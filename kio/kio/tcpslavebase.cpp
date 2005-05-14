@@ -57,6 +57,7 @@
 
 #include <kprotocolmanager.h>
 #include <kde_file.h>
+#include <kstreamsocket.h>
 
 #include "kio/tcpslavebase.h"
 
@@ -75,6 +76,7 @@ public:
   QString host;
   QString realHost;
   QString ip;
+  KNetwork::KStreamSocket socket;
   DCOPClient *dcc;
   KSSLPKCS12 *pkcs;
 
@@ -96,10 +98,8 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const Q3CString &poolSocket,
                            const Q3CString &appSocket)
              :SlaveBase (protocol, poolSocket, appSocket),
-              m_iSock(-1),
               m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol),
-              fp(0)
+              m_sServiceName(protocol)
 {
     // We have to have two constructors, so don't add anything
     // else in here. Put it in doConstructorStuff() instead.
@@ -113,11 +113,9 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const Q3CString &appSocket,
                            bool useSSL)
              :SlaveBase (protocol, poolSocket, appSocket),
-              m_iSock(-1),
               m_bIsSSL(useSSL),
               m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol),
-              fp(0)
+              m_sServiceName(protocol)
 {
     doConstructorStuff();
     if (useSSL)
@@ -144,12 +142,12 @@ TCPSlaveBase::~TCPSlaveBase()
 {
     cleanSSL();
     if (d->usingTLS) delete d->kssl;
-    if (d->dcc) delete d->dcc;
-    if (d->pkcs) delete d->pkcs;
+    delete d->dcc;
+    delete d->pkcs;
     delete d;
 }
 
-ssize_t TCPSlaveBase::write(const void *data, ssize_t len)
+ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 {
 #ifdef Q_OS_UNIX
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
@@ -158,13 +156,13 @@ ssize_t TCPSlaveBase::write(const void *data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->write(data, len);
     }
-    return KSocks::self()->write(m_iSock, data, len);
+    return d->socket.writeData(data, len);
 #else
     return 0;
 #endif
 }
 
-ssize_t TCPSlaveBase::read(void *data, ssize_t len)
+ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 {
 #ifdef Q_OS_UNIX
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
@@ -173,7 +171,7 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->read(data, len);
     }
-    return KSocks::self()->read(m_iSock, data, len);
+    return d->socket.readData(data, len);
 #else
     return 0;
 #endif
@@ -197,7 +195,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 //   so that the while loop is as small as possible.  (GS)
 
   // let's not segfault!
-  if (!data)
+  if (!data || !len)
     return -1;
 
   char tmpbuf[1024];   // 1kb temporary buffer for peeking
@@ -259,19 +257,43 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
     }
   }
 } else {                                                      // NON SSL CASE
-  while (clen < len-1) {
-#ifdef Q_OS_UNIX
-    rc = KSocks::self()->read(m_iSock, buf, 1);
-#else
-    rc = 0;
+
+#ifndef Q_OS_UNIX
+  return -1;
 #endif
-    if (rc <= 0) {
-      // FIXME: this doesn't cover rc == 0 case
+
+  while (true) {
+    rc = d->socket.bytesAvailable();
+
+    if (rc == -1)		// error
       return -1;
-    } else {
-      clen++;
-      if (*buf++ == '\n')
-        break;
+    if (rc == 0) {
+      // nothing to be read, wait for more
+      rc = d->socket.waitForMore(-1);
+      if (rc == -1)
+	// error
+	return -1;
+      if (rc == 0)
+	// eof?
+	rc = 1;
+    }
+
+    // peek to see if anything is available
+    int bytes = rc;
+    if (bytes > len)
+      bytes = len;
+
+    rc = d->socket.peekData(data, bytes);
+    if (rc == -1)
+      return -1;		// error
+    if (rc == 0)
+      return 0;			// eof
+
+    for (int i = 0; i < rc; i++) {
+      if (data[i] == '\n') {
+	rc = d->socket.readData(data, i + 1);
+	return rc;
+      }
     }
   }
 }
@@ -281,13 +303,12 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 return clen;
 }
 
-unsigned short int TCPSlaveBase::port(unsigned short int _p)
+QString TCPSlaveBase::port(const QString& _p)
 {
-    unsigned short int p = _p;
-
-    if (_p <= 0)
+    QString p(_p);
+    if (p.isEmpty() || p == QLatin1String("*") || p == QLatin1String("-1"))
     {
-        p = m_iDefaultPort;
+        p.setNum(m_iDefaultPort);
     }
 
     return p;
@@ -300,13 +321,10 @@ unsigned short int TCPSlaveBase::port(unsigned short int _p)
 // is a port specified in /etc/services, and if so use that
 // otherwise as a last resort use the supplied default port.
 bool TCPSlaveBase::connectToHost( const QString &host,
-                                  unsigned int _port,
+                                  const QString &service,
                                   bool sendError )
 {
 #ifdef Q_OS_UNIX
-    unsigned short int p;
-    KExtendedSocket ks;
-
     d->userAborted = false;
 
     //  - leaving SSL - warn before we even connect
@@ -348,39 +366,33 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     d->status = -1;
     d->host = host;
     d->needSSLHandShake = m_bIsSSL;
-    p = port(_port);
-    ks.setAddress(host, p);
-    if ( d->timeout > -1 )
-        ks.setTimeout( d->timeout );
 
-    if (ks.connect() < 0)
+    // set to blocking mode so that we can connect now
+    d->socket.setBlocking(true);
+
+    if ( d->timeout > -1 )
+        d->socket.setTimeout( d->timeout * 1000 );
+    if (!d->socket.connect(host, port(service)))
     {
-        d->status = ks.status();
+        d->status = d->socket.error();
         if ( sendError )
         {
-            if (d->status == IO_LookupError)
+            if (d->status == KNetwork::KSocketBase::LookupFailure)
                 error( ERR_UNKNOWN_HOST, host);
-            else if ( d->status != -1 )
-                error( ERR_COULD_NOT_CONNECT, host);
+            else if ( d->status != KNetwork::KSocketBase::NoError)
+                error( ERR_COULD_NOT_CONNECT, host + QLatin1String(": ") + 
+		       d->socket.errorString());
         }
         return false;
     }
 
-    m_iSock = ks.fd();
-
     // store the IP for later
-    const KSocketAddress *sa = ks.peerAddress();
-    if (sa)
-      d->ip = sa->nodeName();
-    else
-      d->ip = "";
+    KNetwork::KSocketAddress sa = d->socket.peerAddress();
+    d->ip = sa.nodeName();
+    m_port = sa.serviceName();
 
-    ks.release(); // KExtendedSocket no longer applicable
-
-    if ( d->block != ks.blockingMode() )
-        ks.setBlockingMode( d->block );
-
-    m_iPort=p;
+    // reset the blocking mode
+    d->socket.setBlocking( d->block );
 
     if (m_bIsSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
@@ -388,14 +400,6 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     }
     else
         setMetaData("ssl_in_use", "FALSE");
-
-    // Since we want to use stdio on the socket,
-    // we must fdopen it to get a file pointer,
-    // if it fails, close everything up
-    if ((fp = KDE_fdopen(m_iSock, "w+")) == 0) {
-        closeDescriptor();
-        return false;
-    }
 
     return true;
 #else //!Q_OS_UNIX
@@ -406,19 +410,11 @@ bool TCPSlaveBase::connectToHost( const QString &host,
 void TCPSlaveBase::closeDescriptor()
 {
     stopTLS();
-    if (fp) {
-        fclose(fp);
-        fp=0;
-        m_iSock=-1;
-        if (m_bIsSSL)
-            d->kssl->close();
-    }
-    if (m_iSock != -1) {
-        close(m_iSock);
-        m_iSock=-1;
-    }
-    d->ip = "";
-    d->host = "";
+    if (m_bIsSSL)
+      d->kssl->close();
+    d->socket.close();
+    d->ip = QString();
+    d->host = QString();
 }
 
 bool TCPSlaveBase::initializeSSL()
@@ -445,7 +441,10 @@ void TCPSlaveBase::cleanSSL()
 
 bool TCPSlaveBase::atEnd()
 {
-    return feof(fp);
+    // this doesn't work!!
+    kdError(7029) << k_funcinfo << " called! It doesn't work.  Fix caller"
+		  << endl << kdBacktrace();
+    return d->socket.atEnd();
 }
 
 int TCPSlaveBase::startTLS()
@@ -477,7 +476,7 @@ int TCPSlaveBase::startTLS()
     }
     certificatePrompt();
 
-    int rc = d->kssl->connect(m_iSock);
+    int rc = d->kssl->connect(&d->socket);
     if (rc < 0) {
         delete d->kssl;
         return -2;
@@ -754,13 +753,6 @@ bool TCPSlaveBase::usingTLS() const
     return d->usingTLS;
 }
 
-// ### remove this for KDE4 (misses const):
-bool TCPSlaveBase::usingTLS()
-{
-    return d->usingTLS;
-}
-
-
 //  Returns 0 for failed verification, -1 for rejected cert and 1 for ok
 int TCPSlaveBase::verifyCertificate()
 {
@@ -776,7 +768,7 @@ int TCPSlaveBase::verifyCertificate()
         ourHost = d->realHost;
     else ourHost = d->host;
 
-    QString theurl = QString(m_sServiceName)+"://"+ourHost+":"+QString::number(m_iPort);
+    QString theurl = QString(m_sServiceName)+"://"+ourHost+":"+m_port;
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
      d->militantSSL = false;
@@ -1169,52 +1161,36 @@ int TCPSlaveBase::verifyCertificate()
 
 bool TCPSlaveBase::isConnectionValid()
 {
-    if ( m_iSock == -1 )
+    if ( d->socket.state() != KNetwork::KStreamSocket::Connected )
       return false;
 
-    fd_set rdfs;
-    FD_ZERO(&rdfs);
-    FD_SET(m_iSock , &rdfs);
-
-    struct timeval tv;
-    tv.tv_usec = 0;
-    tv.tv_sec = 0;
-    int retval;
+    qint64 retval = -1;
 #ifdef Q_OS_UNIX
-    do {
-       retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
-       if (wasKilled())
-          return false; // Beam us out of here
-    } while ((retval == -1) && (errno == EAGAIN));
-#else
-    retval = -1;
+    retval = d->socket.bytesAvailable();
 #endif
     // retval == -1 ==> Error
     // retval ==  0 ==> Connection Idle
-    // retval >=  1 ==> Connection Active
+    // retval ==  1 ==> either Active or Closed
+    // retval >   1 ==> Connection Active
     //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
     //              << retval << endl;
 
     if (retval == -1)
        return false;
 
-    if (retval == 0)
-       return true;
+    if (retval == 1)
+    {
+      // corner case!
+      char c;
+      retval = d->socket.peekData(&c, 1);
+      if (retval == 0)
+	// it's in fact closed
+	return false;
+    }
 
-    // Connection is active, check if it has closed.
-    char buffer[100];
-#ifdef Q_OS_UNIX
-    do {
-       retval = KSocks::self()->recv(m_iSock, buffer, 80, MSG_PEEK);
-
-    } while ((retval == -1) && (errno == EAGAIN));
-#else
-    retval = -1;
-#endif
-    //kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
-    //                 << retval << endl;
-    if (retval <= 0)
-       return false; // Error or connection closed.
+    // if there's more than 1 byte in bytesAvailable, we can't know if the
+    // connection is closed or not without actually reading from it
+    // (i.e., we can't do it with peekData)
 
     return true; // Connection still valid.
 }
@@ -1222,51 +1198,15 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-  fd_set rd;
-  struct timeval timeout;
-
   if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling && d->kssl )
+  {
     if (d->kssl->pending() > 0)
         return true;
-
-  FD_ZERO(&rd);
-  FD_SET(m_iSock, &rd);
-
-  timeout.tv_usec = 0;
-  timeout.tv_sec = t;
-  time_t startTime;
-
-  int rc;
-  int n = t;
-
-reSelect:
-  startTime = time(NULL);
-#ifdef Q_OS_UNIX
-  rc = KSocks::self()->select(m_iSock+1, &rd, NULL, NULL, &timeout);
-#else
-  rc = -1;
-#endif
-  if (wasKilled())
-    return false; // We're dead.
-
-  if (rc == -1)
-    return false;
-
-  if (FD_ISSET(m_iSock, &rd))
+  }
+  else if (d->socket.bytesAvailable() > 0)
     return true;
 
-  // Well it returned but it wasn't set.  Let's see if it
-  // returned too early (perhaps from an errant signal) and
-  // start over with the remaining time
-  int timeDone = time(NULL) - startTime;
-  if (timeDone < n)
-  {
-    n -= timeDone;
-    timeout.tv_sec = n;
-    goto reSelect;
-  }
-
-  return false; // Timed out!
+  return d->socket.waitForMore(t * 1000) > 0;
 }
 
 int TCPSlaveBase::connectResult()
@@ -1323,7 +1263,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     kdDebug(7029) << "Setting real hostname: " << msgHost << endl;
     d->kssl->setPeerHost(msgHost);
 
-    d->status = d->kssl->connect(m_iSock);
+    d->status = d->kssl->connect(&d->socket);
     if (d->status < 0)
     {
         closeDescriptor();

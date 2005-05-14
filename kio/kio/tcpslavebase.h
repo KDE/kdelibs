@@ -27,9 +27,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-#include <kextsock.h>
+#include <ksocketbase.h>
 #include <kio/slavebase.h>
-
 
 namespace KIO {
 
@@ -56,54 +55,6 @@ public:
 
 protected:
 
-#ifndef KDE_NO_COMPAT
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED ssize_t Write(const void *data, ssize_t len) { return write( data, len ); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED ssize_t Read(void *data, ssize_t len) { return read( data, len ); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED ssize_t ReadLine(char *data, ssize_t len) { return readLine( data, len ); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED unsigned short int GetPort(unsigned short int p) { return port(p); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED bool ConnectToHost( const QString &host, unsigned int port,
-                        bool sendError ) { return connectToHost( host, port, sendError ); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED void CloseDescriptor() { closeDescriptor(); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED bool AtEOF() { return atEnd(); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED bool InitializeSSL() { return initializeSSL(); }
-
-    /**
-     * @deprecated Due to inconsistency with KDE naming convention.
-     */
-    KDE_DEPRECATED void CleanSSL() { cleanSSL(); }
-#endif
-
     /**
      * This function acts like standard write function call
      * except it is also capable of making SSL or SOCKS
@@ -114,7 +65,7 @@ protected:
      *
      * @return the actual size of the data that was sent
      */
-    ssize_t write(const void *data, ssize_t len);
+    ssize_t write(const char *data, ssize_t len);
 
     /**
      * This function acts like standard read function call
@@ -126,7 +77,7 @@ protected:
      *
      * @return the actual size of data that was obtained
      */
-    ssize_t read(void *data, ssize_t len);
+    ssize_t read(char *data, ssize_t len);
 
     /**
      * Same as above except it reads data one line at a time.
@@ -150,7 +101,7 @@ protected:
      * @param _port the port to try, if it works, it is returned
      * @return the default port if the given port doesn't work
      */
-    unsigned short int port(unsigned short int _port);
+    QString port(const QString& _port);
 
     /**
      * Performs the initial TCP connection stuff and/or
@@ -170,7 +121,7 @@ protected:
      *         on failure, false is returned and an appropriate
      *         error message is send to the application.
      */
-    bool connectToHost( const QString &host, unsigned int port,
+    bool connectToHost( const QString &host, const QString& service,
                         bool sendError = true );
 
     /**
@@ -190,15 +141,6 @@ protected:
      * @since 3.2
      */
     bool usingTLS() const;
-
-    /**
-     * @obsolete kept for binary compatibility
-     * Are we using TLS?
-     *
-     * @return if so, true is returned.
-     *         if not, true isn't returned.
-     */
-    bool usingTLS();
 
     /**
      * Can we use TLS?
@@ -279,7 +221,7 @@ protected:
      * can send the appropriate error message back to the
      * calling io-slave.
      *
-     * @return the status code as returned by KExtendedSocket.
+     * @return the error code after the connection
      */
     int connectResult();
 
@@ -367,12 +309,10 @@ protected:
     bool userAborted() const;
 
 protected:
-    int m_iSock;
     bool m_bIsSSL;
-    unsigned short int m_iPort;
+    QString m_port;
     unsigned short int m_iDefaultPort;
     Q3CString m_sServiceName;
-    FILE *fp;
 
 private:
     bool doSSLHandShake( bool sendError );
