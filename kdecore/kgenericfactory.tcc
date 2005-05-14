@@ -125,7 +125,7 @@ namespace KDEPrivate
                                        QObject *parent, const char *name, 
                                        const char *className, const QStringList &args )
         {
-            QMetaObject *metaObject = Product::staticMetaObject();
+            const QMetaObject* metaObject = &Product::staticMetaObject;
             while ( metaObject )
             {
                 if ( !qstrcmp( className, metaObject->className() ) )

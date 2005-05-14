@@ -34,7 +34,6 @@ class Q3Frame;
 class QLabel;
 class KCertPartPrivate;
 class KComboBox;
-class Q3Button;
 class KSSLSigners;
 class KSSLPKCS12;
 class KSSLCertificate;
@@ -42,6 +41,7 @@ class QTabWidget;
 class Q3MultiLineEdit;
 class KAboutData;
 class QGridLayout;
+class QPushButton;
 
 
 class KX509Item : public KListViewItem {
@@ -116,7 +116,7 @@ protected:
 
   // The rest
   KInstance *_instance;
-  Q3Button *_import, *_save, *_done, *_launch, *_importAll;
+  QPushButton *_import, *_save, *_done, *_launch, *_importAll;
   // Store the pointer to the current item
   KSSLPKCS12 *_p12;
   KSSLCertificate *_ca;
