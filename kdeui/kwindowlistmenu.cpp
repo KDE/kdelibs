@@ -74,8 +74,8 @@ int NameSortedInfoList::compareItems( Q3PtrCollection::Item s1, Q3PtrCollection:
 
 } // namespace
 
-KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
-  : KPopupMenu(parent, name)
+KWindowListMenu::KWindowListMenu(QWidget *parent, const char */*name*/)
+  : KPopupMenu(parent)
 {
     kwin_module = new KWinModule(this);
 
@@ -116,55 +116,56 @@ void KWindowListMenu::init()
     int maxwidth = kapp->desktop()->screenGeometry( this ).width() / 2 - 100;
 
     clear();
-    map.clear();
 
-    int unclutter = insertItem( i18n("Unclutter Windows"),
+    QAction* unclutter = addAction( i18n("Unclutter Windows"),
                                 this, SLOT( slotUnclutterWindows() ) );
-    int cascade = insertItem( i18n("Cascade Windows"),
+    QAction* cascade = addAction( i18n("Cascade Windows"),
                               this, SLOT( slotCascadeWindows() ) );
 
     // if we only have one desktop we won't be showing titles, so put a separator in
     if (nd == 1)
     {
-        insertSeparator();
+        addSeparator();
     }
 
 
     QList<KWin::WindowInfo> windows;
-    for (QList<WId>::ConstIterator it = kwin_module->windows().begin();
-         it != kwin_module->windows().end(); ++it) {
-         windows.append( KWin::windowInfo( *it, NET::WMDesktop ));
-    }
+    foreach (WId id, kwin_module->windows())
+         windows.append( KWin::windowInfo( id, NET::WMDesktop ));
+
     bool show_all_desktops_group = ( nd > 1 );
     for (d = 1; d <= nd + (show_all_desktops_group ? 1 : 0); d++) {
         bool on_all_desktops = ( d > nd );
-	int items = 0;
+    int items = 0;
 
-	if (!active_window && d == cd)
-	    setItemChecked(1000 + d, true);
+    // KDE4 porting - huh? didn't know you could set an item checked before it's created?
+    //if (!active_window && d == cd)
+        //setItemChecked(1000 + d, true);
 
-        NameSortedInfoList list;
-        list.setAutoDelete(true);
+    NameSortedInfoList list;
+    list.setAutoDelete(true);
 
-	for (QList<KWin::WindowInfo>::ConstIterator it = windows.begin();
-             it != windows.end(); ++it) {
-	    if (((*it).desktop() == d) || (on_all_desktops && (*it).onAllDesktops())
-                || (!show_all_desktops_group && (*it).onAllDesktops())) {
-	        list.inSort(new KWin::WindowInfo( (*it).win(),
+    foreach (KWin::WindowInfo wi, windows) {
+        if ((wi.desktop() == d) || (on_all_desktops && wi.onAllDesktops())
+                || (!show_all_desktops_group && wi.onAllDesktops())) {
+            list.inSort(new KWin::WindowInfo( wi.win(),
                     NET::WMVisibleName | NET::WMState | NET::XAWMState | NET::WMWindowType,
                     NET::WM2GroupLeader | NET::WM2TransientFor ));
             }
         }
 
-        for (KWin::WindowInfo* info = list.first(); info; info = list.next(), ++i)
-        {
+        foreach (KWin::WindowInfo* info, list) {
+            ++i;
             QString itemText = KStringHandler::cPixelSqueeze(info->visibleNameWithState(), fontMetrics(), maxwidth);
+            
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
                 | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
                 | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
+
             if ( (windowType == NET::Normal || windowType == NET::Unknown
                     || (windowType == NET::Dialog && standaloneDialog( info, list )))
-                && !(info->state() & NET::SkipTaskbar) ) {
+                    && !(info->state() & NET::SkipTaskbar) ) {
+                
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
 
@@ -172,24 +173,24 @@ void KWindowListMenu::init()
                 if ( items == 1 && nd > 1 )
                 {
                     if( !on_all_desktops )
-                        insertTitle(kwin_module->desktopName( d ), 1000 + d);
+                        addTitle(kwin_module->desktopName( d ));
                     else
-                        insertTitle(i18n("On All Desktops"), 2000 );
+                        addTitle(i18n("On All Desktops"));
                 }
 
                 // Avoid creating unwanted accelerators.
                 itemText.replace('&', QString::fromLatin1("&&"));
-                insertItem( pm, itemText, i);
-                map.insert(i, info->win());
+                QAction* a = addAction(pm, itemText, this, SLOT(slotForceActiveWindow()));
+                a->setData((int)info->win());
                 if (info->win() == active_window)
-                    setItemChecked(i, true);
+                    a->setChecked(true);
             }
         }
 
         if (d == cd)
         {
-            setItemEnabled(unclutter, items > 0);
-            setItemEnabled(cascade, items > 0);
+            unclutter->setEnabled(items > 0);
+            cascade->setEnabled(items > 0);
         }
     }
 
@@ -199,21 +200,29 @@ void KWindowListMenu::init()
         if (nd > 1)
         {
             // because we don't have any titles, nor a separator
-            insertSeparator();
+            addSeparator();
         }
 
-        setItemEnabled(insertItem(i18n("No Windows")), false);
+        addAction(i18n("No Windows"))->setEnabled(false);
     }
 }
 
-void KWindowListMenu::slotExec(int id)
+void KWindowListMenu::slotForceActiveWindow()
 {
-    if (id == 2000)
-        ; // do nothing
-    else if (id > 1000)
-        KWin::setCurrentDesktop(id - 1000);
-    else if ( id >= 0 )
-	KWin::forceActiveWindow(map[id]);
+    QAction* window = qobject_cast<QAction*>(sender());
+    if (!window || !window->data().canConvert(QVariant::Int))
+        return;
+
+    KWin::forceActiveWindow(window->data().toInt());
+}
+
+void KWindowListMenu::slotSetCurrentDesktop()
+{
+    QAction* window = qobject_cast<QAction*>(sender());
+    if (!window || !window->data().canConvert(QVariant::Int))
+        return;
+
+    KWin::setCurrentDesktop(window->data().toInt());
 }
 
 // This popup is much more useful from keyboard if it has the active
@@ -222,14 +231,11 @@ void KWindowListMenu::slotExec(int id)
 // called after popup().
 void KWindowListMenu::selectActiveWindow()
 {
-    for( unsigned int i = 0;
-         i < count();
-         ++i )
-        if( isItemChecked( idAt( i )))
-            {
-            setActiveItem( i );
+    foreach (QAction* action, actions())
+        if (action->isChecked()) {
+            setActiveAction(action);
             break;
-            }
+        }
 }
 
 void KWindowListMenu::slotUnclutterWindows()
