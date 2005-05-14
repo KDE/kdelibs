@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-static Q3CString
+static QByteArray
 ps(const QString &s)
 {
   if (s.isNull())
@@ -14,14 +14,14 @@ ps(const QString &s)
 static void
 tx(const char *t)
 {
-    std::cout << t << " -> " << ps(KShell::tildeExpand(t)) << std::endl;
+    std::cout << t << " -> " << ps(KShell::tildeExpand(t)).data() << std::endl;
 }
 
 static void
 sj(const char *t, int flg)
 {
     int err;
-    std::cout << t << " (" << flg << ") -> " << ps(KShell::joinArgsDQ(KShell::splitArgs(t, flg, &err))) << " (" << err << ")" << std::endl;
+    std::cout << t << " (" << flg << ") -> " << ps(KShell::joinArgsDQ(KShell::splitArgs(t, flg, &err))).data() << " (" << err << ")" << std::endl;
 }
 
 int main()
