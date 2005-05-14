@@ -29,7 +29,7 @@
 /**
  * @short A menu with keyboard searching and convenience methods for title items.
  *
- * KMenu is a class for menus with standard title items and keyboard
+ * KPopupMenu is a class for menus with standard title items and keyboard
  * accessibility for popups with many options and/or varying options. It acts
  * identically to QMenu, with the addition of insertTitle(),
  * changeTitle(), setKeyboardShortcutsEnabled() and
@@ -44,27 +44,27 @@
  * @author Hamish Rodda <rodda@kde.org>
  * FIXME KDE4 rename this file to kmenu.h
  */
-class KDEUI_EXPORT KMenu : public Q3PopupMenu {
+class KDEUI_EXPORT KPopupMenu : public Q3PopupMenu {
     Q_OBJECT
 public:
     /**
-     * Constructs a KMenu.
+     * Constructs a KPopupMenu.
      */
-    KMenu(QWidget *parent=0);
+    KPopupMenu(QWidget *parent=0);
 
     /**
      * Destructs the object
      */
-    ~KMenu();
+    ~KPopupMenu();
 
     /**
      * Inserts a title item with no icon.
      */
-    QAction* insertTitle(const QString &text, QAction* before = 0L);
+    QAction* addTitle(const QString &text, QAction* before = 0L);
     /**
      * Inserts a title item with the given icon and title.
      */
-    QAction* insertTitle(const QIcon &icon, const QString &text, QAction* before = 0L);
+    QAction* addTitle(const QIcon &icon, const QString &text, QAction* before = 0L);
 
     /**
      * Enables keyboard navigation by searching for the entered key sequence.
@@ -106,10 +106,10 @@ public:
     void hideContextMenu();
 
     /**
-     * Returns the KMenu associated with the current context menu
+     * Returns the KPopupMenu associated with the current context menu
      * @since 3.2
      */
-    static KMenu* contextMenuFocus();
+    static KPopupMenu* contextMenuFocus();
 
     /**
      * returns the QAction associated with the current context menu
@@ -126,9 +126,9 @@ public:
 
     // BEGIN compat methods
     /**
-     * Constructs a KMenu.
+     * Constructs a KPopupMenu.
      */
-    KMenu(QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KPopupMenu(QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
 
     /**
      * Inserts a title item with no icon.
@@ -164,7 +164,7 @@ public:
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
-    KMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
 
     /**
      * @deprecated
@@ -194,9 +194,9 @@ signals:
      * @param ctxMenu The context menu itself
      * @since 3.2
      */
-    void aboutToShowContextMenu(KMenu* menu, QAction* menuAction, QMenu* ctxMenu);
+    void aboutToShowContextMenu(KPopupMenu* menu, QAction* menuAction, QMenu* ctxMenu);
     /// compat
-    void aboutToShowContextMenu(KMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
+    void aboutToShowContextMenu(KPopupMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -221,11 +221,8 @@ protected slots:
     void ctxMenuHideShowingMenu();
 
 private:
-    class KMenuPrivate;
-    KMenuPrivate *d;
+    class KPopupMenuPrivate;
+    KPopupMenuPrivate *d;
 };
-
-// compat
-typedef KMenu KPopupMenu;
 
 #endif
