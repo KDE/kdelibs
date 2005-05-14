@@ -41,7 +41,7 @@ class QCheckBox;
 class QPushButton;
 class KLineEdit;
 class KURLRequester;
-class Q3Button;
+class QPushButton;
 class KIconButton;
 class KPropsDlgPlugin;
 class QComboBox;
@@ -854,7 +854,7 @@ private:
     KLineEdit *suidEdit;
     KLineEdit *swallowExecEdit;
     KLineEdit *swallowTitleEdit;
-    Q3Button *execBrowse;
+    QPushButton *execBrowse;
 
     QString execStr;
     QString swallowExecStr;

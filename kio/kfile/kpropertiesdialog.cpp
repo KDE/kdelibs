@@ -818,7 +818,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !isDevice && !isTrash && (bDesktopFile || S_ISDIR(mode)) && !d->bMultiple /*not implemented for multiple*/ )
   {
     KIconButton *iconButton = new KIconButton( d->m_frame );
-    int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
+    int bsize = 66 + 2 * iconButton->style()->pixelMetric(QStyle::PM_ButtonMargin);
     iconButton->setFixedSize(bsize, bsize);
     iconButton->setIconSize(48);
     iconButton->setStrictIconSize(false);
@@ -844,7 +844,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
              this, SLOT( slotIconChanged() ) );
   } else {
     QLabel *iconLabel = new QLabel( d->m_frame );
-    int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
+    int bsize = 66 + 2 * iconLabel->style()->pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
     iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
     iconArea = iconLabel;
@@ -2730,7 +2730,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   layout->addMultiCellWidget(sep, 6, 6, 0, 1);
 
   unmounted = new KIconButton( d->m_frame );
-  int bsize = 66 + 2 * unmounted->style().pixelMetric(QStyle::PM_ButtonMargin);
+  int bsize = 66 + 2 * unmounted->style()->pixelMetric(QStyle::PM_ButtonMargin);
   unmounted->setFixedSize(bsize, bsize);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
   layout->addWidget(unmounted, 7, 0);
@@ -3074,7 +3074,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         QString maj = mimetype.left(index);
         QString min = mimetype.mid(index+1);
 
-        QMapIterator<QString,Q3ListViewItem*> mit = majorMap.find( maj );
+        QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( maj );
         if ( mit == majorMap.end() ) {
            majorGroup = new Q3ListViewItem( mw->listView, maj );
            majorGroup->setExpandable(true);
@@ -3089,7 +3089,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         Q3ListViewItem *item = new Q3ListViewItem(majorGroup, min, (*it)->comment());
         item->setPixmap(0, (*it)->pixmap(KIcon::Small, IconSize(KIcon::Small)));
      }
-     QMapIterator<QString,Q3ListViewItem*> mit = majorMap.find( "all" );
+     QMap<QString,Q3ListViewItem*>::iterator mit = majorMap.find( "all" );
      if ( mit != majorMap.end())
      {
         mw->listView->setCurrentItem(mit.data());
