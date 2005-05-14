@@ -21,7 +21,7 @@ int main( int argc, char** argv )
     KApplication app( argc, argv, "kidlservertest", false /* No GUI */ );
 
     app.dcopClient()->attach();
-    app.dcopClient()->registerAs( "kidlservertest" );
+    app.dcopClient()->registerAs( "kidlservertest", false );
 
     qDebug("Server process started...");
 

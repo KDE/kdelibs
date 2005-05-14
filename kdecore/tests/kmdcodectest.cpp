@@ -148,7 +148,7 @@ void testCodec (const char* msg, Codec type, bool isFile)
         }
 
         Q3CString result (output.data(), output.size()+1);
-        cout << "Result: " << endl << result << endl;
+        cout << "Result: " << endl << result.data() << endl;
     }
     else
     {
@@ -179,7 +179,7 @@ void testCodec (const char* msg, Codec type, bool isFile)
           default:
             break;
         }
-        cout << result << endl;
+        cout << result.data() << endl;
     }
 }
 
@@ -220,7 +220,7 @@ void MD5_timeTrial ()
     cout << "Result: " << endl;
     cout << "  Time   = " << duration << " seconds" << endl;
     cout << "  Speed  = " << speed << " bytes/second" << endl;
-    cout << "  Digest = " << context.hexDigest() << endl;
+    cout << "  Digest = " << context.hexDigest().data() << endl;
 }
 
 void MD5_testSuite ()
@@ -264,7 +264,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
     cout << "Input filename: " << input << endl;
   }
 
-  cout << "Calculated Digest = " <<  context.hexDigest() << endl;
+  cout << "Calculated Digest = " <<  context.hexDigest().data() << endl;
   cout << "Supplied Digest   = " << digest << endl;
   cout << "Matches: " << (result ? "TRUE":"FALSE") << endl;
 }
@@ -286,7 +286,7 @@ void MD5_file (const char *filename, bool rawOutput )
   if ( rawOutput )
     cout << "MD5 (" << filename << ") = " << context.rawDigest() << endl;
   else
-    cout << "MD5 (" << filename << ") = " << context.hexDigest() << endl;
+    cout << "MD5 (" << filename << ") = " << context.hexDigest().data() << endl;
 
   f.close ();
 }
@@ -301,7 +301,7 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
   if ( rawOutput )
     cout << "Result: " << context.rawDigest() << endl;
   else
-    cout << "Result: " << context.hexDigest() << endl;
+    cout << "Result: " << context.hexDigest().data() << endl;
 
   if ( expected )
   {
