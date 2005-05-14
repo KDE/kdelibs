@@ -219,7 +219,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_isasking = 0;
 
   // plugins
-  for (uint i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
   {
     if (config()->plugin (i))
       loadPlugin (i);
@@ -556,7 +556,7 @@ QString KateDocument::text() const
       s.append (textLine->string());
 
       if ((i+1) < m_buffer->count())
-        s.append('\n');
+        s.append(QChar::fromAscii('\n'));
     }
   }
 
@@ -609,7 +609,7 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
       }
 
       if ( i < endLine )
-        s.append('\n');
+        s.append(QChar::fromAscii('\n'));
     }
   }
 
@@ -647,7 +647,7 @@ bool KateDocument::setText(const QString &s)
 
   editEnd ();
 
-  for (uint i=0; i < msave.count(); i++)
+  for (int i=0; i < msave.count(); i++)
     setMark (msave[i].line, msave[i].type);
 
   return true;
@@ -1875,7 +1875,7 @@ void KateDocument::readSessionConfig(KConfig *kconfig)
 
   // Restore Bookmarks
   Q3ValueList<int> marks = kconfig->readIntListEntry("Bookmarks");
-  for( uint i = 0; i < marks.count(); i++ )
+  for( int i = 0; i < marks.count(); i++ )
     addMark( marks[i], KateDocument::markType01 );
 }
 
@@ -2168,7 +2168,8 @@ KMimeType::Ptr KateDocument::mimeTypeForContent()
     if (bufpos + len > 1024)
       len = 1024 - bufpos;
 
-    memcpy(&buf[bufpos], (line + "\n").latin1(), len);
+    QString ld (line + QChar::fromAscii('\n'));
+    memcpy(buf.data() + bufpos, ld.latin1(), len);
 
     bufpos += len;
 
@@ -2859,19 +2860,19 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   bool bracketInserted = false;
   QString buf;
   QChar c;
-  for( uint z = 0; z < chars.length(); z++ )
+  for( int z = 0; z < chars.length(); z++ )
   {
     QChar ch = c = chars[z];
 
-    if (ch.isPrint() || ch == '\t')
+    if (ch.isPrint() || ch == QChar::fromAscii('\t'))
     {
       buf.append (ch);
 
       if (!bracketInserted && (config()->configFlags() & KateDocument::cfAutoBrackets))
       {
-        if (ch == '(') { bracketInserted = true; buf.append (')'); }
-        if (ch == '[') { bracketInserted = true; buf.append (']'); }
-        if (ch == '{') { bracketInserted = true; buf.append ('}'); }
+        if (ch == QChar::fromAscii('(')) { bracketInserted = true; buf.append (QChar::fromAscii(')')); }
+        if (ch == QChar::fromAscii('[')) { bracketInserted = true; buf.append (QChar::fromAscii(']')); }
+        if (ch == QChar::fromAscii('{')) { bracketInserted = true; buf.append (QChar::fromAscii('}')); }
       }
     }
   }
@@ -3101,7 +3102,7 @@ void KateDocument::paste ( KateView* view )
   if (s.isEmpty())
     return;
 
-  uint lines = s.contains (QChar ('\n'));
+  int lines = s.count (QChar::fromAscii ('\n'));
 
   m_undoDontMerge = true;
 
@@ -3150,7 +3151,7 @@ void KateDocument::insertIndentChars ( KateView *view )
     s.fill (' ', width - (view->cursorColumnReal() % width));
   }
   else
-    s.append ('\t');
+    s.append (QChar::fromAscii ('\t'));
 
   insertText (view->cursorLine(), view->cursorColumnReal(), s);
 
@@ -4060,7 +4061,7 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
 
   QChar opposite;
 
-  switch( bracket ) {
+  switch( bracket.toAscii() ) {
   case '{': opposite = '}'; break;
   case '}': opposite = '{'; break;
   case '[': opposite = ']'; break;
@@ -4448,13 +4449,13 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
     v->renderer()->config()->configStart();
   }
   // read a number of lines in the top/bottom of the document
-  for (uint i=0; i < QMIN( 9, numLines() ); ++i )
+  for (uint i=0; i < kMin( (uint)9, numLines() ); ++i )
   {
     readVariableLine( textLine( i ), onlyViewAndRenderer );
   }
   if ( numLines() > 10 )
   {
-    for ( uint i = QMAX(10, numLines() - 10); i < numLines(); ++i )
+    for ( uint i = kMax( (uint)10, numLines() - 10); i < numLines(); ++i )
     {
       readVariableLine( textLine( i ), onlyViewAndRenderer );
     }
