@@ -9,8 +9,8 @@ kspell2includedir = $(includedir)/kspell2
 kspell2include_HEADERS = dialog.h highlighter.h configdialog.h \
 	configwidget.h
 
-libkspell2_la_SOURCES = kspell2ui.ui dialog.cpp \
-	highlighter.cpp configui.ui configdialog.cpp \
+libkspell2_la_SOURCES = kspell2ui.ui3 dialog.cpp \
+	highlighter.cpp configui.ui3 configdialog.cpp \
 	configwidget.cpp
 
 libkspell2_la_LDFLAGS = -no-undefined -version-info 1:0:0 $(all_libraries)
