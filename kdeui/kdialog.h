@@ -91,7 +91,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param margin The new layout margin
      * @param spacing The new layout spacing
      */
-    static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
+    static void resizeLayout( QLayout *lay, int margin, int spacing );
 
     /**
      * Centers @p widget on the desktop, taking multi-head setups into

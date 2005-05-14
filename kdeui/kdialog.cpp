@@ -153,14 +153,15 @@ void KDialog::resizeLayout( QWidget *w, int margin, int spacing )
 }
 
 
-void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
+void KDialog::resizeLayout( QLayout *lay, int margin, int spacing )
 {
-  QLayoutIterator it = lay->iterator();
   QLayoutItem *child;
-  while ( (child = it.current() ) )
+  int pos = 0;
+  while ( (child = lay->itemAt(pos) ) )
   {
-    resizeLayout( child, margin, spacing );
-    ++it;
+    if ( child->layout() )
+      resizeLayout( child->layout(), margin, spacing );
+    ++pos;
   }
   if( lay->layout() )
   {

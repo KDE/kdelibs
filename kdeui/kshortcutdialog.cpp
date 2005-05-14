@@ -26,6 +26,7 @@
 	#define XK_MISCELLANY
 	#include <X11/Xlib.h>	// For x11Event()
 	#include <X11/keysymdef.h> // For XK_...
+	#include <fixx11h.h>
 
 	#ifdef KeyPress
 		const int XKeyPress = KeyPress;
