@@ -337,7 +337,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
               else
               {
                 QRegExp rx(value);
-                rx.setWildcard(TRUE);
+                rx.setWildcard(true);
                 d->adFilters.append(rx);
               }
           }
@@ -719,7 +719,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
     config.sync();
 
     QRegExp rx(url);
-    rx.setWildcard(TRUE);
+    rx.setWildcard(true);
     d->adFilters.append(rx);
 }   
 
