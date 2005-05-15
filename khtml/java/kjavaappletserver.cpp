@@ -53,6 +53,7 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <QAbstractEventDispatcher>
 
 #define KJAS_CREATE_CONTEXT    (char)1
 #define KJAS_DESTROY_CONTEXT   (char)2
@@ -515,7 +516,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     //now parse out the arguments
     while( index < qb_size )
     {
-        int sep_pos = qb.find( 0, index );
+        int sep_pos = qb.indexOf( "0", index );
         if (sep_pos < 0) {
             kdError(6100) << "Missing separation byte" << endl;
             sep_pos = qb_size;
@@ -724,7 +725,7 @@ void KJavaAppletServer::waitForReturnData(JSStackFrame * frame) {
     killTimers();
     startTimer(15000);
     while (!frame->exit)
-        kapp->eventLoop()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMore);
+		QAbstractEventDispatcher::instance()->processEvents (QEventLoop::AllEvents | QEventLoop::WaitForMore);
     if (d->jsstack.size() <= 1)
         killTimers();
     kdDebug(6100) << "<KJavaAppletServer::waitForReturnData stacksize:" << d->jsstack.size() << endl;
