@@ -24,7 +24,7 @@
 #include "../interfaces/document.h"
 #include "../interfaces/view.h"
 
-#include "katedocument.h"
+#include "katefactory.h"
 
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
@@ -79,7 +79,7 @@ KWrite::KWrite (KTextEditor::Document *doc)
 
   if ( !doc )
   {
-    doc = new KateDocument ();
+    doc = (KTextEditor::Document *)KateFactory::self()->createPartObject (0,0,0,"", "Kate::Document", QStringList());
 
     docList.append(doc);
   }
@@ -99,7 +99,7 @@ KWrite::KWrite (KTextEditor::Document *doc)
   connect(m_view->document(),SIGNAL(fileNameChanged()),this,SLOT(slotFileNameChanged()));
   connect(m_view,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
 
-  setXMLFile( "kwriteui.rc" );
+  setXMLFile( "katetestui.rc" );
   createShellGUI( true );
   guiFactory()->addClient( m_view );
 
@@ -546,7 +546,7 @@ int main(int argc, char **argv)
 
   KLocale::setMainCatalogue("kate");         //lukas: set this to have the kwritepart translated using kate message catalog
 
-  KAboutData aboutData ( "kwrite", I18N_NOOP("KWrite"), "4.5",
+  KAboutData aboutData ( "katetest", I18N_NOOP("KWrite"), "4.5",
                          I18N_NOOP( "KWrite - Text Editor" ), KAboutData::License_LGPL_V2,
                          I18N_NOOP( "(c) 2000-2005 The Kate Authors" ), 0, "http://kate.kde.org" );
 
@@ -590,13 +590,13 @@ int main(int argc, char **argv)
 
   KGlobal::locale()->insertCatalogue("katepart");
 
-  DCOPClient *client = kapp->dcopClient();
+/*  DCOPClient *client = kapp->dcopClient();
   if (!client->isRegistered())
   {
     client->attach();
     client->registerAs("kwrite");
   }
-
+*/
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   if (kapp->isRestored())

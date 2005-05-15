@@ -233,8 +233,9 @@ void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
   QPen penBackup( paint.pen() );
   paint.setPen( config()->tabMarkerColor() );
 
-  const int top = paint.window().top();
-  const int bottom = paint.window().bottom();
+  const int height = config()->fontStruct()->fontHeight;
+  const int top = 0;
+  const int bottom = height-1;
   const int h = bottom - top + 1;
 
   // Dot padding.

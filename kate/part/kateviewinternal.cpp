@@ -763,17 +763,7 @@ void KateViewInternal::paintText (int x, int y, int width, int height, bool pain
   uint endz = startz + 1 + (height / h);
   uint lineRangesSize = lineRanges.size();
 
-  // temp hack
-  QPixmap drawBuffer;
-
-  if (drawBuffer.width() < KateViewInternal::width() || drawBuffer.height() < (int)h)
-    drawBuffer.resize(KateViewInternal::width(), (int)h);
-
-  if (drawBuffer.isNull())
-    return;
-
   QPainter paint(this);
-  QPainter paintDrawBuffer(&drawBuffer);
 
   // TODO put in the proper places
   m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
@@ -786,16 +776,17 @@ void KateViewInternal::paintText (int x, int y, int width, int height, bool pain
       if (!(z >= lineRangesSize))
         lineRanges[z].dirty = false;
 
-      paint.fillRect( x, z * h, width, h, m_view->renderer()->config()->backgroundColor() );
+      paint.fillRect( x, 0, width, h, m_view->renderer()->config()->backgroundColor() );
     }
     else if (!paintOnlyDirty || lineRanges[z].dirty)
     {
       lineRanges[z].dirty = false;
 
-      m_view->renderer()->paintTextLine(paintDrawBuffer, &lineRanges[z], xStart, xEnd, &cursor, &bm);
-
-      paint.drawPixmap (x, z * h, drawBuffer, 0, 0, width, h);
+      
+      m_view->renderer()->paintTextLine(paint, &lineRanges[z], xStart, xEnd, &cursor, &bm);
     }
+    
+    paint.translate(0, h);
   }
 }
 
