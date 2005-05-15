@@ -1,5 +1,8 @@
 2005-05-15  Harri Porten  <porten@kde.org>
 
+	* ecma/kjs_dom.cpp: return "null" from getAttribute() and
+	getAttributeNS() if the attribute isn't set.
+
 	* html/html_elementimpl.cpp: always return a non-null string
 	from innerHTML() and innerText()
 
