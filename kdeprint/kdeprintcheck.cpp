@@ -40,7 +40,7 @@
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kextsock.h>
+#include <network/kbufferedsocket.h>
 #include <qfile.h>
 #include <unistd.h>
 
@@ -123,12 +123,7 @@ bool KdeprintChecker::checkExec(const KURL& url)
 bool KdeprintChecker::checkService(const KURL& url)
 {
 	QString	serv(url.path().mid(1));
-	KExtendedSocket	sock;
+	KNetwork::KBufferedSocket	sock;
 
-	bool	ok;
-	int	port = serv.toInt(&ok);
-
-	if (ok) sock.setAddress("localhost", port);
-	else sock.setAddress("localhost", serv);
-	return (sock.connect() == 0);
+	return sock.connect("localhost", serv);
 }
