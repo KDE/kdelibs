@@ -29,7 +29,6 @@
 #include <qmap.h>
 #include <QSize>
 
-
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
  *

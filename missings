@@ -10,13 +10,9 @@ kdewidgets/kdewidgets.lo
 kdoctools/kio_help.lo
 khtml/ecma/kjs_events.lo
 khtml/ecma/kjs_window.lo
-khtml/java/kjavaappletcontext.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
-khtml/java/kjavaappletwidget.lo
-khtml/java/kjavadownloader.lo
 khtml/java/kjavaprocess.lo
-khtml/khtml_ext.lo
 khtml/khtmlview.lo
 khtml/kmultipart/kmultipart.lo
 khtml/misc/loader.lo

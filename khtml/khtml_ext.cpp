@@ -39,7 +39,6 @@
 #include <qfileinfo.h>
 #include <q3popupmenu.h>
 #include <qmetaobject.h>
-#include <private/qucomextra_p.h>
 #include <q3dragobject.h>
 
 #include <kdebug.h>
@@ -306,12 +305,11 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !m_extensionProxy )
         return;
 
-    int slot = m_extensionProxy->metaObject()->findSlot( method );
+    int slot = m_extensionProxy->metaObject()->indexOfSlot( method );
     if ( slot == -1 )
         return;
 
-    QUObject o[ 1 ];
-    m_extensionProxy->qt_invoke( slot, o );
+    QMetaObject::invokeMethod(m_extensionProxy, method, Qt::DirectConnection);
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()
@@ -335,9 +333,9 @@ void KHTMLPartBrowserExtension::updateEditActions()
     bool hasSelection = false;
 
     if( m_editableFormWidget) {
-        if ( qobject_cast<QLineEdit>(m_editableFormWidget))
+        if ( qobject_cast<QLineEdit*>(m_editableFormWidget))
             hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-        else if(qobject_cast<Q3TextEdit>(m_editableFormWidget))
+        else if(qobject_cast<Q3TextEdit*>(m_editableFormWidget))
             hasSelection = static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     }
 
@@ -906,7 +904,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     {
         int num = i * m;
         QString numStr = QString::number( num );
-        if ( num > 0 ) numStr.prepend( '+' );
+        if ( num > 0 ) numStr.prepend( QLatin1Char('+') );
 
         m_popup->insertItem( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
     }
