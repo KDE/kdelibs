@@ -5,8 +5,6 @@ kdeprint/management/kmjobviewer.lo
 kdeprint/management/kmwlpd.lo
 kdeprint/management/kmwsocketutil.lo
 kdeprint/management/networkscanner.lo
-kdeprint/ppdparser.lo
-kdeprint/ppdscanner.lo
 kdeprint/rlpr/kmwrlpr.lo
 kdewidgets/kdewidgets.lo
 kdoctools/kio_help.lo
@@ -19,7 +17,6 @@ khtml/java/kjavaappletwidget.lo
 khtml/java/kjavadownloader.lo
 khtml/java/kjavaprocess.lo
 khtml/khtml_ext.lo
-khtml/khtmlimage.lo
 khtml/khtmlview.lo
 khtml/kmultipart/kmultipart.lo
 khtml/misc/loader.lo
@@ -45,7 +42,6 @@ kmdi/kmdi/guiclient.lo
 kmdi/kmdi/mainwindow.lo
 kmdi/kmdi/tabwidget.lo
 kmdi/kmdi/toolviewaccessor.lo
-knewstuff/security.lo
 kresources/kcmkresources.lo
 kspell2/plugins/ispell/ispell_checker.lo
 kunittest/tester.lo
