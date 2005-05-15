@@ -1052,7 +1052,7 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "module"))
 	return "lib" KDELIBSUFF "/kde4/";
     if (!strcmp(type, "qtplugins"))
-        return "lib" KDELIBSUFF "/kde3/plugins";
+        return "lib" KDELIBSUFF "/kde4/plugins";
     if (!strcmp(type, "xdgdata-apps"))
         return "applications/";
     if (!strcmp(type, "xdgdata-dirs"))
