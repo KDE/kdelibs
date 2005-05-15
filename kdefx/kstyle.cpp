@@ -1325,6 +1325,7 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             return widgetLayoutProp(WT_Menu, Menu::TearOffHeight);
 
         case PM_TabBarTabHSpace:
+        {
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
             if (tabOpt)
             {
@@ -1336,6 +1337,7 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             }
             
             return widgetLayoutProp(WT_Tab, Tab::TextToIconSpace);
+        }
 
         case PM_TabBarTabVSpace:
             return 0;
