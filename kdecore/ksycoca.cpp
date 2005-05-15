@@ -140,6 +140,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
 #endif
         m_str = new QDataStream(database);
+        m_str->setVersion(QDataStream::Qt_3_1);
 #ifdef HAVE_MMAP
      }
      else
@@ -149,6 +150,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         QBuffer *buffer = new QBuffer( b_array );
         buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
+        m_str->setVersion(QDataStream::Qt_3_1);	
         //### FIXME: cleanup the array?
      }
 #endif
@@ -170,6 +172,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         QBuffer *buffer = new QBuffer( new QByteArray() );
         buffer->open(QIODevice::ReadWrite);
         m_str = new QDataStream( buffer);
+        m_str->setVersion(QDataStream::Qt_3_1);		
         (*m_str) << (Q_INT32) KSYCOCA_VERSION;
         (*m_str) << (Q_INT32) 0;
      }
