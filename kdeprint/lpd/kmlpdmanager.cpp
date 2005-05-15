@@ -230,7 +230,7 @@ bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 	{
 		QTextStream	t(&proc);
 		QString		buffer;
-		while (!t.eof())
+		while (!t.atEnd())
 			buffer.append(t.readLine());
 		if (buffer.startsWith("?Privilege"))
 		{
@@ -294,7 +294,7 @@ void KMLpdManager::checkStatus()
 		QString		line;
 		KMPrinter	*printer(0);
 		int		p(-1);
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())
@@ -328,7 +328,7 @@ void KMLpdManager::loadPrintcapFile(const QString& filename)
 		QTextStream	t(&f);
 		QString		line, comment;
 		PrintcapEntry	*entry;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = getPrintcapLine(t,&comment);
 			if (line.isEmpty())
@@ -464,7 +464,7 @@ QMap<QString,QString> KMLpdManager::loadPrinttoolCfgFile(const QString& filename
 		QTextStream	t(&f);
 		QString		line, name, val;
 		int 		p(-1);
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = getPrintcapLine(t);
 			if (line.isEmpty())
@@ -497,7 +497,7 @@ bool KMLpdManager::savePrinttoolCfgFile(const QString& templatefile, const QStri
 		QTextStream	tin(&fin), tout(&fout);
 		QString		line, name;
 		int		p(-1);
-		while (!tin.eof())
+		while (!tin.atEnd())
 		{
 			line = tin.readLine().stripWhiteSpace();
 			if (line.isEmpty() || line[0] == '#')

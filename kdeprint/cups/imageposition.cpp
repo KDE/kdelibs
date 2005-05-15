@@ -27,17 +27,18 @@ static void draw3DPage(QPainter *p, QRect r)
 	// draw white page
 	p->fillRect(r,Qt::white);
 	// draw 3D border
+
 	p->setPen(Qt::black);
-	p->moveTo(r.left(),r.bottom());
-	p->lineTo(r.right(),r.bottom());
-	p->lineTo(r.right(),r.top());
+	p->drawLine(r.left(),r.bottom(), r.right(),r.bottom());
+	p->drawLine(r.right(),r.bottom(), r.right(),r.top());
+	
 	p->setPen(Qt::darkGray);
-	p->lineTo(r.left(),r.top());
-	p->lineTo(r.left(),r.bottom());
+	p->drawLine(r.right(),r.top(), r.left(),r.top());
+	p->drawLine(r.left(),r.top(), r.left(),r.bottom());
+	
 	p->setPen(Qt::gray);
-	p->moveTo(r.left()+1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.top()+1);
+	p->drawLine(r.left()+1,r.bottom()-1, r.right()-1,r.bottom()-1);
+	p->drawLine(r.right()-1,r.bottom()-1, r.right()-1,r.top()+1);
 }
 
 ImagePosition::ImagePosition(QWidget *parent, const char *name)
@@ -56,15 +57,15 @@ ImagePosition::~ImagePosition()
 void ImagePosition::setPosition(const char *type)
 {
 	int	pos(Center);
-	if (strcmp(type,"top-left") == 0) pos = Qt::TopLeftCorner;
-	else if (strcmp(type,"top") == 0) pos = Qt::DockTop;
-	else if (strcmp(type,"top-right") == 0) pos = Qt::TopRightCorner;
-	else if (strcmp(type,"left") == 0) pos = Qt::DockLeft;
+	if (strcmp(type,"top-left") == 0) pos = TopLeft;
+	else if (strcmp(type,"top") == 0) pos = Top;
+	else if (strcmp(type,"top-right") == 0) pos = TopRight;
+	else if (strcmp(type,"left") == 0) pos = Left;
 	else if (strcmp(type,"center") == 0) pos = Center;
-	else if (strcmp(type,"right") == 0) pos = Qt::DockRight;
-	else if (strcmp(type,"bottom-left") == 0) pos = Qt::BottomLeftCorner;
-	else if (strcmp(type,"bottom") == 0) pos = Qt::DockBottom;
-	else if (strcmp(type,"bottom-right") == 0) pos = Qt::BottomRightCorner;
+	else if (strcmp(type,"right") == 0) pos = Right;
+	else if (strcmp(type,"bottom-left") == 0) pos = BottomLeft;
+	else if (strcmp(type,"bottom") == 0) pos = Bottom;
+	else if (strcmp(type,"bottom-right") == 0) pos = BottomRight;
 	setPosition((PositionType)pos);
 }
 
@@ -85,15 +86,15 @@ void ImagePosition::setPosition(int horiz, int vert)
 QString ImagePosition::positionString() const
 {
 	switch (position_) {
-	   case Qt::TopLeftCorner: return "top-left";
-	   case Qt::DockTop: return "top";
-	   case Qt::TopRightCorner: return "top-right";
-	   case Qt::DockLeft: return "left";
+	   case TopLeft: return "top-left";
+	   case Top: return "top";
+	   case TopRight: return "top-right";
+	   case Left: return "left";
 	   case Center: return "center";
-	   case Qt::DockRight: return "right";
-	   case Qt::BottomLeftCorner: return "bottom-left";
-	   case Qt::DockBottom: return "bottom";
-	   case Qt::BottomRightCorner: return "bottom-right";
+	   case Right: return "right";
+	   case BottomLeft: return "bottom-left";
+	   case Bottom: return "bottom";
+	   case BottomRight: return "bottom-right";
 	}
 	return "center";
 }

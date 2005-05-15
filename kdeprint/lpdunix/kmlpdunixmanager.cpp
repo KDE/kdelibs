@@ -285,16 +285,13 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 void KMLpdUnixManager::parseEtcLpPrinters()
 {
 	QDir	d("/etc/lp/printers");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Dirs);
-	if (!prlist)
-		return;
+	const QFileInfoList& prlist = d.entryInfoList(QDir::Dirs);
 
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	foreach(const QFileInfo& itFile, prlist)
 	{
-		if (it.current()->fileName() == "." || it.current()->fileName() == "..")
+		if (itFile.fileName() == "." || itFile.fileName() == "..")
 			continue;
-		QFile	f(it.current()->absFilePath() + "/configuration");
+		QFile	f(itFile.absFilePath() + "/configuration");
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
@@ -310,8 +307,8 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 				}
 			}
 			KMPrinter	*printer = new KMPrinter;
-			printer->setName(it.current()->fileName());
-			printer->setPrinterName(it.current()->fileName());
+			printer->setName(itFile.fileName());
+			printer->setPrinterName(itFile.fileName());
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())
@@ -327,16 +324,13 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 void KMLpdUnixManager::parseEtcLpMember()
 {
 	QDir	d("/etc/lp/member");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Files);
-	if (!prlist)
-		return;
+	const QFileInfoList& prlist = d.entryInfoList(QDir::Files);
 
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	foreach(const QFileInfo& itFile, prlist)
 	{
 		KMPrinter	*printer = new KMPrinter;
-		printer->setName(it.current()->fileName());
-		printer->setPrinterName(it.current()->fileName());
+		printer->setName(itFile.fileName());
+		printer->setPrinterName(itFile.fileName());
 		printer->setType(KMPrinter::Printer);
 		printer->setState(KMPrinter::Idle);
 		printer->setDescription(i18n("Local printer"));
@@ -348,14 +342,11 @@ void KMLpdUnixManager::parseEtcLpMember()
 void KMLpdUnixManager::parseSpoolInterface()
 {
 	QDir	d("/usr/spool/interfaces/lp");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Files);
-	if (!prlist)
-		return;
-
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	const QFileInfoList&	prlist = d.entryInfoList(QDir::Files);
+	
+	foreach(const QFileInfo& itFile, prlist)
 	{
-		QFile	f(it.current()->absFilePath());
+		QFile	f(itFile.absFilePath());
 		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
@@ -372,8 +363,8 @@ void KMLpdUnixManager::parseSpoolInterface()
 			}
 
 			KMPrinter	*printer = new KMPrinter;
-			printer->setName(it.current()->fileName());
-			printer->setPrinterName(it.current()->fileName());
+			printer->setName(itFile.fileName());
+			printer->setPrinterName(itFile.fileName());
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())

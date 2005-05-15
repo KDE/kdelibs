@@ -64,7 +64,7 @@ void ImagePreview::paintEvent(QPaintEvent*){
 	p.drawImage(x,y,tmpImage);
 	p.end();
 
-	bitBlt(this, QPoint(0, 0), &buffer, buffer.rect(), Qt::CopyROP);
+	bitBlt(this, QPoint(0, 0), &buffer, buffer.rect());
 }
 
 void ImagePreview::setBlackAndWhite(bool on){

@@ -173,7 +173,7 @@ bool PrinttoolEntry::readEntry(QTextStream& t)
 	m_depths.setAutoDelete(true);
 	m_resolutions.clear();
 	m_depths.clear();
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		line = getPrintcapLine(t);
 		if (line.isEmpty())
@@ -395,7 +395,7 @@ DrMain* PrinttoolEntry::createDriver()
 QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 {
 	QString	line, buffer, comm;
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')

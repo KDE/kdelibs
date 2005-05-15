@@ -27,15 +27,15 @@
 class ImagePosition : public QWidget
 {
 public:
-	enum PositionType {Qt::TopLeftCorner,
-			   Qt::DockTop,
-			   Qt::TopRightCorner,
-			   Qt::DockLeft,
+	enum PositionType {TopLeft,
+			   Top,
+			   TopRight,
+			   Left,
 			   Center,
-			   Qt::DockRight,
-			   Qt::BottomLeftCorner,
-			   Qt::DockBottom,
-			   Qt::BottomRightCorner};
+			   Right,
+			   BottomLeft,
+			   Bottom,
+			   BottomRight};
 
 	ImagePosition(QWidget *parent = 0, const char *name = 0);
 	~ImagePosition();

@@ -43,7 +43,7 @@ void GsChecker::loadDriverList()
 		QTextStream	t(&proc);
 		QString	buffer, line;
 		bool	ok(false);
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (ok)
