@@ -889,7 +889,10 @@ bool KTar::writeSymLink_impl(const QString &name, const QString &target,
         return false;
     }
 
-    device()->flush();
+#ifdef __GNUC__
+#warning flush :(
+#endif
+    //device()->flush();
 
     // In some tar files we can find dir/./file => call cleanDirPath
     QString fileName ( QDir::cleanDirPath( name ) );

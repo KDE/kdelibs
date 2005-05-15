@@ -158,8 +158,11 @@ void KFilterDev::close()
 
 bool KFilterDev::flush()
 {
+#ifdef __GNUC__
+#warning flush :(
+#endif
     //kdDebug(7005) << "KFilterDev::flush" << endl;
-    return filter->device()->flush();
+    return true;//filter->device()->flush();
     // Hmm, might not be enough...
 }
 
