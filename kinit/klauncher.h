@@ -24,16 +24,18 @@
 #include <unistd.h>
 #include <time.h>
 #include <qstring.h>
-#include <q3valuelist.h>
 #include <qsocketnotifier.h>
-#include <q3ptrlist.h>
 #include <qtimer.h>
+#include <q3ptrlist.h>
 
 #include <dcopclient.h>
-#include <kio/connection.h>
-#include <ksock.h>
+
 #include <kurl.h>
 #include <kuniqueapplication.h>
+#include <kstreamsocket.h>
+#include <kserversocket.h>
+
+#include <kio/connection.h>
 
 #include <kservice.h>
 
@@ -43,7 +45,7 @@ class IdleSlave : public QObject
 {
    Q_OBJECT
 public:
-   IdleSlave(KSocket *socket);
+   IdleSlave(KNetwork::KStreamSocket *socket);
    bool match( const QString &protocol, const QString &host, bool connected);
    void connect( const QString &app_socket);
    pid_t pid() const { return mPid;}
@@ -79,9 +81,9 @@ public:
 class KLaunchRequest
 {
 public:
-   Q3CString name;
-   Q3ValueList<Q3CString> arg_list;
-   Q3CString dcop_name;
+   DCOPCString name;
+   DCOPCStringList arg_list;
+   DCOPCString dcop_name;
    enum status_t { Init = 0, Launching, Running, Error, Done };
    pid_t pid;
    status_t status;
@@ -90,17 +92,17 @@ public:
    bool autoStart;
    QString errorMsg;
 #ifdef Q_WS_X11
-   Q3CString startup_id; // "" is the default, "0" for none
-   Q3CString startup_dpy; // Display to send startup notification to.
+   DCOPCString startup_id; // "" is the default, "0" for none
+   DCOPCString startup_dpy; // Display to send startup notification to.
 #endif
-   Q3ValueList<Q3CString> envs; // env. variables to be app's environment
-   Q3CString cwd;
+   DCOPCStringList envs; // env. variables to be app's environment
+   DCOPCString cwd;
 };
 
 struct serviceResult
 {
   int result;        // 0 means success. > 0 means error (-1 means pending)
-  Q3CString dcopName; // Contains DCOP name on success
+  DCOPCString dcopName; // Contains DCOP name on success
   QString error;     // Contains error description on failure.
   pid_t pid;
 };
@@ -110,7 +112,7 @@ class KLauncher : public KApplication, public DCOPObject
    Q_OBJECT
 
 public:
-   KLauncher(int _kdeinitSocket);
+   KLauncher(int kdeinitSocket);
 
    ~KLauncher();
 
@@ -118,10 +120,10 @@ public:
    static void destruct(int exit_code); // exit!
 
    // DCOP
-   virtual bool process(const Q3CString &fun, const QByteArray &data,
-                Q3CString &replyType, QByteArray &replyData);
-   virtual QCStringList functions();
-   virtual QCStringList interfaces();
+   virtual bool process(const DCOPCString &fun, const QByteArray &data,
+                DCOPCString &replyType, QByteArray &replyData);
+   virtual DCOPCStringList functions();
+   virtual DCOPCStringList interfaces();
 
 protected:
    void processDied(pid_t pid, long exitStatus);
@@ -129,20 +131,20 @@ protected:
    void requestStart(KLaunchRequest *request);
    void requestDone(KLaunchRequest *request);
 
-   void setLaunchEnv(const Q3CString &name, const Q3CString &value);
-   void exec_blind(const Q3CString &name, const Q3ValueList<Q3CString> &arg_list,
-       const Q3ValueList<Q3CString> &envs, const Q3CString& startup_id = "" );
+   void setLaunchEnv(const DCOPCString &name, const DCOPCString &value);
+   void exec_blind(const DCOPCString &name, const DCOPCStringList &arg_list,
+       const DCOPCStringList &envs, const DCOPCString& startup_id = "" );
    bool start_service(KService::Ptr service, const QStringList &urls,
-       const Q3ValueList<Q3CString> &envs, const Q3CString& startup_id = "",
+       const DCOPCStringList &envs, const DCOPCString& startup_id = "",
        bool blind = false, bool autoStart = false );
    bool start_service_by_name(const QString &serviceName, const QStringList &urls,
-       const Q3ValueList<Q3CString> &envs, const Q3CString& startup_id, bool blind);
+       const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind);
    bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
-       const Q3ValueList<Q3CString> &envs, const Q3CString& startup_id, bool blind);
+       const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind);
    bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
-       const Q3ValueList<Q3CString> &envs, const Q3CString& startup_id, bool blind);
+       const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind);
    bool kdeinit_exec(const QString &app, const QStringList &args,
-       const Q3ValueList<Q3CString> &envs, Q3CString startup_id, bool wait);
+       const DCOPCStringList &envs, DCOPCString startup_id, bool wait);
 
    void waitForSlave(pid_t pid);
 
@@ -158,39 +160,39 @@ protected:
 
    void queueRequest(KLaunchRequest *);
 
-   void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const Q3CString& startup_id,
-       const Q3ValueList<Q3CString> &envs );
-   void cancel_service_startup_info( KLaunchRequest *request, const Q3CString& startup_id,
-       const Q3ValueList<Q3CString> &envs );
+   void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const DCOPCString& startup_id,
+       const DCOPCStringList &envs );
+   void cancel_service_startup_info( KLaunchRequest *request, const DCOPCString& startup_id,
+       const DCOPCStringList &envs );
 
 public slots:
    void slotAutoStart();
    void slotDequeue();
    void slotKDEInitData(int);
-   void slotAppRegistered(const Q3CString &appId);
+   void slotAppRegistered(const DCOPCString &appId);
    void slotSlaveStatus(IdleSlave *);
-   void acceptSlave( KSocket *);
+   void acceptSlave();
    void slotSlaveGone();
    void idleTimeout();
 
 protected:
    Q3PtrList<KLaunchRequest> requestList; // Requests being handled
    Q3PtrList<KLaunchRequest> requestQueue; // Requests waiting to being handled
-   int kdeinitSocket;
-   QSocketNotifier *kdeinitNotifier;
    serviceResult DCOPresult;
    KLaunchRequest *lastRequest;
    Q3PtrList<SlaveWaitRequest> mSlaveWaitRequest;
    QString mPoolSocketName;
-   KServerSocket *mPoolSocket;
+   int kdeinitSocket;
+   QSocketNotifier *kdeinitNotifier;
+   KNetwork::KServerSocket mPoolSocket;
    Q3PtrList<IdleSlave> mSlaveList;
    QTimer mTimer;
    QTimer mAutoTimer;
    bool bProcessingQueue;
    AutoStart mAutoStart;
-   Q3CString mSlaveDebug;
-   Q3CString mSlaveValgrind;
-   Q3CString mSlaveValgrindSkin;
+   DCOPCString mSlaveDebug;
+   DCOPCString mSlaveValgrind;
+   DCOPCString mSlaveValgrindSkin;
    bool dontBlockReading;
 #ifdef Q_WS_X11
    Display *mCached_dpy;

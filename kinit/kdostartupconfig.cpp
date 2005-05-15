@@ -42,7 +42,7 @@ QString get_entry( QString* ll )
     QString ret;
     if( l[ 0 ] == '\'' )
         {
-        unsigned int pos = 1;
+        int pos = 1;
         while( pos < l.length() && l[ pos ] != '\'' )
             ret += l[ pos++ ];
         if( pos >= l.length())
@@ -53,7 +53,7 @@ QString get_entry( QString* ll )
         *ll = l.mid( pos + 1 );
         return ret;
         }
-    unsigned int pos = 0;
+    int pos = 0;
     while( pos < l.length() && l[ pos ] != ' ' )
         ret += l[ pos++ ];
     *ll = l.mid( pos );
@@ -79,9 +79,14 @@ int main()
     startupconfig << "#! /bin/sh\n";
     for(;;)
         {
-        QString line;
-        if( keys.readLine( line, 1024 ) < 0 )
-            break;
+	  QString line;
+	  {
+	    QByteArray buf;
+	    buf.resize(1024);
+	    if( keys.readLine( buf.data(), buf.length() ) < 0 )
+	      break;
+	    line = QString::fromLocal8Bit(buf);
+	  }
         line = line.stripWhiteSpace();
         if( line.isEmpty())
             break;

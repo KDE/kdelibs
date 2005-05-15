@@ -208,6 +208,7 @@ setproctitle(const char *fmt, ...)
 
 	/* print the argument string */
 	va_start(ap, fmt);
+	extern int qvsnprintf(char*, unsigned int, char const*, char*);
 	(void) qvsnprintf(p, SPACELEFT(buf, p), fmt, ap);
 	va_end(ap);
 
@@ -284,6 +285,7 @@ kdeinit_setproctitle(const char *fmt, ...)
 	va_list ap;
 	/* print the argument string */
 	va_start(ap, fmt);
+	extern int qvsnprintf(char*, unsigned int, char const*, char*);
 	(void) qvsnprintf(buf, SPT_BUFSIZE, fmt, ap);
 	va_end(ap);
 
