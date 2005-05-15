@@ -62,7 +62,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
     : KParts::ReadOnlyPart( parent, name ), m_image( 0 )
 {
-    KHTMLPart* parentPart = qobject_cast<KHTMLPart >( parent );
+    KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
     Q3VBox *box = new Q3VBox( parentWidget, widgetName );
@@ -103,7 +103,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     // forward important signals from the khtml part
 
     // forward opening requests to parent frame (if existing)
-    KHTMLPart *p = qobject_cast<KHTMLPart >(parent);
+    KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
     connect(m_khtml->browserExtension(), SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)),
     		be, SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)));
@@ -303,7 +303,7 @@ bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
       case QEvent::Drop: {
         // find out if this part is embedded in a frame, and send the
 	// event to its outside widget
-	KHTMLPart *p = qobject_cast<KHTMLPart >(parent());
+	KHTMLPart *p = qobject_cast<KHTMLPart*>(parent());
 	if (p)
 	    return QApplication::sendEvent(p->widget(), e);
         // otherwise simply forward all dnd events to the part widget,
