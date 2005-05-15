@@ -129,8 +129,8 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 	// It may happen that the contrast is -- well -- virtually non existent.
 	// In this case, simply invert the colors
 	if (!khtml::hasSufficientContrast(hbg, bg)) {
-	    hc = QColor(0xff-hc.Qt::red(),0xff-hc.Qt::green(),0xff-hc.Qt::blue());
-	    hbg = QColor(0xff-hbg.Qt::red(),0xff-hbg.Qt::green(),0xff-hbg.Qt::blue());
+	    hc = QColor(0xff-hc.red(),0xff-hc.green(),0xff-hc.blue());
+	    hbg = QColor(0xff-hbg.red(),0xff-hbg.green(),0xff-hbg.blue());
 	}/*end if*/
     }
 
@@ -139,7 +139,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string().left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
-		m_reversed ? QPainter::RTL : QPainter::LTR,
+		m_reversed ? Qt::RightToLeft : Qt::LeftToRight,
 		startPos, endPos, hbg, m_y + ty, height(), deco);
 }
 
@@ -182,7 +182,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         pt->setPen(shadow->color);
         f->drawText(pt, x, y+m_baseline, text->str->s, text->str->l,
                     m_start, m_len, m_toAdd,
-                    m_reversed ? QPainter::RTL : QPainter::LTR);
+                    m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
         pt->setPen(c);
 
     }
@@ -191,8 +191,8 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         const int w = m_width+2*thickness;
         const int h = m_height+2*thickness;
         const QRgb color = shadow->color.rgb();
-        const int Qt::gray = qGray(color);
-        const bool inverse = (Qt::gray < 100);
+        const int gray = qGray(color);
+        const bool inverse = (gray < 100);
         const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
         QPixmap pixmap(w, h);
         pixmap.fill(bgColor);
@@ -203,7 +203,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.setFont(pt->font());
         f->drawText(&p, thickness, thickness+m_baseline, text->str->s, text->str->l,
                     m_start, m_len, m_toAdd,
-                    m_reversed ? QPainter::RTL : QPainter::LTR);
+                    m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
@@ -238,9 +238,9 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                 if (col == bgColor) continue;
                 float g = qGray(col);
                 if (inverse)
-                    g = (255-g)/(255-Qt::gray);
+                    g = (255-g)/(255-gray);
                 else
-                    g = g/Qt::gray;
+                    g = g/gray;
                 for(int n=-thickness; n<=thickness; n++) {
                     for(int m=-thickness; m<=thickness; m++) {
                         int d = n*n+m*m;
@@ -947,7 +947,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 #endif
 // kdDebug(6040) << QConstString(str->s + s->m_start, s->m_len).string().left(40) << endl;
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
-				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+				   s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 	        }
 		else {
                     int offset = s->m_start;
@@ -964,16 +964,16 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                         if (sPos >= ePos)
                             font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                            str->s, str->l, s->m_start, s->m_len,
-                                           s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+                                           s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
                         else {
                             if (sPos-1 >= 0)
                                 font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                                str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
+                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, 0, sPos);
                             if (ePos < s->m_len)
                                 font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                                str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
+                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, ePos, s->m_len);
                         }
 #ifdef APPLE_CHANGES
                     }
@@ -984,7 +984,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
                         font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                        str->l, s->m_start, s->m_len,
-                                       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, sPos, ePos);
+                                       s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, sPos, ePos);
                     }
 #endif
                 }

@@ -632,15 +632,15 @@ bool RenderObject::sizesToMaxWidth() const
 }
 
 // from Mozilla's nsCSSColorUtils.cpp
-static int brightness(int Qt::red, int Qt::green, int Qt::blue)
+static int brightness(int red, int green, int blue)
 {
 
-  int intensity = (Qt::red + Qt::green + Qt::blue) / 3;
+  int intensity = (red + green + blue) / 3;
 
   int luminosity =
-    ((RED_LUMINOSITY * Qt::red) / 100) +
-    ((GREEN_LUMINOSITY * Qt::green) / 100) +
-    ((BLUE_LUMINOSITY * Qt::blue) / 100);
+    ((RED_LUMINOSITY * red) / 100) +
+    ((GREEN_LUMINOSITY * green) / 100) +
+    ((BLUE_LUMINOSITY * blue) / 100);
 
   return ((intensity * INTENSITY_FACTOR) +
           (luminosity * LUMINOSITY_FACTOR)) / 100;
@@ -648,9 +648,9 @@ static int brightness(int Qt::red, int Qt::green, int Qt::blue)
 
 static void calc3DColor(QColor &color, bool darken)
 {
-  int rb = color.Qt::red();
-  int gb = color.Qt::green();
-  int bb = color.Qt::blue();
+  int rb = color.red();
+  int gb = color.green();
+  int bb = color.blue();
 
   int brightness_ = brightness(rb,gb,bb);
 
@@ -701,7 +701,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     if(!c.isValid()) {
         if(invalidisInvert)
         {
-            p->setRasterOp(Qt::XorROP);
+            p->setCompositionMode(QPainter::CompositionMode_Xor);
             c = Qt::white;
         }
         else {
@@ -719,8 +719,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case BNONE:
     case BHIDDEN:
         // should not happen
-        if(invalidisInvert && p->rasterOp() == Qt::XorROP)
-            p->setRasterOp(Qt::CopyROP);
+        if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+            p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
         return;
     case DOTTED:
@@ -917,8 +917,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         break;
     }
 
-    if(invalidisInvert && p->rasterOp() == Qt::XorROP)
-        p->setRasterOp(Qt::CopyROP);
+    if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+        p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 }
 
 void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)

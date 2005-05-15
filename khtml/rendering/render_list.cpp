@@ -341,7 +341,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
         return;
     case LDIAMOND: {
-        static Q3PointArray diamond(4);
+        static QPolygon diamond(4);
         int x = _tx + xoff;
         int y = _ty + (3 * yoff)/2 - 1;
         int s = (offset>>2)+1;
