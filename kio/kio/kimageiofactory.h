@@ -11,6 +11,7 @@
 #include "ksycocafactory.h"
 #include "kimageio.h"
 
+class QImageIO;
 class KImageIOFormat;
 class KImageIOFormatList;
 
