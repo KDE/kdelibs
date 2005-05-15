@@ -189,12 +189,12 @@ void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 	Q3Dict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
 	if (models)
 	{
-		Q3StrIList	ilist(true);
+		QStringList	ilist;
 		Q3DictIterator<KMDBEntryList>	it(*models);
 		for (;it.current();++it)
-			ilist.append(it.currentKey().latin1());
+			ilist.append(QString( it.currentKey().latin1() ).upper());
 		ilist.sort();
-		m_model->insertStrList(&ilist);
+		m_model->insertStringList(ilist);
 		m_model->setCurrentItem(0);
 	}
 }
