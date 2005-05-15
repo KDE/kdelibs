@@ -1,5 +1,4 @@
 interfaces/kmediaplayer/kfileaudiopreview/kfileaudiopreview.lo
-kded/kbuildsycoca.lo
 kdeprint/management/kmjobviewer.lo
 kdeprint/management/kmwlpd.lo
 kdeprint/management/kmwsocketutil.lo
