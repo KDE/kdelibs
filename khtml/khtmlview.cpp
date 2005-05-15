@@ -106,32 +106,12 @@ namespace khtml {
 
 using namespace DOM;
 using namespace khtml;
-class KHTMLToolTip;
 
 
-#ifndef QT_NO_TOOLTIP
 
-class KHTMLToolTip : public QToolTip
-{
-public:
-    KHTMLToolTip(KHTMLView *view,  KHTMLViewPrivate* vp) : QToolTip(view->viewport())
-    {
-        m_view = view;
-        m_viewprivate = vp;
-    };
-
-protected:
-    virtual void maybeTip(const QPoint &);
-
-private:
-    KHTMLView *m_view;
-    KHTMLViewPrivate* m_viewprivate;
-};
-
-#endif
 
 class KHTMLViewPrivate {
-    friend class KHTMLToolTip;
+    friend class KHTMLView;
 public:
 
     enum PseudoFocusNodes {
@@ -162,7 +142,7 @@ public:
         vertPaintBuffer=0;
         formCompletions=0;
         prevScrollbarVisible = true;
-	tooltip = 0;
+
         possibleTripleClick = false;
         emitCompletedAfterRepaint = CSNone;
 	cursor_icon_widget = NULL;
@@ -180,7 +160,7 @@ public:
 	    underMouse->deref();
         if (underMouseNonShared)
 	    underMouseNonShared->deref();
-	delete tooltip;
+
 #ifndef KHTML_NO_CARET
 	delete m_caretViewContext;
 	delete m_editorContext;
@@ -360,7 +340,6 @@ public:
     bool dirtyLayout				:1;
     bool m_dialogsAllowed			:1;
     QRegion updateRegion;
-    KHTMLToolTip *tooltip;
     Q3PtrDict<QWidget> visibleWidgets;
 #ifndef KHTML_NO_CARET
     CaretViewContext *m_caretViewContext;
@@ -426,34 +405,42 @@ static bool findImageMapRect(HTMLImageElementImpl *img, const QPoint &scrollOfs,
     return false;
 }
 
-void KHTMLToolTip::maybeTip(const QPoint& p)
+bool KHTMLView::event( QEvent* e )
 {
-    DOM::NodeImpl *node = m_viewprivate->underMouseNonShared;
-    QRect region;
-    while ( node ) {
-        if ( node->isElementNode() ) {
-            DOM::ElementImpl *e = static_cast<DOM::ElementImpl*>( node );
-            QRect r;
-            QString s;
-            bool found = false;
-            // for images, check if it is part of a client-side image map,
-            // and query the <area>s' title attributes, too
-            if (e->id() == ID_IMG && !e->getAttribute( ATTR_USEMAP ).isEmpty()) {
-                found = findImageMapRect(static_cast<HTMLImageElementImpl *>(e),
-                    		m_view->viewportToContents(QPoint(0, 0)), p, r, s);
+    if ( e->type() == QEvent::ToolTip) {
+        QHelpEvent *he = static_cast<QHelpEvent*>(e);
+        QPoint     p   = he->pos();
+        
+        DOM::NodeImpl *node = d->underMouseNonShared;
+        QRect region;
+        while ( node ) {
+            if ( node->isElementNode() ) {
+                DOM::ElementImpl *e = static_cast<DOM::ElementImpl*>( node );
+                QRect r;
+                QString s;
+                bool found = false;
+                // for images, check if it is part of a client-side image map,
+                // and query the <area>s' title attributes, too
+                if (e->id() == ID_IMG && !e->getAttribute( ATTR_USEMAP ).isEmpty()) {
+                    found = findImageMapRect(static_cast<HTMLImageElementImpl *>(e),
+                                viewportToContents(QPoint(0, 0)), p, r, s);
+                }
+                if (!found) {
+                    s = e->getAttribute( ATTR_TITLE ).string();
+                    r = node->getRect();
+                }
+                region |= QRect( contentsToViewport( r.topLeft() ), r.size() );
+                if ( !s.isEmpty() ) {
+                    QToolTip::showText( viewport()->mapToGlobal(region.bottomLeft()),
+                        Q3StyleSheet::convertFromPlainText( s, Q3StyleSheetItem::WhiteSpaceNormal ) );
+                    break;
+                }
             }
-            if (!found) {
-                s = e->getAttribute( ATTR_TITLE ).string();
-                r = node->getRect();
-            }
-            region |= QRect( m_view->contentsToViewport( r.topLeft() ), r.size() );
-            if ( !s.isEmpty() ) {
-                tip( region, Q3StyleSheet::convertFromPlainText( s, Q3StyleSheetItem::WhiteSpaceNormal ) );
-                break;
-            }
+            node = node->parentNode();
         }
-        node = node->parentNode();
+        return true;
     }
+    return Q3ScrollView::event(e);
 }
 #endif
 
@@ -472,7 +459,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     // initialize QScrollView
     enableClipper(true);
     // hack to get unclipped painting on the viewport.
-    static_cast<KHTMLView *>(static_cast<QWidget *>(viewport()))->setWFlags(WPaintUnclipped);
+    static_cast<KHTMLView *>(static_cast<QWidget *>(viewport()))->setAttribute(Qt::WA_PaintUnclipped);
 
     setResizePolicy(Manual);
     viewport()->setMouseTracking(true);
@@ -480,9 +467,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     KImageIO::registerFormats();
 
-#ifndef QT_NO_TOOLTIP
-    d->tooltip = new KHTMLToolTip( this, d );
-#endif
 
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
@@ -708,7 +692,10 @@ static int cnt=0;
         QRect pos(d->m_caretViewContext->x, d->m_caretViewContext->y,
 		d->m_caretViewContext->width, d->m_caretViewContext->height);
         if (pos.intersects(QRect(ex, ey, ew, eh))) {
-            p->setRasterOp(XorROP);
+#ifdef __GNUC__
+    #warning "FIXME: What to do instead of restart op here?"
+#endif
+            //p->setRasterOp(XorROP);
 	    p->setPen(Qt::white);
 	    if (pos.width() == 1)
               p->drawLine(pos.topLeft(), pos.bottomRight());
@@ -761,8 +748,6 @@ void KHTMLView::layout()
 //                      d->tooltip = 0;
 //                  }
              }
-             else if (!d->tooltip)
-                 d->tooltip = new KHTMLToolTip( this, d );
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -814,12 +799,12 @@ void KHTMLView::layout()
 
 void KHTMLView::closeChildDialogs()
 {
-    QObjectList *dlgs = queryList("QDialog");
-    for (QObject *dlg = dlgs->first(); dlg; dlg = dlgs->next())
+    QObjectList dlgs = queryList("QDialog");
+    foreach (QObject *dlg, dlgs)
     {
         KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
         if ( dlgbase ) {
-            if ( dlgbase->testWFlags( Qt::WShowModal ) ) {
+            if ( dlgbase->testAttribute( Qt::WA_ShowModal ) ) {
                 kdDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
                 // close() ends up calling QButton::animateClick, which isn't immediate
                 // we need something the exits the event loop immediately (#49068)
@@ -832,7 +817,6 @@ void KHTMLView::closeChildDialogs()
             static_cast<QWidget*>(dlg)->hide();
         }
     }
-    delete dlgs;
     d->m_dialogsAllowed = false;
 }
 
@@ -923,26 +907,26 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
                 QBitmap bm( 16, 16, true );
                 bitBlt( &mask, 16,  0, &bm, 0, 0, -1, -1 );
                 bitBlt( &mask, 16, 32, &bm, 0, 0, -1, -1 );
-                d->m_mouseScrollIndicator->setCursor( KCursor::SizeHorCursor );
+                d->m_mouseScrollIndicator->setCursor( Qt::SizeHorCursor );
             }
             else if ( !hasHorBar && hasVerBar ) {
                 QBitmap bm( 16, 16, true );
                 bitBlt( &mask,  0, 16, &bm, 0, 0, -1, -1 );
                 bitBlt( &mask, 32, 16, &bm, 0, 0, -1, -1 );
-                d->m_mouseScrollIndicator->setCursor( KCursor::SizeVerCursor );
+                d->m_mouseScrollIndicator->setCursor( Qt::SizeVerCursor );
             }
             else
-                d->m_mouseScrollIndicator->setCursor( KCursor::SizeAllCursor );
+                d->m_mouseScrollIndicator->setCursor( Qt::SizeAllCursor );
 
             d->m_mouseScrollIndicator->setMask( mask );
         }
         else {
             if ( hasHorBar && !hasVerBar )
-                viewport()->setCursor( KCursor::SizeHorCursor );
+                viewport()->setCursor( Qt::SizeHorCursor );
             else if ( !hasHorBar && hasVerBar )
-                viewport()->setCursor( KCursor::SizeVerCursor );
+                viewport()->setCursor( Qt::SizeVerCursor );
             else
-                viewport()->setCursor( KCursor::SizeAllCursor );
+                viewport()->setCursor( Qt::SizeAllCursor );
         }
 
         return;
@@ -1176,8 +1160,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             attr.save_under = True;
             XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
             d->cursor_icon_widget->resize( icon_pixmap.width(), icon_pixmap.height());
-            if( icon_pixmap.mask() )
-                d->cursor_icon_widget->setMask( *icon_pixmap.mask());
+            if( !icon_pixmap.mask().isNull() )
+                d->cursor_icon_widget->setMask( icon_pixmap.mask());
             else
                 d->cursor_icon_widget->clearMask();
             d->cursor_icon_widget->setBackgroundPixmap( icon_pixmap );
@@ -1749,7 +1733,7 @@ void KHTMLView::doAutoScroll()
 class HackWidget : public QWidget
 {
  public:
-    inline void setNoErase() { setWFlags(getWFlags()|Qt::WNoAutoErase); }
+    inline void setNoErase() { setAttribute(Qt::WA_NoBackground); }
 };
 
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
@@ -1796,19 +1780,19 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    if (!strcmp(w->name(), "__khtml")) {
 			w->installEventFilter(this);
 			w->unsetCursor();
-			if (!qobject_cast<Q3Frame>(w))
+			if (!qobject_cast<QFrame*>(w))
 			    w->setBackgroundMode( Qt::NoBackground );
 			static_cast<HackWidget *>(w)->setNoErase();
-			if (w->children()) {
-			    QObjectListIterator it(*w->children());
-			    for (; it.current(); ++it) {
-				QWidget *widget = qobject_cast<QWidget >(it.current());
-				if (widget && !widget->isTopLevel()) {
-				    if (!qobject_cast<Q3Frame>(w))
-				        widget->setBackgroundMode( Qt::NoBackground );
-				    static_cast<HackWidget *>(widget)->setNoErase();
-				    widget->installEventFilter(this);
-				}
+
+			QObjectList children = w->children();
+			QList<QObject*>::iterator it = children.begin();
+			for (; it != children.end(); ++it) {
+			    QWidget *widget = qobject_cast<QWidget*>(*it);
+			    if (widget && !widget->isTopLevel()) {
+				if (!qobject_cast<QFrame*>(w))
+				    widget->setBackgroundMode( Qt::NoBackground );
+				static_cast<HackWidget *>(widget)->setNoErase();
+				widget->installEventFilter(this);
 			    }
 			}
 		    }
@@ -1841,7 +1825,10 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView >(c);
+		    bool asap = !d->contentsMoving && qobject_cast<Q3ScrollView*>(c);
+#ifndef __GNUC__
+    #warning "Q3ScrollView??"
+#endif
 
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
@@ -1858,7 +1845,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !qobject_cast<QScrollBar >(w)) {
+		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
 		    QPoint pt = (me->pos() + w->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
@@ -1877,7 +1864,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    }
 	    case QEvent::KeyPress:
 	    case QEvent::KeyRelease:
-		if (w->parentWidget() == view && !qobject_cast<QScrollBar >(w)) {
+		if (w->parentWidget() == view && !qobject_cast<QScrollBar*>(w)) {
 		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 		    if (e->type() == QEvent::KeyPress)
 			keyPressEvent(ke);
@@ -3141,7 +3128,7 @@ void KHTMLView::focusInEvent( QFocusEvent *e )
 {
     DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
     if (fn && fn->renderer() && fn->renderer()->isWidget() &&
-        (e->reason() != QFocusEvent::Mouse) &&
+        (e->reason() != Qt::MouseFocusReason) &&
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget())
         static_cast<khtml::RenderWidget*>(fn->renderer())->widget()->setFocus();
 #ifndef KHTML_NO_CARET
