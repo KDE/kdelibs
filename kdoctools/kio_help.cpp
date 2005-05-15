@@ -135,7 +135,7 @@ void HelpProtocol::unicodeError( const QString &t )
 {
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-        "%2</html>" ).arg( QTextCodec::codecForLocale()->name() ).arg( t ) ) );
+        "%2</html>" ).arg( QString( QTextCodec::codecForLocale()->name() ) ).arg( t ) ) );
 }
 
 HelpProtocol *slave = 0;
