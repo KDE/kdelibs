@@ -694,7 +694,10 @@ KLauncher::slotAutoStart()
 	    DCOPCString autoStartSignal( "autoStartDone()" );
 	    int phase = mAutoStart.phase();
 	    if ( phase > 1 )
-	        autoStartSignal.sprintf( "autoStart%dDone()", phase );
+	    {
+	        QString text = QString("autoStart%1Done()").arg( phase );
+	        autoStartSignal = text.toAscii();
+	    }
             emitDCOPSignal(autoStartSignal, QByteArray());
 	 }
          return;
