@@ -8,6 +8,7 @@
 #define _KDIRWATCH_P_H
 
 #ifdef HAVE_FAM
+#include <limits.h>
 #include <fam.h>
 #endif
 
