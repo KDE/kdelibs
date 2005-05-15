@@ -26,12 +26,7 @@ kimgio/xview.lo
 kinit/klauncher.lo
 kioslave/ftp/ftp.lo
 kioslave/http/http.lo
-kmdi/kmdi/dockcontainer.lo
 kmdi/kmdidocumentviewtabwidget.lo
 kmdi/kmdifocuslist.lo
-kmdi/kmdi/guiclient.lo
-kmdi/kmdi/mainwindow.lo
-kmdi/kmdi/tabwidget.lo
-kmdi/kmdi/toolviewaccessor.lo
 kresources/kcmkresources.lo
 kspell2/plugins/ispell/ispell_checker.lo
