@@ -236,11 +236,11 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Just exists to let the idl compiler make the DCOP signal for this
 		 */
-		void contactPresenceChanged( QString uid, Q3CString appId, int presence );
+		void contactPresenceChanged( QString uid, DCOPCString appId, int presence );
 
 	public slots:
-		void registeredToDCOP( const Q3CString& appId );
-        void unregisteredFromDCOP( const Q3CString& appId );
+		void registeredToDCOP( const DCOPCString& appId );
+        void unregisteredFromDCOP( const DCOPCString& appId );
 	signals:
 		/**
 		 * Indicates that the specified UID's presence changed
@@ -257,7 +257,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Bootstrap our presence data for a newly registered app
 		 */
-		void pollApp( const Q3CString & appId );
+		void pollApp( const DCOPCString & appId );
 		/**
 		 * Bootstrap our presence data by polling all known apps
 		 */
@@ -266,7 +266,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Update our records with the given data
 		 */
-		bool updatePresence( const QString &uid, const Q3CString &appId, int presence );
+		bool updatePresence( const QString &uid, const DCOPCString &appId, int presence );
 
 		/**
 		 * Get the name of the user's IM weapon of choice

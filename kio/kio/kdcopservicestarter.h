@@ -21,9 +21,9 @@
 
 #include <qstring.h>
 #include <kstaticdeleter.h>
+#include <dcopclient.h>
 
 class KDCOPServiceStarter;
-class Q3CString;
 
 /**
  * A generic DCOP service starter, using KTrader.
@@ -61,7 +61,7 @@ public:
     int findServiceFor( const QString& serviceType,
                         const QString& constraint = QString::null,
                         const QString& preferences = QString::null,
-                        QString *error=0, Q3CString* dcopService=0,
+                        QString *error=0, DCOPCString* dcopService=0,
                         int flags=0 );
 
     /**
@@ -89,7 +89,7 @@ public:
     virtual int startServiceFor( const QString& serviceType,
                                  const QString& constraint = QString::null,
                                  const QString& preferences = QString::null,
-                                 QString *error=0, Q3CString* dcopService=0,
+                                 QString *error=0, DCOPCString* dcopService=0,
                                  int flags=0 );
 protected:
     KDCOPServiceStarter();

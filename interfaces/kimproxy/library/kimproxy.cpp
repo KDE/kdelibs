@@ -43,7 +43,7 @@ KIMProxy * KIMProxy::s_instance = 0L;
 
 struct AppPresenceCurrent
 {
-	Q3CString appId;
+	DCOPCString appId;
 	int presence;
 };
 
@@ -86,7 +86,7 @@ bool ContactPresenceListCurrent::update( AppPresenceCurrent ap )
 	{
 		if ( (*it).presence > best.presence )
 			best = (*it);
-		if ( (*it).appId = ap.appId )
+		if ( (*it).appId == ap.appId )
 			existing = it;
 		++it;
 	}
@@ -181,8 +181,8 @@ KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject(),
 
 	d->dc = dc;
 	m_initialized = false;
-	connect( d->dc, SIGNAL( applicationRemoved( const Q3CString& ) ) , this, SLOT( unregisteredFromDCOP( const Q3CString& ) ) );
-	connect( d->dc, SIGNAL( applicationRegistered( const Q3CString& ) ) , this, SLOT( registeredToDCOP( const Q3CString& ) ) );
+	connect( d->dc, SIGNAL( applicationRemoved( const DCOPCString& ) ) , this, SLOT( unregisteredFromDCOP( const DCOPCString& ) ) );
+	connect( d->dc, SIGNAL( applicationRegistered( const DCOPCString& ) ) , this, SLOT( registeredToDCOP( const DCOPCString& ) ) );
 	d->dc->setNotifications( true );
 
 	d->presence_strings.append( "Unknown" );
@@ -199,7 +199,7 @@ KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject(),
 	
 	//QCString senderApp = "Kopete";
 	//QCString senderObjectId = "KIMIface";
-	Q3CString method = "contactPresenceChanged( QString, QCString, int )";
+	DCOPCString method = "contactPresenceChanged( QString, QCString, int )";
 	//QCString receiverObjectId = "KIMProxyIface";
 	
 	// FIXME: make this work when the sender object id is set to KIMIFace
@@ -221,15 +221,14 @@ bool KIMProxy::initialize()
 		if ( KServiceType::serviceType( IM_SERVICE_TYPE ) ) 
 		{
 			//kdDebug( 790 ) << k_funcinfo << endl;
-			Q3CString dcopObjectId = "KIMIface";
+			DCOPCString dcopObjectId = "KIMIface";
 	
 			// see what apps implementing our service type are out there
 			KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
 			KService::List::iterator offer;
-			typedef Q3ValueList<Q3CString> QCStringList;
-			QCStringList registeredApps = d->dc->registeredApplications();
-			QCStringList::iterator app;
-			const QCStringList::iterator end = registeredApps.end();
+			DCOPCStringList registeredApps = d->dc->registeredApplications();
+			DCOPCStringList::iterator app;
+			const DCOPCStringList::iterator end = registeredApps.end();
 			// for each registered app
 			for ( app = registeredApps.begin(); app != end; ++app )
 			{
@@ -237,12 +236,12 @@ bool KIMProxy::initialize()
 				//for each offer
 				for ( offer = offers.begin(); offer != offers.end(); ++offer )
 				{
-					Q3CString dcopService = (*offer)->property("X-DCOP-ServiceName").toString().latin1();
+					DCOPCString dcopService = (*offer)->property("X-DCOP-ServiceName").toString().latin1();
 					if ( !dcopService.isEmpty() )
 					{
 						//kdDebug( 790 ) << " is it: " << dcopService << "?" << endl;
 						// get the application name ( minus any process ID )
-						Q3CString instanceName =  (*app).left( dcopService.length() );
+						DCOPCString instanceName =  (*app).left( dcopService.length() );
 						// if the application implements the dcop service, add it 
 						if ( instanceName == dcopService )
 						{
@@ -263,7 +262,7 @@ bool KIMProxy::initialize()
 	return !m_im_client_stubs.isEmpty();
 }
 
-void KIMProxy::registeredToDCOP( const Q3CString& appId )
+void KIMProxy::registeredToDCOP( const DCOPCString& appId )
 {
 	//kdDebug( 790 ) << k_funcinfo << " appId '" << appId << "'" << endl;
 	// check that appId implements our service
@@ -279,8 +278,8 @@ void KIMProxy::registeredToDCOP( const Q3CString& appId )
 	KService::List::const_iterator it;
 	for ( it = offers.begin(); it != offers.end(); ++it )
 	{
-		Q3CString dcopObjectId = "KIMIface";
-		Q3CString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
+		DCOPCString dcopObjectId = "KIMIface";
+		DCOPCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
 		if ( appId.left( dcopService.length() ) == dcopService )
 		{
 			// if it's not already known, insert it
@@ -298,7 +297,7 @@ void KIMProxy::registeredToDCOP( const Q3CString& appId )
 	//	emit sigPresenceInfoExpired();
 }
 
-void KIMProxy::unregisteredFromDCOP( const Q3CString& appId )
+void KIMProxy::unregisteredFromDCOP( const DCOPCString& appId )
 {
 	//kdDebug( 790 ) << k_funcinfo << appId << endl;
 	if ( m_im_client_stubs.find( appId ) )
@@ -325,7 +324,7 @@ void KIMProxy::unregisteredFromDCOP( const Q3CString& appId )
 	}
 }
 
-void KIMProxy::contactPresenceChanged( QString uid, Q3CString appId, int presence )
+void KIMProxy::contactPresenceChanged( QString uid, DCOPCString appId, int presence )
 {
 	// update the presence map
 	//kdDebug( 790 ) << k_funcinfo << "uid: " << uid << " appId: " << appId << " presence " << presence << endl;
@@ -560,7 +559,7 @@ bool KIMProxy::startPreferredApp()
 	QString preferences = QString("[X-DCOP-ServiceName] = '%1'").arg( preferredApp() );
 	// start/find an instance of DCOP/InstantMessenger
 	QString error;
-	Q3CString dcopService;
+	DCOPCString dcopService;
 	// Get a preferred IM client.
 	// The app will notify itself to us using registeredToDCOP, so we don't need to record a stub for it here
 	// FIXME: error in preferences, see debug output
@@ -591,7 +590,7 @@ void KIMProxy::pollAll( const QString &uid )
 	}*/
 }
 
-void KIMProxy::pollApp( const Q3CString & appId )
+void KIMProxy::pollApp( const DCOPCString & appId )
 {
 	//kdDebug( 790 ) << k_funcinfo << endl;
 	KIMIface_stub * appStub = m_im_client_stubs[ appId ];
