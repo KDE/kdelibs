@@ -198,16 +198,16 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
     {
         if (m_validator->inherits("QIntValidator"))
         {
-            sb->setMinValue(static_cast<QIntValidator*>(m_validator)->bottom());
-            sb->setMaxValue(static_cast<QIntValidator*>(m_validator)->top());
+            sb->setMinimum(static_cast<QIntValidator*>(m_validator)->bottom());
+            sb->setMaximum(static_cast<QIntValidator*>(m_validator)->top());
         }
-        reparentValidator(sb, m_validator);
-        sb->setValidator(m_validator);
+        //reparentValidator(sb, m_validator);
+        //sb->setValidator(m_validator);
     }
 
     // make sure that an uint cannot be set to a value < 0
     if (m_item.type() == QVariant::UInt)
-        sb->setMinValue(QMAX(sb->minValue(), 0));
+        sb->setMinimum(QMAX(sb->minimum(), 0));
 
     connect(sb, SIGNAL(valueChanged(int)), this, SLOT(slotChanged(int)));
     return sb;
