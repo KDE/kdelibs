@@ -429,7 +429,7 @@ void KFindDialog::showPatterns()
 
     if ( d->m_regexpDialog )
     {
-        KRegExpEditorInterface *iface = qobject_cast<KRegExpEditorInterface*>( d->m_regexpDialog );
+        KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface*>( d->m_regexpDialog );
         assert( iface );
 
         iface->setRegExp( pattern() );
@@ -537,7 +537,7 @@ void KFindDialog::slotOk()
     }
     m_find->addToHistory(pattern());
     emit okClicked();
-    if ( testWFlags( Qt::WShowModal ) )
+    if ( windowFlags() & Qt::WShowModal )
         accept();
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;

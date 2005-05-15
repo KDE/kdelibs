@@ -34,6 +34,7 @@
 #include <qtooltip.h>
 #include <qfontmetrics.h>
 #include <qstyle.h>
+#include <QStyleOptionButton>
 
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -473,7 +474,7 @@ QSize KMultiTabBarButton::sizeHint() const
     }
 #endif
     if ( isMenuButton() )
-        w += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, this);
+        w += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, 0L, this);
 
     if ( pixmap() ) {
         QPixmap *pm = (QPixmap *)pixmap();
@@ -492,7 +493,7 @@ QSize KMultiTabBarButton::sizeHint() const
             h = QMAX(h, sz.height());
     }
 
-    return (style()->sizeFromContents(QStyle::CT_ToolButton, this, QSize(w, h)).
+    return (style()->sizeFromContents(QStyle::CT_ToolButton, 0L, QSize(w, h), this).
             expandedTo(QApplication::globalStrut()));
 }
 
@@ -650,9 +651,14 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	st|=QStyle::State_Enabled;
 
 	if (isOn()) st|=QStyle::State_On;
+    
+    QStyleOptionButton options;
+    options.state = st;
+    options.rect = QRect(0,0,pixmap.width(),pixmap.height());
+    options.palette = colorGroup();
 
-	style()->drawControl(QStyle::CE_PushButton,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
-	style()->drawControl(QStyle::CE_PushButtonLabel,&painter,this, QRect(0,0,pixmap.width(),pixmap.height()), colorGroup(),st);
+	style()->drawControl(QStyle::CE_PushButton, &options, &painter, this);
+	style()->drawControl(QStyle::CE_PushButtonLabel, &options, &painter, this);
 
 	switch (m_position) {
 		case KMultiTabBar::Left:
@@ -836,7 +842,7 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
 KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent,const char *name):QWidget(parent,name)
 {
 	m_buttons.setAutoDelete(false);
-	if (bm==Qt::Vertical)
+	if (bm==Vertical)
 	{
 		m_l=new QVBoxLayout(this);
 		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding, true);
