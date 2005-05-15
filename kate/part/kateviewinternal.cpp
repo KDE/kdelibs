@@ -769,6 +769,8 @@ void KateViewInternal::paintText (int x, int y, int width, int height, bool pain
   m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
   m_view->renderer()->setShowTabs(m_doc->configFlags() & KateDocument::cfShowTabs);
 
+  paint.translate(0, startz * h);
+
   for (uint z=startz; z <= endz; z++)
   {
     if ( (z >= lineRangesSize) || ((lineRanges[z].line == -1) && (!paintOnlyDirty || lineRanges[z].dirty)) )
