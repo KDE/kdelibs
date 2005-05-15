@@ -67,7 +67,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
-      m_pixmap( 0L ),
+      m_pixmap( ),
       m_parent( parent ),
       m_appLocal( true )
 {
@@ -79,7 +79,7 @@ KURLBarItem::KURLBarItem( KURLBar *parent,
                           const QString& icon, KIcon::Group group )
     : Q3ListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
-      m_pixmap( 0L ),
+      m_pixmap(  ),
       m_parent( parent ),
       m_appLocal( true )
 {

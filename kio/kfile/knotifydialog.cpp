@@ -377,7 +377,7 @@ bool KNotifyWidget::eventFilter( QObject * watched, QEvent * event )
 {
   if ( watched == d->header && event->type() == QEvent::ToolTip)
   {
-    QHelpEvent* he = static_cast<QHelpEvent*>(he);
+    QHelpEvent* he = static_cast<QHelpEvent*>(event);
     int section = 0;
 
     if ( d->header->orientation() == Qt::Horizontal )
