@@ -213,7 +213,7 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
   switch ( mImpl->fieldId() ) {
     --CASESETVALUE--
     case FieldImpl::Birthday:
-      a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
+      a.setBirthday( QDateTime::fromString( value, Qt::ISODate ) );
     case FieldImpl::CustomField:
       a.insertCustom( mImpl->app(), mImpl->key(), value );
     default:
