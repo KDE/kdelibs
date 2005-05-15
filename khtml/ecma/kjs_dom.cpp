@@ -450,7 +450,7 @@ UString DOMNode::toString(ExecState *) const
 
   DOM::Element e = node;
   if ( !e.isNull() ) {
-    s = e.nodeName().string();
+    s = DOMString(e.nodeName().string());
   } else
     s = className(); // fallback
 
@@ -1668,7 +1668,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const Identifier &propert
     return Number(m_nodes.count());
   // index?
   bool ok;
-  unsigned int u = propertyName.toULong(&ok);
+  int u = propertyName.toULong(&ok);
   if (ok && u < m_nodes.count()) {
     DOM::Node node = m_nodes[u];
     return getDOMNode(exec,node);
