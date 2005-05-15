@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <qvgroupbox.h>
-#include <qhbuttongroup.h>
+#include <Q3HButtonGroup>
+#include <Q3ButtonGroup>
 #include <qradiobutton.h>
 
 #include <kmessagebox.h>
@@ -284,7 +284,7 @@ void LdapConfigWidget::sendQuery()
   if ( mHost ) _url.setHost( mHost->text() );
   if ( mPort ) _url.setPort( mPort->value() );
   _url.setDn( "" );
-  _url.setAttributes( mAttr );
+  _url.setAttributes( QStringList( mAttr ) );
   _url.setScope( LDAPUrl::Base );
   if ( mVer ) _url.setExtension( "x-ver", QString::number( mVer->value() ) );
   if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls", "" );
@@ -607,19 +607,15 @@ void LdapConfigWidget::setFlags( int flags )
 
   // First delete all the child widgets.
   // FIXME: I hope it's correct
-  const QObjectList *ch = children();
-  QObjectList ch2 = *ch;
-  QObject *obj;
-  QWidget *widget;
+  QList<QObject*> ch = children();
 
-  obj = ch2.first();
-  while ( obj != 0 ) {
-    widget = dynamic_cast<QWidget*> (obj);
-    if ( widget && widget->parent() == this ) {
-      mainLayout->remove( widget );
-      delete ( widget );
-    }
-    obj = ch2.next();
+  foreach ( QObject*obj, ch ) {
+	  QWidget *widget;
+	  widget = dynamic_cast<QWidget*> (obj);
+	  if ( widget && widget->parent() == this ) {
+		  mainLayout->remove( widget );
+		  delete ( widget );
+	  }
   }
   // Re-create child widgets according to the new flags
   initWidget();

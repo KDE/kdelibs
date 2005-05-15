@@ -191,8 +191,8 @@ class KABC_EXPORT VCardLineX
 public:
   QString name;
   bool qualified;
-  Q3ValueList<QString> qualifiers;
-  Q3ValueList<QString> parameters;
+  QList<QString> qualifiers;
+  QList<QString> parameters;
   bool isValid() const;
 };
 
@@ -212,10 +212,10 @@ public:
   QStringList getValues(const QString& name, const QString& qualifier);
   QStringList getValues(const QString& name);
 
-  Q3ValueList<VCardLineX> *_vcdata;
+  QList<VCardLineX> *_vcdata;
 
 private:
-  VCard21ParserImpl (Q3ValueList<VCardLineX> *_vcd);
+  VCard21ParserImpl (QList<VCardLineX> *_vcd);
 };
 
 #endif

@@ -109,13 +109,13 @@ typedef enum { Uid, Name, FormattedName, FamilyName, GivenName } SortingCriterio
  *
  * @author Jost Schenck jost@schenck.de
  */
-class KABC_EXPORT AddresseeList : public Q3ValueList<Addressee>
+class KABC_EXPORT AddresseeList : public QList<Addressee>
 {
   public:
     AddresseeList();
     ~AddresseeList();
     AddresseeList( const AddresseeList & );
-    AddresseeList( const Q3ValueList<Addressee> & );
+    AddresseeList( const QList<Addressee> & );
 
     /**
      * Debug output.

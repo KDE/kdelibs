@@ -206,7 +206,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCARD::VCard &v )
         break;
 
       case EntityBirthday:
-        addressee.setBirthday( readDateValue( cl ) );
+        addressee.setBirthday( QDateTime( readDateValue( cl ) ) );
         break;
 
       case EntityRevision:

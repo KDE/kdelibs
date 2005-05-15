@@ -23,6 +23,7 @@
 
 #include <qimage.h>
 #include <qstring.h>
+#include <QDataStream>
 
 #include <kdelibs_export.h>
 

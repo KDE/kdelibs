@@ -74,15 +74,15 @@ VCardEntity::~VCardEntity()
 VCardEntity::_parse()
 {
 	vDebug("parse");
-	Q3CString s(strRep_);
+	QByteArray s(strRep_);
 	
-	int i = s.find(QRegExp("BEGIN:VCARD", false));
+	int i = QString( s ).find(QRegExp("BEGIN:VCARD", false));
 	
 	while (i != -1) {
 		
-		i = s.find(QRegExp("BEGIN:VCARD", false), 11);
+		i = QString( s ).find(QRegExp("BEGIN:VCARD", false), 11);
 		
-		Q3CString cardStr(s.left(i));
+		QByteArray cardStr(s.left(i));
 		
 		VCard * v = new VCard(cardStr);
 		

@@ -110,9 +110,9 @@ void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
 
 bool VCardFormatPlugin::checkFormat( QFile *file ) const
 {
-  QCString line;
+  QByteArray line;
 
-  file->readLine( line, 1024 );
+  file->readLine( line.data(), 1024 );
   line = line.stripWhiteSpace();
   if ( line == "BEGIN:VCARD" )
     return true;

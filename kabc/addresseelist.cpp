@@ -107,7 +107,7 @@ bool SortingTraits::GivenName::lt( const Addressee &a1, const Addressee &a2 )
 static Field *sActiveField=0;
 
 AddresseeList::AddresseeList()
-  : Q3ValueList<Addressee>()
+  : QList<Addressee>()
 {
   mReverseSorting = false;
   mActiveSortingCriterion = FormattedName;
@@ -118,14 +118,14 @@ AddresseeList::~AddresseeList()
 }
 
 AddresseeList::AddresseeList( const AddresseeList &l )
-  : Q3ValueList<Addressee>( l )
+  : QList<Addressee>( l )
 {
   mReverseSorting = l.reverseSorting();
   mActiveSortingCriterion = l.sortingCriterion();
 }
 
-AddresseeList::AddresseeList( const Q3ValueList<Addressee> &l )
-  : Q3ValueList<Addressee>( l )
+AddresseeList::AddresseeList( const QList<Addressee> &l )
+  : QList<Addressee>( l )
 {
   mReverseSorting = false;
 }

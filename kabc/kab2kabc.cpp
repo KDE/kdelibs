@@ -251,7 +251,7 @@ void readKAddressBookEntries( const QString &dataString, Addressee &a )
     } else if ( fieldName == "ROLE" ) {
       a.setRole( fieldValue );
     } else if ( fieldName == "BDAY" ) {
-      a.setBirthday( KGlobal::locale()->readDate( fieldValue ) );
+      a.setBirthday( QDateTime( KGlobal::locale()->readDate( fieldValue ) ) );
     } else if ( fieldName == "WEBPAGE" ) {
       a.setUrl( KURL( fieldValue ) );
     } else if ( fieldName == "N" ) {
@@ -351,7 +351,7 @@ void importKab( KABC::AddressBook *ab, bool override, bool quiet )
     a.setGivenName( entry.firstname );
     a.setAdditionalName( entry.middlename );
     a.setFamilyName( entry.lastname );
-    a.setBirthday( entry.birthday );
+    a.setBirthday( QDateTime( entry.birthday ) );
 
     QStringList::ConstIterator emailIt;
     for ( emailIt = entry.emails.begin(); emailIt != entry.emails.end(); ++emailIt )

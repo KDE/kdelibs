@@ -164,7 +164,7 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   
   mErrorMsg = d->mResultDn = "";
 
-  url.setAttributes("dn");
+  url.setAttributes(QStringList( "dn" ));
   url.setFilter( "(" + mAttributes[ "uid" ] + "=" + uid + ")" + mFilter );
   url.setExtension( "x-dir", "one" );
 
@@ -297,7 +297,7 @@ bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   
   if ( !mAttributes[ "jpegPhoto" ].isEmpty() ) {
     QByteArray pic;
-    QBuffer buffer( pic );
+    QBuffer buffer( &pic );
     buffer.open( QIODevice::WriteOnly );
     addr.photo().data().save( &buffer, "JPEG" );
     
