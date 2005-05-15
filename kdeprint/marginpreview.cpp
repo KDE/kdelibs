@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <qpainter.h>
 #include <kcursor.h>
+#include <QMouseEvent>
 
 #define	A4_WIDTH	595
 #define	A4_HEIGHT	842
@@ -40,16 +41,11 @@ static void draw3DPage(QPainter *p, QRect r)
 	p->fillRect(r,Qt::white);
 	// draw 3D border
 	p->setPen(Qt::black);
-	p->moveTo(r.left(),r.bottom());
-	p->lineTo(r.right(),r.bottom());
-	p->lineTo(r.right(),r.top());
+	p->drawLine( QPoint( r.left(), r.bottom() ), QPoint(r.right(), r.bottom() ) );
+	p->drawLine( QPoint( r.right(), r.bottom() ), QPoint(r.right(), r.top() ) );
 	p->setPen(Qt::darkGray);
-	p->lineTo(r.left(),r.top());
-	p->lineTo(r.left(),r.bottom());
-	p->setPen(Qt::gray);
-	p->moveTo(r.left()+1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.top()+1);
+	p->drawLine( QPoint( r.left()+1, r.bottom()-1 ), QPoint(r.right()-1, r.bottom()-1 ) );
+	p->drawLine( QPoint( r.right()-1, r.bottom()-1 ), QPoint(r.right()-1, r.top()+1 ) );
 }
 
 MarginPreview::MarginPreview(QWidget *parent, const char *name)
@@ -227,7 +223,7 @@ void MarginPreview::mouseMoveEvent(QMouseEvent *e)
 		if (newpos != oldpos_)
 		{
 			QPainter	p(this);
-			p.setRasterOp(Qt::XorROP);
+			p.setCompositionMode(QPainter::CompositionMode_Xor);
 			p.setPen(Qt::gray);
 			for (int i=0; i<2; i++, oldpos_ = newpos)
 			{
@@ -276,7 +272,7 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 	if (state_ > None)
 	{
 		QPainter	p(this);
-		p.setRasterOp(Qt::XorROP);
+		p.setCompositionMode(QPainter::CompositionMode_Xor);
 		p.setPen(Qt::gray);
 		if (oldpos_ >= 0)
 		{
