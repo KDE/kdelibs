@@ -21,6 +21,8 @@
 
 #include <klocale.h>
 
+#include <stdio.h>
+
 #include "httpfilter.h"
 
 HTTPFilterBase::HTTPFilterBase()
