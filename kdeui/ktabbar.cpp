@@ -29,6 +29,7 @@
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <QMouseEvent>
 
 #include "ktabbar.h"
 #include "ktabwidget.h"

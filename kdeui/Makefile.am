@@ -28,7 +28,7 @@ AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
 lib_LTLIBRARIES = libkdeui.la libkspell.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
 
 libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkspell_la_LIBADD = libkdeui.la
