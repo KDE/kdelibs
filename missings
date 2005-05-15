@@ -1,11 +1,9 @@
-interfaces/kmediaplayer/kfileaudiopreview/kfileaudiopreview.lo
 kdeprint/management/kmjobviewer.lo
 kdeprint/management/kmwlpd.lo
 kdeprint/management/kmwsocketutil.lo
 kdeprint/management/networkscanner.lo
 kdeprint/rlpr/kmwrlpr.lo
 kdewidgets/kdewidgets.lo
-kdoctools/kio_help.lo
 khtml/ecma/kjs_window.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
@@ -28,5 +26,3 @@ kioslave/ftp/ftp.lo
 kioslave/http/http.lo
 kmdi/kmdidocumentviewtabwidget.lo
 kmdi/kmdifocuslist.lo
-kresources/kcmkresources.lo
-kspell2/plugins/ispell/ispell_checker.lo
