@@ -34,7 +34,7 @@ int kdeprint_ppdscanner_numberoflines();
 static QString processLocaleString( const QString& s )
 {
 	QString res;
-	uint pos = 0;
+	int pos = 0;
 	while ( pos < s.length() )
 	{
 		QChar c = s[ pos++ ];
@@ -379,11 +379,11 @@ bool PPDLoader::putFooData( const QString& data )
 
 bool PPDLoader::putFooProcessedData( const QVariant& var )
 {
-	QMap<QString,QVariant>::ConstIterator it = var.mapFind( "args_byname" );
-	if ( it != var.mapEnd() )
+	QMap<QString,QVariant>::ConstIterator it = var.toMap().find( "args_byname" );
+	if ( it != var.toMap().end() )
 	{
 		QVariant opts = it.data();
-		for ( it = opts.mapBegin(); it != opts.mapEnd(); ++it )
+		for ( it = opts.toMap().begin(); it != opts.toMap().end(); ++it )
 		{
 			QMap<QString,QVariant> opt = it.data().toMap();
 			QString type = opt[ "type" ].toString();
