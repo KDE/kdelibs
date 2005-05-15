@@ -49,6 +49,11 @@
 #include <klocale.h>
 #include <ksocks.h>
 
+#include <ksocketdevice.h>
+using namespace KNetwork;
+
+#warning "kssl.cc contains temporary functions! Clean up"
+
 #define sk_dup d->kossl->sk_dup
 
 class KSSLPrivate {
@@ -266,6 +271,14 @@ bool KSSL::setVerificationLogic() {
 return true;
 }
 
+// KDE4 FIXME: temporary code
+int KSSL::accept(QIODevice* dev) {
+	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	if (socket == 0L)
+		return -1;
+
+	return accept(socket->socketDevice()->socket());
+}
 
 int KSSL::accept(int sock) {
 #ifdef KSSL_HAVE_SSL
@@ -350,6 +363,15 @@ return rc;
 #else
 return -1;
 #endif
+}
+
+// KDE4 FIXME: temporary code
+int KSSL::connect(QIODevice* dev) {
+	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	if (socket == 0L)
+		return -1;
+
+	return connect(socket->socketDevice()->socket());
 }
 
 
