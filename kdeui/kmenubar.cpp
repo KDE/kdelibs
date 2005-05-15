@@ -135,8 +135,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
 #ifdef Q_WS_X11
-    #warning KDE4 porting: reinstate when the new QXEmbed is ready
-    //QXEmbed::initialize();
+    QXEmbed::initialize();
 #endif
     d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),

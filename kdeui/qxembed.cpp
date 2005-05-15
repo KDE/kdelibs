@@ -56,6 +56,7 @@
 #include <private/qwidget_p.h>
 #include <QKeyEvent>
 #include <QX11Info>
+#include <private/qt_x11_p.h>
 
 // L0001: QXEmbed works only under X windows.
 #ifdef Q_WS_X11
@@ -91,20 +92,20 @@
 # endif
 
 // L0004: Conflicts between X11 and Qt definitions.
-const int XFocusOut = FocusOut;
-const int XFocusIn = FocusIn;
-const int XKeyPress = KeyPress;
-const int XKeyRelease = KeyRelease;
+//const int XFocusOut = FocusOut;
+//const int XFocusIn = FocusIn;
+//const int XKeyPress = KeyPress;
+//const int XKeyRelease = KeyRelease;
 # undef KeyRelease
 # undef KeyPress
 # undef FocusOut
 # undef FocusIn
 
 // L0005: Variables defined in qapplication_x11.cpp
-extern Atom qt_wm_protocols;
-extern Atom qt_wm_delete_window;
-extern Atom qt_wm_take_focus;
-extern Atom qt_wm_state;
+static const Atom qt_wm_protocols = ATOM(WM_PROTOCOLS);
+static const Atom qt_wm_delete_window = ATOM(WM_DELETE_WINDOW);
+static const Atom qt_wm_take_focus = ATOM(WM_TAKE_FOCUS);
+static const Atom qt_wm_state = ATOM(WM_STATE);
 
 // L0006: X11 atoms private to QXEmbed
 static Atom xembed = 0;
@@ -186,9 +187,7 @@ public:
 
 // L0400: This sets a very low level filter for X11 messages.
 //        See qapplication_x11.cpp
-typedef int (*QX11EventFilter) (XEvent*);
-extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
-static QX11EventFilter oldFilter = 0;
+static QCoreApplication::EventFilter oldFilter = 0L;
 
 
 // L0500: Helper to send XEmbed messages.
@@ -402,8 +401,9 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 
 // L0650: This filter receives all XEvents in both the client and the embedder.  
 //        Most of it involves the embedded client (except L0660, L0671).
-static int qxembed_x11_event_filter( XEvent* e)
+static bool qxembed_x11_event_filter( void* xe, long* unused)
 {
+    XEvent* e = (XEvent*)xe;
     switch ( e->type ) {
     case XKeyPress:
     case XKeyRelease: {
@@ -548,7 +548,7 @@ static int qxembed_x11_event_filter( XEvent* e)
     }
     // L0698: The next x11 filter 
     if ( oldFilter )
-        return oldFilter( e );
+        return oldFilter( xe, unused );
     // L0699: Otherwise process the event as usual.
     return false;
 }
@@ -569,7 +569,7 @@ void QXEmbed::initialize()
     // L0710: Atom used by the XEMBED protocol.
     xembed = XInternAtom( QX11Info::display(), "_XEMBED", false );
     // L0720: Install low level filter for X11 events (L0650)
-    oldFilter = qt_set_x11_event_filter( qxembed_x11_event_filter );
+    oldFilter = qApp->setEventFilter(qxembed_x11_event_filter);
     // L0730: See L0610 for an explanation about focusMap.
     focusMap = new Q3PtrDict<QPointer<QWidget> >;
     focusMap->setAutoDelete( true );
@@ -654,7 +654,7 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, Qt::WFlags f)
     if ( qApp->activeWindow() == topLevelWidget() )
         if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
             XSetInputFocus( QX11Info::display(), d->focusProxy->winId(), 
-                            RevertToParent, QX11Info::appTime() );
+                            XRevertToParent, QX11Info::appTime() );
     // L0915: ??? [drag&drop?]
     setAcceptDrops( true );
 }
@@ -706,7 +706,7 @@ QXEmbed::~QXEmbed()
     int revert;
     XGetInputFocus( QX11Info::display(), &focus, &revert );
     if( focus == d->focusProxy->winId())
-        XSetInputFocus( QX11Info::display(), topLevelWidget()->winId(), RevertToParent, QX11Info::appTime() );
+        XSetInputFocus( QX11Info::display(), topLevelWidget()->winId(), XRevertToParent, QX11Info::appTime() );
     // L01045: Delete our private data.
     delete d;
 }
@@ -776,7 +776,7 @@ bool QXEmbed::eventFilter( QObject *o, QEvent * e)
             if ( !((QPublicWidget*) topLevelWidget())->topData()->embedded )
                 if (! hasFocus() )
                     XSetInputFocus( QX11Info::display(), d->focusProxy->winId(), 
-                                    RevertToParent, QX11Info::appTime() );
+                                    XRevertToParent, QX11Info::appTime() );
             if (d->xplain)
                 // L1311: Activation has changed. Grab state might change. See L2800.
                 checkGrab();
@@ -860,7 +860,7 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
           //        This is dual safety here because FocusIn implies this.
           //        But see L1581 for an example where this really matters.
           XSetInputFocus( QX11Info::display(), d->focusProxy->winId(), 
-                          RevertToParent, QX11Info::appTime() );
+                          XRevertToParent, QX11Info::appTime() );
     if (d->xplain) {
         // L1520: Qt focus has changed. Grab state might change. See L2800.
         checkGrab();
@@ -910,7 +910,7 @@ void QXEmbed::focusOutEvent( QFocusEvent * ){
             //        Function isActiveWindow() also returns true when a modal
             //        dialog child of this window is active.
             XSetInputFocus( QX11Info::display(), d->focusProxy->winId(), 
-                            RevertToParent, QX11Info::appTime() );
+                            XRevertToParent, QX11Info::appTime() );
 }
 
 
@@ -1299,7 +1299,7 @@ void QXEmbed::checkGrab()
         if (! d->xgrab)
             XGrabButton(QX11Info::display(), AnyButton, AnyModifier, winId(),
                         false, ButtonPressMask, GrabModeSync, GrabModeAsync,
-                        None, None );
+                        XNone, XNone );
         d->xgrab = true;
     } else {
         if (d->xgrab)
@@ -1329,7 +1329,7 @@ void QXEmbed::sendSyntheticConfigureNotifyEvent()
         c.width = width();
         c.height = height();
         c.border_width = 0;
-        c.above = None;
+        c.above = XNone;
         c.override_redirect = 0;
         XSendEvent( QX11Info::display(), c.event, true, StructureNotifyMask, (XEvent*)&c );
     }
