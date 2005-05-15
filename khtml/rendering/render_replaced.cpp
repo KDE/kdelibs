@@ -38,6 +38,7 @@
 #include <qobject.h>
 #include <q3valuevector.h>
 #include <Q3MemArray>
+#include <qpaintengine.h>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -525,7 +526,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     Q3MemArray<QRect> br = blit.rects();
 
     const int cnt = br.size();
-    const bool external = p->device()->isExtDev();
+    const bool external = p->device()->paintEngine()->type() >= QPaintEngine::PostScript;
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
     if (!pm)
     {
@@ -552,7 +553,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     // send paint event
     QPainter::redirect(widget, pm);
-    QPaintEvent e( r, false );
+    QPaintEvent e( r );
     QApplication::sendEvent( widget, &e );
     QPainter::redirect(widget, 0);
 
@@ -578,13 +579,13 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    const bool dsbld = QSharedDoubleBuffer::isDisabled();
-    QSharedDoubleBuffer::setDisabled(true);
+//    const bool dsbld = QSharedDoubleBuffer::isDisabled();
+//    QSharedDoubleBuffer::setDisabled(true);
     QRect rr = pI.r;
     rr.moveBy(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
     copyWidget(r, p, widget, tx, ty);
-    QSharedDoubleBuffer::setDisabled(dsbld);
+//    QSharedDoubleBuffer::setDisabled(dsbld);
 
     allowWidgetPaintEvents = false;
 }
@@ -606,7 +607,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     case QEvent::FocusOut:
         // Don't count popup as a valid reason for losing the focus
         // (example: opening the options of a select combobox shouldn't emit onblur)
-        if ( QFocusEvent::reason() != QFocusEvent::Popup )
+        if ( static_cast<QFocusEvent*>(e)->reason() != Qt::PopupFocusReason )
             handleFocusOut();
         break;
     case QEvent::FocusIn:
