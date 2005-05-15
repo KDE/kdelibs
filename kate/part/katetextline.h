@@ -140,7 +140,8 @@ class KateTextLine : public KShared
      * @return character at the given position or QChar::null if position is
      *   beyond the length of the string
      */
-    inline QChar getChar (uint pos) const { return m_text[pos]; }
+    inline QChar getChar (uint pos) const { if (pos < (uint)m_text.length()) return m_text[pos];
+      return QChar(QChar::Null); }
 
     /**
      * Gets the text as a unicode representation
