@@ -67,22 +67,22 @@ L        [[:alnum:]]
 \*"CloseUI"{L}*      { QDEBUG0("Close UI"); BEGIN(value); return CLOSEUI; }
 \*"OpenGroup"        { QDEBUG0("Open group"); BEGIN(option); return OPENGROUP; }
 \*"CloseGroup"       { QDEBUG0("Close group"); BEGIN(option); return CLOSEGROUP; }
-\*"Default"\*{WORD}  { yylval = yytext+9; BEGIN(option); return DEFAULT; }
-\*"Default"{WORD}    { yylval = yytext+8; BEGIN(option); return DEFAULT; }
+\*"Default"\*{WORD}  { yylval = QStringList(yytext+9); BEGIN(option); return DEFAULT; }
+\*"Default"{WORD}    { yylval = QStringList(yytext+8); BEGIN(option); return DEFAULT; }
 \*"UIConstraints"    |
 \*"NonUIConstraints" { BEGIN(constr); return CONSTRAINT; }
 \*"PaperDimension"   { BEGIN(option); return PAPERDIM; }
 \*"ImageableArea"    { BEGIN(option); return IMGAREA; }
 \*"End"              { /* eat up */ }
 
-"*% COMDATA #".*$    { yylval = yytext+12; return FOODATA; }
+"*% COMDATA #".*$    { yylval = QStringList(yytext+12); return FOODATA; }
 \*%.*                { QDEBUG0("Comment"); return COMMENT; }
-\*{WORD}             { yylval = yytext+1; QDEBUG1("Main keyword: %s",yytext+1); BEGIN(option); return KEYWORD; }
+\*{WORD}             { yylval = QStringList(yytext+1); QDEBUG1("Main keyword: %s",yytext+1); BEGIN(option); return KEYWORD; }
 
 	/**
 	 * Option state
 	 */
-<option>{WORD3}      { yylval = yytext; QDEBUG1("Option: %s",yytext); return OPTION; }
+<option>{WORD3}      { yylval = QStringList(yytext); QDEBUG1("Option: %s",yytext); return OPTION; }
 <option>":"          { BEGIN(value); return ':'; }
 <option>"\n"         { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 <option>"/"          { BEGIN(translation_1); return '/'; }
@@ -90,15 +90,15 @@ L        [[:alnum:]]
 	/**
 	 * Translation state (1: without colon)
 	 */
-<translation_1>[^\n:]*  { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
+<translation_1>[^\n:]*  { yylval = QStringList(yytext); QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
 <translation_1>":"      { BEGIN(value); return ':'; }
 <translation_1>"\n"     { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
 	/**
 	 * Value state
 	 */
-<value>\"[^\"]*\"    { yylval = yytext; kdeprint_ppdscanner_lno += yylval[0].contains('\n'); QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
-<value>{WORD}        { yylval = yytext; QDEBUG1("String part: %s",yytext); return STRINGPART; }
+<value>\"[^\"]*\"    { yylval = QStringList(yytext); kdeprint_ppdscanner_lno += yylval[0].count('\n'); QDEBUG1("Quoted value: %s",yytext); return QUOTED; }
+<value>{WORD}        { yylval = QStringList(yytext); QDEBUG1("String part: %s",yytext); return STRINGPART; }
 <value>"/"           { BEGIN(translation_2); return '/'; }
 <value>"\n"          { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 <value>":"           { /* stay in the same state */ return ':'; }
@@ -106,15 +106,15 @@ L        [[:alnum:]]
 	/**
 	 * Translation state (2: with colon)
 	 */
-<translation_2>[^\n]*   { yylval = yytext; QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
+<translation_2>[^\n]*   { yylval = QStringList(yytext); QDEBUG1("Translation: %s",yytext); return TRANSLATION; }
 <translation_2>"\n"     { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
 	/**
 	 * Constraint state
 	 */
 <constr>":"         { return ':'; }
-<constr>\*{WORD2}   { yylval = yytext+1; QDEBUG1("Constraint keyword: %s",yytext); return KEYWORD; }
-<constr>{WORD2}     { yylval = yytext; QDEBUG1("Constraint option: %s",yytext); return OPTION; }
+<constr>\*{WORD2}   { yylval = QStringList(yytext+1); QDEBUG1("Constraint keyword: %s",yytext); return KEYWORD; }
+<constr>{WORD2}     { yylval = QStringList(yytext); QDEBUG1("Constraint option: %s",yytext); return OPTION; }
 <constr>"\n"        { kdeprint_ppdscanner_lno++; BEGIN(INITIAL); }
 
 "\n"                { kdeprint_ppdscanner_lno++; /* eat up */ }

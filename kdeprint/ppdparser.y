@@ -61,8 +61,8 @@ string:   STRINGPART            { $$ = $1; }
 ;
 
 value:   string                  { $$ = $1; }
-	   | QUOTED                  { $$ = $1[0].mid(1,$1[0].length()-2); }
-	   | QUOTED '/' TRANSLATION  { $$ = $1[0].mid(1,$1[0].length()-2); }
+	   | QUOTED                  { $$ = QStringList($1[0].mid(1,$1[0].length()-2)); }
+	   | QUOTED '/' TRANSLATION  { $$ = QStringList($1[0].mid(1,$1[0].length()-2)); }
 	   | string '/' TRANSLATION  { $$ = $1; }
 ;
 
