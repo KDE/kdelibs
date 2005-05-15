@@ -1277,7 +1277,7 @@ void KToolBar::childEvent( QChildEvent *e )
                     insertWidgetInternal( w, dummy, -1 );
                 }
             }
-        } else {
+        } else if ( e->type() == QEvent::ChildRemoved ) {
             removeWidgetInternal( w );
         }
         if ( isVisibleTo( 0 ) )
