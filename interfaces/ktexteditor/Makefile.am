@@ -12,7 +12,7 @@ libktexteditor_la_SOURCES = ktexteditor.cpp \
     clipboarddcopinterface.skel selectiondcopinterface.cpp selectiondcopinterface.skel  \
     searchdcopinterface.cpp searchdcopinterface.skel markinterfaceextension.cpp \
     configinterfaceextension.cpp encodinginterface.cpp sessionconfiginterface.cpp \
-    viewstatusmsginterface.cpp editorchooser_ui.ui3 editorchooser.cpp \
+    viewstatusmsginterface.cpp editorchooser_ui.ui editorchooser.cpp \
     blockselectiondcopinterface.cpp documentinfo.cpp documentdcopinfo.cpp\
     blockselectiondcopinterface.skel documentdcopinfo.skel encodingdcopinterface.cpp \
     encodingdcopinterface.skel printdcopinterface.cpp printdcopinterface.skel \
