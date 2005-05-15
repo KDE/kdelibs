@@ -60,8 +60,8 @@ bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
 
 	// then check most recent file in current directory
 	QDir	dir(dirname);
-	const QFileInfoList	*list = dir.entryInfoList(QDir::Files,QDir::Time);
-	if (list && list->count() > 0 && list->getFirst()->lastModified() > d)
+	const QFileInfoList	list = dir.entryInfoList(QDir::Files,QDir::Time);
+	if (list.count() > 0 && list.first().lastModified() > d)
 		return false;
 
 	// then loop into subdirs

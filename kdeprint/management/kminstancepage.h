@@ -26,7 +26,7 @@
 
 class KListBox;
 class KMPrinter;
-class Q3Button;
+class QPushButton;
 
 class KMInstancePage : public QWidget, public KMPrinterPage
 {
@@ -51,7 +51,7 @@ protected:
 
 private:
 	KListBox		*m_view;
-	Q3ValueList<Q3Button*>	m_buttons;
+	Q3ValueList<QPushButton*>	m_buttons;
 	KMPrinter		*m_printer;
 };
 

@@ -53,6 +53,7 @@
 #include <qcheckbox.h>
 #include <kurldrag.h>
 #include <kconfig.h>
+#include <QDropEvent>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()

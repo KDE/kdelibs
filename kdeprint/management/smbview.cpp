@@ -23,6 +23,7 @@
 #include <ktempfile.h>
 #include <q3header.h>
 #include <qapplication.h>
+#include <QTextStream>
 
 #include <kiconloader.h>
 #include <klocale.h>

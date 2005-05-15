@@ -172,7 +172,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 
 void KMWBackend::enableBackend(int ID, bool on)
 {
-	Q3Button	*btn = m_buttons->find(ID);
+	QAbstractButton *btn = m_buttons->find(ID);
 	if (btn)
 		btn->setEnabled(on);
 }

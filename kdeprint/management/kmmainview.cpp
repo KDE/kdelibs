@@ -796,7 +796,7 @@ void KMMainView::loadPluginActions()
 	Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
 	int	index = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
-	Q3PopupMenu *menu = m_menubar->getButton( 1 )->popup();
+	QMenu *menu = m_menubar->getButton( 1 )->popup();
 	for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->plug(m_toolbar, index++);

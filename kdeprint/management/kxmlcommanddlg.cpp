@@ -283,27 +283,27 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	Q3WhatsThis::add( m_name, i18n(
 				"An identification string. Use only alphanumeric characters except spaces. "
 				"The string <b>__root__</b> is reserved for internal use." ) );
-	Q3WhatsThis::add( m_namelab, Q3WhatsThis::textFor( m_name ) );
+	Q3WhatsThis::add( m_namelab, m_name->whatsThis() );
 	Q3WhatsThis::add( m_desc, i18n(
 				"A description string. This string is shown in the interface, and should "
 				"be explicit enough about the role of the corresponding option." ) );
-	Q3WhatsThis::add( m_desclab, Q3WhatsThis::textFor( m_desc ) );
+	Q3WhatsThis::add( m_desclab, m_desc->whatsThis() );
 	Q3WhatsThis::add( m_type, i18n(
 				"The type of the option. This determines how the option is presented "
 				"graphically to the user." ) );
-	Q3WhatsThis::add( m_typelab, Q3WhatsThis::textFor( m_type ) );
+	Q3WhatsThis::add( m_typelab, m_type->whatsThis() );
 	Q3WhatsThis::add( m_format, i18n(
 				"The format of the option. This determines how the option is formatted "
 				"for inclusion in the global command line. The tag <b>%value</b> can be used "
 				"to represent the user selection. This tag will be replaced at run-time by a "
 				"string representation of the option value." ) );
-	Q3WhatsThis::add( m_formatlab, Q3WhatsThis::textFor( m_format ) );
+	Q3WhatsThis::add( m_formatlab, m_format->whatsThis() );
 	Q3WhatsThis::add( m_default, i18n(
 				"The default value of the option. For non persistent options, nothing is "
 				"added to the command line if the option has that default value. If this "
 				"value does not correspond to the actual default value of the underlying "
 				"utility, make the option persistent to avoid unwanted effects." ) );
-	Q3WhatsThis::add( m_defaultlab, Q3WhatsThis::textFor( m_default ) );
+	Q3WhatsThis::add( m_defaultlab, m_default->whatsThis() );
 	Q3WhatsThis::add( m_persistent, i18n(
 				"Make the option persistent. A persistent option is always written to the "
 				"command line, whatever its value. This is useful when the chosen default "
@@ -317,28 +317,28 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 				"<li><b>%filteroutput</b>: output specification</li>"
 				"<li><b>%psu</b>: the page size in upper case</li>"
 				"<li><b>%psl</b>: the page size in lower case</li></ul>" ) );
-	Q3WhatsThis::add( m_commandlab, Q3WhatsThis::textFor( m_command ) );
+	Q3WhatsThis::add( m_commandlab, m_command->whatsThis() );
 	Q3WhatsThis::add( m_inputfile, i18n(
 				"Input specification when the underlying utility reads input data from a file. Use "
 				"the tag <b>%in</b> to represent the input filename." ) );
-	Q3WhatsThis::add( m_inputfilelab, Q3WhatsThis::textFor( m_inputfile ) );
+	Q3WhatsThis::add( m_inputfilelab, m_inputfile->whatsThis() );
 	Q3WhatsThis::add( m_outputfile, i18n(
 				"Output specification when the underlying utility writes output data to a file. Use "
 				"the tag <b>%out</b> to represent the output filename." ) );
-	Q3WhatsThis::add( m_outputfilelab, Q3WhatsThis::textFor( m_outputfile ) );
+	Q3WhatsThis::add( m_outputfilelab, m_outputfile->whatsThis() );
 	Q3WhatsThis::add( m_inputpipe, i18n(
 				"Input specification when the underlying utility reads input data from its "
 				"standard input." ) );
-	Q3WhatsThis::add( m_inputpipelab, Q3WhatsThis::textFor( m_inputpipe ) );
+	Q3WhatsThis::add( m_inputpipelab, m_inputpipe->whatsThis() );
 	Q3WhatsThis::add( m_outputpipe, i18n(
 				"Output specification when the underlying utility writes output data to its "
 				"standard output." ) );
-	Q3WhatsThis::add( m_outputpipelab, Q3WhatsThis::textFor( m_outputpipe ) );
+	Q3WhatsThis::add( m_outputpipelab, m_outputpipe->whatsThis() );
 	Q3WhatsThis::add( m_comment, i18n(
 				"A comment about the underlying utility, which can be viewed by the user "
 				"from the interface. This comment string supports basic HTML tags like "
 				"&lt;a&gt;, &lt;b&gt; or &lt;i&gt;." ) );
-	Q3WhatsThis::add( m_commentlab, Q3WhatsThis::textFor( m_comment ) );
+	Q3WhatsThis::add( m_commentlab, m_comment->whatsThis() );
 
 	resize(660, 200);
 }
@@ -963,7 +963,7 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
 	for (QStringList::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		m_selectedmime->insertItem(*it);
-		delete m_availablemime->findItem(*it, Qt::ExactMatch);
+		delete m_availablemime->findItem(*it, Q3ListView::ExactMatch);
 	}
 }
 

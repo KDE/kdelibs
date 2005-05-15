@@ -25,6 +25,7 @@
 #include <klistbox.h>
 #include <qlayout.h>
 #include <kseparator.h>
+#include <QEvent>
 
 class CJanusWidget::CPage
 {
