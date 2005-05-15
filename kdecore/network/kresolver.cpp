@@ -573,7 +573,8 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 {
   KResolver* qres = new KResolver(host, service, QCoreApplication::instance(),
 				  "asynchronous KResolver");
-  QObject::connect(qres, SIGNAL(finished(KResolverResults)), userObj, userSlot);
+  QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)), 
+		   userObj, userSlot);
   qres->setFlags(flags);
   qres->setFamily(families);
   qres->d->deleteWhenDone = true; // this is the only difference from the example code

@@ -36,6 +36,7 @@
 #include <QFile>
 #include <QObject>
 
+#include "klocale.h"
 #include "ksocketaddress.h"
 
 #include "netsupp.h"
@@ -606,15 +607,16 @@ QString KSocketAddress::toString() const
   QString fmt;
 
   if (d->addr.generic->sa_family == AF_INET)
-    fmt = "%1:%2";
+    fmt = QLatin1String("%1:%2");
 #ifdef AF_INET6
   else if (d->addr.generic->sa_family == AF_INET6)
-    fmt = "[%1]:%2";
+    fmt = QLatin1String("[%1]:%2");
 #endif
   else if (d->addr.generic->sa_family == AF_UNIX)
-    return QString::fromLatin1("unix:%1").arg(serviceName());
+    return QString(QLatin1String("unix:%1")).arg(serviceName());
   else
-    return QObject::tr("Unknown family %1").arg(d->addr.generic->sa_family);
+    return i18n("1: the unknown socket address family number", 
+		"Unknown family %1").arg(d->addr.generic->sa_family);
 
   return fmt.arg(nodeName()).arg(serviceName());
 }

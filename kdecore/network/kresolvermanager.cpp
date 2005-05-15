@@ -461,9 +461,8 @@ void KResolverManager::handleFinished()
     }
       
   //qDebug("KResolverManager::handleFinished(%u): %d requests to notify", pid, doneRequests.count());
-  if (!doneRequests.isEmpty())
-    while (RequestData *d = doneRequests.dequeue())
-      doNotifying(d);
+  while (!doneRequests.isEmpty())
+    doNotifying(doneRequests.dequeue());
 
   mutex.unlock();
 

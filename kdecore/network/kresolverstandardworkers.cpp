@@ -718,7 +718,7 @@ bool KStandardWorker::resolveNumerically()
   // now try to resolve the hostname numerically
   KInetSocketAddress sa;
   setError(KResolver::NoError);
-  sa.setHost(KIpAddress(QString::fromLatin1(m_encodedName)));
+  sa.setHost(KIpAddress(QLatin1String(m_encodedName)));
 
   // if it failed, the length was reset to 0
   bool ok = sa.length() != 0;
@@ -934,7 +934,7 @@ bool KStandardWorker::postprocess()
 	setError(rr->error(), rr->systemError());
 
       delete rr;
-      resultList[i] = 0L;
+      resultList[i - 1] = 0L;
     }
 
   resultList.clear();
