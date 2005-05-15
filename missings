@@ -21,7 +21,6 @@ khtml/java/kjavaprocess.lo
 khtml/khtml_ext.lo
 khtml/khtmlimage.lo
 khtml/khtml_part.lo
-khtml/khtml_settings.lo
 khtml/khtmlview.lo
 khtml/kmultipart/kmultipart.lo
 khtml/misc/loader.lo
