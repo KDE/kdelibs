@@ -28,6 +28,8 @@
 #include <klocale.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
+#include <QMouseEvent>
+#include <stdio.h>
 
 PosterPreview::PosterPreview( QWidget *parent, const char *name )
 	: Q3Frame( parent, name )
@@ -69,8 +71,7 @@ void PosterPreview::parseBuffer()
 	int rotate;
 	float pw, ph, mw, mh;
 	float x1, x2, y1, y2;
-	sscanf( m_buffer.ascii(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate,
-			&pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
+	sscanf( m_buffer.ascii(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate, &pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
 	m_pw = ( int )( rotate ? ph : pw );
 	m_ph = ( int )( rotate ? pw : ph );
 	m_mw = ( int )( rotate ? mh : mw );
