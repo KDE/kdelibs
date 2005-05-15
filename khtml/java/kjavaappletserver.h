@@ -27,6 +27,7 @@
 #include "kjavaprocess.h"
 #include <qobject.h>
 #include <qmap.h>
+#include <QSize>
 
 
 /**

@@ -70,7 +70,7 @@ public:
 public slots:
     void jsEvent (const QStringList & args);
 signals:
-    virtual void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
+    void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
 
 private:
     KJavaAppletViewer * m_viewer;
