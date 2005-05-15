@@ -7,7 +7,6 @@ kdeprint/management/networkscanner.lo
 kdeprint/rlpr/kmwrlpr.lo
 kdewidgets/kdewidgets.lo
 kdoctools/kio_help.lo
-khtml/ecma/kjs_events.lo
 khtml/ecma/kjs_window.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo

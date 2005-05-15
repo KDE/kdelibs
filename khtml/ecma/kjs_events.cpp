@@ -196,7 +196,7 @@ void JSLazyEventListener::parseCode() const
         listener = Object();// Error creating function
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
-        declFunc->setName(Identifier(name));
+        declFunc->setName(Identifier(UString(name)));
 
         if (originalNode)
         {
