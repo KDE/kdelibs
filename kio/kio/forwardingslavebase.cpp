@@ -37,7 +37,7 @@ class ForwardingSlaveBasePrivate
 ForwardingSlaveBase::ForwardingSlaveBase(const Q3CString &protocol,
                                          const Q3CString &poolSocket,
                                          const Q3CString &appSocket)
-    : QObject(), SlaveBase(protocol, poolSocket, appSocket)
+    : QObject(), SlaveBase(protocol, poolSocket, appSocket), eventLoop(this)
 {
 }
 
@@ -179,7 +179,7 @@ void ForwardingSlaveBase::get(const KURL &url)
         KIO::TransferJob *job = KIO::get(new_url, false, false);
         connectTransferJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -195,7 +195,7 @@ void ForwardingSlaveBase::put(const KURL &url, int permissions,
                                          resume, false);
         connectTransferJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -209,7 +209,7 @@ void ForwardingSlaveBase::stat(const KURL &url)
         KIO::SimpleJob *job = KIO::stat(new_url, false);
         connectSimpleJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -223,7 +223,7 @@ void ForwardingSlaveBase::mimetype(const KURL &url)
         KIO::TransferJob *job = KIO::mimetype(new_url, false);
         connectTransferJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -237,7 +237,7 @@ void ForwardingSlaveBase::listDir(const KURL &url)
         KIO::ListJob *job = KIO::listDir(new_url, false);
         connectListJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -251,7 +251,7 @@ void ForwardingSlaveBase::mkdir(const KURL &url, int permissions)
         KIO::SimpleJob *job = KIO::mkdir(new_url, permissions);
         connectSimpleJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -266,7 +266,7 @@ void ForwardingSlaveBase::rename(const KURL &src, const KURL &dest,
         KIO::Job *job = KIO::rename(new_src, new_dest, overwrite);
         connectJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -281,7 +281,7 @@ void ForwardingSlaveBase::symlink(const QString &target, const KURL &dest,
         KIO::SimpleJob *job = KIO::symlink(target, new_dest, overwrite, false);
         connectSimpleJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -295,7 +295,7 @@ void ForwardingSlaveBase::chmod(const KURL &url, int permissions)
         KIO::SimpleJob *job = KIO::chmod(new_url, permissions);
         connectSimpleJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -311,7 +311,7 @@ void ForwardingSlaveBase::copy(const KURL &src, const KURL &dest,
                                        overwrite, false);
         connectJob(job);
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -333,7 +333,7 @@ void ForwardingSlaveBase::del(const KURL &url, bool isfile)
             connectSimpleJob(job);
         }
 
-        qApp->eventLoop()->enterLoop();
+        eventLoop.exec();
     }
 }
 
@@ -401,7 +401,7 @@ void ForwardingSlaveBase::slotResult(KIO::Job *job)
         finished();
     }
 
-    qApp->eventLoop()->exitLoop();
+    eventLoop.exit();
 }
 
 void ForwardingSlaveBase::slotInfoMessage(KIO::Job* /*job*/, const QString &msg)

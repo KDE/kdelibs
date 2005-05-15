@@ -24,6 +24,7 @@
 #include <kio/jobclasses.h>
 
 #include <qobject.h>
+#include <qeventloop.h>
 
 namespace KIO
 {
@@ -170,6 +171,8 @@ private:
     void connectSimpleJob(SimpleJob *job);
     void connectListJob(ListJob *job);
     void connectTransferJob(TransferJob *job);
+
+    QEventLoop eventLoop;
 
 private slots:
     // KIO::Job
