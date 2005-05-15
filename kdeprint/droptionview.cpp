@@ -26,7 +26,7 @@
 #include <qslider.h>
 #include <qlabel.h>
 #include <klistbox.h>
-#include <qvbuttongroup.h>
+#include <Q3VButtonGroup>
 #include <qradiobutton.h>
 #include <q3widgetstack.h>
 #include <qlayout.h>
@@ -236,7 +236,7 @@ OptionBooleanView::OptionBooleanView(QWidget *parent, const char *name)
 : OptionBaseView(parent,name)
 {
 	m_group = new Q3VButtonGroup(this);
-	m_group->setFrameStyle(Q3Frame::NoFrame);
+	//m_group->setFrameStyle(Q3Frame::NoFrame);
 
 	QRadioButton	*btn = new QRadioButton(m_group);
 	btn->setCursor(KCursor::handCursor());

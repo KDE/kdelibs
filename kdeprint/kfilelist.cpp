@@ -25,6 +25,7 @@
 #include <qtooltip.h>
 #include <q3header.h>
 #include <q3whatsthis.h>
+#include <QDragEnterEvent>
 
 #include <kio/netaccess.h>
 #include <kurldrag.h>

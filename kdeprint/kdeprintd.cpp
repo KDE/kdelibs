@@ -254,7 +254,7 @@ void KDEPrintd::processRequest()
 	Request *req = m_requestsPending.first();
 	KIO::AuthInfo info;
 	QByteArray params, reply;
-	Q3CString replyType;
+	DCOPCString replyType;
 	QString authString( "::" );
 
 	info.username = req->user;
@@ -263,6 +263,7 @@ void KDEPrintd::processRequest()
 	info.comment = i18n( "Printing system" );
 
 	QDataStream input( &params, QIODevice::WriteOnly );
+	input.setVersion ( QDataStream::Qt_3_1 );
 	input << info << i18n( "Authentication failed (user name=%1)" ).arg( info.username ) << 0 << req->seqNbr;
 	if ( callingDcopClient()->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo,QString,long int,long int)",
 				params, replyType, reply ) )
@@ -270,6 +271,7 @@ void KDEPrintd::processRequest()
 		if ( replyType == "KIO::AuthInfo" )
 		{
 			QDataStream output( reply );
+			output.setVersion ( QDataStream::Qt_3_1 );
 			KIO::AuthInfo result;
 			int seqNbr;
 			output >> result >> seqNbr;
@@ -285,6 +287,7 @@ void KDEPrintd::processRequest()
 
 	QByteArray outputData;
 	QDataStream output( &outputData, QIODevice::WriteOnly );
+	output.setVersion ( QDataStream::Qt_3_1 );
 	output << authString;
 	replyType = "QString";
 	callingDcopClient()->endTransaction( req->transaction, replyType, outputData );
@@ -297,7 +300,7 @@ void KDEPrintd::processRequest()
 void KDEPrintd::initPassword( const QString& user, const QString& passwd, const QString& host, int port )
 {
 	QByteArray params, reply;
-	Q3CString replyType;
+	DCOPCString replyType;
 	KIO::AuthInfo info;
 
 	info.username = user;
@@ -305,6 +308,7 @@ void KDEPrintd::initPassword( const QString& user, const QString& passwd, const 
 	info.url = "print://" + user + "@" + host + ":" + QString::number(port);
 
 	QDataStream input( &params, QIODevice::WriteOnly );
+	input.setVersion ( QDataStream::Qt_3_1 );
 	input << info << ( long int )0;
 
 	if ( !callingDcopClient()->call( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo,long int)",

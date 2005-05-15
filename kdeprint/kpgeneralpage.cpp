@@ -408,7 +408,7 @@ void KPGeneralPage::initialize()
 			if ( opt->choices()->count() == 2 )
 			{
 				// probably a On/Off option instead of the standard PS one
-				Q3Button *btn = m_duplexbox->find( DUPLEX_SHORT_ID );
+				QAbstractButton *btn = m_duplexbox->find( DUPLEX_SHORT_ID );
 				m_duplexbox->remove( btn );
 				btn->hide();
 				//delete btn;
