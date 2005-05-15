@@ -1988,7 +1988,7 @@ void WindowQObject::killTimers()
 {
  for (int i = 0; i < timerIds.size(); ++i) 
  {
-    killTimer(list.at(i));
+    killTimer(timerIds.at(i));
  } 
  timerIds.clear();
 }
