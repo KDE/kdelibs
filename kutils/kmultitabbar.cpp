@@ -466,9 +466,10 @@ QSize KMultiTabBarButton::sizeHint() const
 
     // calculate contents size...
 #ifndef QT_NO_ICONSET
+    int iw = 0, ih = 0;
     if ( iconSet() && !iconSet()->isNull() ) {
-        int iw = iconSet()->pixmap( QIcon::Small, QIcon::Normal ).width() + 4;
-        int ih = iconSet()->pixmap( QIcon::Small, QIcon::Normal ).height();
+        iw = iconSet()->pixmap( QIcon::Small, QIcon::Normal ).width() + 4;
+        ih = iconSet()->pixmap( QIcon::Small, QIcon::Normal ).height();
         w += iw;
         h = QMAX( h, ih );
     }
@@ -493,7 +494,17 @@ QSize KMultiTabBarButton::sizeHint() const
             h = QMAX(h, sz.height());
     }
 
-    return (style()->sizeFromContents(QStyle::CT_ToolButton, 0L, QSize(w, h), this).
+    
+    QStyleOptionToolButton opt;
+    opt.init(this);
+    opt.rect = QRect(0, 0, w, h);
+    opt.subControls       = QStyle::SC_All;
+    opt.activeSubControls = 0;
+    opt.text              = text();
+    opt.font              = font();
+    opt.icon              = icon();
+    opt.iconSize          = QSize(iw, ih);
+    return (style()->sizeFromContents(QStyle::CT_ToolButton, &opt, QSize(w, h), this).
             expandedTo(QApplication::globalStrut()));
 }
 
@@ -652,13 +663,15 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 
 	if (isOn()) st|=QStyle::State_On;
     
-    QStyleOptionButton options;
-    options.state = st;
-    options.rect = QRect(0,0,pixmap.width(),pixmap.height());
-    options.palette = colorGroup();
+	QStyleOptionButton options;
+	options.init(this);
+	options.state = st;
+	options.rect = QRect(0,0,pixmap.width(),pixmap.height());
+	options.palette  = colorGroup();
+	options.text     = text();
+	options.icon     = icon();
 
 	style()->drawControl(QStyle::CE_PushButton, &options, &painter, this);
-	style()->drawControl(QStyle::CE_PushButtonLabel, &options, &painter, this);
 
 	switch (m_position) {
 		case KMultiTabBar::Left:
