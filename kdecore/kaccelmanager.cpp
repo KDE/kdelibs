@@ -523,7 +523,8 @@ QString KAccelString::accelerated() const
     }
   } else {
       if (m_accel >= 0 && m_orig_accel != m_accel) {
-          result.remove(m_orig_accel, 1);
+          if (m_orig_accel != -1)
+              result.remove(m_orig_accel, 1);
           result.insert(m_accel, "&");
       }
   }
