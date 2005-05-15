@@ -48,8 +48,16 @@ namespace KUnitTest
     
     void SlotTester::allTests()
     {
-        Q3StrList allSlots = metaObject()->slotNames();
-        
+        Q3StrList allSlots;
+        int methodCount = metaObject()->methodCount(); 
+        int methodOffset = metaObject()->methodOffset(); 
+        for ( int i=0 ; i < methodCount; ++i )
+        {
+            QMetaMethod method = metaObject()->method( methodOffset + i );
+            if ( method.methodType() == QMetaMethod::Slot )
+                allSlots.append( method.signature() );
+        }
+ 
         if ( allSlots.contains("setUp()") > 0 ) invokeMember("setUp()");
 
         for ( char *sl = allSlots.first(); sl; sl = allSlots.next() ) 
