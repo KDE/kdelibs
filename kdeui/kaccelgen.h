@@ -253,11 +253,11 @@ generate(const QStringList& source, QStringList& target)
  *
  * @param source Map with input strings as VALUES.
  * @param target Output for accelerator-added strings */
-template <class Qt::Key>
+template <class Key>
 inline void
-generateFromValues(const QMap<Qt::Key,QString>& source, QStringList& target)
+generateFromValues(const QMap<Key,QString>& source, QStringList& target)
 {
-    generate<QMapConstIterator<Qt::Key,QString>, Deref_Key<QMapConstIterator<Qt::Key,QString> > >(source.begin(), source.end(), target);
+    generate<class QMap<Key,QString>::ConstIterator, Deref_Key<class QMap<Key,QString>::ConstIterator> >(source.begin(), source.end(), target);
 }
 
 /**
