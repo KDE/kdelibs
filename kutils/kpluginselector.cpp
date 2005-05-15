@@ -696,8 +696,7 @@ void KPluginSelector::defaults()
     // tabwidget - defaults() will be called for all of them)
 
     QWidget * pluginconfig = d->widgetstack->visibleWidget();
-    KCModuleProxy * kcm = ( KCModuleProxy* )pluginconfig->qt_cast(
-            "KCModuleProxy" );
+    KCModuleProxy * kcm = qobject_cast<KCModuleProxy *>( pluginconfig );
     if( kcm )
     {
         kdDebug( 702 ) << "call KCModule::defaults() for the plugins KCM"
@@ -708,16 +707,12 @@ void KPluginSelector::defaults()
 
     // if we get here the visible Widget must be a tabwidget holding more than
     // one KCM
-    QObjectList * kcms = pluginconfig->queryList( "KCModuleProxy",
+    QObjectList kcms = pluginconfig->queryList( "KCModuleProxy",
             0, false, false );
-    QObjectListIt it( *kcms );
-    QObject * obj;
-    while( ( obj = it.current() ) != 0 )
+    foreach ( QObject * obj,  kcms )
     {
-        ++it;
-        ( ( KCModule* )obj )->defaults();
+        static_cast<KCModule*>( obj )->defaults();
     }
-    delete kcms;
     // FIXME: update changed state
 }
 
