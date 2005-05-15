@@ -70,5 +70,5 @@ PrintInterface *KTextEditor::printInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<PrintInterface*>( doc );
+  return dynamic_cast<PrintInterface*>( doc );
 }

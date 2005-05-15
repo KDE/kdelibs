@@ -68,7 +68,7 @@ SessionConfigInterface *KTextEditor::sessionConfigInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<SessionConfigInterface*>( doc );
+  return dynamic_cast<SessionConfigInterface*>( doc );
 }
 
 SessionConfigInterface *KTextEditor::sessionConfigInterface (View *view)
@@ -76,7 +76,7 @@ SessionConfigInterface *KTextEditor::sessionConfigInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<SessionConfigInterface*>( view );
+  return dynamic_cast<SessionConfigInterface*>( view );
 }
 
 SessionConfigInterface *KTextEditor::sessionConfigInterface (Plugin *plugin)
@@ -84,5 +84,5 @@ SessionConfigInterface *KTextEditor::sessionConfigInterface (Plugin *plugin)
   if (!plugin)
     return 0;
 
-  return qobject_cast<SessionConfigInterface*>( plugin );
+  return dynamic_cast<SessionConfigInterface*>( plugin );
 }

@@ -66,5 +66,5 @@ WordWrapInterface *KTextEditor::wordWrapInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<KTextEditor::WordWrapInterface*>(doc );
+  return dynamic_cast<KTextEditor::WordWrapInterface*>(doc );
 }

@@ -70,5 +70,5 @@ UndoInterface *KTextEditor::undoInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<UndoInterface*>( doc );
+  return dynamic_cast<UndoInterface*>( doc );
 }

@@ -65,5 +65,5 @@ MarkInterfaceExtension *KTextEditor::markInterfaceExtension (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<MarkInterfaceExtension*>( doc );
+  return dynamic_cast<MarkInterfaceExtension*>( doc );
 }

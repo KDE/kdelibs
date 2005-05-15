@@ -226,6 +226,6 @@ PluginViewInterface *KTextEditor::pluginViewInterface (Plugin *plugin)
   if (!plugin)
     return 0;
 
-  return static_cast<PluginViewInterface*>(plugin->qt_cast("KTextEditor::PluginViewInterface"));
+  return dynamic_cast<PluginViewInterface*>(plugin);
 }
 

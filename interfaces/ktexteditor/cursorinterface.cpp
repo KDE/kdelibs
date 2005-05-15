@@ -65,5 +65,5 @@ CursorInterface *KTextEditor::cursorInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<KTextEditor::CursorInterface*>( doc );
+  return dynamic_cast<KTextEditor::CursorInterface*>( doc );
 }

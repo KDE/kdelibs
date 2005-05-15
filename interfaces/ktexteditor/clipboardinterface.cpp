@@ -52,5 +52,5 @@ ClipboardInterface *KTextEditor::clipboardInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<KTextEditor::ClipboardInterface*>( view );
+  return dynamic_cast<KTextEditor::ClipboardInterface*>( view );
 }

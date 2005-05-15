@@ -72,5 +72,5 @@ EncodingInterface *KTextEditor::encodingInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<EncodingInterface*>( doc );
+  return dynamic_cast<EncodingInterface*>( doc );
 }

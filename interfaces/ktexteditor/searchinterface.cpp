@@ -51,5 +51,5 @@ SearchInterface *KTextEditor::searchInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<KTextEditor::SearchInterface*>( doc );
+  return dynamic_cast<KTextEditor::SearchInterface*>( doc );
 }

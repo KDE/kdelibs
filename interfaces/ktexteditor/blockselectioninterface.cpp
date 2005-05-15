@@ -70,5 +70,5 @@ BlockSelectionInterface *KTextEditor::blockSelectionInterface (Document *doc)
   if (!doc)
     return 0;
 
-  return qobject_cast<KTextEditor::BlockSelectionInterface*>(doc);
+  return dynamic_cast<KTextEditor::BlockSelectionInterface*>(doc);
 }

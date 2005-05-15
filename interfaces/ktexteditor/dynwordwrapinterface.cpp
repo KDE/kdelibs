@@ -65,5 +65,5 @@ DynWordWrapInterface *KTextEditor::dynWordWrapInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<KTextEditor::DynWordWrapInterface*>( view );
+  return dynamic_cast<KTextEditor::DynWordWrapInterface*>( view );
 }

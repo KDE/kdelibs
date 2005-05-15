@@ -70,5 +70,5 @@ ViewCursorInterface *KTextEditor::viewCursorInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<KTextEditor::ViewCursorInterface*>(view);
+  return dynamic_cast<KTextEditor::ViewCursorInterface*>(view);
 }

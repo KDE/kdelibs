@@ -45,7 +45,7 @@ CodeCompletionInterface *KTextEditor::codeCompletionInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<KTextEditor::CodeCompletionInterface*>( view );
+  return dynamic_cast<KTextEditor::CodeCompletionInterface*>( view );
 }
 
 
