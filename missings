@@ -19,6 +19,5 @@ kimgio/tga.lo
 kimgio/tiffr.lo
 kimgio/xcf.lo
 kimgio/xview.lo
-kinit/klauncher.lo
 kioslave/ftp/ftp.lo
 kioslave/http/http.lo
