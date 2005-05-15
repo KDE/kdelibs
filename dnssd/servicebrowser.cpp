@@ -73,12 +73,12 @@ void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int fla
 
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool autoResolve)
 {
-	init(QStringList( type ) ,new DomainBrowser(domain,false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
+	init(QStringList( type ) ,new DomainBrowser(QStringList(domain),false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
 }
 
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int flags)
 {
-	init(type,new DomainBrowser(domain,false,this),flags | AutoDelete);
+	init(QStringList(type),new DomainBrowser(QStringList(domain),false,this),flags | AutoDelete);
 }
 
 const ServiceBrowser::State ServiceBrowser::isAvailable()
