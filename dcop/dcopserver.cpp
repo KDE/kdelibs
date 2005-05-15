@@ -1548,6 +1548,7 @@ void IoErrorHandler ( IceConn iceConn)
 
 static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 {
+    qDebug("Checking for:%s", fName.data());
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(QIODevice::ReadOnly);
@@ -1557,7 +1558,15 @@ static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 	contents[size] = '\0';
 	int pos = contents.find('\n');
 	ok = ok && ( pos != -1 );
-	pid_t pid = ok ? contents.mid(pos+1).toUInt(&ok) : 0;
+	
+	//Strip trailing newline, if need be..
+	int len = -1;
+	int pos2 = contents.indexOf('\n',pos + 1);
+	if (pos2 != -1)
+	    len = pos2 - (pos + 1);
+	
+
+	pid_t pid = ok ? contents.mid(pos+1,len).toUInt(&ok) : 0;
 	f.close();
 	if (ok && pid && (kill(pid, SIGHUP) == 0)) {
 	    if (printNetworkId)
