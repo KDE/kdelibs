@@ -566,7 +566,7 @@ public:
    * @since 3.4
    */
   static Q3ValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles );
-  
+
   /**
    * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
    * This allows for the menu to be changed depending on the exact files via
@@ -576,11 +576,11 @@ public:
   static Q3ValueList<Service> userDefinedServices( const QString& path, KConfig& config, bool bLocalFiles,  const KURL::List & file_list);
 
   /**
-   * @param _path is the path of the desktop entry.
+   * @param path is the path of the desktop entry.
    * @param service the service to execute
    * @deprecated, see the other executeService
    */
-  static void executeService( const QString& _path, KDEDesktopMimeType::Service& _service ) KDE_DEPRECATED;
+  static void executeService( const QString& path, KDEDesktopMimeType::Service& service ) KDE_DEPRECATED;
 
   /**
    * Execute @p service on the list of @p urls.
@@ -603,8 +603,9 @@ public:
   static pid_t run( const KURL& _url, bool _is_local );
 
 protected:
-  virtual QPixmap pixmap(KIcon::Group a, int b, int c, QString *d) const
-     { return KMimeType::pixmap(a, b, c, d); }
+  virtual QPixmap pixmap( KIcon::Group group, int force_size = 0, int state = 0,
+                          QString * path = 0L ) const
+     { return KMimeType::pixmap( group, force_size, state, path ); }
 
   static pid_t runFSDevice( const KURL& _url, const KSimpleConfig &cfg );
   static pid_t runApplication( const KURL& _url, const QString & _serviceFile );

@@ -328,9 +328,18 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
           if (name.startsWith("Filter"))
           {
-              QRegExp rx(value);
-              rx.setWildcard(TRUE);
-              d->adFilters.append(rx);
+              if (value.length()>2 && value[0]=='/' && value[value.length()-1] == '/')
+              {
+                  QString inside = value.mid(1, value.length()-2);
+                  QRegExp rx(inside);
+                  d->adFilters.append(rx);
+              }
+              else
+              {
+                QRegExp rx(value);
+                rx.setWildcard(true);
+                d->adFilters.append(rx);
+              }
           }
       }
   }
@@ -710,7 +719,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
     config.sync();
 
     QRegExp rx(url);
-    rx.setWildcard(TRUE);
+    rx.setWildcard(true);
     d->adFilters.append(rx);
 }   
 

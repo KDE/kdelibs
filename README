@@ -143,9 +143,9 @@ headings and other identifying marks.
 
 Common Mistakes
 ---------------
-If configure claims Qt cannot be found, have a look at http://www.troll.no
+If configure claims Qt cannot be found, look at http://www.trolltech.com
 to get a copy of Qt, version 3.3.0 or newer. If you have peeked there
-already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
+already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.
 

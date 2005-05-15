@@ -57,7 +57,7 @@ k_dcop:
     virtual QString constTest() const;
     virtual DCOPRef firstView();
     virtual DCOPRef nextView();
-    virtual int getNumObjects();
+    virtual int getNumObjects(unsigned long num);
     virtual DCOPRef getObject( int num );
     virtual int getNumPages();
     virtual DCOPRef getPage( int num );

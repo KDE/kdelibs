@@ -379,7 +379,7 @@ public:
   KHTMLPart *m_khtml;
   KURL m_url;
   KURL m_imageURL;
-  QImage m_image;
+  QPixmap m_pixmap;
   QString m_suggestedFilename;
 };
 
@@ -532,7 +532,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       if(imageimpl) // should be true always.  right?
       {
         if(imageimpl->complete()) {
-	  d->m_image = imageimpl->currentImage();
+	  d->m_pixmap = imageimpl->currentPixmap();
 	}
       }
     }
@@ -546,10 +546,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
 #ifndef QT_NO_MIMECLIPBOARD
     (new KAction( i18n( "Copy Image" ), 0, this, SLOT( slotCopyImage() ),
-                 actionCollection(), "copyimage" ))->setEnabled(!d->m_image.isNull());
+                 actionCollection(), "copyimage" ))->setEnabled(!d->m_pixmap.isNull());
 #endif
 
-    if(d->m_image.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
+    if(d->m_pixmap.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
       new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                    actionCollection(), "copyimagelocation" );
     }
@@ -654,7 +654,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
   lst.append( safeURL );
   KMultipleDrag *drag = new KMultipleDrag(d->m_khtml->view(), "Image");
 
-  drag->addDragObject( new Q3ImageDrag(d->m_image) );
+  drag->addDragObject( new Q3ImageDrag(d->m_pixmap.convertToImage()) );
   drag->addDragObject( new KURLDrag(lst, d->m_khtml->view(), "Image URL") );
 
   // Set it in both the mouse selection and in the clipboard

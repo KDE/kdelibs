@@ -69,6 +69,6 @@ Name[zh_CN]=TIFF 图像
 Name[zh_TW]=TIFF 影像
 Read=true
 Write=false
-Suffices=tiff,TIFF,tif,TIF 
+Suffices=tiff,TIFF,tif,TIF
 Mimetype=image/tiff
 Library=kimg_tiff.la

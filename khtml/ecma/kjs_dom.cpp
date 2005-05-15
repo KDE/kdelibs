@@ -1079,7 +1079,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
   switch(id) {
     case DOMElement::GetAttribute:
-      return String(element.getAttribute(args[0].toString(exec).string()));
+      return getString(element.getAttribute(args[0].toString(exec).string()));
     case DOMElement::SetAttribute:
       element.setAttribute(args[0].toString(exec).string(),args[1].toString(exec).string());
       return Undefined();
@@ -1097,7 +1097,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
     case DOMElement::HasAttribute: // DOM2
       return Boolean(element.hasAttribute(args[0].toString(exec).string()));
     case DOMElement::GetAttributeNS: // DOM2
-      return String(element.getAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+      return getString(element.getAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
     case DOMElement::SetAttributeNS: // DOM2
       element.setAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string(),args[2].toString(exec).string());
       return Undefined();

@@ -38,21 +38,34 @@
 
 static KWinModulePrivate* static_d = 0;
 
-class KWinModulePrivate : public QWidget, public NETRootInfo
+static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
+				     NET::NumberOfDesktops |
+				     NET::DesktopGeometry |
+				     NET::CurrentDesktop |
+				     NET::DesktopNames |
+				     NET::ActiveWindow |
+				     NET::WorkArea |
+				     NET::KDESystemTrayWindows,
+                                     NET::WM2ShowingDesktop };
+
+static unsigned long desktop_properties[ 2 ] = { 
+				     NET::NumberOfDesktops |
+				     NET::DesktopGeometry |
+				     NET::CurrentDesktop |
+				     NET::DesktopNames |
+				     NET::ActiveWindow |
+				     NET::WorkArea |
+				     NET::KDESystemTrayWindows,
+                                     NET::WM2ShowingDesktop };
+
+class KWinModulePrivate : public QWidget, public NETRootInfo4
 {
 public:
     KWinModulePrivate(int _what)
-	: QWidget(0,0), NETRootInfo( QX11Info::display(),
-				     ( _what >= KWinModule::INFO_WINDOWS ? 
-				       (ClientList | ClientListStacking) : 0
-				     ) |
-				     NumberOfDesktops |
-				     DesktopGeometry |
-				     CurrentDesktop |
-				     DesktopNames |
-				     ActiveWindow |
-				     WorkArea |
-				     KDESystemTrayWindows,
+	: QWidget(0,0), NETRootInfo4( QX11Info::display(),
+                                     _what >= KWinModule::INFO_WINDOWS ?
+                                     windows_properties : desktop_properties,
+                                     2,
 				     -1, false
 				     ),
           strutSignalConnected( false ),
@@ -171,28 +184,34 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
         int old_current_desktop = currentDesktop();
         WId old_active_window = activeWindow();
         int old_number_of_desktops = numberOfDesktops();
-	int m = NETRootInfo::event( ev );
+        bool old_showing_desktop = showingDesktop();
+        unsigned long m[ 5 ];
+	NETRootInfo::event( ev, m, 5 );
 
-	if (( m & CurrentDesktop ) && currentDesktop() != old_current_desktop )
+	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->currentDesktopChanged( currentDesktop() );
-	if (( m & ActiveWindow ) && activeWindow() != old_active_window )
+	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->activeWindowChanged( activeWindow() );
-	if ( m & DesktopNames )
+	if ( m[ PROTOCOLS ] & DesktopNames )
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->desktopNamesChanged();
-	if (( m & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
+	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->numberOfDesktopsChanged( numberOfDesktops() );
-	if ( m & WorkArea )
+	if ( m[ PROTOCOLS ] & WorkArea )
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->workAreaChanged();
-	if ( m & ClientListStacking ) {
+	if ( m[ PROTOCOLS ] & ClientListStacking ) {
 	    updateStackingOrder();
 	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->stackingOrderChanged();
 	}
+        if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
+	    for ( Q3PtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
+		emit (*mit)->showingDesktopChanged( showingDesktop());
+        }
     } else  if ( windows.findIndex( ev->xany.window ) != -1 ){
 	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
         unsigned long dirty[ 2 ];
@@ -311,6 +330,11 @@ int KWinModule::numberOfDesktops() const
 WId KWinModule::activeWindow() const
 {
     return d->activeWindow();
+}
+
+bool KWinModule::showingDesktop() const
+{
+    return d->showingDesktop();
 }
 
 QRect KWinModule::workArea( int desktop ) const

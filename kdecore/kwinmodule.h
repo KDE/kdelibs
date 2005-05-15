@@ -194,6 +194,12 @@ public:
      * @param name the new name for the desktop
      **/
     void setDesktopName( int desktop, const QString& name );
+    
+    /**
+     * Returns the state of showing the desktop.
+     * @since 3.5
+     */
+    bool showingDesktop() const;
 
     /**
      * Informs kwin via dcop to not manage a window with the
@@ -303,6 +309,12 @@ signals:
      * @param id the id of the window
      */
     void windowChanged(WId id);
+    
+    /**
+     * The state of showing the desktop has changed.
+     * @since 3.5
+     */
+    void showingDesktopChanged( bool showing );
 
 protected:
     virtual void connectNotify( const char* signal );

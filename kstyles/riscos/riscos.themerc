@@ -120,7 +120,7 @@ PixmapBWidth=3
 [VScrollGroove]
 Pixmap=riscos/vscrollback.png
 PixmapBorder=riscos/scrollborder.png
-PixmapBWidth=1  
+PixmapBWidth=1
 
 [HSBarSlider]
 Pixmap=riscos/hscrollbar.png
@@ -221,7 +221,7 @@ BottomLine=false
 Pixmap=riscos/background.png
 
 [KDE]
-widgetStyle=basicstyle.la 
+widgetStyle=basicstyle.la
 WidgetStyle=riscos
 
 [Misc]

@@ -517,6 +517,17 @@ public:
        @param count The number of windows in the array.
     **/
     void setVirtualRoots(Window *windows, unsigned int count);
+    
+    /**
+     * Sets the _NET_SHOWING_DESKTOP status (whether desktop is being shown).
+     * @since 3.5
+     */
+    void setShowingDesktop( bool showing );
+    /**
+     * Returns the status of _NET_SHOWING_DESKTOP.
+     * @since 3.5
+     */
+    bool showingDesktop() const;
 
     /**
        Assignment operator.  Ensures that the shared data reference counts are
@@ -750,6 +761,11 @@ public:
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
     /**
+     * @since 3.5
+     */
+    NETRootInfo2(Display *display, const unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+    /**
       Sends a ping with the given timestamp to the window, using
       the _NET_WM_PING protocol.
     */
@@ -817,6 +833,11 @@ public:
 		unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
     /**
+     * @since 3.5
+     */
+    NETRootInfo3(Display *display, const unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+    /**
        Sends a take activity message with the given timestamp to the window, using
        the _NET_WM_TAKE_ACTIVITY protocol (see the WM spec for details).
        @param window the window to which the message should be sent
@@ -847,6 +868,35 @@ protected:
        @param flags flags passed in the original message
      */
     virtual void gotTakeActivity(Window window, Time timestamp, long flags ) { Q_UNUSED(window); Q_UNUSED(timestamp); Q_UNUSED(flags); }
+// no private data, use NETRootInfoPrivate
+};
+
+/**
+ This class is an extension of the NETRootInfo class, and exists solely
+ for binary compatibility reasons (adds new virtual methods). Simply
+ use it instead of NETRootInfo and override also the added virtual methods.
+ @since 3.5
+*/
+class KDECORE_EXPORT NETRootInfo4
+    : public NETRootInfo3
+{
+public:
+    NETRootInfo4(Display *display, Window supportWindow, const char *wmName,
+		unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+    NETRootInfo4(Display *display, const unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+
+protected:
+    friend class NETRootInfo;
+    /**
+       A Window Manager should subclass NETRootInfo2 and reimplement this function
+       when it wants to know when a pager made a request to change showing the desktop.
+       See _NET_SHOWING_DESKTOP for details.
+       
+       @param showing whether to activate the showing desktop mode
+    **/
+    virtual void changeShowingDesktop(bool showing) { Q_UNUSED(showing); }
 // no private data, use NETRootInfoPrivate
 };
 

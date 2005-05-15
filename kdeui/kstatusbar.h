@@ -110,7 +110,7 @@ public:
 
   /**
    *  Inserts a text label into the status bar.
-   *  Paremeters @p stretch and  @p permanent are passed to
+   *  Parameters @p stretch and  @p permanent are passed to
    * QStatusBar::addWidget .
    *
    *  If @p permanent is true, then item will be placed on the far right of

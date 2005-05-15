@@ -91,7 +91,7 @@ Type=bool
 Type=bool
 
 # If true, this view shows a hierarchical view, i.e. more than one dir at a time
-# This is used by KonqPopupMenu to know whether to offer "Create Directory" 
+# This is used by KonqPopupMenu to know whether to offer "Create Directory"
 # in the RMB menu on a directory (since it depends on whether the user would
 # see that new dir).
 [PropertyDef::X-KDE-BrowserView-HierarchicalView]
