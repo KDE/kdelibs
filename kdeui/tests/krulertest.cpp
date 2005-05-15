@@ -5,6 +5,7 @@
 #include "kruler.h"
 #include <qlayout.h>
 #include <qlabel.h>
+#include <qevent.h>
 #include <q3groupbox.h>
 
 /*

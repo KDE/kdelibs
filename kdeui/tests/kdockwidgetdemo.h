@@ -138,7 +138,7 @@ public:
   CustomFileDialog( QWidget* parent );
   ~CustomFileDialog();
 
-  void addToolButton( Q3Button * b, bool separator = false ){ Q3FileDialog::addToolButton(b,separator); }
+  void addToolButton( QAbstractButton * b, bool separator = false ){ Q3FileDialog::addToolButton(b,separator); }
   void setBookmark( QStringList& );
   QStringList getBookmark(){ return bookmarkList; }
 

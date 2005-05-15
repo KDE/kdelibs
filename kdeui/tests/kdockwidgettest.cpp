@@ -20,6 +20,7 @@
 #include <kstatusbar.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
+#include <q3popupmenu.h>
 #include <q3vbox.h>
 
 static const char*folder[]={
@@ -101,7 +102,7 @@ DockApplication::DockApplication( const char* name )
   l->setBackgroundColor(Qt::white);
   l->setMinimumSize(100,100);
   dock5->setWidget(l);
-  if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 5");
+  if (dynamic_cast<KDockContainer*>(l)) qDebug("KDockContainer created for dock 5");
   /*****************************************************/
 
   /*****************************************************/
@@ -112,7 +113,7 @@ DockApplication::DockApplication( const char* name )
   l->setBackgroundColor(Qt::white);
   l->setMinimumSize(100,100);
   dock6->setWidget(l);
-  if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 6");
+  if (dynamic_cast<KDockContainer*>(l)) qDebug("KDockContainer created for dock 6");
   /*****************************************************/
 
 

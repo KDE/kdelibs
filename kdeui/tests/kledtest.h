@@ -30,11 +30,6 @@ protected:
   int ledcolor;
   KLed::Look  ledlook;
 
-  const QColor Qt::red;
-  const QColor Qt::blue;
-  const QColor Qt::green;
-  const QColor Qt::yellow;
-
 public:
 
   KLedTest(QWidget* parent=0);

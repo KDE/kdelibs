@@ -9,7 +9,7 @@
 */
 
 #include <qlayout.h>
-#include <qvgroupbox.h>
+#include <q3groupbox.h>
 
 #include <kapplication.h>
 #include <knuminput.h>
@@ -34,7 +34,8 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
     QBoxLayout* l = new QHBoxLayout(this, 10);
 
-    Q3GroupBox* b1 = new QVGroupBox("KIntNumInput", this);
+    Q3GroupBox* b1 = new Q3GroupBox("KIntNumInput", this);
+    b1->setOrientation(Qt::Vertical);
 
     i1 = new KIntNumInput(42, b1, 10, "perc_no_slider");
     i1->setLabel("percent of usage (no slider)");
@@ -79,7 +80,8 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
     l->addWidget(b1);
 
-    Q3GroupBox* b2 = new QVGroupBox("KDoubleNumInput", this);
+    Q3GroupBox* b2 = new Q3GroupBox("KDoubleNumInput", this);
+    b2->setOrientation(Qt::Vertical);
 
     d1 = new KDoubleNumInput(4.0, b2, "perc_double_no_slider");
     d1->setLabel("percent of usage (no slider)", Qt::AlignTop | Qt::AlignRight);

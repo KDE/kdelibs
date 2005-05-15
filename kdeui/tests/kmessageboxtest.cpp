@@ -90,7 +90,7 @@ case 1:
 
 case 2:
   i = KMessageBox::questionYesNo(0, "Do you have a printer?",
-				 QString("Printer setup"), QString::null);
+				 QString("Printer setup"));
   break;
 
 case 3:

@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
     l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
-    KButtonBox *bbox = new KButtonBox(w, KButtonBox::Vertical);
+    KButtonBox *bbox = new KButtonBox(w, Qt::Vertical);
     QPushButton *b = bbox->addButton("OK");
     b->setDefault(true);
     w->connect(b, SIGNAL(clicked()),

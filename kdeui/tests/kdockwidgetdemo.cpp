@@ -638,21 +638,16 @@ void Directory::setOpen( bool o )
     QString s( fullName() );
     QDir thisDir( s );
     if ( !thisDir.isReadable() ) {
-    readable = false;
-    setExpandable( false );
-    return;
-  }
+      readable = false;
+      setExpandable( false );
+      return;
+    }
 
-  listView()->setUpdatesEnabled( false );
-  const QFileInfoList * files = thisDir.entryInfoList();
-  if ( files ){
-    QFileInfoListIterator it( *files );
-    QFileInfo * f;
-    while( (f=it.current()) != 0 ){
-      ++it;
-      if ( f->fileName() != "." && f->fileName() != ".." && f->isDir() )
-        (void)new Directory( this, f->fileName() );
-      }
+    listView()->setUpdatesEnabled( false );
+    QFileInfoList files = thisDir.entryInfoList();
+    foreach ( QFileInfo f, files ){
+      if ( f.fileName() != "." && f.fileName() != ".." && f.isDir() )
+        (void)new Directory( this, f.fileName() );
     }
     listView()->setUpdatesEnabled( true );
   }
@@ -782,8 +777,9 @@ int main(int argc, char* argv[]) {
 #endif
 
 #if 1
-  QStringList s = SFileDialog::getOpenFileNames( QString::null, QString::fromLatin1("All (*)"),
-                                                QString::fromLatin1("DockWidget Demo"), "dialog1" );
+  QStringList s = SFileDialog::getOpenFileNames( QString::null, 
+          QStringList(QLatin1String("All (*)")), 
+          QLatin1String("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();
   for ( ; it != s.end(); ++it ){
     qDebug( "%s", (*it).local8Bit().data() );

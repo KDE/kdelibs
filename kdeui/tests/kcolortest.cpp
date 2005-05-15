@@ -4,6 +4,8 @@
 #include <kimageeffect.h>
 #include <stdio.h>
 #include <qdatetime.h>
+#include <qdesktopwidget.h>
+#include <qpainter.h>
 
 bool fullscreen = false, oldway = false, intvsfade = false;
 int max = 20; // how many steps
@@ -23,9 +25,8 @@ KColorWidget::KColorWidget(QWidget *parent, const char *name)
 
 void KColorWidget::paintEvent(QPaintEvent *)
 {
-  if(!pixmap.isNull())
-    bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-	   Qt::CopyROP, true);
+  QPainter p(this);
+  p.drawPixmap(0, 0, pixmap);
 }
 
 void KColorWidget::doIntensityLoop()
@@ -57,8 +58,7 @@ void KColorWidget::doIntensityLoop()
 	    }
 	}
 	pixmap.convertFromImage(image);
-	bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-	       Qt::CopyROP, true);
+	bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
       stop = t.elapsed();
       qDebug ("Total fullscreen %s dim time for %d steps : %f s",
@@ -70,8 +70,7 @@ void KColorWidget::doIntensityLoop()
 	for(count=0; count < max; ++count){
 	  KImageEffect::fade(image, 1./max, Qt::black);
 	  pixmap.convertFromImage(image);
-	  bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-		 Qt::CopyROP, true);
+	  bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
 	}
       }
       stop = t.elapsed();
@@ -86,15 +85,13 @@ void KColorWidget::doIntensityLoop()
       for(count=0; count < max; ++count){
         KImageEffect::intensity(image, 1./max);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
 
       for(count=0; count < max; ++count){
         KImageEffect::intensity(image, -1./max);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
 
       image = original; image.detach();
@@ -102,14 +99,12 @@ void KColorWidget::doIntensityLoop()
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Red);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, 1./max, KImageEffect::Red);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
 
       image = original; image.detach();
@@ -117,14 +112,12 @@ void KColorWidget::doIntensityLoop()
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Green);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, 1./max, KImageEffect::Green);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
 
       image = original; image.detach();
@@ -132,14 +125,12 @@ void KColorWidget::doIntensityLoop()
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Blue);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, 1./max, KImageEffect::Blue);
         pixmap.convertFromImage(image);
-        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height(),
-               Qt::CopyROP, true);
+        bitBlt(this, 0, 0, &pixmap, 0, 0, pixmap.width(), pixmap.height());
       }
     }
 }
