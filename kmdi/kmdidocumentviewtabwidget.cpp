@@ -40,12 +40,15 @@ void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIcon & iconset,
 	maybeShow();
 }
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 void KMdiDocumentViewTabWidget::addTab ( QWidget * child, QTab * tab )
 {
 	KTabWidget::addTab( child, tab );
 	showPage( child );
 	maybeShow();
 }
+#endif
 
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & label, int index )
 {
@@ -63,6 +66,8 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIcon & icons
 	tabBar() ->repaint();
 }
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int index )
 {
 	KTabWidget::insertTab( child, tab, index );
@@ -70,6 +75,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int ind
 	maybeShow();
 	tabBar() ->repaint();
 }
+#endif
 
 void KMdiDocumentViewTabWidget::removePage ( QWidget * w )
 {
