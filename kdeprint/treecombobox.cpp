@@ -44,7 +44,7 @@ TreeListBoxItem::TreeListBoxItem(Q3ListBox *lb, const QPixmap& pix, const QStrin
 	else
 	{
 		QString	parentStr = txt.left(txt.length()-m_path[m_depth].length()-1);
-		TreeListBoxItem	*parentItem = static_cast<TreeListBoxItem*>(lb->findItem(parentStr, ExactMatch));
+		TreeListBoxItem	*parentItem = static_cast<TreeListBoxItem*>(lb->findItem(parentStr, Q3ListBox::ExactMatch));
 		if (!parentItem)
 		{
 			// parent not found, add parent first into QListBox
@@ -147,7 +147,8 @@ TreeComboBox::TreeComboBox(QWidget *parent, const char *name)
 	: QComboBox(parent, name)
 {
 	m_listbox = new TreeListBox(this);
-	setListBox(m_listbox);
+#warning needs to be ported to QListView
+	// setListBox(m_listbox);
 }
 
 void TreeComboBox::insertItem(const QPixmap& pix, const QString& txt, bool oneBlock)
