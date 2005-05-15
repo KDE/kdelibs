@@ -124,6 +124,8 @@ void Connection::dequeue()
 
 void Connection::init(KNetwork::KStreamSocket *sock)
 {
+    sock->connect();
+
     delete notifier;
     notifier = 0;
 #ifdef Q_OS_UNIX //TODO: not yet available on WIN32
