@@ -146,7 +146,7 @@ signals:
    *
    * @param obj		this class, which contains the results
    */
-  void finished(const KReverseResolver& obj);
+  void finished(const KNetwork::KReverseResolver& obj);
 
 public:
   /**

@@ -60,14 +60,14 @@ public:
 KServerSocket::KServerSocket(QObject* parent, const char *name)
   : QObject(parent, name), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
 }
 
 KServerSocket::KServerSocket(const QString& service, QObject* parent, const char *name)
   : QObject(parent, name), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
   d->resolver.setServiceName(service);
 }
@@ -76,7 +76,7 @@ KServerSocket::KServerSocket(const QString& node, const QString& service,
 			     QObject* parent, const char* name)
   : QObject(parent, name), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
   setAddress(node, service);
 }

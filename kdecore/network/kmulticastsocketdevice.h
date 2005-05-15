@@ -31,7 +31,7 @@
 
 namespace KNetwork {
 
-class KMulticastSocketImplPrivate;
+class KMulticastSocketDevicePrivate;
 
 /**
  * @class KMulticastSocketImpl kmulticastsocketdevice.h kmulticastsocketdevice.h
@@ -42,7 +42,7 @@ class KMulticastSocketImplPrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KMulticastSocketImpl: public KSocketDevice
+class KMulticastSocketDevice: public KSocketDevice
 {
 public:
   /**
@@ -143,7 +143,7 @@ public:
   virtual bool leaveGroup(const KSocketAddress& group,
 			  const KNetworkInterface& iface);
 private:
-  KMulticastSocketImplPrivate *d;
+  KMulticastSocketDevicePrivate *d;
 };
 
 }				// namespace KNetwork

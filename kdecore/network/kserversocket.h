@@ -383,7 +383,7 @@ signals:
    *
    * @param local	the local address we bound to
    */
-  void bound(const KResolverEntry& local);
+  void bound(const KNetwork::KResolverEntry& local);
 
   /**
    * This signal is emitted when the socket completes the

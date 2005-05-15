@@ -442,7 +442,7 @@ signals:
    * @note if the connection is successful, the @ref connected signal will be
    *       emitted.
    */
-  void aboutToConnect(const KResolverEntry& remote, bool& skip);
+  void aboutToConnect(const KNetwork::KResolverEntry& remote, bool& skip);
 
   /**
    * This socket is emitted when the socket successfully connects
@@ -450,7 +450,7 @@ signals:
    *
    * @param remote	the remote address we did connect to
    */
-  void connected(const KResolverEntry& remote);
+  void connected(const KNetwork::KResolverEntry& remote);
 
   /**
    * This signal is emitted when the socket completes the
