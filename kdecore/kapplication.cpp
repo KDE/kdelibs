@@ -2586,7 +2586,7 @@ startServiceInternal( const QByteArray &function,
    struct serviceResult
    {
       int result;
-      QByteArray dcopName;
+      DCOPCString dcopName;
       QString error;
       pid_t pid;
    };
@@ -2614,7 +2614,7 @@ startServiceInternal( const QByteArray &function,
    DCOPCString replyType;
    QByteArray  replyData;
    QByteArray _launcher = KApplication::launcher();
-   QList<QByteArray> envs;
+   QList<DCOPCString> envs;
 #ifdef Q_WS_X11
    if (QX11Info::display()) {
        QByteArray dpystring(XDisplayString(QX11Info::display()));
@@ -2627,7 +2627,8 @@ startServiceInternal( const QByteArray &function,
    stream << envs;
 #if defined Q_WS_X11
    // make sure there is id, so that user timestamp exists
-   stream << ( startup_id.isEmpty() ? KStartupInfo::createNewStartupId() : startup_id );
+   stream << ( startup_id.isEmpty() ? DCOPCString(KStartupInfo::createNewStartupId()) :
+                                      DCOPCString(startup_id) );
 #endif
    if( function.left( 12 ) != "kdeinit_exec" )
        stream << noWait;
@@ -2648,6 +2649,7 @@ startServiceInternal( const QByteArray &function,
       return 0;
 
    QDataStream stream2(&replyData, QIODevice::ReadOnly);
+   stream2.setVersion(QDataStream::Qt_3_1);
    serviceResult result;
    stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
    if (dcopService)
@@ -2667,7 +2669,7 @@ KApplication::startServiceByName( const QString& _name, const QString &URL,
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2676,7 +2678,7 @@ KApplication::startServiceByName( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2688,7 +2690,7 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QString &UR
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2697,7 +2699,7 @@ KApplication::startServiceByDesktopPath( const QString& _name, const QStringList
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_path(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2709,7 +2711,7 @@ KApplication::startServiceByDesktopName( const QString& _name, const QString &UR
    if (!URL.isEmpty())
       URLs.append(URL);
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2718,7 +2720,7 @@ KApplication::startServiceByDesktopName( const QString& _name, const QStringList
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(
-                      "start_service_by_desktop_name(QString,QStringList,QValueList<QByteArray>,QByteArray,bool)",
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
@@ -2733,7 +2735,7 @@ int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
-   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QByteArray>,QByteArray)",
+   return startServiceInternal("kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
 }
 
@@ -2748,7 +2750,7 @@ int
 KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
-   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QByteArray>,QByteArray)",
+   return startServiceInternal("kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
 }
 

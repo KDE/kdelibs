@@ -1197,7 +1197,7 @@ void DCOPServer::removeConnection( void* data )
 
 	appIds.remove( conn->appId );
 
-        broadcastApplicationRegistration( conn, "applicationRemoved(DCOPCString)", conn->appId );
+        broadcastApplicationRegistration( conn, "applicationRemoved(QCString)", conn->appId );
     }
 
     delete conn;
