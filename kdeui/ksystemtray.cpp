@@ -62,7 +62,8 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, Qt::WType_TopLevel )
 {
 #ifdef Q_WS_X11
-    QXEmbed::initialize();
+    #warning KDE4 porting: reinstate when the new QXEmbed is ready
+    //QXEmbed::initialize();
 #endif
     
     d = new KSystemTrayPrivate;

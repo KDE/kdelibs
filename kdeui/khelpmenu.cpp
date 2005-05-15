@@ -279,8 +279,9 @@ void KHelpMenu::contextHelpActivated()
   while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
       w = w->parentWidget();
 #ifdef Q_WS_X11
-   if ( w && w->inherits("QXEmbed") )
-	  (( QXEmbed*) w )->enterWhatsThisMode();
+   #warning KDE4 porting: reinstate when the new QXEmbed is ready
+   /*if ( w && w->inherits("QXEmbed") )
+	  (( QXEmbed*) w )->enterWhatsThisMode();*/
 #endif
 }
 
