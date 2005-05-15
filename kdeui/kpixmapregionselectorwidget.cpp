@@ -126,7 +126,9 @@ void KPixmapRegionSelectorWidget::updatePixmap()
         m_rubberBand->hide();
    else
    {
-        m_rubberBand->setGeometry(m_selectedRegion);
+        m_rubberBand->setGeometry(QRect(m_label -> mapToGlobal(m_selectedRegion.topLeft()),
+                                        m_selectedRegion.size()));
+
         m_rubberBand->show();
    }
 
