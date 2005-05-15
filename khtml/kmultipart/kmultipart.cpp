@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <qtimer.h>
+#include <Q3GArray>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
@@ -51,7 +52,7 @@ public:
         Q_ASSERT( !m_lineComplete );
         if ( storeNewline || c != '\n' ) {
             int sz = m_currentLine.size();
-            m_currentLine.resize( sz+1, Q3GArray::SpeedOptim );
+            m_currentLine.resize( sz+1 );
             m_currentLine[sz] = c;
         }
         if ( c == '\n' )
@@ -68,7 +69,7 @@ public:
         reset();
     }
     void reset() {
-        m_currentLine.resize( 0, Q3GArray::SpeedOptim );
+        m_currentLine.resize( 0 );
         m_lineComplete = false;
     }
 private:
@@ -196,7 +197,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
        }
     }
     // Append to m_currentLine until eol
-    for ( uint i = 0; i < data.size() ; ++i )
+    for ( int i = 0; i < data.size() ; ++i )
     {
         // Store char. Skip if '\n' and currently parsing a header.
         m_lineParser->addChar( data[i], !m_bParsingHeader );
