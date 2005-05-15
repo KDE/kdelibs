@@ -21,6 +21,7 @@
 
 #include "kpalette.h"
 
+#include "kdebug.h"
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kstandarddirs.h>
@@ -68,7 +69,7 @@ KPalette::KPalette(const QString &name)
   line = QString::fromLocal8Bit(paletteFile.readLine());
   if (line.find(" Palette") == -1) return;
 
-  while( paletteFile.canReadLine() )
+  while( !paletteFile.atEnd() )
   {
      line = QString::fromLocal8Bit(paletteFile.readLine());
      if (line[0] == '#') 
