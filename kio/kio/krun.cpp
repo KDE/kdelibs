@@ -508,7 +508,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   QString bin = KRun::binaryName( binName, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   bool silent;
-  Q3CString wmclass;
+  QByteArray wmclass;
   KStartupInfoId id;
   bool startup_notify = KRun::checkStartupNotify( binName, service, &silent, &wmclass );
   if( startup_notify )
@@ -551,10 +551,10 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
 }
 
 // This code is also used in klauncher.
-bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* service, bool* silent_arg, Q3CString* wmclass_arg )
+bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* service, bool* silent_arg, QByteArray* wmclass_arg )
 {
   bool silent = false;
-  Q3CString wmclass;
+  QByteArray wmclass;
   if( service && service->property( "StartupNotify" ).isValid())
   {
       silent = !service->property( "StartupNotify" ).toBool();
