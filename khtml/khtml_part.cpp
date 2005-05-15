@@ -6060,7 +6060,7 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
   }
 }
 
-void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool selectLines )
+void KHTMLPart::extendSelection( DOM::NodeImpl* node, int offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool selectLines )
 {
   khtml::RenderObject* obj = node->renderer();
 

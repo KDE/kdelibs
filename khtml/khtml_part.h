@@ -1592,7 +1592,7 @@ private:
 
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
 
-  void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
+  void extendSelection( DOM::NodeImpl* node, int offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   /** extends the current selection to the given content-coordinates @p x, @p y
    * @param x content x-coordinate
    * @param y content y-coordinate
