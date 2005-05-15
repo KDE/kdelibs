@@ -751,7 +751,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         {
            // Give a number to the toolbar, but prefer a name if there is one,
            // because there's no real guarantee on the ordering of toolbars
-           group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
+           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->name());
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
@@ -862,7 +862,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         {
            // Give a number to the toolbar, but prefer a name if there is one,
            // because there's no real guarantee on the ordering of toolbars
-           group = (!::qstrcmp(toolbar->name(), "unnamed") ? QString::number(n) : QString(" ")+toolbar->name());
+           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->name());
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }

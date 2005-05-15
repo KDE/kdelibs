@@ -314,7 +314,7 @@ void KActionCollection::_insert( KAction* action )
 {
   char unnamed_name[100];
   const char *name = action->name();
-  if( !qstrcmp( name, "unnamed" ) )
+  if( action->objectName().isEmpty() )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
      name = unnamed_name;
@@ -337,7 +337,7 @@ KAction* KActionCollection::_take( KAction* action )
 {
   char unnamed_name[100];
   const char *name = action->name();
-  if( !qstrcmp( name, "unnamed" ) )
+  if( action->objectName().isEmpty() )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *) action);
      name = unnamed_name;
@@ -356,7 +356,11 @@ KAction* KActionCollection::_take( KAction* action )
 
 void KActionCollection::_clear()
 {
+  QList<KAction*> actions;
   foreach( KAction* pAction, d->m_actionDict )
+    actions.append( pAction );
+
+  foreach( KAction* pAction, actions )
     _remove( pAction );
 }
 

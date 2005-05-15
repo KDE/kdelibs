@@ -957,7 +957,7 @@ void KToolBar::saveState()
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
         //kdDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
-        QString barname(!::qstrcmp(name(), "unnamed") ? "mainToolBar" : name());
+        QString barname(objectName().isEmpty() ? "mainToolBar" : name());
         // try to find our toolbar
         d->modified = false;
         // go down one level to get to the right tags
@@ -1021,7 +1021,7 @@ void KToolBar::saveState()
 QString KToolBar::settingsGroup() const
 {
     QString configGroup;
-    if (!::qstrcmp(name(), "unnamed") || !::qstrcmp(name(), "mainToolBar"))
+    if (objectName().isEmpty() || !::qstrcmp(name(), "mainToolBar"))
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";

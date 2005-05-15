@@ -255,7 +255,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     if ( receiver && slot )
         connect( this, SIGNAL( activated() ), receiver, slot );
 
-    if( !cut.isNull() && !qstrcmp( name(), "unnamed" ) )
+    if( !cut.isNull() && objectName().isEmpty() )
         kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
     d->setText( text );
     initShortcut( cut );
@@ -370,7 +370,7 @@ bool KAction::initShortcut( const KShortcut& cut )
     d->m_cut = cut;
 
     // Only insert action into KAccel if it has a valid name,
-    if( qstrcmp( name(), "unnamed" ) &&
+    if( !objectName().isEmpty() &&
         m_parentCollection &&
         m_parentCollection->isAutoConnectShortcuts() &&
         m_parentCollection->kaccel() )
@@ -387,7 +387,7 @@ void KAction::plugShortcut()
   KAccel* const kaccel = kaccelCurrent();
 
   //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
-  if( kaccel && qstrcmp( name(), "unnamed" ) ) {
+  if( kaccel && !objectName().isEmpty() ) {
     // Check if already plugged into current KAccel object
     const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
     Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
@@ -425,7 +425,7 @@ bool KAction::setShortcut( const KShortcut& cut )
   }
 
   // Only insert action into KAccel if it has a valid name,
-  if( kaccel && bInsertRequired && qstrcmp( name(), "unnamed" ) )
+  if( kaccel && bInsertRequired && !objectName().isEmpty() )
     insertKAccel( kaccel );
 
   if( bChanged ) {
