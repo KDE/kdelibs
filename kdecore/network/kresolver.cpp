@@ -463,7 +463,15 @@ bool KResolver::wait(int msec)
   QMutexLocker locker(&d->mutex);
 
   if (!isRunning())
-    return true;
+    {
+      // it was running and no longer is?
+      // That means the manager has finished its processing and has posted
+      // an event for the signal to be emitted already. This means the signal
+      // will be emitted twice!
+
+      emitFinished();
+      return true;
+    }
   else
     {
       QTime t;
@@ -874,7 +882,7 @@ static QStringList *KResolver_initIdnDomains()
 {
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
-     kde_use_idn = "at:ch:cn:de:dk:kr:jp:li:no:se:tw";
+     kde_use_idn = "at:br:ch:cn:de:dk:kr:jp:li:no:se:tw";
   return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).lower()));
 }
 
