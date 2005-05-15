@@ -32,8 +32,8 @@
 #include <qregexp.h>
 #include <qstring.h>
 
-#include <network/kbufferedsocket.h>
-#include <network/ksocketaddress.h>
+#include <kbufferedsocket.h>
+#include <ksocketaddress.h>
 #include <kurl.h>
 #include <kjs/object.h>
 
@@ -176,6 +176,8 @@ namespace
                 KInetSocketAddress host = Address::resolve( args[ 0 ].toString( exec ) );
                 KInetSocketAddress subnet = Address::parse( args[ 1 ].toString( exec ) );
                 KInetSocketAddress mask = Address::parse( args[ 2 ].toString( exec ) );
+
+#warning "Write a method to do netmask comparison in the KNetwork library"
                 return Boolean( ( host.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) == ( subnet.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) );
             }
             catch ( const Address::Error& )

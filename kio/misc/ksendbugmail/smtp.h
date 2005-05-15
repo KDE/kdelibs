@@ -5,7 +5,7 @@
 
 #include <qobject.h>
 #include <qtimer.h>
-#include <network/kbufferedsocket.h>
+#include <kbufferedsocket.h>
 
 /*int SMTPServerStatus[] = {
     220,  // greeting from server

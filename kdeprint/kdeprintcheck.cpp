@@ -40,7 +40,7 @@
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <network/kbufferedsocket.h>
+#include <kbufferedsocket.h>
 #include <qfile.h>
 #include <unistd.h>
 
