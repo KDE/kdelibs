@@ -135,7 +135,10 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
 #ifdef Q_WS_X11
-    QXEmbed::initialize();
+#ifdef __GNUC__
+#warning this does initialize QXEmbed, no good idea atm
+#endif
+   // QXEmbed::initialize();
 #endif
     d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),
