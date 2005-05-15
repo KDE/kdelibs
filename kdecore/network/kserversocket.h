@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include "ksocketbase.h"
+#include "kstreamsocket.h"
 
 namespace KNetwork {
 
@@ -345,15 +346,10 @@ public:
    * to the implementation: derived classes may return specialised objects
    * descended from KStreamSocket.
    *
-   * @note This function should return a KStreamSocket object, but compiler
-   *       deficiencies prevent such an adjustment. Therefore, we return
-   *       the base class for active sockets, but it is guaranteed
-   *       that the object will be a KStreamSocket or derived from it.
-   *
    * @sa KBufferedSocket
    * @sa setAcceptBuffered
    */
-  virtual KActiveSocketBase* accept();
+  virtual KStreamSocket* accept();
 
   /**
    * Returns this socket's local address.

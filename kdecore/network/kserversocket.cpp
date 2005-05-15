@@ -31,7 +31,6 @@
 #include "kresolver.h"
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
-#include "kstreamsocket.h"
 #include "kbufferedsocket.h"
 #include "kserversocket.h"
 
@@ -280,7 +279,7 @@ void KServerSocket::setAcceptBuffered(bool enable)
   d->useKBufferedSocket = enable;
 }
 
-KActiveSocketBase* KServerSocket::accept()
+KStreamSocket* KServerSocket::accept()
 {
   if (d->state < KServerSocketPrivate::Listening)
     {
