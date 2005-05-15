@@ -24,6 +24,8 @@
 #include <kdialogbase.h>
 #include <q3ptrlist.h>
 
+namespace KNetwork { class KResolverEntry; }
+
 
 class KDEPRINT_EXPORT NetworkScanner : public QWidget
 {
@@ -55,7 +57,7 @@ signals:
 	void scanFinished();
 
 protected slots:
-	void slotConnectionSuccess();
+	void slotConnectionSuccess( const KNetwork::KResolverEntry& );
 	void slotConnectionFailed( int );
 	void slotTimeout();
 	void slotScanClicked();
