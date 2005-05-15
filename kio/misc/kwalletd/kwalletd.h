@@ -43,7 +43,7 @@ class KWalletD : public KDEDModule {
 	Q_OBJECT
 	K_DCOP
 	public:
-		KWalletD(const Q3CString &name);
+		KWalletD(const QByteArray &name);
 		virtual ~KWalletD();
 
 	k_dcop:
@@ -58,7 +58,7 @@ class KWalletD : public KDEDModule {
 
 		// Asynchronous open - must give the object to return the handle
 		// to.
-		virtual void openAsynchronous(const QString& wallet, const Q3CString& returnObject, uint wId);
+		virtual void openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId);
 
 		// Close and lock the wallet
 		// If force = true, will close it for all users.  Behave.  This
@@ -74,7 +74,7 @@ class KWalletD : public KDEDModule {
 		virtual int deleteWallet(const QString& wallet);
 
 		// Returns true if the wallet is open
-		virtual bool isOpen(const QString& wallet) const;
+		virtual bool isOpen(const QString& wallet);
 		virtual bool isOpen(int handle);
 
 		// List the users of this wallet
@@ -130,7 +130,7 @@ class KWalletD : public KDEDModule {
 		virtual int removeEntry(int handle, const QString& folder, const QString& key);
 
 		// Disconnect an app from a wallet
-		virtual bool disconnectApplication(const QString& wallet, const Q3CString& application);
+		virtual bool disconnectApplication(const QString& wallet, const QByteArray& application);
 
 		virtual void reconfigure();
 
@@ -145,17 +145,17 @@ class KWalletD : public KDEDModule {
 		virtual QString localWallet();
 
 	private slots:
-		void slotAppUnregistered(const Q3CString& app);
+		void slotAppUnregistered(const QByteArray& app);
 		void emitWalletListDirty();
 		void timedOut(int);
 		void notifyFailures();
 		void processTransactions();
 
 	private:
-		int internalOpen(const Q3CString& appid, const QString& wallet, bool isPath = false, WId w = 0);
-		bool isAuthorizedApp(const Q3CString& appid, const QString& wallet, WId w);
+		int internalOpen(const QByteArray& appid, const QString& wallet, bool isPath = false, WId w = 0);
+		bool isAuthorizedApp(const QByteArray& appid, const QString& wallet, WId w);
 		// This also validates the handle.  May return NULL.
-		KWallet::Backend* getWallet(const Q3CString& appid, int handle);
+		KWallet::Backend* getWallet(const QByteArray& appid, int handle);
 		// Generate a new unique handle.
 		int generateHandle();
 		// Invalidate a handle (remove it from the QMap)
@@ -166,16 +166,16 @@ class KWalletD : public KDEDModule {
 		// Internal - close this wallet.
 		int closeWallet(KWallet::Backend *w, int handle, bool force);
 		// Implicitly allow access for this application
-		bool implicitAllow(const QString& wallet, const Q3CString& app);
-		bool implicitDeny(const QString& wallet, const Q3CString& app);
-		Q3CString friendlyDCOPPeerName();
+		bool implicitAllow(const QString& wallet, const QByteArray& app);
+		bool implicitDeny(const QString& wallet, const QByteArray& app);
+		QByteArray friendlyDCOPPeerName();
 
-		void doTransactionChangePassword(const Q3CString& appid, const QString& wallet, uint wId);
-		int doTransactionOpen(const Q3CString& appid, const QString& wallet, uint wId);
+		void doTransactionChangePassword(const QByteArray& appid, const QString& wallet, uint wId);
+		int doTransactionOpen(const QByteArray& appid, const QString& wallet, uint wId);
 
 		Q3IntDict<KWallet::Backend> _wallets;
-		QMap<Q3CString,Q3ValueList<int> > _handles;
-		QMap<QString,Q3CString> _passwords;
+		QMap<QByteArray,Q3ValueList<int> > _handles;
+		QMap<QString,QByteArray> _passwords;
 		KDirWatch *_dw;
 		int _failed;
 
