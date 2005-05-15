@@ -37,6 +37,7 @@
 #include <kglobalsettings.h>
 #include <qobject.h>
 #include <q3valuevector.h>
+#include <Q3MemArray>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -506,19 +507,19 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     Q3ValueVector<QWidget*> cw;
     Q3ValueVector<QRect> cr;
 
-    if (widget->children()) {
+    if (!widget->children().isEmpty()) {
         // build region
-        QObjectListIterator it = *widget->children();
-        for (; it.current(); ++it) {
-            QWidget* const w = qobject_cast<QWidget* >(it.current());
-	    if ( w && !w->isTopLevel() && !w->isHidden()) {
-	        QRect r2 = w->geometry();
-	        blit.subtract( r2 );
-	        r2 = r2.intersect( r );
-	        r2.moveBy(-w->x(), -w->y());
-	        cr.append(r2);
-	        cw.append(w);
-            }
+		QList<QObject*> list = widget->children();
+		foreach ( QObject* it, list ) {
+            QWidget* w = qobject_cast<QWidget* >(it);
+			if ( w && !w->isTopLevel() && !w->isHidden()) {
+				QRect r2 = w->geometry();
+				blit.subtract( r2 );
+				r2 = r2.intersect( r );
+				r2.moveBy(-w->x(), -w->y());
+				cr.append(r2);
+				cw.append(w);
+			}
         }
     }
     Q3MemArray<QRect> br = blit.rects();
