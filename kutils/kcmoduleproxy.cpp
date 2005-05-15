@@ -32,7 +32,6 @@
 #include <q3whatsthis.h>
 #include <qwidget.h>
 
-#include <dcopclient.h>
 #include <qxembed.h>
 #include <qx11info_x11.h>
 
@@ -101,7 +100,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
 		KCModuleProxyRootCommunicatorImpl	*rootCommunicator;
 		QLabel								*rootInfo;
-		Q3CString							dcopName;
+		DCOPCString							dcopName;
 		KCModuleInfo 						modInfo;
 		bool 								withFallback;
 		bool 								changed;
@@ -239,11 +238,11 @@ KCModule * KCModuleProxy::realModule() const
 
 		/* Figure out the name of where the module is already loaded */
 		QByteArray replyData, data;
-		Q3CString replyType;
+		DCOPCString replyType;
 		QString result;
 		QDataStream arg, stream( replyData );
 
-		if( d->dcopClient->call( d->dcopName, d->dcopName, "applicationName()", 
+		if( d->dcopClient->call( d->dcopName, d->dcopName, DCOPCString("applicationName()"), 
 					data, replyType, replyData ))
 		{
 			stream >> result;
@@ -268,7 +267,7 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
-void KCModuleProxy::applicationRemoved( const Q3CString& app )
+void KCModuleProxy::applicationRemoved( const DCOPCString& app )
 {
 	if( app == d->dcopName )
 	{
@@ -539,7 +538,7 @@ void KCModuleProxy::save()
 void KCModuleProxy::callRootModule( const Q3CString& function )
 {
 	QByteArray sendData, replyData;
-	Q3CString replyType;
+	DCOPCString replyType;
 
 	/* Note, we don't use d->dcopClient here, because it's used for 
 	 * the loaded module(and it's not "us" when this function is called) */
@@ -565,7 +564,7 @@ QString KCModuleProxy::quickHelp() const
 	else
 	{
 		QByteArray data, replyData;
-		Q3CString replyType;
+		DCOPCString replyType;
 
 		if (kapp->dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
 				  data, replyType, replyData))

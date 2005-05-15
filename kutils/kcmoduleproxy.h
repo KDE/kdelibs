@@ -25,6 +25,7 @@
 #include <qstringlist.h>
 #include <q3cstring.h>
 
+#include <dcopclient.h>
 #include <kservice.h>
 #include <kdelibs_export.h>
 
@@ -329,7 +330,7 @@ private slots:
 	 *
 	 * @since 3.4
 	 */
-	void applicationRemoved( const Q3CString& app );
+	void applicationRemoved( const DCOPCString& app );
 
 private:
 	
