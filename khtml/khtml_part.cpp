@@ -110,7 +110,6 @@ using namespace DOM;
 #include <qfile.h>
 #include <qtooltip.h>
 #include <qmetaobject.h>
-#include <private/qucomextra_p.h>
 
 #include "khtmlpart_p.h"
 #include "kpopupmenu.h"
@@ -176,7 +175,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
     script += ")";
     kdDebug(6050) << "khtml::ChildFrame::liveConnectEvent " << script << endl;
 
-    KHTMLPart * part = qobject_cast<KHTMLPart >(m_part->parent());
+    KHTMLPart * part = qobject_cast<KHTMLPart*>(m_part->parent());
     if (!part)
         return;
     if (!m_jscript)
@@ -4166,7 +4165,7 @@ void KHTMLPart::updateActions()
   {
     QObject *ext = KParts::BrowserExtension::childObject( frame );
     if ( ext )
-      enablePrintFrame = ext->metaObject()->slotNames().contains( "print()" );
+      enablePrintFrame = ext->metaObject()->indexOfSlot( "print()" ) != -1;
   }
 
   d->m_paPrintFrame->setEnabled( enablePrintFrame );
@@ -4369,7 +4368,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     //CRITICAL STUFF
     if ( child->m_part )
     {
-      if (!qobject_cast<KHTMLPart>(child->m_part) && child->m_jscript)
+      if (!qobject_cast<KHTMLPart*>(child->m_part) && child->m_jscript)
           child->m_jscript->clear();
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
       delete (KParts::ReadOnlyPart *)child->m_part;
@@ -4390,7 +4389,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
     child->m_part = part;
 
-    if (qobject_cast<KHTMLPart>(part)) {
+    if (qobject_cast<KHTMLPart*>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
     } else if (child->m_frame) {
       child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
@@ -5178,7 +5177,7 @@ bool KHTMLPart::frameExists( const QString &frameName )
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 {
-  KHTMLPart* const kp = qobject_cast<KHTMLPart>(framePart);
+  KHTMLPart* const kp = qobject_cast<KHTMLPart*>(framePart);
   if (kp)
     return kp->jScript();
 
@@ -5196,7 +5195,7 @@ KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 
 KHTMLPart *KHTMLPart::parentPart()
 {
-  return qobject_cast<KHTMLPart >( parent() );
+  return qobject_cast<KHTMLPart*>( parent() );
 }
 
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url,
@@ -5812,7 +5811,7 @@ bool KHTMLPart::dndEnabled() const
   return d->m_bDnd;
 }
 
-void KHTMLPart::customEvent( QCustomEvent *event )
+void KHTMLPart::customEvent( QEvent *event )
 {
   if ( khtml::MousePressEvent::test( event ) )
   {
@@ -6534,13 +6533,12 @@ void KHTMLPart::slotPrintFrame()
   if ( !ext )
     return;
 
-  QMetaObject *mo = ext->metaObject();
+  
+  const QMetaObject *mo = ext->metaObject();
 
-  int idx = mo->findSlot( "print()", true );
-  if ( idx >= 0 ) {
-    QUObject o[ 1 ];
-    ext->qt_invoke( idx, o );
-  }
+  
+  if (mo->indexOfSlot( "print()") != -1)
+    QMetaObject::invokeMethod(ext, "print()",  Qt::DirectConnection);
 }
 
 void KHTMLPart::slotSelectAll()
