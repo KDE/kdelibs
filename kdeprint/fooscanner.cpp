@@ -838,13 +838,13 @@ case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 64 "/space/kde/kde4/kdelibs/kdeprint/fooscanner.l"
-{ yylval = QCString(kdeprint_foomatic2text+1, strlen(kdeprint_foomatic2text)-1); return STRING; }
+{ yylval = QByteArray(kdeprint_foomatic2text+1, strlen(kdeprint_foomatic2text)-1); return STRING; }
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 #line 65 "/space/kde/kde4/kdelibs/kdeprint/fooscanner.l"
-{ yylval = QCString(kdeprint_foomatic2text+1, strlen(kdeprint_foomatic2text)-1); return QUOTED; }
+{ yylval = QByteArray(kdeprint_foomatic2text+1, strlen(kdeprint_foomatic2text)-1); return QUOTED; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP

@@ -61,8 +61,8 @@ D        [[:digit:]]
 "]"            { return ']'; }
 ";"            { return ';'; }
 
-'([^']|"\\'")*'          { yylval = QCString(yytext+1, strlen(yytext)-1); return STRING; }
-\"[^\"]*\"               { yylval = QCString(yytext+1, strlen(yytext)-1); return QUOTED; }
+'([^']|"\\'")*'          { yylval = QByteArray(yytext+1, strlen(yytext)-1); return STRING; }
+\"[^\"]*\"               { yylval = QByteArray(yytext+1, strlen(yytext)-1); return QUOTED; }
 -?{D}+                   { yylval = yytext; return NUMBER; }
 -?{D}+"."{D}+            { yylval = yytext; return NUMBER; }
 -?{D}+"."{D}+(e|E)-?{D}+ { yylval = yytext; return NUMBER; }
