@@ -1101,7 +1101,7 @@ void KMainWindow::shuttingDown()
 KMenuBar *KMainWindow::internalMenuBar()
 {
     QList<QObject*> l = queryList( "KMenuBar", 0, false, false );
-    if ( !l.first() ) //empty list
+    if ( l.isEmpty() || !l.first() ) //empty list
         return 0;
 
     KMenuBar *m = (KMenuBar*)l.first();
@@ -1111,7 +1111,7 @@ KMenuBar *KMainWindow::internalMenuBar()
 KStatusBar *KMainWindow::internalStatusBar()
 {
     QList<QObject*> l = queryList( "KStatusBar", 0, false, false );
-    if ( !l.first() )
+    if ( l.isEmpty() || !l.first() ) //empty list
         return 0;
 
     KStatusBar *s = (KStatusBar*)l.first();
