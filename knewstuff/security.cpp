@@ -234,9 +234,9 @@ void Security::slotCheckValidity()
   file.setName(f.dirPath() + "/md5sum");
   if (file.open(QIODevice::ReadOnly))
   {
-     QString md5sum_file;
-     file.readLine(md5sum_file, 50);
-     if (!md5sum.isEmpty() && !md5sum_file.isEmpty() && md5sum_file.startsWith(md5sum))
+     QByteArray md5sum_file;
+     file.readLine(md5sum_file.data(), 50);
+     if (!md5sum_file.isEmpty() && QString( md5sum_file ).startsWith(md5sum))
        m_result |= MD5_OK;
      file.close();
   }
@@ -315,7 +315,7 @@ void Security::slotSignFile()
   if (secretKeys.count() > 1)
   {
     bool ok;
-    secretKeys = KInputDialog::getItemList(i18n("Select Signing Key"), i18n("Key used for signing:"), secretKeys, secretKeys[0], false, &ok);    
+    secretKeys = KInputDialog::getItemList(i18n("Select Signing Key"), i18n("Key used for signing:"), secretKeys, QStringList( secretKeys[0] ), false, &ok);    
     if (ok)
       m_secretKey = secretKeys[0];
     else
