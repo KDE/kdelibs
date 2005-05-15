@@ -20,12 +20,11 @@
 #ifndef KMCUPSMANAGER_H
 #define KMCUPSMANAGER_H
 
+#include <kbufferedsocket.h>
 #include "kmmanager.h"
 
 class IppRequest;
 class KLibrary;
-class KExtendedSocket;
-class Q3Socket;
 
 class KMCupsManager : public KMManager
 {
@@ -95,7 +94,7 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
-	Q3Socket *m_socket;
+	KNetwork::KBufferedSocket m_socket;
 	bool m_hostSuccess;
 	bool m_lookupDone;
 };
