@@ -25,6 +25,7 @@
 #include <kparts/partmanager.h>
 
 #include <qapplication.h>
+#include <private/qapplication_p.h>
 #include <qfile.h>
 #include <qpoint.h>
 #include <q3pointarray.h>
@@ -670,10 +671,6 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   }
 }
 
-// Trolls: Nothing to see here, please step away.
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
-
 bool ReadWritePart::waitSaveComplete()
 {
   if (!d->m_uploadJob)
@@ -683,9 +680,10 @@ bool ReadWritePart::waitSaveComplete()
 
   QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
   dummy.setFocusPolicy( Qt::NoFocus );
-  qt_enter_modal(&dummy);
+  #warning KDE4 porting: find the proper way to do this, if one exists
+  QApplicationPrivate::enterModal(&dummy);
   qApp->enter_loop();
-  qt_leave_modal(&dummy);
+  QApplicationPrivate::leaveModal(&dummy);
 
   d->m_waitForSave = false;
 

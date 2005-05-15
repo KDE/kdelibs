@@ -67,6 +67,7 @@ extern "C" {
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <q3progressbar.h>
+#include <private/qapplication_p.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -1229,10 +1230,6 @@ bool KFilePropsPlugin::supports( KFileItemList /*_items*/ )
   return true;
 }
 
-// Don't do this at home
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
-
 void KFilePropsPlugin::applyChanges()
 {
   if ( d->dirSizeJob )
@@ -1286,9 +1283,10 @@ void KFilePropsPlugin::applyChanges()
                SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
       // wait for job
       QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-      qt_enter_modal(&dummy);
+#warning KDE4 porting: find the proper way to do this, if one exists
+      QApplicationPrivate::enterModal(&dummy);
       qApp->enter_loop();
-      qt_leave_modal(&dummy);
+      QApplicationPrivate::leaveModal(&dummy);
       return;
     }
     properties->updateUrl(properties->kurl());
@@ -2337,9 +2335,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
       QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-      qt_enter_modal(&dummy);
+      #warning KDE4 porting: find the proper way to do this, if one exists
+      QApplicationPrivate::enterModal(&dummy);
       qApp->enter_loop();
-      qt_leave_modal(&dummy);
+      QApplicationPrivate::leaveModal(&dummy);
     }
     if (dirs.count() > 0) {
       job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
@@ -2348,9 +2347,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
       QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-      qt_enter_modal(&dummy);
+      #warning KDE4 porting: find the proper way to do this, if one exists
+      QApplicationPrivate::enterModal(&dummy);
       qApp->enter_loop();
-      qt_leave_modal(&dummy);
+      QApplicationPrivate::leaveModal(&dummy);
     }
   }
 }

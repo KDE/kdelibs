@@ -30,6 +30,7 @@
 
 #include <qstring.h>
 #include <qapplication.h>
+#include <private/qapplication_p.h>
 #include <qfile.h>
 #include <qmetaobject.h>
 #include <qtextstream.h>
@@ -449,17 +450,14 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   return bJobOK;
 }
 
-// If a troll sees this, he kills me
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
-
 void NetAccess::enter_loop()
 {
   QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
   dummy.setFocusPolicy( Qt::NoFocus );
-  qt_enter_modal(&dummy);
+#warning KDE4 porting: find the proper way to do this, if one exists
+  QApplicationPrivate::enterModal(&dummy);
   qApp->enter_loop();
-  qt_leave_modal(&dummy);
+  QApplicationPrivate::leaveModal(&dummy);
 }
 
 void NetAccess::slotResult( KIO::Job * job )

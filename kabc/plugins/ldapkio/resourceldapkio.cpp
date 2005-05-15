@@ -21,6 +21,7 @@
 
 
 #include <qapplication.h>
+#include <private/qapplication_p.h>
 #include <qbuffer.h>
 #include <qfile.h>
 
@@ -42,10 +43,6 @@
 #include "resourceldapkioconfig.h"
 
 using namespace KABC;
-
-// Hack from Netaccess
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
 
 class ResourceLDAPKIO::ResourceLDAPKIOPrivate 
 {
@@ -124,9 +121,10 @@ void ResourceLDAPKIO::enter_loop()
 {
   QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
   dummy.setFocusPolicy( Qt::NoFocus );
-  qt_enter_modal(&dummy);
+#warning KDE4 porting: find the proper way to do this, if one exists
+  QApplicationPrivate::enterModal(&dummy);
   qApp->enter_loop();
-  qt_leave_modal(&dummy);
+  QApplicationPrivate::leaveModal(&dummy);
 }
 
 void ResourceLDAPKIO::entries( KIO::Job*, const KIO::UDSEntryList & list )
