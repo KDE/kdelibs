@@ -5,6 +5,8 @@
 #include <dcopref.h>
 #include <qstringlist.h>
 #include <q3cstring.h>
+#include <QPoint>
+
 //#include "editdcopinterface.moc"
 namespace KTextEditor
 {

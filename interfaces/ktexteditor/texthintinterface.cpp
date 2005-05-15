@@ -58,7 +58,7 @@ TextHintInterface *textHintInterface (View *view)
   if (!view)
     return 0;
 
-  return qobject_cast<TextHintInterface*>( view );
+  return dynamic_cast<TextHintInterface*>( view );
 }
 
 

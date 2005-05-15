@@ -25,15 +25,15 @@ namespace KTextEditor
     }
     ~PrivateEditorChooser(){}
   // Data Members
-  EditorChooser_UI *chooser;
+  Ui::EditorChooser *chooser;
   QStringList ElementNames;
   QStringList elements;
   };
 
 }
 
-EditorChooser::EditorChooser(QWidget *parent,const char *name) :
-	QWidget (parent,name)
+EditorChooser::EditorChooser(QWidget *parent,const char *name)
+    : QWidget(parent,name)
   {
   d = new PrivateEditorChooser ();
 
@@ -41,9 +41,10 @@ EditorChooser::EditorChooser(QWidget *parent,const char *name) :
   QGridLayout *grid = new QGridLayout( this, 1, 1 );
 
 
-  d->chooser = new EditorChooser_UI (this, name);
+  d->chooser = new Ui::EditorChooser();
+  d->chooser->setupUi(this);
 
-  grid->addWidget( d->chooser, 0, 0);
+  //grid->addWidget( d->chooser, 0, 0);
 
 
 	KTrader::OfferList offers = KTrader::self()->query("text/plain", "'KTextEditor/Document' in ServiceTypes");
@@ -95,7 +96,7 @@ void EditorChooser::writeAppSetting(const QString& postfix){
 	cfg->setGroup("KTEXTEDITOR:"+postfix);
 	cfg->writeEntry("DEVELOPER_INFO","NEVER TRY TO USE VALUES FROM THAT GROUP, THEY ARE SUBJECT TO CHANGES");
 	cfg->writePathEntry("editor", (d->chooser->editorCombo->currentItem()==0) ? 
-		QString::null : (*d->elements.at(d->chooser->editorCombo->currentItem()-1)));
+		QString() : QString(d->elements.at(d->chooser->editorCombo->currentItem()-1)));
 	cfg->sync();
 	cfg->setGroup(previousGroup);
 

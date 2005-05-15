@@ -181,6 +181,6 @@ TemplateInterface *KTextEditor::templateInterface ( KTextEditor::Document *doc )
   if ( !doc )
     return 0;
 
-  return qobject_cast<KTextEditor::TemplateInterface*>( doc );
+  return dynamic_cast<KTextEditor::TemplateInterface*>( doc );
 }
 
