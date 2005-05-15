@@ -19,7 +19,7 @@
 
 #include "kpipeprocess.h"
 
-KPipeProcess::KPipeProcess(const QString& cmd, int mode)
+KPipeProcess::KPipeProcess(const QString& cmd, QIODevice::OpenModeFlag mode)
 : QFile()
 {
 	m_pipe = NULL;
@@ -32,7 +32,7 @@ KPipeProcess::~KPipeProcess()
 	close();
 }
 
-bool KPipeProcess::open(const QString& cmd, int mode)
+bool KPipeProcess::open(const QString& cmd, QIODevice::OpenModeFlag mode)
 {
 	// close first if needed
 	close();

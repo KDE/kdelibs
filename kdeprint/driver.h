@@ -69,7 +69,7 @@ public:
 	Type type() const 					{ return m_type; }
 	bool isOption() const 					{ return (m_type >= DrBase::String); }
 
-	const QString& get(const QString& key) const 		{ return m_map[key]; }
+	QString get(const QString& key) const 		{ return m_map[key]; }
 	void set(const QString& key, const QString& val)	{ m_map[key] = val; }
 	bool has(const QString& key) const 			{ return m_map.contains(key); }
 	const QString& name() const				{ return m_name; }

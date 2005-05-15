@@ -204,7 +204,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	}
 
 	QByteArray data, replyData;
-	Q3CString replyType;
+	DCOPCString replyType;
 	QDataStream arg( &data, QIODevice::WriteOnly );
 	arg << cmd;
 	arg << files;

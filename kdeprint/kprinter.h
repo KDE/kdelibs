@@ -87,7 +87,7 @@ class DrPageSize;
  */
 class KDEPRINT_EXPORT KPrinter : public QPaintDevice, public KPReloadObject
 {
-friend class KPrinterWrapper;
+//friend class KPrinterWrapper;
 friend class KPrinterImpl;
 public:
 	// Print global settings (set via static functions)
@@ -488,7 +488,7 @@ public:
 	 * application does page selection itself.
 	 * @see setCurrentPage()
 	 */
-	Q3ValueList<int> pageList() const;
+	QList<int> pageList() const;
 	/**
 	 * Sets the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
 	 * printed but only a preview dialog will be popped up with the single "Close" action. Using
@@ -644,7 +644,7 @@ public:
 	 * @returns the option value correponding to the key, or QString::null
 	 * @see KPrintDialogPage, setOption, options(), setOptions()
 	 */
-	const QString& option(const QString& key) const;
+	QString option(const QString& key) const;
 	/**
 	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
 	 * explicitly. This will be done implicitely for example when reimplementing
@@ -749,7 +749,7 @@ public:
 
 protected:
 	virtual QPaintEngine * paintEngine () const;
-	virtual int metric(int) const;
+	//virtual int metric(int) const;
 	void translateQtOptions();
 	void loadSettings();
 	void saveSettings();
