@@ -1,46 +1,46 @@
 KDE RGB Palette
 0 0 0	Black
-48 48 48	Almost Qt::black
-88 88 88	Very dark Qt::gray
-128 128 128	Dark Qt::gray
-160 160 160	Mid Qt::gray
-195 195 195	Light Qt::gray
-220 220 220	Very light Qt::gray
+48 48 48	Almost black
+88 88 88	Very dark gray
+128 128 128	Dark gray
+160 160 160	Mid gray
+195 195 195	Light gray
+220 220 220	Very light gray
 255 255 255 White
 
-64 0 0	Very dark Qt::red
-128 0 0	Dark Qt::red
-192 0 0	Mid Qt::red
+64 0 0	Very dark red
+128 0 0	Dark red
+192 0 0	Mid red
 255 0 0	Red
-255 192 192	Light Qt::red
+255 192 192	Light red
 
-0 64 0	Very dark Qt::green
-0 128 0	Dark Qt::green
-0 192 0	Mid Qt::green
+0 64 0	Very dark green
+0 128 0	Dark green
+0 192 0	Mid green
 0 255 0	Green
-192 255 192	Light Qt::green
+192 255 192	Light green
 
-0 0 128	Dark Qt::blue
-0 0 192	Mid Qt::blue
+0 0 128	Dark blue
+0 0 192	Mid blue
 0 0 255	Blue
-192 192 255	Light Qt::blue
+192 192 255	Light blue
 
-64 64 0	Very dark Qt::yellow
-128 128 0	Dark Qt::yellow
-192 192 0	Mid Qt::yellow
+64 64 0	Very dark yellow
+128 128 0	Dark yellow
+192 192 0	Mid yellow
 255 255 0	Yellow
-255 255 192	Light Qt::yellow
+255 255 192	Light yellow
 
-0 64 64	Very dark Qt::cyan
-0 128 128	Dark Qt::cyan
-0 192 192	Mid Qt::cyan
+0 64 64	Very dark cyan
+0 128 128	Dark cyan
+0 192 192	Mid cyan
 0 255 255	Cyan
-192 255 255	Light Qt::cyan
+192 255 255	Light cyan
 
-128 0 128	Dark Qt::magenta
-192 0 192	Mid Qt::magenta
+128 0 128	Dark magenta
+192 0 192	Mid magenta
 255 0 255	Magenta
-255 192 255	Light Qt::magenta
+255 192 255	Light magenta
 
 192 88 0	Dark orange
 255 128 0	Orange
