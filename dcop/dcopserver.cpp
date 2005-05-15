@@ -1548,7 +1548,6 @@ void IoErrorHandler ( IceConn iceConn)
 
 static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 {
-    qDebug("Checking for:%s", fName.data());
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(QIODevice::ReadOnly);
