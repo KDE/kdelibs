@@ -60,8 +60,8 @@ bool Foomatic2Loader::readFromFile( const QString& filename )
 
 bool Foomatic2Loader::readFromBuffer( const QString& buffer )
 {
-	Q3CString buf = buffer.utf8();
-	QBuffer d( buf );
+	QByteArray buf = buffer.utf8();
+	QBuffer d( &buf );
 	m_foodata.clear();
 	if ( d.open( QIODevice::ReadOnly ) )
 		return read( &d );
@@ -84,8 +84,8 @@ DrBase* Foomatic2Loader::createOption( const QMap<QString,QVariant>& m ) const
 	{
 		DrListOption *lopt = new DrListOption;
 		QVariant a = m.operator[]( "vals_byname" );
-		QMap<QString,QVariant>::ConstIterator it = a.mapBegin();
-		for ( ; it!=a.mapEnd(); ++it )
+		QMap<QString,QVariant>::ConstIterator it = a.toMap().begin();
+		for ( ; it!=a.toMap().end(); ++it )
 		{
 			if ( it.data().type() != QVariant::Map )
 				continue;
@@ -147,18 +147,18 @@ DrMain* Foomatic2Loader::buildDriver() const
 	{
 		DrMain *driver = new DrMain;
 		QMap<QString,DrGroup*> groups;
-		driver->set( "manufacturer", v.mapFind( "make" ).data().toString() );
-		driver->set( "model", v.mapFind( "model" ).data().toString() );
-		driver->set( "matic_printer", v.mapFind( "id" ).data().toString() );
-		driver->set( "matic_driver", v.mapFind( "driver" ).data().toString() );
+		driver->set( "manufacturer", v.toMap().find( "make" ).data().toString() );
+		driver->set( "model", v.toMap().find( "model" ).data().toString() );
+		driver->set( "matic_printer", v.toMap().find( "id" ).data().toString() );
+		driver->set( "matic_driver", v.toMap().find( "driver" ).data().toString() );
 		driver->set( "text", QString( "%1 %2 (%3)" ).arg( driver->get( "manufacturer" ) ).arg( driver->get( "model" ) ).arg( driver->get( "matic_driver" ) ) );
 		if ( m_foodata.contains( "POSTPIPE" ) )
 			driver->set( "postpipe", m_foodata.find( "POSTPIPE" ).data().toString() );
-		v = v.mapFind( "args" ).data();
+		v = v.toMap().find( "args" ).data();
 		if ( !v.isNull() && v.type() == QVariant::List )
 		{
-			Q3ValueList<QVariant>::ConstIterator it = v.listBegin();
-			for ( ; it!=v.listEnd(); ++it )
+			QList<QVariant>::ConstIterator it = v.toList().begin();
+			for ( ; it!=v.toList().end(); ++it )
 			{
 				if ( ( *it ).type() != QVariant::Map )
 					continue;
@@ -180,14 +180,14 @@ DrMain* Foomatic2Loader::buildDriver() const
 					if ( opt->name() == "PageSize" )
 					{
 						// try to add the corresponding page sizes
-						QVariant choices = ( *it ).mapFind( "vals_byname" ).data();
+						QVariant choices = ( *it ).toMap().find( "vals_byname" ).data();
 						QRegExp re( "(\\d+) +(\\d+)" );
 						if ( choices.type() == QVariant::Map )
 						{
-							QMap<QString,QVariant>::ConstIterator it = choices.mapBegin();
-							for ( ; it!=choices.mapEnd(); ++it )
+							QMap<QString,QVariant>::ConstIterator it = choices.toMap().begin();
+							for ( ; it!=choices.toMap().end(); ++it )
 							{
-								QString driverval = ( *it ).mapFind( "driverval" ).data().toString();
+								QString driverval = ( *it ).toMap().find( "driverval" ).data().toString();
 								if ( re.exactMatch( driverval ) )
 								{
 									driver->addPageSize( new DrPageSize( it.key(), re.cap( 1 ).toInt(), re.cap( 2 ).toInt(), 36, 24, 36, 24 ) );
@@ -215,11 +215,11 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 		QVariant V = m_foodata.find( "VAR" ).data();
 		if ( !V.isNull() && V.type() == QVariant::Map )
 		{
-			QVariant v = V.mapFind( "args" ).data();
+			QVariant v = V.toMap().find( "args" ).data();
 			if ( !v.isNull() && v.type() == QVariant::List )
 			{
-				Q3ValueList<QVariant>::ConstIterator it = v.listBegin();
-				for ( ; it!=v.listEnd(); ++it )
+				QList<QVariant>::ConstIterator it = v.toList().begin();
+				for ( ; it!=v.toList().end(); ++it )
 				{
 					if ( ( *it ).type() != QVariant::Map )
 						continue;
@@ -232,11 +232,11 @@ DrMain* Foomatic2Loader::modifyDriver( DrMain *driver ) const
 			}
 			else
 			{
-				v = V.mapFind( "args_byname" ).data();
+				v = V.toMap().find( "args_byname" ).data();
 				if ( !v.isNull() && v.type() == QVariant::Map )
 				{
-					QMap<QString,QVariant>::ConstIterator it = v.mapBegin();
-					for ( ; it!=v.mapEnd(); ++it )
+					QMap<QString,QVariant>::ConstIterator it = v.toMap().begin();
+					for ( ; it!=v.toMap().end(); ++it )
 					{
 						if ( ( *it ).type() != QVariant::Map )
 							continue;
