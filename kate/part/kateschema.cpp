@@ -64,8 +64,8 @@
 #include <qstringlist.h>
 #include <qtabwidget.h>
 #include <q3vbox.h>
-#include <qvgroupbox.h>
 #include <q3whatsthis.h>
+#include <Q3PointArray>
 //END
 
 //BEGIN KateStyleListViewItem decl
@@ -90,7 +90,7 @@ class KateStyleListItem : public Q3ListViewItem
     ~KateStyleListItem() { if (st) delete is; };
 
     /* mainly for readability */
-    enum Property { ContextName, Bold, Italic, Qt::TextUnderline, Strikeout, Color, SelColor, BgColor, SelBgColor, UseDefStyle };
+    enum Property { ContextName, Bold, Italic, TextUnderline, Strikeout, Color, SelColor, BgColor, SelBgColor, UseDefStyle };
 
     /* initializes the style from the default and the hldata */
     void initStyle();
@@ -196,7 +196,7 @@ void KateSchemaManager::update (bool readfromfile)
 //
 KConfig *KateSchemaManager::schema (uint number)
 {
-  if ((number>1) && (number < m_schemas.count()))
+  if ((number>1) && (number < (uint)m_schemas.count()))
     m_config.setGroup (m_schemas[number]);
   else if (number == 1)
     m_config.setGroup (printingSchema());
@@ -216,7 +216,7 @@ void KateSchemaManager::addSchema (const QString &t)
 
 void KateSchemaManager::removeSchema (uint number)
 {
-  if (number >= m_schemas.count())
+  if (number >= (uint)m_schemas.count())
     return;
 
   if (number < 2)
@@ -229,7 +229,7 @@ void KateSchemaManager::removeSchema (uint number)
 
 bool KateSchemaManager::validSchema (uint number)
 {
-  if (number < m_schemas.count())
+  if (number < (uint)m_schemas.count())
     return true;
 
   return false;
@@ -252,7 +252,7 @@ uint KateSchemaManager::number (const QString &name)
 
 QString KateSchemaManager::name (uint number)
 {
-  if ((number>1) && (number < m_schemas.count()))
+  if ((number>1) && (number < (uint)m_schemas.count()))
     return m_schemas[number];
   else if (number == 1)
     return printingSchema();
@@ -276,7 +276,7 @@ KateSchemaConfigColorTab::KateSchemaConfigColorTab( QWidget *parent, const char 
 
   QVBoxLayout *blay=new QVBoxLayout(this, 0, KDialog::spacingHint());
 
-  QVGroupBox *gbTextArea = new QVGroupBox(i18n("Text Area Background"), this);
+  QGroupBox *gbTextArea = new Q3GroupBox(1, Qt::Vertical, i18n("Text Area Background"), this);
 
   b = new Q3HBox (gbTextArea);
   b->setSpacing(KDialog::spacingHint());
@@ -314,7 +314,7 @@ KateSchemaConfigColorTab::KateSchemaConfigColorTab( QWidget *parent, const char 
 
   blay->addWidget(gbTextArea);
 
-  QVGroupBox *gbBorder = new QVGroupBox(i18n("Additional Elements"), this);
+  QGroupBox *gbBorder = new Q3GroupBox(1, Qt::Vertical, i18n("Additional Elements"), this);
 
   b = new Q3HBox (gbBorder);
   b->setSpacing(KDialog::spacingHint());
@@ -1013,7 +1013,7 @@ void KateViewSchemaAction::slotAboutToShow()
   {
     QString hlName = KateFactory::self()->schemaManager()->list().operator[](z);
 
-    if (names.contains(hlName) < 1)
+    if (!names.contains(hlName))
     {
       names << hlName;
       popupMenu()->insertItem ( hlName, this, SLOT(setSchema(int)), 0,  z+1);
@@ -1090,7 +1090,7 @@ void KateStyleListView::showPopupMenu( KateStyleListItem *i, const QPoint &globa
   m.setItemChecked( id, is->bold() );
   id = m.insertItem( i18n("&Italic"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::Italic );
   m.setItemChecked( id, is->italic() );
-  id = m.insertItem( i18n("&Underline"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::Underline );
+  id = m.insertItem( i18n("&Underline"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::TextUnderline );
   m.setItemChecked( id, is->underline() );
   id = m.insertItem( i18n("S&trikeout"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::Strikeout );
   m.setItemChecked( id, is->strikeOut() );
@@ -1290,7 +1290,7 @@ void KateStyleListItem::activate( int column, const QPoint &localPos )
   switch( column ) {
     case Bold:
     case Italic:
-    case Qt::TextUnderline:
+    case TextUnderline:
     case Strikeout:
     case UseDefStyle:
       w = BoxSize;
@@ -1314,7 +1314,7 @@ void KateStyleListItem::changeProperty( Property p )
     is->setBold( ! is->bold() );
   else if ( p == Italic )
     is->setItalic( ! is->italic() );
-  else if ( p == Qt::TextUnderline )
+  else if ( p == TextUnderline )
     is->setUnderline( ! is->underline() );
   else if ( p == Strikeout )
     is->setStrikeOut( ! is->strikeOut() );
@@ -1481,7 +1481,7 @@ void KateStyleListItem::paintCell( QPainter *p, const QColorGroup& /*cg*/, int c
     break;
     case Bold:
     case Italic:
-    case Qt::TextUnderline:
+    case TextUnderline:
     case Strikeout:
     case UseDefStyle:
     {
@@ -1500,7 +1500,7 @@ void KateStyleListItem::paintCell( QPainter *p, const QColorGroup& /*cg*/, int c
       y++;
       if ( (col == Bold && is->bold()) ||
           (col == Italic && is->italic()) ||
-          (col == Qt::TextUnderline && is->underline()) ||
+          (col == TextUnderline && is->underline()) ||
           (col == Strikeout && is->strikeOut()) ||
           (col == UseDefStyle && *is == *ds ) )
       {

@@ -3324,7 +3324,7 @@ bool KateDocument::removeStringFromBegining(int line, QString &str)
   {
     index = textline->firstChar ();
 
-    if ((index >= 0) && (textline->length() >= (index + str.length())) && (textline->string(index, str.length()) == str))
+    if ((index >= 0) && ((int)textline->length() >= (index + str.length())) && (textline->string(index, str.length()) == str))
       there = true;
   }
 
@@ -3357,7 +3357,7 @@ bool KateDocument::removeStringFromEnd(int line, QString &str)
   {
     index = textline->lastChar ()-str.length()+1;
 
-    if ((index >= 0) && (textline->length() >= (index + str.length())) && (textline->string(index, str.length()) == str))
+    if ((index >= 0) && ((int)textline->length() >= (index + str.length())) && (textline->string(index, str.length()) == str))
       there = true;
   }
 
@@ -3842,7 +3842,7 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
       else // Capitalize
       {
         KateTextLine::Ptr l = m_buffer->plainLine( ln );
-        uint p ( 0 );
+        int p ( 0 );
         while( p < s.length() )
         {
           // If bol or the character before is not in a word, up this one:
@@ -4297,9 +4297,9 @@ void KateDocument::reloadFile()
     KateDocument::openURL( url() );
     m_reloading = false;
 
-    for (uint z=0; z < tmp.size(); z++)
+    for (int z=0; z < tmp.size(); z++)
     {
-      if (z < numLines())
+      if (z < (int)numLines())
       {
         if (textLine(tmp[z].mark.line) == tmp[z].line)
           setMark (tmp[z].mark.line, tmp[z].mark.type);
@@ -4417,7 +4417,7 @@ void KateDocument::updateConfig ()
   m_buffer->setTabWidth (config()->tabWidth());
 
   // plugins
-  for (uint i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
   {
     if (config()->plugin (i))
       loadPlugin (i);

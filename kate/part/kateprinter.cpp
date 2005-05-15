@@ -124,8 +124,8 @@ bool KatePrinter::print (KateDocument *doc)
      QColor footerBgColor(printer.option("app-kate-footerbg"));
      QColor footerFgColor(printer.option("app-kate-footerfg"));
      uint footerHeight( 0 ); // further init only if needed
-     QStringList footerTagList = 0; // do
-     bool footerDrawBg = 0; // do
+     QStringList footerTagList; // do
+     bool footerDrawBg = false; // do
 
      // Layout Page
      renderer.config()->setSchema( KateFactory::self()->schemaManager()->number(
