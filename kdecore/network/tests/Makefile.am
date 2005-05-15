@@ -1,21 +1,15 @@
 ## Makefile.am for libqt-addon
 
-INCLUDES = -I$(top_srcdir)/libqt-addon/libqt-addon -I$(qt_includes)
+INCLUDES = -I$(srcdir)/.. $(all_includes)
 
-check_PROGRAMS = resolution synchro socketimpltest streamsockettest serversockettest
-LDADD = ../libqt-addon.la $(LIB_QT)
-KDE_CXXFLAGS = -O0 -g
+check_PROGRAMS = resolution socketimpltest streamsockettest serversockettest
+LDADD = ../../libkdecore.la
 
 resolution_SOURCES = resolution.cpp
-synchro_SOURCES = synchro.cpp
 socketimpltest_SOURCES = socketimpltest.cpp
 streamsockettest_SOURCES = streamsockettest.cpp
 serversockettest_SOURCES = serversockettest.cpp
 
-resolution.moc: resolution.cpp
+noinst_HEADERS = resolution.h
 
-%.moc: %.cpp
-	$(MOC) -o $@ $^ 
-
-# let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
