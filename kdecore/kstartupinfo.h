@@ -342,7 +342,7 @@ class KDECORE_EXPORT KStartupInfo
 	/**
 	 * 
 	 */ 
-	virtual void customEvent( QCustomEvent* e_P );
+	virtual void customEvent( QEvent* e_P );
     private slots:
         void startups_cleanup();
         void startups_cleanup_no_age();

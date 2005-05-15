@@ -79,7 +79,7 @@ public:
     bool enterText();
     void exitText();
 
-    QString errorString();
+    QString errorString() const;
 
     bool fatalError( const QXmlParseException& exception );
 
@@ -139,7 +139,7 @@ public:
     virtual QChar next();
     virtual void setData( const QString& str );
     virtual void setData( const QByteArray& data );
-    virtual QString data();
+    virtual QString data() const;
 
     void appendXML( const QString& str );
     void setFinished( bool );

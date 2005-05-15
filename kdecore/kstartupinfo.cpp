@@ -194,7 +194,7 @@ void KStartupInfo::slot_window_added( WId w_P )
     kapp->postEvent( this, new DelayedWindowEvent( w_P ));
     }
 
-void KStartupInfo::customEvent( QCustomEvent* e_P )
+void KStartupInfo::customEvent( QEvent* e_P )
     {
     if( e_P->type() == QEvent::User + 15 )
 	window_added( static_cast< DelayedWindowEvent* >( e_P )->w );

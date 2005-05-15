@@ -266,7 +266,7 @@ protected:
     /**
      * @internal
      */
-    virtual void customEvent( QCustomEvent *event );
+    virtual void customEvent( QEvent *event );
 
     /**
      * Convenience method which is called when the Part received a PartActivateEvent .

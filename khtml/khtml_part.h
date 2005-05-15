@@ -1101,7 +1101,7 @@ protected:
    */
   void htmlError( int errorCode, const QString& text, const KURL& reqUrl );
 
-  virtual void customEvent( QCustomEvent *event );
+  virtual void customEvent( QEvent *event );
 
   /**
    * Eventhandler of the khtml::MousePressEvent.

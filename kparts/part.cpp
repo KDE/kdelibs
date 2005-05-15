@@ -219,7 +219,7 @@ bool Part::isSelectable() const
   return d->m_bSelectable;
 }
 
-void Part::customEvent( QCustomEvent *event )
+void Part::customEvent( QEvent *event )
 {
   if ( PartActivateEvent::test( event ) )
   {

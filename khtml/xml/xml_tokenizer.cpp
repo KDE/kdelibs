@@ -81,7 +81,7 @@ void XMLIncrementalSource::appendXML( const QString& str )
     m_unicode = m_data.unicode();
 }
 
-QString XMLIncrementalSource::data()
+QString XMLIncrementalSource::data() const
 {
     return m_data;
 }
@@ -295,7 +295,7 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
 }
 
 
-QString XMLHandler::errorString()
+QString XMLHandler::errorString() const
 {
     return i18n("the document is not in the correct file format");
 }
