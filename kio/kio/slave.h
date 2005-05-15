@@ -208,7 +208,7 @@ namespace KIO {
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 
     public slots:
-        void accept(KNetwork::KStreamSocket *socket);
+        void accept();
 	void gotInput();
 	void timeout();
     signals:

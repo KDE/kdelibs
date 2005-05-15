@@ -90,9 +90,10 @@ namespace KIO {
   };
 }
 
-void Slave::accept(KStreamSocket *socket)
+void Slave::accept()
 {
 #ifndef Q_WS_WIN
+    KStreamSocket *socket = serv->accept();
     slaveconn.init(socket);
 #endif
     delete serv;
@@ -155,8 +156,9 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     m_pid = 0;
     m_port = 0;
 #ifndef Q_WS_WIN
-    connect(serv, SIGNAL(accepted( KSocket* )),
-	    SLOT(accept(KSocket*) ) );
+    serv->setAcceptBuffered(false);
+    connect(serv, SIGNAL(readyAccept()),
+	    SLOT(accept() ) );
 #endif
 }
 
@@ -177,8 +179,9 @@ Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
     m_port = 0;
     if (serv != 0) {
 #ifndef Q_WS_WIN
-      connect(serv, SIGNAL(accepted( KSocket* )),
-        SLOT(accept(KSocket*) ) );
+      serv->setAcceptBuffered(false);
+      connect(serv, SIGNAL(readyAccept()),
+        SLOT(accept() ) );
 #endif
     }
 }
