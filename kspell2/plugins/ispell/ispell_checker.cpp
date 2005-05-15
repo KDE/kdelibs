@@ -222,9 +222,6 @@ ISpellChecker::~ISpellChecker()
 	FREEP(m_hashstrings);
 	FREEP(m_sflaglist);
 	FREEP(m_chartypes);
-
-	delete m_translate_in;
-	m_translate_in = 0;
 }
 
 bool
