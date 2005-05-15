@@ -26,6 +26,7 @@
 #include <qpointer.h>
 #include <qmap.h>
 #include <q3ptrlist.h>
+#include <qlist.h>
 #include <qdatetime.h>
 
 #include "kjs_binding.h"
@@ -211,11 +212,13 @@ namespace KJS {
   protected:
     void timerEvent(QTimerEvent *e);
     void setNextTimer();
+    void killTimers();
   private:
     Window *parent;
     Q3PtrList<ScheduledAction> scheduledActions;
     int pausedTime;
     int lastTimerId;
+    QList<int> timerIds;
   };
 
   class Location : public ObjectImp {

@@ -1981,7 +1981,16 @@ void WindowQObject::setNextTimer()
   int nextInterval = QTime::currentTime().msecsTo(nextTimeActual);
   if (nextInterval < 0)
     nextInterval = 0;
-  startTimer(nextInterval);
+  timerIds.append(startTimer(nextInterval));
+}
+
+void WindowQObject::killTimers()
+{
+ for (int i = 0; i < timerIds.size(); ++i) 
+ {
+    killTimer(list.at(i));
+ } 
+ timerIds.clear();
 }
 
 void WindowQObject::timeoutClose()
