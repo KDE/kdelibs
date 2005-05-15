@@ -1369,7 +1369,7 @@ RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filena
 {
     QString againstFilename( filename + "-dump.png" );
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
-    if ( cvsIgnored( absFilename ) ) {
+    if ( svnIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
         return Ignored;
     }
@@ -1393,7 +1393,7 @@ RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filena
 RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFilename)
 {
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
-    if ( cvsIgnored( absFilename ) ) {
+    if ( svnIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
         return Ignored;
     }
@@ -1543,10 +1543,10 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
     pm.waitForCompletion();
 }
 
-bool RegressionTest::cvsIgnored( const QString &filename )
+bool RegressionTest::svnIgnored( const QString &filename )
 {
     QFileInfo fi( filename );
-    QString ignoreFilename = fi.dirPath() + "/.cvsignore";
+    QString ignoreFilename = fi.dirPath() + "/svnignore";
     QFile ignoreFile(ignoreFilename);
     if (!ignoreFile.open(IO_ReadOnly))
         return false;

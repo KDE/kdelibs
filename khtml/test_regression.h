@@ -180,7 +180,7 @@ public:
 private:
     void printDescription(const QString& description);
 
-    static bool cvsIgnored( const QString &filename );
+    static bool svnIgnored( const QString &filename );
 
 private:
     void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
