@@ -33,6 +33,8 @@
 #include <qapplication.h>
 #include <qobject.h>
 #include <q3cstring.h>
+#include <QEvent>
+#include <QHelpEvent>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -78,47 +80,6 @@ private:
     KPluginInfo *m_pluginInfo;
 };
 
-/*
-	Custom QToolTip for the list view.
-	The decision whether or not to show tooltips is taken in
-	maybeTip(). See also the QListView sources from Qt itself.
-*/
-class KPluginListViewToolTip : public QToolTip
-{
-public:
-	KPluginListViewToolTip( QWidget *parent, KListView *lv );
-
-	void maybeTip( const QPoint &pos );
-
-private:
-	KListView *m_listView;
-};
-
-KPluginListViewToolTip::KPluginListViewToolTip( QWidget *parent, KListView *lv )
-: QToolTip( parent ), m_listView( lv )
-{
-}
-
-void KPluginListViewToolTip::maybeTip( const QPoint &pos )
-{
-    if ( !parentWidget() || !m_listView )
-        return;
-
-    KPluginInfoLVI *item = dynamic_cast<KPluginInfoLVI *>( m_listView->itemAt( pos ) );
-    if ( !item )
-        return;
-
-    QString toolTip = i18n( "<qt><table>"
-        "<tr><td><b>Description:</b></td><td>%1</td></tr>"
-        "<tr><td><b>Author:</b></td><td>%2</td></tr>"
-        "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-        "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
-        item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
-
-    //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
-    tip( m_listView->itemRect( item ), toolTip );
-}
-
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
     KPluginSelectionWidgetPrivate( KPluginSelector * _kps,
@@ -127,7 +88,6 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
      : widgetstack( 0 )
         , kps( _kps )
         , config( _config )
-        , tooltip( 0 )
         , catname( _cat )
         , currentplugininfo( 0 )
         , visible( true )
@@ -144,10 +104,10 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 
     QMap<Q3CheckListItem*, KPluginInfo*> pluginInfoMap;
 
+    KListView     * listview;
     Q3WidgetStack * widgetstack;
     KPluginSelector * kps;
     KConfigGroup * config;
-    KPluginListViewToolTip *tooltip;
 
     Q3Dict<KCModuleInfo> pluginconfigmodules;
     QMap<QString, int> widgetIDs;
@@ -161,6 +121,31 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     bool currentchecked;
     int changed;
 };
+
+bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
+{
+    if ( obj == d->listview->viewport() && ev->type() == QEvent::ToolTip)
+    {
+        QHelpEvent *he = static_cast<QHelpEvent *>(ev);
+        KPluginInfoLVI *item = dynamic_cast<KPluginInfoLVI *>( d->listview->itemAt( he->pos() ) );
+        if ( !item )
+            return true;
+        
+        QString toolTip = i18n( "<qt><table>"
+            "<tr><td><b>Description:</b></td><td>%1</td></tr>"
+            "<tr><td><b>Author:</b></td><td>%2</td></tr>"
+            "<tr><td><b>Version:</b></td><td>%3</td></tr>"
+            "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
+            item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
+        
+        //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
+        QToolTip::showText( he->globalPos(), toolTip, d->listview->viewport() );
+        return true;
+    }
+    
+    return QWidget::eventFilter( obj, ev );
+}
+
 
 KPluginSelectionWidget::KPluginSelectionWidget(
         const Q3ValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
@@ -183,7 +168,9 @@ void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos
     // setup Widgets
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     KListView * listview = new KListView( this );
-    d->tooltip = new KPluginListViewToolTip( listview->viewport(), listview );
+    listview->viewport()->installEventFilter( this ); //Listen for tooltip requests
+    d->listview = listview;
+    
     connect( listview, SIGNAL( pressed( Q3ListViewItem * ) ), this,
             SLOT( executed( Q3ListViewItem * ) ) );
     connect( listview, SIGNAL( spacePressed( Q3ListViewItem * ) ), this,
@@ -223,7 +210,6 @@ void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos
 
 KPluginSelectionWidget::~KPluginSelectionWidget()
 {
-    delete d->tooltip;
     delete d;
 }
 

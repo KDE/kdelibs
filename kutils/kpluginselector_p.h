@@ -160,6 +160,13 @@ class KPluginSelectionWidget : public QWidget
          */
         void tabWidgetChanged( QWidget * );
 
+    protected:
+        /**
+         Used for tooltip handling.
+         @internal
+        */
+        virtual bool eventFilter ( QObject * watched, QEvent * event );
+
     private:
         /**
          * Load a KCM from a KCModuleInfo. If successfull connect changed
