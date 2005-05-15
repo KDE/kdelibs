@@ -102,10 +102,10 @@
 # undef FocusIn
 
 // L0005: Variables defined in qapplication_x11.cpp
-static const Atom qt_wm_protocols = ATOM(WM_PROTOCOLS);
-static const Atom qt_wm_delete_window = ATOM(WM_DELETE_WINDOW);
-static const Atom qt_wm_take_focus = ATOM(WM_TAKE_FOCUS);
-static const Atom qt_wm_state = ATOM(WM_STATE);
+static const Atom qt_wm_protocols = 0; // ATOM(WM_PROTOCOLS);
+static const Atom qt_wm_delete_window = 0; // ATOM(WM_DELETE_WINDOW);
+static const Atom qt_wm_take_focus = 0; // ATOM(WM_TAKE_FOCUS);
+static const Atom qt_wm_state = 0; // ATOM(WM_STATE);
 
 // L0006: X11 atoms private to QXEmbed
 static Atom xembed = 0;
