@@ -325,7 +325,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
     return true;
 }
 
-bool KTar::openArchive( int mode )
+bool KTar::openArchive( QIODevice::OpenMode mode )
 {
     kdDebug( 7041 ) << "KTar::openArchive" << endl;
     if ( !(mode & QIODevice::ReadOnly) )

@@ -105,7 +105,7 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      * @param mode the mode of the file
      */
-    virtual bool openArchive( int mode );
+    virtual bool openArchive( QIODevice::OpenMode mode );
     virtual bool closeArchive();
 
 private:
