@@ -873,7 +873,7 @@ static QStringList *KResolver_initIdnDomains()
 {
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
-     kde_use_idn = "at:ch:cn:de:dk:kr:jp:li:no:se:tw";
+     kde_use_idn = "at:br:ch:cn:de:dk:kr:jp:li:no:se:tw";
   return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).lower()));
 }
 
