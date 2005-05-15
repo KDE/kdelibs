@@ -24,5 +24,3 @@ kimgio/xview.lo
 kinit/klauncher.lo
 kioslave/ftp/ftp.lo
 kioslave/http/http.lo
-kmdi/kmdidocumentviewtabwidget.lo
-kmdi/kmdifocuslist.lo
