@@ -2117,14 +2117,18 @@ uint KateDocument::editableMarks()
 //END
 
 //BEGIN KTextEditor::PrintInterface stuff
+#ifdef __GNUC__
+#warning port this to QT 4
+#endif
+
 bool KateDocument::printDialog ()
 {
-  return KatePrinter::print (this);
+  return false;//KatePrinter::print (this);
 }
 
 bool KateDocument::print ()
 {
-  return KatePrinter::print (this);
+  return false;//KatePrinter::print (this);
 }
 //END
 

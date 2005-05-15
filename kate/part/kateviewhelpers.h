@@ -179,6 +179,9 @@ class KateIconBorder : public QWidget
 
     mutable QPixmap m_arrow;
     mutable QColor m_oldBackgroundColor;
+    
+    QPixmap minus_px;
+    QPixmap plus_px;
 };
 
 class KateViewEncodingAction : public KActionMenu

@@ -6,12 +6,13 @@ libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
   katetextline.cpp kateview.cpp kateconfig.cpp kateviewhelpers.cpp \
   katecodecompletion.cpp katedocumenthelpers.cpp \
   katecodefoldinghelpers.cpp kateviewinternal.cpp katebookmarks.cpp \
-  kateprinter.cpp katefont.cpp katelinerange.cpp katesupercursor.cpp \
+   katefont.cpp katelinerange.cpp katesupercursor.cpp \
   katearbitraryhighlight.cpp katerenderer.cpp kateattribute.cpp \
   kateautoindent.cpp katefiletype.cpp kateschema.cpp katedocument.skel \
   katetemplatehandler.cpp katejscript.cpp katespell.cpp
+# kateprinter.cpp
 
-libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la
+libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la # $(top_builddir)/kdeprint/libkdeprint.la
 
 libkatepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
@@ -28,3 +29,9 @@ katejscript.lut.h : $(srcdir)/katejscript.cpp $(CREATE_HASH_TABLE)
 katejscript.lo: katejscript.lut.h
 
 CLEANFILES = $(LUT_FILES)
+
+check_PROGRAMS = katetest
+
+katetest_SOURCES = katetest.cpp
+katetest_LDADD = ./libkatepart.la
+katetest_LDFLAGS = $(KDE_RPATH)

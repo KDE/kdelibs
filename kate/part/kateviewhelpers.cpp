@@ -697,9 +697,6 @@ static const char * bookmark_xpm[] = {
 const int iconPaneWidth = 16;
 const int halfIPW = 8;
 
-static QPixmap minus_px ((const char**)minus_xpm);
-static QPixmap plus_px ((const char**)plus_xpm);
-
 KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent )
   : QWidget(parent, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase )
   , m_view( internalView->m_view )
@@ -712,6 +709,8 @@ KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent
   , m_dynWrapIndicators( 0 )
   , m_cachedLNWidth( 0 )
   , m_maxCharWidth( 0 )
+  , minus_px ((const char**)minus_xpm)
+  , plus_px ((const char**)plus_xpm)
 {
   setSizePolicy( QSizePolicy(  QSizePolicy::Fixed, QSizePolicy::Minimum ) );
 

@@ -763,7 +763,8 @@ void KateViewInternal::paintText (int x, int y, int width, int height, bool pain
   uint endz = startz + 1 + (height / h);
   uint lineRangesSize = lineRanges.size();
 
-  static QPixmap drawBuffer;
+  // temp hack
+  QPixmap drawBuffer;
 
   if (drawBuffer.width() < KateViewInternal::width() || drawBuffer.height() < (int)h)
     drawBuffer.resize(KateViewInternal::width(), (int)h);
