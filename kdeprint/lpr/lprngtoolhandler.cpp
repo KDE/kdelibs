@@ -105,7 +105,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 
 QMap<QString,QString> LPRngToolHandler::parseXferOptions(const QString& str)
 {
-	uint	p(0), q;
+	int	p(0), q;
 	QMap<QString,QString>	opts;
 	QString	key, val;
 
@@ -189,10 +189,10 @@ DrMain* LPRngToolHandler::loadDbDriver(const QString& s)
 	return driver;
 }
 
-Q3ValueList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QString& filename)
+QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QString& filename)
 {
 	QFile	f(filename);
-	Q3ValueList< QPair<QString,QStringList> >	dict;
+	QList< QPair<QString,QStringList> >	dict;
 	if (f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
@@ -237,7 +237,7 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
 	{
 		bool	found(false);
-		for (Q3ValueList< QPair<QString,QStringList> >::ConstIterator p=m_dict.begin(); p!=m_dict.end() && !found; ++p)
+		for (QList< QPair<QString,QStringList> >::ConstIterator p=m_dict.begin(); p!=m_dict.end() && !found; ++p)
 		{
 			if ((*p).second.find(*it) != (*p).second.end())
 			{
@@ -247,7 +247,7 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 		}
 		if (!found)
 		{
-			unknown.append(*it).append(',');
+			unknown.append(*it).append(QLatin1Char( ',' ));
 		}
 	}
 	if (!unknown.isEmpty())
