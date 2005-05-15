@@ -750,7 +750,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
   m_updatingView = false;
 
   if (changed)
-    paintText(0, 0, width(), height(), true);
+    update(); //paintText(0, 0, width(), height(), true);
 }
 
 void KateViewInternal::paintText (int x, int y, int width, int height, bool paintOnlyDirty)
@@ -2187,7 +2187,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
   //kdDebug() << "m_currentMaxX: " << m_currentMaxX << " (was "<< oldmaxx << "), cXPos: " << cXPos << endl;
   //kdDebug(13030) << "Cursor now located at real " << cursor.line << "," << cursor.col << ", virtual " << displayCursor.line << ", " << displayCursor.col << "; Top is " << startLine() << ", " << startPos().col <<  endl;
 
-  paintText(0, 0, width(), height(), true);
+  update(); //paintText(0, 0, width(), height(), true);
 
   emit m_view->cursorPositionChanged();
 }
@@ -2342,7 +2342,7 @@ void KateViewInternal::tagAll()
 void KateViewInternal::paintCursor()
 {
   if (tagLine(displayCursor))
-    paintText (0,0,width(), height(), true);
+    update(); //paintText (0,0,width(), height(), true);
 }
 
 // Point in content coordinates
