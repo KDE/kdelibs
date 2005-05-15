@@ -145,7 +145,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 		{
 			QStringList	host_components = QStringList::split(QRegExp("/|\\\\\""), args[1], false);
 			QString	workgrp, user, pass;
-			for (uint i=2; i<args.count(); i++)
+			for (int i=2; i<args.count(); i++)
 			{
 				if (args[i] == "-U")
 					user = args[++i];
@@ -159,7 +159,7 @@ QString MaticHandler::parsePostpipe(const QString& s)
 		// remote printer
 		else if (args[0].right(5) == "/rlpr")
 		{
-			uint	i=1;
+			int	i=1;
 			while (i < args.count())
 			{
 				if (args[i].left(2) != "-P")
@@ -247,7 +247,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	}
 
 	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
-	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	PATH = QString( getenv("PATH") ) + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{
@@ -351,7 +351,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 	if (mdriver.isEmpty() || mprinter.isEmpty())
 		return true;
 
-	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	PATH = QString( getenv("PATH") ) + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{
