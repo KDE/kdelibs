@@ -13,9 +13,7 @@ khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
 khtml/java/kjavaprocess.lo
 khtml/khtmlview.lo
-khtml/kmultipart/kmultipart.lo
 khtml/misc/loader.lo
-khtml/rendering/render_replaced.lo
 kimgio/dds.lo
 kimgio/eps.lo
 kimgio/ico.lo
