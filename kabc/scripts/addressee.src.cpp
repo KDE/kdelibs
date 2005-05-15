@@ -1001,7 +1001,7 @@ void Addressee::setSortMode( KABC::SortMode *mode )
   mSortMode = mode;
 }
 
-bool Addressee::operator< ( const Addressee &addr )
+bool Addressee::operator< ( const Addressee &addr ) const
 {
   if ( !mSortMode )
     return false;

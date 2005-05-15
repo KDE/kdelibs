@@ -372,7 +372,7 @@ class KABC_EXPORT Addressee
 
     static void setSortMode( KABC::SortMode *mode );
 
-    bool operator< ( const Addressee &addr );
+    bool operator< ( const Addressee &addr ) const;
 
   private:
     void detach();
