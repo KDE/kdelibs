@@ -86,7 +86,7 @@ KJavaServerMaintainer::~KJavaServerMaintainer () {
 }
 
 KJavaAppletContext * KJavaServerMaintainer::getContext (QObject * w, const QString & doc) {
-    ContextMap::key_type key = qMakePair (w, doc);
+    QPair<QObject*,QString> key = qMakePair (w, doc);
     ContextMap::iterator it = m_contextmap.find (key);
     if (it != m_contextmap.end ()) {
         ++((*it).second);
