@@ -70,8 +70,9 @@ RenderBlock::~RenderBlock()
 
 void RenderBlock::setStyle(RenderStyle* _style)
 {
+    setReplaced(_style->isDisplayReplacedType());
+
     RenderFlow::setStyle(_style);
-    setReplaced( style()->display() == INLINE_BLOCK );
 
     m_pre = ( _style->whiteSpace() == PRE );
 
