@@ -110,7 +110,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         // long render texts (in the order of several megabytes).
         // Hence, only hand over the piece of text of the actual inline text box
 	QConstString cstr = QConstString(str + pos, len);
-	p->drawText( x, y, cstr.string(), 0, len, d );
+	Qt::LayoutDirection oldDir = p->layoutDirection();
+	p->setLayoutDirection( d );
+	p->drawText( x, y, cstr.string() );
+	p->setLayoutDirection( oldDir );
     } else {
 	if (from < 0) from = 0;
 	if (to < 0) to = len;
@@ -263,7 +266,14 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 		if ( scFont )
 		    p->setFont( lowercase ? *scFont : f );
-		p->drawText( x, y, (lowercase ? upper : qstr), pos+i, 1, d );
+
+	         Qt::LayoutDirection oldDir = p->layoutDirection();
+	         p->setLayoutDirection( d );
+		 p->drawText( x, y, QString((lowercase ? upper : qstr)[pos+i]));
+#ifdef __GNUC__
+  #warning "Light bloatery"
+#endif
+		 p->setLayoutDirection( oldDir );
 
 	        if (d != Qt::RightToLeft)
 		    x += chw;

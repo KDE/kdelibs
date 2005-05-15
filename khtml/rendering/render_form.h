@@ -266,9 +266,9 @@ public:
 protected:
     virtual bool event( QEvent *e );
     virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual Q3PopupMenu *createPopupMenu();
+    virtual void contextMenuEvent(QContextMenuEvent *e);
 private slots:
-    void extendedMenuActivated( int id);
+    void clearHistoryActivated();
     void slotCheckSpelling();
     void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );

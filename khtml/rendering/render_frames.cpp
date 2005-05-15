@@ -435,7 +435,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
       QPainter paint( view );
       paint.setPen( Qt::gray );
       paint.setBrush( Qt::gray );
-      paint.setRasterOp( Qt::XorROP );
+      paint.setCompositionMode(QPainter::CompositionMode_Xor);
       QRect r(xPos(), yPos(), width(), height());
       const int rBord = 3;
       int sw = element()->border();
@@ -821,7 +821,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
             int res = KMessageBox::questionYesNo( m_view,
                                                   i18n("No plugin found for '%1'.\nDo you want to download one from %2?").arg(mimeName).arg(shortURL),
-                                                  i18n("Missing Plugin"), QString::null, QString::null, QString("plugin-")+serviceType);
+                                                  i18n("Missing Plugin"), QString(), QString(), QString("plugin-")+serviceType);
             if ( res == KMessageBox::Yes )
             {
                 // Display vendor download page

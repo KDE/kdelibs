@@ -37,7 +37,9 @@
 #include <kurlcompletion.h>
 #include <kwin.h>
 
+#include <QAbstractItemView>
 #include <qstyle.h>
+#include <QStyleOptionButton>
 
 #include "misc/helper.h"
 #include "xml/dom2_eventsimpl.h"
@@ -118,7 +120,7 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
     QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
-    b->setAutoMask(true);
+    //b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
 
@@ -134,8 +136,8 @@ void RenderCheckBox::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
-    QSize s( cb->style().pixelMetric( QStyle::PM_IndicatorWidth ),
-             cb->style().pixelMetric( QStyle::PM_IndicatorHeight ) );
+    QSize s( cb->style()->pixelMetric( QStyle::PM_IndicatorWidth ),
+             cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -185,8 +187,8 @@ void RenderRadioButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
-    QSize s( rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
-             rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
+    QSize s( rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
+             rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -210,7 +212,7 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
 {
     QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
     setQWidget(p);
-    p->setAutoMask(true);
+    //p->setAutoMask(true);
     p->setMouseTracking(true);
 }
 
@@ -241,14 +243,18 @@ void RenderSubmitButton::calcMinMaxWidth()
         raw = QString::fromLatin1("X");
     QFontMetrics fm = pb->fontMetrics();
     QSize ts = fm.size( Qt::TextShowMnemonic, raw);
-    QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
+    //Oh boy.
+    QStyleOptionButton butOpt;
+    butOpt.init(pb);
+    butOpt.text = raw;
+    QSize s(pb->style()->sizeFromContents( QStyle::CT_PushButton, &butOpt, ts, pb )
             .expandedTo(QApplication::globalStrut()));
-    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
-		 pb->style().pixelMetric( QStyle::PM_DefaultFrameWidth, pb ) * 2;
+    int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
+		 pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
     int w = ts.width() + margin;
     int h = s.height();
     if (pb->isDefault() || pb->autoDefault()) {
-	int dbw = pb->style().pixelMetric( QStyle::PM_ButtonDefaultIndicator, pb ) * 2;
+	int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
 	w += dbw;
     }
 
@@ -366,21 +372,23 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 }
 
 
-Q3PopupMenu *LineEditWidget::createPopupMenu()
+void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
-    Q3PopupMenu *popup = KLineEdit::createPopupMenu();
+    QMenu* popup = createStandardContextMenu();
 
+/*    menu->exec(e->globalPos());
+            delete menu;*/
+            
     if ( !popup ) {
-        return 0L;
+        return;
     }
-
-    connect( popup, SIGNAL( activated( int ) ),
-             this, SLOT( extendedMenuActivated( int ) ) );
 
     if (m_input->autoComplete()) {
         popup->insertSeparator();
-        int id = popup->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), ClearHistory );
-        popup->setItemEnabled( id, (compObj() && !compObj()->isEmpty()) );
+        QAction* act = popup->addAction( SmallIconSet("history_clear"), i18n("Clear &History"));
+        act->setEnabled(compObj() && !compObj()->isEmpty());
+        connect(act, SIGNAL(triggered()),
+                this, SLOT(clearHistoryActivated()));
     }
 
     if (echoMode() == QLineEdit::Normal &&
@@ -390,22 +398,14 @@ Q3PopupMenu *LineEditWidget::createPopupMenu()
         m_spellAction->plug(popup);
         m_spellAction->setEnabled( !text().isEmpty() );
     }
-
-    return popup;
 }
 
 
-void LineEditWidget::extendedMenuActivated( int id)
+void LineEditWidget::clearHistoryActivated()
 {
-    switch ( id )
-    {
-    case ClearHistory:
-        m_view->clearCompletionHistory(m_input->name().string());
-        if (compObj())
-          compObj()->clear();
-    default:
-        break;
-    }
+    m_view->clearCompletionHistory(m_input->name().string());
+    if (compObj())
+      compObj()->clear();
 }
 
 bool LineEditWidget::event( QEvent *e )
@@ -523,13 +523,17 @@ void RenderLineEdit::calcMinMaxWidth()
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
+    
     int size = element()->size();
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
-    s = QSize(w + 2 + 2*widget()->frameWidth(),
-              kMax(h, 14) + 2 + 2*widget()->frameWidth())
-        .expandedTo(QApplication::globalStrut());
+
+    QStyleOption opt;
+    opt.init(widget());
+    s = QSize(w + 2 + 2, kMax(h, 14) + 2 + 2);
+    s = widget()->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s);
+    s = s.expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -750,9 +754,12 @@ void RenderFileButton::calcMinMaxWidth()
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
     KLineEdit* edit = static_cast<KURLRequester*>( m_widget )->lineEdit();
-    QSize s = edit->style().sizeFromContents(QStyle::CT_LineEdit,
-                                             edit,
-          QSize(w + 2 + 2*edit->frameWidth(), kMax(h, 14) + 2 + 2*edit->frameWidth()))
+
+    QStyleOption opt;
+    opt.init(edit);
+    QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
+                                             &opt,
+          QSize(w + 2 + 2, kMax(h, 14) + 2 + 2), edit)
         .expandedTo(QApplication::globalStrut());
     QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
 
@@ -823,8 +830,8 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent, "__khtml")
 {
-    setAutoMask(true);
-    if (listBox()) listBox()->installEventFilter(this);
+    //setAutoMask(true);
+    if (view()) view()->installEventFilter(this);
     setMouseTracking(true);
 }
 
@@ -851,7 +858,7 @@ bool ComboBoxWidget::event(QEvent *e)
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 {
-    if (dest==listBox() &&  e->type()==QEvent::KeyPress)
+    if (dest==view() &&  e->type()==QEvent::KeyPress)
     {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 	bool forward = false;
@@ -950,7 +957,12 @@ void RenderSelect::updateFromElement()
                 else {
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+#ifdef __GNUC__
+  #warning "This needs fixing (though did it work in 3?)"
+#endif
+#if 0
 		    static_cast<KComboBox*>(m_widget)->listBox()->item(listIndex)->setSelectable(false);
+#endif
 		}
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
@@ -1235,7 +1247,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     }
     KCursor::setAutoHideCursor(viewport(), true);
     setTextFormat(Qt::PlainText);
-    setAutoMask(true);
+    //setAutoMask(true);
     setMouseTracking(true);
 
     KActionCollection *ac = new KActionCollection(this);
@@ -1666,7 +1678,7 @@ void RenderTextArea::close( )
 static QString expandLF(const QString& s)
 {
     // LF -> CRLF
-    unsigned crs = s.contains( '\n' );
+    unsigned crs = s.count( '\n' );
     if (crs == 0)
 	return s;
     unsigned len = s.length();
