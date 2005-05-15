@@ -239,7 +239,10 @@ UString::UString(const QString &d)
 UString::UString(const DOM::DOMString &d)
 {
   if (d.isNull()) {
-    attach(&Rep::null);
+    // we do a conversion here as null DOMStrings shouldn't cross
+    // the boundary to kjs. They should either be empty strings
+    // or explicitly converted to KJS::Null via getString().
+    attach(&Rep::empty);
     return;
   }
 
