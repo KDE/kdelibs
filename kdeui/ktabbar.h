@@ -41,26 +41,32 @@ public:
     KTabBar( QWidget* parent=0, const char* name=0 );
     virtual ~KTabBar();
 
-    virtual void setTabEnabled( int, bool );
+    //virtual void setTabEnabled( int, bool );
 
+    // KDE4: colors not supported, disabled
     const QColor &tabColor( int ) const;
     void setTabColor( int, const QColor& );
 
-    virtual int insertTab( QTab *, int index = -1 );
-    virtual void removeTab( QTab * );
+    // KDE4 porting: use the QTabBar functions instead
+    //virtual int insertTab( QTab *, int index = -1 );
+    //virtual void removeTab( QTab * );
 
     void setTabReorderingEnabled( bool enable );
     bool isTabReorderingEnabled() const;
 
+    // KDE4 porting: disabled
     void setHoverCloseButton( bool );
     bool hoverCloseButton() const;
 
+    // KDE4 porting: disabled
     void setHoverCloseButtonDelayed( bool );
     bool hoverCloseButtonDelayed() const;
 
     void setTabCloseActivatePrevious( bool );
     bool tabCloseActivatePrevious() const;
 
+    int selectTab(const QPoint& pos) const;
+    
 signals:
     void contextMenu( int, const QPoint & );
     void mouseDoubleClick( int );
@@ -86,25 +92,28 @@ protected:
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );
 
-    virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
+    //virtual void paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
 protected slots:
-    virtual void closeButtonClicked();
-    virtual void onLayoutChange();
-    virtual void enableCloseButton();
+    //virtual void closeButtonClicked();
+    //virtual void enableCloseButton();
     virtual void activateDragSwitchTab();
+    
+protected:
+    virtual void tabLayoutChange();
 
 private:
     QPoint mDragStart;
     int mReorderStartTab;
     int mReorderPreviousTab;
+    int mDragSwitchTab;
     QMap<int, QColor> mTabColors;
-    QTab *mHoverCloseButtonTab, *mDragSwitchTab;
-    QPushButton *mHoverCloseButton;
-    QTimer *mEnableCloseButtonTimer, *mActivateDragSwitchTabTimer;
+    //QTab *mHoverCloseButtonTab, *mDragSwitchTab;
+    //QPushButton *mHoverCloseButton;
+    QTimer /*mEnableCloseButtonTimer,*/ *mActivateDragSwitchTabTimer;
 
-    bool mHoverCloseButtonEnabled;
-    bool mHoverCloseButtonDelayed;
+    //bool mHoverCloseButtonEnabled;
+    //bool mHoverCloseButtonDelayed;
     bool mTabReorderingEnabled;
     bool mTabCloseActivatePrevious;
 
