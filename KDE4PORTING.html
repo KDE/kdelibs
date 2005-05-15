@@ -120,6 +120,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KEditListBox</H4>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
 
+<H4>KTabBar</H4>
+<li>colors, close buttons on individual tabs not working at the moment</li>
+<li>The old insertTab and removeTab have been removed, use addTab / insertTab / removeTab from QTabBar instead (uses indices, not QTab*s)</li>
+
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 
