@@ -350,7 +350,7 @@ bool KMVirtualManager::testInstance(KMPrinter *p)
 		pr.setPrinterName(p->printerName());
 		pr.setSearchName(p->name());
 		pr.setOptions(p->defaultOptions());
-		return (pr.printFiles(testpage));
+		return (pr.printFiles(QStringList(testpage)));
 	}
 }
 

@@ -179,7 +179,7 @@ bool KMManager::testPrinter(KMPrinter *prt)
 	// temporarily added to the printer list, then taken out.
 	if (!prExist)
 		m_printers.append(prt);
-	result = pr.printFiles(testpage, false, false);
+	result = pr.printFiles(QStringList(testpage), false, false);
 	if (!prExist)
 		m_printers.take(m_printers.count()-1);
 	return result;

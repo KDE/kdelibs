@@ -748,7 +748,7 @@ public:
 	QString docDirectory() const;
 
 protected:
-	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
+	virtual QPaintEngine * paintEngine () const;
 	virtual int metric(int) const;
 	void translateQtOptions();
 	void loadSettings();
