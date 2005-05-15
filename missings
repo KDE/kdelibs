@@ -1,10 +1,8 @@
 kdeprint/management/kmjobviewer.lo
 kdeprint/management/kmwlpd.lo
 kdeprint/management/kmwsocketutil.lo
-kdeprint/management/networkscanner.lo
 kdeprint/rlpr/kmwrlpr.lo
 kdewidgets/kdewidgets.lo
-khtml/ecma/kjs_window.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
 khtml/java/kjavaprocess.lo
