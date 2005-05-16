@@ -291,7 +291,7 @@ namespace KUnitTest
 
         emit finished(name, test);
     }
-};
+}
 
 #include "runner.moc"
 

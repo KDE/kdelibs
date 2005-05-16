@@ -544,7 +544,7 @@ namespace KUnitTest
         TestResultsListType  m_resultsList;
         TestResults         *m_total;
     };
-};
+}
 
 QTextStream& operator<<( QTextStream& str, const QRect& r );
 

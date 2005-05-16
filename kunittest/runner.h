@@ -200,6 +200,6 @@ namespace KUnitTest
         }
     };
 
-};
+}
 
 #endif

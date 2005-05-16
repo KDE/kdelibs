@@ -78,7 +78,7 @@ namespace KUnitTest
     
         return m_resultsList[sl]; 
     }
-};
+}
 
 QTextStream& operator<<( QTextStream& str, const QRect& r ) {
     str << "[" << r.x() << "," << r.y() << " - " << r.width() << "x" << r.height() << "]";
