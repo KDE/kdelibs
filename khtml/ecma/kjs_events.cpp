@@ -145,7 +145,7 @@ JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_n
 
 JSLazyEventListener::~JSLazyEventListener()
 {
-  if (!listener.isNull() && listener.imp()) {
+  if (listener.isValid() && listener.imp()) {
     static_cast<Window*>(win.imp())->jsEventListeners.remove(listener.imp());
   }
 }
@@ -153,7 +153,7 @@ JSLazyEventListener::~JSLazyEventListener()
 void JSLazyEventListener::handleEvent(DOM::Event &evt)
 {
   parseCode();
-  if (!listener.isNull()) {
+  if (listener.isValid()) {
     JSEventListener::handleEvent(evt);
   }
 }
@@ -206,7 +206,7 @@ void JSLazyEventListener::parseCode() const
 
           Object thisObj = Object::dynamicCast(getDOMNode(exec, originalNode));
 
-          if (!thisObj.isNull()) {
+          if (thisObj.isValid()) {
             static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
 
             listener.setScope(scope);
@@ -218,7 +218,7 @@ void JSLazyEventListener::parseCode() const
     // no more need to keep the unparsed code around
     code = QString();
 
-    if (!listener.isNull() && listener.imp()) {
+    if (listener.isValid() && listener.imp()) {
       static_cast<Window*>(win.imp())->jsEventListeners.insert(listener.imp(),
                                                                (KJS::JSEventListener *)(this));
     }
@@ -427,7 +427,7 @@ Value KJS::getDOMEvent(ExecState *exec, DOM::Event e)
 DOM::Event KJS::toEvent(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMEvent::info))
+  if (!obj.isValid() || !obj.inherits(&DOMEvent::info))
     return DOM::Event();
 
   const DOMEvent *dobj = static_cast<const DOMEvent*>(obj.imp());

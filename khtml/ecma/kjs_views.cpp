@@ -78,7 +78,7 @@ Value KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractView av)
 DOM::AbstractView KJS::toAbstractView (const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMAbstractView::info))
+  if (!obj.isValid() || !obj.inherits(&DOMAbstractView::info))
     return DOM::AbstractView ();
 
   const DOMAbstractView  *dobj = static_cast<const DOMAbstractView *>(obj.imp());

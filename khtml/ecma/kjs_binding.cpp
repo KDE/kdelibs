@@ -280,7 +280,7 @@ QString Identifier::qstring() const
 DOM::Node KJS::toNode(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMNode::info))
+  if (!obj.isValid() || !obj.inherits(&DOMNode::info))
     return DOM::Node();
 
   const DOMNode *dobj = static_cast<const DOMNode*>(obj.imp());

@@ -283,7 +283,7 @@ Value KJS::getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw)
 DOM::NodeFilter KJS::toNodeFilter(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMNodeFilter::info))
+  if (!obj.isValid() || !obj.inherits(&DOMNodeFilter::info))
     return DOM::NodeFilter();
 
   const DOMNodeFilter *dobj = static_cast<const DOMNodeFilter*>(obj.imp());

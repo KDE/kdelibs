@@ -166,7 +166,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   window->afterScriptExecution();
 
   // let's try to convert the return value
-  if (success && !comp.value().isNull())
+  if (success && comp.value().isValid())
     return ValueToVariant( m_script->globalExec(), comp.value());
   else
   {

@@ -599,7 +599,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
 
   // Look in the prototype (for functions) before assuming it's an item's name
   Object proto = Object::dynamicCast(prototype());
-  if (!proto.isNull() && proto.hasProperty(exec,p))
+  if (proto.isValid() && proto.hasProperty(exec,p))
     return proto.get(exec,p);
 
   Value result;
@@ -945,7 +945,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     }
     else {
       Object obj = Object::dynamicCast(args[2]);
-      if (!obj.isNull())
+      if (obj.isValid())
       {
         DOM::CustomNodeFilter *customFilter = new JSNodeFilter(obj);
         DOM::NodeFilter filter = DOM::NodeFilter::createCustom(customFilter);

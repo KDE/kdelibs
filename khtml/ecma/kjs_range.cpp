@@ -222,7 +222,7 @@ Value KJS::getRangeConstructor(ExecState *exec)
 DOM::Range KJS::toRange(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMRange::info))
+  if (!obj.isValid() || !obj.inherits(&DOMRange::info))
     return DOM::Range();
 
   const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());
