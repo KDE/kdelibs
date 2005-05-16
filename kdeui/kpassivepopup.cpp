@@ -35,12 +35,12 @@
 class KPassivePopup::Private
 {
 public:
-  KPassivePopup::PopupStyle popupStyle;
+  int popupStyle;
   QPointArray               surround;
   QPoint                    anchor;
 };
 
-
+static const int DEFAULT_POPUP_TYPE = KPassivePopup::Boxed;
 static const int DEFAULT_POPUP_TIME = 6*1000;
 static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt::WX11BypassWM
                              | Qt::WStyle_StaysOnTop | Qt::WStyle_Tool | Qt::WStyle_NoBorder;
@@ -51,7 +51,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
 {
-    init( Default );
+    init( DEFAULT_POPUP_TYPE );
 }
 
 KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
@@ -60,10 +60,10 @@ KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
       m_autoDelete( false )
 {
-    init( Default );
+    init( DEFAULT_POPUP_TYPE );
 }
 
-KPassivePopup::KPassivePopup( PopupStyle popupStyle, QWidget *parent, const char *name, WFlags f )
+KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, const char *name, WFlags f )
     : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
@@ -72,7 +72,7 @@ KPassivePopup::KPassivePopup( PopupStyle popupStyle, QWidget *parent, const char
     init( popupStyle );
 }
 
-KPassivePopup::KPassivePopup( PopupStyle popupStyle, WId win, const char *name, WFlags f )
+KPassivePopup::KPassivePopup( int popupStyle, WId win, const char *name, WFlags f )
     : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
@@ -81,7 +81,7 @@ KPassivePopup::KPassivePopup( PopupStyle popupStyle, WId win, const char *name, 
     init( popupStyle );
 }
 
-void KPassivePopup::init( PopupStyle popupStyle )
+void KPassivePopup::init( int popupStyle )
 {
     d = new Private;
     d->popupStyle = popupStyle;

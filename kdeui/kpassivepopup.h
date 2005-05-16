@@ -75,11 +75,11 @@ public:
      */
     enum PopupStyle
     {
-        Boxed,             ///< Information will appear in a framed box
+        Boxed,             ///< Information will appear in a framed box (default)
         Balloon,           ///< Information will appear in a comic-alike balloon
-        Default = Boxed    ///< Will be used by default
+	CustomStyle=128    ///< Ids greater than this are reserved for use by subclasses
     };
-    public:
+
     /**
      * Creates a popup for the specified widget.
      */
@@ -88,20 +88,19 @@ public:
     /**
      * Creates a popup for the specified window.
      */
-
     KPassivePopup( WId parent, const char *name=0, WFlags f=0 );
+
     /**
      * Creates a popup for the specified widget.
      * @since 3.5
      */
-
-    KPassivePopup( PopupStyle popupStyle, QWidget *parent=0, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, QWidget *parent=0, const char *name=0, WFlags f=0 );
 
     /**
      * Creates a popup for the specified window.
      * @since 3.5
      */
-    KPassivePopup( PopupStyle popupStyle, WId parent, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, WId parent, const char *name=0, WFlags f=0 );
 
     /**
      * Cleans up.
@@ -284,7 +283,7 @@ protected:
     virtual void paintEvent( QPaintEvent* pe );
 
 private:
-    void init( PopupStyle popupStyle );
+    void init( int popupStyle );
 
     WId window;
     QWidget *msgView;
