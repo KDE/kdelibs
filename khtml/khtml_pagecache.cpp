@@ -26,6 +26,7 @@
 
 #include <q3intdict.h>
 #include <qtimer.h>
+#include <qfile.h>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -95,7 +96,7 @@ KHTMLPageCacheEntry::endData()
 {
   m_complete = true;
   if ( m_file->status() == 0) {
-    m_file->dataStream()->device()->flush();
+    m_file->file()->flush();
     m_file->dataStream()->device()->at(0);
   }
 }
