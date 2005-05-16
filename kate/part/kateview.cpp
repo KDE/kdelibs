@@ -784,31 +784,21 @@ void KateView::slotNewUndo()
 
 void KateView::slotDropEventPass( QDropEvent * ev )
 {
-#ifdef __GNUC__
-#warning port this to QT 4
-#endif
-/*
   KURL::List lstDragURLs;
   bool ok = KURLDrag::decode( ev, lstDragURLs );
 
   KParts::BrowserExtension * ext = KParts::BrowserExtension::childObject( doc() );
   if ( ok && ext )
     emit ext->openURLRequest( lstDragURLs.first() );
-*/
 }
 
 void KateView::contextMenuEvent( QContextMenuEvent *ev )
 {
-#ifdef __GNUC__
-#warning port this to QT 4
-#endif
-/*
   if ( !m_doc || !m_doc->browserExtension()  )
     return;
   emit m_doc->browserExtension()->popupMenu( ev->globalPos(), m_doc->url(),
                                         QString::fromLatin1( "text/plain" ) );
   ev->accept();
-*/
 }
 
 bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bool calledExternally )
@@ -821,7 +811,7 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bo
   QString line_str = m_doc->textLine( line );
 
   int x = 0;
-  for (int z = 0; z < line_str.length() && z < col; z++) {
+  for (int z = 0; z < line_str.length() && (uint)z < col; z++) {
     if (line_str[z] == QChar('\t')) x += tabwidth - (x % tabwidth); else x++;
   }
 

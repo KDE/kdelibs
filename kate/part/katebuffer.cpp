@@ -176,7 +176,7 @@ class KateFileLoader
     inline const QChar *unicode () const { return m_text.unicode(); }
 
     // read a line, return length + offset in unicode data
-    void readLine (uint &offset, uint &length)
+    void readLine (int &offset, int &length)
     {
       length = 0;
       offset = 0;
@@ -1336,11 +1336,11 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
     rawData.resize ((KATE_AVG_BLOCK_SIZE * sizeof(QChar)) + ((KATE_AVG_BLOCK_SIZE/80) * 8));
 
   char *buf = rawData.data ();
-  uint size = 0;
-  uint blockSize = 0;
+  int size = 0;
+  int blockSize = 0;
   while (!stream->eof() && (blockSize < KATE_AVG_BLOCK_SIZE) && (m_lines < KATE_MAX_BLOCK_LINES))
   {
-    uint offset = 0, length = 0;
+    int offset = 0, length = 0;
     stream->readLine(offset, length);
     const QChar *unicodeData = stream->unicode () + offset;
 
@@ -1363,7 +1363,7 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
       // create the swapped data on the fly, no need to waste time
       // via going over the textline classes and dump them !
       char attr = KateTextLine::flagNoOtherData;
-      uint pos = size;
+      int pos = size;
 
       // calc new size
       size = size + 1 + sizeof(uint) + (sizeof(QChar)*length);

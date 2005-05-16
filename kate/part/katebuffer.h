@@ -25,10 +25,7 @@
 
 #include <kvmallocator.h>
 
-#include <q3ptrlist.h>
-#include <qobject.h>
-#include <qtimer.h>
-#include <q3valuevector.h>
+#include <QObject>
 
 class KateLineInfo;
 class KateDocument;
@@ -202,7 +199,7 @@ class KateBufBlock
     /**
      * list of textlines
      */
-    Q3ValueVector<KateTextLine::Ptr> m_stringList;
+    QVector<KateTextLine::Ptr> m_stringList;
 
     /**
      * parent buffer.
@@ -640,7 +637,7 @@ class KateBuffer : public QObject
      * ALL blocks
      * in order of linenumbers
      */
-    Q3ValueVector<KateBufBlock*> m_blocks;
+    QVector<KateBufBlock*> m_blocks;
 
     /**
      * last block where the start/end line is in sync with real life
