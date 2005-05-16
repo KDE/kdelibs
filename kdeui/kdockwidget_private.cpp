@@ -668,6 +668,13 @@ void KDockButton_Private::leaveEvent( QEvent * )
   repaint();
 }
 
+void KDockButton_Private::paintEvent( QPaintEvent * )
+{
+  QPainter painter( this );
+  //KDE4 enable this if you want to use the custom drawing function, though pixmap() returning null, it will crash :)
+//  drawButton( &painter );
+}
+
 /*************************************************************************/
 KDockWidgetPrivate::KDockWidgetPrivate()
   : QObject()

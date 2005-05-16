@@ -254,6 +254,7 @@ protected:
   virtual void drawButton( QPainter * );
   virtual void enterEvent( QEvent * );
   virtual void leaveEvent( QEvent * );
+  virtual void paintEvent( QPaintEvent * );
 
 private:
   bool moveMouse;

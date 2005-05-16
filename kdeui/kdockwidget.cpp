@@ -231,34 +231,34 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
 
   closeButton = new KDockButton_Private( this, "DockCloseButton" );
   QToolTip::add( closeButton, i18n("Close") );
-  //closeButton->setPixmap( style()->stylePixmap(QStyle::SP_TitleBarCloseButton , this) );
-  closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  closeButton->setIcon( QIcon( style()->standardPixmap(QStyle::SP_TitleBarCloseButton) ) );
+//  closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new KDockButton_Private( this, "DockStayButton" );
   QToolTip::add( stayButton, i18n("Freeze the window geometry", "Freeze") );
   stayButton->setToggleButton( true );
-  stayButton->setPixmap( const_cast< const char** >(not_close_xpm) );
-  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  stayButton->setIcon( QIcon(not_close_xpm) );
+//  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new KDockButton_Private( this, "DockbackButton" );
   QToolTip::add( dockbackButton, i18n("Dock this window", "Dock") );
-  dockbackButton->setPixmap( const_cast< const char** >(dockback_xpm));
-  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  dockbackButton->setIcon( QIcon(dockback_xpm));
+//  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
   d->toDesktopButton = new KDockButton_Private( this, "ToDesktopButton" );
   QToolTip::add( d->toDesktopButton, i18n("Detach") );
-  d->toDesktopButton->setPixmap( const_cast< const char** >(todesktop_xpm));
-  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+  d->toDesktopButton->setIcon( QIcon(todesktop_xpm));
+//  d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
   stayButton->hide();
 
   d->dummy = new QWidget( this );
-  d->dummy->setFixedSize( 1,closeButton->pixmap()->height() );
+//  d->dummy->setFixedSize( 1,closeButton->pixmap()->height() );
 
 
   layout->addWidget( drag );
@@ -761,7 +761,7 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
     header = h;
     layout->addWidget( header );
   }
-  kdDebug(282)<<caption()<<": KDockWidget::setHeader"<<endl;
+//  kdDebug(282)<<caption()<<": KDockWidget::setHeader"<<endl;
   setEnableDocking(eDocking);
 }
 
