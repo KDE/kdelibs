@@ -57,6 +57,7 @@
 #include <kedittoolbar.h>
 #include <kparts/event.h>
 #include <kmenubar.h>
+#include <kstandarddirs.h>
 
 #include <q3vbox.h>
 #include <qtextcodec.h>
@@ -99,7 +100,7 @@ KWrite::KWrite (KTextEditor::Document *doc)
   connect(m_view->document(),SIGNAL(fileNameChanged()),this,SLOT(slotFileNameChanged()));
   connect(m_view,SIGNAL(dropEventPass(QDropEvent *)),this,SLOT(slotDropEvent(QDropEvent *)));
 
-  setXMLFile( "katetestui.rc" );
+  setXMLFile( "./katetestui.rc" );
   createShellGUI( true );
   guiFactory()->addClient( m_view );
 
@@ -585,7 +586,11 @@ int main(int argc, char **argv)
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
-  KApplication a;
+  KApplication a; 
+  
+  // KXMLGUIClient looks in the "data" resource for the .rc files
+  // Let's add $PWD (ideally $srcdir instead...) to it
+  KGlobal::dirs()->addResourceDir( "data", QDir::currentDirPath() );
 
   KGlobal::locale()->insertCatalogue("katepart");
 
