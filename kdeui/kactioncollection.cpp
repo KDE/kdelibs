@@ -324,11 +324,19 @@ void KActionCollection::_insert( KAction* action )
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
      name = unnamed_name;
   }
-  KAction *a = d->m_actionDict[ name ]; // this already creates entry
-  if ( a == action )
+  
+  // look if we already have THIS action under THIS name ;)
+  QHash<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name); 
+  while (it != d->m_actionDict.end() && it.key() == name)
+  {
+    if ( it.value() == action )
       return;
-
-  d->m_actionDict.insert (name, action);
+      
+    ++it;
+  }
+  
+  // really insert action
+  d->m_actionDict.insertMulti (name, action);
 
   emit inserted( action );
 }
@@ -667,7 +675,7 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
   kdWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
 
-  foreach( KAction* pAction, d->m_actionDict )
+  foreach( KAction* pAction, c.d->m_actionDict )
     insert( pAction );
 
   return *this;
