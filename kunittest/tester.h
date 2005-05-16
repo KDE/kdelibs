@@ -210,16 +210,15 @@ SampleTest - 1 test passed, 1 test failed
  * how you use them:
  *
  * @code
- * KUNITTEST_MODULE( kunittest_samplemodule, SampleModule );
- * KUNITTEST_MODULE_REGISTER_TESTER( SampleModule , SimpleSampleTester );
- * KUNITTEST_MODULE_REGISTER_TESTER( SampleModule , SomeSampleTester );
+ * KUNITTEST_MODULE( kunittest_samplemodule, "Tests for sample module" );
+ * KUNITTEST_MODULE_REGISTER_TESTER( SimpleSampleTester );
+ * KUNITTEST_MODULE_REGISTER_TESTER( SomeSampleTester );
  * @endcode
  *
  * The first macro, KUNITTEST_MODULE, makes sure that the module can be loaded and that
  * the test classes are created. The first argument "kunittest_samplemodule" is the library
  * name, in this case the library we're creating a kunittest_samplemodule.la module. The
- * second argument is the module class name. It doesn't really matter what you put here, as
- * long as the name is a valid name you could give to a class.
+ * second argument is name which will appear in the test runner for this test suite.
  *
  * The tester class are now added by the KUNITTEST_MODULE_REGISTER_TESTER macro, not the
  * KUNITTEST_REGISTER_TESTER. The only difference between the two is that you have to
@@ -230,11 +229,9 @@ SampleTest - 1 test passed, 1 test failed
  * @code
  * INCLUDES = -I$(top_srcdir)/include $(all_includes)
  * METASOURCES = AUTO
- * noinst_HEADERS = samplemodule.h
- * # Install this plugin in the KDE modules directory
  * check_LTLIBRARIES = kunittest_samplemodule.la
  * kunittest_samplemodule_la_SOURCES = samplemodule.cpp
- * kunittest_samplemodule_la_LIBADD = -lkunittest
+ * kunittest_samplemodule_la_LIBADD = $(LIB_KUNITTEST)
  * kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
  * @endcode
  *
