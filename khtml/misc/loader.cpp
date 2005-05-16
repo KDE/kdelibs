@@ -346,6 +346,8 @@ void CachedScript::error( int /*err*/, const char* /*text*/ )
 namespace khtml
 {
 
+#warning QDataSource does not exist
+#if 0
 class ImageSource : public QDataSource
 {
 public:
@@ -423,6 +425,8 @@ private:
     bool rewable : 1;
 };
 
+#endif
+
 } // end namespace
 
 static QString buildAcceptHeader()
@@ -475,7 +479,7 @@ void CachedImage::ref( CachedObjectClient *c )
 
     if( m ) {
         m->unpause();
-        if( m->finished() || m_clients.count() == 1 )
+        if( m->state() == QMovie::NotRunning || m_clients.count() == 1 )
             m->restart();
     }
 
@@ -547,10 +551,10 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 #ifdef Q_WS_X11
         !r.hasAlphaChannel() &&
 #endif
-        ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask())) )
+        ( (w != r.width()) || (h != r.height()) || (isvalid && !r.mask().isNull())) )
     {
         QPixmap pix = r;
-        if ( w != r.width() || (isvalid && pix.mask()))
+        if ( w != r.width() || (isvalid && !pix.mask().isNull()))
         {
             bg = new QPixmap(w, r.height());
             QPainter p(bg);
@@ -558,13 +562,13 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
             p.drawTiledPixmap(0, 0, w, r.height(), pix);
             p.end();
 
-            if(!isvalid && pix.mask())
+            if(!isvalid && !pix.mask().isNull())
             {
                 // unfortunately our anti-transparency trick doesn't work here
                 // we need to create a mask.
                 QBitmap newmask(w, r.height());
                 QPainter pm(&newmask);
-                pm.drawTiledPixmap(0, 0, w, r.height(), *pix.mask());
+                pm.drawTiledPixmap(0, 0, w, r.height(), pix.mask());
                 bg->setMask(newmask);
                 bgColor = bgTransparant;
             }
@@ -579,13 +583,13 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
             QPainter p(bg);
             if(isvalid) p.fillRect(0, 0, w, h, newc);
             p.drawTiledPixmap(0, 0, w, h, pix);
-            if(!isvalid && pix.mask())
+            if(!isvalid && !pix.mask().isNull())
             {
                 // unfortunately our anti-transparency trick doesn't work here
                 // we need to create a mask.
                 QBitmap newmask(w, h);
                 QPainter pm(&newmask);
-                pm.drawTiledPixmap(0, 0, w, h, *pix.mask());
+                pm.drawTiledPixmap(0, 0, w, h, pix.mask());
                 bg->setMask(newmask);
                 bgColor = bgTransparant;
             }
@@ -598,7 +602,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     return r;
 }
 
-const QPixmap &CachedImage::pixmap( ) const
+QPixmap CachedImage::pixmap( ) const
 {
     if(m_hadError)
         return *Cache::brokenPixmap;
@@ -608,7 +612,7 @@ const QPixmap &CachedImage::pixmap( ) const
 
     if(m)
     {
-        if(m->framePixmap().size() != m->getValidRect().size())
+        if(m->framePixmap().size() != m->frameRect().size())
         {
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
@@ -616,8 +620,8 @@ const QPixmap &CachedImage::pixmap( ) const
             if(!pixPart) pixPart = new QPixmap();
 
             (*pixPart) = m->framePixmap();
-            if (m->getValidRect().size().isValid())
-                pixPart->resize(m->getValidRect().size());
+            if (m->frameRect().size().isValid())
+                pixPart->resize(m->frameRect().size());
             else
                 pixPart->resize(0, 0);
             return *pixPart;
@@ -642,7 +646,7 @@ QSize CachedImage::pixmap_size() const
 QRect CachedImage::valid_rect() const
 {
     if (m_wasBlocked) return Cache::blockedPixmap->rect();
-    return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->getValidRect() : ( p ? p->rect() : QRect()) );
+    return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->frameRect() : ( p ? p->rect() : QRect()) );
 }
 
 
@@ -665,6 +669,8 @@ void CachedImage::movieUpdated( const QRect& r )
 
 void CachedImage::movieStatus(int status)
 {
+#warning QMovie emits different signals now and requires different ways to call
+#if 0
 #ifdef LOADER_DEBUG
     qDebug("movieStatus(%d)", status);
 #endif
@@ -720,8 +726,7 @@ void CachedImage::movieStatus(int status)
             {
                 QPixmap* pix = new QPixmap;
                 pix->convertFromImage( p->convertToImage().convertDepth( 1 ), Qt::MonoOnly|Qt::AvoidDither );
-                if ( p->mask() )
-                    pix->setMask( *p->mask() );
+                pix->setMask( p->mask() );
                 delete p;
                 p = pix;
                 monochrome = false;
@@ -730,6 +735,8 @@ void CachedImage::movieStatus(int status)
         for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
             it()->notifyFinished( this );
     }
+
+#endif
 
 #if 0
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
@@ -753,12 +760,14 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
 {
     m_showAnimations = showAnimations;
     if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
-        imgSource->cleanBuffer();
+#warning QDataSource
+        // imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
-        m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
-        m->disconnectStatus( this, SLOT( movieStatus( int ) ));
-        m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
+#warning QMovie requires different API now
+        //m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+        //m->disconnectStatus( this, SLOT( movieStatus( int ) ));
+        // m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
         QTimer::singleShot(0, this, SLOT( deleteMovie()));
         imgSource = 0;
     }
@@ -795,6 +804,8 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         // don't attempt incremental loading if we have all the data already
         assert(!eof);
 
+#warning QImage* requires heavy porting
+#if 0
         formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
         if ( formatType && strcmp( formatType, "PNG" ) == 0 )
             formatType = 0; // Some png files contain multiple images, we want to show only the first one
@@ -803,8 +814,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
         if ( formatType )  // movie format exists
         {
-            imgSource = new ImageSource( _buffer.buffer());
-            m = new QMovie( imgSource, 8192 );
+            // imgSource = new ImageSource( _buffer.buffer());
+            // m = new QMovie( imgSource, 8192 );
+	    m = new QMovie( _buffer);
             m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
             m->connectStatus( this, SLOT( movieStatus(int)));
             m->connectResize( this, SLOT( movieResize( const QSize& ) ) );
@@ -843,6 +855,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
             for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
                 it()->notifyFinished( this );
         }
+#endif
     }
 }
 
