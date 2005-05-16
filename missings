@@ -6,8 +6,6 @@ kdewidgets/kdewidgets.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
 khtml/java/kjavaprocess.lo
-khtml/khtmlview.lo
-khtml/misc/loader.lo
 kimgio/dds.lo
 kimgio/eps.lo
 kimgio/ico.lo
