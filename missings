@@ -6,16 +6,6 @@ kdewidgets/kdewidgets.lo
 khtml/java/kjavaappletserver.lo
 khtml/java/kjavaappletviewer.lo
 khtml/java/kjavaprocess.lo
-kimgio/dds.lo
-kimgio/eps.lo
-kimgio/ico.lo
 kimgio/jp2.lo
-kimgio/pcx.lo
-kimgio/psd.lo
-kimgio/rgb.lo
-kimgio/tga.lo
-kimgio/tiffr.lo
-kimgio/xcf.lo
-kimgio/xview.lo
 kioslave/ftp/ftp.lo
 kioslave/http/http.lo
