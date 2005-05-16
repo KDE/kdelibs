@@ -9,10 +9,9 @@ libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
    katefont.cpp katelinerange.cpp katesupercursor.cpp \
   katearbitraryhighlight.cpp katerenderer.cpp kateattribute.cpp \
   kateautoindent.cpp katefiletype.cpp kateschema.cpp katedocument.skel \
-  katetemplatehandler.cpp katejscript.cpp katespell.cpp
-# kateprinter.cpp
+  katetemplatehandler.cpp katejscript.cpp katespell.cpp kateprinter.cpp
 
-libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la # $(top_builddir)/kdeprint/libkdeprint.la
+libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(top_builddir)/kdeprint/libkdeprint.la
 
 libkatepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
