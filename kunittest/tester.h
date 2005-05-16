@@ -306,16 +306,16 @@ using namespace std;
 #include <kdelibs_export.h>
 
 /*! @def CHECK(x,y)
- * Use this macro to perform a check. For example
+ * Use this macro to perform an equality check. For example
  *
- * @code CHECK( numerOfErrors(), 0 ); @endcode
+ * @code CHECK( numberOfErrors(), 0 ); @endcode
  */
 #define CHECK( x, y ) check( __FILE__, __LINE__, #x, x, y, false )
 
 /*! @def XFAIL(x,y)
  * Use this macro to perform a check you expect to fail. For example
  *
- * @code XFAIL( numerOfErrors(), 1 ); @endcode
+ * @code XFAIL( numberOfErrors(), 1 ); @endcode
  *
  * If the test fails, it will be counted as such, however it will
  * also be registered separately.
@@ -546,4 +546,16 @@ namespace KUnitTest
     };
 };
 
+QTextStream& operator<<( QTextStream& str, const QRect& r ) {
+    str << "[" << r.x() << "," << r.y() << " - " << r.width() << "x" << r.height() << "]";
+    return str;
+}
+QTextStream& operator<<( QTextStream& str, const QPoint& r ) {
+    str << "(" << r.x() << "," << r.y() << ")";
+    return str;
+}
+QTextStream& operator<<( QTextStream& str, const QSize& r ) {
+    str << "[" << r.width() << "x" << r.height() << "]";
+    return str;
+}
 #endif

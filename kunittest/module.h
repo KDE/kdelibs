@@ -49,17 +49,17 @@ namespace KUnitTest
     public:                                                                                 \
         library##Module()                                                                   \
         {                                                                                   \
-            RegistryIteratorType it(s_registry);                                            \
+            KUnitTest::RegistryIteratorType it(s_registry);                                 \
             for( ; it.current(); ++it )                                                     \
                 KUnitTest::Runner::registerTester(it.currentKey(), it.current());           \
         }                                                                                   \
                                                                                             \
-        static RegistryType s_registry;                                                     \
+        static KUnitTest::RegistryType s_registry;                                          \
     };                                                                                      \
                                                                                             \
-    RegistryType library##Module::s_registry;                                               \
+    KUnitTest::RegistryType library##Module::s_registry;                                    \
                                                                                             \
-    void kunittest_registerModuleTester(const char *name, Tester *test)                     \
+    void kunittest_registerModuleTester(const char *name, KUnitTest::Tester *test)          \
     {                                                                                       \
         library##Module::s_registry.insert(name, test);                                     \
     }                                                                                       \
@@ -87,7 +87,7 @@ namespace KUnitTest
     public:                                                                                     \
         tester##ModuleAutoregister()                                                            \
         {                                                                                       \
-            Tester *test = new tester();                                                        \
+            KUnitTest::Tester *test = new tester();                                             \
             QString name = s_kunittest_suite + QString("::") + QString::fromLocal8Bit(#tester); \
             test->setName(name.local8Bit());                                                    \
             kunittest_registerModuleTester(name.local8Bit(), test );                            \
@@ -106,7 +106,7 @@ namespace KUnitTest
         tester##ModuleAutoregister()                                                          \
         {                                                                                     \
             QString fullName = s_kunittest_suite + QString("::") + QString::fromLocal8Bit(name); \
-            Tester *test = new tester(fullName.local8Bit()));                                 \
+            KUnitTest::Tester *test = new tester(fullName.local8Bit());                       \
             kunittest_registerModuleTester(fullName.local8Bit(), test);                       \
         }                                                                                     \
     } tester##ModuleAutoregisterInstance;
