@@ -1,7 +1,9 @@
 /*
  *   copyright            : (C) 2001-2002 by Richard Moore
+ *   copyright            : (C) 2004-2005 by Sascha Cunz
  *   License              : This file is released under the terms of the LGPL, version 2.
  *   email                : rich@kde.org
+ *   email                : sascha.cunz@tiscali.de
  */
 
 #include <kconfig.h>
@@ -11,6 +13,10 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qvbox.h>
+#include <qpainter.h>
+#include <qtooltip.h>
+#include <qbitmap.h>
+#include <qpointarray.h>
 
 #include <kdebug.h>
 #include <kdialog.h>
@@ -20,43 +26,82 @@
 
 #include "config.h"
 #ifdef Q_WS_X11
-#include <netwm.h> 
+#include <netwm.h>
 #endif
 
 #include "kpassivepopup.h"
 #include "kpassivepopup.moc"
 
+class KPassivePopup::Private
+{
+public:
+  KPassivePopup::PopupStyle popupStyle;
+  QPointArray               surround;
+  QPoint                    anchor;
+};
+
+
 static const int DEFAULT_POPUP_TIME = 6*1000;
 static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt::WX11BypassWM
                              | Qt::WStyle_StaysOnTop | Qt::WStyle_Tool | Qt::WStyle_NoBorder;
 
-
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
     : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      m_autoDelete( false )
 {
-    init();
+    init( Default );
 }
 
 KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
     : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), topLayout( 0 ),
-      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      m_autoDelete( false )
 {
-    init();
+    init( Default );
 }
 
-void KPassivePopup::init()
+KPassivePopup::KPassivePopup( PopupStyle popupStyle, QWidget *parent, const char *name, WFlags f )
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
+      window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      m_autoDelete( false )
 {
-    setFrameStyle( QFrame::Box| QFrame::Plain );
-    setLineWidth( 2 );
+    init( popupStyle );
+}
+
+KPassivePopup::KPassivePopup( PopupStyle popupStyle, WId win, const char *name, WFlags f )
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
+      window( win ), msgView( 0 ), topLayout( 0 ),
+      hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ),
+      m_autoDelete( false )
+{
+    init( popupStyle );
+}
+
+void KPassivePopup::init( PopupStyle popupStyle )
+{
+    d = new Private;
+    d->popupStyle = popupStyle;
+    if( popupStyle == Boxed )
+    {
+        setFrameStyle( QFrame::Box| QFrame::Plain );
+        setLineWidth( 2 );
+    }
+    else if( popupStyle == Balloon )
+    {
+        setPalette(QToolTip::palette());
+        setAutoMask(TRUE);
+    }
     connect( hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
     connect( this, SIGNAL( clicked() ), SLOT( hide() ) );
 }
 
 KPassivePopup::~KPassivePopup()
 {
+    delete d;
 }
 
 void KPassivePopup::setView( QWidget *child )
@@ -65,7 +110,7 @@ void KPassivePopup::setView( QWidget *child )
     msgView = child;
 
     delete topLayout;
-    topLayout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
+    topLayout = new QVBoxLayout( this, d->popupStyle == Balloon ? 22 : KDialog::marginHint(), KDialog::spacingHint() );
     topLayout->addWidget( msgView );
     topLayout->activate();
 }
@@ -155,11 +200,12 @@ void KPassivePopup::show()
     QFrame::show();
 
     int delay = hideDelay;
-    if ( delay < 0 )
-	delay = DEFAULT_POPUP_TIME;
+    if ( delay < 0 ) {
+        delay = DEFAULT_POPUP_TIME;
+    }
 
     if ( delay > 0 ) {
-	hideTimer->start( delay );
+        hideTimer->start( delay );
     }
 }
 
@@ -241,25 +287,132 @@ void KPassivePopup::moveNear( QRect target )
 
     QRect r = KGlobalSettings::desktopGeometry(QPoint(x+w/2,y+h/2));
 
-    if ( x < ( r.width() / 2 ) )
-	x = x + target.width();
-    else
-	x = x - w;
+    if( d->popupStyle == Balloon )
+    {
+        // find a point to anchor to
+        if( x + w > r.width() ){
+            x = x + target.width();
+        }
 
-    // It's apparently trying to go off screen, so display it ALL at the bottom.
-    if ( (y + h) > r.height() )
-	y = r.height() - h;
+        if( y + h > r.height() ){
+            y = y + target.height();
+        }
+    } else
+    {
+        if ( x < ( r.width() / 2 ) )
+            x = x + target.width();
+        else
+            x = x - w;
 
-    if ( (x + w) > r.width() )
-	x = r.width() - w;
+        // It's apparently trying to go off screen, so display it ALL at the bottom.
+        if ( (y + h) > r.height() )
+            y = r.height() - h;
 
+        if ( (x + w) > r.width() )
+            x = r.width() - w;
+    }
     if ( y < 0 )
         y = 0;
 
     if ( x < 0 )
-	x = 0;
+        x = 0;
 
-    move( x, y );
+    if( d->popupStyle == Balloon )
+        setAnchor( QPoint( x, y ) );
+    else
+        move( x, y );
+}
+
+void KPassivePopup::setAnchor(const QPoint &anchor)
+{
+    d->anchor = anchor;
+    updateMask();
+}
+
+void KPassivePopup::paintEvent( QPaintEvent* pe )
+{
+    if( d->popupStyle == Balloon )
+    {
+        QPainter p;
+        p.begin( this );
+        p.drawPolygon( d->surround );
+    } else
+        QFrame::paintEvent( pe );
+}
+
+void KPassivePopup::updateMask()
+{
+    // get screen-geometry for screen our anchor is on
+    // (geometry can differ from screen to screen!
+    QRect deskRect = KGlobalSettings::desktopGeometry(d->anchor);
+
+    int xh = 70, xl = 40;
+    if( width() < 80 )
+        xh = xl = 40;
+    else if( width() < 110 )
+        xh = width() - 40;
+
+    bool bottom = (d->anchor.y() + height()) > ((deskRect.y() + deskRect.height()-48));
+    bool right = (d->anchor.x() + width()) > ((deskRect.x() + deskRect.width()-48));
+
+    QPoint corners[4] = {
+        QPoint( width() - 50, 10 ),
+        QPoint( 10, 10 ),
+        QPoint( 10, height() - 50 ),
+        QPoint( width() - 50, height() - 50 )
+    };
+
+    QBitmap mask( width(), height(), true );
+    QPainter p( &mask );
+    QBrush brush( Qt::white, Qt::SolidPattern );
+    p.setBrush( brush );
+
+    int i = 0, z = 0;
+    for (; i < 4; ++i) {
+        QPointArray corner;
+        corner.makeArc(corners[i].x(), corners[i].y(), 40, 40, i * 16 * 90, 16 * 90);
+
+        d->surround.resize( z + corner.count() );
+        for (unsigned int s = 0; s < corner.count() - 1; s++) {
+            d->surround.setPoint( z++, corner[s] );
+        }
+		
+        if (bottom && i == 2) {
+            if (right) {
+                d->surround.resize( z + 3 );
+                d->surround.setPoint( z++, QPoint( width() - xh, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( width() - 20, height() ) );
+                d->surround.setPoint( z++, QPoint( width() - xl, height() - 11 ) );
+            } else {
+                d->surround.resize( z + 3 );
+                d->surround.setPoint( z++, QPoint( xl, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( 20, height() ) );
+                d->surround.setPoint( z++, QPoint( xh, height() - 11 ) );
+            }
+        } else if (!bottom && i == 0) {
+            if (right) {
+                d->surround.resize( z + 3 );
+                d->surround.setPoint( z++, QPoint( width() - xl, 10 ) );
+                d->surround.setPoint( z++, QPoint( width() - 20, 0 ) );
+                d->surround.setPoint( z++, QPoint( width() - xh, 10 ) );
+            } else {
+                d->surround.resize( z + 3 );
+                d->surround.setPoint( z++, QPoint( xh, 10 ) );
+                d->surround.setPoint( z++, QPoint( 20, 0 ) );
+                d->surround.setPoint( z++, QPoint( xl, 10 ) );
+            }
+        }
+    }
+
+    d->surround.resize( z + 1 );
+    d->surround.setPoint( z, d->surround[0] );
+    p.drawPolygon( d->surround );
+    setMask(mask);
+
+    move( right ? d->anchor.x() - width() + 20 : ( d->anchor.x() < 11 ? 11 : d->anchor.x() - 20 ),
+          bottom ? d->anchor.y() - height() : ( d->anchor.y() < 11 ? 11 : d->anchor.y() ) );
+
+    update();
 }
 
 //
@@ -305,5 +458,3 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
 // Local Variables:
 // c-basic-offset: 4
 // End:
-
-

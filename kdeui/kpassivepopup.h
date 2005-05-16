@@ -2,8 +2,10 @@
 
 /*
  *   Copyright            : (C) 2001-2002 by Richard Moore
+ *   Copyright            : (C) 2004-2005 by Sascha Cunz
  *   License              : This file is released under the terms of the LGPL, version 2.
  *   Email                : rich@kde.org
+ *   Email                : sascha.cunz@tiscali.de
  */
 
 #ifndef KPASSIVEPOPUP_H
@@ -58,6 +60,7 @@ class QVBox;
  * @version $Id$
  * @since 3.1
  * @author Richard Moore, rich@kde.org
+ * @author Sascha Cunz, sascha.cunz@tiscali.de
  */
 class KDEUI_EXPORT KPassivePopup : public QFrame
 {
@@ -67,6 +70,17 @@ class KDEUI_EXPORT KPassivePopup : public QFrame
 
 public:
     /**
+     * Styles that a KPassivePopup can have.
+     * @since 3.5
+     */
+    enum PopupStyle
+    {
+        Boxed,             ///< Information will appear in a framed box
+        Balloon,           ///< Information will appear in a comic-alike balloon
+        Default = Balloon  ///< Will be used by default
+    };
+    public:
+    /**
      * Creates a popup for the specified widget.
      */
     KPassivePopup( QWidget *parent=0, const char *name=0, WFlags f=0 );
@@ -74,7 +88,20 @@ public:
     /**
      * Creates a popup for the specified window.
      */
+
     KPassivePopup( WId parent, const char *name=0, WFlags f=0 );
+    /**
+     * Creates a popup for the specified widget.
+     * @since 3.5
+     */
+
+    KPassivePopup( PopupStyle popupStyle, QWidget *parent=0, const char *name=0, WFlags f=0 );
+
+    /**
+     * Creates a popup for the specified window.
+     * @since 3.5
+     */
+    KPassivePopup( PopupStyle popupStyle, WId parent, const char *name=0, WFlags f=0 );
 
     /**
      * Cleans up.
@@ -118,7 +145,7 @@ public:
      */
     QVBox * standardView( const QString& caption, const QString& text,
                           const QPixmap& icon, QWidget *parent = 0L );
-    
+
     /**
      * Returns the main view.
      */
@@ -142,6 +169,13 @@ public:
      * @see setAutoDelete
      */
     bool autoDelete() const { return m_autoDelete; }
+
+    /**
+     * Sets the anchor of this balloon. The balloon tries automatically to adjust
+     * itself somehow around the point.
+     * @since 3.5
+     */
+    void setAnchor( const QPoint& anchor );
 
     /**
      * Convenience method that displays popup with the specified  message  beside the
@@ -185,7 +219,7 @@ public slots:
      * Sets the delay for the popup is removed automatically. Setting the delay to 0
      * disables the #timeout, if you're doing this, you may want to connect the
      * clicked() signal to the hide() slot.
-	 * Setting the delay to -1 makes it use the default value.
+     * Setting the delay to -1 makes it use the default value.
      */
     void setTimeout( int delay );
 
@@ -237,8 +271,20 @@ protected:
      */
     QRect defaultArea() const;
 
+    /**
+     * Updates the transparency mask. Unused if PopupStyle == Boxed
+     * @since 3.5
+     */
+    void updateMask();
+
+    /**
+     * Overwrite to paint the border when PopupStyle == Balloon.
+     * Unused if PopupStyle == Boxed
+     */
+    virtual void paintEvent( QPaintEvent* pe );
+
 private:
-    void init();
+    void init( PopupStyle popupStyle );
 
     WId window;
     QWidget *msgView;
@@ -253,7 +299,8 @@ private:
     bool m_autoDelete;
 
     /* @internal */
-    class Private *d;
+    class Private;
+    Private *d;
 };
 
 #endif // KPASSIVEPOPUP_H
