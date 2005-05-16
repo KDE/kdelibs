@@ -281,12 +281,12 @@ qWarning("Reverting entries");
 }
 
   KConfig sc2( "kconfigtest" );
-  
+
   KConfigGroup sc3( &sc2, "AAA");
   bool bImmutable = sc3.entryIsImmutable("stringEntry1");
 
   qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
-  
+
   sc2.setGroup("AAA");
   test( "hasKey() 1", sc2.hasKey( "stringEntry1" ) == true);
   test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
@@ -297,7 +297,7 @@ qWarning("Reverting entries");
   qWarning("hasDefault() 1: %s", sc2.hasDefault( "stringEntry1" ) ? "YES" : "NO");
 
   sc2.setGroup("Hello");
-  test( "readEntry()", sc2.readEntry( "Test" ) == LOCAL8BITENTRY );
+  test( "readEntry()", sc2.readEntry( "Test" ) == QString::fromLocal8Bit( LOCAL8BITENTRY ) );
   test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel").isEmpty() );
   test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
   test( "readEntry() 2", sc2.readEntry( "stringEntry2" ) == STRINGENTRY2 );
