@@ -139,6 +139,8 @@ KActionCollection::~KActionCollection()
 {
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
   foreach ( KAction* pAction, d->m_actionDict ) {
+    Q_ASSERT (pAction != 0);
+  
     if ( pAction->m_parentCollection == this )
       pAction->m_parentCollection = 0L;
   }
