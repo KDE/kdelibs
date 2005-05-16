@@ -2323,7 +2323,8 @@ DCOPClient::emergencyClose()
     if (!map) return;
 
     foreach (DCOPClient* client, map->values()) {
-       clients.insert(client);
+        if (client)
+            clients.insert(client);
     }
 #ifdef Q_OS_UNIX
     foreach (DCOPClient *cl, clients)
