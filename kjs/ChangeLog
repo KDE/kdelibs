@@ -1,3 +1,7 @@
+2005-05-16  Harri Porten  <porten@kde.org>
+
+	* removed remaining use of deprecated Value::isNull(). 
+
 2005-04-24  Harri Porten  <porten@kde.org>
 
 	* lexer.cpp (isIdentLetter): allow umlauts, accents as well as

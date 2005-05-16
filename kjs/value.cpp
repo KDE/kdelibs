@@ -376,7 +376,7 @@ Number::Number(long unsigned int l)
 
 Number Number::dynamicCast(const Value &v)
 {
-  if (v.isNull() || v.type() != NumberType)
+  if (!v.isValid() || v.type() != NumberType)
     return Number((NumberImp*)0);
 
   return Number(static_cast<NumberImp*>(v.imp()));
