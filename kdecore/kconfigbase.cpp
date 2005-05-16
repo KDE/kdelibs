@@ -380,16 +380,20 @@ QVariant KConfigBase::readPropertyEntry( const char *pKey,
           }
           return QVariant( list );
       }
-      case QVariant::Font:
-          return QVariant( readFontEntry( pKey, &qvariant_cast<QFont>( tmp ) ) );
+      case QVariant::Font: {
+	  QFont tmpf = qvariant_cast<QFont>( tmp );
+          return QVariant( readFontEntry( pKey, &tmpf ) );
+	}
       case QVariant::Point:
           return QVariant( readPointEntry( pKey, &tmp.asPoint() ) );
       case QVariant::Rect:
           return QVariant( readRectEntry( pKey, &tmp.asRect() ) );
       case QVariant::Size:
           return QVariant( readSizeEntry( pKey, &tmp.asSize() ) );
-      case QVariant::Color:
-          return QVariant( readColorEntry( pKey, &qvariant_cast<QColor>( tmp ) ) );
+      case QVariant::Color: {
+	  QColor tmpc = qvariant_cast<QColor>( tmp );
+          return QVariant( readColorEntry( pKey, &tmpc ) );
+	}
       case QVariant::Int:
           return QVariant( readNumEntry( pKey, aDefault.toInt() ) );
       case QVariant::UInt:
