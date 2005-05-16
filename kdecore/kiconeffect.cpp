@@ -281,17 +281,46 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
     return result;
 }
 
+struct KIEImgEdit
+{
+    QImage& img;
+    QVector <QRgb> colors;
+    unsigned int*  data;
+    unsigned int   pixels;
+    
+    KIEImgEdit(QImage& _img):img(_img)
+    {
+	if (img.depth() > 8)
+	{
+	    data   = (unsigned int*)img.bits();
+	    pixels = img.width()*img.height();
+	}
+	else
+	{
+	    pixels = img.numColors();
+	    colors = img.colorTable();
+	    data   = (unsigned int*)colors.data();
+	}
+    }
+    
+    ~KIEImgEdit()
+    {
+	if (img.depth() <= 8)
+	    img.setColorTable(colors);
+    }
+};
+
 // Taken from KImageEffect. We don't want to link kdecore to kdeui! As long
 // as this code is not too big, it doesn't seem much of a problem to me.
 
 void KIconEffect::toGray(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable().data();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    
+    
     int rval, gval, bval, val, alpha, i;
-    for (i=0; i<pixels; i++)
+    for (i=0; i<ii.pixels; i++)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
@@ -304,17 +333,17 @@ void KIconEffect::toGray(QImage &img, float value)
 	} else
 	    data[i] = qRgba(val, val, val, alpha);
     }
+
 }
 
 void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable().data();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+
     int rval, gval, bval, val, alpha, i;
     float rcol = col.red(), gcol = col.green(), bcol = col.blue();
-    for (i=0; i<pixels; i++)
+    for (i=0; i<ii.pixels; i++)
     {
         val = qGray(data[i]);
         if (val < 128)
@@ -348,9 +377,10 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 }
 
 void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
-   int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
-   unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-         : (unsigned int *) img.colorTable().data();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+
    int rval, gval, bval, alpha, i;
    int rw = white.red(), gw = white.green(), bw = white.blue();
    int rb = black.red(), gb = black.green(), bb = black.blue();
@@ -399,10 +429,10 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
 
 void KIconEffect::deSaturate(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = (img.depth() > 8) ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable().data();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+    
     QColor color;
     int h, s, v, i;
     for (i=0; i<pixels; i++)
@@ -417,10 +447,11 @@ void KIconEffect::deSaturate(QImage &img, float value)
 
 void KIconEffect::toGamma(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = (img.depth() > 8) ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable().data();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+
+    
     QColor color;
     int i, rval, gval, bval;
     float gamma;
