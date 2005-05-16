@@ -314,6 +314,9 @@ const KAccel* KActionCollection::kaccel() const
 
 void KActionCollection::_insert( KAction* action )
 {
+  if (!action)
+    return;
+
   char unnamed_name[100];
   const char *name = action->name();
   if( action->objectName().isEmpty() )
@@ -321,11 +324,11 @@ void KActionCollection::_insert( KAction* action )
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
      name = unnamed_name;
   }
-  KAction *a = d->m_actionDict[ name ];
+  KAction *a = d->m_actionDict[ name ]; // this already creates entry
   if ( a == action )
       return;
 
-  d->m_actionDict.insert( name, action );
+  d->m_actionDict.insert (name, action);
 
   emit inserted( action );
 }
@@ -378,7 +381,7 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 {
   KAction* pAction = 0;
 
-  if ( !classname && name )
+  if ( !classname && name && d->m_actionDict.contains(name) )
     pAction = d->m_actionDict[ name ];
 
   else {
