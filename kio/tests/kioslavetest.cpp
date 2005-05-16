@@ -22,6 +22,7 @@
 #include <kio/job.h>
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
+#include <qtimer.h>
 
 #include "kioslavetest.h"
 
@@ -209,10 +210,9 @@ void KioslaveTest::changeProgressMode( int id ) {
 
 
 void KioslaveTest::startJob() {
-  QString sCurrent = QDir::currentDirPath()+"/";
-  KURL::encode_string(sCurrent);
+  KURL sCurrent = KURL::fromPathOrURL (QDir::currentDirPath() );
   QString sSrc( le_source->text() );
-  KURL src( sCurrent, sSrc );
+  KURL src = KURL( sCurrent, sSrc );
 
   if ( !src.isValid() ) {
     QMessageBox::critical(this, "Kioslave Error Message", "Source URL is malformed" );
@@ -520,6 +520,7 @@ int main(int argc, char **argv) {
   args->clear(); // Free up memory
 
   KioslaveTest test( src, dest, op, pr );
+  QTimer::singleShot(100, &test, SLOT(startJob()));
   test.show();
   // Bug in KTMW / Qt / layouts ?
   test.resize( test.sizeHint() );
