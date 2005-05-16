@@ -1998,7 +1998,7 @@ void KURL::setDirectory( const QString &dir)
 
 void KURL::setQuery( const QString &_txt, int encoding_hint)
 {
-   if (_txt[0] == '?')
+   if (!_txt.isEmpty() && _txt[0] == '?')
       _setQuery( _txt.mid(1), encoding_hint );
    else
       _setQuery( _txt, encoding_hint );
