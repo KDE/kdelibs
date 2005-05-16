@@ -138,6 +138,9 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
 
     if ( !ret )
         kdWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
+    else
+        setOpenMode( mode );
+
     ioIndex = 0;
     return ret;
 }
@@ -154,6 +157,7 @@ void KFilterDev::close()
     filter->terminate();
     if ( d->bOpenedUnderlyingDevice )
         filter->device()->close();
+    setOpenMode( QIODevice::NotOpen );
 }
 
 bool KFilterDev::flush()
