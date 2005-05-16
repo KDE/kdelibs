@@ -390,7 +390,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	uint count = 0;
 	// Parse list to get the count
 	while (true) {
-	    if( j > args.count() )
+	    if( j >= args.count() )
 	    {
 		qWarning("List end-delimiter '%s' not found.", delim.latin1());
 		exit(1);
