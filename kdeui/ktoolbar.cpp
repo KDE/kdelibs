@@ -172,6 +172,7 @@ void KToolBarSeparator::drawContents( QPainter* p )
 
         QStyleOption opt;
         opt.init(this);
+        opt.state = flags;
         style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, p, this);
     } else {
         Q3Frame::drawContents(p);
