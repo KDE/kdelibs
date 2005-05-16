@@ -1,6 +1,41 @@
+2005-04-24  Harri Porten  <porten@kde.org>
+
+	* lexer.cpp (isIdentLetter): allow umlauts, accents as well as
+	greek, cyrillic, thai etc. letters in identifier names.
+
+	* date_object.cpp (KRFCDate_parseDate): correctly handle large
+	year numbers in "MM/DD/YYYY" formats
+
+	* date_object.cpp (KRFCDate_parseDate): parse date strings that
+	have no time but a timezone. Like "3/31/2005 GMT".
+
+2005-04-17  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: parse date strings like "Apr17,2005" 
+
+	* function.cpp: don't produce a null string result on unescape("")
+	(spotted in the JSC ChangeLog)
+
+	* string_object.cpp: faking toLocalLowerCase and toLocalUpperCase
+	by using their non-localized counter parts
+
+2005-04-16  Harri Porten  <porten@kde.org>
+
+	* function.cpp: escape() u0000 properly (found in JSC)
+
+	* nodes.cpp: save some cpu cycles on variable declarations 
+
+	* error_object.cpp: made prototype read-only (JSC patch) 
+
+	* string_object.cpp: adopted tag casing and code formatting to JSC-style
+
 2005-02-27  Harri Porten  <porten@kde.org>
 
 	* regexp_object.cpp: fixed RegExp(/regexp/) constructor
+
+	* regexp_object.cpp: throw exception on invalid regexps
+
+============================= KDE 3.4.0 ============================	
 
 2004-11-07  Harri Porten  <porten@kde.org>
 

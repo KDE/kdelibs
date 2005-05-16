@@ -134,6 +134,8 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   substring		StringProtoFuncImp::Substring	DontEnum|Function	2
   toLowerCase		StringProtoFuncImp::ToLowerCase	DontEnum|Function	0
   toUpperCase		StringProtoFuncImp::ToUpperCase	DontEnum|Function	0
+  toLocaleLowerCase	StringProtoFuncImp::ToLocaleLowerCase DontEnum|Function	0
+  toLocaleUpperCase     StringProtoFuncImp::ToLocaleUpperCase DontEnum|Function	0
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
 # I guess we need to generate two hashtables in the .lut.h file, and use #ifdef
@@ -292,10 +294,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       } else {
 	// return array of matches
 	List list;
-	int lastIndex = 0;
 	while (pos >= 0) {
 	  list.append(String(mstr));
-	  lastIndex = pos;
 	  pos += mstr.isEmpty() ? 1 : mstr.size();
 	  delete [] *ovector;
 	  mstr = reg->match(s, pos, &pos, ovector);
@@ -504,58 +504,56 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     break;
   case ToLowerCase:
+  case ToLocaleLowerCase: // FIXME: To get this 100% right we need to detect Turkish and change I to lowercase i without a dot.
     for (i = 0; i < len; i++)
       s[i] = s[i].toLower();
     result = String(s);
     break;
   case ToUpperCase:
+  case ToLocaleUpperCase: // FIXME: To get this 100% right we need to detect Turkish and change i to uppercase I with a dot.
     for (i = 0; i < len; i++)
       s[i] = s[i].toUpper();
     result = String(s);
     break;
 #ifndef KJS_PURE_ECMA
   case Big:
-    result = String("<BIG>" + s + "</BIG>");
+    result = String("<big>" + s + "</big>");
     break;
   case Small:
-    result = String("<SMALL>" + s + "</SMALL>");
+    result = String("<small>" + s + "</small>");
     break;
   case Blink:
-    result = String("<BLINK>" + s + "</BLINK>");
+    result = String("<blink>" + s + "</blink>");
     break;
   case Bold:
-    result = String("<B>" + s + "</B>");
+    result = String("<b>" + s + "</b>");
     break;
   case Fixed:
-    result = String("<TT>" + s + "</TT>");
+    result = String("<tt>" + s + "</tt>");
     break;
   case Italics:
-    result = String("<I>" + s + "</I>");
+    result = String("<i>" + s + "</i>");
     break;
   case Strike:
-    result = String("<STRIKE>" + s + "</STRIKE>");
+    result = String("<strike>" + s + "</strike>");
     break;
   case Sub:
-    result = String("<SUB>" + s + "</SUB>");
+    result = String("<sub>" + s + "</sub>");
     break;
   case Sup:
-    result = String("<SUP>" + s + "</SUP>");
+    result = String("<sup>" + s + "</sup>");
     break;
   case Fontcolor:
-    result = String("<FONT COLOR=\"" + a0.toString(exec) + "\">"
-		    + s + "</FONT>");
+    result = String("<font color=\"" + a0.toString(exec) + "\">" + s + "</font>");
     break;
   case Fontsize:
-    result = String("<FONT SIZE=\"" + a0.toString(exec) + "\">"
-		    + s + "</FONT>");
+    result = String("<font size=\"" + a0.toString(exec) + "\">" + s + "</font>");
     break;
   case Anchor:
-    result = String("<a name=\"" + a0.toString(exec) + "\">"
-		    + s + "</a>");
+    result = String("<a name=\"" + a0.toString(exec) + "\">" + s + "</a>");
     break;
   case Link:
-    result = String("<a href=\"" + a0.toString(exec) + "\">"
-		    + s + "</a>");
+    result = String("<a href=\"" + a0.toString(exec) + "\">" + s + "</a>");
     break;
 #endif
   }

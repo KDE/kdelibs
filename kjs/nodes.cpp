@@ -1243,7 +1243,7 @@ bool AppendStringNode::deref()
 Value AppendStringNode::evaluate(ExecState *exec) const
 {
   UString s = term->toString(exec);
-  KJS_CHECKEXCEPTIONVALUE;
+  KJS_CHECKEXCEPTIONVALUE
 
   return String(s + str);
 }
@@ -1465,7 +1465,7 @@ bool BinaryLogicalNode::deref()
 Value BinaryLogicalNode::evaluate(ExecState *exec) const
 {
   Value v1 = expr1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE;
+  KJS_CHECKEXCEPTIONVALUE
   bool b1 = v1.toBoolean(exec);
   if ((!b1 && oper == OpAnd) || (b1 && oper == OpOr))
     return v1;
@@ -1780,7 +1780,10 @@ Value VarDeclNode::evaluate(ExecState *exec) const
     flags |= ReadOnly;
   variable.put(exec, ident, val, flags);
 
-  return String(ident.ustring());
+  // the spec wants us to return the name of the identifier here
+  // but we'll save the construction and copying as the return
+  // value isn't used by the caller
+  return Value();
 }
 
 void VarDeclNode::processVarDecls(ExecState *exec)
@@ -1827,7 +1830,7 @@ bool VarDeclListNode::deref()
 Value VarDeclListNode::evaluate(ExecState *exec) const
 {
   for (const VarDeclListNode *n = this; n; n = n->list) {
-    n->var->evaluate(exec);
+    (void)n->var->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
   }
   return Undefined();
@@ -2246,7 +2249,7 @@ Completion ForInNode::execute(ExecState *exec)
   Completion c;
 
   if ( varDecl ) {
-    varDecl->evaluate(exec);
+    (void)varDecl->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
 

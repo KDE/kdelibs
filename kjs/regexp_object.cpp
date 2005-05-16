@@ -270,7 +270,14 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
       reflags |= RegExp::IgnoreCase;
   if (multiline)
       reflags |= RegExp::Multiline;
-  dat->setRegExp(new RegExp(p, reflags));
+  RegExp *re = new RegExp(p, reflags);
+  if (!re->isValid()) {
+    Object err = Error::create(exec, SyntaxError,
+                               "Invalid regular expression");
+    exec->setException(err);
+    return err;
+  }
+  dat->setRegExp(re);
 
   return obj;
 }
