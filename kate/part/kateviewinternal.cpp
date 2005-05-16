@@ -55,7 +55,7 @@
 #include <QClipboard>
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
-  : QWidget (view, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase )
+  : QWidget (view, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase)
   , editSessionNumber (0)
   , editIsRunning (false)
   , m_view (view)
@@ -162,8 +162,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   cXPos = 0;
 
   setAcceptDrops( true );
-  setBackgroundMode( Qt::NoBackground );
-
+  
   // event filter
   installEventFilter(this);
 

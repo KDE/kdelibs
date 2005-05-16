@@ -714,8 +714,6 @@ KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent
 {
   setSizePolicy( QSizePolicy(  QSizePolicy::Fixed, QSizePolicy::Minimum ) );
 
-  setBackgroundMode( Qt::NoBackground );
-
   m_doc->setDescription( MarkInterface::markType01, i18n("Bookmark") );
   m_doc->setPixmap( MarkInterface::markType01, QPixmap((const char**)bookmark_xpm) );
 
