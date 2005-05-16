@@ -54,10 +54,10 @@
 <!ENTITY relecteurCharlesDemartigny      '<othercredit role="reviewer"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurSimonDepiets     '<othercredit role="translator"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY relecteurSimonDepiets     '<othercredit role="reviewer"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurYvesDessertine     '<othercredit role="translator"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>yves.d@hrnet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY traducteurYvesDessertine     '<othercredit role="translator"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>kde@yvesd.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>kde@yvesd.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurChristopheDioux    '<othercredit role="translator"><firstname>Christophe</firstname><surname>Dioux</surname><affiliation><address><email>chdioux@club-internet.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheDioux     '<othercredit role="reviewer"><firstname>Christophe</firstname><surname>Dioux</surname><affiliation><address><email>chdioux@club-internet.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -175,7 +175,7 @@
 <!ENTITY CecileDelafond    'Cécile Delafond <email>cecile@delafond.org</email>'>
 <!ENTITY CharlesDemartigny 'Charles Demartigny <email>charles@demartigny.com</email>'>
 <!ENTITY SimonDepiets    'Simon Depiets <email>2df@tuxfamily.org</email>'>
-<!ENTITY YvesDessertine    'Yves Dessertine <email>yves.d@hrnet.fr</email>'>
+<!ENTITY YvesDessertine    'Yves Dessertine <email>kde@yvesd.net</email>'>
 <!ENTITY ChristopheDioux   'Christophe Dioux <email>chdioux@club-internet.fr</email>'>
 <!ENTITY PhillipDucharme   'Phillip Ducharme <email>philip.ducharme@hermes.usherb.ca</email>'>
 <!ENTITY NicolasDupuis     'Nicolas Dupuis <email>ndupuis@tiscali.be</email>'>
