@@ -220,14 +220,14 @@ public:
     bool hasUrls:1, hasSpec:1;
 
 protected:
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     const KService &service;
 };
 
 int
-KRunMX1::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
    uint option = str[pos + 1].unicode();
    switch( option ) {
@@ -269,7 +269,7 @@ public:
     bool ignFile:1;
 
 protected:
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     void subst( int option, const KURL &url, QStringList &ret );
@@ -302,7 +302,7 @@ KRunMX2::subst( int option, const KURL &url, QStringList &ret )
 }
 
 int
-KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
    uint option = str[pos + 1].unicode();
    switch( option ) {
