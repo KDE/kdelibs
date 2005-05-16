@@ -2,11 +2,11 @@
 
 INCLUDES = -I$(srcdir)/.. $(all_includes)
 
-check_PROGRAMS = resolution socketimpltest streamsockettest serversockettest
+check_PROGRAMS = resolution socketdevicetest streamsockettest serversockettest
 LDADD = ../../libkdecore.la
 
 resolution_SOURCES = resolution.cpp
-socketimpltest_SOURCES = socketimpltest.cpp
+socketdevicetest_SOURCES = socketdevicetest.cpp
 streamsockettest_SOURCES = streamsockettest.cpp
 serversockettest_SOURCES = serversockettest.cpp
 
