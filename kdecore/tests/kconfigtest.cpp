@@ -16,200 +16,25 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-// $Id$
 
-//
-// configtest.cpp: libKDEcore example
-//
-// demonstrates use of KConfig class
-//
-// adapted from Qt widgets demo
+#include <kunittest/tester.h>
+#include <kunittest/module.h>
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <kapplication.h>
-#include <qdialog.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qdatetime.h>
-#include <kdebug.h>
-#include <ksimpleconfig.h>
-#include <config.h>
-
-// Standard Qt widgets
-
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-
-// KDE includes
 #include <kconfig.h>
 
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp/"
-#endif
-
-//
-// KConfigTestView contains lots of Qt widgets.
-//
-
-#include "kconfigtest.h"
-//
-// Construct the KConfigTestView with buttons
-//
-
-void test(const char *msg, bool result)
+class KConfigTest : public KUnitTest::Tester
 {
-    fprintf( stderr, "Testing %s ..... %s\n", msg, result ? "OK" : "FAILED" );
-}
+public:
+    void allTests();
+private:
+    void writeConfigFile();
+    void revertEntries();
+};
 
-KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
-    : QDialog( parent, name ),
-      pConfig( 0L ),
-      pFile( 0L ),
-      pStream( 0L )
-{
-  // Set the window caption/title
+KUNITTEST_MODULE( kunittest_kconfig, "KConfigTest" );
+KUNITTEST_MODULE_REGISTER_TESTER( KConfigTest );
 
-  setCaption( "KConfig test" );
-
-  // Label and edit for the app config file
-  pAppFileLabel = new QLabel( this, "appconfiglabel" );
-  pAppFileLabel->setText( "Application config file:" );
-  pAppFileLabel->setGeometry( 20, 20, 200, 20 );
-
-  pAppFileEdit = new QLineEdit( this, "appconfigedit" );
-  pAppFileEdit->setGeometry( 240, 20, 160, 20 );
-  connect( pAppFileEdit, SIGNAL(returnPressed()),
-	   SLOT(appConfigEditReturnPressed()));
-
-  // Label and edit for the group
-  pGroupLabel = new QLabel( this, "grouplabel" );
-  pGroupLabel->setText( "Group:" );
-  pGroupLabel->setGeometry( 20, 60, 80, 20 );
-
-  pGroupEdit = new QLineEdit( this, "groupedit" );
-  pGroupEdit->setGeometry( 120, 60, 100, 20 );
-  connect( pGroupEdit, SIGNAL(returnPressed()),
-	   SLOT(groupEditReturnPressed()));
-
-  // Edit and label for the key/value pair
-  pKeyEdit = new QLineEdit( this, "keyedit" );
-  pKeyEdit->setGeometry( 20, 100, 80, 20 );
-  connect( pKeyEdit, SIGNAL( returnPressed()),
-	   SLOT(keyEditReturnPressed()));
-
-  pEqualsLabel = new QLabel( this, "equalslabel" );
-  pEqualsLabel->setGeometry( 105, 100, 20, 20 );
-  pEqualsLabel->setText( "=" );
-
-  pValueEdit = new QLineEdit( this, "valueedit" );
-  pValueEdit->setGeometry( 120, 100, 100, 20 );
-  pValueEdit->setText( "---" );
-
-  pWriteButton = new QPushButton( this, "writebutton" );
-  pWriteButton->setGeometry( 20,140, 80, 20 );
-  pWriteButton->setText( "Write entry" );
-  connect( pWriteButton, SIGNAL(clicked()), SLOT( writeButtonClicked() ) );
-
-  // Labels for the info line
-  pInfoLabel1 = new QLabel( this, "infolabel1" );
-  pInfoLabel1->setGeometry( 20, 200, 60, 20 );
-  pInfoLabel1->setText( "Info:" );
-
-  pInfoLabel2 = new QLabel( this, "infolabel2" );
-  pInfoLabel2->setGeometry( 100, 200, 300, 20 );
-  pInfoLabel2->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-
-  // Quit button
-  pQuitButton = new QPushButton( this, "quitbutton" );
-  pQuitButton->setText( "Quit" );
-  pQuitButton->setGeometry( 340, 60, 60, 60 );
-  connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
-
-  // create a default KConfig object in order to be able to start right away
-  pConfig = new KConfig( QString::null );
-}
-
-KConfigTestView::~KConfigTestView()
-{
-    delete pConfig;
-    delete pFile;
-    delete pStream;
-}
-
-void KConfigTestView::appConfigEditReturnPressed()
-{
-    // if there already was a config object, delete it and its associated data
-    delete pConfig;
-    pConfig = 0L;
-    delete pFile;
-    pFile = 0L;
-    delete pStream;
-    pStream = 0L;
-
-  // create a new config object
-  if( !pAppFileEdit->text().isEmpty() )
-	  pConfig = new KConfig( pAppFileEdit->text() );
-
-  pInfoLabel2->setText( "New config object created." );
-}
-
-void KConfigTestView::groupEditReturnPressed()
-{
-  pConfig->setGroup( pGroupEdit->text() );
-  // according to the Qt doc, this is begging for trouble, but for a
-  // test program this will do
-  QString aText;
-  aText.sprintf( "Group set to %s", QString( pConfig->group() ).isEmpty() ?
-		 QString("<default>").ascii() : pConfig->group().ascii() );
-  pInfoLabel2->setText( aText );
-}
-
-void KConfigTestView::keyEditReturnPressed()
-{
-  QString aValue = pConfig->readEntry( pKeyEdit->text() );
-  // just checking aValue.isNull() would be easier here, but this is
-  // to demonstrate the HasKey()-method. Besides, it is better data
-  // encapsulation because we do not make any assumption about coding
-  // non-values here.
-  if( !pConfig->hasKey( pKeyEdit->text() ) )
-    {
-      pInfoLabel2->setText( "Key not found!" );
-      pValueEdit->setText( "---" );
-    }
-  else
-    {
-      pInfoLabel2->setText( "Key found!" );
-      pValueEdit->setText( aValue );
-    }
-}
-
-void KConfigTestView::writeButtonClicked()
-{
-  pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
-  pInfoLabel2->setText( "Entry written" );
-
-  kdDebug() << "Entry written: " << 27 << endl;
-}
-
-//
-// Create and display our KConfigTestView.
-//
-
-int main( int argc, char **argv )
-{
-  KApplication  a( argc, argv, "bla" );
-
-  // KConfigTestView   *w = new KConfigTestView();
-  // a.setMainWidget( w );
-  // w->exec();
-
-  // test data
+// test data
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
 #define STRINGENTRY1 "hello"
@@ -225,9 +50,8 @@ int main( int argc, char **argv )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 #define STRINGLISTENTRY QStringList( "Hello," )
 
-if (argc == 2)
+void KConfigTest::writeConfigFile()
 {
-qWarning("Adding entries.");
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("AAA");
@@ -261,9 +85,10 @@ qWarning("Adding entries.");
   sc.sync();
 }
 
-if (argc == 3)
+// ### TODO: call this, and test the state of things afterwards
+void KConfigTest::revertEntries()
 {
-qWarning("Reverting entries");
+  qWarning("Reverting entries");
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("Hello");
@@ -280,35 +105,38 @@ qWarning("Reverting entries");
   sc.sync();
 }
 
+void KConfigTest::allTests()
+{
   KConfig sc2( "kconfigtest" );
 
   KConfigGroup sc3( &sc2, "AAA");
   bool bImmutable = sc3.entryIsImmutable("stringEntry1");
 
-  qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
+  CHECK( bImmutable, false );
+  //qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
   sc2.setGroup("AAA");
-  test( "hasKey() 1", sc2.hasKey( "stringEntry1" ) == true);
-  test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
-  test( "enryIsImmutable() 1", sc2.entryIsImmutable("stringEntry1") == bImmutable);
-  test( "hasKey() 2", sc2.hasKey( "stringEntry2" ) == false);
-  test( "readEntry() 2", sc2.readEntry( "stringEntry2", "bla" ) == "bla" );
+  CHECK( sc2.hasKey( "stringEntry1" ), true );
+  CHECK( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  CHECK( sc2.entryIsImmutable("stringEntry1"), bImmutable );
+  CHECK( sc2.hasKey( "stringEntry2" ), false );
+  CHECK( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
 
-  qWarning("hasDefault() 1: %s", sc2.hasDefault( "stringEntry1" ) ? "YES" : "NO");
+  CHECK( sc2.hasDefault( "stringEntry1" ), false );
 
   sc2.setGroup("Hello");
-  test( "readEntry()", sc2.readEntry( "Test" ) == QString::fromLocal8Bit( LOCAL8BITENTRY ) );
-  test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel").isEmpty() );
-  test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
-  test( "readEntry() 2", sc2.readEntry( "stringEntry2" ) == STRINGENTRY2 );
-  test( "readEntry() 3", sc2.readEntry( "stringEntry3" ) == STRINGENTRY3 );
-  test( "readEntry() 4", sc2.readEntry( "stringEntry4" ) == STRINGENTRY4 );
-  test( "hasKey() 5", sc2.hasKey( "stringEntry5" ) == false);
-  test( "readEntry() 5", sc2.readEntry( "stringEntry5", "test" ) == "test" );
-  test( "hasKey() 6", sc2.hasKey( "stringEntry6" ) == false);
-  test( "readEntry() 6", sc2.readEntry( "stringEntry6", "foo" ) == "foo" );
-  test( "readBoolEntry() 1", sc2.readBoolEntry( "boolEntry1" ) == BOOLENTRY1 );
-  test( "readBoolEntry() 2", sc2.readBoolEntry( "boolEntry2" ) == BOOLENTRY2 );
+  CHECK( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
+  CHECK( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
+  CHECK( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  CHECK( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
+  CHECK( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
+  CHECK( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
+  CHECK( sc2.hasKey( "stringEntry5" ), false);
+  CHECK( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
+  CHECK( sc2.hasKey( "stringEntry6" ), false);
+  CHECK( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
+  CHECK( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
+  CHECK( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
 
 #if 0
   QString s;
@@ -324,12 +152,9 @@ qWarning("Reverting entries");
 
   sc2.setGroup("Bye");
 
-  test( "readPointEntry()", sc2.readPointEntry( "pointEntry" ) == POINTENTRY );
-  test( "readSizeEntry()", sc2.readSizeEntry( "sizeEntry" ) == SIZEENTRY);
-  test( "readRectEntry()", sc2.readRectEntry( "rectEntry" ) == RECTENTRY );
-  test( "readDateTimeEntry()", sc2.readDateTimeEntry( "dateTimeEntry" ) == DATETIMEENTRY );
-  test( "readListEntry()", sc2.readListEntry( "stringListEntry") == STRINGLISTENTRY );
+  CHECK( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
+  CHECK( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
+  CHECK( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
+  CHECK( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
+  CHECK( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
 }
-
-#include "kconfigtest.moc"
-
