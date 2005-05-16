@@ -28,9 +28,3 @@ katejscript.lut.h : $(srcdir)/katejscript.cpp $(CREATE_HASH_TABLE)
 katejscript.lo: katejscript.lut.h
 
 CLEANFILES = $(LUT_FILES)
-
-check_PROGRAMS = katetest
-
-katetest_SOURCES = katetest.cpp
-katetest_LDADD = ./libkatepart.la
-katetest_LDFLAGS = $(KDE_RPATH)
