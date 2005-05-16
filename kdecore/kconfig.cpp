@@ -148,7 +148,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   if (aIt == aEntryMap.end())
      return tmpMap;
   ++aIt; // advance past special group entry marker
-  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
   {
     // Leave the default values out && leave deleted entries out
     if (!aIt.key().bDefault && !(*aIt).bDeleted)
