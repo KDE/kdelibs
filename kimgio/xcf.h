@@ -21,18 +21,27 @@
  *
  */
 
-#include <qimage.h>
-#include <qiodevice.h>
-#include <q3valuestack.h>
-#include <q3valuevector.h>
+
+#include <QImageIOHandler>
+#include <QImage>
+#include <QIODevice>
+#include <QVector>
 
 #include "gimp.h"
 
+class XCFHandler : public QImageIOHandler
+{
+public:
+    XCFHandler();
 
-extern "C" {
-void kimgio_xcf_read(QImageIO *);
-void kimgio_xcf_write(QImageIO *);
-}
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 const float INCHESPERMETER = (100.0 / 2.54);
 
@@ -43,14 +52,14 @@ const float INCHESPERMETER = (100.0 / 2.54);
  * parallel processing on a tile-by-tile basis. Here, though,
  * we just read them in en-masse and store them in a matrix.
  */
-typedef Q3ValueVector<Q3ValueVector<QImage> > Tiles;
+typedef QVector<QVector<QImage> > Tiles;
 
 
 
 class XCFImageFormat {
 public:
 	XCFImageFormat();
-	void readXCF(QImageIO* image_io);
+	bool readXCF(QIODevice *device, QImage *image);
 
 
 private:
@@ -85,7 +94,7 @@ private:
 			Q_UINT32 opacity;
 			Q_UINT32 visible;
 			Q_UINT32 show_masked;
-			uchar Qt::red, Qt::green, Qt::blue;
+			uchar red, green, blue;
 			Q_UINT32 tattoo;
 		} mask_channel;
 
@@ -132,7 +141,7 @@ private:
 		Q_INT32 tattoo;			//!< (unique identifier?)
 		Q_UINT32 unit;			//!< Units of The GIMP (inch, mm, pica, etc...)
 		Q_INT32 num_colors;		//!< number of colors in an indexed image
-		Q3ValueVector<QRgb> palette;	//!< indexed image color palette
+		QVector<QRgb> palette;	        //!< indexed image color palette
 
 		int num_layers;			//!< number of layers
 		Layer layer;			//!< most recently read layer

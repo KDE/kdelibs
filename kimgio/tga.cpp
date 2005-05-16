@@ -70,7 +70,7 @@ namespace {	// Private.
 		ushort height;
 		uchar pixel_size;
 		uchar flags;
-	
+
 		enum { SIZE = 18 }; // const static int SIZE = 18;
 	};
 
@@ -127,7 +127,7 @@ namespace {	// Private.
 		ushort g : 5;
 		ushort r : 5;
 	};
-	
+
 	static bool HasAlpha( const TgaHeader & tga )
 	{
 		return tga.pixel_size == 32;
@@ -139,7 +139,7 @@ namespace {	// Private.
 		bool rgb;
 		bool grey;
 		bool supported;
-	
+
 		TgaHeaderInfo( const TgaHeader & tga ) : rle(false), pal(false), rgb(false), grey(false), supported(true)
 		{
 			switch( tga.image_type ) {
@@ -152,28 +152,28 @@ namespace {	// Private.
 					}
 					pal = true;
 					break;
-		
+
 				case TGA_TYPE_RLE_RGB:
 					rle = true;
 					// no break is intended!
 				case TGA_TYPE_RGB:
 					rgb = true;
 					break;
-		
+
 				case TGA_TYPE_RLE_GREY:
 					rle = true;
 					// no break is intended!
 				case TGA_TYPE_GREY:
 					grey = true;
 					break;
-		
+
 				default:
 					// Error, unknown image type.
 					supported = false;
 			}
 		}
 	};
-	
+
 
 
 	static bool LoadTGA( QDataStream & s, const TgaHeader & tga, QImage &img )
@@ -189,7 +189,7 @@ namespace {	// Private.
   			kdDebug(399) << "This TGA file is not supported." << endl;
 			return false;
 		}
-		
+
 		// Enable alpha buffer for transparent images.
 		if( HasAlpha( tga ) ) {
 			img.setAlphaBuffer( true );
@@ -198,7 +198,7 @@ namespace {	// Private.
 		uint pixel_size = (tga.pixel_size/8);
 		uint size = tga.width * tga.height * pixel_size;
 
-		
+
 		// Read palette.
 		char palette[768];
 		if( info.pal ) {
@@ -213,15 +213,15 @@ namespace {	// Private.
 			// Decode image.
 			char * dst = (char *)image;
 			int num = size;
-	
+
 			while (num > 0) {
 				// Get packet header.
-				uchar c; 
+				uchar c;
 				s >> c;
-	
+
 				uint count = (c & 0x7f) + 1;
 				num -= count * pixel_size;
-	
+
 				if (c & 0x80) {
 					// RLE pixels.
                                         assert(pixel_size <= 8);
@@ -245,7 +245,7 @@ namespace {	// Private.
 			s.readRawBytes( (char *)image, size );
 		}
 
-		// Convert image to internal format.				
+		// Convert image to internal format.
 		int y_start, y_step, y_end;
 		if( tga.flags & TGA_ORIGIN_UPPER ) {
 			y_start = 0;
@@ -262,7 +262,7 @@ namespace {	// Private.
 
 		for( int y = y_start; y != y_end; y += y_step ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
-		
+
 			if( info.pal ) {
 				// Paletted.
 				for( int x = 0; x < tga.width; x++ ) {
@@ -303,65 +303,67 @@ namespace {	// Private.
 
 		// Free image.
 		delete [] image;
-		
+
 		return true;
 	}
-	
+
 } // namespace
 
 
-KDE_EXPORT void kimgio_tga_read( QImageIO *io )
+TGAHandler::TGAHandler()
 {
-	//kdDebug(399) << "Loading TGA file!" << endl;
-	
-	QDataStream s( io->ioDevice() );
-	s.setByteOrder( QDataStream::LittleEndian );
-
-
-	// Read image header.
-	TgaHeader tga;
-	s >> tga;
-	s.device()->at( TgaHeader::SIZE + tga.id_length );
-
-	// Check image file format.
-	if( s.atEnd() ) {
-		kdDebug(399) << "This TGA file is not valid." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
-
-	// Check supported file types.
-	if( !IsSupported(tga) ) {
-		kdDebug(399) << "This TGA file is not supported." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
-				
-
-	QImage img;
-	bool result = LoadTGA(s, tga, img);
-		
-	if( result == false ) {
-  		kdDebug(399) << "Error loading TGA file." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
-
-
-    io->setImage( img );
-    io->setStatus( 0 );
 }
 
-
-KDE_EXPORT void kimgio_tga_write( QImageIO *io )
+bool TGAHandler::canRead() const
 {
-    QDataStream s( io->ioDevice() );
+    return canRead(device());
+}
+
+bool TGAHandler::read(QImage *outImage)
+{
+    //kdDebug(399) << "Loading TGA file!" << endl;
+
+    QDataStream s( device() );
     s.setByteOrder( QDataStream::LittleEndian );
 
-    const QImage img = io->image();
+
+    // Read image header.
+    TgaHeader tga;
+    s >> tga;
+    s.device()->at( TgaHeader::SIZE + tga.id_length );
+
+    // Check image file format.
+    if( s.atEnd() ) {
+        kdDebug(399) << "This TGA file is not valid." << endl;
+        return false;
+    }
+
+    // Check supported file types.
+    if( !IsSupported(tga) ) {
+        kdDebug(399) << "This TGA file is not supported." << endl;
+        return false;
+    }
+
+
+    QImage img;
+    bool result = LoadTGA(s, tga, img);
+
+    if( result == false ) {
+        kdDebug(399) << "Error loading TGA file." << endl;
+        return false;
+    }
+
+
+    *outImage = img;
+    return true;
+}
+
+bool TGAHandler::write(const QImage &image)
+{
+    QDataStream s( device() );
+    s.setByteOrder( QDataStream::LittleEndian );
+
+    const QImage& img = image;
     const bool hasAlpha = img.hasAlphaBuffer();
     for( int i = 0; i < 12; i++ )
         s << targaMagic[i];
@@ -382,6 +384,75 @@ KDE_EXPORT void kimgio_tga_write( QImageIO *io )
                 s << Q_UINT8( qAlpha( color ) );
         }
 
-    io->setStatus( 0 );
+    return true;
 }
- 
+
+QByteArray TGAHandler::name() const
+{
+    return "tga";
+}
+
+bool TGAHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("TGAHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+    QByteArray head = device->readLine(64);
+    int readBytes = head.size();
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    const QRegExp regexp("^.\x01[\x01-\x03\x09-\x0b]\x01{3}.[\x01\x18]");
+    QString data(head);
+
+    return data.contains(regexp);
+}
+
+
+class TGAPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList TGAPlugin::keys() const
+{
+    return QStringList() << "tga" << "TGA";
+}
+
+QImageIOPlugin::Capabilities TGAPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "tga" || format == "TGA")
+        return Capabilities(CanRead | CanWrite);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && TGAHandler::canRead(device))
+        cap |= CanRead;
+    if (device->isWritable())
+        cap |= CanWrite;
+    return cap;
+}
+
+QImageIOHandler *TGAPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new TGAHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(TGAPlugin)

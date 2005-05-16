@@ -51,7 +51,7 @@ namespace {	// Private.
 		ushort depth;
 		ushort color_mode;
 	};
-	
+
 	static QDataStream & operator>> ( QDataStream & s, PSDHeader & header )
 	{
 		s >> header.signature;
@@ -114,7 +114,7 @@ namespace {	// Private.
 		if( !img.create( header.width, header.height, 32 )) {
 			return false;
 		}
-	
+
 		uint tmp;
 
 		// Skip mode data.
@@ -128,48 +128,48 @@ namespace {	// Private.
 		// Skip the reserved data.
 		s >> tmp;
 		s.device()->at( s.device()->at() + tmp );
-		
+
 		// Find out if the data is compressed.
 		// Known values:
 		//   0: no compression
 		//   1: RLE compressed
 		ushort compression;
 		s >> compression;
-		
+
 		if( compression > 1 ) {
 			// Unknown compression type.
 			return false;
 		}
 
 		uint channel_num = header.channel_count;
-		
+
 		// Clear the image.
 		if( channel_num < 4 ) {
 			img.fill(qRgba(0, 0, 0, 0xFF));
 		}
 		else {
-			// Enable alpha.		
+			// Enable alpha.
 			img.setAlphaBuffer( true );
-			
+
 			// Ignore the other channels.
-			channel_num = 4;			
+			channel_num = 4;
 		}
-		
+
 		const uint pixel_count = header.height * header.width;
-		
+
 		static const uint components[4] = {2, 1, 0, 3}; // @@ Is this endian dependant?
-		
+
 		if( compression ) {
-		
+
 			// Skip row lengths.
                         if(!seekBy(s, header.height*header.channel_count*sizeof(ushort)))
                                 return false;
 
-			// Read RLE data.						
+			// Read RLE data.
 			for(uint channel = 0; channel < channel_num; channel++) {
-			
+
 				uchar * ptr = img.bits() + components[channel];
-				
+
 				uint count = 0;
 				while( count < pixel_count ) {
 					uchar c;
@@ -177,7 +177,7 @@ namespace {	// Private.
                                                 return false;
 					s >> c;
 					uint len = c;
-					
+
 					if( len < 128 ) {
 						// Copy next len+1 bytes literally.
 						len++;
@@ -190,7 +190,7 @@ namespace {	// Private.
 							ptr += 4;
 							len--;
 						}
-					} 
+					}
 					else if( len > 128 ) {
 						// Next -len+1 bytes in the dest are replicated from next source byte.
 						// (Interpret len as a negative 8-bit int.)
@@ -221,7 +221,7 @@ namespace {	// Private.
 			for(uint channel = 0; channel < channel_num; channel++) {
 
 				uchar * ptr = img.bits() + components[channel];
-			
+
 				// Read the data.
 				uint count = pixel_count;
 				while( count != 0 ) {
@@ -238,45 +238,122 @@ namespace {	// Private.
 } // Private
 
 
-void kimgio_psd_read( QImageIO *io )
+PSDHandler::PSDHandler()
 {
-	QDataStream s( io->ioDevice() );
-	s.setByteOrder( QDataStream::BigEndian );
+}
 
-	PSDHeader header;
-	s >> header;
+bool PSDHandler::canRead() const
+{
+     return canRead(device());
+}
 
-	// Check image file format.
-	if( s.atEnd() || !IsValid( header ) ) {
-		kdDebug(399) << "This PSD file is not valid." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
+bool PSDHandler::read(QImage *image)
+{
+    QDataStream s( device() );
+    s.setByteOrder( QDataStream::BigEndian );
 
-	// Check if it's a supported format.
-	if( !IsSupported( header ) ) {
-		kdDebug(399) << "This PSD file is not supported." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
+    PSDHeader header;
+    s >> header;
 
-	QImage img;
-	if( !LoadPSD(s, header, img) ) {
-		kdDebug(399) << "Error loading PSD file." << endl;
-		io->setImage( 0 );
-		io->setStatus( -1 );
-		return;
-	}
+    // Check image file format.
+    if( s.atEnd() || !IsValid( header ) ) {
+        kdDebug(399) << "This PSD file is not valid." << endl;
+        return false;
+    }
 
-    io->setImage( img );
-    io->setStatus( 0 );
+    // Check if it's a supported format.
+    if( !IsSupported( header ) ) {
+        kdDebug(399) << "This PSD file is not supported." << endl;
+        return false;
+    }
+
+    QImage img;
+    if( !LoadPSD(s, header, img) ) {
+        kdDebug(399) << "Error loading PSD file." << endl;
+        return false;
+    }
+
+    *image = img;
+    return true;
+}
+
+bool PSDHandler::write(const QImage &)
+{
+    // TODO Stub!
+    return false;
+}
+
+QByteArray PSDHandler::name() const
+{
+    return "psd";
+}
+
+bool PSDHandler::canRead(QIODevice *device)
+{
+       if (!device) {
+        qWarning("PSDHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+
+    char head[4];
+    qint64 readBytes = device->read(head, sizeof(head));
+    if (readBytes != sizeof(head)) {
+        if (device->isSequential()) {
+            while (readBytes > 0)
+                device->ungetChar(head[readBytes-- - 1]);
+        } else {
+            device->seek(oldPos);
+        }
+        return false;
+    }
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    return qstrncmp(head, "8BPS", 4) == 0;
 }
 
 
-void kimgio_psd_write( QImageIO * )
+class PSDPlugin : public QImageIOPlugin
 {
-	// TODO Stub!
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList PSDPlugin::keys() const
+{
+    return QStringList() << "psd" << "PSD";
 }
 
+QImageIOPlugin::Capabilities PSDPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "psd" || format == "PSD")
+        return Capabilities(CanRead);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && PSDHandler::canRead(device))
+        cap |= CanRead;
+    return cap;
+}
+
+QImageIOHandler *PSDPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new PSDHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(PSDPlugin)

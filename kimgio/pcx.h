@@ -10,17 +10,24 @@
 #ifndef PCX_H
 #define PCX_H
 
-#include <qglobal.h>
-#include <qdatastream.h>
-#include <qcolor.h>
 
-class QImageIO;
+#include <QImageIOHandler>
+#include <QDataStream>
+#include <QColor>
 
-extern "C"
+class PCXHandler : public QImageIOHandler
 {
-  void kimgio_pcx_read( QImageIO * );
-  void kimgio_pcx_write( QImageIO * );
-}
+public:
+    PCXHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 class RGB
 {

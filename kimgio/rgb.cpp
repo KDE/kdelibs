@@ -28,46 +28,11 @@
 #include <kdebug.h>
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-
-KDE_EXPORT void kimgio_rgb_read(QImageIO *io)
-{
-	SGIImage sgi(io);
-	QImage img;
-
-	if (!sgi.readImage(img)) {
-		io->setImage(0);
-		io->setStatus(-1);
-		return;
-	}
-
-	io->setImage(img);
-	io->setStatus(0);
-}
-
-
-KDE_EXPORT void kimgio_rgb_write(QImageIO *io)
-{
-	SGIImage sgi(io);
-	QImage img = io->image();
-
-	if (!sgi.writeImage(img))
-		io->setStatus(-1);
-
-	io->setStatus(0);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-SGIImage::SGIImage(QImageIO *io) :
-	m_io(io),
+SGIImage::SGIImage(QIODevice *io) :
 	m_starttab(0),
 	m_lengthtab(0)
 {
-	m_dev = io->ioDevice();
+	m_dev = io;
 	m_stream.setDevice(m_dev);
 }
 
@@ -183,107 +148,106 @@ bool SGIImage::readData(QImage& img)
 
 bool SGIImage::readImage(QImage& img)
 {
-	Q_INT8 u8;
-	Q_INT16 u16;
-	Q_INT32 u32;
+    Q_INT8 u8;
+    Q_INT16 u16;
+    Q_INT32 u32;
 
-	kdDebug(399) << "reading '" << m_io->fileName() << '\'' << endl;
+    kdDebug(399) << "reading rgb " << endl;
 
-	// magic
-	m_stream >> u16;
-	if (u16 != 0x01da)
-		return false;
+    // magic
+    m_stream >> u16;
+    if (u16 != 0x01da)
+        return false;
 
-	// verbatim/rle
-	m_stream >> m_rle;
-	kdDebug(399) << (m_rle ? "RLE" : "verbatim") << endl;
-	if (m_rle > 1)
-		return false;
+    // verbatim/rle
+    m_stream >> m_rle;
+    kdDebug(399) << (m_rle ? "RLE" : "verbatim") << endl;
+    if (m_rle > 1)
+        return false;
 
-	// bytes per channel
-	m_stream >> m_bpc;
-	kdDebug(399) << "bytes per channel: " << int(m_bpc) << endl;
-	if (m_bpc == 1)
-		;
-	else if (m_bpc == 2)
-		kdDebug(399) << "dropping least significant byte" << endl;
-	else
-		return false;
+    // bytes per channel
+    m_stream >> m_bpc;
+    kdDebug(399) << "bytes per channel: " << int(m_bpc) << endl;
+    if (m_bpc == 1)
+        ;
+    else if (m_bpc == 2)
+        kdDebug(399) << "dropping least significant byte" << endl;
+    else
+        return false;
 
-	// number of dimensions
-	m_stream >> m_dim;
-	kdDebug(399) << "dimensions: " << m_dim << endl;
-	if (m_dim < 1 || m_dim > 3)
-		return false;
+    // number of dimensions
+    m_stream >> m_dim;
+    kdDebug(399) << "dimensions: " << m_dim << endl;
+    if (m_dim < 1 || m_dim > 3)
+        return false;
 
-	m_stream >> m_xsize >> m_ysize >> m_zsize >> m_pixmin >> m_pixmax >> u32;
-	kdDebug(399) << "x: " << m_xsize << endl;
-	kdDebug(399) << "y: " << m_ysize << endl;
-	kdDebug(399) << "z: " << m_zsize << endl;
+    m_stream >> m_xsize >> m_ysize >> m_zsize >> m_pixmin >> m_pixmax >> u32;
+    kdDebug(399) << "x: " << m_xsize << endl;
+    kdDebug(399) << "y: " << m_ysize << endl;
+    kdDebug(399) << "z: " << m_zsize << endl;
 
-	// name
-	m_stream.readRawBytes(m_imagename, 80);
-	m_imagename[79] = '\0';
-	m_io->setDescription(m_imagename);
+    // name
+    m_stream.readRawBytes(m_imagename, 80);
+    m_imagename[79] = '\0';
 
-	m_stream >> m_colormap;
-	kdDebug(399) << "colormap: " << m_colormap << endl;
-	if (m_colormap != NORMAL)
-		return false;		// only NORMAL supported
+    m_stream >> m_colormap;
+    kdDebug(399) << "colormap: " << m_colormap << endl;
+    if (m_colormap != NORMAL)
+        return false;		// only NORMAL supported
 
-	for (int i = 0; i < 404; i++)
-		m_stream >> u8;
+    for (int i = 0; i < 404; i++)
+        m_stream >> u8;
 
-	if (m_dim == 1) {
-		kdDebug(399) << "1-dimensional images aren't supported yet" << endl;
-		return false;
-	}
+    if (m_dim == 1) {
+        kdDebug(399) << "1-dimensional images aren't supported yet" << endl;
+        return false;
+    }
 
-	if( m_stream.atEnd())
-		return false;
+    if( m_stream.atEnd())
+        return false;
 
-	m_numrows = m_ysize * m_zsize;
+    m_numrows = m_ysize * m_zsize;
 
-	if (!img.create(m_xsize, m_ysize, 32)) {
-		kdDebug(399) << "cannot create image" << endl;
-		return false;
-	}
+    if (!img.create(m_xsize, m_ysize, 32)) {
+        kdDebug(399) << "cannot create image" << endl;
+        return false;
+    }
 
-	if (m_zsize == 2 || m_zsize == 4)
-		img.setAlphaBuffer(true);
-	else if (m_zsize > 4)
-		kdDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
+    if (m_zsize == 2 || m_zsize == 4)
+        img.setAlphaBuffer(true);
+    else if (m_zsize > 4)
+        kdDebug(399) << "using first 4 of " << m_zsize << " channels" << endl;
 
-	if (m_rle) {
-		uint l;
-		m_starttab = new Q_UINT32[m_numrows];
-		for (l = 0; !m_stream.atEnd() && l < m_numrows; l++) {
-			m_stream >> m_starttab[l];
-			m_starttab[l] -= 512 + m_numrows * 2 * sizeof(Q_UINT32);
-		}
+    if (m_rle) {
+        uint l;
+        m_starttab = new Q_UINT32[m_numrows];
+        for (l = 0; !m_stream.atEnd() && l < m_numrows; l++) {
+            m_stream >> m_starttab[l];
+            m_starttab[l] -= 512 + m_numrows * 2 * sizeof(Q_UINT32);
+        }
 
-		m_lengthtab = new Q_UINT32[m_numrows];
-		for (l = 0; l < m_numrows; l++)
-			m_stream >> m_lengthtab[l];
-	}
+        m_lengthtab = new Q_UINT32[m_numrows];
+        for (l = 0; l < m_numrows; l++)
+            m_stream >> m_lengthtab[l];
+    }
 
-	m_data = m_dev->readAll();
+    m_data = m_dev->readAll();
 
-	// sanity check
-	if (m_rle)
-		for (uint o = 0; o < m_numrows; o++)
-			// don't change to greater-or-equal!
-			if (m_starttab[o] + m_lengthtab[o] > m_data.size()) {
-				kdDebug(399) << "image corrupt (sanity check failed)" << endl;
-				return false;
-			}
+    // sanity check
+    if (m_rle)
+        for (uint o = 0; o < m_numrows; o++)
+            // don't change to greater-or-equal!
+            if (m_starttab[o] + m_lengthtab[o] > (uint)m_data.size()) {
+                kdDebug(399) << "image corrupt (sanity check failed)" << endl;
+                return false;
+            }
 
-	if (!readData(img)) {
-		kdDebug(399) << "image corrupt (incomplete scanline)" << endl;
-		return false;
-	}
+    if (!readData(img)) {
+        kdDebug(399) << "image corrupt (incomplete scanline)" << endl;
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -294,7 +258,7 @@ bool SGIImage::readImage(QImage& img)
 void RLEData::print(QString desc) const
 {
 	QString s = desc + ": ";
-	for (uint i = 0; i < size(); i++)
+	for (int i = 0; i < size(); i++)
 		s += QString::number(at(i)) + ",";
 	kdDebug() << "--- " << s << endl;
 }
@@ -302,7 +266,7 @@ void RLEData::print(QString desc) const
 
 void RLEData::write(QDataStream& s)
 {
-	for (unsigned i = 0; i < size(); i++)
+	for (int i = 0; i < size(); i++)
 		s << at(i);
 }
 
@@ -310,7 +274,7 @@ void RLEData::write(QDataStream& s)
 bool RLEData::operator<(const RLEData& b) const
 {
 	uchar ac, bc;
-	for (unsigned i = 0; i < QMIN(size(), b.size()); i++) {
+	for (int i = 0; i < QMIN(size(), b.size()); i++) {
 		ac = at(i);
 		bc = b[i];
 		if (ac != bc)
@@ -332,13 +296,13 @@ uint RLEMap::insert(const uchar *d, uint l)
 }
 
 
-Q3PtrVector<RLEData> RLEMap::vector()
+QVector<const RLEData*> RLEMap::vector()
 {
-	Q3PtrVector<RLEData> v(size());
-	for (Iterator it = begin(); it != end(); it++)
-		v.insert(it.data(), &it.key());
+    QVector<const RLEData*> v(size());
+    for (Iterator it = begin(); it != end(); it++)
+        v.insert(it.data(), &it.key());
 
-	return v;
+    return v;
 }
 
 
@@ -390,16 +354,16 @@ uint SGIImage::compact(uchar *d, uchar *s)
 bool SGIImage::scanData(const QImage& img)
 {
 	Q_UINT32 *start = m_starttab;
-	Q3CString lineguard(m_xsize * 2);
-	Q3CString bufguard(m_xsize);
+	QByteArray lineguard(m_xsize * 2);
+	QByteArray bufguard(m_xsize);
 	uchar *line = (uchar *)lineguard.data();
 	uchar *buf = (uchar *)bufguard.data();
-	QRgb *c;
+	const QRgb *c;
 	unsigned x, y;
 	uint len;
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = intensity(qRed(*c++));
 		len = compact(line, buf);
@@ -411,7 +375,7 @@ bool SGIImage::scanData(const QImage& img)
 
 	if (m_zsize != 2) {
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = intensity(qGreen(*c++));
 			len = compact(line, buf);
@@ -419,7 +383,7 @@ bool SGIImage::scanData(const QImage& img)
 		}
 
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				buf[x] = intensity(qBlue(*c++));
 			len = compact(line, buf);
@@ -431,7 +395,7 @@ bool SGIImage::scanData(const QImage& img)
 	}
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			buf[x] = intensity(qAlpha(*c++));
 		len = compact(line, buf);
@@ -450,19 +414,8 @@ void SGIImage::writeHeader()
 	m_stream << m_pixmin << m_pixmax;
 	m_stream << Q_UINT32(0);
 
-	uint i;
-	QString desc = m_io->description();
-	kdDebug(399) << "Description: " << desc << endl;
-	desc.truncate(79);
-
-	for (i = 0; i < desc.length(); i++)
-		m_imagename[i] = desc.latin1()[i];
-	for (; i < 80; i++)
-		m_imagename[i] = '\0';
-	m_stream.writeRawBytes(m_imagename, 80);
-
 	m_stream << m_colormap;
-	for (i = 0; i < 404; i++)
+	for (int i = 0; i < 404; i++)
 		m_stream << Q_UINT8(0);
 }
 
@@ -483,8 +436,8 @@ void SGIImage::writeRle()
 		m_stream << Q_UINT32(m_rlevector[m_starttab[i]]->size());
 
 	// write data
-	for (i = 0; i < m_rlevector.size(); i++)
-		m_rlevector[i]->write(m_stream);
+	for (i = 0; (int)i < m_rlevector.size(); i++)
+		const_cast<RLEData*>(m_rlevector[i])->write(m_stream);
 }
 
 
@@ -494,11 +447,11 @@ void SGIImage::writeVerbatim(const QImage& img)
 	kdDebug(399) << "writing verbatim data" << endl;
 	writeHeader();
 
-	QRgb *c;
+	const QRgb *c;
 	unsigned x, y;
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			m_stream << Q_UINT8(qRed(*c++));
 	}
@@ -508,13 +461,13 @@ void SGIImage::writeVerbatim(const QImage& img)
 
 	if (m_zsize != 2) {
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				m_stream << Q_UINT8(qGreen(*c++));
 		}
 
 		for (y = 0; y < m_ysize; y++) {
-			c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+			c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 			for (x = 0; x < m_xsize; x++)
 				m_stream << Q_UINT8(qBlue(*c++));
 		}
@@ -524,17 +477,17 @@ void SGIImage::writeVerbatim(const QImage& img)
 	}
 
 	for (y = 0; y < m_ysize; y++) {
-		c = reinterpret_cast<QRgb *>(img.scanLine(m_ysize - y - 1));
+		c = reinterpret_cast<const QRgb *>(img.scanLine(m_ysize - y - 1));
 		for (x = 0; x < m_xsize; x++)
 			m_stream << Q_UINT8(qAlpha(*c++));
 	}
 }
 
 
-bool SGIImage::writeImage(QImage& img)
+bool SGIImage::writeImage(const QImage& image)
 {
-	kdDebug(399) << "writing '" << m_io->fileName() << '\'' << endl;
-
+	kdDebug(399) << "writing "<< endl;
+        QImage img = image;
 	if (img.allGray())
 		m_dim = 2, m_zsize = 1;
 	else
@@ -570,7 +523,7 @@ bool SGIImage::writeImage(QImage& img)
 
 	long verbatim_size = m_numrows * m_xsize;
 	long rle_size = m_numrows * 2 * sizeof(Q_UINT32);
-	for (uint i = 0; i < m_rlevector.size(); i++)
+	for (int i = 0; i < m_rlevector.size(); i++)
 		rle_size += m_rlevector[i]->size();
 
 	kdDebug(399) << "minimum intensity: " << m_pixmin << endl;
@@ -579,7 +532,7 @@ bool SGIImage::writeImage(QImage& img)
 	kdDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes" << endl;
 	kdDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%' << endl;
 
-	if (verbatim_size <= rle_size || m_io->quality() > 50)
+	if (verbatim_size <= rle_size)
 		writeVerbatim(img);
 	else
 		writeRle();
@@ -587,3 +540,105 @@ bool SGIImage::writeImage(QImage& img)
 }
 
 
+RGBHandler::RGBHandler()
+{
+}
+
+bool RGBHandler::canRead() const
+{
+    return canRead(device());
+}
+
+bool RGBHandler::read(QImage *outImage)
+{
+    SGIImage sgi(device());
+
+    if (!sgi.readImage(*outImage)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool RGBHandler::write(const QImage &image)
+{
+    SGIImage sgi(device());
+
+    if (!sgi.writeImage(image))
+        return false;
+
+    return true;
+}
+
+QByteArray RGBHandler::name() const
+{
+    return "rgb";
+}
+
+bool RGBHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("RGBHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+    QByteArray head = device->readLine(64);
+    int readBytes = head.size();
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    const QRegExp regexp("^\x01\xda\x01[\x01\x02]");
+    QString data(head);
+
+    return data.contains(regexp);
+}
+
+
+class RGBPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList RGBPlugin::keys() const
+{
+    return QStringList() << "rgb"<<"RGB"<<"rgba"<<"RGBA"
+                         <<"bw"<<"BW"<<"sgi"<<"SGI";
+}
+
+QImageIOPlugin::Capabilities RGBPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "rgb" || format == "rgb" || format == "RGB" ||
+        format ==  "rgba" || format == "RGBA" || format ==  "bw" ||
+        format == "BW" || format == "sgi" || format == "SGI")
+        return Capabilities(CanRead | CanWrite);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && RGBHandler::canRead(device))
+        cap |= CanRead;
+    if (device->isWritable())
+        cap |= CanWrite;
+    return cap;
+}
+
+QImageIOHandler *RGBPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new RGBHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(RGBPlugin)

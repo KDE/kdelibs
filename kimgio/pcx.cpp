@@ -95,7 +95,7 @@ PCXHEADER::PCXHEADER()
   // Initialize all data to zero
   QByteArray dummy( 128 );
   dummy.fill( 0 );
-  QDataStream s( dummy, QIODevice::ReadOnly );
+  QDataStream s( &dummy, QIODevice::ReadOnly );
   s >> *this;
 }
 
@@ -149,7 +149,7 @@ static void readImage1( QImage &img, QDataStream &s, const PCXHEADER &header )
 
     readLine( s, buf, header );
     uchar *p = img.scanLine( y );
-    unsigned int bpl = QMIN((header.width()+7)/8, header.BytesPerLine);
+    unsigned int bpl = qMin((Q_UINT16)((header.width()+7)/8), header.BytesPerLine);
     for ( unsigned int x=0; x< bpl; ++x )
       p[ x ] = buf[x];
   }
@@ -181,13 +181,13 @@ static void readImage4( QImage &img, QDataStream &s, const PCXHEADER &header )
     for ( int i=0; i<4; i++ )
     {
       Q_UINT32 offset = i*header.BytesPerLine;
-      for ( unsigned int x=0; x<header.width(); ++x )
+      for ( int x=0; x<header.width(); ++x )
         if ( buf[ offset + ( x/8 ) ] & ( 128 >> ( x%8 ) ) )
-          pixbuf[ x ] += ( 1 << i );
+          pixbuf[ x ] = (int)(pixbuf[ x ]) + ( 1 << i );
     }
 
     uchar *p = img.scanLine( y );
-    for ( unsigned int x=0; x<header.width(); ++x )
+    for ( int x=0; x<header.width(); ++x )
       p[ x ] = pixbuf[ x ];
   }
 
@@ -214,7 +214,7 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
     readLine( s, buf, header );
 
     uchar *p = img.scanLine( y );
-    unsigned int bpl = QMIN(header.BytesPerLine, header.width());
+    unsigned int bpl = qMin(header.BytesPerLine, (Q_UINT16)header.width());
     for ( unsigned int x=0; x<bpl; ++x )
       p[ x ] = buf[ x ];
   }
@@ -257,77 +257,8 @@ static void readImage24( QImage &img, QDataStream &s, const PCXHEADER &header )
     readLine( s, b_buf, header );
 
     uint *p = ( uint * )img.scanLine( y );
-    for ( unsigned int x=0; x<header.width(); ++x )
+    for ( int x=0; x<header.width(); ++x )
       p[ x ] = qRgb( r_buf[ x ], g_buf[ x ], b_buf[ x ] );
-  }
-}
-
-KDE_EXPORT void kimgio_pcx_read( QImageIO *io )
-{
-  QDataStream s( io->ioDevice() );
-  s.setByteOrder( QDataStream::LittleEndian );
-
-  if ( s.device()->size() < 128 )
-  {
-    io->setStatus( -1 );
-    return;
-  }
-
-  PCXHEADER header;
-
-  s >> header;
-
-  if ( header.Manufacturer != 10 || s.atEnd())
-  {
-    io->setStatus( -1 );
-    return;
-  }
-
-  int w = header.width();
-  int h = header.height();
-
-  kdDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
-  kdDebug( 399 ) << "Version: " << header.Version << endl;
-  kdDebug( 399 ) << "Encoding: " << header.Encoding << endl;
-  kdDebug( 399 ) << "Bpp: " << header.Bpp << endl;
-  kdDebug( 399 ) << "Width: " << w << endl;
-  kdDebug( 399 ) << "Height: " << h << endl;
-  kdDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << "," 
-                 << header.YMin << "," << header.YMax << endl;
-  kdDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
-  kdDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
-
-  QImage img;
-
-  if ( header.Bpp == 1 && header.NPlanes == 1 )
-  {
-    readImage1( img, s, header );
-  }
-  else if ( header.Bpp == 1 && header.NPlanes == 4 )
-  {
-    readImage4( img, s, header );
-  }
-  else if ( header.Bpp == 8 && header.NPlanes == 1 )
-  {
-    readImage8( img, s, header );
-  }
-  else if ( header.Bpp == 8 && header.NPlanes == 3 )
-  {
-    readImage24( img, s, header );
-  }
-
-  kdDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
-  kdDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
-  kdDebug( 399 ) << "Image Depth: " << img.depth() << endl;
-
-  if ( !img.isNull() )
-  {
-    io->setImage( img );
-    io->setStatus( 0 );
-  }
-  else
-  {
-    io->setStatus( -1 );
   }
 }
 
@@ -408,11 +339,11 @@ static void writeImage4( QImage &img, QDataStream &s, PCXHEADER &header )
     for ( int i=0; i<4; ++i )
       buf[ i ].fill( 0 );
 
-    for ( unsigned int x=0; x<header.width(); ++x )
+    for ( int x=0; x<header.width(); ++x )
     {
       for ( int i=0; i<4; ++i )
         if ( *( p+x ) & ( 1 << i ) )
-          buf[ i ][ x/8 ] |= 1 << ( 7-x%8 );
+          buf[ i ][ x/8 ] = (int)(buf[ i ][ x/8 ])| 1 << ( 7-x%8 );
     }
 
     for ( int i=0; i<4; ++i )
@@ -465,7 +396,7 @@ static void writeImage24( QImage &img, QDataStream &s, PCXHEADER &header )
   {
     uint *p = ( uint * )img.scanLine( y );
 
-    for ( unsigned int x=0; x<header.width(); ++x )
+    for ( int x=0; x<header.width(); ++x )
     {
       QRgb rgb = *p++;
       r_buf[ x ] = qRed( rgb );
@@ -479,12 +410,89 @@ static void writeImage24( QImage &img, QDataStream &s, PCXHEADER &header )
   }
 }
 
-KDE_EXPORT void kimgio_pcx_write( QImageIO *io )
+
+PCXHandler::PCXHandler()
 {
-  QDataStream s( io->ioDevice() );
+}
+
+bool PCXHandler::canRead() const
+{
+    return canRead(device());
+}
+
+bool PCXHandler::read(QImage *outImage)
+{
+  QDataStream s( device() );
   s.setByteOrder( QDataStream::LittleEndian );
 
-  QImage img = io->image();
+  if ( s.device()->size() < 128 )
+  {
+    return false;
+  }
+
+  PCXHEADER header;
+
+  s >> header;
+
+  if ( header.Manufacturer != 10 || s.atEnd())
+  {
+    return false;
+  }
+
+  int w = header.width();
+  int h = header.height();
+
+  kdDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
+  kdDebug( 399 ) << "Version: " << header.Version << endl;
+  kdDebug( 399 ) << "Encoding: " << header.Encoding << endl;
+  kdDebug( 399 ) << "Bpp: " << header.Bpp << endl;
+  kdDebug( 399 ) << "Width: " << w << endl;
+  kdDebug( 399 ) << "Height: " << h << endl;
+  kdDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << ","
+                 << header.YMin << "," << header.YMax << endl;
+  kdDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
+  kdDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
+
+  QImage img;
+
+  if ( header.Bpp == 1 && header.NPlanes == 1 )
+  {
+    readImage1( img, s, header );
+  }
+  else if ( header.Bpp == 1 && header.NPlanes == 4 )
+  {
+    readImage4( img, s, header );
+  }
+  else if ( header.Bpp == 8 && header.NPlanes == 1 )
+  {
+    readImage8( img, s, header );
+  }
+  else if ( header.Bpp == 8 && header.NPlanes == 3 )
+  {
+    readImage24( img, s, header );
+  }
+
+  kdDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
+  kdDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
+  kdDebug( 399 ) << "Image Depth: " << img.depth() << endl;
+
+  if ( !img.isNull() )
+  {
+    *outImage = img;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool PCXHandler::write(const QImage &image)
+{
+  QDataStream s( device() );
+  s.setByteOrder( QDataStream::LittleEndian );
+
+  QImage img = image;
 
   int w = img.width();
   int h = img.height();
@@ -526,8 +534,84 @@ KDE_EXPORT void kimgio_pcx_write( QImageIO *io )
     writeImage24( img, s, header );
   }
 
-  io->setStatus( 0 );
+  return true;
 }
+
+QByteArray PCXHandler::name() const
+{
+    return "pcx";
+}
+
+bool PCXHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("PCXHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+
+    char head[1];
+    qint64 readBytes = device->read(head, sizeof(head));
+    if (readBytes != sizeof(head)) {
+        if (device->isSequential()) {
+            while (readBytes > 0)
+                device->ungetChar(head[readBytes-- - 1]);
+        } else {
+            device->seek(oldPos);
+        }
+        return false;
+    }
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    return qstrncmp(head, "\012", 1) == 0;
+}
+
+class PCXPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList PCXPlugin::keys() const
+{
+    return QStringList() << "pcx" << "PCX";
+}
+
+QImageIOPlugin::Capabilities PCXPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "pcx" || format == "PCX")
+        return Capabilities(CanRead | CanWrite);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && PCXHandler::canRead(device))
+        cap |= CanRead;
+    if (device->isWritable())
+        cap |= CanWrite;
+    return cap;
+}
+
+QImageIOHandler *PCXPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new PCXHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(PCXPlugin)
 
 /* vim: et sw=2 ts=2
 */

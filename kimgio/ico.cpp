@@ -6,18 +6,18 @@
  * Distributed under the terms of the LGPL
  * Copyright (c) 2000 Malte Starostik <malte@kde.org>
  *
- */   
+ */
 
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
 #include <vector>
 
-#include <qimage.h>
-#include <qbitmap.h>
-#include <qapplication.h>
-#include <q3memarray.h>
-#include <q3paintdevicemetrics.h>
+#include <QImage>
+#include <QBitmap>
+#include <QApplication>
+#include <QVector>
+#include <QDesktopWidget>
 
 #include <kdelibs_export.h>
 
@@ -58,7 +58,7 @@ namespace
         Q_UINT32  biClrImportant;        // number of important colors
     };
     const Q_UINT32 BMP_INFOHDR::Size;
-  
+
     QDataStream& operator >>( QDataStream &s, BMP_INFOHDR &bi )
     {
         s >> bi.biSize;
@@ -162,15 +162,15 @@ namespace
             if (header.biClrUsed && header.biClrUsed < paletteSize)
                 paletteEntries = header.biClrUsed;
         }
-        
+
         // Always create a 32-bit image to get the mask right
         // Note: this is safe as rec.width, rec.height are bytes
         icon.create( rec.width, rec.height, 32 );
         if ( icon.isNull() ) return false;
         icon.setAlphaBuffer( true );
 
-        Q3MemArray< QRgb > colorTable( paletteSize );
-        
+        QVector< QRgb > colorTable( paletteSize );
+
         colorTable.fill( QRgb( 0 ) );
         for ( unsigned i = 0; i < paletteEntries; ++i )
         {
@@ -181,7 +181,7 @@ namespace
         }
 
         unsigned bpl = ( rec.width * header.biBitCount + 31 ) / 32 * 4;
-        
+
         unsigned char* buf = new unsigned char[ bpl ];
         unsigned char** lines = icon.jumpTable();
         for ( unsigned y = rec.height; !stream.atEnd() && y--; )
@@ -241,22 +241,32 @@ namespace
     }
 }
 
-extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
+ICOHandler::ICOHandler()
 {
-    Q_LONGLONG offset = io->ioDevice()->at();
+}
 
-    QDataStream stream( io->ioDevice() );
+bool ICOHandler::canRead() const
+{
+    return canRead(device());
+}
+
+bool ICOHandler::read(QImage *outImage)
+{
+
+    qint64 offset = device()->at();
+
+    QDataStream stream( device() );
     stream.setByteOrder( QDataStream::LittleEndian );
     IcoHeader header;
     stream >> header;
     if ( stream.atEnd() || !header.count ||
          ( header.type != IcoHeader::Icon && header.type != IcoHeader::Cursor) )
-        return;
+        return false;
 
-    Q3PaintDeviceMetrics metrics( QApplication::desktop() );
     unsigned requestedSize = 32;
-    unsigned requestedColors = metrics.depth() > 8 ? 0 : metrics.depth();
+    unsigned requestedColors =  QApplication::desktop()->depth() > 8 ? 0 : QApplication::desktop()->depth();
     int requestedIndex = -1;
+#if 0
     if ( io->parameters() )
     {
         QStringList params = QStringList::split( ';', io->parameters() );
@@ -274,12 +284,14 @@ extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
         if ( options[ "colors" ].toUInt() )
             requestedColors = options[ "colors" ].toUInt();
     }
+#endif
 
     typedef std::vector< IconRec > IconList;
     IconList icons;
     for ( unsigned i = 0; i < header.count; ++i )
     {
-        if ( stream.atEnd() ) return;
+        if ( stream.atEnd() )
+            return false;
         IconRec rec;
         stream >> rec;
         icons.push_back( rec );
@@ -289,13 +301,13 @@ extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
         selected = std::min( icons.begin() + requestedIndex, icons.end() );
     } else {
         selected = std::min_element( icons.begin(), icons.end(),
-                          LessDifference( requestedSize, requestedColors ) );
+                                     LessDifference( requestedSize, requestedColors ) );
     }
     if ( stream.atEnd() || selected == icons.end() ||
-         offset + selected->offset > io->ioDevice()->size() )
-        return;
+         offset + selected->offset > device()->size() )
+        return false;
 
-    io->ioDevice()->at( offset + selected->offset );
+    device()->at( offset + selected->offset );
     QImage icon;
     if ( loadFromDIB( stream, *selected, icon ) )
     {
@@ -305,27 +317,29 @@ extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
             icon.setText( "X-HotspotX", 0, QString::number( selected->hotspotX ) );
             icon.setText( "X-HotspotY", 0, QString::number( selected->hotspotY ) );
         }
-        io->setImage(icon);
-        io->setStatus(0);
+
+        *outImage = icon;
+        return true;
     }
+    return false;
 }
 
-#if 0
-void kimgio_ico_write(QImageIO *io)
+bool ICOHandler::write(const QImage &/*image*/)
 {
-    if (io->image().isNull())
+#if 0
+    if (image.isNull())
         return;
 
     QByteArray dibData;
     QDataStream dib(dibData, QIODevice::ReadWrite);
     dib.setByteOrder(QDataStream::LittleEndian);
 
-    QImage pixels = io->image();
+    QImage pixels = image;
     QImage mask;
     if (io->image().hasAlphaBuffer())
-        mask = io->image().createAlphaMask();
+        mask = image.createAlphaMask();
     else
-        mask = io->image().createHeuristicMask();
+        mask = image.createHeuristicMask();
     mask.invertPixels();
     for ( int y = 0; y < pixels.height(); ++y )
         for ( int x = 0; x < pixels.width(); ++x )
@@ -339,8 +353,8 @@ void kimgio_ico_write(QImageIO *io)
         return;
     memmove(dibData.data() + hdrPos, dibData.data() + hdrPos + BMP_WIN + 8, dibData.size() - hdrPos - BMP_WIN - 8);
     dibData.resize(dibData.size() - BMP_WIN - 8);
-        
-    QDataStream ico(io->ioDevice());
+
+    QDataStream ico(device());
     ico.setByteOrder(QDataStream::LittleEndian);
     IcoHeader hdr;
     hdr.reserved = 0;
@@ -348,11 +362,11 @@ void kimgio_ico_write(QImageIO *io)
     hdr.count = 1;
     ico << hdr.reserved << hdr.type << hdr.count;
     IconRec rec;
-    rec.width = io->image().width();
-    rec.height = io->image().height();
-    if (io->image().numColors() <= 16)
+    rec.width = image.width();
+    rec.height = image.height();
+    if (image.numColors() <= 16)
         rec.colors = 16;
-    else if (io->image().depth() <= 8)
+    else if (image.depth() <= 8)
         rec.colors = 256;
     else
         rec.colors = 0;
@@ -367,11 +381,87 @@ void kimgio_ico_write(QImageIO *io)
     BMP_INFOHDR dibHeader;
     dib.device()->at(0);
     dib >> dibHeader;
-    dibHeader.biHeight = io->image().height() << 1;
+    dibHeader.biHeight = image.height() << 1;
     dib.device()->at(0);
     dib << dibHeader;
 
     ico.writeRawBytes(dibData.data(), dibData.size());
-    io->setStatus(0);
-}
+    return true;
 #endif
+    return false;
+}
+
+QByteArray ICOHandler::name() const
+{
+    return "ico";
+}
+
+bool ICOHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("ICOHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+
+    char head[8];
+    qint64 readBytes = device->read(head, sizeof(head));
+    if (readBytes != sizeof(head)) {
+        if (device->isSequential()) {
+            while (readBytes > 0)
+                device->ungetChar(head[readBytes-- - 1]);
+        } else {
+            device->seek(oldPos);
+        }
+        return false;
+    }
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    return (qstrncmp(head, "\001\001\001\001", 8) == 0 ||
+            qstrncmp(head, "\001\001\002\001", 8) == 0);
+}
+
+class ICOPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList ICOPlugin::keys() const
+{
+    return QStringList() << "ico" << "ICO";
+}
+
+QImageIOPlugin::Capabilities ICOPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "ico" || format == "ICO")
+        return Capabilities(CanRead);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && ICOHandler::canRead(device))
+        cap |= CanRead;
+    return cap;
+}
+
+QImageIOHandler *ICOPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new ICOHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(ICOPlugin)

@@ -2,11 +2,21 @@
 #ifndef XVIEW_H
 #define XVIEW_H
 
-class QImageIO;
 
-extern "C" {   
-void kimgio_xv_read( QImageIO * );
-void kimgio_xv_write( QImageIO * );
-}
+#include <QImageIOHandler>
+
+class XVHandler : public QImageIOHandler
+{
+public:
+    XVHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif
