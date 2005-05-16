@@ -86,6 +86,7 @@
 #include <qstring.h>
 #include <q3stylesheet.h>
 #include <qtimer.h>
+#include <QAbstractEventDispatcher>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
@@ -529,7 +530,7 @@ void KHTMLView::clear()
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
     d->reset();
-    killTimers();
+    QAbstractEventDispatcher::instance()->unregisterTimers(this);
     emit cleared();
 
     Q3ScrollView::setHScrollBarMode(d->hmode);
@@ -2529,9 +2530,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 }
             }
             if( key.isNull() && !text.isEmpty()) {
-                for( unsigned int i = 0;
-                     i < text.length();
-                     ++i ) {
+                for( int i = 0; i < text.length(); ++i ) {
                     if( keys.contains( text[ i ].upper())) {
                         key = text[ i ].upper();
                         break;
@@ -2874,7 +2873,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     // dashes or spaces as those are likely credit card numbers or
     // something similar
     bool cc_number(true);
-    for (unsigned int i = 0; i < value.length(); ++i)
+    for ( int i = 0; i < value.length(); ++i)
     {
       QChar c(value[i]);
       if (!c.isNumber() && c != '-' && !c.isSpace())

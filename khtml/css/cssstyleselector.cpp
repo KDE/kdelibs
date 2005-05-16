@@ -1018,7 +1018,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 pos = str.find(selStr, pos, strictParsing);
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || str[pos-1] == ' ' ) {
-                    uint endpos = pos + selStrlen;
+                    int endpos = pos + selStrlen;
                     if ( endpos >= str.length() || str[endpos] == ' ' )
                         break; // We have a match.
                 }

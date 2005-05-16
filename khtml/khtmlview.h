@@ -179,6 +179,7 @@ signals:
 protected:
     void clear();
 
+    virtual bool event ( QEvent * event );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void showEvent ( QShowEvent * );
     virtual void hideEvent ( QHideEvent *);
