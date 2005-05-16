@@ -186,7 +186,8 @@ void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
   opt->icon      = icon();
   opt->iconSize  = QSize(d->m_iconSize, d->m_iconSize);
   opt->text      = textLabel();
-  opt->features  = menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
+  opt->features  = QStyleOptionToolButton::None; //We don't Qt know about the menu, since we don't want the split-button!
+	//### delay stuff?
   opt->subControls       = QStyle::SC_All;
   opt->activeSubControls = 0; //### FIXME: !!
 }
@@ -488,8 +489,9 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
     emit buttonClicked( d->m_id, state );
 }
 
-void KToolBarButton::drawButton( QPainter *_painter )
+void KToolBarButton::paintEvent( QPaintEvent* )
 {
+  QPainter painter(this);
 #ifdef __GNUC__
     #warning "KDE4 port: Most of this can be removed, Qt can do this stuff now! -- Maks"
 #endif
@@ -511,7 +513,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   opt.state             = flags;
   opt.activeSubControls = active;
 
-  style()->drawComplexControl(QStyle::CC_ToolButton, &opt, _painter, this);
+  style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &painter, this);
 
   int dx, dy;
   QFont tmp_font(KGlobalSettings::toolBarFont());
@@ -534,7 +536,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
   }
   else if (d->m_iconText == KToolBar::IconTextRight) // icon and text (if any)
@@ -552,7 +554,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
@@ -601,7 +603,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
@@ -622,14 +624,14 @@ void KToolBarButton::drawButton( QPainter *_painter )
   // Draw the text at the position given by textRect, and using textFlags
   if (!textLabel().isNull() && !textRect.isNull())
   {
-      _painter->setFont(KGlobalSettings::toolBarFont());
+      painter.setFont(KGlobalSettings::toolBarFont());
       if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
+        painter.setPen(palette().disabled().dark());
       else if(d->m_isRaised)
-        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
+        painter.setPen(KGlobalSettings::toolBarHighlightColor());
       else
-	_painter->setPen( colorGroup().buttonText() );
-      _painter->drawText(textRect, textFlags, textLabel());
+	painter.setPen( colorGroup().buttonText() );
+      painter.drawText(textRect, textFlags, textLabel());
   }
 
   if (QToolButton::popup())
@@ -643,7 +645,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
     opt.init(this);
     opt.rect  = QRect(width()-7, height()-7, 7, 7);
     opt.state = arrowFlags;
-    style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &opt, _painter);
+    style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &opt, &painter);
   }
 }
 

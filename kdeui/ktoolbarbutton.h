@@ -279,7 +279,7 @@ protected:
   void changeEvent(QEvent* e);
   void leaveEvent(QEvent *e);
   void enterEvent(QEvent *e);
-  void drawButton(QPainter *p);
+  void paintEvent(QPaintEvent* pe);
   bool eventFilter (QObject *o, QEvent *e);
   /// @since 3.4
   void mousePressEvent( QMouseEvent * );
