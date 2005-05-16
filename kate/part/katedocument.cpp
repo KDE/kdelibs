@@ -261,13 +261,13 @@ KateDocument::~KateDocument()
 //BEGIN Plugins
 void KateDocument::unloadAllPlugins ()
 {
-  for (uint i=0; i<m_plugins.count(); i++)
+  for (int i=0; i<m_plugins.count(); i++)
     unloadPlugin (i);
 }
 
 void KateDocument::enableAllPluginsGUI (KateView *view)
 {
-  for (uint i=0; i<m_plugins.count(); i++)
+  for (int i=0; i<m_plugins.count(); i++)
     enablePluginGUI (m_plugins[i], view);
 }
 

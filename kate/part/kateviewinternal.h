@@ -289,7 +289,7 @@ class KateViewInternal : public QWidget
     //
     // lines Ranges, mostly useful to speedup + dyn. word wrap
     //
-    Q3MemArray<KateLineRange> lineRanges;
+    QVector<KateLineRange> lineRanges;
 
     // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
     bool scrollbarVisible(uint startLine);

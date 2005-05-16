@@ -288,7 +288,7 @@ KateTextCursor KateViewInternal::endPos() const
   }
 
   for (int i = viewLines; i >= 0; i--) {
-    KateLineRange& thisRange = lineRanges[i];
+    const KateLineRange& thisRange = lineRanges[i];
 
     if (thisRange.line == -1) continue;
 

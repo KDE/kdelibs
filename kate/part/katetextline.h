@@ -25,8 +25,8 @@
 
 #include <ksharedptr.h>
 
-#include <q3memarray.h>
-#include <qstring.h>
+#include <QString>
+#include <QVector>
 
 class KateRenderer;
 class QTextStream;
@@ -163,7 +163,8 @@ class KateTextLine : public KShared
      *
      * @return hl-attributes array
      */
-    inline uchar *attributes () const { return m_attributes.data(); }
+    inline const uchar *attributes () const { return m_attributes.data(); }
+    inline uchar *attributes () { return m_attributes.data(); }
 
     /**
      * Gets a QString
@@ -269,7 +270,7 @@ class KateTextLine : public KShared
      */
     inline uchar attribute (uint pos) const
     {
-      if (pos < m_attributes.size()) return m_attributes[pos];
+      if (pos < (uint)m_attributes.size()) return m_attributes[pos];
       return 0;
     }
 
@@ -277,7 +278,7 @@ class KateTextLine : public KShared
      * context stack
      * @return context stack
      */
-    inline const Q3MemArray<short> &ctxArray () const { return m_ctx; };
+    inline const QVector<short> &ctxArray () const { return m_ctx; };
 
     /**
      * @return true if any context at the line end has the noIndentBasedFolding flag set 
@@ -288,13 +289,13 @@ class KateTextLine : public KShared
      * folding list
      * @return folding array
      */
-    inline const Q3MemArray<uint> &foldingListArray () const { return m_foldingList; };
+    inline const QVector<uint> &foldingListArray () const { return m_foldingList; };
 
     /**
      * indentation stack
      * @return indentation array
      */
-    inline const Q3MemArray<unsigned short> &indentationDepthArray () const { return m_indentationDepth; };
+    inline const QVector<unsigned short> &indentationDepthArray () const { return m_indentationDepth; };
 
     /**
      * insert text into line
@@ -303,7 +304,7 @@ class KateTextLine : public KShared
      * @param insText text to insert
      * @param insAttribs attributes for the insert text
      */
-    void insertText (uint pos, uint insLen, const QChar *insText, uchar *insAttribs = 0);
+    void insertText (uint pos, uint insLen, const QChar *insText, const uchar *insAttribs = 0);
 
     /**
      * remove text at given position
@@ -342,7 +343,7 @@ class KateTextLine : public KShared
      * Sets the syntax highlight context number
      * @param val new context array
      */
-    inline void setContext (Q3MemArray<short> &val) { m_ctx.assign (val); }
+    inline void setContext (QVector<short> &val) { m_ctx = val; }
 
     /**
      * sets if for the next line indent based folding should be disabled
@@ -353,13 +354,13 @@ class KateTextLine : public KShared
      * update folding list
      * @param val new folding list
      */
-    inline void setFoldingList (Q3MemArray<uint> &val) { m_foldingList.assign (val); m_foldingList.detach(); }
+    inline void setFoldingList (QVector<uint> &val) { m_foldingList = val; }
 
     /**
      * update indentation stack
      * @param val new indentation stack
      */
-    inline void setIndentationDepth (Q3MemArray<unsigned short> &val) { m_indentationDepth.assign (val); }
+    inline void setIndentationDepth (QVector<unsigned short> &val) { m_indentationDepth = val; }
 
   /**
    * Methodes for dump/restore of the line in the buffer
@@ -418,22 +419,22 @@ class KateTextLine : public KShared
      * This is exactly the same size as m_text.length()
      * Each letter in m_text has a uchar attribute
      */
-    Q3MemArray<uchar> m_attributes;
+    QVector<uchar> m_attributes;
 
     /**
      * context stack
      */
-    Q3MemArray<short> m_ctx;
+    QVector<short> m_ctx;
 
     /**
      * list of folding starts/ends
      */
-    Q3MemArray<uint> m_foldingList;
+    QVector<uint> m_foldingList;
 
     /**
      * indentation stack
      */
-    Q3MemArray<unsigned short> m_indentationDepth;
+    QVector<unsigned short> m_indentationDepth;
 
     bool m_noIndentationBasedFolding;
     bool m_noIndentationBasedFoldingAtStart;

@@ -433,7 +433,7 @@ void KateBuffer::clear()
   m_regionTree.clear();
 
   // cleanup the blocks
-  for (uint i=0; i < m_blocks.size(); i++)
+  for (int i=0; i < m_blocks.size(); i++)
     delete m_blocks[i];
 
   m_blocks.clear ();
@@ -481,7 +481,7 @@ bool KateBuffer::openFile (const QString &m_file)
   clear ();
 
   // cleanup the blocks
-  for (uint i=0; i < m_blocks.size(); i++)
+  for (int i=0; i < m_blocks.size(); i++)
     delete m_blocks[i];
 
   m_blocks.clear ();
@@ -908,9 +908,9 @@ void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,
     textLine = blk->line(current_line);
   } while (textLine->firstChar()==-1);
   kdDebug(13020)<<"updatePreviousNotEmptyLine: updating line:"<<(blk->startLine()+current_line)<<endl;
-  Q3MemArray<uint> foldingList=textLine->foldingListArray();
+  QVector<uint> foldingList=textLine->foldingListArray();
   while ( (foldingList.size()>0)  && ( abs(foldingList[foldingList.size()-2])==1)) {
-    foldingList.resize(foldingList.size()-2,Q3GArray::SpeedOptim);
+    foldingList.resize(foldingList.size()-2);
   }
   addIndentBasedFoldingInformation(foldingList,addindent,deindent);
   textLine->setFoldingList(foldingList);
@@ -919,19 +919,19 @@ void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,
   emit tagLines (blk->startLine()+current_line, blk->startLine()+current_line);
 }
 
-void KateBuffer::addIndentBasedFoldingInformation(Q3MemArray<uint> &foldingList,bool addindent,uint deindent)
+void KateBuffer::addIndentBasedFoldingInformation(QVector<uint> &foldingList,bool addindent,uint deindent)
 {
   if (addindent) {
     //kdDebug(13020)<<"adding indent for line :"<<current_line + buf->startLine()<<"  textLine->noIndentBasedFoldingAtStart"<<textLine->noIndentBasedFoldingAtStart()<<endl;
     kdDebug(13020)<<"adding ident"<<endl;
-    foldingList.resize (foldingList.size() + 2, Q3GArray::SpeedOptim);
+    foldingList.resize (foldingList.size() + 2);
     foldingList[foldingList.size()-2] = 1;
     foldingList[foldingList.size()-1] = 0;
   }
   kdDebug(13020)<<"DEINDENT: "<<deindent<<endl;
   if (deindent > 0)
   {
-    foldingList.resize (foldingList.size() + (deindent*2), Q3GArray::SpeedOptim);
+    foldingList.resize (foldingList.size() + (deindent*2));
 
     for (uint z= foldingList.size()-(deindent*2); z < foldingList.size(); z=z+2)
     {
@@ -1033,7 +1033,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     // current line
     KateTextLine::Ptr textLine = buf->line(current_line);
 
-    Q3MemArray<uint> foldingList;
+    QVector<uint> foldingList;
     bool ctxChanged = false;
 
     m_highlight->doHighlight (prevLine, textLine, &foldingList, &ctxChanged);
@@ -1045,14 +1045,13 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     if (m_highlight->foldingIndentationSensitive())
     {
       // get the indentation array of the previous line to start with !
-      Q3MemArray<unsigned short> indentDepth;
-      indentDepth.duplicate (prevLine->indentationDepthArray());
+      QVector<unsigned short> indentDepth (prevLine->indentationDepthArray());
 
       // current indentation of this line
       uint iDepth = textLine->indentDepth(m_tabWidth);
       if ((current_line+buf->startLine())==0)
       {
-          indentDepth.resize (1, Q3GArray::SpeedOptim);
+          indentDepth.resize (1);
           indentDepth[0] = iDepth;
       }
 
@@ -1113,19 +1112,17 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
         if ((iDepth > 0) && (indentDepth.isEmpty() || (indentDepth[indentDepth.size()-1] < iDepth)))
         {
           kdDebug(13020)<<"adding depth to \"stack\":"<<iDepth<<endl;
-          indentDepth.resize (indentDepth.size()+1, Q3GArray::SpeedOptim);
-          indentDepth[indentDepth.size()-1] = iDepth;
+          indentDepth.append (iDepth);
         } else {
           if (!indentDepth.isEmpty())
           {
             for (int z=indentDepth.size()-1; z > -1; z--)
               if (indentDepth[z]>iDepth)
-                indentDepth.resize(z, Q3GArray::SpeedOptim);
+                indentDepth.resize(z);
             if ((iDepth > 0) && (indentDepth.isEmpty() || (indentDepth[indentDepth.size()-1] < iDepth)))
             {
               kdDebug(13020)<<"adding depth to \"stack\":"<<iDepth<<endl;
-              indentDepth.resize (indentDepth.size()+1, Q3GArray::SpeedOptim);
-              indentDepth[indentDepth.size()-1] = iDepth;
+              indentDepth.append (iDepth);
               if (prevLine->firstChar()==-1) {
 
               }
@@ -1188,8 +1185,8 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     if (foldingList.size()!=textLine->foldingListArray().size()) {
       foldingChanged=true;
     } else {
-      Q3MemArray<uint>::ConstIterator it=foldingList.begin();
-      Q3MemArray<uint>::ConstIterator it1=textLine->foldingListArray();
+      QVector<uint>::ConstIterator it=foldingList.begin();
+      QVector<uint>::ConstIterator it1=textLine->foldingListArray().begin();
       bool markerType=true;
       for(;it!=foldingList.end();++it,++it1) {
         if  (markerType) {
@@ -1255,7 +1252,7 @@ void KateBuffer::codeFoldingColumnUpdate(unsigned int lineNr) {
   if (line->foldingColumnsOutdated()) {
     line->setFoldingColumnsOutdated(false);
     bool tmp;
-    Q3MemArray<uint> folding=line->foldingListArray();
+    QVector<uint> folding=line->foldingListArray();
     m_regionTree.updateLine(lineNr,&folding,&tmp,true,false);
   }
 }

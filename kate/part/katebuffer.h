@@ -503,7 +503,7 @@ class KateBuffer : public QObject
      */
      KateTextLine::Ptr line_internal (KateBufBlock *buf, uint i);
 
-     inline void addIndentBasedFoldingInformation(Q3MemArray<uint> &foldingList,bool addindent,uint deindent);
+     inline void addIndentBasedFoldingInformation(QVector<uint> &foldingList,bool addindent,uint deindent);
      inline void updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,bool addindent,uint deindent);
   public:
     /**

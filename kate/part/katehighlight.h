@@ -121,7 +121,7 @@ class KateHighlighting
   public:
     void doHighlight ( KateTextLine *prevLine,
                        KateTextLine *textLine,
-                       Q3MemArray<uint> *foldingList,
+                       QVector<uint> *foldingList,
                        bool *ctxChanged );
 
     void loadWildcards();
@@ -214,7 +214,7 @@ class KateHighlighting
 
     void clearAttributeArrays ();
 
-    Q3MemArray<KateAttribute> *attributes (uint schema);
+    QVector<KateAttribute> *attributes (uint schema);
 
     inline bool noHighlighting () const { return noHl; };
 
@@ -243,7 +243,7 @@ class KateHighlighting
     void readFoldingConfig ();
 
     // manipulates the ctxs array directly ;)
-    void generateContextStack(int *ctxNum, int ctx, Q3MemArray<short> *ctxs, int *posPrevLine);
+    void generateContextStack(int *ctxNum, int ctx, QVector<short> *ctxs, int *posPrevLine);
 
     KateHlItem *createKateHlItem(KateSyntaxContextData *data, KateHlItemDataList &iDl, QStringList *RegionList, QStringList *ContextList);
     int lookupAttrName(const QString& name, KateHlItemDataList &iDl);
@@ -299,7 +299,7 @@ class KateHighlighting
     KateHlIncludeRules includeRules;
     bool m_foldingIndentationSensitive;
 
-    Q3IntDict< Q3MemArray<KateAttribute> > m_attributeArrays;
+    Q3IntDict< QVector<KateAttribute> > m_attributeArrays;
 
 
     /**

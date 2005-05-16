@@ -91,7 +91,7 @@ class KateHlItem
 
     static void dynamicSubstitute(QString& str, const QStringList *args);
 
-    Q3MemArray<KateHlItem*> subItems;
+    QVector<KateHlItem*> subItems;
     int attr;
     int ctx;
     signed char region;
@@ -220,7 +220,7 @@ class KateHlKeyword : public KateHlItem
     virtual int checkHgl(const QString& text, int offset, int len);
 
   private:
-    Q3MemArray< Q3Dict<bool>* > dict;
+    QVector< Q3Dict<bool>* > dict;
     bool _caseSensitive;
     const QString& deliminators;
     int minLen;
@@ -420,7 +420,7 @@ KateHlItem::KateHlItem(int attribute, int context,signed char regionId,signed ch
 KateHlItem::~KateHlItem()
 {
   //kdDebug(13010)<<"In hlItem::~KateHlItem()"<<endl;
-  for (uint i=0; i < subItems.size(); i++)
+  for (int i=0; i < subItems.size(); i++)
     delete subItems[i];
 }
 
@@ -601,7 +601,7 @@ KateHlKeyword::KateHlKeyword (int attribute, int context, signed char regionId,s
 
 KateHlKeyword::~KateHlKeyword ()
 {
-  for (uint i=0; i < dict.size(); ++i)
+  for (int i=0; i < dict.size(); ++i)
     delete dict[i];
 }
 
@@ -617,12 +617,12 @@ void KateHlKeyword::addList(const QStringList& list)
     if (maxLen < len)
       maxLen = len;
 
-    if ((uint)len >= dict.size())
+    if (len >= dict.size())
     {
       uint oldSize = dict.size();
       dict.resize (len+1);
 
-      for (uint m=oldSize; m < dict.size(); ++m)
+      for (int m=oldSize; m < dict.size(); ++m)
         dict[m] = 0;
     }
 
@@ -676,7 +676,7 @@ int KateHlInt::checkHgl(const QString& text, int offset, int len)
   {
     if (len > 0)
     {
-      for (uint i=0; i < subItems.size(); i++)
+      for (int i=0; i < subItems.size(); i++)
       {
         if ( (offset = subItems[i]->checkHgl(text, offset2, len)) )
           return offset;
@@ -1212,7 +1212,7 @@ KateHighlighting::~KateHighlighting()
   m_contexts.clear ();
 }
 
-void KateHighlighting::generateContextStack(int *ctxNum, int ctx, Q3MemArray<short>* ctxs, int *prevLine)
+void KateHighlighting::generateContextStack(int *ctxNum, int ctx, QVector<short>* ctxs, int *prevLine)
 {
   //kdDebug(13010)<<QString("Entering generateContextStack with %1").arg(ctx)<<endl;
   while (true)
@@ -1221,8 +1221,7 @@ void KateHighlighting::generateContextStack(int *ctxNum, int ctx, Q3MemArray<sho
     {
       (*ctxNum) = ctx;
 
-      ctxs->resize (ctxs->size()+1, Q3GArray::SpeedOptim);
-      (*ctxs)[ctxs->size()-1]=(*ctxNum);
+      ctxs->append (*ctxNum);
 
       return;
     }
@@ -1238,12 +1237,12 @@ void KateHighlighting::generateContextStack(int *ctxNum, int ctx, Q3MemArray<sho
 
         if (size > 0)
         {
-          ctxs->resize (size, Q3GArray::SpeedOptim);
+          ctxs->resize (size);
           (*ctxNum)=(*ctxs)[size-1];
         }
         else
         {
-          ctxs->resize (0, Q3GArray::SpeedOptim);
+          ctxs->resize (0);
           (*ctxNum)=0;
         }
 
@@ -1325,7 +1324,7 @@ void KateHighlighting::dropDynamicContexts()
  */
 void KateHighlighting::doHighlight ( KateTextLine *prevLine,
                                      KateTextLine *textLine,
-                                     Q3MemArray<uint>* foldingList,
+                                     QVector<uint>* foldingList,
                                      bool *ctxChanged )
 {
   if (!textLine)
@@ -1340,8 +1339,7 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
   }
 
   // duplicate the ctx stack, only once !
-  Q3MemArray<short> ctx;
-  ctx.duplicate (prevLine->ctxArray());
+  QVector<short> ctx (prevLine->ctxArray());
 
   int ctxNum = 0;
   int previousLine = -1;
@@ -1445,11 +1443,11 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         // kdDebug(13010)<<QString("Region mark 2 detected: %1").arg(item->region2)<<endl;
         if ( !foldingList->isEmpty() && ((item->region2 < 0) && (*foldingList)[foldingList->size()-2] == -item->region2 ) )
         {
-          foldingList->resize (foldingList->size()-2, Q3GArray::SpeedOptim);
+          foldingList->resize (foldingList->size()-2);
         }
         else
         {
-          foldingList->resize (foldingList->size()+2, Q3GArray::SpeedOptim);
+          foldingList->resize (foldingList->size()+2);
           (*foldingList)[foldingList->size()-2] = (uint)item->region2;
           if (item->region2<0) //check not really needed yet
             (*foldingList)[foldingList->size()-1] = offset2;
@@ -1469,7 +1467,7 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         }
         else*/
         {
-          foldingList->resize (foldingList->size()+2, Q3GArray::SpeedOptim);
+          foldingList->resize (foldingList->size()+2);
           (*foldingList)[foldingList->size()-2] = item->region;
           if (item->region<0) //check not really needed yet
             (*foldingList)[foldingList->size()-1] = offset2;
@@ -2832,7 +2830,7 @@ int KateHighlighting::addToContextList(const QString &ident, int ctx0)
 
 void KateHighlighting::clearAttributeArrays ()
 {
-  for ( Q3IntDictIterator< Q3MemArray<KateAttribute> > it( m_attributeArrays ); it.current(); ++it )
+  for ( Q3IntDictIterator< QVector<KateAttribute> > it( m_attributeArrays ); it.current(); ++it )
   {
     // k, schema correct, let create the data
     KateAttributeList defaultStyleList;
@@ -2843,7 +2841,7 @@ void KateHighlighting::clearAttributeArrays ()
     getKateHlItemDataList(it.currentKey(), itemDataList);
 
     uint nAttribs = itemDataList.count();
-    Q3MemArray<KateAttribute> *array = it.current();
+    QVector<KateAttribute> *array = it.current();
     array->resize (nAttribs);
 
     for (uint z = 0; z < nAttribs; z++)
@@ -2854,14 +2852,14 @@ void KateHighlighting::clearAttributeArrays ()
       if (itemData && itemData->isSomethingSet())
         n += *itemData;
 
-      array->at(z) = n;
+      (*array)[z] = n;
     }
   }
 }
 
-Q3MemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
+QVector<KateAttribute> *KateHighlighting::attributes (uint schema)
 {
-  Q3MemArray<KateAttribute> *array;
+  QVector<KateAttribute> *array;
 
   // found it, allready floating around
   if ((array = m_attributeArrays[schema]))
@@ -2883,7 +2881,7 @@ Q3MemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
   getKateHlItemDataList(schema, itemDataList);
 
   uint nAttribs = itemDataList.count();
-  array = new Q3MemArray<KateAttribute> (nAttribs);
+  array = new QVector<KateAttribute> (nAttribs);
 
   for (uint z = 0; z < nAttribs; z++)
   {
@@ -2893,7 +2891,7 @@ Q3MemArray<KateAttribute> *KateHighlighting::attributes (uint schema)
     if (itemData && itemData->isSomethingSet())
       n += *itemData;
 
-    array->at(z) = n;
+    (*array)[z] = n;
   }
 
   m_attributeArrays.insert(schema, array);

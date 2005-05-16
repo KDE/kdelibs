@@ -31,8 +31,8 @@
 #include <kxmlguifactory.h>
 
 #include <qregexp.h>
-#include <q3memarray.h>
 #include <qevent.h>
+#include <QVector>
 
 /**
    Utility: selection sort
@@ -41,7 +41,7 @@
    To sort the entire array: ssort( *array, array.size() -1 );
    This is only efficient if ran only once.
 */
-static void ssort( Q3MemArray<uint> &a, int max )
+static void ssort( QVector<uint> &a, int max )
 {
   uint tmp, j, maxpos;
   for ( uint h = max; h >= 1; h-- )
@@ -156,7 +156,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
   KTextEditor::Mark *prev = 0;
 
   Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
-  Q3MemArray<uint> sortArray( m.count() );
+  QVector<uint> sortArray( m.count() );
   Q3PtrListIterator<KTextEditor::Mark> it( m );
 
   if ( it.count() > 0 )
@@ -176,7 +176,15 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
       {
         sortArray[i] = (*it)->line;
         ssort( sortArray, i );
-        idx = sortArray.find( (*it)->line ) + 3;
+        
+        for (int i=0; i < sortArray.size(); ++i)
+        {
+          if (sortArray[i] == (*it)->line)
+          {
+            idx = i + 3;
+            break;
+          }
+        }
       }
 
       menu.insertItem(

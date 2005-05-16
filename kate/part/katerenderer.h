@@ -255,7 +255,7 @@ public:
     bool m_showTabs;
     bool m_printerFriendly;
 
-    Q3MemArray<KateAttribute> *m_attributes;
+    QVector<KateAttribute> *m_attributes;
 
   /**
    * Configuration

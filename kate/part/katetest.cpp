@@ -104,8 +104,7 @@ KWrite::KWrite (KTextEditor::Document *doc)
   guiFactory()->addClient( m_view );
 
   // install a working kate part popup dialog thingy
- // if (static_cast<Kate::View*>(m_view->qt_cast("Kate::View")))
-   // static_cast<Kate::View*>(m_view->qt_cast("Kate::View"))->installPopup ((QPopupMenu*)(factory()->container("ktexteditor_popup", this)) );
+  ((Kate::View*)m_view)->installPopup ((Q3PopupMenu*)(factory()->container("ktexteditor_popup", this)) );
 
   // call it as last thing, must be sure everything is already set up ;)
   setAutoSaveSettings ("MainWindow Settings");

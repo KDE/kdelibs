@@ -116,7 +116,7 @@ class KateDocument : public Kate::Document,
     void disablePluginGUI (KTextEditor::Plugin *plugin);
 
   private:
-     Q3MemArray<KTextEditor::Plugin *> m_plugins;
+     QVector<KTextEditor::Plugin *> m_plugins;
 
   public:
     bool readOnly () const { return m_bReadOnly; }

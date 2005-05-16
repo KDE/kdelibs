@@ -36,7 +36,7 @@ KateTextLine::~KateTextLine()
 {
 }
 
-void KateTextLine::insertText (uint pos, uint insLen, const QChar *insText, uchar *insAttribs)
+void KateTextLine::insertText (uint pos, uint insLen, const QChar *insText, const uchar *insAttribs)
 {
   // nothing to do
   if (insLen == 0)
@@ -106,7 +106,7 @@ void KateTextLine::truncate(int newLen)
   if (newLen < m_text.length())
   {
     m_text.truncate (newLen);
-    m_attributes.truncate (newLen);
+    m_attributes.resize (newLen);
   }
 }
 
@@ -393,7 +393,8 @@ char *KateTextLine::restore (char *buf)
   else
     m_flags = f;
 
-  m_attributes.duplicate ((uchar *) buf, l);
+  m_attributes.resize (l);
+  memcpy((char *) m_attributes.data(), buf, sizeof(uchar) * l);
   buf += sizeof(uchar) * l;
 
   uint lctx = 0;
@@ -409,13 +410,16 @@ char *KateTextLine::restore (char *buf)
   memcpy((char *) &lind, buf, sizeof(uint));
   buf += sizeof(uint);
 
-  m_ctx.duplicate ((short *) buf, lctx);
+  m_ctx.resize (lctx);
+  memcpy((char *) m_ctx.data(), buf, sizeof(short) * lctx);
   buf += sizeof(short) * lctx;
 
-  m_foldingList.duplicate ((uint *) buf, lfold);
+  m_foldingList.resize (lfold);
+  memcpy((char *) m_foldingList.data(), buf, sizeof(uint)*lfold);
   buf += sizeof(uint)*lfold;
 
-  m_indentationDepth.duplicate ((unsigned short *) buf, lind);
+  m_indentationDepth.resize (lind);
+  memcpy((char *) m_indentationDepth.data(), buf, sizeof(unsigned short) * lind);
   buf += sizeof(unsigned short) * lind;
 
   bool nibf;
