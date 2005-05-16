@@ -727,7 +727,7 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QString& mimedest)
 {
 	QStringList	chain;
-	uint		score(0);
+	int		score(0);
 
 	preload();
 
