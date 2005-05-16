@@ -184,14 +184,8 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   KEntryMap tmpEntryMap;
 
   aIt = aEntryMap.find(aKey);
-  if (aIt == aEntryMap.end()) {
-    // the special group key is not in the map,
-    // so it must be an invalid group.  Return
-    // an empty map.
-    return tmpEntryMap;
-  }
-  // we now have a pointer to the nodes we want to copy.
-  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+  //Copy any matching nodes.
+  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
   {
     tmpEntryMap.insert(aIt.key(), *aIt);
   }
