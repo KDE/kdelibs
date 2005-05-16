@@ -501,6 +501,7 @@ bool KBuildSycoca::recreate()
   }
 
   m_str = database->dataStream();
+  m_str->setVersion(QDataStream::Qt_3_1);
 
   kdDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
 
