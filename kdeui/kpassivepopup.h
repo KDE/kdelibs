@@ -77,7 +77,7 @@ public:
     {
         Boxed,             ///< Information will appear in a framed box
         Balloon,           ///< Information will appear in a comic-alike balloon
-        Default = Balloon  ///< Will be used by default
+        Default = Boxed    ///< Will be used by default
     };
     public:
     /**
