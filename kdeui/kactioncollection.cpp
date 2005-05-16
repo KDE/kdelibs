@@ -389,8 +389,8 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 {
   KAction* pAction = 0;
 
-  if ( !classname && name && d->m_actionDict.contains(name) )
-    pAction = d->m_actionDict[ name ];
+  if ( !classname && name )
+    pAction = d->m_actionDict.value (name);
 
   else {
     foreach( KAction* itAction, d->m_actionDict )
@@ -504,7 +504,8 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   if ( !d->m_highlight )
     return;
 
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  // try to locate the thingy
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value (container);
 
   if ( !actionList )
   {
@@ -537,7 +538,7 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
   if ( !d->m_highlight )
     return;
 
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ container ];
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value (container);
 
   if ( !actionList )
     return;
@@ -623,7 +624,7 @@ void KActionCollection::slotDestroyed()
 
 KAction *KActionCollection::findAction( QWidget *container, int id )
 {
-  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
+  Q3PtrList<KAction> *actionList = d->m_dctHighlightContainers.value ( reinterpret_cast<void *>( container ) );
 
   if ( !actionList )
     return 0;
