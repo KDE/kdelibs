@@ -272,6 +272,11 @@ KPrinter::ApplicationType KPrinter::applicationType()
 	return (ApplicationType)KMFactory::self()->settings()->application;
 }
 
+#warning Kprinter's use of QPainter needs to be ported
+QPaintEngine * paintEngine () const { 
+	return 0;
+}
+
 /*bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
