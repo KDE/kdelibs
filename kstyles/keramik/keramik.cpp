@@ -498,8 +498,56 @@ public:
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
 									p, r, pal.button().color(), pal.background().color(), disabled);
 						return;
-					
 				}
+				
+				if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
+				{
+					KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
+					QColor               arrowColor = colorOpt->color.color(pal);
+					
+					QPolygon poly;
+					switch (primitive)
+					{
+						case Generic::ArrowUp:
+							poly.setPoints(POLY_LEN(keramik_up_arrow), keramik_up_arrow);
+							break;
+		
+						case Generic::ArrowDown:
+							poly.setPoints(POLY_LEN(keramik_down_arrow), keramik_down_arrow);
+							break;
+		
+						case Generic::ArrowLeft:
+							poly.setPoints(POLY_LEN(keramik_left_arrow), keramik_left_arrow);
+							break;
+		
+						default:
+							poly.setPoints(POLY_LEN(keramik_right_arrow), keramik_right_arrow);
+					}
+		
+		
+					if ( flags & State_Enabled )
+					{
+						//CHECKME: Why is the -1 needed?
+						poly.translate(r.x() + r.width()/2 - 1, r.y() + r.height()/2);
+		
+						p->setPen(arrowColor);
+						p->drawPolygon(poly);
+					}
+					else
+					{
+						//Disabled ones ignore color parameter
+						poly.translate(r.x() + r.width()/2, r.y() + r.height()/2 + 1);
+						p->setPen(pal.light().color());
+						p->drawPolygon(poly);
+						
+						poly.translate(-1,-1);
+						p->setPen(pal.mid().color());
+						p->drawPolygon(poly);
+					}
+		
+					return;
+				}
+
 			}
 
 			case WT_Tab:
@@ -562,53 +610,6 @@ public:
 		}
 
 		//Handle default fallbacks
-		if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
-		{
-			KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
-			QColor               arrowColor = colorOpt->color.color(pal);
-			
-			QPolygon poly;
-			switch (primitive)
-			{
-				case Generic::ArrowUp:
-					poly.setPoints(POLY_LEN(keramik_up_arrow), keramik_up_arrow);
-					break;
-
-				case Generic::ArrowDown:
-					poly.setPoints(POLY_LEN(keramik_down_arrow), keramik_down_arrow);
-					break;
-
-				case Generic::ArrowLeft:
-					poly.setPoints(POLY_LEN(keramik_left_arrow), keramik_left_arrow);
-					break;
-
-				default:
-					poly.setPoints(POLY_LEN(keramik_right_arrow), keramik_right_arrow);
-			}
-
-
-			if ( flags & State_Enabled )
-			{
-				//CHECKME: Why is the -1 needed?
-				poly.translate(r.x() + r.width()/2 - 1, r.y() + r.height()/2);
-
-				p->setPen(arrowColor);
-				p->drawPolygon(poly);
-			}
-			else
-			{
-				//Disabled ones ignore color parameter
-				poly.translate(r.x() + r.width()/2, r.y() + r.height()/2 + 1);
-				p->setPen(pal.light().color());
-				p->drawPolygon(poly);
-				
-				poly.translate(-1,-1);
-				p->setPen(pal.mid().color());
-				p->drawPolygon(poly);
-			}
-
-			return;
-		}
 		
 		KStyle::drawKStylePrimitive(widgetType, primitive, opt,
 					    r, pal, flags, p, widget, kOpt);

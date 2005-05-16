@@ -10,7 +10,7 @@
  *      Copyright (C) 2002      Malte Starostik   <malte@kde.org>
  *                (C) 2002-2003 Maksim Orlovich  <maksim@kde.org>
  *      Portions  (C) 2001-2002 Karol Szwed     <gallium@kde.org>
- *                (C) 2001-2002 Fredrik Höglund <fredrik@kde.org>
+ *                (C) 2001-2002 Fredrik Hï¿½lund <fredrik@kde.org>
  *                (C) 2000 Daniel M. Duley       <mosfet@kde.org>
  *                (C) 2000 Dirk Mueller         <mueller@kde.org>
  *                (C) 2001 Martijn Klingens    <klingens@kde.org>
@@ -41,6 +41,15 @@
 //#include <QStyleOptionButton>
 
 #include <stdio.h> //###debug
+
+
+//### FIXME: Who to credit these to?
+static const QCOORD u_arrow[]={-1,-3, 0,-3, -2,-2, 1,-2, -3,-1, 2,-1, -4,0, 3,0, -4,1, 3,1};
+static const QCOORD d_arrow[]={-4,-2, 3,-2, -4,-1, 3,-1, -3,0, 2,0, -2,1, 1,1, -1,2, 0,2};
+static const QCOORD l_arrow[]={-3,-1, -3,0, -2,-2, -2,1, -1,-3, -1,2, 0,-4, 0,3, 1,-4, 1,3};
+static const QCOORD r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2,-1, 2,0};
+#define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
+
 
 /**
  TODO: lots of missing widgets, SH_ settings, etc.
@@ -173,6 +182,54 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         pen.setStyle(Qt::DotLine);
         p->setPen(pen);
         drawInsideRect(p, r);
+    }
+    else if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
+    {
+        //### FIXME: Helper for these sorts of things, as Keramik has virtually
+        //identical code!
+        KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
+        QColor               arrowColor = colorOpt->color.color(pal);
+
+        QPolygon poly;
+    
+        switch (primitive)
+        {
+            case Generic::ArrowUp:
+                poly.setPoints(QCOORDARRLEN(u_arrow), u_arrow);
+                break;
+    
+            case Generic::ArrowDown:
+                poly.setPoints(QCOORDARRLEN(d_arrow), d_arrow);
+                break;
+    
+            case Generic::ArrowLeft:
+                poly.setPoints(QCOORDARRLEN(l_arrow), l_arrow);
+                break;
+    
+            default:
+                poly.setPoints(QCOORDARRLEN(r_arrow), r_arrow);
+        }
+    
+        if ( flags & State_Enabled )
+        {
+            //CHECKME: Why is the -1 needed?
+            poly.translate(r.x() + r.width()/2 - 1, r.y() + r.height()/2);
+        
+            p->setPen(arrowColor);
+            p->drawPolygon(poly);
+        }
+        else
+        {
+            //Disabled ones ignore color parameter
+            poly.translate(r.x() + r.width()/2, r.y() + r.height()/2 + 1);
+            p->setPen(pal.light().color());
+            p->drawPolygon(poly);
+            
+            poly.translate(-1,-1);
+            p->setPen(pal.mid().color());
+            p->drawPolygon(poly);
+        }
+        
     }
     else
     {
