@@ -47,7 +47,7 @@ class KReverseResolverPrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KReverseResolver: public QObject
+class KDECORE_EXPORT KReverseResolver: public QObject
 {
   Q_OBJECT
 
