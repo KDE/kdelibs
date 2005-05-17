@@ -60,7 +60,6 @@
 #include <q3valuelist.h>
 #include <qregexp.h>
 
-#include <kshred.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kinstance.h>
@@ -1140,21 +1139,6 @@ void FileProtocol::special( const QByteArray &data)
       }
       break;
 
-    case 3:
-    {
-      QString filename;
-      stream >> filename;
-      KShred shred( filename );
-      connect( &shred, SIGNAL( processedSize( KIO::filesize_t ) ),
-               this, SLOT( slotProcessedSize( KIO::filesize_t ) ) );
-      connect( &shred, SIGNAL( infoMessage( const QString & ) ),
-               this, SLOT( slotInfoMessage( const QString & ) ) );
-      if (!shred.shred())
-          error( KIO::ERR_CANNOT_DELETE, filename );
-      else
-          finished();
-      break;
-    }
     default:
       break;
     }

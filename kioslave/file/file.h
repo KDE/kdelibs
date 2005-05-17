@@ -67,7 +67,6 @@ public:
    * Special commands supported by this slave:
    * 1 - mount
    * 2 - unmount
-   * 3 - shred
    */
   virtual void special( const QByteArray &data);
   void unmount( const QString& point );
