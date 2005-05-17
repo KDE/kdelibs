@@ -137,7 +137,6 @@ private:
   int maxX;
   int minY;
   int maxY;
-  QPixmap store;
 
 protected:
   virtual void virtual_hook( int id, void* data );

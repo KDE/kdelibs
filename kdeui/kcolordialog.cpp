@@ -475,9 +475,9 @@ void KColorCells::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 
 //-----------------------------------------------------------------------------
 
-KColorPatch::KColorPatch( QWidget *parent ) : Q3Frame( parent )
+KColorPatch::KColorPatch( QWidget *parent ) : QFrame( parent )
 {
-	setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
+	setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	setAcceptDrops( true);
 }
 
@@ -489,18 +489,16 @@ void KColorPatch::setColor( const QColor &col )
 {
 	color.setRgb( col.rgb() );
 
-	QPainter painter;
-
-	painter.begin( this );
-	drawContents( &painter );
-	painter.end();
+	update();
 }
 
-void KColorPatch::drawContents( QPainter *painter )
+void KColorPatch::paintEvent ( QPaintEvent* pe )
 {
-	painter->setPen( color );
-	painter->setBrush( QBrush( color ) );
-	painter->drawRect( contentsRect() );
+	QFrame::paintEvent( pe );
+	QPainter painter( this );
+	painter.setPen( color );
+	painter.setBrush( QBrush( color ) );
+	painter.drawRect( contentsRect() );
 }
 
 void KColorPatch::mouseMoveEvent( QMouseEvent *e )

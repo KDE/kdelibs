@@ -26,8 +26,6 @@
 #include <QPaintEvent>
 
 
-#define STORE_W 8
-#define STORE_W2 STORE_W * 2
 
 //-----------------------------------------------------------------------------
 /*
@@ -44,7 +42,6 @@ KXYSelector::KXYSelector( QWidget *parent, const char *name )
 	minY = 0;
 	maxX = 100;
 	maxY = 100;
-	store.resize( STORE_W2, STORE_W2 );
 }
 
 
@@ -100,7 +97,6 @@ QRect KXYSelector::contentsRect() const
 
 void KXYSelector::paintEvent( QPaintEvent *ev )
 {
-	QRect cursorRect( px - STORE_W, py - STORE_W, STORE_W2, STORE_W2);
 	QRect paintRect = ev->rect();
 
 	QPainter painter;
@@ -111,16 +107,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 			true, 2, &brush );
 
 	drawContents( &painter );
-	if (paintRect.contains(cursorRect))
-	{
-	   bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
-		STORE_W2, STORE_W2 );
-	   drawCursor( &painter, px, py );
-        }
-        else if (paintRect.intersects(cursorRect))
-        {
-           repaint( cursorRect, false);
-        }
+	drawCursor( &painter, px, py );
 
 	painter.end();
 }
@@ -181,18 +168,11 @@ void KXYSelector::setPosition( int xp, int yp )
 	else if ( yp > height() - 2 )
 		yp = height() - 2;
 
-	QPainter painter;
-	painter.begin( this );
-
-	bitBlt( this, px - STORE_W, py - STORE_W, &store, 0, 0,
-			STORE_W2, STORE_W2 );
-	bitBlt( &store, 0, 0, this, xp - STORE_W, yp - STORE_W,
-			STORE_W2, STORE_W2 );
-	drawCursor( &painter, xp, yp );
 	px = xp;
 	py = yp;
 
-	painter.end();
+
+	update();
 }
 
 void KXYSelector::drawContents( QPainter * )
@@ -287,18 +267,11 @@ void KSelector::wheelEvent( QWheelEvent *e )
 
 void KSelector::valueChange()
 {
-	QPainter painter;
-	QPoint pos;
+	QPoint prevPos, newPos;
 
-	painter.begin( this );
-
-	pos = calcArrowPos( prevValue() );
-	drawArrow( &painter, false, pos );   
-
-	pos = calcArrowPos( value() );
-	drawArrow( &painter, true, pos );   
-
-	painter.end();
+	prevPos = calcArrowPos( prevValue() );
+	newPos = calcArrowPos( value() );
+	update(QRect(prevPos, newPos));
 
 	emit valueChanged( value() );
 }

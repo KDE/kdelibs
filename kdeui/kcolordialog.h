@@ -306,7 +306,7 @@ private:
  * automatically handles drag and drop from and on the widget.
  *
  */
-class KDEUI_EXPORT KColorPatch : public Q3Frame
+class KDEUI_EXPORT KColorPatch : public QFrame
 {
   Q_OBJECT
 public:
@@ -319,7 +319,7 @@ signals:
   void colorChanged( const QColor&);
 
 protected:
-  virtual void drawContents( QPainter *painter );
+  virtual void paintEvent    ( QPaintEvent * pe );
   virtual void mouseMoveEvent( QMouseEvent * );
   virtual void dragEnterEvent( QDragEnterEvent *);
   virtual void dropEvent( QDropEvent *);
