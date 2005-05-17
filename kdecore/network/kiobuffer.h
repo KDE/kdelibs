@@ -77,7 +77,7 @@ public:
   /**
    * Reads a line from the buffer and discards it.
    */
-  virtual QByteArray readLine() = 0;
+  virtual qint64 readLine(char* data, qint64 maxlen) = 0;
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not

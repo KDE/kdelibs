@@ -244,21 +244,15 @@ public:
    * @param service	the service
    */
   virtual bool connect(const QString& node = QString(),
-		       const QString& service = QString()) = 0;
+		       const QString& service = QString(),
+		       OpenMode mode = ReadWrite) = 0;
 
   /**
    * @overload
    * Reimplemented from KSocketBase.
    */
-  virtual bool connect(const KResolverEntry& address);
-
-  /**
-   * @deprecated
-   * This is a convenience function provided to ease migrating from
-   * Qt 3.x's QSocket class.
-   */
-  inline void connectToHost(const QString& host, quint16 port)
-  { connect(host, QString::number(port)); }
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite);
 
   /**
    * Disconnects the socket.
@@ -271,8 +265,8 @@ public:
    *
    * You should not call this function; instead, use @ref connect
    */
-  virtual inline bool open(int)
-  { return connect(); }
+  virtual inline bool open(OpenMode mode)
+  { return connect(QString(), QString(), mode); }
 
   /**
    * Closes the socket. Reimplemented from QIODevice.
@@ -283,7 +277,8 @@ public:
   virtual void close();
 
   /**
-   * This call is not supported on sockets. Reimplemented from QIODevice.
+   * This call is not supported on unbuffered sockets. 
+   * Reimplemented from QIODevice.
    */
   virtual bool flush()
   { return false; }
@@ -298,39 +293,6 @@ public:
    * Waits for more data. Reimplemented from KSocketBase.
    */
   virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
-
-  /**
-   * Reads data from a socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 readData(char *data, qint64 maxlen);
-
-  /**
-   * @overload
-   * Reads data from a socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data from the socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen);
-
-  /**
-   * @overload
-   * Peeks data from the socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress &from);
-
-  /**
-   * Writes data to the socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 writeData(const char *data, qint64 len);
-
-  /**
-   * @overload
-   * Writes data to the socket. Reimplemented from KSocketBase.
-   */
-  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
    * Returns the local socket address. Reimplemented from KSocketBase.
@@ -458,6 +420,8 @@ signals:
    */
   void closed();
 
+#if 0
+  // QIODevice already has this
   /**
    * This signal is emitted whenever the socket is ready for
    * reading -- i.e., there is data to be read in the buffers.
@@ -467,6 +431,7 @@ signals:
    * function. This signal is by default enabled.
    */
   void readyRead();
+#endif
 
   /**
    * This signal is emitted whenever the socket is ready for 
@@ -482,6 +447,22 @@ signals:
   void readyWrite();
 
 protected:
+  /**
+   * Reads data from a socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Peeks data from the socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * @overload
+   * Writes data to the socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
+
   /**
    * Sets the socket state to @p state. This function does not
    * emit the @ref stateChanged signal.

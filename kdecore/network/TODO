@@ -1,0 +1,22 @@
+Qt4-port
+========
+
+* Talk to TT about finding a way to reuse the unget buffer
+  It is currently wholly ignored.
+
+* Make KDatagramSocket respect text-mode conventions
+  (or not?)
+
+* Use QIODevice's aboutToClose
+
+* All classes must have bytesAvailable and bytesToWrite
+
+* Rename emitsReadyRead & family
+
+* On KStreamSocket::connectionEvent, use indeces instead of iterators
+  (KResolverResults is a QList)
+
+* For multicast, use an Interface class
+  A better idea would be to replace the Capabilities with C++ interfaces
+
+* s/setOpenMode/open/

@@ -100,45 +100,6 @@ public:
   virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
-   * Reads data from the socket. Make use of buffers.
-   */
-  virtual qint64 readData(char *data, qint64 maxlen);
-
-  /**
-   * @overload
-   * Reads data from a socket.
-   *
-   * The @p from parameter is always set to @ref peerAddress()
-   */
-  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data from the socket.
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen);
-
-  /**
-   * @overload
-   * Peeks data from the socket.
-   *
-   * The @p from parameter is always set to @ref peerAddress()
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress &from);
-
-  /**
-   * Writes data to the socket.
-   */
-  virtual qint64 writeData(const char *data, qint64 len);
-
-  /**
-   * @overload
-   * Writes data to the socket.
-   *
-   * The @p to parameter is discarded.
-   */
-  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
-
-  /**
    * Catch changes.
    */
   virtual void enableRead(bool enable);
@@ -184,14 +145,35 @@ public:
   /**
    * Returns true if a line can be read with @ref readLine
    */
-  bool canReadLine() const;
-
-  /**
-   * Reads a line of data from the socket buffers.
-   */
-  QByteArray readLine();
+  virtual bool canReadLine() const;
 
 protected:
+  /**
+   * Reads data from a socket.
+   *
+   * The @p from parameter is always set to @ref peerAddress()
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Peeks data from the socket.
+   *
+   * The @p from parameter is always set to @ref peerAddress()
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Writes data to the socket.
+   *
+   * The @p to parameter is discarded.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
+
+  /**
+   * Improve the readLine performance
+   */
+  virtual qint64 readLineData(char *data, qint64 maxSize);
+
   /**
    * Catch connection to clear the buffers
    */
@@ -208,11 +190,14 @@ protected slots:
    */
   virtual void slotWriteActivity();
 
+#if 0
+  // Already present in QIODevice
 signals:
   /**
    * This signal is emitted whenever data is written.
    */
   void bytesWritten(int bytes);
+#endif
 
 private:
   KBufferedSocket(const KBufferedSocket&);

@@ -78,7 +78,7 @@ public:
   /**
    * Reads a line from the buffer and discard it from the buffer.
    */
-  virtual QByteArray readLine();
+  virtual qint64 readLine(char *data, qint64 maxSize);
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not
@@ -153,7 +153,7 @@ public:
 protected:
   mutable QMutex m_mutex;
   QList<QByteArray> m_list;
-  qlonglong m_offset;	///< offset of the start of data in the first element
+  qint64 m_offset;	///< offset of the start of data in the first element
 
   qint64 m_size;		///< the maximum length of the buffer
   mutable qint64 m_length;

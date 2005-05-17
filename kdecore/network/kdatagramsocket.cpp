@@ -52,9 +52,10 @@ KDatagramSocket::KDatagramSocket(QObject* parent)
 
   localResolver().setFlags(KResolver::Passive);
 
-  //  QObject::connect(localResolver(), SIGNAL(finished(KResolverResults)),
+  //  QObject::connect(localResolver(), SIGNAL(finished(const KNetwork::KResolverResults&))
   //		   this, SLOT(lookupFinishedLocal()));
-  QObject::connect(&peerResolver(), SIGNAL(finished(KResolverResults)),
+  QObject::connect(&peerResolver(),
+		   SIGNAL(finished(const KNetwork::KResolverResults&)), 
   		   this, SLOT(lookupFinishedPeer()));
   QObject::connect(this, SIGNAL(hostFound()), this, SLOT(lookupFinishedLocal()));
 }
@@ -89,7 +90,8 @@ bool KDatagramSocket::bind(const QString& node, const QString& service)
   return true;
 }
 
-bool KDatagramSocket::connect(const QString& node, const QString& service)
+bool KDatagramSocket::connect(const QString& node, const QString& service,
+			      OpenMode mode)
 {
   if (state() >= Connected)
     return true;		// already connected
@@ -156,7 +158,7 @@ KDatagramPacket KDatagramSocket::receive()
   KSocketAddress address;
   
   // now do the reading
-  size = readData(data.data(), size, address);
+  size = read(data.data(), size, address);
   if (size < 0)
     // error has been set
     return KDatagramPacket();
@@ -167,7 +169,7 @@ KDatagramPacket KDatagramSocket::receive()
 
 qint64 KDatagramSocket::send(const KDatagramPacket& packet)
 {
-  return writeData(packet.data(), packet.size(), packet.address());
+  return write(packet.data(), packet.size(), packet.address());
 }
 
 void KDatagramSocket::lookupFinishedLocal()
@@ -237,6 +239,7 @@ bool KDatagramSocket::doBind()
       {
 	// bound
 	setupSignals();
+	KActiveSocketBase::open(ReadWrite | Unbuffered);
 	return true;
       }
 

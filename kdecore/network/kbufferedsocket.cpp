@@ -68,6 +68,7 @@ void KBufferedSocket::setSocketDevice(KSocketDevice* device)
 {
   KStreamSocket::setSocketDevice(device);
   device->setBlocking(false);
+  KActiveSocketBase::open(openMode() & ~Unbuffered);
 }
 
 bool KBufferedSocket::setSocketOptions(int opts)
@@ -113,8 +114,10 @@ qint64 KBufferedSocket::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-qint64 KBufferedSocket::readData(char *data, qint64 maxlen)
+qint64 KBufferedSocket::readData(char *data, qint64 maxlen, KSocketAddress* from)
 {
+  if (from)
+    *from = peerAddress();
   if (d->input)
     {
       if (d->input->isEmpty())
@@ -126,17 +129,13 @@ qint64 KBufferedSocket::readData(char *data, qint64 maxlen)
       resetError();
       return d->input->consumeBuffer(data, maxlen);
     }
-  return KStreamSocket::readData(data, maxlen);
+  return KStreamSocket::readData(data, maxlen, 0L);
 }
 
-qint64 KBufferedSocket::readData(char *data, qint64 maxlen, KSocketAddress& from)
+qint64 KBufferedSocket::peekData(char *data, qint64 maxlen, KSocketAddress* from)
 {
-  from = peerAddress();
-  return readData(data, maxlen);
-}
-
-qint64 KBufferedSocket::peekData(char *data, qint64 maxlen)
-{
+  if (from)
+    *from = peerAddress();
   if (d->input)
     {
       if (d->input->isEmpty())
@@ -148,17 +147,13 @@ qint64 KBufferedSocket::peekData(char *data, qint64 maxlen)
       resetError();
       return d->input->consumeBuffer(data, maxlen, false);
     }
-  return KStreamSocket::peekData(data, maxlen);
+  return KStreamSocket::peekData(data, maxlen, 0L);
 }
 
-qint64 KBufferedSocket::peekData(char *data, qint64 maxlen, KSocketAddress& from)
+qint64 KBufferedSocket::writeData(const char *data, qint64 len,
+				   const KSocketAddress*)
 {
-  from = peerAddress();
-  return peekData(data, maxlen);
-}
-
-qint64 KBufferedSocket::writeData(const char *data, qint64 len)
-{
+  // ignore the third parameter
   if (state() != Connected)
     {
       // cannot write now!
@@ -184,14 +179,7 @@ qint64 KBufferedSocket::writeData(const char *data, qint64 len)
       return d->output->feedBuffer(data, len);
     }
 
-  return KStreamSocket::writeData(data, len);
-}
-
-qint64 KBufferedSocket::writeData(const char *data, qint64 maxlen,
-				   const KSocketAddress&)
-{
-  // ignore the third parameter
-  return writeData(data, maxlen);
+  return KStreamSocket::writeData(data, len, 0L);
 }
 
 void KBufferedSocket::enableRead(bool enable)
@@ -300,9 +288,9 @@ bool KBufferedSocket::canReadLine() const
   return d->input->canReadLine();
 }
 
-QByteArray KBufferedSocket::readLine()
+qint64 KBufferedSocket::readLineData(char* data, qint64 maxSize)
 {
-  return d->input->readLine();
+  return d->input->readLine(data, maxSize);
 }
 
 void KBufferedSocket::slotReadActivity()

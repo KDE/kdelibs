@@ -191,12 +191,14 @@ public:
    * @param service	the service on the remote node to connect to
    */
   virtual bool connect(const QString& node = QString(),
-		       const QString& service = QString());
+		       const QString& service = QString(),
+		       OpenMode mode = ReadWrite);
 
   /**
    * Unshadowing from KClientSocketBase.
    */
-  virtual bool connect(const KResolverEntry& entry);
+  virtual bool connect(const KResolverEntry& entry,
+		       OpenMode mode = ReadWrite);
 
 signals:
   /**

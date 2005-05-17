@@ -82,10 +82,12 @@ KSocketDevice::KSocketDevice(const KSocketBase* parent, QObject* objparent)
     setSocketOptions(parent->socketOptions());
 }
 
-KSocketDevice::KSocketDevice(int fd)
+KSocketDevice::KSocketDevice(int fd, OpenMode mode)
   : KActiveSocketBase(0L), m_sockfd(fd), d(new KSocketDevicePrivate)
 {
-  setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
+  if (mode)
+    mode |= Unbuffered;
+  KActiveSocketBase::open(mode);
   setSocketDevice(this);
 }
 
@@ -172,12 +174,6 @@ bool KSocketDevice::setSocketOptions(int opts)
    }
 
   return true;			// all went well
-}
-
-bool KSocketDevice::open(int)
-{
-  resetError();
-  return false;
 }
 
 void KSocketDevice::close()
@@ -272,7 +268,7 @@ bool KSocketDevice::listen(int backlog)
   return false;
 }
 
-bool KSocketDevice::connect(const KResolverEntry& address)
+bool KSocketDevice::connect(const KResolverEntry& address, OpenMode mode)
 {
   resetError();
 
@@ -301,7 +297,7 @@ bool KSocketDevice::connect(const KResolverEntry& address)
       return false;
     }
 
-  setOpenMode(QIODevice::Unbuffered | QIODevice::ReadWrite);
+  KActiveSocketBase::open(Unbuffered | mode);
   return true;			// all is well
 }
 
@@ -412,28 +408,7 @@ static int do_read_common(int sockfd, char *data, qint64 maxlen, KSocketAddress*
   return 0;
 }
 
-qint64 KSocketDevice::readData(char *data, qint64 maxlen)
-{
-  resetError();
-  if (m_sockfd == -1)
-    return -1;
-
-  if (maxlen == 0 || data == 0L)
-    return 0;			// can't read
-
-  ssize_t retval;
-  int err = do_read_common(m_sockfd, data, maxlen, 0L, retval);
-
-  if (err)
-    {
-      setError(static_cast<SocketError>(err));
-      return -1;
-    }
-
-  return retval;
-}
-
-qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress &from)
+qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress *from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -443,7 +418,7 @@ qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress &from)
     return 0;			// user doesn't want to read
 
   ssize_t retval;
-  int err = do_read_common(m_sockfd, data, maxlen, &from, retval);
+  int err = do_read_common(m_sockfd, data, maxlen, from, retval);
 
   if (err)
     {
@@ -454,28 +429,7 @@ qint64 KSocketDevice::readData(char *data, qint64 maxlen, KSocketAddress &from)
   return retval;
 }
 
-qint64 KSocketDevice::peekData(char *data, qint64 maxlen)
-{
-  resetError();
-  if (m_sockfd == -1)
-    return -1;
-
-  if (maxlen == 0 || data == 0L)
-    return 0;			// can't read
-
-  ssize_t retval;
-  int err = do_read_common(m_sockfd, data, maxlen, 0L, retval, true);
-
-  if (err)
-    {
-      setError(static_cast<SocketError>(err));
-      return -1;
-    }
-
-  return retval;
-}
-
-qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress& from)
+qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress* from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -485,7 +439,7 @@ qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress& from)
     return 0;			// user doesn't want to read
 
   ssize_t retval;
-  int err = do_read_common(m_sockfd, data, maxlen, &from, retval, true);
+  int err = do_read_common(m_sockfd, data, maxlen, from, retval, true);
 
   if (err)
     {
@@ -496,12 +450,7 @@ qint64 KSocketDevice::peekData(char *data, qint64 maxlen, KSocketAddress& from)
   return retval;
 }
 
-qint64 KSocketDevice::writeData(const char *data, qint64 len)
-{
-  return writeData(data, len, KSocketAddress());
-}
-
-qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddress& to)
+qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddress* to)
 {
   resetError();
   if (m_sockfd == -1)
@@ -510,7 +459,11 @@ qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddre
   if (data == 0L || len == 0)
     return 0;			// nothing to be written
 
-  ssize_t retval = ::sendto(m_sockfd, data, len, 0, to.address(), to.length());
+  ssize_t retval;
+  if (to != 0L)
+    retval = ::sendto(m_sockfd, data, len, 0, to->address(), to->length());
+  else
+    retval = ::write(m_sockfd, data, len);
   if (retval == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)

@@ -144,9 +144,11 @@ bool KClientSocketBase::lookup()
 
       // don't restart the lookups if they had succeeded and
       // the input values weren't changed
-      QObject::connect(&d->peerResolver, SIGNAL(finished(KResolverResults)), 
+      QObject::connect(&d->peerResolver, 
+		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
 		       this, SLOT(lookupFinishedSlot()));
-      QObject::connect(&d->localResolver, SIGNAL(finished(KResolverResults)), 
+      QObject::connect(&d->localResolver,
+		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
 		       this, SLOT(lookupFinishedSlot()));
 
       if (d->localResolver.status() <= 0)
@@ -207,7 +209,7 @@ bool KClientSocketBase::bind(const KResolverEntry& address)
   return false;
 }
 
-bool KClientSocketBase::connect(const KResolverEntry& address)
+bool KClientSocketBase::connect(const KResolverEntry& address, OpenMode mode)
 {
   if (state() == Connected)
     return true;		// to be compliant with the other classes
@@ -231,7 +233,7 @@ bool KClientSocketBase::connect(const KResolverEntry& address)
 	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
-	      setOpenMode(ReadWrite | Unbuffered);
+	      KActiveSocketBase::open(mode | Unbuffered);
 	      emit connected(address);
 	    }
 	}
@@ -272,6 +274,7 @@ void KClientSocketBase::close()
   d->localResults = d->peerResults = KResolverResults();
 
   socketDevice()->close();
+  KActiveSocketBase::close();
   setState(Idle);
   emit stateChanged(Idle);
   emit closed();
@@ -298,19 +301,7 @@ qint64 KClientSocketBase::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-qint64 KClientSocketBase::readData(char *data, qint64 maxlen)
-{
-  resetError();
-  qint64 retval = socketDevice()->readData(data, maxlen);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
-  return retval;
-}
-
-qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress* from)
 {
   resetError();
   qint64 retval = socketDevice()->readData(data, maxlen, from);
@@ -322,19 +313,7 @@ qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress& fr
   return retval;
 }
 
-qint64 KClientSocketBase::peekData(char *data, qint64 maxlen)
-{
-  resetError();
-  qint64 retval = socketDevice()->peekData(data, maxlen);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
-  return retval;
-}
-
-qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress* from)
 {
   resetError();
   qint64 retval = socketDevice()->peekData(data, maxlen, from);
@@ -346,19 +325,7 @@ qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress& fr
   return retval;
 }
 
-qint64 KClientSocketBase::writeData(const char *data, qint64 len)
-{
-  resetError();
-  qint64 retval = socketDevice()->writeData(data, len);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
-  return retval;
-}
-
-qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketAddress& to)
+qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketAddress* to)
 {
   resetError();
   qint64 retval = socketDevice()->writeData(data, len, to);
@@ -367,6 +334,8 @@ qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketA
       copyError();
       emit gotError(error());
     }
+  else
+    emit bytesWritten(retval);
   return retval;
 }
 

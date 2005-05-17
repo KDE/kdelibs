@@ -228,14 +228,15 @@ public:
    *       to call @ref bind explicitly.
    */
   virtual bool connect(const QString& node = QString(),
-		       const QString& service = QString());
+		       const QString& service = QString(),
+		       OpenMode mode = ReadWrite);
 
   /**
    * @overload
    * "Connects" this socket to the given address.
    */
-  virtual bool connect(const KResolverEntry& entry)
-  { return KClientSocketBase::connect(entry); }
+  virtual bool connect(const KResolverEntry& entry, OpenMode mode = ReadWrite)
+  { return KClientSocketBase::connect(entry, mode); }
 
   /**
    * Receives one datagram from the stream. The reading process is guaranteed

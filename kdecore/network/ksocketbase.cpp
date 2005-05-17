@@ -294,22 +294,49 @@ KActiveSocketBase::~KActiveSocketBase()
 {
 }
 
-int KActiveSocketBase::getch()
+bool KActiveSocketBase::open(OpenMode mode)
 {
-  unsigned char c;
-  if (readBlock((char*)&c, 1) != 1)
-    return -1;
-
-  return c;
+  QIODevice::open(mode);
+  seek(0);			// clear unget buffers
+  return true;
 }
 
-int KActiveSocketBase::putch(int ch)
+void KActiveSocketBase::setSocketDevice(KSocketDevice* dev)
 {
-  unsigned char c = (unsigned char)ch;
-  if (writeBlock((char*)&c, 1) != 1)
-    return -1;
+  KSocketBase::setSocketDevice(dev);
+  KActiveSocketBase::open(dev->openMode());
+}
 
-  return c;
+qint64 KActiveSocketBase::read(char *data, qint64 len, KSocketAddress& from)
+{
+  // FIXME TODO: implement unget buffers
+  return readData(data, len, &from);
+}
+
+qint64 KActiveSocketBase::peek(char *data, qint64 len)
+{
+  return peekData(data, len, 0L);
+}
+
+qint64 KActiveSocketBase::peek(char *data, qint64 len, KSocketAddress& from)
+{
+  return peekData(data, len, &from);
+}
+
+qint64 KActiveSocketBase::write(const char *data, qint64 len, 
+				const KSocketAddress& to)
+{
+  return writeData(data, len, &to);
+}
+
+qint64 KActiveSocketBase::readData(char *data, qint64 len)
+{
+  return readData(data, len, 0L);
+}
+
+qint64 KActiveSocketBase::writeData(const char *data, qint64 len)
+{
+  return writeData(data, len, 0L);
 }
 
 void KActiveSocketBase::setError(SocketError error)

@@ -150,13 +150,13 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
       // must create the socket
       if (!KSocketDevice::connect(d->proxy))
 	return false;		// also unable to contact proxy server
-      setOpenMode(0);		// unset open flag
+      KActiveSocketBase::close();
 
       // prepare the request
-      QString request = QString::fromLatin1("CONNECT %1:%2 HTTP/1.1\r\n"
-					    "Cache-Control: no-cache\r\n"
-					    "Host: \r\n"
-					    "\r\n");
+      QString request = QLatin1String("CONNECT %1:%2 HTTP/1.1\r\n"
+				      "Cache-Control: no-cache\r\n"
+				      "Host: \r\n"
+				      "\r\n");
       QString node2 = node;
       if (node.contains(':'))
 	node2 = '[' + node + ']';
@@ -207,7 +207,7 @@ bool KHttpProxySocketDevice::parseServerReply()
     {
       qint64 avail = bytesAvailable();
       qDebug("KHttpProxySocketDevice: %lld bytes available", avail);
-      setOpenMode(0);
+      KActiveSocketBase::close();
       if (avail == 0)
 	{
 	  setError(InProgress);
@@ -276,6 +276,6 @@ bool KHttpProxySocketDevice::parseServerReply()
 
   // we've got it
   resetError();
-  setOpenMode(ReadOnly);
+  KActiveSocketBase::open(ReadOnly);
   return true;
 }

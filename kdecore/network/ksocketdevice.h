@@ -109,7 +109,7 @@ public:
    * Note: you should write programs that create sockets through
    * the classes whenever possible.
    */
-  explicit KSocketDevice(int fd);
+  explicit KSocketDevice(int fd, OpenMode mode = ReadWrite);
 
   /**
    * QObject constructor
@@ -143,11 +143,6 @@ public:
    * This implementation sets the options on the socket.
    */
   virtual bool setSocketOptions(int opts);
-
-  /**
-   * Reimplementation from QIODevice. You should not call this function in sockets.
-   */
-  virtual bool open(int mode);
 
   /**
    * Closes the socket. Reimplemented from QIODevice.
@@ -187,7 +182,8 @@ public:
   /**
    * Connect to a remote host.
    */
-  virtual bool connect(const KResolverEntry& address);
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite);
 
   /**
    * Accepts a new incoming connection.
@@ -212,36 +208,6 @@ public:
    * for any read events.
    */
   virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
-
-  /**
-   * Reads data from this socket.
-   */
-  virtual qint64 readData(char *data, qint64 maxlen);
-
-  /**
-   * Reads data and the source address from this socket.
-   */
-  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data in the socket.
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen);
-
-  /**
-   * Peeks the data in the socket and the source address.
-   */
-  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress& from);
-
-  /**
-   * Writes data to the socket.
-   */
-  virtual qint64 writeData(const char *data, qint64 len);
-
-  /**
-   * Writes the given data to the given destination address.
-   */
-  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
    * Returns this socket's local address.
@@ -294,6 +260,22 @@ public:
    * This function might return NULL.
    */
   QSocketNotifier* exceptionNotifier() const;
+
+  /**
+   * Reads data and the source address from this socket.
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress* from = 0L);
+
+  /**
+   * Peeks the data in the socket and the source address.
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress* from = 0L);
+
+  /**
+   * Writes the given data to the given destination address.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, 
+			   const KSocketAddress* to = 0L);
 
   /**
    * Executes a poll in the socket, via select(2) or poll(2).

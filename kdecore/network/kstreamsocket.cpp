@@ -104,7 +104,8 @@ bool KStreamSocket::bind(const QString& node, const QString& service)
   return true;
 }
 
-bool KStreamSocket::connect(const QString& node, const QString& service)
+bool KStreamSocket::connect(const QString& node, const QString& service,
+			    OpenMode mode)
 {
   if (state() == Connected)
     return true;		// already connected
@@ -185,9 +186,9 @@ bool KStreamSocket::connect(const QString& node, const QString& service)
   return error() == NoError;
 }
 
-bool KStreamSocket::connect(const KResolverEntry& entry)
+bool KStreamSocket::connect(const KResolverEntry& entry, OpenMode mode)
 {
-  return KClientSocketBase::connect(entry);
+  return KClientSocketBase::connect(entry, mode);
 }
 
 void KStreamSocket::hostFoundSlot()
@@ -345,7 +346,7 @@ void KStreamSocket::connectionSucceeded(const KResolverEntry& peer)
   QObject::disconnect(socketDevice()->writeNotifier(), 0, this, SLOT(connectionEvent()));
 
   resetError();
-  setOpenMode(ReadWrite | Unbuffered);
+  KActiveSocketBase::open(ReadWrite | Unbuffered);
   setState(Connected);
   socketDevice()->setSocketOptions(socketOptions());
   d->timer.stop();

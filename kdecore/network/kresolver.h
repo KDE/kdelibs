@@ -699,7 +699,7 @@ signals:
    * @note This signal is @b always delivered in the GUI event thread, even for
    *       resolutions that were started in secondary threads.
    */
-  void finished(KNetwork::KResolverResults results);
+  void finished(const KNetwork::KResolverResults& results);
 
 private:
   void emitFinished();

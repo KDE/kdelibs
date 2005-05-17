@@ -85,16 +85,16 @@ bool KSocketBuffer::canReadLine() const
   return false;			// not found
 }
 
-QByteArray KSocketBuffer::readLine()
+qint64 KSocketBuffer::readLine(char* data, qint64 maxSize)
 {
   if (!canReadLine())
-    return QByteArray();		// empty
+    return qint64(-1);		// empty
 
   QMutexLocker locker(&m_mutex);
 
   // find the offset of the newline in the buffer
-  int newline = 0;
-  QIODevice::Offset offset = m_offset;
+  qint64 newline = 0;
+  qint64 offset = m_offset;
 
   // walk the buffer
   for (int i = 0; i < m_list.size(); ++i)
@@ -113,9 +113,11 @@ QByteArray KSocketBuffer::readLine()
       break;
     }
 
-  QByteArray result(newline + 2 - m_offset);
-  consumeBuffer(result.data(), newline + 1 - m_offset);
-  return result;
+  qint64 bytesToRead = newline + 1 - m_offset;
+  if (bytesToRead > maxSize)
+    bytesToRead = maxSize;		// don't read more than maxSize
+
+  return consumeBuffer(data, bytesToRead);
 }
 
 qint64 KSocketBuffer::length() const

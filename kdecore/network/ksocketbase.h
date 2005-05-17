@@ -62,19 +62,6 @@
 #include "ksocketaddress.h"
 #include <kdelibs_export.h>
 
-/*
- * This is extending QIODevice's error codes
- *
- * According to qiodevice.h, the last error is IO_UnspecifiedError
- * These errors will never occur in functions declared in QIODevice
- * (except open, but you shouldn't call open)
- */
-#define IO_ListenError		(IO_UnspecifiedError+1)
-#define IO_AcceptError		(IO_UnspecifiedError+2)
-#define IO_LookupError		(IO_UnspecifiedError+3)
-#define IO_SocketCreateError	(IO_UnspecifiedError+4)
-#define IO_BindError		(IO_UnspecifiedError+5)
-
 class QMutex;
 
 namespace KNetwork {
@@ -465,6 +452,16 @@ public:
   { return QIODevice::errorString(); }
 
   /**
+   * @reimplemented
+   */
+  virtual void setSocketDevice(KSocketDevice* device);
+
+  /**
+   * Reimplemented from QIODevice.
+   */
+  virtual bool open(OpenMode mode);
+
+  /**
    * Binds this socket to the given address.
    *
    * The socket will be constructed with the address family,
@@ -492,7 +489,8 @@ public:
    * @returns true if the connection was successful or has been successfully
    *          queued; false if an error occurred.
    */
-  virtual bool connect(const KResolverEntry& address) = 0;
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite) = 0;
 
   /**
    * Disconnects this socket from a connection, if possible.
@@ -515,21 +513,21 @@ public:
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset size() const
+  virtual qint64 size() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset at() const
+  virtual qint64 pos() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return false.
    */
-  virtual bool at(Offset)
+  virtual bool seek(qint64)
   { return false; }
 
   /**
@@ -540,31 +538,22 @@ public:
   { return true; }
 
   /**
-   * Returns the number of bytes available for reading without
-   * blocking.
+   * Reads data from the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::read for
+   * more information.
    */
-  virtual qlonglong bytesAvailable() const = 0;
-
-  /**
-   * Waits up to @p msecs for more data to be available on this socket.
-   *
-   * If msecs is -1, this call will block indefinetely until more data
-   * is indeed available; if it's 0, this function returns immediately.
-   *
-   * If @p timeout is not NULL, this function will set it to indicate
-   * if a timeout occurred.
-   *
-   * @returns the number of bytes available
-   */
-  virtual qlonglong waitForMore(int msecs, bool *timeout = 0L) = 0;
+  inline qint64 read(char *data, qint64 maxlen)
+  { return QIODevice::read(data, maxlen); }
 
   /**
    * Reads data from the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::readData for
+   * Reimplemented from QIODevice. See QIODevice::read for
    * more information.
    */
-  virtual qint64 readData(char *data, qint64 len) = 0;
+  inline QByteArray read(qint64 len)
+  { return QIODevice::read(len); }
 
   /** @overload
    * Receives data and the source address.
@@ -577,10 +566,10 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes read
    */
-  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress& from) = 0;
+  qint64 read(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
-   * Peeks the data in the socket.
+   * Peeks the data in the socket and the source address.
    *
    * This call will allow you to peek the data to be received without actually
    * receiving it -- that is, it will be available for further peekings and
@@ -590,9 +579,10 @@ public:
    * @param maxlen		the maximum number of bytes to peek
    * @returns the actual number of bytes copied into @p data
    */
-  virtual qint64 peekData(char *data, qint64 maxlen) = 0;
+  qint64 peek(char *data, qint64 maxlen);
 
-  /** @overload
+  /**
+   * @overload
    * Peeks the data in the socket and the source address.
    *
    * This call will allow you to peek the data to be received without actually
@@ -604,15 +594,16 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes copied into @p data
    */
-  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress& from) = 0;
+  qint64 peek(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Writes the given data to the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::writeData for
+   * Reimplemented from QIODevice. See QIODevice::write for
    * more information.
    */
-  virtual qint64 writeData(const char *data, qint64 len) = 0;
+  inline qint64 write(const char *data, qint64 len)
+  { return QIODevice::write(data, len); }
 
   /** @overload
    * Writes the given data to the destination address.
@@ -625,26 +616,26 @@ public:
    * @param to			the address to send to
    * @returns the number of bytes actually sent
    */
-  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress& to) = 0;
+  qint64 write(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
-   * Reads one character from the socket.
-   * Reimplementation from QIODevice. See QIODevice::getch for more information.
+   * Waits up to @p msecs for more data to be available on this socket.
+   *
+   * If msecs is -1, this call will block indefinetely until more data
+   * is indeed available; if it's 0, this function returns immediately.
+   *
+   * If @p timeout is not NULL, this function will set it to indicate
+   * if a timeout occurred.
+   *
+   * @returns the number of bytes available
    */
-  virtual int getch();
-
-  /**
-   * Writes one character to the socket.
-   * Reimplementation from QIODevice. See QIODevice::putch for more information.
-   */
-  virtual int putch(int ch);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L) = 0;
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
-   * This will always return -1;
    */
-  virtual int ungetch(int)
-  { return -1; }
+  void ungetChar(char)
+  { return; }
 
   /**
    * Returns this socket's local address.
@@ -668,6 +659,62 @@ public:
 #endif
 
 protected:
+  /**
+   * Reads data from the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::readData for
+   * more information.
+   */
+  virtual qint64 readData(char *data, qint64 len);
+
+  /** @overload
+   * Receives data and the source address.
+   *
+   * This call will read data in the socket and will also
+   * place the sender's address in @p from object.
+   *
+   * @param data		where to write the read data to
+   * @param maxlen		the maximum number of bytes to read
+   * @param from		the address of the sender will be stored here
+   * @returns the actual number of bytes read
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress* from) = 0;
+
+  /**
+   * Peeks the data in the socket and the source address.
+   *
+   * This call will allow you to peek the data to be received without actually
+   * receiving it -- that is, it will be available for further peekings and
+   * for the next read call.
+   *
+   * @param data		where to write the peeked data to
+   * @param maxlen		the maximum number of bytes to peek
+   * @param from		the address of the sender will be stored here
+   * @returns the actual number of bytes copied into @p data
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress* from) = 0;
+
+  /**
+   * Writes the given data to the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::writeData for
+   * more information.
+   */
+  virtual qint64 writeData(const char *data, qint64 len);
+
+  /** @overload
+   * Writes the given data to the destination address.
+   *
+   * Note that not all socket connections allow sending data to different
+   * addresses than the one the socket is connected to.
+   *
+   * @param data		the data to write
+   * @param len			the length of the data
+   * @param to			the address to send to
+   * @returns the number of bytes actually sent
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to) = 0;
+
   /**
    * Sets the socket's error code.
    *
