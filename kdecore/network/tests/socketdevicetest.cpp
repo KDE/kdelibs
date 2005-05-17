@@ -84,14 +84,15 @@ bool testio(KSocketDevice* c1, KSocketDevice* c2)
        << c1->localAddress().toString().latin1() << " to "
        << c2->localAddress().toString().latin1() << endl;
 
-  if ((sent = c1->writeData(sendbuf, sizeof sendbuf - 1, c2->localAddress())) == -1)
+  sa = c2->localAddress();
+  if ((sent = c1->writeData(sendbuf, sizeof sendbuf - 1, &sa)) == -1)
     {
       cout << "Failed to write" << endl;
       return false;
     }
   cout << "Wrote " << sent << " bytes" << endl;
 
-  if ((recvd = c2->readData(recvbuf, sizeof recvbuf, sa)) == -1)
+  if ((recvd = c2->readData(recvbuf, sizeof recvbuf, &sa)) == -1)
     {
       cout << "Failed to read" << endl;
       return false;
@@ -189,11 +190,15 @@ int main()
 {
   signal(SIGPIPE, SIG_IGN);
 
+  cout << "Using stream sockets" << endl;
   socktype = SOCK_STREAM;
-  runtest();
+  if (runtest())
+    exit(1);
 
+  cout << endl << "Using datagram sockets" << endl;
   socktype = SOCK_DGRAM;
-  runtest();
+  if (runtest())
+    exit(1);
 
   return 0;
 }

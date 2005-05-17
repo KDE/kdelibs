@@ -1,95 +1,83 @@
 #include <unistd.h>
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qcstring.h>
-
-#include <qsocketbase.h>
-#include <qstreamsocket.h>
-#include <qresolver.h>
-#include <qsocketaddress.h>
-#include <qserversocket.h>
+#include <QCoreApplication>
+#include <QString>
+#include <QByteArray>
 
 #include <iostream>
 using namespace std;
 
+#include "serversockettest.h"
+
 int timeout = 0;
-class Test : public QObject
+Test::Test(QString host, QString service, bool blocking)
+  : socket(host, service)
 {
-  Q_OBJECT
+  QObject::connect(&socket, SIGNAL(gotError(int)), this, SLOT(gotErrorSlot(int)));
+  QObject::connect(&socket, SIGNAL(hostFound()), this, SLOT(hostFoundSlot()));
+  QObject::connect(&socket, SIGNAL(bound(const KResolverEntry&)), 
+		   this, SLOT(boundSlot(const KResolverEntry&)));
+  QObject::connect(&socket, SIGNAL(closed()), this, SLOT(closedSlot()));
+  QObject::connect(&socket, SIGNAL(readyAccept()), this, SLOT(readyAcceptSlot()));
+  socket.setBlocking(blocking);
+  socket.setAcceptBuffered(false);
+  if (!socket.listen())
+    exit(1);
+  if (blocking)
+    readyAcceptSlot();
+}
 
-public:
-  QServerSocket socket;
+void Test::gotErrorSlot(int errorcode)
+{
+  cerr << "Socket got error " << errorcode << endl;
+  if (socket.isFatalError(errorcode))
+    QCoreApplication::exit(1);
+}
 
-  Test(QString host, QString service, bool blocking)
-    : socket(host, service)
-  {
-    QObject::connect(&socket, SIGNAL(gotError(int)), this, SLOT(gotErrorSlot(int)));
-    QObject::connect(&socket, SIGNAL(hostFound()), this, SLOT(hostFoundSlot()));
-    QObject::connect(&socket, SIGNAL(bound(const QResolverEntry&)), 
-		     this, SLOT(boundSlot(const QResolverEntry&)));
-    QObject::connect(&socket, SIGNAL(closed()), this, SLOT(closedSlot()));
-    QObject::connect(&socket, SIGNAL(readyAccept()), this, SLOT(readyAcceptSlot()));
-    socket.setBlocking(blocking);
-    if (!socket.listen())
-      exit(1);
-    if (blocking)
-      readyAcceptSlot();
-  }
+void Test::hostFoundSlot()
+{
+  cout << "Socket name lookup finished; got "
+       << socket.resolverResults().count() << " results" << endl;
+}
 
-public slots:
-  void gotErrorSlot(int errorcode)
-  {
-    cerr << "Socket got error " << errorcode << endl;
-    QApplication::exit();
-  }
+void Test::boundSlot(const KResolverEntry& target)
+{
+  cout << "Socket has bound to " << target.address().toString().latin1() 
+       << " (really " << socket.localAddress().toString().latin1() << ")" << endl;
+}
 
-  void hostFoundSlot()
-  {
-    cout << "Socket name lookup finished; got "
-	 << socket.resolverResults().count() << " results" << endl;
-  }
-
-  void boundSlot(const QResolverEntry& target)
-  {
-    cout << "Socket has bound to " << target.address().toString().latin1() 
-	 << " (really " << socket.localAddress().toString().latin1() << ")" << endl;
-  }
-
-  void closedSlot()
-  {
-    cout << "Socket has closed" << endl;
-    QApplication::exit();
-  }
+void Test::closedSlot()
+{
+  cout << "Socket has closed" << endl;
+  QCoreApplication::exit(0);
+}
     
-  void readyAcceptSlot()
-  {
-    cout << "Socket is ready to accept" << endl;
-    QActiveSocketBase* newsocket = socket.accept();
+void Test::readyAcceptSlot()
+{
+  cout << "Socket is ready to accept" << endl;
+  KStreamSocket* newsocket = socket.accept();
 
-    if (!newsocket)
-      {
-	cout << "Couldn't accept anything" << endl;
-	return;
-      }
+  if (!newsocket)
+    {
+      cout << "Couldn't accept anything" << endl;
+      return;
+    }
 
-    cout << "Accepted connection from "
-	 << newsocket->peerAddress().toString().latin1() << endl;
+  cout << "Accepted connection from "
+       << newsocket->peerAddress().toString().latin1() << endl;
+  
+  QByteArray data("HTTP/1.0 200 Ok\r\n\r\n<html><p>Hello</p></html>");
 
-    QCString data("HTTP/1.0 200 Ok\r\n\r\n<html><p>Hello</p></html>");
+  cout << endl << "Socket is ready for writing; will write: " << endl;
+  cout << data.data() << endl;
 
-    cout << endl << "Socket is ready for writing; will write: " << endl;
-    cout << data.data() << endl;
-
-    newsocket->writeBlock(data.data(), data.length());
-    delete newsocket;
-  }
-
-};
+  newsocket->write(data.data(), data.length());
+  newsocket->deleteLater();
+}
 
 int main(int argc, char **argv)
 {
-  QApplication a(argc, argv, false);
+  QCoreApplication a(argc, argv);
 
   bool blocking = false;
   int c;
