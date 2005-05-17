@@ -635,8 +635,10 @@ KPaletteTable::readNamedColor( void )
 
     QByteArray line;
     QStringList list;
-    while( paletteFile.readLine( line.data(), 100 ) != -1 )
+    while( !paletteFile.atEnd() )
     {
+      line = paletteFile.readLine();
+    
       int red, green, blue;
       int pos = 0;
 
@@ -647,6 +649,7 @@ KPaletteTable::readNamedColor( void )
 	// that start with "gray".
 	//
 	QString name = line.mid(pos).stripWhiteSpace();
+	QByteArray s1 = line.mid(pos);
 	if( name.isNull() || name.find(' ') != -1 ||
 	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )
 	{
