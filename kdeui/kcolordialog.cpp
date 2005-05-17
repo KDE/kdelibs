@@ -318,6 +318,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 	: Q3GridView( parent )
 {
+	setFrameShape(QFrame::NoFrame);
 	shade = true;
 	setNumRows( rows );
 	setNumCols( cols );
