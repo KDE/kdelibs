@@ -6157,7 +6157,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     }
 
     // Test that char
-    ch = str[ offset ];
+    ch = str[ (int)offset ];
     //kdDebug() << " offset=" << offset << " ch=" << QString(ch) << endl;
   } while ( !ch.isSpace() && !ch.isPunct() );
 
