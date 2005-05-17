@@ -56,5 +56,5 @@ bin_SCRIPTS = fileshareset
 install-exec-local:
 	@-rm -f $(DESTDIR)$(bindir)/filesharelist
 	@$(LN_S) fileshareset $(DESTDIR)$(bindir)/filesharelist
-	@(chown) root $(DESTDIR)$(bindir)/fileshareset && chmod 4755 $(DESTDIR)$(bindir)/fileshareset) || echo "Was not able to make fileshareset setuid root"
+	@(chown root $(DESTDIR)$(bindir)/fileshareset && chmod 4755 $(DESTDIR)$(bindir)/fileshareset) || echo "Was not able to make fileshareset setuid root"
 
