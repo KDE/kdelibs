@@ -40,7 +40,7 @@ class KHttpProxySocketDevicePrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KHttpProxySocketDevice: public KSocketDevice
+class KDECORE_EXPORT KHttpProxySocketDevice: public KSocketDevice
 {
 public:
   /**
