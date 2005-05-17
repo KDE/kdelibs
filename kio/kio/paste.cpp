@@ -101,7 +101,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
                                      bool clipboard )
 {
     QStringList formatLabels;
-    for ( uint i = 0; i < formats.size(); ++i ) {
+    for ( int i = 0; i < formats.size(); ++i ) {
         const QString& fmt = formats[i];
         KMimeType::Ptr mime = KMimeType::mimeType( fmt );
         if ( mime != KMimeType::defaultMimeTypePtr() )
@@ -176,14 +176,14 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
   }
   else
   {
-      QStringList allFormats;
       QStringList formats;
-      foreach (QString fmt, allFormats) {
-          if ( fmt == "application/x-qiconlist" ) // see QIconDrag
+      const char* fmt;
+      for ( int i = 0; ( fmt = data->format( i ) ); ++i ) {
+          if ( qstrcmp( fmt, "application/x-qiconlist" ) == 0 ) // see QIconDrag
               continue;
-          if ( fmt == "application/x-kde-cutselection" )  // see KonqDrag
+          if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
               continue;
-          if ( fmt.indexOf( '/' ) == -1 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+           if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
               continue;
           formats.append( fmt );
       }

@@ -3250,80 +3250,46 @@ void CopyJob::copyNextFile()
                 //kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource << " link=" << (*it).uDest << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
-                    bool devicesOk=false;
-
                     // if the source is a devices url, handle it a littlebit special
-#ifdef __GNUC__
-  #warning "This looks pretty dead to me!"
-#endif
-#if 0               
-                    if ((*it).uSource.protocol()==QString::fromLatin1("devices"))
-                    {
-                       QByteArray data;
-                       QByteArray param;
-                       DCOPCString retType;
-                       QDataStream streamout(&param,QIODevice::WriteOnly);
-                       streamout<<(*it).uSource;
-                       streamout<<(*it).uDest;
-                       DCOPReply reply; 
-                       if ( kapp->dcopClient()->call( "kded",
-                            "mountwatcher", "createLink(KURL, KURL)", param,retType,data,false ) )
-                       {
-                          QDataStream streamin(data);
-                          streamin>>devicesOk;
-                       }
-                       if (devicesOk)
-                       {
-                           files.remove( it );
-                           m_processedFiles++;
-                           //emit processedFiles( this, m_processedFiles );
-                           copyNextFile();
-                           return;
-                       }
-                    }
-#endif
 
-                    if (!devicesOk)
+                    QString path = (*it).uDest.path();
+                    //kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
+                    QFile f( path );
+                    if ( f.open( QIODevice::ReadWrite ) )
                     {
-                       QString path = (*it).uDest.path();
-                       //kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
-                       QFile f( path );
-                       if ( f.open( QIODevice::ReadWrite ) )
-                       {
-                           f.close();
-                           KSimpleConfig config( path );
-                           config.setDesktopGroup();
-                           KURL url = (*it).uSource;
-                           url.setPass( "" );
-                           config.writePathEntry( QString::fromLatin1("URL"), url.url() );
-                           config.writeEntry( QString::fromLatin1("Name"), url.url() );
-                           config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
-                           QString protocol = (*it).uSource.protocol();
-                           if ( protocol == QString::fromLatin1("ftp") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
-                           else if ( protocol == QString::fromLatin1("http") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
-                           else if ( protocol == QString::fromLatin1("info") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
-                           else if ( protocol == QString::fromLatin1("mailto") )   // sven:
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
-                           else
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
-                           config.sync();
-                           files.remove( it );
-                           m_processedFiles++;
-                           //emit processedFiles( this, m_processedFiles );
-                           copyNextFile();
-                           return;
-                       }
-                       else
-                       {
-                           kdDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
-                           m_error = ERR_CANNOT_OPEN_FOR_WRITING;
-                           m_errorText = (*it).uDest.path();
-                           emitResult();
-                           return;
-                       }
+                        f.close();
+                        KSimpleConfig config( path );
+                        config.setDesktopGroup();
+                        KURL url = (*it).uSource;
+                        url.setPass( "" );
+                        config.writePathEntry( QString::fromLatin1("URL"), url.url() );
+                        config.writeEntry( QString::fromLatin1("Name"), url.url() );
+                        config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
+                        QString protocol = (*it).uSource.protocol();
+                        if ( protocol == QString::fromLatin1("ftp") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
+                        else if ( protocol == QString::fromLatin1("http") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
+                        else if ( protocol == QString::fromLatin1("info") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
+                        else if ( protocol == QString::fromLatin1("mailto") )   // sven:
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
+                        else
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
+                        config.sync();
+                        files.remove( it );
+                        m_processedFiles++;
+                        //emit processedFiles( this, m_processedFiles );
+                        copyNextFile();
+                        return;
+                    }
+                    else
+                    {
+                        kdDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
+                        m_error = ERR_CANNOT_OPEN_FOR_WRITING;
+                        m_errorText = (*it).uDest.path();
+                        emitResult();
+                        return;
                     }
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
