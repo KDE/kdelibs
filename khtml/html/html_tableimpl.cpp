@@ -766,6 +766,11 @@ HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 {
 }
 
+long HTMLTableCellElementImpl::cellIndex() const
+{
+    return nodeIndex();
+}
+
 void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())

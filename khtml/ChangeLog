@@ -1,3 +1,11 @@
+2005-05-17  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp: allow setting location.href on foreign
+	windows opened by window.open() again (bug #101178).
+
+	* html/html_tableimpl.cpp (cellIndex): return meaningful values
+	using patch suggested by Rob in bug report #7690.
+
 2005-04-30  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp: unbreak calling close() on other
