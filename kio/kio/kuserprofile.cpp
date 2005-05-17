@@ -172,7 +172,8 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         }
     }
 
-    qBubbleSort( offers );
+    if (!offers.isEmpty())
+        qBubbleSort( offers );
 
 #if 0
     // debug code, comment if you wish but don't remove.
