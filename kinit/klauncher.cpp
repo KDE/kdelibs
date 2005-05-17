@@ -188,6 +188,10 @@ KLauncher::KLauncher(int _kdeinitSocket)
       ::exit(1);
    }
    mPoolSocketName = domainname.name();
+#ifdef __CYGWIN__
+   domainname.close();
+   domainname.unlink();
+#endif
    mPoolSocket = new KServerSocket(QFile::encodeName(mPoolSocketName));
    connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
            SLOT(acceptSlave(KSocket *)));
