@@ -138,11 +138,11 @@ void Connection::init(KNetwork::KStreamSocket *sock)
     f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
 #endif
     if (receiver && ( fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        notifier = 0L;
 	if ( m_suspended ) {
             suspend();
 	}
-	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+	QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
     dequeue();
 }
@@ -171,10 +171,15 @@ void Connection::connect(QObject *_receiver, const char *_member)
     delete notifier;
     notifier = 0;
     if (receiver && (fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        if (socket == 0L)
+	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
         if ( m_suspended )
             suspend();
-	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+
+	if (notifier)
+	    QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+	if (socket)
+	    QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
 }
 
