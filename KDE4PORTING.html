@@ -124,6 +124,10 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>colors, close buttons on individual tabs not working at the moment</li>
 <li>The old insertTab and removeTab have been removed, use addTab / insertTab / removeTab from QTabBar instead (uses indices, not QTab*s)</li>
 
+<H4>KNetwork::K*Socket</H4>
+<li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
+<li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
+
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
