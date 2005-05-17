@@ -39,7 +39,7 @@ include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
-	kfilespeedbar.h
+	kfilespeedbar.h kpreviewprops.h
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
@@ -49,7 +49,7 @@ libkfile_la_SOURCES = \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp kfilesharedlg.cpp \
-	kurlbar.cpp kmetaprops.cpp \
+	kurlbar.cpp kmetaprops.cpp kpreviewprops.cpp \
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui \
