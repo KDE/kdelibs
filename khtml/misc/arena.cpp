@@ -48,14 +48,9 @@
 #include <kglobal.h>
 #include "arena.h"
 
-#ifdef __CYGWIN__                                          
-inline int kMax(int a, int b) {return a > b ? a : b; }     
-#endif                                                     
-
-
 #ifdef HAVE_GETPAGESIZE
 #include <unistd.h>
-#define POOL_SIZE kMax(8192, 2*getpagesize())
+#define POOL_SIZE kMax(8192u, 2*( unsigned ) getpagesize())
 #else
 #define POOL_SIZE 8192
 #endif
