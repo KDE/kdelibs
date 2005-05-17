@@ -668,65 +668,30 @@ KSSLCertificateHome::KSSLAuthAction aa;
   KSSLPKCS12 *pkcs = KSSLCertificateHome::getCertificateByName(certname);
   if (!pkcs && KSSLCertificateHome::hasCertificateByName(certname)) {           // We need the password
      KIO::AuthInfo ai;
-     bool showprompt = !checkCachedAuthentication(ai);
+     bool first = true;
      do {
-        QString pass;
-        QByteArray authdata, authval;
-        QCString rettype;
-        QDataStream qds(authdata, IO_WriteOnly);
         ai.prompt = i18n("Enter the certificate password:");
         ai.caption = i18n("SSL Certificate Password");
-        ai.setModified(true);
+        ai.url.setProtocol("kssl");
+        ai.url.setHost(certname);
         ai.username = certname;
         ai.keepPassword = true;
+
+        bool showprompt;
+        if (first)
+           showprompt = !checkCachedAuthentication(ai);
+        else
+           showprompt = true;
         if (showprompt) {
-           qds << ai;
-
-           if (!d->dcc) {
-              d->dcc = new DCOPClient;
-              d->dcc->attach();
-              if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                 KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
-                                                         QStringList() );
-             }
-           }
-
-           bool rc = d->dcc->call("kio_uiserver", "UIServer",
-                                   "openPassDlg(KIO::AuthInfo)",
-                                   authdata, rettype, authval);
-           if (!rc) {
-             break;
-           }
-           if (rettype != "QByteArray") {
-             continue;
-           }
-
-           QDataStream qdret(authval, IO_ReadOnly);
-           QByteArray authdecode;
-           qdret >> authdecode;
-           QDataStream qdtoo(authdecode, IO_ReadOnly);
-           qdtoo >> ai;
-           if (!ai.isModified()) {
-             break;
-           }
+           if (!openPassDlg(ai, first ? QString::null : 
+                   i18n("Unable to open the certificate. Please try a new password:")))
+              break;
         }
-        pass = ai.password;
-        pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
 
-        if (!pkcs) {
-              int rc = messageBox(WarningYesNo, i18n("Unable to open the "
-                                                     "certificate. Try a "
-                                                     "new password?"),
-                                                i18n("SSL"));
-              if (rc == KMessageBox::No) {
-                break;
-              }
-              showprompt = true;
-        }
+        first = false;
+        pkcs = KSSLCertificateHome::getCertificateByName(certname, ai.password);
      } while (!pkcs);
-     if (pkcs) {
-       cacheAuthentication(ai);
-     }
+
   }
 
    // If we could open the certificate, let's send it
