@@ -54,6 +54,7 @@
 #include <kurldrag.h>
 #include <kconfig.h>
 #include <QDropEvent>
+#include <QMenuItem>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -354,7 +355,7 @@ void KMJobViewer::buildPrinterMenu(Q3PopupMenu *menu, bool use_all, bool use_spe
 	int	i(0);
 	if (use_all)
 	{
-		menu->insertItem(SmallIcon("fileprint"), i18n("All Printers"), i++);
+		menu->insertItem(QIcon(SmallIcon("fileprint")), i18n("All Printers"), i++);
 		menu->insertSeparator();
 	}
 	for (; it.current(); ++it, i++)
@@ -362,7 +363,7 @@ void KMJobViewer::buildPrinterMenu(Q3PopupMenu *menu, bool use_all, bool use_spe
 		if ( !it.current()->instanceName().isEmpty() ||
 				( it.current()->isSpecial() && !use_specials ) )
 			continue;
-		menu->insertItem(SmallIcon(it.current()->pixmap()), it.current()->printerName(), i);
+		menu->insertItem(QIcon(SmallIcon(it.current()->pixmap())), it.current()->printerName(), i);
 	}
 }
 
@@ -579,7 +580,7 @@ void KMJobViewer::slotClose()
 void KMJobViewer::loadPluginActions()
 {
 	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
-	QMenuData	*menu(0);
+  QMenuItem *item = 0;
 
 	if (m_standalone)
 	{
@@ -587,9 +588,9 @@ void KMJobViewer::loadPluginActions()
 		KAction	*act = actionCollection()->action("job_restart");
 		for (int i=0;i<act->containerCount();i++)
 		{
-			if (menuBar()->findItem(act->itemId(i), &menu))
+			if ((item = menuBar()->findItem(act->itemId(i))) && item->menu())
 			{
-				menuindex = mpopindex = menu->indexOf(act->itemId(i))+1;
+				menuindex = mpopindex = item->menu()->indexOf(act->itemId(i))+1;
 				break;
 			}
 		}
@@ -605,8 +606,8 @@ void KMJobViewer::loadPluginActions()
 		(*it)->plug(toolBar(), toolbarindex++);
 		if (m_pop)
 			(*it)->plug(m_pop, mpopindex++);
-		if (menu)
-			(*it)->plug(static_cast<Q3PopupMenu*>(menu), menuindex++);
+		if (item->menu())
+			(*it)->plug(static_cast<Q3PopupMenu*>(item->menu()), menuindex++);
 	}
 }
 
