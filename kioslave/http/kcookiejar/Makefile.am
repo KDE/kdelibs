@@ -18,7 +18,7 @@ kcookiejar_la_LIBADD = $(LIB_KDECORE)
 kded_kcookiejar_la_SOURCES = kcookiejar.cpp kcookieserver.cpp \
 			kcookieserver.skel kcookiewin.cpp 
 kded_kcookiejar_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_kcookiejar_la_LIBADD = $(LIB_KIO)
+kded_kcookiejar_la_LIBADD = $(LIB_KIO) $(LIB_KDED)
 
 kded_DATA = kcookiejar.desktop
 kdeddir = $(kde_servicesdir)/kded

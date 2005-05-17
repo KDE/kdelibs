@@ -10,7 +10,7 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 kded_proxyscout_la_SOURCES = proxyscout.skel proxyscout.cpp script.cpp \
                              downloader.cpp discovery.cpp
 kded_proxyscout_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_proxyscout_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la
+kded_proxyscout_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la $(LIB_KDED)
 
 kpac_dhcp_helper_SOURCES = kpac_dhcp_helper.c
 kpac_dhcp_helper_LDADD = $(LIBSOCKET)
