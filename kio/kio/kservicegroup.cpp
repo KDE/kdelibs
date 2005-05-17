@@ -538,7 +538,10 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
                 {
                     if (!excludeNoDisplay || !group->noDisplay())
                     {
-                        const QString &nextItem = *( ++it );
+                        ++it;
+                        const QString &nextItem =
+                            (it == d->sortOrder.end()) ? QString() : *it;
+
                         if ( nextItem.startsWith( ":O" ) )
                         {
                             QString tmp(  nextItem );
