@@ -285,6 +285,22 @@ KConfig *cfg;
    if (!libname.isNull())
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
+#elif defined(__CYGWIN__)
+   libpaths << "/usr/bin/"             
+   		<< "/usr/local/bin"             
+   		<< "/usr/local/openssl/bin"     
+   		<< "/opt/openssl/bin"           
+   		<< "/opt/kde3/bin"              
+   		<< "";                          
+                                       
+   libnamess << "cygssl-0.9.7.dll"     
+		 << "cygssl.dll"                    
+		 << "libssl.dll"                    
+		 << "";                         
+                                       
+   libnamesc << "cygcrypto.dll"        
+		 << "libcrypto.dll"                 
+		 << "";                         
 #else
    libpaths
             #ifdef _AIX
@@ -298,7 +314,7 @@ KConfig *cfg;
 	    << "/opt/openssl/lib" KDELIBSUFF "/"
 	    << "/lib" KDELIBSUFF "/"
             << "";
-
+    
 // FIXME: #define here for the various OS types to optimize
    libnamess
 	     #ifdef hpux
@@ -333,6 +349,7 @@ KConfig *cfg;
 	     << "libcrypto.so.0"
              #endif
 	     ;
+#endif
 
    for (QStringList::Iterator it = libpaths.begin();
                               it != libpaths.end();
@@ -352,7 +369,6 @@ KConfig *cfg;
       }
       if (_cryptoLib) break;
    }
-#endif
 
    if (_cryptoLib) {
 #ifdef KSSL_HAVE_SSL
