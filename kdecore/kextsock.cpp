@@ -49,6 +49,10 @@
 #include "ksockaddr.h"
 #include "ksocks.h"
 
+#ifdef __CYGWIN__
+#include "netsupp.h"
+#endif 
+
 using namespace KNetwork;
 
 //
