@@ -63,7 +63,6 @@ public:
         return true;
     }
     virtual void close() {}
-    virtual bool flush() { return true; }
 
     virtual Offset size() const { return m_length; }
 

@@ -60,7 +60,6 @@ public:
      * If the KFilterBase's device was opened by open(), it will be closed.
      */
     virtual void close();
-    virtual bool flush();
 
     /**
      * For writing gzip compressed files only:

@@ -160,16 +160,6 @@ void KFilterDev::close()
     setOpenMode( QIODevice::NotOpen );
 }
 
-bool KFilterDev::flush()
-{
-#ifdef __GNUC__
-#warning flush :(
-#endif
-    //kdDebug(7005) << "KFilterDev::flush" << endl;
-    return true;//filter->device()->flush();
-    // Hmm, might not be enough...
-}
-
 qint64 KFilterDev::size() const
 {
     // Well, hmm, Houston, we have a problem.
