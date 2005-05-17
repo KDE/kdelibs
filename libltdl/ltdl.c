@@ -2240,7 +2240,7 @@ lt_dlopen (filename)
 	else if (strncmp (line, STR_LIBDIR, sizeof (STR_LIBDIR) - 1) == 0)
 	  {
 	    error = trim (&libdir, &line[sizeof(STR_LIBDIR) - 1]);
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	    win32_mapDir(&libdir);
 #endif
 	  }
