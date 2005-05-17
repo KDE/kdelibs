@@ -213,6 +213,45 @@ public:
 				   const QPixmap &icon,
 				   WId parent, const char *name=0, int timeout = -1 );
 
+    /**
+     * Convenience method that displays popup with the specified popup-style and message beside the
+     * icon of the specified widget.
+     * Note that the returned object is destroyed when it is hidden.
+     * @see setAutoDelete
+     */
+    static KPassivePopup *message( int popupStyle, const QString &text, QWidget *parent,
+				   const char *name=0 );
+
+    /**
+     * Convenience method that displays popup with the specified popup-style, caption and message
+     * beside the icon of the specified widget.
+     * Note that the returned object is destroyed when it is hidden.
+     * @see setAutoDelete
+     */
+    static KPassivePopup *message( int popupStyle, const QString &caption, const QString &text,
+				   QWidget *parent, const char *name=0 );
+
+    /**
+     * Convenience method that displays popup with the specified popup-style, icon, caption and
+     * message beside the icon of the specified widget.
+     * Note that the returned object is destroyed when it is hidden.
+     * @see setAutoDelete
+     */
+    static KPassivePopup *message( int popupStyle, const QString &caption, const QString &text,
+				   const QPixmap &icon,
+				   QWidget *parent, const char *name=0, int timeout = -1 );
+
+    /**
+     * Convenience method that displays popup with the specified popup-style, icon, caption and
+     * message beside the icon of the specified window.
+     * Note that the returned object is destroyed when it is hidden.
+     * @see setAutoDelete
+     */
+    static KPassivePopup *message( int popupStyle, const QString &caption, const QString &text,
+				   const QPixmap &icon,
+				   WId parent, const char *name=0, int timeout = -1 );
+
+
 public slots:
     /**
      * Sets the delay for the popup is removed automatically. Setting the delay to 0

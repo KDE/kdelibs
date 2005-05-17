@@ -423,7 +423,31 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
 				       const QPixmap &icon,
 				       QWidget *parent, const char *name, int timeout )
 {
-    KPassivePopup *pop = new KPassivePopup( parent, name );
+    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, name, timeout );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &text, QWidget *parent, const char *name )
+{
+    return message( DEFAULT_POPUP_TYPE, QString::null, text, QPixmap(), parent, name );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+				       QWidget *parent, const char *name )
+{
+    return message( DEFAULT_POPUP_TYPE, caption, text, QPixmap(), parent, name );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+				       const QPixmap &icon, WId parent, const char *name, int timeout )
+{
+    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, name, timeout );
+}
+
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
+				       const QPixmap &icon,
+				       QWidget *parent, const char *name, int timeout )
+{
+    KPassivePopup *pop = new KPassivePopup( popupStyle, parent, name );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->hideDelay = timeout;
@@ -432,21 +456,21 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
     return pop;
 }
 
-KPassivePopup *KPassivePopup::message( const QString &text, QWidget *parent, const char *name )
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &text, QWidget *parent, const char *name )
 {
-    return message( QString::null, text, QPixmap(), parent, name );
+    return message( popupStyle, QString::null, text, QPixmap(), parent, name );
 }
 
-KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
 				       QWidget *parent, const char *name )
 {
-    return message( caption, text, QPixmap(), parent, name );
+    return message( popupStyle, caption, text, QPixmap(), parent, name );
 }
 
-KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
 				       const QPixmap &icon, WId parent, const char *name, int timeout )
 {
-    KPassivePopup *pop = new KPassivePopup( parent, name );
+    KPassivePopup *pop = new KPassivePopup( popupStyle, parent, name );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->hideDelay = timeout;
