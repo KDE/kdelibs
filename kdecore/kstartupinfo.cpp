@@ -47,9 +47,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kstartupinfo.h"
 
-// KDE4 TODO
 #include <QtGui/qx11info_x11.h>
-#define None 0
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>

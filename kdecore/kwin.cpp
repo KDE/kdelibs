@@ -47,8 +47,6 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #ifdef Q_WS_X11
-#define None 0
-
 #include <kstartupinfo.h>
 #include <kxerrorhandler.h>
 

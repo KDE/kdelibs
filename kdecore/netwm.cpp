@@ -29,7 +29,6 @@
 #ifdef Q_WS_X11 //FIXME
 
 #include <QtGui/qx11info_x11.h>
-#define None 0
 
 #include "netwm.h"
 
