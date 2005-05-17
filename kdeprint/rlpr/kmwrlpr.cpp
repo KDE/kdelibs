@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
-static Q3ListViewItem* findChild(Q3ListViewItem *c, const QString& txt)
+static Q3ListViewItem* findItem(Q3ListViewItem *c, const QString& txt)
 {
 	Q3ListViewItem	*item(c);
 	while (item)
@@ -94,10 +94,10 @@ void KMWRlpr::initPrinter(KMPrinter *p)
 {
 	m_host->setText(p->option("host"));
 	m_queue->setText(p->option("queue"));
-	Q3ListViewItem	*item = findChild(m_view->firstChild(),m_host->text());
+	Q3ListViewItem	*item = findItem(m_view->firstChild(),m_host->text());
 	if (item)
 	{
-		item = findChild(item->firstChild(),m_queue->text());
+		item = findItem(item->firstChild(),m_queue->text());
 		if (item)
 		{
 			item->parent()->setOpen(true);
