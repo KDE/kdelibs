@@ -371,6 +371,11 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
+
+#ifdef __CYGWIN__
+   socketfile.close();
+#endif
+    
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
 
@@ -467,6 +472,11 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
     if ( socketfile.status() != 0 )
 	return 0;
+
+#ifdef __CYGWIN__
+   socketfile.close();
+   socketfile.unlink();
+#endif
 
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
