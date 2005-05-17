@@ -523,7 +523,7 @@ if (whatType == "application/x-pkcs12") {
 		qf.close();
 
 		const char *signature = "-----BEGIN CERTIFICATE-----";
-		theFile[qf.size()-1] = 0;
+		theFile[(uint)(qf.size()-1)] = 0;
 		isPEM = (QCString(theFile.data()).find(signature) >= 0);
 	}
 
