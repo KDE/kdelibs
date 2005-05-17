@@ -300,7 +300,9 @@ bool KJavaProcess::invokeJVM()
     QString argStr;
     QTextOStream stream( &argStr );
     const QList<QByteArray> args = javaProcess->args();
-    qCopy( args.begin(), args.end(), QTextOStreamIterator<QByteArray>( stream, " " ) );
+    QListIterator<QByteArray> bit(args);
+    while (bit.hasNext())
+	stream << bit.next();
     kdDebug(6100) << argStr << endl;
 
     KProcess::Communication flags =  (KProcess::Communication)

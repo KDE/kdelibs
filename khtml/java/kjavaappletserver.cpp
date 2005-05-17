@@ -706,6 +706,11 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         kdError(6100) << "no context object for this id" << endl;
 }
 
+void KJavaAppletServer::killTimers()
+{
+	QAbstractEventDispatcher::instance()->unregisterTimers(this);
+}
+
 void KJavaAppletServer::endWaitForReturnData() {
     kdDebug(6100) << "KJavaAppletServer::endWaitForReturnData" << endl;
     killTimers();

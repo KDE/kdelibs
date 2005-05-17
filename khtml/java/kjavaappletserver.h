@@ -149,6 +149,7 @@ protected slots:
     void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
     void timerEvent(QTimerEvent *);
+    void killTimers();
 
 private:
     KJavaAppletServerPrivate* d;

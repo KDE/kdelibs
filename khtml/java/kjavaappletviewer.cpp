@@ -273,7 +273,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     if (baseurl.isEmpty ()) {
         // not embeded in khtml
         QString pwd = QDir().absPath ();
-        if (!pwd.endsWith (QChar (QDir::separator ())))
+        if (!pwd.endsWith ( QString(QDir::separator ())))
             pwd += QDir::separator ();
         baseurl = KURL (KURL (pwd), codebase).url ();
     }
@@ -299,7 +299,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         /* if this page needs authentication */
         KIO::AuthInfo info;
         QString errorMsg;
-        Q3CString replyType;
+        DCOPCString replyType;
         QByteArray params;
         QByteArray reply;
         KIO::AuthInfo authResult;
