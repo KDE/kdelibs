@@ -156,7 +156,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->write(data, len);
     }
-    return d->socket.writeData(data, len);
+    return d->socket.write(data, len);
 #else
     return 0;
 #endif
@@ -171,7 +171,7 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
             (void) doSSLHandShake( true );
         return d->kssl->read(data, len);
     }
-    return d->socket.readData(data, len);
+    return d->socket.read(data, len);
 #else
     return 0;
 #endif
@@ -283,7 +283,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
     if (bytes > len)
       bytes = len;
 
-    rc = d->socket.peekData(data, bytes);
+    rc = d->socket.peek(data, bytes);
     if (rc == -1)
       return -1;		// error
     if (rc == 0)
@@ -291,7 +291,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
 
     for (int i = 0; i < rc; i++) {
       if (data[i] == '\n') {
-	rc = d->socket.readData(data, i + 1);
+	rc = d->socket.read(data, i + 1);
 	return rc;
       }
     }
@@ -1144,7 +1144,7 @@ bool TCPSlaveBase::isConnectionValid()
     {
       // corner case!
       char c;
-      retval = d->socket.peekData(&c, 1);
+      retval = d->socket.peek(&c, 1);
       if (retval == 0)
 	// it's in fact closed
 	return false;
@@ -1152,7 +1152,7 @@ bool TCPSlaveBase::isConnectionValid()
 
     // if there's more than 1 byte in bytesAvailable, we can't know if the
     // connection is closed or not without actually reading from it
-    // (i.e., we can't do it with peekData)
+    // (i.e., we can't do it with peek)
 
     return true; // Connection still valid.
 }
