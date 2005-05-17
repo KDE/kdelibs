@@ -2663,7 +2663,7 @@ bool HTTPProtocol::readHeader()
 
   gets(buffer, sizeof(buffer)-1);
 
-  if (m_bEOF)
+  if (m_bEOF || *buffer == '\0')
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
                   << "EOF while waiting for header start." << endl;
