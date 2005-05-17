@@ -57,6 +57,7 @@
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
+#include <kio/kservicetypefactory.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
@@ -769,6 +770,10 @@ void KFileDialog::setLocationText( const QString& text )
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
     locationEdit->setEditText( text );
+
+    // don't change selection when user has clicked on an item
+    if ( d->operationMode == Saving && !locationEdit->isVisible())
+       setNonExtSelection();
 }
 
 static QString autocompletionWhatsThisText = i18n("<p>While typing in the text area, you may be presented "
@@ -1814,8 +1819,10 @@ void KFileDialog::setOperationMode( OperationMode mode )
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     if ( mode == Opening )
        d->okButton->setGuiItem( KGuiItem( i18n("&Open"), "fileopen") );
-    else if ( mode == Saving )
+    else if ( mode == Saving ) {
        d->okButton->setGuiItem( KStdGuiItem::save() );
+       setNonExtSelection();
+    }
     else
        d->okButton->setGuiItem( KStdGuiItem::ok() );
     updateLocationWhatsThis ();
@@ -2305,6 +2312,22 @@ void KFileDialog::setStartDir( const KURL& directory )
     initStatic();
     if ( directory.isValid() )
         *lastDirectory = directory;
+}
+
+void KFileDialog::setNonExtSelection()
+{
+    // Enhanced rename: Don't highlight the file extension.
+    QString pattern, filename = locationEdit->currentText().stripWhiteSpace();
+    KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
+
+    if ( !pattern.isEmpty() && pattern.at( 0 ) == '*' && pattern.find( '*' , 1 ) == -1 )
+       locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.stripWhiteSpace().length()+1 );
+    else
+    {
+       int lastDot = filename.findRev( '.' );
+       if ( lastDot > 0 )
+          locationEdit->lineEdit()->setSelection( 0, lastDot );
+    }
 }
 
 void KFileDialog::virtual_hook( int id, void* data )

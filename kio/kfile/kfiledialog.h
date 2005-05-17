@@ -971,6 +971,8 @@ private:
 
     static void initStatic();
 
+    void setNonExtSelection();
+
 protected:
     KDirOperator *ops;
     bool autoDirectoryFollowing;
