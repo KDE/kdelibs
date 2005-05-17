@@ -28,7 +28,7 @@
 #include <kdebug.h>
 #include <qlineedit.h>
 #include <kmessagebox.h>
-#include <kextsock.h>
+#include <kstreamsocket.h>
 
 static bool checkLpdQueue(const char *host, const char *queue);
 
@@ -74,8 +74,8 @@ void KMWLpd::updatePrinter(KMPrinter *p)
 
 bool checkLpdQueue(const char *host, const char *queue)
 {
-	KExtendedSocket	sock(host, "printer", KExtendedSocket::streamSocket);
-	sock.setBlockingMode(true);
+	KNetwork::KStreamSocket	sock(host, "printer");
+	sock.setBlocking(true);
 	if (sock.connect() != 0)
 		return false;
 
