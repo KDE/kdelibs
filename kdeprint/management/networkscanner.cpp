@@ -291,7 +291,7 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 
 	// not found in SocketInfo list, try to establish connection
 	KStreamSocket sock( host, QString::number(port) );
-	sock.setTimeout( d->timeout * 1000 ); // FIXME: confirm that d->timeout is in seconds
+	sock.setTimeout( d->timeout ); // FIXME: confirm that d->timeout is in seconds
 	return sock.connect();
 }
 

@@ -34,10 +34,14 @@
 
 #include <kapplication.h>
 #include <klocale.h>
-#include <kextsock.h>
 #include <kdebug.h>
+#include <kresolver.h>
+#include <kreverseresolver.h>
+#include <kstreamsocket.h>
 
 #include <unistd.h>
+
+using namespace KNetwork;
 
 QString localRootIP();
 
@@ -140,20 +144,19 @@ KMWSocketUtil::KMWSocketUtil()
 
 bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostname)
 {
-	KExtendedSocket	sock(IPstr, port, KExtendedSocket::inetSocket|KExtendedSocket::streamSocket);
-	bool	result(false);
-	sock.setTimeout(0, timeout_ * 1000);
-	if (sock.connect() == 0)
+	KStreamSocket	sock(IPstr, QString::number(port));
+	sock.setTimeout(timeout_);
+	if (sock.connect())
 	{
 		if (hostname)
 		{
 			QString	portname;
-			KExtendedSocket::resolve((KSocketAddress*)(sock.peerAddress()), *hostname, portname);
+			KReverseResolver::resolve(sock.peerAddress(), *hostname, portname);
 		}
-		result = true;
+		return true;
 	}
-	sock.close();
-	return result;
+	else
+		return false;
 }
 
 bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
@@ -204,11 +207,10 @@ QString localRootIP()
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	Q3PtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
-	infos.setAutoDelete(true);
-	if (infos.count() > 0)
+	KResolverResults    infos = KResolver::resolve(buf, QString::null);
+	if (!infos.error() && infos.count() > 0)
 	{
-		QString	IPstr = infos.first()->address()->nodeName();
+		QString	IPstr = infos.first().address().nodeName();
 		int	p = IPstr.findRev('.');
 		IPstr.truncate(p);
 		return IPstr;
