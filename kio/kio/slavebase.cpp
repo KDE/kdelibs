@@ -325,11 +325,14 @@ void SlaveBase::dispatchLoop()
 void SlaveBase::connectSlave(const QString& path)
 {
 #ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
-    appconn->init(new KNetwork::KStreamSocket(QString(), 
-					      QFile::encodeName(path)));
+    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(), 
+						QFile::encodeName(path));
+    appconn->init(sock);
+					      
     if (!appconn->inited())
     {
-        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl;
+        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl
+		      << "Reason: " << sock->errorString() << endl;
         exit();
     }
 
