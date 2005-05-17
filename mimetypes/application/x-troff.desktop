@@ -75,6 +75,7 @@ Icon=man
 Type=MimeType
 MimeType=application/x-troff
 Patterns=*.tr;*.roff;
+X-KDE-AutoEmbed=true
 
 [Property::X-KDE-text]
 Type=bool
