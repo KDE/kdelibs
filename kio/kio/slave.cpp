@@ -377,10 +377,16 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
-#ifndef Q_WS_WIN
-    KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
+    
+    QString sockname = socketfile.name();
+    socketfile.unlink(); // can't bind if there is such a file
 
-    Slave *slave = new Slave(kss, protocol, socketfile.name());
+#ifndef Q_WS_WIN
+    KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
+    kss->setFamily(KResolver::LocalFamily);
+    kss->listen();
+
+    Slave *slave = new Slave(kss, protocol, sockname);
 #else
     Slave *slave = 0;
 #endif
@@ -392,7 +398,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     // In such case we start the slave via KProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
-    static bool bForkSlaves = !Q3CString(getenv("KDE_FORK_SLAVES")).isEmpty();
+    static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
     
     if (bForkSlaves || !client->isAttached() || client->isAttachedToForeignServer())
     {
@@ -414,8 +420,8 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
        KProcess proc;
 
-       proc << locate("exe", "kioslave") << lib_path << protocol << "" << socketfile.name();
-       kdDebug(7002) << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << socketfile.name() << endl;
+       proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
+       kdDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << sockname << endl;
 
        proc.start(KProcess::DontCare);
 
@@ -430,7 +436,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     QByteArray params, reply;
     DCOPCString replyType;
     QDataStream stream(&params, QIODevice::WriteOnly);
-    stream << protocol << url.host() << socketfile.name();
+    stream << protocol << url.host() << sockname;
 
     DCOPCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",

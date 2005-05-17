@@ -36,6 +36,7 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
+#include <network/kresolver.h>
 #include <network/kstreamsocket.h>
 #include <network/ksocketdevice.h>
 
@@ -124,6 +125,8 @@ void Connection::dequeue()
 
 void Connection::init(KNetwork::KStreamSocket *sock)
 {
+    sock->setFamily(KNetwork::KResolver::LocalFamily);
+    sock->setBlocking(true);
     sock->connect();
 
     delete notifier;
@@ -196,7 +199,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
     n = fwrite( data.data(), 1, data.size(), f_out );
 
-    if ( n != data.size() ) {
+    if ( n != (size_t)data.size() ) {
 	kdError(7017) << "Could not write data" << endl;
 	return false;
     }
