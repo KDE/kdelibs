@@ -85,6 +85,10 @@ extern "C" {
 
 #include "netsupp.h"		// leave this last
 
+#ifdef __CYGWIN__
+#include "qwindowdefs.h"
+#endif 
+
 class KSocketPrivate
 {
 public:
