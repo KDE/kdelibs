@@ -2114,7 +2114,6 @@ class CopyJob::CopyJobPrivate
 public:
     CopyJobPrivate() {
         m_defaultPermissions = false;
-        m_interactive = true;
         m_bURLDirty = false;
     }
     // This is the dest URL that was initially given to CopyJob
@@ -2126,8 +2125,6 @@ public:
     CopyJob::DestinationState m_globalDestinationState;
     // See setDefaultPermissions
     bool m_defaultPermissions;
-    // See setInteractive
-    bool m_interactive;
     // Whether URLs changed (and need to be emitted by the next slotReport call)
     bool m_bURLDirty;
 };
@@ -2740,7 +2737,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                     emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
                     dirs.remove( it ); // Move on to next dir
                 } else {
-                    if ( !d->m_interactive ) {
+                    if ( !isInteractive() ) {
                         Job::slotResult( job ); // will set the error and emit result(this)
                         return;
                     }
@@ -2976,7 +2973,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         }
         else
         {
-            if ( !d->m_interactive ) {
+            if ( !isInteractive() ) {
                 Job::slotResult( job ); // will set the error and emit result(this)
                 return;
             }
@@ -3127,7 +3124,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     {
         if ( job->error() == ERR_USER_CANCELED )
             res = R_CANCEL;
-        else if ( !d->m_interactive ) {
+        else if ( !isInteractive() ) {
             Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
@@ -3524,7 +3521,7 @@ void CopyJob::slotResultRenaming( Job* job )
 
         // Existing dest?
         if ( ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
-             && d->m_interactive )
+             && isInteractive() )
         {
             if (m_reportTimer)
                 m_reportTimer->stop();
@@ -3704,9 +3701,10 @@ void KIO::CopyJob::setDefaultPermissions( bool b )
     d->m_defaultPermissions = b;
 }
 
+// KDE4: remove
 void KIO::CopyJob::setInteractive( bool b )
 {
-    d->m_interactive = b;
+    Job::setInteractive( b );
 }
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
