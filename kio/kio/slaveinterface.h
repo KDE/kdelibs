@@ -120,7 +120,7 @@ signals:
     void error( int , const QString & );
     void connected();
     void finished();
-    void slaveStatus(pid_t, const Q3CString &, const QString &, bool);
+    void slaveStatus(pid_t, const QByteArray&, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
     void needSubURLData();

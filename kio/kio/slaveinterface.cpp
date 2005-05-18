@@ -282,7 +282,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case MSG_SLAVE_STATUS:
         {
            pid_t pid;
-           Q3CString protocol;
+           DCOPCString protocol;
            stream >> pid >> protocol >> str1 >> b;
            emit slaveStatus(pid, protocol, str1, (b != 0));
         }

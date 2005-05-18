@@ -289,7 +289,7 @@ namespace KIO {
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
-        void slotSlaveStatus(pid_t pid, const QString &protocol,
+        void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                              const QString &host, bool connected);
     signals:
         void slaveConnected(KIO::Slave *slave);
