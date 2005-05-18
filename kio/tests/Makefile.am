@@ -21,7 +21,7 @@ LDADD = $(LIB_KIO)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
-                 kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
+                 kioslavetest kdirwatchtest speed kurifiltertest \
                  kdefaultprogresstest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
