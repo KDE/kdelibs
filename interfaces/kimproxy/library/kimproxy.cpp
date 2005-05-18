@@ -181,8 +181,8 @@ KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject(),
 
 	d->dc = dc;
 	m_initialized = false;
-	connect( d->dc, SIGNAL( applicationRemoved( const DCOPCString& ) ) , this, SLOT( unregisteredFromDCOP( const DCOPCString& ) ) );
-	connect( d->dc, SIGNAL( applicationRegistered( const DCOPCString& ) ) , this, SLOT( registeredToDCOP( const DCOPCString& ) ) );
+	connect( d->dc, SIGNAL( applicationRemoved( const QByteArray& ) ) , this, SLOT( unregisteredFromDCOP( const QByteArray& ) ) );
+	connect( d->dc, SIGNAL( applicationRegistered( const QByteArray& ) ) , this, SLOT( registeredToDCOP( const QByteArray& ) ) );
 	d->dc->setNotifications( true );
 
 	d->presence_strings.append( "Unknown" );
@@ -262,7 +262,7 @@ bool KIMProxy::initialize()
 	return !m_im_client_stubs.isEmpty();
 }
 
-void KIMProxy::registeredToDCOP( const DCOPCString& appId )
+void KIMProxy::registeredToDCOP( const QByteArray& appId )
 {
 	//kdDebug( 790 ) << k_funcinfo << " appId '" << appId << "'" << endl;
 	// check that appId implements our service
@@ -297,7 +297,7 @@ void KIMProxy::registeredToDCOP( const DCOPCString& appId )
 	//	emit sigPresenceInfoExpired();
 }
 
-void KIMProxy::unregisteredFromDCOP( const DCOPCString& appId )
+void KIMProxy::unregisteredFromDCOP( const QByteArray& appId )
 {
 	//kdDebug( 790 ) << k_funcinfo << appId << endl;
 	if ( m_im_client_stubs.find( appId ) )

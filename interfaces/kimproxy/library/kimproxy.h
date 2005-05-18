@@ -239,8 +239,8 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		void contactPresenceChanged( QString uid, DCOPCString appId, int presence );
 
 	public slots:
-		void registeredToDCOP( const DCOPCString& appId );
-        void unregisteredFromDCOP( const DCOPCString& appId );
+		void registeredToDCOP( const QByteArray& appId );
+        void unregisteredFromDCOP( const QByteArray& appId );
 	signals:
 		/**
 		 * Indicates that the specified UID's presence changed
