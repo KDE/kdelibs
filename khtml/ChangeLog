@@ -1,3 +1,8 @@
+2005-05-18  Harri Porten  <porten@kde.org>
+
+	* xml/dom2_eventsimpl.cpp: recognize "dblclick" type in
+	addEventListener() calls (bug #98994).
+
 2005-05-16  Harri Porten  <porten@kde.org>
 
 	* ecma/*.cpp: removed usage of deprecated KJS::Value::isNull()
