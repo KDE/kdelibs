@@ -2,7 +2,7 @@
 <class>KPropertiesDesktopAdvBase</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>widget11</cstring>
+        <cstring>KPropertiesDesktopAdvBase</cstring>
     </property>
     <property name="geometry">
         <rect>
