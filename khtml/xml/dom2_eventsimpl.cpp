@@ -258,8 +258,6 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "keypress";
     case KHTML_MOVE_EVENT:
         return "khtml_move";
-    case KHTML_ORIGCLICK_MOUSEUP_EVENT:
-        return "khtml_origclick_mouseup_event";
     case KHTML_READYSTATECHANGE_EVENT:
         return "readystatechange";
 
