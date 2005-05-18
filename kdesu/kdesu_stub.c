@@ -262,7 +262,7 @@ int main()
 #endif
     } else 
     {
-#ifndef __CYGWIN__
+#ifdef HAVE_SETPRIORITY
 	int val = 20 - (int) (((double) prio) * 40 / 100 + 0.5);
 	setpriority(PRIO_PROCESS, getpid(), val);
 #endif 
