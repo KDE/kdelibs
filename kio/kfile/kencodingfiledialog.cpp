@@ -58,7 +58,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   
   QStringList encodings (KGlobal::charsets()->availableEncodingNames());
   int insert = 0;
-  for (uint i=0; i < encodings.count(); i++)
+  for (int i=0; i < encodings.count(); i++)
   {
     bool found = false;
     QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);

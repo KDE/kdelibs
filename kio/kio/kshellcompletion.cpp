@@ -58,7 +58,7 @@ QString KShellCompletion::makeCompletion(const QString &text)
 	//
 	bool is_exe_completion = true;
 
-	for ( uint i = 0; i < m_text_start.length(); i++ ) {
+	for ( int i = 0; i < m_text_start.length(); i++ ) {
 		if ( m_text_start[i] != m_word_break_char ) {
 			is_exe_completion = false;
 			break;
@@ -156,7 +156,7 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 	int last_unquoted_space = -1;
 	int end_space_len = 0;
 
-	for (uint pos = 0; pos < text.length(); pos++) {
+	for (int pos = 0; pos < text.length(); pos++) {
 
 		end_space_len = 0;
 
@@ -274,7 +274,7 @@ QString KShellCompletion::unquote(const QString &text) const
 	QChar p_last_quote_char;
 	QString result;
 
-	for (uint pos = 0; pos < text.length(); pos++) {
+	for (int pos = 0; pos < text.length(); pos++) {
 
 		if ( escaped ) {
 			escaped = false;
