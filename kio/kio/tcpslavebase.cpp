@@ -684,7 +684,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
            showprompt = true;
         if (showprompt) {
            if (!openPassDlg(ai, first ? QString::null : 
-                   i18n("Unable to open the certificate. Please try a new password:")))
+                   i18n("Unable to open the certificate. Try a new password?")))
               break;
         }
 
