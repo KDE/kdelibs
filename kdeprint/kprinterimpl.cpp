@@ -347,7 +347,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 
 	QString	filtercmd;
 	QStringList	inputMimeTypes;
-	for (uint i=0;i<flist.count();i++)
+	for (int i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
 		if (!filter)
@@ -586,7 +586,7 @@ void KPrinterImpl::loadAppOptions()
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	QStringList	opts = conf->readListEntry("ApplicationOptions");
-	for (uint i=0; i<opts.count(); i+=2)
+	for (int i=0; i<opts.count(); i+=2)
 		if (opts[i].startsWith("app-"))
 			m_options[opts[i]] = opts[i+1];
 }

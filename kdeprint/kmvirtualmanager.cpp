@@ -277,7 +277,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 					printer->addType(KMPrinter::Virtual);
 				}
 				// parse options
-				for (uint i=2; i<words.count(); i++)
+				for (int i=2; i<words.count(); i++)
 				{
 					pair = QStringList::split('=',words[i],false);
 					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString::null));

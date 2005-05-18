@@ -316,7 +316,7 @@ int main(int argc, char** argv)
 
 	cout<<"static const KeramikEmbedImage  image_db[] = {\n";
 
-	for (unsigned int c=0; c<images.size(); c++)
+	for (int c=0; c<images.size(); c++)
 	{
 		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<(char *)images[c].data<<"},";
 		cout<<"\n";

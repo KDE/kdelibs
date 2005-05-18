@@ -354,7 +354,7 @@ QString KMFactory::autoDetect()
 {
 	Q3ValueList<PluginInfo>	plugins = pluginList();
 	int	pluginIndex(-1), currentPrecedence(0);
-	for (uint i=0;i<plugins.count();i++)
+	for (int i=0;i<plugins.count();i++)
 	{
 		if (plugins[i].detectUris.count() > 0 && KdeprintChecker::check(plugins[i].detectUris)
 		    && (pluginIndex == -1 || plugins[i].detectPrecedence >= currentPrecedence))
