@@ -160,8 +160,7 @@ public:
      * Sorts the KSortableItems.
      */
     void sort() {
-        if (!this->isEmpty())
-            qSort( *this );
+        qSort( *this );
     }
 };
 
