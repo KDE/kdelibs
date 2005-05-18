@@ -221,7 +221,7 @@ QString RenderSubmitButton::rawText()
     QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
     value = value.stripWhiteSpace();
     QString raw;
-    for(unsigned int i = 0; i < value.length(); i++) {
+    for(int i = 0; i < value.length(); i++) {
         raw += value[i];
         if(value[i] == '&')
             raw += '&';

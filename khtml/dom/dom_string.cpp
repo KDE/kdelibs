@@ -272,7 +272,7 @@ bool DOM::operator==( const DOMString &a, const DOMString &b )
 
 bool DOM::operator==( const DOMString &a, const QString &b )
 {
-    unsigned int l = a.length();
+    int l = a.length();
 
     if( l != b.length() ) return false;
 

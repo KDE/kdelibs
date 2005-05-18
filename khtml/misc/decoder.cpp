@@ -377,7 +377,7 @@ QString Decoder::decode(const char *data, int len)
 
                             // end ?
                             if ( pos == ( int )str.length() ) break;
-			    uint endpos = pos;
+			    int endpos = pos;
 			    while( endpos < str.length() &&
                                    (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != '\''
                                     && str[endpos] != ';' && str[endpos] != '>') )

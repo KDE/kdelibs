@@ -96,15 +96,6 @@ KMFactory::KMFactory()
 	m_implementation = 0;
 	m_factory = 0;
 	m_printconfig = 0;
-#if QT_VERSION >= 230
-	// Qt's default behavior, to generate EPS in some cases and not in others, sucks.
-	// This is fixed in Qt 3.0, but for Qt 2.x we need to disable it explicitly.
-	// If this is a problem for anyone, we can add a public method to set this flag.
-	// (David Faure, doing as advised by Lars Knoll)
-#ifdef Q_WS_X11
-	qt_generate_epsf( false );
-#endif
-#endif
 
 	// By default, embed PS fonts
 	bool ok = false;

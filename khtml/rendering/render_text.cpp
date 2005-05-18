@@ -1435,7 +1435,7 @@ static QString quoteAndEscapeNonPrintables(const QString &s)
 {
     QString result;
     result += '"';
-    for (uint i = 0; i != s.length(); ++i) {
+    for (int i = 0; i != s.length(); ++i) {
         QChar c = s.at(i);
         if (c == '\\') {
             result += "\\\\";

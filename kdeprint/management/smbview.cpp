@@ -180,7 +180,7 @@ void SmbView::processServers()
 {
 	QStringList	lines = QStringList::split('\n',m_buffer,true);
 	QString		line;
-	uint 		index(0);
+	int 		index(0);
 	for (;index < lines.count();index++)
 		if (lines[index].stripWhiteSpace().startsWith("Server"))
 			break;
@@ -201,7 +201,7 @@ void SmbView::processShares()
 {
 	QStringList	lines = QStringList::split('\n',m_buffer,true);
 	QString		line;
-	uint 		index(0);
+	int 		index(0);
 	for (;index < lines.count();index++)
 		if (lines[index].stripWhiteSpace().startsWith("Sharename"))
 			break;
