@@ -175,8 +175,8 @@ KLauncher::KLauncher(int _kdeinitSocket)
    requestList.setAutoDelete(true);
    mSlaveWaitRequest.setAutoDelete(true);
    dcopClient()->setNotifications( true );
-   connect(dcopClient(), SIGNAL( applicationRegistered( const DCOPCString &)),
-           this, SLOT( slotAppRegistered( const DCOPCString &)));
+   connect(dcopClient(), SIGNAL( applicationRegistered( const QByteArray &)),
+           this, SLOT( slotAppRegistered( const QByteArray &)));
    dcopClient()->connectDCOPSignal( "DCOPServer", "", "terminateKDE()",
                                     objId(), "terminateKDE()", false );
 
@@ -628,7 +628,7 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
 }
 
 void
-KLauncher::slotAppRegistered(const DCOPCString &appId)
+KLauncher::slotAppRegistered(const QByteArray &appId)
 {
    const char *cAppId = appId.data();
    if (!cAppId) return;

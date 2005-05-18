@@ -169,7 +169,7 @@ public slots:
    void slotAutoStart();
    void slotDequeue();
    void slotKDEInitData(int);
-   void slotAppRegistered(const DCOPCString &appId);
+   void slotAppRegistered(const QByteArray &appId);
    void slotSlaveStatus(IdleSlave *);
    void acceptSlave();
    void slotSlaveGone();
