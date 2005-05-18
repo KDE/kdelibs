@@ -12,7 +12,8 @@ common_DATA = artistic-license.html bottom1.png bottom2.png bsd-license.html \
 	x11-license.html xml.dcl web-doctop.png \
 	doctop1a.png doctop1b.png 1.png 2.png 3.png 4.png 5.png 6.png \
 	7.png 8.png 9.png 10.png \
-	doxygen.css header.html footer.html mainheader.html appheader.html mainfooter.html \
+	doxygen.css header.html footer.html mainheader.html appheader.html \
+	mainfooter.html fdl-notice.html \
 	docheadergears.png headerbg.png grad.png kmenu.png \
 	kde_logo.png kde_logo_bg.png bottom-left.png bottom-middle.png bottom-right.png \
 	top-left.png top-middle.png top-right-konqueror.png
