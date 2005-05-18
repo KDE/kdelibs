@@ -13,6 +13,15 @@
 <!ENTITY Shift        		"<keycap>Shift</keycap>">				  <!-- English: &Shift; -->
 <!ENTITY Tab        		"<keycap>Tab</keycap>">
 
+<!ENTITY kicon                  "
+<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>Ikona K &kde;</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used instead of fileref -->
+
 <!ENTITY ark    '&ark-mianownik;'>
 <!ENTITY ark-mianownik    '<application>Ark</application>'>
 <!ENTITY ark-dopelniacz    '<application>Arka</application>'>
@@ -25,6 +34,14 @@
 <!ENTITY GUI-celownik    'graficznemu interfejsowi użytkownika'>
 <!ENTITY GUI-biernik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-miejscownik    'graficznym interfejsie użytkownika'>
+
+<!ENTITY kappfinder    '&kappfinder-mianownik;'>
+<!ENTITY kappfinder-mianownik    '<application>Kappfinder</application>'>
+<!ENTITY kappfinder-dopelniacz    '<application>Kappfinder</application>'>
+<!ENTITY kappfinder-celownik    '<application>Kappfinder</application>'>
+<!ENTITY kappfinder-biernik    '<application>Kappfinder</application>'>
+<!ENTITY kappfinder-narzednik    '<application>Kappfinder</application>'>
+<!ENTITY kappfinder-miejscownik    '<application>Kappfinder</application>'>
 
 <!ENTITY kcalc    '&kcalc-mianownik;'>
 <!ENTITY kcalc-mianownik    '<application>Kalkulator</application>'>
@@ -62,6 +79,14 @@
 <!ENTITY kicker-biernik    '<application>Kickera</application>'>
 <!ENTITY kicker-narzednik    '<application>Kickerem</application>'>
 <!ENTITY kicker-miejscownik    '<application>Kickerze</application>'>
+
+<!ENTITY klipper    '&klipper-mianownik;'>
+<!ENTITY klipper-mianownik    '<application>Klipper</application>'>
+<!ENTITY klipper-dopelniacz    '<application>Klippera</application>'>
+<!ENTITY klipper-celownik    '<application>Klipperowi</application>'>
+<!ENTITY klipper-biernik    '<application>Klippera</application>'>
+<!ENTITY klipper-narzednik    '<application>Klipperem</application>'>
+<!ENTITY klipper-miejscownik    '<application>Klipperze</application>'>
 
 <!ENTITY kmail    '&kmail-mianownik;'>
 <!ENTITY kmail-mianownik    '<application>Kmail</application>'>
