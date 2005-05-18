@@ -19,8 +19,6 @@
 
 #include "treecombobox.h"
 
-#include <kdebug.h>
-
 #include <qheaderview.h>
 #include <qstandarditemmodel.h>
 #include <qtreeview.h>
@@ -69,6 +67,7 @@ void TreeComboBox::insertItem(const QIcon& icon, const QString& text, bool oneBl
 		else
 			parentIndex = matches.first();
 
+                // TODO: QComboBox doesn't let us select these items.
 		model()->insertRow(model()->rowCount(parentIndex), parentIndex);
 		QModelIndex	index = model()->index(model()->rowCount(parentIndex)-1, 0, parentIndex);
 		model()->setData(index, icon, Qt::DecorationRole);
