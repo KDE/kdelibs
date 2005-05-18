@@ -1276,7 +1276,7 @@ void RenderObject::setStyle(RenderStyle *style)
             setNeedsLayoutAndMinMaxRecalc();
         } else if (!isText() && d == RenderStyle::Visible) {
             if (layer())
-                layer()->markForRepaint();
+                layer()->repaint();
             else
                 repaint();
         }
@@ -1300,7 +1300,7 @@ void RenderObject::repaintDuringLayout()
     if (canvas()->needsFullRepaint() || isText())
         return;
     if (layer()) {
-        layer()->markForRepaint( true );
+        layer()->repaint( true );
     } else {
        repaint();
        canvas()->deferredRepaint( this );

@@ -404,6 +404,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
   case ScrollTop: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
     if (rend && rend->layer()) {
+        node.handle()->getDocument()->updateLayout();
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToYOffset(value.toInt32(exec));
         else if (rend->isRoot()) {
@@ -417,6 +418,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
   case ScrollLeft: {
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
     if (rend && rend->layer()) {
+        node.handle()->getDocument()->updateLayout();
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToXOffset(value.toInt32(exec));
         else if (rend->isRoot()) {

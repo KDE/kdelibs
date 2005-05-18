@@ -51,6 +51,7 @@
 #include "render_arena.h"
 #include "render_replaced.h"
 #include "xml/dom_docimpl.h"
+#include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
 #include "html/html_blockimpl.h"
 
@@ -142,19 +143,18 @@ void RenderLayer::updateLayerPosition()
     setPos(x,y);
 }
 
-void RenderLayer::markForRepaint( bool afterLayout )
+void RenderLayer::repaint( bool markForRepaint )
 {
-    if (m_markedForRepaint)
+    if (markForRepaint && m_markedForRepaint)
         return;
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
-        child->markForRepaint( afterLayout );
+        child->repaint( markForRepaint );
     QRect layerBounds, damageRect, fgrect;
-    QRect vr = m_object->viewRect();
     calculateRects(renderer()->canvas()->layer(), renderer()->viewRect(), layerBounds, damageRect, fgrect);
     m_visibleRect = damageRect.intersect( layerBounds );
     if (m_visibleRect.isValid())
         renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height() );
-    if (afterLayout)
+    if (markForRepaint)
         m_markedForRepaint = true;
 }
 
@@ -184,13 +184,13 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         m_object->repaintAfterLayoutIfNeeded(m_repaintRect, m_fullRepaintRect);
 #else    
     if (checkForRepaint && m_markedForRepaint) {
-        m_markedForRepaint = false;
         QRect layerBounds, damageRect, fgrect;
         calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
         QRect vr = damageRect.intersect( layerBounds );
         if (vr != m_visibleRect && vr.isValid())
             renderer()->canvas()->repaintViewRectangle( vr.x(), vr.y(), vr.width(), vr.height() );
-    }            
+    }
+    m_markedForRepaint = false;   
 #endif
     
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
@@ -436,7 +436,13 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
     m_scrollX = x;
     m_scrollY = y;
 
-    // FIXME: Fire the onscroll DOM event.
+    // Update the positions of our child layers.
+    RenderLayer* rootLayer = root();
+    for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
+        child->updateLayerPositions(rootLayer);
+    
+    // Fire the scroll DOM event.
+    m_object->element()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 
     // Just schedule a full repaint of our object.
     if (repaint)
@@ -678,14 +684,6 @@ void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
 	RenderWidget::paintWidget(pI, m_vBar, x, y);
     }
 #endif
-}
-
-void RenderLayer::layout()
-{
-    updateLayerPosition();
-    checkScrollbarsAfterLayout();
-    if (!renderer()->style()->hasAutoZIndex() || renderer()->isCanvas())
-       updateZOrderLists();
 }
 
 void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly)
