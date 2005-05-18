@@ -1,3 +1,8 @@
+2005-05-18  Harri Porten  <porten@kde.org>
+
+	* xml/dom2_eventsimpl.cpp: recognize "dblclick" type in
+	addEventListener() calls (bug #98994).
+
 2005-05-17  Harri Porten  <porten@kde.org>
 
 	* html/html_elementimpl.cpp: always return a non-null string

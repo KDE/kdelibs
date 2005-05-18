@@ -175,8 +175,9 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
         return KEYUP_EVENT;
     else if ( type == "readystatechange" )
         return KHTML_READYSTATECHANGE_EVENT;
+    else if ( type == "dblclick" )
+        return KHTML_ECMA_DBLCLICK_EVENT;
 
-    // ignore: KHTML_DBLCLICK_EVENT
     // ignore: KHTML_CLICK_EVENT
     return UNKNOWN_EVENT;
 }
