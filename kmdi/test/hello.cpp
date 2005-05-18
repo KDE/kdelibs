@@ -13,6 +13,7 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <QMouseEvent>
 
 /*
   Constructs a Hello widget. Starts a 40 ms animation timer.

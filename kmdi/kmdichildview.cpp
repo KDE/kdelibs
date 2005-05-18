@@ -604,12 +604,8 @@ bool KMdiChildView::eventFilter( QObject *obj, QEvent *e )
 				return false;
 			QObjectList list = pNewWidget->queryList( "QWidget" );
 			list.insert( 0, pNewChild );         // add the new child to the list too, just to save code
-			QObjectList::iterator it = list.begin();          // iterate over all new child widgets
-			QObject * o;
-			while ( ( o = (*it) ) != 0 )
-			{ // for each found object...
+			foreach ( QObject *o, list ) {
 				QWidget * widg = ( QWidget* ) o;
-				++it;
 				widg->installEventFilter( this );
 				connect( widg, SIGNAL( destroyed() ), this, SLOT( slot_childDestroyed() ) );
 				Qt::FocusPolicy wfp = widg->focusPolicy();
