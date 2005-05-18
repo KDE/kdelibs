@@ -330,7 +330,7 @@ private slots:
 	 *
 	 * @since 3.4
 	 */
-	void applicationRemoved( const DCOPCString& app );
+	void applicationRemoved( const QByteArray& app );
 
 private:
 	

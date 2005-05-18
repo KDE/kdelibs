@@ -67,9 +67,9 @@ Wallet::Wallet(int handle, const QString& name)
 
 	_dcopRef->dcopClient()->setNotifications(true);
 	connect(_dcopRef->dcopClient(),
-			SIGNAL(applicationRemoved(const DCOPCString&)),
+			SIGNAL(applicationRemoved(const QByteArray&)),
 			this,
-			SLOT(slotAppUnregistered(const DCOPCString&)));
+			SLOT(slotAppUnregistered(const QByteArray&)));
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderListUpdated(QString)", "slotFolderListUpdated(QString)", false);
@@ -629,7 +629,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotAppUnregistered(const DCOPCString& app) {
+void Wallet::slotAppUnregistered(const QByteArray& app) {
 	if (_handle >= 0 && app == "kded") {
 		slotWalletClosed(_handle);
 	}

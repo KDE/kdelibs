@@ -301,7 +301,7 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
      lib->unload();
 }
 
-void Kded::slotApplicationRemoved(const DCOPCString &appId)
+void Kded::slotApplicationRemoved(const QByteArray &appId)
 {
   for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
@@ -871,8 +871,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
      DCOPClient *client = kapp->dcopClient();
-     QObject::connect(client, SIGNAL(applicationRemoved(const DCOPCString&)),
-             kded, SLOT(slotApplicationRemoved(const DCOPCString&)));
+     QObject::connect(client, SIGNAL(applicationRemoved(const QByteArray&)),
+             kded, SLOT(slotApplicationRemoved(const QByteArray&)));
      client->setNotifications(true);
      client->setDaemonMode( true );
 

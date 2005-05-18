@@ -496,7 +496,7 @@ class KIO_EXPORT Wallet : public QObject, public DCOPObject {
 		 *  @internal
 		 *  Used to detect when the wallet service dies.
 		 */
-		void slotAppUnregistered(const DCOPCString&);
+		void slotAppUnregistered(const QByteArray&);
 
 	private:
 		class WalletPrivate;

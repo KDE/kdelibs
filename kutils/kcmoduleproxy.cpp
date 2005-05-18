@@ -233,8 +233,8 @@ KCModule * KCModuleProxy::realModule() const
 		d->dcopClient->attach();
 
 		d->dcopClient->setNotifications( true );
-		connect( d->dcopClient, SIGNAL( applicationRemoved( const Q3CString& )),
-			SLOT( applicationRemoved( const Q3CString& )));
+		connect( d->dcopClient, SIGNAL( applicationRemoved( const QByteArray& )),
+			SLOT( applicationRemoved( const QByteArray& )));
 
 		/* Figure out the name of where the module is already loaded */
 		QByteArray replyData, data;
@@ -267,7 +267,7 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
-void KCModuleProxy::applicationRemoved( const DCOPCString& app )
+void KCModuleProxy::applicationRemoved( const QByteArray & app )
 {
 	if( app == d->dcopName )
 	{

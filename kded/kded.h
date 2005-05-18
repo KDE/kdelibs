@@ -102,7 +102,7 @@ public slots:
    /**
     * An application unregistered itself with DCOP
     */
-   void slotApplicationRemoved(const DCOPCString &appId);
+   void slotApplicationRemoved(const QByteArray &appId);
 
    /**
     * A KDEDModule is about to get destroyed.

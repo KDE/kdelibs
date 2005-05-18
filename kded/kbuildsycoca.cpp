@@ -815,7 +815,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      while (dcopClient->isApplicationRegistered(appName))
      {
        WaitForSignal *obj = new WaitForSignal;
-       obj->connect(dcopClient, SIGNAL(applicationRemoved(const Q3CString &)),
+       obj->connect(dcopClient, SIGNAL(applicationRemoved(const QByteArray &)),
                SLOT(deleteLater()));
        kapp->enter_loop();
      }

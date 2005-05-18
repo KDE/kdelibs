@@ -14,8 +14,8 @@ public:
     int exec();
 
 public slots:
-    void newApp(const Q3CString &appId);
-    void endApp(const Q3CString &appId);
+    void newApp(const QByteArray &appId);
+    void endApp(const QByteArray &appId);
     void appExit();
     void stop();
 
