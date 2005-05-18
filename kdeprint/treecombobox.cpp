@@ -28,8 +28,8 @@
 TreeComboBox::TreeComboBox(QWidget *parent, const char *name)
 	: QComboBox(parent, name)
 {
-        QTreeView   *view = new QTreeView(this);
-        view->header()->hide();
+	QTreeView   *view = new QTreeView(this);
+	view->header()->hide();
 	view->setRootIsDecorated(false);
 	setView(view);
 }
@@ -63,11 +63,12 @@ void TreeComboBox::insertItem(const QIcon& icon, const QString& text, bool oneBl
 			model()->insertRow(model()->rowCount());
 			parentIndex = model()->index(model()->rowCount()-1, 0);
 			model()->setData(parentIndex, parentStr, Qt::DisplayRole);
+			model()->insertColumn(0, parentIndex);
+			static_cast<QTreeView*>(view())->setExpanded(parentIndex, true);
 		}
 		else
 			parentIndex = matches.first();
 
-		// TODO: find out why the child item isn't inserted correctly into the model
 		model()->insertRow(model()->rowCount(parentIndex), parentIndex);
 		QModelIndex	index = model()->index(model()->rowCount(parentIndex)-1, 0, parentIndex);
 		model()->setData(index, icon, Qt::DecorationRole);
