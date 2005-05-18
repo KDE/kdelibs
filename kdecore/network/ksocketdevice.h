@@ -47,7 +47,7 @@ class KSocketDevicePrivate;
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
+class KDECORE_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
 {
 public:
   /**
