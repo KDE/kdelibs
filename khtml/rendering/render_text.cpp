@@ -177,7 +177,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
     int y = m_y + _ty + shadow->y;
     const RenderText* text = renderText();
 
-    if (shadow->blur == 0) {
+    if (shadow->blur <= 0) {
         QColor c = pt->pen().color();
         pt->setPen(shadow->color);
         f->drawText(pt, x, y+m_baseline, text->str->s, text->str->l,
