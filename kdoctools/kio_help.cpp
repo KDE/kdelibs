@@ -27,7 +27,6 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 
-#include <kshred.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
