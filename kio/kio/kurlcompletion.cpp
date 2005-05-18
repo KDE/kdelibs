@@ -225,7 +225,7 @@ void DirectoryListThread::run()
 		// Solaris and IRIX dirent structures do not allocate space for d_name. On
 		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
 		// that's ok.
-#ifdef __CYGWIN__
+#ifndef HAVE_READDIR_R
 		struct dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
 		        (dirEntry = ::readdir( dir)))
@@ -293,7 +293,7 @@ void DirectoryListThread::run()
 
 		::closedir( dir );
 		dir = 0;
-#ifndef __CYGWIN__
+#ifdef HAVE_READDIR_R
 		free( dirPosition );
 #endif
 	}
