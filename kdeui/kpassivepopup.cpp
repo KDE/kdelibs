@@ -30,20 +30,18 @@
 #include "kpassivepopup.moc"
 
 static const int DEFAULT_POPUP_TIME = 6*1000;
-static const Qt::WFlags POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt::WX11BypassWM
-                             | Qt::WStyle_StaysOnTop | Qt::WStyle_Tool | Qt::WStyle_NoBorder;
+static const int POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint;
 
-
-KPassivePopup::KPassivePopup( QWidget *parent, const char *name, Qt::WFlags f )
-    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
+KPassivePopup::KPassivePopup( QWidget *parent, const char *name )
+    : Q3Frame( 0, name ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
     init();
 }
 
-KPassivePopup::KPassivePopup( WId win, const char *name, Qt::WFlags f )
-    : Q3Frame( 0, name, f ? f : POPUP_FLAGS ),
+KPassivePopup::KPassivePopup( WId win, const char *name )
+    : Q3Frame( 0, name ),
       window( win ), msgView( 0 ), topLayout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -52,6 +50,7 @@ KPassivePopup::KPassivePopup( WId win, const char *name, Qt::WFlags f )
 
 void KPassivePopup::init()
 {
+    setWindowFlags( POPUP_FLAGS );
     setFrameStyle( Q3Frame::Box| Q3Frame::Plain );
     setLineWidth( 2 );
     connect( hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
