@@ -19,139 +19,58 @@
 
 #include "treecombobox.h"
 
-#include <qpainter.h>
+#include <kdebug.h>
 
-TreeListBoxItem::TreeListBoxItem(Q3ListBox *lb, const QPixmap& pix, const QString& txt, bool oneBlock)
-	: Q3ListBoxPixmap(pix, txt)
-{
-	if (oneBlock)
-		m_path = QStringList(txt);
-	else
-		m_path = QStringList::split('/', text(), false);
-	m_depth = m_path.count()-1;
-	m_child = m_next = m_parent = 0;
-
-	// insert into QListBox
-	if (m_depth == 0)
-	{
-		TreeListBoxItem	*item = static_cast<TreeListBoxItem*>(lb->item(0));
-		while (item && item->m_next)
-			item = item->m_next;
-		lb->insertItem(this);
-		if (item)
-			item->m_next = this;
-	}
-	else
-	{
-		QString	parentStr = txt.left(txt.length()-m_path[m_depth].length()-1);
-		TreeListBoxItem	*parentItem = static_cast<TreeListBoxItem*>(lb->findItem(parentStr, Q3ListBox::ExactMatch));
-		if (!parentItem)
-		{
-			// parent not found, add parent first into QListBox
-			parentItem = new TreeListBoxItem(lb, QPixmap(), parentStr);
-		}
-		// search last "child" of the parent item, to put the new one
-		// at the end
-		TreeListBoxItem	*childItem = static_cast<TreeListBoxItem*>(parentItem), *prevItem = 0;
-		while (childItem->next())
-		{
-			TreeListBoxItem	*nextItem = static_cast<TreeListBoxItem*>(childItem->next());
-			if (nextItem->m_depth >= m_depth)
-			{
-				childItem = nextItem;
-				if (childItem->m_depth == m_depth)
-					prevItem = childItem;
-			}
-			else
-				break;
-		}
-		// eventually insert item
-		lb->insertItem(this, childItem);
-		m_parent = parentItem;
-		if (prevItem)
-			prevItem->m_next = this;
-		else
-			parentItem->m_child = this;
-	}
-}
-
-int TreeListBoxItem::width(const Q3ListBox *lb) const
-{
-	int	w = m_depth * stepSize() + 2;
-	if (pixmap())
-		w += (pixmap()->width() + 2);
-	if (!m_path[m_depth].isEmpty())
-		w += (lb->fontMetrics().width(m_path[m_depth]) + 2);
-	return QMAX(w, Q3ListBoxPixmap::width(lb));
-}
-
-void TreeListBoxItem::paint(QPainter *p)
-{
-	if(!static_cast<TreeListBox*>(listBox())->m_painting)
-	{
-		Q3ListBoxPixmap::paint(p);
-		return;
-	}
-
-	const QPixmap	*pix = pixmap();
-	QRect	r = p->viewport();
-	int	h = height(listBox());
-	int	xo = (m_depth * stepSize() + 2);
-	int	yo = (pix ? (h-pix->height())/2 : 0);
-
-	if (m_depth > 0)
-	{
-		QPen	oldPen = p->pen();
-		p->setPen(listBox()->colorGroup().mid());
-
-		TreeListBoxItem	*item = this;
-		int	s = xo-stepSize()/2;
-		p->drawLine(s, r.top(), s, h/2);
-		p->drawLine(s, h/2, s+stepSize()/2-2, h/2);
-		while (item->m_parent)
-		{
-			if (item->m_next)
-				p->drawLine(s, r.top(), s, h);
-			item = item->m_parent;
-			s -= stepSize();
-		}
-
-		p->setPen(oldPen);
-	}
-	if (pix)
-	{
-		p->drawPixmap(xo, yo, *pix);
-		xo += (pix->width() + 2);
-	}
-	p->drawText(xo, 0, r.width()-xo, height(listBox()), Qt::AlignLeft, m_path[m_depth]);
-}
-
-//-----------------------------------------------------------------------------------------
-
-TreeListBox::TreeListBox(QWidget *parent, const char *name)
-	: Q3ListBox(parent, name)
-{
-	m_painting = false;
-}
-
-void TreeListBox::paintCell(QPainter *p, int row, int col)
-{
-	m_painting = true;
-	Q3ListBox::paintCell(p, row, col);
-	m_painting = false;
-}
-
-//-----------------------------------------------------------------------------------------
+#include <qheaderview.h>
+#include <qstandarditemmodel.h>
+#include <qtreeview.h>
 
 TreeComboBox::TreeComboBox(QWidget *parent, const char *name)
 	: QComboBox(parent, name)
 {
-	m_listbox = new TreeListBox(this);
-#warning needs to be ported to QListView
-	// setListBox(m_listbox);
+        QTreeView   *view = new QTreeView(this);
+        view->header()->hide();
+	view->setRootIsDecorated(false);
+	setView(view);
 }
 
-void TreeComboBox::insertItem(const QPixmap& pix, const QString& txt, bool oneBlock)
+void TreeComboBox::insertItem(const QIcon& icon, const QString& text, bool oneBlock)
 {
-	new TreeListBoxItem(m_listbox, pix, txt, oneBlock);
+	QStringList	path;
+	if (oneBlock)
+		path = QStringList(text);
+	else
+		path = QStringList::split('/', text, false);
+	int	depth = path.count()-1;
+
+	if (depth == 0)
+	{
+		model()->insertRow(model()->rowCount());
+		QModelIndex	index = model()->index(model()->rowCount()-1, 0);
+		model()->setData(index, icon, Qt::DecorationRole);
+		model()->setData(index, text, Qt::DisplayRole);
+	}
+	else
+	{
+		// Find parent item
+		QString	parentStr = text.left(text.length()-path[depth].length()-1);
+		QModelIndexList	matches = model()->match(model()->index(0, 0), Qt::DisplayRole, parentStr, 1, Qt::MatchExactly);
+
+		QModelIndex	parentIndex;
+		if (matches.isEmpty())
+		{
+			// parent not found, add parent first into model
+			model()->insertRow(model()->rowCount());
+			parentIndex = model()->index(model()->rowCount()-1, 0);
+			model()->setData(parentIndex, parentStr, Qt::DisplayRole);
+		}
+		else
+			parentIndex = matches.first();
+
+		// TODO: find out why the child item isn't inserted correctly into the model
+		model()->insertRow(model()->rowCount(parentIndex), parentIndex);
+		QModelIndex	index = model()->index(model()->rowCount(parentIndex)-1, 0, parentIndex);
+		model()->setData(index, icon, Qt::DecorationRole);
+		model()->setData(index, text, Qt::DisplayRole);
+	}
 }
