@@ -30,7 +30,7 @@
 #include "kpassivepopup.moc"
 
 static const int DEFAULT_POPUP_TIME = 6*1000;
-static const int POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint;
+static const Qt::WindowFlags POPUP_FLAGS = Qt::Tool | Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint;
 
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name )
     : Q3Frame( 0, name ),
