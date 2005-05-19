@@ -1,0 +1,15 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Service
+ServiceTypes=KSpell/Client
+X-KDE-Library=kspell_hspell
+X-KDE-PluginInfo-Author=Mashrab Kuvatov
+X-KDE-PluginInfo-Email=kmashrab@uni-bremen.de
+X-KDE-PluginInfo-Name=kspell_hspell
+X-KDE-PluginInfo-Version=0.0.1
+X-KDE-PluginInfo-Website=http://www.kde.org
+X-KDE-PluginInfo-Category=Clients
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=LGPL
+X-KDE-PluginInfo-EnabledByDefault=true
+Name=HSpell
