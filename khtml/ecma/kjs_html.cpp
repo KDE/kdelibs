@@ -2331,7 +2331,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
       /*uint u =*/ propertyName.toULong(&ok);
       if (ok) {
         Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
-        if ( !coll.isNull() )
+        if ( coll.isValid() )
           coll.put(exec,propertyName,value);
         return;
       }
@@ -2511,7 +2511,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case SelectValue:           { select.setValue(str); return; }
       case SelectLength:          { // read-only according to the NS spec, but webpages need it writeable
                                          Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
-                                         if ( !coll.isNull() )
+                                         if ( coll.isValid() )
                                            coll.put(exec,"length",value);
                                          return;
                                        }
@@ -3147,7 +3147,7 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyNam
 
   // Look in the prototype (for functions) before assuming it's an item's name
   Object proto = Object::dynamicCast(prototype());
-  if (!proto.isNull() && proto.hasProperty(exec,propertyName))
+  if (proto.isValid() && proto.hasProperty(exec,propertyName))
     return proto.get(exec,propertyName);
 
   // name or index ?

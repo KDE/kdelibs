@@ -636,7 +636,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 
       if (args.size() >= 1) {
 	Object obj = Object::dynamicCast(args[0]);
-	if (!obj.isNull() && obj.inherits(&DOMDocument::info)) {
+	if (obj.isValid() && obj.inherits(&DOMDocument::info)) {
 	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
 	  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
 

@@ -599,7 +599,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const Identifier &p) const
 
   // Look in the prototype (for functions) before assuming it's an item's name
   Object proto = Object::dynamicCast(prototype());
-  if (!proto.isNull() && proto.hasProperty(exec,p))
+  if (proto.isValid() && proto.hasProperty(exec,p))
     return proto.get(exec,p);
 
   Value result;
@@ -945,7 +945,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     }
     else {
       Object obj = Object::dynamicCast(args[2]);
-      if (!obj.isNull())
+      if (obj.isValid())
       {
         DOM::CustomNodeFilter *customFilter = new JSNodeFilter(obj);
         DOM::NodeFilter filter = DOM::NodeFilter::createCustom(customFilter);
@@ -1079,7 +1079,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
   switch(id) {
     case DOMElement::GetAttribute:
-      return getString(element.getAttribute(args[0].toString(exec).string()));
+      return String(element.getAttribute(args[0].toString(exec).string()));
     case DOMElement::SetAttribute:
       element.setAttribute(args[0].toString(exec).string(),args[1].toString(exec).string());
       return Undefined();
@@ -1097,7 +1097,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
     case DOMElement::HasAttribute: // DOM2
       return Boolean(element.hasAttribute(args[0].toString(exec).string()));
     case DOMElement::GetAttributeNS: // DOM2
-      return getString(element.getAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
+      return String(element.getAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
     case DOMElement::SetAttributeNS: // DOM2
       element.setAttributeNS(args[0].toString(exec).string(),args[1].toString(exec).string(),args[2].toString(exec).string());
       return Undefined();

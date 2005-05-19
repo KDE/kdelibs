@@ -98,7 +98,7 @@ extern "C" {
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
 # define _tcgetattr(fd, ttmode) ioctl(fd, TIOCGETA, (char *)ttmode)
 #else
-# if defined(_HPUX_SOURCE) || defined(__Lynx__)
+# if defined(_HPUX_SOURCE) || defined(__Lynx__) || defined (__CYGWIN__)
 #  define _tcgetattr(fd, ttmode) tcgetattr(fd, ttmode)
 # else
 #  define _tcgetattr(fd, ttmode) ioctl(fd, TCGETS, (char *)ttmode)
@@ -108,8 +108,8 @@ extern "C" {
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
 # define _tcsetattr(fd, ttmode) ioctl(fd, TIOCSETA, (char *)ttmode)
 #else
-# ifdef _HPUX_SOURCE
-#  define _tcsetattr(fd, ttmode) tcsetattr(fd, TCSANOW, ttmode)
+# if defined(_HPUX_SOURCE) || defined(__CYGWIN__)
+#  define _tcsetattr(fd, ttmode) tcsetattr(fd, TCSANOW, ttmode) 
 # else
 #  define _tcsetattr(fd, ttmode) ioctl(fd, TCSETS, (char *)ttmode)
 # endif

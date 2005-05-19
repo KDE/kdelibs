@@ -1314,6 +1314,10 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
+#ifdef __CYGWIN__                
+#define hasmntopt(var,opt) (0)   
+#endif                           
+                                 
 // There are (at least) four kind of APIs:
 // setmntent + getmntent + struct mntent (linux...)
 //             getmntent + struct mnttab

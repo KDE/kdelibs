@@ -85,6 +85,8 @@
 1216        kwin (client errors)
 1217        khotkeys
 1218        ksmserver
+1219        media kioslave
+1220        remote kioslave
 
 1400        khelpcenter (kdebase)
 1401        kcmhelpcenter

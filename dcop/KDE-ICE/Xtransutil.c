@@ -526,6 +526,7 @@ trans_mkdir(char *path, int mode)
 		}
 	    }
 #endif
+#ifndef __CYGWIN__
 	    if (updateOwner && !updatedOwner) {
 	  	PRMSG(1, "mkdir: Owner of %s should be set to root\n",
 		      path, 0, 0);
@@ -536,6 +537,7 @@ trans_mkdir(char *path, int mode)
 		      path, mode, 0);
 /*		sleep(5); */
 	    }
+#endif 
 	    return 0;
 	}
     }

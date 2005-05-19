@@ -1617,6 +1617,12 @@ void KHTMLView::updateFindAheadTimeout()
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    if(d->typeAheadActivated) {
+        _ke->accept();
+        return;
+    }
+#endif
     if (d->m_caretViewContext && d->m_caretViewContext->keyReleasePending) {
         //caretKeyReleaseEvent(_ke);
 	d->m_caretViewContext->keyReleasePending = false;

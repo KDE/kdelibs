@@ -21,7 +21,7 @@ INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 
 AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
+check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
@@ -32,13 +32,13 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 
 TESTS = kurltest kstdacceltest
 
-noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h \
+noinst_HEADERS = klocaletest.h kprocesstest.h KIDLTest.h \
 		kipctest.h kprociotest.h
 
 METASOURCES = AUTO
 
 LDADD = ../libkdecore.la
-kconfigtest_SOURCES = kconfigtest.cpp
+kconfigtestgui_SOURCES = kconfigtestgui.cpp
 kdebugtest_SOURCES = kdebugtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
 #klocaletest2_SOURCES = klocaletest2.cpp klocale.cpp libintl.cpp kcatalogue.cpp
@@ -75,3 +75,9 @@ kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
 startserviceby_SOURCES = startserviceby.cpp
 kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
+
+check_LTLIBRARIES = kunittest_kconfig.la
+
+kunittest_kconfig_la_SOURCES = kconfigtest.cpp
+kunittest_kconfig_la_LIBADD = $(LIB_KUNITTEST)
+kunittest_kconfig_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)

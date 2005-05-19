@@ -379,8 +379,12 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     }
     
     QString sockname = socketfile.name();
-    socketfile.unlink(); // can't bind if there is such a file
 
+#ifdef __CYGWIN__
+   socketfile.close();
+#endif
+   socketfile.unlink(); // can't bind if there is such a file
+    
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
     kss->setFamily(KResolver::LocalFamily);
@@ -479,6 +483,11 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
     if ( socketfile.status() != 0 )
 	return 0;
+
+#ifdef __CYGWIN__
+   socketfile.close();
+   socketfile.unlink();
+#endif
 
 #ifndef Q_WS_WIN
     KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));

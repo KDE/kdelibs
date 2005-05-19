@@ -298,11 +298,26 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     QColor c = style()->backgroundColor();
     CachedImage *bg = style()->backgroundImage();
 
-    if (!c.isValid() && !bg && firstChild()) {
-        if (!c.isValid())
-            c = firstChild()->style()->backgroundColor();
-        if (!bg)
-            bg = firstChild()->style()->backgroundImage();
+    if (!c.isValid() && !bg) {
+        // Locate the <body> element using the DOM.  This is easier than trying
+        // to crawl around a render tree with potential :before/:after content and
+        // anonymous blocks created by inline <body> tags etc.  We can locate the <body>
+        // render object very easily via the DOM.
+        RenderObject* bodyObject = 0;
+        for (DOM::NodeImpl* elt = element()->firstChild(); elt; elt = elt->nextSibling()) {
+            if (elt->id() == ID_BODY) {
+                bodyObject = elt->renderer();
+                break;
+            }
+            else if (elt->id() == ID_FRAMESET) {
+                break;
+            }
+        }
+
+        if (bodyObject) {
+            c = bodyObject->style()->backgroundColor();
+            bg = bodyObject->style()->backgroundImage();
+        }
     }
 
     if( !c.isValid() && canvas()->view())

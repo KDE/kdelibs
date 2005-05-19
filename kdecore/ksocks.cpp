@@ -196,7 +196,12 @@ KDanteSocksTable::~KDanteSocksTable() {
 
 
 KSocks *KSocks::_me = 0;
+#ifdef __CYGWIN__
+bool KSocks::_disabled = true;
+#else 
 bool KSocks::_disabled = false;
+#endif 
+static KStaticDeleter<KSocks> med;
 
 void KSocks::disable()
 {

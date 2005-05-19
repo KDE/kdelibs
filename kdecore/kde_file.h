@@ -64,6 +64,7 @@
 #define KDE_struct_stat 	struct stat64
 #define KDE_struct_dirent	struct dirent64
 #define KDE_rename              ::rename
+#define KDE_mkdir              ::mkdir
 /* TODO: define for win32 */
 
 #else /* !_LFS64_LARGEFILE */
@@ -76,11 +77,13 @@
 #define KDE_lstat		kdewin32_lstat
 #define KDE_open		kdewin32_open
 #define KDE_rename		kdewin32_rename
+#define KDE_mkdir   kdewin32_mkdir
 #else /* unix */
 #define KDE_stat		::stat
 #define KDE_lstat		::lstat
 #define KDE_open		::open
 #define KDE_rename		::rename
+#define KDE_mkdir   ::mkdir
 #endif
 
 #define KDE_fstat		::fstat

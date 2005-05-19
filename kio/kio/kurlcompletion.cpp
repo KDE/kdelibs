@@ -225,11 +225,17 @@ void DirectoryListThread::run()
 		// Solaris and IRIX dirent structures do not allocate space for d_name. On
 		// systems that do (HP-UX, Linux, Tru64 UNIX), we overallocate space but
 		// that's ok.
-
+#ifndef HAVE_READDIR_R
+		struct dirent *dirEntry = 0;
+		while ( !terminationRequested() &&
+		        (dirEntry = ::readdir( dir)))
+#else
 		struct dirent *dirPosition = (struct dirent *) malloc( sizeof( struct dirent ) + MAXPATHLEN + 1 );
 		struct dirent *dirEntry = 0;
 		while ( !terminationRequested() &&
 		        ::readdir_r( dir, dirPosition, &dirEntry ) == 0 && dirEntry )
+#endif 
+
 		{
 			// Skip hidden files if m_noHidden is true
 
@@ -287,8 +293,9 @@ void DirectoryListThread::run()
 
 		::closedir( dir );
 		dir = 0;
-
+#ifdef HAVE_READDIR_R
 		free( dirPosition );
+#endif
 	}
 
 	done();

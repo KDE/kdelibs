@@ -28,6 +28,7 @@
 #define KDE_open kdewin32_open
 #else
 #define KDE_open open
+#define KDE_mkdir mkdir 
 #endif
 
 #ifndef HAVE_SETENV
@@ -301,7 +302,7 @@ KDECORE_EXPORT char* mkdtemp (char* _template)
 	 with (module 2^32).  */
       value += 7777;
 
-      if (!mkdir(_template,0700))
+      if (!KDE_mkdir(_template,0700))
 	return _template;	
     }
     return 0;

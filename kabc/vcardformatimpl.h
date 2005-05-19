@@ -27,7 +27,11 @@
 #include "address.h"
 #include "addressee.h"
 
+#ifdef __CYGWIN__ 
+#include <vcard/include/VCard.h>
+#else
 #include <VCard.h>
+#endif 
 
 namespace KABC {
 

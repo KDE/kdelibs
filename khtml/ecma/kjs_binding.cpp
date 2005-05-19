@@ -239,7 +239,10 @@ UString::UString(const QString &d)
 UString::UString(const DOM::DOMString &d)
 {
   if (d.isNull()) {
-    attach(&Rep::null);
+    // we do a conversion here as null DOMStrings shouldn't cross
+    // the boundary to kjs. They should either be empty strings
+    // or explicitly converted to KJS::Null via getString().
+    attach(&Rep::empty);
     return;
   }
 
@@ -277,7 +280,7 @@ QString Identifier::qstring() const
 DOM::Node KJS::toNode(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMNode::info))
+  if (!obj.isValid() || !obj.inherits(&DOMNode::info))
     return DOM::Node();
 
   const DOMNode *dobj = static_cast<const DOMNode*>(obj.imp());

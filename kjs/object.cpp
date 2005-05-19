@@ -176,7 +176,7 @@ Value ObjectImp::get(ExecState *exec, const Identifier &propertyName) const
       return Value(proto);
   }
 
-  if (proto.isNull())
+  if (!proto.isValid())
     return Undefined();
 
   return proto.get(exec,propertyName);
@@ -192,7 +192,7 @@ Value ObjectImp::getPropertyByIndex(ExecState *exec,
 void ObjectImp::put(ExecState *exec, const Identifier &propertyName,
                      const Value &value, int attr)
 {
-  assert(!value.isNull());
+  assert(value.isValid());
 
   // non-standard netscape extension
   if (propertyName == specialPrototypePropertyName) {
@@ -256,7 +256,7 @@ bool ObjectImp::hasProperty(ExecState *exec, const Identifier &propertyName) con
 
   // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
-  return !proto.isNull() && proto.hasProperty(exec,propertyName);
+  return proto.isValid() && proto.hasProperty(exec,propertyName);
 }
 
 bool ObjectImp::hasPropertyByIndex(ExecState *exec, unsigned propertyName) const

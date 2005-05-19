@@ -33,7 +33,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
-#if defined(__osf__)
+#if defined(__osf__) || defined(__CYGWIN__)
 #include <pty.h>
 #endif
 

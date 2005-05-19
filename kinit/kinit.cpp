@@ -1743,14 +1743,14 @@ int main(int argc, char **argv, char **envp)
          exit(1);
       }
    }
-
+#ifndef __CYGWIN__
    if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
 	  (void) lt_dlopen(QFile::encodeName(konq).data());
    }
-
+#endif 
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );

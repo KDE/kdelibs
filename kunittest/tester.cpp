@@ -86,7 +86,22 @@ namespace KUnitTest
     
         return m_resultsList[sl]; 
     }
-};
+}
+
+QTextStream& operator<<( QTextStream& str, const QRect& r ) {
+    str << "[" << r.x() << "," << r.y() << " - " << r.width() << "x" << r.height() << "]";
+    return str;
+}
+
+QTextStream& operator<<( QTextStream& str, const QPoint& r ) {
+    str << "(" << r.x() << "," << r.y() << ")";
+    return str;
+}
+
+QTextStream& operator<<( QTextStream& str, const QSize& r ) {
+    str << "[" << r.width() << "x" << r.height() << "]";
+    return str;
+}
 
 #include "tester.moc"
 

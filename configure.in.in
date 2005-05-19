@@ -119,7 +119,7 @@ AC_CHECK_RANDOM
 AC_CHECK_MKSTEMPS
 AC_CHECK_MKSTEMP
 AC_CHECK_MKDTEMP
-AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday)
+AC_CHECK_FUNCS(strtoll socket seteuid setegid strfmon stpcpy gettimeofday readdir_r setpriority)
 
 AH_BOTTOM([
 /* provide a definition for a 32 bit entity, usable as a typedef, possibly
@@ -204,6 +204,12 @@ AC_SUBST(LIB_KDEPRINT, '$(top_builddir)/kdeprint/libkdeprint.la')
 AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 AC_SUBST(LIB_KIMGIO, '$(top_builddir)/kimgio/libkimgio.la')
 AC_SUBST(LIB_KNEWSTUFF, '$(top_builddir)/knewstuff/libknewstuff.la')
+AC_SUBST(LIB_KUNITTEST, '$(top_builddir)/kunittest/libkunittest.la')
+case $host in 
+	*cygwin*) lib_kded='$(top_builddir)/kded/libkdeinit_kded.la' ;;
+	*) lib_kded='' ;;
+esac
+AC_SUBST(LIB_KDED, $lib_kded)
 
 AC_SUBST(EXTRA_SUBDIRS)
 

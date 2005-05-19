@@ -1207,6 +1207,9 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
 
     delete dir;
     itemsInUse.insert( newUrl.url(), newDir );
+    urlsCurrentlyListed.insert( newUrl.url(), listers );
+    if ( holders )
+      urlsCurrentlyHeld.insert( newUrl.url(), holders );
 
     // emit old items: listers, holders
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )

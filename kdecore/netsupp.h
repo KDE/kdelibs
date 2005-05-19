@@ -31,6 +31,10 @@
 #include <netdb.h>
 //#include "ksockaddr.h"
 
+#ifdef __CYGWIN__                 
+typedef unsigned ksocklen_t;
+#endif                            
+
 /*
  * Seems some systems don't know about AF_LOCAL
  */

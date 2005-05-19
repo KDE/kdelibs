@@ -121,7 +121,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
 
   // Look in the prototype (for functions) before assuming it's a name
   Object proto = Object::dynamicCast(prototype());
-  if (!proto.isNull() && proto.hasProperty(exec,propertyName))
+  if (proto.isValid() && proto.hasProperty(exec,propertyName))
     return proto.get(exec,propertyName);
 
   bool ok;
@@ -830,7 +830,7 @@ Value KJS::getDOMCSSRule(ExecState *exec, const DOM::CSSRule& r)
 DOM::CSSRule KJS::toCSSRule(const Value& val)
 {
   Object obj = Object::dynamicCast(val);
-  if (obj.isNull() || !obj.inherits(&DOMCSSRule::info))
+  if (!obj.isValid() || !obj.inherits(&DOMCSSRule::info))
     return DOM::CSSRule();
 
   const DOMCSSRule *dobj = static_cast<const DOMCSSRule*>(obj.imp());

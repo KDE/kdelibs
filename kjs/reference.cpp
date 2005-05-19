@@ -123,7 +123,7 @@ Value Reference::getValue(ExecState *exec) const
 
   Value o = getBase(exec);
 
-  if (o.isNull() || o.type() == NullType) {
+  if (!o.isValid() || o.type() == NullType) {
     UString m = I18N_NOOP("Can't find variable: ") + getPropertyName(exec).ustring();
     Object err = Error::create(exec, ReferenceError, m.ascii());
     exec->setException(err);

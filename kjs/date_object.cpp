@@ -136,9 +136,11 @@ static double timeZoneOffset(const struct tm *t)
 #if defined BSD || defined(__linux__) || defined(__APPLE__)
   return -(t->tm_gmtoff / 60);
 #else
-#  if defined(__BORLANDC__)
+#  if defined(__BORLANDC__) || defined(__CYGWIN__)
 // FIXME consider non one-hour DST change
+#if !defined(__CYGWIN__)
 #error please add daylight savings offset here!
+#endif
   return _timezone / 60 - (t->tm_isdst > 0 ? 60 : 0);
 #  else
   return timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 );
@@ -671,7 +673,7 @@ double KJS::makeTime(struct tm *t, int ms, bool utc)
         t->tm_isdst = t3.tm_isdst;
 #else
         (void)localtime(&zero);
-#  if defined(__BORLANDC__)
+#  if defined(__BORLANDC__) || defined(__CYGWIN__)
         utcOffset = - _timezone;
 #  else
         utcOffset = - timezone;

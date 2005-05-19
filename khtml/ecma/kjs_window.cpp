@@ -342,13 +342,13 @@ Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
   KHTMLPart *part = qobject_cast<KHTMLPart*>(p);
   if ( part && part->jScriptEnabled() )
   {
-    assert( !obj.isNull() );
+    assert( obj.isValid() );
 #ifndef QWS
     assert( dynamic_cast<KJS::Window*>(obj.imp()) ); // type checking
 #endif
   }
 #endif
-  if ( obj.isNull() ) // JS disabled
+  if ( !obj.isValid() ) // JS disabled
     return 0;
   return static_cast<KJS::Window*>(obj.imp());
 }
@@ -2013,7 +2013,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   else if (p== "location") // non-standard property, but works in NS and IE
   {
     Object obj = Object::dynamicCast( Window::retrieve( part ) );
-    if ( !obj.isNull() )
+    if ( obj.isValid() )
       return obj.get( exec, "location" );
     return Undefined();
   }
@@ -2388,7 +2388,7 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
   Value v = args[0];
   Number n;
-  if(!v.isNull())
+  if(v.isValid())
     n = v.toInteger(exec);
 
   int steps;
