@@ -1377,7 +1377,7 @@ static void fillQtObjects( DCOPCStringList& l, QObject* o, DCOPCString path)
 
     int unnamed = 0;
     //const QObjectList *list = o ? o->children() : QObject::objectTrees();
-    const QObjectList list =  o->children(); // ### FIXME
+    const QObjectList list = o ? o->children() : QObjectList(); // ### FIXME
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
@@ -1413,7 +1413,7 @@ static void fillQtObjectsEx( QList<O>& l, QObject* o, DCOPCString path )
 
     int unnamed = 0;
     //const QObjectList *list = o ? o->children() : QObject::objectTrees();
-    const QObjectList list =  o->children(); // ### FIXME
+    const QObjectList list = o ? o->children() : QObjectList(); // ### FIXME
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
