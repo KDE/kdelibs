@@ -52,14 +52,13 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	virtual ~%PluginName() {}\n"
                                 "	\n"
                                 "	bool isContainer() const { return %IsContainer; }\n"
-                                "	bool isForm() { return %IsForm; }\n"
                                 "	bool isInitialized() { return mInitialized; }\n"
                                 "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
                                 "	QString codeTemplate() const { return QLatin1String(\"%CodeTemplate\");}\n"
-                                "	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
+                                "//	QString domXml() const { return QLatin1String(\"%DomXml\"); }\n"
                                 "	QString group() const { return QLatin1String(\"%Group\"); }\n"
                                 "	QString includeFile() const { return QLatin1String(\"%IncludeFile\"); }\n"
-                                "	QString name() const { return QLatin1String(\"%Class;\"); }\n"
+                                "	QString name() const { return QLatin1String(\"%Class\"); }\n"
                                 "	QString toolTip() const { return QLatin1String(\"%ToolTip\"); }\n"
                                 "	QString whatsThis() const { return QLatin1String(\"%WhatsThis\"); }\n\n"
                                 "	QWidget* createWidget( QWidget* parent ) \n\t{%CreateWidget\n\t}\n"
@@ -190,8 +189,7 @@ QString buildWidgetClass( const QString &name, KConfig &input, const QString &gr
     defMap.insert( "ToolTip", input.readEntry( "ToolTip", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "WhatsThis", input.readEntry( "WhatsThis", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "IsContainer", input.readEntry( "IsContainer", "false" ) );
-    defMap.insert( "IsForm", input.readEntry( "IsForm", "false" ) );
-    defMap.insert( "IconName", input.readEntry( "IconName" ) );
+    defMap.insert( "IconName", input.readEntry( "IconName", QString(":pics/%1.png").arg( denamespace( name ).lower() ) ) );
     defMap.insert( "Class", name );
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
     
