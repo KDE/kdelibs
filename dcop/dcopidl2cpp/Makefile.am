@@ -9,7 +9,7 @@ bin_PROGRAMS = dcopidl2cpp
 dcopidl2cpp_SOURCES = main.cpp skel.cpp stub.cpp stubimpl.cpp
 noinst_HEADERS = main.h
 
-dcopidl2cpp_LDADD = $(LIB_QT) -lQtXml
+dcopidl2cpp_LDADD = $(LIB_QT) -lQtXml_debug
 dcopidl2cpp_LDFLAGS = $(KDE_RPATH)
 
 dcopidl_output.kidl: $(DCOPIDL) $(srcdir)/dcopidl_test.h
