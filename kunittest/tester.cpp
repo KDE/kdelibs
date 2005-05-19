@@ -28,6 +28,7 @@ using namespace std;
 
 #include <qmetaobject.h>
 #include <q3strlist.h>
+#include <QRect>
 #include "tester.h"
 
 namespace KUnitTest
