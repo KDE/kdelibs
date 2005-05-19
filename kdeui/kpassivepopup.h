@@ -83,7 +83,7 @@ public:
     /**
      * Creates a popup for the specified widget.
      */
-    KPassivePopup( QWidget *parent=0, const char *name=0 );
+    KPassivePopup( QWidget *parent=0, const char *name=0, Qt::WFlags f = 0 );
 
     /**
      * Creates a popup for the specified window.
@@ -94,13 +94,13 @@ public:
      * Creates a popup for the specified widget.
      * @since 3.5
      */
-    KPassivePopup( int popupStyle, QWidget *parent=0, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
 
     /**
      * Creates a popup for the specified window.
      * @since 3.5
      */
-    KPassivePopup( int popupStyle, WId parent, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, WId parent, const char *name=0, Qt::WFlags f=0 );
 
     /**
      * Cleans up.
