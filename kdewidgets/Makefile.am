@@ -38,5 +38,6 @@ kdewidgets.cpp: $(srcdir)/kde.widgets makekdewidgets kdewidgets.moc
 
 kdewidgets.moc: 
 	$(MOC) -o kdewidgets.moc kdewidgets.cpp $(DEFINES) 
-CLEANFILES = kdewidgets.cpp
+
+CLEANFILES = kdewidgets.cpp kdewidgets.moc
 
