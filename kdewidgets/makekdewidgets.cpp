@@ -17,7 +17,31 @@ static const char classHeader[] = 	"/**\n"
                                    	"*/\n"
 					"#include <QIcon>\n"
 					"#include <QtDesigner/QDesignerContainerExtension>\n"
-					"#include <QtDesigner/QDesignerCustomWidgetInterface>\n";
+					"#include <QtDesigner/QDesignerCustomWidgetInterface>\n"
+					"#include <QtDesigner/QtDesigner>\n"
+					"#include <qplugin.h>\n"
+					"#include <qdebug.h>\n";
+;
+static const char collClassDef[] = "class %CollName : public QObject, public QDesignerCustomWidgetCollectionInterface\n"
+                                "{\n"
+                                "	Q_OBJECT\n"
+                                "	Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)\n"
+                                "public:\n"
+                                "	%CollName(QObject *parent = 0);\n"
+                                "	virtual ~%CollName() {}\n"
+                                "	QList<QDesignerCustomWidgetInterface*> customWidgets() const { return m_plugins; } \n"
+                                "	\n"
+                                "private:\n"
+                                "	QList<QDesignerCustomWidgetInterface*> m_plugins;\n"
+                                "};\n\n"
+                                "Q_EXPORT_PLUGIN(%CollName)\n\n";
+
+static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
+                                "	: QObject(parent)"
+                                "{\n"
+                                "%CollectionAdd\n"
+                                "}\n\n";
+
 
 static const char classDef[] =  "class %PluginName : public QObject, public QDesignerCustomWidgetInterface\n"
                                 "{\n"
@@ -27,7 +51,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	%PluginName(QObject *parent = 0) :\n\t\tQObject(parent), mInitialized(false) {}\n"
                                 "	virtual ~%PluginName() {}\n"
                                 "	\n"
-                                "	bool isContainer() { return %IsContainer; }\n"
+                                "	bool isContainer() const { return %IsContainer; }\n"
                                 "	bool isForm() { return %IsForm; }\n"
                                 "	bool isInitialized() { return mInitialized; }\n"
                                 "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
@@ -43,8 +67,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "\n"
                                 "private:\n"
                                 "	bool mInitialized;\n"
-                                "};\n\n"
-                                "// Q_EXPORT_PLUGIN(%PluginName) ###FIXME\n\n";
+                                "};\n\n";
 
 static KCmdLineOptions options[] =
     {
@@ -56,7 +79,9 @@ static KCmdLineOptions options[] =
         KCmdLineLastOption
     };
 
-static QString buildWidgetDef( const QString &name, KConfig &input, const QString &group );
+static QString denamespace ( const QString &str );
+static QString buildCollClass( KConfig &input, const QStringList& classes );
+static QString buildWidgetClass( const QString &name, KConfig &input, const QString &group );
 static QString buildWidgetInclude( const QString &name, KConfig &input );
 static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath );
 
@@ -89,6 +114,9 @@ int main( int argc, char **argv ) {
         if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );
             buildFile( ts, group, fileName , pluginName, iconPath );
+            QString mocFile = output.name();
+            mocFile.replace(".cpp", ".moc");
+            ts << QString( "#include <%1>\n" ).arg(mocFile) << endl;
         }
         output.close();
     } else {
@@ -121,14 +149,39 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
 
     // Autogenerate widget defs here
     foreach ( QString myClass, classes )
-        ts << buildWidgetDef( myClass, input, group ) << endl;
+        ts << buildWidgetClass( myClass, input, group ) << endl;
+
+    ts << buildCollClass( input, classes );
+
 }
 
-QString buildWidgetDef( const QString &name, KConfig &input, const QString &group ) {
+QString denamespace ( const QString &str ) {
+    QString denamespaced = str;
+    denamespaced.remove("::");
+    return denamespaced;
+}
+
+QString buildCollClass( KConfig &input, const QStringList& classes ) {
+    input.setGroup( "Global" );
+    QMap<QString, QString> defMap;
+    defMap.insert( "CollName", input.readEntry( "PluginName" ) );
+    QString genCode;
+
+    foreach ( QString myClass, classes )
+    {
+      genCode += QString("\t\tm_plugins.append( new %1(this) );\n").arg(denamespace( myClass ) +"Plugin");
+    }
+
+    defMap.insert( "CollectionAdd", genCode  );
+
+    QString str = KMacroExpander::expandMacros(collClassDef, defMap);
+    str += KMacroExpander::expandMacros(collClassImpl, defMap);
+    return str;
+}
+
+QString buildWidgetClass( const QString &name, KConfig &input, const QString &group ) {
     input.setGroup( name );
     QMap<QString, QString> defMap;
-    QString denamepspaced = name;
-    denamepspaced.remove("::");
     
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
     defMap.insert( "IconSet", input.readEntry( "IconSet", name.lower() + ".png" ).replace( ":", "_" ) );
@@ -140,7 +193,7 @@ QString buildWidgetDef( const QString &name, KConfig &input, const QString &grou
     defMap.insert( "IsForm", input.readEntry( "IsForm", "false" ) );
     defMap.insert( "IconName", input.readEntry( "IconName" ) );
     defMap.insert( "Class", name );
-    defMap.insert( "PluginName", denamepspaced + QLatin1String( "Plugin" ) );
+    defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
     
     // FIXME: ### make this more useful, i.e. outsource to separate file
     defMap.insert( "DomXml", input.readEntry( "DomXML" ) );
