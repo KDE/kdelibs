@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <QByteArray>
 
 /* _PATH_KMEM should be defined in <paths.h> */
 #ifndef _PATH_KMEM
@@ -208,8 +209,7 @@ setproctitle(const char *fmt, ...)
 
 	/* print the argument string */
 	va_start(ap, fmt);
-	extern int qvsnprintf(char*, unsigned int, char const*, char*);
-	(void) qvsnprintf(p, SPACELEFT(buf, p), fmt, ap);
+	qvsnprintf(p, SPACELEFT(buf, p), fmt, ap);
 	va_end(ap);
 
 	i = strlen(buf);
@@ -285,8 +285,7 @@ kdeinit_setproctitle(const char *fmt, ...)
 	va_list ap;
 	/* print the argument string */
 	va_start(ap, fmt);
-	extern int qvsnprintf(char*, unsigned int, char const*, char*);
-	(void) qvsnprintf(buf, SPT_BUFSIZE, fmt, ap);
+	qvsnprintf(buf, SPT_BUFSIZE, fmt, ap);
 	va_end(ap);
 
 	setproctitle("%s", buf);

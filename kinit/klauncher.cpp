@@ -199,10 +199,6 @@ KLauncher::KLauncher(int _kdeinitSocket)
    connect(&mPoolSocket, SIGNAL(readyAccept()),
            SLOT(acceptSlave()));
 
-   mPoolSocket = new KServerSocket(QFile::encodeName(mPoolSocketName));
-   connect(mPoolSocket, SIGNAL(accepted( KSocket *)),
-           SLOT(acceptSlave(KSocket *)));
-
    connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
