@@ -12,6 +12,7 @@ Group=Display (KDE)
 ToolTip=Character Selection Widget (KDE)
 WhatsThis=A widget that allows selection a character out ot a table
 Group=Graphics (KDE)
+ConstructorArgs=(parent, "KCharSelect", QFont().family(), QChar('X'), 1)
 
 [KColorButton]
 ToolTip=Color Chooser Button (KDE)
@@ -38,7 +39,7 @@ Group=Input (KDE)
 [KDatePicker]
 ToolTip=A date selection widget (KDE)
 WhatsThis=Provides a widget for calendar date input
-ConstructorArgs=(parent, QDate::currentDate(), name)
+ConstructorArgs=(parent, QDate::currentDate())
 Group=Input (KDE)
 
 [KDialog]
@@ -111,7 +112,7 @@ Group=Input (KDE)
 [KListViewSearchLine]
 ToolTip=ListView Search Line (KDE)
 Group=Input (KDE)
-ConstructorArgs=(parent, 0, name)
+ConstructorArgs=(parent, 0, 0)
 
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
@@ -163,7 +164,7 @@ Group=Display (KDE)
 [KSqueezedTextLabel]
 ToolTip=A QLabel that squeezes its text (KDE)
 WhatsThis=If the text is too long to fit into the label it is divided into remaining left and right parts which are separated by three dots
-ConstructorArgs=("KSqueezedTextLabel", parent, name)
+ConstructorArgs=("KSqueezedTextLabel", parent)
 Group=Display (KDE)
 
 [KTextBrowser]
@@ -178,7 +179,7 @@ Group=Input (KDE)
 
 [KURLLabel]
 ToolTip=URL Label (KDE)
-ConstructorArgs=("KURLLabel", QString::null, parent, name)
+ConstructorArgs=("KURLLabel", QString::null, parent)
 Group=Display (KDE)
 
 [KURLComboRequester]
@@ -223,7 +224,7 @@ Group=Input (KDE)
 [KDateTable]
 IncludeFile=kdatetbl.h
 Group=Input (KDE)
-ConstructorArgs=(parent, QDate::currentDate(), name)
+ConstructorArgs=(parent, QDate::currentDate())
 
 [KLanguageButton]
 IncludeFile=klanguagebutton.h
@@ -245,7 +246,7 @@ Group=Views (KDE)
 [KWritePermsIcon]
 IncludeFile=kauthicon.h
 ToolTip=Auth icon for write permission display.
-ConstructorArgs=("", parent, name)
+ConstructorArgs=("", parent)
 Group=Display (KDE)
 
 [KRootPermsIcon]
@@ -269,19 +270,19 @@ ConstructorArgs=(parent, 210, 16)
 IncludeFile=kabc/ldapconfigwidget.h
 ToolTip=A widget which allows the user to set up LDAP connection parameters
 Group=Input (KDE)
-ConstructorArgs=(KABC::LdapConfigWidget::W_ALL, parent, name)
+ConstructorArgs=(KABC::LdapConfigWidget::W_ALL, parent)
 
 [KArrowButton]
 IncludeFile=karrowbutton.h
 ToolTip=Draws a button which shows an arrow pointing into a certain direction.
 Group=Buttons (KDE)
-ConstructorArgs=(parent,Qt::UpArrow,name)
+ConstructorArgs=(parent,Qt::UpArrow)
 
 [KAnimWidget]
 IncludeFile=kanimwidget.h
 ToolTip=This is a widget used to display animation using multiple individual pixmaps.
 Group=Display (KDE)
-ConstructorArgs=("kde",0,parent,name)
+ConstructorArgs=("kde",0,parent)
 
 [KValueSelector]
 IncludeFile=kcolordialog.h
