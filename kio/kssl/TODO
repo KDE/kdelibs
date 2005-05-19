@@ -5,8 +5,6 @@
   certificates (self signed) for users.
   This should be a separate app I guess, and can include a CA signer even.
 
-- Document libkssl interface: ksslcertificatecache.h ksslcertificatehome.h
-
 - KDE4 - fix constness and reference arguments
 
 - CRL support (not much left to do?)
@@ -17,5 +15,11 @@
 
 - <keygen> is not working.
 
-- Namespace it all to KDESSL:: in KDE4
+- Namespace it all to KIO::SSL:: in KDE4
+
+- Remove SSLv2
+
+- Fix ksslcalist and any code that uses subject/issuer name as provided by
+  openssl since this is broken by design.  Use MD5 sum for indexing the database
+  instead
 
