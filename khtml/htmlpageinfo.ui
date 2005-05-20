@@ -4,7 +4,7 @@
 <author>George Staikos &lt;staikos@kde.org&gt;</author>
 <widget class="QDialog">
     <property name="name">
-        <cstring>HTMLPageInfo</cstring>
+        <cstring>KHTMLInfoDlg</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -276,7 +276,7 @@
     <connection>
         <sender>_close</sender>
         <signal>clicked()</signal>
-        <receiver>HTMLPageInfo</receiver>
+        <receiver>KHTMLInfoDlg</receiver>
         <slot>close()</slot>
     </connection>
 </connections>
