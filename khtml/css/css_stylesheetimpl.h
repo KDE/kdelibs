@@ -1,7 +1,8 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2004 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,6 +40,7 @@ namespace DOM {
 
 class StyleSheet;
 class CSSStyleSheet;
+class CSSParser;
 class MediaListImpl;
 class CSSRuleImpl;
 class CSSRuleList;
@@ -87,6 +89,8 @@ public:
     CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig);
     CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig);
 
+    ~CSSStyleSheetImpl() { delete m_namespaces; }
+
     virtual bool isCSSStyleSheet() const { return true; }
 
     virtual DOM::DOMString type() const { return "text/css"; }
@@ -95,6 +99,9 @@ public:
     CSSRuleList cssRules();
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index, int &exceptioncode );
     void deleteRule ( unsigned long index, int &exceptioncode );
+
+    void addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri);
+    void determineNamespace(Q_UINT32& id, const DOM::DOMString& prefix);
 
     virtual bool parseString( const DOMString &string, bool strict = true );
 
@@ -112,6 +119,7 @@ public:
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
+    CSSNamespace* m_namespaces;
 };
 
 // ----------------------------------------------------------------------------

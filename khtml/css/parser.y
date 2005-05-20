@@ -206,11 +206,12 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <rule> invalid_at
 %type <rule> rule
 
+%type <string> namespace_selector
+
 %type <string> string_or_uri
 %type <string> ident_or_string
 %type <string> medium
 %type <string> hexcolor
-%type <string> ns_prefix
 %type <string> maybe_ns_prefix
 
 %type <mediaList> media_list
@@ -245,11 +246,8 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <value> function
 
 %type <element> element_name
-%type <element> ns_element
-%type <ns> ns_selector
 
 %type <attribute> attrib_id
-%type <attribute> ns_attrib_id
 
 %%
 
@@ -356,17 +354,22 @@ maybe_namespace
   | namespace maybe_sgml
 ;
 
-namespace
-  : NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';'
-  ;
-
-ns_prefix
-  : IDENT
-  ;
+namespace:
+NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';' {
+#ifdef CSS_DEBUG
+    kdDebug( 6080 ) << "@namespace: " << qString($4) << endl;
+#endif
+      CSSParser *p = static_cast<CSSParser *>(parser);
+    if (p->styleElement && p->styleElement->isCSSStyleSheet())
+        static_cast<CSSStyleSheetImpl*>(p->styleElement)->addNamespace(p, domString($3), domString($4));
+ }
+| NAMESPACE_SYM error invalid_block
+| NAMESPACE_SYM error ';'
+    ;
 
 maybe_ns_prefix:
-    /* empty */ { $$.string = 0; $$.length = 0; }
-  | ns_prefix maybe_space
+/* empty */ { $$.string = 0; }
+| IDENT S { $$ = $1; }
   ;
 
 rule_list:
@@ -582,12 +585,18 @@ selector:
     }
     ;
 
+namespace_selector:
+    /* empty */ '|' { $$.string = 0; $$.length = 0; }
+    | '*' '|' { static unsigned short star = '*'; $$.string = &star; $$.length = 1; }
+    | IDENT '|' { $$ = $1; }
+;
+
 simple_selector:
-    ns_element maybe_space {
+    element_name maybe_space {
 	$$ = new CSSSelector();
 	$$->tag = $1;
     }
-    | ns_element specifier_list maybe_space {
+    | element_name specifier_list maybe_space {
 	$$ = $2;
         if ( $$ )
 	    $$->tag = $1;
@@ -595,26 +604,34 @@ simple_selector:
     | specifier_list maybe_space {
 	$$ = $1;
         if ( $$ )
-	    $$->tag = 0xffffffff;
+            $$->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
+    }
+    | namespace_selector element_name maybe_space {
+        $$ = new CSSSelector();
+        $$->tag = $2;
+	CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tag, domString($1));
+    }
+    | namespace_selector element_name specifier_list maybe_space {
+        $$ = $3;
+        if ($$) {
+            $$->tag = $2;
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tag, domString($1));
+        }
+    }
+    | namespace_selector specifier_list maybe_space {
+        $$ = $2;
+        if ($$) {
+            $$->tag = makeId(anyNamespace, anyLocalName);
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tag, domString($1));
+        }
     }
   ;
-
-ns_element:
-    ns_selector element_name { $$ = ($1<<16) | $2; }
-  | element_name {
-        /* according to the specs this one matches all namespaces if no
-	   default namespace has been specified otherwise the default namespace */
-	CSSParser *p = static_cast<CSSParser *>(parser);
-	$$ = (p->defaultNamespace<<16) | $1;
-    }
-;
-
-ns_selector:
-    '|' { $$ = 0; }
-  | IDENT '|' { $$ = 1; /* #### insert correct namespace id here */ }
-  | '*' '|' { $$ = 0xffff; }
-;
-
 
 element_name:
     IDENT {
@@ -625,19 +642,17 @@ element_name:
 	    if (doc->isHTMLDocument())
 		tag = tag.lower();
 	    const DOMString dtag(tag);
-#ifdef APPLE_CHANGES
-            $$ = doc->tagId(0, dtag.implementation(), false);
-#else
-	    $$ = doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true);
-#endif
+            $$ = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    $$ = khtml::getTagID(tag.lower().ascii(), tag.length());
+	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.lower().ascii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
 	}
     }
-  | '*' { $$ = 0xffff; }
+    | '*' {
+	$$ = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
+    }
   ;
 
 specifier_list:
@@ -682,14 +697,6 @@ class:
     }
   ;
 
-ns_attrib_id:
-    ns_selector attrib_id { $$ = ($1<<16) | $2; }
-  | attrib_id {
-	/* opposed to elements, these only match for non namespaced attributes */
-	$$ = $1;
-    }
-;
-
 attrib_id:
     IDENT maybe_space {
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -715,17 +722,34 @@ attrib_id:
     ;
 
 attrib:
-    '[' maybe_space ns_attrib_id ']' {
+    '[' maybe_space attrib_id ']' {
 	$$ = new CSSSelector();
 	$$->attr = $3;
 	$$->match = CSSSelector::Set;
     }
-    | '[' maybe_space ns_attrib_id match maybe_space ident_or_string maybe_space ']' {
+    | '[' maybe_space attrib_id match maybe_space ident_or_string maybe_space ']' {
 	$$ = new CSSSelector();
 	$$->attr = $3;
 	$$->match = $4;
 	$$->value = domString($6);
     }
+    | '[' maybe_space namespace_selector '|' attrib_id ']' {
+        $$ = new CSSSelector();
+        $$->attr = $5;
+        $$->match = CSSSelector::Set;
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attr, domString($3));
+    }
+    | '[' maybe_space namespace_selector '|' attrib_id match maybe_space ident_or_string maybe_space ']' {
+        $$ = new CSSSelector();
+        $$->attr = $5;
+        $$->match = (CSSSelector::Match)$6;
+        $$->value = domString($8);
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attr, domString($3));
+   }
   ;
 
 match:

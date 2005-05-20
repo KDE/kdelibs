@@ -1,3 +1,14 @@
+2005-05-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement/fix CSS namespace selector and other XHTML fixes.
+
+        * css/css_base.h: Merge CSSNamespace from WebCore
+        * css/css_stylesheetimpl.{h,cpp}: Port determineNamespace and addNamespace from WC
+        * css/parser.y: Parse namespaces better
+        * xml/dom_docimpl.cpp: Add noNamespace to namespace functions
+        * xml/dom_nodeimpl.h: Add constants for any, no and xhtml namespaces
+        * xml/xml_tokenizer.cpp: Parse white space.
+
 2005-05-18  Harri Porten  <porten@kde.org>
 
 	* xml/dom2_eventsimpl.cpp: recognize "dblclick" type in
@@ -9,7 +20,7 @@
 
 	* ecma/kjs_dom.cpp: reverted "null" change from previous day
 	until the compatibility to other browsers is investigated.
-	
+
 2005-05-15  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_dom.cpp: return "null" from getAttribute() and
@@ -20,7 +31,7 @@
 
 2005-05-14  Ivor Hewitt <ivor@ivor.org>
         * khtml_settings.cc: Support full wildcard expressions in AdblocK
-        
+
 2005-05-12  Luciano Montanaro <mikelima@cirulla.net>
 	* html/html_formimpl.cpp: Make a return keypress activate form
 	buttons. Matches Mozilla.

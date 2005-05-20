@@ -73,6 +73,17 @@ private:
 #define NodeImpl_IdNSMask    0xffff0000
 #define NodeImpl_IdLocalMask 0x0000ffff
 
+const Q_UINT16 noNamespace = 0;
+const Q_UINT16 anyNamespace = 0xffff;
+const Q_UINT16 xhtmlNamespace = 1;
+const Q_UINT16 anyLocalName = 0xffff;
+
+inline Q_UINT16 localNamePart(Q_UINT32 id) { return id & NodeImpl_IdLocalMask; }
+inline Q_UINT16 namespacePart(Q_UINT32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }
+inline Q_UINT32 makeId(Q_UINT16 n, Q_UINT16 l) { return (n << 16) | l; }
+
+const Q_UINT32 anyQName = makeId(anyNamespace, anyLocalName);
+
 class NodeImpl : public khtml::TreeShared<NodeImpl>
 {
     friend class DocumentImpl;
@@ -324,7 +335,7 @@ public:
     virtual void close();
 
     void closeRenderer();
-    
+
     void createRendererIfNeeded();
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
     virtual bool rendererIsNeeded(khtml::RenderStyle *);
@@ -398,7 +409,7 @@ public:
      * @return An html formatted string for this node and its children between the selectionStart and selectionEnd.
      */
     virtual DOMString selectionToString(NodeImpl * /*selectionStart*/, NodeImpl * /*selectionEnd*/, int /*startOffset*/, int /*endOffset*/, bool &/*found*/) const { return toString(); }
-    
+
 private: // members
     DocumentPtr *document;
     NodeImpl *m_previous;
