@@ -80,7 +80,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
     for(; it!=end; ++it)
     {
-        KURL new_url = m_processedURL;
+        KURL new_url = m_requestedURL;
 
         switch( (*it).m_uds )
         {
