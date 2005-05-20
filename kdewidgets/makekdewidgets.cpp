@@ -39,6 +39,7 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
 static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
                                 "	: QObject(parent)"
                                 "{\n"
+                                "	(void) new KInstance(\"makekdewidgets\");\n"
                                 "%CollectionAdd\n"
                                 "}\n\n";
 
@@ -139,7 +140,7 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     classes.remove( classes.find( "Global" ) );
 
     foreach ( QString myInclude, classes )
-      includes += buildWidgetInclude( myInclude, input ); 
+      includes += buildWidgetInclude( myInclude, input );
 
     foreach ( QString myInclude, includes)
         ts << "#include <" << myInclude << ">" << endl;
@@ -181,7 +182,7 @@ QString buildCollClass( KConfig &input, const QStringList& classes ) {
 QString buildWidgetClass( const QString &name, KConfig &input, const QString &group ) {
     input.setGroup( name );
     QMap<QString, QString> defMap;
-    
+
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
     defMap.insert( "IconSet", input.readEntry( "IconSet", name.lower() + ".png" ).replace( ":", "_" ) );
     defMap.insert( "Pixmap", name.lower().replace( ":", "_" ) + "_xpm" );
@@ -189,14 +190,14 @@ QString buildWidgetClass( const QString &name, KConfig &input, const QString &gr
     defMap.insert( "ToolTip", input.readEntry( "ToolTip", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "WhatsThis", input.readEntry( "WhatsThis", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "IsContainer", input.readEntry( "IsContainer", "false" ) );
-    defMap.insert( "IconName", input.readEntry( "IconName", QString(":pics/%1.png").arg( denamespace( name ).lower() ) ) );
+    defMap.insert( "IconName", input.readEntry( "IconName", QString(":/pics/%1.png").arg( denamespace( name ).lower() ) ) );
     defMap.insert( "Class", name );
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
-    
+
     // FIXME: ### make this more useful, i.e. outsource to separate file
     defMap.insert( "DomXml", input.readEntry( "DomXML" ) );
     defMap.insert( "CodeTemplate", input.readEntry( "CodeTemplate" ) );
-    defMap.insert( "CreateWidget", input.readEntry( "CreateWidget", 
+    defMap.insert( "CreateWidget", input.readEntry( "CreateWidget",
       QString( "\n\t\treturn new %1%2;" )
          .arg( input.readEntry( "ImplClass", name ) )
          .arg( input.readEntry( "ConstructorArgs", "( parent )" ) ) ) );

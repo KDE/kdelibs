@@ -26,7 +26,7 @@ INCLUDES = -I$(top_srcdir)/kfile $(all_includes)
 bin_PROGRAMS = makekdewidgets
 makekdewidgets_SOURCES = makekdewidgets.cpp
 makekdewidgets_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-makekdewidgets_LDADD = $(LIB_QT) ../kdecore/libkdecore.la 
+makekdewidgets_LDADD = $(LIB_QT) ../kdecore/libkdecore.la
 
 kde_widget_LTLIBRARIES = kdewidgets.la
 kdewidgets_la_LDFLAGS = $(KDE_PLUGIN) -module $(all_libraries)
@@ -38,9 +38,9 @@ kdewidgets.cpp: $(srcdir)/kde.widgets makekdewidgets
 
 kdewidgets.lo: kdewidgets.moc
 kdewidgets.moc: kdewidgets.cpp
-	$(MOC) -o kdewidgets.moc kdewidgets.cpp 
+	$(MOC) -o kdewidgets.moc kdewidgets.cpp
 
-qrc_kdewidgets.cpp:
+qrc_kdewidgets.cpp: $(srcdir)/kdewidgets.qrc
 	$(QTDIR)/bin/rcc -o qrc_kdewidgets.cpp $(srcdir)/kdewidgets.qrc
 
 CLEANFILES = kdewidgets.cpp kdewidgets.moc qrc_kdewidgets.cpp
