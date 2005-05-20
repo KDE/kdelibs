@@ -480,6 +480,8 @@ public:
 /**
  * An entry is the list of atoms containing all the informations for a file or URL
  */
+////// KDE4 TODO: m_uds is the key, QVariant would do the job as the value (to allow QDateTime etc.).
+//////  -> remove UDSAtom, turn UDSEntry into QHash<uint, QVariant>, and UDSEntryList can be a QList.
 typedef Q3ValueList<UDSAtom> UDSEntry;
 typedef Q3ValueList<UDSEntry> UDSEntryList;
 typedef Q3ValueListIterator<UDSEntry> UDSEntryListIterator;
