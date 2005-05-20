@@ -36,7 +36,7 @@ kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp qrc_kdewidgets.cpp
 kdewidgets.cpp: $(srcdir)/kde.widgets makekdewidgets
 	./makekdewidgets -o kdewidgets.cpp $(srcdir)/kde.widgets
 
-kdewidgets.lo: kdewidgets.mo
+kdewidgets.lo: kdewidgets.moc
 kdewidgets.moc: kdewidgets.cpp
 	$(MOC) -o kdewidgets.moc kdewidgets.cpp 
 
