@@ -317,7 +317,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * slot that is called when an answer is received.
    *
    * The slot should have the following signature:
-   * callBackSlot(int callId, const QByteArray& replyType,
+   * callBackSlot(int callId, const DCOPCString& replyType,
    *              const QByteArray &replyData);
    *
    *
@@ -784,7 +784,7 @@ signals:
    * @see callAsync()
    * @since 3.2
    */
-  void callBack(int, const QByteArray&, const QByteArray &);
+  void callBack(int, const DCOPCString&, const QByteArray &);
 
 public slots:
 
