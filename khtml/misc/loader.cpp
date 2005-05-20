@@ -604,7 +604,10 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
 QPixmap CachedImage::pixmap( ) const
 {
-    if(m_hadError)
+#ifdef __GNUC__
+   #warning "Stub!"
+#endif
+    //if(m_hadError)
         return *Cache::brokenPixmap;
 
     if(m_wasBlocked)
@@ -796,6 +799,8 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
+    return;
+
 #ifdef LOADER_DEBUG
     kdDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
