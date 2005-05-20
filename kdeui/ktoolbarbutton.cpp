@@ -188,7 +188,7 @@ void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
   opt->text      = textLabel();
   opt->features  = QStyleOptionToolButton::None; //We don't Qt know about the menu, since we don't want the split-button!
 	//### delay stuff?
-  opt->subControls       = QStyle::SC_All;
+  opt->subControls       = QStyle::SC_ToolButton;
   opt->activeSubControls = 0; //### FIXME: !!
 }
 
