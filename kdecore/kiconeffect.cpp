@@ -15,6 +15,9 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <qapplication.h>
+#include <qpaintengine.h>
+#include <qdesktopwidget.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qbitmap.h>
@@ -33,17 +36,6 @@
 #include "kiconeffect.h"
 
 
-#ifdef __GNUC__
-    #warning "qt_use_xrender && qt_use_xft replacements for qt 4 missing - cullmann"
-#endif
-
-#if defined(Q_WS_WIN) || defined(Q_WS_MACX) || !defined(HACK_FOR_QT_4)
-static bool qt_use_xrender=true;
-static bool qt_has_xft=true;
-#else
-extern bool qt_use_xrender;
-extern bool qt_has_xft;
-#endif
 class KIconEffectPrivate
 {
 public:
@@ -478,7 +470,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	int width  = img.width();
 	int height = img.height();
 	
-	if (qt_use_xrender && qt_has_xft )
+	if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
 	  for (y=0; y<height; y++)
 	  {
 #ifdef WORDS_BIGENDIAN
@@ -544,7 +536,7 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    if ( qt_use_xrender && qt_has_xft )
+    if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
     {
 	QImage img=pix.convertToImage();
 	semiTransparent(img);
