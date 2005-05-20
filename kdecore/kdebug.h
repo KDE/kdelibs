@@ -216,7 +216,7 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream &operator<<(const QString& string) {
 	if (!print) return *this;
 	output += string;
-	if (output.at(output.length() -1 ) == '\n')
+	if (output.length() && output.at(output.length() -1 ) == '\n')
 	    flush();
 	return *this;
     }
@@ -228,7 +228,7 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream &operator<<(const char *string) {
 	if (!print) return *this;
 	output += QString::fromUtf8(string);
-	if (output.at(output.length() - 1) == '\n')
+	if (output.length() && output.at(output.length() - 1) == '\n')
 	    flush();
 	return *this;
     }
