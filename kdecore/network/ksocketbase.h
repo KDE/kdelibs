@@ -101,6 +101,8 @@ public:
    *    has gone idle for far too long.
    *  - Broadcast: whether this socket is allowed to send broadcast packets
    *    and will receive packets sent to broadcast.
+   *  - NoDelay: disable the Nagle algorithm for socket types that support
+   *    it.
    */
   enum SocketOptions
     {
@@ -108,7 +110,8 @@ public:
       AddressReuseable = 0x02,
       IPv6Only = 0x04,
       Keepalive = 0x08,
-      Broadcast = 0x10
+      Broadcast = 0x10,
+      NoDelay = 0x20
     };
 
   /**
@@ -296,6 +299,28 @@ public:
    *          false if it can't.
    */
   bool broadcast() const;
+
+  /**
+   * Sets this socket's NoDelay flag.
+   * 
+   * Stream-oriented protocols, like TCP, have an internal algorithm 
+   * (called Nagle's algorithm) that collects data in a buffer so that
+   * the transmission doesn't occur after every single write operation. 
+   * The side-effect is that the transmission of short messages is
+   * delayed.
+   *
+   * Setting NoDelay to 'true' will disable this algorithm.
+   *
+   * @returns true if setting this flag was successful.
+   */
+  virtual bool setNoDelay(bool enable);
+
+  /**
+   * Retrieves this socket's NoDelay flag.
+   *
+   * @returns true if this socket's Nagle algorithm is disabled.
+   */
+  bool noDelay() const;
 
   /**
    * Retrieves the socket implementation used on this socket.

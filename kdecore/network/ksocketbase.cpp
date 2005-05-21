@@ -113,6 +113,17 @@ bool KSocketBase::broadcast() const
   return socketOptions() & Broadcast;
 }
 
+bool KSocketBase::setNoDelay(bool enable)
+{
+  return setSocketOptions((socketOptions() & ~NoDelay) | (enable ? NoDelay : 0));
+}
+
+bool KSocketBase::noDelay() const
+{
+  return socketOptions() & NoDelay;
+}
+
+
 KSocketDevice* KSocketBase::socketDevice() const
 {
   if (d->device)
