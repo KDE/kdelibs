@@ -406,7 +406,13 @@ public:
     /**
      * @return An iterator over the list of all toolbars for this window.
      */
-	QList<KToolBar*>::iterator toolBarIterator();
+	QList<KToolBar*>::iterator toolBarIterator(); //### This seems kind of useless - remove?
+	
+	
+     QList<KToolBar*> toolBars();
+	
+	
+	
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically

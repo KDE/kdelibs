@@ -1152,6 +1152,13 @@ QList<KToolBar*>::iterator KMainWindow::toolBarIterator()
     return toolbarList.begin();
 }
 
+QList<KToolBar*> KMainWindow::toolBars()
+{
+    (void)toolBarIterator();
+    return toolbarList;
+}
+
+
 KAccel * KMainWindow::accel()
 {
     if ( !d->kaccel )
