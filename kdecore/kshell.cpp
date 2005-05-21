@@ -361,7 +361,7 @@ QString KShell::joinArgsDQ( const QStringList &args )
 
 QString KShell::tildeExpand( const QString &fname )
 {
-    if (fname[0] == '~') {
+    if (fname.length() && fname[0] == '~') {
         int pos = fname.find( '/' );
         if (pos < 0)
             return homeDir( QConstString( fname.unicode() + 1, fname.length() - 1 ).string() );
