@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>	// WARNING: verify if this is portable
 #include <unistd.h>
 
 #ifdef HAVE_POLL
@@ -65,6 +66,7 @@ class KNetwork::KSocketDevicePrivate
 public:
   mutable QSocketNotifier *input, *output, *exception;
   int af;
+  int proto;
 
   inline KSocketDevicePrivate()
   {
@@ -173,6 +175,21 @@ bool KSocketDevice::setSocketOptions(int opts)
        }
    }
 
+  if ((d->proto == IPPROTO_TCP || d->proto == 0) &&
+      (d->af == AF_INET
+#if defined(AF_INET6)
+       || d->af == AF_INET6
+#endif
+       ))
+   {
+     int on = opts & NoDelay ? 1 : 0;
+     if (setsockopt(m_sockfd, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on)) == -1)
+       {
+	 setError(UnknownError);
+	 return false;		// error
+       }
+   }
+
   return true;			// all went well
 }
 
@@ -215,6 +232,7 @@ bool KSocketDevice::create(int family, int type, int protocol)
     }
 
   d->af = family;
+  d->proto = protocol;
   setSocketOptions(socketOptions());
   return true;		// successfully created
 }
@@ -648,6 +666,8 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
     *output = true;
   if (exception && fds.revents & POLLPRI)
     *exception = true;
+  if (timedout)
+    *timedout = false;
 
   return true;
 #else
