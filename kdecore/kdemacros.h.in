@@ -53,7 +53,7 @@
  * cope with symbol visibility.
  */
 #define KDE_Q_EXPORT_PLUGIN(PLUGIN) \
-  Q_EXTERN_C KDE_EXPORT const char* Q_STANDARD_CALL qt_plugin_query_verification_data(); \
+  Q_EXTERN_C KDE_EXPORT const char* qt_plugin_query_verification_data(); \
   Q_EXTERN_C KDE_EXPORT QObject* qt_plugin_instance(); \
   Q_EXPORT_PLUGIN(PLUGIN)
 
