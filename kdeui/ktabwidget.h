@@ -273,6 +273,9 @@ protected:
     virtual void wheelEvent( QWheelEvent *e );
 #endif
     virtual void resizeEvent( QResizeEvent * );
+    virtual void tabInserted( int );
+    virtual void tabRemoved ( int );
+
 
 protected slots:
     virtual void receivedDropEvent( int, QDropEvent * );

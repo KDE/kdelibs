@@ -433,11 +433,6 @@ void KTabWidget::moveTab( int from, int to )
 }
 
 void KTabWidget::removePage( QWidget * w ) {
-    if ( d->m_automaticResizeTabs ) {
-        int index = indexOf( w );
-        if ( index != -1 )
-            d->m_tabNames.remove( d->m_tabNames.at( index ) );
-    }
     QTabWidget::removePage( w );
     if ( d->m_automaticResizeTabs )
         resizeTabs();
@@ -522,5 +517,16 @@ void KTabWidget::resizeEvent( QResizeEvent *e )
     QTabWidget::resizeEvent( e );
     resizeTabs();
 }
+
+void KTabWidget::tabInserted( int idx )
+{
+   d->m_tabNames.insert( idx, tabBar()->tabText( idx ) );
+}
+
+void KTabWidget::tabRemoved( int idx )
+{
+   d->m_tabNames.removeAt( idx );
+}
+
 
 #include "ktabwidget.moc"
