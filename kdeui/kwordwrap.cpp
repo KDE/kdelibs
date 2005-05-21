@@ -19,11 +19,17 @@
 #include "kwordwrap.h"
 #include <kdebug.h>
 #include <kstringhandler.h>
+
 #include <qpainter.h>
+#include <qvector.h>
 
 class KWordWrapPrivate {
 public:
   QRect m_constrainingRect;
+  QVector<int> m_breakPositions;
+  QVector<int> m_lineWidths;
+  QRect m_boundingRect;
+  QString m_text;
 };
 
 KWordWrap::KWordWrap(const QRect & r) {
@@ -40,9 +46,9 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     //kdDebug() << "KWordWrap::formatText " << str << " r=" << r.x() << "," << r.y() << " " << r.width() << "x" << r.height() << endl;
     int height = fm.height();
     if ( len == -1 )
-        kw->m_text = str;
+        kw->d->m_text = str;
     else
-        kw->m_text = str.left( len );
+        kw->d->m_text = str.left( len );
     if ( len == -1 )
         len = str.length();
     int lastBreak = -1;
@@ -58,22 +64,25 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
 
     for ( int i = 0 ; i < len; ++i )
     {
-        QChar c = str[i];
+        QChar c = str.at(i);
         int ww = fm.charWidth( str, i );
 
-        isParens = ( c == '(' || c == '[' || c == '{' );
+        isParens = ( c == QLatin1Char('(') || c == QLatin1Char('[')
+                     || c == QLatin1Char('{') );
         // isBreakable is true when we can break _after_ this character.
         isBreakable = ( c.isSpace() || c.isPunct() || c.isSymbol() ) & !isParens;
 
         // Special case for '(', '[' and '{': we want to break before them
         if ( !isBreakable && i < len-1 ) {
-            QChar nextc = str[i+1]; // look at next char
-            isBreakable = ( nextc == '(' || nextc == '[' || nextc == '{' );
+            QChar nextc = str.at(i + 1); // look at next char
+            isBreakable = ( nextc == QLatin1Char('(')
+                            || nextc == QLatin1Char('[')
+                            || nextc == QLatin1Char('{') );
         }
         // Special case for '/': after normal chars it's breakable (e.g. inside a path),
         // but after another breakable char it's not (e.g. "mounted at /foo")
         // Same thing after a parenthesis (e.g. "dfaure [/fool]")
-        if ( c == '/' && (wasBreakable || wasParens) )
+        if ( c == QLatin1Char('/') && (wasBreakable || wasParens) )
             isBreakable = false;
 
         /*kdDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
@@ -86,7 +95,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             breakAt = i;
         if ( i == len - 2 && x + ww + fm.charWidth( str, i+1 ) > w ) // don't leave the last char alone
             breakAt = lastBreak == -1 ? i - 1 : lastBreak;
-        if ( c == '\n' ) // Forced break here
+        if ( c == QLatin1Char('\n') ) // Forced break here
         {
             if ( breakAt == -1 && lastBreak != -1) // only break if not already breaking
             {
@@ -94,16 +103,16 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
                 lastBreak = -1;
             }
             // remove the line feed from the string
-            kw->m_text.remove(i, 1);
+            kw->d->m_text.remove(i, 1);
             len--;
         }
         if ( breakAt != -1 )
         {
             //kdDebug() << "KWordWrap::formatText breaking after " << breakAt << endl;
-            kw->m_breakPositions.append( breakAt );
+            kw->d->m_breakPositions.append( breakAt );
             int thisLineWidth = lastBreak == -1 ? x + ww : lineWidth;
-            kw->m_lineWidths.append( thisLineWidth );
-            textwidth = QMAX( textwidth, thisLineWidth );
+            kw->d->m_lineWidths.append( thisLineWidth );
+            textwidth = qMax( textwidth, thisLineWidth );
             x = 0;
             y += height;
             wasBreakable = true;
@@ -124,8 +133,8 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
         wasBreakable = isBreakable;
         wasParens = isParens;
     }
-    textwidth = QMAX( textwidth, x );
-    kw->m_lineWidths.append( x );
+    textwidth = qMax( textwidth, x );
+    kw->d->m_lineWidths.append( x );
     y += height;
     //kdDebug() << "KWordWrap::formatText boundingRect:" << r.x() << "," << r.y() << " " << textwidth << "x" << y << endl;
     if ( r.height() >= 0 && y > r.height() )
@@ -135,9 +144,9 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     {
         while ( realY > r.height() )
             realY -= height;
-        realY = QMAX( realY, 0 );
+        realY = qMax( realY, 0 );
     }
-    kw->m_boundingRect.setRect( 0, 0, textwidth, realY );
+    kw->d->m_boundingRect.setRect( 0, 0, textwidth, realY );
     return kw;
 }
 
@@ -150,25 +159,24 @@ QString KWordWrap::wrappedString() const
     // We use the calculated break positions to insert '\n' into the string
     QString ws;
     int start = 0;
-    Q3ValueList<int>::ConstIterator it = m_breakPositions.begin();
-    for ( ; it != m_breakPositions.end() ; ++it )
-    {
-        int end = (*it);
-        ws += m_text.mid( start, end - start + 1 ) + '\n';
+    for (int i = 0; i < d->m_breakPositions.count(); ++i) {
+        int end = d->m_breakPositions.at(i);
+        ws += d->m_text.mid( start, end - start + 1 );
+        ws += QLatin1Char('\n');
         start = end + 1;
     }
-    ws += m_text.mid( start );
+    ws += d->m_text.mid( start );
     return ws;
 }
 
 QString KWordWrap::truncatedString( bool dots ) const
 {
-    if ( m_breakPositions.isEmpty() )
-        return m_text;
+    if ( d->m_breakPositions.isEmpty() )
+        return d->m_text;
 
-    QString ts = m_text.left( m_breakPositions.first() + 1 );
+    QString ts = d->m_text.left( d->m_breakPositions.first() + 1 );
     if ( dots )
-        ts += "...";
+        ts += QLatin1String("...");
     return ts;
 }
 
@@ -198,7 +206,7 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
             p->drawText( x, y, t.left( tl - 3 ) );
             x += fm.width( t.left( tl - 3 ) );
         }
-        int n = QMIN( tl, 3);
+        int n = qMin( tl, 3);
         for (int i = 0; i < n; i++) {
             p->setPen( mixColors( 0.70 - i * 0.25, textColor, bgColor ) );
             QString s( t.at( tl - n + i ) );
@@ -225,45 +233,53 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
     QFontMetrics fm = painter->fontMetrics();
     int height = fm.height(); // line height
     int ascent = fm.ascent();
-    int maxwidth = m_boundingRect.width();
-    Q3ValueList<int>::ConstIterator it = m_breakPositions.begin();
-    Q3ValueList<int>::ConstIterator itw = m_lineWidths.begin();
-    for ( ; it != m_breakPositions.end() ; ++it, ++itw )
+    int maxwidth = d->m_boundingRect.width();
+    int i;
+    int lwidth = 0;
+    int end = 0;
+    for (i = 0; i < d->m_breakPositions.count() ; ++i )
     {
         // if this is the last line, leave the loop
         if ( (d->m_constrainingRect.height() >= 0) &&
 	     ((y + 2 * height) > d->m_constrainingRect.height()) )
 	    break;
-        int end = (*it);
+        end = d->m_breakPositions.at(i);
+        lwidth = d->m_lineWidths.at(i);
         int x = textX;
         if ( flags & Qt::AlignHCenter )
-            x += ( maxwidth - *itw ) / 2;
+            x += ( maxwidth - lwidth ) / 2;
         else if ( flags & Qt::AlignRight )
-            x += maxwidth - *itw;
-        painter->drawText( x, textY + y + ascent, m_text.mid( start, end - start + 1 ) );
+            x += maxwidth - lwidth;
+        painter->drawText( x, textY + y + ascent, d->m_text.mid( start, end - start + 1 ) );
         y += height;
         start = end + 1;
     }
     // Draw the last line
     int x = textX;
     if ( flags & Qt::AlignHCenter )
-        x += ( maxwidth - *itw ) / 2;
+        x += ( maxwidth - lwidth ) / 2;
     else if ( flags & Qt::AlignRight )
-        x += maxwidth - *itw;
+        x += maxwidth - lwidth;
     if ( (d->m_constrainingRect.height() < 0) ||
          ((y + height) <= d->m_constrainingRect.height()) ) {
-	if ( it == m_breakPositions.end() )
-            painter->drawText( x, textY + y + ascent, m_text.mid( start ) );
+	if ( i == d->m_breakPositions.count() )
+            painter->drawText( x, textY + y + ascent, d->m_text.mid( start ) );
 	else if (flags & FadeOut)
 	    drawFadeoutText( painter, textX, textY + y + ascent,
 	                     d->m_constrainingRect.width(),
-			     m_text.mid( start ) );
+			     d->m_text.mid( start ) );
         else if (flags & Truncate)
             drawTruncateText( painter, textX, textY + y + ascent,
                               d->m_constrainingRect.width(),
-			      m_text.mid( start ) );
+			      d->m_text.mid( start ) );
 	else
             painter->drawText( x, textY + y + ascent,
-	                       m_text.mid( start, (*it) - start + 1 ) );
+	                       d->m_text.mid( start, end - start + 1 ) );
     }
 }
+
+QRect KWordWrap::boundingRect() const
+{
+    return d->m_boundingRect;
+}
+

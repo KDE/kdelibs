@@ -19,12 +19,13 @@
 #ifndef kwordwrap_h
 #define kwordwrap_h
 
-#include <qfontmetrics.h>
-#include <q3valuelist.h>
-#include <qrect.h>
-#include <qstring.h>
-
+#include <qnamespace.h>
 #include <kdelibs_export.h>
+
+class QFontMetrics;
+class QRect;
+class QString;
+class QPainter;
 
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)
@@ -74,7 +75,7 @@ public:
      *         the rectangle given to formatText. The height is the
      *         text block. X and Y are always 0.
      */
-    QRect boundingRect() const { return m_boundingRect; }
+    QRect boundingRect() const;
 
     /**
      * @return the original string, with '\n' inserted where
@@ -138,11 +139,6 @@ public:
 
 private:
     KWordWrap( const QRect & r );
-    Q3ValueList<int> m_breakPositions;
-    Q3ValueList<int> m_lineWidths;
-    QRect m_boundingRect;
-    QString m_text;
-private:
     class KWordWrapPrivate* d;
 };
 
