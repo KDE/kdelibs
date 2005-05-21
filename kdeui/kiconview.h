@@ -164,6 +164,7 @@ protected slots:
 
 protected:
   void emitExecute( QIconViewItem *item, const QPoint &pos );
+  void updateDragHoldItem( QDropEvent *e );
 
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void leaveEvent( QEvent *e );
@@ -171,6 +172,7 @@ protected:
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
   virtual void contentsDragEnterEvent( QDragEnterEvent *e );
+  virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
   virtual void contentsDragMoveEvent( QDragMoveEvent *e );
   virtual void contentsDropEvent( QDropEvent* e );
   virtual void wheelEvent( QWheelEvent *e );
