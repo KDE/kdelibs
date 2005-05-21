@@ -277,7 +277,8 @@ void KStreamSocket::connectionEvent()
 	    }
 
 	  // socket has connected
-	  continue;		// let the beginning of the loop handle success
+	  connectionSucceeded(r);
+	  return;
 	}
 
       // connection failed

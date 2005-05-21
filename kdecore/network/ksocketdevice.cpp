@@ -37,7 +37,6 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <kdebug.h>
 
 #ifdef HAVE_POLL
 # include <sys/poll.h>
@@ -58,7 +57,6 @@
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
 #include "ksockssocketdevice.h"
-#include "kclientsocketbase.h"
 
 using namespace KNetwork;
 
@@ -89,7 +87,6 @@ KSocketDevice::KSocketDevice(int fd, OpenMode mode)
 {
   if (mode)
     mode |= Unbuffered;
-  kdDebug() << "KSocketDevice::KSocketDevice\n";
   KActiveSocketBase::open(mode);
   setSocketDevice(this);
 }
@@ -273,16 +270,11 @@ bool KSocketDevice::listen(int backlog)
 
 bool KSocketDevice::connect(const KResolverEntry& address, OpenMode mode)
 {
-  kdDebug() << "KSocketDevice::connect " << state() << " " << KClientSocketBase::Connected << endl;
   resetError();
-
-  if (m_sockfd >= 0)
-	return true;
 
   if (m_sockfd == -1 && !create(address))
     return false;		// failed creating!
 
-  kdDebug() << "kde_connect " << m_sockfd << endl;
   if (kde_connect(m_sockfd, address.address(), address.length()) == -1)
     {
       if (errno == EISCONN)
@@ -305,7 +297,6 @@ bool KSocketDevice::connect(const KResolverEntry& address, OpenMode mode)
       return false;
     }
 
-  kdDebug() << "KSocketDevice::connect\n";
   KActiveSocketBase::open(Unbuffered | mode);
   return true;			// all is well
 }
