@@ -1,3 +1,8 @@
+2005-05-21  Harri Porten  <porten@kde.org>
+
+	* html/html_documentimpl.cpp: emit onload event even if the
+	document has no body element (bug #105798).
+
 2005-05-18  Harri Porten  <porten@kde.org>
 
 	* xml/dom2_eventsimpl.cpp: recognize "dblclick" type in
