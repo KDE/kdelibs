@@ -267,7 +267,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
     if (!isTipDialog)
     {
 	QLabel *l = new QLabel(hbox);
-	l->setPixmap(img);
+	l->setPixmap(QPixmap::fromImage(img));
 	l->setBackgroundColor(mBlendedColor);
 	l->setAlignment(Qt::AlignRight | Qt::AlignBottom);
 
