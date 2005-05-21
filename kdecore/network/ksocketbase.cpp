@@ -297,7 +297,7 @@ KActiveSocketBase::~KActiveSocketBase()
 bool KActiveSocketBase::open(OpenMode mode)
 {
   QIODevice::open(mode);
-  seek(0);			// clear unget buffers
+  QIODevice::seek(0);		// clear unget buffers
   return true;
 }
 
