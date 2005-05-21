@@ -490,27 +490,36 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
 
 void SlaveBase::processedSize( KIO::filesize_t _bytes )
 {
+    bool           emitSignal=false;
     struct timeval tv;
-    if ( gettimeofday( &tv, 0L ) == 0 ) {
-	time_t msecdiff = 2000;
-	if (d->last_tv.tv_sec) {
-	    // Compute difference, in ms
-	    msecdiff = 1000 * ( tv.tv_sec - d->last_tv.tv_sec );
-	    time_t usecdiff = tv.tv_usec - d->last_tv.tv_usec;
-	    if ( usecdiff < 0 ) {
-		msecdiff--;
-		msecdiff += 1000;
-	    }
-	    msecdiff += usecdiff / 1000;
-	}
-	if ( msecdiff >= 100 ) { // emit size 10 times a second
-	    KIO_DATA << KIO_FILESIZE_T(_bytes);
-	    slaveWriteError = false;
-	    m_pConnection->send( INF_PROCESSED_SIZE, data );
+    int            gettimeofday_res=gettimeofday( &tv, 0L );
+
+    if( _bytes == d->totalSize )
+        emitSignal=true;
+    else if ( gettimeofday_res == 0 ) {
+        time_t msecdiff = 2000;
+        if (d->last_tv.tv_sec) {
+            // Compute difference, in ms
+            msecdiff = 1000 * ( tv.tv_sec - d->last_tv.tv_sec );
+            time_t usecdiff = tv.tv_usec - d->last_tv.tv_usec;
+            if ( usecdiff < 0 ) {
+                msecdiff--;
+                msecdiff += 1000;
+            }
+            msecdiff += usecdiff / 1000;
+        }
+        emitSignal=msecdiff >= 100; // emit size 10 times a second
+    }
+
+    if( emitSignal ) {
+        KIO_DATA << KIO_FILESIZE_T(_bytes);
+        slaveWriteError = false;
+        m_pConnection->send( INF_PROCESSED_SIZE, data );
             if (slaveWriteError) exit();
-	    d->last_tv.tv_sec = tv.tv_sec;
-	    d->last_tv.tv_usec = tv.tv_usec;
-	}
+        if ( gettimeofday_res == 0 ) {
+            d->last_tv.tv_sec = tv.tv_sec;
+            d->last_tv.tv_usec = tv.tv_usec;
+        }
     }
 //    d->processed_size = _bytes;
 }

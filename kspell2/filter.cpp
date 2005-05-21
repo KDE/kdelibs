@@ -120,10 +120,12 @@ Word Filter::nextWord() const
         if ( currentChar.category() & QChar::Letter_Lowercase )
             allUppercase = false;
 
+	/* FIXME: this does not work for Hebrew for example
         //we consider run-together words as mixed-case words
         if ( !allUppercase &&
              currentChar.category() & QChar::Letter_Uppercase )
             runTogether = true;
+	*/
 
         foundWord += currentChar;
         ++m_currentPosition;

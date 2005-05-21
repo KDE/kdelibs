@@ -301,6 +301,24 @@ public:
     static bool stat(const KURL& url, KIO::UDSEntry & entry) KDE_DEPRECATED;
 
     /**
+     * Tries to map a local URL for the given URL.
+     *
+     * This is a convenience function for KIO::stat + parsing the
+     * resulting UDSEntry.
+     *
+     * @param url The URL we are testing.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.
+     * @return a local URL corresponding to the same ressource than the
+     *         original URL, or the original URL if no local URL can be mapped
+     * @since 3.5
+     */
+    static KURL mostLocalURL(const KURL& url, QWidget* window);
+
+    /**
      * Deletes a file or a directory in a synchronous way.
      *
      * This is a convenience function for KIO::del

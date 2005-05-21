@@ -206,6 +206,44 @@ bool NetAccess::stat( const KURL & url, KIO::UDSEntry & entry, QWidget* window )
   return ret;
 }
 
+KURL NetAccess::mostLocalURL(const KURL & url, QWidget* window)
+{
+  if ( url.isLocalFile() )
+  {
+    return url;
+  }
+
+  KIO::UDSEntry entry;
+  if (!stat(url, entry, window))
+  {
+    return url;
+  }
+
+  QString path;
+
+  // Extract the local path from the KIO::UDSEntry
+  KIO::UDSEntry::ConstIterator it = entry.begin();
+  const KIO::UDSEntry::ConstIterator end = entry.end();
+  for ( ; it != end; ++it )
+  {
+    if ( (*it).m_uds == KIO::UDS_LOCAL_PATH )
+    {
+      path = (*it).m_str;
+      break;
+    }
+  }
+
+  if ( !path.isEmpty() )
+  {
+    KURL new_url;
+    new_url.setPath(path);
+    return new_url;
+  }
+
+  return url;
+}
+
+
 bool NetAccess::del( const KURL & url )
 {
   return NetAccess::del( url, 0 );

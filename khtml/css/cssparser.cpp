@@ -100,8 +100,6 @@ CSSParser::CSSParser( bool strictParsing )
     numParsedProperties = 0;
     maxParsedProperties = 32;
 
-    defaultNamespace = 0xffff;
-
     data = 0;
     valueList = 0;
     rule = 0;
@@ -109,6 +107,9 @@ CSSParser::CSSParser( bool strictParsing )
     important = false;
     nonCSSHint = false;
     inParseShortHand = false;
+
+    defaultNamespace = anyNamespace;
+
     yy_start = 1;
 
 #if YYDEBUG > 0
@@ -155,6 +156,7 @@ void CSSParser::runParser(int length)
 void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
     styleElement = sheet;
+    defaultNamespace = anyNamespace; // Reset the default namespace.
 
     int length = string.length() + 3;
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
@@ -559,7 +561,8 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
      * correctly and allows optimization in khtml::applyRule(..)
      */
     case CSS_PROP_CAPTION_SIDE:         // top | bottom | left | right | inherit
-        if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT ||
+        // Left and right were deprecated in CSS 2.1 and never supported by KHTML
+        if ( /* id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || */
             id == CSS_VAL_TOP || id == CSS_VAL_BOTTOM)
             valid_primitive = true;
         break;
@@ -2167,6 +2170,7 @@ int DOM::CSSParser::lex( void *_yylval )
     case MEDIA_SYM:
     case FONT_FACE_SYM:
     case CHARSET_SYM:
+    case NAMESPACE_SYM:
 
     case IMPORTANT_SYM:
         break;

@@ -142,8 +142,9 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     if (currentNode()->nodeType() == Node::TEXT_NODE)
         exitText();
 
-    ElementImpl *newElement;
-    newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    ElementImpl *newElement = m_doc->document()->createElementNS(namespaceURI,qName);
+    if (!newElement)
+        return false;
 
     int i;
     for (i = 0; i < atts.length(); i++) {
@@ -250,22 +251,10 @@ bool XMLHandler::characters( const QString& ch )
     if (currentNode()->nodeType() == Node::TEXT_NODE ||
         currentNode()->nodeType() == Node::CDATA_SECTION_NODE ||
         enterText()) {
-        NodeImpl::Id parentId = currentNode()->parentNode() ? currentNode()->parentNode()->id() : 0;
-        if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
-            // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
-            // way of doing this?
-            int exceptioncode = 0;
-            static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
-            if (exceptioncode)
-                return false;
-        }
-        else {
-            // for all others, simplify the whitespace
-            int exceptioncode = 0;
-            static_cast<TextImpl*>(currentNode())->appendData(ch.simplifyWhiteSpace(),exceptioncode);
-            if (exceptioncode)
-                return false;
-        }
+        int exceptioncode = 0;
+        static_cast<TextImpl*>(currentNode())->appendData(ch,exceptioncode);
+        if (exceptioncode)
+            return false;
         return true;
     }
     else

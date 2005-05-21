@@ -2,7 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003-2004 Apple Computer, Inc.
  *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
@@ -403,13 +403,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     unsigned int numPseudoProps = 0;
 
     // try to sort out most style rules as early as possible.
-    int cssTagId = (e->id() & NodeImpl_IdLocalMask);
+    Q_UINT16 cssTagId = localNamePart(element->id());
     int smatch = 0;
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	int tag = selectors[i]->tag & NodeImpl_IdLocalMask;
-	if ( cssTagId == tag || tag == 0xffff ) {
+	Q_UINT16 tag = localNamePart(selectors[i]->tag);
+	if ( cssTagId == tag || tag == anyLocalName ) {
 	    ++schecked;
 
 	    checkSelector( i, e );
@@ -824,7 +824,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     // We track whether or not the rule contains only :hover and :active in a simple selector. If
     // so, we can't allow that to apply to every element on the page.  We assume the author intended
     // to apply the rules only to links.
-    bool onlyHoverActive = (((sel->tag & NodeImpl_IdLocalMask) == NodeImpl_IdLocalMask) &&
+    bool onlyHoverActive = (sel->tag == anyQName &&
                             (sel->match == CSSSelector::PseudoClass &&
                               (sel->pseudoType() == CSSSelector::PseudoHover ||
                                sel->pseudoType() == CSSSelector::PseudoActive)));
@@ -939,37 +939,24 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     if(!e)
         return false;
 
-    unsigned int element_id = e->id();
-    if ( (sel->tag & NodeImpl_IdNSMask) == NodeImpl_IdNSMask ) {
-       // all namespaces would match
-       unsigned int sel_id = sel->tag & NodeImpl_IdLocalMask;
-       if ( (element_id & NodeImpl_IdLocalMask) != sel_id &&
-            sel_id != NodeImpl_IdLocalMask )
-           return false;
-    } else {
-       // specific namespace selected
-       if( (element_id & NodeImpl_IdNSMask) != (sel->tag & NodeImpl_IdNSMask) )
-           return false;
-       if ( element_id != sel->tag &&
-            (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask )
-           return false;
+    if (sel->tag != anyQName) {
+        int eltID = e->id();
+        Q_UINT16 localName = localNamePart(eltID);
+        Q_UINT16 ns = namespacePart(eltID);
+        Q_UINT16 selLocalName = localNamePart(sel->tag);
+        Q_UINT16 selNS = namespacePart(sel->tag);
+
+        if (selNS == xhtmlNamespace && localName < ID_LAST_TAG)
+            selNS = anyNamespace; // Always match HTML elements even when in HTML docs.
+
+        if ((selLocalName != anyLocalName && localName != selLocalName) ||
+            (selNS != anyNamespace && ns != selNS))
+            return false;
     }
 
     if(sel->attr)
     {
-       unsigned int attr_id = sel->attr;
-       if ( (attr_id & NodeImpl_IdNSMask ) == NodeImpl_IdNSMask ) {
-           // ### fixme: this should allow attributes from all
-           // ### namespaces. I'm not 100% sure what the semantics
-           // ### should be in this case. Do they all have to match?
-           // ### Or should only one of them match. Anyways it might
-           // ### be we have to iterate over all namespaces and check
-           // ### all of them. For now we just set the namespace to
-           // ### 0, so they at least match attributes in the default
-           // ### namespace.
-           attr_id &= NodeImpl_IdLocalMask;
-       }
-        DOMString value = e->getAttribute(attr_id);
+        DOMString value = e->getAttribute(sel->attr);
         if(value.isNull()) return false; // attribute is not set
 
         switch(sel->match)

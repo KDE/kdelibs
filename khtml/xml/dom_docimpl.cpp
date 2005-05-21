@@ -262,11 +262,13 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_textColor = "#000000";
     m_attrMap = new IdNameMapping(ATTR_LAST_ATTR+1);
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
-    m_namespaceMap = new IdNameMapping(1);
+    m_namespaceMap = new IdNameMapping(2);
     QString xhtml(XHTML_NAMESPACE);
-    m_namespaceMap->names.insert(0, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
-    m_namespaceMap->names[0]->ref();
-    m_namespaceMap->count++;
+    m_namespaceMap->names.insert(noNamespace, new DOMStringImpl(""));
+    m_namespaceMap->names.insert(xhtmlNamespace, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
+    m_namespaceMap->names[noNamespace]->ref();
+    m_namespaceMap->names[xhtmlNamespace]->ref();
+    m_namespaceMap->count+=2;
     m_focusNode = 0;
     m_hoverNode = 0;
     m_defaultView = new AbstractViewImpl(this);
@@ -1664,7 +1666,9 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         break;
     case NodeImpl::NamespaceId:
         if( !strcasecmp(_name, XHTML_NAMESPACE) )
-            return 0; //### Id == 0 can't be used with (void*)int based QDicts...
+            return xhtmlNamespace; //### Id == 0 can't be used with (void*)int based QDicts...
+        if( _name->l == 0)
+            return noNamespace;
         map = m_namespaceMap;
         lookup= 0;
         break;
@@ -1767,8 +1771,10 @@ DOMString DocumentImpl::getName( NodeImpl::IdType _type, NodeImpl::Id _id ) cons
         lookup = getAttrName;
         break;
     case NodeImpl::NamespaceId:
-        if( !_id )
+        if( _id == xhtmlNamespace )
             return XHTML_NAMESPACE;
+        if( _id == noNamespace )
+            return "";
         map = m_namespaceMap;
         lookup = 0;
         break;
@@ -2125,7 +2131,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url))
         return false;
-            
+
     // Prohibit non-file URLs if we are asked to.
     if (!thisPart || thisPart->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data")
         return false;
