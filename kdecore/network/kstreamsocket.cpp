@@ -161,6 +161,9 @@ bool KStreamSocket::connect(const QString& node, const QString& service,
 	      connectionEvent();
 	      if (state() < Connecting)
 		return false;	// error connecting
+	      if (state() == Connected)
+		return true;	// connected!
+
 	      if (remainingTimeout() <= 0)
 		{
 		  // we've timed out
