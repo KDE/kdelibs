@@ -1152,7 +1152,7 @@ QList<KToolBar*>::iterator KMainWindow::toolBarIterator()
     return toolbarList.begin();
 }
 
-QList<KToolBar*> KMainWindow::toolBars()
+QList<KToolBar*> KMainWindow::toolBarList()
 {
     (void)toolBarIterator();
     return toolbarList;

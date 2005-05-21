@@ -408,8 +408,11 @@ public:
      */
 	QList<KToolBar*>::iterator toolBarIterator(); //### This seems kind of useless - remove?
 	
-	
-     QList<KToolBar*> toolBars();
+
+    /**
+     * @return A list of all toolbars for this window
+     */	
+    QList<KToolBar*> toolBarList();
 	
 	
 	
