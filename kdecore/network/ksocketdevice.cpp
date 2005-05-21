@@ -692,6 +692,8 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
     *output = true;
   if (exception && fds.revents & POLLPRI)
     *exception = true;
+  if (timedout)
+    *timedout = false;
 
   return true;
 #else
