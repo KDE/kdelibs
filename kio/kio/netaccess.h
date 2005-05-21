@@ -451,6 +451,12 @@ public:
      */
     static int lastError() { return lastErrorCode; }
 
+    /**
+     * Try to map a given URL to a local file
+     * @since 3.5
+     */
+    KURL mostLocalURL( const KURL& url, QWidget& window );
+
 private:
     /**
      * Private constructor
