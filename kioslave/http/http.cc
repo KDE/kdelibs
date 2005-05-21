@@ -34,12 +34,6 @@
 #include <netinet/tcp.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
-/*
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-*/
-
 #include <qdom.h>
 #include <qfile.h>
 #include <qregexp.h>
@@ -60,6 +54,7 @@
 #include <dcopclient.h>
 #include <kdatastream.h>
 #include <kapplication.h>
+#include <kstreamsocket.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kremoteencoding.h>
@@ -88,6 +83,7 @@
 #include <misc/kntlm/kntlm.h>
 
 using namespace KIO;
+using namespace KNetwork;
 
 extern "C" {
   KDE_EXPORT int kdemain(int argc, char **argv);
@@ -1908,7 +1904,7 @@ void HTTPProtocol::httpCheckConnection()
                                       " Keep Alive: " << m_bKeepAlive <<
                                            " First: " << m_bFirstRequest << endl;
 
-  if ( !m_bFirstRequest && (m_iSock != -1) )
+  if ( !m_bFirstRequest && isConnectionValid() )
   {
      bool closeDown = false;
      if ( !isConnectionValid())
@@ -1980,11 +1976,11 @@ bool HTTPProtocol::httpOpenConnection()
 
       switch ( connectResult() )
       {
-        case IO_LookupError:
+        case KSocketBase::LookupFailure:
           errMsg = proxy_host;
           errCode = ERR_UNKNOWN_PROXY_HOST;
           break;
-        case IO_TimeOutError:
+        case KSocketBase::Timeout:
           errMsg = i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
@@ -2010,14 +2006,14 @@ bool HTTPProtocol::httpOpenConnection()
 
       switch ( connectResult() )
       {
-        case IO_LookupError:
+/*/        case IO_LookupError:
           errMsg = m_state.hostname;
           errCode = ERR_UNKNOWN_HOST;
           break;
         case IO_TimeOutError:
           errMsg = i18n("Connection was to %1 at port %2").arg(m_state.hostname).arg(m_state.port);
           errCode = ERR_SERVER_TIMEOUT;
-          break;
+          break;*/
         default:
           errCode = ERR_COULD_NOT_CONNECT;
           if (m_state.port != m_iDefaultPort)
@@ -2031,8 +2027,7 @@ bool HTTPProtocol::httpOpenConnection()
   }
 
   // Set our special socket option!!
-  int on = 1;
-  (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on) );
+  socket().setNoDelay(true);
 
   m_bFirstRequest = true;
 
@@ -2513,10 +2508,13 @@ bool HTTPProtocol::httpOpen()
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
   // not already have one...
-  if ( m_iSock == -1)
+  if ( !isConnectionValid() )
   {
     if (!httpOpenConnection())
+    {
+       kdDebug(7113) << "Couldn't connect, oopsie!" << endl;
        return false;
+    }
   }
 
   // Send the data to the remote machine...
@@ -2542,6 +2540,8 @@ bool HTTPProtocol::httpOpen()
        return false;
     }
   }
+  else
+      kdDebug(7113) << "sent it!" << endl;
 
   bool res = true;
 
@@ -2653,7 +2653,7 @@ try_again:
   bool hasCacheDirective = false;
   bool bCanResume = false;
 
-  if (m_iSock == -1)
+  if ( !isConnectionValid() )
   {
      kdDebug(7113) << "HTTPProtocol::readHeader: No connection." << endl;
      return false; // Restablish connection and try again
@@ -3885,10 +3885,10 @@ void HTTPProtocol::slave_status()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::slave_status" << endl;
 
-  if ( m_iSock != -1 && !isConnectionValid() )
+  if ( !isConnectionValid() )
      httpCloseConnection();
 
-  slaveStatus( m_state.hostname, (m_iSock != -1) );
+  slaveStatus( m_state.hostname, isConnectionValid() );
 }
 
 void HTTPProtocol::mimetype( const KURL& url )
@@ -4554,7 +4554,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    Q3CString u = m_request.url.url().latin1();
    for(int i = u.length(); i--;)
    {
-      hash = (hash * 12211 + u[i]) % 2147483563;
+      hash = (hash * 12211 + u.at(i)) % 2147483563;
    }
 
    QString hashString;

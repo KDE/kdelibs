@@ -20,8 +20,8 @@ if include_bzip2
 BZIP2DIR=bzip2
 endif
 
-# waiting: http ftp
-SUBDIRS = file gzip $(BZIP2DIR) metainfo
+# waiting: ftp
+SUBDIRS = file http gzip $(BZIP2DIR) metainfo
 
 messages: # they get into kio.pot
 
