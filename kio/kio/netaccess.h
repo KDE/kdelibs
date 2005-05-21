@@ -455,7 +455,7 @@ public:
      * Try to map a given URL to a local file
      * @since 3.5
      */
-    KURL mostLocalURL( const KURL& url, QWidget& window );
+    KURL mostLocalURL( const KURL& url, QWidget* window );
 
 private:
     /**
