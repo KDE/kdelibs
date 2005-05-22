@@ -60,6 +60,15 @@ inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int po
     return fm.width(s.string());
 }
 
+inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
+    int x, int y, const QString &str)
+{
+    Qt::LayoutDirection saveDir = p->layoutDirection();
+    p->setLayoutDirection(d);
+    p->drawText(x, y, str);
+    p->setLayoutDirection(saveDir);
+}
+
 /** closes the current word and draws it
  * @param p painter
  * @param d text direction
@@ -86,7 +95,8 @@ inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
       x -= width;
 
     QConstString s(str + pos + wordStart, wordEnd - wordStart);
-    p->drawText(x, y, s.string(), -1, d);
+
+    drawDirectedText( p, d, x, y, s.string() );
 
     if (d != Qt::RightToLeft)
       x += width;
@@ -110,10 +120,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         // long render texts (in the order of several megabytes).
         // Hence, only hand over the piece of text of the actual inline text box
 	QConstString cstr = QConstString(str + pos, len);
-	Qt::LayoutDirection oldDir = p->layoutDirection();
-	p->setLayoutDirection( d );
-	p->drawText( x, y, cstr.string() );
-	p->setLayoutDirection( oldDir );
+	drawDirectedText( p, d, x, y, cstr.string() );
     } else {
 	if (from < 0) from = 0;
 	if (to < 0) to = len;
@@ -163,7 +170,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    // draw whole string segment, with optional background
 	    if ( bg.isValid() )
 		p->fillRect( eff_x, uy, segmentWidth, h, bg );
-	    p->drawText(eff_x, y, segStr.string(), -1, d);
+	    drawDirectedText( p, d, eff_x, y, segStr.string() );
 	    if (deco)
 	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth - 1, h, deco);
 	    return;
@@ -267,13 +274,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		if ( scFont )
 		    p->setFont( lowercase ? *scFont : f );
 
-	         Qt::LayoutDirection oldDir = p->layoutDirection();
-	         p->setLayoutDirection( d );
-		 p->drawText( x, y, QString((lowercase ? upper : qstr)[pos+i]));
+		 drawDirectedText( p, d, x, y, QString((lowercase ? upper : qstr)[pos+i]) );
 #ifdef __GNUC__
   #warning "Light bloatery"
 #endif
-		 p->setLayoutDirection( oldDir );
 
 	        if (d != Qt::RightToLeft)
 		    x += chw;

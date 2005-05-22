@@ -543,7 +543,6 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
             for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
                 totalWidth += curr->width();
             QRect clipRect(_tx, _ty, width(), height());
-            clipRect = pI.p->xForm(clipRect);
             pI.p->save();
 #ifdef APPLE_CHANGES
             pI.p->addClip(clipRect);

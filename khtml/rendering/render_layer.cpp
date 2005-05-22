@@ -700,13 +700,7 @@ static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipR
 #ifdef APPLE_CHANGES
     p->addClip(clipRect);
 #else
-
-    QRect clippedRect = p->xForm(clipRect);
-    QRegion creg(clippedRect);
-    QRegion old = p->clipRegion();
-    if (!old.isNull())
-        creg = old.intersect(creg);
-    p->setClipRegion(creg);
+    p->setClipRegion(clipRect, Qt::IntersectClip);
 #endif
 
 }
