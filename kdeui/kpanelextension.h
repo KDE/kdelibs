@@ -105,7 +105,7 @@ public:
     enum Type { Normal = 0, Stretch };
     // KDE4: Merge these with KPanelApplet's enums
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
-    enum Position { DockLeft = 0, DockRight, DockTop, DockBottom, Floating };
+	enum Position { Left = 0, Right, Top, Bottom, Floating };
     enum Alignment { LeftTop = 0, Center, RightBottom };
     /// @since 3.1
     enum Size { SizeTiny = 0, SizeSmall, SizeNormal, SizeLarge, SizeCustom };
@@ -180,7 +180,7 @@ public:
      * to this setting.
      * @return Position
      **/
-    virtual Position preferedPosition() const { return DockBottom; }
+    virtual Position preferedPosition() const { return Bottom; }
 
     /**
      * @internal
@@ -289,7 +289,7 @@ protected:
     /**
      * @return the extensions orientation. (horizontal or vertical)
      **/
-    Qt::Orientation orientation();
+	Qt::Orientation orientation();
 
     /**
      * @return the appropriate size in pixels for the panel

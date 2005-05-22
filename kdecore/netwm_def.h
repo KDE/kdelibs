@@ -399,14 +399,14 @@ public:
     **/
 
     enum Direction {
-	TopLeftCorner      = 0,
-	DockTop          = 1,
-	TopRightCorner     = 2,
-	DockRight        = 3,
-	BottomRightCorner  = 4,
-	DockBottom       = 5,
-	BottomLeftCorner   = 6,
-	DockLeft         = 7,
+	TopLeft      = 0,
+	Top          = 1,
+	TopRight     = 2,
+	Right        = 3,
+	BottomRight  = 4,
+	Bottom       = 5,
+	BottomLeft   = 6,
+	Left         = 7,
 	Move         = 8,  // movement only
     /**
        @since 3.2

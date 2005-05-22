@@ -48,7 +48,7 @@ KPanelExtension::KPanelExtension(const QString& configFile, Type type,
 				 int actions, QWidget *parent, const char *name)
   : Q3Frame(parent, name)
   , _type(type)
-  , _position( DockTop )
+  , _position( Top )
   , _alignment( LeftTop )
   , _config(0)
   , _actions(actions)
@@ -100,7 +100,7 @@ void KPanelExtension::action( Action a )
 
 Qt::Orientation KPanelExtension::orientation()
 {
-    if (_position == DockLeft || _position == DockRight)
+    if (_position == Left || _position == Right)
 	return Qt::Vertical;
     else
 	return Qt::Horizontal;

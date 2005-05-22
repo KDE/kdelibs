@@ -70,7 +70,7 @@ namespace {	// Private.
         {
                 char buf[4096];
                 while (bytes) {
-                        unsigned int num= QMIN(bytes,sizeof(buf));
+                        unsigned int num= qMin(bytes,( unsigned int )sizeof(buf));
                         unsigned int l = num;
                         s.readRawBytes(buf, l);
                         if(l != num)
