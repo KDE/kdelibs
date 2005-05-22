@@ -752,45 +752,6 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     update(); //paintText(0, 0, width(), height(), true);
 }
 
-void KateViewInternal::paintText (int x, int y, int width, int height, bool paintOnlyDirty)
-{
-  //kdDebug() << k_funcinfo << x << " " << y << " " << width << " " << height << " " << paintOnlyDirty << endl;
-  int xStart = startX() + x;
-  int xEnd = xStart + width;
-  uint h = m_view->renderer()->fontHeight();
-  uint startz = (y / h);
-  uint endz = startz + 1 + (height / h);
-  uint lineRangesSize = lineRanges.size();
-
-  QPainter paint(this);
-
-  // TODO put in the proper places
-  m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
-  m_view->renderer()->setShowTabs(m_doc->configFlags() & KateDocument::cfShowTabs);
-
-  paint.translate(0, startz * h);
-
-  for (uint z=startz; z <= endz; z++)
-  {
-    if ( (z >= lineRangesSize) || ((lineRanges[z].line == -1) && (!paintOnlyDirty || lineRanges[z].dirty)) )
-    {
-      if (!(z >= lineRangesSize))
-        lineRanges[z].dirty = false;
-
-      paint.fillRect( x, 0, width, h, m_view->renderer()->config()->backgroundColor() );
-    }
-    else if (!paintOnlyDirty || lineRanges[z].dirty)
-    {
-      lineRanges[z].dirty = false;
-
-      
-      m_view->renderer()->paintTextLine(paint, &lineRanges[z], xStart, xEnd, &cursor, &bm);
-    }
-    
-    paint.translate(0, h);
-  }
-}
-
 /**
  * this function ensures a certain location is visible on the screen.
  * if endCol is -1, ignore making the columns visible.
@@ -2878,8 +2839,49 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 }
 
 void KateViewInternal::paintEvent(QPaintEvent *e)
-{
-  paintText(e->rect().x(), e->rect().y(), e->rect().width(), e->rect().height());
+{  
+  kdDebug (13030) << "GOT PAINT EVENT: x: " << e->rect().x() << " y: " << e->rect().y()
+    << " width: " << e->rect().width() << " height: " << e->rect().height() << endl;
+  
+  int xStart = startX() + e->rect().x();
+  int xEnd = xStart + e->rect().width();
+  uint h = m_view->renderer()->fontHeight();
+  uint startz = (e->rect().y() / h);
+  uint endz = startz + 1 + (e->rect().height() / h);
+  uint lineRangesSize = lineRanges.size();
+  bool paintOnlyDirty = false; // hack atm ;)
+
+  QPainter paint(this);
+
+  // TODO put in the proper places
+  m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
+  m_view->renderer()->setShowTabs(m_doc->configFlags() & KateDocument::cfShowTabs);
+
+  int sy = startz * h;
+  paint.translate(e->rect().x(), startz * h);
+
+  for (uint z=startz; z <= endz; z++)
+  {
+    if ( (z >= lineRangesSize) || ((lineRanges[z].line == -1) && (!paintOnlyDirty || lineRanges[z].dirty)) )
+    {
+      if (!(z >= lineRangesSize))
+        lineRanges[z].dirty = false;
+
+      paint.fillRect( 0, 0, e->rect().width(), h, m_view->renderer()->config()->backgroundColor() );
+    }
+    else if (!paintOnlyDirty || lineRanges[z].dirty)
+    {
+      lineRanges[z].dirty = false;
+
+      kdDebug (13030) << "paint text: x: " << e->rect().x() << " y: " << sy
+    << " width: " << xEnd-xStart << " height: " << h << endl;
+    
+      m_view->renderer()->paintTextLine(paint, &lineRanges[z], xStart, xEnd, &cursor, &bm);
+    }
+    
+    paint.translate(0, h);
+    sy += h;
+  }
 }
 
 void KateViewInternal::resizeEvent(QResizeEvent* e)

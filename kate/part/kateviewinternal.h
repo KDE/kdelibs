@@ -155,8 +155,6 @@ class KateViewInternal : public QWidget
     inline const KateTextCursor& getCursor() { return cursor; }
     QPoint cursorCoordinates();
 
-    void paintText (int x, int y, int width, int height, bool paintOnlyDirty = false);
-
   // EVENT HANDLING STUFF - IMPORTANT
   protected:
     void paintEvent(QPaintEvent *e);
