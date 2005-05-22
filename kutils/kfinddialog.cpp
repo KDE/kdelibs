@@ -116,10 +116,9 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     topLayout->setSpacing( KDialog::spacingHint() );
     topLayout->setMargin( 0 );
 
-    m_findGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Find"), page);
-    m_findGrp->layout()->setSpacing( KDialog::spacingHint() );
+    m_findGrp = new QGroupBox(i18n("Find"), page);
    // m_findGrp->layout()->setMargin( KDialog::marginHint() );
-    m_findLayout = new QGridLayout(m_findGrp->layout());
+    m_findLayout = new QGridLayout(m_findGrp);
     m_findLayout->setSpacing( KDialog::spacingHint() );
    // m_findLayout->setMargin( KDialog::marginHint() );
 
@@ -137,10 +136,9 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_findLayout->addWidget(m_regExpItem, 2, 1);
     topLayout->addWidget(m_findGrp);
 
-    m_replaceGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Replace With"), page);
-    m_replaceGrp->layout()->setSpacing( KDialog::spacingHint() );
+    m_replaceGrp = new QGroupBox( i18n("Replace With"), page);
   //  m_replaceGrp->layout()->setMargin( KDialog::marginHint() );
-    m_replaceLayout = new QGridLayout(m_replaceGrp->layout());
+    m_replaceLayout = new QGridLayout(m_replaceGrp);
     m_replaceLayout->setSpacing( KDialog::spacingHint() );
 //    m_replaceLayout->setMargin( KDialog::marginHint() );
 
@@ -158,10 +156,9 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_replaceLayout->addWidget(m_backRefItem, 2, 1);
     topLayout->addWidget(m_replaceGrp);
 
-    m_optionGrp = new Q3GroupBox(0, Qt::Vertical, i18n("Options"), page);
-    m_optionGrp->layout()->setSpacing(KDialog::spacingHint());
+    m_optionGrp = new QGroupBox(i18n("Options"), page);
   //  m_optionGrp->layout()->setMargin(KDialog::marginHint());
-    optionsLayout = new QGridLayout(m_optionGrp->layout());
+    optionsLayout = new QGridLayout(m_optionGrp);
     optionsLayout->setSpacing( KDialog::spacingHint() );
    // optionsLayout->setMargin( KDialog::marginHint() );
 

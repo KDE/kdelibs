@@ -22,13 +22,14 @@
 #define KFINDDIALOG_H
 
 #include <kdialogbase.h>
+
 class KHistoryCombo;
 class QPushButton;
 class Q3PopupMenu;
 class QGridLayout;
 class QLabel;
-class Q3GroupBox;
 class QCheckBox;
+class QGroupBox;
 
 /**
  * @brief A generic "find" dialog.
@@ -253,7 +254,7 @@ private slots:
 
 private:
 
-    Q3GroupBox *m_findGrp;
+    QGroupBox *m_findGrp;
     QLabel *m_findLabel;
     KHistoryCombo *m_find;
     QCheckBox *m_regExp;
@@ -261,7 +262,7 @@ private:
     QGridLayout *m_findLayout;
     QWidget *m_findExtension;
 
-    Q3GroupBox *m_optionGrp;
+    QGroupBox *m_optionGrp;
     QCheckBox *m_wholeWordsOnly;
     QCheckBox *m_fromCursor;
     QCheckBox *m_selectedText;
@@ -284,7 +285,7 @@ private:
     KFindDialog( QWidget *parent, const char *name, bool forReplace );
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
-    Q3GroupBox *m_replaceGrp;
+    QGroupBox *m_replaceGrp;
     QLabel *m_replaceLabel;
     KHistoryCombo *m_replace;
     QCheckBox* m_backRef;
