@@ -267,12 +267,12 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                 qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
-            QPixmap const* pix = i ? &i->pixmap() : 0;
-            if(berrorPic && pix && (cWidth >= pix->width()+4) && (cHeight >= pix->height()+4) )
+            QPixmap pix = i ? i->pixmap() : QPixmap();
+            if(berrorPic && !pix.isNull() && (cWidth >= pix.width()+4) && (cHeight >= pix.height()+4) )
             {
-                QRect r(pix->rect());
+                QRect r(pix.rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
-                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
+                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), pix, r );
             }
             if(!alt.isEmpty()) {
                 QString text = alt.string();
