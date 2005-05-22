@@ -766,7 +766,7 @@ extern char **environ; // Array of environment variables
 
 bool KURLCompletion::envCompletion(const MyURL &url, QString *match)
 {
-	if ( url.file().at(0) != '$' )
+	if ( url.file().isEmpty() || url.file().at(0) != '$' )
 		return false;
 
 	if ( !isListedURL( CTEnv ) ) {
@@ -882,7 +882,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 
 	QString dir = url.dir();
 
-	if (url.url()[0] == '.')
+	if (url.url().length() && url.url()[0] == '.')
 	{
 		if (url.url().length() == 1)
 		{
@@ -919,7 +919,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 	}
 
 	// No hidden files unless the user types "."
-	bool no_hidden_files = ( url.file().at(0) != '.' );
+	bool no_hidden_files = ( url.file().length() && url.file().at(0) != '.' );
 
 	// List files if needed
 	//
