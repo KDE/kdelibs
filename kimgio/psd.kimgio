@@ -49,4 +49,4 @@ Write=false
 Suffices=psd,PSD
 Mimetype=image/x-psd
 Library=kimg_psd.la
- 
+

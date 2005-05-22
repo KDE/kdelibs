@@ -69,4 +69,4 @@ Write=true
 Suffices=tga,TGA
 Mimetype=image/x-targa
 Library=kimg_tga.la
- 
+
