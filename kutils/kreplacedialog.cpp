@@ -21,7 +21,7 @@
 #include "kreplacedialog.h"
 
 #include <qcheckbox.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qregexp.h>

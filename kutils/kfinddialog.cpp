@@ -21,7 +21,7 @@
 #include "kfinddialog.h"
 #include <qcheckbox.h>
 #include <qcursor.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <q3popupmenu.h>
