@@ -3551,7 +3551,7 @@ try_again:
   // Web-servers really shouldn't do this: They let Content-Size refer
   // to the size of the tgz file, not to the size of the tar file,
   // while the Content-Type refers to "tar" instead of "tgz".
-  if (m_qContentEncodings.last() == "gzip")
+  if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "gzip")
   {
      if (m_strMimeType == "application/x-tar")
      {
@@ -3590,7 +3590,7 @@ try_again:
   //   encoding and "application/x-bzip2" as mimetype. That is wrong.
   //   currently that doesn't bother us, because we remove the encoding
   //   and set the mimetype to x-bzip2 anyway.
-  if (m_qContentEncodings.last() == "bzip2")
+  if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "bzip2")
   {
      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
      m_strMimeType = QString::fromLatin1("application/x-bzip2");
