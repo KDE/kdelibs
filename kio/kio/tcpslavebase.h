@@ -30,6 +30,8 @@
 #include <ksocketbase.h>
 #include <kio/slavebase.h>
 
+namespace KNetwork { class KStreamSocket; }
+
 namespace KIO {
 
 /**
@@ -308,8 +310,11 @@ protected:
     // Did the user abort (as the reason for connectToHost returning false)
     bool userAborted() const;
 
-    // Returns the socket for the connection
+    /**
+     * Return the socket object, if the class ever needs to do anything to it
+     */
     KNetwork::KStreamSocket& socket();
+
 protected:
     bool m_bIsSSL;
     QString m_port;
