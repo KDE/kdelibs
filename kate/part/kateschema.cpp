@@ -276,7 +276,7 @@ KateSchemaConfigColorTab::KateSchemaConfigColorTab( QWidget *parent, const char 
 
   QVBoxLayout *blay=new QVBoxLayout(this, 0, KDialog::spacingHint());
 
-  QGroupBox *gbTextArea = new Q3GroupBox(1, Qt::Vertical, i18n("Text Area Background"), this);
+  QGroupBox *gbTextArea = new Q3GroupBox(1, Qt::Horizontal, i18n("Text Area Background"), this);
 
   b = new Q3HBox (gbTextArea);
   b->setSpacing(KDialog::spacingHint());
@@ -314,7 +314,7 @@ KateSchemaConfigColorTab::KateSchemaConfigColorTab( QWidget *parent, const char 
 
   blay->addWidget(gbTextArea);
 
-  QGroupBox *gbBorder = new Q3GroupBox(1, Qt::Vertical, i18n("Additional Elements"), this);
+  QGroupBox *gbBorder = new Q3GroupBox(1, Qt::Horizontal, i18n("Additional Elements"), this);
 
   b = new Q3HBox (gbBorder);
   b->setSpacing(KDialog::spacingHint());

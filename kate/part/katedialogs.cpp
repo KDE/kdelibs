@@ -146,7 +146,8 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
   int configFlags = KateDocumentConfig::global()->configFlags();
 
-  QGroupBox *gbAuto = new Q3GroupBox(1, Qt::Vertical, i18n("Automatic Indentation"), this);
+  QGroupBox *gbAuto = new QGroupBox(i18n("Automatic Indentation"), this);
+  QVBoxLayout *vb = new QVBoxLayout (gbAuto);
 
   Q3HBox *indentLayout = new Q3HBox(gbAuto);
   indentLayout->setSpacing(KDialog::spacingHint());
@@ -155,24 +156,32 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   m_indentMode->insertStringList (KateAutoIndent::listModes());
   indentLabel->setBuddy(m_indentMode);
   m_configPage = new QPushButton(SmallIconSet("configure"), i18n("Configure..."), indentLayout);
+  vb->addWidget (indentLayout);
 
   opt[5] = new QCheckBox(i18n("Insert leading Doxygen \"*\" when typing"), gbAuto);
+  vb->addWidget (opt[5]);
 
-  QGroupBox *gbSpaces = new Q3GroupBox(1, Qt::Vertical, i18n("Indentation with Spaces"), this);
-  Q3VBox *spaceLayout = new Q3VBox(gbSpaces);
-  opt[0] = new QCheckBox(i18n("Use &spaces instead of tabs to indent"), spaceLayout );
-  opt[6] = new QCheckBox(i18n("Emacs style mixed mode"), spaceLayout);
+  QGroupBox *gbSpaces = new QGroupBox(i18n("Indentation with Spaces"), this);
+  vb = new QVBoxLayout (gbSpaces);
+  opt[0] = new QCheckBox(i18n("Use &spaces instead of tabs to indent"), gbSpaces );
+  vb->addWidget (opt[0]);
+  opt[6] = new QCheckBox(i18n("Emacs style mixed mode"), gbSpaces);
+  vb->addWidget (opt[6]);
 
-  indentationWidth = new KIntNumInput(KateDocumentConfig::global()->indentationWidth(), spaceLayout);
+  indentationWidth = new KIntNumInput(KateDocumentConfig::global()->indentationWidth(), gbSpaces);
   indentationWidth->setRange(1, 16, 1, false);
   indentationWidth->setLabel(i18n("Number of spaces:"), Qt::AlignVCenter);
+  vb->addWidget (indentationWidth);
 
   opt[1] = new QCheckBox(i18n("Keep indent &profile"), this);
   opt[2] = new QCheckBox(i18n("&Keep extra spaces"), this);
 
-  QGroupBox *keys = new Q3GroupBox(1, Qt::Vertical, i18n("Keys to Use"), this);
+  QGroupBox *keys = new QGroupBox(i18n("Keys to Use"), this);
+  vb = new QVBoxLayout (keys);
   opt[3] = new QCheckBox(i18n("&Tab key indents"), keys);
+  vb->addWidget (opt[3]);
   opt[4] = new QCheckBox(i18n("&Backspace key indents"), keys);
+  vb->addWidget (opt[4]);
 
   QRadioButton *rb1, *rb2, *rb3;
   m_tabs = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Tab Key Mode if Nothing Selected"), this );
@@ -344,7 +353,7 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
 
-  QGroupBox *gbCursor = new Q3GroupBox(1, Qt::Vertical, i18n("Text Cursor Movement"), this);
+  QGroupBox *gbCursor = new Q3GroupBox(1, Qt::Horizontal, i18n("Text Cursor Movement"), this);
 
   opt[0] = new QCheckBox(i18n("Smart ho&me"), gbCursor);
   opt[0]->setChecked(configFlags & flags[3]);
@@ -456,7 +465,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
   QVBoxLayout *mainLayout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
   int configFlags = KateDocumentConfig::global()->configFlags();
 
-  QGroupBox *gbWhiteSpace = new Q3GroupBox(1, Qt::Vertical, i18n("Tabulators"), this);
+  QGroupBox *gbWhiteSpace = new Q3GroupBox(1, Qt::Horizontal, i18n("Tabulators"), this);
 
   opt[3] = new QCheckBox( i18n("&Insert spaces instead of tabulators"), gbWhiteSpace );
   opt[3]->setChecked( configFlags & KateDocumentConfig::cfReplaceTabsDyn );
@@ -473,7 +482,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
 
   mainLayout->addWidget(gbWhiteSpace);
 
-  QGroupBox *gbWordWrap = new Q3GroupBox(1, Qt::Vertical, i18n("Static Word Wrap"), this);
+  QGroupBox *gbWordWrap = new Q3GroupBox(1, Qt::Horizontal, i18n("Static Word Wrap"), this);
 
   opt[0] = new QCheckBox(i18n("Enable static &word wrap"), gbWordWrap);
   opt[0]->setChecked(KateDocumentConfig::global()->wordWrap());
@@ -634,7 +643,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
 
   QVBoxLayout *blay=new QVBoxLayout(this,0,KDialog::spacingHint());
 
-  QGroupBox *gbWordWrap = new Q3GroupBox(1, Qt::Vertical, i18n("Word Wrap"), this);
+  QGroupBox *gbWordWrap = new Q3GroupBox(1, Qt::Horizontal, i18n("Word Wrap"), this);
 
   m_dynwrap=new QCheckBox(i18n("&Dynamic word wrap"),gbWordWrap);
 
@@ -655,7 +664,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
 
   blay->addWidget(gbWordWrap);
 
-  QGroupBox *gbFold = new Q3GroupBox(1, Qt::Vertical, i18n("Code Folding"), this);
+  QGroupBox *gbFold = new Q3GroupBox(1, Qt::Horizontal, i18n("Code Folding"), this);
 
   m_folding=new QCheckBox(i18n("Show &folding markers (if available)"), gbFold );
   m_collapseTopLevel = new QCheckBox( i18n("Collapse toplevel folding nodes"), gbFold );
@@ -663,7 +672,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
 
   blay->addWidget(gbFold);
 
-  QGroupBox *gbBar = new Q3GroupBox(1, Qt::Vertical, i18n("Borders"), this);
+  QGroupBox *gbBar = new Q3GroupBox(1, Qt::Horizontal, i18n("Borders"), this);
 
   m_icons=new QCheckBox(i18n("Show &icon border"),gbBar);
   m_line=new QCheckBox(i18n("Show &line numbers"),gbBar);
@@ -838,7 +847,7 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   int configFlags = KateDocumentConfig::global()->configFlags();
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
 
-  QGroupBox *gbEnc = new Q3GroupBox(1, Qt::Vertical, i18n("File Format"), this);
+  QGroupBox *gbEnc = new Q3GroupBox(1, Qt::Horizontal, i18n("File Format"), this);
   layout->addWidget( gbEnc );
 
   Q3HBox *e5Layout = new Q3HBox(gbEnc);
@@ -857,7 +866,7 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   m_eol->insertItem (i18n("DOS/Windows"));
   m_eol->insertItem (i18n("Macintosh"));
 
-  QGroupBox *gbMem = new Q3GroupBox(1, Qt::Vertical, i18n("Memory Usage"), this);
+  QGroupBox *gbMem = new Q3GroupBox(1, Qt::Horizontal, i18n("Memory Usage"), this);
   layout->addWidget( gbMem );
 
   e5Layout = new Q3HBox(gbMem);
@@ -868,13 +877,13 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   blockCount->setValue (KateBuffer::maxLoadedBlocks());
   blockCountLabel->setBuddy(blockCount);
 
-  QGroupBox *gbWhiteSpace = new Q3GroupBox(1, Qt::Vertical, i18n("Automatic Cleanups on Load/Save"), this);
+  QGroupBox *gbWhiteSpace = new Q3GroupBox(1, Qt::Horizontal, i18n("Automatic Cleanups on Load/Save"), this);
   layout->addWidget( gbWhiteSpace );
 
   removeSpaces = new QCheckBox(i18n("Re&move trailing spaces"), gbWhiteSpace);
   removeSpaces->setChecked(configFlags & KateDocument::cfRemoveSpaces);
 
-  QGroupBox *dirConfigBox = new Q3GroupBox(1, Qt::Vertical, i18n("Folder Config File"), this);
+  QGroupBox *dirConfigBox = new Q3GroupBox(1, Qt::Horizontal, i18n("Folder Config File"), this);
   layout->addWidget( dirConfigBox );
 
   dirSearchDepth = new KIntNumInput(KateDocumentConfig::global()->searchDirConfigDepth(), dirConfigBox);
