@@ -2840,8 +2840,8 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 
 void KateViewInternal::paintEvent(QPaintEvent *e)
 {  
-  kdDebug (13030) << "GOT PAINT EVENT: x: " << e->rect().x() << " y: " << e->rect().y()
-    << " width: " << e->rect().width() << " height: " << e->rect().height() << endl;
+  //kdDebug (13030) << "GOT PAINT EVENT: x: " << e->rect().x() << " y: " << e->rect().y()
+  //  << " width: " << e->rect().width() << " height: " << e->rect().height() << endl;
   
   int xStart = startX() + e->rect().x();
   int xEnd = xStart + e->rect().width();
@@ -2873,8 +2873,8 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
     {
       lineRanges[z].dirty = false;
 
-      kdDebug (13030) << "paint text: x: " << e->rect().x() << " y: " << sy
-    << " width: " << xEnd-xStart << " height: " << h << endl;
+      //kdDebug (13030) << "paint text: x: " << e->rect().x() << " y: " << sy
+      // << " width: " << xEnd-xStart << " height: " << h << endl;
     
       m_view->renderer()->paintTextLine(paint, &lineRanges[z], xStart, xEnd, &cursor, &bm);
     }
