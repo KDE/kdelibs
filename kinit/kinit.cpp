@@ -435,7 +435,13 @@ static pid_t launch(int argc, const char *_name, const char *args,
   if (0 > pipe(d.fd))
   {
      perror("kdeinit: pipe() failed!\n");
-     exit(255);
+     d.result = 3;
+     d.errorMsg = i18n("Unable to start new process.\n"
+                       "The system may have reached the maximum number of open files possible or the maximum number of open files that you are allowed to use has been reached.").utf8();
+     close(d.fd[0]);
+     close(d.fd[1]);
+     d.fork = 0;
+     return d.fork;
   }
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
@@ -451,7 +457,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
   switch(d.fork) {
   case -1:
      perror("kdeinit: fork() failed!\n");
-     exit(255);
+     d.result = 3;
+     d.errorMsg = i18n("Unable to create new process.\n"
+                       "The system may have reached the maximum number of processes possible or the maximum number of processes that you are allowed to use has been reached.").utf8();
+     close(d.fd[0]);
+     close(d.fd[1]);
+     d.fork = 0;
      break;
   case 0:
      /** Child **/
