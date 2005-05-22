@@ -563,7 +563,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
     else
         for ( int i = 0; i < cnt; ++i )
-            bitBlt(p->device(), p->xForm( QPoint(tx, ty) + br[i].topLeft() ), pm, br[i]);
+            p->drawPixmap(p->xForm( QPoint(tx, ty) + br[i].topLeft() ), *pm, br[i]);
 
     // cleanup and recurse
     PaintBuffer::release();
