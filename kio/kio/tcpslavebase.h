@@ -308,6 +308,8 @@ protected:
     // Did the user abort (as the reason for connectToHost returning false)
     bool userAborted() const;
 
+    // Returns the socket for the connection
+    KNetwork::KStreamSocket& socket();
 protected:
     bool m_bIsSSL;
     QString m_port;

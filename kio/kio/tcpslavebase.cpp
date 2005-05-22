@@ -92,6 +92,11 @@ public:
   MetaData savedMetaData;
 };
 
+KNetwork::KStreamSocket& TCPSlaveBase::socket()
+{
+    return d->socket;
+}
+
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const Q3CString &protocol,

@@ -20,7 +20,7 @@
 */
 
 #include "kbookmark.h"
-#include <q3valuestack.h>
+#include <QStack>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
@@ -463,7 +463,7 @@ void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaD
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
 {
     // non-recursive bookmark iterator
-    Q3ValueStack<KBookmarkGroup> stack;
+    QStack<KBookmarkGroup> stack;
     stack.push(root);
     KBookmark bk = stack.top().first();
     for (;;) {
@@ -474,6 +474,10 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
             if (stack.count() > 1)
                 visitLeave(stack.top());
             bk = stack.pop();
+        
+            if (stack.isEmpty())
+                return;
+        
             bk = stack.top().next(bk);
             if (bk.isNull())
                 continue;
