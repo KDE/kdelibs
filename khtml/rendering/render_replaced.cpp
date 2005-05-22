@@ -1,4 +1,4 @@
-/**
+ /**
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
@@ -552,10 +552,10 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     }
 
     // send paint event
-    QPainter::redirect(widget, pm);
+    QPainter::setRedirected(widget, pm);
     QPaintEvent e( r );
     QApplication::sendEvent( widget, &e );
-    QPainter::redirect(widget, 0);
+    QPainter::restoreRedirected(widget);
 
     // transfer result
     if ( external )
