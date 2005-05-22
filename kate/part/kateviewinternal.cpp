@@ -55,7 +55,7 @@
 #include <QClipboard>
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
-  : QWidget (view, "", Qt::WStaticContents | Qt::WNoAutoErase | Qt::WResizeNoErase)
+  : QWidget (view)
   , editSessionNumber (0)
   , editIsRunning (false)
   , m_view (view)

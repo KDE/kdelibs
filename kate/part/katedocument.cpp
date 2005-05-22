@@ -154,6 +154,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   editWithUndo = false;
 
   m_docNameNumber = 0;
+  m_docName = "need init";
 
   m_bSingleViewMode = bSingleViewMode;
   m_bBrowserView = bBrowserView;
