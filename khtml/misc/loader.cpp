@@ -849,9 +849,9 @@ void CachedImage::clear()
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef LOADER_DEBUG
-    kdDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
+    kdDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << " pos:" << _buffer.pos() << endl;
 #endif
-    i->processData((uchar*)_buffer.data().data(), _buffer.data().length());
+    i->processData((uchar*)_buffer.data().data(), _buffer.pos());
 
     _buffer.close();
 
