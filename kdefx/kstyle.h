@@ -732,8 +732,6 @@ class KStyleFactory: public QStylePlugin
 };
 
 #define K_EXPORT_STYLE(name,type) template<> const char* kstyleName<type>() { return name; } \
-    Q_EXTERN_C KDE_EXPORT const char* qt_plugin_query_verification_data(); \
-    Q_EXTERN_C KDE_EXPORT QObject   * qt_plugin_instance(); \
     Q_EXPORT_PLUGIN(KStyleFactory<type>)
 
 #endif
