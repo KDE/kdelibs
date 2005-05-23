@@ -30,7 +30,6 @@
 
 #include <qstring.h>
 #include <qapplication.h>
-#include <private/qapplication_p.h>
 #include <qfile.h>
 #include <qmetaobject.h>
 #include <qtextstream.h>
@@ -490,12 +489,10 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
 
 void NetAccess::enter_loop()
 {
-  QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
-  dummy.setFocusPolicy( Qt::NoFocus );
-#warning KDE4 porting: find the proper way to do this, if one exists
-  QApplicationPrivate::enterModal(&dummy);
-  qApp->enter_loop();
-  QApplicationPrivate::leaveModal(&dummy);
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(leaveModality()),
+            &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void NetAccess::slotResult( KIO::Job * job )
@@ -514,7 +511,7 @@ void NetAccess::slotResult( KIO::Job * job )
   if ( m_metaData )
     *m_metaData = job->metaData();
 
-  qApp->exit_loop();
+  emit leaveModality();
 }
 
 void NetAccess::slotData( KIO::Job*, const QByteArray& data )
