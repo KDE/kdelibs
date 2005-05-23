@@ -81,8 +81,6 @@ private:
     
     ImageFormat format;
         
-    //Our double-buffer. Used by all of the library
-    static QPixmap* doubleBuffer;
 public:
     /**
      Returns the frame original width

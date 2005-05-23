@@ -60,6 +60,8 @@ void Image::loadError()
     owner->imageError(this);
 }
 
+
+
 bool Image::processData(uchar* data, int length)
 {
     if (inError)
@@ -142,16 +144,11 @@ bool Image::processData(uchar* data, int length)
         fullyDecoded = true;
     
     if (stat == ImageLoader::Error)
-        loadError();
-    
-    if (stat < 0)
     {
-        //If nothing more to do, get rid of the loader
-        delete loader;
-        loader = 0;
-        return false; //done!                
+        loadError();
+        return false;
     }
-            
+    
     return true; //Need more stuff
 }
 
@@ -161,9 +158,9 @@ void Image::processEOF()
         return; 
 
     //If no loader detected, and we're at EOF, it's an error
-    if (!loader)
+    if (!loader )
     {
-        loadError();        
+        loadError();
         return;
     }
     

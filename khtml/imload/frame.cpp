@@ -39,8 +39,6 @@
 
 namespace khtmlImLoad {
 
-QPixmap* Frame::doubleBuffer = 0;
-
 int Frame::origFrameWidth() const
 {
     return basicPlane->width; 
@@ -93,10 +91,6 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
     unsigned int elapsed = 0;
     
     
-    QPainter* usePainter = p;
-    unsigned int useDX      = dx;
-    unsigned int useDY      = dy;
-    
     //Do some basic clipping, discarding invalid requests and adjusting sizes of others
     if (sy >= usePlane->height)
         return;
@@ -115,19 +109,6 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
     sHeight = ey - sy + 1;     
     sWidth  = ex - sx + 1;
     
-    if (sWidth > Tile::TileSize || sHeight > Tile::TileSize)
-    {
-        if (!doubleBuffer)
-            doubleBuffer = new QPixmap(sWidth, sHeight);
-        else if ((doubleBuffer->width() < sWidth) || (doubleBuffer->height() < sHeight))
-            doubleBuffer->resize(QMAX(sWidth,  doubleBuffer->width()), 
-                                 QMAX(sHeight, doubleBuffer->height()));
-                                 
-        usePainter = new QPainter(doubleBuffer);
-        usePainter->fillRect(0, 0, sWidth, sHeight, Qt::black);
-        useDX = 0;
-        useDY = 0;
-    }
     
     //Calculate the range of tiles to paint, in both directions
     unsigned int startTileY = sy / Tile::TileSize;
@@ -137,7 +118,7 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
     unsigned int endTileX   = ex / Tile::TileSize;
     
     //Walk through all the rows
-    unsigned int paintY = useDY;
+    unsigned int paintY = dy;
     for (unsigned int tileY = startTileY; tileY <= endTileY; ++tileY)
     {
         //see how much we have to paint -- end points are different
@@ -153,7 +134,7 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
         unsigned int paintHeight = endY - startY + 1;
         
         //Now through some columns
-        unsigned int paintX = useDX;
+        unsigned int paintX = dx;
         for (unsigned int tileX = startTileX; tileX <= endTileX; ++tileX)
         {
             //calculate the horizontal size. Some redundancy here, 
@@ -183,17 +164,18 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
             if (!pmap.isNull())
             {
                 //We have to be extra careful if we have an alpha channel and we're double-buffering
-                if (format.hasAlpha() && usePainter != p)
+                //### FIXME: need something like this for the extract mode!
+                /*if (format.hasAlpha() && usePainter != p)
                 {
                     usePainter->end();
                     copyBlt(doubleBuffer, paintX, paintY, &pmap, startX, startY, paintWidth, paintHeight);
                     usePainter->begin(doubleBuffer);
                 }
-                else
-                    usePainter->drawPixmap(paintX, paintY, pmap, startX, startY, paintWidth, paintHeight);
+                else*/
+                p->drawPixmap(paintX, paintY, pmap, startX, startY, paintWidth, paintHeight);
             }
-            else
-                usePainter->fillRect(paintX, paintY, paintWidth, paintHeight, Qt::black);
+            //else ###  extract mode?
+            //    usePainter->fillRect(paintX, paintY, paintWidth, paintHeight, Qt::black);
                 
             paintX += paintWidth;
             
@@ -201,20 +183,13 @@ void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx
             {
                 interrupted = true;
                 
-                interY = (paintY - useDY) + sy;
+                interY = (paintY - dy) + sy;
                 if (tileX == endTileX)
                     interY += paintHeight; //This tile row done
             }
         }
         
         paintY += paintHeight;        
-    }
-    
-    if (usePainter != p)
-    {
-        usePainter->end();
-        delete usePainter;
-        p->drawPixmap(dx, dy, *doubleBuffer, 0, 0, sWidth, sHeight); 
     }
     
     if (interrupted)
