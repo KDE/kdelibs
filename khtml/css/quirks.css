@@ -19,7 +19,7 @@ img[align="right"] {
 /* Tables reset both line-height and white-space in quirks mode.
    Compatible with WinIE. For some reason they don't reset font-family */
 TABLE {
-    Qt::white-space: normal;
+    white-space: normal;
     line-height: normal;
     color: -khtml-text;
     font-size: medium;

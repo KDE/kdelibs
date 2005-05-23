@@ -461,7 +461,7 @@ XMP,
 PLAINTEXT {
 	display: block;
 	font-family: monospace;
-	Qt::white-space: pre;
+	white-space: pre;
 	text-align: -khtml-auto;
 	margin: 1__qem 0;
 }
@@ -495,8 +495,8 @@ ABBR, ACRONYM {
 }
 
 :focus          { outline: 1px dotted invert }
-a:link:active          { color: Qt::red; outline: 1px dotted invert; }
-a:visited:active          { color: Qt::red; outline: 1px dotted invert; }
+a:link:active          { color: red; outline: 1px dotted invert; }
+a:visited:active          { color: red; outline: 1px dotted invert; }
 
 /* With the current design it is too expensive to set this default via CSS
 :before,:after  { white-space: pre-line }
@@ -554,11 +554,11 @@ frame {
 
 nobr {
         display: inline;
-        Qt::white-space: nowrap;
+        white-space: nowrap;
 }
 
 wbr {
-        Qt::white-space: normal;
+        white-space: normal;
 }
 
 marquee {
