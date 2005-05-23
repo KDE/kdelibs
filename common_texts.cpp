@@ -159,7 +159,7 @@ i18n( "Saturday");
 i18n( "Sunday");
 i18n( "&Update");
 // mok - removed "Layout" from here as it has to be translated in many different ways
-//i18n( "Layout");
+// i18n( "Layout");
 i18n( "Highscore");
 i18n( "&New View");
 i18n( "&Insert");
