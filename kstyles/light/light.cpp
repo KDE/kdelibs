@@ -55,4 +55,4 @@ QStyle *LightStylePlugin::create(const QString &s)
     return 0;
 }
 
-KDE_Q_EXPORT_PLUGIN( LightStylePlugin )
+Q_EXPORT_PLUGIN( LightStylePlugin )
