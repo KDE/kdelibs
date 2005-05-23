@@ -529,6 +529,9 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     QSize s(pixmap_size());
     int w = r.width();
     int h = r.height();
+    if (w == 0 || h == 0)  return *Cache::nullPixmap; //Not there yet ### will this be needed
+    // when I fix it to have isComplete?
+
     if ( w*h < 8192 )
     {
         if ( r.width() < BGMINWIDTH )
