@@ -24,6 +24,7 @@
 #include "katerenderer.h"
 
 #include <kglobal.h>
+#include <kdebug.h>
 
 #include <qregexp.h>
 
@@ -427,6 +428,25 @@ char *KateTextLine::restore (char *buf)
   m_noIndentationBasedFolding=nibf;
   buf += sizeof(bool);
   return buf;
+}
+
+void KateTextLine::addAttribute (int start, int length, int attribute)
+{
+//  kdDebug () << "addAttribute: " << start << " " << length << " " << attribute << endl;
+
+  // try to append to previous range
+  if ((m_attributesList.size() > 2) && (m_attributesList[m_attributesList.size()-1] == attribute)
+      && (m_attributesList[m_attributesList.size()-3]+m_attributesList[m_attributesList.size()-2]
+         == start))
+  {
+    m_attributesList[m_attributesList.size()-2] += length;
+    return;
+  }
+
+  m_attributesList.resize (m_attributesList.size()+3);
+  m_attributesList[m_attributesList.size()-3] = start;
+  m_attributesList[m_attributesList.size()-2] = length;
+  m_attributesList[m_attributesList.size()-1] = attribute;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

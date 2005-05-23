@@ -1329,6 +1329,9 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
 {
   if (!textLine)
     return;
+    
+  // in all cases, remove old hl, or we will grow to infinite ;)
+  textLine->clearAttributes ();
 
   if (noHl)
   {
@@ -1509,7 +1512,11 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         // even set attributes ;)
         memset ( textLine->attributes()+offset
                , item->onlyConsume ? context->attr : item->attr
-               , len-offset);
+               , offset2-offset);
+
+        int attribute = item->onlyConsume ? context->attr : item->attr;
+        if (attribute > 0)
+          textLine->addAttribute (offset, offset2-offset, attribute);
 
         offset = offset2;
         lastChar = text[offset-1];
@@ -1543,6 +1550,10 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
     else
     {
       *(textLine->attributes() + offset) = context->attr;
+      
+      if (context->attr > 0)
+        textLine->addAttribute (offset, 1, context->attr);
+      
       lastChar = text[offset];
       offset++;
     }

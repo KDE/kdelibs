@@ -404,6 +404,16 @@ class KateTextLine : public KShared
      * @return buffer index after restoring
      */
     char *restore (char *buf);
+    
+  /**
+   * methodes to manipulate the attribute list
+   */
+  public:
+    void addAttribute (int start, int length, int attribute);
+    
+    void clearAttributes () { m_attributesList.clear (); }
+    
+    const QVector<int> &attributesList () const { return m_attributesList; }
 
   /**
    * REALLY PRIVATE ;) please no new friend classes
@@ -420,6 +430,12 @@ class KateTextLine : public KShared
      * Each letter in m_text has a uchar attribute
      */
     QVector<uchar> m_attributes;
+    
+    /**
+     * new kind to store the attribs, int array
+     * one int len, next one len, next one attrib
+     */
+    QVector<int> m_attributesList;
 
     /**
      * context stack
