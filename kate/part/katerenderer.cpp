@@ -33,6 +33,7 @@
 
 #include <qpainter.h>
 #include <q3popupmenu.h>
+#include <QTextLayout>
 
 static const QChar tabChar('\t');
 static const QChar spaceChar(' ');
@@ -44,6 +45,10 @@ KateRenderer::KateRenderer(KateDocument* doc, KateView *view)
     , m_showTabs(true)
     , m_printerFriendly(false)
 {
+  m_width = 0;
+  m_height = 0;
+  m_startLine = 0;
+
   KateFactory::self()->registerRenderer ( this );
   m_config = new KateRendererConfig (this);
 
@@ -1015,4 +1020,49 @@ uint KateRenderer::spaceWidth()
   return attribute(0)->width(*config()->fontStruct(), spaceChar, m_tabWidth);
 }
 
+void KateRenderer::layoutText (int width, int height, int startLine, bool wrapText)
+{
+  return;
+  kdDebug () << "layoutText: width: " << width << " height: " << height << " startLine: " << startLine << endl; 
+
+  m_width = width;
+  m_height = height;
+  m_startLine = startLine;
+    
+  for (int i = 0; i < m_layouts.size(); ++i)
+    delete m_layouts[i];
+  m_layouts.clear ();
+
+  int curHeight = 0;
+  int curLine = m_startLine;
+  while ((curHeight < m_height) && (curLine < m_doc->numLines()))
+  {
+    QTextLayout *l = new QTextLayout (m_doc->kateTextLine(curLine)->string(), config()->fontStruct()->font(false, false));
+    l->beginLayout();
+    
+    int h = 0;
+    while (true)
+    {
+      QTextLine line = l->createLine();
+      
+      if (!line.isValid())
+        break;
+        
+      if (wrapText)
+        line.setLineWidth ( width );
+        
+      h += line.height ();  
+    }
+    
+    l->endLayout ();
+    
+    kdDebug () << "layout: line: " << curLine << " height: " << h << endl; 
+
+    m_layouts.append (l);
+    
+    curHeight += h;
+    ++curLine;
+  }
+}
+  
 // kate: space-indent on; indent-width 2; replace-tabs on;

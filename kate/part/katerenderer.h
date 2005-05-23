@@ -28,6 +28,8 @@
 
 #include <qfont.h>
 #include <qfontmetrics.h>
+#include <QList>
+#include <QTextLayout>
 
 class KateDocument;
 class KateView;
@@ -228,6 +230,19 @@ public:
      *   attribute(myktextline->attribute(position));
      */
     KateAttribute* attribute(uint pos);
+
+  /**
+   * new stuff for the QTextLayout
+   */
+  public:
+    void layoutText (int width, int height, int startLine, bool wrapText);
+
+  private:
+    int m_width;
+    int m_height;
+    int m_startLine;
+    
+    QList<QTextLayout *> m_layouts;
 
   private:
     /**

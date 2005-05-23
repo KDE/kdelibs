@@ -550,7 +550,9 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
         lineRanges[z].dirty = true;
       }
     }
-  }
+  }    
+  
+  m_view->renderer()->layoutText (width(), height(), m_doc->getRealLine(startPos().line()), m_view->dynWordWrap()); 
 
   if (m_view->dynWordWrap())
   {

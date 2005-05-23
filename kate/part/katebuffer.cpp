@@ -1039,8 +1039,8 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     m_highlight->doHighlight (prevLine, textLine, &foldingList, &ctxChanged);
 
     // debug stuff
-    kdDebug () << "current line to hl: " << current_line + buf->startLine() << endl;
-    kdDebug () << "text length: " << textLine->length() << " attribute list size: " << textLine->attributesList().size() << endl;
+    //kdDebug () << "current line to hl: " << current_line + buf->startLine() << endl;
+    //kdDebug () << "text length: " << textLine->length() << " attribute list size: " << textLine->attributesList().size() << endl;
     /*
     const QVector<int> &ml (textLine->attributesList());
     for (int i=2; i < ml.size(); i+=3)
