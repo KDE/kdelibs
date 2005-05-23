@@ -472,6 +472,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
 CachedImage::~CachedImage()
 {
     clear();
+    delete i;
 }
 
 void CachedImage::ref( CachedObjectClient *c )
@@ -827,7 +828,7 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
 
 void CachedImage::clear()
 {
-    delete i;   i = 0;
+    delete i;   i = new khtmlImLoad::Image(this);
     bgColor = qRgba( 0, 0, 0, 0xff );
     delete bg;  bg = 0;
 /*    delete p;   p = 0;
