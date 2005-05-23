@@ -76,6 +76,12 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h \
 		kiconviewsearchline.h ktoolbarlabelaction.h kshortcutdialog.h
 
+# this is needed to create the .h files from .ui sources and avoid
+# failing because of undefined references.
+libkdeui_la_COMPILE_FIRST = \
+		kshortcutdialog_simple.h kshortcutdialog_advanced.h \
+		kspellui.h
+
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
 # the files on the first line need to occur first when compiling
