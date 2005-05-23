@@ -53,6 +53,8 @@
 
 #include <khtml_settings.h>
 #include <dom/dom_string.h>
+#include "imload/image.h"
+#include "imload/imageowner.h"
 
 class QMovie;
 class KHTMLPart;
@@ -246,26 +248,29 @@ namespace khtml
     /**
      * a cached image
      */
-    class CachedImage : public QObject, public CachedObject
+    class CachedImage : public QObject, public CachedObject, public khtmlImLoad::ImageOwner
     {
 	Q_OBJECT
     public:
 	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept);
 	virtual ~CachedImage();
 
-	QPixmap pixmap() const;
+	//QPixmap pixmap() const;
 	const QPixmap &tiled_pixmap(const QColor& bg);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
-        QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
+        //QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
 
         void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
+        void scale(int width, int height);
+        void paint(QPainter* p, int width, int height);
+
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
-        bool isTransparent() const { return isFullyTransparent; }
+        bool isTransparent() const { return false; } //### isFullyTransparent; }
         bool isErrorImage() const { return m_hadError; }
         bool isBlockedImage() const { return m_wasBlocked; }
         const QString& suggestedFilename() const { return m_suggestedFilename; }
@@ -286,27 +291,28 @@ namespace khtml
     protected:
 	void clear();
 
-    private slots:
-	/**
-	 * gets called, whenever a QMovie changes frame
-	 */
-	void movieUpdated( const QRect &rect );
-        void movieStatus(int);
-        void movieResize(const QSize&);
-        void deleteMovie();
-
     private:
-        void do_notify(const QPixmap& p, const QRect& r);
+        /**
+         Interface to the image
+        */
+        virtual void imageHasGeometry(khtmlImLoad::Image* img, int width, int height);
+        virtual void imageChange     (khtmlImLoad::Image* img, QRect region);
+        virtual void imageError      (khtmlImLoad::Image* img);
+    private:
+        void do_notify(const QRect& r);
+        khtmlImLoad::Image* i;
 
         QString m_suggestedFilename;
 #ifdef IMAGE_TITLES
         QString m_suggestedTitle;
 #endif
-	QMovie* m;
+/*	QMovie* m;
         QPixmap* p;
-	QPixmap* bg;
+	
+        
+        mutable QPixmap* pixPart;*/
+        QPixmap* bg;
         QRgb bgColor;
-        mutable QPixmap* pixPart;
 
         ImageSource* imgSource;
         const char* formatType;  // Is the name of the movie format type

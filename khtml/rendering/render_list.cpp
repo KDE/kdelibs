@@ -293,7 +293,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int offset = fm.ascent()*2/3;
     bool haveImage = m_listImage && !m_listImage->isErrorImage();
     if (haveImage)
-        offset = m_listImage->pixmap().width();
+        offset = m_listImage->pixmap_size().width();
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;
@@ -311,7 +311,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         xoff += haveImage ? cMarkerPadding : (m_width - bulletWidth);
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
-	p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
+	m_listImage->paint( p, _tx + xoff, _ty );
         return;
     }
 
@@ -394,10 +394,10 @@ void RenderListMarker::layout()
     setNeedsLayout(false);
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
+void RenderListMarker::updatePixmap( const QRect& r, CachedImage *o)
 {
     if(o != m_listImage) {
-        RenderBox::setPixmap(p, r, o);
+        RenderBox::updatePixmap(r, o);
         return;
     }
 
@@ -414,10 +414,10 @@ void RenderListMarker::calcMinMaxWidth()
     m_markerWidth = m_width = 0;
 
     if(m_listImage) {
-        m_markerWidth = m_listImage->pixmap().width() + cMarkerPadding;
+        m_markerWidth = m_listImage->pixmap_size().width() + cMarkerPadding;
         if (listPositionInside())
             m_width = m_markerWidth;
-        m_height = m_listImage->pixmap().height();
+        m_height = m_listImage->pixmap_size().height();
         m_minWidth = m_maxWidth = m_width;
         setMinMaxKnown();
         return;

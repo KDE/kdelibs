@@ -229,9 +229,9 @@ long HTMLImageElementImpl::height() const
 QImage HTMLImageElementImpl::currentImage() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
-
-    if(r)
-        return r->pixmap().convertToImage();
+#warning "FIXME"
+    //if(r)
+    //    return r->pixmap().convertToImage();
 
     return QImage();
 }
@@ -240,8 +240,9 @@ QPixmap HTMLImageElementImpl::currentPixmap() const
 {
     RenderImage *r = static_cast<RenderImage*>(renderer());
 
-    if(r)
-        return r->pixmap();
+#warning "FIXME"
+    //if(r)
+    //    return r->pixmap();
 
     return QPixmap();
 }

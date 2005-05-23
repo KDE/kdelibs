@@ -684,7 +684,7 @@ public:
      */
     virtual long maxOffset() const { return 0; }
 
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
+    virtual void updatePixmap(const QRect&, CachedImage *);
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

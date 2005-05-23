@@ -525,7 +525,8 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     if ((!parent() && m_firstLine && styleToUse != object()->style()) || 
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
         CachedImage* bg = styleToUse->backgroundImage();
-        bool hasBackgroundImage = bg && (bg->pixmap_size() == bg->valid_rect().size()) &&
+#warning "FIXME"
+        bool hasBackgroundImage = bg && /* (bg->pixmap_size() == bg->valid_rect().size())  && */
                                   !bg->isTransparent() && !bg->isErrorImage();
         if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
             object()->paintBackgroundExtended(pI.p, styleToUse->backgroundColor(),

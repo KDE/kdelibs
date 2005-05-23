@@ -44,6 +44,7 @@
 
 #include "misc/loader.h"
 #include "misc/seed.h"
+#include "imload/image.h"
 
 // default cache size
 #define DEFCACHESIZE 2096*1024
@@ -441,9 +442,9 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
 
-    m = 0;
-    p = 0;
-    pixPart = 0;
+    i = new khtmlImLoad::Image(this);
+    //p = 0;
+    //pixPart = 0;
     bg = 0;
     bgColor = qRgba( 0, 0, 0, 0xFF );
     typeChecked = false;
@@ -477,24 +478,25 @@ void CachedImage::ref( CachedObjectClient *c )
 {
     CachedObject::ref(c);
 
-    if( m ) {
-        m->unpause();
-        if( m->state() == QMovie::NotRunning || m_clients.count() == 1 )
-            m->restart();
-    }
+//     if( m ) {
+//         m->unpause();
+//         if( m->state() == QMovie::NotRunning || m_clients.count() == 1 )
+//             m->restart();
+//     }
 
     // for mouseovers, dynamic changes
-    if ( m_status >= Persistent && !valid_rect().isNull() ) {
+//???
+/*    if ( m_status >= Persistent && !valid_rect().isNull() ) {
         c->setPixmap( pixmap(), valid_rect(), this);
         c->notifyFinished( this );
-    }
+    }*/
 }
 
 void CachedImage::deref( CachedObjectClient *c )
 {
     CachedObject::deref(c);
-    if(m && m_clients.isEmpty() && m->running())
-        m->pause();
+/*    if(m && m_clients.isEmpty() && m->running())
+        m->pause();*/
 }
 
 #define BGMINWIDTH      32
@@ -503,6 +505,8 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
+#warning "Re-implement!"
+
     static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
     if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
         delete bg; bg = 0;
@@ -511,9 +515,12 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (bg)
         return *bg;
 
-    const QPixmap &r = pixmap();
+    i->dontScale();
+    QPixmap r (i->originalSize().width(), i->originalSize().height());
+    QPainter paint(&r);
+    i->paint(0, 0, &paint, 0, 0, i->originalSize().width(), i->originalSize().height());
+    paint.end();
 
-    if (r.isNull()) return r;
 
     // no error indication for background images
     if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
@@ -599,9 +606,10 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         return *bg;
     }
 
-    return r;
+    *bg = r;
+    return *bg;
 }
-
+/*
 QPixmap CachedImage::pixmap( ) const
 {
 #ifdef __GNUC__
@@ -636,44 +644,76 @@ QPixmap CachedImage::pixmap( ) const
         return *p;
 
     return *Cache::nullPixmap;
-}
+}*/
 
 
 QSize CachedImage::pixmap_size() const
 {
     if (m_wasBlocked) return Cache::blockedPixmap->size();
-    return (m_hadError ? Cache::brokenPixmap->size() : m ? m->framePixmap().size() : ( p ? p->size() : QSize()));
+    if (m_hadError)   return Cache::brokenPixmap->size();
+    if (i)            return i->originalSize();
+    return QSize();
 }
 
-
-QRect CachedImage::valid_rect() const
+void CachedImage::paint(QPainter* p, int x, int y)
 {
-    if (m_wasBlocked) return Cache::blockedPixmap->rect();
-    return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->frameRect() : ( p ? p->rect() : QRect()) );
+    i->paint(x, y, p, 0, 0, i->originalSize().width(), i->originalSize().height());
+}
+
+void CachedImage::scale(int width, int height)
+{
+    i->scale(width, height);
 }
 
 
-void CachedImage::do_notify(const QPixmap& p, const QRect& r)
+void CachedImage::imageHasGeometry(khtmlImLoad::Image* img, int width, int height)
+{
+}
+
+void CachedImage::imageChange     (khtmlImLoad::Image* img, QRect region)
+{
+    //### this is overly conservative -- I guess we need to also specify reason,
+    //e.g. repaint vs. changed !!!
+    delete bg;
+    bg = 0;
+
+    do_notify(region);
+}
+
+void CachedImage::imageError      (khtmlImLoad::Image* img)
+{
+    m_hadError = true;
+}
+
+
+// QRect CachedImage::valid_rect() const
+// {
+//     if (m_wasBlocked) return Cache::blockedPixmap->rect();
+//     return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->frameRect() : ( p ? p->rect() : QRect()) );
+// }
+
+
+void CachedImage::do_notify(const QRect& r)
 {
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
-        it()->setPixmap( p, r, this);
+        it()->notifyPixmap( r, this);
 }
 
 
-void CachedImage::movieUpdated( const QRect& r )
-{
-#ifdef LOADER_DEBUG
-    qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
-           m->framePixmap().size().width(), m->framePixmap().size().height());
-#endif
-
-    do_notify(m->framePixmap(), r);
-}
+// void CachedImage::movieUpdated( const QRect& r )
+// {
+// #ifdef LOADER_DEBUG
+//     qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
+//            m->framePixmap().size().width(), m->framePixmap().size().height());
+// #endif
+// 
+//     do_notify(m->framePixmap(), r);
+// }
+#if 0
 
 void CachedImage::movieStatus(int status)
 {
 #warning QMovie emits different signals now and requires different ways to call
-#if 0
 #ifdef LOADER_DEBUG
     qDebug("movieStatus(%d)", status);
 #endif
@@ -739,9 +779,6 @@ void CachedImage::movieStatus(int status)
             it()->notifyFinished( this );
     }
 
-#endif
-
-#if 0
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
 #ifdef LOADER_DEBUG
@@ -751,16 +788,17 @@ void CachedImage::movieStatus(int status)
 #endif
         do_notify(pixmap(), valid_rect());
     }
+}
 #endif
-}
 
-void CachedImage::movieResize(const QSize& /*s*/)
-{
-    do_notify(m->framePixmap(), QRect());
-}
+// void CachedImage::movieResize(const QSize& /*s*/)
+// {
+//     do_notify(m->framePixmap(), QRect());
+// }
 
 void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
+#if 0
     m_showAnimations = showAnimations;
     if ( (m_showAnimations == KHTMLSettings::KAnimationDisabled) && imgSource ) {
 #warning QDataSource
@@ -774,20 +812,24 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
         QTimer::singleShot(0, this, SLOT( deleteMovie()));
         imgSource = 0;
     }
+#endif
+
+#warning "Use largeimagelib to disable animation"
 }
 
-void CachedImage::deleteMovie()
-{
-    delete m; m = 0;
-}
+// void CachedImage::deleteMovie()
+// {
+//     delete m; m = 0;
+// }
 
 void CachedImage::clear()
 {
-    delete m;   m = 0;
-    delete p;   p = 0;
-    delete bg;  bg = 0;
+    delete i;   i = 0;
     bgColor = qRgba( 0, 0, 0, 0xff );
-    delete pixPart; pixPart = 0;
+    delete bg;  bg = 0;
+/*    delete p;   p = 0;
+    
+    delete pixPart; pixPart = 0; */
 
     formatType = 0;
     typeChecked = false;
@@ -799,15 +841,20 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-    return;
-
 #ifdef LOADER_DEBUG
     kdDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
-    if ( !typeChecked )
-    {
+    i->processData((uchar*)_buffer.data().data(), _buffer.data().length());
+
+    _buffer.close();
+
+    if (eof)
+        i->processEOF();
+
+    //if ( !typeChecked )
+    //{
         // don't attempt incremental loading if we have all the data already
-        assert(!eof);
+      //  assert(!eof);
 
 #warning QImage* requires heavy porting
 #if 0
@@ -861,17 +908,17 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                 it()->notifyFinished( this );
         }
 #endif
-    }
+    //}
 }
 
 void CachedImage::finish()
 {
-    Status oldStatus = m_status;
+    //Status oldStatus = m_status;
     CachedObject::finish();
-    if ( oldStatus != m_status ) {
+/*    if ( oldStatus != m_status ) {
 	const QPixmap &pm = pixmap();
 	do_notify( pm, pm.rect() );
-    }
+    }*/
     QSize s = pixmap_size();
     setSize( s.width() * s.height() * 2);
 }
@@ -883,7 +930,7 @@ void CachedImage::error( int /*err*/, const char* /*text*/ )
     typeChecked = true;
     m_hadError = true;
     m_loading = false;
-    do_notify(pixmap(), QRect(0, 0, 16, 16));
+    do_notify(QRect(0, 0, 16, 16));
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->notifyFinished(this);
 }
@@ -1442,11 +1489,11 @@ void Cache::statistics()
         {
             CachedImage *im = static_cast<CachedImage *>(o);
             images++;
-            if(im->m != 0)
+            /*if(im->m != 0)
             {
                 movie++;
                 msize += im->size();
-            }
+            }*/
             break;
         }
         case CachedObject::CSSStyleSheet:
@@ -1578,7 +1625,7 @@ void Cache::insertInLRUList(CachedObject *object)
 
 // --------------------------------------
 
-void CachedObjectClient::setPixmap(const QPixmap &, const QRect&, CachedImage *) {}
+void CachedObjectClient::notifyPixmap(const QRect&, CachedImage *) {}
 void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
 void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}

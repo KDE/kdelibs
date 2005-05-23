@@ -78,10 +78,10 @@ RenderImage::~RenderImage()
     if (oimage) oimage->deref( this );
 }
 
-QPixmap RenderImage::pixmap() const
-{
-    return image ? image->pixmap() : QPixmap();
-}
+// QPixmap RenderImage::pixmap() const
+// {
+//     return image ? image->pixmap() : QPixmap();
+// }
 
 void RenderImage::setStyle(RenderStyle* _style)
 {
@@ -97,21 +97,21 @@ void RenderImage::setContentObject(CachedObject* co )
         updateImage( static_cast<CachedImage*>( co ) );
 }
 
-void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
+void RenderImage::updatePixmap( const QRect& r, CachedImage *o)
 {
     if ( o == oimage )
         return;
 
     if(o != image) {
-        RenderReplaced::setPixmap(p, r, o);
+        RenderReplaced::updatePixmap(r, o);
         return;
     }
 
     bool iwchanged = false;
 
     if(o->isErrorImage()) {
-        int iw = p.width() + 8;
-        int ih = p.height() + 8;
+        int iw = o->pixmap_size().width() + 8;
+        int ih = o->pixmap_size().height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
         if ( element() && !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
@@ -185,24 +185,12 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
     else
     {
-        bool completeRepaint = !resizeCache.isNull();
         int cHeight = contentHeight();
-        int scaledHeight = intrinsicHeight() ? ((o->valid_rect().height()*cHeight)/intrinsicHeight()) : 0;
+        //### FIXME!
+        //int scaledHeight = intrinsicHeight() ? ((o->valid_rect().height()*cHeight)/intrinsicHeight()) : 0;
 
-        // don't bog down X server doing xforms
-        if(completeRepaint && cHeight >= 5 &&  o->valid_rect().height() < intrinsicHeight() &&
-           (scaledHeight / (cHeight/5) == resizeCache.height() / (cHeight/5)))
-            return;
-
-        resizeCache = QPixmap(); // for resized animations
-
-        if(completeRepaint)
-            repaintRectangle(borderLeft()+paddingLeft(), borderTop()+paddingTop(), contentWidth(), contentHeight());
-        else
-        {
-            repaintRectangle(r.x() + borderLeft() + paddingLeft(), r.y() + borderTop() + paddingTop(),
-                             r.width(), r.height());
-        }
+        repaintRectangle(r.x() + borderLeft() + paddingLeft(), r.y() + borderTop() + paddingTop(),
+                            r.width(), r.height());
     }
 }
 
@@ -235,8 +223,10 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
-                     ? oimage : image;
+    //CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
+    //                 ? oimage : image;
+#warning "FIXME: when isComplete added, use this"
+    CachedImage* i = image;
 
     // paint frame around image as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
@@ -267,13 +257,15 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                 qDrawShadePanel( paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
-            QPixmap pix = i ? i->pixmap() : QPixmap();
-            if(berrorPic && !pix.isNull() && (cWidth >= pix.width()+4) && (cHeight >= pix.height()+4) )
+            //QPixmap pix = i ? i->pixmap() : QPixmap();
+            /* ### Use error image directly here 
+             if(berrorPic && !pix.isNull() && (cWidth >= pix.width()+4) && (cHeight >= pix.height()+4) )
             {
                 QRect r(pix.rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
                 paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), pix, r );
             }
+           */
             if(!alt.isEmpty()) {
                 QString text = alt.string();
                 paintInfo.p->setFont(style()->font());
@@ -289,66 +281,9 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     else if (i && !i->isTransparent())
     {
         paintInfo.p->setPen( Qt::black ); // used for bitmaps
-        const QPixmap& pix = i->pixmap();
-        if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
-             pix.width() > 0 && pix.height() > 0 && i->valid_rect().isValid())
-        {
-            if (resizeCache.isNull() && cWidth && cHeight && intrinsicWidth() && intrinsicHeight())
-            {
-                QRect scaledrect(i->valid_rect());
-//                 kdDebug(6040) << "time elapsed: " << dt->elapsed() << endl;
-//                  kdDebug( 6040 ) << "have to scale: " << endl;
-//                  qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
-//                          cWidth, cHeight, intrinsicWidth(), intrinsicHeight(), resizeCache.width(), resizeCache.height());
-                QMatrix matrix;
-                matrix.scale( (float)(cWidth)/intrinsicWidth(),
-                              (float)(cHeight)/intrinsicHeight() );
-                resizeCache = pix.xForm( matrix );
-                scaledrect.setWidth( ( cWidth*scaledrect.width() ) / intrinsicWidth() );
-                scaledrect.setHeight( ( cHeight*scaledrect.height() ) / intrinsicHeight() );
-//                   qDebug("resizeCache size: %d/%d", resizeCache.width(), resizeCache.height());
-//                   qDebug("valid: %d/%d, scaled: %d/%d",
-//                          i->valid_rect().width(), i->valid_rect().height(),
-//                          scaledrect.width(), scaledrect.height());
-
-                // sometimes scaledrect.width/height are off by one because
-                // of rounding errors. if the i is fully loaded, we
-                // make sure that we don't do unnecessary resizes during painting
-                QSize s(scaledrect.size());
-                if(i->valid_rect().size() == QSize( intrinsicWidth(), intrinsicHeight() )) // fully loaded
-                    s = QSize(cWidth, cHeight);
-                if(kAbs(s.width() - cWidth) < 2) // rounding errors
-                    s.setWidth(cWidth);
-                if(resizeCache.size() != s)
-                    resizeCache.resize(s);
-
-                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
-                               resizeCache, scaledrect );
-            }
-            else
-                paintInfo.p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
-        }
-        else
-        {
-            // we might be just about switching images
-            QRect rect(i->valid_rect().isValid() ? i->valid_rect()
-                       : QRect(0, 0, intrinsicWidth(), intrinsicHeight()));
-
-            QPoint offs( _tx + leftBorder + leftPad, _ty + topBorder + topPad);
-//             qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
-//             rect = rect & QRect( 0 , y - offs.y() - 10, w, 10 + y + h  - offs.y());
-
-//             qDebug("normal paint rect after %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
-//             qDebug("normal paint: offs.y(): %d, y: %d, diff: %d", offs.y(), y, y - offs.y());
-//             qDebug("");
-
-//           p->setClipRect(QRect(x,y,w,h));
-
-
-//             p->drawPixmap( offs.x(), y, pix, rect.x(), rect.y(), rect.width(), rect.height() );
-             paintInfo.p->drawPixmap(offs, pix, rect);
-
-        }
+        //const QPixmap& pix = i->pixmap();
+        i->scale(contentWidth(), contentHeight());
+        i->paint(paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad);
     }
     if (m_selectionState != SelectionNone) {
 //    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
@@ -404,8 +339,6 @@ void RenderImage::layout()
 	m_height = (int) (m_height/scale);
     }
 
-    if ( m_width != oldwidth || m_height != oldheight )
-        resizeCache = QPixmap();
 
     setNeedsLayout(false);
 }
@@ -501,7 +434,8 @@ bool RenderImage::complete() const
 {
      // "complete" means that the image has been loaded
      // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
-     return image && image->valid_rect().size() == image->pixmap_size() && !needsLayout();
+    //### FIXME!
+     return image && /*image->valid_rect().size() == image->pixmap_size() &&*/ !needsLayout();
 }
 
 short RenderImage::calcReplacedWidth() const

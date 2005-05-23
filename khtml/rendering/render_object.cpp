@@ -488,11 +488,12 @@ bool RenderObject::hasStaticY() const
     return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
 }
 
-void RenderObject::setPixmap(const QPixmap&, const QRect& /*r*/, CachedImage* image)
+void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
 {
+#warning "FIXME: Check if complete!"
     //repaint bg when it finished loading
     if(image && parent() && style() && style()->backgroundImage() == image
-       && image->valid_rect().size() == image->pixmap_size() ) {
+       /* && image->valid_rect().size() == image->pixmap_size()*/ ) {
         isBody() ? canvas()->repaint() : repaint();
     }
 }

@@ -98,7 +98,7 @@ public:
     virtual short lineHeight( bool firstLine ) const;
     virtual short baselinePosition( bool firstLine ) const;
 
-    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
+    virtual void updatePixmap( const QRect&, CachedImage *);
 
     virtual void calcWidth();
 
