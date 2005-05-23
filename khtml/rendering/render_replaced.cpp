@@ -420,8 +420,6 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
-#include <private/qinternal_p.h>
-
 // The PaintBuffer class provides a shared buffer for widget painting.
 //
 // It will grow to encompass the biggest widget encountered, in order to avoid
@@ -579,13 +577,10 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-//    const bool dsbld = QSharedDoubleBuffer::isDisabled();
-//    QSharedDoubleBuffer::setDisabled(true);
     QRect rr = pI.r;
     rr.moveBy(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
     copyWidget(r, p, widget, tx, ty);
-//    QSharedDoubleBuffer::setDisabled(dsbld);
 
     allowWidgetPaintEvents = false;
 }
