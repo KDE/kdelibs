@@ -610,7 +610,9 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         return *bg;
     }
 
-    *bg = r;
+    if (!bg)
+        bg = new QPixmap(r);
+
     return *bg;
 }
 /*
