@@ -534,6 +534,8 @@ protected slots:
   void slotSizeStop();
   void slotSizeDetermine();
 
+signals:
+  void leaveModality();
 private slots:
   // workaround for compiler bug
   void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
@@ -604,6 +606,9 @@ private slots:
 
   void slotChmodResult( KIO::Job * );
   void slotShowAdvancedPermissions();
+
+signals:
+  void leaveModality();
 
 private:
   void setComboContent(QComboBox *combo, PermissionsTarget target,
