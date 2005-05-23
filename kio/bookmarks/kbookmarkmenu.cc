@@ -503,10 +503,7 @@ void KBookmarkMenu::addAddBookmark()
   if (!kapp->authorizeKAction("bookmarks"))
      return;
 
-  QString title = i18n( "&Add Bookmark" );
-  int p;
-  while ( ( p = title.find( '&' ) ) >= 0 )
-    title.remove( p, 1 );
+  QString title = i18n( "Add Bookmark" );
 
   KAction * paAddBookmarks = new KAction( title,
                                           "bookmark_add",
