@@ -69,6 +69,9 @@ k_dcop:
     void setCell( const int& point = 3 );
     Q3ValueList<DCOPRef> getWindows();
 
+    long int testLongInt( long int n );
+    long testLong( long n );
+
 k_dcop_signals:
     void blah_signal();
 
