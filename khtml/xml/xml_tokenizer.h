@@ -146,7 +146,7 @@ public:
 
 private:
     QString      m_data;
-    uint         m_pos;
+    int          m_pos;
     const QChar *m_unicode;
     bool         m_finished;
 };
