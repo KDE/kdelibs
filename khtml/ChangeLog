@@ -1,3 +1,8 @@
+2005-05-24  David Faure  <faure@kde.org>
+
+        * html/html_tableimpl.cpp (appendChild): Allow javascript to insert
+        a TR directly into a TABLE, creating a TBODY section if needed (bug #105586).
+
 2005-05-21  Harri Porten  <porten@kde.org>
 
 	* html/html_documentimpl.cpp: emit onload event even if the

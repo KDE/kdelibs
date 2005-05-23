@@ -307,6 +307,19 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
         exceptioncode = DOMException::INDEX_SIZE_ERR;
 }
 
+NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
+{
+    if(child->id() == ID_TR) { // #105586, allow to insert a TR inside a TABLE, creation section as needed
+        // See insertRow
+        if (!firstBody && !head && !foot && !hasChildNodes())
+            setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
+        Q_ASSERT( firstBody );
+        if (firstBody)
+            return firstBody->appendChild( child, exceptioncode );
+    }
+    return HTMLElementImpl::appendChild( child, exceptioncode );
+}
+
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
