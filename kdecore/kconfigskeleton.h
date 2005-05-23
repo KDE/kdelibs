@@ -469,11 +469,11 @@ public:
   /**
    * Class for handling an 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
+  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
-    ItemInt64(const QString & group, const QString & key, Q_INT64 &reference,
-            Q_INT64 defaultValue = 0);
+    ItemInt64(const QString & group, const QString & key, qint64 &reference,
+            qint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -482,14 +482,14 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(Q_INT64);
-    void setMaxValue(Q_INT64);
+    void setMinValue(qint64);
+    void setMaxValue(qint64);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    Q_INT64 mMin;
-    Q_INT64 mMax;
+    qint64 mMin;
+    qint64 mMax;
   };
 
   /**
@@ -598,11 +598,11 @@ public:
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
+  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
-    ItemUInt64(const QString & group, const QString & key, Q_UINT64 &reference,
-            Q_UINT64 defaultValue = 0);
+    ItemUInt64(const QString & group, const QString & key, quint64 &reference,
+            quint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -611,14 +611,14 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(Q_UINT64);
-    void setMaxValue(Q_UINT64);
+    void setMinValue(quint64);
+    void setMaxValue(quint64);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    Q_UINT64 mMin;
-    Q_UINT64 mMax;
+    quint64 mMin;
+    quint64 mMax;
   };
 
   /**
@@ -987,7 +987,7 @@ public:
                           const QString & key = QString::null);
 
   /**
-   * Register an item of type Q_INT64.
+   * Register an item of type qint64.
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -997,12 +997,12 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemInt64 *addItemInt64(const QString & name, Q_INT64 &reference,
-                          Q_INT64 defaultValue = 0,
+  ItemInt64 *addItemInt64(const QString & name, qint64 &reference,
+                          qint64 defaultValue = 0,
                           const QString & key = QString::null);
 
   /**
-   * Register an item of type Q_UINT64
+   * Register an item of type quint64
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -1012,8 +1012,8 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemUInt64 *addItemUInt64(const QString & name, Q_UINT64 &reference,
-                            Q_UINT64 defaultValue = 0,
+  ItemUInt64 *addItemUInt64(const QString & name, quint64 &reference,
+                            quint64 defaultValue = 0,
                             const QString & key = QString::null);
 
   /**

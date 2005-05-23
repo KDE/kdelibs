@@ -463,7 +463,7 @@ public:
    * the read value cannot be interpreted.
    * @return The value for this key.
    */
-  Q_INT64 readNum64Entry( const QString& pKey, Q_INT64 nDefault = 0 ) const;
+  qint64 readNum64Entry( const QString& pKey, qint64 nDefault = 0 ) const;
 
   /**
    * Reads a 64-bit numerical value.
@@ -476,7 +476,7 @@ public:
    * the read value cannot be interpreted.
    * @return The value for this key.
    */
-  Q_INT64 readNum64Entry( const char *pKey, Q_INT64 nDefault = 0 ) const;
+  qint64 readNum64Entry( const char *pKey, qint64 nDefault = 0 ) const;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -489,7 +489,7 @@ public:
    * the read value cannot be interpreted.
    * @return The value for this key.
    */
-  Q_UINT64 readUnsignedNum64Entry( const QString& pKey, Q_UINT64 nDefault = 0 ) const;
+  quint64 readUnsignedNum64Entry( const QString& pKey, quint64 nDefault = 0 ) const;
 
   /**
    * Read an 64-bit unsigned numerical value.
@@ -502,7 +502,7 @@ public:
    * the read value cannot be interpreted.
    * @return The value for this key.
    */
-  Q_UINT64 readUnsignedNum64Entry( const char *pKey, Q_UINT64 nDefault = 0 ) const;
+  quint64 readUnsignedNum64Entry( const char *pKey, quint64 nDefault = 0 ) const;
 
   /**
    * Reads a floating point value.
@@ -1161,7 +1161,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const QString& pKey, Q_INT64 nValue,
+  void writeEntry( const QString& pKey, qint64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
   /**
@@ -1178,7 +1178,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const char *pKey, Q_INT64 nValue,
+  void writeEntry( const char *pKey, qint64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -1196,7 +1196,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const QString& pKey, Q_UINT64 nValue,
+  void writeEntry( const QString& pKey, quint64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
   /**
@@ -1213,7 +1213,7 @@ public:
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
    */
-  void writeEntry( const char *pKey, Q_UINT64 nValue,
+  void writeEntry( const char *pKey, quint64 nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 

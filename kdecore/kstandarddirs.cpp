@@ -336,7 +336,7 @@ for (QStringList::ConstIterator pit = prefixes.begin();
     else return dir + filename;
 }
 
-static Q_UINT32 updateHash(const QString &file, Q_UINT32 hash)
+static quint32 updateHash(const QString &file, quint32 hash)
 {
     QByteArray cFile = QFile::encodeName(file);
     KDE_struct_stat buff;
@@ -344,15 +344,15 @@ static Q_UINT32 updateHash(const QString &file, Q_UINT32 hash)
         (KDE_stat( cFile, &buff ) == 0) &&
         (S_ISREG( buff.st_mode )))
     {
-       hash = hash + (Q_UINT32) buff.st_ctime;
+       hash = hash + (quint32) buff.st_ctime;
     }
     return hash;
 }
 
-Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
+quint32 KStandardDirs::calcResourceHash( const char *type,
 			      const QString& filename, bool deep) const
 {
-    Q_UINT32 hash = 0;
+    quint32 hash = 0;
 
     if (!QDir::isRelativePath(filename))
     {
