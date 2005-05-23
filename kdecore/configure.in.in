@@ -156,7 +156,9 @@ AC_TRY_LINK(dnl
       AC_MSG_RESULT(no)
 )
 
-AC_CHECK_HEADERS(sys/mount.h)  
+AC_CHECK_HEADERS([sys/mount.h],,,
+[#include <sys/types.h>
+#include <sys/param.h>])
 
 dnl AC_OUTPUT(kdecore/kde-config.cpp)
 
