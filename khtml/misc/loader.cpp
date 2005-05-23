@@ -672,6 +672,7 @@ void CachedImage::scale(int width, int height)
 
 void CachedImage::imageHasGeometry(khtmlImLoad::Image* img, int width, int height)
 {
+    do_notify(QRect(0, 0, width, height));
 }
 
 void CachedImage::imageChange     (khtmlImLoad::Image* img, QRect region)
@@ -700,7 +701,7 @@ void CachedImage::imageError      (khtmlImLoad::Image* img)
 void CachedImage::do_notify(const QRect& r)
 {
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
-        it()->notifyPixmap( r, this);
+        it()->updatePixmap( r, this);
 }
 
 
@@ -1629,7 +1630,7 @@ void Cache::insertInLRUList(CachedObject *object)
 
 // --------------------------------------
 
-void CachedObjectClient::notifyPixmap(const QRect&, CachedImage *) {}
+void CachedObjectClient::updatePixmap(const QRect&, CachedImage *) {}
 void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
 void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}
