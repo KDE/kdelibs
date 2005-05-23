@@ -118,7 +118,7 @@ QMap<QString,QString> readEntry(KTextBuffer& t)
 				entry["printer-name"] = l[0].left(p);	// only keep first name (discard aliases
 			else
 				entry["printer-name"] = l[0];
-			for (uint i=1; i<l.count(); i++)
+			for (int i=1; i<l.count(); i++)
 				if ((p=l[i].find('=')) != -1)
 					entry[l[i].left(p).stripWhiteSpace()] = l[i].right(l[i].length()-p-1).stripWhiteSpace();
 				else

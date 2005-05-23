@@ -119,7 +119,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
         entry->comment = comment;
         // kdDebug() << "Printer: " << entry->name << endl;
         // kdDebug() << "Aliases:" << endl;
-        for (uint i=1; i<l.count(); i++)
+        for (int i=1; i<l.count(); i++)
         {
             entry->aliases << l[i];
             // kdDebug() << "  " << l[i] << endl;

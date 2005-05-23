@@ -127,7 +127,7 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   if (mFirst) return QByteArray();
   Q3CString str, realm, nonce, qop, algorithm, charset;
   Q3CString nc = "00000001";
-  unsigned int a, b, c, d;
+  int a, b, c, d;
   a = 0;
   while (a < aChallenge.size())
   {
