@@ -22,8 +22,8 @@
 
 */
 
-#include <qtimer.h>
-#include <qvaluevector.h>
+#include <QTimer>
+#include <QVector>
 
 #include "animtimer.h"
 #include "animprovider.h"
@@ -55,7 +55,7 @@ void AnimTimer::tick()
     lastTime      = newTime;
     if (change < 1) change = 1; //Just in case someone changes the clock or something
     
-    QValueVector<AnimProvider*> toHandle;
+    QVector<AnimProvider*> toHandle;
     
     for (QMap<AnimProvider*, int>::iterator iter = pending.begin(); 
          iter != pending.end(); ++iter)
@@ -66,7 +66,7 @@ void AnimTimer::tick()
     }
         
     //Notify all images for the given slice.
-    QValueVector<AnimProvider*>::const_iterator iter;
+    QVector<AnimProvider*>::const_iterator iter;
     for (iter  = toHandle.constBegin();
          iter != toHandle.constEnd()  ; ++iter)
     {

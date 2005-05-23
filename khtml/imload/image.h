@@ -25,8 +25,9 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <qcstring.h> 
-#include <qtimer.h> 
+#include <QByteArray> 
+#include <QSize>
+#include <QTimer> 
 #include "imageformat.h"
 
 class QPainter;

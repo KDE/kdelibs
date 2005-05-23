@@ -78,7 +78,7 @@ void Frame::noUpdates()
 }
 
 void Frame::paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx, unsigned int sy, 
-                  unsigned int sWidth, unsigned int sHeight, int timeLimit)
+                  int sWidth, int sHeight, int timeLimit)
 {
     Plane* usePlane = scaledPlane ? scaledPlane : basicPlane;
     
@@ -283,7 +283,7 @@ public:
     }
 };
 
-const QImage& Frame::image(bool forceBasicPlane, unsigned int tileX, unsigned int tileY, bool* expensive)
+QImage& Frame::image(bool forceBasicPlane, unsigned int tileX, unsigned int tileY, bool* expensive)
 {
     if (expensive) *expensive = false;
 
@@ -570,7 +570,7 @@ void Frame::notifyScanline(uchar version, uchar* line)
     {
         TileStack& ts = basicPlane->tile(tileX, tileY);
                 
-        const QImage& img = image(true, tileX, tileY);
+        QImage& img = image(true, tileX, tileY);
         
         ts.imageProgress[loaderScanline % Tile::TileSize] = version;
             

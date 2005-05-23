@@ -25,7 +25,7 @@
 #ifndef IMAGE_LOADER_PROVIDER_H
 #define IMAGE_LOADER_PROVIDER_H
 
-#include <qcstring.h>
+#include <QByteArray>
 
 class ImageLoader;
 /**

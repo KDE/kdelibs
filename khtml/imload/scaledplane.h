@@ -26,7 +26,6 @@
 
 #include "plane.h"
 
-#include <qvaluevector.h>
 
 struct ScaledPlane: public Plane
 {

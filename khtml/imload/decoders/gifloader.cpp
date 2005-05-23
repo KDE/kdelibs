@@ -29,9 +29,9 @@
 #include "imageloader.h"
 #include "imagemanager.h"
 
-#include <qcstring.h> //For QByteArray
-#include <qpainter.h>
-#include <qvaluevector.h>
+#include <QByteArray>
+#include <QPainter>
+#include <QVector>
 
 #include <stdlib.h>
 
@@ -58,8 +58,8 @@ struct GIFFrameInfo
 class SimpleGIFAnimProvider: public AnimProvider
 {
 protected:
-    QValueVector<GIFFrameInfo> frameInfo;
-    int                        frame;
+    QVector<GIFFrameInfo> frameInfo;
+    int                   frame;
     
     QRect scaleRect(QRect geom)
     {
@@ -77,7 +77,7 @@ protected:
         return toRet;
     }
 public:
-    SimpleGIFAnimProvider(Image* image, QValueVector<GIFFrameInfo> _frames): AnimProvider(image)
+    SimpleGIFAnimProvider(Image* image, QVector<GIFFrameInfo> _frames): AnimProvider(image)
     {
         frameInfo = _frames;
         frame     = 0;
@@ -111,7 +111,7 @@ public:
             QRegion paint(QRect(dx, dy, width, height));
             paint = paint.subtract(pcFramePortion);
             
-            p->setClipRegion(paint, QPainter::CoordPainter);
+            p->setClipRegion(paint);
             p->fillRect(dx, dy, width, height, frameInfo[frame].bg);
             p->setClipping(false);
         }
@@ -131,7 +131,7 @@ public:
 class CompeteGIFAnimProvider: public SimpleGIFAnimProvider
 {
 public:
-    CompeteGIFAnimProvider(Image* image, QValueVector<GIFFrameInfo> _frames, 
+    CompeteGIFAnimProvider(Image* image, QVector<GIFFrameInfo> _frames, 
                            int screenWidth, int screenHeight): SimpleGIFAnimProvider(image, _frames)
     {}
 };
@@ -232,7 +232,7 @@ public:
         
         bool allBG = true;
         
-        QValueVector<GIFFrameInfo> frameProps;
+        QVector<GIFFrameInfo> frameProps;
         
         ColorMapObject* globalColorMap = file->Image.ColorMap;
         if (!globalColorMap)

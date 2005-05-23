@@ -25,8 +25,8 @@
 #ifndef UPDATER_H
 #define UPDATER_H
 
-#include <qobject.h>
-#include <qvaluevector.h>
+#include <QObject>
+#include <QVector>
 
 class Frame;
 
@@ -49,8 +49,8 @@ public:
 private slots:
     void pushUpdates();
 private:
-    QValueVector<Frame*> frames[10];
-    int                  timePortion;
+    QVector<Frame*> frames[10];
+    int             timePortion;
 };
 
 #endif

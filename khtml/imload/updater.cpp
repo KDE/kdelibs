@@ -58,7 +58,7 @@ void Updater::pushUpdates()
         timePortion = 0;
         
     //Notify all images for the given slice.
-    QValueVector<Frame*>::const_iterator iter;
+    QVector<Frame*>::const_iterator iter;
     for (iter = frames[timePortion].constBegin();
         iter != frames[timePortion].constEnd()  ; ++iter)
     {        

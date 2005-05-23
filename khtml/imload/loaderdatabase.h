@@ -26,7 +26,7 @@
 #define LOADER_DATABASE_H
 
 #include "imageloaderprovider.h"
-#include <qvaluevector.h>
+#include <QVector>
 
 class ImageLoader;
 
@@ -77,8 +77,8 @@ public:
             delete foreignProviders[c];            
     }
 private:
-    QValueVector<ImageLoaderProvider*> efficientProviders;
-    QValueVector<ImageLoaderProvider*> foreignProviders;
+    QVector<ImageLoaderProvider*> efficientProviders;
+    QVector<ImageLoaderProvider*> foreignProviders;
 };
 
 #endif

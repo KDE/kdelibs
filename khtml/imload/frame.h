@@ -52,7 +52,7 @@ private:
     //Constructs an image for the given tile. After this call, the tile's .image will be set
     //if forceBasicPlane, the basic image will always be used, otherwise scaled will be preferred
     //if it exists    
-    const QImage& image(bool forceBasicPlane, unsigned int tileX, unsigned int tileY,
+    QImage& image(bool forceBasicPlane, unsigned int tileX, unsigned int tileY,
                         bool* expensive = 0);
     
     //Incorporate the scanline into update range
@@ -117,7 +117,7 @@ public:
      will interrupt after that many ms, and issue a deferred update. 
     */
     void paint(unsigned int dx, unsigned int dy, QPainter* p, unsigned int sx, unsigned int sy, 
-               unsigned int width, unsigned int height, int timeLimit = 0);
+               int width, int height, int timeLimit = 0);
     
     /**
      Called by the controlling image to provide a scanline. 

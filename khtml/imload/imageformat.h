@@ -25,8 +25,8 @@
 #ifndef IMAGE_FORMAT_H
 #define IMAGE_FORMAT_H
 
-#include <qcolor.h>
-#include <qvaluevector.h>
+#include <QColor>
+#include <QVector>
 
 struct ImageFormat
 {
@@ -54,7 +54,7 @@ struct ImageFormat
         return  (type == Image_RGBA_32);
     }
     
-    QValueVector<QRgb> palette;
+    QVector<QRgb> palette;
 
     //A helper for setting up a format descriptor for 8-bit grayscale
     void greyscaleSetup()
