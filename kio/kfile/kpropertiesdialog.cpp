@@ -67,7 +67,6 @@ extern "C" {
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <q3progressbar.h>
-#include <private/qapplication_p.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -1290,11 +1289,10 @@ void KFilePropsPlugin::applyChanges()
       connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
                SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
       // wait for job
-      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-#warning KDE4 porting: find the proper way to do this, if one exists
-      QApplicationPrivate::enterModal(&dummy);
-      qApp->enter_loop();
-      QApplicationPrivate::leaveModal(&dummy);
+      QEventLoop eventLoop;
+      connect(this, SIGNAL(leaveModality()),
+              &eventLoop, SLOT(quit()));
+      eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
       return;
     }
     properties->updateUrl(properties->kurl());
@@ -1313,7 +1311,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   if (job)
   {
     // allow apply() to return
-    qApp->exit_loop();
+    emit leaveModality();
     if ( job->error() )
     {
         job->showErrorDialog( d->m_frame );
@@ -2342,11 +2340,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
       connect( job, SIGNAL( result( KIO::Job * ) ),
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
-      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-      #warning KDE4 porting: find the proper way to do this, if one exists
-      QApplicationPrivate::enterModal(&dummy);
-      qApp->enter_loop();
-      QApplicationPrivate::leaveModal(&dummy);
+      QEventLoop eventLoop;
+      connect(this, SIGNAL(leaveModality()),
+              &eventLoop, SLOT(quit()));
+      eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
     }
     if (dirs.count() > 0) {
       job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
@@ -2354,11 +2351,10 @@ void KFilePermissionsPropsPlugin::applyChanges()
       connect( job, SIGNAL( result( KIO::Job * ) ),
 	       SLOT( slotChmodResult( KIO::Job * ) ) );
       // Wait for job
-      QWidget dummy(0,0,Qt::WType_Dialog|Qt::WShowModal);
-      #warning KDE4 porting: find the proper way to do this, if one exists
-      QApplicationPrivate::enterModal(&dummy);
-      qApp->enter_loop();
-      QApplicationPrivate::leaveModal(&dummy);
+      QEventLoop eventLoop;
+      connect(this, SIGNAL(leaveModality()),
+              &eventLoop, SLOT(quit()));
+      eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
     }
   }
 }
@@ -2369,7 +2365,7 @@ void KFilePermissionsPropsPlugin::slotChmodResult( KIO::Job * job )
   if (job->error())
     job->showErrorDialog( d->m_frame );
   // allow apply() to return
-  qApp->exit_loop();
+  emit leaveModality();
 }
 
 

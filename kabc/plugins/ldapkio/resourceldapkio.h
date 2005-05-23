@@ -40,10 +40,10 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
     ResourceLDAPKIO( const KConfig* );
     virtual ~ResourceLDAPKIO();
     /**
-     *  Call this after you used one of the set... methods 
+     *  Call this after you used one of the set... methods
      */
     virtual void init();
-    
+
     virtual void writeConfig( KConfig* );
 
     virtual bool doOpen();
@@ -67,10 +67,10 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
 
     void setPassword( const QString &password );
     QString password() const;
-    
+
     void setRealm( const QString &realm );
     QString realm() const;
-    
+
     void setBindDN( const QString &binddn );
     QString bindDN() const;
 
@@ -85,10 +85,10 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
 
     void setVer( int ver );
     int ver() const;
-    
+
     void setSizeLimit( int sizelimit );
     int sizeLimit();
-    
+
     void setTimeLimit( int timelimit );
     int timeLimit();
 
@@ -100,16 +100,16 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
 
     void setAttributes( const QMap<QString, QString> &attributes );
     QMap<QString, QString> attributes() const;
-    
+
     void setRDNPrefix( int value );
     int RDNPrefix() const;
 
     void setIsTLS( bool value );
     bool isTLS() const ;
-    
+
     void setIsSSL( bool value );
     bool isSSL() const;
-    
+
     void setIsSubTree( bool value );
     bool isSubTree() const ;
 
@@ -124,9 +124,9 @@ class KABC_EXPORT ResourceLDAPKIO : public Resource
 
     void setAutoCache( bool value );
     bool autoCache();
-    
+
     QString cacheDst() const;
-    
+
 protected slots:
     void entries( KIO::Job*, const KIO::UDSEntryList& );
     void data( KIO::Job*, const QByteArray& );
@@ -135,7 +135,9 @@ protected slots:
     void syncLoadSaveResult( KIO::Job* );
     void saveResult( KIO::Job* );
     void saveData( KIO::Job*, QByteArray& );
-  
+signals:
+    void leaveModality();
+
   private:
     QString mUser;
     QString mPassword;
@@ -158,9 +160,9 @@ protected slots:
     void enter_loop();
     Q3CString addEntry( const QString &attr, const QString &value, bool mod );
     QString findUid( const QString &uid );
-    bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr, 
+    bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
       const QString &olddn );
-    
+
     class ResourceLDAPKIOPrivate;
     ResourceLDAPKIOPrivate *d;
 };

@@ -25,7 +25,6 @@
 #include <kparts/partmanager.h>
 
 #include <qapplication.h>
-#include <private/qapplication_p.h>
 #include <qfile.h>
 #include <qpoint.h>
 #include <q3pointarray.h>
@@ -667,7 +666,7 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   d->m_originalURL = KURL();
   if (d->m_waitForSave)
   {
-     qApp->exit_loop();
+    emit leaveModality();
   }
 }
 
@@ -678,12 +677,10 @@ bool ReadWritePart::waitSaveComplete()
 
   d->m_waitForSave = true;
 
-  QWidget dummy(0,0,Qt::WType_Dialog | Qt::WShowModal);
-  dummy.setFocusPolicy( Qt::NoFocus );
-  #warning KDE4 porting: find the proper way to do this, if one exists
-  QApplicationPrivate::enterModal(&dummy);
-  qApp->enter_loop();
-  QApplicationPrivate::leaveModal(&dummy);
+  QEventLoop eventLoop;
+  connect(this, SIGNAL(leaveModality()),
+          &eventLoop, SLOT(quit()));
+  eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
   d->m_waitForSave = false;
 

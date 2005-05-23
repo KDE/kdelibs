@@ -297,6 +297,8 @@ protected:
      */
     QWidget *hostContainer( const QString &containerName );
 
+signals:
+    void leaveModality();
 private slots:
     void slotWidgetDestroyed();
 

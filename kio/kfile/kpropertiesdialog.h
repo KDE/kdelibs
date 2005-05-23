@@ -63,7 +63,7 @@ namespace KIO { class Job; }
  *
  * This class must be created with (void)new KPropertiesDialog(...)
  * It will take care of deleting itself.
- * 
+ *
  * If you are looking for more flexibility, see KFileMetaInfo and
  * KFileMetaInfoWidget.
  */
@@ -82,9 +82,9 @@ public:
   static bool canDisplay( KFileItemList _items );
 
   /**
-   * Brings up a Properties dialog, as shown above. 
+   * Brings up a Properties dialog, as shown above.
    * This is the normal constructor for
-   * file-manager type applications, where you have a KFileItem instance 
+   * file-manager type applications, where you have a KFileItem instance
    * to work with.  Normally you will use this
    * method rather than the one below.
    *
@@ -192,40 +192,40 @@ public:
   virtual ~KPropertiesDialog();
 
   /**
-   * Immediately displays a Properties dialog using constructor with 
-   * the same parameters. 
-   * On MS Windows, if @p item points to a local file, native (non modal) property 
+   * Immediately displays a Properties dialog using constructor with
+   * the same parameters.
+   * On MS Windows, if @p item points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
-   * 
+   *
    * @return true on succesfull dialog displaying (can be false on win32).
    * @since 3.4
    */
-  static bool showDialog(KFileItem* item, QWidget* parent = 0, 
+  static bool showDialog(KFileItem* item, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
 
   /**
-   * Immediately displays a Properties dialog using constructor with 
-   * the same parameters. 
-   * On MS Windows, if @p _url points to a local file, native (non modal) property 
+   * Immediately displays a Properties dialog using constructor with
+   * the same parameters.
+   * On MS Windows, if @p _url points to a local file, native (non modal) property
    * dialog is displayed (@p parent and @p modal are ignored in this case).
-   * 
+   *
    * @return true on succesfull dialog displaying (can be false on win32).
    * @since 3.4
    */
-  static bool showDialog(const KURL& _url, QWidget* parent = 0, 
+  static bool showDialog(const KURL& _url, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
 
   /**
-   * Immediately displays a Properties dialog using constructor with 
-   * the same parameters. 
-   * On MS Windows, if @p _items has one element and this element points 
-   * to a local file, native (non modal) property dialog is displayed 
+   * Immediately displays a Properties dialog using constructor with
+   * the same parameters.
+   * On MS Windows, if @p _items has one element and this element points
+   * to a local file, native (non modal) property dialog is displayed
    * (@p parent and @p modal are ignored in this case).
-   * 
+   *
    * @return true on succesfull dialog displaying (can be false on win32).
    * @since 3.4
    */
-  static bool showDialog(const KFileItemList& _items, QWidget* parent = 0, 
+  static bool showDialog(const KFileItemList& _items, QWidget* parent = 0,
                          const char* name = 0, bool modal = false);
 
   /**
@@ -244,7 +244,7 @@ public:
   void insertPlugin (KPropsDlgPlugin *plugin);
 
   /**
-   * The URL of the file that has its properties being displayed. 
+   * The URL of the file that has its properties being displayed.
    * This is only valid if the KPropertiesDialog was created/shown
    * for one file or URL.
    *
@@ -323,7 +323,7 @@ public:
    * @since 3.1
    */
   void showFileSharingPage();
-  
+
   /**
    * Sets the file sharing page.
    * This page is shown when calling showFileSharingPage().
@@ -413,6 +413,8 @@ private:
 
 private slots:
   void slotStatResult( KIO::Job * ); // No longer used
+signals:
+  void leaveModality();
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
