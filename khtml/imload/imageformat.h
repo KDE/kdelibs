@@ -28,6 +28,8 @@
 #include <QColor>
 #include <QVector>
 
+namespace khtmlImLoad {
+
 struct ImageFormat
 {
     enum Type
@@ -65,6 +67,8 @@ struct ImageFormat
         type = ImageFormat::Image_Palette_8;    
     }
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

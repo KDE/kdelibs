@@ -26,6 +26,8 @@
 #include <kvmallocator.h>
 #include <qmap.h>
 
+namespace khtmlImLoad {
+
 class VMManager
 {
 public:
@@ -69,6 +71,8 @@ private:
     // The list of allocators and the amount of data allocated in each
     QMap<KVMAllocator*, unsigned int> allocStats;
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

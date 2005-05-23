@@ -26,6 +26,7 @@
 
 #include "plane.h"
 
+namespace khtmlImLoad {
 
 struct ScaledPlane: public Plane
 {
@@ -78,5 +79,7 @@ struct ScaledPlane: public Plane
         delete[] yScaleTable;
     }   
 };
+
+}
 
 #endif

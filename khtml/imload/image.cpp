@@ -31,6 +31,8 @@
 #include "imageowner.h"
 #include "frame.h"
 
+namespace khtmlImLoad {
+
 Image::Image(ImageOwner* _owner)
 {
     owner     = _owner;
@@ -318,6 +320,8 @@ QSize Image::size() const
         return QSize(curWidth, curHeight);
     else
         return originalSize();
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

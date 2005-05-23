@@ -34,6 +34,21 @@
 
 #include "imageloader.h"
 
+extern "C" {
+#define XMD_H
+#include <jpeglib.h>
+#undef const
+}
+
+#undef BUFFER_DEBUG
+//#define BUFFER_DEBUG
+
+#undef JPEG_DEBUG
+//#define JPEG_DEBUG
+
+namespace khtmlImLoad {
+
+
 class JPEGLoader: public ImageLoader
 {
     struct Private;
@@ -62,18 +77,6 @@ ImageLoader* JPEGLoaderProvider::loaderFor(const QByteArray& prefix)
 
     return 0;
 }
-
-extern "C" {
-#define XMD_H
-#include <jpeglib.h>
-#undef const
-}
-
-#undef BUFFER_DEBUG
-//#define BUFFER_DEBUG
-
-#undef JPEG_DEBUG
-//#define JPEG_DEBUG
 
 // -----------------------------------------------------------------------------
 
@@ -500,6 +503,6 @@ int JPEGLoader::processData(uchar* data, int length)
     return d->processData(data, length);
 }
 
-
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

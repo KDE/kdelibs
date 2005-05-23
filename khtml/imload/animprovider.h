@@ -27,6 +27,8 @@
 
 #include "image.h"
 
+namespace khtmlImLoad {
+
 /**
  A base class for animation support. Decoders should inherit off this, and implement the pure virtual. The AnimTimer should be used to 
  schedule new frames.
@@ -81,6 +83,8 @@ public:
     }
 
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

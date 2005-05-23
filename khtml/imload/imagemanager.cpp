@@ -28,6 +28,8 @@
 #include "decoders/pngloader.h"
 #include "decoders/gifloader.h"
 
+namespace khtmlImLoad {
+
 TileCache*      ImageManager::imgCache   = 0;
 TileCache*      ImageManager::pixCache   = 0;
 Updater*        ImageManager::theUpdater = 0;
@@ -57,6 +59,8 @@ void ImageManager::initLoaders()
     loaderDB->registerLoaderProvider(new JPEGLoaderProvider);
     loaderDB->registerLoaderProvider(new PNGLoaderProvider);
     loaderDB->registerLoaderProvider(new GIFLoaderProvider);    
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

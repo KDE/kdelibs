@@ -33,6 +33,8 @@
 #include "updater.h"
 #include "vmmanager.h"
 
+namespace khtmlImLoad {
+
 class ImageManager
 {
 private:
@@ -102,6 +104,7 @@ public:
     }
 };
 
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

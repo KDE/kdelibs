@@ -28,6 +28,8 @@
 #include "animtimer.h"
 #include "animprovider.h"
 
+namespace khtmlImLoad {
+
 AnimTimer::AnimTimer()
 {
     lastTime = QTime::currentTime();
@@ -78,6 +80,8 @@ void AnimTimer::tick()
 void AnimTimer::destroyed(AnimProvider* provider)
 {
     pending.remove(provider);
+}
+
 }
 
 #include "animtimer.moc"

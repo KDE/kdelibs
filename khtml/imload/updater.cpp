@@ -28,6 +28,8 @@
 #include "frame.h"
 #include "updater.h"
 
+namespace khtmlImLoad {
+
 /**
  We keep 10 separate tables for each of ten 100ms portions of a second.
  Each entry is scheduled to be delivered 5 slots ahead
@@ -69,6 +71,7 @@ void Updater::pushUpdates()
     frames[timePortion].clear();
 }
 
+}
 
 #include "updater.moc"
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

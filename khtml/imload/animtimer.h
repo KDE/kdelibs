@@ -29,6 +29,8 @@
 #include <qobject.h>
 #include <qmap.h>
 
+namespace khtmlImLoad {
+
 class AnimProvider;
 
 /**
@@ -54,6 +56,8 @@ private:
     QMap<AnimProvider*, int> pending;
     QTime lastTime;
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

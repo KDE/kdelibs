@@ -25,6 +25,8 @@
 #ifndef TILE_H
 #define TILE_H
 
+namespace khtmlImLoad {
+
 class TileStack;
 
 /** 
@@ -79,6 +81,8 @@ protected:
     */
     TileStack* owner;
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -3,6 +3,8 @@
 
 #include "imageloaderprovider.h"
 
+namespace khtmlImLoad {
+
 class ImageLoader;
 
 class JPEGLoaderProvider: public ImageLoaderProvider
@@ -13,6 +15,7 @@ public:
     virtual ImageLoader* loaderFor(const QByteArray& prefix);
 };
 
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

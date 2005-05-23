@@ -22,6 +22,8 @@
 */
 #include "vmmanager.h"
 
+namespace khtmlImLoad {
+
 const int AllocatorLimit = 0x3FFFFFFF; /* limit files to about a gig */
 
 VMManager::VMBlock VMManager::doAlloc(KVMAllocator* alloc, unsigned int size)
@@ -54,6 +56,8 @@ void VMManager::free(VMBlock& block)
     block.block     = 0;
     block.allocator = 0;
     block.length    = 0;
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

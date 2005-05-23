@@ -37,6 +37,8 @@
 #include <qdatetime.h>
 #include <qpainter.h>
 
+namespace khtmlImLoad {
+
 QPixmap* Frame::doubleBuffer = 0;
 
 int Frame::origFrameWidth() const
@@ -627,6 +629,8 @@ void Frame::notifyPerformUpdate()
     
     if (effEnd != -1)
         owner->notifyChanged(this, effStart, effEnd);
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

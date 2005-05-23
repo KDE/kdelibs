@@ -25,6 +25,8 @@
 #ifndef IMAGE_OWNER_H
 #define IMAGE_OWNER_H
 
+namespace khtmlImLoad {
+
 /**
  The users of Image's need to inherit off ImageOwner, in order to receive the information about
  their geometry, needs to repaint due to animation and progressive loading, etc.
@@ -51,6 +53,8 @@ public:
     */
     virtual void imageError(Image* img) = 0;
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

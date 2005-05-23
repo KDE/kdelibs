@@ -38,6 +38,8 @@
 #include <config.h> //For endian
 #include <gif_lib.h>
 
+namespace khtmlImLoad {
+
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
 static int INTERLACED_JUMP  [] = { 8, 8, 4, 2 };
 
@@ -433,5 +435,6 @@ ImageLoader* GIFLoaderProvider::loaderFor(const QByteArray& prefix)
     return 0;
 }
 
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

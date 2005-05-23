@@ -31,6 +31,9 @@
 #include "imageformat.h"
 
 class QPainter;
+
+namespace khtmlImLoad {
+
 class Image;
 class ImageOwner;
 class ImageLoader;
@@ -177,6 +180,8 @@ private:
     //image itself
     void scaleFrame(int frame, int width, int height);
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

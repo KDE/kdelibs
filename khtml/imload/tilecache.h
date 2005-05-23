@@ -29,6 +29,9 @@
 
 #include "tile.h"
 
+namespace khtmlImLoad {
+
+
 /** 
  An LRU-replacement cache for tiles.
  ### TODO: Consider using a size policy that favors smaller images
@@ -170,6 +173,8 @@ public:
             size--;
     }
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

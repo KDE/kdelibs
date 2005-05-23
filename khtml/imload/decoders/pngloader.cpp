@@ -28,6 +28,9 @@
 #include <config.h> //For endian
 #include <png.h>
 
+namespace khtmlImLoad {
+
+
 class PNGLoader;
 /**
 Paranoia: since g++ may very well store "this" in a register, we
@@ -271,5 +274,6 @@ ImageLoader* PNGLoaderProvider::loaderFor(const QByteArray& prefix)
     return 0;
 }
 
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

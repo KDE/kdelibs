@@ -28,6 +28,8 @@
 #include "imageformat.h"
 #include "image.h"
 
+namespace khtmlImLoad {
+
 class Image;
 /**
  A base class for decoders. The decoders should inherit off this, and use the protected functions to  
@@ -137,6 +139,8 @@ public:
         return Done; //### Probably should be Error if notifyImageInfo has not been called
     }
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

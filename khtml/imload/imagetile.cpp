@@ -26,6 +26,8 @@
 #include "imageloader.h"
 #include "imagemanager.h"
 
+namespace khtmlImLoad {
+
 template<>
 ImageTile* Pool<ImageTile>::poolHead = 0;
 
@@ -104,5 +106,6 @@ void ImageTile::discard()
     Pool<ImageTile>::release(this);
 }
 
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

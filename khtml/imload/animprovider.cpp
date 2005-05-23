@@ -25,9 +25,13 @@
 #include "animprovider.h"
 #include "imagemanager.h"
 
+namespace khtmlImLoad {
+
 AnimProvider::~AnimProvider()
 {
     ImageManager::animTimer()->destroyed(this);
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

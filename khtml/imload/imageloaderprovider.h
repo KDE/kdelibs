@@ -27,6 +27,8 @@
 
 #include <QByteArray>
 
+namespace khtmlImLoad {
+
 class ImageLoader;
 /**
 To register new image formats, new copies of ImageLoaderProvider's must be 
@@ -54,6 +56,8 @@ public:
     */
     virtual ImageLoader* loaderFor(const QByteArray& prefix) = 0;
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

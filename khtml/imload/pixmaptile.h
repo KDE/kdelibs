@@ -31,6 +31,8 @@
 
 #include <qpixmap.h>
 
+namespace khtmlImLoad {
+
 class PixmapTile: public Tile
 {
 private:
@@ -67,6 +69,8 @@ public:
         return pixmap;
     }    
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

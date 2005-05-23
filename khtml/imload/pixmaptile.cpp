@@ -26,6 +26,8 @@
 
 #include <qpainter.h>
 
+namespace khtmlImLoad {
+
 template<>
 PixmapTile* Pool<PixmapTile>::poolHead = 0;
 
@@ -38,6 +40,8 @@ PixmapTile* PixmapTile::create(TileStack* owner, int width, int height)
     tile->pixmap.resize(width, height);
     tile->pixmap.fill(Qt::black);    
     return tile;
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

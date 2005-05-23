@@ -25,6 +25,8 @@
 #ifndef POOL_H
 #define POOL_H
 
+namespace khtmlImLoad {
+
 template<typename T>
 class Pool
 {
@@ -51,6 +53,8 @@ public:
         poolHead        = entry;
     }
 };
+
+}
 
 #endif
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
