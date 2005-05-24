@@ -156,8 +156,8 @@ void queryFunctions( const char* app, const char* obj )
 int callFunction( const char* app, const char* obj, const char* func, const DCOPCStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
-    int left = f.find( '(' );
-    int right = f.find( ')' );
+    int left = f.indexOf( '(' );
+    int right = f.indexOf( ')' );
 
     if ( right <  left )
     {
@@ -178,12 +178,12 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 	    return( 1 );
 	}
 	for ( DCOPCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
-	    int l = (*it).find( '(' );
+	    int l = (*it).indexOf( '(' );
 	    int s;
 	    if (l > 0)
-	        s = (*it).findRev( ' ', l);
+	        s = (*it).lastIndexOf( ' ', l);
 	    else
-	        s = (*it).find( ' ' );
+	        s = (*it).indexOf( ' ' );
 
 	    if ( s < 0 )
 		s = 0;
@@ -192,7 +192,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 
 	    if ( l > 0 && (*it).mid( s, l - s ) == func ) {
 		realfunc = (*it).mid( s );
-		const QString arguments = (*it).mid(l+1,(*it).find( ')' )-l-1);
+		const QString arguments = (*it).mid(l+1,(*it).indexOf( ')' )-l-1);
 		int a = arguments.count(',');
 		if ( (a==0 && !arguments.isEmpty()) || a>0)
 			a++;
@@ -206,8 +206,8 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 	    return( 1 );
 	}
 	f = realfunc;
-	left = f.find( '(' );
-	right = f.find( ')' );
+	left = f.indexOf( '(' );
+	right = f.indexOf( ')' );
     }
 
  doit:
@@ -227,7 +227,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    QString lt = (*it).simplifyWhiteSpace();
 
-	    int s = lt.find(' ');
+	    int s = lt.indexOf(' ');
 
 	    // If there are spaces in the name, there may be two
 	    // reasons: the parameter name is still there, ie.
@@ -458,9 +458,9 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
     DCOPCStringList params;
     DCOPClient *client = 0L;
     int retval = 0;
-    if ( !args.isEmpty() && args[ 0 ].find( "DCOPRef(" ) == 0 )
+    if ( !args.isEmpty() && args[ 0 ].indexOf( "DCOPRef(" ) == 0 )
     {
-	int delimPos = args[ 0 ].findRev( ',' );
+	int delimPos = args[ 0 ].lastIndexOf( ',' );
 	if( delimPos == -1 )
         {
 	    cerr_ << "Error: '" << args[ 0 ]
@@ -475,8 +475,8 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	if( args.count() > 2 )
 	{
 	    params = args;
-	    params.remove( params.begin() );
-	    params.remove( params.begin() );
+	    params.erase( params.begin() );
+	    params.erase( params.begin() );
 	}
 	DCOPrefmode=true;
     }
@@ -491,9 +491,9 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
         if( args.count() > 3)
 	{
 	    params = args;
-	    params.remove( params.begin() );
-	    params.remove( params.begin() );
-	    params.remove( params.begin() );
+	    params.erase( params.begin() );
+	    params.erase( params.begin() );
+	    params.erase( params.begin() );
 	}
     }
 
@@ -512,7 +512,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 
 	if( session == QuerySessions )
 	{
-	    QStringList sessions = dcopSessionList( it.key(), it.data() );
+	    QStringList sessions = dcopSessionList( it.key(), it.value() );
 	    if( sessions.isEmpty() )
 	    {
 		if( users.count() <= 1 )
@@ -548,7 +548,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	if( users.count() > 1 || ( users.count() == 1 &&
 	    ( getenv( "DCOPSERVER" ) == 0 /*&& getenv( "DISPLAY" ) == 0*/ ) ) )
 	{
-	    sessions = dcopSessionList( it.key(), it.data() );
+	    sessions = dcopSessionList( it.key(), it.value() );
 	    if( sessions.isEmpty() )
 	    {
 		if( users.count() > 1 )
@@ -587,8 +587,8 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	    ( getenv( "ICEAUTHORITY" ) == 0 || getenv( "DISPLAY" ) == 0 ) ) )
 	{
 	    // Check for ICE authority file and if the file can be read by us
-	    QString home = it.data();
-	    QString iceFile = it.data() + "/.ICEauthority";
+	    QString home = it.value();
+	    QString iceFile = it.value() + "/.ICEauthority";
 	    QFileInfo fi( iceFile );
 	    if( iceFile.isEmpty() )
 	    {
@@ -637,7 +637,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	{
 	    if( !presetDCOPServer && !users.isEmpty() )
 	    {
-		QString dcopFile = it.data() + "/" + *sIt;
+		QString dcopFile = it.value() + "/" + *sIt;
 		QFile f( dcopFile );
 		if( !f.open( QIODevice::ReadOnly ) )
 		{
@@ -666,7 +666,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	    if( !success )
 	    {
 		cerr_ << "ERROR: Couldn't attach to DCOP server!" << endl;
-		retval = QMAX( retval, 1 );
+		retval = qMax( retval, 1 );
 		if( users.isEmpty() )
 		    break;
 		else
@@ -719,7 +719,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 			if( !buf.isNull() )
 			{
 			    int res = callFunction( app, objid, function, params );
-			    retval = QMAX( retval, res );
+			    retval = qMax( retval, res );
 			}
 		    }
 		}
@@ -728,7 +728,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 		    // Just call function
 //		    cout_ << "call " << app << ", " << objid << ", " << function << ", (params)" << endl;
 		    int res = callFunction( app, objid, function, params );
-		    retval = QMAX( retval, res );
+		    retval = qMax( retval, res );
 		}
 		break;
 	    }
@@ -852,7 +852,7 @@ int main( int argc, char** argv )
           if (prog[prog.length()-1] != '*')
           {
              // Strip a trailing -<PID> part.
-             int i = prog.findRev('-');
+             int i = prog.lastIndexOf('-');
              if (i >= 0)
              {
                 prog = prog.left(i);

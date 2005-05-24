@@ -138,7 +138,7 @@ QList<DCOPObject*> DCOPObject::match(const DCOPCString &partialId)
     QMap<DCOPCString, DCOPObject *>::ConstIterator it(objMap()->begin());
     for (; it != objMap()->end(); ++it)
 	if (it.key().left(partialId.length()) == partialId) // found it?
-	    mlist.append(it.data());
+	    mlist.append(it.value());
     return mlist;
 }
 
@@ -168,13 +168,13 @@ bool DCOPObject::process(const DCOPCString &fun, const QByteArray &data,
 {
     if ( fun == "interfaces()" ) {
 	replyType = "QCStringList";
-	QDataStream reply( &replyData, IO_WriteOnly );
+	QDataStream reply( &replyData, QIODevice::WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1);
 	reply << interfaces();
 	return true;
     } else  if ( fun == "functions()" ) {
 	replyType = "QCStringList";
-	QDataStream reply( &replyData, IO_WriteOnly );
+	QDataStream reply( &replyData, QIODevice::WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1);
 	reply << functions();
 	return true;

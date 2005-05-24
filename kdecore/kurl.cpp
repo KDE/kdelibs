@@ -357,7 +357,7 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
 
   cdUp = 0;
   pos = orig_pos = len;
-  while ( pos && (pos = path.findRev('/',--pos)) != -1 )
+  while ( pos && (pos = path.lastIndexOf('/',--pos)) != -1 )
   {
     len = orig_pos - pos - 1;
     if ( len == 2 && path[pos+1] == '.' && path[pos+2] == '.' )
@@ -485,13 +485,13 @@ QDataStream & operator<< (QDataStream & s, const KURL & a)
 
     s << a.m_strProtocol << a.m_strUser << a.m_strPass << a.m_strHost
       << a.m_strPath << a.m_strPath_encoded << QueryForWire << a.m_strRef_encoded
-      << Q_INT8(a.m_bIsMalformed ? 1 : 0) << a.m_iPort;
+      << qint8(a.m_bIsMalformed ? 1 : 0) << a.m_iPort;
     return s;
 }
 
 QDataStream & operator>> (QDataStream & s, KURL & a)
 {
-    Q_INT8 malf;
+    qint8 malf;
     QString QueryFromWire;
     s >> a.m_strProtocol >> a.m_strUser >> a.m_strPass >> a.m_strHost
       >> a.m_strPath >> a.m_strPath_encoded >> QueryFromWire >> a.m_strRef_encoded
@@ -670,7 +670,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
     if (pos < len && buf[pos] == ':' )
     {
-	m_strProtocol = QString( orig, pos ).lower();
+	m_strProtocol = QString( orig, pos ).toLower();
 	if ( m_iUriMode == Auto )
 	    m_iUriMode = uriModeForProtocol( m_strProtocol );
 	// Proceed to correct parse function.
@@ -741,9 +741,9 @@ void KURL::parseMailto( const QString& _url, int encoding_hint )
 #ifndef KDE_QT_ONLY
 	QString host = KIDNA::toUnicode( mailre.cap( 2 ) );
 	if (host.isEmpty())
-	    host = mailre.cap( 2 ).lower();
+	    host = mailre.cap( 2 ).toLower();
 #else
-	QString host = mailre.cap( 2 ).lower();
+	QString host = mailre.cap( 2 ).toLower();
 #endif
 	m_strPath = mailre.cap( 1 ) + host;
   }
@@ -1225,7 +1225,7 @@ void KURL::setFileName( const QString& _txt )
     path = "/";
   else
   {
-    int lastSlash = path.findRev( '/' );
+    int lastSlash = path.lastIndexOf( '/' );
     if ( lastSlash == -1)
     {
       // The first character is not a '/' ???
@@ -1338,7 +1338,7 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 
 void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
 {
-  int pos = _txt.find( '?' );
+  int pos = _txt.indexOf( '?' );
   if ( pos == -1 )
   {
     setEncodedPath(_txt, encoding_hint);
@@ -1481,7 +1481,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
     }
     if ( m_iUriMode == URL )
     {
-      bool IPv6 = (m_strHost.find(':') != -1);
+      bool IPv6 = (m_strHost.indexOf(':') != -1);
       if (IPv6)
         u += '[' + m_strHost + ']';
       else
@@ -1537,7 +1537,7 @@ QString KURL::prettyURL( int _trailing ) const
     }
     if ( m_iUriMode == URL )
     {
-    bool IPv6 = (m_strHost.find(':') != -1);
+    bool IPv6 = (m_strHost.indexOf(':') != -1);
     if (IPv6)
     {
        u += '[' + m_strHost + ']';
@@ -1699,13 +1699,13 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
      // This is hairy, we need the last unencoded slash.
      // Count in the encoded string how many encoded slashes follow the last
      // unencoded one.
-     int i = m_strPath_encoded.findRev( '/', len - 1 );
+     int i = m_strPath_encoded.lastIndexOf( '/', len - 1 );
      QString fileName_encoded = m_strPath_encoded.mid(i+1);
      n += fileName_encoded.count("%2f", Qt::CaseInsensitive);
   }
   int i = len;
   do {
-    i = path.findRev( '/', i - 1 );
+    i = path.lastIndexOf( '/', i - 1 );
   }
   while (--n && (i > 0));
 
@@ -1768,7 +1768,7 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
   if ( result.isEmpty() || result == "/" )
     return result;
 
-  int i = result.findRev( "/" );
+  int i = result.lastIndexOf( "/" );
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, with no path
   if ( i == -1 )
@@ -1820,7 +1820,7 @@ bool KURL::cd( const QString& _dir )
   if ( ( _dir[0] == '~' ) && ( m_strProtocol == fileProt ))
   {
     m_strPath_encoded = QString::null;
-    m_strPath = QDir::homeDirPath();
+    m_strPath = QDir::homePath();
     m_strPath += "/";
     m_strPath += _dir.right(m_strPath.length() - 1);
     setHTMLRef( QString::null );
@@ -1957,9 +1957,9 @@ KURL::setHost( const QString& _txt )
 #ifndef KDE_QT_ONLY
    m_strHost = KIDNA::toUnicode(_txt);
    if (m_strHost.isEmpty())
-      m_strHost = _txt.lower(); // Probably an invalid hostname, but...
+      m_strHost = _txt.toLower(); // Probably an invalid hostname, but...
 #else
-   m_strHost = _txt.lower();
+   m_strHost = _txt.toLower();
 #endif
     break;
   default:
@@ -2134,7 +2134,7 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
     if ( equal_pos > 0 ) { // = is not the first char...
       QString name = (*it).left( equal_pos );
       if ( options & CaseInsensitiveKeys )
-	name = name.lower();
+	name = name.toLower();
       QString value = (*it).mid( equal_pos + 1 );
       if ( value.isEmpty() )
 	result.insert( name, QString::fromLatin1("") );
@@ -2146,7 +2146,7 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
     } else if ( equal_pos < 0 ) { // no =
       QString name = (*it);
       if ( options & CaseInsensitiveKeys )
-	name = name.lower();
+	name = name.toLower();
       result.insert( name, QString::null );
     }
   }

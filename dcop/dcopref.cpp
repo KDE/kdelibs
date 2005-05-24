@@ -62,9 +62,9 @@ DCOPReply DCOPRef::callInternal( const DCOPCString& fun, const DCOPCString& args
 	return reply;
     }
     DCOPCString sig = fun;
-    if ( fun.find('(') == -1 ) {
+    if ( fun.indexOf('(') == -1 ) {
 	sig += args;
-	if( args.find( "<unknown" ) != -1 )
+	if( args.indexOf( "<unknown" ) != -1 )
 	    qWarning("DCOPRef: unknown type error "
 		     "<\"%s\",\"%s\">::call(\"%s\",%s",
 		     STR(m_app), STR(m_obj), STR(fun), args.data()+1 );
@@ -87,9 +87,9 @@ bool DCOPRef::sendInternal( const DCOPCString& fun, const DCOPCString& args, con
     }
     Q_UNUSED( data );
     DCOPCString sig = fun;
-    if ( fun.find('(') == -1 ) {
+    if ( fun.indexOf('(') == -1 ) {
 	sig += args;
-	if( args.find( "<unknown" ) != -1 )
+	if( args.indexOf( "<unknown" ) != -1 )
 	    qWarning("DCOPRef: unknown type error "
 		     "<\"%s\",\"%s\">::send(\"%s\",%s",
 		     STR(m_app), STR(m_obj), STR(fun), args.data()+1 );

@@ -524,7 +524,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
-        if( w->isTopLevel() && !( w->windowFlags() & Qt::X11BypassWindowManagerHint ) && !w->isPopup() && !event->spontaneous())
+        if( w->isTopLevel() && !( w->windowFlags() & Qt::X11BypassWindowManagerHint ) && w->windowType() != Qt::Popup && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
             {
@@ -534,7 +534,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
             if( !d->app_started_timer->isActive())
                 d->app_started_timer->start( 0, true );
         }
-        if( w->isTopLevel() && ( w->icon() == NULL || w->icon()->isNull()))
+        if( w->isTopLevel() && ( w->windowIcon().isNull()))
         {
             // icon() cannot be null pixmap, it'll be the "unknown" icon - so check if there is this application icon
             static QPixmap* ic = NULL;
@@ -543,7 +543,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
                     KIcon::NoGroup, 0, KIcon::DefaultState, NULL, true ));
             if( !ic->isNull())
             {
-                w->setIcon( *ic );
+                w->setWindowIcon( *ic );
 #if defined Q_WS_X11
                 KWin::setIcons( w->winId(), *ic, miniIcon());
 #endif
@@ -965,7 +965,7 @@ void KApplication::init(bool GUIenabled)
 static int my_system (const char *command) {
    int pid, status;
 
-   QApplication::flushX();
+   QApplication::flush();
    pid = fork();
    if (pid == -1)
       return -1;
@@ -1179,7 +1179,7 @@ void KApplication::propagateSessionManager()
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
     int i;
-    while( (i = display.find(':')) >= 0)
+    while( (i = display.indexOf(':')) >= 0)
        display[i] = '_';
 
     fName += "_"+display;
@@ -1305,7 +1305,7 @@ void KApplication::saveState( QSessionManager& sm )
 
 
     QByteArray multiHead = getenv("KDE_MULTIHEAD");
-    if (multiHead.lower() == "true") {
+    if (multiHead.toLower() == "true") {
         // if multihead is enabled, we save our -display argument so that
         // we are restored onto the correct head... one problem with this
         // is that the display is hard coded, which means we cannot restore
@@ -1489,10 +1489,10 @@ void KApplication::parseCommandLine( )
     {
 
        QStringList styles = QStyleFactory::keys();
-       QString reqStyle(args->getOption("style").lower());
+       QString reqStyle(args->getOption("style").toLower());
 
 	   for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
-		   if ((*it).lower() == reqStyle)
+		   if ((*it).toLower() == reqStyle)
 		   {
 			   d->overrideStyle = *it;
 			   break;
@@ -1997,7 +1997,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     QColor disfg = foreground;
 
     int h, s, v;
-    disfg.hsv( &h, &s, &v );
+    disfg.getHsv( &h, &s, &v );
     if (v > 128)
 	// dark bg, light fg - need a darker disabled fg
 	disfg = disfg.dark(lowlightVal);
@@ -2292,7 +2292,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup
    QStringList attachURLs;
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
    {
-     QString q = (*it).lower();
+     QString q = (*it).toLower();
      if (q.startsWith("subject="))
        subject = KURL::decode_string((*it).mid(8));
      else
@@ -2761,22 +2761,22 @@ QString KApplication::tempSaveName( const QString& pFilename ) const
   if( QDir::isRelativePath(pFilename) )
     {
       kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
-      aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
+      aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
     }
   else
     aFilename = pFilename;
 
-  QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
+  QDir aAutosaveDir( QDir::homePath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
     {
-      if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
+      if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
         {
           // Last chance: use temp dir
           aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
         }
     }
 
-  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
+  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absolutePath() );
 
   return aFilename;
 }
@@ -2790,22 +2790,22 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
   if( QDir::isRelativePath(pFilename) )
     {
       kdWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
-      aFilename = QFileInfo( QDir( "." ), pFilename ).absFilePath();
+      aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
     }
   else
     aFilename = pFilename;
 
-  QDir aAutosaveDir( QDir::homeDirPath() + "/autosave/" );
+  QDir aAutosaveDir( QDir::homePath() + "/autosave/" );
   if( !aAutosaveDir.exists() )
     {
-      if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
+      if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
         {
           // Last chance: use temp dir
           aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
         }
     }
 
-  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
+  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absolutePath() );
 
   if( QFile( aFilename ).exists() )
     {
@@ -2838,7 +2838,7 @@ bool checkAccess(const QString& pathname, int mode)
 
   //strip the filename (everything until '/' from the end
   QString dirName(pathname);
-  int pos = dirName.findRev('/');
+  int pos = dirName.lastIndexOf('/');
   if ( pos == -1 )
     return false;   // No path in argument. This is evil, we won't allow this
   else if ( pos == 0 ) // don't turn e.g. /root into an empty string
@@ -2937,7 +2937,7 @@ QString KApplication::randomString(int length)
 {
    if (length <=0 ) return QString::null;
 
-   QString str; str.setLength( length );
+   QString str; str.resize( length );
    int i = 0;
    while (length--)
    {
@@ -3048,18 +3048,18 @@ void KApplication::initUrlActionRestrictions()
     QString urlProt = rule[4];
     QString urlHost = rule[5];
     QString urlPath = rule[6];
-    QString strEnabled = rule[7].lower();
+    QString strEnabled = rule[7].toLower();
 
     bool bEnabled = (strEnabled == "true");
 
     if (refPath.startsWith("$HOME"))
-       refPath.replace(0, 5, QDir::homeDirPath());
+       refPath.replace(0, 5, QDir::homePath());
     else if (refPath.startsWith("~"))
-       refPath.replace(0, 1, QDir::homeDirPath());
+       refPath.replace(0, 1, QDir::homePath());
     if (urlPath.startsWith("$HOME"))
-       urlPath.replace(0, 5, QDir::homeDirPath());
+       urlPath.replace(0, 5, QDir::homePath());
     else if (urlPath.startsWith("~"))
-       urlPath.replace(0, 1, QDir::homeDirPath());
+       urlPath.replace(0, 1, QDir::homePath());
 
     if (refPath.startsWith("$TMP"))
        refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
@@ -3091,10 +3091,10 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
      initUrlActionRestrictions();
 
   KURL baseURL(_baseURL);
-  baseURL.setPath(QDir::cleanDirPath(baseURL.path()));
+  baseURL.setPath(QDir::cleanPath(baseURL.path()));
   QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
   KURL destURL(_destURL);
-  destURL.setPath(QDir::cleanDirPath(destURL.path()));
+  destURL.setPath(QDir::cleanPath(destURL.path()));
   QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 
   for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();

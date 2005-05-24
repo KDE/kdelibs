@@ -75,7 +75,7 @@ inline QDataStream & operator << (QDataStream & str, unsigned long val)
 inline QDataStream & operator >> (QDataStream & str, unsigned long& val)
 {
     QByteArray buf(sizeof(unsigned long), '\0');
-    str.readRawBytes(buf.data(), buf.size());
+    str.readRawData(buf.data(), buf.size());
 
     //Swap if need be
     if ((int)str.byteOrder() != QSysInfo::ByteOrder)
@@ -108,7 +108,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPCString& s)
 {
     int len = strlen(s.data());
     str << len + 1;
-    str.writeRawBytes(s.data(), len + 1);
+    str.writeRawData(s.data(), len + 1);
     return str;
 }
 
@@ -120,7 +120,7 @@ inline QDataStream & operator >> (QDataStream & str, DCOPCString& s)
 
     if (length)
     {
-        str.readRawBytes(s.data(), s.length());
+        str.readRawData(s.data(), s.length());
         s.resize(length - 1); //Drop the null
     }
         

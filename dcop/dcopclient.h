@@ -509,7 +509,7 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @see process()
    * @see beginTransaction()
    */
-  Q_INT32 transactionId() const;
+  qint32 transactionId() const;
 
   /**
    * Checks whether @p remApp is registered with the DCOP server.
@@ -810,7 +810,7 @@ public:
 
 private:
 
-  bool isLocalTransactionFinished(Q_INT32 id, DCOPCString &replyType, QByteArray &replyData);
+  bool isLocalTransactionFinished(qint32 id, DCOPCString &replyType, QByteArray &replyData);
 
   bool attachInternal( bool registerAsAnonymous = true );
 

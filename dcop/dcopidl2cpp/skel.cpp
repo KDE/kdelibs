@@ -179,7 +179,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	QString namespace_tmp = className;
 	str << endl;
 	for(;;) {
-	    int pos = namespace_tmp.find( "::" );
+	    int pos = namespace_tmp.indexOf( "::" );
 	    if( pos < 0 ) {
 		className = namespace_tmp;
 		break;

@@ -146,7 +146,7 @@ public:
     DCOPCString* replyType;
     QByteArray* replyData;
     int replyId;
-    Q_INT32 transactionId;
+    qint32 transactionId;
     DCOPCString calledApp;
     QPointer<QObject> replyObject;
     DCOPCString replySlot;
@@ -180,7 +180,7 @@ public:
     DCOPCString defaultObject;
     QList<DCOPClientTransaction*> *transactionList;
     bool transaction;
-    Q_INT32 transactionId;
+    qint32 transactionId;
     int opcode;
 
 #ifdef Q_OS_UNIX
@@ -214,7 +214,7 @@ public:
 class DCOPClientTransaction
 {
 public:
-    Q_INT32 id;
+    qint32 id;
 #ifdef Q_OS_UNIX
     CARD32 key;
 #endif
@@ -264,7 +264,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
         disp = "NODISPLAY";
 
     int i;
-    if((i = disp.findRev('.')) > disp.findRev(KPATH_SEPARATOR) && i >= 0)
+    if((i = disp.lastIndexOf('.')) > disp.lastIndexOf(KPATH_SEPARATOR) && i >= 0)
         disp.truncate(i);
 
     if (!old)
@@ -372,7 +372,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
             replyStruct->transactionId = 0;
 
             DCOPCString calledApp, app;
-            QDataStream ds( &dataReceived, IO_ReadOnly );
+            QDataStream ds( &dataReceived, QIODevice::ReadOnly );
             ds.setVersion(QDataStream::Qt_3_1);
             ds >> calledApp >> app >> *t >> *b;
 
@@ -385,8 +385,8 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     case DCOPReplyWait:
         if ( replyStruct ) {
             DCOPCString calledApp, app;
-            Q_INT32 id;
-            QDataStream ds( &dataReceived, IO_ReadOnly );
+            qint32 id;
+            QDataStream ds( &dataReceived, QIODevice::ReadOnly );
             ds.setVersion(QDataStream::Qt_3_1);
             ds >> calledApp >> app >> id;
             replyStruct->transactionId = id;
@@ -400,10 +400,10 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
         }
     case DCOPReplyDelayed:
         {
-            QDataStream ds( &dataReceived, IO_ReadOnly );
+            QDataStream ds( &dataReceived, QIODevice::ReadOnly );
             ds.setVersion(QDataStream::Qt_3_1);
             DCOPCString calledApp, app;
-            Q_INT32 id;
+            qint32 id;
 
             ds >> calledApp >> app >> id;
             if (replyStruct && (id == replyStruct->transactionId) && (calledApp == replyStruct->calledApp))
@@ -476,7 +476,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     IceConn iceConn = d->iceConn;
     DCOPMsg *pMsg = 0;
     DCOPClient *c = d->parent;
-    QDataStream ds( (QByteArray*)&dataReceived, IO_ReadOnly );
+    QDataStream ds( (QByteArray*)&dataReceived, QIODevice::ReadOnly );
     ds.setVersion(QDataStream::Qt_3_1);
 
     DCOPCString fromApp;
@@ -487,7 +487,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     if (!d->accept_calls)
     {
         QByteArray reply;
-        QDataStream replyStream( &reply, IO_WriteOnly );
+        QDataStream replyStream( &reply, QIODevice::WriteOnly );
         replyStream.setVersion(QDataStream::Qt_3_1);
         // Call rejected.
         replyStream << d->appId << fromApp;
@@ -542,10 +542,10 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
         d->currentKey = oldCurrentKey;
 
     QByteArray reply;
-    QDataStream replyStream( &reply, IO_WriteOnly );
+    QDataStream replyStream( &reply, QIODevice::WriteOnly );
     replyStream.setVersion(QDataStream::Qt_3_1);
 
-    Q_INT32 id = c->transactionId();
+    qint32 id = c->transactionId();
     if (id) {
         // Call delayed. Send back the transaction ID.
         replyStream << d->appId << fromApp << id;
@@ -646,7 +646,7 @@ DCOPClient::~DCOPClient()
         d->messages.removeRef( msg );
         qWarning("DROPPING UNHANDLED DCOP MESSAGE:");
         qWarning("         opcode = %d key = %d", msg->opcode, msg->key);
-        QDataStream ds( &msg->data, IO_ReadOnly );
+        QDataStream ds( &msg->data, QIODevice::ReadOnly );
         ds.setVersion(QDataStream::Qt_3_1);
 
         DCOPCString fromApp, app, objId, fun;
@@ -794,11 +794,11 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
         if (dcopSrv.isEmpty()) {
             QString fName = dcopServerFile();
             QFile f(fName);
-            if (!f.open(IO_ReadOnly)) {
+            if (!f.open(QIODevice::ReadOnly)) {
                 emit attachFailed(QString::fromLatin1( "Could not read network connection list.\n" )+fName);
                 return false;
             }
-            int size = QMIN( qint64(1024), f.size() ); // protection against a huge file
+            int size = qMin( qint64(1024), f.size() ); // protection against a huge file
             QByteArray contents( size+1 );
             if ( f.readBlock( contents.data(), size ) != size )
             {
@@ -806,7 +806,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
                // Should we abort ?
             }
             contents[size] = '\0';
-            int pos = contents.find('\n');
+            int pos = contents.indexOf('\n');
             if ( pos == -1 ) // Shouldn't happen
             {
                 qDebug("Only one line in dcopserver file !: %s", contents.data());
@@ -996,11 +996,11 @@ DCOPCString DCOPClient::registerAs( const DCOPCString &appId, bool addPID )
     // register the application identifier with the server
     DCOPCString replyType;
     QByteArray data, replyData;
-    QDataStream arg( &data, IO_WriteOnly );
+    QDataStream arg( &data, QIODevice::WriteOnly );
     arg.setVersion(QDataStream::Qt_3_1);
     arg << _appId;
     if ( call( "DCOPServer", "", "registerAs(QCString)", data, replyType, replyData ) ) {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
     }
@@ -1085,7 +1085,7 @@ bool DCOPClient::send(const DCOPCString &remApp, const DCOPCString &remObjId,
 
     if ( localClient  ) {
         bool saveTransaction = d->transaction;
-        Q_INT32 saveTransactionId = d->transactionId;
+        qint32 saveTransactionId = d->transactionId;
         DCOPCString saveSenderId = d->senderId;
 
         d->senderId = 0; // Local call
@@ -1110,7 +1110,7 @@ bool DCOPClient::send(const DCOPCString &remApp, const DCOPCString &remObjId,
     DCOPMsg *pMsg;
 
     QByteArray ba;
-    QDataStream ds(&ba, IO_WriteOnly);
+    QDataStream ds(&ba, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
     ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
@@ -1136,7 +1136,7 @@ bool DCOPClient::send(const DCOPCString &remApp, const DCOPCString &remObjId,
                       const DCOPCString &remFun, const QString &data)
 {
     QByteArray ba;
-    QDataStream ds(&ba, IO_WriteOnly);
+    QDataStream ds(&ba, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
     ds << data;
     return send(remApp, remObjId, remFun, ba);
@@ -1199,13 +1199,13 @@ bool DCOPClient::findObject(const DCOPCString &remApp, const DCOPCString &remObj
         if ( (phase == 1) && localClient ) {
             // In phase 1 we do all local clients
             bool saveTransaction = d->transaction;
-            Q_INT32 saveTransactionId = d->transactionId;
+            qint32 saveTransactionId = d->transactionId;
             DCOPCString saveSenderId = d->senderId;
 
             d->senderId = 0; // Local call
             result = localClient->find(  remApp, remObj, remFun, data, replyType, replyData );
 
-            Q_INT32 id = localClient->transactionId();
+            qint32 id = localClient->transactionId();
             if (id) {
                 // Call delayed. We have to wait till it has been processed.
                 do {
@@ -1229,7 +1229,7 @@ bool DCOPClient::findObject(const DCOPCString &remApp, const DCOPCString &remObj
             if (replyType == "DCOPRef")
             {
                 DCOPRef ref;
-                QDataStream reply( &replyData, IO_ReadOnly );
+                QDataStream reply( &replyData, QIODevice::ReadOnly );
                 reply.setVersion(QDataStream::Qt_3_1);
                 reply >> ref;
 
@@ -1257,12 +1257,12 @@ bool DCOPClient::isApplicationRegistered( const DCOPCString& remApp)
 {
     DCOPCString replyType;
     QByteArray data, replyData;
-    QDataStream arg( &data, IO_WriteOnly );
+    QDataStream arg( &data, QIODevice::WriteOnly );
     arg.setVersion(QDataStream::Qt_3_1);
     arg << remApp;
     int result = false;
     if ( call( "DCOPServer", "", "isApplicationRegistered(QCString)", data, replyType, replyData ) ) {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
         qDebug("Call to isApplicationRegistered returned:%d", result);
@@ -1278,7 +1278,7 @@ DCOPCStringList DCOPClient::registeredApplications()
     QByteArray data, replyData;
     DCOPCStringList result;
     if ( call( "DCOPServer", "", "registeredApplications()", data, replyType, replyData ) ) {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
     }
@@ -1293,7 +1293,7 @@ DCOPCStringList DCOPClient::remoteObjects( const DCOPCString& remApp, bool *ok )
     if ( ok )
         *ok = false;
     if ( call( remApp, "DCOPClient", "objects()", data, replyType, replyData ) ) {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
         if ( ok )
@@ -1310,7 +1310,7 @@ DCOPCStringList DCOPClient::remoteInterfaces( const DCOPCString& remApp, const D
     if ( ok )
         *ok = false;
     if ( call( remApp, remObj, "interfaces()", data, replyType, replyData ) && replyType == "QCStringList") {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
         if ( ok )
@@ -1327,7 +1327,7 @@ DCOPCStringList DCOPClient::remoteFunctions( const DCOPCString& remApp, const DC
     if ( ok )
         *ok = false;
     if ( call( remApp, remObj, "functions()", data, replyType, replyData ) && replyType == "QCStringList") {
-        QDataStream reply( &replyData, IO_ReadOnly );
+        QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
         if ( ok )
@@ -1339,9 +1339,9 @@ DCOPCStringList DCOPClient::remoteFunctions( const DCOPCString& remApp, const DC
 void DCOPClient::setNotifications(bool enabled)
 {
     QByteArray data;
-    QDataStream ds(&data, IO_WriteOnly);
+    QDataStream ds(&data, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
-    ds << static_cast<Q_INT8>(enabled);
+    ds << static_cast<qint8>(enabled);
 
     DCOPCString replyType;
     QByteArray reply;
@@ -1352,9 +1352,9 @@ void DCOPClient::setNotifications(bool enabled)
 void DCOPClient::setDaemonMode( bool daemonMode )
 {
     QByteArray data;
-    QDataStream ds(&data, IO_WriteOnly);
+    QDataStream ds(&data, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
-    ds << static_cast<Q_INT8>( daemonMode );
+    ds << static_cast<qint8>( daemonMode );
 
     DCOPCString replyType;
     QByteArray reply;
@@ -1469,7 +1469,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
     if  ( objId == "qt" ) {
         if ( fun == "interfaces()" ) {
             replyType = "QStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             l << "DCOPObject";
@@ -1478,7 +1478,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             return true;
         } else if ( fun == "functions()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             l << "QCStringList functions()";
@@ -1489,7 +1489,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             return true;
         } else if ( fun == "objects()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             fillQtObjects( l, 0, "qt" );
@@ -1501,7 +1501,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             DCOPCString id;
             ds >> id ;
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             reply << findQtObjects( id ) ;
             return true;
@@ -1512,7 +1512,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             return false;
         if ( fun == "functions()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             l << "QCStringList functions()";
@@ -1537,7 +1537,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             return true;
         } else if ( fun == "interfaces()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             const QMetaObject *meta = o->metaObject();
@@ -1549,7 +1549,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             return true;
         } else if ( fun == "properties()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             const QMetaObject *mo = o->metaObject();
@@ -1573,7 +1573,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             DCOPCString name;
             ds >> name ;
             QVariant result = o->property(  name );
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             reply << result;
             return true;
@@ -1584,9 +1584,9 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             QVariant value;
             ds >> name >> value;
             replyType = "bool";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
-            reply << (Q_INT8) o->setProperty( name, value );
+            reply << (qint8) o->setProperty( name, value );
             return true;
         } else {
             int slot = o->metaObject()->indexOfSlot( fun );
@@ -1617,7 +1617,7 @@ bool DCOPClient::receive(const DCOPCString &/*app*/, const DCOPCString &objId,
     if ( objId == "DCOPClient" ) {
         if ( fun == "objects()" ) {
             replyType = "QCStringList";
-            QDataStream reply( &replyData, IO_WriteOnly );
+            QDataStream reply( &replyData, QIODevice::WriteOnly );
             reply.setVersion(QDataStream::Qt_3_1);
             DCOPCStringList l;
             if (d->qt_bridge_enabled)
@@ -1715,10 +1715,10 @@ bool DCOPClient::receive(const DCOPCString &/*app*/, const DCOPCString &objId,
 // return true. Return false otherwise.
 static bool findResultOk(DCOPCString &replyType, QByteArray &replyData)
 {
-    Q_INT8 success; // Tsk.. why is there no operator>>(bool)?
+    qint8 success; // Tsk.. why is there no operator>>(bool)?
     if (replyType != "bool") return false;
 
-    QDataStream reply( &replyData, IO_ReadOnly );
+    QDataStream reply( &replyData, QIODevice::ReadOnly );
     reply.setVersion(QDataStream::Qt_3_1);
     reply >> success;
 
@@ -1734,7 +1734,7 @@ static bool findSuccess(const DCOPCString &app, const DCOPCString objId, DCOPCSt
     replyType = "DCOPRef";
 
     replyData = QByteArray();
-    QDataStream final_reply( &replyData, IO_WriteOnly );
+    QDataStream final_reply( &replyData, QIODevice::WriteOnly );
     final_reply.setVersion(QDataStream::Qt_3_1);
     final_reply << ref;
     return true;
@@ -1807,13 +1807,13 @@ bool DCOPClient::call(const DCOPCString &remApp, const DCOPCString &remObjId,
 
     if ( localClient ) {
         bool saveTransaction = d->transaction;
-        Q_INT32 saveTransactionId = d->transactionId;
+        qint32 saveTransactionId = d->transactionId;
         DCOPCString saveSenderId = d->senderId;
 
         d->senderId = 0; // Local call
         bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
 
-        Q_INT32 id = localClient->transactionId();
+        qint32 id = localClient->transactionId();
         if (id) {
            // Call delayed. We have to wait till it has been processed.
            do {
@@ -1908,7 +1908,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
         d->currentKey = d->key; // no key yet, initiate new call
 
     QByteArray ba;
-    QDataStream ds(&ba, IO_WriteOnly);
+    QDataStream ds(&ba, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
     ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data.size();
 
@@ -2105,7 +2105,7 @@ DCOPCString DCOPClient::defaultObject() const
 }
 
 bool
-DCOPClient::isLocalTransactionFinished(Q_INT32 id, DCOPCString &replyType, QByteArray &replyData)
+DCOPClient::isLocalTransactionFinished(qint32 id, DCOPCString &replyType, QByteArray &replyData)
 {
     DCOPClientPrivate::LocalTransactionResult *result = d->localTransActionList.take(id);
     if (!result)
@@ -2141,7 +2141,7 @@ DCOPClient::beginTransaction()
     return trans;
 }
 
-Q_INT32
+qint32
 DCOPClient::transactionId() const
 {
     if (d->transaction)
@@ -2188,7 +2188,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, DCOPCString& replyType
     DCOPMsg *pMsg;
 
     QByteArray ba;
-    QDataStream ds(&ba, IO_WriteOnly);
+    QDataStream ds(&ba, QIODevice::WriteOnly);
     ds.setVersion(QDataStream::Qt_3_1);
     ds << d->appId << trans->senderId << trans->id << replyType << replyData;
 
@@ -2225,9 +2225,9 @@ DCOPClient::connectDCOPSignal( const DCOPCString &sender, const DCOPCString &sen
 {
     DCOPCString replyType;
     QByteArray data, replyData;
-    Q_INT8 iVolatile = Volatile ? 1 : 0;
+    qint8 iVolatile = Volatile ? 1 : 0;
 
-    QDataStream args(&data, IO_WriteOnly );
+    QDataStream args(&data, QIODevice::WriteOnly );
     args.setVersion(QDataStream::Qt_3_1);
     args << sender << senderObj << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot) << iVolatile;
 
@@ -2241,9 +2241,9 @@ DCOPClient::connectDCOPSignal( const DCOPCString &sender, const DCOPCString &sen
     if (replyType != "bool")
         return false;
 
-    QDataStream reply(&replyData, IO_ReadOnly );
+    QDataStream reply(&replyData, QIODevice::ReadOnly );
     reply.setVersion(QDataStream::Qt_3_1);
-    Q_INT8 result;
+    qint8 result;
     reply >> result;
     return (result != 0);
 }
@@ -2263,7 +2263,7 @@ DCOPClient::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCString &
     DCOPCString replyType;
     QByteArray data, replyData;
 
-    QDataStream args (&data, IO_WriteOnly );
+    QDataStream args (&data, QIODevice::WriteOnly );
     args.setVersion  (QDataStream::Qt_3_1);
     args << sender << senderObj << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot);
 
@@ -2277,9 +2277,9 @@ DCOPClient::disconnectDCOPSignal( const DCOPCString &sender, const DCOPCString &
     if (replyType != "bool")
         return false;
 
-    QDataStream reply(&replyData, IO_ReadOnly );
+    QDataStream reply(&replyData, QIODevice::ReadOnly );
     reply.setVersion(QDataStream::Qt_3_1);
-    Q_INT8 result;
+    qint8 result;
     reply >> result;
     return (result != 0);
 }

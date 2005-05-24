@@ -53,8 +53,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
     str << "*****************************************************************************/" << endl;
     str << endl;
 
-    QString ifdefstring = idl.upper();
-    int pos = idl.findRev( '.' );
+    QString ifdefstring = idl.toUpper();
+    int pos = idl.lastIndexOf( '.' );
     if ( pos != -1 )
 	ifdefstring = ifdefstring.left( pos );
 
@@ -110,11 +110,11 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	if( DCOPParent != "DCOPObject" ) { // we need to include the .h file for the base stub
 	    if( all_includes.contains( DCOPParent + ".h" ))
 		str << "#include <" << DCOPParent << "_stub.h>" << endl;
-	    else if( all_includes.contains( DCOPParent.lower() + ".h" ))
-		str << "#include <" << DCOPParent.lower() << "_stub.h>" << endl;
+	    else if( all_includes.contains( DCOPParent.toLower() + ".h" ))
+		str << "#include <" << DCOPParent.toLower() << "_stub.h>" << endl;
 	    else {// damn ... let's assume it's the last include
 		QString stub_h = all_includes.last();
-		unsigned int pos = stub_h.find( ".h" );
+		unsigned int pos = stub_h.indexOf( ".h" );
 		if( pos > 0 ) {
 		    stub_h = stub_h.remove( pos, 100000 );
 		    str << "#include <" << stub_h << "_stub.h>" << endl;
@@ -129,7 +129,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 	int namespace_count = 0;
 	QString namespace_tmp = className;
 	for(;;) {
-	    int pos = namespace_tmp.find( "::" );
+	    int pos = namespace_tmp.indexOf( "::" );
 	    if( pos < 0 ) {
 		className = namespace_tmp;
 		break;

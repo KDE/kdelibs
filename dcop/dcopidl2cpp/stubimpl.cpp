@@ -107,7 +107,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	QString namespace_tmp = className_stub;
 	str << endl;
 	for(;;) {
-	    int pos = namespace_tmp.find( "::" );
+	    int pos = namespace_tmp.indexOf( "::" );
 	    if( pos < 0 ) {
 		className_stub = namespace_tmp;
 		break;

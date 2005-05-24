@@ -117,7 +117,7 @@ void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr)
 static QByteArray readQByteArray(QDataStream &ds)
 {
    QByteArray result;
-   Q_UINT32 len;
+   quint32 len;
    ds >> len;
    if (len == 0xffffffff)
    {
@@ -126,7 +126,7 @@ static QByteArray readQByteArray(QDataStream &ds)
    }
 
    QIODevice *device = ds.device();
-   int bytesLeft = device->size()-device->at();
+   int bytesLeft = device->size()-device->pos();
    if ((bytesLeft < 0 ) || (len > (uint) bytesLeft))
    {
       qWarning("Corrupt data!\n");
@@ -134,7 +134,7 @@ static QByteArray readQByteArray(QDataStream &ds)
    }
    result.resize( (uint)len );
    if (len > 0)
-      ds.readRawBytes( result.data(), (uint)len);
+      ds.readRawData( result.data(), (uint)len);
    return result;
 }
 
@@ -333,7 +333,7 @@ qWarning("DCOPServer: slotOutputReady() %d bytes written", nwritten);
    if (outputBufferStart == data.size())
    {
       outputBufferStart = 0;
-      outputBuffer.remove(outputBuffer.begin());
+      outputBuffer.erase(outputBuffer.begin());
       if (outputBuffer.isEmpty())
       {
 #ifdef DCOP_DEBUG
@@ -1288,7 +1288,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         QDataStream args( &dataCopy, QIODevice::ReadOnly );
         args.setVersion(QDataStream::Qt_3_1);
         if ( !args.atEnd() ) {
-            Q_INT8 iDaemon;
+            qint8 iDaemon;
             bool daemon;
             args >> iDaemon;
 
@@ -1375,7 +1375,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 		}
 		appIds.insert( conn->appId, conn );
 
-		int c = conn->appId.find( '-' );
+		int c = conn->appId.indexOf( '-' );
 		if ( c > 0 )
 		    conn->plainAppId = conn->appId.left( c );
 		else
@@ -1422,7 +1422,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 	QDataStream args( &dataCopy, QIODevice::ReadOnly );
 	args.setVersion(QDataStream::Qt_3_1);
 	if (!args.atEnd()) {
-	    Q_INT8 notifyActive;
+	    qint8 notifyActive;
 	    args >> notifyActive;
 	    DCOPConnection* conn = clients.find( iceConn );
 	    if ( conn ) {
@@ -1446,14 +1446,14 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         DCOPCString signal      = readQByteArray(args);
         DCOPCString receiverObj = readQByteArray(args);
         DCOPCString slot        = readQByteArray(args);
-        Q_INT8 Volatile;
+        qint8 Volatile;
         args >> Volatile;
         //qDebug("DCOPServer: connectSignal(sender = %s senderObj = %s signal = %s recvObj = %s slot = %s)", sender.data(), senderObj.data(), signal.data(), receiverObj.data(), slot.data());
         bool b = dcopSignals->connectSignal(sender, senderObj, signal, conn, receiverObj, slot, (Volatile != 0));
         replyType = "bool";
         QDataStream reply( &replyData, QIODevice::WriteOnly );
         reply.setVersion(QDataStream::Qt_3_1);
-        reply << (Q_INT8) (b?1:0);
+        reply << (qint8) (b?1:0);
         return true;
     } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
         DCOPConnection* conn = clients.find( iceConn );
@@ -1472,7 +1472,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         replyType = "bool";
         QDataStream reply( &replyData, QIODevice::WriteOnly );
         reply.setVersion(QDataStream::Qt_3_1);
-        reply << (Q_INT8) (b?1:0);
+        reply << (qint8) (b?1:0);
         return true;
     }
 
@@ -1553,9 +1553,9 @@ static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 	f.open(QIODevice::ReadOnly);
 	int size = qMin( (qint64)1024, f.size() ); // protection against a huge file
 	QByteArray contents( size+1 );
-	bool ok = f.readBlock( contents.data(), size ) == size;
+	bool ok = f.read( contents.data(), size ) == size;
 	contents[size] = '\0';
-	int pos = contents.find('\n');
+	int pos = contents.indexOf('\n');
 	ok = ok && ( pos != -1 );
 	
 	//Strip trailing newline, if need be..

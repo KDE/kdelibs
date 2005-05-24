@@ -25,11 +25,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 bool mkBool( const QString& s )
 {
-    if ( s.lower()  == "true" )
+    if ( s.toLower()  == "true" )
 	return true;
-    if ( s.lower()  == "yes" )
+    if ( s.toLower()  == "yes" )
 	return true;
-    if ( s.lower()  == "on" )
+    if ( s.toLower()  == "on" )
 	return true;
     if ( s.toInt() != 0 )
 	return true;
@@ -134,11 +134,11 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         stream >> d;
         result.setNum( d, 'f' );
     } else if ( type == "Q_INT64" ) {
-        Q_INT64 i;
+        qint64 i;
         stream >> i;
         result = QString().sprintf( "%lld", i ).toAscii();
     } else if ( type == "Q_UINT64" ) {
-        Q_UINT64 i;
+        quint64 i;
         stream >> i;
         result = QString().sprintf( "%llu", i ).toAscii();
     } else if ( type == "bool" )
@@ -210,7 +210,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         redump << var;
 
         QDataStream replayed( buf );
-        Q_UINT32 id; replayed >> id; //Don't care about this anymore
+        quint32 id; replayed >> id; //Don't care about this anymore
         
 
         return demarshal( replayed, var.typeName() );
@@ -226,7 +226,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         result = r.url().local8Bit();
     } else if ( type.startsWith("QList<") )
     {
-        if ( type.find( '>' ) != type.length() - 1 )
+        if ( type.indexOf( '>' ) != type.length() - 1 )
             return result;
 
         QString nestedType = type.mid( strlen("QList<") );
@@ -235,10 +235,10 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         if ( nestedType.isEmpty() )
             return result;
 
-        Q_UINT32 count;
+        quint32 count;
         stream >> count;
 
-        Q_UINT32 i = 0;
+        quint32 i = 0;
         for (; i < count; ++i )
         {
             QByteArray arg = demarshal( stream, nestedType );
@@ -249,21 +249,21 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         }
     } else if ( type.left( 5 ) == "QMap<" )
     {
-        int commaPos = type.find( ',', 5 );
+        int commaPos = type.indexOf( ',', 5 );
 
         if ( commaPos == -1 )
             return result;
 
-        if ( type.find( '>', commaPos ) != type.length() - 1 )
+        if ( type.indexOf( '>', commaPos ) != type.length() - 1 )
             return result;
 
         QString keyType = type.mid( 5, commaPos - 5 );
         QString valueType = type.mid( commaPos + 1, type.length() - commaPos - 2 );
 
-        Q_UINT32 count;
+        quint32 count;
         stream >> count;
 
-        Q_UINT32 i = 0;
+        quint32 i = 0;
         for (; i < count; ++i )
         {
             QByteArray key = demarshal( stream, keyType );
@@ -400,7 +400,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	    marshall( dummy_arg, args, j, type );
 	    count++;
 	}
-	arg << (Q_UINT32) count;
+	arg << (quint32) count;
 	// Parse the list for real
 	while (true) {
 	    if( i > args.count() )

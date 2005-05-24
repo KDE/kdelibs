@@ -40,7 +40,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QB
 #ifdef Q_OS_UNIX
    DCOPCString senderObj;
    DCOPCString fun = _fun;
-   int i = fun.find('#');
+   int i = fun.indexOf('#');
    if (i > -1)
    {
       senderObj = fun.left(i);
@@ -105,16 +105,16 @@ DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &sender
    // TODO: Check if signal and slot match
    DCOPCString signalArgs, slotArgs;
    int i,j;
-   i = signal.find('(');
+   i = signal.indexOf('(');
    if (i < 0) return false;
    signalArgs = signal.mid(i+1);
-   j = signalArgs.find(')');
+   j = signalArgs.indexOf(')');
    if (j < 0) return false;
    signalArgs.truncate(j);
-   i = slot.find('(');
+   i = slot.indexOf('(');
    if (i < 0) return false;
    slotArgs = slot.mid(i+1);
-   j = slotArgs.find(')');
+   j = slotArgs.indexOf(')');
    if (j < 0) return false;
    slotArgs.truncate(j);
 
