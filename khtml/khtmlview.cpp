@@ -1740,6 +1740,25 @@ class HackWidget : public QWidget
     inline void setNoErase() { setAttribute(Qt::WA_NoBackground); }
 };
 
+
+static void handleWidget(QWidget* w, KHTMLView* view)
+{
+    if (w->isTopLevel())
+        return;
+
+    if (!qobject_cast<QFrame*>(w))
+	w->setBackgroundMode( Qt::NoBackground );
+    static_cast<HackWidget *>(w)->setNoErase();
+    w->installEventFilter(view);
+    
+    QObjectList children = w->children();
+    foreach (QObject* object, children) {
+	QWidget *widget = qobject_cast<QWidget*>(object);
+	if (widget)
+	    handleWidget(widget, view);
+    }
+}
+
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::ShortcutOverride ) {
@@ -1782,23 +1801,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		// don't install the event filter on toplevels
 		if (w->parentWidget(true) == view) {
 		    if (!strcmp(w->name(), "__khtml")) {
-			w->installEventFilter(this);
 			w->unsetCursor();
-			if (!qobject_cast<QFrame*>(w))
-			    w->setBackgroundMode( Qt::NoBackground );
-			static_cast<HackWidget *>(w)->setNoErase();
-
-			QObjectList children = w->children();
-			QList<QObject*>::iterator it = children.begin();
-			for (; it != children.end(); ++it) {
-			    QWidget *widget = qobject_cast<QWidget*>(*it);
-			    if (widget && !widget->isTopLevel()) {
-				if (!qobject_cast<QFrame*>(w))
-				    widget->setBackgroundMode( Qt::NoBackground );
-				static_cast<HackWidget *>(widget)->setNoErase();
-				widget->installEventFilter(this);
-			    }
-			}
+			handleWidget(w, this);
 		    }
 		}
 	    }
