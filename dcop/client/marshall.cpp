@@ -357,7 +357,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	arg << KURL( s );
     else if ( type == "QVariant" ) {
 	if ( s == "true" || s == "false" )
-	    arg << QVariant( mkBool( s ), 42 );
+	    arg << QVariant( mkBool( s ) );
 	else if ( s.left( 4 ) == "int(" )
 	    arg << QVariant( s.mid(4, s.length()-5).toInt() );
 	else if ( s.left( 7 ) == "QPoint(" )

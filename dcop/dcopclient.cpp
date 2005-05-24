@@ -460,7 +460,7 @@ void DCOPClient::processPostedMessagesInternal()
         delete msg;
     }
     if ( !d->messages.isEmpty() )
-        d->postMessageTimer.start( 100, true );
+        d->postMessageTimer.start( 100 );
 #endif
 }
 
@@ -515,7 +515,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
         msg->key = key;
         msg->data = dataReceived;
         d->messages.append( msg );
-        d->postMessageTimer.start( 0, true );
+        d->postMessageTimer.start( 0 );
         return;
     }
 
@@ -628,6 +628,8 @@ DCOPClient::DCOPClient()
     d->qt_bridge_enabled = true;
     d->transactionList = 0L;
     d->transactionId = 0;
+    d->postMessageTimer.setSingleShot( true );
+    d->eventLoopTimer.setSingleShot( true );
     QObject::connect( &d->postMessageTimer, SIGNAL( timeout() ), this, SLOT( processPostedMessagesInternal() ) );
     QObject::connect( &d->eventLoopTimer, SIGNAL( timeout() ), this, SLOT( eventLoopTimeout() ) );
 
@@ -700,7 +702,7 @@ void DCOPClient::bindToApp()
         if ( d->notifier )
             delete d->notifier;
         d->notifier = new QSocketNotifier(socket(),
-                                          QSocketNotifier::Read, 0, 0);
+                                          QSocketNotifier::Read, 0);
         QObject::connect(d->notifier, SIGNAL(activated(int)),
                 SLOT(processSocketData(int)));
     }
@@ -800,9 +802,9 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             }
             int size = qMin( qint64(1024), f.size() ); // protection against a huge file
             QByteArray contents( size+1, '\0' );
-            if ( f.readBlock( contents.data(), size ) != size )
+            if ( f.read( contents.data(), size ) != size )
             {
-               qDebug("Error reading from %s, didn't read the expected %d bytes", fName.latin1(), size);
+               qDebug("Error reading from %s, didn't read the expected %d bytes", fName.toLatin1().constData(), size);
                // Should we abort ?
             }
             contents[size] = '\0';
@@ -820,7 +822,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 //#endif
             }
         }
-        d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
+        d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.toLatin1().constData()) );
         bClearServerAddr = true;
     }
 
@@ -1209,7 +1211,7 @@ bool DCOPClient::findObject(const DCOPCString &remApp, const DCOPCString &remObj
             if (id) {
                 // Call delayed. We have to wait till it has been processed.
                 do {
-                    QApplication::processEvents( QEventLoop::WaitForMore);
+                    QApplication::processEvents( QEventLoop::WaitForMoreEvents );
                 } while( !localClient->isLocalTransactionFinished(id, replyType, replyData));
                 result = true;
             }
@@ -1381,11 +1383,12 @@ static void fillQtObjects( DCOPCStringList& l, QObject* o, DCOPCString path)
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
-      QByteArray n = (*it)->name();
+#warning might make sense to update to QString as objectName is one now
+      QByteArray n = (*it)->objectName().toLatin1();
       if ( n == "unnamed" || n.isEmpty() )
       {
           n = QString().sprintf("%p", (char*)(*it) ).toAscii();
-          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->className()).arg(QLatin1String( n ));
+          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->metaObject()->className()).arg(QLatin1String( n )).toAscii();
       }
       QByteArray fn = path + n;
       l.append( fn );
@@ -1417,11 +1420,12 @@ static void fillQtObjectsEx( QList<O>& l, QObject* o, DCOPCString path )
     QObjectList::const_iterator it;
     for ( it = list.constBegin(); it != list.constEnd(); ++it ){
       ++it;
-      QByteArray n = (*it)->name();
+#warning might make sense to update to QString as objectName is one now
+      QByteArray n = (*it)->objectName().toLatin1();
       if ( n == "unnamed" || n.isEmpty() )
       {
           QString ptr = QString().sprintf("%p", (char*)(*it) );
-          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->className()).arg(QLatin1String( ptr ));
+          n = QString("unnamed%1(%2, %3)").arg(++unnamed).arg((*it)->metaObject()->className()).arg(QLatin1String( ptr.toLatin1() )).toLatin1();
       }
       QByteArray fn = path + n;
       QObject *obj = *it;
@@ -1817,7 +1821,7 @@ bool DCOPClient::call(const DCOPCString &remApp, const DCOPCString &remObjId,
         if (id) {
            // Call delayed. We have to wait till it has been processed.
            do {
-              QApplication::processEvents( QEventLoop::WaitForMore);
+              QApplication::processEvents( QEventLoop::WaitForMoreEvents );
            } while( !localClient->isLocalTransactionFinished(id, replyType, replyData));
            b = true;
         }
@@ -1974,7 +1978,7 @@ bool DCOPClient::callInternal(const DCOPCString &remApp, const DCOPCString &remO
                         emit blockUserInput( true );
                     }
                     if( timeout >= 0 )
-                        d->eventLoopTimer.start(time_left - guiTimeout, true);
+                        d->eventLoopTimer.start(time_left - guiTimeout);
                     qApp->enter_loop();
                     d->eventLoopTimer.stop();
                     if ( !old_lock ) {
@@ -2308,7 +2312,7 @@ DCOPClient::setPriorityCall(bool b)
           return;
        d->currentKey = d->currentKeySaved;
        if ( !d->messages.isEmpty() )
-          d->postMessageTimer.start( 0, true ); // Process queued messages
+          d->postMessageTimer.start( 0 ); // Process queued messages
     }
 #endif
 }

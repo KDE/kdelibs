@@ -170,7 +170,7 @@ main
 includes
 	: includes T_INCLUDE
           {
-		printf("<INCLUDE>%s</INCLUDE>\n", $2->toLatin1() );
+		printf("<INCLUDE>%s</INCLUDE>\n", $2->toLatin1().constData() );
 	  }
 	| T_EXTERN_C T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
 	  {
@@ -189,7 +189,7 @@ declaration
 	: T_CLASS Identifier class_header dcoptag body T_SEMICOLON
 	  {
 	 	if ($4)
-			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *$2 ).latin1(), $3->latin1(), $5->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *$2 ).toLatin1().constData(), $3->toLatin1().constData(), $5->toLatin1().constData() );
 		// default C++ visibility specifier is 'private'
 		dcop_area = 0;
 		dcop_signal_area = 0;
@@ -198,7 +198,7 @@ declaration
 	| T_CLASS T_IDENTIFIER Identifier class_header dcoptag body T_SEMICOLON
 	  {
 	 	if ($5)
-			  printf("<CLASS>\n    <NAME>%s</NAME>\n    <LINK_SCOPE>%s</LINK_SCOPE>\n%s%s</CLASS>\n", ( in_namespace + *$3 ).latin1(),$2->latin1(),  $4->latin1(), $6->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n    <LINK_SCOPE>%s</LINK_SCOPE>\n%s%s</CLASS>\n", ( in_namespace + *$3 ).toLatin1().constData(),$2->toLatin1().constData(),  $4->toLatin1().constData(), $6->toLatin1().constData() );
 		// default C++ visibility specifier is 'private'
 		dcop_area = 0;
 		dcop_signal_area = 0;
@@ -219,7 +219,7 @@ declaration
                   } 
             main T_RIGHT_CURLY_BRACKET opt_semicolon
                   {
-                      int pos = in_namespace.findRev( "::", -3 );
+                      int pos = in_namespace.lastIndexOf( "::", -3 );
                       if( pos >= 0 )
                           in_namespace = in_namespace.left( pos + 2 );
                       else

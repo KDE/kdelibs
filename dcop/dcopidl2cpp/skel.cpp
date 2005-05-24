@@ -25,7 +25,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtextstream.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3valuelist.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -102,7 +101,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	}
     
 	// get function table
-	Q3ValueList<Function> functions;
+	QList<Function> functions;
 	s = n.nextSibling().toElement();
 	for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 	    if ( s.tagName() != "FUNC" )
@@ -195,7 +194,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	}
 	str << "static const char* const " << className << "_ftable[" << functions.count() + 1 << "][3] = {" << endl;
-	for( Q3ValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
+	for( QList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
 	    str << "    { \"" << (*it).type << "\", \"" << (*it).name << "\", \"" << (*it).fullName << "\" }," << endl;
 	}
 	str << "    { 0, 0, 0 }" << endl;
@@ -203,7 +202,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 
 	if (functions.count() > 0) {
 	    str << "static const int " << className << "_ftable_hiddens[" << functions.count() << "] = {" << endl;
-	    for( Q3ValueList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
+	    for( QList<Function>::Iterator it = functions.begin(); it != functions.end(); ++it ){
 		str << "    " << !!(*it).hidden << "," << endl;
 	    }
 	    str << "};" << endl;

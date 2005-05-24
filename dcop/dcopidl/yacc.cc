@@ -1556,7 +1556,7 @@ yyreduce:
   case 4:
 #line 172 "yacc.yy"
     {
-		printf("<INCLUDE>%s</INCLUDE>\n", yyvsp[0]._str->latin1() );
+		printf("<INCLUDE>%s</INCLUDE>\n", yyvsp[0]._str->toLatin1().constData() );
 	  ;}
     break;
 
@@ -1586,7 +1586,7 @@ yyreduce:
 #line 190 "yacc.yy"
     {
 	 	if (yyvsp[-2]._int)
-			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *yyvsp[-4]._str ).latin1(), yyvsp[-3]._str->latin1(), yyvsp[-1]._str->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n%s%s</CLASS>\n", ( in_namespace + *yyvsp[-4]._str ).toLatin1().constData(), yyvsp[-3]._str->toLatin1().constData(), yyvsp[-1]._str->toLatin1().constData() );
 		// default C++ visibility specifier is 'private'
 		dcop_area = 0;
 		dcop_signal_area = 0;
@@ -1598,7 +1598,7 @@ yyreduce:
 #line 199 "yacc.yy"
     {
 	 	if (yyvsp[-2]._int)
-			  printf("<CLASS>\n    <NAME>%s</NAME>\n    <LINK_SCOPE>%s</LINK_SCOPE>\n%s%s</CLASS>\n", ( in_namespace + *yyvsp[-4]._str ).latin1(),yyvsp[-5]._str->latin1(),  yyvsp[-3]._str->latin1(), yyvsp[-1]._str->latin1() );
+			  printf("<CLASS>\n    <NAME>%s</NAME>\n    <LINK_SCOPE>%s</LINK_SCOPE>\n%s%s</CLASS>\n", ( in_namespace + *yyvsp[-4]._str ).toLatin1().constData(),yyvsp[-5]._str->toLatin1().constData(),  yyvsp[-3]._str->toLatin1().constData(), yyvsp[-1]._str->toLatin1().constData() );
 		// default C++ visibility specifier is 'private'
 		dcop_area = 0;
 		dcop_signal_area = 0;
@@ -1634,7 +1634,7 @@ yyreduce:
   case 15:
 #line 221 "yacc.yy"
     {
-                      int pos = in_namespace.findRev( "::", -3 );
+                      int pos = in_namespace.lastIndexOf( "::", -3 );
                       if( pos >= 0 )
                           in_namespace = in_namespace.left( pos + 2 );
                       else

@@ -68,7 +68,7 @@ void startApp(const char *_app, int argc, const char **args)
         reply >> result >> dcopName >> error;
         if (result != 0)
         {
-            qWarning("Error: %s", error.local8Bit().data());
+            qWarning("Error: %s", error.toLocal8Bit().data());
             exit(1);
         }
         if (!dcopName.isEmpty())

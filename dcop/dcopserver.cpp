@@ -908,7 +908,7 @@ static void sighandler(int sig)
 }
 
 DCOPServer::DCOPServer(bool _suicide)
-    : QObject(0,0), currentClientNumber(0), appIds(263), clients(263)
+    : QObject(0), currentClientNumber(0), appIds(263), clients(263)
 {
     serverKey = 42;
 
@@ -1003,6 +1003,7 @@ DCOPServer::DCOPServer(bool _suicide)
     m_timer =  new QTimer(this);
     connect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
     m_deadConnectionTimer = new QTimer(this);
+    m_deadConnectionTimer->setSingleShot(true);
     connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
 
 #ifdef DCOP_LOG
@@ -1060,7 +1061,7 @@ void DCOPServer::ioError( IceConn iceConn  )
 {
     deadConnections.removeRef(iceConn);
     deadConnections.prepend(iceConn);
-    m_deadConnectionTimer->start(0, true);
+    m_deadConnectionTimer->start(0);
 }
 
 

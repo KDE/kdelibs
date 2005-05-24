@@ -755,7 +755,7 @@ int main( int argc, char** argv )
     QString sessionName;
     bool updateUserTime = true;
 
-    cin_.setEncoding( QTextStream::Locale );
+    cin_.setCodec( QTextCodec::codecForLocale() );
 
     // Scan for command-line options first
     for( int pos = 1 ; pos <= argc - 1 ; pos++ )
