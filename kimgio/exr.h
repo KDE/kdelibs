@@ -11,11 +11,29 @@
 #ifndef KIMG_EXR_H
 #define KIMG_EXR_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-  void kimgio_exr_read (QImageIO *io);
-  void kimgio_exr_write (QImageIO *io);
-}
+class EXRHandler : public QImageIOHandler
+{
+public:
+    EXRHandler();
+
+    bool canRead() const;
+    bool read( QImage *outImage );
+    bool write( const QImage &image );
+
+    QByteArray name() const;
+
+    static bool canRead( QIODevice *device );
+};
+
+
+class EXRPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
 
 #endif

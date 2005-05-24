@@ -10,8 +10,8 @@ if include_JP2_MODULES
 endif
 
 if include_EXR_MODULES
-#KIMGIO_EXR_MODULES=kimg_exr.la
-#KIMGIO_EXR_DATAFILES=exr.kimgio
+KIMGIO_EXR_MODULES=kimg_exr.la
+KIMGIO_EXR_DATAFILES=exr.kimgio
 endif
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
