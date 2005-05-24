@@ -19,8 +19,8 @@
 #    Boston, MA 02111-1307, USA.
 
 check-local: testwithpixmaps.cpp testkde.cpp
-	# Broken and not informative enough about the changes
-	# md5sum -c $(srcdir)/sums
+# Broken and not informative enough about the changes
+# md5sum -c $(srcdir)/sums
 
 testwithpixmaps.cpp: $(srcdir)/test.widgets
 	../makekdewidgets -o testwithpixmaps.cpp -p $(top_srcdir)/kdewidgets/pics $(srcdir)/test.widgets
