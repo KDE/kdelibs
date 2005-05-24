@@ -186,7 +186,7 @@ public:
 	{
 		// Convert in a libart suitable form
 		QString tempName = color.name();
-		const char *str = tempName.latin1();
+		const char *str = tempName.toLatin1().constData();
 
 		int result = 0;
 
@@ -1272,7 +1272,7 @@ void KSVGIconPainter::setStrokeColor(const QString &stroke)
 		d->helper->m_useStrokeGradient = false;
 		d->helper->m_strokeGradientReference = QString::null;
 
-		if(stroke.stripWhiteSpace().lower() != "none")
+		if(stroke.trimmed().toLower() != "none")
 			setUseStroke(true);
 		else
 			setUseStroke(false);
@@ -1300,7 +1300,7 @@ void KSVGIconPainter::setFillColor(const QString &fill)
 		d->helper->m_useFillGradient = false;
 		d->helper->m_fillGradientReference = QString::null;
 
-		if(fill.stripWhiteSpace().lower() != "none")
+		if(fill.trimmed().toLower() != "none")
 			setUseFill(true);
 		else
 			setUseFill(false);
@@ -1734,8 +1734,8 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	unsigned int lastCommand = 0;
 
 	QString _d = value.replace(",", " ");
-	_d = _d.simplifyWhiteSpace();
-	const char *ptr = _d.latin1();
+	_d = _d.simplified();
+	const char *ptr = _d.latin1().constData();
 	const char *end = _d.latin1() + _d.length() + 1;
 
 	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
@@ -2321,15 +2321,15 @@ void KSVGIconPainter::drawImage(double x, double y, QImage &image)
 
 QColor KSVGIconPainter::parseColor(const QString &param)
 {
-	if(param.stripWhiteSpace().startsWith("#"))
+	if(param.trimmed().startsWith("#"))
 	{
 		QColor color;
-		color.setNamedColor(param.stripWhiteSpace());
+		color.setNamedColor(param.trimmed());
 		return color;
 	}
-	else if(param.stripWhiteSpace().startsWith("rgb("))
+	else if(param.trimmed().startsWith("rgb("))
 	{
-		QString parse = param.stripWhiteSpace();
+		QString parse = param.trimmed();
 		QStringList colors = QStringList::split(',', parse);
 		QString r = colors[0].right((colors[0].length() - 4));
 		QString g = colors[1];
@@ -2357,7 +2357,7 @@ QColor KSVGIconPainter::parseColor(const QString &param)
 	}
 	else
 	{
-		QString rgbColor = param.stripWhiteSpace();
+		QString rgbColor = param.trimmed();
 
 		if(rgbColor == "aliceblue")
 			return QColor(240, 248, 255);
@@ -2673,7 +2673,7 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 	double ret = 0.0;
 
 	double value = 0;
-	const char *start = check.latin1();
+	const char *start = check.toLatin1().constData();
 	const char *end = getCoord(start, value);
 
 	if(int(end - start) < check.length())
@@ -2767,8 +2767,8 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 	{
 		QStringList subtransform = QStringList::split('(', (*it));
 
-		subtransform[0] = subtransform[0].stripWhiteSpace().lower();
-		subtransform[1] = subtransform[1].simplifyWhiteSpace();
+		subtransform[0] = subtransform[0].trimmed().toLower();
+		subtransform[1] = subtransform[1].simplified();
 		QRegExp reg("([-]?\\d*\\.?\\d+(?:e[-]?\\d+)?)");
 
                 int pos = 0;

@@ -93,14 +93,14 @@ public:
 			{
 				QString style = element.attribute("style");
 
-				QStringList substyles = QStringList::split(';', style);
+				QStringList substyles = style.split(';', QString::SkipEmptyParts);
 				for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
 				{
-					QStringList substyle = QStringList::split(':', (*it));
+					QStringList substyle = (*it).split(':', QString::SkipEmptyParts);
 					QString command = substyle[0];
 					QString params = substyle[1];
-					command = command.stripWhiteSpace();
-					params = params.stripWhiteSpace();
+					command = command.trimmed();
+					params = params.trimmed();
 
 					if(command == "stop-color")
 					{
@@ -154,7 +154,7 @@ public:
 		if(points.isEmpty())
 			return Q3PointArray();
 
-		points = points.simplifyWhiteSpace();
+		points = points.simplified();
 
 		if(points.contains(",,") || points.contains(", ,"))
 			return Q3PointArray();
@@ -163,9 +163,9 @@ public:
 		points.replace('\r', QString::null);
 		points.replace('\n', QString::null);
 
-		points = points.simplifyWhiteSpace();
+		points = points.simplified();
 
-		QStringList pointList = QStringList::split(' ', points);
+		QStringList pointList = points.split(' ', QString::SkipEmptyParts);
 
 		Q3PointArray array(pointList.count() / 2);
 		int i = 0;
@@ -392,7 +392,7 @@ public:
 			if(element.hasAttribute("fill") && element.attribute("fill").contains("none"))
 				filled = false;
 
-			if(element.attribute("style").contains("fill") && element.attribute("style").stripWhiteSpace().contains("fill:none"))
+			if(element.attribute("style").contains("fill") && element.attribute("style").trimmed().contains("fill:none"))
 				filled = false;
 
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
@@ -410,19 +410,19 @@ public:
 			if(href.startsWith("data:"))
 			{
 				// Get input
-				QByteArray input = href.mid(13).utf8();
+				QByteArray input = href.mid(13).toUtf8();
 
 				// Decode into 'output'
 				QByteArray output;
 				KCodecs::base64Decode(input, output);
 
 				// Display
-				QImage image(output);
+				QImage image = QImage::fromData(output);
 
 				// Scale, if needed
 				if(image.width() != (int) w || image.height() != (int) h)
 				{
-					QImage show = image.smoothScale((int) w, (int) h, Qt::KeepAspectRatio);
+					QImage show = image.scaled((int) w, (int) h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 					m_engine->painter()->drawImage(x, y, show);
 				}
 
@@ -435,14 +435,14 @@ public:
 
 	void parseStyle(const QString &style)
 	{
-		QStringList substyles = QStringList::split(';', style);
+		QStringList substyles = style.split(';', QString::SkipEmptyParts);
 		for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
 		{
-			QStringList substyle = QStringList::split(':', (*it));
+			QStringList substyle = (*it).split(':', QString::SkipEmptyParts);
 			QString command = substyle[0];
 			QString params = substyle[1];
-			command = command.stripWhiteSpace();
-			params = params.stripWhiteSpace();
+			command = command.trimmed();
+			params = params.trimmed();
 
 			parsePA(command, params);
 		}
@@ -523,7 +523,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	QDomDocument svgDocument("svg");
 	QFile file(path);
 
-	if(path.right(3).upper() == "SVG")
+	if(path.right(3).toUpper() == "SVG")
 	{
 		// Open SVG Icon
 		if(!file.open(QIODevice::ReadOnly))
@@ -533,14 +533,14 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	}
 	else // SVGZ
 	{
-		gzFile svgz = gzopen(path.latin1(), "ro");
+		gzFile svgz = gzopen(path.toLatin1().data(), "ro");
 		if(!svgz)
 			return false;
 
 		QString data;
 		bool done = false;
 
-		QByteArray buffer(1024);
+		QByteArray buffer(1024, '\0');
 		int length = 0;
 
 		while(!done)
@@ -593,7 +593,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	// Apply viewbox
 	if(rootElement.hasAttribute("viewBox"))
 	{
-		QStringList points = QStringList::split(' ', rootElement.attribute("viewBox").simplifyWhiteSpace());
+		QStringList points = rootElement.attribute("viewBox").simplified().split(' ', QString::SkipEmptyParts);
 
 		float w = points[2].toFloat();
 		float h = points[3].toFloat();
