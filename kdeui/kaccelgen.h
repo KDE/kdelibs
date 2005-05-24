@@ -111,7 +111,7 @@ public:
  * @param index offset to check
  */
 inline bool
-isLegalAccelerator(const QString& str, uint index)
+isLegalAccelerator(const QString& str, int index)
 {
     return index < str.length()
         && str[index].isLetterOrNumber();
@@ -181,8 +181,8 @@ generate(Iter begin, Iter end, QStringList& target)
         int user_ampersand = item.find(QChar('&'));
         if( user_ampersand < 0 || item[user_ampersand+1] == '&') {
             bool found = false;
-            uint found_idx;
-            uint j;
+            int found_idx;
+            int j;
 
             // Check word-starting letters first.
             for( j=0; j < item.length(); ++j ) {
