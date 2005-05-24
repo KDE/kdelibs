@@ -39,7 +39,7 @@ bool mkBool( const QString& s )
 
 QPoint mkPoint( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int x = strtol(s, &end, 10);
@@ -51,7 +51,7 @@ QPoint mkPoint( const QString &str )
 
 QSize mkSize( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int w = strtol(s, &end, 10);
@@ -63,7 +63,7 @@ QSize mkSize( const QString &str )
 
 QRect mkRect( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int p1 = strtol(s, &end, 10);
@@ -150,7 +150,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
     {
         QString s;
         stream >> s;
-        result = s.local8Bit();
+        result = s.toLocal8Bit();
     } else if ( type == "QByteArray") 
     {
         QByteArray ba;
@@ -169,7 +169,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
     {
         QColor c;
         stream >> c;
-        result = c.name().local8Bit();
+        result = c.name().toLocal8Bit();
     } else if ( type == "QSize" )
     {
         QSize s;
@@ -223,7 +223,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
     {
         KURL r;
         stream >> r;
-        result = r.url().local8Bit();
+        result = r.url().toLocal8Bit();
     } else if ( type.startsWith("QList<") )
     {
         if ( type.indexOf( '>' ) != type.length() - 1 )
@@ -284,7 +284,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
     }
     else
     {
-       result = QString().sprintf( "<%s>", type.latin1()).toAscii();
+       result = QString().sprintf( "<%s>", type.toLatin1().data()).toAscii();
     }
 
     return result;
@@ -392,7 +392,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	while (true) {
 	    if( j >= args.count() )
 	    {
-		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		qWarning("List end-delimiter '%s' not found.", delim.toLatin1().constData());
 		exit(1);
 	    }
 	    if( QString::fromLocal8Bit( args[ j ] ) == delim )
@@ -405,7 +405,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	while (true) {
 	    if( i > args.count() )
 	    {
-		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		qWarning("List end-delimiter '%s' not found.", delim.toLatin1().constData());
 		exit(1);
 	    }
 	    if( QString::fromLocal8Bit( args[ i ] ) == delim )
@@ -413,7 +413,7 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	    marshall( arg, args, i, type );
 	}
     } else {
-	qWarning( "cannot handle datatype '%s'", type.latin1() );
+	qWarning( "cannot handle datatype '%s'", type.toLatin1().constData() );
 	exit(1);
     }
     i++;

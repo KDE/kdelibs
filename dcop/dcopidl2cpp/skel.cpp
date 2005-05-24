@@ -69,7 +69,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 {
     QFile skel( filename );
     if ( !skel.open( QIODevice::WriteOnly ) )
-	qFatal("Could not write to %s", filename.local8Bit().data() );
+	qFatal("Could not write to %s", filename.toLocal8Bit().data() );
 
     QTextStream str( &skel );
 
@@ -424,7 +424,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    funcName += ")";
 	
 	    if ( result != "void" )
-	       qFatal("Error in DCOP signal %s::%s: DCOP signals can not return values.", className.latin1(), funcName.latin1());
+	       qFatal("Error in DCOP signal %s::%s: DCOP signals can not return values.", className.toLatin1().constData(), funcName.toLatin1().constData());
 	
 	    str << "    QByteArray data;" << endl;
 	    if ( !args.isEmpty() ) {

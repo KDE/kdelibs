@@ -225,7 +225,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
     if ( left >0 && left + 1 < right - 1) {
 	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-	    QString lt = (*it).simplifyWhiteSpace();
+	    QString lt = (*it).simplified();
 
 	    int s = lt.indexOf(' ');
 
@@ -255,15 +255,15 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 		if ( s < static_cast<int>(partl.count())-1)
 		{
 			qWarning("The argument `%s' seems syntactically wrong.",
-				lt.latin1());
+				lt.toLatin1().constData());
 		}
 		if ( s == static_cast<int>(partl.count())-1)
 		{
-			partl.remove(partl.at(s));
+			partl.removeAll(partl.at(s));
 		}
 
 		lt = partl.join(" ");
-		lt = lt.simplifyWhiteSpace();
+		lt = lt.simplified();
 	    }
 
 	    (*it) = lt;
@@ -296,7 +296,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 	return( 1 );
     }
 
-    if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {
+    if ( !dcop->call( app, obj, f.toLatin1().data(),  data, replyType, replyData) ) {
 	qWarning( "call failed");
 	return( 1 );
     } else {
@@ -407,7 +407,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 
     QDir d( home );
     d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
-    d.setNameFilter( ".DCOP4server*" );
+    d.setNameFilters( QStringList(".DCOP4server*") );
 
     const QList<QFileInfo> list = d.entryInfoList();
     if( !list.count() )
@@ -601,7 +601,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	    {
 		if( fi.isReadable() )
 		{
-		    char *envStr = strdup( ( "ICEAUTHORITY=" + iceFile ).ascii() );
+		    char *envStr = strdup( ( "ICEAUTHORITY=" + iceFile ).toAscii().constData() );
 		    putenv( envStr );
 		    //cerr_ << "ice: " << envStr << endl;
 		}
@@ -661,7 +661,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 	    delete client;
 	    client = new DCOPClient;
 	    if( !dcopServer.isEmpty() )
-		client->setServerAddress( dcopServer.ascii() );
+		client->setServerAddress( dcopServer.toAscii().constData() );
 	    bool success = client->attach();
 	    if( !success )
 	    {
@@ -714,7 +714,7 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
 			QString buf = cin_.readLine();
 
 			if( replaceArg != params.end() )
-			    *replaceArg = buf.local8Bit();
+			    *replaceArg = buf.toLocal8Bit();
 
 			if( !buf.isNull() )
 			{

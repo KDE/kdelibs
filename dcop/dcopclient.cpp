@@ -269,7 +269,7 @@ static QByteArray dcopServerFile(const QByteArray &hostname, bool old)
 
     if (!old)
     {
-        while( (i = disp.find(KPATH_SEPARATOR)) >= 0)
+        while( (i = disp.indexOf(KPATH_SEPARATOR)) >= 0)
             disp[i] = '_';
     }
 
@@ -348,7 +348,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     if ( d->key == 0 )
         d->key = key; // received a key from the server
 
-    QByteArray dataReceived( length );
+    QByteArray dataReceived( length, '\0' );
     IceReadData(iceConn, length, dataReceived.data() );
 
     d->opcode = opcode;
@@ -799,7 +799,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
                 return false;
             }
             int size = qMin( qint64(1024), f.size() ); // protection against a huge file
-            QByteArray contents( size+1 );
+            QByteArray contents( size+1, '\0' );
             if ( f.readBlock( contents.data(), size ) != size )
             {
                qDebug("Error reading from %s, didn't read the expected %d bytes", fName.latin1(), size);
@@ -2165,7 +2165,7 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, DCOPCString& replyType
         return; // No pending transactions!
     }
 
-    if ( !d->transactionList->remove( trans ) ) {
+    if ( !d->transactionList->removeAll( trans ) ) {
         qWarning("Transaction unknown: Not on list of pending transactions!");
         return; // Transaction
     }

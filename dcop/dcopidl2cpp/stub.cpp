@@ -40,7 +40,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 {
     QFile stub( filename );
     if ( !stub.open( QIODevice::WriteOnly ) )
-	qFatal("Could not write to %s", filename.local8Bit().data() );
+	qFatal("Could not write to %s", filename.toLocal8Bit().data() );
 	
     QTextStream str( &stub );
 

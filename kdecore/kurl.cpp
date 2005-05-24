@@ -70,12 +70,12 @@ static QString encode( const QString& segment, int encoding_offset, int encoding
 
   QByteArray local;
   if (encoding_hint==0)
-    local = segment.local8Bit();
+    local = segment.toLocal8Bit();
   else
   {
       QTextCodec * textCodec = codecForHint( encoding_hint );
       if (!textCodec)
-          local = segment.local8Bit();
+          local = segment.toLocal8Bit();
       else
           local = textCodec->fromUnicode( segment );
   }
@@ -330,7 +330,7 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
 #else
      QString encodedDot("%2e");
 #endif
-     if (path.find(encodedDot, 0, false) != -1)
+     if (path.indexOf(encodedDot, 0, Qt::CaseInsensitive) != -1)
      {
 #ifndef KDE_QT_ONLY
         static const QString &encodedDOT = KGlobal::staticQString("%2E"); // Uppercase!
@@ -399,12 +399,12 @@ bool KURL::isRelativeURL(const QString &_url)
   const QChar *str = _url.unicode();
 
   // Absolute URL must start with alpha-character
-  if (!isalpha(str[0].latin1()))
+  if (!isalpha(str[0].toLatin1()))
      return true; // Relative URL
 
   for(int i = 1; i < len; i++)
   {
-     char c = str[i].latin1(); // Note: non-latin1 chars return 0!
+     char c = str[i].toLatin1(); // Note: non-latin1 chars return 0!
      if (c == ':')
         return false; // Absolute URL
 
@@ -523,7 +523,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   {
     KURL::List lst = split( _u );
     KURL u(lst.last(), _rel_url, encoding_hint);
-    lst.remove( lst.last() );
+    lst.erase( --lst.end() );
     lst.append( u );
     *this = join( lst );
     return;
@@ -534,11 +534,11 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   QString rUrl = _rel_url;
   int len = _u.m_strProtocol.length();
   if ( !_u.m_strHost.isEmpty() && !rUrl.isEmpty() &&
-       rUrl.find( _u.m_strProtocol, 0, false ) == 0 &&
+       rUrl.indexOf( _u.m_strProtocol, 0, Qt::CaseInsensitive ) == 0 &&
        rUrl[len] == ':' && (rUrl[len+1] != '/' ||
        (rUrl[len+1] == '/' && rUrl[len+2] != '/')) )
   {
-    rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+    rUrl.remove( 0, rUrl.indexOf( ':' ) + 1 );
   }
 
   if ( rUrl.isEmpty() )
@@ -572,13 +572,13 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
     }
     else if ( rUrl[0] != '?' )
     {
-       int pos = m_strPath.findRev( '/' );
+       int pos = m_strPath.lastIndexOf( '/' );
        if (pos >= 0)
           m_strPath.truncate(pos);
        m_strPath += '/';
        if (!m_strPath_encoded.isEmpty())
        {
-          pos = m_strPath_encoded.findRev( '/' );
+          pos = m_strPath_encoded.lastIndexOf( '/' );
           if (pos >= 0)
              m_strPath_encoded.truncate(pos);
           m_strPath_encoded += '/';
@@ -865,7 +865,7 @@ void KURL::parseURL( const QString& _url, int encoding_hint )
       m_strUser = QString::null;
       QString tmp( buf + start, pos - start );
       char *endptr;
-      m_iPort = (unsigned short int)strtol(tmp.ascii(), &endptr, 10);
+      m_iPort = (unsigned short int)strtol(tmp.toAscii().constData(), &endptr, 10);
       if ((pos == len) && (strlen(endptr) == 0))
         goto NodeOk;
       // there is more after the digits
@@ -2021,7 +2021,7 @@ void KURL::_setQuery( const QString &_txt, int encoding_hint)
       // characters '&:;=/?' and re-encode part by part.
       while(i < l)
       {
-         char c = m_strQuery_encoded[i].latin1();
+         char c = m_strQuery_encoded[i].toLatin1();
          if ((c == '&') || (c == ':') || (c == ';') ||
              (c == '=') || (c == '/') || (c == '?'))
             break;
@@ -2130,7 +2130,7 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
   QMap< QString, QString > result;
   QStringList items = QStringList::split( '&', m_strQuery_encoded );
   for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
-    int equal_pos = (*it).find( '=' );
+    int equal_pos = (*it).indexOf( '=' );
     if ( equal_pos > 0 ) { // = is not the first char...
       QString name = (*it).left( equal_pos );
       if ( options & CaseInsensitiveKeys )
@@ -2198,7 +2198,7 @@ void KURL::removeQueryItem( const QString& _item )
     {
       QStringList::Iterator deleteIt = it;
       ++it;
-      items.remove(deleteIt);
+      items.erase(deleteIt);
     }
     else
     {
@@ -2235,8 +2235,8 @@ KURL KURL::fromPathOrURL( const QString& text )
 
 static QString _relativePath(const QString &base_dir, const QString &path, bool &isParent)
 {
-   QString _base_dir(QDir::cleanDirPath(base_dir));
-   QString _path(QDir::cleanDirPath(path.isEmpty() || (path[0] != '/') ? _base_dir+"/"+path : path));
+   QString _base_dir(QDir::cleanPath(base_dir));
+   QString _path(QDir::cleanPath(path.isEmpty() || (path[0] != '/') ? _base_dir+"/"+path : path));
 
    if (_base_dir.isEmpty())
       return _path;
@@ -2249,7 +2249,7 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
 
    // Find where they meet
    int level = 0;
-   int maxLevel = QMIN(list1.count(), list2.count());
+   int maxLevel = qMin(list1.count(), list2.count());
    while((level < maxLevel) && (list1[level] == list2[level])) level++;
 
    QString result;

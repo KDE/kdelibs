@@ -12,7 +12,7 @@ public:
     DCOPCString()
     {}
 
-    DCOPCString(int size): QByteArray(size)
+    DCOPCString(int size): QByteArray(size, '\0')
     {}
 
 
@@ -69,7 +69,8 @@ inline QDataStream & operator << (QDataStream & str, unsigned long val)
     }
 
     //Write out.
-    return str.writeRawBytes(buf.data(), buf.size());
+    str.writeRawData(buf.data(), buf.size());
+    return str;
 }
 
 inline QDataStream & operator >> (QDataStream & str, unsigned long& val)

@@ -221,7 +221,7 @@ qWarning("DCOPServer: DCOPIceWriteChar() Writing %d bytes to %d [%s]", nbytes, f
     {
        if (conn->outputBlocked)
        {
-          QByteArray _data(nbytes);
+          QByteArray _data(nbytes, '\0');
           memcpy(_data.data(), ptr, nbytes);
 #ifdef DCOP_DEBUG
 qWarning("DCOPServer: _IceWrite() outputBlocked. Queuing %d bytes.", _data.size());
@@ -235,7 +235,7 @@ qWarning("DCOPServer: _IceWrite() outputBlocked. Queuing %d bytes.", _data.size(
     unsigned long nleft = writeIceData(iceConn, nbytes, ptr);
     if ((nleft > 0) && conn)
     {
-        QByteArray _data(nleft);
+        QByteArray _data(nleft, '\0');
         memcpy(_data.data(), ptr, nleft);
         conn->waitForOutputReady(_data, 0);
         return;
@@ -369,7 +369,7 @@ class DCOPListener : public QSocketNotifier
 public:
     DCOPListener( IceListenObj obj )
 	: QSocketNotifier( IceGetListenConnectionNumber( obj ),
-			   QSocketNotifier::Read, 0, 0)
+			   QSocketNotifier::Read, 0)
 {
     listenObj = obj;
 }
@@ -379,7 +379,7 @@ public:
 
 DCOPConnection::DCOPConnection( IceConn conn )
 	: QSocketNotifier( IceConnectionNumber( conn ),
-			   QSocketNotifier::Read, 0, 0 )
+			   QSocketNotifier::Read, 0 )
 {
     iceConn = conn;
     notifyRegister = 0;
@@ -665,7 +665,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
 	    CARD32 key = pMsg->key;
-	    QByteArray ba( length );
+	    QByteArray ba( length, '\0' );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( &ba, QIODevice::ReadOnly );
 	    ds.setVersion(QDataStream::Qt_3_1);
@@ -744,7 +744,7 @@ if (opcode == DCOPSend)
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
 	    CARD32 key = pMsg->key;
-	    QByteArray ba( length );
+	    QByteArray ba( length, '\0' );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( &ba, QIODevice::ReadOnly );
 	    ds.setVersion(QDataStream::Qt_3_1);
@@ -829,7 +829,7 @@ if (opcode == DCOPCall)
 	    DCOPMsg *pMsg = 0;
 	    IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
 	    CARD32 key = pMsg->key;
-	    QByteArray ba( length );
+	    QByteArray ba( length, '\0' );
 	    IceReadData(iceConn, length, ba.data() );
 	    QDataStream ds( &ba, QIODevice::ReadOnly );
 	    ds.setVersion(QDataStream::Qt_3_1);
@@ -1552,7 +1552,7 @@ static bool isRunning(const QByteArray &fName, bool printNetworkId = false)
 	QFile f(fName);
 	f.open(QIODevice::ReadOnly);
 	int size = qMin( (qint64)1024, f.size() ); // protection against a huge file
-	QByteArray contents( size+1 );
+	QByteArray contents( size+1, '\0' );
 	bool ok = f.read( contents.data(), size ) == size;
 	contents[size] = '\0';
 	int pos = contents.indexOf('\n');
@@ -1707,7 +1707,7 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
-    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
+    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0);
     server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
 
     int ret = a.exec();

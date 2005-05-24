@@ -75,7 +75,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 {
     QFile impl( filename );
     if ( !impl.open( QIODevice::WriteOnly ) )
-	qFatal("Could not write to %s", filename.latin1() );
+	qFatal("Could not write to %s", filename.toLatin1().constData() );
 
     QTextStream str( &impl );
 

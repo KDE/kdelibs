@@ -170,8 +170,8 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
                         }
 "#include"[ \t]*[<\"][^>"]*[>\"]\s*\n {
 			  QString s( yytext );
-                          int i = s.find(QRegExp("[\"<]"))+1;
-                          int j = s.find(QRegExp("[\">]"), i);
+                          int i = s.indexOf(QRegExp("[\"<]"))+1;
+                          int j = s.indexOf(QRegExp("[\">]"), i);
 			  yylval._str = new QString( s.mid( i, j - i ) );
                           idl_line_no++;
                           return T_INCLUDE;
