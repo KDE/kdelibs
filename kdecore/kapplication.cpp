@@ -1898,7 +1898,7 @@ void KApplication::applyGUIStyle()
     if ( !useStyles ) return;
 
     KConfigGroup pConfig (KGlobal::config(), "General");
-    QString defaultStyle;// = KStyle::defaultStyle(); ### wait for KStyle4 
+    QString defaultStyle = "plastique";// = KStyle::defaultStyle(); ### wait for KStyle4
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (d->overrideStyle.isEmpty()) {
