@@ -1,6 +1,6 @@
 [Image Format]
 Type=HDR
-Header=^\x23\x3fRADIANCE
+Header=^\x23\x3f(RGBE|RADIANCE)
 Name=High Dynamic Range Image
 Read=true
 Write=false
