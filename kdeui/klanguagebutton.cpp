@@ -241,6 +241,8 @@ bool KLanguageButton::contains( const QString & id ) const
 
 QString KLanguageButton::current() const
 {
+  if( currentItem() >= m_ids->size() || currentItem() < 0 )
+	return "en";
   return m_ids->at( currentItem() );
 }
 
