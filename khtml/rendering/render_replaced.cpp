@@ -510,7 +510,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         // build region
 		QList<QObject*> list = widget->children();
 		foreach ( QObject* it, list ) {
-            QWidget* w = qobject_cast<QWidget* >(it);
+			QWidget* w = qobject_cast<QWidget* >(it);
 			if ( w && !w->isTopLevel() && !w->isHidden()) {
 				QRect r2 = w->geometry();
 				blit.subtract( r2 );
@@ -552,16 +552,12 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     // send paint event
     QPainter::setRedirected(widget, pm);
     QPaintEvent e( r );
-    QApplication::sendEvent( widget, &e );
+    QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
 
     // transfer result
-    if ( external )
-        for ( int i = 0; i < cnt; ++i )
-            p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
-    else
-        for ( int i = 0; i < cnt; ++i )
-            p->drawPixmap(p->xForm( QPoint(tx, ty) + br[i].topLeft() ), *pm, br[i]);
+    for ( int i = 0; i < cnt; ++i )
+        p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
 
     // cleanup and recurse
     PaintBuffer::release();
