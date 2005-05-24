@@ -28,6 +28,7 @@
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <kurl.h>
 
 #undef m_unit
