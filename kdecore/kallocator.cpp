@@ -151,7 +151,7 @@ void KZoneAllocator::delBlock(MemBlock *b)
 	QList<MemBlock *>::Iterator endit = list->end();
 	for (; it != endit; ++it)
 	  if (*it == b) {
-	    list->remove(it);
+	    list->erase(it);
 	    break;
 	  }
       }

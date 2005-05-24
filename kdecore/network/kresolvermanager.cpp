@@ -729,7 +729,7 @@ void KResolverManager::dispatch(RequestData *data)
       // find if there's a finished one
       KResolverThread *th = 0L;
       for (int i = 0; i < workers.size(); ++i)
-	if (!workers[i]->running())
+	if (!workers[i]->isRunning())
 	  {
 	    th = workers[i];
 	    break;
@@ -753,7 +753,7 @@ void KResolverManager::dispatch(RequestData *data)
   while (it.hasNext())
     {
       KResolverThread *worker = it.next();
-      if (!worker->running())
+      if (!worker->isRunning())
 	{
 	  it.remove();
 	  delete worker;

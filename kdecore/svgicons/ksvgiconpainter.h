@@ -73,8 +73,8 @@ public:
 	void drawImage(double x, double y, QImage &image);
 
 	QColor parseColor(const QString &param);
-	Q_UINT32 toArtColor(const QColor &color);
-	Q_UINT32 parseOpacity(const QString &data);
+	quint32 toArtColor(const QColor &color);
+	quint32 parseOpacity(const QString &data);
 
 	double toPixel(const QString &s, bool hmode);
 	double dpi();

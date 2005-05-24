@@ -312,7 +312,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
      for (QMap<QString,QString>::Iterator it2  = map.begin();
           it2 != map.end(); ++it2)
      {
-        config->writeEntry(it2.key(), it2.data());
+        config->writeEntry(it2.key(), it2.value());
      }
 
   }

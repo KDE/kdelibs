@@ -271,17 +271,17 @@ static GC create_gc( int scrn, bool monochrome )
 	gc = XCreateGC( QX11Info::display(), pm, 0, 0 );
 	XFreePixmap( QX11Info::display(), pm );
     } else {
-	if ( QPaintDevice::x11AppDefaultVisual( scrn ) ) {
+	if ( QX11Info::appDefaultVisual( scrn ) ) {
 	    gc = XCreateGC( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 0, 0 );
 	} else {
 	    Window w;
 	    XSetWindowAttributes a;
 	    a.background_pixel = QColor(Qt::black).pixel( scrn );
 	    a.border_pixel = QColor(Qt::black).pixel( scrn );
-	    a.colormap = QPaintDevice::x11AppColormap( scrn );
+	    a.colormap = QX11Info::appColormap( scrn );
 	    w = XCreateWindow( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 0, 0, 100, 100,
-			       0, QPaintDevice::x11AppDepth( scrn ), InputOutput,
-			       (Visual*)QPaintDevice::x11AppVisual( scrn ),
+			       0, QX11Info::appDepth( scrn ), InputOutput,
+			       (Visual*)QX11Info::appVisual( scrn ),
 			       CWBackPixel|CWBorderPixel|CWColormap, &a );
 	    gc = XCreateGC( QX11Info::display(), w, 0, 0 );
 	    XDestroyWindow( QX11Info::display(), w );

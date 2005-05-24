@@ -722,12 +722,12 @@ void KMD5::update(const unsigned char* in, int len)
         return;
     }
 
-    Q_UINT32 in_index;
-    Q_UINT32 buffer_index;
-    Q_UINT32 buffer_space;
-    Q_UINT32 in_length = static_cast<Q_UINT32>( len );
+    quint32 in_index;
+    quint32 buffer_index;
+    quint32 buffer_space;
+    quint32 in_length = static_cast<quint32>( len );
 
-    buffer_index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3F);
+    buffer_index = static_cast<quint32>((m_count[0] >> 3) & 0x3F);
 
     if (  (m_count[0] += (in_length << 3))<(in_length << 3) )
         m_count[1]++;
@@ -767,8 +767,8 @@ void KMD5::finalize ()
 {
     if (m_finalized) return;
 
-    Q_UINT8 bits[8];
-    Q_UINT32 index, padLen;
+    quint8 bits[8];
+    quint32 index, padLen;
     static const unsigned char PADDING[64]=
     {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -781,7 +781,7 @@ void KMD5::finalize ()
     //memcpy( bits, m_count, 8 );
 
     // Pad out to 56 mod 64.
-    index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3f);
+    index = static_cast<quint32>((m_count[0] >> 3) & 0x3f);
     padLen = (index < 56) ? (56 - index) : (120 - index);
     update (reinterpret_cast<const char*>(PADDING), padLen);
 
@@ -882,7 +882,7 @@ void KMD5::reset()
 void KMD5::transform( const unsigned char block[64] )
 {
 
-    Q_UINT32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
+    quint32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
 
     decode (x, block, 64);
     //memcpy( x, block, 64 );
@@ -969,91 +969,91 @@ void KMD5::transform( const unsigned char block[64] )
     memset ( static_cast<void *>(x), 0, sizeof(x) );
 }
 
-inline Q_UINT32 KMD5::rotate_left (Q_UINT32 x, Q_UINT32 n)
+inline quint32 KMD5::rotate_left (quint32 x, quint32 n)
 {
     return (x << n) | (x >> (32-n))  ;
 }
 
-inline Q_UINT32 KMD5::F (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD5::F (quint32 x, quint32 y, quint32 z)
 {
     return (x & y) | (~x & z);
 }
 
-inline Q_UINT32 KMD5::G (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD5::G (quint32 x, quint32 y, quint32 z)
 {
     return (x & z) | (y & ~z);
 }
 
-inline Q_UINT32 KMD5::H (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD5::H (quint32 x, quint32 y, quint32 z)
 {
     return x ^ y ^ z;
 }
 
-inline Q_UINT32 KMD5::I (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD5::I (quint32 x, quint32 y, quint32 z)
 {
     return y ^ (x | ~z);
 }
 
-void KMD5::FF ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                       Q_UINT32 x, Q_UINT32  s, Q_UINT32 ac )
+void KMD5::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
+                       quint32 x, quint32  s, quint32 ac )
 {
     a += F(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::GG ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                 Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac)
+void KMD5::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
+                 quint32 x, quint32 s, quint32 ac)
 {
     a += G(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::HH ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                 Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac )
+void KMD5::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
+                 quint32 x, quint32 s, quint32 ac )
 {
     a += H(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                 Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac )
+void KMD5::II ( quint32& a, quint32 b, quint32 c, quint32 d,
+                 quint32 x, quint32 s, quint32 ac )
 {
     a += I(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
 
-void KMD5::encode ( unsigned char* output, Q_UINT32 *in, Q_UINT32 len )
+void KMD5::encode ( unsigned char* output, quint32 *in, quint32 len )
 {
 #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 
 #else
-    Q_UINT32 i, j;
+    quint32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
     {
-        output[j]   = static_cast<Q_UINT8>((in[i] & 0xff));
-        output[j+1] = static_cast<Q_UINT8>(((in[i] >> 8) & 0xff));
-        output[j+2] = static_cast<Q_UINT8>(((in[i] >> 16) & 0xff));
-        output[j+3] = static_cast<Q_UINT8>(((in[i] >> 24) & 0xff));
+        output[j]   = static_cast<quint8>((in[i] & 0xff));
+        output[j+1] = static_cast<quint8>(((in[i] >> 8) & 0xff));
+        output[j+2] = static_cast<quint8>(((in[i] >> 16) & 0xff));
+        output[j+3] = static_cast<quint8>(((in[i] >> 24) & 0xff));
     }
 #endif
 }
 
-// Decodes in (Q_UINT8) into output (Q_UINT32). Assumes len is a
+// Decodes in (quint8) into output (quint32). Assumes len is a
 // multiple of 4.
-void KMD5::decode (Q_UINT32 *output, const unsigned char* in, Q_UINT32 len)
+void KMD5::decode (quint32 *output, const unsigned char* in, quint32 len)
 {
 #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
 
 #else
-    Q_UINT32 i, j;
+    quint32 i, j;
     for (i = 0, j = 0; j < len; i++, j += 4)
-        output[i] = static_cast<Q_UINT32>(in[j]) |
-                    (static_cast<Q_UINT32>(in[j+1]) << 8)  |
-                    (static_cast<Q_UINT32>(in[j+2]) << 16) |
-                    (static_cast<Q_UINT32>(in[j+3]) << 24);
+        output[i] = static_cast<quint32>(in[j]) |
+                    (static_cast<quint32>(in[j+1]) << 8)  |
+                    (static_cast<quint32>(in[j+2]) << 16) |
+                    (static_cast<quint32>(in[j+3]) << 24);
 #endif
 }
 
@@ -1104,12 +1104,12 @@ void KMD4::update(const unsigned char *in, int len)
       return;
   }
 
-  Q_UINT32 t;
+  quint32 t;
 
   /* Update bitcount */
 
   t = m_count[0];
-  if ((m_count[0] = t + ((Q_UINT32) len << 3)) < t)
+  if ((m_count[0] = t + ((quint32) len << 3)) < t)
     m_count[1]++;		/* Carry from low to high */
   m_count[1] += len >> 29;
 
@@ -1119,17 +1119,17 @@ void KMD4::update(const unsigned char *in, int len)
 
   if (t)
     {
-      Q_UINT8 *p = &m_buffer[ t ];
+      quint8 *p = &m_buffer[ t ];
 
       t = 64 - t;
-      if ((Q_UINT32)len < t)
+      if ((quint32)len < t)
 	{
 	  memcpy (p, in, len);
 	  return;
 	}
       memcpy (p, in, t);
       byteReverse (m_buffer, 16);
-      transform (m_state, (Q_UINT32*) m_buffer);
+      transform (m_state, (quint32*) m_buffer);
       in += t;
       len -= t;
     }
@@ -1139,7 +1139,7 @@ void KMD4::update(const unsigned char *in, int len)
     {
       memcpy (m_buffer, in, 64);
       byteReverse (m_buffer, 16);
-      transform (m_state, (Q_UINT32 *) m_buffer);
+      transform (m_state, (quint32 *) m_buffer);
       in += 64;
       len -= 64;
     }
@@ -1186,7 +1186,7 @@ void KMD4::finalize()
       /* Two lots of padding:  Pad the first block to 64 bytes */
       memset (p, 0, count);
       byteReverse (m_buffer, 16);
-      transform (m_state, (Q_UINT32*) m_buffer);
+      transform (m_state, (quint32*) m_buffer);
 
       /* Now fill the next block with 56 bytes */
       memset (m_buffer, 0, 56);
@@ -1199,10 +1199,10 @@ void KMD4::finalize()
   byteReverse (m_buffer, 14);
 
   /* Append length in bits and transform */
-  ((Q_UINT32 *) m_buffer)[14] = m_count[0];
-  ((Q_UINT32 *) m_buffer)[15] = m_count[1];
+  ((quint32 *) m_buffer)[14] = m_count[0];
+  ((quint32 *) m_buffer)[15] = m_count[1];
 
-  transform (m_state, (Q_UINT32 *) m_buffer);
+  transform (m_state, (quint32 *) m_buffer);
   byteReverse ((unsigned char *) m_state, 4);
 
   memcpy (m_digest, m_state, 16);
@@ -1294,53 +1294,53 @@ void KMD4::reset()
   memset ( m_digest, 0, sizeof(*m_digest));
 }
 
-//#define rotl32(x,n)   (((x) << ((Q_UINT32)(n))) | ((x) >> (32 - (Q_UINT32)(n))))
+//#define rotl32(x,n)   (((x) << ((quint32)(n))) | ((x) >> (32 - (quint32)(n))))
 
-inline Q_UINT32 KMD4::rotate_left (Q_UINT32 x, Q_UINT32 n)
+inline quint32 KMD4::rotate_left (quint32 x, quint32 n)
 {
     return (x << n) | (x >> (32-n))  ;
 }
 
-inline Q_UINT32 KMD4::F (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD4::F (quint32 x, quint32 y, quint32 z)
 {
     return (x & y) | (~x & z);
 }
 
-inline Q_UINT32 KMD4::G (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD4::G (quint32 x, quint32 y, quint32 z)
 {
     return ((x) & (y)) | ((x) & (z)) | ((y) & (z));
 }
 
-inline Q_UINT32 KMD4::H (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
+inline quint32 KMD4::H (quint32 x, quint32 y, quint32 z)
 {
     return x ^ y ^ z;
 }
 
-inline void KMD4::FF ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                       Q_UINT32 x, Q_UINT32  s )
+inline void KMD4::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
+                       quint32 x, quint32  s )
 {
     a += F(b, c, d) + x;
     a = rotate_left (a, s);
 }
 
-inline void KMD4::GG ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                 Q_UINT32 x, Q_UINT32 s)
+inline void KMD4::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
+                 quint32 x, quint32 s)
 {
-    a += G(b, c, d) + x + (Q_UINT32)0x5a827999;
+    a += G(b, c, d) + x + (quint32)0x5a827999;
     a = rotate_left (a, s);
 }
 
-inline void KMD4::HH ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
-                 Q_UINT32 x, Q_UINT32 s )
+inline void KMD4::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
+                 quint32 x, quint32 s )
 {
-    a += H(b, c, d) + x + (Q_UINT32)0x6ed9eba1;
+    a += H(b, c, d) + x + (quint32)0x6ed9eba1;
     a = rotate_left (a, s);
 }
 
-void KMD4::byteReverse( unsigned char *buf, Q_UINT32 len )
+void KMD4::byteReverse( unsigned char *buf, quint32 len )
 {
 #ifdef WORDS_BIGENDIAN
-  Q_UINT32 *b = (Q_UINT32*) buf;
+  quint32 *b = (quint32*) buf;
   while ( len > 0 ) {
     *b = ((((*b) & 0xff000000) >> 24) | (((*b) & 0x00ff0000) >>  8) |
          (((*b) & 0x0000ff00) <<  8) | (((*b) & 0x000000ff) << 24));
@@ -1356,9 +1356,9 @@ void KMD4::byteReverse( unsigned char *buf, Q_UINT32 len )
 /*
  * The core of the MD4 algorithm
  */
-void KMD4::transform( Q_UINT32 buf[4], Q_UINT32 const in[16] )
+void KMD4::transform( quint32 buf[4], quint32 const in[16] )
 {
-  Q_UINT32 a, b, c, d;
+  quint32 a, b, c, d;
 
   a = buf[0];
   b = buf[1];

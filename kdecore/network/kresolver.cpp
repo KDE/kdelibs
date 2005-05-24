@@ -867,7 +867,7 @@ static QStringList *KResolver_initIdnDomains()
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
      kde_use_idn = "at:br:ch:cn:de:dk:kr:jp:li:no:se:tw";
-  return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).lower()));
+  return new QStringList(QStringList::split(':', QString::fromLatin1(kde_use_idn).toLower()));
 }
 
 // implement the ToAscii function, as described by IDN documents
@@ -885,8 +885,8 @@ QByteArray KResolver::domainToAscii(const QString& unicodeDomain)
   QStringList input = splitLabels(unicodeDomain);
 
   // Do we allow IDN names for this TLD?
-  if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
-    return input.join(".").lower().latin1(); // No IDN allowed for this TLD
+  if (input.count() && !idnDomains->contains(input[input.count()-1].toLower()))
+    return input.join(".").toLower().latin1(); // No IDN allowed for this TLD
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce
@@ -933,8 +933,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
   QStringList input = splitLabels(asciiDomain);
 
   // Do we allow IDN names for this TLD?
-  if (input.count() && !idnDomains->contains(input[input.count()-1].lower()))
-    return asciiDomain.lower(); // No TLDs allowed
+  if (input.count() && !idnDomains->contains(input[input.count()-1].toLower()))
+    return asciiDomain.toLower(); // No TLDs allowed
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce
@@ -944,7 +944,7 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
   const QStringList::Iterator end = input.end();
   for (it = input.begin(); it != end; ++it)
     {
-      QString label = ToUnicode(*it).lower();
+      QString label = ToUnicode(*it).toLower();
 
       // ToUnicode can't fail
       if (!retval.isEmpty())
@@ -1072,7 +1072,7 @@ static QString ToUnicode(const QString& label)
 
   // now set the answer
   QString result;
-  result.setLength(outlen);
+  result.resize(outlen);
   for (uint i = 0; i < outlen; i++)
     result[i] = (unsigned int)ucs4_output[i];
 

@@ -298,7 +298,7 @@ public:
   inline bool isMulticast() const
   {
     if (version() == 4) return isClassD();
-    if (version() == 6) return ((Q_UINT8*)addr())[0] == 0xff;
+    if (version() == 6) return ((quint8*)addr())[0] == 0xff;
     return false;
   }
 
@@ -308,7 +308,7 @@ public:
   inline bool isLinkLocal() const
   { 
     if (version() != 6) return false;
-    Q_UINT8* addr = (Q_UINT8*)this->addr();
+    quint8* addr = (quint8*)this->addr();
     return (addr[0] & 0xff) == 0xfe &&
       (addr[1] & 0xc0) == 0x80;
   }
@@ -319,7 +319,7 @@ public:
   inline bool isSiteLocal() const
   {
     if (version() != 6) return false;
-    Q_UINT8* addr = (Q_UINT8*)this->addr();
+    quint8* addr = (quint8*)this->addr();
     return (addr[0] & 0xff) == 0xfe &&
       (addr[1] & 0xc0) == 0xc0;
   }

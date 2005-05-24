@@ -50,7 +50,7 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
   QString myName;
   QString myContext;
 
-  const int pos = absOrRelName.find ('|');
+  const int pos = absOrRelName.indexOf ('|');
   if (pos > -1)
 	{
 	  myContext = absOrRelName.left (pos);

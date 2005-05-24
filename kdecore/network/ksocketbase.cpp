@@ -43,7 +43,7 @@ public:
   QMutex mutex;
 
   KSocketBasePrivate()
-    : mutex(true)		// create recursive
+    : mutex(QMutex::Recursive)		// create recursive
   { }
 };
 

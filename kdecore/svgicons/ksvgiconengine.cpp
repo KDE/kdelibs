@@ -124,12 +124,12 @@ public:
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
 
 			// Convert in a libart suitable form
-			Q_UINT32 stopColor = m_engine->painter()->toArtColor(qStopColor);
+			quint32 stopColor = m_engine->painter()->toArtColor(qStopColor);
 
 			int opacity = m_engine->painter()->parseOpacity(parseOpacity);
 
-			Q_UINT32 rgba = (stopColor << 8) | opacity;
-			Q_UINT32 r, g, b, a;
+			quint32 rgba = (stopColor << 8) | opacity;
+			quint32 r, g, b, a;
 
 			// Convert from separated to premultiplied alpha
 			a = rgba & 0xff;
@@ -220,7 +220,7 @@ public:
 			{
 				QString name, value;
 
-				name = attr.item(i).nodeName().lower();
+				name = attr.item(i).nodeName().toLower();
 				value = attr.item(i).nodeValue();
 
 				if(name == "transform")
@@ -239,12 +239,12 @@ public:
 		{
 			QDomNode current = attr.item(i);
 
-			if(current.nodeName().lower() == "transform")
+			if(current.nodeName().toLower() == "transform")
 				parseTransform(current.nodeValue());
-			else if(current.nodeName().lower() == "style")
+			else if(current.nodeName().toLower() == "style")
 				parseStyle(current.nodeValue());
 			else
-				parsePA(current.nodeName().lower(), current.nodeValue());
+				parsePA(current.nodeName().toLower(), current.nodeValue());
 		}
 	}
 

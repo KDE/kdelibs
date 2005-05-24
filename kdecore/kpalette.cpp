@@ -66,7 +66,7 @@ KPalette::KPalette(const QString &name)
   // Read first line
   // Expected "GIMP Palette"
   line = QString::fromLocal8Bit(paletteFile.readLine());
-  if (line.find(" Palette") == -1) return;
+  if (line.indexOf(" Palette") == -1) return;
 
   while( !paletteFile.atEnd() )
   {
@@ -145,7 +145,7 @@ KPalette::save()
    for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
    {
        int r,g,b;
-       node->color.rgb(&r, &g, &b);
+       node->color.getRgb(&r, &g, &b);
        (*str) << r << " " << g << " " << b << " " << node->name << "\n";
    }
    return sf.close();

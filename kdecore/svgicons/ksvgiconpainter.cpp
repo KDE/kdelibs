@@ -109,11 +109,11 @@ public:
 
 		for(QMap<QString, ArtGradientLinear *>::Iterator it = m_linearGradientMap.begin(); it != m_linearGradientMap.end(); ++it)
 		{
-			delete it.data();
+			delete it.value();
 		}
 		for(QMap<QString, ArtGradientRadial *>::Iterator it = m_radialGradientMap.begin(); it != m_radialGradientMap.end(); ++it)
 		{
-			delete it.data();
+			delete it.value();
 		}
 	}
 
@@ -182,7 +182,7 @@ public:
 		m_tempBuffer = 0;
 	}
 
-	Q_UINT32 toArtColor(const QColor &color)
+	quint32 toArtColor(const QColor &color)
 	{
 		// Convert in a libart suitable form
 		QString tempName = color.name();
@@ -208,7 +208,7 @@ public:
 		return result;
 	}
 
-	void drawSVP(ArtSVP *svp, Q_UINT32 rgb, int opacity)
+	void drawSVP(ArtSVP *svp, quint32 rgb, int opacity)
 	{
 		if(!svp)
 			return;
@@ -264,7 +264,7 @@ public:
 		ArtSVP *svp;
 		ArtSVP *fillSVP = 0, *strokeSVP = 0;
 
-		Q_UINT32 fillColor = 0, strokeColor = 0;
+		quint32 fillColor = 0, strokeColor = 0;
 
 		// Filling
 		{
@@ -1260,8 +1260,8 @@ void KSVGIconPainter::setStrokeColor(const QString &stroke)
 
 		QString url = stroke;
 
-		unsigned int start = url.find("#") + 1;
-		unsigned int end = url.findRev(")");
+		unsigned int start = url.indexOf("#") + 1;
+		unsigned int end = url.lastIndexOf(")");
 
 		d->helper->m_strokeGradientReference = url.mid(start, end - start);
 	}
@@ -1288,8 +1288,8 @@ void KSVGIconPainter::setFillColor(const QString &fill)
 
 		QString url = fill;
 
-		unsigned int start = url.find("#") + 1;
-		unsigned int end = url.findRev(")");
+		unsigned int start = url.indexOf("#") + 1;
+		unsigned int end = url.lastIndexOf(")");
 
 		d->helper->m_fillGradientReference = url.mid(start, end - start);
 	}
@@ -1312,7 +1312,7 @@ void KSVGIconPainter::setFillRule(const QString &fillRule)
 	d->helper->m_fillRule = fillRule;
 }
 
-Q_UINT32 KSVGIconPainter::parseOpacity(const QString &data)
+quint32 KSVGIconPainter::parseOpacity(const QString &data)
 {
 	int opacity = 255;
 
@@ -2750,7 +2750,7 @@ void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDom
 	d->helper->m_radialGradientElementMap.insert(gradient, element);
 }
 
-Q_UINT32 KSVGIconPainter::toArtColor(const QColor &color)
+quint32 KSVGIconPainter::toArtColor(const QColor &color)
 {
 	return d->helper->toArtColor(color);
 }

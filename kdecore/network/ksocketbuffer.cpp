@@ -36,12 +36,12 @@ using namespace KNetwork;
 using namespace KNetwork::Internal;
 
 KSocketBuffer::KSocketBuffer(qint64 size)
-  : m_mutex(true), m_offset(0), m_size(size), m_length(0)
+  : m_mutex(QMutex::Recursive), m_offset(0), m_size(size), m_length(0)
 {
 }
 
 KSocketBuffer::KSocketBuffer(const KSocketBuffer& other)
-  : KIOBufferBase(other), m_mutex(true)
+  : KIOBufferBase(other), m_mutex(QMutex::Recursive)
 {
   *this = other;
 }
@@ -70,14 +70,14 @@ bool KSocketBuffer::canReadLine() const
 {
   QMutexLocker locker(&m_mutex);
 
-  QIODevice::Offset offset = m_offset;
+  qint64 offset = m_offset;
 
   // walk the buffer
   for (int i = 0; i < m_list.size(); ++i)
     {
-      if (m_list.at(i).find('\n', offset) != -1)
+      if (m_list.at(i).indexOf('\n', offset) != -1)
 	return true;
-      if (m_list.at(i).find('\r', offset) != -1)
+      if (m_list.at(i).indexOf('\r', offset) != -1)
 	return true;
       offset = 0;
     }
@@ -99,7 +99,7 @@ qint64 KSocketBuffer::readLine(char* data, qint64 maxSize)
   // walk the buffer
   for (int i = 0; i < m_list.size(); ++i)
     {
-      int posnl = m_list.at(i).find('\n', offset);
+      int posnl = m_list.at(i).indexOf('\n', offset);
       if (posnl == -1)
 	{
 	  // not found in this one
@@ -174,7 +174,7 @@ qint64 KSocketBuffer::consumeBuffer(char *destbuffer, qint64 maxlen, bool discar
     return 0;
 
   QMutableListIterator<QByteArray> it(m_list);
-  QIODevice::Offset offset = m_offset;
+  qint64 offset = m_offset;
   qint64 copied = 0;
 
   // walk the buffer
@@ -234,7 +234,7 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
   QMutexLocker locker(&m_mutex);
   
   QMutableListIterator<QByteArray> it(m_list);
-  QIODevice::Offset offset = m_offset;
+  qint64 offset = m_offset;
   qint64 written = 0;
   
   // walk the buffer

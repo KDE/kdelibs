@@ -66,63 +66,63 @@ struct kde_in6_addr
 struct kde_sockaddr_in6
 {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  Q_UINT8		sin6_len;
-  Q_UINT8		sin6_family;
+  quint8		sin6_len;
+  quint8		sin6_family;
 #else  //HAVE_STRUCT_SOCKADDR_SA_LEN
-  Q_UINT16		sin6_family;
+  quint16		sin6_family;
 #endif
   unsigned short       	sin6_port;	/* RFC says in_port_t */
-  Q_UINT32		sin6_flowinfo;
+  quint32		sin6_flowinfo;
   struct kde_in6_addr	sin6_addr;
-  Q_UINT32		sin6_scope_id;
+  quint32		sin6_scope_id;
 };
 
 /* IPv6 test macros that could be missing from some implementations */
 
 #define KDE_IN6_IS_ADDR_UNSPECIFIED(a) \
-	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
-	 ((Q_UINT32 *) (a))[2] == 0 && ((Q_UINT32 *) (a))[3] == 0)
+	(((quint32 *) (a))[0] == 0 && ((quint32 *) (a))[1] == 0 && \
+	 ((quint32 *) (a))[2] == 0 && ((quint32 *) (a))[3] == 0)
 
 #define KDE_IN6_IS_ADDR_LOOPBACK(a) \
-	(((Q_UINT32 *) (a))[0] == 0 && ((Q_UINT32 *) (a))[1] == 0 && \
-	 ((Q_UINT32 *) (a))[2] == 0 && ((Q_UINT32 *) (a))[3] == htonl (1))
+	(((quint32 *) (a))[0] == 0 && ((quint32 *) (a))[1] == 0 && \
+	 ((quint32 *) (a))[2] == 0 && ((quint32 *) (a))[3] == htonl (1))
 
 #define KDE_IN6_IS_ADDR_MULTICAST(a) (((u_int8_t *) (a))[0] == 0xff)
 
 #define KDE_IN6_IS_ADDR_LINKLOCAL(a) \
-	((((Q_UINT32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfe800000))
+	((((quint32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfe800000))
 
 #define KDE_IN6_IS_ADDR_SITELOCAL(a) \
-	((((Q_UINT32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfec00000))
+	((((quint32 *) (a))[0] & htonl (0xffc00000)) == htonl (0xfec00000))
 
 #define KDE_IN6_IS_ADDR_V4MAPPED(a) \
-	((((Q_UINT32 *) (a))[0] == 0) && (((Q_UINT32 *) (a))[1] == 0) && \
-	 (((Q_UINT32 *) (a))[2] == htonl (0xffff)))
+	((((quint32 *) (a))[0] == 0) && (((quint32 *) (a))[1] == 0) && \
+	 (((quint32 *) (a))[2] == htonl (0xffff)))
 
 #define KDE_IN6_IS_ADDR_V4COMPAT(a) \
-	((((Q_UINT32 *) (a))[0] == 0) && (((Q_UINT32 *) (a))[1] == 0) && \
-	 (((Q_UINT32 *) (a))[2] == 0) && (ntohl (((Q_UINT32 *) (a))[3]) > 1))
+	((((quint32 *) (a))[0] == 0) && (((quint32 *) (a))[1] == 0) && \
+	 (((quint32 *) (a))[2] == 0) && (ntohl (((quint32 *) (a))[3]) > 1))
 
 #define KDE_IN6_ARE_ADDR_EQUAL(a,b) \
-	((((Q_UINT32 *) (a))[0] == ((Q_UINT32 *) (b))[0]) && \
-	 (((Q_UINT32 *) (a))[1] == ((Q_UINT32 *) (b))[1]) && \
-	 (((Q_UINT32 *) (a))[2] == ((Q_UINT32 *) (b))[2]) && \
-	 (((Q_UINT32 *) (a))[3] == ((Q_UINT32 *) (b))[3]))
+	((((quint32 *) (a))[0] == ((quint32 *) (b))[0]) && \
+	 (((quint32 *) (a))[1] == ((quint32 *) (b))[1]) && \
+	 (((quint32 *) (a))[2] == ((quint32 *) (b))[2]) && \
+	 (((quint32 *) (a))[3] == ((quint32 *) (b))[3]))
 
 #define KDE_IN6_IS_ADDR_MC_NODELOCAL(a) \
-	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x1))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((quint8 *) (a))[1] & 0xf) == 0x1))
 
 #define KDE_IN6_IS_ADDR_MC_LINKLOCAL(a) \
-	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x2))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((quint8 *) (a))[1] & 0xf) == 0x2))
 
 #define KDE_IN6_IS_ADDR_MC_SITELOCAL(a) \
-	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x5))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((quint8 *) (a))[1] & 0xf) == 0x5))
 
 #define KDE_IN6_IS_ADDR_MC_ORGLOCAL(a) \
-	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0x8))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((quint8 *) (a))[1] & 0xf) == 0x8))
 
 #define KDE_IN6_IS_ADDR_MC_GLOBAL(a) \
-	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((Q_UINT8 *) (a))[1] & 0xf) == 0xe))
+	(KDE_IN6_IS_ADDR_MULTICAST(a) && ((((quint8 *) (a))[1] & 0xf) == 0xe))
 
 #ifdef NEED_IN6_TESTS
 # define IN6_IS_ADDR_UNSPECIFIED	KDE_IN6_IS_ADDR_UNSPECIFIED

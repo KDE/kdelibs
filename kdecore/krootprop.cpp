@@ -60,7 +60,7 @@ void KRootProp::sync()
 
     while ( it != propDict.end() )
     {
-      keyvalue = QString( "%1=%2\n").arg(it.key()).arg(it.data());
+      keyvalue = QString( "%1=%2\n").arg(it.key()).arg(it.value());
       propString += keyvalue;
       ++it;
     }
@@ -119,7 +119,7 @@ void KRootProp::setProp( const QString& rProp )
   {
     // parse the string for first key-value pair separator '\n'
 
-    i = s.find("\n");
+    i = s.indexOf("\n");
     if(i == -1)
       i = s.length();
 
@@ -132,7 +132,7 @@ void KRootProp::setProp( const QString& rProp )
 
     keypair.simplifyWhiteSpace();
 
-    i = keypair.find( "=" );
+    i = keypair.indexOf( "=" );
     if( i != -1 )
     {
       key = keypair.left( i );
@@ -218,18 +218,18 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 
   // Support #ffffff style color naming.
   // Help ease transistion from legacy KDE setups
-  if( aValue.find("#") == 0 ) {
+  if( aValue.indexOf("#") == 0 ) {
     aRetColor.setNamedColor( aValue );
     return aRetColor;
   }
 
   // Parse "red,green,blue"
   // find first comma
-  int nIndex1 = aValue.find( ',' );
+  int nIndex1 = aValue.indexOf( ',' );
   if( nIndex1 == -1 )
     return aRetColor;
   // find second comma
-  int nIndex2 = aValue.find( ',', nIndex1+1 );
+  int nIndex2 = aValue.indexOf( ',', nIndex1+1 );
   if( nIndex2 == -1 )
     return aRetColor;
 

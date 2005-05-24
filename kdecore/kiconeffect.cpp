@@ -430,7 +430,7 @@ void KIconEffect::deSaturate(QImage &img, float value)
     for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
-        color.hsv(&h, &s, &v);
+        color.getHsv(&h, &s, &v);
         color.setHsv(h, (int) (s * (1.0 - value) + 0.5), v);
 	data[i] = qRgba(color.red(), color.green(), color.blue(),
 		qAlpha(data[i]));
@@ -452,7 +452,7 @@ void KIconEffect::toGamma(QImage &img, float value)
     for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
-        color.rgb(&rval, &gval, &bval);
+        color.getRgb(&rval, &gval, &bval);
         rval = static_cast<int>(pow(static_cast<float>(rval)/255 , gamma)*255);
         gval = static_cast<int>(pow(static_cast<float>(gval)/255 , gamma)*255);
         bval = static_cast<int>(pow(static_cast<float>(bval)/255 , gamma)*255);
@@ -718,7 +718,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 		r2 = (a1 * r1 + (0xff - a1) * r2) >> 8;
 		g2 = (a1 * g1 + (0xff - a1) * g2) >> 8;
 		b2 = (a1 * b1 + (0xff - a1) * b2) >> 8;
-		a2 = QMAX(a1, a2);
+		a2 = qMax(a1, a2);
 
 		sline[j] = qRgba(r2, g2, b2, a2);
 	    }

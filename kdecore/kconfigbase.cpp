@@ -256,7 +256,7 @@ QString KConfigBase::readEntry( const char *pKey,
   if( expand || bExpand )
     {
       // check for environment variables and make necessary translations
-      int nDollarPos = aValue.find( '$' );
+      int nDollarPos = aValue.indexOf( '$' );
 
       while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length())) {
         // there is at least one $
@@ -310,7 +310,7 @@ QString KConfigBase::readEntry( const char *pKey,
           aValue.remove( nDollarPos, 1 );
           nDollarPos++;
         }
-        nDollarPos = aValue.find( '$', nDollarPos );
+        nDollarPos = aValue.indexOf( '$', nDollarPos );
       }
     }
 
@@ -784,7 +784,7 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       // find third part (style hint)
       nOldIndex = nIndex;
-      nIndex = aValue.find( ',', nOldIndex+1 );
+      nIndex = aValue.indexOf( ',', nOldIndex+1 );
 
       if( nIndex == -1 ){
         if( pDefault )
@@ -939,7 +939,7 @@ QColor KConfigBase::readColorEntry( const char *pKey,
           bool bOK;
 
           // find first part (red)
-          int nIndex = aValue.find( ',' );
+          int nIndex = aValue.indexOf( ',' );
 
           if( nIndex == -1 ){
             // return a sensible default -- Bernd
@@ -952,7 +952,7 @@ QColor KConfigBase::readColorEntry( const char *pKey,
 
           // find second part (green)
           int nOldIndex = nIndex;
-          nIndex = aValue.find( ',', nOldIndex+1 );
+          nIndex = aValue.indexOf( ',', nOldIndex+1 );
 
           if( nIndex == -1 ){
             // return a sensible default -- Bernd
@@ -1105,7 +1105,7 @@ static QString translatePath( QString path )
    // All of the 3 following functions to return the user's home directory
    // can return different paths. We have to test all them.
    QString homeDir0 = QFile::decodeName(getenv("HOME"));
-   QString homeDir1 = QDir::homeDirPath();
+   QString homeDir1 = QDir::homePath();
    QString homeDir2 = QDir(homeDir1).canonicalPath();
    if (cleanHomeDirPath(path, homeDir0) ||
        cleanHomeDirPath(path, homeDir1) ||

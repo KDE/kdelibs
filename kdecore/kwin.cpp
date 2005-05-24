@@ -471,7 +471,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    if( XGetClassHint( QX11Info::display(), win, &hint ) ) {
 	        QString className = hint.res_class;
 
-	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.lower(), KIcon::Small, iconWidth,
+	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.toLower(), KIcon::Small, iconWidth,
 								          KIcon::DefaultState, 0, true );
 	        if( scale && !pm.isNull() )
 		    result.convertFromImage( pm.convertToImage().smoothScale( width, height ) );

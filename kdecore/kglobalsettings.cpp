@@ -288,7 +288,7 @@ QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
     else
     {
         int h, s, v;
-        base.hsv( &h, &s, &v );
+        base.getHsv( &h, &s, &v );
         if (v > 128)
             return base.dark(106);
         else if (base != Qt::black)
@@ -489,16 +489,16 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     KConfigGroup g( KGlobal::config(), "Paths" );
 
     // Desktop Path
-    *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
+    *s_desktopPath = QDir::homePath() + "/Desktop/";
     *s_desktopPath = g.readPathEntry( "Desktop", *s_desktopPath);
-    *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
+    *s_desktopPath = QDir::cleanPath( *s_desktopPath );
     if ( !s_desktopPath->endsWith("/") )
       s_desktopPath->append(QLatin1Char('/'));
 
     // Trash Path - TODO remove in KDE4 (kio_trash can't use it for interoperability reasons)
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = g.readPathEntry( "Trash" , *s_trashPath);
-    *s_trashPath = QDir::cleanDirPath( *s_trashPath );
+    *s_trashPath = QDir::cleanPath( *s_trashPath );
     if ( !s_trashPath->endsWith("/") )
       s_trashPath->append(QLatin1Char('/'));
     // We need to save it in any case, in case the language changes later on,
@@ -511,13 +511,13 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = g.readPathEntry( "Autostart" , *s_autostartPath);
-    *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
+    *s_autostartPath = QDir::cleanPath( *s_autostartPath );
     if ( !s_autostartPath->endsWith("/") )
       s_autostartPath->append(QLatin1Char('/'));
 
     // Document Path
-    *s_documentPath = g.readPathEntry( "Documents", QDir::homeDirPath() );
-    *s_documentPath = QDir::cleanDirPath( *s_documentPath );
+    *s_documentPath = g.readPathEntry( "Documents", QDir::homePath() );
+    *s_documentPath = QDir::cleanPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
       s_documentPath->append(QLatin1Char('/'));
 

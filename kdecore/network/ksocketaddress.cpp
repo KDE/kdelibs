@@ -131,7 +131,7 @@ bool KIpAddress::setAddress(const QString& address)
   m_version = 0;
 
   // try to guess the address version
-  if (address.find(':') != -1)
+  if (address.indexOf(':') != -1)
     {
 #ifdef AF_INET6
       // guessing IPv6
@@ -213,14 +213,14 @@ QString KIpAddress::toString() const
 struct our_sockaddr_in6
 {
 # ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  Q_UINT8		sin6_len;
-  Q_UINT8		sin6_family;
+  quint8		sin6_len;
+  quint8		sin6_family;
 # else  //!HAVE_STRUCT_SOCKADDR_SA_LEN
   quint16		sin6_family;
 # endif
   quint16       	sin6_port;	/* RFC says in_port_t */
   quint32		sin6_flowinfo;
-  Q_UINT8		sin6_addr[16]; // 24 bytes up to here
+  quint8		sin6_addr[16]; // 24 bytes up to here
   quint32		sin6_scope_id; // 28 bytes total
 };
 

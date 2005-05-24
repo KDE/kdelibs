@@ -465,7 +465,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (sigsetjmp (mmap_jmpbuf, 1))
       {
-qWarning("SIGBUS while reading %s", rFile.name().latin1());
+qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
          munmap(( char* )map, rFile.size());
          sigaction (SIGBUS, &mmap_old_sigact, 0);
          return;
@@ -475,7 +475,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
    else
 #endif
    {
-      rFile.at(0);
+      rFile.seek(0);
       data = rFile.readAll();
       s = data.data();
       eof = s + data.size();
@@ -522,7 +522,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
          if ((e >= eof) || (*e != ']'))
          {
-            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
+            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().latin1(), line);
             continue;
          }
          // group found; get the group name by taking everything in
@@ -596,7 +596,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
 	    for (;; s++)
 	    {
 		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.name().latin1(), line);
+		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().latin1(), line);
 		    goto sktoeol;
 		}
 		if (*s == ']')
@@ -607,7 +607,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
             {
               // Locale
               if (locale) {
-		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
+		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().latin1(), line);
 		goto sktoeol;
               }
               locale = option;
@@ -634,7 +634,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
             }
          }
       }
-      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.name().latin1(), line);
+      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().latin1(), line);
       continue;
 
    haveeq:
@@ -642,7 +642,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       {
 	 if (endOfKey < startLine)
 	 {
-	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.name().latin1(), line);
+	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().latin1(), line);
 	   goto sktoeol;
 	 }
 	 if (!isspace(*endOfKey))

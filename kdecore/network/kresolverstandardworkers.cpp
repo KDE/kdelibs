@@ -108,7 +108,7 @@ void KBlacklistWorker::loadBlacklist()
     {
       // for each file, each line is a domainname to be blacklisted
       QFile f(*it);
-      if (!f.open(IO_ReadOnly))
+      if (!f.open(QIODevice::ReadOnly))
 	continue;
 
       QTextStream stream(&f);
@@ -125,7 +125,7 @@ void KBlacklistWorker::loadBlacklist()
 	  if (line[0] != '.')
 	    line.prepend(QChar( '.') );
 
-	  blacklist.append(line.lower());
+	  blacklist.append(line.toLower());
 	}
     }
 }
@@ -553,8 +553,8 @@ bool KStandardWorker::sanityCheck()
   if (!nodeName().isEmpty())
     {
       QString node = nodeName();
-      if (node.find('%') != -1)
-	node.truncate(node.find('%'));
+      if (node.indexOf('%') != -1)
+	node.truncate(node.indexOf('%'));
 
       if (node.isEmpty() || node == QString::fromLatin1("*") ||
 	  node == QString::fromLatin1("localhost"))
@@ -590,7 +590,7 @@ bool KStandardWorker::resolveScopeId()
 {
   // we must test the original name, not the encoded one
   scopeid = 0;
-  int pos = nodeName().findRev('%');
+  int pos = nodeName().lastIndexOf('%');
   if (pos == -1)
     return true;
 

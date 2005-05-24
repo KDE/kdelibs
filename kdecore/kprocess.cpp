@@ -187,7 +187,7 @@ KProcess::setupEnvironment()
    for(it = d->env.begin(); it != d->env.end(); ++it)
    {
       setenv(QFile::encodeName(it.key()).data(),
-             QFile::encodeName(it.data()).data(), 1);
+             QFile::encodeName(it.value()).data(), 1);
    }
    if (!d->wd.isEmpty())
    {
@@ -356,7 +356,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (pipe(fd))
      fd[0] = fd[1] = -1; // Pipe failed.. continue
 
-  QApplication::flushX();
+  QApplication::flush();
 
   // we don't use vfork() because
   // - it has unclear semantics and is not standardized

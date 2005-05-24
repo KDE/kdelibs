@@ -758,7 +758,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
             return pix;
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
-	QString ext = icon.path.right(3).upper();
+	QString ext = icon.path.right(3).toUpper();
 	if(ext != "SVG" && ext != "VGZ")
 	{
 	    img = new QImage(icon.path, ext.latin1());
@@ -817,9 +817,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         if (overlay & KIcon::HiddenOverlay)
             for (int y = 0; y < img->height(); y++)
             {
-		Q_UINT32 *line = reinterpret_cast<Q_UINT32 *>(img->scanLine(y));
+		quint32 *line = reinterpret_cast<quint32 *>(img->scanLine(y));
                 for (int x = 0; x < img->width();  x++)
-                    line[x] = (line[x] & 0x00ffffff) | (QMIN(0x80, qAlpha(line[x])) << 24);
+                    line[x] = (line[x] & 0x00ffffff) | (qMin(0x80, qAlpha(line[x])) << 24);
 	    }
     }
 
@@ -921,7 +921,7 @@ QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size
     QString file = moviePath( name, group, size );
     if (file.isEmpty())
 	return 0;
-    int dirLen = file.findRev('/');
+    int dirLen = file.lastIndexOf('/');
     QString icon = iconPath(name, size ? -size : group, true);
     if (!icon.isEmpty() && file.left(dirLen) != icon.left(dirLen))
 	return 0;
@@ -1085,7 +1085,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QStringList::ConstIterator it;
     for (it=result.begin(); it!=result.end(); ++it)
     {
-	int n = (*it).findRev('/');
+	int n = (*it).lastIndexOf('/');
 	if (n == -1)
 	    name = *it;
 	else
@@ -1125,7 +1125,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
     QStringList::ConstIterator it;
     for (it=result.begin(); it!=result.end(); ++it)
     {
-	int n = (*it).findRev('/');
+	int n = (*it).lastIndexOf('/');
 	if (n == -1)
 	    name = *it;
 	else
