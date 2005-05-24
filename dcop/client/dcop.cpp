@@ -223,7 +223,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 
     QStringList types;
     if ( left >0 && left + 1 < right - 1) {
-	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
+	types = f.mid( left + 1, right - left - 1).split( ',', QString::SkipEmptyParts );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    QString lt = (*it).simplified();
 
@@ -237,7 +237,7 @@ int callFunction( const char* app, const char* obj, const char* func, const DCOP
 	    //
 	    if ( s > 0 )
 	    {
-		QStringList partl = QStringList::split(' ' , lt);
+		QStringList partl = lt.split(' ' , QString::SkipEmptyParts);
 
 		// The zero'th part is -- at the very least -- a
 		// type part. Any trailing parts *might* be extra

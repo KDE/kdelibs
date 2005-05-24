@@ -1385,7 +1385,7 @@ void KURL::setFileEncoding(const QString &encoding)
   if (!q.isEmpty() && (q[0] == '?'))
      q = q.mid(1);
 
-  QStringList args = QStringList::split('&', q);
+  QStringList args = q.split('&', QString::SkipEmptyParts);
   for(QStringList::Iterator it = args.begin();
       it != args.end();)
   {
@@ -1417,7 +1417,7 @@ QString KURL::fileEncoding() const
   if (q[0] == '?')
      q = q.mid(1);
 
-  QStringList args = QStringList::split('&', q);
+  QStringList args = q.split('&', QString::SkipEmptyParts);
   for(QStringList::ConstIterator it = args.begin();
       it != args.end();
       ++it)
@@ -2128,7 +2128,7 @@ QMap< QString, QString > KURL::queryItems( int options, int encoding_hint ) cons
     return QMap<QString,QString>();
 
   QMap< QString, QString > result;
-  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  QStringList items = m_strQuery_encoded.split( '&', QString::SkipEmptyParts );
   for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
     int equal_pos = (*it).indexOf( '=' );
     if ( equal_pos > 0 ) { // = is not the first char...
@@ -2165,7 +2165,7 @@ QString KURL::queryItem( const QString& _item, int encoding_hint ) const
   if ( m_strQuery_encoded.length() <= 1 )
     return QString::null;
 
-  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  QStringList items = m_strQuery_encoded.split( '&', QString::SkipEmptyParts );
   int _len = item.length();
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
   {
@@ -2191,7 +2191,7 @@ void KURL::removeQueryItem( const QString& _item )
   if ( m_strQuery_encoded.length() <= 1 )
     return;
 
-  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  QStringList items = m_strQuery_encoded.split( '&', QString::SkipEmptyParts );
   for ( QStringList::Iterator it = items.begin(); it != items.end(); )
   {
     if ( (*it).startsWith( item ) || (*it == _item) )
@@ -2244,8 +2244,8 @@ static QString _relativePath(const QString &base_dir, const QString &path, bool 
    if (_base_dir[_base_dir.length()-1] != '/')
       _base_dir.append(QChar( '/') );
 
-   QStringList list1 = QStringList::split('/', _base_dir);
-   QStringList list2 = QStringList::split('/', _path);
+   QStringList list1 = _base_dir.split('/', QString::SkipEmptyParts);
+   QStringList list2 = _path.split('/', QString::SkipEmptyParts);
 
    // Find where they meet
    int level = 0;
