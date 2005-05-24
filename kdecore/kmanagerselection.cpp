@@ -77,7 +77,7 @@ bool KSelectionOwnerPrivate::x11Event( XEvent* ev_P )
 KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P, QObject* parent_P )
     :   QObject( parent_P ),
         selection( selection_P ),
-        screen( screen_P >= 0 ? screen_P : DefaultScreen( QX11Info::display )),
+        screen( screen_P >= 0 ? screen_P : DefaultScreen( QX11Info::display() )),
         window( None ),
         timestamp( CurrentTime ),
         extra1( 0 ), extra2( 0 ),
