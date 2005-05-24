@@ -404,7 +404,11 @@ static void intializeKKeyLabels()
 
 bool Sym::initQt( int keyQt )
 {
-	int symQt = keyQt & 0xffff;
+	int symQt = keyQt; /// & 0xffff;
+
+#ifdef __GNUC__	
+#warning "Rough port, the commented-out masking not fully understood"
+#endif
 
 	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
 		m_sym = QChar(symQt).toLower().unicode();
