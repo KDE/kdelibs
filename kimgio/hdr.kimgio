@@ -7,4 +7,4 @@ Write=false
 Suffices=.hdr,.HDR,.pic,.PIC
 Mimetype=image/x-hdr
 Library=kimg_hdr.la
- 
+

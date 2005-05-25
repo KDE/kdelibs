@@ -4,6 +4,7 @@ Type=MimeType
 Comment=Java Web Start application
 Comment[af]=Java Web Begin program
 Comment[pt_BR]=Aplicativo Java Web Start
+Comment[rw]=Porogaramu Gutangira Urubuga Java
 Comment[sv]=Java webbstartprogram
 Comment[ta]=ஜாவா வலை துவக்க பயன்பாடு
 MimeType=application/x-java-jnlp-file
