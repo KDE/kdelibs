@@ -293,8 +293,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
 
         connect( d->klineEdit,
-                 SIGNAL( aboutToShowContextMenu( Q3PopupMenu * )),
-                 SIGNAL( aboutToShowContextMenu( Q3PopupMenu * )) );
+                 SIGNAL( aboutToShowContextMenu( QMenu * )),
+                 SIGNAL( aboutToShowContextMenu( QMenu * )) );
 
         connect( d->klineEdit,
                  SIGNAL( completionBoxActivated( const QString& )),
@@ -374,8 +374,8 @@ void KHistoryCombo::init( bool useCompletion )
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 
-    connect( this, SIGNAL(aboutToShowContextMenu(Q3PopupMenu*)),
-             SLOT(addContextMenuItems(Q3PopupMenu*)) );
+    connect( this, SIGNAL(aboutToShowContextMenu(QMenu*)),
+             SLOT(addContextMenuItems(QMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
 }
@@ -433,7 +433,7 @@ void KHistoryCombo::clearHistory()
     setEditText( temp );
 }
 
-void KHistoryCombo::addContextMenuItems( Q3PopupMenu* menu )
+void KHistoryCombo::addContextMenuItems( QMenu* menu )
 {
     if ( menu )
     {
