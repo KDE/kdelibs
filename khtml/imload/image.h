@@ -34,6 +34,8 @@ class QPainter;
 
 namespace khtmlImLoad {
 
+class AnimProvider;
+class Frame;
 class Image;
 class ImageOwner;
 class ImageLoader;
