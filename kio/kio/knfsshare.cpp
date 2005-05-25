@@ -104,7 +104,7 @@ bool KNFSSharePrivate::readExportsFile() {
       completeLine = currentLine;
 
     // is the line continued in the next line ?
-    if ( completeLine[completeLine.length()-1] == '\\' )
+    if ( !completeLine.isEmpty() && completeLine[completeLine.length()-1] == '\\' )
     {
       continuedLine = true;
       // remove the ending backslash
