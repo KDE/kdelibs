@@ -312,7 +312,7 @@ void KIconEffect::toGray(QImage &img, float value)
     
     
     int rval, gval, bval, val, alpha, i;
-    for (i=0; i<ii.pixels; i++)
+    for (unsigned int i=0; i<ii.pixels; i++)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
@@ -335,7 +335,7 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 
     int rval, gval, bval, val, alpha, i;
     float rcol = col.red(), gcol = col.green(), bcol = col.blue();
-    for (i=0; i<ii.pixels; i++)
+    for (unsigned int i=0; i<ii.pixels; i++)
     {
         val = qGray(data[i]);
         if (val < 128)
