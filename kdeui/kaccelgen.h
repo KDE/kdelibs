@@ -113,7 +113,7 @@ public:
 inline bool
 isLegalAccelerator(const QString& str, int index)
 {
-    return index < str.length()
+    return index >= 0 && index < str.length()
         && str[index].isLetterOrNumber();
 }
 
