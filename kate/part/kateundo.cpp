@@ -276,29 +276,29 @@ KateTextCursor KateUndo::cursorAfter() const
 KateUndoGroup::KateUndoGroup (KateDocument *doc)
 : m_doc (doc),m_safePoint(false)
 {
-  m_items.setAutoDelete (true);
 }
 
 KateUndoGroup::~KateUndoGroup ()
 {
+  qDeleteAll (m_items);
 }
 
 void KateUndoGroup::undo ()
 {
-  if (m_items.count() == 0)
+  if (m_items.isEmpty())
     return;
 
   m_doc->editStart (false);
 
-  for (KateUndo* u = m_items.last(); u; u = m_items.prev())
-    u->undo(m_doc);
+  for (int i=m_items.size()-1; i >= 0; --i)
+    m_items[i]->undo(m_doc);
 
   if (m_doc->activeView())
   {
-    for (uint z=0; z < m_items.count(); z++)
-      if (m_items.at(z)->type() != KateUndoGroup::editMarkLineAutoWrapped)
+    for (int z=0; z < m_items.size(); ++z)
+      if (m_items[z]->type() != KateUndoGroup::editMarkLineAutoWrapped)
       {
-        m_doc->activeView()->editSetCursor (m_items.at(z)->cursorBefore());
+        m_doc->activeView()->editSetCursor (m_items[z]->cursorBefore());
         break;
       }
   }
@@ -308,20 +308,20 @@ void KateUndoGroup::undo ()
 
 void KateUndoGroup::redo ()
 {
-  if (m_items.count() == 0)
+  if (m_items.isEmpty())
     return;
 
   m_doc->editStart (false);
 
-  for (KateUndo* u = m_items.first(); u; u = m_items.next())
-    u->redo(m_doc);
+  for (int i=0; i < m_items.size(); ++i)
+    m_items[i]->redo(m_doc);
 
   if (m_doc->activeView())
   {
-    for (uint z=0; z < m_items.count(); z++)
-      if (m_items.at(z)->type() != KateUndoGroup::editMarkLineAutoWrapped)
+    for (int z=0; z < m_items.size(); ++z)
+      if (m_items[z]->type() != KateUndoGroup::editMarkLineAutoWrapped)
       {
-        m_doc->activeView()->editSetCursor (m_items.at(z)->cursorAfter());
+        m_doc->activeView()->editSetCursor (m_items[z]->cursorAfter());
         break;
       }
   }
@@ -338,7 +338,7 @@ void KateUndoGroup::addItem(KateUndo* u)
 {
   if (!u->isValid())
     delete u;
-  else if (m_items.last() && m_items.last()->merge(u))
+  else if (!m_items.isEmpty() && m_items.last()->merge(u))
     delete u;
   else
     m_items.append(u);
@@ -349,10 +349,10 @@ bool KateUndoGroup::merge(KateUndoGroup* newGroup,bool complex)
   if (m_safePoint) return false;
   if (newGroup->isOnlyType(singleType()) || complex) {
     // Take all of its items first -> last
-    KateUndo* u = newGroup->m_items.take(0);
+    KateUndo* u = newGroup->m_items.isEmpty() ? 0 : newGroup->m_items.takeFirst ();
     while (u) {
       addItem(u);
-      u = newGroup->m_items.take(0);
+      u = newGroup->m_items.isEmpty() ? 0 : newGroup->m_items.takeFirst ();
     }
     if (newGroup->m_safePoint) safePoint();
     return true;
@@ -368,10 +368,10 @@ KateUndoGroup::UndoType KateUndoGroup::singleType()
 {
   KateUndoGroup::UndoType ret = editInvalid;
 
-  for (KateUndo* u = m_items.first(); u; u = m_items.next()) {
+  for (int i=0; i < m_items.size(); ++i) {
     if (ret == editInvalid)
-      ret = u->type();
-    else if (ret != u->type())
+      ret = m_items[i]->type();
+    else if (ret != m_items[i]->type())
       return editInvalid;
   }
 
@@ -382,8 +382,8 @@ bool KateUndoGroup::isOnlyType(KateUndoGroup::UndoType type)
 {
   if (type == editInvalid) return false;
 
-  for (KateUndo* u = m_items.first(); u; u = m_items.next())
-    if (u->type() != type)
+  for (int i=0; i < m_items.size(); ++i)
+    if (m_items[i]->type() != type)
       return false;
 
   return true;
