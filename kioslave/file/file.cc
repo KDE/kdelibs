@@ -203,6 +203,10 @@ void FileProtocol::get( const KURL& url )
         return;
     }
 
+#ifdef HAVE_FADVISE
+    posix_fadvise( fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+#endif
+
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
     KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
@@ -542,6 +546,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 	return;
     }
 
+#ifdef HAVE_FADVISE
+    posix_fadvise(src_fd,0,0,POSIX_FADV_SEQUENTIAL);
+#endif
     // WABA: Make sure that we keep writing permissions ourselves,
     // otherwise we can be in for a surprise on NFS.
     mode_t initialMode;
@@ -562,6 +569,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
         return;
     }
 
+#ifdef HAVE_FADVISE
+    posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
+#endif
     totalSize( buff_src.st_size );
 
     KIO::filesize_t processed_size = 0;
