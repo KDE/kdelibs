@@ -30,5 +30,5 @@ test.h: shell.generated
 shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
 	perl $(srcdir)/generate.pl < $(srcdir)/testcases
 
-check-local:
+check-local: dcop_test driver
 	sh $(srcdir)/run-tests.sh
