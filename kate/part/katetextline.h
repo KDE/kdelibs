@@ -289,7 +289,7 @@ class KateTextLine : public KShared
      * folding list
      * @return folding array
      */
-    inline const QVector<uint> &foldingListArray () const { return m_foldingList; };
+    inline const QVector<int> &foldingListArray () const { return m_foldingList; };
 
     /**
      * indentation stack
@@ -354,7 +354,7 @@ class KateTextLine : public KShared
      * update folding list
      * @param val new folding list
      */
-    inline void setFoldingList (QVector<uint> &val) { m_foldingList = val; }
+    inline void setFoldingList (QVector<int> &val) { m_foldingList = val; }
 
     /**
      * update indentation stack
@@ -445,7 +445,7 @@ class KateTextLine : public KShared
     /**
      * list of folding starts/ends
      */
-    QVector<uint> m_foldingList;
+    QVector<int> m_foldingList;
 
     /**
      * indentation stack

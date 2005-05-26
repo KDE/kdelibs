@@ -173,8 +173,8 @@ class KateCodeFoldingTree : public QObject
     bool correctEndings (signed char data, KateCodeFoldingNode *node, unsigned int line, unsigned int endCol, int insertPos);
 
     void dumpNode    (KateCodeFoldingNode *node, const QString &prefix);
-    void addOpening  (KateCodeFoldingNode *node, signed char nType,QVector<uint>* list, unsigned int line,unsigned int charPos);
-    void addOpening_further_iterations (KateCodeFoldingNode *node,signed char nType, QVector<uint>*
+    void addOpening  (KateCodeFoldingNode *node, signed char nType,QVector<int>* list, unsigned int line,unsigned int charPos);
+    void addOpening_further_iterations (KateCodeFoldingNode *node,signed char nType, QVector<int>*
                                         list,unsigned int line,int current,unsigned int startLine,unsigned int charPos);
 
     void incrementBy1 (KateCodeFoldingNode *node, KateCodeFoldingNode *after);
@@ -208,7 +208,7 @@ class KateCodeFoldingTree : public QObject
     void moveSubNodesUp (KateCodeFoldingNode *node);
 
   public slots:
-    void updateLine (unsigned int line,QVector<uint>* regionChanges, bool *updated, bool changed,bool colschanged);
+    void updateLine (unsigned int line,QVector<int>* regionChanges, bool *updated, bool changed,bool colschanged);
     void toggleRegionVisibility (unsigned int);
     void collapseToplevelNodes ();
     void expandToplevelNodes (int numLines);

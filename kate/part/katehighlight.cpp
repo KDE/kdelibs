@@ -1342,7 +1342,7 @@ void KateHighlighting::dropDynamicContexts()
  */
 void KateHighlighting::doHighlight ( KateTextLine *prevLine,
                                      KateTextLine *textLine,
-                                     QVector<uint>* foldingList,
+                                     QVector<int>* foldingList,
                                      bool *ctxChanged )
 {
   if (!textLine)

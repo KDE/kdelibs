@@ -500,7 +500,7 @@ class KateBuffer : public QObject
      */
      KateTextLine::Ptr line_internal (KateBufBlock *buf, uint i);
 
-     inline void addIndentBasedFoldingInformation(QVector<uint> &foldingList,bool addindent,uint deindent);
+     inline void addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,uint deindent);
      inline void updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,bool addindent,uint deindent);
   public:
     /**
@@ -526,7 +526,7 @@ class KateBuffer : public QObject
      * index pointer gets filled with index of block in m_blocks
      * index only valid if returned block != 0 !
      */
-    KateBufBlock *findBlock (uint i, uint *index = 0)
+    KateBufBlock *findBlock (uint i, int *index = 0)
     {
       // out of range !
       if (i >= m_lines)
@@ -543,7 +543,7 @@ class KateBuffer : public QObject
       return findBlock_internal (i, index);
     }
 
-    KateBufBlock *findBlock_internal (uint i, uint *index = 0);
+    KateBufBlock *findBlock_internal (uint i, int *index = 0);
 
   public:
     /**
@@ -642,12 +642,12 @@ class KateBuffer : public QObject
     /**
      * last block where the start/end line is in sync with real life
      */
-    uint m_lastInSyncBlock;
+    int m_lastInSyncBlock;
 
     /**
      * last block found by findBlock, there to make searching faster
      */
-    uint m_lastFoundBlock;
+    int m_lastFoundBlock;
 
     /**
      * status of the cache read/write errors

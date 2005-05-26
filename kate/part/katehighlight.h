@@ -131,7 +131,7 @@ class KateHighlighting
   public:
     void doHighlight ( KateTextLine *prevLine,
                        KateTextLine *textLine,
-                       QVector<uint> *foldingList,
+                       QVector<int> *foldingList,
                        bool *ctxChanged );
 
     void loadWildcards();

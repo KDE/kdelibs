@@ -34,12 +34,10 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 
-#include <q3popupmenu.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtimer.h>
 #include <qtextcodec.h>
-#include <q3cstring.h>
 #include <qdatetime.h>
 
 /**
@@ -54,7 +52,7 @@ static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
  * block will max contain around BLOCK_SIZE chars or
  * BLOCK_LINES lines (after load, later that won't be tracked)
  */
-static const Q_ULONG KATE_AVG_BLOCK_SIZE  = 2048 * 80;
+static const int KATE_AVG_BLOCK_SIZE  = 2048 * 80;
 static const Q_ULONG KATE_MAX_BLOCK_LINES = 2048;
 
 /**
@@ -611,7 +609,7 @@ bool KateBuffer::saveFile (const QString &m_file)
 
   m_loadingBorked = false;
 
-  return (file.status() == IO_Ok);
+  return (file.error() == QFile::NoError);
 }
 
 KateTextLine::Ptr KateBuffer::line_internal (KateBufBlock *buf, uint i)
@@ -637,7 +635,7 @@ KateTextLine::Ptr KateBuffer::line_internal (KateBufBlock *buf, uint i)
   return buf->line (i - buf->startLine());
 }
 
-KateBufBlock *KateBuffer::findBlock_internal (uint i, uint *index)
+KateBufBlock *KateBuffer::findBlock_internal (uint i, int *index)
 {
   uint lastLine = m_blocks[m_lastInSyncBlock]->endLine ();
 
@@ -657,19 +655,19 @@ KateBufBlock *KateBuffer::findBlock_internal (uint i, uint *index)
       }
 
       if (i < buf->startLine())
-        m_lastFoundBlock--;
+        --m_lastFoundBlock;
       else
-        m_lastFoundBlock++;
+        ++m_lastFoundBlock;
     }
   }
   else // we need first to resync the startLines !
   {
     if ((m_lastInSyncBlock+1) < m_blocks.size())
-      m_lastInSyncBlock++;
+      ++m_lastInSyncBlock;
     else
       return 0;
 
-    for (; m_lastInSyncBlock < m_blocks.size(); m_lastInSyncBlock++)
+    for (; m_lastInSyncBlock < m_blocks.size(); ++m_lastInSyncBlock)
     {
       // get next block
       KateBufBlock *buf = m_blocks[m_lastInSyncBlock];
@@ -722,7 +720,7 @@ void KateBuffer::changeLine(uint i)
 
 void KateBuffer::insertLine(uint i, KateTextLine::Ptr line)
 {
-  uint index = 0;
+  int index = 0;
   KateBufBlock *buf;
   if (i == m_lines)
     buf = findBlock(i-1, &index);
@@ -771,7 +769,7 @@ void KateBuffer::insertLine(uint i, KateTextLine::Ptr line)
 
 void KateBuffer::removeLine(uint i)
 {
-   uint index = 0;
+   int index = 0;
    KateBufBlock *buf = findBlock(i, &index);
 
    if (!buf)
@@ -908,7 +906,7 @@ void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,
     textLine = blk->line(current_line);
   } while (textLine->firstChar()==-1);
   kdDebug(13020)<<"updatePreviousNotEmptyLine: updating line:"<<(blk->startLine()+current_line)<<endl;
-  QVector<uint> foldingList=textLine->foldingListArray();
+  QVector<int> foldingList=textLine->foldingListArray();
   while ( (foldingList.size()>0)  && ( abs(foldingList[foldingList.size()-2])==1)) {
     foldingList.resize(foldingList.size()-2);
   }
@@ -919,7 +917,7 @@ void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,
   emit tagLines (blk->startLine()+current_line, blk->startLine()+current_line);
 }
 
-void KateBuffer::addIndentBasedFoldingInformation(QVector<uint> &foldingList,bool addindent,uint deindent)
+void KateBuffer::addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,uint deindent)
 {
   if (addindent) {
     //kdDebug(13020)<<"adding indent for line :"<<current_line + buf->startLine()<<"  textLine->noIndentBasedFoldingAtStart"<<textLine->noIndentBasedFoldingAtStart()<<endl;
@@ -933,7 +931,7 @@ void KateBuffer::addIndentBasedFoldingInformation(QVector<uint> &foldingList,boo
   {
     foldingList.resize (foldingList.size() + (deindent*2));
 
-    for (uint z= foldingList.size()-(deindent*2); z < foldingList.size(); z=z+2)
+    for (int z= foldingList.size()-(deindent*2); z < foldingList.size(); z=z+2)
     {
       foldingList[z] = -1;
       foldingList[z+1] = 0;
@@ -1033,7 +1031,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     // current line
     KateTextLine::Ptr textLine = buf->line(current_line);
 
-    QVector<uint> foldingList;
+    QVector<int> foldingList;
     bool ctxChanged = false;
 
     m_highlight->doHighlight (prevLine, textLine, &foldingList, &ctxChanged);
@@ -1196,8 +1194,8 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
     if (foldingList.size()!=textLine->foldingListArray().size()) {
       foldingChanged=true;
     } else {
-      QVector<uint>::ConstIterator it=foldingList.begin();
-      QVector<uint>::ConstIterator it1=textLine->foldingListArray().begin();
+      QVector<int>::ConstIterator it=foldingList.begin();
+      QVector<int>::ConstIterator it1=textLine->foldingListArray().begin();
       bool markerType=true;
       for(;it!=foldingList.end();++it,++it1) {
         if  (markerType) {
@@ -1263,7 +1261,7 @@ void KateBuffer::codeFoldingColumnUpdate(unsigned int lineNr) {
   if (line->foldingColumnsOutdated()) {
     line->setFoldingColumnsOutdated(false);
     bool tmp;
-    QVector<uint> folding=line->foldingListArray();
+    QVector<int> folding=line->foldingListArray();
     m_regionTree.updateLine(lineNr,&folding,&tmp,true,false);
   }
 }

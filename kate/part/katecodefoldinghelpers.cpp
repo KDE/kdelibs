@@ -380,7 +380,7 @@ void KateCodeFoldingTree::dumpNode(KateCodeFoldingNode *node, const QString &pre
  That's one of the most important functions ;)
 */
 void KateCodeFoldingTree::updateLine(unsigned int line,
-  QVector<uint> *regionChanges, bool *updated,bool changed,bool colsChanged)
+  QVector<int> *regionChanges, bool *updated,bool changed,bool colsChanged)
 {
   if ( (!changed) || colsChanged)
   {
@@ -778,7 +778,7 @@ void KateCodeFoldingTree::moveSubNodesUp(KateCodeFoldingNode *node)
 
 
 
-void KateCodeFoldingTree::addOpening(KateCodeFoldingNode *node,signed char nType, QVector<uint>* list,unsigned int line,unsigned int charPos)
+void KateCodeFoldingTree::addOpening(KateCodeFoldingNode *node,signed char nType, QVector<int>* list,unsigned int line,unsigned int charPos)
 {
   uint startLine = getStartLine(node);
   if ((startLine==line) && (node->type!=0))
@@ -936,7 +936,7 @@ void KateCodeFoldingTree::addOpening(KateCodeFoldingNode *node,signed char nType
 }
 
 
-void KateCodeFoldingTree::addOpening_further_iterations(KateCodeFoldingNode *node,signed char /* nType */, QVector<uint>*
+void KateCodeFoldingTree::addOpening_further_iterations(KateCodeFoldingNode *node,signed char /* nType */, QVector<int>*
     list,unsigned int line,int current, unsigned int startLine,unsigned int charPos)
 {
   while (!(list->isEmpty()))
