@@ -2273,13 +2273,14 @@ bool KateVarIndent::hasRelevantOpening( const KateDocCursor &end ) const
 KateScriptIndent::KateScriptIndent( KateDocument *doc )
   : KateNormalIndent( doc )
 {
+    m_script=KateFactory::self()->indentScript ("script-indent-c1-test");
 }
 
 KateScriptIndent::~KateScriptIndent()
 {
 }
 
-void KateScriptIndent::processNewline( KateDocCursor &begin, bool  )
+void KateScriptIndent::processNewline( KateDocCursor &begin, bool needContinue )
 {
   kdDebug(13030) << "processNewline" << endl;
   KateView *view = doc->activeView();
@@ -2290,37 +2291,53 @@ void KateScriptIndent::processNewline( KateDocCursor &begin, bool  )
 
     QTime t;
     t.start();
-    if( !KateFactory::self()->jscriptManager()->exec( view, "script-indent-c-newline", errorMsg ) )
+    kdDebug(13030)<<"calling m_script.processChar"<<endl;
+    if( !m_script.processNewline( view, begin, needContinue , errorMsg ) )
     {
       kdDebug(13030) << "Error in script-indent: " << errorMsg << endl;
-    }
-    else
-    {
-      begin.setPosition( view->cursorLine(), view->cursorColumnReal() );
     }
     kdDebug(13030) << "ScriptIndent::TIME in ms: " << t.elapsed() << endl;
   }
 }
 
-void KateScriptIndent::processChar( QChar )
+void KateScriptIndent::processChar( QChar c)
 {
-  kdDebug(13030) << "processNewline" << endl;
+  kdDebug(13030) << "processChar" << endl;
   KateView *view = doc->activeView();
 
   if (view)
   {
     QString errorMsg;
 
-    if( !KateFactory::self()->jscriptManager()->exec( view, "script-indent-c-char", errorMsg ) )
+    QTime t;
+    t.start();
+    kdDebug(13030)<<"calling m_script.processChar"<<endl;
+    if( !m_script.processChar( view, c , errorMsg ) )
     {
       kdDebug(13030) << "Error in script-indent: " << errorMsg << endl;
     }
+    kdDebug(13030) << "ScriptIndent::TIME in ms: " << t.elapsed() << endl;
   }
 }
 
-void KateScriptIndent::processLine (KateDocCursor &)
+void KateScriptIndent::processLine (KateDocCursor &line)
 {
   kdDebug(13030) << "processLine" << endl;
+  KateView *view = doc->activeView();
+
+  if (view)
+  {
+    QString errorMsg;
+
+    QTime t;
+    t.start();
+    kdDebug(13030)<<"calling m_script.processLine"<<endl;
+    if( !m_script.processLine( view, line , errorMsg ) )
+    {
+      kdDebug(13030) << "Error in script-indent: " << errorMsg << endl;
+    }
+    kdDebug(13030) << "ScriptIndent::TIME in ms: " << t.elapsed() << endl;
+  }
 }
 //END KateScriptIndent
 
