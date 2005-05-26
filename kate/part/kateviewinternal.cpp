@@ -563,9 +563,9 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
   if (viewLinesScrolled != 0) {
     // loop backwards if we've just scrolled up...
     bool forwards = viewLinesScrolled >= 0 ? true : false;
-    for (int z = forwards ? 0 : lineRanges.count() - 1; z < lineRanges.count(); forwards ? z++ : z--) {
+    for (int z = forwards ? 0 : lineRanges.count() - 1; forwards ? (z < lineRanges.count()) : (z >= 0); forwards ? z++ : z--) {
       int oldZ = z + viewLinesScrolled;
-      if (oldZ < lineRanges.count()) {
+      if (oldZ >= 0 && oldZ < lineRanges.count()) {
         lineRanges[z] = lineRanges[oldZ];
       } else {
         lineRanges[z].setDirty();
