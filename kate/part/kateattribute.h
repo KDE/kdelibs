@@ -22,6 +22,7 @@
 #include "katefont.h"
 
 #include <qcolor.h>
+#include <QTextCharFormat>
 
 /**
  * The Attribute class incorporates all text decorations supported by Kate.
@@ -50,6 +51,7 @@ public:
   virtual ~KateAttribute();
 
   QFont font(const QFont& ref);
+  const QTextCharFormat& toFormat(bool selected) const;
 
   inline int width(KateFontStruct& fs, const QString& text, int col, int tabWidth) const
   { return fs.width(text, col, bold(), italic(), tabWidth); };
@@ -138,6 +140,7 @@ public:
   void clear();
 
 private:
+  mutable QTextCharFormat m_format;
   int m_weight;
   bool m_italic, m_underline, m_overline,m_strikeout, m_changed, m_bgColorFillWhitespace;
   QColor m_outline, m_textColor, m_selectedTextColor, m_bgColor, m_selectedBGColor;

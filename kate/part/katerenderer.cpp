@@ -83,6 +83,14 @@ KateAttribute* KateRenderer::attribute(uint pos)
   return &(*m_attributes)[0];
 }
 
+KateAttribute * KateRenderer::specificAttribute( int context )
+{
+  if (context >= 0 && context < m_attributes->count())
+    return &(*m_attributes)[context];
+    
+  return &(*m_attributes)[0];
+}
+
 void KateRenderer::setDrawCaret(bool drawCaret)
 {
   m_drawCaret = drawCaret;
@@ -1204,6 +1212,88 @@ void KateRenderer::layoutText (int width, int height, int startLine, bool wrapTe
     curHeight += h;
     ++curLine;
   }
+}
+
+void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
+{
+  // if maxwidth == -1 we have no wrap
+
+  range.setWrap(false);
+  range.setEndX(range.startX());
+  range.setEndCol(range.startCol());
+
+  if (!range.textLine() || range.textLine()->string().isEmpty()) {
+    Q_ASSERT(range.textLine());
+    return;
+  }
+  
+  if (!range.layout())
+    range.setLayout(new QTextLayout(range.textLine()->string(), config()->fontStruct()->font(false, false)), 0, true);
+
+  Q_ASSERT(currentFont());
+
+  QTextLayout* l = range.layout();
+
+  if (range.viewLine() == 0) {
+    // Initial setup of the QTextLayout.
+    
+    // Tab width
+    QTextOption opt;
+    opt.setTabStop(m_doc->config()->tabWidth());
+    l->setTextOption(opt);
+    
+    // Begin layouting
+    l->beginLayout();
+
+    // FIXME update to new api... Retrieve decoration range list
+    /*KateRangeList& ranges = m_doc->arbitraryHL()->rangesIncluding(range.line(), m_view);
+
+    KateTextCursor rangeStart = range.rangeStart();
+
+    for (KateTextCursor* r = ranges.firstBoundary(&rangeStart); r && r->line() == range.line(); r = ranges.nextBoundary())
+      l->setBoundary(r->col());*/
+
+    // Break for attribute changes
+    QList<QTextLayout::FormatRange> formatRanges;
+    const QVector<int> &al = range.textLine()->attributesList();
+    for (int i = 0; i+2 < al.count(); i += 3) {
+      QTextLayout::FormatRange fr;
+      fr.start = al[i];
+      fr.length = al[i+1];
+      // FIXME account for selection: change false to true when in a selection.
+      fr.format = specificAttribute(al[i+2])->toFormat(false);
+      formatRanges.append(fr);
+    }
+    l->setAdditionalFormats(formatRanges);
+  }
+
+  int leading = 0;//l->font().fontMetrics().leading()
+  int height = 0;
+  forever {
+    QTextLine line = l->createLine();
+    if (!line.isValid())
+      break;
+
+    if (maxwidth > 0)
+      line.setLineWidth(maxwidth);
+    
+    height += leading;
+    line.setPosition(QPoint(range.xOffset() * spaceWidth(), height));
+    height += line.height();
+
+    range.setStartCol(line.textStart());
+    range.setEndCol(range.endCol() + line.textLength());
+    range.setEndX(range.startX() + line.naturalTextWidth());
+
+    if (range.endCol() < range.textLine()->length()) {
+      range.setWrap(true);
+
+      break;
+    }
+  }
+  
+  if (!range.wrap())
+    l->endLayout();
 }
   
 // kate: space-indent on; indent-width 2; replace-tabs on;

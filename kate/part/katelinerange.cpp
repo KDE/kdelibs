@@ -19,6 +19,8 @@
 
 #include "katelinerange.h"
 
+#include <QTextLayout>
+
 #include <kdebug.h>
 
 #include "katedocument.h"
@@ -38,6 +40,9 @@ KateLineRange::KateLineRange(KateDocument* doc)
   , m_wrap(false)
   , m_startsInvisibleBlock(false)
   , m_special(false)
+  , m_ownsLayout(false)
+  , m_layoutOffset(0)
+  , m_layout(0L)
 {
 }
 
@@ -66,6 +71,9 @@ KateLineRange& KateLineRange::operator= (const KateLineRange& r)
   m_dirty = r.isDirty();
   m_special = false;
   Q_ASSERT(!r.m_special);
+  //if (m_ownsLayout) delete m_layout;
+  m_ownsLayout = false;
+  m_layout = 0L;
   
   return *this;
 }
@@ -93,6 +101,10 @@ void KateLineRange::clear()
   m_wrap = false;
   m_startsInvisibleBlock = false;
   // not touching dirty
+  //if (m_ownsLayout) delete m_layout;
+  m_ownsLayout = false;
+  m_layout = 0L;
+  m_layoutOffset = 0;
 }
 
 bool KateLineRange::includesCursor(const KateTextCursor& realCursor) const
@@ -272,6 +284,24 @@ void KateLineRange::setSpecial( const KateTextLine::Ptr & textLine )
 bool KateLineRange::isValid( ) const
 {
   return line() != -1 && textLine();
+}
+
+QTextLayout* KateLineRange::layout() const
+{
+  return m_layout;
+}
+
+int KateLineRange::layoutOffset() const
+{
+  return m_layoutOffset;
+}
+
+void KateLineRange::setLayout(QTextLayout* layout, int offset, bool owner)
+{
+  if (m_ownsLayout) delete m_layout;
+  m_layout = layout;
+  m_layoutOffset = offset;
+  m_ownsLayout = owner;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

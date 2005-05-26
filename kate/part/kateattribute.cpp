@@ -33,6 +33,15 @@ KateAttribute::~KateAttribute()
 {
 }
 
+const QTextCharFormat & KateAttribute::toFormat(bool selected) const
+{
+  /*if (selected && itemSet(SelectedTextColor))
+    m_format.setTextColor(m_selectedTextColor);
+  else if (itemSet(TextColor))
+    m_format.setTextColor(m_textColor);*/
+  return m_format;
+}
+
 void KateAttribute::clear()
 {
   m_itemsSet=0;
@@ -98,6 +107,7 @@ void KateAttribute::setWeight(int weight)
     m_itemsSet |= Weight;
 
     m_weight = weight;
+    m_format.setFontWeight(m_weight);
 
     changed();
   }
@@ -115,6 +125,7 @@ void KateAttribute::setItalic(bool enable)
     m_itemsSet |= Italic;
 
     m_italic = enable;
+    m_format.setFontItalic(m_italic);
 
     changed();
   }
@@ -127,6 +138,7 @@ void KateAttribute::setUnderline(bool enable)
     m_itemsSet |= Underline;
 
     m_underline = enable;
+    m_format.setFontUnderline(m_underline);
 
     changed();
   }
@@ -139,6 +151,7 @@ void KateAttribute::setOverline(bool enable)
     m_itemsSet |= Overline;
 
     m_overline = enable;
+    m_format.setFontOverline(m_overline);
 
     changed();
   }
@@ -151,6 +164,7 @@ void KateAttribute::setStrikeOut(bool enable)
     m_itemsSet |= StrikeOut;
 
     m_strikeout = enable;
+    m_format.setFontStrikeOut(m_strikeout);
 
     changed();
   }
@@ -163,6 +177,7 @@ void KateAttribute::setOutline(const QColor& color)
     m_itemsSet |= Outline;
 
     m_outline = color;
+    //m_format.setFontOutline(m_outline);
 
     changed();
   }

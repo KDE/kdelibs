@@ -169,6 +169,7 @@ public:
     /**
      * Text width & height calculation functions...
      */
+    void layoutLine(KateLineRange& range, int maxwidth);
 
     // Width calculators
     uint spaceWidth();
@@ -231,6 +232,7 @@ public:
      *   attribute(myktextline->attribute(position));
      */
     KateAttribute* attribute(uint pos);
+    KateAttribute* specificAttribute(int context);
 
   /**
    * new stuff for the QTextLayout

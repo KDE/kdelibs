@@ -20,7 +20,6 @@
 #ifndef _KATE_LINERANGE_H_
 #define _KATE_LINERANGE_H_
 
-
 #include "katecursor.h"
 #include "katetextline.h"
 
@@ -99,6 +98,10 @@ class KateLineRange
     bool startsInvisibleBlock() const;
     void setStartsInvisibleBlock(bool sib);
 
+    QTextLayout* layout() const;
+    int layoutOffset() const;
+    void setLayout(QTextLayout* layout, int offset = 0, bool owner = false);
+    
     void debugOutput() const;
 
 private:
@@ -119,6 +122,10 @@ private:
     bool m_wrap : 1;
     bool m_startsInvisibleBlock : 1;
     bool m_special : 1;
+    bool m_ownsLayout : 1;
+
+    int m_layoutOffset;
+    QTextLayout* m_layout;
 };
 
 #endif
