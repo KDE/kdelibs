@@ -299,12 +299,12 @@ KateTextCursor KateViewInternal::endPos() const
   }
 
   // Check to make sure that lineRanges isn't invalid
-  if (!lineRanges.count() || lineRanges[0].line() == -1 || viewLines >= (int)lineRanges.count()) {
+  if (lineRanges.isEmpty() || lineRanges[0].line() == -1 || viewLines >= lineRanges.size()) {
     // Switch off use of the cache
     return KateTextCursor(m_doc->numVisLines() - 1, m_doc->lineLength(m_doc->getRealLine(m_doc->numVisLines() - 1)));
   }
 
-  for (int i = viewLines; i >= 0; i--) {
+  for (int i = kMin(viewLines, lineRanges.size()-1); i >= 0; i--) {
     const KateLineRange& thisRange = lineRanges[i];
 
     if (thisRange.line() == -1) continue;
@@ -881,7 +881,7 @@ QPoint KateViewInternal::cursorCoordinates()
 {
   int viewLine = displayViewLine(displayCursor, true);
 
-  if (viewLine == -1)
+  if (viewLine < 0 || viewLine >= lineRanges.size())
     return QPoint(-1, -1);
 
   uint y = viewLine * m_view->renderer()->fontHeight();
@@ -895,7 +895,7 @@ QVariant KateViewInternal::inputMethodQuery ( Qt::InputMethodQuery query ) const
   switch (query) {
     case Qt::ImMicroFocus: {
       int line = displayViewLine(displayCursor, true);
-      if (line == -1)
+      if (line < 0 || line >= lineRanges.size())
           return QWidget::inputMethodQuery(query);
     
       KateRenderer *renderer = m_view->renderer();
@@ -1253,7 +1253,7 @@ void KateViewInternal::end( bool sel )
 KateLineRange KateViewInternal::range(int realLine, const KateLineRange* previous) const
 {
   // look at the cache first
-  if (!m_updatingView && realLine >= lineRanges[0].line() && realLine <= lineRanges[lineRanges.count() - 1].line())
+  if (!m_updatingView && !lineRanges.isEmpty() && realLine >= lineRanges[0].line() && realLine <= lineRanges[lineRanges.count() - 1].line())
     for (int i = 0; i < lineRanges.count(); i++)
       if (realLine == lineRanges[i].line())
         if (!m_view->dynWordWrap() || (!previous && lineRanges[i].startCol() == 0) || (previous && lineRanges[i].startCol() == previous->endCol()))
@@ -2214,7 +2214,7 @@ void KateViewInternal::updateBracketMarks()
 bool KateViewInternal::tagLine(const KateTextCursor& virtualCursor)
 {
   int viewLine = displayViewLine(virtualCursor, true);
-  if (viewLine >= 0 && viewLine < (int)lineRanges.count()) {
+  if (viewLine >= 0 && viewLine < lineRanges.size()) {
     lineRanges[viewLine].setDirty();
     leftBorder->update (0, lineToY(viewLine), leftBorder->width(), m_view->renderer()->fontHeight());
     return true;
@@ -3254,7 +3254,7 @@ void KateViewInternal::viewSelectionChanged ()
 KateLineRange KateViewInternal::viewRange( int viewLine ) const
 {
   static KateLineRange invalid(m_doc);
-  if (viewLine < 0 || viewLine >= (int)lineRanges.count())
+  if (viewLine < 0 || viewLine >= lineRanges.size())
     return invalid;
 
   return lineRanges[viewLine];

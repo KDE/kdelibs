@@ -421,7 +421,7 @@ QTextCodec *KateDocumentConfig::codec ()
   if (m_encodingSet || isGlobal())
   {
     if (m_encoding.isEmpty() && isGlobal())
-      return KGlobal::charsets()->codecForName (QString::fromLatin1(KGlobal::locale()->encoding()));
+      return KGlobal::locale()->codecForEncoding();
     else if (m_encoding.isEmpty())
       return s_global->codec ();
     else

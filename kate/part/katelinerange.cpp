@@ -46,8 +46,11 @@ KateLineRange::KateLineRange(const KateLineRange& copy)
   *this = copy;
 }
 
-void KateLineRange::operator= (const KateLineRange& r)
+KateLineRange& KateLineRange::operator= (const KateLineRange& r)
 {
+  if (this == &r)
+    return *this;
+
   m_doc = r.doc();
   m_textLine = 0L;
   m_line = r.line();
@@ -63,6 +66,8 @@ void KateLineRange::operator= (const KateLineRange& r)
   m_dirty = r.isDirty();
   m_special = false;
   Q_ASSERT(!r.m_special);
+  
+  return *this;
 }
 
 KateTextCursor KateLineRange::rangeStart() const

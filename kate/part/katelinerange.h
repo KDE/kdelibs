@@ -34,7 +34,7 @@ class KateLineRange
     KateLineRange(const KateLineRange& copy);
     ~KateLineRange();
 
-    void operator=(const KateLineRange& r);
+    KateLineRange& operator=(const KateLineRange& r);
 
     KateDocument* doc() const;
     KateTextCursor rangeStart() const;
