@@ -202,7 +202,7 @@ void DownloadDialog::slotProviders(Provider::List *list)
 
 void DownloadDialog::addProvider(Provider *p)
 {
-  Q3Frame *frame;
+  QFrame *frame;
   KTabCtl *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;

@@ -75,6 +75,7 @@
 #include <qtextstream.h>
 #include <qtextcodec.h>
 #include <qmap.h>
+#include <q3vbox.h>
 //END  includes
 
 //BEGIN PRIVATE CLASSES

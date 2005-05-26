@@ -20,7 +20,6 @@
 #include "kpushbutton.h"
 
 #include <q3dragobject.h>
-#include <q3whatsthis.h>
 #include <qevent.h>
 
 #include "config.h"
@@ -100,7 +99,7 @@ void KPushButton::init( const KGuiItem &item )
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
-    Q3WhatsThis::add( this, item.whatsThis() );
+    setWhatsThis(item.whatsThis());
 
     if (kapp)
     {

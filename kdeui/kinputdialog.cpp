@@ -57,7 +57,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -91,7 +91,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     KStdGuiItem::clear() ),
     d( new KInputDialogPrivate() )
 {
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -116,7 +116,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
     d( new KInputDialogPrivate() )
 {
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -138,7 +138,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
     d( new KInputDialogPrivate() )
 {
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -163,7 +163,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 {
   showButton( User1, editable );
 
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -207,7 +207,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     : KDialogBase( parent, name, true, caption, Ok|Cancel, Ok, true ),
     d( new KInputDialogPrivate() )
 {
-  Q3Frame *frame = makeMainWidget();
+  QFrame *frame = makeMainWidget();
   QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
 
   d->m_label = new QLabel( label, frame );

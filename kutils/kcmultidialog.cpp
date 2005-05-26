@@ -245,7 +245,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     if( !KCModuleLoader::testModule( moduleinfo ))
             return;
 
-    Q3Frame* page = 0;
+    QFrame* page = 0;
     if (!moduleinfo.service()->noDisplay())
         switch( dialogface )
         {

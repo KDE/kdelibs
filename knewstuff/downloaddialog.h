@@ -30,7 +30,7 @@ namespace KIO
 
 class KListView;
 class Q3TextBrowser;
-class Q3Frame;
+class QFrame;
 class KNewStuffGeneric;
 
 namespace KNS
@@ -213,7 +213,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     QString m_entryname;
     KListView *lv_r, *lv_d, *lv_l;
     Q3TextBrowser *m_rt;
-    Q3Frame *m_frame;
+    QFrame *m_frame;
     Q3ListViewItem *m_entryitem;
     Q3PtrList<Entry> m_entries;
     Entry *m_entry;

@@ -20,7 +20,7 @@
 #define KURLBAR_H
 
 #include <qevent.h>
-#include <q3frame.h>
+#include <QFrame>
 #include <qtooltip.h>
 
 #include <kdialogbase.h>
@@ -227,7 +227,7 @@ class KURLBarListBox;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A URL-bar widget, as used in the KFileDialog
  */
-class KIO_EXPORT KURLBar : public Q3Frame
+class KIO_EXPORT KURLBar : public QFrame
 {
     Q_OBJECT
 

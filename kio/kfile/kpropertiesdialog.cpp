@@ -657,7 +657,7 @@ public:
 
   KDirSize * dirSizeJob;
   QTimer *dirSizeUpdateTimer;
-  Q3Frame *m_frame;
+  QFrame *m_frame;
   bool bMultiple;
   bool bIconChanged;
   bool bKDesktopMode;
@@ -1431,7 +1431,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
   QCheckBox *cbRecursive;
   QLabel *explanationLabel;
   QComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
@@ -2381,7 +2381,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
 };
 
 KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
@@ -2487,7 +2487,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
 };
 
 KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2644,7 +2644,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
   QStringList mountpointlist;
   QLabel *m_freeSpaceText;
   QLabel *m_freeSpaceLabel;
@@ -2918,7 +2918,7 @@ void KDevicePropsPlugin::applyChanges()
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
-  Q3Frame *frame = properties->addPage(i18n("&Application"));
+  QFrame *frame = properties->addPage(i18n("&Application"));
   QVBoxLayout *mainlayout = new QVBoxLayout( frame, 0, KDialog::spacingHint() );
 
   w = new KPropertiesDesktopBase(frame);
@@ -3401,7 +3401,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
   QCheckBox *nocloseonexitCheck;
 };
 
@@ -3714,7 +3714,7 @@ public:
   {
   }
 
-  Q3Frame *m_frame;
+  QFrame *m_frame;
   bool m_kdesktopMode;
 };
 

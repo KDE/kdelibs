@@ -441,7 +441,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The widget or 0 if the predefined layout mode is not @p Plain
      *         or if you don't use any predefined layout.
      */
-    Q3Frame *plainPage();
+    QFrame *plainPage();
 
     /**
      * Add a page to the dialog when the class is used in @p TreeList ,
@@ -470,7 +470,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    Q3Frame  *addPage( const QString &itemName,
+    QFrame  *addPage( const QString &itemName,
 		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
@@ -485,7 +485,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    Q3Frame  *addPage( const QStringList &items,
+    QFrame  *addPage( const QStringList &items,
 		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
@@ -633,7 +633,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    Q3Frame *makeMainWidget();
+    QFrame *makeMainWidget();
 
     /**
      * Make a main widget.

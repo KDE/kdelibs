@@ -50,7 +50,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
 {
   mEntryList.setAutoDelete( true );
 
-  Q3Frame *topPage = plainPage();
+  QFrame *topPage = plainPage();
 
   QGridLayout *topLayout = new QGridLayout( topPage );
   topLayout->setSpacing( spacingHint() );

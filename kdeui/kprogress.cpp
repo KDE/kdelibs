@@ -187,7 +187,7 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
     showButton(KDialogBase::Close, false);
     mCancelText = actionButton(KDialogBase::Cancel)->text();
 
-    Q3Frame* mainWidget = plainPage();
+    QFrame* mainWidget = plainPage();
     QVBoxLayout* layout = new QVBoxLayout(mainWidget, 10);
 
     mLabel = new QLabel(text, mainWidget);

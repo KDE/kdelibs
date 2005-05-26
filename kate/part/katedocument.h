@@ -565,23 +565,6 @@ class KateDocument : public Kate::Document,
 
     QString m_dirWatchFile;
 
-  //
-  // Kate::Document stuff, this is all deprecated!!!!!!!!!!
-  //
-  public:
-    Kate::ConfigPage *colorConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *fontConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *indentConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *selectConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *editConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *keysConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *hlConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *viewDefaultsConfigPage (QWidget *) { return 0; }
-    Kate::ConfigPage *saveConfigPage( QWidget * ) { return 0; }
-
-    Kate::ActionMenu *hlActionMenu (const QString& /* text */, QObject* /* parent */ = 0, const char* /* name */ = 0) { return 0; }
-    Kate::ActionMenu *exportActionMenu (const QString& /* text */, QObject* /* parent */ = 0, const char* /* name */ = 0) { return 0; }
-
   public:
     /**
      * Type chars in a view
@@ -747,7 +730,7 @@ class KateDocument : public Kate::Document,
   public:
 
     QString docName () {return m_docName;};
-
+    
     void setDocName (QString docName);
 
     void lineInfo (KateLineInfo *info, unsigned int line);
@@ -761,9 +744,6 @@ class KateDocument : public Kate::Document,
      * @since 3.3
      */
     bool isModifiedOnDisc() { return m_modOnHd; };
-
-    /** @deprecated */
-    void isModOnHD( bool =false ) {};
 
     void setModifiedOnDisk( int reason );
 

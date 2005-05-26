@@ -36,7 +36,6 @@
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <q3intdict.h>
-#include <q3vbox.h>
 #include <qtabwidget.h>
 
 class KatePartPluginListItem;
@@ -72,8 +71,6 @@ class QPushButton;
 class QRadioButton;
 class QSpinBox;
 class Q3ListBoxItem;
-class Q3WidgetStack;
-class Q3VBox;
 class Q3ListViewItem;
 class QCheckBox;
 

@@ -54,7 +54,7 @@ ProviderDialog::ProviderDialog( Engine *engine, QWidget *parent ) :
                parent, 0, false, true ),
   mEngine( engine )
 {
-  Q3Frame *topPage = plainPage();
+  QFrame *topPage = plainPage();
 
   QBoxLayout *topLayout = new QVBoxLayout( topPage );
 

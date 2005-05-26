@@ -231,7 +231,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapList.append( evolutionMap );
   mMapList.append( outlookMap );
 
-  Q3Frame *page = plainPage();
+  QFrame *page = plainPage();
   QGridLayout *layout = new QGridLayout( page, 4, ( attributes.count() + 4 ) >> 1,
                                          0, spacingHint() );
 
@@ -335,7 +335,7 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
   : KDialogBase( Plain, i18n( "Offline Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
 {
-  Q3Frame *page = plainPage();
+  QFrame *page = plainPage();
   QVBoxLayout *layout = new QVBoxLayout( page );
   layout->setAutoAdd( true );
 

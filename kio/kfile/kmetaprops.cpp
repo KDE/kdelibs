@@ -45,13 +45,13 @@ public:
     MetaPropsScrollView(QWidget* parent = 0, const char* name = 0)
         : Q3ScrollView(parent, name)
     {
-      setFrameStyle(Q3Frame::NoFrame);
-      m_frame = new Q3Frame(viewport(), "MetaPropsScrollView::m_frame");
-      m_frame->setFrameStyle(Q3Frame::NoFrame);
+      setFrameStyle(QFrame::NoFrame);
+      m_frame = new QFrame(viewport(), "MetaPropsScrollView::m_frame");
+      m_frame->setFrameStyle(QFrame::NoFrame);
       addChild(m_frame, 0, 0);
     };
 
-    Q3Frame* frame() {return m_frame;};
+    QFrame* frame() {return m_frame;};
 
 protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
@@ -62,7 +62,7 @@ protected:
     };
 
 private:
-      Q3Frame* m_frame;
+      QFrame* m_frame;
 };
 
 class KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate
@@ -71,7 +71,7 @@ public:
     KFileMetaPropsPluginPrivate()  {}
     ~KFileMetaPropsPluginPrivate() {}
 
-    Q3Frame*                       m_frame;
+    QFrame*                       m_frame;
     QGridLayout*                  m_framelayout;
     KFileMetaInfo                 m_info;
 //    QPushButton*                m_add;
@@ -128,8 +128,8 @@ void KFileMetaPropsPlugin::createLayout()
     }
 
     // let the dialog create the page frame
-    Q3Frame* topframe = properties->addPage(i18n("&Meta Info"));
-    topframe->setFrameStyle(Q3Frame::NoFrame);
+    QFrame* topframe = properties->addPage(i18n("&Meta Info"));
+    topframe->setFrameStyle(QFrame::NoFrame);
     QVBoxLayout* tmp = new QVBoxLayout(topframe);
 
     // create a scroll view in the page

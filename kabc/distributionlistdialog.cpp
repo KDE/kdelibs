@@ -63,7 +63,7 @@ EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
 {
   if (!sEmailMap)
      sEmailMap = new QMap<QWidget*,QString>();
-  Q3Frame *topFrame = plainPage();
+  QFrame *topFrame = plainPage();
   QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
   mButtonGroup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Email Addresses"),

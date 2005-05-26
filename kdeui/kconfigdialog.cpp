@@ -136,7 +136,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
 
     case Plain:
     {
-      Q3Frame *main = plainPage();
+      QFrame *main = plainPage();
       QVBoxLayout *topLayout = new QVBoxLayout( main, 0, 0 );
       page->reparent(((QWidget*)main), 0, QPoint());
       topLayout->addWidget( page );

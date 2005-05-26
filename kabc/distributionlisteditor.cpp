@@ -43,7 +43,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
   KDialogBase( KDialogBase::Plain, i18n("Select Email Address"), Ok, Ok,
                parent )
 {
-  Q3Frame *topFrame = plainPage();
+  QFrame *topFrame = plainPage();
   QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
   mButtonGroup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Email Addresses"),

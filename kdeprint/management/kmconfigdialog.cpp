@@ -66,7 +66,7 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
                         	                                           KIcon::SizeMedium
 		                                                          );
 
-		Q3Frame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
+		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
 		page->reparent(frame,QPoint(0,0));
 		QVBoxLayout	*lay = new QVBoxLayout(frame, 0, 0);
 		lay->addWidget(page);

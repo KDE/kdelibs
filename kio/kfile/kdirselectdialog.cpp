@@ -92,7 +92,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     d = new KDirSelectDialogPrivate;
     d->branch = 0L;
 
-    Q3Frame *page = makeMainWidget();
+    QFrame *page = makeMainWidget();
     QHBoxLayout *hlay = new QHBoxLayout( page, 0, spacingHint() );
     m_mainLayout = new QVBoxLayout();
     d->speedBar = new KFileSpeedBar( page, "speedbar" );

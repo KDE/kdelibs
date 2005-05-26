@@ -42,7 +42,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 {
   Factory *factory = Factory::self( resourceFamily );
 
-  Q3Frame *main = makeMainWidget();
+  QFrame *main = makeMainWidget();
 
   QVBoxLayout *mainLayout = new QVBoxLayout( main, 0, spacingHint() );
 

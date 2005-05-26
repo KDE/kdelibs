@@ -352,7 +352,7 @@ void KDialogBase::setButtonBoxOrientation( int orientation )
     if( mActionSep )
     {
       mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
-				  Q3Frame::HLine : Q3Frame::VLine );
+				  QFrame::HLine : QFrame::VLine );
     }
     if( mButtonOrientation == Qt::Vertical )
     {
@@ -399,7 +399,7 @@ void KDialogBase::enableButtonSeparator( bool state )
     mActionSep = new KSeparator( this );
     mActionSep->setFocusPolicy(Qt::NoFocus);
     mActionSep->setOrientation( mButtonOrientation == Qt::Horizontal ?
-				Q3Frame::HLine : Q3Frame::VLine );
+				QFrame::HLine : QFrame::VLine );
     mActionSep->show();
   }
   else
@@ -419,7 +419,7 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 
 
-Q3Frame *KDialogBase::plainPage()
+QFrame *KDialogBase::plainPage()
 {
 	return ( mJanus ? mJanus->plainPage() : 0 );
 }
@@ -1294,14 +1294,13 @@ void KDialogBase::setHelpLinkText( const QString &text )
   }
 }
 
-
-Q3Frame *KDialogBase::addPage( const QString &itemName, const QString &header,
+QFrame *KDialogBase::addPage( const QString &itemName, const QString &header,
 			      const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addPage( itemName, header, pixmap ) : 0);
 }
 
-Q3Frame *KDialogBase::addPage( const QStringList &items, const QString &header,
+QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
 			      const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addPage( items, header, pixmap ) : 0);
@@ -1358,7 +1357,7 @@ void KDialogBase::setFolderIcon(const QStringList &path, const QPixmap &pixmap)
   mJanus->setFolderIcon(path,pixmap);
 }
 
-Q3Frame *KDialogBase::makeMainWidget()
+QFrame *KDialogBase::makeMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1366,7 +1365,7 @@ Q3Frame *KDialogBase::makeMainWidget()
     return 0;
   }
 
-  Q3Frame *mainWidget = new Q3Frame( this );
+  QFrame *mainWidget = new QFrame( this );
   setMainWidget( mainWidget );
   return mainWidget;
 }

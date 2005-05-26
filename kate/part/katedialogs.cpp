@@ -103,7 +103,6 @@
 #include <qtoolbutton.h>
 #include <q3vbox.h>
 #include <q3whatsthis.h>
-#include <q3widgetstack.h>
 
 // trailing slash is important
 #define HLDOWNLOADPATH "http://www.kde.org/apps/kate/syntax/"
@@ -149,14 +148,17 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   QGroupBox *gbAuto = new QGroupBox(i18n("Automatic Indentation"), this);
   QVBoxLayout *vb = new QVBoxLayout (gbAuto);
 
-  Q3HBox *indentLayout = new Q3HBox(gbAuto);
+  QHBoxLayout *indentLayout = new QHBoxLayout();
+  vb->addItem(indentLayout);
   indentLayout->setSpacing(KDialog::spacingHint());
-  QLabel *indentLabel = new QLabel(i18n("&Indentation mode:"), indentLayout);
-  m_indentMode = new KComboBox (indentLayout);
+  QLabel *indentLabel = new QLabel(i18n("&Indentation mode:"),gbAuto);
+  indentLayout->addWidget(indentLabel);
+  m_indentMode = new KComboBox (gbAuto);
+  indentLayout->addWidget(m_indentMode);
   m_indentMode->insertStringList (KateAutoIndent::listModes());
   indentLabel->setBuddy(m_indentMode);
-  m_configPage = new QPushButton(SmallIconSet("configure"), i18n("Configure..."), indentLayout);
-  vb->addWidget (indentLayout);
+  m_configPage = new QPushButton(SmallIconSet("configure"), i18n("Configure..."), gbAuto);
+  indentLayout->addWidget(m_configPage);
 
   opt[5] = new QCheckBox(i18n("Insert leading Doxygen \"*\" when typing"), gbAuto);
   vb->addWidget (opt[5]);
@@ -208,25 +210,25 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   layout->addStretch();
 
   // What is this? help
-  Q3WhatsThis::add(opt[0], i18n(
+  opt[0]->setWhatsThis( i18n(
         "Check this if you want to indent with spaces rather than tabs."));
-  Q3WhatsThis::add(opt[2], i18n(
+  opt[2]->setWhatsThis( i18n(
         "Indentations of more than the selected number of spaces will not be "
         "shortened."));
-  Q3WhatsThis::add(opt[3], i18n(
+  opt[3]->setWhatsThis( i18n(
         "This allows the <b>Tab</b> key to be used to increase the indentation "
         "level."));
-  Q3WhatsThis::add(opt[4], i18n(
+  opt[4]->setWhatsThis( i18n(
         "This allows the <b>Backspace</b> key to be used to decrease the "
         "indentation level."));
-  Q3WhatsThis::add(opt[5], i18n(
+  opt[5]->setWhatsThis( i18n(
         "Automatically inserts a leading \"*\" while typing within a Doxygen "
         "style comment."));
-  Q3WhatsThis::add( opt[6], i18n(
+  opt[6]->setWhatsThis( i18n(
       "Use a mix of tab and space characters for indentation.") );
-  Q3WhatsThis::add(indentationWidth, i18n("The number of spaces to indent with."));
+  indentationWidth->setWhatsThis( i18n("The number of spaces to indent with."));
 
-  Q3WhatsThis::add(m_configPage, i18n(
+  m_configPage->setWhatsThis( i18n(
         "If this button is enabled, additional indenter specific options are "
         "available and can be configured in an extra dialog.") );
 
@@ -1600,7 +1602,7 @@ KateModOnHdPrompt::KateModOnHdPrompt( KateDocument *doc,
   enableButtonSeparator( true );
   setCaption( title );
 
-  Q3Frame *w = makeMainWidget();
+  QFrame *w = makeMainWidget();
   QVBoxLayout *lo = new QVBoxLayout( w );
   QHBoxLayout *lo1 = new QHBoxLayout( lo );
   QLabel *icon = new QLabel( w );

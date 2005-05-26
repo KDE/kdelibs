@@ -21,7 +21,7 @@
 
 #include <limits.h> // INT_MAX
 
-#include <q3frame.h>
+#include <QFrame>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -838,7 +838,7 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 
   setButtonBoxOrientation( Qt::Vertical );
 
-  Q3Frame *page = makeMainWidget();
+  QFrame *page = makeMainWidget();
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   d = new KEdReplacePrivate( page );

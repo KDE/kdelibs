@@ -305,7 +305,7 @@ public:
 
 
 KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WFlags f )
-    : Q3Frame( parent, name, f ),
+    : QFrame( parent, name, f ),
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
@@ -421,7 +421,7 @@ void KURLBar::clear()
 
 void KURLBar::resizeEvent( QResizeEvent *e )
 {
-    Q3Frame::resizeEvent( e );
+    QFrame::resizeEvent( e );
     m_listBox->resize( width(), height() );
 }
 
@@ -876,7 +876,7 @@ bool KURLBarListBox::event( QEvent* e )
         return true;
     }
 
-    return Q3Frame::event(e);
+    return QFrame::event(e);
 }
 
 

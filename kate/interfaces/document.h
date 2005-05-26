@@ -205,27 +205,10 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
 
   public:
     /**
-     * deprecated for KDE 4.0, just does reloadFile, which will ask
-     * the normal "do you want it really" questions
-     * @deprecated
-     */
-    virtual void isModOnHD(bool =false) { ; };
-
-    /**
      * Returns the document name.
      */
     virtual QString docName () { return 0L; };
 
-    /**
-     * Sets the document name.
-     * deprecated for KDE 4.0, is done internally, calling it won't hurt
-     * but changes nothing beside triggers signal
-     * @deprecated
-     */
-    virtual void setDocName (QString ) { ; };
-
-    virtual ActionMenu *hlActionMenu (const QString& , QObject* =0, const char* = 0) = 0;
-    virtual ActionMenu *exportActionMenu (const QString& , QObject* =0, const char* = 0) = 0;
 
   public slots:
     // clear buffer/filename - update the views
@@ -257,25 +240,6 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
     virtual void setEncoding (const QString &e) = 0;
     virtual QString encoding() const = 0;
 
-  /** @deprecated */
-  // FIXME: Remove when BIC allowed.
-  public:
-    /** @deprecated */
-    virtual ConfigPage *colorConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *fontConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *indentConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *selectConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *editConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *keysConfigPage (QWidget *) = 0;
-    /** @deprecated */
-    virtual ConfigPage *kSpellConfigPage (QWidget *) { return 0L; }
-    /** @deprecated */
-    virtual ConfigPage *hlConfigPage (QWidget *) = 0;
 
   public:
     virtual uint configFlags () = 0;
