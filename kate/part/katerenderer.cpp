@@ -34,6 +34,7 @@
 #include <qpainter.h>
 #include <q3popupmenu.h>
 #include <QTextLayout>
+#include <Q3ValueStack>
 
 static const QChar tabChar('\t');
 static const QChar spaceChar(' ');
@@ -232,6 +233,169 @@ void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
   paint.setPen( penBackup );
 }
 
+/*KateSuperRange* KateRenderer::advanceSyntaxHL(const KateTextCursor& currentPos, KateSuperRange* currentRange) const
+{
+  bool outDebug = false;//currentPos.line() == 22;
+
+  if (!currentRange)
+    return 0L;
+
+  KateSuperRange* tmpRange = 0L;
+  // Check to see if we are exiting any ranges
+  while (currentRange->end() <= currentPos) {
+    if (outDebug)
+      kdDebug() << k_funcinfo << currentRange << "Leaving range " << *currentRange << " (current col: " << currentPos.col() << ")" << endl;
+
+    tmpRange = currentRange;
+
+    Q_ASSERT(currentRange->parentRange());
+    currentRange = currentRange->parentRange();
+  }
+
+  // We are now in a range which includes currentPos.
+  // FIXME FIXME this needs to be asserted!
+  Q_ASSERT(currentRange->includes(currentPos));
+
+  // Check to see if we are entering any child ranges
+  while (currentRange->childRanges().count()) {
+    QValueList<KateSuperRange*>::ConstIterator it = currentRange->childRanges().begin();
+
+    if (tmpRange) {
+      it = currentRange->childRanges().find(tmpRange);
+      tmpRange = 0L;
+    }
+
+    for (; it != currentRange->childRanges().end(); ++it)
+      if ((*it)->includes(currentPos)) {
+      currentRange = *it;
+
+      if (outDebug)
+        kdDebug() << k_funcinfo << currentRange << "Entering range " << *currentRange << " (current col: " << currentPos.col() << ")" << endl;
+
+      goto doubleContinue;
+      }
+
+    // No matches; done...
+      break;
+
+    doubleContinue:
+          continue;
+  }
+
+  return currentRange;
+}
+
+KateAttribute merge(QPtrList<KateRange> ranges)
+{
+  ranges.sort();
+
+  KateAttribute ret;
+
+  for (KateSuperRange* r = ranges.first(); r; r = ranges.next())
+    if (r->attribute())
+      ret += *(r->attribute());
+
+  return ret;
+}*/
+
+class RenderRange {
+  public:
+    RenderRange(KateSuperRange* range = 0L)
+      : m_currentRange(0L)
+    {
+      // Might happen if we ask for a non-existing range in RenderRangeList
+      //Q_ASSERT(range);
+      if (range)
+        addTo(range);
+    }
+
+    bool advanceTo(const KateTextCursor& pos) const
+    {
+      if (!m_currentRange)
+        return false;
+
+      bool ret = false;
+
+      while (m_currentRange && !m_currentRange->includes(pos)) {
+        m_attribs.pop();
+        m_currentRange = m_currentRange->parentRange();
+        ret = true;
+      }
+
+      Q_ASSERT(m_currentRange);
+
+      KateSuperRange* r = m_currentRange->deepestRangeIncluding(pos);
+      if (r != m_currentRange)
+        ret = true;
+
+      if (r)
+        addTo(r);
+
+      return ret;
+    }
+
+    KateAttribute* currentAttribute() const
+    {
+      if (m_attribs.count())
+        return const_cast<KateAttribute*>(&m_attribs.top());
+      return 0L;
+    }
+
+  private:
+    void addTo(KateSuperRange* range) const
+    {
+      KateSuperRange* r = range;
+      Q3ValueStack<KateSuperRange*> reverseStack;
+      while (r != m_currentRange) {
+        reverseStack.append(r);
+        r = r->parentRange();
+      }
+
+      KateAttribute a;
+      while (reverseStack.count()) {
+        if (KateAttribute* a2 = reverseStack.top()->attribute())
+          a += *a2;
+        m_attribs.append(a);
+        reverseStack.pop();
+      }
+
+      m_currentRange = range;
+    }
+
+    mutable KateSuperRange* m_currentRange;
+    mutable Q3ValueStack<KateAttribute> m_attribs;
+};
+
+class RenderRangeList : public QList<RenderRange>
+{
+  public:
+    RenderRangeList(const QList<KateSuperRange*>& startingRanges)
+    {
+      foreach (KateSuperRange* range, startingRanges)
+        append(RenderRange(range));
+    }
+
+    bool advanceTo(const KateTextCursor& pos) const
+    {
+      bool ret = false;
+
+      foreach (const RenderRange& r, *this)
+        ret |= r.advanceTo(pos);
+
+      return ret;
+    }
+
+    KateAttribute generateAttribute() const
+    {
+      KateAttribute a;
+
+      foreach (const RenderRange& r, *this)
+        if (KateAttribute* a2 = r.currentAttribute())
+          a += *a2;
+
+      return a;
+    }
+};
 
 void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
 {
@@ -258,53 +422,20 @@ void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
   paint.setPen( penBackup );
 }
 
-
-void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KateTextCursor* cursor, const KateBracketRange* bracketmark)
+void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KateTextCursor* cursor)
 {
-  int line = range->line;
+  int line = range->line();
 
   // textline
-  KateTextLine::Ptr textLine = m_doc->kateTextLine(line);
+  KateTextLine::Ptr textLine = range->textLine();
+
+  Q_ASSERT(textLine);
   if (!textLine)
     return;
 
   bool showCursor = drawCaret() && cursor && range->includesCursor(*cursor);
 
-  KateSuperRangeList& superRanges = m_doc->arbitraryHL()->rangesIncluding(range->line, 0);
-
-  int minIndent = 0;
-
-  // A bit too verbose for my tastes
-  // Re-write a bracketmark class? put into its own function? add more helper constructors to the range stuff?
-  // Also, need a light-weight arbitraryhighlightrange class for static stuff
-  KateArbitraryHighlightRange* bracketStartRange (0L);
-  KateArbitraryHighlightRange* bracketEndRange (0L);
-  if (bracketmark && bracketmark->isValid()) {
-    if (range->includesCursor(bracketmark->start())) {
-      KateTextCursor startend = bracketmark->start();
-      startend.setCol(startend.col()+1);
-      bracketStartRange = new KateArbitraryHighlightRange(m_doc, bracketmark->start(), startend);
-      bracketStartRange->setBGColor(config()->highlightedBracketColor());
-      bracketStartRange->setBold(true);
-      superRanges.append(bracketStartRange);
-    }
-
-    if (range->includesCursor(bracketmark->end())) {
-      KateTextCursor endend = bracketmark->end();
-      endend.setCol(endend.col()+1);
-      bracketEndRange = new KateArbitraryHighlightRange(m_doc, bracketmark->end(), endend);
-      bracketEndRange->setBGColor(config()->highlightedBracketColor());
-      bracketEndRange->setBold(true);
-      superRanges.append(bracketEndRange);
-    }
-
-    Q_ASSERT(bracketmark->start().line() <= bracketmark->end().line());
-    if (bracketmark->start().line() < line && bracketmark->end().line() >= line)
-    {
-      minIndent = bracketmark->getMinIndent();
-    }
-  }
-
+  RenderRangeList renderRanges(m_doc->arbitraryHL()->startingRanges(range->rangeStart(), m_view));
 
   // length, chars + raw attribs
   uint len = textLine->length();
@@ -322,6 +453,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
   bool hasSel = false;
   uint startSel = 0;
   uint endSel = 0;
+  
+  int minIndent = 0;
 
   // was the selection background already completely painted ?
   bool selectionPainted = false;
@@ -334,14 +467,14 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     endSel = len + 1;
   }
 
-  int startcol = range->startCol;
+  int startcol = range->startCol();
   if (startcol > (int)len)
     startcol = len;
 
   if (startcol < 0)
     startcol = 0;
 
-  int endcol = range->wrap ? range->endCol : -1;
+  int endcol = range->wrap() ? range->endCol() : -1;
   if (endcol < 0)
     len = len - startcol;
   else
@@ -354,13 +487,14 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
   // Start arbitrary highlighting
   KateTextCursor currentPos(line, startcol);
-  superRanges.firstBoundary(&currentPos);
+  KateTextCursor nextPos(line, startcol + 1);
+  KateAttribute currentHL;
 
   if (showSelections() && !selectionPainted)
     hasSel = getSelectionBounds(line, oldLen, startSel, endSel);
 
   // Draws the dashed underline at the start of a folded block of text.
-  if (range->startsInvisibleBlock) {
+  if (range->startsInvisibleBlock()) {
     paint.setPen(QPen(config()->wordWrapMarkerColor(), 1, Qt::DashLine));
     paint.drawLine(0, fs->fontHeight - 1, xEnd - xStart, fs->fontHeight - 1);
   }
@@ -371,6 +505,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     paint.fillRect(0, 0, range->xOffset() - xStart, fs->fontHeight,
       QBrush(config()->wordWrapMarkerColor(), Qt::DiagCrossPattern));
   }
+
+  KateAttribute customHL = renderRanges.generateAttribute();
 
   // painting loop
   uint xPos = range->xOffset();
@@ -451,7 +587,6 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
         xPosAfter -= (xPosAfter % curAt->width(*fs, curChar, m_tabWidth));
 
       // Only draw after the starting X value
-      // Haha, this was always wrong, due to the use of individual char width calculations...?? :(
       if ((int)xPosAfter >= xStart)
       {
         // Determine if we're in a selection and should be drawing it
@@ -466,14 +601,13 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
         // Determine current color, taking into account selection
         curColor = isSel ? &(curAt->selectedTextColor()) : &(curAt->textColor());
 
+        bool hitArbitraryHLBoundary = renderRanges.advanceTo(nextPos);
+
         // Incorporate in arbitrary highlighting
-        if (curAt != oldAt || curColor != oldColor || (superRanges.count() && superRanges.currentBoundary() && *(superRanges.currentBoundary()) == currentPos)) {
-          if (superRanges.count() && superRanges.currentBoundary() && *(superRanges.currentBoundary()) == currentPos)
-            customHL = KateArbitraryHighlightRange::merge(superRanges.rangesIncluding(currentPos));
+        if (curAt != oldAt || curColor != oldColor || hitArbitraryHLBoundary) {
+          KateAttribute hl = *curAt;
 
-          KateAttribute hl = customHL;
-
-          hl += *curAt;
+          hl += customHL;
 
           // use default highlighting color if we haven't defined one above.
           if (!hl.itemSet(KateAttribute::TextColor))
@@ -486,8 +620,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
           paint.setFont(hl.font(*currentFont()));
 
-          if (superRanges.currentBoundary() && *(superRanges.currentBoundary()) == currentPos)
-            superRanges.nextBoundary();
+          if (hitArbitraryHLBoundary)
+            customHL = renderRanges.generateAttribute();
 
           currentHL = hl;
         }
@@ -500,7 +634,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
         bool renderNow = false;
         if ((isTab)
           // formatting has changed OR
-          || (superRanges.count() && superRanges.currentBoundary() && *(superRanges.currentBoundary()) == KateTextCursor(line, nextCol))
+          || (hitArbitraryHLBoundary)
 
           // it is the end of the line OR
           || (curCol >= len - 1)
@@ -692,6 +826,10 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       curCol++;
       nextCol++;
       currentPos.setCol(currentPos.col() + 1);
+      nextPos.setCol(nextPos.col() + 1);
+
+      //syntaxHL = nextSyntaxHL;
+      //nextSyntaxHL = advanceSyntaxHL(nextPos, syntaxHL);
 
       // Update the current indentation pos.
       if (isTab)
@@ -728,10 +866,6 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     int _x = m_doc->config()->wordWrapAt() * fs->myFontMetrics.width('x') - xStart;
     paint.drawLine( _x,0,_x,fs->fontHeight );
   }
-
-  // cleanup ;)
-  delete bracketStartRange;
-  delete bracketEndRange;
 }
 
 uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
@@ -755,6 +889,13 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
       width = a->width(*fs, textLine->string(), z, m_tabWidth);
     } else {
       // DF: commented out. It happens all the time.
+      /**
+       * Rodda: If this is hit, there is a bug.
+       * What this means is that the cursor's position in the line is past the
+       * end of the line. When we haven't got the "wrap cursor" mode on, this
+       * should never happen.  If you can trigger this, find out why, and fix
+       * it.
+       */
       //Q_ASSERT(!m_doc->wrapCursor());
       width = a->width(*fs, spaceChar, m_tabWidth);
     }

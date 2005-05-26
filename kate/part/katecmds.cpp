@@ -228,7 +228,7 @@ bool KateCommands::CoreCommands::exec(Kate::View *view,
   {
     if ( ! args.count() )
       KCC_ERR( i18n("Usage: %1 on|off|1|0|true|false").arg( cmd ) );
-    bool enable;
+    bool enable = false;
     if ( getBoolArg( args.first(), &enable ) )
     {
       if ( cmd == "set-icon-border" )

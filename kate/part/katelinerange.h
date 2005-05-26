@@ -20,42 +20,69 @@
 #ifndef _KATE_LINERANGE_H_
 #define _KATE_LINERANGE_H_
 
+
 #include "katecursor.h"
+#include "katetextline.h"
+
+class QTextLayout;
+class KateDocument;
 
 class KateLineRange
 {
   public:
-    KateLineRange();
-    virtual ~KateLineRange ();
+    KateLineRange(KateDocument* doc = 0L);
+    KateLineRange(const KateLineRange& copy);
+    ~KateLineRange();
+
+    void operator=(const KateLineRange& r);
+
+    KateDocument* doc() const;
+    KateTextCursor rangeStart() const;
 
     void clear();
+    bool isValid() const;
 
-    inline bool includesCursor (const KateTextCursor& realCursor) const
-    {
-      return realCursor.line() == line && realCursor.col() >= startCol && (!wrap || realCursor.col() < endCol);
-    }
-
-    inline int xOffset () const
-    {
-      return startX ? shiftX : 0;
-    }
+    bool includesCursor(const KateTextCursor& realCursor) const;
 
     friend bool operator> (const KateLineRange& r, const KateTextCursor& c);
     friend bool operator>= (const KateLineRange& r, const KateTextCursor& c);
     friend bool operator< (const KateLineRange& r, const KateTextCursor& c);
     friend bool operator<= (const KateLineRange& r, const KateTextCursor& c);
 
-    int line;
-    int virtualLine;
-    int startCol;
-    int endCol;
-    int startX;
-    int endX;
+    // Override current textLine. Only use when you know what you're doing.
+    void setSpecial(const KateTextLine::Ptr& textLine);
 
-    bool dirty;
-    int viewLine;
-    bool wrap;
-    bool startsInvisibleBlock;
+    const KateTextLine::Ptr& textLine() const;
+
+    int line() const;
+    /**
+     * Only pass virtualLine if you know it (and thus we shouldn't try to look it up)
+     */
+    void setLine(int line, int virtualLine = -1);
+
+    int virtualLine() const;
+    void setVirtualLine(int virtualLine);
+
+    int viewLine() const;
+    void setViewLine(int viewLine);
+
+    int startCol() const;
+    void setStartCol(int startCol);
+
+    int endCol() const;
+    void setEndCol(int endCol);
+
+    bool wrap() const;
+    void setWrap(bool wrap);
+
+    bool isDirty() const;
+    bool setDirty(bool dirty = true);
+
+    int startX() const;
+    void setStartX(int startX);
+
+    int endX() const;
+    void setEndX(int endX);
 
     // This variable is used as follows:
     // non-dynamic-wrapping mode: unused
@@ -64,7 +91,34 @@ class KateLineRange
     //   subsequent viewLines: the X offset from the left of the display.
     //
     // this is used to provide a dynamic-wrapping-retains-indent feature.
-    int shiftX;
+    int shiftX() const;
+    void setShiftX(int shiftX);
+
+    int xOffset() const;
+
+    bool startsInvisibleBlock() const;
+    void setStartsInvisibleBlock(bool sib);
+
+    void debugOutput() const;
+
+private:
+    QTextLayout* takeLayout() const;
+
+    KateDocument* m_doc;
+    mutable KateTextLine::Ptr m_textLine;
+    int m_line;
+    int m_virtualLine;
+    int m_viewLine;
+    int m_startCol;
+    int m_endCol;
+    int m_startX;
+    int m_endX;
+    int m_shiftX;
+
+    bool m_dirty : 1;
+    bool m_wrap : 1;
+    bool m_startsInvisibleBlock : 1;
+    bool m_special : 1;
 };
 
 #endif

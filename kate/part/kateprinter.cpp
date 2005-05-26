@@ -599,11 +599,11 @@ bool KatePrinter::print (KateDocument *doc)
 
          // HA! this is where we print [part of] a line ;]]
          // FIXME Convert this function + related functionality to a separate KatePrintView
-         KateLineRange range;
-         range.line = lineCount;
-         range.startCol = startCol;
-         range.endCol = endCol;
-         range.wrap = needWrap;
+         KateLineRange range(doc);
+         range.setLine(lineCount);
+         range.setStartCol(startCol);
+         range.setEndCol(endCol);
+         range.setWrap(needWrap);
          paint.translate(xstart, y);
          renderer.paintTextLine(paint, &range, 0, maxWidth);
          paint.resetXForm();

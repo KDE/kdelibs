@@ -10,7 +10,8 @@ libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
   katearbitraryhighlight.cpp katerenderer.cpp kateattribute.cpp \
   kateautoindent.cpp katefiletype.cpp kateschema.cpp katedocument.skel \
   katetemplatehandler.cpp katejscript.cpp katespell.cpp kateprinter.cpp \
-  kateindentscriptabstracts.cpp kateluaindentscript.cpp
+  kateindentscriptabstracts.cpp kateluaindentscript.cpp katerange.cpp \
+	katerangelist.cpp katerangetype.cpp katesuperrange.cpp
 
 libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
 

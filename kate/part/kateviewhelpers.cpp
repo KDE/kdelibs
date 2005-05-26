@@ -290,7 +290,7 @@ class KateCmdLineFlagCompletion : public KCompletion
   public:
     KateCmdLineFlagCompletion() {;}
 
-    QString makeCompletion( const QString & s )
+    QString makeCompletion( const QString & /*s*/ )
     {
       return QString::null;
     }
@@ -904,10 +904,10 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
   KateLineInfo oldInfo;
   if (startz < lineRangesSize)
   {
-    if ((m_viewInternal->lineRanges[startz].line-1) < 0)
+    if ((m_viewInternal->viewRange(startz).line()-1) < 0)
       oldInfo.topLevel = true;
     else
-       m_doc->lineInfo(&oldInfo,m_viewInternal->lineRanges[startz].line-1);
+      m_doc->lineInfo(&oldInfo,m_viewInternal->viewRange(startz).line()-1);
   }
 
   for (uint z=startz; z <= endz; z++)
@@ -916,7 +916,7 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
     int realLine = -1;
 
     if (z < lineRangesSize)
-     realLine = m_viewInternal->lineRanges[z].line;
+      realLine = m_viewInternal->viewRange(z).line();
 
     int lnX ( 0 );
 
@@ -928,7 +928,7 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
     {
       p.drawLine(lnX+iconPaneWidth, y, lnX+iconPaneWidth, y+h);
 
-      if( (realLine > -1) && (m_viewInternal->lineRanges[z].startCol == 0) )
+      if( (realLine > -1) && (m_viewInternal->viewRange(z).startCol() == 0) )
       {
         uint mrk ( m_doc->mark( realLine ) ); // call only once
 
@@ -968,7 +968,7 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
       lnX +=2;
 
       if (realLine > -1)
-        if (m_viewInternal->lineRanges[z].startCol == 0) {
+        if (m_viewInternal->viewRange(z).startCol() == 0) {
           if (m_lineNumbersOn)
             p.drawText( lnX + 1, y, lnWidth-4, h, Qt::AlignRight|Qt::AlignVCenter, QString("%1").arg( realLine + 1 ) );
         } else if (m_view->dynWordWrap() && m_dynWrapIndicatorsOn) {
@@ -988,7 +988,7 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
 
         if (!info.topLevel)
         {
-          if (info.startsVisibleBlock && (m_viewInternal->lineRanges[z].startCol == 0))
+          if (info.startsVisibleBlock && (m_viewInternal->viewRange(z).startCol() == 0))
           {
             if (oldInfo.topLevel)
               p.drawLine(lnX+halfIPW,y+m_px,lnX+halfIPW,y+h-1);
@@ -999,7 +999,7 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
           }
           else if (info.startsInVisibleBlock)
           {
-            if (m_viewInternal->lineRanges[z].startCol == 0)
+            if (m_viewInternal->viewRange(z).startCol() == 0)
             {
               if (oldInfo.topLevel)
                 p.drawLine(lnX+halfIPW,y+m_px,lnX+halfIPW,y+h-1);
@@ -1013,14 +1013,14 @@ void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
               p.drawLine(lnX+halfIPW,y,lnX+halfIPW,y+h-1);
             }
 
-            if (!m_viewInternal->lineRanges[z].wrap)
+            if (!m_viewInternal->viewRange(z).wrap())
               p.drawLine(lnX+halfIPW,y+h-1,lnX+iconPaneWidth-2,y+h-1);
           }
           else
           {
             p.drawLine(lnX+halfIPW,y,lnX+halfIPW,y+h-1);
 
-            if (info.endsBlock && !m_viewInternal->lineRanges[z].wrap)
+            if (info.endsBlock && !m_viewInternal->viewRange(z).wrap())
               p.drawLine(lnX+halfIPW,y+h-1,lnX+iconPaneWidth-2,y+h-1);
           }
         }
@@ -1056,7 +1056,7 @@ KateIconBorder::BorderArea KateIconBorder::positionToArea( const QPoint& p ) con
 
 void KateIconBorder::mousePressEvent( QMouseEvent* e )
 {
-  m_lastClickedLine = m_viewInternal->yToKateLineRange(e->y()).line;
+  m_lastClickedLine = m_viewInternal->yToKateLineRange(e->y()).line();
 
   if ( positionToArea( e->pos() ) != IconBorder )
   {
@@ -1079,7 +1079,7 @@ void KateIconBorder::mouseMoveEvent( QMouseEvent* e )
 
 void KateIconBorder::mouseReleaseEvent( QMouseEvent* e )
 {
-  uint cursorOnLine = m_viewInternal->yToKateLineRange(e->y()).line;
+  uint cursorOnLine = m_viewInternal->yToKateLineRange(e->y()).line();
 
   if (cursorOnLine == m_lastClickedLine &&
       cursorOnLine <= m_doc->lastLine() )

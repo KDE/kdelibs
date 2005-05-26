@@ -44,6 +44,8 @@
 #include "kateconfig.h"
 #include "katefiletype.h"
 #include "kateautoindent.h"
+#include "katearbitraryhighlight.h"
+#include "katerangelist.h"
 #include "katespell.h"
 
 #include <ktexteditor/plugin.h>
@@ -93,6 +95,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
     , m_hasWrap( false )
     , m_startingUp (true)
     , m_updatingDocumentConfig (false)
+    , m_internalHighlights(new KateRangeList(doc, this))
     , selectStart (m_doc, true)
     , selectEnd (m_doc, true)
     , blockSelect (false)
@@ -107,6 +110,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   m_config = new KateViewConfig (this);
 
   m_renderer = new KateRenderer(doc, this);
+  m_doc->arbitraryHL()->addHighlightToView(m_internalHighlights, this);
 
   m_grid = new QGridLayout (this, 3, 3);
 
@@ -117,6 +121,10 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   m_grid->setColStretch ( 2, 0 );
 
   m_viewInternal = new KateViewInternal( this, doc );
+
+  connect(&m_viewInternal->cursor, SIGNAL(positionChanged()), SLOT(slotCaretPositionChanged()));
+  connect(&m_viewInternal->mouse, SIGNAL(positionChanged()), SLOT(slotMousePositionChanged()));
+
   m_grid->addWidget (m_viewInternal, 0, 1);
 
   setClipboardInterfaceDCOPSuffix (viewDCOPSuffix());
@@ -1281,6 +1289,11 @@ bool KateView::tagLine (const KateTextCursor& virtualCursor)
   return m_viewInternal->tagLine (virtualCursor);
 }
 
+bool KateView::tagRange(const KateRange& range, bool realLines)
+{
+  return m_viewInternal->tagRange(range, realLines);
+}
+
 bool KateView::tagLines (int start, int end, bool realLines)
 {
   return m_viewInternal->tagLines (start, end, realLines);
@@ -1338,6 +1351,20 @@ uint KateView::cursorColumn()
     r += m_viewInternal->getCursor().col() - m_doc->textLine( m_viewInternal->getCursor().line() ).length();
 
   return r;
+}
+
+void KateView::slotMousePositionChanged( )
+{
+  Q_ASSERT(sender() && sender()->inherits("KateSuperCursor"));
+  KateSuperCursor* mousePosition = static_cast<KateSuperCursor*>(const_cast<QObject*>(sender()));
+  emit mousePositionChanged(*mousePosition);
+}
+
+void KateView::slotCaretPositionChanged( )
+{
+  Q_ASSERT(sender() && sender()->inherits("KateSuperCursor"));
+  KateSuperCursor* caretPosition = static_cast<KateSuperCursor*>(const_cast<QObject*>(sender()));
+  emit caretPositionChanged(*caretPosition);
 }
 
 //BEGIN KTextEditor::SelectionInterface stuff

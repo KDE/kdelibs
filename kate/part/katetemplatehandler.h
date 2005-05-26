@@ -18,7 +18,8 @@
 #ifndef _KATE_TEMPLATE_HANDLER_H_
 #define _KATE_TEMPLATE_HANDLER_H_
 
-#include "katesupercursor.h"
+#include "katesuperrange.h"
+#include "katerangelist.h"
 #include "katekeyinterceptorfunctor.h"
 #include <qobject.h>
 #include <qmap.h>
@@ -37,7 +38,8 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 		virtual bool operator()(KKey key);
 	private:
 		struct KateTemplatePlaceHolder {
-			KateSuperRangeList ranges;
+      KateTemplatePlaceHolder(KateDocument* doc) : ranges(doc) {}
+      KateRangeList ranges;
 			bool isCursor;
 			bool isInitialValue;
 		};
@@ -49,7 +51,7 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 				uint len;
 				QString placeholder;
 		};
-		class KateSuperRangeList *m_ranges;
+		class KateRangeList *m_ranges;
 		class KateDocument *m_doc;
 		Q3PtrList<KateTemplatePlaceHolder> m_tabOrder;
 		Q3Dict<KateTemplatePlaceHolder> m_dict;
@@ -62,7 +64,7 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 	private slots:
 		void slotTextInserted(int,int);
 		void slotDocumentDestroyed();
-		void slotAboutToRemoveText(const KateTextRange &range);
+		void slotAboutToRemoveText(const KateRange& range);
 		void slotTextRemoved();
 };
 #endif

@@ -35,7 +35,6 @@
 
 class KateView;
 class KateDocument;
-class KateSuperRangeList;
 
 class KActionCollection;
 
@@ -148,8 +147,6 @@ class KateSearch : public QObject
 
     KateView*     m_view;
     KateDocument* m_doc;
-
-    KateSuperRangeList* m_arbitraryHLList;
 
     SConfig s;
 

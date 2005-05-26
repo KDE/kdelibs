@@ -22,6 +22,7 @@
 #define _KATE_DOCUMENT_H_
 
 #include "katesupercursor.h"
+#include "katesuperrange.h"
 #include "katetextline.h"
 #include "kateundo.h"
 #include "katebuffer.h"
@@ -140,21 +141,14 @@ class KateDocument : public Kate::Document,
 
     inline KateView *activeView () const { return m_activeView; }
 
+  signals:
+    void activeViewCaretPositionChanged(const KateTextCursor& newPosition);
+    void activeViewMousePositionChanged(const KateTextCursor& newPosition);
+  
   private:
     Q3PtrList<KateView> m_views;
     Q3PtrList<KTextEditor::View> m_textEditViews;
     KateView *m_activeView;
-
-    /**
-     * set the active view.
-     *
-     * If @p view is allready the active view, nothing is done.
-     *
-     * If the document is modified on disk, ask the user what to do.
-     *
-     * @since Kate 2.4
-     */
-    void setActiveView( KateView *view );
 
   //
   // KTextEditor::ConfigInterfaceExtension stuff
@@ -426,7 +420,7 @@ class KateDocument : public Kate::Document,
     KateArbitraryHighlight* arbitraryHL() const { return m_arbitraryHL; };
 
   private slots:
-    void tagArbitraryLines(KateView* view, KateSuperRange* range);
+    void tagArbitraryLines(KateView* view, KateRange* range);
 
   //
   // KTextEditor::ConfigInterface stuff
@@ -627,6 +621,7 @@ class KateDocument : public Kate::Document,
   public:
     void addView(KTextEditor::View *);
     void removeView(KTextEditor::View *);
+    void setActiveView(KTextEditor::View*);
 
     void addSuperCursor(class KateSuperCursor *, bool privateC);
     void removeSuperCursor(class KateSuperCursor *, bool privateC);
@@ -743,7 +738,7 @@ class KateDocument : public Kate::Document,
   public:
     void tagAll();
 
-    void newBracketMark( const KateTextCursor& start, KateBracketRange& bm, int maxLines = -1 );
+    void newBracketMark( const KateTextCursor& start, KateSuperRange& bm, int maxLines = -1 );
     bool findMatchingBracket( KateTextCursor& start, KateTextCursor& end, int maxLines = -1 );
 
   private:
@@ -852,7 +847,7 @@ class KateDocument : public Kate::Document,
 
   signals:
     void codeFoldingUpdated();
-    void aboutToRemoveText(const KateTextRange&);
+    void aboutToRemoveText(const KateRange&);
     void textRemoved();
 
   private slots:

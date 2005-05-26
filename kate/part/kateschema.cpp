@@ -1085,7 +1085,7 @@ void KateStyleListView::showPopupMenu( KateStyleListItem *i, const QPoint &globa
   sbgcl.fill( i->style()->itemSet(KateAttribute::SelectedBGColor) ? i->style()->selectedBGColor() : viewport()->colorGroup().base() );
 
   if ( showtitle )
-    m.insertTitle( i->contextName(), KateStyleListItem::ContextName );
+    m.addTitle( i->contextName() );
   id = m.insertItem( i18n("&Bold"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::Bold );
   m.setItemChecked( id, is->bold() );
   id = m.insertItem( i18n("&Italic"), this, SLOT(mSlotPopupHandler(int)), 0, KateStyleListItem::Italic );

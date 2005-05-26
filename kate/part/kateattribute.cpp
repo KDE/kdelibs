@@ -24,8 +24,8 @@ KateAttribute::KateAttribute()
   , m_underline(false)
   , m_overline(false)
   , m_strikeout(false)
+  , m_bgColorFillWhitespace(false)
   , m_itemsSet(0)
-
 {
 }
 
@@ -65,7 +65,7 @@ KateAttribute& KateAttribute::operator+=(const KateAttribute& a)
     setSelectedTextColor(a.selectedTextColor());
 
   if (a.itemSet(BGColor))
-    setBGColor(a.bgColor());
+    setBGColor(a.bgColor(), a.bgColorFillWhitespace());
 
   if (a.itemSet(SelectedBGColor))
     setSelectedBGColor(a.selectedBGColor());
@@ -192,13 +192,14 @@ void KateAttribute::setSelectedTextColor(const QColor& color)
   }
 }
 
-void KateAttribute::setBGColor(const QColor& color)
+void KateAttribute::setBGColor(const QColor& color, bool fillWhitespace)
 {
-  if (!(m_itemsSet & BGColor) || m_bgColor != color)
+  if (!(m_itemsSet & BGColor) || m_bgColor != color || m_bgColorFillWhitespace != fillWhitespace)
   {
     m_itemsSet |= BGColor;
 
     m_bgColor = color;
+    m_bgColorFillWhitespace = fillWhitespace;
 
     changed();
   }

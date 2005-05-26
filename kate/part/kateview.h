@@ -43,6 +43,7 @@ class KateCodeCompletion;
 class KateViewConfig;
 class KateViewSchemaAction;
 class KateRenderer;
+class KateRangeList;
 class KateSpell;
 
 class KToggleAction;
@@ -145,6 +146,12 @@ class KateView : public Kate::View,
 
   signals:
     void cursorPositionChanged();
+    void caretPositionChanged(const KateTextCursor& newPosition);
+    void mousePositionChanged(const KateTextCursor& newPosition);
+
+  private slots:
+    void slotMousePositionChanged();
+    void slotCaretPositionChanged();
 
   //
   // KTextEditor::CodeCompletionInterface
@@ -260,6 +267,7 @@ class KateView : public Kate::View,
   public:
     bool tagLine (const KateTextCursor& virtualCursor);
 
+    bool tagRange (const KateRange& range, bool realLines = false);
     bool tagLines (int start, int end, bool realLines = false );
     bool tagLines (KateTextCursor start, KateTextCursor end, bool realCursors = false);
 
@@ -532,8 +540,8 @@ class KateView : public Kate::View,
     KateViewConfig *m_config;
     bool m_startingUp;
     bool m_updatingDocumentConfig;
+    KateRangeList* m_internalHighlights;
 
-  private:
     // stores the current selection
     KateSuperCursor selectStart;
     KateSuperCursor selectEnd;

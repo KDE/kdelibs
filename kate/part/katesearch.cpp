@@ -26,8 +26,6 @@
 
 #include "kateview.h"
 #include "katedocument.h"
-#include "katesupercursor.h"
-#include "katearbitraryhighlight.h"
 #include "kateconfig.h"
 
 #include <klocale.h>
@@ -45,7 +43,6 @@
 QStringList KateSearch::s_searchList  = QStringList();
 QStringList KateSearch::s_replaceList = QStringList();
 QString KateSearch::s_pattern = QString();
-static const bool arbitraryHLExample = false;
 
 KateSearch::KateSearch( KateView* view )
   : QObject( view, "kate search" )
@@ -53,15 +50,11 @@ KateSearch::KateSearch( KateView* view )
   , m_doc( view->doc() )
   , replacePrompt( new KateReplacePrompt( view ) )
 {
-  m_arbitraryHLList = new KateSuperRangeList();
-  if (arbitraryHLExample) m_doc->arbitraryHL()->addHighlightToView(m_arbitraryHLList, m_view);
-
   connect(replacePrompt,SIGNAL(clicked()),this,SLOT(replaceSlot()));
 }
 
 KateSearch::~KateSearch()
 {
-  delete m_arbitraryHLList;
 }
 
 void KateSearch::createActions( KActionCollection* ac )
@@ -305,11 +298,8 @@ void KateSearch::findAgain()
     if( askContinue() ) {
       wrapSearch();
       findAgain();
-    } else {
-      if (arbitraryHLExample) m_arbitraryHLList->clear();
     }
   } else {
-    if (arbitraryHLExample) m_arbitraryHLList->clear();
     if ( s.showNotFound )
       KMessageBox::sorry( view(),
         i18n("Search string '%1' not found!")
@@ -349,7 +339,6 @@ void KateSearch::promptReplace()
     wrapSearch();
     promptReplace();
   } else {
-    if (arbitraryHLExample) m_arbitraryHLList->clear();
     replacePrompt->hide();
     KMessageBox::information( view(),
         i18n("%n replacement made.","%n replacements made.",replaces),
@@ -538,27 +527,6 @@ KateTextCursor KateSearch::getCursor()
 
 bool KateSearch::doSearch( const QString& text )
 {
-/*
-  rodda: Still Working on this... :)
-
-  bool result = false;
-
-  if (m_searchResults.count()) {
-    m_resultIndex++;
-    if (m_resultIndex < (int)m_searchResults.count()) {
-      s = m_searchResults[m_resultIndex];
-      result = true;
-    }
-
-  } else {
-    int temp = 0;
-    do {*/
-
-#if 0
-  static int oldLine = -1;
-  static int oldCol = -1;
-#endif
-
   uint line = s.cursor.line();
   uint col = s.cursor.col();// + (result ? s.matchedLength : 0);
   bool backward = s.flags.backward;
@@ -568,7 +536,6 @@ bool KateSearch::doSearch( const QString& text )
   uint foundLine, foundCol, matchLen;
   bool found = false;
   //kdDebug() << "Searching at " << line << ", " << col << endl;
-//   kdDebug()<<"KateSearch::doSearch: "<<line<<", "<<col<<", "<<backward<<endl;
 
   do {
       if( regExp ) {
@@ -629,32 +596,7 @@ bool KateSearch::doSearch( const QString& text )
 
 //   kdDebug() << "Found at " << s.cursor.line() << ", " << s.cursor.col() << endl;
 
-
-  //m_searchResults.append(s);
-
-  if (arbitraryHLExample)  {
-    KateArbitraryHighlightRange* hl = new KateArbitraryHighlightRange(new KateSuperCursor(m_doc, true, s.cursor), new KateSuperCursor(m_doc, true, s.cursor.line(), s.cursor.col() + s.matchedLength), this);
-    hl->setBold();
-    hl->setTextColor(Qt::white);
-    hl->setBGColor(Qt::black);
-    // destroy the highlight upon change
-    connect(hl, SIGNAL(contentsChanged()), hl, SIGNAL(eliminated()));
-    m_arbitraryHLList->append(hl);
-  }
-
   return true;
-
-    /* rodda: more of my search highlighting work
-
-    } while (++temp < 100);
-
-    if (result) {
-      s = m_searchResults.first();
-      m_resultIndex = 0;
-    }
-  }
-
-  return result;*/
 }
 
 void KateSearch::exposeFound( KateTextCursor &cursor, int slen )

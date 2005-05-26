@@ -24,7 +24,6 @@
 #ifndef _KATE_VIEW_INTERNAL_
 #define _KATE_VIEW_INTERNAL_
 
-#include "katecursor.h"
 #include "katesupercursor.h"
 #include "katelinerange.h"
 #include "katetextline.h"
@@ -65,6 +64,9 @@ class KateViewInternal : public QWidget
   public:
     KateViewInternal ( KateView *view, KateDocument *doc );
     ~KateViewInternal ();
+    
+    // Return the correct micro focus hint
+    virtual QVariant inputMethodQuery(Qt::InputMethodQuery query) const;
 
   //BEGIN EDIT STUFF
   public:
@@ -86,6 +88,8 @@ class KateViewInternal : public QWidget
     bool tagLines (int start, int end, bool realLines = false);
     bool tagLines (KateTextCursor start, KateTextCursor end, bool realCursors = false);
 
+    bool tagRange(const KateRange& range, bool realLines);
+
     void tagAll ();
 
     void clear ();
@@ -103,7 +107,7 @@ class KateViewInternal : public QWidget
     KateTextCursor endPos () const;
     uint endLine () const;
 
-    KateLineRange yToKateLineRange(uint y) const;
+    const KateLineRange& yToKateLineRange(uint y) const;
 
     void prepareForDynWrapChange();
     void dynWrapChanged();
@@ -206,8 +210,6 @@ class KateViewInternal : public QWidget
 
     void paintCursor();
 
-    void updateMicroFocusHint();
-
     void placeCursor( const QPoint& p, bool keepSelection = false, bool updateSelection = true );
     bool isTargetSelected( const QPoint& p );
 
@@ -225,13 +227,15 @@ class KateViewInternal : public QWidget
     Qt::CursorShape m_mouseCursor;
 
     KateSuperCursor cursor;
+    // FIXME probably a bug here, the mouse position shouldn't change just because text gets changed
+    KateSuperCursor mouse;
     KateTextCursor displayCursor;
     int cXPos;
 
     bool possibleTripleClick;
 
-    // Bracket mark
-    KateBracketRange bm;
+    // Bracket mark and corresponding decorative ranges
+    KateSuperRange bm, bmStart, bmEnd;
 
     enum DragState { diNone, diPending, diDragging };
 
@@ -285,9 +289,9 @@ class KateViewInternal : public QWidget
     KateTextCursor selEndCached;
 
     //
-    // lines Ranges, mostly useful to speedup + dyn. word wrap
+    // Cache information about each view line.
     //
-    QVector<KateLineRange> lineRanges;
+    mutable QVector<KateLineRange> lineRanges;
 
     // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
     bool scrollbarVisible(uint startLine);
@@ -299,7 +303,7 @@ class KateViewInternal : public QWidget
 
     // get the values for a specific range.
     // specify lastLine to get the next line of a range.
-    KateLineRange range(int realLine, const KateLineRange* previous = 0L);
+    KateLineRange range(int realLine, const KateLineRange* previous = 0L) const;
 
     KateLineRange currentRange();
     KateLineRange previousRange();
@@ -311,18 +315,21 @@ class KateViewInternal : public QWidget
     // Returns the lineRange of the specified realLine + viewLine.
     KateLineRange range(uint realLine, int viewLine);
 
+    // Returns the lineRange of the corresponding view line.
+    KateLineRange viewRange(int viewLine) const;
+
     // find the view line of cursor c (0 = same line, 1 = down one, etc.)
-    uint viewLine(const KateTextCursor& realCursor);
+    uint viewLine(const KateTextCursor& realCursor) const;
 
     // find the view line of the cursor, relative to the display (0 = top line of view, 1 = second line, etc.)
     // if limitToVisible is true, only lines which are currently visible will be searched for, and -1 returned if the line is not visible.
-    int displayViewLine(const KateTextCursor& virtualCursor, bool limitToVisible = false);
+    int displayViewLine(const KateTextCursor& virtualCursor, bool limitToVisible = false) const;
 
     // find the index of the last view line for a specific line
-    uint lastViewLine(uint realLine);
+    uint lastViewLine(uint realLine) const;
 
     // count the number of view lines for a real line
-    uint viewLineCount(uint realLine);
+    uint viewLineCount(uint realLine) const;
 
     // find the cursor offset by (offset) view lines from a cursor.
     // when keepX is true, the column position will be calculated based on the x
@@ -335,7 +342,7 @@ class KateViewInternal : public QWidget
 
     bool m_usePlainLines; // accept non-highlighted lines if this is set
 
-    inline KateTextLine::Ptr textLine( int realLine )
+    inline KateTextLine::Ptr textLine( int realLine ) const
     {
       if (m_usePlainLines)
         return m_doc->plainKateTextLine(realLine);

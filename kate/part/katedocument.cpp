@@ -94,6 +94,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
                              const char *widgetName, QObject *parent, const char *name)
 : Kate::Document(parent, name),
   m_plugins (KateFactory::self()->plugins().count()),
+  m_activeView(0L),
   m_undoDontMerge(false),
   m_undoIgnoreCancel(false),
   lastUndoGroupWhenSaved( 0 ),
@@ -141,7 +142,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_config = new KateDocumentConfig (this);
 
   // init some more vars !
-  m_activeView = 0L;
+  setActiveView(0L);
 
   hlSetByUser = false;
   m_fileType = -1;
@@ -191,7 +192,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   connect(KateHlManager::self(),SIGNAL(changed()),SLOT(internalHlChanged()));
 
   // signal for the arbitrary HL
-  connect(m_arbitraryHL, SIGNAL(tagLines(KateView*, KateSuperRange*)), SLOT(tagArbitraryLines(KateView*, KateSuperRange*)));
+  connect(m_arbitraryHL, SIGNAL(tagLines(KateView*, KateRange*)), SLOT(tagArbitraryLines(KateView*, KateRange*)));
 
   // signals for mod on hd
   connect( KateFactory::self()->dirWatch(), SIGNAL(dirty (const QString &)),
@@ -274,7 +275,7 @@ void KateDocument::enableAllPluginsGUI (KateView *view)
 
 void KateDocument::disableAllPluginsGUI (KateView *view)
 {
-  for (uint i=0; i<m_plugins.count(); i++)
+  for (int i=0; i<m_plugins.count(); i++)
     disablePluginGUI (m_plugins[i], view);
 }
 
@@ -361,14 +362,6 @@ Q3PtrList<KTextEditor::View> KateDocument::views () const
 {
   return m_textEditViews;
 }
-
-void KateDocument::setActiveView( KateView *view )
-{
-  if ( m_activeView == view ) return;
-
-  m_activeView = view;
-}
-//END
 
 //BEGIN KTextEditor::ConfigInterfaceExtension stuff
 
@@ -764,7 +757,7 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
     return false;
 
   if (!blockwise) {
-    emit aboutToRemoveText(KateTextRange(startLine,startCol,endLine,endCol));
+    emit aboutToRemoveText(KateTextRange(startLine, startCol, endLine, endCol));
   }
   editStart ();
 
@@ -2798,18 +2791,35 @@ void KateDocument::addView(KTextEditor::View *view) {
   // apply the view & renderer vars from the file
   readVariables (true);
 
-  m_activeView = (KateView *) view;
+  setActiveView(view);
 }
 
 void KateDocument::removeView(KTextEditor::View *view) {
   if (!view)
     return;
 
-  if (m_activeView == view)
-    m_activeView = 0L;
+  if (activeView() == view)
+    setActiveView(0L);
 
   m_views.removeRef( (KateView *) view );
   m_textEditViews.removeRef( view  );
+}
+
+void KateDocument::setActiveView(KTextEditor::View* view)
+{
+  if ( m_activeView == view ) return;
+
+  if (m_activeView) {
+    disconnect(m_activeView, SIGNAL(mousePositionChanged(const KateTextCursor&)), this, SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)));
+    disconnect(m_activeView, SIGNAL(caretPositionChanged(const KateTextCursor&)), this, SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)));
+  }
+
+  m_activeView = (KateView*)view;
+
+  if (m_activeView) {
+    connect(m_activeView, SIGNAL(mousePositionChanged(const KateTextCursor&)), SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)));
+    connect(m_activeView, SIGNAL(caretPositionChanged(const KateTextCursor&)), SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)));
+  }
 }
 
 void KateDocument::addSuperCursor(KateSuperCursor *cursor, bool privateC) {
@@ -3791,7 +3801,7 @@ void KateDocument::comment( KateView *v, uint line,uint column, int change)
            KateCodeFoldingNode *n=foldingTree()->findNodeForPosition(line,column);
            if (n) {
             KateTextCursor start,end;
-             if ((n->nodeType()==commentRegion) && n->getBegin(foldingTree(), &start) && n->getEnd(foldingTree(), &end)) {
+            if ((n->nodeType()==(int)commentRegion) && n->getBegin(foldingTree(), &start) && n->getEnd(foldingTree(), &end)) {
                 kdDebug(13020)<<"Enclosing region found:"<<start.col()<<"/"<<start.line()<<"-"<<end.col()<<"/"<<end.line()<<endl;
                 removeStartStopCommentFromRegion(start,end,startAttrib);
              } else {
@@ -4013,7 +4023,7 @@ inline bool isBracket     ( const QChar& c ) { return isStartBracket( c ) || isE
    to the right of the cursor is an ending bracket, match it. Otherwise, don't
    match anything.
 */
-void KateDocument::newBracketMark( const KateTextCursor& cursor, KateBracketRange& bm, int maxLines )
+void KateDocument::newBracketMark( const KateTextCursor& cursor, KateSuperRange& bm, int maxLines )
 {
   bm.setValid(false);
 
@@ -4027,7 +4037,7 @@ void KateDocument::newBracketMark( const KateTextCursor& cursor, KateBracketRang
   const int tw = config()->tabWidth();
   const int indentStart = m_buffer->plainLine(bm.start().line())->indentDepth(tw);
   const int indentEnd = m_buffer->plainLine(bm.end().line())->indentDepth(tw);
-  bm.setIndentMin(QMIN(indentStart, indentEnd));
+  //bm.setIndentMin(QMIN(indentStart, indentEnd));
 }
 
 bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& end, int maxLines )
@@ -4368,7 +4378,7 @@ KTextEditor::Cursor *KateDocument::createCursor ( )
   return new KateSuperCursor (this, false, 0, 0, this);
 }
 
-void KateDocument::tagArbitraryLines(KateView* view, KateSuperRange* range)
+void KateDocument::tagArbitraryLines(KateView* view, KateRange* range)
 {
   if (view)
     view->tagLines(range->start(), range->end());
