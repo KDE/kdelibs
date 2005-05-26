@@ -131,6 +131,14 @@ static void createTestDirectory( const QString& path )
     createTestFile( path + "/testfile" );
 }
 
+void JobTest::enterLoop()
+{
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(exitLoop()),
+            &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+}
+
 void JobTest::get()
 {
     kdDebug() << k_funcinfo << endl;
@@ -141,7 +149,7 @@ void JobTest::get()
     KIO::StoredTransferJob* job = KIO::storedGet( u );
     connect( job, SIGNAL( result( KIO::Job* ) ),
             this, SLOT( slotGetResult( KIO::Job* ) ) );
-    kapp->eventLoop()->enterLoop();
+    enterLoop();
     assert( m_result == 0 ); // no error
     assert( m_data.size() == 11 );
     assert( Q3CString( m_data ) == "Hello world" );
@@ -151,7 +159,7 @@ void JobTest::slotGetResult( KIO::Job* job )
 {
     m_result = job->error();
     m_data = static_cast<KIO::StoredTransferJob *>(job)->data();
-    kapp->eventLoop()->exitLoop();
+    emit exitLoop();
 }
 
 ////

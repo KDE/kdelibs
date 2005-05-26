@@ -310,7 +310,7 @@ int main( int argc, char **argv )
         QLabel* label = new QLabel(0);
         app.setMainWidget(label);
         QPixmap pix;
-        pix.convertFromImage(thumbitem.value().toImage());
+        pix.convertFromImage(thumbitem.value().value<QImage>());
         label->setPixmap(pix);
         label->show();
         app.exec();

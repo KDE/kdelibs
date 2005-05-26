@@ -48,11 +48,14 @@ public:
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
 
+signals:
+    void exitLoop();
 private slots:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
     void slotGetResult( KIO::Job* );
 
 private:
+    void enterLoop();
     QString homeTmpDir() const;
     QString otherTmpDir() const;
     void copyLocalFile( const QString& src, const QString& dest );

@@ -18,10 +18,10 @@
 
 #include <kio/global.h>
 
-#include <q3cstring.h>
 #include <qstring.h>
 
-#include <iostream.h>
+#include <iostream>
+using namespace std;
 
 class KURL;
 
@@ -53,7 +53,7 @@ public:
       // remove key from map
       attributes_expected.remove(it);
     } else {
-      cout << endl << prefix << " no such key expected";
+      cout << endl << prefix.latin1() << " no such key expected";
       total++;
     }
   }
@@ -63,7 +63,7 @@ public:
     KIO::MetaData::ConstIterator it = attributes_expected.begin();
     KIO::MetaData::ConstIterator end = attributes_expected.end();
     for (; it != end; ++it) {
-      cout << endl << "Metadata[\"" << it.key()
+      cout << endl << "Metadata[\"" << it.key().latin1()
       		<< "\"] was expected but not defined";
       total++;
     }
@@ -111,8 +111,8 @@ private:
     if (templat == s)
       passed++;
     else {
-      cout << endl << prefix << "expected \"" << templat << "\", found \""
-      		<< s << "\"";
+      cout << endl << prefix.latin1() << "expected \"" << templat.latin1() << "\", found \""
+      		<< s.latin1() << "\"";
       failure = true;
     }/*end if*/
     total++;

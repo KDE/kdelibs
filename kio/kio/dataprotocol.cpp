@@ -32,9 +32,6 @@
 #  include <kinstance.h>
 #  include <stdlib.h>
 #endif
-#ifdef TESTKIO
-#  include <iostream.h>
-#endif
 
 #if !defined(DATAKIOSLAVE) && !defined(TESTKIO)
 #  define DISPATCH(f) dispatch_##f
@@ -271,9 +268,6 @@ void DataProtocol::get(const KURL& url) {
   QString url_data = hdr.url.mid(data_ofs);
   Q3CString outData;
 
-#ifdef TESTKIO
-//  cout << "current charset: \"" << *hdr.charset << "\"" << endl;
-#endif
   if (hdr.is_base64) {
     // base64 stuff is expected to contain the correct charset, so we just
     // decode it and pass it to the receiver
