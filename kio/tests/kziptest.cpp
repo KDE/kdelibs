@@ -36,7 +36,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
 	path.latin1(), (*it).latin1(), entry->isDirectory(),
-	!entry->symlink() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
+	entry->symlink().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");

@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 {
    KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
-   Q3CString instname = "kword";
+   QString instname = "kword";
    QString desktopPath = QString::fromLatin1( "Office/%1.desktop" ).arg( instname );
    qDebug( "Looking for %s", desktopPath.latin1() );
    KService::Ptr service = KService::serviceByDesktopPath( desktopPath );
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
    else
        qDebug( "not found" );
 
-   qDebug( "Looking for desktop name = %s", instname.data() );
+   qDebug( "Looking for desktop name = %s", instname.latin1() );
    service = KService::serviceByDesktopName( instname );
    if ( service )
        qDebug( "found: %s", service->desktopEntryPath().latin1() );

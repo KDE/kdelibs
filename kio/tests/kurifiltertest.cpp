@@ -235,10 +235,10 @@ int main(int argc, char **argv)
     // filter( "localhost/~blah", "http://localhost.localdomain/~blah", KURIFilterData::NET_PROTOCOL );
 
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
-    filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
-    filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
-    filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter", "/tmp" );
-    filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
+    filter( "/", "/", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ) );
+    filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, QStringList( "kshorturifilter" ) );
+    filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), "/tmp" );
+    filter( "~foobar", 0, KURIFilterData::ERROR, QStringList( "kshorturifilter" ) );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
     // Windows style SMB (UNC) URL. Should be converted into the valid smb format...
@@ -329,8 +329,8 @@ int main(int argc, char **argv)
     // the shortURI filter will return the string
     // itself if the requested environment variable
     // is not already set.
-    filter( "$QTDIR", 0, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
-    filter( "$HOME", home, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
+    filter( "$QTDIR", 0, KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ) ); //use specific filter.
+    filter( "$HOME", home, KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ) ); //use specific filter.
 
     // Search Engine tests
     char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
@@ -347,9 +347,9 @@ int main(int argc, char **argv)
     filter( sc.sprintf("gg%cпрйвет", delimiter) /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     // Absolute Path tests for kshorturifilter
-    filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share/" ); // cleanDirPath removes the trailing slash
-    filter( "../", kdehome, KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
-    filter( "config", kdehome+"/share/config", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
+    filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share/" ); // cleanDirPath removes the trailing slash
+    filter( "../", kdehome, KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share" );
+    filter( "config", kdehome+"/share/config", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share" );
 
     // Clean up
     KIO::NetAccess::del( kdehome, 0 );
