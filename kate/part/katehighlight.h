@@ -29,6 +29,9 @@
 #include <kconfig.h>
 
 #include <QVector>
+#include <QList>
+#include <QHash>
+#include <QMap>
 
 #include <q3ptrlist.h>
 #include <q3valuelist.h>
@@ -36,7 +39,6 @@
 #include <qregexp.h>
 #include <q3dict.h>
 #include <q3intdict.h>
-#include <qmap.h>
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qpointer.h>
@@ -65,12 +67,10 @@ class KateEmbeddedHlInfo
     int context0;
 };
 
-
 // some typedefs
 typedef Q3PtrList<KateAttribute> KateAttributeList;
 typedef Q3ValueList<KateHlIncludeRule*> KateHlIncludeRules;
 typedef Q3PtrList<KateHlItemData> KateHlItemDataList;
-typedef Q3PtrList<KateHlData> KateHlDataList;
 typedef QMap<QString,KateEmbeddedHlInfo> KateEmbeddedHlInfos;
 typedef QMap<int*,QString> KateHlUnresolvedCtxRefs;
 
@@ -118,6 +118,15 @@ class KateHighlighting
   public:
     KateHighlighting(const KateSyntaxModeListItem *def);
     ~KateHighlighting();
+    
+  private:
+    /**
+     * this method frees mem ;)
+     * used by the destructor and done(), therefor
+     * not only delete elements but also reset the array
+     * sizes, as we will reuse this object later and refill ;)
+     */
+    void cleanup ();
 
   public:
     void doHighlight ( KateTextLine *prevLine,
@@ -126,7 +135,7 @@ class KateHighlighting
                        bool *ctxChanged );
 
     void loadWildcards();
-    Q3ValueList<QRegExp>& getRegexpExtensions();
+    QList<QRegExp>& getRegexpExtensions();
     QStringList& getPlainExtensions();
 
     QString getMimetypes();
@@ -259,7 +268,7 @@ class KateHighlighting
 
     KateHlItemDataList internalIDList;
 
-    Q3ValueVector<KateHlContext*> m_contexts;
+    QVector<KateHlContext*> m_contexts;
     inline KateHlContext *contextNum (int n) { if (n >= 0 && n < m_contexts.size()) return m_contexts[n]; return 0; }
 
     QMap< QPair<KateHlContext *, QString>, short> dynamicCtxs;
@@ -300,7 +309,7 @@ class KateHighlighting
     KateHlIncludeRules includeRules;
     bool m_foldingIndentationSensitive;
 
-    Q3IntDict< QVector<KateAttribute> > m_attributeArrays;
+    QHash< int, QVector<KateAttribute> * > m_attributeArrays;
 
 
     /**
@@ -339,9 +348,8 @@ class KateHighlighting
      */
     QMap<int, QString> m_hlIndex;
 
-
     QString extensionSource;
-    Q3ValueList<QRegExp> regexpExtensions;
+    QList<QRegExp> regexpExtensions;
     QStringList plainExtensions;
 
   public:

@@ -120,7 +120,7 @@ class KateHlContext
     virtual ~KateHlContext();
     KateHlContext *clone(const QStringList *args);
 
-    Q3ValueVector<KateHlItem*> items;
+    QVector<KateHlItem*> items;
     QString hlId; ///< A unique highlight identifier. Used to look up correct properties.
     int attr;
     int ctx;
@@ -749,7 +749,7 @@ int KateHlFloat::checkHgl(const QString& text, int offset, int len)
     {
       if (len > 0)
       {
-        for (uint i=0; i < subItems.size(); i++)
+        for (int i=0; i < subItems.size(); ++i)
         {
           int offset2 = subItems[i]->checkHgl(text, offset, len);
 
@@ -781,7 +781,7 @@ int KateHlFloat::checkHgl(const QString& text, int offset, int len)
   {
     if (len > 0)
     {
-      for (uint i=0; i < subItems.size(); i++)
+      for (int i=0; i < subItems.size(); ++i)
       {
         int offset2 = subItems[i]->checkHgl(text, offset, len);
 
@@ -1175,8 +1175,6 @@ KateHlContext::~KateHlContext()
 //BEGIN KateHighlighting
 KateHighlighting::KateHighlighting(const KateSyntaxModeListItem *def) : refCount(0)
 {
-  m_attributeArrays.setAutoDelete (true);
-
   errorsAndWarnings = "";
   building=false;
   noHl = false;
@@ -1217,10 +1215,19 @@ KateHighlighting::KateHighlighting(const KateSyntaxModeListItem *def) : refCount
 
 KateHighlighting::~KateHighlighting()
 {
-  // cu contexts
-  for (int i=0; i < m_contexts.size(); ++i)
-    delete m_contexts[i];
+  // cleanup ;)
+  cleanup ();
+}
+
+void KateHighlighting::cleanup ()
+{
+  qDeleteAll (m_contexts);
   m_contexts.clear ();
+  
+  qDeleteAll (m_attributeArrays);
+  m_attributeArrays.clear ();
+  
+  internalIDList.clear();
 }
 
 void KateHighlighting::generateContextStack(int *ctxNum, int ctx, QVector<short>* ctxs, int *prevLine)
@@ -1627,7 +1634,7 @@ void KateHighlighting::loadWildcards()
   }
 }
 
-Q3ValueList<QRegExp>& KateHighlighting::getRegexpExtensions()
+QList<QRegExp>& KateHighlighting::getRegexpExtensions()
 {
   return regexpExtensions;
 }
@@ -1804,12 +1811,7 @@ void KateHighlighting::done()
   if (noHl)
     return;
 
-  // cu contexts
-  for (int i=0; i < m_contexts.size(); ++i)
-    delete m_contexts[i];
-  m_contexts.clear ();
-
-  internalIDList.clear();
+  cleanup ();
 }
 
 /**
@@ -2497,7 +2499,7 @@ void KateHighlighting::makeContextList()
 void KateHighlighting::handleKateHlIncludeRules()
 {
   // if there are noe include rules to take care of, just return
-  kdDebug(13010)<<"KateHlIncludeRules, which need attention: " <<includeRules.count()<<endl;
+  kdDebug(13010)<<"KateHlIncludeRules, which need attention: " <<includeRules.size()<<endl;
   if (includeRules.isEmpty()) return;
 
   buildPrefix="";
@@ -2509,7 +2511,7 @@ void KateHighlighting::handleKateHlIncludeRules()
   // method.
 
   //resolove context names
-  for (KateHlIncludeRules::iterator it=includeRules.begin();it!=includeRules.end();)
+  for (KateHlIncludeRules::iterator it=includeRules.begin(); it!=includeRules.end(); )
   {
     if ((*it)->incCtx==-1) // context unresolved ?
     {
@@ -2852,18 +2854,18 @@ int KateHighlighting::addToContextList(const QString &ident, int ctx0)
 
 void KateHighlighting::clearAttributeArrays ()
 {
-  for ( Q3IntDictIterator< QVector<KateAttribute> > it( m_attributeArrays ); it.current(); ++it )
+  for ( QHash< int, QVector<KateAttribute> * >::iterator it( m_attributeArrays.begin() ); it != m_attributeArrays.end(); ++it )
   {
     // k, schema correct, let create the data
     KateAttributeList defaultStyleList;
     defaultStyleList.setAutoDelete(true);
-    KateHlManager::self()->getDefaults(it.currentKey(), defaultStyleList);
+    KateHlManager::self()->getDefaults(it.key(), defaultStyleList);
 
     KateHlItemDataList itemDataList;
-    getKateHlItemDataList(it.currentKey(), itemDataList);
+    getKateHlItemDataList(it.key(), itemDataList);
 
     uint nAttribs = itemDataList.count();
-    QVector<KateAttribute> *array = it.current();
+    QVector<KateAttribute> *array = it.value();
     array->resize (nAttribs);
 
     for (uint z = 0; z < nAttribs; z++)
@@ -2884,7 +2886,7 @@ QVector<KateAttribute> *KateHighlighting::attributes (uint schema)
   QVector<KateAttribute> *array;
 
   // found it, allready floating around
-  if ((array = m_attributeArrays[schema]))
+  if ((array = m_attributeArrays.value(schema)))
     return array;
 
   // ohh, not found, check if valid schema number
@@ -3052,7 +3054,7 @@ int KateHlManager::realWildcardFind(const QString &fileName)
       if (fileName.endsWith((*it)))
         highlights.append(highlight);
 
-    for (int i = 0; i < (int)highlight->getRegexpExtensions().count(); i++) {
+    for (int i = 0; i < highlight->getRegexpExtensions().size(); i++) {
       QRegExp re = highlight->getRegexpExtensions()[i];
       if (re.exactMatch(fileName))
         highlights.append(highlight);
