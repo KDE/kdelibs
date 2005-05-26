@@ -47,6 +47,8 @@ KateLineRange::KateLineRange(KateDocument* doc)
 }
 
 KateLineRange::KateLineRange(const KateLineRange& copy)
+  : m_ownsLayout(false)
+  , m_layout(0L)
 {
   *this = copy;
 }
@@ -71,7 +73,7 @@ KateLineRange& KateLineRange::operator= (const KateLineRange& r)
   m_dirty = r.isDirty();
   m_special = false;
   Q_ASSERT(!r.m_special);
-  //if (m_ownsLayout) delete m_layout;
+  if (m_ownsLayout) delete m_layout;
   m_ownsLayout = false;
   m_layout = 0L;
   
@@ -101,7 +103,7 @@ void KateLineRange::clear()
   m_wrap = false;
   m_startsInvisibleBlock = false;
   // not touching dirty
-  //if (m_ownsLayout) delete m_layout;
+  if (m_ownsLayout) delete m_layout;
   m_ownsLayout = false;
   m_layout = 0L;
   m_layoutOffset = 0;
