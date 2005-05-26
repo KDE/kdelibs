@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (c) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (c) 2001 David Faure <faure@kde.org>
    Copyright (c) 2001 Laurent Montel <lmontel@mandrakesoft.com>
 
    This library is free software; you can redistribute it and/or

@@ -221,7 +221,7 @@ class KWordWrap;
  * KIconViewItem exists to improve the word-wrap functionality of QIconViewItem
  * Use KIconViewItem instead of QIconViewItem for any iconview item you might have :)
  *
- * @author David Faure <david@mandrakesoft.com>
+ * @author David Faure <faure@kde.org>
  */
 class KDEUI_EXPORT KIconViewItem : public Q3IconViewItem
 {

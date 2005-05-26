@@ -500,9 +500,9 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( mb )
         mb->clear();
 
-	//is that any usefull these days ? //mikmak => KDE4
-    (void)toolBarIterator(); // make sure toolbarList is most-up-to-date
-	qDeleteAll( toolbarList );
+    //is that any usefull these days ? //mikmak => KDE4
+    (void)toolBarList(); // make sure toolbarList is most-up-to-date
+    qDeleteAll( toolbarList );
     toolbarList.clear();
 
     // don't build a help menu unless the user ask for it
@@ -1100,27 +1100,12 @@ void KMainWindow::shuttingDown()
 
 KMenuBar *KMainWindow::internalMenuBar()
 {
-    QList<QObject*> l = queryList( "KMenuBar", 0, false, false );
-    if ( l.isEmpty() || !l.first() ) //empty list
-        return 0;
-
-    KMenuBar *m = (KMenuBar*)l.first();
-    return m;
+    return qFindChild<KMenuBar *>(this);
 }
 
 KStatusBar *KMainWindow::internalStatusBar()
 {
-    QList<QObject*> l = queryList( "KStatusBar", 0, false, false );
-    if ( l.isEmpty() || !l.first() ) //empty list
-        return 0;
-
-    KStatusBar *s = (KStatusBar*)l.first();
-    return s;
-}
-
-void KMainWindow::childEvent( QChildEvent* e)
-{
-    Q3MainWindow::childEvent( e );
+    return qFindChild<KStatusBar *>(this);
 }
 
 KToolBar *KMainWindow::toolBar( const char * name )
@@ -1138,26 +1123,23 @@ KToolBar *KMainWindow::toolBar( const char * name )
         return new KToolBar(this, Qt::DockTop, false, name, honor_mode ); // non-XMLGUI
 }
 
-QList<KToolBar*>::iterator KMainWindow::toolBarIterator()
+QList<KToolBar*> KMainWindow::toolBarList() // TODO const
 {
+    // When using QMainWindow instead of Q3MainWindow, simply do:
+    // return qFindChildren<KToolBar *>(this);
+    // and get rid of the toolbarList member variable
+
     toolbarList.clear();
     QList<Q3ToolBar*> lst;
     for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
         lst = toolBars( (Qt::ToolBarDock)i );
-		foreach ( Q3ToolBar* tb, lst ) {
-            if ( tb->inherits( "KToolBar" ) )
-            	toolbarList.append( (KToolBar*)tb );
+        foreach ( Q3ToolBar* tb, lst ) {
+            if ( qobject_cast<KToolBar *>(  tb ) )
+                toolbarList.append( (KToolBar*)tb );
         }
     }
-    return toolbarList.begin();
-}
-
-QList<KToolBar*> KMainWindow::toolBarList()
-{
-    (void)toolBarIterator();
     return toolbarList;
 }
-
 
 KAccel * KMainWindow::accel()
 {

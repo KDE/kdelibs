@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001, 2002 David Faure <david@mandrakesoft.com>
+   Copyright (C) 2001, 2002 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,7 +25,7 @@
  * A readonly device that reads from an underlying device
  * from a given point to another (e.g. to give access to a single
  * file inside an archive).
- * @author David Faure <david@mandrakesoft.com>
+ * @author David Faure <faure@kde.org>
  * @since 3.1
  */
 class KIO_EXPORT KLimitedIODevice : public QIODevice

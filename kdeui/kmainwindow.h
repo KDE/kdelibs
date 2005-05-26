@@ -404,18 +404,9 @@ public:
     KToolBar *toolBar( const char *name=0 );
 
     /**
-     * @return An iterator over the list of all toolbars for this window.
-     */
-	QList<KToolBar*>::iterator toolBarIterator(); //### This seems kind of useless - remove?
-	
-
-    /**
      * @return A list of all toolbars for this window
-     */	
-    QList<KToolBar*> toolBarList();
-	
-	
-	
+     */
+    QList<KToolBar*> toolBarList() /*TODO const*/;
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -771,7 +762,6 @@ public slots:
 
 protected:
     void paintEvent( QPaintEvent* e );
-    void childEvent( QChildEvent* e);
     void resizeEvent( QResizeEvent* e);
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
