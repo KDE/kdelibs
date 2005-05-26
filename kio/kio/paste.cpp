@@ -292,11 +292,11 @@ KIO_EXPORT QString KIO::pasteActionText()
         if ( urls.isEmpty() )
             return QString::null; // nothing to paste
         else if ( urls.first().isLocalFile() )
-            return i18n( "&Paste file", "&Paste %n files", urls.count() );
+            return i18n( "&Paste File", "&Paste %n Files", urls.count() );
         else
             return i18n( "&Paste URL", "&Paste %n URLs", urls.count() );
     } else if ( data->format(0) != 0 ) {
-        return i18n( "&Paste clipboard contents" );
+        return i18n( "&Paste Clipboard Contents" );
     } else {
         return QString::null;
     }
