@@ -25,6 +25,7 @@
 #include <qimage.h>
 #include <qdatastream.h>
 
+#include <kglobal.h>
 #include <kdebug.h>
 
 #include <math.h> // sqrtf
@@ -42,8 +43,6 @@ typedef Q_UINT8 uchar;
 		(uint(uchar(ch0)) | (uint(uchar(ch1)) << 8) | \
 		(uint(uchar(ch2)) << 16) | (uint(uchar(ch3)) << 24 ))
 #endif
-
-#define max(a,b)	((a)>?(b))
 
 #define HORIZONTAL 1
 #define VERTICAL 2
@@ -230,7 +229,7 @@ static DDSType GetType( const DDSHeader & header )
         if( header.pf.flags & DDPF_ALPHAPIXELS ) {
             switch( header.pf.bitcount ) {
             case 16:
-                return (header.pf.amask == 0x7000) ? DDS_A1R5G5B5 : DDS_A4R4G4B4;
+                return (header.pf.amask == 0x8000) ? DDS_A1R5G5B5 : DDS_A4R4G4B4;
             case 32:
                 return DDS_A8R8G8B8;
             }
@@ -831,7 +830,7 @@ static int FaceOffset( const DDSHeader & header ) {
 
     DDSType type = GetType( header );
 
-    int mipmap = max(header.mipmapcount, 1);
+    int mipmap = kMax(header.mipmapcount, 1U);
     int size = 0;
     int w = header.width;
     int h = header.height;
@@ -839,7 +838,7 @@ static int FaceOffset( const DDSHeader & header ) {
     if( type >= DDS_DXT1 ) {
         int multiplier = (type == DDS_DXT1) ? 8 : 16;
         do {
-            int face_size = max(w/4,1) * max(h/4,1) * multiplier;
+            int face_size = kMax(w/4,1) * kMax(h/4,1) * multiplier;
             size += face_size;
             w >>= 1;
             h >>= 1;
@@ -850,8 +849,8 @@ static int FaceOffset( const DDSHeader & header ) {
         do {
             int face_size = w * h * multiplier;
             size += face_size;
-            w = max( w>>1, 1 );
-            h = max( h>>1, 1 );
+            w = kMax( w>>1, 1 );
+            h = kMax( h>>1, 1 );
         } while( --mipmap );
     }
 

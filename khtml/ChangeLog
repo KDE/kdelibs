@@ -1,3 +1,13 @@
+2005-05-24  David Faure  <faure@kde.org>
+
+        * html/html_tableimpl.cpp (appendChild): Allow javascript to insert
+        a TR directly into a TABLE, creating a TBODY section if needed (bug #105586).
+
+2005-05-21  Harri Porten  <porten@kde.org>
+
+	* html/html_documentimpl.cpp: emit onload event even if the
+	document has no body element (bug #105798).
+
 2005-05-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement/fix CSS namespace selector and other XHTML fixes.

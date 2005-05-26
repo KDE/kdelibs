@@ -247,8 +247,7 @@ void HTMLDocumentImpl::close()
 
     DocumentImpl::close();
 
-    HTMLElementImpl* b = body();
-    if (b && doload) {
+    if (doload) {
 
         if (title().isEmpty()) // ensure setTitle is called at least once
             setTitle( DOMString() );

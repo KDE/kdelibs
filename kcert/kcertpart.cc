@@ -452,7 +452,7 @@ if (_p12) {
 
 bool KCertPart::openFile() {
 #ifndef HAVE_SSL
-	KMessageBox::sorry(_frame, i18n("You don't seem to have compiled KDE with SSL support."), i18n("Certificate Import"));
+	KMessageBox::sorry(_frame, i18n("You do not seem to have compiled KDE with SSL support."), i18n("Certificate Import"));
 	return false;
 #else
 
@@ -595,7 +595,7 @@ if (whatType == "application/x-pkcs12") {
 	//       Dunno how to load this
 	/////////////////////////////////////////////////////////////////////////////
 } else {
-	QString emsg = i18n("I don't know how to handle this type of file.") + "\n" + whatType;
+	QString emsg = i18n("I do not know how to handle this type of file.") + "\n" + whatType;
 	KMessageBox::sorry(_frame, emsg, i18n("Certificate Import"));
 	return false;
 }

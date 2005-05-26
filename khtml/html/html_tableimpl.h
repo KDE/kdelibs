@@ -95,6 +95,7 @@ public:
 
     // overrides
     virtual NodeImpl *addChild(NodeImpl *child);
+    virtual NodeImpl *appendChild( NodeImpl *newChild, int &exceptioncode );
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
 

@@ -256,6 +256,24 @@ void KIconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
   }
 }
 
+void KIconView::updateDragHoldItem( QDropEvent *e )
+{
+  Q3IconViewItem *item = findItem( e->pos() );
+
+  if ( d->dragHoldItem != item)
+  {
+    d->dragHoldItem = item;
+    if( item  )
+    {
+      d->dragHoldTimer.start( 1000, true );
+    }
+    else
+    {
+      d->dragHoldTimer.stop();
+    }
+  }
+}
+
 void KIconView::focusOutEvent( QFocusEvent *fe )
 {
   m_pAutoSelect->stop();
@@ -314,41 +332,21 @@ void KIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 
 void KIconView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    Q3IconViewItem *item = findItem( e->pos() );
-
-    if ( d->dragHoldItem != item)
-    {
-        d->dragHoldItem = item;
-        if( item  )
-        {
-            d->dragHoldTimer.start( 1000, true );
-        }
-        else
-        {
-            d->dragHoldTimer.stop();
-        }
-    }
-
+    updateDragHoldItem( e );
     Q3IconView::contentsDragEnterEvent( e );
 }
 
+void KIconView::contentsDragLeaveEvent( QDragLeaveEvent *e )
+{
+    d->dragHoldTimer.stop();
+    d->dragHoldItem = 0L;
+    Q3IconView::contentsDragLeaveEvent( e );
+}
+
+
 void KIconView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
-    Q3IconViewItem *item = findItem( e->pos() );
-
-    if ( d->dragHoldItem != item)
-    {
-        d->dragHoldItem = item;
-        if( item  )
-        {
-            d->dragHoldTimer.start( 1000, true );
-        }
-        else
-        {
-            d->dragHoldTimer.stop();
-        }
-    }
-
+    updateDragHoldItem( e );
     Q3IconView::contentsDragMoveEvent( e );
 }
 

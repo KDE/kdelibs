@@ -5,8 +5,8 @@ KIMGIO_TIFF_DATAFILES=tiff.kimgio # g3.kimgio
 endif
 
 if include_JP2_MODULES
-#KIMGIO_JP2_MODULES=kimg_jp2.la
-#KIMGIO_JP2_DATAFILES=jp2.kimgio
+KIMGIO_JP2_MODULES=kimg_jp2.la
+KIMGIO_JP2_DATAFILES=jp2.kimgio
 endif
 
 if include_EXR_MODULES
@@ -16,10 +16,11 @@ endif
 
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
+# kimg_hdr.la missing and JP2_MODULES
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la  \
 	$(KIMGIO_TIFF_MODULES) kimg_ico.la \
 	kimg_pcx.la kimg_tga.la kimg_rgb.la kimg_xcf.la kimg_dds.la  \
-	$(KIMGIO_EXR_MODULES) kimg_psd.la
+	$(KIMGIO_EXR_MODULES) kimg_psd.la 
 
 KIMGIO_PLUGIN = $(KDE_PLUGIN) -module $(all_libraries)
 
@@ -75,8 +76,12 @@ kimg_psd_la_SOURCES = psd.cpp
 kimg_psd_la_LDFLAGS = $(KIMGIO_PLUGIN)
 kimg_psd_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
 
+kimg_hdr_la_SOURCES = hdr.cpp
+kimg_hdr_la_LDFLAGS = -module $(KIMGIO_PLUGIN) -no-undefined $(all_libraries)
+kimg_hdr_la_LIBADD = $(LIB_QT) $(LIB_KDECORE)
+
 noinst_HEADERS= xview.h eps.h tiffr.h g3r.h ico.h jp2.h pcx.h tga.h rgb.h \
-	xcf.h gimp.h exr.h dds.h psd.h
+	xcf.h gimp.h exr.h dds.h psd.h hdr.h
 
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl \
 	$(all_includes) -Drestrict= $(EXR_FLAGS)
@@ -86,4 +91,4 @@ service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
               ppm.kimgio xbm.kimgio jpeg.kimgio xv.kimgio eps.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
            gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio xcf.kimgio dds.kimgio \
-           $(KIMGIO_EXR_DATAFILES) mng.kimgio psd.kimgio
+           $(KIMGIO_EXR_DATAFILES) mng.kimgio psd.kimgio hdr.kimgio

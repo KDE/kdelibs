@@ -380,9 +380,9 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  KAction* ft = new KAction( "Find Text As You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
+  KAction* ft = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
       actionCollection(), "findAheadText");
-  KAction* fl = new KAction( "Find Links As You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
+  KAction* fl = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
       actionCollection(), "findAheadLink");
 
   if ( parentPart() )
