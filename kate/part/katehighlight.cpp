@@ -46,6 +46,7 @@
 #include <kstaticdeleter.h>
 #include <kapplication.h>
 
+#include <QSet>
 #include <qstringlist.h>
 #include <qtextstream.h>
 //END
@@ -220,7 +221,7 @@ class KateHlKeyword : public KateHlItem
     virtual int checkHgl(const QString& text, int offset, int len);
 
   private:
-    QVector< Q3Dict<bool>* > dict;
+    QVector< QSet<QString>* > dict;
     bool _caseSensitive;
     const QString& deliminators;
     int minLen;
@@ -374,7 +375,6 @@ class KateHlDetectIdentifier : public KateHlItem
 //BEGIN STATICS
 KateHlManager *KateHlManager::s_self = 0;
 
-static const bool trueBool = true;
 static const QString stdDeliminator = QString (" \t.():!+,-<=>%&*/;?[]^{|}~\\");
 //END
 
@@ -627,9 +627,12 @@ void KateHlKeyword::addList(const QStringList& list)
     }
 
     if (!dict[len])
-      dict[len] = new Q3Dict<bool> (17, _caseSensitive);
+      dict[len] = new QSet<QString> ();
 
-    dict[len]->insert(list[i], &trueBool);
+    if (_caseSensitive)
+      dict[len]->insert(list[i]);
+    else
+      dict[len]->insert(list[i].lower());
   }
 }
 
@@ -646,11 +649,19 @@ int KateHlKeyword::checkHgl(const QString& text, int offset, int len)
     if (wordLen > maxLen) return 0;
   }
 
-  if (wordLen < minLen) return 0;
+  if (wordLen < minLen || !dict[wordLen]) return 0;
 
-  if ( dict[wordLen] && dict[wordLen]->find(QConstString(text.unicode() + offset, wordLen).string()) )
-    return offset2;
-
+  if (_caseSensitive)
+  {
+    if (dict[wordLen]->contains(QConstString(text.unicode() + offset, wordLen).string()) )
+      return offset2;
+  }
+  else
+  {
+    if (dict[wordLen]->contains(QConstString(text.unicode() + offset, wordLen).string().lower()) )
+      return offset2;
+  }
+  
   return 0;
 }
 //END

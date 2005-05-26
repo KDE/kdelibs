@@ -28,6 +28,8 @@
 
 #include <kconfig.h>
 
+#include <QVector>
+
 #include <q3ptrlist.h>
 #include <q3valuelist.h>
 #include <q3valuevector.h>
@@ -71,7 +73,6 @@ typedef Q3PtrList<KateHlItemData> KateHlItemDataList;
 typedef Q3PtrList<KateHlData> KateHlDataList;
 typedef QMap<QString,KateEmbeddedHlInfo> KateEmbeddedHlInfos;
 typedef QMap<int*,QString> KateHlUnresolvedCtxRefs;
-typedef Q3ValueList<int> IntList;
 
 //Item Properties: name, Item Style, Item Font
 class KateHlItemData : public KateAttribute
