@@ -16,8 +16,6 @@
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
 
-K_EXPORT_COMPONENT_FACTORY( libnotepadpart, NotepadFactory )
-
 NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
                           QObject* parent, const char* name,
                           const QStringList& )
@@ -56,14 +54,12 @@ KAboutData* NotepadPart::createAboutData()
 bool NotepadPart::openFile()
 {
   kdDebug() << "NotepadPart: opening " << m_file << endl;
-  // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
-    while ( !t.eof() ) {
-      s += t.readLine() + "\n";
-    }
+    t.setEncoding( QTextStream::UnicodeUTF8 );
+    s = t.read();
     f.close();
   }
   m_edit->setText(s);
