@@ -24,8 +24,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
-#include <q3valuelist.h>
-#include <q3cstring.h>
 #include <qobject.h>
 #include "kdelibs_export.h"
 
