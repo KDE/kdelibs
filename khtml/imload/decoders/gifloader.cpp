@@ -25,6 +25,7 @@
 */
 
 #include "animprovider.h"
+
 #include "gifloader.h"
 #include "imageloader.h"
 #include "imagemanager.h"
@@ -36,8 +37,9 @@
 #include <stdlib.h>
 
 #include <config.h> //For endian
+extern "C" {
 #include <gif_lib.h>
-
+};
 namespace khtmlImLoad {
 
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
@@ -356,7 +358,7 @@ public:
                     {
                         if (line == nextNewLine)
                         {
-                            uchar* toFeed = file->SavedImages[frame].RasterBits + w*index;
+			  uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*index;
                             if (format.hasAlpha())
                             {
                                 palettedToRGB(buf, toFeed, format, w);
@@ -380,7 +382,7 @@ public:
             {
                 for (int line = 0; line < h; ++line)
                 {
-                    uchar* toFeed = file->SavedImages[frame].RasterBits + w*line;
+		  uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*line;
                     if (format.hasAlpha())
                     {
                         palettedToRGB(buf, toFeed, format, w);
