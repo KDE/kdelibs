@@ -301,7 +301,7 @@ using namespace std;
 
 #include <qobject.h>
 #include <qstringlist.h>
-#include <q3asciidict.h>
+#include <qhash.h>
 #include <qtextstream.h>
 
 #include <kdelibs_export.h>
@@ -413,10 +413,10 @@ namespace KUnitTest
         int         m_tests;
     };
 
-    typedef Q3AsciiDict<TestResults> TestResultsListType;
+    typedef QHash<QByteArray, TestResults *> TestResultsList;
 
     /*! A type that can be used to iterate through the registry. */
-    typedef Q3AsciiDictIterator<TestResults> TestResultsListIteratorType;
+    //typedef TestResultsList::Iterator TestResultsListIteratorType;
 
     /*! The abstract Tester class forms the base class for all test cases. Users must
      * implement the void Tester::allTests() method. This method contains the actual test.
@@ -429,8 +429,8 @@ namespace KUnitTest
     class KUNITTEST_EXPORT Tester : public QObject
     {
     public:
-        Tester(const char *name = 0L)
-        : QObject(0L, name), m_results(new TestResults())
+        Tester()
+        : QObject(), m_results(new TestResults())
         {}
 
         virtual ~Tester() { delete m_results; }
@@ -438,12 +438,12 @@ namespace KUnitTest
     public:
         /*! Implement this method with the tests and checks you want to perform.
          */
-        virtual void allTests() = 0L;
+        virtual void allTests() = 0;
 
     public:
         /*! @return The TestResults instance.
          */
-        virtual TestResults *results() { return m_results; }
+        virtual TestResults *results() const { return m_results; }
 
     protected:
         /*! This is called when the SKIP(x) macro is used.
@@ -527,14 +527,19 @@ namespace KUnitTest
         Q_OBJECT
 
     public:
-        SlotTester(const char *name = 0L);
+        SlotTester();
+        virtual ~SlotTester();
 
         void allTests();
 
-        using Tester::results;
-        TestResults *results(const char *sl);
+        // using Tester::results; // won't compile with gcc-2.95
+        virtual TestResults *results() const { return Tester::results(); }
 
-        TestResultsListType &resultsList() { return m_resultsList; }
+        /// Create or return TestResults for a given slot - used internally
+        TestResults *results(const char *slotName);
+
+        /// Return the list of results - used internally by Runner
+        const TestResultsList &resultsList() const { return m_resultsList; }
 
     signals:
         void invoke();
@@ -542,15 +547,18 @@ namespace KUnitTest
     private:
         void invokeMember(const QString &str);
 
-        TestResultsListType  m_resultsList;
+        TestResultsList      m_resultsList;
         TestResults         *m_total;
     };
 }
 
+class QRect;
 QTextStream& operator<<( QTextStream& str, const QRect& r );
 
+class QPoint;
 QTextStream& operator<<( QTextStream& str, const QPoint& r );
 
+class QSize;
 QTextStream& operator<<( QTextStream& str, const QSize& r );
 
 #endif

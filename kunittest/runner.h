@@ -32,7 +32,7 @@
 using namespace std;
 
 #include <qobject.h>
-#include <q3asciidict.h>
+#include <qhash.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>
@@ -44,7 +44,7 @@ class QSocketNotifier;
 namespace KUnitTest
 {
     /*! @def KUNITTEST_SUITE(suite)
-     * 
+     *
      * This macro must be used if you are not making a test-module. The macro
      * defines the name of the test suite.
      */
@@ -67,23 +67,20 @@ namespace KUnitTest
     static TesterAutoregister tester##Autoregister( QString(s_kunittest_suite + QString("::") + QString::fromLocal8Bit(name)).local8Bit() , new tester ())
 
     /*! The type of the registry. */
-    typedef Q3AsciiDict<Tester> RegistryType;
+    typedef QHash<QByteArray, Tester*> Registry;
 
-    /*! A type that can be used to iterate through the registry. */
-    typedef Q3AsciiDictIterator<Tester> RegistryIteratorType;
-    
     /*! The Runner class holds a list of registered Tester classes and is able
      * to run those test cases. The Runner class follows the singleton design
      * pattern, which means that you can only have one Runner instance. This
      * instance can be retrieved using the Runner::self() method.
      *
-     * The registry is an object of type RegistryType, it is able to map the name
+     * The registry is an object of type Registry, it is able to map the name
      * of a test to a pointer to a Tester object. The registry is also a singleton
      * and can be accessed via Runner::registry(). Since there is only one registry,
      * which can be accessed at all times, test cases can be added without having to
      * worry if a Runner instance is present or not. This allows for a design in which
      * the KUnitTest library can be kept separate from the test case sources. Test cases
-     * (classes inheriting from Tester) can be added using the static 
+     * (classes inheriting from Tester) can be added using the static
      * registerTester(const char *name, Tester *test) method. Allthough most users
      * will want to use the KUNITTEST_REGISTER_TESTER macro.
      *
@@ -92,7 +89,7 @@ namespace KUnitTest
     class KUNITTEST_EXPORT Runner : public QObject
     {
         Q_OBJECT
-    
+
     public:
         /*! Registers a test case. A registry will be automatically created if necessary.
          * @param name The name of the test case.
@@ -102,7 +99,7 @@ namespace KUnitTest
 
         /*! @returns The registry holding all the Tester objects.
          */
-        RegistryType &registry();
+        Registry &registry();
 
         /*! @returns The global Runner instance. If necessary an instance will be created.
          */
@@ -112,19 +109,19 @@ namespace KUnitTest
          */
         int numberOfTestCases();
 
-        /*! Load all modules found in the folder. 
+        /*! Load all modules found in the folder.
          * @param folder The folder where to look for modules.
          * @param query A regular expression. Only modules which match the query will be run.
          */
         static void loadModules(const QString &folder, const QString &query);
-            
+
     private:
-        RegistryType         m_registry;
+        Registry             m_registry;
         static Runner       *s_self;
-    
+
     protected:
         Runner();
-    
+
     public:
         /*! @returns The number of finished tests. */
         int numberOfTests() const;
@@ -170,10 +167,10 @@ namespace KUnitTest
          */
         void finished(const char *name, Tester *test);
         void invoke();
-    
+
     private:
         void registerTests();
-    
+
     private:
         int globalSteps;
         int globalTests;
@@ -183,7 +180,7 @@ namespace KUnitTest
         int globalXPasses;
         int globalSkipped;
     };
-    
+
     /*! The TesterAutoregister is a helper class to allow the automatic registration
      * of Tester classes.
      */
@@ -193,10 +190,11 @@ namespace KUnitTest
         /*! @param name A unique name that identifies the Tester class.
          * @param test A pointer to a Tester object.
          */
-        TesterAutoregister(const char *name, Tester *test) 
-        { 
-            if ( test->name() == 0L ) test->setName(name);
-            Runner::registerTester(name, test); 
+        TesterAutoregister(const char *name, Tester *test)
+        {
+            if ( test->name() == 0 )
+                test->setName(name);
+            Runner::registerTester(name, test);
         }
     };
 

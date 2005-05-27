@@ -27,17 +27,23 @@
 using namespace std;
 
 #include <qmetaobject.h>
-#include <q3strlist.h>
 #include <QRect>
+#include <qvector.h>
 #include "tester.h"
 
 namespace KUnitTest
 {
-    SlotTester::SlotTester(const char *name) : Tester(name)
+    SlotTester::SlotTester() : Tester()
     {
-        m_resultsList.setAutoDelete(true);
         m_total = m_results;
     }
+
+
+    SlotTester::~SlotTester()
+    {
+        qDeleteAll( m_resultsList );
+    }
+
 
     void SlotTester::invokeMember(const QString &str)
     {
@@ -46,46 +52,49 @@ namespace KUnitTest
         emit invoke();
         disconnect(this, SIGNAL(invoke()), this, slotname.ascii());
     }
-    
+
     void SlotTester::allTests()
     {
-        Q3StrList allSlots;
-        int methodCount = metaObject()->methodCount(); 
-        int methodOffset = metaObject()->methodOffset(); 
+        QVector<QByteArray> allSlots;
+        const int methodCount = metaObject()->methodCount();
+        const int methodOffset = metaObject()->methodOffset();
+        allSlots.reserve( methodCount );
         for ( int i=0 ; i < methodCount; ++i )
         {
             QMetaMethod method = metaObject()->method( methodOffset + i );
             if ( method.methodType() == QMetaMethod::Slot )
                 allSlots.append( method.signature() );
         }
- 
-        if ( allSlots.contains("setUp()") > 0 ) invokeMember("setUp()");
 
-        for ( char *sl = allSlots.first(); sl; sl = allSlots.next() ) 
+        if ( allSlots.contains("setUp()") )
+            invokeMember("setUp()");
+
+        foreach ( QByteArray sl, allSlots )
         {
-            QString str = sl;
-           
+            const QString str = sl;
             if ( str.startsWith("test") )
             {
                 m_results = results(sl);
                 m_results->clear();
 
-                cout << "KUnitTest_Debug_BeginSlot[" << sl << "]" << endl;
+                cout << "KUnitTest_Debug_BeginSlot[" << sl.data() << "]" << endl;
                 invokeMember(str);
-                cout << "KUnitTest_Debug_EndSlot[" << sl << "]" << endl;
+                cout << "KUnitTest_Debug_EndSlot[" << sl.data() << "]" << endl;
             }
         }
 
-        if ( allSlots.contains("tearDown()") > 0 ) invokeMember("tearDown()");
-    
-        m_total->clear();        
+        if ( allSlots.contains("tearDown()") )
+            invokeMember("tearDown()");
+
+        m_total->clear();
     }
-    
-    TestResults *SlotTester::results(const char *sl) 
+
+    TestResults *SlotTester::results(const char *sl)
     {
-        if ( m_resultsList.find(sl) == 0L ) m_resultsList.insert(sl, new TestResults());
-    
-        return m_resultsList[sl]; 
+        if ( m_resultsList.find(sl) == 0 )
+            m_resultsList.insert(sl, new TestResults());
+
+        return m_resultsList[sl];
     }
 }
 
@@ -105,4 +114,3 @@ QTextStream& operator<<( QTextStream& str, const QSize& r ) {
 }
 
 #include "tester.moc"
-
