@@ -1294,7 +1294,9 @@ void KStandardDirs::addKDEDefaults()
        kdedirList.append(execPrefix);
 #endif
 #ifdef __linux__
-    kdedirList.append(executablePrefix());
+    const QString linuxExecPrefix = executablePrefix();
+    if ( !linuxExecPrefix.isEmpty() )
+       kdedirList.append( linuxExecPrefix );
 #endif
 
     // We treat root differently to prevent a "su" shell messing up the
