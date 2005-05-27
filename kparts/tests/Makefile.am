@@ -3,26 +3,29 @@ INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kfile -I$(top_
 AM_LDFLAGS = $(all_libraries)
 LDADD = $(LIB_KPARTS)
 
-check_PROGRAMS = kpartstest normalktmtest ghostviewtest 
+check_PROGRAMS = kpartstest normalktmtest ghostviewtest
 
 kpartstest_SOURCES = example.cpp parts.cpp
-kpartstest_LDADD = libnotepadpart.la
+kpartstest_LDADD = libnotepad.la $(LIB_KPARTS)
 normalktmtest_SOURCES = normalktm.cpp parts.cpp
-normalktmtest_LDADD = libnotepadpart.la
+normalktmtest_LDADD = libnotepad.la $(LIB_KPARTS)
 ghostviewtest_SOURCES = ghostview.cpp
-ghostviewtest_LDADD = $(LIB_KPARTS) 
+ghostviewtest_LDADD = $(LIB_KPARTS)
 
 # These are not really libraries, but modules dynamically opened.
-# So they should be installed in kde_module_dir, which is usually $prefix/lib/kde2
+# So they should be installed in kde_module_dir, which is usually $prefix/lib/kde3
 kde_module_LTLIBRARIES = libspellcheckplugin.la libnotepadpart.la
 
 libspellcheckplugin_la_SOURCES = plugin_spellcheck.cpp
 libspellcheckplugin_la_LIBADD = $(LIB_KPARTS) 
 libspellcheckplugin_la_LDFLAGS = -module $(KDE_PLUGIN)
 
-libnotepadpart_la_SOURCES = notepad.cpp
-libnotepadpart_la_LIBADD = $(LIB_KPARTS)
+libnotepadpart_la_SOURCES = notepadpart.cpp
+libnotepadpart_la_LIBADD = libnotepad.la $(LIB_KPARTS)
 libnotepadpart_la_LDFLAGS = -module $(KDE_PLUGIN)
+
+noinst_LTLIBRARIES = libnotepad.la
+libnotepad_la_SOURCES = notepad.cpp
 
 rcdir = $(kde_datadir)/kpartstest
 rc_DATA = kpartstest_shell.rc
