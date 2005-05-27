@@ -51,7 +51,7 @@ class KAction;
 class KRecentFilesAction;
 class KSelectAction;
 
-class QGridLayout;
+class QVBoxLayout;
 
 //
 // Kate KTextEditor::View class ;)
@@ -512,7 +512,7 @@ class KateView : public Kate::View,
     KateCmdLine *m_cmdLine;
     bool m_cmdLineOn;
 
-    QGridLayout *m_grid;
+    QVBoxLayout *m_vBox;
 
     bool       m_active;
     bool       m_hasWrap;

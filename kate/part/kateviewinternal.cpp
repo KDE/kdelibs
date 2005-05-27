@@ -120,20 +120,15 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   m_lineScroll = new KateScrollBar(Qt::Vertical, this);
   m_lineScroll->show();
   m_lineScroll->setTracking (true);
-
-  m_lineLayout = new QVBoxLayout();
-  m_colLayout = new QHBoxLayout();
-
-  m_colLayout->addWidget(m_lineScroll);
-  m_lineLayout->addLayout(m_colLayout);
+  m_lineScroll->setSizePolicy( QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding));
 
   if (!m_view->dynWordWrap())
   {
     // bottom corner box
     m_dummy = new QWidget(m_view);
     m_dummy->setFixedHeight(m_lineScroll->width());
+    m_dummy->setSizePolicy( QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     m_dummy->show();
-    m_lineLayout->addWidget(m_dummy);
   }
 
   // Hijack the line scroller's controls, so we can scroll nicely for word-wrap
@@ -212,24 +207,9 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   // selection changed to set anchor
   connect( m_view, SIGNAL( selectionChanged() ),
              this, SLOT( viewSelectionChanged() ) );
-
-
-// this is a work arround for RTL desktops
-// should be changed in kde 3.3
-// BTW: this comment has been "ported" from 3.1.X tree
-//      any hacker with BIDI knowlege is welcomed to fix kate problems :)
-  if (QApplication::reverseLayout()){
-      m_view->m_grid->addMultiCellWidget(leftBorder,     0, 1, 2, 2);
-      m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
-      m_view->m_grid->addMultiCellLayout(m_lineLayout, 0, 0, 0, 0);
-  }
-  else{
-      m_view->m_grid->addMultiCellLayout(m_lineLayout, 0, 1, 2, 2);
-      m_view->m_grid->addMultiCellWidget(m_columnScroll, 1, 1, 0, 1);
-      m_view->m_grid->addWidget(leftBorder, 0, 0);
-  }
-
-  updateView ();
+             
+  // update is called in KateView, after construction and layout is over
+  // but before any other kateviewinternal call
 }
 
 KateViewInternal::~KateViewInternal ()
@@ -246,8 +226,7 @@ void KateViewInternal::dynWrapChanged()
 {
   if (m_view->dynWordWrap())
   {
-    delete m_dummy;
-    m_dummy = 0;
+    m_dummy->hide();
     m_columnScroll->hide();
     m_columnScrollDisplayed = false;
 
@@ -255,10 +234,7 @@ void KateViewInternal::dynWrapChanged()
   else
   {
     // bottom corner box
-    m_dummy = new QWidget(m_view);
-    m_dummy->setFixedSize( m_lineScroll->width(), m_lineScroll->width() );
     m_dummy->show();
-    m_lineLayout->addWidget(m_dummy);
   }
 
   tagAll();

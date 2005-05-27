@@ -112,20 +112,42 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   m_renderer = new KateRenderer(doc, this);
   m_doc->arbitraryHL()->addHighlightToView(m_internalHighlights, this);
 
-  m_grid = new QGridLayout (this, 3, 3);
-
-  m_grid->setRowStretch ( 0, 10 );
-  m_grid->setRowStretch ( 1, 0 );
-  m_grid->setColStretch ( 0, 0 );
-  m_grid->setColStretch ( 1, 10 );
-  m_grid->setColStretch ( 2, 0 );
-
   m_viewInternal = new KateViewInternal( this, doc );
+  
+  // layouting ;)
+  
+  m_vBox = new QVBoxLayout (this);
+  m_vBox->setMargin (0);
+  m_vBox->setSpacing (0);
+  
+  QHBoxLayout *hbox = new QHBoxLayout ();
+  m_vBox->addLayout (hbox);
+  hbox->setMargin (0);
+  hbox->setSpacing (0);
+  
+  hbox->addWidget (m_viewInternal->leftBorder);
+  
+  QVBoxLayout *vbox = new QVBoxLayout ();
+  hbox->addLayout (vbox);
+  vbox->setMargin (0);
+  vbox->setSpacing (0);
+  
+  vbox->addWidget (m_viewInternal);
+  vbox->addWidget (m_viewInternal->m_columnScroll);
+  
+  vbox = new QVBoxLayout ();
+  hbox->addLayout (vbox);
+  vbox->setMargin (0);
+  vbox->setSpacing (0); 
+  
+  vbox->addWidget (m_viewInternal->m_lineScroll);
+  vbox->addWidget (m_viewInternal->m_dummy);
+  
+  // this really is needed :)
+  m_viewInternal->updateView ();
 
   connect(&m_viewInternal->cursor, SIGNAL(positionChanged()), SLOT(slotCaretPositionChanged()));
   connect(&m_viewInternal->mouse, SIGNAL(positionChanged()), SLOT(slotMousePositionChanged()));
-
-  m_grid->addWidget (m_viewInternal, 0, 1);
 
   setClipboardInterfaceDCOPSuffix (viewDCOPSuffix());
   setCodeCompletionInterfaceDCOPSuffix (viewDCOPSuffix());
@@ -1054,7 +1076,7 @@ void KateView::showCmdLine ( bool enabled )
     if (!m_cmdLine)
     {
       m_cmdLine = new KateCmdLine (this);
-      m_grid->addMultiCellWidget (m_cmdLine, 2, 2, 0, 2);
+      m_vBox->addWidget (m_cmdLine);
     }
 
     m_cmdLine->show ();

@@ -38,8 +38,6 @@ class KateView;
 class KateIconBorder;
 class KateScrollBar;
 
-class QHBoxLayout;
-class QVBoxLayout;
 class QScrollBar;
 
 class KateViewInternal : public QWidget
@@ -252,8 +250,6 @@ class KateViewInternal : public QWidget
     //
     KateScrollBar *m_lineScroll;
     QWidget* m_dummy;
-    QVBoxLayout* m_lineLayout;
-    QHBoxLayout* m_colLayout;
 
     // These are now cursors to account for word-wrap.
     KateSuperCursor m_startPos;
