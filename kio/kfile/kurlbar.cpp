@@ -444,7 +444,7 @@ void KURLBar::paletteChange( const QPalette & )
 
 QSize KURLBar::sizeHint() const
 {
-    return m_listBox->sizeHint();
+    return minimumSizeHint();
 
 #if 0
     // this code causes vertical and or horizontal scrollbars appearing
@@ -486,9 +486,10 @@ QSize KURLBar::sizeHint() const
 
 QSize KURLBar::minimumSizeHint() const
 {
-    QSize s = sizeHint(); // ###
-    int w = s.width()  + m_listBox->verticalScrollBar()->width();
-    int h = s.height() + m_listBox->horizontalScrollBar()->height();
+    QSize s       = m_listBox->sizeHint();
+    int   barSize = style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+    int w = s.width()  + barSize;
+    int h = s.height() + barSize;
     return QSize( w, h );
 }
 
@@ -808,7 +809,7 @@ void KURLBarListBox::paintEvent( QPaintEvent* )
 {
     QPainter p(this);
     p.setPen( colorGroup().mid() );
-    p.drawRect( 0, 0, width(), height() );
+    p.drawRect( 0, 0, width() - 1, height() - 1 );
 }
 
 Q3DragObject * KURLBarListBox::dragObject()
