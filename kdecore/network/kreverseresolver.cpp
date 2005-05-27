@@ -111,8 +111,8 @@ public:
 };
 
 KReverseResolver::KReverseResolver(const KSocketAddress& addr, int flags,
-				   QObject *parent, const char* name)
-  : QObject(parent, name), d(new KReverseResolverPrivate(addr))
+				   QObject *parent)
+  : QObject(parent), d(new KReverseResolverPrivate(addr))
 {
   d->flags = flags;
 }

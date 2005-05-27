@@ -57,15 +57,15 @@ public:
   }
 };
 
-KServerSocket::KServerSocket(QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+KServerSocket::KServerSocket(QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
   QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
 }
 
-KServerSocket::KServerSocket(const QString& service, QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+KServerSocket::KServerSocket(const QString& service, QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
   QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
@@ -73,8 +73,8 @@ KServerSocket::KServerSocket(const QString& service, QObject* parent, const char
 }
 
 KServerSocket::KServerSocket(const QString& node, const QString& service,
-			     QObject* parent, const char* name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+			     QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
   QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));

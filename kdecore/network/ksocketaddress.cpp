@@ -137,7 +137,7 @@ bool KIpAddress::setAddress(const QString& address)
       // guessing IPv6
 
       quint32 buf[4];
-      if (inet_pton(AF_INET6, address.latin1(), buf))
+      if (inet_pton(AF_INET6, address.toLatin1(), buf))
 	{
 	  memcpy(m_data, buf, sizeof(m_data));
 	  m_version = 6;
@@ -150,7 +150,7 @@ bool KIpAddress::setAddress(const QString& address)
   else
     {
       quint32 buf;
-      if (inet_pton(AF_INET, address.latin1(), &buf))
+      if (inet_pton(AF_INET, address.toLatin1(), &buf))
 	{
 	  *m_data = buf;
 	  m_version = 4;

@@ -161,7 +161,7 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
       if (node.contains(':'))
 	node2 = '[' + node + ']';
 
-      d->request = request.arg(node2).arg(service).latin1();
+      d->request = request.arg(node2).arg(service).toLatin1();
     }
 
   return parseServerReply();

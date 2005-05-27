@@ -109,7 +109,7 @@ public:
    * @param parent		the parent QObject object
    * @param name		the name of this object
    */
-  KServerSocket(QObject* parent = 0L, const char *name = 0L);
+  KServerSocket(QObject* parent = 0L);
 
   /**
    * Construct this object specifying the service to listen on.
@@ -128,7 +128,7 @@ public:
    * @param parent		the parent QObject object
    * @param name		the name of this object
    */
-  KServerSocket(const QString& service, QObject* parent = 0L, const char *name = 0L);
+  KServerSocket(const QString& service, QObject* parent = 0L);
 
   /**
    * Construct this object specifying the node and service names to listen on.
@@ -149,7 +149,7 @@ public:
    * @param name		the name of this object
    */
   KServerSocket(const QString& node, const QString& service,
-		QObject* parent = 0L, const char *name = 0L);
+		QObject* parent = 0L);
 
   /**
    * Destructor. This will close the socket, if open.

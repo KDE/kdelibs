@@ -1735,8 +1735,8 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 
 	QString _d = value.replace(",", " ");
 	_d = _d.simplified();
-	const char *ptr = _d.latin1();
-	const char *end = _d.latin1() + _d.length() + 1;
+	const char *ptr = _d.toLatin1();
+	const char *end = _d.toLatin1().data() + _d.length() + 1;
 
 	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
 	bool largeArc, sweep;

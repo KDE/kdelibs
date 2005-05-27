@@ -269,14 +269,14 @@ QStringList *KResolver::idnDomains = 0;
 
 // default constructor
 KResolver::KResolver(QObject *parent, const char *name)
-  : QObject(parent, name), d(new KResolverPrivate(this))
+  : QObject(parent), d(new KResolverPrivate(this))
 {
 }
 
 // constructor with host and service
 KResolver::KResolver(const QString& nodename, const QString& servicename,
 		   QObject *parent, const char *name)
-  : QObject(parent, name), d(new KResolverPrivate(this, nodename, servicename))
+  : QObject(parent), d(new KResolverPrivate(this, nodename, servicename))
 {
 }
 
@@ -886,7 +886,7 @@ QByteArray KResolver::domainToAscii(const QString& unicodeDomain)
 
   // Do we allow IDN names for this TLD?
   if (input.count() && !idnDomains->contains(input[input.count()-1].toLower()))
-    return input.join(".").toLower().latin1(); // No IDN allowed for this TLD
+    return input.join(".").toLower().toLatin1(); // No IDN allowed for this TLD
 
   // 3) decide whether to enforce the STD3 rules for chars < 0x7F
   // we don't enforce

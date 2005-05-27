@@ -121,7 +121,7 @@ void KBlacklistWorker::loadBlacklist()
 
 	  // make sure there are no surrounding whitespaces
 	  // and that it starts with .
-	  line = line.stripWhiteSpace();
+	  line = line.trimmed();
 	  if (line[0] != '.')
 	    line.prepend(QChar( '.') );
 
@@ -565,7 +565,7 @@ bool KStandardWorker::sanityCheck()
 
 	  if (m_encodedName.isNull())
 	    {
-	      qDebug("could not encode hostname '%s' (UTF-8)", node.utf8().data());
+	      qDebug("could not encode hostname '%s' (UTF-8)", node.toUtf8().data());
 	      setError(KResolver::NoName);
 	      return false;		// invalid hostname!
 	    }
@@ -603,7 +603,7 @@ bool KStandardWorker::resolveScopeId()
       // it's not a number
       // therefore, it's an interface name
 #ifdef HAVE_IF_NAMETOINDEX
-      scopeid = if_nametoindex(scopename.latin1());
+      scopeid = if_nametoindex(scopename.toLatin1());
 #else
       scopeid = 0;
 #endif
@@ -645,7 +645,7 @@ bool KStandardWorker::resolveService()
 	    protoname = "tcp";
 
 	  // it's not, so we can do a port lookup
-	  int result = KResolver::servicePort(serviceName().latin1(), protoname);
+	  int result = KResolver::servicePort(serviceName().toLatin1(), protoname);
 	  if (result == -1)
 	    {
 	      // lookup failed!
@@ -891,7 +891,7 @@ bool KStandardWorker::run()
 	resultList.append(res);
 #ifdef HAVE_GETADDRINFO
 	worker = new GetAddrInfoThread(m_encodedName,
-				       serviceName().latin1(),
+				       serviceName().toLatin1(),
 				       families[i].af, flags(), res);
 #else
 	worker = new GetHostByNameThread(m_encodedName, port, scopeid,
@@ -962,7 +962,7 @@ bool KGetAddrinfoWorker::preprocess()
 bool KGetAddrinfoWorker::run()
 {
   // make an AF_UNSPEC getaddrinfo(3) call
-  GetAddrInfoThread worker(m_encodedName, serviceName().latin1(),
+  GetAddrInfoThread worker(m_encodedName, serviceName().toLatin1(),
 			   AF_UNSPEC, flags(), &results);
 
   if (!worker.run())
