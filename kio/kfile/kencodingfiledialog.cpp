@@ -193,7 +193,7 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QS
 			     const QString& dir, const  QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = !dir.isEmpty() && dir.at(0) == ':';
     KEncodingFileDialog dlg(specialDir?dir:QString::null, encoding,filter,caption.isNull() ? i18n("Save As") : 
 	caption, Saving,parent, "filedialog", true);
 
