@@ -73,8 +73,7 @@ VCardTool::~VCardTool()
 {
 }
 
-// TODO: make list a const&
-QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
+QString VCardTool::createVCards( const Addressee::List& list, VCard::Version version )
 {
   VCard::List vCardList;
 
@@ -847,7 +846,7 @@ QStringList VCardTool::splitString( const QChar &sep, const QString &str )
   int pos = value.find( sep, start );
 
   while ( pos != -1 ) {
-    if ( value[ pos - 1 ] != '\\' ) {
+    if ( pos == 0 || value[ pos - 1 ] != '\\' ) {
       if ( pos > start && pos <= (int)value.length() )
         list << value.mid( start, pos - start );
       else

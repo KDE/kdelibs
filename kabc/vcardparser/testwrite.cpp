@@ -46,7 +46,7 @@ int main( int argc, char **argv )
 
   addressee.setNameFromString( "Mr. Tobias Koenig Jr." );
   addressee.setNickName( "tokoe" );
-  addressee.setBirthday( QDate( 1982, 7, 19 ) );
+  addressee.setBirthday( QDateTime( QDate( 1982, 7, 19 ) ) );
   addressee.setMailer( "mutt1.2" );
   addressee.setTimeZone( KABC::TimeZone( +2 ) );
 

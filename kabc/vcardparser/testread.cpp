@@ -42,7 +42,7 @@ static const KCmdLineOptions options[] =
 
 int main( int argc, char **argv )
 {
-  KApplication::disableAutoDcopRegistration();
+  KApplication::disableAutoDcopRegistration(); // nice thought, but KURL -> ksycoca -> DCOP attach() anyway
 
   KAboutData aboutData( "testread", "vCard test reader", "0.1" );
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
@@ -83,7 +83,7 @@ int main( int argc, char **argv )
     text = converter.createVCards( list ); // uses version 3.0
   }
 
-  std::cout << text.utf8();
+  std::cout << text.utf8().data();
 
   return 0;
 }

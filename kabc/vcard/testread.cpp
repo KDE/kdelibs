@@ -18,19 +18,13 @@ int main(int argc, char * argv[])
 	
 	QFile f(argv[1]);
 	
-	Q3CString str;
-	
 	if (!f.open(QIODevice::ReadOnly)) {
 		cerr << "Couldn't open file \"" << argv[1] << endl;
 		exit(1);
 	}
+        QByteArray str = f.readAll();
 	
-	QTextStream t(&f);
-	
-	while (!t.eof())
-		str += t.readLine().utf8() + '\n';
-	
-	using namespace VCARD; 
+	using namespace VCARD;
 
 	// Iterate through all vCards in the file.
 
@@ -54,14 +48,14 @@ int main(int argc, char * argv[])
 			
 			Q3CString s = v.contentLine(EntityEmail)->value()->asString();
 			
-			cerr << "Email value == " << s << endl;
+			cerr << "Email value == " << s.data() << endl;
 		}
 		
 		if (v.has(EntityNickname)) {
 			cerr << "Nickname parameter found" << endl;
 			
 			cerr << "Nickname value == " <<
-				v.contentLine(EntityNickname)->value()->asString() <<
+				v.contentLine(EntityNickname)->value()->asString().data() <<
 				endl;
 		}
 		
@@ -95,7 +89,7 @@ int main(int argc, char * argv[])
 			cerr << "URL Parameter found" << endl;
 			
 			cerr << "URL Value == " <<
-				v.contentLine(EntityURL)->value()->asString() <<
+				v.contentLine(EntityURL)->value()->asString().data() <<
 				endl;
 			
 			URIValue * urlVal =
@@ -104,10 +98,10 @@ int main(int argc, char * argv[])
 			assert(urlVal != 0);
 			
 			cerr << "URL scheme == " <<
-				urlVal->scheme() << endl;
+				urlVal->scheme().data() << endl;
 			
 			cerr << "URL scheme specific part == " <<
-				urlVal->schemeSpecificPart() << endl;
+				urlVal->schemeSpecificPart().data() << endl;
 		}
 		
 		if (v.has(EntityN)) {
@@ -116,11 +110,11 @@ int main(int argc, char * argv[])
 			NValue * n =
 				(NValue *)(v.contentLine(EntityN)->value());
 			
-			cerr << "Family name  == " << n->family()	<< endl;
-			cerr << "Given  name  == " << n->given()	<< endl;
-			cerr << "Middle name  == " << n->middle()	<< endl;
-			cerr << "Prefix       == " << n->prefix()	<< endl;
-			cerr << "Suffix       == " << n->suffix()	<< endl;
+			cerr << "Family name  == " << n->family().data() << endl;
+			cerr << "Given  name  == " << n->given().data()  << endl;
+			cerr << "Middle name  == " << n->middle().data() << endl;
+			cerr << "Prefix       == " << n->prefix().data() << endl;
+			cerr << "Suffix       == " << n->suffix().data() << endl;
 		}
 		
 		cerr << "***************** END VCARD ******************" << endl;
