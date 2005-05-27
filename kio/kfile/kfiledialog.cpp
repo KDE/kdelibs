@@ -1063,7 +1063,7 @@ void KFileDialog::initGUI()
     delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
-    d->boxLayout->addWidget(toolbar, Qt::AlignTop);
+    d->boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     d->urlBarLayout = new QHBoxLayout( d->boxLayout ); // needed for the urlBar that may appear
     QVBoxLayout *vbox = new QVBoxLayout( d->urlBarLayout );
