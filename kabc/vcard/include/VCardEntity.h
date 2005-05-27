@@ -25,6 +25,7 @@
 #define  ENTITY_H
 
 #include <qcstring.h>
+#include <kdelibs_export.h>
 
 namespace VCARD
 {
