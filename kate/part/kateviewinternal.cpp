@@ -573,8 +573,6 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     }
   }    
   
-  m_view->renderer()->layoutText (width(), height(), m_doc->getRealLine(startPos().line()), m_view->dynWordWrap()); 
-
   if (m_view->dynWordWrap())
   {
     KateTextCursor realStart = startPos();
@@ -584,11 +582,9 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     uint line = startRange.virtualLine();
     int realLine = startRange.line();
     uint oldLine = line;
-    int startCol = startRange.startCol();
     int startX = startRange.startX();
-    int endX = startRange.startX();
+    int startCol = startRange.startCol();
     int shiftX = startRange.startCol() ? startRange.shiftX() : 0;
-    bool wrap = false;
     int newViewLine = startRange.viewLine();
     // z is the current display view line
     KateTextLine::Ptr text = textLine(realLine);
@@ -606,7 +602,6 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
         text = textLine(realLine);
         startCol = 0;
         startX = 0;
-        endX = 0;
         shiftX = 0;
         newViewLine = 0;
         oldLine = line;
@@ -631,16 +626,18 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
         if (lineRanges[z].isDirty() || changed || alreadyDirty) {
           alreadyDirty = true;
 
+          int endX = lineRanges[z].endX();
+          int endCol = lineRanges[z].endCol();
+          
           lineRanges[z].setLine(realLine, line);
           lineRanges[z].setStartsInvisibleBlock(false);
+          lineRanges[z].setStartX(startX);
+          lineRanges[z].setStartCol(startCol);
+          lineRanges[z].setViewLine(newViewLine);
 
-          int tempEndX = 0;
+          m_view->renderer()->layoutLine(lineRanges[z], width() - shiftX);
 
-          int endCol = m_view->renderer()->textWidth(text, startCol, width() - shiftX, &wrap, &tempEndX);
-
-          endX += tempEndX;
-
-          if (wrap)
+          if (lineRanges[z].wrap())
           {
             if (m_view->config()->dynWordWrapAlignIndent() > 0)
             {
@@ -655,46 +652,25 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
                   shiftX = 0;
               }
             }
-
-            if ((lineRanges[z].startX() != startX) || (lineRanges[z].endX() != endX) ||
-                 (lineRanges[z].startCol() != startCol) || (lineRanges[z].endCol() != endCol) ||
-                 (lineRanges[z].shiftX() != shiftX))
-              lineRanges[z].setDirty();
-
-            lineRanges[z].setStartCol(startCol);
-            lineRanges[z].setEndCol(endCol);
-            lineRanges[z].setStartX(startX);
-            lineRanges[z].setEndX(endX);
-            lineRanges[z].setViewLine(newViewLine);
-            lineRanges[z].setWrap(true);
-
-            startCol = endCol;
-            startX = endX;
+            
+            lineRanges[z].setShiftX(shiftX);
+            startX = lineRanges[z].endX();
+            startCol = lineRanges[z].endCol();
           }
           else
           {
-            if ((lineRanges[z].startX() != startX) || (lineRanges[z].endX() != endX) ||
-                 (lineRanges[z].startCol() != startCol) || (lineRanges[z].endCol() != endCol))
-              lineRanges[z].setDirty();
-
-            lineRanges[z].setStartCol(startCol);
-            lineRanges[z].setEndCol(endCol);
-            lineRanges[z].setStartX(startX);
-            lineRanges[z].setEndX(endX);
-            lineRanges[z].setViewLine(newViewLine);
-            lineRanges[z].setWrap(false);
-
             line++;
           }
 
-          lineRanges[z].setShiftX(shiftX);
+          if ((lineRanges[z].startX() != startX) || (lineRanges[z].endX() != endX) ||
+                (lineRanges[z].startCol() != startCol) || (lineRanges[z].endCol() != endCol) ||
+                (lineRanges[z].wrap() && lineRanges[z].shiftX() != shiftX))
+            lineRanges[z].setDirty();
 
         } else {
           // The cached data is still intact
           if (lineRanges[z].wrap()) {
-            startCol = lineRanges[z].endCol();
             startX = lineRanges[z].endX();
-            endX = lineRanges[z].endX();
           } else {
             line++;
           }
@@ -718,12 +694,11 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
           lineRanges[z-1].setStartsInvisibleBlock(lineRanges[z].line() != lineRanges[z-1].line() + 1);
 
         lineRanges[z].setStartCol(0);
-        lineRanges[z].setEndCol(m_doc->lineLength(lineRanges[z].line()));
         lineRanges[z].setStartX(0);
-        lineRanges[z].setEndX(m_view->renderer()->textWidth( textLine( lineRanges[z].line() ), -1 ));
         lineRanges[z].setShiftX(0);
         lineRanges[z].setViewLine(0);
-        lineRanges[z].setWrap(false);
+        
+        m_view->renderer()->layoutLine(lineRanges[z]);
       }
       else if (z && lineRanges[z-1].isDirty())
       {
@@ -1036,37 +1011,43 @@ public:
   BoundedCursor(KateViewInternal* vi, uint line, uint col )
     : CalculatingCursor( vi, line, col ) {};
   virtual CalculatingCursor& operator+=( int n ) {
-    m_col += n;
+    KateLineRange thisRange = m_vi->range(*this);
+    if (!thisRange.layout()) {
+      kdWarning() << "Did not retrieve layout for line " << thisRange.line() << endl;
+      return *this;
+    }
 
-    if (n > 0 && m_vi->m_view->dynWordWrap()) {
+    if (n >= 0) {
       // Need to constrain to current visible text line for dynamic wrapping mode
-      if (m_col > m_vi->m_doc->lineLength(m_line)) {
-        KateLineRange currentRange = m_vi->range(*this);
-
-        int endX;
-        bool crap;
-        m_vi->m_view->renderer()->textWidth(m_vi->textLine(m_line), currentRange.startCol(), m_vi->width() - currentRange.xOffset(), &crap, &endX);
-        endX += (m_col - currentRange.endCol() + 1) * m_vi->m_view->renderer()->spaceWidth();
-
-        // Constraining if applicable NOTE: some code duplication in KateViewInternal::resize()
-        if (endX >= m_vi->width() - currentRange.xOffset()) {
-          m_col -= n;
-          if ( uint( line() ) < m_vi->m_doc->numLines() - 1 ) {
-            m_line++;
-            m_col = 0;
-          }
-        }
+      const int maxCol = m_vi->m_view->dynWordWrap() ? thisRange.endCol() : m_vi->m_doc->lineLength(line());
+      for (int i = 0; i < n; i++) {
+        if (m_col == maxCol)
+          break;
+    
+        m_col = thisRange.layout()->nextCursorPosition(m_col);
       }
+    } else {
+      // Need to constrain to current visible text line for dynamic wrapping mode
+      const int minCol = m_vi->m_view->dynWordWrap() ? thisRange.startCol() : 0;
+      for (int i = 0; i > n; i--) {
+        if (m_col == minCol)
+          break;
+    
+        m_col = thisRange.layout()->previousCursorPosition(m_col);
+      }
+    }
 
+    Q_ASSERT( valid() );
+    return *this;
+
+    /*
+    This is old code.  Still here because I don't quite understand why it was doing this...??
+    
     } else if (n < 0 && col() < 0 && line() > 0 ) {
       m_line--;
       m_col = m_vi->m_doc->lineLength( line() );
     }
-
-    m_col = QMAX( 0, col() );
-
-    Q_ASSERT( valid() );
-    return *this;
+    */
   }
   virtual CalculatingCursor& operator-=( int n ) {
     return operator+=( -n );
@@ -1081,37 +1062,48 @@ public:
     : CalculatingCursor( vi, c ) {};
   WrappingCursor(KateViewInternal* vi, uint line, uint col )
     : CalculatingCursor( vi, line, col ) {};
-
+  
   virtual CalculatingCursor& operator+=( int n ) {
-    if( n < 0 ) return operator-=( -n );
-    int len = m_vi->m_doc->lineLength( line() );
-    if( col() + n <= len ) {
-      m_col += n;
-    } else if( uint( line() ) < m_vi->m_doc->numLines() - 1 ) {
-      n -= len - col() + 1;
-      m_col = 0;
-      m_line++;
-      operator+=( n );
-    } else {
-      m_col = len;
+    KateLineRange thisRange = m_vi->range(*this);
+    if (!thisRange.layout()) {
+      kdWarning() << "Did not retrieve layout for line " << thisRange.line() << endl;
+      return *this;
     }
-    Q_ASSERT( valid() );
+
+    if (n >= 0) {
+      for (int i = 0; i < n; i++) {
+        if (m_col == m_vi->m_doc->lineLength(line())) {
+          if (uint(line()) >= m_vi->m_doc->numLines() - 1)
+            break;
+  
+          m_col = 0;
+          m_line++;
+          continue;
+        }
+  
+        m_col = thisRange.layout()->nextCursorPosition(m_col);
+      }
+      
+    } else {
+      for (int i = 0; i > n; i--) {
+        if (m_col == 0) {
+          if (line() == 0)
+            break;
+  
+          m_line--;
+          m_col = m_vi->m_doc->lineLength(line());
+          continue;
+        }
+  
+        m_col = thisRange.layout()->previousCursorPosition(m_col);
+      }
+    }
+
+    Q_ASSERT(valid());
     return *this;
   }
   virtual CalculatingCursor& operator-=( int n ) {
-    if( n < 0 ) return operator+=( -n );
-    if( col() - n >= 0 ) {
-      m_col -= n;
-    } else if( line() > 0 ) {
-      n -= col() + 1;
-      m_line--;
-      m_col = m_vi->m_doc->lineLength( line() );
-      operator-=( n );
-    } else {
-      m_col = 0;
-    }
-    Q_ASSERT( valid() );
-    return *this;
+    return operator+=( -n );
   }
 };
 

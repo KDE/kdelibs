@@ -169,7 +169,7 @@ public:
     /**
      * Text width & height calculation functions...
      */
-    void layoutLine(KateLineRange& range, int maxwidth);
+    void layoutLine(KateLineRange& range, int maxwidth = -1);
 
     // Width calculators
     uint spaceWidth();
