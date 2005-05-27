@@ -5,6 +5,7 @@ INCLUDES= $(all_includes)
 kde_module_LTLIBRARIES = kio_ftp.la
 
 kio_ftp_la_SOURCES = ftp.cc
+kio_ftp_la_CPPFLAGS = -I$(top_srcdir)/kdecore/network
 kio_ftp_la_LIBADD  = $(LIB_KIO)
 kio_ftp_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN) 
 

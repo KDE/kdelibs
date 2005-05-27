@@ -28,13 +28,13 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <q3cstring.h>
-#include <qstring.h>
+#include <QString>
+#include <QByteArray>
 
 #include <kurl.h>
 #include <kio/slavebase.h>
-#include <kextsock.h>
-#include <ksocks.h>
+#include <kstreamsocket.h>
+#include <kserversocket.h>
 
 struct FtpEntry
 {
@@ -50,187 +50,6 @@ struct FtpEntry
 };
 
 //===============================================================================
-// FtpTextReader  A helper class to read text lines from a socket
-//===============================================================================
-
-#ifdef  KIO_FTP_PRIVATE_INCLUDE
-class FtpSocket;
-
-class FtpTextReader
-{
-public:
-        FtpTextReader()         { textClear();  }
-
-/**
-  * Resets the status of the object, also called from xtor
-  */
-  void  textClear();
-
-/**
-  * Read a line from the socket into m_szText. Only the first RESP_READ_LIMIT
-  * characters are copied. If the server response is longer all extra data up to
-  * the new-line gets discarded. An ending CR gets stripped. The number of chars
-  * in the buffer is returned. Use textToLong() to check for truncation!
-  */
-  int   textRead(FtpSocket *pSock);
-
-/**
-  * An accessor to the data read by textRead()
-  */
-  const char* textLine() const  {  return m_szText;  }
-
-/**
-  * Returns true if the last textRead() resulted in a truncated line
-  */
-  bool  textTooLong() const     {  return m_bTextTruncated;  }
-
-/**
-  * Returns true if the last textRead() got an EOF or an error
-  */
-  bool  textEOF() const         {  return m_bTextEOF;  }
-
-  enum {
-
-  /**
-  * This is the physical size of m_szText. Only up to textReadLimit
-  * characters are used to store a server reply. If the server reply
-  * is longer, the stored line gets truncated - see textTooLong()!
-  */
-    textReadBuffer = 2048,
-
-/**
-  * Max number of chars returned from textLine(). If the server
-  * sends more all chars until the next new-line are discarded.
-  */
-    textReadLimit = 1024
-  };
-
-private:
-  /**
-   * textRead() sets this true on trucation (e.g. line too long)
-   */
-  bool  m_bTextTruncated;
-
-  /**
-   * textRead() sets this true if the read returns 0 bytes or error
-   */
-  bool  m_bTextEOF;
-
-  /**
-   * textRead() fills this buffer with data
-   */
-  char m_szText[textReadBuffer];
-
-  /**
-   * the number of bytes in the current response line
-   */
-  int m_iTextLine;
-
-  /**
-   * the number of bytes in the response buffer (includes m_iRespLine)
-   */
-  int m_iTextBuff;
-};
-#endif // KIO_FTP_PRIVATE_INCLUDE
-
-//===============================================================================
-// FtpSocket  Helper Class for Data or Control Connections
-//===============================================================================
-#ifdef  KIO_FTP_PRIVATE_INCLUDE
-class FtpSocket : public FtpTextReader, public KExtendedSocket
-{
-private:
-  // hide the default xtor
-          FtpSocket()  {}
-public:
-/**
-  * The one and only public xtor. The string data passed to the
-  * xtor must remain valid during the object's lifetime - it is
-  * used in debug messages to identify the socket instance.
-  */
-          FtpSocket(const char* pszName)
-          {
-            m_pszName = pszName;
-            m_server = -1;
-          }
-
-          ~FtpSocket()       {  closeSocket();  }
-
-/**
-  * Resets the status of the object, also called from xtor
-  */
-  void    closeSocket();
-
-/**
-  * We may have a server connection socket if not in passive mode. This
-  * routine returns the server socket set by setServer. The sock()
-  * function will return the server socket - if it is set.
-  */
-  int     server() const     {  return m_server;  }
-
-/**
-  * Set the server socket if arg >= 0, otherwise clear it.
-  */
-  void    setServer(int i)   {  m_server = (i >= 0) ? i : -1;  }
-
-/**
-  * returns the effective socket that user used for read/write. See server()
-  */
-  int     sock() const       {  return (m_server != -1) ? m_server : fd(); }
-
-/**
-  * output an debug message via kdDebug
-  */
-  void    debugMessage(const char* pszMsg) const;
-
-/**
-  * output an error message via kdError, returns iErrorCode
-  */
-  int     errorMessage(int iErrorCode, const char* pszMsg) const;
-
-/**
-  * connect socket and set some options (reuse, keepalive, linger)
-  */
-  int     connectSocket(int iTimeOutSec, bool bControl);
-
-/**
-  * utility to simplify calls to ::setsockopt(). Uses sock().
-  */
-  bool    setSocketOption(int opt, char*arg, socklen_t len) const;
-
-/**
-  * utility to read data from the effective socket, see sock()
-  */
-  long    read(void* pData, long iMaxlen)
-          {
-            return KSocks::self()->read(sock(), pData, iMaxlen);
-          }
-
-/**
-  * utility to write data to the effective socket, see sock()
-  */
-  long    write(void* pData, long iMaxlen)
-          {
-            return KSocks::self()->write(sock(), pData, iMaxlen);
-          }
-
-/**
-  * Use the inherited FtpTextReader to read a line from the socket
-  */
-  int     textRead()
-          {
-            return FtpTextReader::textRead(this);
-          }
-
-private:
-  const char*  m_pszName;  // set by the xtor, used for debug output
-  int          m_server;   // socket override, see setSock()
-};
-#else
-   class FtpSocket;
-#endif // KIO_FTP_PRIVATE_INCLUDE
-
-//===============================================================================
 // Ftp
 //===============================================================================
 class Ftp : public KIO::SlaveBase
@@ -238,7 +57,7 @@ class Ftp : public KIO::SlaveBase
   // Ftp()	{}
 
 public:
-  Ftp( const Q3CString &pool, const Q3CString &app );
+  Ftp( const QByteArray &pool, const QByteArray &app );
   virtual ~Ftp();
 
   virtual void setHost( const QString& host, int port, const QString& user, const QString& pass );
@@ -337,7 +156,7 @@ private:
    *
    * return true if any response received, false on error
    */
-  bool ftpSendCmd( const Q3CString& cmd, int maxretries = 1 );
+  bool ftpSendCmd( const QByteArray& cmd, int maxretries = 1 );
 
   /**
    * Use the SIZE command to get the file size.
@@ -587,12 +406,12 @@ private: // data members
   /**
    * control connection socket, only set if openControl() succeeded
    */
-  FtpSocket  *m_control;
+  KNetwork::KStreamSocket  *m_control;
 
   /**
    * data connection socket
    */
-  FtpSocket  *m_data;
+  KNetwork::KStreamSocket  *m_data;
 };
 
 #endif
