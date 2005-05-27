@@ -546,10 +546,10 @@ namespace KUnitTest
     };
 }
 
-QTextStream& operator<<( QTextStream& str, const QRect& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QRect& r );
 
-QTextStream& operator<<( QTextStream& str, const QPoint& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QPoint& r );
 
-QTextStream& operator<<( QTextStream& str, const QSize& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QSize& r );
 
 #endif
