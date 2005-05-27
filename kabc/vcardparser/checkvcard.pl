@@ -41,9 +41,11 @@ if ( !open( READ, "./testread $file $options 2> /dev/null |" ) ) {
 
 print "Checking '$file':\n";
 
+$gotsomething = 0;
 $error = 0;
 $i = 0;
 while( <READ> ) {
+  $gotsomething = 1;
   $out = $_;
   $ref = @ref[$i++];
 
@@ -57,6 +59,11 @@ while( <READ> ) {
 
 close READ;
 
+if ( $gotsomething == 0 ) {
+  print "\n  FAILED: testread didn't output anything\n";
+  system "touch FAILED";
+  exit 1;
+}
 if ( $error > 0 ) {
   print "\n  FAILED: $error errors found.\n";
   system "touch FAILED";
