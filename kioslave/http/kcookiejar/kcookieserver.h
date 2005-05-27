@@ -41,7 +41,7 @@ class KCookieServer : public KDEDModule
   Q_OBJECT
   K_DCOP
 public:
-  KCookieServer(const Q3CString &);
+  KCookieServer(const DCOPCString &);
   ~KCookieServer();
 
 k_dcop:

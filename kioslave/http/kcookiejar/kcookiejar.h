@@ -174,7 +174,7 @@ public:
      * cookie_headers should be a concatenation of all lines of a HTTP-header
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
-    KHttpCookieList makeCookies(const QString &_url, const Q3CString &cookie_headers, long windowId);
+    KHttpCookieList makeCookies(const QString &_url, const QByteArray &cookie_headers, long windowId);
 
     /**
      * This function parses cookie_headers and returns a linked list of
@@ -184,7 +184,7 @@ public:
      * cookie_domstr should be a concatenation of "name=value" pairs, separated
      * by a semicolon ';'.
      */
-    KHttpCookieList makeDOMCookies(const QString &_url, const Q3CString &cookie_domstr, long windowId);
+    KHttpCookieList makeDOMCookies(const QString &_url, const QByteArray &cookie_domstr, long windowId);
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.

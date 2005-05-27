@@ -46,7 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookieserver.h"
 
 extern "C" {
-    KDE_EXPORT KDEDModule *create_kcookiejar(const Q3CString &name)
+    KDE_EXPORT KDEDModule *create_kcookiejar(const DCOPCString &name)
     {
        return new KCookieServer(name);
     }
@@ -75,7 +75,7 @@ public:
    RequestList() : Q3PtrList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer(const Q3CString &name)
+KCookieServer::KCookieServer(const DCOPCString &name)
               :KDEDModule(name)
 {
    mOldCookieServer = new DCOPClient(); // backwards compatibility.

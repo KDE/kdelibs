@@ -109,13 +109,13 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
     if (_str.isEmpty())
         return KCookieDunno;
 
-    Q3CString advice = _str.lower().latin1();
+    QString advice = _str.lower();
 
-    if (advice == "accept")
+    if (advice == QLatin1String("accept"))
         return KCookieAccept;
-    else if (advice == "reject")
+    else if (advice == QLatin1String("reject"))
         return KCookieReject;
-    else if (advice == "ask")
+    else if (advice == QLatin1String("ask"))
         return KCookieAsk;
 
     return KCookieDunno;
@@ -662,7 +662,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
           // Catch some TLDs that we miss with the previous check
           // e.g. com.au, org.uk, mil.co
-          Q3CString t = partList[0].lower().utf8();
+          const QString t = partList[0].lower();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int"))
               break;
        }
@@ -688,7 +688,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 // which start with "Set-Cookie". The lines should be separated by '\n's.
 //
 KHttpCookieList KCookieJar::makeCookies(const QString &_url,
-                                       const Q3CString &cookie_headers,
+                                       const QByteArray &cookie_headers,
                                        long windowId)
 {
     KHttpCookieList cookieList;
@@ -773,11 +773,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         while ((*cookieStr == ';') || (*cookieStr == ' '))
         {
             cookieStr++;
-            
+
             // Name-Value pair follows
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
-            Q3CString cName = Name.lower().latin1();
+            QString cName = Name.lower();
             if (cName == "domain")
             {
                 lastCookie->mDomain = Value.lower();
@@ -843,7 +843,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 * If no cookies are found, 0 is returned.
 */
 KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
-                                          const Q3CString &cookie_domstring,
+                                          const QByteArray &cookie_domstring,
                                           long windowId)
 {
     // A lot copied from above
@@ -1512,11 +1512,10 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     m_globalAdvice = strToAdvice(value);
 
     // Reset current domain settings first.
-    for ( QStringList::Iterator it=m_domainList.begin(); it != m_domainList.end(); )
+    //  (must make a copy because setDomainAdvice() might delete the domain from m_domainList inside the for loop)
+    const QStringList domains = m_domainList;
+    foreach( QString domain, domains )
     {
-         // Make sure to update iterator before calling setDomainAdvice()
-         // setDomainAdvice() might delete the domain from domainList.
-         QString domain = *it++;
          setDomainAdvice(domain, KCookieDunno);
     }
 
