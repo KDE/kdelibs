@@ -20,6 +20,8 @@
 #include <kunittest/tester.h>
 #include <kunittest/module.h>
 
+#include <qrect.h>
+
 #include <kconfig.h>
 
 class KConfigTest : public KUnitTest::Tester

@@ -553,12 +553,12 @@ namespace KUnitTest
 }
 
 class QRect;
-QTextStream& operator<<( QTextStream& str, const QRect& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QRect& r );
 
 class QPoint;
-QTextStream& operator<<( QTextStream& str, const QPoint& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QPoint& r );
 
 class QSize;
-QTextStream& operator<<( QTextStream& str, const QSize& r );
+KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QSize& r );
 
 #endif
