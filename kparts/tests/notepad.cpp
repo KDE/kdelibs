@@ -16,8 +16,6 @@
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
 
-K_EXPORT_COMPONENT_FACTORY( libnotepadpart, NotepadFactory )
-
 NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
                           QObject* parent, const char* name,
                           const QStringList& )
