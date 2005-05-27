@@ -234,19 +234,6 @@ public:
     KateAttribute* attribute(uint pos);
     KateAttribute* specificAttribute(int context);
 
-  /**
-   * new stuff for the QTextLayout
-   */
-  public:
-    void layoutText (int width, int height, int startLine, bool wrapText);
-
-  private:
-    int m_width;
-    int m_height;
-    int m_startLine;
-    
-    QList<QTextLayout *> m_layouts;
-
   private:
     /**
      * Paint a whitespace marker on position (x, y).
