@@ -782,8 +782,8 @@ int Ftp::ftpOpenPASVDataConnection()
   }
 
   // Make hostname and port number ...
-  KInetSocketAddress address(KIpAddress((i[0] << 24) | (i[1] << 16) |
-                                        (i[2] << 8) | i[3]), i[4] << 8 | i[5]);
+  KInetSocketAddress address((KIpAddress((i[0] << 24) | (i[1] << 16) |
+                                         (i[2] << 8) | i[3]) ), i[4] << 8 | i[5]);
 
   // now connect the data socket ...
   m_data = new KStreamSocket("PASV");
