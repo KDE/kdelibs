@@ -1763,7 +1763,8 @@ Value VarDeclNode::evaluate(ExecState *exec) const
       val = init->evaluate(exec);
       KJS_CHECKEXCEPTIONVALUE
   } else {
-      if ( variable.hasProperty(exec, ident ) ) // already declared ?
+    // ### check attributes? reuse check done in processVarDecls()?
+      if (variable.imp()->getDirect(ident)) // already declared ?
           return Value();
       val = Undefined();
   }
@@ -1789,6 +1790,8 @@ Value VarDeclNode::evaluate(ExecState *exec) const
 void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
+  // ### use getDirect()? Check attributes? 
+  // ### avoid duplication with actions performed in evaluate()?
   if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
     int flags = None;
     if (exec->_context->type() != EvalCode)

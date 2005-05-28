@@ -1,3 +1,8 @@
+2005-05-28  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: fixed override of properties on variable
+	declarations. See bug report #104181.
+
 2005-05-16  Harri Porten  <porten@kde.org>
 
 	* removed remaining use of deprecated Value::isNull(). 
