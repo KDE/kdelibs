@@ -89,9 +89,18 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
     case ARABIC_INDIC:
         item = toArabicIndic( value );
         break;
+    case LAO:
+        item = toLao( value );
+        break;
     case PERSIAN:
     case URDU:
         item = toPersianUrdu( value );
+        break;
+    case THAI:
+        item = toThai( value );
+        break;
+    case TIBETAN:
+        item = toTibetan( value );
         break;
 // Algoritmic:
     case LOWER_ROMAN:
@@ -112,11 +121,11 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
 // Alphabetic:
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        item = toLatin( value, 'a' );
+        item = toLowerLatin( value );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        item = toLatin( value, 'A' );
+        item = toUpperLatin( value );
         break;
     case LOWER_GREEK:
         item = toLowerGreek( value );
@@ -135,6 +144,27 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
         break;
     case KATAKANA_IROHA:
         item = toKatakanaIroha( value );
+        break;
+// Ideographic:
+    case JAPANESE_FORMAL:
+        item = toJapaneseFormal( value );
+        break;
+    case JAPANESE_INFORMAL:
+        item = toJapaneseInformal( value );
+        break;
+    case SIMP_CHINESE_FORMAL:
+        item = toSimpChineseFormal( value );
+        break;
+    case SIMP_CHINESE_INFORMAL:
+        item = toSimpChineseInformal( value );
+        break;
+    case TRAD_CHINESE_FORMAL:
+        item = toTradChineseFormal( value );
+        break;
+    case CJK_IDEOGRAPHIC:
+        // CSS 3 List says treat as trad-chinese-informal
+    case TRAD_CHINESE_INFORMAL:
+        item = toTradChineseInformal( value );
         break;
 // Quotes:
     case OPEN_QUOTE:

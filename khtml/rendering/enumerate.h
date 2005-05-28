@@ -1,7 +1,7 @@
 /**
  * This file is part of the HTML rendering engine for KDE.
  *
- * Copyright (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,13 +31,15 @@ namespace khtml {
 namespace Enumerate {
 
 // Numeric
-    QString toNumeric( int number, int base );
     QString toArabicIndic( int number );
+    QString toLao( int number );
     QString toPersianUrdu( int number );
+    QString toThai( int number );
+    QString toTibetan( int number );
 
 // Alphabetic
-    QString toLatin( int number, int base );
-    QString toAlphabetic( int number, int base, const QChar alphabet[] );
+    QString toLowerLatin( int number );
+    QString toUpperLatin( int number );
     QString toLowerGreek( int number );
     QString toUpperGreek( int number );
     QString toHiragana( int number );
@@ -50,6 +52,14 @@ namespace Enumerate {
     QString toHebrew( int number );
     QString toGeorgian( int number );
     QString toArmenian( int number );
+
+// Ideographic
+    QString toJapaneseFormal   ( int number );
+    QString toJapaneseInformal ( int number );
+    QString toSimpChineseFormal   ( int number );
+    QString toSimpChineseInformal ( int number );
+    QString toTradChineseFormal   ( int number );
+    QString toTradChineseInformal ( int number );
 
 }} // namespaces
 
