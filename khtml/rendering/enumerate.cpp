@@ -1,9 +1,9 @@
 /**
  * This file is part of the HTML rendering engine for KDE.
  *
- * Copyright (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
- *      
- *           (C) Hebrew algorithm by herouth@netvision.net.il 
+ * Copyright (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *
+ *           (C) Hebrew algorithm by herouth@netvision.net.il
  *                               and schlpbch@iam.unibe.ch
  *
  * This library is free software; you can redistribute it and/or
@@ -169,7 +169,7 @@ QString toHebrew( int number ) {
     return letter;
 }
 
-QString toLatin( int number, int base ) {
+static inline QString toLatin( int number, int base ) {
     if (number < 1) return QString::number(number);
     Q3ValueList<QChar> letters;
     while(number > 0) {
@@ -188,7 +188,15 @@ QString toLatin( int number, int base ) {
     return str;
 }
 
-QString toAlphabetic( int number, int base, const QChar alphabet[] ) {
+QString toLowerLatin( int number ) {
+    return toLatin( number, 'a' );
+}
+
+QString toUpperLatin( int number ) {
+    return toLatin( number, 'A' );
+}
+
+static inline QString toAlphabetic( int number, int base, const QChar alphabet[] ) {
     if (number < 1) return QString::number(number);
     Q3ValueList<QChar> letters;
     while(number > 0) {
@@ -269,7 +277,7 @@ QString toUpperGreek( int number ) {
     return toAlphabetic( number, 19, greek );
 }
 
-QString toNumeric( int number, int base ) {
+static inline QString toNumeric( int number, int base ) {
     QString letter = QString::number(number);
     for(int i = 0; i < letter.length(); i++) {
         if (letter[i].isDigit())
@@ -284,6 +292,120 @@ QString toArabicIndic( int number ) {
 
 QString toPersianUrdu( int number ) {
     return toNumeric(number, 0x6F0);
+}
+
+QString toLao( int number ) {
+    return toNumeric(number, 0xED0);
+}
+
+QString toThai( int number ) {
+    return toNumeric(number, 0xE50);
+}
+
+QString toTibetan( int number ) {
+    return toNumeric(number, 0xF20);
+}
+
+static inline QString toIdeographic(int number, const QChar digits[], const QChar digitmarkers[]) {
+    if (number < 0 || number > 9999) return QString::number(number);
+
+    QString grp = QString::number(number);
+
+    // ### Append group markers to handle numbers > 9999
+
+    QString str;
+
+    // special case
+    if (number < 20 && number >= 10) {
+        str.append(digitmarkers[0]);
+        str.append(digits[grp[1].digitValue()]);
+        return str;
+    }
+
+    int len = grp.length();
+    bool collapseZero = false;
+    for (int i = 0; i < len ; i++) {
+        int digit = grp[i].digitValue();
+        // Add digit markers to digits > 0
+        if ((len-i-1) > 0 && digit > 0)
+            str.append(digitmarkers[(len-i-2)]);
+        // Add digit, but collapse consecutive zeros
+        if (!collapseZero || digit > 0) {
+            str.append(digits[digit]);
+
+            if (digit == 0)
+                collapseZero = true;
+            else
+                collapseZero = false;
+        }
+    }
+    return str;
+}
+
+QString toTradChineseFormal( int number ) {
+//     static const QChar groupMarkers[3] = {0x4e07, 0x4ebf, 0x5146};
+    static const QChar digitMarkers[3] = {0x4e07, 0x4ebf, 0x5146};
+    static const QChar digits[10] = {0x96f6, 0x4e00,
+                                     0x4ebc, 0x4e09,
+                                     0x56db, 0x4e94,
+                                     0x516d, 0x4e03,
+                                     0x516b, 0x4e5d};
+    return toIdeographic(number, digits, digitMarkers);
+}
+
+QString toTradChineseInformal( int number ) {
+//     static const QChar groupMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digitMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digits[10] = {0x96f6, 0x4e00,
+                                     0x4ebc, 0x4e09,
+                                     0x56db, 0x4e94,
+                                     0x516d, 0x4e03,
+                                     0x516b, 0x4e5d};
+    return toIdeographic(number, digits, digitMarkers);
+}
+
+QString toSimpChineseFormal( int number ) {
+//     static const QChar groupMarkers[3] = {0x4e07, 0x5104, 0x5146};
+    static const QChar digitMarkers[3] = {0x4e07, 0x4ebf, 0x5146};
+    static const QChar digits[10] = {0x96f6, 0x58f9,
+                                     0x8cb3, 0x53c3,
+                                     0x8086, 0x4f0d,
+                                     0x9678, 0x67d2,
+                                     0x634c, 0x7396};
+    return toIdeographic(number, digits, digitMarkers);
+}
+
+QString toSimpChineseInformal( int number ) {
+//     static const QChar groupMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digitMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digits[10] = {0x96f6, 0x58f9,
+                                     0x8cb3, 0x53c3,
+                                     0x8086, 0x4f0d,
+                                     0x9678, 0x67d2,
+                                     0x634c, 0x7396};
+    return toIdeographic(number, digits, digitMarkers);
+}
+
+QString toJapaneseFormal( int number ) {
+//     static const QChar groupMarkers[3] = {0x4e07, 0x5104, 0x5146};
+    static const QChar digitMarkers[3] = {0x62fe, 0x4f70, 0x4edf};
+    static const QChar digits[10] = {0x96f6, 0x58f9,
+                                     0x8cb3, 0x53c3,
+                                     0x8086, 0x4f0d,
+                                     0x9678, 0x67d2,
+                                     0x634c, 0x7396};
+    return toIdeographic(number, digits, digitMarkers);
+}
+
+QString toJapaneseInformal( int number ) {
+//     static const QChar groupMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digitMarkers[3] = {0x842c, 0x5104, 0x5146};
+    static const QChar digits[10] = {0x96f6, 0x58f9,
+                                     0x8d30, 0x53c1,
+                                     0x8086, 0x4f0d,
+                                     0x9646, 0x67d2,
+                                     0x634c, 0x7396};
+    return toIdeographic(number, digits, digitMarkers);
 }
 
 }} // namespace

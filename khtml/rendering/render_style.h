@@ -593,11 +593,19 @@ enum ECaptionSide {
 
 
 enum EListStyleType {
+    // Symbols:
      LDISC, LCIRCLE, LSQUARE, LBOX, LDIAMOND,
-     LDECIMAL, DECIMAL_LEADING_ZERO, ARABIC_INDIC, PERSIAN, URDU,
-     LOWER_ROMAN, UPPER_ROMAN, HEBREW, ARMENIAN, GEORGIAN, CJK_IDEOGRAPHIC,
+    // Numeric:
+     LDECIMAL, DECIMAL_LEADING_ZERO, ARABIC_INDIC, LAO, PERSIAN, URDU, THAI, TIBETAN,
+    // Algorithmic:
+     LOWER_ROMAN, UPPER_ROMAN, HEBREW, ARMENIAN, GEORGIAN,
+    // Ideographic:
+     CJK_IDEOGRAPHIC, JAPANESE_FORMAL, JAPANESE_INFORMAL,
+     SIMP_CHINESE_FORMAL, SIMP_CHINESE_INFORMAL, TRAD_CHINESE_FORMAL, TRAD_CHINESE_INFORMAL,
+    // Alphabetic:
      LOWER_GREEK, UPPER_GREEK, LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
      HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA,
+    // Special:
      OPEN_QUOTE, CLOSE_QUOTE, LNONE
 };
 
@@ -678,7 +686,7 @@ protected:
             struct {
                 EEmptyCell _empty_cells : 1 ;
                 ECaptionSide _caption_side : 2;
-                EListStyleType _list_style_type : 5 ;
+                EListStyleType _list_style_type : 6;
                 EListStylePosition _list_style_position :1;
 
                 EVisibility _visibility : 2;
@@ -695,7 +703,7 @@ protected:
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
 
-                unsigned int unused : 29;
+                unsigned int unused : 28;
             } f;
             Q_UINT64 _iflags;
         };

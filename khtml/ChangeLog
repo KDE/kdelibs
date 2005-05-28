@@ -1,3 +1,12 @@
+2005-05-28  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement ideographic enumeration including the CSS 2.1 cjk-ideographic and several from CSS 3 List (working draft).
+        Also add three more numeric: (Lao, Thai and Tibetan)
+
+        * css/cssvalues.in: Add new CSS3 values with -khtml-
+        * rendering/render_style.h: Add new enums
+        * rendering/enumerate.cpp: Implement the ideographic algorithm.
+
 2005-05-24  David Faure  <faure@kde.org>
 
         * html/html_tableimpl.cpp (appendChild): Allow javascript to insert

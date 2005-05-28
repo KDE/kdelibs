@@ -243,6 +243,8 @@ if test "$want_mitshm" = "yes" -a "$have_mitshm" = "yes"; then
   AC_DEFINE(HAVE_MITSHM,1,[Define if you want MIT-SHM support])
 fi
 
+AC_CHECK_FUNC(posix_fadvise,[AC_DEFINE(HAVE_FADVISE,1,[Define is posix_fadvise is supported] )])
+
 AC_SUBST(ICE_SUBDIR, 'ICE')
 AC_SUBST(ICE_RLIB, 'ICE/libkICE.la')
 

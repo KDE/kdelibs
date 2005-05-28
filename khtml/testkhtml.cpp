@@ -46,7 +46,9 @@ int main(int argc, char *argv[])
 	::exit( 1 );
     }
 
+#ifndef __KDE_HAVE_GCC_VISIBILITY
     KHTMLFactory *fac = new KHTMLFactory(true);
+#endif
 
     KMainWindow *toplevel = new KMainWindow();
     KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
@@ -117,7 +119,9 @@ int main(int argc, char *argv[])
 
 
     int ret = a.exec();
+#ifndef __KDE_HAVE_GCC_VISIBILITY
     fac->deref();
+#endif
     return ret;
 }
 

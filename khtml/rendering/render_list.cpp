@@ -457,9 +457,6 @@ void RenderListMarker::calcMinMaxWidth()
 
     switch(style()->listStyleType())
     {
-// Unsupported:
-    case CJK_IDEOGRAPHIC:
-        // ### unsupported, we use decimal instead
 // Numeric:
     case LDECIMAL:
         m_item.setNum ( value );
@@ -480,9 +477,18 @@ void RenderListMarker::calcMinMaxWidth()
     case ARABIC_INDIC:
         m_item = toArabicIndic( value );
         break;
+    case LAO:
+        m_item = toLao( value );
+        break;
     case PERSIAN:
     case URDU:
         m_item = toPersianUrdu( value );
+        break;
+    case THAI:
+        m_item = toThai( value );
+        break;
+    case TIBETAN:
+        m_item = toTibetan( value );
         break;
 // Algoritmic:
     case LOWER_ROMAN:
@@ -503,11 +509,11 @@ void RenderListMarker::calcMinMaxWidth()
 // Alphabetic:
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        m_item = toLatin( value, 'a' );
+        m_item = toLowerLatin( value );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        m_item = toLatin( value, 'A' );
+        m_item = toUpperLatin( value );
         break;
     case LOWER_GREEK:
         m_item = toLowerGreek( value );
@@ -526,6 +532,27 @@ void RenderListMarker::calcMinMaxWidth()
         break;
     case KATAKANA_IROHA:
         m_item = toKatakanaIroha( value );
+        break;
+// Ideographic:
+    case JAPANESE_FORMAL:
+        m_item = toJapaneseFormal( value );
+        break;
+    case JAPANESE_INFORMAL:
+        m_item = toJapaneseInformal( value );
+        break;
+    case SIMP_CHINESE_FORMAL:
+        m_item = toSimpChineseFormal( value );
+        break;
+    case SIMP_CHINESE_INFORMAL:
+        m_item = toSimpChineseInformal( value );
+        break;
+    case TRAD_CHINESE_FORMAL:
+        m_item = toTradChineseFormal( value );
+        break;
+    case CJK_IDEOGRAPHIC:
+        // CSS 3 List says treat as trad-chinese-informal
+    case TRAD_CHINESE_INFORMAL:
+        m_item = toTradChineseInformal( value );
         break;
 // Quotes:
     case OPEN_QUOTE:
