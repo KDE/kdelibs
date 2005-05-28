@@ -52,44 +52,6 @@ namespace Kate
 
 class View;
 
-class KATEPARTINTERFACES_EXPORT Cursor : public KTextEditor::Cursor
-{
-  public:
-    Cursor () { ; };
-    virtual ~Cursor () { ; };
-};
-
-class KATEPARTINTERFACES_EXPORT ConfigPage : public KTextEditor::ConfigPage
-{
-  Q_OBJECT
-
-  public:
-    ConfigPage ( QWidget *parent=0, const char *name=0 ) : KTextEditor::ConfigPage (parent, name) { ; };
-    virtual ~ConfigPage () { ; };
-
-  public slots:
-    virtual void apply () { ; };
-    virtual void reload () { ; };
-    virtual void reset () {};
-    virtual void defaults () {};
-
-  protected slots:
-    void slotChanged();
-};
-
-class KATEPARTINTERFACES_EXPORT ActionMenu : public KActionMenu
-{
-  Q_OBJECT
-
-  public:
-    ActionMenu ( const QString& text, QObject* parent = 0, const char* name = 0 )
-      : KActionMenu(text, parent, name) { ; };
-    virtual ~ActionMenu () { ; };
-
-  public:
-    virtual void updateMenu (class Document *) = 0;
-};
-
 /**
  * Kate Commands
  */

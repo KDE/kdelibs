@@ -112,13 +112,13 @@ class KateFileTypeConfigTab : public KateConfigPage
     KateFileType *m_lastType;
 };
 
-class KateViewFileTypeAction : public Kate::ActionMenu
+class KateViewFileTypeAction : public KActionMenu
 {
   Q_OBJECT
 
   public:
     KateViewFileTypeAction(const QString& text, QObject* parent = 0, const char* name = 0)
-       : Kate::ActionMenu(text, parent, name) { init(); };
+       : KActionMenu(text, parent, name) { init(); };
 
     ~KateViewFileTypeAction(){;};
 

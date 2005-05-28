@@ -74,7 +74,7 @@ class Q3ListBoxItem;
 class Q3ListViewItem;
 class QCheckBox;
 
-class KateConfigPage : public Kate::ConfigPage
+class KateConfigPage : public KTextEditor::ConfigPage
 {
   Q_OBJECT
 
@@ -84,6 +84,9 @@ class KateConfigPage : public Kate::ConfigPage
 
   public:
     bool changed () { return m_changed; }
+  
+  protected slots:
+    void slotChanged();
 
   private slots:
     void somethingHasChanged ();

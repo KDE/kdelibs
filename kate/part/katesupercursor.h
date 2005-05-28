@@ -45,7 +45,7 @@ class KateView;
  *
  * @author Hamish Rodda
  **/
-class KateSuperCursor : public QObject, public KateDocCursor, public Kate::Cursor
+class KateSuperCursor : public QObject, public KateDocCursor, public KTextEditor::Cursor
 {
   Q_OBJECT
 

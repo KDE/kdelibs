@@ -82,11 +82,6 @@ View::~View ()
 {
 }
 
-void ConfigPage::slotChanged()
-{
-  emit changed();
-}
-
 DocumentExt::DocumentExt ()
 {
 }

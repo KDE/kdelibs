@@ -425,13 +425,13 @@ class KateHlManager : public QObject
     bool forceNoDCReset;
 };
 
-class KateViewHighlightAction: public Kate::ActionMenu
+class KateViewHighlightAction: public KActionMenu
 {
   Q_OBJECT
 
   public:
     KateViewHighlightAction(const QString& text, QObject* parent = 0, const char* name = 0)
-       : Kate::ActionMenu(text, parent, name) { init(); };
+       : KActionMenu(text, parent, name) { init(); };
 
     ~KateViewHighlightAction(){;};
 
