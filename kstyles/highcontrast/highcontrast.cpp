@@ -345,7 +345,7 @@ void HighContrastStyle::drawPrimitive (PrimitiveElement pe,
 		case PE_ButtonTool:
 		case PE_ButtonBevel: {
 			setColorsButton (p, cg, flags, Style_On|Style_MouseOver|Style_Down);
-			drawRoundRect (p, r);
+			drawRoundRect (p, r, 0, false);
 			break;
 		}
 
@@ -391,7 +391,7 @@ void HighContrastStyle::drawPrimitive (PrimitiveElement pe,
 					r2.setWidth (4*basicLineWidth);
 					r2.setHeight (4*basicLineWidth);
 					r2.moveCenter (r.center());
-					drawRect (p, r2);
+					drawRect (p, r2, 0, false);
 				}
 			}
 			break;
@@ -555,15 +555,15 @@ void HighContrastStyle::drawPrimitive (PrimitiveElement pe,
 				p->setPen (pen);
 			}
 			if (pe == PE_PanelPopup)
-				drawRect (p, r);
+				drawRect (p, r, 0, false);
 			else 
-				drawRoundRect (p, r);
+				drawRoundRect (p, r, 0, false);
 			break;
 		}
 		case PE_WindowFrame:
 		case PE_TabBarBase: {
 			setColorsNormal (p, cg, flags, 0);
-			drawRect (p, r);
+			drawRect (p, r, 0, false);
 			break;
 		}
 		case PE_PanelLineEdit: {
@@ -597,9 +597,9 @@ void HighContrastStyle::drawPrimitive (PrimitiveElement pe,
 			p->fillRect (r, p->backgroundColor());
 			p->setPen (p->pen().color());
 			if (flags & Style_Horizontal)
-				p->drawLine (r.center().x(), r.top()+basicLineWidth, r.center().x(), r.bottom()-basicLineWidth);
+				p->drawLine (r.center().x(), r.top()+basicLineWidth, r.center().x(), r.bottom()-basicLineWidth + 1);
 			else
-				p->drawLine (r.left()+basicLineWidth, r.center().y(), r.right()-basicLineWidth, r.center().y());
+				p->drawLine (r.left()+basicLineWidth, r.center().y(), r.right()-basicLineWidth + 1, r.center().y());
 			break;
 		}
 		case PE_DockWindowSeparator: {
@@ -1004,7 +1004,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 
 			// Are we a menu item separator?
 			if ( mi->isSeparator() ) {
-				p->drawLine (r.right(), r.center().y(), r.left(), r.center().y());
+				p->drawLine (r.left() + 1, r.center().y(), r.right(), r.center().y());
 				break;
 			}
 
@@ -1142,9 +1142,9 @@ void HighContrastStyle::drawControlMask (ControlElement element,
 										const QStyleOption &opt) const
 {
 	switch (element) {
+		case CE_PushButton:
 		case CE_ToolBoxTab:
 		case CE_TabBarTab: 
-		case CE_PushButton:
 		case CE_ProgressBarLabel:
 		case CE_TabBarLabel:
 		case CE_RadioButtonLabel:
