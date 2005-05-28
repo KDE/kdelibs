@@ -33,12 +33,8 @@ KateAttribute::~KateAttribute()
 {
 }
 
-const QTextCharFormat & KateAttribute::toFormat(bool selected) const
+const QTextCharFormat & KateAttribute::toFormat() const
 {
-  /*if (selected && itemSet(SelectedTextColor))
-    m_format.setTextColor(m_selectedTextColor);
-  else if (itemSet(TextColor))
-    m_format.setTextColor(m_textColor);*/
   return m_format;
 }
 
@@ -190,6 +186,7 @@ void KateAttribute::setTextColor(const QColor& color)
     m_itemsSet |= TextColor;
 
     m_textColor = color;
+    m_format.setForeground(m_textColor);
 
     changed();
   }
@@ -215,6 +212,7 @@ void KateAttribute::setBGColor(const QColor& color, bool fillWhitespace)
 
     m_bgColor = color;
     m_bgColorFillWhitespace = fillWhitespace;
+    m_format.setBackground(color);
 
     changed();
   }

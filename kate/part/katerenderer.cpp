@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2003 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2003-2005 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 1999 Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
@@ -73,7 +73,7 @@ void KateRenderer::updateAttributes ()
 
 KateAttribute* KateRenderer::attribute(uint pos)
 {
-  if (pos < m_attributes->size())
+  if (pos < (uint)m_attributes->size())
     return &(*m_attributes)[pos];
 
   return &(*m_attributes)[0];
@@ -174,12 +174,12 @@ bool KateRenderer::paintTextLineBackground(QPainter& paint, int line, bool isCur
   QColor backgroundColor( config()->backgroundColor() );
 
   bool selectionPainted = false;
-  if (showSelections() && m_view->lineSelected(line))
+  /*if (showSelections() && m_view->lineSelected(line))
   {
     backgroundColor = config()->selectionColor();
     selectionPainted = true;
   }
-  else
+  else*/
   {
     // paint the current line background if we're on the current line
     if (isCurrentLine)
@@ -512,12 +512,59 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
   KateAttribute customHL = renderRanges.generateAttribute();
 
-  // painting loop
-  uint xPos = range->xOffset();
-  int cursorXPos = 0;
-
+  if (range->layout()) {
+    if (len > 0) {
+      // Set up the selection backgrounds
+      QVector<QTextLayout::FormatRange> selections;
+      if (hasSel) {
+        const QVector<int> &al = range->textLine()->attributesList();
+        for (uint i = 0; i+2 < al.count(); i += 3) {
+          if (al[i] + al[i+1] <= startSel)
+            continue;
+          
+          QTextLayout::FormatRange fr;
+          fr.start = QMAX(al[i], (int)startSel) - range->startCol();
+          fr.length = QMIN(al[i+1], (int)endSel - range->startCol() - fr.start);
+          fr.format.setBackground(config()->selectionColor());
+          
+          KateAttribute* a = specificAttribute(al[i+2]);
+          if (a->itemSet(KateAttribute::SelectedTextColor))
+            fr.format.setForeground(a->selectedTextColor());
+          
+          selections.append(fr);
+          
+          if (al[i+1] > endSel)
+            break;
+        }
+      }
+      
+      // Draw the text :)
+      range->layout()->draw(&paint, QPoint(-xStart,0), selections);
+    }
+    
+    // Draw selection outside of areas where text is rendered
+    if (hasSel && m_view->lineEndSelected(range->line(), range->endCol())) {
+      QRect area((len ? range->layout()->lineAt(0).naturalTextWidth() - xStart : 0), 0, xEnd - xStart, fs->fontHeight);
+      paint.fillRect(area, config()->selectionColor());
+    }
+    
+    // Draw cursor
+    if (showCursor) {
+      paint.save();
+      
+      // Make the cursor the desired width
+      uint cursorWidth = (caretStyle() == Replace && (cursorMaxWidth > 2)) ? cursorMaxWidth : 2;
+      paint.setPen(QPen(*cursorColor, cursorWidth));
+      
+      // Draw the cursor, start drawing in the middle as the above sets the width from the centre of the line
+      range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->col() - range->startCol());
+      
+      paint.restore();
+    }
+  }
+  
   // Optimisation to quickly draw an empty line of text
-  if (len < 1)
+  /*if (len < 1)
   {
     if (showCursor && (cursor->col() >= int(startcol)))
     {
@@ -854,14 +901,14 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       cursorMaxWidth = xPosAfter - xPos;
       cursorColor = &oldAt->textColor();
     }
-  }
+  }*/
 
   // Paint cursor
-  if (cursorVisible)
+  /*if (cursorVisible)
   {
     uint cursorWidth = (caretStyle() == Replace && (cursorMaxWidth > 2)) ? cursorMaxWidth : 2;
     paint.fillRect(cursorXPos-xStart, 0, cursorWidth, fs->fontHeight, *cursorColor);
-  }
+  }*/
 
   // show word wrap marker if desirable
   if (!isPrinterFriendly() && config()->wordWrapMarker() && fs->fixedPitch())
@@ -1128,6 +1175,12 @@ bool KateRenderer::getSelectionBounds(uint line, uint lineLength, uint &start, u
       end = lineLength;
       hasSel = true;
     }
+    else if ((int)line > m_view->selStartLine() && (int)line < m_view->selEndLine())
+    {
+      start = 0;
+      end = lineLength;
+      hasSel = true;
+    }
     else if ((int)line == m_view->selEndLine())
     {
       start = 0;
@@ -1169,79 +1222,64 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
 {
   // if maxwidth == -1 we have no wrap
 
-  range.setWrap(false);
-  range.setEndX(range.startX());
-  range.setEndCol(range.startCol());
-
   if (!range.textLine() || range.textLine()->string().isEmpty()) {
     Q_ASSERT(range.textLine());
+    range.setEndCol(0);
+    range.setEndX(0);
+    range.setWrap(false);
     return;
   }
   
-  if (!range.layout())
-    range.setLayout(new QTextLayout(range.textLine()->string(), config()->fontStruct()->font(false, false)), 0, true);
+  range.setLayout(new QTextLayout(range.textLine()->string().mid(range.startCol()), config()->fontStruct()->font(false, false)), true);
 
   Q_ASSERT(currentFont());
 
   QTextLayout* l = range.layout();
+  l->setCacheEnabled(true);
+
+  // Initial setup of the QTextLayout.
+  
+  // Tab width
+  QTextOption opt;
+  opt.setTabStop(m_doc->config()->tabWidth());
+  l->setTextOption(opt);
+
+  // FIXME update to new api... Retrieve decoration range list
+  /*KateRangeList& ranges = m_doc->arbitraryHL()->rangesIncluding(range.line(), m_view);
+
+  KateTextCursor rangeStart = range.rangeStart();
+
+  for (KateTextCursor* r = ranges.firstBoundary(&rangeStart); r && r->line() == range.line(); r = ranges.nextBoundary())
+    l->setBoundary(r->col());*/
+
+  // Initialise syntax highlighting ranges
+  QList<QTextLayout::FormatRange> formatRanges;
+  const QVector<int> &al = range.textLine()->attributesList();
+  for (int i = 0; i+2 < al.count(); i += 3) {
+    QTextLayout::FormatRange fr;
+    fr.start = al[i] - range.startCol();
+    fr.length = al[i+1];
+    fr.format = specificAttribute(al[i+2])->toFormat();
+    
+    //kdDebug() << k_funcinfo << "Adding attribute from " << fr.start << " length " << fr.length << " (colour "<< fr.format.foreground() <<" bold " << fr.format.fontWeight() << ")" << endl;
+    formatRanges.append(fr);
+  }
+  l->setAdditionalFormats(formatRanges);
 
   // Begin layouting
   l->beginLayout();
-
-  if (range.viewLine() == 0) {
-    // Initial setup of the QTextLayout.
-    
-    // Tab width
-    QTextOption opt;
-    opt.setTabStop(m_doc->config()->tabWidth());
-    l->setTextOption(opt);
   
-    // FIXME update to new api... Retrieve decoration range list
-    /*KateRangeList& ranges = m_doc->arbitraryHL()->rangesIncluding(range.line(), m_view);
-
-    KateTextCursor rangeStart = range.rangeStart();
-
-    for (KateTextCursor* r = ranges.firstBoundary(&rangeStart); r && r->line() == range.line(); r = ranges.nextBoundary())
-      l->setBoundary(r->col());*/
-
-    // Break for attribute changes
-    QList<QTextLayout::FormatRange> formatRanges;
-    const QVector<int> &al = range.textLine()->attributesList();
-    for (int i = 0; i+2 < al.count(); i += 3) {
-      QTextLayout::FormatRange fr;
-      fr.start = al[i];
-      fr.length = al[i+1];
-      // FIXME account for selection: change false to true when in a selection.
-      fr.format = specificAttribute(al[i+2])->toFormat(false);
-      formatRanges.append(fr);
-    }
-    l->setAdditionalFormats(formatRanges);
-  }
-
-  int leading = 0;//l->font().fontMetrics().leading()
-  int height = 0;
-  forever {
-    QTextLine line = l->createLine();
-    if (!line.isValid())
-      break;
-
+  QTextLine line = l->createLine();
+  if (line.isValid()) {
     if (maxwidth > 0)
       line.setLineWidth(maxwidth);
     
-    height += leading;
-    line.setPosition(QPoint(range.xOffset() * spaceWidth(), height));
-    height += line.height();
-
-    range.setStartCol(line.textStart());
-    range.setEndCol(range.endCol() + line.textLength());
-    range.setEndX(range.startX() + line.naturalTextWidth());
-
-    if (range.endCol() < range.textLine()->length()) {
-      range.setWrap(true);
-
-      break;
-    }
+    line.setPosition(QPoint(range.xOffset() * spaceWidth(), 0));
   }
+
+  range.setEndCol(range.endCol() + line.textLength());
+  range.setEndX(range.startX() + line.naturalTextWidth());
+  range.setWrap(range.endCol() < range.textLine()->length());
   
   l->endLayout();
 }

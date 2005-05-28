@@ -433,6 +433,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
   // set false here but reversed if we return to makeVisible
   m_madeVisible = false;
 
+  /* FIXME disabling widget scrolling for now while Scribe development takes place
   if (viewLinesScrolledUsable)
   {
     int lines = linesDisplayed();
@@ -462,6 +463,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
       return;
     }
   }
+  */
 
   updateView();
   update();

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002,2003 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2002-2005 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2003      Anakim Border <aborder@sources.sourceforge.net>
 
    This library is free software; you can redistribute it and/or
@@ -41,7 +41,6 @@ KateLineRange::KateLineRange(KateDocument* doc)
   , m_startsInvisibleBlock(false)
   , m_special(false)
   , m_ownsLayout(false)
-  , m_layoutOffset(0)
   , m_layout(0L)
 {
 }
@@ -51,6 +50,33 @@ KateLineRange::KateLineRange(const KateLineRange& copy)
   , m_layout(0L)
 {
   *this = copy;
+}
+
+KateLineRange& KateLineRange::operator= (KateLineRange& r)
+{
+  if (this == &r)
+    return *this;
+
+  m_doc = r.doc();
+  m_textLine = 0L;
+  m_line = r.line();
+  m_virtualLine = r.virtualLine();
+  m_viewLine = r.viewLine();
+  m_startCol = r.startCol();
+  m_endCol = r.endCol();
+  m_startX = r.startX();
+  m_endX = r.endX();
+  m_shiftX = r.shiftX();
+  m_wrap = r.wrap();
+  m_startsInvisibleBlock = r.startsInvisibleBlock();
+  m_dirty = r.isDirty();
+  m_special = false;
+  Q_ASSERT(!r.m_special);
+  if (m_ownsLayout) delete m_layout;
+  m_ownsLayout = r.takeLayoutOwnership();
+  m_layout = r.layout();
+  
+  return *this;
 }
 
 KateLineRange& KateLineRange::operator= (const KateLineRange& r)
@@ -75,7 +101,7 @@ KateLineRange& KateLineRange::operator= (const KateLineRange& r)
   Q_ASSERT(!r.m_special);
   if (m_ownsLayout) delete m_layout;
   m_ownsLayout = false;
-  m_layout = 0L;
+  m_layout = r.layout();
   
   return *this;
 }
@@ -87,6 +113,7 @@ KateTextCursor KateLineRange::rangeStart() const
 
 KateLineRange::~KateLineRange()
 {
+  if (m_ownsLayout) delete m_layout;
 }
 
 void KateLineRange::clear()
@@ -106,7 +133,6 @@ void KateLineRange::clear()
   if (m_ownsLayout) delete m_layout;
   m_ownsLayout = false;
   m_layout = 0L;
-  m_layoutOffset = 0;
 }
 
 bool KateLineRange::includesCursor(const KateTextCursor& realCursor) const
@@ -293,17 +319,20 @@ QTextLayout* KateLineRange::layout() const
   return m_layout;
 }
 
-int KateLineRange::layoutOffset() const
-{
-  return m_layoutOffset;
-}
-
-void KateLineRange::setLayout(QTextLayout* layout, int offset, bool owner)
+void KateLineRange::setLayout(QTextLayout* layout, bool ownsLayout)
 {
   if (m_ownsLayout) delete m_layout;
   m_layout = layout;
-  m_layoutOffset = offset;
-  m_ownsLayout = owner;
+  m_ownsLayout = ownsLayout;
+}
+
+bool KateLineRange::takeLayoutOwnership( )
+{
+  if (m_ownsLayout) {
+    m_ownsLayout = false;
+    return true;
+  }
+  return false;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

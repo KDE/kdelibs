@@ -33,6 +33,9 @@ class KateLineRange
     KateLineRange(const KateLineRange& copy);
     ~KateLineRange();
 
+    // This takes ownership of the layout from the range being copied
+    KateLineRange& operator=(KateLineRange& r);
+    // This leaves ownership intact
     KateLineRange& operator=(const KateLineRange& r);
 
     KateDocument* doc() const;
@@ -99,8 +102,8 @@ class KateLineRange
     void setStartsInvisibleBlock(bool sib);
 
     QTextLayout* layout() const;
-    int layoutOffset() const;
-    void setLayout(QTextLayout* layout, int offset = 0, bool owner = false);
+    void setLayout(QTextLayout* layout, bool ownsLayout);
+    bool takeLayoutOwnership();
     
     void debugOutput() const;
 
@@ -124,7 +127,6 @@ private:
     bool m_special : 1;
     bool m_ownsLayout : 1;
 
-    int m_layoutOffset;
     QTextLayout* m_layout;
 };
 

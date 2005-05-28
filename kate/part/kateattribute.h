@@ -51,7 +51,7 @@ public:
   virtual ~KateAttribute();
 
   QFont font(const QFont& ref);
-  const QTextCharFormat& toFormat(bool selected) const;
+  const QTextCharFormat& toFormat() const;
 
   inline int width(KateFontStruct& fs, const QString& text, int col, int tabWidth) const
   { return fs.width(text, col, bold(), italic(), tabWidth); };
