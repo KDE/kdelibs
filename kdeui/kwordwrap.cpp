@@ -254,7 +254,9 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
         y += height;
         start = end + 1;
     }
+
     // Draw the last line
+    lwidth = d->m_lineWidths.last();
     int x = textX;
     if ( flags & Qt::AlignHCenter )
         x += ( maxwidth - lwidth ) / 2;
@@ -274,7 +276,7 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
 			      d->m_text.mid( start ) );
 	else
             painter->drawText( x, textY + y + ascent,
-	                       d->m_text.mid( start, end - start + 1 ) );
+	                       d->m_text.mid( start ) );
     }
 }
 
