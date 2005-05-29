@@ -544,7 +544,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     
     // Draw selection outside of areas where text is rendered
     if (hasSel && m_view->lineEndSelected(range->line(), range->endCol())) {
-      QRect area((len ? range->layout()->lineAt(0).naturalTextWidth() - xStart : 0), 0, xEnd - xStart, fs->fontHeight);
+      QRect area((len ? range->endX() - range->startX() + range->xOffset() - xStart : 0), 0, xEnd - xStart, fs->fontHeight);
       paint.fillRect(area, config()->selectionColor());
     }
     
@@ -1274,10 +1274,13 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
     if (maxwidth > 0)
       line.setLineWidth(maxwidth);
     
-    line.setPosition(QPoint(range.xOffset() * spaceWidth(), 0));
+    //if (range.startX())
+      //kdDebug() << "offset " << range.xOffset() << " pixels " << (range.xOffset() * spaceWidth()) << endl;
+    
+    line.setPosition(QPoint(range.xOffset(), 0));
   }
 
-  range.setEndCol(range.endCol() + line.textLength());
+  range.setEndCol(range.startCol() + line.textLength());
   range.setEndX(range.startX() + line.naturalTextWidth());
   range.setWrap(range.endCol() < range.textLine()->length());
   
