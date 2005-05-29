@@ -1012,15 +1012,12 @@ void KateDocument::editEnd ()
 
   if (editWithUndo)
     undoEnd();
+    
+  for (uint z = 0; z < m_views.count(); z++)
+    m_views.at(z)->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
 
-  // only trigger this stuff if something really happened!
   if (m_buffer->editChanged())
   {
-    for (uint z = 0; z < m_views.count(); z++)
-    {
-      m_views.at(z)->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
-    }
-
     setModified(true);
     emit textChanged ();
   }
