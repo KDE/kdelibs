@@ -325,7 +325,7 @@ using namespace std;
 /*! @def SKIP(x)
  * Use this macro to indicate that a test is skipped.
  *
- * @code CHECK("Test skipped because of lack of foo support."); @endcode
+ * @code SKIP("Test skipped because of lack of foo support."); @endcode
  */
 #define SKIP( x ) skip( __FILE__, __LINE__, QString::fromLatin1(#x))
 
