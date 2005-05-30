@@ -13,11 +13,13 @@
 
 #include <qobject.h>
 #include <qcolor.h>
+#include <qrect.h>
 #include <kdelibs_export.h>
+#include <kwinmodule.h>
 
 #ifndef Q_WS_QWS //FIXME
 
-class QRect;
+class QPixmap;
 class QWidget;
 class QTimer;
 class KSharedPixmap;

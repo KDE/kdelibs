@@ -18,7 +18,6 @@
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <kpixmapio.h>
-#include <kwinmodule.h>
 #include <kwin.h>
 #include <kdebug.h>
 #include <netwm.h>
