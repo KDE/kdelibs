@@ -341,10 +341,10 @@ QVariant KConfigBase::readPropertyEntry( const QString& pKey,
 QVariant KConfigBase::readPropertyEntry( const char *pKey,
                                           QVariant::Type type ) const
 {
-  QVariant va;
-  if ( !hasKey( pKey ) ) return va;
-  (void)va.cast(type);
-  return readPropertyEntry(pKey, va);
+  if ( !hasKey( pKey ) ) 
+    return QVariant();
+  else
+    return readPropertyEntry(pKey, QVariant(type));
 }
 
 QVariant KConfigBase::readPropertyEntry( const QString& pKey,
