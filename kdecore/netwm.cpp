@@ -2890,14 +2890,18 @@ void NETWinInfo::setIconGeometry(NETRect geometry) {
 
     p->icon_geom = geometry;
 
-    long data[4];
-    data[0] = geometry.pos.x;
-    data[1] = geometry.pos.y;
-    data[2] = geometry.size.width;
-    data[3] = geometry.size.height;
+    if( geometry.size.width == 0 ) // empty
+        XDeleteProperty(p->display, p->window, net_wm_icon_geometry);
+    else {
+        long data[4];
+        data[0] = geometry.pos.x;
+        data[1] = geometry.pos.y;
+        data[2] = geometry.size.width;
+        data[3] = geometry.size.height;
 
-    XChangeProperty(p->display, p->window, net_wm_icon_geometry, XA_CARDINAL,
+        XChangeProperty(p->display, p->window, net_wm_icon_geometry, XA_CARDINAL,
 		    32, PropModeReplace, (unsigned char *) data, 4);
+    }
 }
 
 
