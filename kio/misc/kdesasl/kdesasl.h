@@ -21,7 +21,7 @@
 #define KDESASL_H
 
 #include <qstring.h>
-#include <q3cstring.h>
+#include <qbytearray.h>
 
 #include <kdelibs_export.h>
 
@@ -92,16 +92,16 @@ public:
    * @returns the most secure method from the given methods and use it for
    * further operations.
    */
-  virtual Q3CString chooseMethod(const Q3StrIList aMethods);
+  virtual QByteArray chooseMethod(const Q3StrIList aMethods);
   /**
    * Explicitely set the SASL method used.
    */
-  virtual void setMethod(const Q3CString &aMethod);
+  virtual void setMethod(const QByteArray &aMethod);
   /**
    * @return the SASL method used.
    * @since 3.2
    */
-  Q3CString method() const;
+  QByteArray method() const;
   /**
    * @param numCalls number of times getResponse() has been called.
    * @return whether the challenge/response dialog has completed
@@ -127,7 +127,7 @@ public:
    * encoding. The challenge is decoded from base64 and the response is
    * encoded base64 if set to true.
    */
-   Q3CString getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = true);
+   QByteArray getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = true);
   /**
    * Create a response as above but place it in a QByteArray
    */
@@ -163,7 +163,7 @@ protected:
 
 private:
   QString mProtocol, mUser, mPass;
-  Q3CString mMethod;
+  QByteArray mMethod;
   bool mFirst;
 };
 
