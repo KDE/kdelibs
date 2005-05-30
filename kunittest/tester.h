@@ -327,7 +327,7 @@ using namespace std;
  *
  * @code CHECK("Test skipped because of lack of foo support."); @endcode
  */
-#define SKIP( x ) skip( __FILE__, __LINE__, #x )
+#define SKIP( x ) skip( __FILE__, __LINE__, QString::fromLatin1(#x))
 
 namespace KUnitTest
 {
