@@ -178,6 +178,17 @@ typedef XStatus Status;
 #undef Status
 #endif
 
+// Affects: Should be without side effects.
+#ifdef CursorShape
+#ifndef FIXX11H_CursorShape
+#define FIXX11H_CursorShape
+const int XCursorShape = CursorShape;
+#undef CursorShape
+const int CursorShape = CursorShape;
+#endif
+#undef CursorShape
+#endif
+
 // template --->
 // Affects: Should be without side effects.
 #ifdef index
