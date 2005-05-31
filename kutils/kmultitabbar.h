@@ -60,10 +60,10 @@ public:
        enum KMultiTabBarPosition{Left, Right, Top, Bottom};
 
 	/**
-	 * VSNET == Visual Studio .Net like (only show the text of active tabs
-	 * KDEV3 == Kdevelop 3 like (always show the text)
-	 * KONQSBC == konqy's classic sidebar style (unthemed), this one is disabled
-	 * 	at the moment, but will be renabled soon too
+	 * The list of available styles for KMultiTabBar
+	 * <li>VSNET - Visual Studio .Net like (only show the text of active tabs
+	 * <li>KDEV3 - Kdevelop 3 like (always show the text)
+	 * <li>KONQSBC - konqy's classic sidebar style (unthemed) (currently disabled)
 	 */
 	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
 

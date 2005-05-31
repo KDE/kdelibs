@@ -1013,7 +1013,8 @@ void KateDocument::editEnd ()
   if (editWithUndo)
     undoEnd();
     
-  for (uint z = 0; z < m_views.count(); z++)
+  // edit end for all views !!!!!!!!!
+  for (int z = 0; z < m_views.count(); z++)
     m_views.at(z)->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
 
   if (m_buffer->editChanged())

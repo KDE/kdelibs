@@ -48,7 +48,7 @@
   -             position: the position of the toolbar in the window
   -             iconText: whether to show icon or text or both
   -             iconSize: the size of the icons (0 for default, or usually 22 or 32)
-  -             index: the index in the toolbar dock (see QMainWindow::moveToolBar)
+  -             index: the index in the toolbar dock (see QMainWindow::moveToolBar; starts at 0)
   -             offset: the X offset in the toolbar dock (see QMainWindow::moveToolBar)
   -             newline: if true, this toolbar will start a new line (i.e. under the ones before it).
   -             group: optional group name, for named merging (?)
