@@ -13,6 +13,7 @@
 
 #include <qobject.h>
 #include <qcolor.h>
+#include <qwindowdefs.h>
 #include <qrect.h>
 #include <kdelibs_export.h>
 #include <kwinmodule.h>
@@ -24,6 +25,7 @@ class QWidget;
 class QTimer;
 class KSharedPixmap;
 class KRootPixmapData;
+class QPixmap;
 
 /**
  * Creates pseudo-transparent widgets.
