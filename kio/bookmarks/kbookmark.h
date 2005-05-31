@@ -156,6 +156,21 @@ public:
     { return parentAddress(address) + '/' + QString::number(positionInParent(address)+1); }
 
     /**
+     * @return depth of the address, depth of root is 0
+     * This doesn't check whether the adress actually exists
+     * @since 3.5
+     */
+    static int depth( const QString & address )
+    { return address.contains('/'); }
+
+    /**
+     * @return the common parent of both addresses which 
+     * has the greatest depth
+     * @since 3.5
+     */
+     static QString commonParent(QString A, QString B);
+
+    /**
      * Get the value of a specific metadata item.
      * @param key Name of the metadata item
      * @return Value of the metadata item. QString::null is returned in case
