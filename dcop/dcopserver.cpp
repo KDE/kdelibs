@@ -1467,7 +1467,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 }
 
 void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,
-    const QString& appId )
+    const QCString& appId )
 {
     QByteArray data;
     QDataStream datas( data, IO_WriteOnly );
