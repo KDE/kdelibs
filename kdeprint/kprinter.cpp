@@ -605,11 +605,11 @@ void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 	return val;
 }*/
 
-void KPrinter::setOrientation(Qt::Orientation o)
+void KPrinter::setOrientation(Orientation o)
 {
 	KMFactory::self()->settings()->orientation = o;
-	setOption("kde-orientation",(o == Qt::Horizontal ? "Landscape" : "Portrait"));
-	d->m_impl->broadcastOption("kde-orientation",(o == Qt::Horizontal ? "Landscape" : "Portrait"));
+	setOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
+	d->m_impl->broadcastOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
 	d->m_impl->broadcastOption( "kde-orientation-fixed", "1" );
 }
 
@@ -666,7 +666,7 @@ void KPrinter::reload()
 {
 	d->m_impl = KMFactory::self()->printerImplementation();
 	int	global = KMFactory::self()->settings()->orientation;
-	if (global != -1) setOrientation((Qt::Orientation)global);
+	if (global != -1) setOrientation((Orientation)global);
 	global = KMFactory::self()->settings()->pageSize;
 	if (global != -1) setPageSize((KPrinter::PageSize)global);
 	//initOptions(d->m_options);
@@ -823,8 +823,8 @@ void KPrinter::setColorMode(ColorMode m)
 void KPrinter::setNumCopies(int n)
 { setOption("kde-copies",QString::number(n)); }
 
-Qt::Orientation KPrinter::orientation() const
-{ return (option("kde-orientation") == "Landscape" ? Qt::Horizontal : Qt::Vertical); }
+KPrinter::Orientation KPrinter::orientation() const
+{ return (option("kde-orientation") == "Landscape" ? Landscape : Portrait ); }
 
 KPrinter::PageOrder KPrinter::pageOrder() const
 { return (option("kde-pageorder") == "Reverse" ? LastPageFirst : FirstPageFirst); }

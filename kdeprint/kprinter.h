@@ -285,11 +285,11 @@ public:
 	/**
 	 * See QPrinter::orientation().
 	 */
-	Qt::Orientation orientation() const;
+	Orientation orientation() const;
 	/**
 	 * See QPrinter::setOrientation().
 	 */
-	void setOrientation(Qt::Orientation);
+	void setOrientation(Orientation);
 	/**
 	 * See QPrinter::pageOrder().
 	 */
