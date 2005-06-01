@@ -25,7 +25,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <q3whatsthis.h>
 
 PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 :QWidget(parent, name)
@@ -41,9 +40,9 @@ PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
                                                 " </qt>" );
 
 	m_combo = new QComboBox(this, "PluginCombo");
-        Q3WhatsThis::add(m_combo, whatsThisCurrentPrintsystem);
+        m_combo->setWhatsThis(whatsThisCurrentPrintsystem);
 	QLabel	*m_label = new QLabel(i18n("Print s&ystem currently used:"), this);
-        Q3WhatsThis::add(m_label, whatsThisCurrentPrintsystem);
+        m_label->setWhatsThis(whatsThisCurrentPrintsystem);
 	m_label->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_label->setBuddy(m_combo);
 	m_plugininfo = new QLabel("Plugin information", this);
@@ -97,7 +96,7 @@ void PluginComboBox::configChanged()
                                                 " </qt>" );
 
 	m_plugininfo->setText(KMManager::self()->stateInformation());
-        Q3WhatsThis::add(m_plugininfo, whatsThisCurrentConnection);
+        m_plugininfo->setWhatsThis(whatsThisCurrentConnection);
 
 }
 

@@ -28,7 +28,8 @@
 #include <qmap.h>
 #include <q3ptrdict.h>
 #include <qstringlist.h>
-
+#include <q3cstring.h>
+#include <qpixmap.h>
 
 #define IM_SERVICE_TYPE "DCOP/InstantMessenger"
 #define IM_CLIENT_PREFERENCES_FILE "default_components"

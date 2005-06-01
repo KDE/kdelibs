@@ -28,7 +28,6 @@
 #include <q3popupmenu.h>
 #include <qstyle.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -322,7 +321,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, Qt::WF
                                 isVertical() ?
                                 QSizePolicy::Preferred :
                                 QSizePolicy::Maximum ));
-    Q3WhatsThis::add(this, i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
+    this->setWhatsThis(i18n("<qt>The <b>Quick Access</b> panel provides easy access to commonly used file locations.<p>"
                                "Clicking on one of the shortcut entries will take you to that location.<p>"
                                "By right clicking on an entry you can add, edit and remove shortcuts.</qt>"));
 }
@@ -932,8 +931,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_edit = new KLineEdit( grid, "description edit" );
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
-    Q3WhatsThis::add( label, whatsThisText );
-    Q3WhatsThis::add( m_edit, whatsThisText );
+    label->setWhatsThis(whatsThisText );
+    m_edit->setWhatsThis(whatsThisText );
 
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
                          "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
@@ -943,8 +942,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     m_urlEdit = new KURLRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );
     label->setBuddy( m_urlEdit );
-    Q3WhatsThis::add( label, whatsThisText );
-    Q3WhatsThis::add( m_urlEdit, whatsThisText );
+    label->setWhatsThis(whatsThisText );
+    m_urlEdit->setWhatsThis(whatsThisText );
 
     whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
                          "Click on the button to select a different icon.</qt>");
@@ -955,8 +954,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         icon = KMimeType::iconForURL( url );
     m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
-    Q3WhatsThis::add( label, whatsThisText );
-    Q3WhatsThis::add( m_iconButton, whatsThisText );
+    label->setWhatsThis(whatsThisText );
+    m_iconButton->setWhatsThis(whatsThisText );
 
     if ( allowGlobal ) {
         QString appName;
@@ -966,8 +965,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
             appName = QString::fromLatin1( KGlobal::instance()->instanceName() );
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)").arg( appName ), box );
         m_appLocal->setChecked( appLocal );
-        Q3WhatsThis::add( m_appLocal,
-                         i18n("<qt>Select this setting if you want this "
+        m_appLocal->setWhatsThis(                         i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
                               "If this setting is not selected, the entry will be available in all "
                               "applications.</qt>")

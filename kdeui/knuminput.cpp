@@ -60,14 +60,14 @@ static inline int calcDiffByTen( int x, int y ) {
 
 // ----------------------------------------------------------------------------
 
-KNumInput::KNumInput(QWidget* parent, const char* name)
-    : QWidget(parent, name)
+KNumInput::KNumInput(QWidget* parent)
+    : QWidget(parent)
 {
     init();
 }
 
-KNumInput::KNumInput(KNumInput* below, QWidget* parent, const char* name)
-    : QWidget(parent, name)
+KNumInput::KNumInput(QWidget* parent, KNumInput* below)
+    : QWidget(parent)
 {
     init();
 
@@ -202,9 +202,11 @@ void KNumInput::setSteps(int minor, int major)
 
 // ----------------------------------------------------------------------------
 
-KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
-    : QSpinBox(0, 99, 1, parent, name)
+KIntSpinBox::KIntSpinBox(QWidget *parent)
+    : QSpinBox(parent)
 {
+    setRange(0,99);
+    setSingleStep(1);
     lineEdit()->setAlignment(Qt::AlignRight);
     val_base = 10;
     setValue(0);
@@ -214,10 +216,11 @@ KIntSpinBox::~KIntSpinBox()
 {
 }
 
-KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
-                         QWidget* parent, const char* name)
-    : QSpinBox(lower, upper, step, parent, name)
+KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base)
+    : QSpinBox(parent)
 {
+    setRange(lower,upper);
+    setSingleStep(step);
     lineEdit()->setAlignment(Qt::AlignRight);
     val_base = base;
     setValue(value);
@@ -264,21 +267,20 @@ public:
 };
 
 
-KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
-                           int _base, const char* name)
-    : KNumInput(below, parent, name)
+KIntNumInput::KIntNumInput(KNumInput* below, int val,QWidget *parent,int _base)
+    : KNumInput(parent,below)
 {
     init(val, _base);
 }
 
-KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
-    : KNumInput(parent, name)
+KIntNumInput::KIntNumInput(QWidget *parent)
+    : KNumInput(parent)
 {
     init(0, 10);
 }
 
-KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
-    : KNumInput(parent, name)
+KIntNumInput::KIntNumInput(int val, QWidget *parent,int _base)
+    : KNumInput(parent)
 {
     init(val, _base);
 
@@ -287,7 +289,8 @@ KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name
 void KIntNumInput::init(int val, int _base)
 {
     d = new KIntNumInputPrivate( val );
-    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, _base, this, "KIntNumInput::KIntSpinBox");
+    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, this, _base);
+    m_spin->setObjectName("KIntNumInput::KIntSpinBox");
     // the KIntValidator is broken beyond believe for
     // spinboxes which have suffix or prefix texts, so
     // better don't use it unless absolutely necessary
@@ -543,40 +546,25 @@ public:
     short blockRelative;
 };
 
-KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
-    : KNumInput(parent, name)
+KDoubleNumInput::KDoubleNumInput(QWidget *parent)
+    : KNumInput(parent)
 {
     init(0.0, 0.0, 9999.0, 0.01, 2);
 }
 
-KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value,
-				 double step, int precision, QWidget* parent,
-				 const char *name)
-    : KNumInput(parent, name)
+KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
+				 double step, int precision)
+    : KNumInput(parent)
 {
     init(value, lower, upper, step, precision);
 }
 
 KDoubleNumInput::KDoubleNumInput(KNumInput *below,
-				 double lower, double upper, double value,
-				 double step, int precision, QWidget* parent,
-				 const char *name)
-    : KNumInput(below, parent, name)
+				 double lower, double upper, double value, QWidget *parent,
+				 double step, int precision)
+    : KNumInput(parent,below)
 {
     init(value, lower, upper, step, precision);
-}
-
-KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
-    : KNumInput(parent, name)
-{
-    init(value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
-}
-
-KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent,
-                                 const char* name)
-    : KNumInput(below, parent, name)
-{
-    init( value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
 }
 
 KDoubleNumInput::~KDoubleNumInput()
@@ -610,8 +598,8 @@ void KDoubleNumInput::init(double value, double lower, double upper,
 
     d = new KDoubleNumInputPrivate( value );
 
-    d->spin = new KDoubleSpinBox( lower, upper, step, value, precision,
-				  this, "KDoubleNumInput::d->spin" );
+    d->spin = new KDoubleSpinBox(lower, upper, step, value, this,precision);
+    d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);
     connect( d->spin, SIGNAL(valueChanged(double)),
 	     this, SIGNAL(valueChanged(double)) );
@@ -887,8 +875,8 @@ void KDoubleNumInput::setLabel(const QString & label, int a)
 class KDoubleSpinBoxValidator : public KDoubleValidator
 {
 public:
-    KDoubleSpinBoxValidator( double bottom, double top, int decimals, KDoubleSpinBox* sb, const char *name )
-        : KDoubleValidator( bottom, top, decimals, sb, name ), spinBox( sb ) { }
+    KDoubleSpinBoxValidator( KDoubleSpinBox *sb,double bottom, double top, int decimals)
+        : KDoubleValidator( bottom, top, decimals, sb), spinBox( sb ) { }
 
     virtual State validate( QString& str, int& pos ) const;
 
@@ -995,8 +983,8 @@ public:
   KDoubleSpinBoxValidator * mValidator;
 };
 
-KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
-  : QSpinBox( parent, name )
+KDoubleSpinBox::KDoubleSpinBox( QWidget * parent)
+  : QSpinBox( parent)
 {
   lineEdit()->setAlignment( Qt::AlignRight );
   d = new Private();
@@ -1005,9 +993,8 @@ KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
 }
 
 KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
-				double value, int precision,
-				QWidget * parent, const char * name )
-  : QSpinBox( parent, name )
+				double value, QWidget *parent, int precision)
+  : QSpinBox( parent)
 {
   lineEdit()->setAlignment( Qt::AlignRight );
   d = new Private();
@@ -1157,8 +1144,8 @@ void KDoubleSpinBox::slotValueChanged( int value ) {
 
 void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
-    d->mValidator =  new KDoubleSpinBoxValidator( minValue(), maxValue(), precision(),
-					   this, "d->mValidator" );
+    d->mValidator =  new KDoubleSpinBoxValidator(this, minValue(), maxValue(), precision());
+    d->mValidator->setObjectName("d->mValidator" );
 #warning KDE4 we NEED to fix the validation of values here
 //    base::setValidator( d->mValidator );
   } else

@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 
 #include <signal.h>
@@ -32,7 +34,11 @@ werke\nmerkt\nich\nund\nden\nbrauch\nund\nmit\ngeistesstaerke\ntu\nich\nwunder\n
 int main(int argc, char *argv[])
 {
  Dummy dummy; 
- KApplication app(argc, argv, "kprociotest");
+
+ KAboutData about("kprociotest", "kprociotest", "version");
+ KCmdLineArgs::init(argc, argv, &about);
+
+ KApplication app;
 
  printf("Welcome to the KProcIO Demo Application!\n");
 

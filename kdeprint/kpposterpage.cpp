@@ -29,7 +29,6 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qlineedit.h>
-#include <q3whatsthis.h>
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <knuminput.h>
@@ -160,36 +159,36 @@ KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	setTitle( i18n( "Poster" ) );
 
 	m_postercheck = new QCheckBox( i18n( "&Print poster" ), this );
-          Q3WhatsThis::add(m_postercheck, whatsThisEnablePosterPage);
+          m_postercheck->setWhatsThis(whatsThisEnablePosterPage);
 	QWidget *dummy = new QWidget( this );
 	m_preview = new PosterPreview( dummy );
-          Q3WhatsThis::add(m_preview, whatsThisTileSelectionPosterPage);
+          m_preview->setWhatsThis(whatsThisTileSelectionPosterPage);
 	m_postersize = new QComboBox( dummy );
-          Q3WhatsThis::add(m_postersize, whatsThisPostersizePosterPage);
+          m_postersize->setWhatsThis(whatsThisPostersizePosterPage);
 	m_printsize = new QComboBox( dummy );
-          Q3WhatsThis::add(m_printsize, whatsThisPrintsizePosterPage);
+          m_printsize->setWhatsThis(whatsThisPrintsizePosterPage);
 	m_lockbtn = new KPushButton( dummy );
           //QWhatsThis::add(m_lockbtn, whatsThis5_PosterPage);           //FIXME ASK_MICHAEL: which pushbutton would that be?
 	m_mediasize = new QLabel( dummy );
-          Q3WhatsThis::add(m_mediasize, whatsThisPrintsizePosterPage);
+          m_mediasize->setWhatsThis(whatsThisPrintsizePosterPage);
 	m_mediasize->setFrameStyle( Q3Frame::Panel|Q3Frame::Sunken );
 	QLabel *posterlab = new QLabel( i18n( "Poste&r size:" ), dummy );
-          Q3WhatsThis::add(posterlab, whatsThisPostersizePosterPage);
+          posterlab->setWhatsThis(whatsThisPostersizePosterPage);
 	QLabel *medialab = new QLabel( i18n( "Media size:" ), dummy );
-          Q3WhatsThis::add(medialab, whatsThisPrintsizePosterPage);
+          medialab->setWhatsThis(whatsThisPrintsizePosterPage);
 	QLabel *printlab = new QLabel( i18n( "Pri&nt size:" ), dummy );
-          Q3WhatsThis::add(printlab, whatsThisPrintsizePosterPage);
+          printlab->setWhatsThis(whatsThisPrintsizePosterPage);
 	posterlab->setBuddy( m_postersize );
 	printlab->setBuddy( m_printsize );
-	m_cutmargin = new KIntNumInput( 5, dummy );
-          Q3WhatsThis::add(m_cutmargin, whatsThisCutmarginPosterPage);
+	m_cutmargin = new KIntNumInput( 5,dummy );
+          m_cutmargin->setWhatsThis(whatsThisCutmarginPosterPage);
 	// xgettext:no-c-format
 	m_cutmargin->setLabel( i18n( "C&ut margin (% of media):" ) );
 	m_cutmargin->setRange( 0, 100, 2, true );                     // step width was too big, changed from 10 to 2 (-kp-)
 	m_selection = new QLineEdit( dummy );
-          Q3WhatsThis::add(m_selection, whatsThisTileOrderSelectionPosterPage);
+          m_selection->setWhatsThis(whatsThisTileOrderSelectionPosterPage);
 	QLabel *selectionlab = new QLabel( i18n( "&Tile pages (to be printed):" ), dummy );
-          Q3WhatsThis::add(selectionlab, whatsThisTileOrderSelectionPosterPage);
+          selectionlab->setWhatsThis(whatsThisTileOrderSelectionPosterPage);
 	selectionlab->setBuddy( m_selection );
 	m_lockbtn->setToggleButton( true );
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );

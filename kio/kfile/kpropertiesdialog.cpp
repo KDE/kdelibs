@@ -63,7 +63,6 @@ extern "C" {
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <q3groupbox.h>
-#include <q3whatsthis.h>
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <q3progressbar.h>
@@ -1590,7 +1589,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 1, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  Q3WhatsThis::add(l, i18n("Specifies the actions that the owner is allowed to do."));
+  l->setWhatsThis(i18n("Specifies the actions that the owner is allowed to do."));
 
   lbl = new QLabel( i18n("Gro&up:"), gb);
   gl->addWidget(lbl, 2, 0);
@@ -1598,7 +1597,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 2, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  Q3WhatsThis::add(l, i18n("Specifies the actions that the members of the group are allowed to do."));
+  l->setWhatsThis(i18n("Specifies the actions that the members of the group are allowed to do."));
 
   lbl = new QLabel( i18n("O&thers:"), gb);
   gl->addWidget(lbl, 3, 0);
@@ -1606,7 +1605,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   lbl->setBuddy(l);
   gl->addWidget(l, 3, 1);
   connect(l, SIGNAL( highlighted(int) ), this, SIGNAL( changed() ));
-  Q3WhatsThis::add(l, i18n("Specifies the actions that all users, who are neither "
+  l->setWhatsThis(i18n("Specifies the actions that all users, who are neither "
 			  "owner nor in the group, are allowed to do."));
 
   if (!isLink) {
@@ -1616,7 +1615,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 					 gb );
     connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
     gl->addWidget(l, 4, 1);
-    Q3WhatsThis::add(l, hasDir ? i18n("Enable this option to allow only the folder's owner to "
+    l->setWhatsThis(hasDir ? i18n("Enable this option to allow only the folder's owner to "
 				     "delete or rename the contained files and folders. Other "
 				     "users can only add new files, which requires the 'Modify "
 				     "Content' permission.")
@@ -1824,7 +1823,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     readWhatsThis = i18n("This flag allows viewing the content of the folder.");
   else
     readWhatsThis = i18n("The Read flag allows viewing the content of the file.");
-  Q3WhatsThis::add(l, readWhatsThis);
+  l->setWhatsThis(readWhatsThis);
 
   if (isDir)
     l = new QLabel( i18n("Write\nEntries"), gb );
@@ -1837,7 +1836,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 			  "Note that deleting and renaming can be limited using the Sticky flag.");
   else
     writeWhatsThis = i18n("The Write flag allows modifying the content of the file.");
-  Q3WhatsThis::add(l, writeWhatsThis);
+  l->setWhatsThis(writeWhatsThis);
 
   QString execWhatsThis;
   if (isDir) {
@@ -1848,7 +1847,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     l = new QLabel( i18n("Exec"), gb );
     execWhatsThis = i18n("Enable this flag to allow executing the file as a program.");
   }
-  Q3WhatsThis::add(l, execWhatsThis);
+  l->setWhatsThis(execWhatsThis);
   // GJ: Add space between normal and special modes
   QSize size = l->sizeHint();
   size.setWidth(size.width() + 15);
@@ -1864,7 +1863,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     specialWhatsThis = i18n("Special flag. The exact meaning of the flag can be seen "
 			    "in the right hand column.");
-  Q3WhatsThis::add(l, specialWhatsThis);
+  l->setWhatsThis(specialWhatsThis);
 
   cl[0] = new QLabel( i18n("User"), gb );
   gl->addWidget (cl[0], 2, 0);
@@ -1884,7 +1883,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     setUidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
 			   "be executed with the permissions of the owner.");
-  Q3WhatsThis::add(l, setUidWhatsThis);
+  l->setWhatsThis(setUidWhatsThis);
 
   l = new QLabel(i18n("Set GID"), gb);
   gl->addWidget(l, 3, 5);
@@ -1895,7 +1894,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     setGidWhatsThis = i18n("If this file is an executable and the flag is set, it will "
 			   "be executed with the permissions of the group.");
-  Q3WhatsThis::add(l, setGidWhatsThis);
+  l->setWhatsThis(setGidWhatsThis);
 
   l = new QLabel(i18n("File permission", "Sticky"), gb);
   gl->addWidget(l, 4, 5);
@@ -1907,7 +1906,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     stickyWhatsThis = i18n("The Sticky flag on a file is ignored on Linux, but may "
 			   "be used on some systems");
-  Q3WhatsThis::add(l, stickyWhatsThis);
+  l->setWhatsThis(stickyWhatsThis);
 
   mode_t aPermissions, aPartialPermissions;
   mode_t dummy1, dummy2;
@@ -1957,24 +1956,24 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
       gl->addWidget (cb, row+2, col+1);
       switch(col) {
       case 0:
-	Q3WhatsThis::add(cb, readWhatsThis);
+	cb->setWhatsThis(readWhatsThis);
 	break;
       case 1:
-	Q3WhatsThis::add(cb, writeWhatsThis);
+	cb->setWhatsThis(writeWhatsThis);
 	break;
       case 2:
-	Q3WhatsThis::add(cb, execWhatsThis);
+	cb->setWhatsThis(execWhatsThis);
 	break;
       case 3:
 	switch(row) {
 	case 0:
-	  Q3WhatsThis::add(cb, setUidWhatsThis);
+	  cb->setWhatsThis(setUidWhatsThis);
 	  break;
 	case 1:
-	  Q3WhatsThis::add(cb, setGidWhatsThis);
+	  cb->setWhatsThis(setGidWhatsThis);
 	  break;
 	case 2:
-	  Q3WhatsThis::add(cb, stickyWhatsThis);
+	  cb->setWhatsThis(stickyWhatsThis);
 	  break;
 	}
 	break;
@@ -3424,7 +3423,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   mainlayout->addLayout(hlayout);
 
   execEdit = new KLineEdit( d->m_frame );
-  Q3WhatsThis::add(execEdit,i18n(
+  execEdit->setWhatsThis(i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
     "%f - a single file name\n"

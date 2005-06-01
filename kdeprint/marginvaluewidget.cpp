@@ -20,10 +20,12 @@
 #include "marginvaluewidget.h"
 
 #include <math.h>
+#include <kglobal.h>
 
 MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent, const char *name)
-: KDoubleNumInput(below, value, parent, name)
+: KDoubleNumInput(below, kMin(0.0,value),kMax(0.0,value),value,parent,0.01,2)
 {
+        setObjectName(name);
 	m_mode = Pixels;
 	m_block = false;
 	setPrecision(0);

@@ -17,6 +17,8 @@
 */
 
 #include "ktempfile.h"
+#include "kcmdlineargs.h"
+#include "kaboutdata.h"
 #include "kapplication.h"
 #include "kstandarddirs.h"
 #include <qstring.h>
@@ -28,7 +30,11 @@
 int
 main(int argc, char *argv[])
 {
-   KApplication a(argc, argv, "ktempfiletest");
+   KAboutData about("ktempfiletest", "ktempfiletest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
+
    printf("Making tempfile after KApplication constructor.\n");
    KTempFile f4;
    printf("Filename = %s\n", f4.name().ascii());

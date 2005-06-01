@@ -52,7 +52,6 @@
 #include <qlineedit.h>
 #include <qspinbox.h>
 #include <qstringlist.h>
-#include <q3whatsthis.h>
 
 //BEGIN KatePrinter
 bool KatePrinter::print (KateDocument *doc)
@@ -655,12 +654,12 @@ KatePrintTextSettings::KatePrintTextSettings( KPrinter * /*printer*/, QWidget *p
   // set defaults - nothing to do :-)
 
   // whatsthis
-  Q3WhatsThis::add( cbSelection, i18n(
+  cbSelection->setWhatsThis(i18n(
         "<p>This option is only available if some text is selected in the document.</p>"
         "<p>If available and enabled, only the selected text is printed.</p>") );
-  Q3WhatsThis::add( cbLineNumbers, i18n(
+  cbLineNumbers->setWhatsThis(i18n(
         "<p>If enabled, line numbers will be printed on the left side of the page(s).</p>") );
-  Q3WhatsThis::add( cbGuide, i18n(
+  cbGuide->setWhatsThis(i18n(
         "<p>Print a box displaying typographical conventions for the document type, as "
         "defined by the syntax highlighting being used.") );
 }
@@ -798,13 +797,13 @@ KatePrintHeaderFooter::KatePrintHeaderFooter( KPrinter * /*printer*/, QWidget *p
       "<li><tt>%p</tt>: page number</li>"
       "</ul><br>"
       "<u>Note:</u> Do <b>not</b> use the '|' (vertical bar) character.");
-  Q3WhatsThis::add(leHeaderRight, s + s1 );
-  Q3WhatsThis::add(leHeaderCenter, s + s1 );
-  Q3WhatsThis::add(leHeaderLeft, s + s1 );
+  leHeaderRight->setWhatsThis(s + s1 );
+  leHeaderCenter->setWhatsThis(s + s1 );
+  leHeaderLeft->setWhatsThis(s + s1 );
   s = i18n("<p>Format of the page footer. The following tags are supported:</p>");
-  Q3WhatsThis::add(leFooterRight, s + s1 );
-  Q3WhatsThis::add(leFooterCenter, s + s1 );
-  Q3WhatsThis::add(leFooterLeft, s + s1 );
+  leFooterRight->setWhatsThis(s + s1 );
+  leFooterCenter->setWhatsThis(s + s1 );
+  leFooterLeft->setWhatsThis(s + s1 );
 
 
 }
@@ -950,18 +949,18 @@ KatePrintLayout::KatePrintLayout( KPrinter * /*printer*/, QWidget *parent, const
   // FIXME uncomment when string freeze is over
 //   QWhatsThis::add ( cmbSchema, i18n(
 //         "Select the color scheme to use for the print." ) );
-  Q3WhatsThis::add( cbDrawBackground, i18n(
+  cbDrawBackground->setWhatsThis(i18n(
         "<p>If enabled, the background color of the editor will be used.</p>"
         "<p>This may be useful if your color scheme is designed for a dark background.</p>") );
-  Q3WhatsThis::add( cbEnableBox, i18n(
+  cbEnableBox->setWhatsThis(i18n(
         "<p>If enabled, a box as defined in the properties below will be drawn "
         "around the contents of each page. The Header and Footer will be separated "
         "from the contents with a line as well.</p>") );
-  Q3WhatsThis::add( sbBoxWidth, i18n(
+  sbBoxWidth->setWhatsThis(i18n(
         "The width of the box outline" ) );
-  Q3WhatsThis::add( sbBoxMargin, i18n(
+  sbBoxMargin->setWhatsThis(i18n(
         "The margin inside boxes, in pixels") );
-  Q3WhatsThis::add( kcbtnBoxColor, i18n(
+  kcbtnBoxColor->setWhatsThis(i18n(
         "The line color to use for boxes") );
 }
 

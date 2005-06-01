@@ -1,13 +1,18 @@
 #include <kiconloader.h>
 #include <qdatetime.h>
 #include <stdio.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <stdlib.h>
 #include <kdebug.h>
 
 int main(int argc, char *argv[])
 {
-  KApplication app(argc,argv,"kiconloadertest"/*,false,false*/);
+  KAboutData about("kiconloadertest", "kiconloadertest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
 
   KIconLoader * mpLoader = KGlobal::iconLoader();
   KIcon::Context mContext = KIcon::Application;

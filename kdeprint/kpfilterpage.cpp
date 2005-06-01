@@ -25,7 +25,6 @@
 #include <q3header.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -127,7 +126,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	m_valid = true;
 
 	m_view = new KListView(this);
-	  Q3WhatsThis::add(m_view, whatsThisFilterchainListView);
+	  m_view->setWhatsThis(whatsThisFilterchainListView);
 	m_view->addColumn("");
 	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_view->setLineWidth(1);
@@ -136,27 +135,27 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	connect(m_view,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotItemSelected(Q3ListViewItem*)));
 
 	m_add = new QToolButton(this);
-	  Q3WhatsThis::add(m_add, whatsThisAddFilterButton);
+	  m_add->setWhatsThis(whatsThisAddFilterButton);
 	m_add->setIconSet(BarIconSet("filter"));
 	QToolTip::add(m_add, i18n("Add filter"));
 
 	m_remove = new QToolButton(this);
-	  Q3WhatsThis::add(m_remove, whatsThisRemoveFilterButton);
+	  m_remove->setWhatsThis(whatsThisRemoveFilterButton);
 	m_remove->setIconSet(BarIconSet("remove"));
 	QToolTip::add(m_remove, i18n("Remove filter"));
 
 	m_up = new QToolButton(this);
-	  Q3WhatsThis::add(m_up, whatsThisMoveFilterUpButton);
+	  m_up->setWhatsThis(whatsThisMoveFilterUpButton);
 	m_up->setIconSet(BarIconSet("up"));
 	QToolTip::add(m_up, i18n("Move filter up"));
 
 	m_down = new QToolButton(this);
-	  Q3WhatsThis::add(m_down, whatsThisMoveFilterDownButton);
+	  m_down->setWhatsThis(whatsThisMoveFilterDownButton);
 	m_down->setIconSet(BarIconSet("down"));
 	QToolTip::add(m_down, i18n("Move filter down"));
 
 	m_configure = new QToolButton(this);
-	  Q3WhatsThis::add(m_configure, whatsThisConfigureFilterButton);
+	  m_configure->setWhatsThis(whatsThisConfigureFilterButton);
 	m_configure->setIconSet(BarIconSet("configure"));
 	QToolTip::add(m_configure, i18n("Configure filter"));
 
@@ -168,7 +167,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	connect(m_view,SIGNAL(doubleClicked(Q3ListViewItem*)),SLOT(slotConfigureClicked()));
 
 	m_info = new KActiveLabel(this);
-	  Q3WhatsThis::add(m_info, whatsThisFilterInfoPane);
+	  m_info->setWhatsThis(whatsThisFilterInfoPane);
 	m_info->setVScrollBarMode( Q3ScrollView::Auto );
 	m_info->setHScrollBarMode( Q3ScrollView::Auto );
 	m_info->setFrameStyle( Q3Frame::Panel|Q3Frame::Sunken );

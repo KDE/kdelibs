@@ -39,7 +39,6 @@
 #include <qtextcodec.h>
 #include <qtooltip.h>
 #include <qtimer.h>
-#include <q3whatsthis.h>
 #include <q3filedialog.h>
 #include <qx11info_x11.h>
 
@@ -802,8 +801,8 @@ void KFileDialog::updateLocationWhatsThis (void)
                              autocompletionWhatsThisText;
     }
 
-    Q3WhatsThis::add(d->locationLabel, whatsThisText);
-    Q3WhatsThis::add(locationEdit, whatsThisText);
+    d->locationLabel->setWhatsThis(whatsThisText);
+    locationEdit->setWhatsThis(whatsThisText);
 }
 
 void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
@@ -837,7 +836,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used folders") );
-    Q3WhatsThis::add( d->pathCombo, "<qt>" + i18n("Commonly used locations are listed here. "
+    d->pathCombo->setWhatsThis("<qt>" + i18n("Commonly used locations are listed here. "
                                                  "This includes standard locations, such as your home folder, as well as "
                                                  "locations that have been visited recently.") + autocompletionWhatsThisText);
 
@@ -1018,10 +1017,10 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                          "directly into the text area.<p>"
                          "Wildcards such as * and ? are allowed.</qt>");
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    Q3WhatsThis::add(d->filterLabel, whatsThisText);
+    d->filterLabel->setWhatsThis(whatsThisText);
     filterWidget = new KFileFilterCombo(d->mainWidget,
                                         "KFileDialog::filterwidget");
-    Q3WhatsThis::add(filterWidget, whatsThisText);
+    filterWidget->setWhatsThis(whatsThisText);
     setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
@@ -1977,8 +1976,7 @@ void KFileDialog::updateAutoSelectExtension (void)
 
         const QString locationLabelText = stripUndisplayable (d->locationLabel->text ());
         const QString filterLabelText = stripUndisplayable (d->filterLabel->text ());
-        Q3WhatsThis::add (d->autoSelectExtCheckBox,
-            "<qt>" +
+        d->autoSelectExtCheckBox->setWhatsThis(            "<qt>" +
                 i18n (
                   "This option enables some convenient features for "
                   "saving files with extensions:<br>"
@@ -2230,8 +2228,7 @@ void KFileDialog::toggleBookmarks(bool show)
                               i18n("Bookmarks"), 5);
         toolbar->getButton(HOTLIST_BUTTON)->setPopup(d->bookmarkHandler->menu(),
                                                      true);
-        Q3WhatsThis::add(toolbar->getButton(HOTLIST_BUTTON),
-                        i18n("<qt>This button allows you to bookmark specific locations. "
+        toolbar->getButton(HOTLIST_BUTTON)->setWhatsThis(                        i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
                                 "edit or select a bookmark.<p>"
                                 "These bookmarks are specific to the file dialog, but otherwise operate "

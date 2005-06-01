@@ -24,6 +24,8 @@
 */
 
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kfontdialog.h"
 #include <kconfig.h>
@@ -31,7 +33,10 @@
 
  int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "KFontDialogTest" );
+  KAboutData about("KFontDialogTest", "KFontDialogTest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
 
   KConfig aConfig;
   aConfig.setGroup( "KFontDialog-test" );

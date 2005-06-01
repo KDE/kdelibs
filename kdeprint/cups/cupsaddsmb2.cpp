@@ -34,7 +34,6 @@
 #include <kdebug.h>
 #include <kseparator.h>
 #include <kactivelabel.h>
-#include <q3whatsthis.h>
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
 
@@ -82,23 +81,23 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 						"the source CUPS server, use the <nobr><i>Configure Manager -> CUPS server</i></nobr> first). "
 						"The <tt>[print$]</tt> share must exist on the Samba side prior to clicking the "
 						"<b>Export</b> button below." );
-	Q3WhatsThis::add( m_serverlab, txt );
-	Q3WhatsThis::add( m_servered, txt );
+	m_serverlab->setWhatsThis(txt );
+	m_servered->setWhatsThis(txt );
 
 	txt = i18n( "<p><b>Samba username</b></p>"
 				"User needs to have write access to the <tt>[print$]</tt> share on the Samba server. "
 				"<tt>[print$]</tt> holds printer drivers prepared for download to Windows clients. "
 				"This dialog does not work for Samba servers configured with <tt>security = share</tt> "
 				"(but works fine with <tt>security = user</tt>)." );
-	Q3WhatsThis::add( m_loginlab, txt );
-	Q3WhatsThis::add( m_logined, txt );
+	m_loginlab->setWhatsThis(txt );
+	m_logined->setWhatsThis(txt );
 
 	txt = i18n( "<p><b>Samba password</b></p>"
 				"The Samba setting <tt>encrypt passwords = yes</tt> "
 				"(default) requires prior use of <tt>smbpasswd -a [username]</tt> command, "
 				"to create an encrypted Samba password and have Samba recognize it." );
-	Q3WhatsThis::add( m_passwdlab, txt );
-	Q3WhatsThis::add( m_passwded, txt );
+	m_passwdlab->setWhatsThis(txt );
+	m_passwded->setWhatsThis(txt );
 
 	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
 	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);

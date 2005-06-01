@@ -15,6 +15,8 @@
 #include "kdockwidgettest.h"
 
 #include <qpushbutton.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <kiconloader.h>
 #include <kstatusbar.h>
@@ -243,7 +245,11 @@ void DockApplication::gSetPix2() {
 }
 
 int main(int argc, char* argv[]) {
-  KApplication a(argc,argv, "kdockdemoapp1");
+  KAboutData about("kdockdemoapp1", "kdockdemoapp1", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
+
   DockApplication* ap = new DockApplication("DockWidget demo");
   ap->setCaption("DockWidget demo");
   a.setMainWidget(ap);

@@ -27,7 +27,6 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -117,13 +116,13 @@ void LocationDialog::setInfos(CupsdConf *conf)
 	for (; it.current(); ++it)
 		resource_->insertItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
 
-	Q3WhatsThis::add(encryption_, conf_->comments_.toolTip("encryption"));
-	Q3WhatsThis::add(order_, conf_->comments_.toolTip("order"));
-	Q3WhatsThis::add(authclass_, conf_->comments_.toolTip("authclass"));
-	Q3WhatsThis::add(authtype_, conf_->comments_.toolTip("authtype"));
-	Q3WhatsThis::add(authname_, conf_->comments_.toolTip("authname"));
-	Q3WhatsThis::add(satisfy_, conf_->comments_.toolTip("satisfy"));
-	Q3WhatsThis::add(addresses_, conf_->comments_.toolTip("allowdeny"));
+	encryption_->setWhatsThis(conf_->comments_.toolTip("encryption"));
+	order_->setWhatsThis(conf_->comments_.toolTip("order"));
+	authclass_->setWhatsThis(conf_->comments_.toolTip("authclass"));
+	authtype_->setWhatsThis(conf_->comments_.toolTip("authtype"));
+	authname_->setWhatsThis(conf_->comments_.toolTip("authname"));
+	satisfy_->setWhatsThis(conf_->comments_.toolTip("satisfy"));
+	addresses_->setWhatsThis(conf_->comments_.toolTip("allowdeny"));
 }
 
 void LocationDialog::fillLocation(CupsLocation *loc)

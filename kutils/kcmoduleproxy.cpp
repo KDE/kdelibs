@@ -29,7 +29,6 @@
 #include <q3scrollview.h>
 #include <qtextstream.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 #include <qwidget.h>
 
 #include <qxembed.h>
@@ -191,7 +190,7 @@ KCModule * KCModuleProxy::realModule() const
 				SLOT( moduleDestroyed() ) );
 		connect( d->kcm, SIGNAL(quickHelpChanged()), 
 				SIGNAL(quickHelpChanged()));
-		Q3WhatsThis::add( that, d->kcm->quickHelp() );
+		that->setWhatsThis(d->kcm->quickHelp() );
 
 		d->topLayout->addWidget( d->kcm );
 
@@ -215,7 +214,7 @@ KCModule * KCModuleProxy::realModule() const
 			else
 				d->rootInfo->setText(msg);
 
-			Q3WhatsThis::add( d->rootInfo, i18n(
+			d->rootInfo->setWhatsThis(i18n(
 				  "This section requires special permissions, probably "
 				  "for system-wide changes; therefore, it is "
 				  "required that you provide the root password to be "

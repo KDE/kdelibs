@@ -19,7 +19,6 @@
 #ifndef KWHATSTHISMANAGER_P_H
 #define KWHATSTHISMANAGER_P_H
 
-#include <q3whatsthis.h>
 #include <qapplication.h>
 
 #include <kdialogbase.h>

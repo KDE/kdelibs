@@ -26,7 +26,6 @@
 #include <qlayout.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -164,18 +163,18 @@ bool CupsdBrowsingPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdBrowsingPage::setInfos(CupsdConf *conf)
 {
-	Q3WhatsThis::add(browsing_, conf->comments_.toolTip("browsing"));
-	Q3WhatsThis::add(cups_, conf->comments_.toolTip("browseprotocols"));
-	Q3WhatsThis::add(slp_, conf->comments_.toolTip("browseprotocols"));
-	Q3WhatsThis::add(browseinterval_, conf->comments_.toolTip("browseinterval"));
-	Q3WhatsThis::add(browseport_, conf->comments_.toolTip("browseport"));
-	Q3WhatsThis::add(browsetimeout_, conf->comments_.toolTip("browsetimeout"));
-	Q3WhatsThis::add(browseaddresses_, conf->comments_.toolTip("browseaddresses"));
-	Q3WhatsThis::add(browseorder_, conf->comments_.toolTip("browseorder"));
-	Q3WhatsThis::add(useimplicitclasses_, conf->comments_.toolTip("implicitclasses"));
-	Q3WhatsThis::add(useanyclasses_, conf->comments_.toolTip("implicitanyclasses"));
-	Q3WhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip("hideimplicitmembers"));
-	Q3WhatsThis::add(useshortnames_, conf->comments_.toolTip("browseshortnames"));
+	browsing_->setWhatsThis(conf->comments_.toolTip("browsing"));
+	cups_->setWhatsThis(conf->comments_.toolTip("browseprotocols"));
+	slp_->setWhatsThis(conf->comments_.toolTip("browseprotocols"));
+	browseinterval_->setWhatsThis(conf->comments_.toolTip("browseinterval"));
+	browseport_->setWhatsThis(conf->comments_.toolTip("browseport"));
+	browsetimeout_->setWhatsThis(conf->comments_.toolTip("browsetimeout"));
+	browseaddresses_->setWhatsThis(conf->comments_.toolTip("browseaddresses"));
+	browseorder_->setWhatsThis(conf->comments_.toolTip("browseorder"));
+	useimplicitclasses_->setWhatsThis(conf->comments_.toolTip("implicitclasses"));
+	useanyclasses_->setWhatsThis(conf->comments_.toolTip("implicitanyclasses"));
+	hideimplicitmembers_->setWhatsThis(conf->comments_.toolTip("hideimplicitmembers"));
+	useshortnames_->setWhatsThis(conf->comments_.toolTip("browseshortnames"));
 }
 
 void CupsdBrowsingPage::slotAdd()

@@ -25,7 +25,6 @@
 #include <qregexp.h>
 #include <q3buttongroup.h>
 #include <qradiobutton.h>
-#include <q3whatsthis.h>
 #include <q3button.h>
 
 #include <kcursor.h>
@@ -162,7 +161,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 		KRadioButton	*btn = new KRadioButton(txt, this);
 		btn->setEnabled(on);
 		if ( !whatsThis.isEmpty() )
-			Q3WhatsThis::add( btn, whatsThis );
+			btn->setWhatsThis(whatsThis );
 		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
 		m_layout->insertWidget(m_count, btn);

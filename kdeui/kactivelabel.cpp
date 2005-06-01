@@ -21,10 +21,10 @@
 
 #include <kapplication.h>
 #include <qregexp.h>
-#include <q3whatsthis.h>
 #include <q3simplerichtext.h>
 #include <kdebug.h>
 #include <QFocusEvent>
+#include <QWhatsThis>
 
 KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
  : Q3TextBrowser(parent, name)
@@ -69,7 +69,7 @@ void KActiveLabel::openLink(const QString & link)
 {
    QRegExp whatsthis("whatsthis:/*([^/].*)");
    if (whatsthis.exactMatch(link)) {
-      Q3WhatsThis::display(whatsthis.cap(1));
+      QWhatsThis::showText(QCursor::pos(),whatsthis.cap(1));
       return;
    }
 

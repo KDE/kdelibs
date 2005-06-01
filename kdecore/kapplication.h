@@ -170,33 +170,6 @@ public:
 #endif
 
   /**
-   * @deprecated do not use it at all, it will make your application crash, use KCmdLineArgs
-   *
-   * Constructor. Parses command-line arguments.
-   *
-   * @param argc command line argument count
-   *
-   * @param argv command line argument value(s)
-   *
-   * @param rAppName application name. Will be used for finding the
-   * associated message files and icon files, and as the default
-   * registration name for DCOP. This is a mandatory parameter.
-   *
-   * @param allowStyles Set to false to disable the loading on plugin based
-   * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with @p allowStyles set to false
-   * that normally runs in the background but under special circumstances
-   * displays widgets call enableStyles() before displaying any widgets.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff. This implies
-   * no styles either.
-   */
-  // REMOVE FOR KDE 4.0 - using it only gives crashing applications because
-  // KCmdLineArgs::init isn't called
- KApplication(int& argc, char** argv,
-              const QByteArray& rAppName, bool allowStyles=true, bool GUIenabled=true) KDE_DEPRECATED;
-
-  /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
@@ -445,22 +418,6 @@ public:
   // KDE4 merge with above with startup_id = ""
   void invokeHelp( const QString& anchor = QString::null,
                    const QString& appname = QString::null ) const;
-
-  /**
-   * @deprecated
-   * Invoke the khelpcenter HTML help viewer from HTML sources.
-   * Please use invokeHelp() instead.
-   *
-   * @param aFilename  The filename that is to be loaded. Its
-   *                   location is computed automatically
-   *                   according to the KFSSTND.  If @p aFilename
-   *                   is empty, the logical appname with .html
-   *                   appended to it is used.
-   * @param aTopic     This allows context-sensitive help. Its
-   *                   value will be appended to the filename,
-   *                   prefixed with a "#" (hash) character.
-   */
-  void invokeHTMLHelp( const QString& aFilename, const QString& aTopic = QString::null ) const KDE_DEPRECATED;
 
   /**
    * Convenience method; invokes the standard email application.
@@ -795,10 +752,6 @@ public:
    */
   QString caption() const;
 
-  /**
-   * @deprecated
-   */
-  KDE_DEPRECATED KStyle* kstyle() const { return 0; }
 
   /**
    * Builds a caption that contains the application name along with the
@@ -1052,11 +1005,6 @@ public:
          Modifier3 = 1<<5,
          Modifier4 = 1<<6,
          Modifier5 = 1<<7 };
-  /**
-   * @deprecated Use keyboardMouseState()
-   * @since 3.1
-   */
-  static uint keyboardModifiers() KDE_DEPRECATED;
 
   /** @deprecated Same values as Button1Mask etc. in X.h */
   enum { Button1Pressed = 1<<8,
@@ -1064,12 +1012,6 @@ public:
          Button3Pressed = 1<<10,
          Button4Pressed = 1<<11,
          Button5Pressed = 1<<12 };
-  /**
-   * @deprecated Use keyboardMouseState()
-   * @since 3.1
-   */
-  static uint mouseState() KDE_DEPRECATED;
-
 
 public slots:
   /**

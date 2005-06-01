@@ -31,7 +31,6 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
-#include <q3whatsthis.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate
@@ -100,7 +99,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
     connect( d->lvMimeTypes, SIGNAL(currentChanged(Q3ListViewItem*)),
              this, SLOT(slotCurrentChanged(Q3ListViewItem*)) );
 
-    Q3WhatsThis::add( d->btnEditMimeType, i18n(
+    d->btnEditMimeType->setWhatsThis(i18n(
         "Click this button to display the familiar KDE mime type editor.") );
   }
 }

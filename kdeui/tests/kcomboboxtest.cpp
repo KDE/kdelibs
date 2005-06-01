@@ -6,6 +6,8 @@
 
 #include <assert.h>
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -217,7 +219,11 @@ void KComboBoxTest::quitApp()
 
 int main ( int argc, char **argv)
 {
-  KApplication a(argc, argv, "kcomboboxtest");
+  KAboutData about("kcomboboxtest", "kcomboboxtest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
+
   KComboBoxTest* t= new KComboBoxTest;
   a.setMainWidget (t);
   t->show ();

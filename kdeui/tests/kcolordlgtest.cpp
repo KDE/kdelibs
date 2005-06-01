@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kcolordialog.h"
 #include <kconfig.h>
@@ -28,7 +30,11 @@ int main( int argc, char *argv[] )
 
 	KLocale::setMainCatalogue("kdelibs");
 	QApplication::setColorMode( QApplication::CustomColor );
-	KApplication a( argc, argv, "KColorDialogTest" );
+	KAboutData about("KColorDialogTest", "KColorDialogTest", "version");
+	KCmdLineArgs::init(argc, argv, &about);
+
+	KApplication a;
+
         KConfig aConfig;
         aConfig.setGroup( "KColorDialog-test" );
     

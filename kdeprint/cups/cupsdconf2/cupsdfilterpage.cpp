@@ -24,7 +24,6 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 #include <qcombobox.h>
 
 #include <klocale.h>
@@ -87,8 +86,8 @@ bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdFilterPage::setInfos(CupsdConf *conf)
 {
-	Q3WhatsThis::add(user_, conf->comments_.toolTip("user"));
-	Q3WhatsThis::add(group_, conf->comments_.toolTip("group"));
-	Q3WhatsThis::add(ripcache_, conf->comments_.toolTip("ripcache"));
-	Q3WhatsThis::add(filterlimit_, conf->comments_.toolTip("filterlimit"));
+	user_->setWhatsThis(conf->comments_.toolTip("user"));
+	group_->setWhatsThis(conf->comments_.toolTip("group"));
+	ripcache_->setWhatsThis(conf->comments_.toolTip("ripcache"));
+	filterlimit_->setWhatsThis(conf->comments_.toolTip("filterlimit"));
 }

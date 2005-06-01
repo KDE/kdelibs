@@ -16,8 +16,9 @@
 #include <qlayout.h>
 #include <qvariant.h>
 #include <qtooltip.h>
-#include <q3whatsthis.h>
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klineedit.h>
 #include <kcombobox.h>
@@ -186,7 +187,10 @@ QStringList Form1::defaultItems() const
 
 int main(int argc, char **argv )
 {
-    KApplication app( argc, argv, "kcompletiontest" );
+    KAboutData about("kcompletiontest", "kcompletiontest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app;
 
     Form1 *form = new Form1();
     form->show();

@@ -32,7 +32,6 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 #include <q3groupbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -101,11 +100,9 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_extensionlabel->setEnabled( false );
 	m_extension->setEnabled( false );
 
-	Q3WhatsThis::add(m_usefile,
-		i18n("<p>The command will use an output file. If checked, make sure the "
+	m_usefile->setWhatsThis(		i18n("<p>The command will use an output file. If checked, make sure the "
 		     "command contains an output tag.</p>"));
-	Q3WhatsThis::add(m_command,
-		i18n("<p>The command to execute when printing on this special printer. Either enter "
+	m_command->setWhatsThis(		i18n("<p>The command to execute when printing on this special printer. Either enter "
 			 "the command to execute directly, or associate/create a command object with/for "
 			 "this special printer. The command object is the preferred method as it provides "
 			 "support for advanced settings like mime type checking, configurable options and "
@@ -116,11 +113,11 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 			 "<li><b>%psl</b>: the paper size in lower case.</li>"
 			 "<li><b>%psu</b>: the paper size with the first letter in upper case.</li></ul>"));
 	QString mimetypeWhatsThis = i18n("<p>The default mimetype for the output file (e.g. application/postscript).</p>");
-	Q3WhatsThis::add(m_mimetypelabel, mimetypeWhatsThis);
-	Q3WhatsThis::add(m_mimetype, mimetypeWhatsThis);
+	m_mimetypelabel->setWhatsThis(mimetypeWhatsThis);
+	m_mimetype->setWhatsThis(mimetypeWhatsThis);
 	QString extensionWhatsThis = i18n("<p>The default extension for the output file (e.g. ps, pdf, ps.gz).</p>");
-	Q3WhatsThis::add(m_extensionlabel, extensionWhatsThis);
-	Q3WhatsThis::add(m_extension, extensionWhatsThis);
+	m_extensionlabel->setWhatsThis(extensionWhatsThis);
+	m_extension->setWhatsThis(extensionWhatsThis);
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);

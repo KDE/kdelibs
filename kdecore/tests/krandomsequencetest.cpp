@@ -19,6 +19,8 @@
 #include <q3ptrlist.h>
 
 #include "krandomsequence.h"
+#include "kcmdlineargs.h"
+#include "kaboutdata.h"
 #include "kapplication.h"
 
 #include <stdio.h>
@@ -26,7 +28,10 @@
 int
 main(int argc, char *argv[])
 {
-   KApplication a(argc, argv, "krandomsequencetest");
+   KAboutData about("krandomsequencetest", "krandomsequencetest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
    long seed;
    KRandomSequence seq;

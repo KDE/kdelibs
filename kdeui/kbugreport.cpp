@@ -22,7 +22,6 @@
 #include <qlayout.h>
 #include <q3multilineedit.h>
 #include <qradiobutton.h>
-#include <q3whatsthis.h>
 #include <qregexp.h>
 #include <Q3HButtonGroup>
 
@@ -110,10 +109,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
     tmpLabel = new QLabel( i18n("From:"), parent );
     glay->addWidget( tmpLabel, row,0 );
-    Q3WhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
     m_from = new QLabel( parent );
     glay->addWidget( m_from, row, 1 );
-    Q3WhatsThis::add( m_from, qwtstr );
+    m_from->setWhatsThis(qwtstr );
 
 
     // Configure email button
@@ -127,10 +126,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     qwtstr = i18n( "The email address this bug report is sent to." );
     tmpLabel = new QLabel( i18n("To:"), parent );
     glay->addWidget( tmpLabel, ++row,0 );
-    Q3WhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
     tmpLabel = new QLabel( m_aboutData->bugAddress(), parent );
     glay->addWidget( tmpLabel, row, 1 );
-    Q3WhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
 
     setButtonOK( KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
@@ -147,9 +146,9 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   QString qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
   tmpLabel = new QLabel( i18n("Application: "), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
-  Q3WhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
-  Q3WhatsThis::add( d->appcombo, qwtstr );
+  d->appcombo->setWhatsThis(qwtstr );
   QStringList packageList;
   for (int c = 0; packages[c]; ++c)
     packageList << QString::fromLatin1(packages[c]);
@@ -170,13 +169,13 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   }
   d->appcombo->setCurrentItem(index);
 
-  Q3WhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
 
   // Version
   qwtstr = i18n( "The version of this application - please make sure that no newer version is available before sending a bug report" );
   tmpLabel = new QLabel( i18n("Version:"), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
-  Q3WhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
   if (m_aboutData)
       m_strVersion = m_aboutData->version();
   else
@@ -188,7 +187,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
   glay->addMultiCellWidget( m_version, row, row, 1, 2 );
-  Q3WhatsThis::add( m_version, qwtstr );
+  m_version->setWhatsThis(qwtstr );
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );

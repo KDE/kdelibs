@@ -33,7 +33,6 @@
 #include <qradiobutton.h>
 #include <qregexp.h>
 #include <qtoolbutton.h>
-#include <q3whatsthis.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -54,12 +53,13 @@
 #include <kaboutdata.h>
 #include <kstaticdeleter.h>
 
+#include <q3whatsthis.h>
+
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event()
 #include <X11/keysymdef.h> // For XK_...
-#include <q3whatsthis.h>
 
 #ifdef KeyPress
 const int XFocusOut = FocusOut;
@@ -331,8 +331,8 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   QString wtstr = i18n("Search interactively for shortcut names (e.g. Copy) "
                        "or combination of keys (e.g. Ctrl+C) by typing them here.");
 
-  Q3WhatsThis::add(slbl, wtstr);
-  Q3WhatsThis::add(listViewSearch, wtstr);
+  slbl->setWhatsThis(wtstr);
+  listViewSearch->setWhatsThis(wtstr);
 
   //
   // CREATE SPLIT LIST BOX
@@ -357,7 +357,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
                        "shown in the left column and keys or combination "
                        "of keys (e.g. Ctrl+V) shown in the right column.");
 
-  Q3WhatsThis::add( d->pList, wtstr );
+  d->pList->setWhatsThis(wtstr );
   new KKeyChooserWhatsThis( d->pList );
 
   d->pList->setAllColumnsShowFocus( true );
@@ -395,7 +395,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbNone->setEnabled( false );
   //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
   grid->addWidget( m_prbNone, 1, 0 );
-  Q3WhatsThis::add( m_prbNone, i18n("The selected action will not be associated with any key.") );
+  m_prbNone->setWhatsThis(i18n("The selected action will not be associated with any key.") );
   connect( m_prbNone, SIGNAL(clicked()), SLOT(slotNoKey()) );
 
   m_prbDef = new QRadioButton( i18n("default key", "De&fault"), d->fCArea );
@@ -403,7 +403,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbDef->setEnabled( false );
   //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
   grid->addWidget( m_prbDef, 1, 1 );
-  Q3WhatsThis::add( m_prbDef, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
+  m_prbDef->setWhatsThis(i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
   connect( m_prbDef, SIGNAL(clicked()), SLOT(slotDefaultKey()) );
 
   m_prbCustom = new QRadioButton( i18n("C&ustom"), d->fCArea );
@@ -411,7 +411,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_prbCustom->setEnabled( false );
   //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
   grid->addWidget( m_prbCustom, 1, 2 );
-  Q3WhatsThis::add( m_prbCustom, i18n("If this option is selected you can create a customized key binding for the"
+  m_prbCustom->setWhatsThis(i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
   connect( m_prbCustom, SIGNAL(clicked()), SLOT(slotCustomKey()) );
 
@@ -428,7 +428,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   wtstr = i18n("Use this button to choose a new shortcut key. Once you click it, "
   		"you can press the key-combination which you would like to be assigned "
 		"to the currently selected action.");
-  Q3WhatsThis::add( d->pbtnShortcut, wtstr );
+  d->pbtnShortcut->setWhatsThis(wtstr );
 
   //
   // Add widgets to the geometry manager

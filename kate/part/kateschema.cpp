@@ -64,7 +64,6 @@
 #include <qstringlist.h>
 #include <qtabwidget.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 #include <Q3PointArray>
 //END
 
@@ -354,29 +353,29 @@ KateSchemaConfigColorTab::KateSchemaConfigColorTab( QWidget *parent, const char 
   connect( this, SIGNAL( changed() ), parent->parentWidget(), SLOT( slotChanged() ) );
 
   // QWhatsThis help
-  Q3WhatsThis::add(m_back, i18n("<p>Sets the background color of the editing area.</p>"));
-  Q3WhatsThis::add(m_selected, i18n("<p>Sets the background color of the selection.</p>"
+  m_back->setWhatsThis(i18n("<p>Sets the background color of the editing area.</p>"));
+  m_selected->setWhatsThis(i18n("<p>Sets the background color of the selection.</p>"
         "<p>To set the text color for selected text, use the \"<b>Configure "
         "Highlighting</b>\" dialog.</p>"));
-  Q3WhatsThis::add(m_markers, i18n("<p>Sets the background color of the selected "
+  m_markers->setWhatsThis(i18n("<p>Sets the background color of the selected "
         "marker type.</p><p><b>Note</b>: The marker color is displayed lightly because "
         "of transparency.</p>"));
-  Q3WhatsThis::add(m_combobox, i18n("<p>Select the marker type you want to change.</p>"));
-  Q3WhatsThis::add(m_current, i18n("<p>Sets the background color of the currently "
+  m_combobox->setWhatsThis(i18n("<p>Select the marker type you want to change.</p>"));
+  m_current->setWhatsThis(i18n("<p>Sets the background color of the currently "
         "active line, which means the line where your cursor is positioned.</p>"));
-  Q3WhatsThis::add( m_linenumber, i18n(
+  m_linenumber->setWhatsThis(i18n(
         "<p>This color will be used to draw the line numbers (if enabled) and the "
         "lines in the code-folding pane.</p>" ) );
-  Q3WhatsThis::add(m_bracket, i18n("<p>Sets the bracket matching color. This means, "
+  m_bracket->setWhatsThis(i18n("<p>Sets the bracket matching color. This means, "
         "if you place the cursor e.g. at a <b>(</b>, the matching <b>)</b> will "
         "be highlighted with this color.</p>"));
-  Q3WhatsThis::add(m_wwmarker, i18n(
+  m_wwmarker->setWhatsThis(i18n(
         "<p>Sets the color of Word Wrap-related markers:</p>"
         "<dl><dt>Static Word Wrap</dt><dd>A vertical line which shows the column where "
         "text is going to be wrapped</dd>"
         "<dt>Dynamic Word Wrap</dt><dd>An arrow shown to the left of "
         "visually-wrapped lines</dd></dl>"));
-  Q3WhatsThis::add(m_tmarker, i18n(
+  m_tmarker->setWhatsThis(i18n(
         "<p>Sets the color of the tabulator marks:</p>"));
 }
 
@@ -601,7 +600,7 @@ KateSchemaConfigFontColorTab::KateSchemaConfigFontColorTab( QWidget *parent, con
 
   connect (m_defaultStyles, SIGNAL (changed()), parent->parentWidget(), SLOT (slotChanged()));
 
-  Q3WhatsThis::add( m_defaultStyles,  i18n(
+  m_defaultStyles->setWhatsThis(i18n(
       "This list displays the default styles for the current schema and "
       "offers the means to edit them. The style name reflects the current "
       "style settings."
@@ -707,7 +706,7 @@ KateSchemaConfigHighlightTab::KateSchemaConfigHighlightTab( QWidget *parent, con
   hlCombo->setCurrentItem ( hl );
   hlChanged ( hl );
 
-  Q3WhatsThis::add( m_styles,  i18n(
+  m_styles->setWhatsThis(i18n(
     "This list displays the contexts of the current syntax highlight mode and "
     "offers the means to edit them. The context name reflects the current "
     "style settings.<p>To edit using the keyboard, press "

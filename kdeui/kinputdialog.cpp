@@ -20,7 +20,6 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qvalidator.h>
-#include <q3whatsthis.h>
 
 #include <klineedit.h>
 #include <knuminput.h>
@@ -122,8 +121,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_intSpinBox = new KIntSpinBox( minValue, maxValue, step, value,
-      base, frame );
+  d->m_intSpinBox = new KIntSpinBox( minValue, maxValue, step, value, frame,
+      base);
   layout->addWidget( d->m_intSpinBox );
 
   layout->addStretch();
@@ -144,8 +143,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_doubleSpinBox = new KDoubleSpinBox( minValue, maxValue, step, value,
-      decimals, frame );
+  d->m_doubleSpinBox = new KDoubleSpinBox( minValue, maxValue, step, value, frame,
+      decimals);
   layout->addWidget( d->m_doubleSpinBox );
 
   layout->addStretch();
@@ -272,7 +271,7 @@ QString KInputDialog::text( const QString &caption,
   KInputDialog dlg( caption, label, value, parent, name, validator, mask );
 
   if( !whatsThis.isEmpty() )
-    Q3WhatsThis::add( dlg.lineEdit(), whatsThis );
+    dlg.lineEdit()->setWhatsThis(whatsThis );
 
   bool _ok = ( dlg.exec() == Accepted );
 

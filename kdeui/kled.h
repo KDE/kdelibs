@@ -178,15 +178,7 @@ public:
    * Set the shape of the LED to @p s.
    */
   void setShape(Shape s);
-  /**
-   * Toggle the state of the LED from Off to On and vice versa.
-   *
-   * The widget will be repainted when returning to the main
-   * event loop.
-   * @short Toggles LED on->off / off->on.
-   * @deprecated, use #toggle() instead.
-   */
-  void toggleState() KDE_DEPRECATED;
+
 
   /**
    * Set the color of the widget.

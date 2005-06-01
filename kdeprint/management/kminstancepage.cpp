@@ -28,7 +28,6 @@
 
 #include <qlayout.h>
 #include <qregexp.h>
-#include <q3whatsthis.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
@@ -57,8 +56,7 @@ KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
 			sub_->addSpacing(10);
 	sub_->addStretch(1);
 
-	Q3WhatsThis::add(this,
-		i18n("Define/Edit here instances for the current selected "
+	this->setWhatsThis(		i18n("Define/Edit here instances for the current selected "
 		     "printer. An instance is a combination of a real "
 		     "(physical) printer and a set of predefined options. "
 		     "For a single InkJet printer, you could define different "

@@ -27,7 +27,6 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -124,13 +123,13 @@ bool CupsdNetworkPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdNetworkPage::setInfos(CupsdConf *conf)
 {
-	Q3WhatsThis::add(hostnamelookup_, conf->comments_.toolTip("hostnamelookups"));
-	Q3WhatsThis::add(keepalive_, conf->comments_.toolTip("keepalive"));
-	Q3WhatsThis::add(keepalivetimeout_, conf->comments_.toolTip("keepalivetimeout"));
-	Q3WhatsThis::add(maxclients_, conf->comments_.toolTip("maxclients"));
-	Q3WhatsThis::add(maxrequestsize_, conf->comments_.toolTip("maxrequestsize"));
-	Q3WhatsThis::add(clienttimeout_, conf->comments_.toolTip("timeout"));
-	Q3WhatsThis::add(listen_, conf->comments_.toolTip("listen"));
+	hostnamelookup_->setWhatsThis(conf->comments_.toolTip("hostnamelookups"));
+	keepalive_->setWhatsThis(conf->comments_.toolTip("keepalive"));
+	keepalivetimeout_->setWhatsThis(conf->comments_.toolTip("keepalivetimeout"));
+	maxclients_->setWhatsThis(conf->comments_.toolTip("maxclients"));
+	maxrequestsize_->setWhatsThis(conf->comments_.toolTip("maxrequestsize"));
+	clienttimeout_->setWhatsThis(conf->comments_.toolTip("timeout"));
+	listen_->setWhatsThis(conf->comments_.toolTip("listen"));
 }
 
 void CupsdNetworkPage::slotAdd()

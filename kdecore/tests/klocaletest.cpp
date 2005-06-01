@@ -15,6 +15,8 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include "klocale.h"
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kcharsets.h>
 #include <kdebug.h>
@@ -101,7 +103,10 @@ void Test::createFields()
 int main( int argc, char ** argv )
 {
   KLocale::setMainCatalogue("kdelibs");
-  KApplication a( argc, argv, "klocaletest" );
+  KAboutData about("klocaletest", "klocaletest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
 
   KGlobal::locale()->setLanguage(QString::fromLatin1("en_US"));
   KGlobal::locale()->setCountry(QString::fromLatin1("C"));

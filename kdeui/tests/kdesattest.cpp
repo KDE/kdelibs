@@ -1,4 +1,6 @@
 #include "kdesattest.h"
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <qpainter.h>
@@ -12,7 +14,7 @@ KDesatWidget::KDesatWidget(QWidget *parent, const char *name)
 {
 
     image = QImage("testimage.png");
-    slide = new KDoubleNumInput(700, this, "desat");
+    slide = new KDoubleNumInput(this,0,700,700,1,2 /*, "desat"*/);
     slide->setRange(0, 1, 0.001);
     slide->setLabel("Desaturate: ", Qt::AlignVCenter | Qt::AlignLeft);
     connect(slide,SIGNAL(valueChanged(double)), this, SLOT(change(double)));
@@ -55,7 +57,11 @@ void KDesatWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "KDesatTest");
+    KAboutData about("KDesatTest", "KDesatTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication *app=new KApplication();
+
     KDesatWidget w;
     app->setMainWidget(&w);
     w.show();

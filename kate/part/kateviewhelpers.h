@@ -97,7 +97,7 @@ class KateCmdLine : public KLineEdit
 
   public:
     KateCmdLine (KateView *view);
-
+    virtual bool event(QEvent *e);
   private slots:
     void slotReturnPressed ( const QString& cmd );
     void hideMe ();
@@ -108,6 +108,8 @@ class KateCmdLine : public KLineEdit
 
   private:
     void fromHistory( bool up );
+    QString helptext( const QPoint & ) const;
+
     KateView *m_view;
     bool m_msgMode;
     QString m_oldText;

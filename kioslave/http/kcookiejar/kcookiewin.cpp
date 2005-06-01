@@ -54,7 +54,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 #ifndef QT_NO_WHATSTHIS
-#include <q3whatsthis.h>
 #endif
 
 #include <kidna.h>
@@ -147,14 +146,14 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
     QRadioButton* rb = new QRadioButton( txt, m_btnGrp );
 #ifndef QT_NO_WHATSTHIS
-    Q3WhatsThis::add( rb, i18n("Select this option to accept/reject only this cookie. "
+    rb->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
 #endif
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
 #ifndef QT_NO_WHATSTHIS
-    Q3WhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
+    rb->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
                               "the site this cookie originated from. This policy will be "
                               "permanent until you manually change it from the Control Center "
@@ -163,7 +162,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All &cookies"), m_btnGrp );
 #ifndef QT_NO_WHATSTHIS
-    Q3WhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
+    rb->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "anywhere. Choosing this option will change the global "
                               "cookie policy set in the Control Center for all cookies "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
@@ -199,7 +198,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
     bbLay->addWidget( m_button );
 #ifndef QT_NO_WHATSTHIS
-    Q3WhatsThis::add( m_button, i18n("See or modify the cookie information") );
+    m_button->setWhatsThis(i18n("See or modify the cookie information") );
 #endif
 
 

@@ -11,12 +11,18 @@
 #include "kaboutdialog.h"
 // #include <kimgio.h>
 #include <qimage.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klocale.h>
 
 int main(int argc, char** argv)
 {
-  (void)new KApplication(argc, argv, "KAboutDialogTest");
+  KAboutData aboutData("KAboutDialogTest", "KAboutDialogTest", "version");
+  KCmdLineArgs::init(argc, argv, &aboutData);
+
+  (void) new KApplication();
+
   QImage logo;
   QImage bg;
   QPixmap pix;

@@ -27,7 +27,6 @@
 #include <q3buttongroup.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
-#include <q3whatsthis.h>
 
 #include <kcursor.h>
 #include <kdebug.h>
@@ -262,40 +261,40 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 	// widget creation
 	QLabel	*m_pagesizelabel = new QLabel(i18n("Page s&ize:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-          Q3WhatsThis::add(m_pagesizelabel, whatsThisGeneralPageSizeLabel);
+          m_pagesizelabel->setWhatsThis(whatsThisGeneralPageSizeLabel);
 
 	QLabel	*m_papertypelabel = new QLabel(i18n("Paper t&ype:"), this);
 	m_papertypelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-          Q3WhatsThis::add(m_papertypelabel, whatsThisGeneralPaperTypeLabel);
+          m_papertypelabel->setWhatsThis(whatsThisGeneralPaperTypeLabel);
 
 	QLabel	*m_inputslotlabel = new QLabel(i18n("Paper so&urce:"), this);
 	m_inputslotlabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-          Q3WhatsThis::add(m_inputslotlabel, whatsThisGeneralPaperSourceLabel);
+          m_inputslotlabel->setWhatsThis(whatsThisGeneralPaperSourceLabel);
 
 	m_pagesize = new QComboBox(this);
-          Q3WhatsThis::add(m_pagesize, whatsThisGeneralPageSizeLabel);
+          m_pagesize->setWhatsThis(whatsThisGeneralPageSizeLabel);
 
 	m_papertype = new QComboBox(this);
-          Q3WhatsThis::add(m_papertype, whatsThisGeneralPaperTypeLabel);
+          m_papertype->setWhatsThis(whatsThisGeneralPaperTypeLabel);
 
 	m_inputslot = new QComboBox(this);
-          Q3WhatsThis::add(m_inputslot, whatsThisGeneralPaperSourceLabel);
+          m_inputslot->setWhatsThis(whatsThisGeneralPaperSourceLabel);
 
 	m_pagesizelabel->setBuddy(m_pagesize);
 	m_papertypelabel->setBuddy(m_papertype);
 	m_inputslotlabel->setBuddy(m_inputslot);
 
 	m_orientbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-          Q3WhatsThis::add(m_orientbox, whatsThisGeneralOrientationLabel);
+          m_orientbox->setWhatsThis(whatsThisGeneralOrientationLabel);
 
 	m_duplexbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Duplex Printing"), this);
-          Q3WhatsThis::add(m_duplexbox, whatsThisGeneralDuplexLabel);
+          m_duplexbox->setWhatsThis(whatsThisGeneralDuplexLabel);
 
 	m_nupbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
-          Q3WhatsThis::add(m_nupbox, whatsThisGeneralPagesPerSheetLabel);
+          m_nupbox->setWhatsThis(whatsThisGeneralPagesPerSheetLabel);
 
 	m_bannerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Banners"), this);
-          Q3WhatsThis::add(m_bannerbox, whatsThisGeneralBannersLabel);
+          m_bannerbox->setWhatsThis(whatsThisGeneralBannersLabel);
 
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
@@ -326,7 +325,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 
 	// layout creation
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
-          Q3WhatsThis::add(this, whatsThisPrintPropertiesGeneralPage);
+          this->setWhatsThis(whatsThisPrintPropertiesGeneralPage);
 	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, KDialog::spacingHint());
 	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
 	lay0->addStretch(1);

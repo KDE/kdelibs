@@ -28,7 +28,6 @@
 #include <assert.h>
 
 #include <qtooltip.h>
-#include <q3whatsthis.h>
 #include <q3signal.h>
 
 #include <kaccel.h>
@@ -715,7 +714,7 @@ int KAction::plug( QWidget *w, int index )
     ktb->setName( Q3CString("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
-        Q3WhatsThis::add( bar->getButton(id_), whatsThisWithIcon() );
+        bar->getButton(id_)->setWhatsThis(whatsThisWithIcon() );
 
     if ( !d->toolTip().isEmpty() )
       QToolTip::add( bar->getButton(id_), d->toolTip() );
@@ -1015,8 +1014,8 @@ void KAction::updateWhatsThis( int i )
   if ( tb )
   {
     QWidget *w = tb->getButton( itemId( i ) );
-    Q3WhatsThis::remove( w );
-    Q3WhatsThis::add( w, d->whatsThis() );
+    w->setWhatsThis(QString::null);
+    w->setWhatsThis(d->whatsThis() );
     return;
   }
 }

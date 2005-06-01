@@ -29,7 +29,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qevent.h>
-#include <q3whatsthis.h>
 
 class KActionSelectorPrivate {
   public:
@@ -207,16 +206,16 @@ void KActionSelector::setButtonWhatsThis( const QString &text, MoveButton button
   switch ( button )
   {
     case ButtonAdd:
-    Q3WhatsThis::add( d->btnAdd, text );
+    d->btnAdd->setWhatsThis(text );
     break;
     case ButtonRemove:
-    Q3WhatsThis::add( d->btnRemove, text );
+    d->btnRemove->setWhatsThis(text );
     break;
     case ButtonUp:
-    Q3WhatsThis::add( d->btnUp, text );
+    d->btnUp->setWhatsThis(text );
     break;
     case ButtonDown:
-    Q3WhatsThis::add( d->btnDown, text );
+    d->btnDown->setWhatsThis(text );
     break;
     default:
     kdDebug(13001)<<"KActionSelector::setButtonWhatsThis: DAINBREAD!"<<endl;

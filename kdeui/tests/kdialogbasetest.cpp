@@ -1,3 +1,5 @@
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdialogbase.h>
 
@@ -6,7 +8,11 @@
 
 int main(int argc, char** argv)
 {
-  KApplication app(argc, argv, "DialogBaseTest");
+  KAboutData about("DialogBaseTest", "DialogBaseTest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
+
   // -----
   QString text= // the explanation shown by the example dialog
     "<center><h1>DialogBase Example</h1></center><hr><br>"

@@ -31,7 +31,6 @@
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 #include <klocale.h>
 #include <knuminput.h>
 #include <kseparator.h>
@@ -237,31 +236,31 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	setTitle(i18n("Image"));
 
 	Q3GroupBox	*colorbox = new Q3GroupBox(0, Qt::Vertical, i18n("Color Settings"), this);
-	  Q3WhatsThis::add(this, whatsThisImagePage);
+	  this->setWhatsThis(whatsThisImagePage);
 	Q3GroupBox	*sizebox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Size"), this);
-	  Q3WhatsThis::add(sizebox, whatsThisSizeImagePage);
+	  sizebox->setWhatsThis(whatsThisSizeImagePage);
 	Q3GroupBox	*positionbox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Position"), this);
-	  Q3WhatsThis::add(positionbox, whatsThisPositionImagePage);
+	  positionbox->setWhatsThis(whatsThisPositionImagePage);
 
-	m_brightness = new KIntNumInput(100, colorbox);
+	m_brightness = new KIntNumInput(100,colorbox);
 	m_brightness->setLabel(i18n("&Brightness:"));
 	m_brightness->setRange(0, 200, 20, true);
-	  Q3WhatsThis::add(m_brightness, whatsThisBrightnessImagePage);
+	  m_brightness->setWhatsThis(whatsThisBrightnessImagePage);
 
-	m_hue = new KIntNumInput(m_brightness, 0, colorbox);
+	m_hue = new KIntNumInput(m_brightness, 0,colorbox);
 	m_hue->setLabel(i18n("&Hue (Color rotation):"));
 	m_hue->setRange(-360, 360, 36, true);
-	  Q3WhatsThis::add(m_hue, whatsThisHueImagePage);
+	  m_hue->setWhatsThis(whatsThisHueImagePage);
 
-	m_saturation = new KIntNumInput(m_brightness, 100, colorbox);
+	m_saturation = new KIntNumInput(m_brightness, 100,colorbox);
 	m_saturation->setLabel(i18n("&Saturation:"));
 	m_saturation->setRange(0, 200, 20, true);
-	  Q3WhatsThis::add(m_saturation, whatsThisSaturationImagePage);
+	  m_saturation->setWhatsThis(whatsThisSaturationImagePage);
 
-	m_gamma = new KIntNumInput(m_saturation, 1000, colorbox);
+	m_gamma = new KIntNumInput(m_saturation, 1000,colorbox);
 	m_gamma->setLabel(i18n("&Gamma (Color correction):"));
 	m_gamma->setRange(1, 3000, 100, true);
-	  Q3WhatsThis::add(m_gamma, whatsThisGammaImagePage);
+	  m_gamma->setWhatsThis(whatsThisGammaImagePage);
 
 	connect(m_brightness, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
 	connect(m_hue, SIGNAL(valueChanged(int)), SLOT(slotImageSettingsChanged()));
@@ -271,7 +270,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	m_preview = new ImagePreview(colorbox);
 	bool	useColor = (driver ? driver->get("colordevice") == "1" : true);
 	m_preview->setBlackAndWhite(!useColor);
-	  Q3WhatsThis::add(m_preview, whatsThisColorationPreviewImagePage);
+	  m_preview->setWhatsThis(whatsThisColorationPreviewImagePage);
 
 	m_hue->setEnabled(useColor);
 	m_saturation->setEnabled(useColor);
@@ -281,7 +280,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, colorbox);
 
 	QPushButton	*defbtn = new QPushButton(i18n("&Default Settings"), colorbox);
-	  Q3WhatsThis::add(defbtn, whatsThisResetButtonImagePage);
+	  defbtn->setWhatsThis(whatsThisResetButtonImagePage);
 	connect(defbtn, SIGNAL(clicked()), SLOT(slotDefaultClicked()));
 	slotDefaultClicked();
 
@@ -305,7 +304,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	lab->setBuddy(m_sizetype);
 
 	m_position = new ImagePosition(positionbox);
-	  Q3WhatsThis::add(m_position, whatsThisPreviewPositionImagePage);
+	  m_position->setWhatsThis(whatsThisPreviewPositionImagePage);
 
 	QRadioButton	*bottom = new QRadioButton(positionbox);
 	QRadioButton	*top = new QRadioButton(positionbox);

@@ -29,7 +29,7 @@
 #include <kuniqueapplication.h>
 #include <qbitmap.h>
 #include <qimage.h>
-#include <q3whatsthis.h>
+#include <QWhatsThis>
 #include <q3cstring.h>
 #include <qdialog.h>
 #include <qx11info_x11.h>
@@ -156,9 +156,9 @@ ContextWidget::ContextWidget()
     {
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
-	Q3WhatsThis::enterWhatsThisMode();
+	QWhatsThis::enterWhatsThisMode();
 	QCursor c = *QApplication::overrideCursor();
-	Q3WhatsThis::leaveWhatsThisMode();
+	QWhatsThis::leaveWhatsThisMode();
 	XGrabPointer( QX11Info::display(), QX11Info::appRootWindow(), true,
 		      (uint)( ButtonPressMask | ButtonReleaseMask |
 			      PointerMotionMask | EnterWindowMask |

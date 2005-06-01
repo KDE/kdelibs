@@ -29,11 +29,11 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 #include <qtimer.h>
 #include <QKeyEvent>
 #include <QHideEvent>
 #include <QDesktopWidget>
+#include <QWhatsThis>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -911,7 +911,7 @@ void KDialogBase::setButtonOKText( const QString &text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Accept settings") : tooltip );
-  Q3WhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
+  pb->setWhatsThis(quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -941,7 +941,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip.isEmpty() ? i18n("Apply settings") : tooltip );
-  Q3WhatsThis::add( pb, quickhelp.isEmpty() ? whatsThis : quickhelp );
+  pb->setWhatsThis(quickhelp.isEmpty() ? whatsThis : quickhelp );
 }
 
 
@@ -965,7 +965,7 @@ void KDialogBase::setButtonCancelText( const QString& text,
   d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
 
   QToolTip::add( pb, tooltip );
-  Q3WhatsThis::add( pb, quickhelp );
+  pb->setWhatsThis(quickhelp );
 }
 
 
@@ -1021,9 +1021,9 @@ void KDialogBase::setButtonWhatsThis( ButtonCode id, const QString &text )
   if( pb )
   {
     if (text.isEmpty())
-      Q3WhatsThis::remove( pb );
+      pb->setWhatsThis(QString::null);
     else
-      Q3WhatsThis::add( pb, text );
+      pb->setWhatsThis(text );
   }
 }
 
@@ -1584,7 +1584,7 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   }
   else if( e->key() == Qt::Key_F1 && e->state() == Qt::ShiftModifier )
   {
-    Q3WhatsThis::enterWhatsThisMode();
+    QWhatsThis::enterWhatsThisMode();
     e->accept();
     return;
   }

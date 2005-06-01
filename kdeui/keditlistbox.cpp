@@ -23,7 +23,6 @@
 #include <qlayout.h>
 #include <q3groupbox.h>
 #include <q3listbox.h>
-#include <q3whatsthis.h>
 #include <qlabel.h>
 
 #include <kcombobox.h>

@@ -54,7 +54,6 @@
 #include "cupsinfos.h"
 
 #include <q3listview.h>
-#include <q3whatsthis.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>

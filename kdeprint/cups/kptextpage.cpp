@@ -27,7 +27,6 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>
-#include <q3whatsthis.h>
 #include <knuminput.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -189,34 +188,34 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	m_block = false;
 
 	Q3GroupBox	*formatbox = new Q3GroupBox(0, Qt::Vertical, i18n("Text Format"), this);
-	  Q3WhatsThis::add(formatbox, whatsThisFormatTextPage);
+	  formatbox->setWhatsThis(whatsThisFormatTextPage);
 	Q3GroupBox	*prettybox = new Q3GroupBox(0, Qt::Vertical, i18n("Syntax Highlighting"), this);
-	  Q3WhatsThis::add(prettybox, whatsThisPrettyprintFrameTextPage);
+	  prettybox->setWhatsThis(whatsThisPrettyprintFrameTextPage);
 	Q3GroupBox	*marginbox = new Q3GroupBox(0, Qt::Vertical, i18n("Margins"), this);
-	  Q3WhatsThis::add(marginbox, whatsThisMarginsTextPage);
+	  marginbox->setWhatsThis(whatsThisMarginsTextPage);
 
-	m_cpi = new KIntNumInput(10, formatbox);
-	  Q3WhatsThis::add(m_cpi, whatsThisCPITextPage);
+	m_cpi = new KIntNumInput(10,formatbox);
+	  m_cpi->setWhatsThis(whatsThisCPITextPage);
 	m_cpi->setLabel(i18n("&Chars per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_cpi->setRange(1, 999, 1, false);
-	m_lpi = new KIntNumInput(m_cpi, 6, formatbox);
-	  Q3WhatsThis::add(m_lpi, whatsThisLPITextPage);
+	m_lpi = new KIntNumInput(m_cpi, 6,formatbox);
+	  m_lpi->setWhatsThis(whatsThisLPITextPage);
 	m_lpi->setLabel(i18n("&Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_lpi->setRange(1, 999, 1, false);
-	m_columns = new KIntNumInput(m_lpi, 1, formatbox);
-	  Q3WhatsThis::add(m_columns, whatsThisColumnsTextPage);
+	m_columns = new KIntNumInput(m_lpi, 1,formatbox);
+	  m_columns->setWhatsThis(whatsThisColumnsTextPage);
 	m_columns->setLabel(i18n("C&olumns:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_columns->setRange(1, 10, 1, false);
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, formatbox);
 	connect(m_columns, SIGNAL(valueChanged(int)), SLOT(slotColumnsChanged(int)));
 
 	m_prettypix = new QLabel(prettybox);
-	  Q3WhatsThis::add(m_prettypix, whatsThisPrettyprintPreviewIconTextPage);
+	  m_prettypix->setWhatsThis(whatsThisPrettyprintPreviewIconTextPage);
 	m_prettypix->setAlignment(Qt::AlignCenter);
 	QRadioButton	*off = new QRadioButton(i18n("&Disabled"), prettybox);
-	  Q3WhatsThis::add(off, whatsThisPrettyprintButtonOffTextPage);
+	  off->setWhatsThis(whatsThisPrettyprintButtonOffTextPage);
 	QRadioButton	*on = new QRadioButton(i18n("&Enabled"), prettybox);
-	  Q3WhatsThis::add(on, whatsThisPrettyprintButtonOnTextPage);
+	  on->setWhatsThis(whatsThisPrettyprintButtonOnTextPage);
 	m_prettyprint = new Q3ButtonGroup(prettybox);
 	m_prettyprint->hide();
 	m_prettyprint->insert(off, 0);
@@ -226,7 +225,7 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	slotPrettyChanged(0);
 
 	m_margin = new MarginWidget(marginbox);
-	  Q3WhatsThis::add(m_margin, whatsThisMarginsTextPage);
+	  m_margin->setWhatsThis(whatsThisMarginsTextPage);
 	m_margin->setPageSize(595, 842);
 
 	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);

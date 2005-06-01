@@ -34,7 +34,6 @@
 
 #include <kdebug.h>
 
-#include <q3whatsthis.h>
 #include <q3vbox.h>
 #include <q3listbox.h>
 #include <qtimer.h>

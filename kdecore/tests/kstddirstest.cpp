@@ -1,3 +1,5 @@
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kinstance.h>
@@ -6,7 +8,11 @@
 
 int main(int argc, char **argv)
 {
-  KApplication a(argc, argv, "whatever", false);
+   KAboutData about("kstddirstest", "kstddirstst", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
+
   KStandardDirs t;
   KConfig config; // to add custom entries - a bit tricky :/
 

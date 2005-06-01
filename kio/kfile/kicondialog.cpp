@@ -40,7 +40,6 @@
 #include <qradiobutton.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
-#include <q3whatsthis.h>
 
 #ifdef HAVE_LIBART
 #include <svgicons/ksvgiconengine.h>
@@ -305,8 +304,8 @@ void KIconDialog::init()
     connect(clearSearch, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 
     QString wtstr = i18n("Search interactively for icon names (e.g. folder).");
-    Q3WhatsThis::add(searchLabel, wtstr);
-    Q3WhatsThis::add(d->searchLine, wtstr);
+    searchLabel->setWhatsThis(wtstr);
+    d->searchLine->setWhatsThis(wtstr);
 
 
     mpCanvas = new KIconCanvas(main);

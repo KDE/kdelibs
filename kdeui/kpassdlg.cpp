@@ -30,7 +30,6 @@
 #include <qcheckbox.h>
 #include <qregexp.h>
 #include <q3hbox.h>
-#include <q3whatsthis.h>
 #include <q3ptrdict.h>
 
 #include <kglobal.h>
@@ -310,15 +309,6 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, con
     init();
 }
 
-KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
-                                 int extraBttn)
-    : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
-                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
-{
-    d->iconName = "password";
-    init();
-    setPrompt(prompt);
-}
 
 void KPasswordDialog::init()
 {
@@ -421,8 +411,8 @@ void KPasswordDialog::init()
                                                 " - using a longer password;\n"
                                                 " - using a mixture of upper- and lower-case letters;\n"
                                                 " - using numbers or symbols, such as #, as well as letters."));
-        Q3WhatsThis::add(passStrengthLabel, strengthBarWhatsThis);
-        Q3WhatsThis::add(d->m_strengthBar, strengthBarWhatsThis);
+        passStrengthLabel->setWhatsThis(strengthBarWhatsThis);
+        d->m_strengthBar->setWhatsThis(strengthBarWhatsThis);
 
         // Row 6: Label saying whether the passwords match
         m_pGrid->addRowSpacing(12, 10);
@@ -541,11 +531,12 @@ void KPasswordDialog::slotKeep(bool keep)
 
 
 // static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getPassword(Q3CString &password, QString prompt,
+int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, QString prompt,
 	int *keep)
 {
     const bool enableKeep = (keep && *keep);
-    KPasswordDialog* const dlg = new KPasswordDialog(int(Password), prompt, enableKeep);
+    KPasswordDialog* const dlg = new KPasswordDialog(Password, enableKeep,false,parent);
+    dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted) {
 	password = dlg->password();
@@ -558,9 +549,10 @@ int KPasswordDialog::getPassword(Q3CString &password, QString prompt,
 
 
 // static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getNewPassword(Q3CString &password, QString prompt)
+int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, QString prompt)
 {
-    KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, prompt);
+    KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);
+    dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted)
 	password = dlg->password();

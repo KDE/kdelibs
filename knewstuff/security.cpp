@@ -175,7 +175,7 @@ void Security::slotDataArrived(KProcIO *procIO)
          {
            Q3CString password;
            KeyStruct key = m_keys[m_secretKey];
-           int result = KPasswordDialog::getPassword(password, i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>").arg(m_secretKey).arg(key.name).arg(key.mail));
+           int result = KPasswordDialog::getPassword((QWidget*)0,password, i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>").arg(m_secretKey).arg(key.name).arg(key.mail));
            if (result == KPasswordDialog::Accepted)
            {
              procIO->writeStdin(password, true);

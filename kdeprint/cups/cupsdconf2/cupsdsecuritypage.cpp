@@ -26,7 +26,6 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -109,11 +108,11 @@ bool CupsdSecurityPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdSecurityPage::setInfos(CupsdConf *conf)
 {
-	Q3WhatsThis::add(remoteroot_, conf->comments_.toolTip("remoteroot"));
-	Q3WhatsThis::add(systemgroup_, conf->comments_.toolTip("systemgroup"));
-	Q3WhatsThis::add(encryptcert_, conf->comments_.toolTip("servercertificate"));
-	Q3WhatsThis::add(encryptkey_, conf->comments_.toolTip("serverkey"));
-	Q3WhatsThis::add(locations_, conf->comments_.toolTip("locationsshort"));
+	remoteroot_->setWhatsThis(conf->comments_.toolTip("remoteroot"));
+	systemgroup_->setWhatsThis(conf->comments_.toolTip("systemgroup"));
+	encryptcert_->setWhatsThis(conf->comments_.toolTip("servercertificate"));
+	encryptkey_->setWhatsThis(conf->comments_.toolTip("serverkey"));
+	locations_->setWhatsThis(conf->comments_.toolTip("locationsshort"));
 }
 
 void CupsdSecurityPage::slotAdd()

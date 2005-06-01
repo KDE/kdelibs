@@ -1,6 +1,8 @@
 #include <config.h>
 
 #include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kstdaccel.h>
 #include <stdlib.h> // for exit
@@ -24,7 +26,11 @@ static bool check(QString txt, QString a, QString b)
 int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();
-  KApplication app(argc,argv,"kstdacceltest",false,false);
+  KAboutData about("kstdacceltest", "kstdacceltest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
+
 
   check( "shortcutDefault FullScreen", KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), "Ctrl+Shift+F" );
   check( "shortcutDefault BeginningOfLine", KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), "Home" );

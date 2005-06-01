@@ -595,30 +595,6 @@ static SmcConn tmpSmcConnection = 0;
 #endif
 static QTime* smModificationTime = 0;
 
-KApplication::KApplication( int& argc, char** argv, const QByteArray& rAppName,
-                            bool allowStyles, bool GUIenabled ) :
-  QApplication( argc, argv, GUIenabled ), KInstance(rAppName),
-#ifdef Q_WS_X11
-  display(0L),
-#endif
-  d (new KApplicationPrivate())
-{
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
-    read_app_startup_id();
-    if (!GUIenabled)
-       allowStyles = false;
-    useStyles = allowStyles;
-    Q_ASSERT (!rAppName.isEmpty());
-    setName(rAppName);
-
-    installSigpipeHandler();
-    KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
-    parseCommandLine( );
-    init(GUIenabled);
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
-}
-
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
@@ -2229,39 +2205,6 @@ void KApplication::invokeHelp( const QString& anchor,
 }
 #endif
 
-void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
-{
-   kdWarning() << "invoking HTML help is deprecated! use docbook and invokeHelp!\n";
-
-   QString filename;
-
-   if( _filename.isEmpty() )
-     filename = QString(name()) + "/index.html";
-   else
-     filename = _filename;
-
-   QString url;
-   if (!topic.isEmpty())
-     url = QString("help:/%1#%2").arg(filename).arg(topic);
-   else
-     url = QString("help:/%1").arg(filename);
-
-   QString error;
-   if ( !dcopClient()->isApplicationRegistered("khelpcenter") )
-   {
-       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, "", false))
-       {
-           if (Tty != kapp->type())
-               QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
-               i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
-           else
-               kdWarning() << "Could not launch help:\n" << error << endl;
-           return;
-       }
-   }
-   else
-       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openUrl", url );
-}
 
 
 void KApplication::invokeMailer(const QString &address, const QString &subject)
@@ -3112,48 +3055,6 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
 }
 
 
-uint KApplication::keyboardModifiers()
-{
-#ifdef Q_WS_X11
-    Window root;
-    Window child;
-    int root_x, root_y, win_x, win_y;
-    uint keybstate;
-    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
-                   &root_x, &root_y, &win_x, &win_y, &keybstate );
-    return keybstate & 0x00ff;
-#elif defined W_WS_MACX
-    return GetCurrentEventKeyModifiers() & 0x00ff;
-#else
-    //TODO for win32
-    return 0;
-#endif
-}
-
-uint KApplication::mouseState()
-{
-    uint mousestate;
-#ifdef Q_WS_X11
-    Window root;
-    Window child;
-    int root_x, root_y, win_x, win_y;
-    XQueryPointer( QX11Info::display(), QX11Info::appRootWindow(), &root, &child,
-                   &root_x, &root_y, &win_x, &win_y, &mousestate );
-#elif defined(Q_WS_WIN)
-    const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
-    if (GetAsyncKeyState(VK_LBUTTON))
-        mousestate |= (mousebtn_swapped ? Button3Mask : Button1Mask);
-    if (GetAsyncKeyState(VK_MBUTTON))
-        mousestate |= Button2Mask;
-    if (GetAsyncKeyState(VK_RBUTTON))
-        mousestate |= (mousebtn_swapped ? Button1Mask : Button3Mask);
-#elif defined(Q_WS_MACX)
-    mousestate = GetCurrentEventButtonState();
-#else
-    //TODO: other platforms
-#endif
-    return mousestate & 0xff00;
-}
 
 Qt::ButtonState KApplication::keyboardMouseState()
 {

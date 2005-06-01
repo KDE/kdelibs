@@ -28,7 +28,6 @@
 #include <qobject.h>
 #include <q3sqlpropertymap.h>
 #include <qtimer.h>
-#include <q3whatsthis.h>
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
@@ -140,17 +139,15 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
     if (widget->metaObject()->indexOfProperty("maxValue") != -1)
        widget->setProperty("maxValue", maxValue);
   }
-#warning fixme qt4 port qwhatsthis
-#if 0
-  if (Q3WhatsThis::textFor( widget ).isEmpty())
+
+  if (widget->whatsThis().isEmpty())
   {
     QString whatsThis = item->whatsThis();
     if ( !whatsThis.isEmpty() )
     {
-      Q3WhatsThis::add( widget, whatsThis );
+      widget->setWhatsThis(whatsThis );
     }
   }
-#endif
 }
 
 bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChanges)

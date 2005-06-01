@@ -24,7 +24,6 @@
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <q3whatsthis.h>
 #include <qwidget.h>
 
 #include <kaboutapplication.h>
@@ -41,6 +40,8 @@
 #include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
+
+#include <q3whatsthis.h>
 
 #include "config.h"
 #include <qxembed.h>
@@ -274,7 +275,7 @@ void KHelpMenu::menuDestroyed()
 
 void KHelpMenu::contextHelpActivated()
 {
-  Q3WhatsThis::enterWhatsThisMode();
+  QWhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
   while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
       w = w->parentWidget();

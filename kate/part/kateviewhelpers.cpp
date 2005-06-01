@@ -44,7 +44,6 @@
 #include <q3popupmenu.h>
 #include <qstyle.h>
 #include <qtimer.h>
-#include <q3whatsthis.h>
 #include <qregexp.h>
 #include <qtextcodec.h>
 #include <QMouseEvent>
@@ -52,6 +51,8 @@
 #include <math.h>
 
 #include <kdebug.h>
+
+#include <QWhatsThis>
 
 //BEGIN KateScrollBar
 KateScrollBar::KateScrollBar (Qt::Orientation orientation, KateViewInternal* parent, const char* name)
@@ -223,61 +224,6 @@ void KateScrollBar::sliderMaybeMoved(int value)
 }
 //END
 
-//BEGIN KateCmdLnWhatsThis
-class KateCmdLnWhatsThis : public Q3WhatsThis
-{
-  public:
-    KateCmdLnWhatsThis( KateCmdLine *parent )
-  : Q3WhatsThis( parent )
-  , m_parent( parent ) {;}
-
-    QString text( const QPoint & )
-    {
-      QString beg = "<qt background=\"white\"><div><table width=\"100%\"><tr><td bgcolor=\"brown\"><font color=\"white\"><b>Help: <big>";
-      QString mid = "</big></b></font></td></tr><tr><td>";
-      QString end = "</td></tr></table></div><qt>";
-
-      QString t = m_parent->text();
-      QRegExp re( "\\s*help\\s+(.*)" );
-      if ( re.search( t ) > -1 )
-      {
-        QString s;
-        // get help for command
-        QString name = re.cap( 1 );
-        if ( name == "list" )
-        {
-          return beg + i18n("Available Commands") + mid
-              + KateCmd::self()->cmds().join(" ")
-              + i18n("<p>For help on individual commands, do <code>'help &lt;command&gt;'</code></p>")
-              + end;
-        }
-        else if ( ! name.isEmpty() )
-        {
-          Kate::Command *cmd = KateCmd::self()->queryCommand( name );
-          if ( cmd )
-          {
-            if ( cmd->help( (Kate::View*)m_parent->parentWidget(), name, s ) )
-              return beg + name + mid + s + end;
-            else
-              return beg + name + mid + i18n("No help for '%1'").arg( name ) + end;
-          }
-          else
-            return beg + mid + i18n("No such command <b>%1</b>").arg(name) + end;
-        }
-      }
-
-      return beg + mid + i18n(
-          "<p>This is the Katepart <b>command line</b>.<br>"
-          "Syntax: <code><b>command [ arguments ]</b></code><br>"
-          "For a list of available commands, enter <code><b>help list</b></code><br>"
-          "For help for individual commands, enter <code><b>help &lt;command&gt;</b></code></p>")
-          + end;
-    }
-
-  private:
-    KateCmdLine *m_parent;
-};
-//END KateCmdLnWhatsThis
 
 //BEGIN KateCmdLineFlagCompletion
 /**
@@ -312,7 +258,58 @@ KateCmdLine::KateCmdLine (KateView *view)
 
   completionObject()->insertItems (KateCmd::self()->cmds());
   setAutoDeleteCompletionObject( false );
-  m_help = new KateCmdLnWhatsThis( this );
+}
+
+
+QString KateCmdLine::helptext( const QPoint & ) const
+    {
+      QString beg = "<qt background=\"white\"><div><table width=\"100%\"><tr><td bgcolor=\"brown\"><font color=\"white\"><b>Help: <big>";
+      QString mid = "</big></b></font></td></tr><tr><td>";
+      QString end = "</td></tr></table></div><qt>";
+
+      QString t = text();
+      QRegExp re( "\\s*help\\s+(.*)" );
+      if ( re.search( t ) > -1 )
+      {
+        QString s;
+        // get help for command
+        QString name = re.cap( 1 );
+        if ( name == "list" )
+        {
+          return beg + i18n("Available Commands") + mid
+              + KateCmd::self()->cmds().join(" ")
+              + i18n("<p>For help on individual commands, do <code>'help &lt;command&gt;'</code></p>")
+              + end;
+        }
+        else if ( ! name.isEmpty() )
+        {
+          Kate::Command *cmd = KateCmd::self()->queryCommand( name );
+          if ( cmd )
+          {
+            if ( cmd->help( (Kate::View*)parentWidget(), name, s ) )
+              return beg + name + mid + s + end;
+            else
+              return beg + name + mid + i18n("No help for '%1'").arg( name ) + end;
+          }
+          else
+            return beg + mid + i18n("No such command <b>%1</b>").arg(name) + end;
+        }
+      }
+
+      return beg + mid + i18n(
+          "<p>This is the Katepart <b>command line</b>.<br>"
+          "Syntax: <code><b>command [ arguments ]</b></code><br>"
+          "For a list of available commands, enter <code><b>help list</b></code><br>"
+          "For help for individual commands, enter <code><b>help &lt;command&gt;</b></code></p>")
+          + end;
+    }
+
+
+
+bool KateCmdLine::event(QEvent *e) {
+	if (e->type()==QEvent::WhatsThis)
+		setWhatsThis(helptext(QPoint()));
+	return KLineEdit::event(e);
 }
 
 void KateCmdLine::slotReturnPressed ( const QString& text )
@@ -328,7 +325,7 @@ void KateCmdLine::slotReturnPressed ( const QString& text )
   // Built in help: if the command starts with "help", [try to] show some help
   if ( cmd.startsWith( "help" ) )
   {
-    m_help->display( m_help->text( QPoint() ), mapToGlobal(QPoint(0,0)) );
+    QWhatsThis::showText(mapToGlobal(QPoint(0,0)), helptext( QPoint() ) );
     clear();
     KateCmd::self()->appendHistory( cmd );
     m_histpos = KateCmd::self()->historyLength();

@@ -24,7 +24,6 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -99,11 +98,11 @@ bool CupsdDirPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdDirPage::setInfos(CupsdConf *conf)
 {
-	Q3WhatsThis::add(datadir_, conf->comments_.toolTip("datadir"));
-	Q3WhatsThis::add(documentdir_, conf->comments_.toolTip("documentroot"));
-	Q3WhatsThis::add(fontpath_, conf->comments_.toolTip("fontpath"));
-	Q3WhatsThis::add(requestdir_, conf->comments_.toolTip("requestroot"));
-	Q3WhatsThis::add(serverbin_, conf->comments_.toolTip("serverbin"));
-	Q3WhatsThis::add(serverfiles_, conf->comments_.toolTip("serverroot"));
-	Q3WhatsThis::add(tmpfiles_, conf->comments_.toolTip("tempdir"));
+	datadir_->setWhatsThis(conf->comments_.toolTip("datadir"));
+	documentdir_->setWhatsThis(conf->comments_.toolTip("documentroot"));
+	fontpath_->setWhatsThis(conf->comments_.toolTip("fontpath"));
+	requestdir_->setWhatsThis(conf->comments_.toolTip("requestroot"));
+	serverbin_->setWhatsThis(conf->comments_.toolTip("serverbin"));
+	serverfiles_->setWhatsThis(conf->comments_.toolTip("serverroot"));
+	tmpfiles_->setWhatsThis(conf->comments_.toolTip("tempdir"));
 }

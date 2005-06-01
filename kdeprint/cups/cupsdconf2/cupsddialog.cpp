@@ -32,6 +32,7 @@
 #include "cupsdsecuritypage.h"
 
 #include <qdir.h>
+#include <QWhatsThis>
 #include <q3vbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -40,7 +41,6 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <qstringlist.h>
-#include <q3whatsthis.h>
 #include <kio/passdlg.h>
 #include <kguiitem.h>
 #include <kprocess.h>
@@ -319,7 +319,7 @@ void CupsdDialog::slotOk()
 
 void CupsdDialog::slotUser1()
 {
-	Q3WhatsThis::enterWhatsThisMode();
+	QWhatsThis::enterWhatsThisMode();
 }
 
 int CupsdDialog::serverPid()

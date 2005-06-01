@@ -487,7 +487,7 @@ if (whatType == "application/x-pkcs12") {
 
 	while (!_p12) {
 		// try prompting for a password.
-		int rc = KPasswordDialog::getPassword(pass, i18n("Certificate Password"));
+		int rc = KPasswordDialog::getPassword(_frame,pass, i18n("Certificate Password"));
 		if (rc != KPasswordDialog::Accepted) break;
 
 		_p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));

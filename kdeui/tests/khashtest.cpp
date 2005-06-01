@@ -1,4 +1,6 @@
 #include "khashtest.h"
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <kimageeffect.h>
@@ -125,8 +127,11 @@ void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
 
 int main(int argc, char **argv)
 {
+    KAboutData about("KHashTest", "KHashTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
 
-    KApplication *app = new KApplication(argc, argv, "KHashTest");
+    KApplication *app=new KApplication();
+
     KHashWidget w;
     w.resize(250 * cols, 250 * rows);
     app->setMainWidget(&w);

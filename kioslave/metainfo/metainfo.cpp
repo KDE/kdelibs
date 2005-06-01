@@ -20,6 +20,8 @@
 
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kurl.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kmimetype.h>
 #include <kdebug.h>
@@ -42,7 +44,12 @@ extern "C"
 
 int kdemain(int argc, char **argv)
 {
-    KApplication app(argc, argv, "kio_metainfo", false, true);
+    KAboutData about("kio_metainfo", "kio_metainfo", "");
+    KCmdLineArgs::init(&about);
+
+    KApplication app(false,true);
+
+    //KApplication app(argc, argv, "kio_metainfo", false, true);
 
     if (argc != 4)
     {

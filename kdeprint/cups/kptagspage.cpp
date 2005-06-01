@@ -24,7 +24,6 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qregexp.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 
@@ -82,7 +81,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 	m_tags->horizontalHeader()->setLabel(0, i18n("Name"));
 	m_tags->horizontalHeader()->setLabel(1, i18n("Value"));
 	m_tags->setReadOnly(ro);
-	Q3WhatsThis::add(m_tags, whatsThisAdditionalTagsTable);
+	m_tags->setWhatsThis(whatsThisAdditionalTagsTable);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 5);
 	l0->addWidget(m_tags);

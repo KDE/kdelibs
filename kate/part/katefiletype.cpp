@@ -47,7 +47,6 @@
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 #include <q3widgetstack.h>
 
 #define KATE_FT_HOWMANY 1024
@@ -327,29 +326,29 @@ KateFileTypeConfigTab::KateFileTypeConfigTab( QWidget *parent )
   connect( mimetypes, SIGNAL( textChanged ( const QString & ) ), this, SLOT( slotChanged() ) );
   connect( priority, SIGNAL( valueChanged ( int ) ), this, SLOT( slotChanged() ) );
 
-  Q3WhatsThis::add( btnnew, i18n("Create a new file type.") );
-  Q3WhatsThis::add( btndel, i18n("Delete the current file type.") );
-  Q3WhatsThis::add( name, i18n(
+  btnnew->setWhatsThis(i18n("Create a new file type.") );
+  btndel->setWhatsThis(i18n("Delete the current file type.") );
+  name->setWhatsThis(i18n(
       "The name of the filetype will be the text of the corresponding menu item.") );
-  Q3WhatsThis::add( section, i18n(
+  section->setWhatsThis(i18n(
       "The section name is used to organize the file types in menus.") );
-  Q3WhatsThis::add( varLine, i18n(
+  varLine->setWhatsThis(i18n(
       "<p>This string allows you to configure Kate's settings for the files "
       "selected by this mimetype using Kate variables. You can set almost any "
       "configuration option, such as highlight, indent-mode, encoding, etc.</p>"
       "<p>For a full list of known variables, see the manual.</p>") );
-  Q3WhatsThis::add( wildcards, i18n(
+  wildcards->setWhatsThis(i18n(
       "The wildcards mask allows you to select files by filename. A typical "
       "mask uses an asterisk and the file extension, for example "
       "<code>*.txt; *.text</code>. The string is a semicolon-separated list "
       "of masks.") );
-  Q3WhatsThis::add( mimetypes, i18n(
+  mimetypes->setWhatsThis(i18n(
       "The mime type mask allows you to select files by mimetype. The string is "
       "a semicolon-separated list of mimetypes, for example "
       "<code>text/plain; text/english</code>.") );
-  Q3WhatsThis::add( btnMTW, i18n(
+  btnMTW->setWhatsThis(i18n(
       "Displays a wizard that helps you easily select mimetypes.") );
-  Q3WhatsThis::add( priority, i18n(
+  priority->setWhatsThis(i18n(
       "Sets a priority for this file type. If more than one file type selects the same "
       "file, the one with the highest priority will be used." ) );
 }

@@ -552,11 +552,6 @@ KLed::setState( State state )
     }
 }
 
-void
-KLed::toggleState()
-{
-  toggle();
-}
 
 void
 KLed::setShape(KLed::Shape s)

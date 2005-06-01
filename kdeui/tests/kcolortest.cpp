@@ -1,5 +1,7 @@
 
 #include "kcolortest.h"
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <stdio.h>
@@ -151,7 +153,11 @@ int main(int argc, char **argv)
       else
 	printf("Usage: %s [int_vs_fade | fullscreen [old_way]]\n ", argv[0]);
     }
-    KApplication *app = new KApplication(argc, argv, "KColorTest");
+
+    KAboutData about("KColorTest", "KColorTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication *app = new KApplication();
     KColorWidget w;
     app->setMainWidget(&w);
     w.show();

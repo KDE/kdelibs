@@ -32,7 +32,6 @@
 #include <qclipboard.h>
 #include <qfontdatabase.h>
 #include <qobject.h>
-#include <q3whatsthis.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -665,7 +664,7 @@ int KSelectAction::plug( QWidget *widget, int index )
         cb->setMaximumWidth( d->m_comboWidth );
       }
       cb->setInsertionPolicy( QComboBox::NoInsert );
-      Q3WhatsThis::add( cb, whatsThis() );
+      cb->setWhatsThis(whatsThis() );
     }
 
     addContainer( bar, id_ );
@@ -1213,7 +1212,7 @@ int KRecentFilesAction::plug( QWidget *widget, int index )
     bar->setDelayedPopup( id_, d->m_popup, true);
 
     if ( !whatsThis().isEmpty() )
-        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        bar->getButton( id_ )->setWhatsThis(whatsThisWithIcon() );
 
     return containerCount() - 1;
   }
@@ -1724,7 +1723,7 @@ int KActionMenu::plug( QWidget* widget, int index )
     addContainer( bar, id_ );
 
     if (!whatsThis().isEmpty())
-      Q3WhatsThis::add( bar->getButton(id_), whatsThis() );
+      bar->getButton(id_)->setWhatsThis(whatsThis() );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
@@ -1859,7 +1858,7 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
     }
 
     if ( !whatsThis().isEmpty() )
-        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        bar->getButton( id_ )->setWhatsThis(whatsThisWithIcon() );
 
     return containerCount() - 1;
   }
@@ -2056,7 +2055,7 @@ int KWidgetAction::plug( QWidget* w, int index )
   toolBar->insertWidget( id, 0, m_widget, index );
   toolBar->setItemAutoSized( id, m_autoSized );
 
-  Q3WhatsThis::add( m_widget, whatsThis() );
+  m_widget->setWhatsThis(whatsThis() );
   addContainer( toolBar, id );
 
   connect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
@@ -2194,7 +2193,7 @@ int KPasteTextAction::plug( QWidget *widget, int index )
     bar->setDelayedPopup( id_, m_popup, true );
 
     if ( !whatsThis().isEmpty() )
-        Q3WhatsThis::add( bar->getButton( id_ ), whatsThisWithIcon() );
+        bar->getButton( id_ )->setWhatsThis(whatsThisWithIcon() );
 
     return containerCount() - 1;
   }

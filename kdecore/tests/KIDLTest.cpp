@@ -1,5 +1,7 @@
 #include "KIDLTest.h"
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <dcopclient.h>
 
@@ -18,7 +20,10 @@ QString KIDLTest::hello( const QString& name )
 
 int main( int argc, char** argv )
 {
-    KApplication app( argc, argv, "kidlservertest", false /* No GUI */ );
+    KAboutData about("kidlservertest", "kidlservertest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app(false,false);
 
     app.dcopClient()->attach();
     app.dcopClient()->registerAs( "kidlservertest", false );

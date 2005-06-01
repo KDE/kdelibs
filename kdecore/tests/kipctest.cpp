@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <qobject.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kipc.h>
 #include "kipctest.h"
@@ -18,7 +20,11 @@ MyObject::MyObject()
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv, "kipc");
+
+    KAboutData about("kipc", "kipc", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app;
 
     if (argc == 3) 
     {

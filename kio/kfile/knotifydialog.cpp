@@ -49,7 +49,6 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 #include <QHelpEvent>
 
 using namespace KNotify;
@@ -287,8 +286,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
         "<b>%s</b>: for the notification message,<br>"
         "<b>%w</b>: for the numeric window ID where the event originated,<br>"
         "<b>%i</b>: for the numeric event ID.");
-    Q3WhatsThis::add( m_execute, whatsThis );
-    Q3WhatsThis::add( m_executePath, whatsThis );
+    m_execute->setWhatsThis(whatsThis );
+    m_executePath->setWhatsThis(whatsThis );
     
     showAdvanced( false );
 

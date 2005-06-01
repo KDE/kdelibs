@@ -24,7 +24,6 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <q3header.h>
-#include <q3whatsthis.h>
 #include <QDragEnterEvent>
 
 #include <kio/netaccess.h>
@@ -107,41 +106,41 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_files->setAcceptDrops(false);
 	m_files->setSelectionMode(Q3ListView::Extended);
 	m_files->header()->setStretchEnabled(true, 2);
-	Q3WhatsThis::add(m_files, whatsThisFileSelectionListview);
+	m_files->setWhatsThis(whatsThisFileSelectionListview);
 	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QToolButton(this);
 	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
 	QToolTip::add(m_add, i18n("Add file"));
-	Q3WhatsThis::add(m_add, whatsThisAddFileButton);
+	m_add->setWhatsThis(whatsThisAddFileButton);
 
 	m_remove = new QToolButton(this);
 	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
 	QToolTip::add(m_remove, i18n("Remove file"));
-	Q3WhatsThis::add(m_remove, whatsThisRemoveFileButton);
+	m_remove->setWhatsThis(whatsThisRemoveFileButton);
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
 	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
 	QToolTip::add(m_open, i18n("Open file"));
-	Q3WhatsThis::add(m_open, whatsThisOpenFileButton);
+	m_open->setWhatsThis(whatsThisOpenFileButton);
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
 	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
 	QToolTip::add(m_up, i18n("Move up"));
-	Q3WhatsThis::add(m_up, whatsThisMoveFileUpButton);
+	m_up->setWhatsThis(whatsThisMoveFileUpButton);
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
 	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
 	QToolTip::add(m_down, i18n("Move down"));
-	Q3WhatsThis::add(m_down, whatsThisMoveFileDownButton);
+	m_down->setWhatsThis(whatsThisMoveFileDownButton);
 	m_down->setEnabled(false);
 
 	setAcceptDrops(true);

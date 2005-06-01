@@ -32,7 +32,6 @@
 #include <qcheckbox.h>
 #include <qtooltip.h>
 #include <qstyle.h>
-#include <q3whatsthis.h>
 
 #include <kapplication.h>
 #include <kbuttonbox.h>
@@ -451,7 +450,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   }
 
   edit->setURL( _value );
-  Q3WhatsThis::add(edit,i18n(
+  edit->setWhatsThis(i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
     "%f - a single file name\n"

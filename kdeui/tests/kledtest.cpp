@@ -1,3 +1,5 @@
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qwidget.h>
 #include <qtimer.h>
@@ -130,7 +132,10 @@ KLedTest::timeout()
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv, "KLedTest" );
+    KAboutData about("KLedTest", "KLedTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication a;
     KLedTest widget;
     // -----
     /*

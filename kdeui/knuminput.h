@@ -54,16 +54,14 @@ public:
     /**
      * Default constructor
      * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted.
-     * @param name The name is sent to the QObject constructor.
      */
-    KNumInput(QWidget* parent=0, const char* name=0);
+    KNumInput(QWidget* parent=0);
 
     /**
      * @param below A pointer to another KNumInput.
      * @param parent parent widget
-     * @param name name of the widget
      */
-    KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
+    KNumInput(QWidget *parent,KNumInput* below);
     ~KNumInput();
 
     /**
@@ -201,7 +199,7 @@ public:
      * Constructs an input control for integer values
      * with base 10 and initial value 0.
      */
-    KIntNumInput(QWidget *parent=0, const char *name=0);
+    KIntNumInput(QWidget *parent=0);
     /**
      * Constructor
      * It constructs a QSpinBox that allows the input of integer numbers
@@ -212,9 +210,8 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      */
-    KIntNumInput(int value, QWidget* parent=0, int base = 10, const char *name=0);
+    KIntNumInput(int value, QWidget *parent=0,int base = 10);
 
     /**
      * Constructor
@@ -231,9 +228,8 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      */
-    KIntNumInput(KNumInput* below, int value, QWidget* parent=0, int base = 10, const char *name=0);
+    KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
 
     /**
      * Destructor
@@ -447,17 +443,7 @@ public:
      * Constructs an input control for double values
      * with initial value 0.00.
      */
-    KDoubleNumInput(QWidget *parent=0, const char *name=0);
-
-    /**
-     * @deprecated (value is rounded to a multiple of 1/100)
-     * Constructor
-     *
-     * @param value  initial value for the control
-     * @param parent parent QWidget
-     * @param name   internal name for this widget
-     */
-    KDoubleNumInput(double value, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KDoubleNumInput(QWidget *parent);
 
     /**
      * Constructor
@@ -468,29 +454,16 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      * @since 3.1
      */
-    KDoubleNumInput(double lower, double upper, double value, double step=0.01,
-		    int precision=2, QWidget *parent=0, const char *name=0);
+    KDoubleNumInput(double lower, double upper, double value, QWidget *parent=0,double step=0.01,
+		    int precision=2);
 
     /**
      * destructor
      */
     virtual ~KDoubleNumInput();
 
-    /**
-     * @deprecated (rounds @p value to a multiple of 1/100)
-     * Constructor
-     *
-     * puts it visually below other KNumInput
-     *
-     * @param  below
-     * @param  value  initial value for the control
-     * @param  parent parent QWidget
-     * @param  name   internal name for this widget
-     **/
-    KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0) KDE_DEPRECATED;
 
     /**
      * Constructor
@@ -510,12 +483,11 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      * @since 3.1
      */
     KDoubleNumInput(KNumInput* below,
-		    double lower, double upper, double value, double step=0.02,
-		    int precision=2, QWidget *parent=0, const char *name=0);
+		    double lower, double upper, double value, QWidget *parent=0,double step=0.02,
+		    int precision=2);
 
     /**
      * @return the current value.
@@ -715,7 +687,7 @@ public:
      *  and a slider, with minimal value 0, maximal value 99, step 1, base 10
      *  and initial value 0.
      */
-    KIntSpinBox( QWidget *parent=0, const char *name=0);
+    KIntSpinBox( QWidget *parent);
 
     /**
      *  Constructor.
@@ -729,10 +701,8 @@ public:
      *  @param value  The actual value.
      *  @param base   The base of the used number system.
      *  @param parent The parent of the widget.
-     *  @param name   The Name of the widget.
      */
-    KIntSpinBox(int lower, int upper, int step, int value, int base = 10,
-                QWidget* parent = 0, const char* name = 0);
+    KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base = 10);
 
     /**
      *  Destructor.
@@ -844,13 +814,13 @@ public:
   /** Constructs a KDoubleSpinBox with parent @p parent and
       default values for range and value (whatever QRangeControl
       uses) and precision (2). */
-  KDoubleSpinBox( QWidget * parent=0, const char * name=0 );
+  KDoubleSpinBox( QWidget * parent);
 
   /** Constructs a KDoubleSpinBox with parent @p parent, range
       [ @p lower, @p upper ], lineStep @p step, precision @p
       precision and initial value @p value. */
   KDoubleSpinBox( double lower, double upper, double step, double value,
-		  int precision=2, QWidget * parent=0, const char * name=0 );
+		  QWidget *parent,int precision=2);
 
   virtual ~KDoubleSpinBox();
 

@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 
 #include <signal.h>
@@ -34,7 +36,10 @@ int main(int argc, char *argv[])
 {
  KProcess p1, p2, p3, p4;
  Dummy dummy; 
- KApplication app(argc, argv, "kprocesstest");
+ KAboutData about("kprocesstest", "kprocesstest", "version");
+ KCmdLineArgs::init(argc, argv, &about);
+
+ KApplication app;
 
 
  printf("Welcome to the KProcess Demo Application!\n");

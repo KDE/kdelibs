@@ -20,6 +20,8 @@
 #include <qpainter.h>
 
 #include <kconfig.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 //#include <kimgio.h>
 #include <stdlib.h>
@@ -763,7 +765,10 @@ QString DirectoryView::selectedDir()
 /**********************************************************************************************/
 
 int main(int argc, char* argv[]) {
-  KApplication app(argc,argv,"kdockwidgetdemo");
+  KAboutData about("kdockwidgetdemo", "kdockwidgetdemo", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
 
 #if 0
   SFileDialog* openfile = new SFileDialog();

@@ -50,7 +50,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <q3hbox.h>
-#include <q3whatsthis.h>
 #include <qcheckbox.h>
 
 // #include <kdebug.h>
@@ -491,10 +490,10 @@ DocWordCompletionConfigPage::DocWordCompletionConfigPage( DocWordCompletionPlugi
       "'Show completions when a word is at least N characters'",
       "characters long."), hb );
 
-  Q3WhatsThis::add( cbAutoPopup, i18n(
+  cbAutoPopup->setWhatsThis(i18n(
       "Enable the automatic completion list popup as default. The popup can "
       "be disabled on a view basis from the 'Tools' menu.") );
-  Q3WhatsThis::add( sbAutoPopup, i18n(
+  sbAutoPopup->setWhatsThis(i18n(
       "Define the length a word should have before the completion list "
       "is displayed.") );
 

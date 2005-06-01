@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -235,7 +237,10 @@ int main(int argc, char *argv[])
   }
 //  showMem("second");
 
-    KApplication app(argc,argv,"kurltest");
+   KAboutData about("kmemtest", "kmemtest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
 //  showMem("After KApplication constructor");
 

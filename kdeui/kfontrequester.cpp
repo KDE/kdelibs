@@ -23,7 +23,6 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qtooltip.h>
-#include <q3whatsthis.h>
 
 #include <kfontdialog.h>
 #include <klocale.h>
@@ -102,21 +101,19 @@ void KFontRequester::setToolTip()
   QToolTip::add( m_button, i18n( "Click to select a font" ) );
 
   QToolTip::remove( m_sampleLabel );
-  Q3WhatsThis::remove( m_sampleLabel );
+  m_sampleLabel->setWhatsThis(QString::null);
 
   if ( m_title.isNull() )
   {
     QToolTip::add( m_sampleLabel, i18n( "Preview of the selected font" ) );
-    Q3WhatsThis::add( m_sampleLabel, 
-        i18n( "This is a preview of the selected font. You can change it"
+    m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the selected font. You can change it"
         " by clicking the \"Choose...\" button." ) );
   }
   else
   {
     QToolTip::add( m_sampleLabel, 
         i18n( "Preview of the \"%1\" font" ).arg( m_title ) );
-    Q3WhatsThis::add( m_sampleLabel, 
-        i18n( "This is a preview of the \"%1\" font. You can change it"
+    m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the \"%1\" font. You can change it"
         " by clicking the \"Choose...\" button." ).arg( m_title ) );
   }
 }

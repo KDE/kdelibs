@@ -16,6 +16,8 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kbuttonbox.h"
 #include <qlayout.h>
@@ -24,7 +26,10 @@
 #include <qpushbutton.h>
 
 int main(int argc, char **argv) {
-  KApplication a(argc, argv, "dummy");
+   KAboutData about("kbuttonboxtest", "kbuttonboxtest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
   // example 1
   {

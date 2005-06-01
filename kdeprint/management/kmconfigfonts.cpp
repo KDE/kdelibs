@@ -26,7 +26,6 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qsettings.h>
-#include <q3whatsthis.h>
 
 #include <klocale.h>
 #include <kconfig.h>
@@ -81,12 +80,10 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	l4->addWidget(box);
 	l4->addWidget(box2);
 
-	Q3WhatsThis::add(m_embedfonts,
-			i18n("These options will automatically put fonts in the PostScript file "
+	m_embedfonts->setWhatsThis(			i18n("These options will automatically put fonts in the PostScript file "
                              "which are not present on the printer. Font embedding usually produces better print results "
 			     "(closer to what you see on the screen), but larger print data as well."));
-	Q3WhatsThis::add(m_fontpath, 
-			i18n("When using font embedding you can select additional directories where "
+	m_fontpath->setWhatsThis(			i18n("When using font embedding you can select additional directories where "
 			     "KDE should search for embeddable font files. By default, the X server "
 			     "font path is used, so adding those directories is not needed. The default "
 			     "search path should be sufficient in most cases."));

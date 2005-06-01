@@ -23,7 +23,6 @@
 #include <q3groupbox.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
-#include <q3whatsthis.h>
 
 #include <kpushbutton.h>
 #include <klocale.h>
@@ -46,11 +45,11 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPagePixmap("fileprint");
 
 	Q3GroupBox	*m_timerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);
-	m_timer = new KIntNumInput(m_timerbox,"Timer");
+	m_timer = new KIntNumInput(m_timerbox/*,"Timer"*/);
 	m_timer->setRange(0,30);
     m_timer->setSuffix( i18n( " sec" ) );
 	m_timer->setSpecialValueText(i18n("Disabled"));
-	Q3WhatsThis::add(m_timer, i18n("This time setting controls the refresh rate of various "
+	m_timer->setWhatsThis(i18n("This time setting controls the refresh rate of various "
 			              "<b>KDE Print</b> components like the print manager "
 				      "and the job viewer."));
 

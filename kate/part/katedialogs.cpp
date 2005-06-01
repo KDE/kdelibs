@@ -102,7 +102,6 @@
 #include <qtextcodec.h>
 #include <qtoolbutton.h>
 #include <q3vbox.h>
-#include <q3whatsthis.h>
 
 // trailing slash is important
 #define HLDOWNLOADPATH "http://www.kde.org/apps/kate/syntax/"
@@ -175,7 +174,7 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   opt[6] = new QCheckBox(i18n("Emacs style mixed mode"), gbSpaces);
   vb->addWidget (opt[6]);
 
-  indentationWidth = new KIntNumInput(KateDocumentConfig::global()->indentationWidth(), gbSpaces);
+  indentationWidth = new KIntNumInput(KateDocumentConfig::global()->indentationWidth(),gbSpaces);
   indentationWidth->setRange(1, 16, 1, false);
   indentationWidth->setLabel(i18n("Number of spaces:"), Qt::AlignVCenter);
   vb->addWidget (indentationWidth);
@@ -374,7 +373,7 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
   e6->setChecked(KateDocumentConfig::global()->pageUpDownMovesCursor());
   connect(e6, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
-  e4 = new KIntNumInput(KateViewConfig::global()->autoCenterLines(), gbCursor);
+  e4 = new KIntNumInput(KateViewConfig::global()->autoCenterLines(),gbCursor);
   e4->setRange(0, 1000000, 1, false);
   e4->setLabel(i18n("Autocenter cursor (lines):"), Qt::AlignVCenter);
   connect(e4, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
@@ -392,28 +391,28 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 
   layout->addStretch();
 
-  Q3WhatsThis::add(rb1, i18n(
+  rb1->setWhatsThis(i18n(
         "Selections will be overwritten by typed text and will be lost on "
         "cursor movement."));
-  Q3WhatsThis::add(rb2, i18n(
+  rb2->setWhatsThis(i18n(
         "Selections will stay even after cursor movement and typing."));
 
-  Q3WhatsThis::add(e4, i18n(
+  e4->setWhatsThis(i18n(
         "Sets the number of lines to maintain visible above and below the "
         "cursor when possible."));
 
-  Q3WhatsThis::add(opt[0], i18n(
+  opt[0]->setWhatsThis(i18n(
         "When selected, pressing the home key will cause the cursor to skip "
         "whitespace and go to the start of a line's text."));
 
-    Q3WhatsThis::add(opt[1], i18n(
+    opt[1]->setWhatsThis(i18n(
         "When on, moving the insertion cursor using the <b>Left</b> and "
         "<b>Right</b> keys will go on to previous/next line at beginning/end of "
         "the line, similar to most editors.<p>When off, the insertion cursor "
         "cannot be moved left of the line start, but it can be moved off the "
         "line end, which can be very handy for programmers."));
 
-  Q3WhatsThis::add(e6, i18n("Selects whether the PageUp and PageDown keys should alter the vertical position of the cursor relative to the top of the view."));
+  e6->setWhatsThis(i18n("Selects whether the PageUp and PageDown keys should alter the vertical position of the cursor relative to the top of the view."));
 
 
   reload ();
@@ -482,7 +481,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
   opt[2]->setChecked(configFlags & flags[2]);
   connect(opt[2], SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
-  e2 = new KIntNumInput(KateDocumentConfig::global()->tabWidth(), gbWhiteSpace);
+  e2 = new KIntNumInput(KateDocumentConfig::global()->tabWidth(),gbWhiteSpace);
   e2->setRange(1, 16, 1, false);
   e2->setLabel(i18n("Tab width:"), Qt::AlignVCenter);
   connect(e2, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
@@ -499,7 +498,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
   m_wwmarker->setChecked( KateRendererConfig::global()->wordWrapMarker() );
   connect(m_wwmarker, SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
-  e1 = new KIntNumInput(KateDocumentConfig::global()->wordWrapAt(), gbWordWrap);
+  e1 = new KIntNumInput(KateDocumentConfig::global()->wordWrapAt(),gbWordWrap);
   e1->setRange(20, 200, 1, false);
   e1->setLabel(i18n("Wrap words at:"), Qt::AlignVCenter);
   connect(e1, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
@@ -516,7 +515,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
   opt[1]->setChecked(configFlags & flags[1]);
   connect(opt[1], SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
-  e3 = new KIntNumInput(e2, KateDocumentConfig::global()->undoSteps(), this);
+  e3 = new KIntNumInput(e2, KateDocumentConfig::global()->undoSteps(),this);
   e3->setRange(0, 1000000, 1, false);
   e3->setSpecialValueText( i18n("Unlimited") );
   e3->setLabel(i18n("Maximum undo steps:"), Qt::AlignVCenter);
@@ -540,7 +539,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
   mainLayout->addStretch();
 
   // What is this? help
-  Q3WhatsThis::add(opt[0], i18n(
+  opt[0]->setWhatsThis(i18n(
         "Automatically start a new line of text when the current line exceeds "
         "the length specified by the <b>Wrap words at:</b> option."
         "<p>This option does not wrap existing lines of text - use the <b>Apply "
@@ -548,17 +547,17 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
         "<p>If you want lines to be <i>visually wrapped</i> instead, according "
         "to the width of the view, enable <b>Dynamic Word Wrap</b> in the "
         "<b>View Defaults</b> config page."));
-  Q3WhatsThis::add(e1, i18n(
+  e1->setWhatsThis(i18n(
         "If the Word Wrap option is selected this entry determines the length "
         "(in characters) at which the editor will automatically start a new line."));
-  Q3WhatsThis::add(opt[1], i18n(
+  opt[1]->setWhatsThis(i18n(
         "When the user types a left bracket ([,(, or {) KateView automatically "
         "enters the right bracket (}, ), or ]) to the right of the cursor."));
-  Q3WhatsThis::add(opt[2], i18n(
+  opt[2]->setWhatsThis(i18n(
         "The editor will display a symbol to indicate the presence of a tab in "
         "the text."));
 
-  Q3WhatsThis::add(e3, i18n(
+  e3->setWhatsThis(i18n(
         "Sets the number of undo/redo steps to record. More steps uses more memory."));
 
   QString gstfwt = i18n(
@@ -584,16 +583,16 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
         "Note that, in all the above modes, if a search string has "
         "not been or cannot be determined, then the Find Text Dialog "
         "will fall back to the last search text.");
-  Q3WhatsThis::add(e5Label, gstfwt);
-  Q3WhatsThis::add(e5, gstfwt);
-  Q3WhatsThis::add( opt[3], i18n(
+  e5Label->setWhatsThis(gstfwt);
+  e5->setWhatsThis(gstfwt);
+  opt[3]->setWhatsThis(i18n(
       "If this is enabled, the editor will calculate the number of spaces up to "
       "the next tab position as defined by the tab width, and insert that number "
       "of spaces instead of a TAB character." ) );
-  Q3WhatsThis::add( opt[4], i18n(
+  opt[4]->setWhatsThis(i18n(
       "If this is enabled, the editor will remove any trailing whitespace on "
       "lines when they are left by the insertion cursor.") );
-  Q3WhatsThis::add( m_wwmarker, i18n(
+  m_wwmarker->setWhatsThis(i18n(
         "<p>If this option is checked, a vertical line will be drawn at the word "
         "wrap column as defined in the <strong>Editing</strong> properties."
         "<p>Note that the word wrap marker is only drawn if you use a fixed "
@@ -700,14 +699,14 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
 
   blay->addStretch(1000);
 
-  Q3WhatsThis::add(m_dynwrap,i18n(
+  m_dynwrap->setWhatsThis(i18n(
         "If this option is checked, the text lines will be wrapped at the view "
         "border on the screen."));
   QString wtstr = i18n("Choose when the Dynamic Word Wrap Indicators should be displayed");
-  Q3WhatsThis::add(m_dynwrapIndicatorsLabel, wtstr);
-  Q3WhatsThis::add(m_dynwrapIndicatorsCombo, wtstr);
+  m_dynwrapIndicatorsLabel->setWhatsThis(wtstr);
+  m_dynwrapIndicatorsCombo->setWhatsThis(wtstr);
   // xgettext:no-c-format
-  Q3WhatsThis::add(m_dynwrapAlignLevel, i18n(
+  m_dynwrapAlignLevel->setWhatsThis(i18n(
         "<p>Enables the start of dynamically wrapped lines to be aligned "
         "vertically to the indentation level of the first line.  This can help "
         "to make code and markup more readable.</p><p>Additionally, this allows "
@@ -716,28 +715,28 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
         "example, at 50%, lines whose indentation levels are deeper than 50% of "
         "the width of the screen will not have vertical alignment applied to "
         "subsequent wrapped lines.</p>"));
-  Q3WhatsThis::add(m_line,i18n(
+  m_line->setWhatsThis(i18n(
         "If this option is checked, every new view will display line numbers "
         "on the left hand side."));
-  Q3WhatsThis::add(m_icons,i18n(
+  m_icons->setWhatsThis(i18n(
         "If this option is checked, every new view will display an icon border "
         "on the left hand side.<br><br>The icon border shows bookmark signs, "
         "for instance."));
-  Q3WhatsThis::add(m_scrollBarMarks,i18n(
+  m_scrollBarMarks->setWhatsThis(i18n(
         "If this option is checked, every new view will show marks on the "
         "vertical scrollbar.<br><br>These marks will, for instance, show "
         "bookmarks."));
-  Q3WhatsThis::add(m_folding,i18n(
+  m_folding->setWhatsThis(i18n(
         "If this option is checked, every new view will display marks for code "
         "folding, if code folding is available."));
-  Q3WhatsThis::add(m_bmSort,i18n(
+  m_bmSort->setWhatsThis(i18n(
         "Choose how the bookmarks should be ordered in the <b>Bookmarks</b> menu."));
-  Q3WhatsThis::add(rb1,i18n(
+  rb1->setWhatsThis(i18n(
         "The bookmarks will be ordered by the line numbers they are placed at."));
-  Q3WhatsThis::add(rb2,i18n(
+  rb2->setWhatsThis(i18n(
         "Each new bookmark will be added to the bottom, independently from "
         "where it is placed in the document."));
-  Q3WhatsThis::add(m_showIndentLines, i18n(
+  m_showIndentLines->setWhatsThis(i18n(
         "If this is enabled, the editor will display vertical line to help "
         "identifying indent lines.") );
 
@@ -893,7 +892,7 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   QGroupBox *dirConfigBox = new Q3GroupBox(1, Qt::Horizontal, i18n("Folder Config File"), this);
   layout->addWidget( dirConfigBox );
 
-  dirSearchDepth = new KIntNumInput(KateDocumentConfig::global()->searchDirConfigDepth(), dirConfigBox);
+  dirSearchDepth = new KIntNumInput(KateDocumentConfig::global()->searchDirConfigDepth(),dirConfigBox);
   dirSearchDepth->setRange(-1, 64, 1, false);
   dirSearchDepth->setSpecialValueText( i18n("Do not use config file") );
   dirSearchDepth->setLabel(i18n("Se&arch depth for config file:"), Qt::AlignVCenter);
@@ -915,28 +914,28 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
 
   layout->addStretch();
 
-  Q3WhatsThis::add(removeSpaces, i18n(
+  removeSpaces->setWhatsThis(i18n(
         "The editor will automatically eliminate extra spaces at the ends of "
         "lines of text while loading/saving the file."));
-  Q3WhatsThis::add( gb, i18n(
+  gb->setWhatsThis(i18n(
         "<p>Backing up on save will cause Kate to copy the disk file to "
         "'&lt;prefix&gt;&lt;filename&gt;&lt;suffix&gt;' before saving changes."
         "<p>The suffix defaults to <strong>~</strong> and prefix is empty by default" ) );
-  Q3WhatsThis::add( allowEolDetection, i18n(
+  allowEolDetection->setWhatsThis(i18n(
         "Check this if you want the editor to autodetect the end of line type."
         "The first found end of line type will be used for the whole file.") );
-  Q3WhatsThis::add( cbLocalFiles, i18n(
+  cbLocalFiles->setWhatsThis(i18n(
         "Check this if you want backups of local files when saving") );
-  Q3WhatsThis::add( cbRemoteFiles, i18n(
+  cbRemoteFiles->setWhatsThis(i18n(
         "Check this if you want backups of remote files when saving") );
-  Q3WhatsThis::add( leBuPrefix, i18n(
+  leBuPrefix->setWhatsThis(i18n(
         "Enter the prefix to prepend to the backup file names" ) );
-  Q3WhatsThis::add( leBuSuffix, i18n(
+  leBuSuffix->setWhatsThis(i18n(
         "Enter the suffix to add to the backup file names" ) );
-  Q3WhatsThis::add(dirSearchDepth, i18n(
+  dirSearchDepth->setWhatsThis(i18n(
         "The editor will search the given number of folder levels upwards for .kateconfig file"
         " and load the settings line from it." ));
-  Q3WhatsThis::add(blockCount, i18n(
+  blockCount->setWhatsThis(i18n(
         "The editor will load given number of blocks (of around 2048 lines) of text into memory;"
         " if the filesize is bigger than this the other blocks are swapped "
         " to disk and loaded transparently as-needed.<br>"
@@ -1329,21 +1328,21 @@ KateHlConfigPage::KateHlConfigPage (QWidget *parent)
   hlCombo->setCurrentItem( 0 );
   hlChanged(0);
 
-  Q3WhatsThis::add( hlCombo, i18n(
+  hlCombo->setWhatsThis(i18n(
         "Choose a <em>Syntax Highlight mode</em> from this list to view its "
         "properties below.") );
-  Q3WhatsThis::add( wildcards, i18n(
+  wildcards->setWhatsThis(i18n(
         "The list of file extensions used to determine which files to highlight "
         "using the current syntax highlight mode.") );
-  Q3WhatsThis::add( mimetypes, i18n(
+  mimetypes->setWhatsThis(i18n(
         "The list of Mime Types used to determine which files to highlight "
         "using the current highlight mode.<p>Click the wizard button on the "
         "left of the entry field to display the MimeType selection dialog.") );
-  Q3WhatsThis::add( btnMTW, i18n(
+  btnMTW->setWhatsThis(i18n(
         "Display a dialog with a list of all available mime types to choose from."
         "<p>The <strong>File Extensions</strong> entry will automatically be "
         "edited as well.") );
-  Q3WhatsThis::add( btnDl, i18n(
+  btnDl->setWhatsThis(i18n(
         "Click this button to download new or updated syntax highlight "
         "descriptions from the Kate website.") );
 
@@ -1556,7 +1555,7 @@ KateGotoLineDialog::KateGotoLineDialog(QWidget *parent, int line, int max)
   setMainWidget(page);
 
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
-  e1 = new KIntNumInput(line, page);
+  e1 = new KIntNumInput(line,page);
   e1->setRange(1, max);
   e1->setEditFocus(true);
 
@@ -1623,7 +1622,7 @@ KateModOnHdPrompt::KateModOnHdPrompt( KateDocument *doc,
     lo2->addStretch( 1 );
     lo2->addWidget( btnDiff );
     connect( btnDiff, SIGNAL(clicked()), this, SLOT(slotDiff()) );
-    Q3WhatsThis::add( btnDiff, i18n(
+    btnDiff->setWhatsThis(i18n(
         "Calculates the difference between the editor contents and the disk "
         "file using diff(1) and opens the diff file with the default application "
         "for that.") );

@@ -25,7 +25,6 @@
 #include <q3listview.h>
 #include <q3header.h>
 #include <qlayout.h>
-#include <q3whatsthis.h>
 #include <klocale.h>
 
 DrListView::DrListView(QWidget *parent, const char *name)
@@ -94,9 +93,9 @@ DriverView::DriverView(QWidget *parent, const char *name)
 	m_driver = 0;
 
 	m_view = new DrListView(this);
-	  Q3WhatsThis::add(m_view, whatsThisPPDOptionsDriverPage);
+	  m_view->setWhatsThis(whatsThisPPDOptionsDriverPage);
 	m_optview = new DrOptionView(this);
-	  Q3WhatsThis::add(m_optview, whatsThisOptionSettingsDriverPage);
+	  m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	main_->addWidget(m_view,1);

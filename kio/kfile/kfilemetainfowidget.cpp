@@ -215,8 +215,8 @@ QWidget* KFileMetaInfoWidget::makeIntWidget()
 
 QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 {
-    KDoubleNumInput* dni = new KDoubleNumInput(m_item.value().toDouble(),
-                                               this, "metainfo double widget");
+    double value=m_item.value().toDouble();
+    KDoubleNumInput* dni = new KDoubleNumInput(kMin(0.0,value),kMax(0.0,value),value,this,0.01,2);
 
 
     if (m_validator)

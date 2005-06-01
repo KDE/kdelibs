@@ -28,7 +28,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kdockwidgetdemo kdockwidgettest \
 	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
-	kledtest klineedittest klineeditdlgtest \
+	kledtest klineedittest \
 	kmessageboxtest knuminputtest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
