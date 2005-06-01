@@ -237,14 +237,15 @@ int KIntSpinBox::base() const
     return val_base;
 }
 
-QString KIntSpinBox::mapValueToText(int v)
+QString KIntSpinBox::textFromValue(int v) const
 {
     return QString::number(v, val_base);
 }
 
-int KIntSpinBox::mapTextToValue(bool* ok)
+int KIntSpinBox::valueFromText(const QString &text) const
 {
-    return cleanText().toInt(ok, val_base);
+    bool ok;
+    return text.toInt(&ok, val_base);
 }
 
 void KIntSpinBox::setEditFocus(bool mark)
@@ -984,20 +985,18 @@ public:
 };
 
 KDoubleSpinBox::KDoubleSpinBox( QWidget * parent)
-  : QSpinBox( parent)
+  : QSpinBox( parent), d(new Private())
 {
   lineEdit()->setAlignment( Qt::AlignRight );
-  d = new Private();
   updateValidator();
   connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
 }
 
 KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
 				double value, QWidget *parent, int precision)
-  : QSpinBox( parent)
+  : QSpinBox( parent), d(new Private())
 {
   lineEdit()->setAlignment( Qt::AlignRight );
-  d = new Private();
   setRange( lower, upper, step, precision );
   setValue( value );
   connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
@@ -1112,7 +1111,7 @@ void KDoubleSpinBox::setSingleStep( double step ) {
     base::setSingleStep( kMax( d->mapToInt( step, &ok ), 1 ) );
 }
 
-QString KDoubleSpinBox::mapValueToText( int value ) {
+QString KDoubleSpinBox::textFromValue( int value ) const{
   if ( acceptLocalizedNumbers() )
     return KGlobal::locale()
       ->formatNumber( d->mapToDouble( value ), d->mPrecision );
@@ -1120,18 +1119,19 @@ QString KDoubleSpinBox::mapValueToText( int value ) {
     return QString().setNum( d->mapToDouble( value ), 'f', d->mPrecision );
 }
 
-int KDoubleSpinBox::mapTextToValue( bool * ok ) {
+int KDoubleSpinBox::valueFromText( const QString &text ) const{
   double value;
+  bool ok;
   if ( acceptLocalizedNumbers() )
-    value = KGlobal::locale()->readNumber( cleanText(), ok );
+    value = KGlobal::locale()->readNumber( text, &ok );
   else
-    value = cleanText().toDouble( ok );
-  if ( !*ok ) return 0;
+    value = cleanText().toDouble( &ok );
+  if ( !ok ) return 0;
   if ( value > maxValue() )
     value = maxValue();
   else if ( value < minValue() )
     value = minValue();
-  return d->mapToInt( value, ok );
+  return d->mapToInt( value, &ok );
 }
 
 void KDoubleSpinBox::setValidator( const QValidator * ) {

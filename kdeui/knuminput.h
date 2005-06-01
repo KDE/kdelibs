@@ -729,13 +729,13 @@ protected:
      *  Overloaded the method in QSpinBox
      *  to make use of the base given in the constructor.
      */
-    virtual QString mapValueToText(int);
+    virtual QString textFromValue(int) const;
 
     /**
      *  Overloaded the method in QSpinBox
      *  to make use of the base given in the constructor.
      */
-    virtual int mapTextToValue(bool*);
+    virtual int valueFromText(const QString &text) const;
 
 private:
     int val_base;
@@ -907,8 +907,8 @@ public slots:
   virtual void setValue( double value );
 
 protected:
-  virtual QString mapValueToText(int);
-  virtual int mapTextToValue(bool*);
+  virtual QString textFromValue(int) const;
+  virtual int valueFromText(const QString &text) const;
 
 protected slots:
   void slotValueChanged( int value );
