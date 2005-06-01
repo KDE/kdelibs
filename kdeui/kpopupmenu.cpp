@@ -477,7 +477,7 @@ void KPopupMenu::contextMenuEvent(QContextMenuEvent* e)
     Q3PopupMenu::contextMenuEvent(e);
 }
 
-void KPopupMenu::hideEvent(QHideEvent*)
+void KPopupMenu::hideEvent(QHideEvent *e)
 {
     if (d->m_ctxMenu && d->m_ctxMenu->isVisible())
     {
@@ -493,6 +493,7 @@ void KPopupMenu::hideEvent(QHideEvent*)
         d->m_ctxMenu->hide();
         blockSignals(false);
     }
+    Q3PopupMenu::hideEvent(e);
 }
 /**
  * end of RMB menus on menus support
