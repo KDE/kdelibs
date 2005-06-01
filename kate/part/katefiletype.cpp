@@ -23,7 +23,7 @@
 #include "katedocument.h"
 #include "kateconfig.h"
 #include "kateview.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 
 #include <kconfig.h>
 #include <kmimemagic.h>
@@ -361,17 +361,17 @@ void KateFileTypeConfigTab::apply()
 
   save ();
 
-  KateFactory::self()->fileTypeManager()->save(&m_types);
+  KateGlobal::self()->fileTypeManager()->save(&m_types);
 }
 
 void KateFileTypeConfigTab::reload()
 {
   m_types.clear();
-  for (uint z=0; z < KateFactory::self()->fileTypeManager()->list()->count(); z++)
+  for (uint z=0; z < KateGlobal::self()->fileTypeManager()->list()->count(); z++)
   {
     KateFileType *type = new KateFileType ();
 
-    *type = *KateFactory::self()->fileTypeManager()->list()->at(z);
+    *type = *KateGlobal::self()->fileTypeManager()->list()->at(z);
 
     m_types.append (type);
   }
@@ -530,12 +530,12 @@ void KateViewFileTypeAction::updateMenu (Kate::Document *doc)
 void KateViewFileTypeAction::slotAboutToShow()
 {
   KateDocument *doc=m_doc;
-  int count = KateFactory::self()->fileTypeManager()->list()->count();
+  int count = KateGlobal::self()->fileTypeManager()->list()->count();
 
   for (int z=0; z<count; z++)
   {
-    QString hlName = KateFactory::self()->fileTypeManager()->list()->at(z)->name;
-    QString hlSection = KateFactory::self()->fileTypeManager()->list()->at(z)->section;
+    QString hlName = KateGlobal::self()->fileTypeManager()->list()->at(z)->name;
+    QString hlSection = KateGlobal::self()->fileTypeManager()->list()->at(z)->section;
 
     if ( !hlSection.isEmpty() && !names.contains(hlName) )
     {
@@ -572,7 +572,7 @@ void KateViewFileTypeAction::slotAboutToShow()
   else
   {
     const KateFileType *t = 0;
-    if ((t = KateFactory::self()->fileTypeManager()->fileType (doc->fileType())))
+    if ((t = KateGlobal::self()->fileTypeManager()->fileType (doc->fileType())))
     {
       int i = subMenusName.findIndex (t->section);
       if (i >= 0 && subMenus.at(i))

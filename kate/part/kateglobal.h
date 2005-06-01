@@ -16,11 +16,12 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KATE_FACTORY_H__
-#define __KATE_FACTORY_H__
+#ifndef __KATE_GLOBAL_H__
+#define __KATE_GLOBAL_H__
 
 #include "katejscript.h"
-#include <kparts/factory.h>
+
+#include <kparts/part.h>
 
 #include <ktrader.h>
 #include <kinstance.h>
@@ -49,26 +50,27 @@ namespace Kate {
   class Command;
 }
 
-
-class KateFactory
+class KateGlobal : public QObject
 {
+  Q_OBJECT
+
   private:
     /**
      * Default constructor, private, as singleton
      */
-    KateFactory ();
+    KateGlobal ();
 
   public:
     /**
      * Destructor
      */
-    ~KateFactory ();
+    ~KateGlobal ();
 
     /**
      * singleton accessor
      * @return instance of the factory
      */
-    static KateFactory *self ();
+    static KateGlobal *self ();
     
     /**
      * inc ref
@@ -211,7 +213,7 @@ class KateFactory
     /**
      * instance of this factory
      */
-    static KateFactory *s_self;
+    static KateGlobal *s_self;
     
     /**
      * reference counter

@@ -22,7 +22,7 @@
 #include "katedocument.h"
 #include "katedocument.moc"
 #include "katekeyinterceptorfunctor.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "katedialogs.h"
 #include "katehighlight.h"
 #include "kateview.h"
@@ -94,7 +94,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
                              bool bReadOnly, QWidget *parentWidget,
                              const char *widgetName, QObject *parent, const char *name)
 : Kate::Document(parent, name),
-  m_plugins (KateFactory::self()->plugins().count()),
+  m_plugins (KateGlobal::self()->plugins().count()),
   m_activeView(0L),
   m_undoDontMerge(false),
   m_undoIgnoreCancel(false),
@@ -132,7 +132,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_plugins.fill (0);
 
   // register doc at factory
-  KateFactory::self()->registerDocument (this);
+  KateGlobal::self()->registerDocument (this);
 
   m_reloading = false;
 
@@ -148,7 +148,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   hlSetByUser = false;
   m_fileType = -1;
   m_fileTypeSetByUser = false;
-  setInstance( KateFactory::self()->instance() );
+  setInstance( KateGlobal::self()->instance() );
 
   editSessionNumber = 0;
   editIsRunning = false;
@@ -196,13 +196,13 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   connect(m_arbitraryHL, SIGNAL(tagLines(KateView*, KateRange*)), SLOT(tagArbitraryLines(KateView*, KateRange*)));
 
   // signals for mod on hd
-  connect( KateFactory::self()->dirWatch(), SIGNAL(dirty (const QString &)),
+  connect( KateGlobal::self()->dirWatch(), SIGNAL(dirty (const QString &)),
            this, SLOT(slotModOnHdDirty (const QString &)) );
 
-  connect( KateFactory::self()->dirWatch(), SIGNAL(created (const QString &)),
+  connect( KateGlobal::self()->dirWatch(), SIGNAL(created (const QString &)),
            this, SLOT(slotModOnHdCreated (const QString &)) );
 
-  connect( KateFactory::self()->dirWatch(), SIGNAL(deleted (const QString &)),
+  connect( KateGlobal::self()->dirWatch(), SIGNAL(deleted (const QString &)),
            this, SLOT(slotModOnHdDeleted (const QString &)) );
 
   // update doc name
@@ -222,7 +222,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_isasking = 0;
 
   // plugins
-  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateGlobal::self()->plugins().count(); i++)
   {
     if (config()->plugin (i))
       loadPlugin (i);
@@ -257,7 +257,7 @@ KateDocument::~KateDocument()
 
   delete m_config;
   delete m_indenter;
-  KateFactory::self()->deregisterDocument (this);
+  KateGlobal::self()->deregisterDocument (this);
 }
 //END
 
@@ -284,7 +284,7 @@ void KateDocument::loadPlugin (uint pluginIndex)
 {
   if (m_plugins[pluginIndex]) return;
 
-  m_plugins[pluginIndex] = KTextEditor::createPlugin (QFile::encodeName((KateFactory::self()->plugins())[pluginIndex]->library()), this);
+  m_plugins[pluginIndex] = KTextEditor::createPlugin (QFile::encodeName((KateGlobal::self()->plugins())[pluginIndex]->library()), this);
 
   enablePluginGUI (m_plugins[pluginIndex]);
 }
@@ -2338,7 +2338,7 @@ bool KateDocument::openFile(KIO::Job * job)
     }
 
     // update file type
-    updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
+    updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
 
     // read dir config (if possible and wanted)
     readDirConfig ();
@@ -2627,7 +2627,7 @@ void KateDocument::activateDirWatch ()
   // add new file if needed
   if (m_url.isLocalFile() && !m_file.isEmpty())
   {
-    KateFactory::self()->dirWatch ()->addFile (m_file);
+    KateGlobal::self()->dirWatch ()->addFile (m_file);
     m_dirWatchFile = m_file;
   }
 }
@@ -2635,7 +2635,7 @@ void KateDocument::activateDirWatch ()
 void KateDocument::deactivateDirWatch ()
 {
   if (!m_dirWatchFile.isEmpty())
-    KateFactory::self()->dirWatch ()->removeFile (m_dirWatchFile);
+    KateGlobal::self()->dirWatch ()->removeFile (m_dirWatchFile);
 
   m_dirWatchFile = QString::null;
 }
@@ -2784,7 +2784,7 @@ void KateDocument::addView(KTextEditor::View *view) {
 
   // apply the view & renderer vars from the file type
   const KateFileType *t = 0;
-  if ((m_fileType > -1) && (t = KateFactory::self()->fileTypeManager()->fileType(m_fileType)))
+  if ((m_fileType > -1) && (t = KateGlobal::self()->fileTypeManager()->fileType(m_fileType)))
     readVariableLine (t->varLine, true);
 
   // apply the view & renderer vars from the file
@@ -4146,7 +4146,7 @@ void KateDocument::setDocName (QString name )
   {
     // TODO check for similarly named documents
     m_docName = name;
-    updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
+    updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
     emit nameChanged((Kate::Document *) this);
     return;
   }
@@ -4156,11 +4156,11 @@ void KateDocument::setDocName (QString name )
 
   int count = -1;
 
-  for (uint z=0; z < KateFactory::self()->documents()->count(); z++)
+  for (uint z=0; z < KateGlobal::self()->documents()->count(); z++)
   {
-    if ( (KateFactory::self()->documents()->at(z) != this) && (KateFactory::self()->documents()->at(z)->url().filename() == url().filename()) )
-      if ( KateFactory::self()->documents()->at(z)->m_docNameNumber > count )
-        count = KateFactory::self()->documents()->at(z)->m_docNameNumber;
+    if ( (KateGlobal::self()->documents()->at(z) != this) && (KateGlobal::self()->documents()->at(z)->url().filename() == url().filename()) )
+      if ( KateGlobal::self()->documents()->at(z)->m_docNameNumber > count )
+        count = KateGlobal::self()->documents()->at(z)->m_docNameNumber;
   }
 
   m_docNameNumber = count + 1;
@@ -4173,7 +4173,7 @@ void KateDocument::setDocName (QString name )
   if (m_docNameNumber > 0)
     m_docName = QString(m_docName + " (%1)").arg(m_docNameNumber+1);
 
-  updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
+  updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
   emit nameChanged ((Kate::Document *) this);
 }
 
@@ -4427,7 +4427,7 @@ void KateDocument::updateConfig ()
   m_buffer->setTabWidth (config()->tabWidth());
 
   // plugins
-  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateGlobal::self()->plugins().count(); i++)
   {
     if (config()->plugin (i))
       loadPlugin (i);
@@ -4654,7 +4654,7 @@ void KateDocument::setViewVariable( QString var, QString val )
     }
     else if ( var == "scheme" )
     {
-      v->renderer()->config()->setSchema( KateFactory::self()->schemaManager()->number( val ) );
+      v->renderer()->config()->setSchema( KateGlobal::self()->schemaManager()->number( val ) );
     }
   }
 }
@@ -4820,7 +4820,7 @@ void KateDocument::updateFileType (int newType, bool user)
   if (user || !m_fileTypeSetByUser)
   {
     const KateFileType *t = 0;
-    if ((newType == -1) || (t = KateFactory::self()->fileTypeManager()->fileType (newType)))
+    if ((newType == -1) || (t = KateGlobal::self()->fileTypeManager()->fileType (newType)))
     {
       m_fileType = newType;
 

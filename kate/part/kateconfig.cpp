@@ -18,7 +18,7 @@
 
 #include "kateconfig.h"
 
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "katerenderer.h"
 #include "kateview.h"
 #include "katedocument.h"
@@ -88,7 +88,7 @@ KateDocumentConfig::KateDocumentConfig ()
    m_indentationWidth (2),
    m_wordWrapAt (80),
    m_configFlags (0),
-   m_plugins (KateFactory::self()->plugins().count()),
+   m_plugins (KateGlobal::self()->plugins().count()),
    m_tabWidthSet (true),
    m_indentationWidthSet (true),
    m_indentationModeSet (true),
@@ -121,7 +121,7 @@ KateDocumentConfig::KateDocumentConfig ()
 
 KateDocumentConfig::KateDocumentConfig (KateDocument *doc)
  : m_configFlags (0),
-   m_plugins (KateFactory::self()->plugins().count()),
+   m_plugins (KateGlobal::self()->plugins().count()),
    m_tabWidthSet (false),
    m_indentationWidthSet (false),
    m_indentationModeSet (false),
@@ -184,8 +184,8 @@ void KateDocumentConfig::readConfig (KConfig *config)
   setBackupSuffix (config->readEntry("Backup Suffix", QString ("~")));
 
   // plugins
-  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
-    setPlugin (i, config->readBoolEntry("KTextEditor Plugin " + (KateFactory::self()->plugins())[i]->library(), false));
+  for (int i=0; i<KateGlobal::self()->plugins().count(); i++)
+    setPlugin (i, config->readBoolEntry("KTextEditor Plugin " + (KateGlobal::self()->plugins())[i]->library(), false));
 
   configEnd ();
 }
@@ -220,8 +220,8 @@ void KateDocumentConfig::writeConfig (KConfig *config)
   config->writeEntry("Backup Suffix", backupSuffix());
 
   // plugins
-  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
-    config->writeEntry("KTextEditor Plugin " + (KateFactory::self()->plugins())[i]->library(), plugin(i));
+  for (int i=0; i<KateGlobal::self()->plugins().count(); i++)
+    config->writeEntry("KTextEditor Plugin " + (KateGlobal::self()->plugins())[i]->library(), plugin(i));
 }
 
 void KateDocumentConfig::updateConfig ()
@@ -234,9 +234,9 @@ void KateDocumentConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateFactory::self()->documents()->count(); z++)
+    for (uint z=0; z < KateGlobal::self()->documents()->count(); z++)
     {
-      KateFactory::self()->documents()->at(z)->updateConfig ();
+      KateGlobal::self()->documents()->at(z)->updateConfig ();
     }
   }
 }
@@ -731,9 +731,9 @@ void KateViewConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateFactory::self()->views()->count(); z++)
+    for (uint z=0; z < KateGlobal::self()->views()->count(); z++)
     {
-      KateFactory::self()->views()->at(z)->updateConfig ();
+      KateGlobal::self()->views()->at(z)->updateConfig ();
     }
   }
 }
@@ -1057,7 +1057,7 @@ void KateRendererConfig::readConfig (KConfig *config)
 {
   configStart ();
 
-  setSchema (KateFactory::self()->schemaManager()->number (config->readEntry("Schema", KateSchemaManager::normalSchema())));
+  setSchema (KateGlobal::self()->schemaManager()->number (config->readEntry("Schema", KateSchemaManager::normalSchema())));
 
   setWordWrapMarker (config->readBoolEntry("Word Wrap Marker", false ));
 
@@ -1068,7 +1068,7 @@ void KateRendererConfig::readConfig (KConfig *config)
 
 void KateRendererConfig::writeConfig (KConfig *config)
 {
-  config->writeEntry ("Schema", KateFactory::self()->schemaManager()->name(schema()));
+  config->writeEntry ("Schema", KateGlobal::self()->schemaManager()->name(schema()));
 
   config->writeEntry("Word Wrap Marker", wordWrapMarker() );
 
@@ -1085,9 +1085,9 @@ void KateRendererConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateFactory::self()->views()->count(); z++)
+    for (uint z=0; z < KateGlobal::self()->views()->count(); z++)
     {
-      KateFactory::self()->views()->at(z)->renderer()->updateConfig ();
+      KateGlobal::self()->views()->at(z)->renderer()->updateConfig ();
     }
   }
 }
@@ -1112,8 +1112,8 @@ void KateRendererConfig::setSchema (uint schema)
 void KateRendererConfig::reloadSchema()
 {
   if ( isGlobal() )
-    for ( uint z=0; z < KateFactory::self()->views()->count(); z++ )
-      KateFactory::self()->views()->at(z)->renderer()->config()->reloadSchema();
+    for ( uint z=0; z < KateGlobal::self()->views()->count(); z++ )
+      KateGlobal::self()->views()->at(z)->renderer()->config()->reloadSchema();
 
   else if ( m_renderer && m_schemaSet )
     setSchemaInternal( m_schema );
@@ -1124,7 +1124,7 @@ void KateRendererConfig::setSchemaInternal( int schema )
   m_schemaSet = true;
   m_schema = schema;
 
-  KConfig *config (KateFactory::self()->schemaManager()->schema(schema));
+  KConfig *config (KateGlobal::self()->schemaManager()->schema(schema));
 
   QColor tmp0 (KGlobalSettings::baseColor());
   QColor tmp1 (KGlobalSettings::highlightColor());

@@ -89,10 +89,10 @@ class KateConfig
 class KateDocumentConfig : public KateConfig
 {
   private:
-    friend class KateFactory;
+    friend class KateGlobal;
 
     /**
-     * only used in KateFactory for the static global fallback !!!
+     * only used in KateGlobal for the static global fallback !!!
      */
     KateDocumentConfig ();
 
@@ -277,10 +277,10 @@ class KateDocumentConfig : public KateConfig
 class KateViewConfig : public KateConfig
 {
   private:
-    friend class KateFactory;
+    friend class KateGlobal;
 
     /**
-     * only used in KateFactory for the static global fallback !!!
+     * only used in KateGlobal for the static global fallback !!!
      */
     KateViewConfig ();
 
@@ -404,10 +404,10 @@ class KateViewConfig : public KateConfig
 class KateRendererConfig : public KateConfig
 {
   private:
-    friend class KateFactory;
+    friend class KateGlobal;
 
     /**
-     * only used in KateFactory for the static global fallback !!!
+     * only used in KateGlobal for the static global fallback !!!
      */
     KateRendererConfig ();
 

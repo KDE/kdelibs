@@ -21,7 +21,7 @@
 
 #include "katedocument.h"
 #include "kateview.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "kateconfig.h"
 #include "kateautoindent.h"
 #include "katehighlight.h"
@@ -769,7 +769,7 @@ bool KateJScriptManager::exec( Kate::View *view, const QString &_cmd, QString &e
 
   file.close();
 
-  return KateFactory::self()->jscript()->execute(v, source, errorMsg);
+  return KateGlobal::self()->jscript()->execute(v, source, errorMsg);
 }
 
 bool KateJScriptManager::help( Kate::View *, const QString &cmd, QString &msg )

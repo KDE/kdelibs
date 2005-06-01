@@ -23,7 +23,7 @@
 
 #include "kateconfig.h"
 #include "katedocument.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "kateview.h"
 #include "katerenderer.h"
 
@@ -440,7 +440,7 @@ void KateSchemaConfigColorTab::schemaChanged ( int newSchema )
     mark[6] = Qt::red;
 
     SchemaColors c;
-    KConfig *config = KateFactory::self()->schemaManager()->schema(newSchema);
+    KConfig *config = KateGlobal::self()->schemaManager()->schema(newSchema);
 
     c.back= config->readColorEntry("Color Background", &tmp0);
     c.selected = config->readColorEntry("Color Selection", &tmp1);
@@ -493,7 +493,7 @@ void KateSchemaConfigColorTab::apply ()
   for ( it =  m_schemas.begin(); it !=  m_schemas.end(); ++it )
   {
     kdDebug(13030)<<"APPLY scheme = "<<it.key()<<endl;
-    KConfig *config = KateFactory::self()->schemaManager()->schema( it.key() );
+    KConfig *config = KateGlobal::self()->schemaManager()->schema( it.key() );
     kdDebug(13030)<<"Using config group "<<config->group()<<endl;
     SchemaColors c = it.data();
 
@@ -567,7 +567,7 @@ void KateSchemaConfigFontTab::apply()
   FontMap::Iterator it;
   for ( it = m_fonts.begin(); it != m_fonts.end(); ++it )
   {
-    KateFactory::self()->schemaManager()->schema( it.key() )->writeEntry( "Font", it.data() );
+    KateGlobal::self()->schemaManager()->schema( it.key() )->writeEntry( "Font", it.data() );
   }
 }
 
@@ -581,7 +581,7 @@ void KateSchemaConfigFontTab::schemaChanged( int newSchema )
   QFont f (KGlobalSettings::fixedFont());
 
   m_fontchooser->disconnect ( this );
-  m_fontchooser->setFont ( KateFactory::self()->schemaManager()->schema( newSchema )->readFontEntry("Font", &f) );
+  m_fontchooser->setFont ( KateGlobal::self()->schemaManager()->schema( newSchema )->readFontEntry("Font", &f) );
   m_fonts[ newSchema ] = m_fontchooser->font();
   connect (m_fontchooser, SIGNAL (fontSelected( const QFont & )), this, SLOT (slotFontSelected( const QFont & )));
 }
@@ -637,11 +637,11 @@ void KateSchemaConfigFontColorTab::schemaChanged (uint schema)
   QPalette p ( m_defaultStyles->palette() );
   QColor _c ( KGlobalSettings::baseColor() );
   p.setColor( QColorGroup::Base,
-    KateFactory::self()->schemaManager()->schema(schema)->
+    KateGlobal::self()->schemaManager()->schema(schema)->
       readColorEntry( "Color Background", &_c ) );
   _c = KGlobalSettings::highlightColor();
   p.setColor( QColorGroup::Highlight,
-    KateFactory::self()->schemaManager()->schema(schema)->
+    KateGlobal::self()->schemaManager()->schema(schema)->
       readColorEntry( "Color Selection", &_c ) );
   _c = l->at(0)->textColor(); // not quite as much of an assumption ;)
   p.setColor( QColorGroup::Text, _c );
@@ -764,11 +764,11 @@ void KateSchemaConfigHighlightTab::schemaChanged (uint schema)
   QPalette p ( m_styles->palette() );
   QColor _c ( KGlobalSettings::baseColor() );
   p.setColor( QColorGroup::Base,
-    KateFactory::self()->schemaManager()->schema(m_schema)->
+    KateGlobal::self()->schemaManager()->schema(m_schema)->
       readColorEntry( "Color Background", &_c ) );
   _c = KGlobalSettings::highlightColor();
   p.setColor( QColorGroup::Highlight,
-    KateFactory::self()->schemaManager()->schema(m_schema)->
+    KateGlobal::self()->schemaManager()->schema(m_schema)->
       readColorEntry( "Color Selection", &_c ) );
   _c = l->at(0)->textColor(); // not quite as much of an assumption ;)
   p.setColor( QColorGroup::Text, _c );
@@ -879,7 +879,7 @@ KateSchemaConfigPage::KateSchemaConfigPage( QWidget *parent, KateDocument *doc )
 KateSchemaConfigPage::~KateSchemaConfigPage ()
 {
   // just reload config from disc
-  KateFactory::self()->schemaManager()->update ();
+  KateGlobal::self()->schemaManager()->update ();
 }
 
 void KateSchemaConfigPage::apply()
@@ -890,9 +890,9 @@ void KateSchemaConfigPage::apply()
   m_highlightTab->apply ();
 
   // just sync the config
-  KateFactory::self()->schemaManager()->schema (0)->sync();
+  KateGlobal::self()->schemaManager()->schema (0)->sync();
 
-  KateFactory::self()->schemaManager()->update ();
+  KateGlobal::self()->schemaManager()->update ();
   KateRendererConfig::global()->setSchema (defaultSchemaCombo->currentItem());
   KateRendererConfig::global()->reloadSchema();
 
@@ -903,7 +903,7 @@ void KateSchemaConfigPage::apply()
 void KateSchemaConfigPage::reload()
 {
   // just reload the config from disc
-  KateFactory::self()->schemaManager()->update ();
+  KateGlobal::self()->schemaManager()->update ();
 
   // special for the highlighting stuff
   m_fontColorTab->reload ();
@@ -930,13 +930,13 @@ void KateSchemaConfigPage::defaults()
 void KateSchemaConfigPage::update ()
 {
   // soft update, no load from disk
-  KateFactory::self()->schemaManager()->update (false);
+  KateGlobal::self()->schemaManager()->update (false);
 
   schemaCombo->clear ();
-  schemaCombo->insertStringList (KateFactory::self()->schemaManager()->list ());
+  schemaCombo->insertStringList (KateGlobal::self()->schemaManager()->list ());
 
   defaultSchemaCombo->clear ();
-  defaultSchemaCombo->insertStringList (KateFactory::self()->schemaManager()->list ());
+  defaultSchemaCombo->insertStringList (KateGlobal::self()->schemaManager()->list ());
 
   schemaCombo->setCurrentItem (0);
   schemaChanged (0);
@@ -948,7 +948,7 @@ void KateSchemaConfigPage::deleteSchema ()
 {
   int t = schemaCombo->currentItem ();
 
-  KateFactory::self()->schemaManager()->removeSchema (t);
+  KateGlobal::self()->schemaManager()->removeSchema (t);
 
   update ();
 }
@@ -957,11 +957,11 @@ void KateSchemaConfigPage::newSchema ()
 {
   QString t = KInputDialog::getText (i18n("Name for New Schema"), i18n ("Name:"), i18n("New Schema"), 0, this);
 
-  KateFactory::self()->schemaManager()->addSchema (t);
+  KateGlobal::self()->schemaManager()->addSchema (t);
 
   // soft update, no load from disk
-  KateFactory::self()->schemaManager()->update (false);
-  int i = KateFactory::self()->schemaManager()->list ().findIndex (t);
+  KateGlobal::self()->schemaManager()->update (false);
+  int i = KateGlobal::self()->schemaManager()->list ().findIndex (t);
 
   update ();
   if (i > -1)
@@ -1007,11 +1007,11 @@ void KateViewSchemaAction::updateMenu (KateView *view)
 void KateViewSchemaAction::slotAboutToShow()
 {
   KateView *view=m_view;
-  int count = KateFactory::self()->schemaManager()->list().count();
+  int count = KateGlobal::self()->schemaManager()->list().count();
 
   for (int z=0; z<count; z++)
   {
-    QString hlName = KateFactory::self()->schemaManager()->list().operator[](z);
+    QString hlName = KateGlobal::self()->schemaManager()->list().operator[](z);
 
     if (!names.contains(hlName))
     {

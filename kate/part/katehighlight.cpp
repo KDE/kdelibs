@@ -28,7 +28,7 @@
 #include "katedocument.h"
 #include "katesyntaxdocument.h"
 #include "katerenderer.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "kateschema.h"
 #include "kateconfig.h"
 
@@ -1684,7 +1684,7 @@ void KateHighlighting::setData(KateHlData *hlData)
 void KateHighlighting::getKateHlItemDataList (uint schema, KateHlItemDataList &list)
 {
   KConfig *config = KateHlManager::self()->getKConfig();
-  config->setGroup("Highlighting " + iName + " - Schema " + KateFactory::self()->schemaManager()->name(schema));
+  config->setGroup("Highlighting " + iName + " - Schema " + KateGlobal::self()->schemaManager()->name(schema));
 
   list.clear();
   createKateHlItemData(list);
@@ -1738,7 +1738,7 @@ void KateHighlighting::setKateHlItemDataList(uint schema, KateHlItemDataList &li
 {
   KConfig *config = KateHlManager::self()->getKConfig();
   config->setGroup("Highlighting " + iName + " - Schema "
-      + KateFactory::self()->schemaManager()->name(schema));
+      + KateGlobal::self()->schemaManager()->name(schema));
 
   QStringList settings;
 
@@ -2887,7 +2887,7 @@ QVector<KateAttribute> *KateHighlighting::attributes (uint schema)
     return array;
 
   // ohh, not found, check if valid schema number
-  if (!KateFactory::self()->schemaManager()->validSchema(schema))
+  if (!KateGlobal::self()->schemaManager()->validSchema(schema))
   {
     // uhh, not valid :/, stick with normal default schema, it's always there !
     return attributes (0);
@@ -2980,7 +2980,7 @@ KateHlManager::~KateHlManager()
 
 KateHlManager *KateHlManager::self()
 {
-  return KateFactory::self ()->hlManager ();
+  return KateGlobal::self ()->hlManager ();
 }
 
 KateHighlighting *KateHlManager::getHl(int n)
@@ -3242,7 +3242,7 @@ void KateHlManager::getDefaults(uint schema, KateAttributeList &list)
   list.append(error);
 
   KConfig *config = KateHlManager::self()->self()->getKConfig();
-  config->setGroup("Default Item Styles - Schema " + KateFactory::self()->schemaManager()->name(schema));
+  config->setGroup("Default Item Styles - Schema " + KateGlobal::self()->schemaManager()->name(schema));
 
   for (uint z = 0; z < defaultStyles(); z++)
   {
@@ -3295,7 +3295,7 @@ void KateHlManager::getDefaults(uint schema, KateAttributeList &list)
 void KateHlManager::setDefaults(uint schema, KateAttributeList &list)
 {
   KConfig *config =  KateHlManager::self()->self()->getKConfig();
-  config->setGroup("Default Item Styles - Schema " + KateFactory::self()->schemaManager()->name(schema));
+  config->setGroup("Default Item Styles - Schema " + KateGlobal::self()->schemaManager()->name(schema));
 
   for (uint z = 0; z < defaultStyles(); z++)
   {

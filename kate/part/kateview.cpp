@@ -31,7 +31,7 @@
 #include "katerenderer.h"
 #include "katedocument.h"
 #include "katedocumenthelpers.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "katehighlight.h"
 #include "katedialogs.h"
 #include "katetextline.h"
@@ -106,7 +106,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
     , m_imSelEnd( 0 )
     , m_imComposeEvent( false )
 {
-  KateFactory::self()->registerView( this );
+  KateGlobal::self()->registerView( this );
   m_config = new KateViewConfig (this);
 
   m_renderer = new KateRenderer(doc, this);
@@ -157,7 +157,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   setViewCursorInterfaceDCOPSuffix (viewDCOPSuffix());
   setViewStatusMsgInterfaceDCOPSuffix (viewDCOPSuffix());
 
-  setInstance( KateFactory::self()->instance() );
+  setInstance( KateGlobal::self()->instance() );
   doc->addView( this );
 
   setFocusProxy( m_viewInternal );
@@ -208,7 +208,7 @@ KateView::~KateView()
   delete m_renderer;
 
   delete m_config;
-  KateFactory::self()->deregisterView (this);
+  KateGlobal::self()->deregisterView (this);
 }
 
 void KateView::setupConnections()

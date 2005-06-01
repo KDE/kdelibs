@@ -27,7 +27,6 @@
 #include "katecodefoldinghelpers.h"
 #include "kateconfig.h"
 #include "katedocument.h"
-#include "katefactory.h"
 #include "katerenderer.h"
 #include "kateview.h"
 #include "kateviewinternal.h"

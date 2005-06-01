@@ -29,7 +29,7 @@
 #include "katebuffer.h"
 #include "kateconfig.h"
 #include "katedocument.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "kateschema.h"
 #include "katesyntaxdocument.h"
 #include "kateview.h"
@@ -1120,11 +1120,11 @@ KatePartPluginConfigPage::KatePartPluginConfigPage (QWidget *parent) : KateConfi
 
   grid->addWidget( listView, 0, 0);
 
-  for (int i=0; i<KateFactory::self()->plugins().count(); i++)
+  for (int i=0; i<KateGlobal::self()->plugins().count(); i++)
   {
-    KatePartPluginListItem *item = new KatePartPluginListItem(KateDocumentConfig::global()->plugin(i), i, (KateFactory::self()->plugins())[i]->name(), listView);
-    item->setText(0, (KateFactory::self()->plugins())[i]->name());
-    item->setText(1, (KateFactory::self()->plugins())[i]->comment());
+    KatePartPluginListItem *item = new KatePartPluginListItem(KateDocumentConfig::global()->plugin(i), i, (KateGlobal::self()->plugins())[i]->name(), listView);
+    item->setText(0, (KateGlobal::self()->plugins())[i]->name());
+    item->setText(1, (KateGlobal::self()->plugins())[i]->comment());
 
     m_items.append (item);
   }
@@ -1177,7 +1177,7 @@ void KatePartPluginConfigPage::slotCurrentChanged( Q3ListViewItem* i )
   {
 
     // load this plugin, and see if it has config pages
-    KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateFactory::self()->plugins())[item->pluginIndex()]->library()));
+    KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()));
     if ( plugin ) {
       KTextEditor::ConfigInterfaceExtension *cie = KTextEditor::configInterfaceExtension( plugin );
       b = ( cie && cie->configPages() );
@@ -1191,7 +1191,7 @@ void KatePartPluginConfigPage::slotConfigure()
 {
   KatePartPluginListItem *item = static_cast<KatePartPluginListItem*>(listView->currentItem());
   KTextEditor::Plugin *plugin =
-    KTextEditor::createPlugin(QFile::encodeName((KateFactory::self()->plugins())[item->pluginIndex()]->library()));
+    KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()));
 
   if ( ! plugin ) return;
 
@@ -1210,7 +1210,7 @@ void KatePartPluginConfigPage::slotConfigure()
       KDialogBase::IconList :     // still untested
       KDialogBase::Plain;
 
-  QString name = (KateFactory::self()->plugins())[item->pluginIndex()]->name();
+  QString name = (KateGlobal::self()->plugins())[item->pluginIndex()]->name();
   KDialogBase *kd = new KDialogBase ( dt,
               i18n("Configure %1").arg( name ),
               KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,

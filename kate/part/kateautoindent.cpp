@@ -23,7 +23,7 @@
 
 #include "kateconfig.h"
 #include "katehighlight.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "katejscript.h"
 #include "kateview.h"
 
@@ -2273,7 +2273,7 @@ bool KateVarIndent::hasRelevantOpening( const KateDocCursor &end ) const
 KateScriptIndent::KateScriptIndent( KateDocument *doc )
   : KateNormalIndent( doc )
 {
-    m_script=KateFactory::self()->indentScript ("script-indent-c1-test");
+    m_script=KateGlobal::self()->indentScript ("script-indent-c1-test");
 }
 
 KateScriptIndent::~KateScriptIndent()

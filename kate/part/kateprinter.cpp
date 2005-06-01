@@ -23,7 +23,7 @@
 
 #include <kateconfig.h>
 #include <katedocument.h>
-#include <katefactory.h>
+#include <kateglobal.h>
 #include <katehighlight.h>
 #include <katelinerange.h>
 #include <katerenderer.h>
@@ -128,7 +128,7 @@ bool KatePrinter::print (KateDocument *doc)
      bool footerDrawBg = false; // do
 
      // Layout Page
-     renderer.config()->setSchema( KateFactory::self()->schemaManager()->number(
+     renderer.config()->setSchema( KateGlobal::self()->schemaManager()->number(
            printer.option("app-kate-colorscheme") ) );
      bool useBackground = ( printer.option("app-kate-usebackground") == "true" );
      bool useBox = (printer.option("app-kate-usebox") == "true");
@@ -943,7 +943,7 @@ KatePrintLayout::KatePrintLayout( KPrinter * /*printer*/, QWidget *parent, const
   // set defaults:
   sbBoxMargin->setValue( 6 );
   gbBoxProps->setEnabled( false );
-  cmbSchema->insertStringList (KateFactory::self()->schemaManager()->list ());
+  cmbSchema->insertStringList (KateGlobal::self()->schemaManager()->list ());
   cmbSchema->setCurrentItem( 1 );
 
   // whatsthis
@@ -980,7 +980,7 @@ void KatePrintLayout::setOptions( const QMap<QString,QString>& opts )
   QString v;
   v = opts["app-kate-colorscheme"];
   if ( ! v.isEmpty() )
-    cmbSchema->setCurrentItem( KateFactory::self()->schemaManager()->number( v ) );
+    cmbSchema->setCurrentItem( KateGlobal::self()->schemaManager()->number( v ) );
   v = opts["app-kate-usebackground"];
   if ( ! v.isEmpty() )
     cbDrawBackground->setChecked( v == "true" );

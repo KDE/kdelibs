@@ -26,7 +26,6 @@
 #include "katearbitraryhighlight.h"
 #include "kateconfig.h"
 #include "katehighlight.h"
-#include "katefactory.h"
 #include "kateview.h"
 
 #include <kdebug.h>

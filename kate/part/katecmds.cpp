@@ -25,7 +25,7 @@
 #include "kateconfig.h"
 #include "kateautoindent.h"
 #include "katetextline.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "katejscript.h"
 #include "katerenderer.h"
 
@@ -110,7 +110,7 @@ bool KateCommands::CoreCommands::exec(Kate::View *view,
   else if ( cmd == "run-myself" )
   {
 #ifndef Q_WS_WIN //todo
-    return KateFactory::self()->jscript()->execute(v, v->doc()->text(), errorMsg);
+    return KateGlobal::self()->jscript()->execute(v, v->doc()->text(), errorMsg);
 #else
     return 0;
 #endif

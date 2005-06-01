@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "katebuffer.h"
 #include "katebuffer.moc"
@@ -27,7 +28,7 @@
 #include "katedocument.h"
 #include "katehighlight.h"
 #include "kateconfig.h"
-#include "katefactory.h"
+#include "kateglobal.h"
 #include "kateautoindent.h"
 
 #include <kdebug.h>
@@ -972,7 +973,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
         // avoid recursive invalidation
         KateHlManager::self()->setForceNoDCReset(true);
 
-        for (KateDocument *doc = KateFactory::self()->documents()->first(); doc; doc = KateFactory::self()->documents()->next())
+        for (KateDocument *doc = KateGlobal::self()->documents()->first(); doc; doc = KateGlobal::self()->documents()->next())
           doc->makeAttribs();
 
         // doHighlight *shall* do his work. After invalidation, some highlight has
@@ -1327,7 +1328,7 @@ KateBufBlock::~KateBufBlock ()
 
   // if we have some swapped data allocated, free it now or never
   if (m_vmblock)
-    KateFactory::self()->vm()->free(m_vmblock);
+    KateGlobal::self()->vm()->free(m_vmblock);
 
   // remove me from the list I belong
   KateBufBlockList::remove (this);
@@ -1404,15 +1405,15 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
 
   if (swap)
   {
-    m_vmblock = KateFactory::self()->vm()->allocate(size);
+    m_vmblock = KateGlobal::self()->vm()->allocate(size);
     m_vmblockSize = size;
 
     if (!rawData.isEmpty())
     {
-      if (!KateFactory::self()->vm()->copyBlock(m_vmblock, rawData.data(), 0, size))
+      if (!KateGlobal::self()->vm()->copyBlock(m_vmblock, rawData.data(), 0, size))
       {
         if (m_vmblock)
-          KateFactory::self()->vm()->free(m_vmblock);
+          KateGlobal::self()->vm()->free(m_vmblock);
 
         m_vmblock = 0;
         m_vmblockSize = 0;
@@ -1483,7 +1484,7 @@ void KateBufBlock::markDirty ()
     {
       // if we have some swapped data allocated which is dirty, free it now
       if (m_vmblock)
-        KateFactory::self()->vm()->free(m_vmblock);
+        KateGlobal::self()->vm()->free(m_vmblock);
 
       m_vmblock = 0;
       m_vmblockSize = 0;
@@ -1502,7 +1503,7 @@ void KateBufBlock::swapIn ()
   QByteArray rawData (m_vmblockSize);
 
   // what to do if that fails ?
-  if (!KateFactory::self()->vm()->copyBlock(rawData.data(), m_vmblock, 0, rawData.size()))
+  if (!KateGlobal::self()->vm()->copyBlock(rawData.data(), m_vmblock, 0, rawData.size()))
     m_parent->m_cacheReadError = true;
 
   // reserve mem, keep realloc away on push_back
@@ -1546,15 +1547,15 @@ void KateBufBlock::swapOut ()
     for (uint i=0; i < m_lines; i++)
       buf = m_stringList[i]->dump (buf, haveHl);
 
-    m_vmblock = KateFactory::self()->vm()->allocate(rawData.size());
+    m_vmblock = KateGlobal::self()->vm()->allocate(rawData.size());
     m_vmblockSize = rawData.size();
 
     if (!rawData.isEmpty())
     {
-      if (!KateFactory::self()->vm()->copyBlock(m_vmblock, rawData.data(), 0, rawData.size()))
+      if (!KateGlobal::self()->vm()->copyBlock(m_vmblock, rawData.data(), 0, rawData.size()))
       {
         if (m_vmblock)
-          KateFactory::self()->vm()->free(m_vmblock);
+          KateGlobal::self()->vm()->free(m_vmblock);
 
         m_vmblock = 0;
         m_vmblockSize = 0;
