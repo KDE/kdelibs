@@ -292,7 +292,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    if ( funcType == "void" ) {
 		str << '\t' << plainFuncName << '(';
 	    } else {
-		str << "\tQDataStream _replyStream( &replyData, IO_WriteOnly );"  << endl;
+		str << "\tQDataStream _replyStream( &replyData, QIODevice::WriteOnly );"  << endl;
 		str << "\t_replyStream.setVersion( QDataStream::Qt_3_1 );" << endl;
 		str << "\t_replyStream << " << plainFuncName << '(';
 	    }
@@ -427,7 +427,7 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	
 	    str << "    QByteArray data;" << endl;
 	    if ( !args.isEmpty() ) {
-		str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		str << "    QDataStream arg( &data, QIODevice::WriteOnly );" << endl;
 		str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 		    str << "    arg << " << *args_count << ";" << endl;

@@ -214,7 +214,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 	
 		str << "    QByteArray data;" << endl;
 		if ( !args.isEmpty() ) {
-		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		    str << "    QDataStream arg( &data, QIODevice::WriteOnly );" << endl;
 		    str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
@@ -250,7 +250,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 		str << "    DCOPCString replyType;" << endl;
 	
 		if ( !args.isEmpty() ) {
-		    str << "    QDataStream arg( &data, IO_WriteOnly );" << endl;
+		    str << "    QDataStream arg( &data, QIODevice::WriteOnly );" << endl;
 		    str << "    arg.setVersion( QDataStream::Qt_3_1 );" << endl;
 		    for( QStringList::Iterator args_count = args.begin(); args_count != args.end(); ++args_count ){
 			str << "    arg << " << *args_count << ";" << endl;
