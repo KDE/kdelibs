@@ -757,8 +757,8 @@ QString KFileItem::getToolTipText(int maxcount)
 
 void KFileItem::run()
 {
-  bool is_local;
-  KURL url = mostLocalURL(is_local);
+  bool is_local = m_bIsLocalURL;
+  KURL url = m_url;
   // When clicking on a link to e.g. $HOME from the desktop, we want to open $HOME
   // But when following a link on the FTP site, the target be an absolute path
   // that doesn't work in the URL. So we resolve links only on the local filesystem.

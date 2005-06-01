@@ -110,3 +110,7 @@ Type=QString
 
 [PropertyDef::X-KDE-HasTempFileOption]
 Type=bool
+
+[PropertyDef::X-KDE-Protocols]
+Type=QStringList
+
