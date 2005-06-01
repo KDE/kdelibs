@@ -1597,63 +1597,63 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_r = INT_MULT(src_r, dst_r);
 			src_g = INT_MULT(src_g, dst_g);
 			src_b = INT_MULT(src_b, dst_b);
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DIVIDE_MODE: {
-			src_r = MIN((dst_r * 256) / (1 + src_r), 255);
-			src_g = MIN((dst_g * 256) / (1 + src_g), 255);
-			src_b = MIN((dst_b * 256) / (1 + src_b), 255);
-			src_a = MIN(src_a, dst_a);
+			src_r = KMIN((dst_r * 256) / (1 + src_r), 255);
+			src_g = KMIN((dst_g * 256) / (1 + src_g), 255);
+			src_b = KMIN((dst_b * 256) / (1 + src_b), 255);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case SCREEN_MODE: {
 			src_r = 255 - INT_MULT(255 - dst_r, 255 - src_r);
 			src_g = 255 - INT_MULT(255 - dst_g, 255 - src_g);
 			src_b = 255 - INT_MULT(255 - dst_b, 255 - src_b);
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case OVERLAY_MODE: {
 			src_r = INT_MULT(dst_r, dst_r + INT_MULT(2 * src_r, 255 - dst_r));
 			src_g = INT_MULT(dst_g, dst_g + INT_MULT(2 * src_g, 255 - dst_g));
 			src_b = INT_MULT(dst_b, dst_b + INT_MULT(2 * src_b, 255 - dst_b));
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DIFFERENCE_MODE: {
 			src_r = dst_r > src_r ? dst_r - src_r : src_r - dst_r;
 			src_g = dst_g > src_g ? dst_g - src_g : src_g - dst_g;
 			src_b = dst_b > src_b ? dst_b - src_b : src_b - dst_b;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case ADDITION_MODE: {
 			  src_r = add_lut[dst_r][src_r];
 			  src_g = add_lut[dst_g][src_g];
 			  src_b = add_lut[dst_b][src_b];
-			  src_a = MIN(src_a, dst_a);
+			  src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case SUBTRACT_MODE: {
 			src_r = dst_r > src_r ? dst_r - src_r : 0;
 			src_g = dst_g > src_g ? dst_g - src_g : 0;
 			src_b = dst_b > src_b ? dst_b - src_b : 0;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DARKEN_ONLY_MODE: {
 			src_r = dst_r < src_r ? dst_r : src_r;
 			src_g = dst_g < src_g ? dst_g : src_g;
 			src_b = dst_b < src_b ? dst_b : src_b;
-			src_a = MIN( src_a, dst_a );
+			src_a = KMIN( src_a, dst_a );
 			}
 			break;
 		case LIGHTEN_ONLY_MODE: {
 			src_r = dst_r < src_r ? src_r : dst_r;
 			src_g = dst_g < src_g ? src_g : dst_g;
 			src_b = dst_b < src_b ? src_b : dst_b;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case HUE_MODE: {
@@ -1671,7 +1671,7 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_r = new_r;
 			src_g = new_g;
 			src_b = new_b;
-			src_a = MIN( src_a, dst_a );
+			src_a = KMIN( src_a, dst_a );
 			}
 			break;
 		case SATURATION_MODE: {
@@ -1689,7 +1689,7 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_r = new_r;
 			src_g = new_g;
 			src_b = new_b;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case VALUE_MODE: {
@@ -1707,7 +1707,7 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_r = new_r;
 			src_g = new_g;
 			src_b = new_b;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case COLOR_MODE: {
@@ -1726,7 +1726,7 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			src_r = new_r;
 			src_g = new_g;
 			src_b = new_b;
-			src_a = MIN(src_a, dst_a);
+			src_a = KMIN(src_a, dst_a);
 			}
 			break;
 	}
@@ -1800,7 +1800,7 @@ void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l
 			}
 			break;
 		case DIVIDE_MODE: {
-				src = MIN((dst * 256) / (1 + src), 255);
+				src = KMIN((dst * 256) / (1 + src), 255);
 			}
 			break;
 		case SCREEN_MODE: {
@@ -1899,47 +1899,47 @@ void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
 	switch (layer.mode) {
 		case MULTIPLY_MODE: {
 				src = INT_MULT(src, dst);
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DIVIDE_MODE: {
-				src = MIN((dst * 256) / (1 + src), 255);
-				src_a = MIN(src_a, dst_a);
+				src = KMIN((dst * 256) / (1 + src), 255);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case SCREEN_MODE: {
 				src = 255 - INT_MULT(255 - dst, 255 - src);
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case OVERLAY_MODE: {
 				src = INT_MULT( dst, dst + INT_MULT(2 * src, 255 - dst));
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DIFFERENCE_MODE: {
 				src = dst > src ? dst - src : src - dst;
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case ADDITION_MODE: {
 				src = add_lut[dst][src];
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case SUBTRACT_MODE: {
 				src = dst > src ? dst - src : 0;
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case DARKEN_ONLY_MODE: {
 				src = dst < src ? dst : src;
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 		case LIGHTEN_ONLY_MODE: {
 				src = dst < src ? src : dst;
-				src_a = MIN(src_a, dst_a);
+				src_a = KMIN(src_a, dst_a);
 			}
 			break;
 	}

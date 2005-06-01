@@ -21,6 +21,8 @@
  *
  */
 
+#include <kglobal.h>
+
 /*
  * These are the constants and functions I extracted from The GIMP source
  * code. If the reader fails to work, this is probably the place to start
@@ -168,18 +170,6 @@ inline int INT_BLEND ( int a, int b, int alpha )
   return INT_MULT( a - b, alpha ) + b;
 }
 
-// Actually from GLIB
-
-inline int MIN ( int a, int b )
-{
-  return ( a < b ? a : b );
-}
-
-inline int MAX ( int a, int b )
-{
-  return ( a > b ? a : b );
-}
-
 // From GIMP "gimpcolorspace.c" v1.2
 
 /*!
@@ -201,12 +191,12 @@ void RGBTOHSV ( uchar& red, uchar& green, uchar& blue )
   b = blue;
 
   if ( r > g ) {
-    max = MAX( r, b );
-    min = MIN( g, b );
+    max = KMAX( r, b );
+    min = KMIN( g, b );
   }
   else {
-    max = MAX( g, b );
-    min = MIN( r, b );
+    max = KMAX( g, b );
+    min = KMIN( r, b );
   }
 
   v = max;
@@ -314,12 +304,12 @@ void RGBTOHLS ( uchar& red, uchar& green, uchar& blue )
   int min, max;
 
   if ( r > g ) {
-    max = MAX( r, b );
-    min = MIN( g, b );
+    max = KMAX( r, b );
+    min = KMIN( g, b );
   }
   else {
-    max = MAX( g, b );
-    min = MIN( r, b );
+    max = KMAX( g, b );
+    min = KMIN( r, b );
   }
 
   double h;
