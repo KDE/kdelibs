@@ -19,6 +19,7 @@
 #include "config.h"
 
 #include "kateglobal.h"
+#include "katedocument.h"
 
 #include <kparts/factory.h>
 
@@ -30,12 +31,20 @@
 class KateFactory : public KParts::Factory
 {
   public:
+    /**
+     * constructor, increments reference count of KateGlobal
+     * @param parent parent object
+     * @param name name of factory
+     */
     KateFactory ( QObject *parent = 0, const char *name = 0 )
       : KParts::Factory (parent, name)
     {
       KateGlobal::incRef ();
     }
 
+    /**
+     * destructor, decrements reference count of KateGlobal
+     */
     virtual ~KateFactory ()
     {
       KateGlobal::decRef ();
@@ -50,9 +59,17 @@ class KateFactory : public KParts::Factory
      * @param args additional arguments
      * @return constructed part object
      */
-    KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList &args )
+    KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList &args )
     {
-      return KateGlobal::self()->createPartObject (parentWidget, widgetName, parent, name, classname, args);
+      Q3CString classname( _classname );
+      bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "Kate::Document" );
+      bool bWantBrowserView = ( classname == "Browser/View" );
+      bool bWantReadOnly = (bWantBrowserView || ( classname == "KParts::ReadOnlyPart" ));
+    
+      KParts::ReadWritePart *part = new KateDocument (bWantSingleView, bWantBrowserView, bWantReadOnly, parentWidget, widgetName, parent, name);
+      part->setReadWrite( !bWantReadOnly );
+    
+      return part;
     }
 };
 

@@ -21,8 +21,6 @@
 
 #include "katejscript.h"
 
-#include <kparts/part.h>
-
 #include <ktrader.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -73,27 +71,14 @@ class KateGlobal : public QObject
     static KateGlobal *self ();
     
     /**
-     * inc ref
+     * increment reference counter
      */
     static void incRef () { ++s_ref; }
      
     /**
-     * dec ref
+     * decrement reference counter
      */
     static void decRef () { if (s_ref > 0) --s_ref; if (s_ref == 0) { delete s_self; } }
-
-    /**
-     * reimplemented create object method
-     * @param parentWidget parent widget
-     * @param widgetName widget name
-     * @param parent QObject parent
-     * @param name object name
-     * @param args additional arguments
-     * @return constructed part object
-     */
-    KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName,
-                                     QObject *parent, const char *name, const char *classname,
-                                     const QStringList &args );
 
     /**
      * public accessor to the instance

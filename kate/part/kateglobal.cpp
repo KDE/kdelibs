@@ -182,19 +182,6 @@ KateGlobal *KateGlobal::self ()
   return s_self;
 }
 
-KParts::Part *KateGlobal::createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList & )
-{
-  Q3CString classname( _classname );
-  bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "Kate::Document" );
-  bool bWantBrowserView = ( classname == "Browser/View" );
-  bool bWantReadOnly = (bWantBrowserView || ( classname == "KParts::ReadOnlyPart" ));
-
-  KParts::ReadWritePart *part = new KateDocument (bWantSingleView, bWantBrowserView, bWantReadOnly, parentWidget, widgetName, parent, name);
-  part->setReadWrite( !bWantReadOnly );
-
-  return part;
-}
-
 void KateGlobal::registerDocument ( KateDocument *doc )
 {
   KateGlobal::incRef ();
