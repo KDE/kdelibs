@@ -564,9 +564,9 @@ void KateDocumentConfig::setBackupSuffix (const QString &suffix)
   configEnd ();
 }
 
-bool KateDocumentConfig::plugin (uint index) const
+bool KateDocumentConfig::plugin (int index) const
 {
-  if (index >= m_plugins.size())
+  if (index < 0 || index >= m_plugins.size())
     return false;
 
   if (m_pluginsSet.at(index) || isGlobal())
@@ -575,9 +575,9 @@ bool KateDocumentConfig::plugin (uint index) const
   return s_global->plugin (index);
 }
 
-void KateDocumentConfig::setPlugin (uint index, bool load)
+void KateDocumentConfig::setPlugin (int index, bool load)
 {
-  if (index >= m_plugins.size())
+  if (index < 0 || index >= m_plugins.size())
     return;
 
   configStart ();
@@ -1085,9 +1085,9 @@ void KateRendererConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateFactory::self()->renderers()->count(); z++)
+    for (uint z=0; z < KateFactory::self()->views()->count(); z++)
     {
-      KateFactory::self()->renderers()->at(z)->updateConfig ();
+      KateFactory::self()->views()->at(z)->renderer()->updateConfig ();
     }
   }
 }
@@ -1112,8 +1112,8 @@ void KateRendererConfig::setSchema (uint schema)
 void KateRendererConfig::reloadSchema()
 {
   if ( isGlobal() )
-    for ( uint z=0; z < KateFactory::self()->renderers()->count(); z++ )
-      KateFactory::self()->renderers()->at(z)->config()->reloadSchema();
+    for ( uint z=0; z < KateFactory::self()->views()->count(); z++ )
+      KateFactory::self()->views()->at(z)->renderer()->config()->reloadSchema();
 
   else if ( m_renderer && m_schemaSet )
     setSchemaInternal( m_schema );

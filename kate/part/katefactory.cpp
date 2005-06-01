@@ -36,16 +36,24 @@
 #include <kvmallocator.h>
 #include <klocale.h>
 #include <kdirwatch.h>
-#include <kstaticdeleter.h>
-
-#include <qapplication.h>
+#include <kdebug.h>
 
 /**
- * dummy wrapper factory to be sure nobody external deletes our katefactory
+ * wrapper factory to be sure nobody external deletes our katefactory
+ * each instance will just increment the reference counter of our internal
+ * super private factory instance ;)
  */
 class KateFactoryPublic : public KParts::Factory
 {
   public:
+    KateFactoryPublic( QObject *parent = 0, const char *name = 0 )
+      : KParts::Factory (parent, name)
+    {
+      KateFactory::incRef ();
+    }
+    
+    virtual ~KateFactoryPublic() { KateFactory::decRef (); }
+  
     /**
      * reimplemented create object method
      * @param parentWidget parent widget
@@ -65,6 +73,8 @@ K_EXPORT_COMPONENT_FACTORY( libkatepart, KateFactoryPublic )
 
 KateFactory *KateFactory::s_self = 0;
 
+int KateFactory::s_ref = 0;
+
 KateFactory::KateFactory ()
  : m_aboutData ("katepart", I18N_NOOP("Kate Part"), KATEPART_VERSION,
              I18N_NOOP( "Embeddable editor component" ), KAboutData::License_LGPL_V2,
@@ -73,6 +83,8 @@ KateFactory::KateFactory ()
  , m_plugins (KTrader::self()->query("KTextEditor/Plugin"))
  , m_jscript (0)
 {
+  kdDebug () << endl << endl << endl << "KATE FACTORY CONSTRUCTED" << endl << endl << endl;
+
   // set s_self
   s_self = this;
 
@@ -117,6 +129,11 @@ KateFactory::KateFactory ()
   // dir watch
   //
   m_dirWatch = new KDirWatch ();
+  
+  //
+  // hl manager
+  //
+  m_hlManager = new KateHlManager ();
 
   //
   // filetype man
@@ -162,17 +179,7 @@ KateFactory::KateFactory ()
 
 KateFactory::~KateFactory()
 {
-  /* ?hack? If  MainApplication-Interface::quit is called by dcop the factory gets destroyed before all documents are destroyed eg in kwrite.
-  This could happen in other apps too. Since the documents try to unregister a new factory is created (in the ::self call) and registered with a
-  KStaticDeleter which causes a crash. That's why I ensure here that all documents are destroyed before the factory goes down (JOWENN)*/
-  while (KateDocument *doc=m_documents.first()) {
-    s_self=this; /* this is needed because the KStaticDeleter sets the global reference to 0, before it deletes the object it handles.
-    To prevent a crash again restore the factory pointer temporarily. (jowenn)*/
-    delete doc;
-    s_self=0;
-  }
-  /*another solution would be to set a flag in the documents, and inhibit calling of the deregistering methods, but I don't see a problem
-  if all created objects are deleted before their factory. If somebody sees a problem, let me know*/
+  kdDebug () << endl << endl << endl << "KATE FACTORY DELETED" << endl << endl << endl;
 
   delete m_documentConfig;
   delete m_viewConfig;
@@ -193,15 +200,18 @@ KateFactory::~KateFactory()
   m_indentScriptManagers.setAutoDelete(true);
   // cu jscript
   delete m_jscript;
+  
+  delete m_hlManager;
+  
+  s_self = 0;
 }
-
-static KStaticDeleter<KateFactory> sdFactory;
 
 KateFactory *KateFactory::self ()
 {
   if (!s_self) {
-    sdFactory.setObject(s_self, new KateFactory ());
+    new KateFactory ();
   }
+  
   return s_self;
 }
 
@@ -220,32 +230,26 @@ KParts::Part *KateFactory::createPartObject ( QWidget *parentWidget, const char 
 
 void KateFactory::registerDocument ( KateDocument *doc )
 {
+  KateFactory::incRef ();
   m_documents.append( doc );
 }
 
 void KateFactory::deregisterDocument ( KateDocument *doc )
 {
   m_documents.removeRef( doc );
+  KateFactory::decRef ();
 }
 
 void KateFactory::registerView ( KateView *view )
 {
+  KateFactory::incRef ();
   m_views.append( view );
 }
 
 void KateFactory::deregisterView ( KateView *view )
 {
   m_views.removeRef( view );
-}
-
-void KateFactory::registerRenderer ( KateRenderer  *renderer )
-{
-  m_renderers.append( renderer );
-}
-
-void KateFactory::deregisterRenderer ( KateRenderer  *renderer )
-{
-  m_renderers.removeRef( renderer );
+  KateFactory::decRef ();
 }
 
 KateJScript *KateFactory::jscript ()

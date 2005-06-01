@@ -361,10 +361,8 @@ class KateHlManager : public QObject
 {
   Q_OBJECT
 
-  private:
-    KateHlManager();
-
   public:
+    KateHlManager();
     ~KateHlManager();
 
     static KateHlManager *self();
@@ -412,8 +410,6 @@ class KateHlManager : public QObject
 
     Q3PtrList<KateHighlighting> hlList;
     Q3Dict<KateHighlighting> hlDict;
-
-    static KateHlManager *s_self;
 
     KConfig m_config;
     QStringList commonSuffixes;

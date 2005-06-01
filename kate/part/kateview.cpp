@@ -795,7 +795,7 @@ void KateView::slotReadWriteChanged ()
       << "tools_spelling_selection";
 
   KAction *a = 0;
-  for (uint z = 0; z < l.size(); z++)
+  for (int z = 0; z < l.size(); z++)
     if ((a = actionCollection()->action( l[z].ascii() )))
       a->setEnabled (m_doc->isReadWrite());
 }

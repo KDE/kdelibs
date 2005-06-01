@@ -43,6 +43,7 @@ class KateJScriptManager;
 class KateIndentScriptManagerAbstract;
 class KDirWatch;
 class KVMAllocator;
+class KateHlManager;
 
 namespace Kate {
   class Command;
@@ -68,6 +69,16 @@ class KateFactory
      * @return instance of the factory
      */
     static KateFactory *self ();
+    
+    /**
+     * inc ref
+     */
+    static void incRef () { ++s_ref; }
+     
+    /**
+     * dec ref
+     */
+    static void decRef () { if (s_ref > 0) --s_ref; if (s_ref == 0) { delete s_self; } }
 
     /**
      * reimplemented create object method
@@ -114,19 +125,6 @@ class KateFactory
      */
     void deregisterView ( KateView *view );
 
-     /**
-     * register renderer at the factory
-     * this allows us to loop over all views for example on config changes
-     * @param renderer renderer to register
-     */
-    void registerRenderer ( KateRenderer  *renderer );
-
-    /**
-     * unregister renderer at the factory
-     * @param renderer renderer to unregister
-     */
-    void deregisterRenderer ( KateRenderer  *renderer );
-
     /**
      * return a list of all registered docs
      * @return all known documents
@@ -138,12 +136,6 @@ class KateFactory
      * @return all known views
      */
     inline Q3PtrList<KateView> *views () { return &m_views; };
-
-    /**
-     * return a list of all registered renderers
-     * @return all known renderers
-     */
-    inline Q3PtrList<KateRenderer> *renderers () { return &m_renderers; };
 
     /**
      * on start detected plugins
@@ -204,18 +196,27 @@ class KateFactory
      */
     KateJScriptManager *jscriptManager () { return m_jscriptManager; }
 
-
     /**
      * looks up a script given by name. If there are more than
      * one matching, the first found will be taken
      */
     KateIndentScript indentScript (const QString &scriptname);
+    
+    /**
+     * hl manager
+     */
+    KateHlManager *hlManager () { return m_hlManager; }
 
   private:
     /**
      * instance of this factory
      */
     static KateFactory *s_self;
+    
+    /**
+     * reference counter
+     */
+    static int s_ref;
 
     /**
      * about data (authors and more)
@@ -236,11 +237,6 @@ class KateFactory
      * registered views
      */
     Q3PtrList<KateView> m_views;
-
-    /**
-     * registered renderers
-     */
-    Q3PtrList<KateRenderer> m_renderers;
 
     /**
      * global dirwatch object
@@ -301,6 +297,11 @@ class KateFactory
      * manager for js based indenters
      */
     Q3PtrList<KateIndentScriptManagerAbstract> m_indentScriptManagers;
+
+    /**
+     * hl manager
+     */
+    KateHlManager *m_hlManager;
 };
 
 #endif

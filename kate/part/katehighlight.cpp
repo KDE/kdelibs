@@ -43,7 +43,6 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
-#include <kstaticdeleter.h>
 #include <kapplication.h>
 
 #include <QSet>
@@ -373,8 +372,6 @@ class KateHlDetectIdentifier : public KateHlItem
 //END
 
 //BEGIN STATICS
-KateHlManager *KateHlManager::s_self = 0;
-
 static const QString stdDeliminator = QString (" \t.():!+,-<=>%&*/;?[]^{|}~\\");
 //END
 
@@ -2981,14 +2978,9 @@ KateHlManager::~KateHlManager()
   delete syntax;
 }
 
-static KStaticDeleter<KateHlManager> sdHlMan;
-
 KateHlManager *KateHlManager::self()
 {
-  if ( !s_self )
-    sdHlMan.setObject(s_self, new KateHlManager ());
-
-  return s_self;
+  return KateFactory::self ()->hlManager ();
 }
 
 KateHighlighting *KateHlManager::getHl(int n)
