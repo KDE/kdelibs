@@ -722,7 +722,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   }
 
   // Resolve urls if needed, depending on what the app supports
-  KURL::List urls = resolveURLs( _urls, _service );
+  const KURL::List urls = resolveURLs( _urls, _service );
 
   QString error;
   int pid = 0;
