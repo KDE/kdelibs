@@ -4156,11 +4156,13 @@ void KateDocument::setDocName (QString name )
 
   int count = -1;
 
-  for (uint z=0; z < KateGlobal::self()->documents()->count(); z++)
+  for (uint z=0; z < KateGlobal::self()->documents().size(); z++)
   {
-    if ( (KateGlobal::self()->documents()->at(z) != this) && (KateGlobal::self()->documents()->at(z)->url().filename() == url().filename()) )
-      if ( KateGlobal::self()->documents()->at(z)->m_docNameNumber > count )
-        count = KateGlobal::self()->documents()->at(z)->m_docNameNumber;
+    KateDocument *doc = (KateGlobal::self()->documents())[z];
+  
+    if ( (doc != this) && (doc->url().filename() == url().filename()) )
+      if ( doc->m_docNameNumber > count )
+        count = doc->m_docNameNumber;
   }
 
   m_docNameNumber = count + 1;

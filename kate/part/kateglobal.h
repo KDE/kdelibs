@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001-2004 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2001-2005 Christoph Cullmann <cullmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,7 +25,12 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 
-// katepart version must be a string in double quotes, format: "x.x"
+#include <QList>
+
+/**
+ * katepart version must be a string in double quotes, format: "x.x"
+ * it is used for the version in the aboutdata + hl stuff
+ */
 #define KATEPART_VERSION "3.0"
 
 class KateCmd;
@@ -48,6 +53,13 @@ namespace Kate {
   class Command;
 }
 
+/**
+ * KateGlobal
+ * One instance of this class is hold alive during
+ * a kate part session, as long as any factory, document
+ * or view stay around, here is the place to put things
+ * which are needed and shared by all this objects ;)
+ */
 class KateGlobal : public QObject
 {
   Q_OBJECT
@@ -84,7 +96,7 @@ class KateGlobal : public QObject
      * public accessor to the instance
      * @return instance
      */
-    inline KInstance *instance () { return &m_instance; };
+    KInstance *instance () { return &m_instance; };
 
     /**
      * register document at the factory
@@ -116,62 +128,62 @@ class KateGlobal : public QObject
      * return a list of all registered docs
      * @return all known documents
      */
-    inline Q3PtrList<KateDocument> *documents () { return &m_documents; };
+    QList<KateDocument*> &documents () { return m_documents; };
 
     /**
      * return a list of all registered views
      * @return all known views
      */
-    inline Q3PtrList<KateView> *views () { return &m_views; };
+    QList<KateView*> &views () { return m_views; };
 
     /**
      * on start detected plugins
      * @return list of all at launch detected ktexteditor::plugins
      */
-    inline const KTrader::OfferList &plugins () { return m_plugins; };
+    KTrader::OfferList &plugins () { return m_plugins; };
 
     /**
      * global dirwatch
      * @return dirwatch instance
      */
-    inline KDirWatch *dirWatch () { return m_dirWatch; };
+    KDirWatch *dirWatch () { return m_dirWatch; };
 
     /**
      * global filetype manager
      * used to manage the file types centrally
      * @return filetype manager
      */
-    inline KateFileTypeManager *fileTypeManager () { return m_fileTypeManager; };
+    KateFileTypeManager *fileTypeManager () { return m_fileTypeManager; };
 
     /**
      * manager for the katepart schemas
      * @return schema manager
      */
-    inline KateSchemaManager *schemaManager () { return m_schemaManager; };
+    KateSchemaManager *schemaManager () { return m_schemaManager; };
 
     /**
      * fallback document config
      * @return default config for all documents
      */
-    inline KateDocumentConfig *documentConfig () { return m_documentConfig; }
+    KateDocumentConfig *documentConfig () { return m_documentConfig; }
 
     /**
      * fallback view config
      * @return default config for all views
      */
-    inline KateViewConfig *viewConfig () { return m_viewConfig; }
+    KateViewConfig *viewConfig () { return m_viewConfig; }
 
     /**
      * fallback renderer config
      * @return default config for all renderers
      */
-    inline KateRendererConfig *rendererConfig () { return m_rendererConfig; }
+    KateRendererConfig *rendererConfig () { return m_rendererConfig; }
 
     /**
      * Global allocator for swapping
      * @return allocator
      */
-    inline KVMAllocator *vm () { return m_vm; }
+    KVMAllocator *vm () { return m_vm; }
 
     /**
      * global interpreter, for nice js stuff
@@ -218,12 +230,12 @@ class KateGlobal : public QObject
     /**
      * registered docs
      */
-    Q3PtrList<KateDocument> m_documents;
+    QList<KateDocument*> m_documents;
 
     /**
      * registered views
      */
-    Q3PtrList<KateView> m_views;
+    QList<KateView*> m_views;
 
     /**
      * global dirwatch object
@@ -268,7 +280,7 @@ class KateGlobal : public QObject
     /**
      * internal commands
      */
-    Q3ValueList<Kate::Command *> m_cmds;
+    QList<Kate::Command *> m_cmds;
 
     /**
      * js interpreter
@@ -283,7 +295,7 @@ class KateGlobal : public QObject
     /**
      * manager for js based indenters
      */
-    Q3PtrList<KateIndentScriptManagerAbstract> m_indentScriptManagers;
+    QList<KateIndentScriptManagerAbstract*> m_indentScriptManagers;
 
     /**
      * hl manager

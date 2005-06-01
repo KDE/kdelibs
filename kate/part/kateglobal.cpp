@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001-2004 Christoph Cullmann <cullmann@kde.org>
+   Copyright (C) 2001-2005 Christoph Cullmann <cullmann@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -50,8 +50,6 @@ KateGlobal::KateGlobal ()
  , m_plugins (KTrader::self()->query("KTextEditor/Plugin"))
  , m_jscript (0)
 {
-  kdDebug () << endl << endl << endl << "KATE FACTORY CONSTRUCTED" << endl << endl << endl;
-
   // set s_self
   s_self = this;
 
@@ -140,14 +138,12 @@ KateGlobal::KateGlobal ()
   m_cmds.push_back (new KateCommands::Date ());
   m_cmds.push_back (new SearchCommand());
 
-  for ( Q3ValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
+  for ( QList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
     KateCmd::self()->registerCommand (*it);
 }
 
 KateGlobal::~KateGlobal()
 {
-  kdDebug () << endl << endl << endl << "KATE FACTORY DELETED" << endl << endl << endl;
-
   delete m_documentConfig;
   delete m_viewConfig;
   delete m_rendererConfig;
@@ -159,12 +155,15 @@ KateGlobal::~KateGlobal()
 
   delete m_vm;
 
-  for ( Q3ValueList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
-    delete *it;
+  // you too
+  qDeleteAll (m_cmds);
 
   // cu manager
   delete m_jscriptManager;
-  m_indentScriptManagers.setAutoDelete(true);
+  
+  // cu ;)
+  qDeleteAll (m_indentScriptManagers);
+  
   // cu jscript
   delete m_jscript;
   
@@ -190,7 +189,7 @@ void KateGlobal::registerDocument ( KateDocument *doc )
 
 void KateGlobal::deregisterDocument ( KateDocument *doc )
 {
-  m_documents.removeRef( doc );
+  m_documents.remove( doc );
   KateGlobal::decRef ();
 }
 
@@ -202,7 +201,7 @@ void KateGlobal::registerView ( KateView *view )
 
 void KateGlobal::deregisterView ( KateView *view )
 {
-  m_views.removeRef( view );
+  m_views.remove( view );
   KateGlobal::decRef ();
 }
 

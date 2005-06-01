@@ -234,10 +234,8 @@ void KateDocumentConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateGlobal::self()->documents()->count(); z++)
-    {
-      KateGlobal::self()->documents()->at(z)->updateConfig ();
-    }
+    for (int z=0; z < KateGlobal::self()->documents().size(); ++z)
+      (KateGlobal::self()->documents())[z]->updateConfig ();
   }
 }
 
@@ -731,10 +729,8 @@ void KateViewConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateGlobal::self()->views()->count(); z++)
-    {
-      KateGlobal::self()->views()->at(z)->updateConfig ();
-    }
+    for (int z=0; z < KateGlobal::self()->views().size(); ++z)
+      (KateGlobal::self()->views())[z]->updateConfig ();
   }
 }
 
@@ -1085,10 +1081,8 @@ void KateRendererConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (uint z=0; z < KateGlobal::self()->views()->count(); z++)
-    {
-      KateGlobal::self()->views()->at(z)->renderer()->updateConfig ();
-    }
+    for (int z=0; z < KateGlobal::self()->views().size(); ++z)
+      (KateGlobal::self()->views())[z]->renderer()->updateConfig ();
   }
 }
 
@@ -1112,8 +1106,8 @@ void KateRendererConfig::setSchema (uint schema)
 void KateRendererConfig::reloadSchema()
 {
   if ( isGlobal() )
-    for ( uint z=0; z < KateGlobal::self()->views()->count(); z++ )
-      KateGlobal::self()->views()->at(z)->renderer()->config()->reloadSchema();
+    for ( int z=0; z < KateGlobal::self()->views().size(); ++z )
+      (KateGlobal::self()->views())[z]->renderer()->config()->reloadSchema();
 
   else if ( m_renderer && m_schemaSet )
     setSchemaInternal( m_schema );
