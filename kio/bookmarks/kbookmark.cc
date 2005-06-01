@@ -357,7 +357,7 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     return grp.first();
 }
 
-QString KBookmark::commonParent(QString& A, QString& B)
+QString KBookmark::commonParent(QString A, QString B)
 {
     while(depth(A) > depth(B))
         A = parentAddress(A);
