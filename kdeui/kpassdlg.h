@@ -130,7 +130,7 @@ private:
  *
  * \code
  * QCString password;
- * int result = KPasswordDialog::getPassword(password, i18n("Prompt message"));
+ * int result = KPasswordDialog::getPassword(parent, password, i18n("Prompt message"));
  * if (result == KPasswordDialog::Accepted)
  *     use(password);
  * \endcode
