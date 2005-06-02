@@ -37,6 +37,7 @@
 #include <ktexteditor/wordwrapinterface.h>
 #include <ktexteditor/printinterface.h>
 #include <ktexteditor/variableinterface.h>
+#include <ktexteditor/encodinginterface.h>
 
 #include <kaction.h>
 
@@ -148,7 +149,10 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
                      public KTextEditor::ConfigInterface, public KTextEditor::MarkInterface,
                      public KTextEditor::PrintInterface, public KTextEditor::WordWrapInterface,
                      public KTextEditor::MarkInterfaceExtension,
-                     public KTextEditor::SelectionInterfaceExt
+                     public KTextEditor::EncodingInterface,
+                     public KTextEditor::SelectionInterfaceExt,
+                     public KTextEditor::DocumentInfoInterface,
+                     public KTextEditor::VariableInterface
 {
   Q_OBJECT
 
@@ -171,65 +175,10 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
      */
     virtual QString docName () { return 0L; };
 
-
-  public slots:
-    // clear buffer/filename - update the views
-    virtual void flush () { ; };
-
     /**
      * Reloads the current document from disk if possible
      */
     virtual void reloadFile() = 0;
-
-    /**
-     * Spellchecking
-     */
-    virtual void spellcheck() {};
-
-    virtual void exportAs(const QString &) = 0;
-
-    virtual void applyWordWrap () = 0;
-
-
-  public:
-    virtual void setWordWrap (bool ) = 0;
-    virtual bool wordWrap () = 0;
-
-    virtual void setWordWrapAt (unsigned int) = 0;
-    virtual uint wordWrapAt () = 0;
-
-
-    virtual void setEncoding (const QString &e) = 0;
-    virtual QString encoding() const = 0;
-
-
-  public:
-    virtual uint configFlags () = 0;
-    virtual void setConfigFlags (uint flags) = 0;
-
-    // Flags for katedocument config !
-    enum ConfigFlags
-    {
-      cfAutoIndent= 0x1,
-      cfBackspaceIndents= 0x2,
-      cfWordWrap= 0x4,
-      cfReplaceTabs= 0x8,
-      cfRemoveSpaces = 0x10,
-      cfWrapCursor= 0x20,
-      cfAutoBrackets= 0x40,
-      cfPersistent= 0x80,
-      cfKeepSelection= 0x100,
-      cfDelOnInput= 0x400,
-      cfXorSelect= 0x800,
-      cfOvr= 0x1000,
-      cfMark= 0x2000,
-      cfKeepIndentProfile= 0x8000,
-      cfKeepExtraSpaces= 0x10000,
-      cfTabIndents= 0x80000,
-      cfShowTabs= 0x200000,
-      cfSpaceIndent= 0x400000,
-      cfSmartHome = 0x800000
-    };
 
   signals:
     /**
@@ -243,41 +192,7 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
      * @li 3 - deleted
      */
     void modifiedOnDisc (Kate::Document *doc, bool isModified, unsigned char reason);
-
-  /*
-   * there static methodes are usefull to turn on/off the dialogs
-   * kate part shows up on open file errors + file changed warnings
-   * open file errors default on, file changed warnings default off, better
-   * for other apps beside kate app using the part
-   */
-  public:
-    // default true
-    static void setOpenErrorDialogsActivated (bool on);
-
-    // default false
-    static void setFileChangedDialogsActivated (bool on);
-
-    static const QString &defaultEncoding ();
-
-  protected:
-    static bool s_openErrorDialogsActivated;
-    static bool s_fileChangedDialogsActivated;
-
-    static QString s_defaultEncoding;
-};
-
-/**
- * Extensions to the Document Interface
- * @since 3.3
- */
-class KATEPARTINTERFACES_EXPORT DocumentExt
- : public KTextEditor::DocumentInfoInterface,
-   public KTextEditor::VariableInterface
-{
-  public:
-    DocumentExt ();
-    virtual ~DocumentExt ();
-
+    
   public:
     /**
      * Reasons why a document is modified on disk.
@@ -307,6 +222,27 @@ class KATEPARTINTERFACES_EXPORT DocumentExt
      * editor regains focus after the dialog is hidden.
      */
     virtual void slotModifiedOnDisk( View *v=0 ) = 0;
+
+  /*
+   * there static methodes are usefull to turn on/off the dialogs
+   * kate part shows up on open file errors + file changed warnings
+   * open file errors default on, file changed warnings default off, better
+   * for other apps beside kate app using the part
+   */
+  public:
+    // default true
+    static void setOpenErrorDialogsActivated (bool on);
+
+    // default false
+    static void setFileChangedDialogsActivated (bool on);
+
+    static const QString &defaultEncoding ();
+
+  protected:
+    static bool s_openErrorDialogsActivated;
+    static bool s_fileChangedDialogsActivated;
+
+    static QString s_defaultEncoding;
 };
 
 /**
@@ -315,13 +251,6 @@ class KATEPARTINTERFACES_EXPORT DocumentExt
  * @return 0 if no success, else the Kate::Document
  */
 KATEPARTINTERFACES_EXPORT Document *document (KTextEditor::Document *doc);
-
-/**
- * Check if given document is a Kate::DocumentExt
- * @param doc KTextEditor document
- * @return 0 if no success, else the Kate::DocumentExt
- */
-KATEPARTINTERFACES_EXPORT DocumentExt *documentExt (KTextEditor::Document *doc);
 
 /**
  * Creates a new Kate::Document object

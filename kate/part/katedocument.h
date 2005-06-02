@@ -31,7 +31,6 @@
 #include "../interfaces/document.h"
 
 #include <ktexteditor/configinterfaceextension.h>
-#include <ktexteditor/encodinginterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/editinterfaceext.h>
 #include <ktexteditor/templateinterface.h>
@@ -77,9 +76,7 @@ class KateKeyInterceptorFunctor;
 // Kate KTextEditor::Document class (and even KTextEditor::Editor ;)
 //
 class KateDocument : public Kate::Document,
-                     public Kate::DocumentExt,
                      public KTextEditor::ConfigInterfaceExtension,
-                     public KTextEditor::EncodingInterface,
                      public KTextEditor::SessionConfigInterface,
                      public KTextEditor::EditInterfaceExt,
                      public KTextEditor::TemplateInterface,
@@ -576,9 +573,6 @@ class KateDocument : public Kate::Document,
      */
     inline uint lastLine() const { return numLines()-1; }
 
-    uint configFlags ();
-    void setConfigFlags (uint flags);
-
     // Repaint all of all of the views
     void repaintViews(bool paintOnlyDirty = true);
 
@@ -783,10 +777,6 @@ class KateDocument : public Kate::Document,
   signals:
     void modStateChanged (Kate::Document *doc);
     void nameChanged (Kate::Document *doc);
-
-  public slots:
-    // clear buffer/filename - update the views
-    void flush ();
 
   signals:
     /**

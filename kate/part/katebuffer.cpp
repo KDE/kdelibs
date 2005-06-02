@@ -456,7 +456,7 @@ void KateBuffer::clear()
 
 bool KateBuffer::openFile (const QString &m_file)
 {
-  KateFileLoader file (m_file, m_doc->config()->codec(), m_doc->configFlags() & KateDocument::cfRemoveSpaces);
+  KateFileLoader file (m_file, m_doc->config()->codec(), m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces);
 
   bool ok = false;
   struct stat sbuf;
@@ -582,7 +582,7 @@ bool KateBuffer::saveFile (const QString &m_file)
   QString eol = m_doc->config()->eolString ();
 
   // should we strip spaces?
-  bool removeTrailingSpaces = m_doc->configFlags() & KateDocument::cfRemoveSpaces;
+  bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
 
   // just dump the lines out ;)
   for (uint i=0; i < m_lines; i++)

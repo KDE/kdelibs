@@ -82,28 +82,12 @@ View::~View ()
 {
 }
 
-DocumentExt::DocumentExt ()
-{
-}
-
-DocumentExt::~DocumentExt ()
-{
-}
-
 Document *document (KTextEditor::Document *doc)
 {
   if (!doc)
     return 0;
 
   return qobject_cast<Document*>(doc);
-}
-
-DocumentExt *documentExt (KTextEditor::Document *doc)
-{
-  if (!doc || !doc->inherits("Kate::DocumentExt"))
-    return 0;
-
-  return (Kate::DocumentExt*)doc;
 }
 
 Document *createDocument ( QObject *parent, const char *name )

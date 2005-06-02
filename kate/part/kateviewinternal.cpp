@@ -1180,7 +1180,7 @@ void KateViewInternal::home( bool sel )
     }
   }
 
-  if( !(m_doc->configFlags() & KateDocument::cfSmartHome) ) {
+  if( !(m_doc->config()->configFlags() & KateDocumentConfig::cfSmartHome) ) {
     moveEdge( left, sel );
     return;
   }
@@ -2487,13 +2487,13 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
       e->accept();
       return;
     } else
-    if (m_doc->configFlags() & KateDocumentConfig::cfTabIndents)
+    if (m_doc->config()->configFlags() & KateDocumentConfig::cfTabIndents)
     {
       if( key == Qt::Key_Tab )
       {
-        if (m_view->hasSelection() || (m_doc->configFlags() & KateDocumentConfig::cfTabIndentsMode))
+        if (m_view->hasSelection() || (m_doc->config()->configFlags() & KateDocumentConfig::cfTabIndentsMode))
           m_doc->indent( m_view, cursor.line(), 1 );
-        else if (m_doc->configFlags() & KateDocumentConfig::cfTabInsertsTab)
+        else if (m_doc->config()->configFlags() & KateDocumentConfig::cfTabInsertsTab)
           m_doc->typeChars ( m_view, QString ("\t") );
         else
           m_doc->insertIndentChars ( m_view );
@@ -2844,7 +2844,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
 
   // TODO put in the proper places
   m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
-  m_view->renderer()->setShowTabs(m_doc->configFlags() & KateDocument::cfShowTabs);
+  m_view->renderer()->setShowTabs(m_doc->config()->configFlags() & KateDocumentConfig::cfShowTabs);
 
   int sy = startz * h;
   paint.translate(e->rect().x(), startz * h);

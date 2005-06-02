@@ -2878,7 +2878,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
     {
       buf.append (ch);
 
-      if (!bracketInserted && (config()->configFlags() & KateDocument::cfAutoBrackets))
+      if (!bracketInserted && (config()->configFlags() & KateDocumentConfig::cfAutoBrackets))
       {
         if (ch == QChar::fromAscii('(')) { bracketInserted = true; buf.append (QChar::fromAscii(')')); }
         if (ch == QChar::fromAscii('[')) { bracketInserted = true; buf.append (QChar::fromAscii(']')); }
@@ -2899,7 +2899,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   int oldCol = view->cursorColumnReal ();
 
 
-  if (config()->configFlags()  & KateDocument::cfOvr)
+  if (config()->configFlags()  & KateDocumentConfig::cfOvr)
     removeText (view->cursorLine(), view->cursorColumnReal(), view->cursorLine(), QMIN( view->cursorColumnReal()+buf.length(), textLine->length() ) );
 
   insertText (view->cursorLine(), view->cursorColumnReal(), buf);
@@ -3013,7 +3013,7 @@ void KateDocument::backspace( KateView *view, const KateTextCursor& c )
 
   if (col > 0)
   {
-    if (!(config()->configFlags() & KateDocument::cfBackspaceIndents))
+    if (!(config()->configFlags() & KateDocumentConfig::cfBackspaceIndents))
     {
       // ordinary backspace
       //c.cursor.col--;
@@ -3155,7 +3155,7 @@ void KateDocument::insertIndentChars ( KateView *view )
   editStart ();
 
   QString s;
-  if (config()->configFlags() & KateDocument::cfSpaceIndent)
+  if (config()->configFlags() & KateDocumentConfig::cfSpaceIndent)
   {
     int width = config()->indentationWidth();
     s.fill (' ', width - (view->cursorColumnReal() % width));
@@ -3188,7 +3188,7 @@ void KateDocument::indent ( KateView *v, uint line, int change)
       el--; /* */
     }
 
-    if (config()->configFlags() & KateDocument::cfKeepIndentProfile && change < 0) {
+    if (config()->configFlags() & KateDocumentConfig::cfKeepIndentProfile && change < 0) {
       // unindent so that the existing indent profile doesn't get screwed
       // if any line we may unindent is already full left, don't do anything
       int adjustedChange = -change;
@@ -3253,7 +3253,7 @@ void KateDocument::optimizeLeadingSpace(uint line, int flags, int change)
   int first_char = textline->firstChar();
 
   int w = 0;
-  if (flags & KateDocument::cfSpaceIndent)
+  if (flags & KateDocumentConfig::cfSpaceIndent)
     w = config()->indentationWidth();
   else
     w = config()->tabWidth();
@@ -3265,7 +3265,7 @@ void KateDocument::optimizeLeadingSpace(uint line, int flags, int change)
   if (space < 0)
     space = 0;
 
-  if (!(flags & KateDocument::cfKeepExtraSpaces))
+  if (!(flags & KateDocumentConfig::cfKeepExtraSpaces))
   {
     uint extra = space % w;
 
@@ -3285,7 +3285,7 @@ void KateDocument::replaceWithOptimizedSpace(uint line, uint upto_column, uint s
   uint length;
   QString new_space;
 
-  if (flags & KateDocument::cfSpaceIndent && ! (flags & KateDocumentConfig::cfMixedIndent) ) {
+  if (flags & KateDocumentConfig::cfSpaceIndent && ! (flags & KateDocumentConfig::cfMixedIndent) ) {
     length = space;
     new_space.fill(' ', length);
   }
@@ -3998,16 +3998,6 @@ void KateDocument::tagAll()
   }
 }
 
-uint KateDocument::configFlags ()
-{
-  return config()->configFlags();
-}
-
-void KateDocument::setConfigFlags (uint flags)
-{
-  config()->setConfigFlags(flags);
-}
-
 inline bool isStartBracket( const QChar& c ) { return c == '{' || c == '[' || c == '('; }
 inline bool isEndBracket  ( const QChar& c ) { return c == '}' || c == ']' || c == ')'; }
 inline bool isBracket     ( const QChar& c ) { return isStartBracket( c ) || isEndBracket( c ); }
@@ -4049,7 +4039,7 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
   QChar left  = textLine->getChar( start.col() - 1 );
   QChar bracket;
 
-  if ( config()->configFlags() & cfOvr ) {
+  if ( config()->configFlags() & KateDocumentConfig::cfOvr ) {
     if( isBracket( right ) ) {
       bracket = right;
     } else {
@@ -4321,11 +4311,6 @@ void KateDocument::reloadFile()
     if (byUser)
       setHlMode (mode);
   }
-}
-
-void KateDocument::flush ()
-{
-  closeURL ();
 }
 
 void KateDocument::setWordWrap (bool on)

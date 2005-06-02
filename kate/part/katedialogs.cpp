@@ -134,11 +134,11 @@ void KateConfigPage::somethingHasChanged ()
 
 //BEGIN KateIndentConfigTab
 const int KateIndentConfigTab::flags[] = {
-    KateDocument::cfSpaceIndent,
-    KateDocument::cfKeepIndentProfile,
-    KateDocument::cfKeepExtraSpaces,
-    KateDocument::cfTabIndents,
-    KateDocument::cfBackspaceIndents,
+    KateDocumentConfig::cfSpaceIndent,
+    KateDocumentConfig::cfKeepIndentProfile,
+    KateDocumentConfig::cfKeepExtraSpaces,
+    KateDocumentConfig::cfTabIndents,
+    KateDocumentConfig::cfBackspaceIndents,
     KateDocumentConfig::cfDoxygenAutoTyping,
     KateDocumentConfig::cfMixedIndent
 };
@@ -350,7 +350,7 @@ void KateIndentConfigTab::reload ()
 //END KateIndentConfigTab
 
 //BEGIN KateSelectConfigTab
-const int KateSelectConfigTab::flags[] = {KateDocument::cfSmartHome, KateDocument::cfWrapCursor};
+const int KateSelectConfigTab::flags[] = {KateDocumentConfig::cfSmartHome, KateDocumentConfig::cfWrapCursor};
 
 KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
   : KateConfigPage(parent)
@@ -461,8 +461,8 @@ void KateSelectConfigTab::reload ()
 //END KateSelectConfigTab
 
 //BEGIN KateEditConfigTab
-const int KateEditConfigTab::flags[] = {KateDocument::cfWordWrap,
-  KateDocument::cfAutoBrackets, KateDocument::cfShowTabs,
+const int KateEditConfigTab::flags[] = {KateDocumentConfig::cfWordWrap,
+  KateDocumentConfig::cfAutoBrackets, KateDocumentConfig::cfShowTabs,
   KateDocumentConfig::cfReplaceTabsDyn, KateDocumentConfig::cfRemoveTrailingDyn};
 
 KateEditConfigTab::KateEditConfigTab(QWidget *parent)
@@ -887,7 +887,7 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   layout->addWidget( gbWhiteSpace );
 
   removeSpaces = new QCheckBox(i18n("Re&move trailing spaces"), gbWhiteSpace);
-  removeSpaces->setChecked(configFlags & KateDocument::cfRemoveSpaces);
+  removeSpaces->setChecked(configFlags & KateDocumentConfig::cfRemoveSpaces);
 
   QGroupBox *dirConfigBox = new Q3GroupBox(1, Qt::Horizontal, i18n("Folder Config File"), this);
   layout->addWidget( dirConfigBox );
@@ -995,8 +995,8 @@ void KateSaveConfigTab::apply()
 
   int configFlags = KateDocumentConfig::global()->configFlags();
 
-  configFlags &= ~KateDocument::cfRemoveSpaces; // clear flag
-  if (removeSpaces->isChecked()) configFlags |= KateDocument::cfRemoveSpaces; // set flag if checked
+  configFlags &= ~KateDocumentConfig::cfRemoveSpaces; // clear flag
+  if (removeSpaces->isChecked()) configFlags |= KateDocumentConfig::cfRemoveSpaces; // set flag if checked
 
   KateDocumentConfig::global()->setConfigFlags(configFlags);
 

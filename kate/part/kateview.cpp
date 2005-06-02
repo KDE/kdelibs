@@ -722,7 +722,7 @@ void KateView::slotStatusMsg ()
   QString ovrstr;
   if (m_doc->isReadWrite())
   {
-    if (m_doc->config()->configFlags() & KateDocument::cfOvr)
+    if (m_doc->config()->configFlags() & KateDocumentConfig::cfOvr)
       ovrstr = i18n(" OVR ");
     else
       ovrstr = i18n(" INS ");
@@ -751,7 +751,7 @@ void KateView::slotSelectionTypeChanged()
 
 bool KateView::isOverwriteMode() const
 {
-  return m_doc->config()->configFlags() & KateDocument::cfOvr;
+  return m_doc->config()->configFlags() & KateDocumentConfig::cfOvr;
 }
 
 void KateView::reloadFile()
@@ -853,16 +853,16 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bo
 void KateView::setOverwriteMode( bool b )
 {
   if ( isOverwriteMode() && !b )
-    m_doc->setConfigFlags( m_doc->config()->configFlags() ^ KateDocument::cfOvr );
+    m_doc->config()->setConfigFlags( m_doc->config()->configFlags() ^ KateDocumentConfig::cfOvr );
   else
-    m_doc->setConfigFlags( m_doc->config()->configFlags() | KateDocument::cfOvr );
+    m_doc->config()->setConfigFlags( m_doc->config()->configFlags() | KateDocumentConfig::cfOvr );
 
   m_toggleInsert->setChecked (isOverwriteMode ());
 }
 
 void KateView::toggleInsert()
 {
-  m_doc->setConfigFlags(m_doc->config()->configFlags() ^ KateDocument::cfOvr);
+  m_doc->config()->setConfigFlags(m_doc->config()->configFlags() ^ KateDocumentConfig::cfOvr);
   m_toggleInsert->setChecked (isOverwriteMode ());
 
   emit newStatus();
@@ -1909,7 +1909,7 @@ bool KateView::toggleBlockSelectionMode ()
 
 bool KateView::wrapCursor ()
 {
-  return !blockSelectionMode() && (m_doc->configFlags() & KateDocument::cfWrapCursor);
+  return !blockSelectionMode() && (m_doc->config()->configFlags() & KateDocumentConfig::cfWrapCursor);
 }
 
 //END

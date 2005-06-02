@@ -193,9 +193,9 @@ void KateNormalIndent::updateConfig ()
 {
   KateDocumentConfig *config = doc->config();
 
-  useSpaces   = config->configFlags() & KateDocument::cfSpaceIndent || config->configFlags() & KateDocumentConfig::cfReplaceTabsDyn;
+  useSpaces   = config->configFlags() & KateDocumentConfig::cfSpaceIndent || config->configFlags() & KateDocumentConfig::cfReplaceTabsDyn;
   mixedIndent = useSpaces && config->configFlags() & KateDocumentConfig::cfMixedIndent;
-  keepProfile = config->configFlags() & KateDocument::cfKeepIndentProfile;
+  keepProfile = config->configFlags() & KateDocumentConfig::cfKeepIndentProfile;
   tabWidth    = config->tabWidth();
   indentWidth = useSpaces? config->indentationWidth() : tabWidth;
 
