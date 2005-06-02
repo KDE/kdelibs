@@ -16,7 +16,7 @@ public class Main
     //We need to save a reference to the original stdout
     //for sending messages back
     static final KJASProtocolHandler         protocol;
-    private static       Console             console = null;
+    static       Console                     console = null;
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
@@ -64,13 +64,7 @@ public class Main
             good_jdk = false;
         }
         PrintStream protocol_stdout = System.out;
-        if (show_console || !good_jdk) {
-            console = new KJASSwingConsole();
-        } else {
-            PrintStream ps = new java.io.PrintStream(System.err);
-            System.setOut(ps);
-            System.setErr(ps);
-        }
+        console = new KJASSwingConsole();
         protocol = new KJASProtocolHandler( System.in, protocol_stdout );
     }
 

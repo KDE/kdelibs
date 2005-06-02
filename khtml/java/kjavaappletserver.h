@@ -114,6 +114,11 @@ public:
     void stopApplet( int contextId, int appletId );
 
     /**
+     * Show java console.
+     */
+    void showConsole();
+
+    /**
      * Send data we got back from a KJavaDownloader back to the appropriate
      * class loader.
      */

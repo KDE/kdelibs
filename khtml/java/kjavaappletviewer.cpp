@@ -77,11 +77,11 @@ public:
     KJavaAppletContext * getContext (QObject*, const QString &);
     void releaseContext (QObject*, const QString &);
     void setServer (KJavaAppletServer * s);
+    QGuardedPtr <KJavaAppletServer> server;
 private:
     typedef QMap <QPair <QObject*, QString>, QPair <KJavaAppletContext*, int> >
             ContextMap;
     ContextMap m_contextmap;
-    QGuardedPtr <KJavaAppletServer> server;
 };
 
 KJavaServerMaintainer::~KJavaServerMaintainer () {
@@ -193,6 +193,20 @@ inline KJavaAppletWidget * CoverWidget::appletWidget () const {
 void CoverWidget::resizeEvent (QResizeEvent * e) {
     m_appletwidget->resize (e->size().width(), e->size().height());
 }
+
+//-----------------------------------------------------------------------------
+
+class StatusBarIcon : public QLabel {
+public:
+    StatusBarIcon (QWidget * parent) : QLabel (parent) {
+        setPixmap (SmallIcon (QString ("source_java")));
+    }
+protected:
+    void mousePressEvent (QMouseEvent * e) {
+        kdDebug() << "clicked" << endl;
+        serverMaintainer->server->showConsole ();
+    }
+};
 
 //-----------------------------------------------------------------------------
 
@@ -383,8 +397,7 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
     if (!m_statusbar_icon) {
         KStatusBar *sb = m_statusbar->statusBar();
         if (sb) {
-            m_statusbar_icon = new QLabel (sb);
-            m_statusbar_icon->setPixmap (SmallIcon (QString ("source_java")));
+            m_statusbar_icon = new StatusBarIcon (sb);
             m_statusbar->addStatusBarItem (m_statusbar_icon, 0, false);
         }
     }
