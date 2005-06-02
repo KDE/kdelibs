@@ -21,11 +21,10 @@
 #ifndef __KATE_AUTO_INDENT_H__
 #define __KATE_AUTO_INDENT_H__
 
-#include <qobject.h>
-
 #include "katecursor.h"
 #include "kateconfig.h"
 #include "katejscript.h"
+
 class KateDocument;
 
 /**

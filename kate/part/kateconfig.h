@@ -21,10 +21,10 @@
 
 #include <ktexteditor/markinterface.h>
 
-#include <qbitarray.h>
-#include <qcolor.h>
-#include <qobject.h>
-#include <q3valuevector.h>
+#include <QBitArray>
+#include <QColor>
+#include <QObject>
+#include <QVector>
 
 class KateView;
 class KateDocument;
@@ -510,7 +510,7 @@ class KateRendererConfig : public KateConfig
     QColor m_tabMarkerColor;
     QColor m_iconBarColor;
     QColor m_lineNumberColor;
-    Q3ValueVector<QColor> m_lineMarkerColor;
+    QVector<QColor> m_lineMarkerColor;
 
     bool m_schemaSet : 1;
     bool m_fontSet : 1;

@@ -1124,8 +1124,7 @@ void KateIconBorder::showMarkMenu( uint line, const QPoint& pos )
   Q3PopupMenu markMenu;
   Q3PopupMenu selectDefaultMark;
 
-  typedef Q3ValueVector<int> MarkTypeVector;
-  MarkTypeVector vec( 33 );
+  QVector<int> vec( 33 );
   int i=1;
 
   for( uint bit = 0; bit < 32; bit++ ) {
