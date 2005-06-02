@@ -357,8 +357,10 @@ bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
 KJavaAppletViewer::~KJavaAppletViewer () {
     m_view = 0L;
     serverMaintainer->releaseContext (parent(), baseurl);
-    if (m_statusbar_icon)
+    if (m_statusbar_icon) {
         m_statusbar->removeStatusBarItem (m_statusbar_icon);
+        delete m_statusbar_icon;
+    }
 }
 
 bool KJavaAppletViewer::openURL (const KURL & url) {
