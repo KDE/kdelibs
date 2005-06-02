@@ -443,33 +443,61 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
+    bool strict = !parser->doc()->inCompatMode();
+    int delimiterCount = 0;
+    bool canClose = false;
+    
     checkScriptBuffer(src.length());
     while ( src.length() ) {
         scriptCode[ scriptCodeSize++ ] = *src;
+
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
         qDebug("comment is now: *%s*",
                QConstString((QChar*)src.current(), kMin(16U, src.length())).string().latin1());
 #endif
-        if (src->unicode() == '>' &&
-            ( ( brokenComments && !( script || style ) ) ||
-              ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
-                scriptCode[scriptCodeSize-2] == '-' ) ) ) {
-            ++src;
-            if ( !( script || xmp || textarea || style) ) {
-#ifdef COMMENTS_IN_DOM
-                checkScriptBuffer();
-                scriptCode[ scriptCodeSize ] = 0;
-                scriptCode[ scriptCodeSize + 1 ] = 0;
-                currToken.tid = ID_COMMENT;
-                processListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
-                processToken();
-                currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
-                processToken();
-#endif
-                scriptCodeSize = 0;
+ 
+        if (strict)
+        {
+            if (src->unicode() == '-') {
+                delimiterCount++;
+                if (delimiterCount == 2) {
+                    delimiterCount = 0;
+                    canClose = !canClose;    
+                }
             }
-            comment = false;
-            return; // Finished parsing comment
+            else
+                delimiterCount = 0;
+        }
+                         
+        if ((!strict || canClose) && src->unicode() == '>')
+        {
+            bool handleBrokenComments =  brokenComments && !( script || style );
+            bool scriptEnd=false;
+            if (!strict)
+            {
+                if ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
+                     scriptCode[scriptCodeSize-2] == '-' )
+                    scriptEnd=true;
+            }
+
+            if (canClose || handleBrokenComments || scriptEnd ){
+                ++src;
+                if ( !( script || xmp || textarea || style) ) {
+#ifdef COMMENTS_IN_DOM
+                    checkScriptBuffer();
+                    scriptCode[ scriptCodeSize ] = 0;
+                    scriptCode[ scriptCodeSize + 1 ] = 0;
+                    currToken.tid = ID_COMMENT;
+                    processListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
+                    processToken();
+                    currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
+                    processToken();
+#endif
+                    scriptCodeSize = 0;
+                }
+                comment = false;
+                return; // Finished parsing comment
+            }
         }
         ++src;
     }
