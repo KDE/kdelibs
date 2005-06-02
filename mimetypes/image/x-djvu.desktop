@@ -6,4 +6,6 @@ Icon=djvu
 Patterns=*.djvu;*.DJVU;*.djv;*.DJV;
 Comment=DjVu Document
 Comment[el]=Έγγραφο DjVu
+Comment[ga]=Cáipéis DjVu
 Comment[ko]=DjVu 문서
+Comment[tr]=DjVu Belgesi
