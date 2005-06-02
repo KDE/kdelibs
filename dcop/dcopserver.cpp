@@ -1481,12 +1481,12 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 }
 
 void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
-    const QString& /*appId*/ )
+    const QCString& appId )
 {
     QByteArray data;
     QDataStream datas( &data, QIODevice::WriteOnly );
     datas.setVersion(QDataStream::Qt_3_1);
-    datas << conn->appId;
+    datas << appId;
     Q3PtrDictIterator<DCOPConnection> it( clients );
     QByteArray ba;
     QDataStream ds( &ba, QIODevice::WriteOnly );

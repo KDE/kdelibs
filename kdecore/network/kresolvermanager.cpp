@@ -32,6 +32,9 @@
 #ifdef HAVE_RES_INIT
 # include <sys/stat.h>
 # include <resolv.h>
+extern "C" {
+#   include <arpa/nameser.h>
+}
 # include <time.h>
 #endif
 

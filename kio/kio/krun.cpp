@@ -34,6 +34,7 @@
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
+#include "kio/netaccess.h"
 #include "kfile/kopenwith.h"
 #include "kfile/krecentdocument.h"
 
@@ -197,7 +198,7 @@ bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
       if ( !!service )
         return KRun::run( *service, lst, tempFiles );
 
-      kdDebug(250) << "No service set, running " << l.text() << endl;
+      kdDebug(7010) << "No service set, running " << l.text() << endl;
       return KRun::run( l.text(), lst ); // TODO handle tempFiles
     }
     return false;
@@ -630,6 +631,42 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
                              _service.name(), _service.icon() );
 }
 
+// WARNING: don't call this from processDesktopExec, since klauncher uses that too...
+static KURL::List resolveURLs( const KURL::List& _urls, const KService& _service )
+{
+  // Check which protocols the application supports.
+  // This can be a list of actual protocol names, or just KIO for KDE apps.
+  QStringList supportedProtocols = _service.property("X-KDE-Protocols").toStringList();
+  KRunMX1 mx1( _service );
+  QString exec = _service.exec();
+  if ( mx1.expandMacrosShellQuote( exec ) && !mx1.hasUrls ) {
+    Q_ASSERT( supportedProtocols.isEmpty() ); // huh? If you support protocols you need %u or %U...
+  } else {
+    if ( supportedProtocols.isEmpty() ) // compat: assume KIO if not set
+      supportedProtocols.append( "KIO" );
+  }
+  kdDebug(7010) << "supportedProtocols:" << supportedProtocols << endl;
+
+  KURL::List urls( _urls );
+  if ( supportedProtocols.find( "KIO" ) == supportedProtocols.end() ) {
+    for( KURL::List::Iterator it = urls.begin(); it != urls.end(); ++it ) {
+      const KURL url = *it;
+      bool supported = url.isLocalFile() || supportedProtocols.find( url.protocol().lower() ) != supportedProtocols.end();
+      kdDebug(7010) << "Looking at url=" << url << " supported=" << supported << endl;
+      if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
+      {
+        // Maybe we can resolve to a local URL?
+        KURL localURL = KIO::NetAccess::mostLocalURL( url, 0 );
+        if ( localURL != url ) {
+          *it = localURL;
+          kdDebug(7010) << "Changed to " << localURL << endl;
+        }
+      }
+    }
+  }
+  return urls;
+}
+
 // BIC merge with method below
 pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 {
@@ -667,11 +704,14 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
     kdDebug(7010) << "First url " << _urls.first().url() << endl;
   }
 
+  // Resolve urls if needed, depending on what the app supports
+  const KURL::List urls = resolveURLs( _urls, _service );
+
   QString error;
   int pid = 0;
 
   int i = KApplication::startServiceByDesktopPath(
-        _service.desktopEntryPath(), _urls.toStringList(), &error, 0L, &pid
+        _service.desktopEntryPath(), urls.toStringList(), &error, 0L, &pid
         );
 
   if (i != 0)

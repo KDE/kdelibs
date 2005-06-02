@@ -487,10 +487,10 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   }
 
   // Look for overrides first
-  Value val = ObjectImp::get(exec, p);
-  if (!val.isA(UndefinedType)) {
+  ValueImp *val = getDirect(p);
+  if (val) {
     //kdDebug(6070) << "Window::get found dynamic property '" << p.ascii() << "'" << endl;
-    return isSafeScript(exec) ? val : Undefined();
+    return isSafeScript(exec) ? Value(val) : Undefined();
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
@@ -764,6 +764,19 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return getListener(exec,DOM::EventImpl::UNLOAD_EVENT);
     }
   }
+
+  // doing the remainder of ObjectImp::get() that is not covered by
+  // the getDirect() call above.
+  // #### guessed position. move further up or down?
+  Object proto = Object::dynamicCast(prototype());
+  assert(proto.isValid());
+  if (p == specialPrototypePropertyName)
+    return isSafeScript(exec) ? Value(proto) : Undefined();
+  Value val2 = proto.get(exec, p);
+  if (!val2.isA(UndefinedType)) {
+    return isSafeScript(exec) ? val2 : Undefined();
+  }
+
   KParts::ReadOnlyPart *rop = part->findFramePart( p.qstring() );
   if (rop)
     return retrieve(rop);

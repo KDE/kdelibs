@@ -175,6 +175,7 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
     {
         command->execute();
         emit commandExecuted();
+        emit commandExecuted(command);
     }
 }
 
@@ -185,6 +186,7 @@ void KCommandHistory::undo() {
 
     d->m_present->unexecute();
     emit commandExecuted();
+    emit commandExecuted(d->m_present);
     if (m_redo) {
         m_redo->setEnabled(true);
         m_redo->setText(i18n("&Redo: %1").arg(d->m_present->name()));
@@ -218,6 +220,7 @@ void KCommandHistory::redo() {
     if(m_first) {
         d->m_present->execute();
         emit commandExecuted();
+        emit commandExecuted(d->m_present);
         m_first=false;
         m_commands.first();
         if(!d->m_savedAt)
@@ -227,6 +230,7 @@ void KCommandHistory::redo() {
         d->m_present=m_commands.current();
         d->m_present->execute();
         emit commandExecuted();
+        emit commandExecuted(d->m_present);
         ++index;
         if(index==d->m_savedAt)
             emit documentRestored();

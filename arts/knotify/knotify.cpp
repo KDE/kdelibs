@@ -479,13 +479,11 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
                 volumeControl.scaleFactor( d->volume/100.0 );
 
                 ap.stop();
-                player._node()->stop();
                 Arts::disconnect( player, "left", ap, "left" );
                 Arts::disconnect( player, "right", ap, "right" );
 
                 ap.start();
                 volumeControl.start();
-                player._node()->start();
 
                 Arts::connect(player,"left",volumeControl,"inleft");
                 Arts::connect(player,"right",volumeControl,"inright");

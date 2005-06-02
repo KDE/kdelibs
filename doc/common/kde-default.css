@@ -152,7 +152,7 @@ body {
 }
 
 #logo {
-  background: url('help:/common/kde_logo_bg.png') transparent repeat;
+  background: url('kde_logo_bg.png') transparent repeat;
 }
 
 /* A little bit of padding makes the tables for keybindings etc much easier to read */

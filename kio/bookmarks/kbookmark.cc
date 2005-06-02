@@ -357,6 +357,20 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     return grp.first();
 }
 
+QString KBookmark::commonParent(QString A, QString B)
+{
+    while(depth(A) > depth(B))
+        A = parentAddress(A);
+    while(depth(B) > depth(A))
+        B = parentAddress(B);
+    while(A != B)
+    {
+        A = parentAddress(A);
+        B = parentAddress(B);
+    }
+    return A;
+}
+
 static QDomNode cd_or_create(QDomNode node, QString name)
 {
     QDomNode subnode = node.namedItem(name);

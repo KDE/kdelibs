@@ -172,7 +172,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
       bool accurate = false;
       bool isLocalURL;
       KURL url = mostLocalURL(isLocalURL);
-      
+
       m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
                                           // use fast mode if not mimetype on demand
                                           _determineMimeTypeOnDemand, &accurate );
@@ -436,7 +436,7 @@ KMimeType::Ptr KFileItem::determineMimeType()
   {
     bool isLocalURL;
     KURL url = mostLocalURL(isLocalURL);
-    
+
     m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL );
     //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
     m_bMimeTypeKnown = true;
@@ -459,7 +459,7 @@ QString KFileItem::mimeComment()
 
  bool isLocalURL;
  KURL url = mostLocalURL(isLocalURL);
- 
+
  QString comment = mType->comment( url, isLocalURL );
  //kdDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
   if (!comment.isEmpty())
@@ -544,7 +544,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   bool isLocalURL;
   KURL url = mostLocalURL(isLocalURL);
-  
+
   QPixmap p = mime->pixmap( url, KIcon::Desktop, _size, _state );
   //kdDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
   if (p.isNull())
@@ -757,14 +757,13 @@ QString KFileItem::getToolTipText(int maxcount)
 
 void KFileItem::run()
 {
-  bool is_local;
-  KURL url = mostLocalURL(is_local);
+  KURL url = m_url;
   // When clicking on a link to e.g. $HOME from the desktop, we want to open $HOME
   // But when following a link on the FTP site, the target be an absolute path
   // that doesn't work in the URL. So we resolve links only on the local filesystem.
-  if ( m_bLink && is_local )
+  if ( m_bLink && m_bIsLocalURL )
     url = KURL( m_url, linkDest() );
-  (void) new KRun( url, m_fileMode, is_local );
+  (void) new KRun( url, m_fileMode, m_bIsLocalURL );
 }
 
 bool KFileItem::cmp( const KFileItem & item )
@@ -812,11 +811,11 @@ void KFileItem::assign( const KFileItem & item )
     determineMimeType();
 
     if ( item.d ) {
-        if ( !d ) 
+        if ( !d )
             d = new KFileItemPrivate;
         d->iconName = item.d->iconName;
     } else {
-        delete d; 
+        delete d;
         d = 0;
     }
 }
@@ -935,7 +934,7 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
     bool isLocalURL;
     KURL url = mostLocalURL(isLocalURL);
-      
+
     if ( autoget && !m_metaInfo.isValid() &&
          KGlobalSettings::showFilePreview(url) )
     {

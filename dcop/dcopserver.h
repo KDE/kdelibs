@@ -152,7 +152,7 @@ private slots:
 
 private:
     void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
-        const QString& data );
+        const QCString& data );
     bool suicide;
     bool shutdown;
     int majorOpcode;

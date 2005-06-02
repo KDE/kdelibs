@@ -1,3 +1,9 @@
+2005-06-01  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp: fixed prototype property lookup order of
+	global window object. Fixes endless loop on maps.google.com
+	(bug #98979).
+
 2005-05-28  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement ideographic enumeration including the CSS 2.1 cjk-ideographic and several from CSS 3 List (working draft).
