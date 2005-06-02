@@ -27,11 +27,14 @@
 #include <qpair.h>
 #include <qtimer.h>
 #include <qguardedptr.h>
+#include <qlabel.h>
 
 #include <klibloader.h>
 #include <kaboutdata.h>
 #include <kstaticdeleter.h>
 #include <klocale.h>
+#include <kstatusbar.h>
+#include <kiconloader.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kconfig.h>
@@ -198,6 +201,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
  : KParts::ReadOnlyPart (parent, name),
    m_browserextension (new KJavaAppletViewerBrowserExtension (this)),
    m_liveconnect (new KJavaAppletViewerLiveConnectExtension (this)),
+   m_statusbar (new KParts::StatusBarExtension (this)),
+   m_statusbar_icon (0L),
    m_closed (true)
 {
     if (!serverMaintainer) {
@@ -352,6 +357,8 @@ bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
 KJavaAppletViewer::~KJavaAppletViewer () {
     m_view = 0L;
     serverMaintainer->releaseContext (parent(), baseurl);
+    if (m_statusbar_icon)
+        m_statusbar->removeStatusBarItem (m_statusbar_icon);
 }
 
 bool KJavaAppletViewer::openURL (const KURL & url) {
@@ -370,6 +377,14 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
             applet->setAppletClass (url.url ());
         AppletParameterDialog (w).exec ();
         applet->setSize (w->sizeHint());
+    }
+    if (!m_statusbar_icon) {
+        KStatusBar *sb = m_statusbar->statusBar();
+        if (sb) {
+            m_statusbar_icon = new QLabel (sb);
+            m_statusbar_icon->setPixmap (SmallIcon (QString ("source_java")));
+            m_statusbar->addStatusBarItem (m_statusbar_icon, 0, false);
+        }
     }
     // delay showApplet if size is unknown and m_view not shown
     if (applet->size().width() > 0 || m_view->isVisible())
