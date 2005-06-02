@@ -98,11 +98,12 @@ KateCmd *KateCmd::self ()
 
 void KateCmd::appendHistory( const QString &cmd )
 {
-  if ( m_history.last() == cmd )
-    return;
+  if (!m_history.isEmpty()) //this line should be backported to 3.x
+    if ( m_history.last() == cmd )
+      return;
 
   if ( m_history.count() == CMD_HIST_LENGTH )
-    m_history.remove( m_history.first() );
+    m_history.removeFirst();
 
   m_history.append( cmd );
 }
