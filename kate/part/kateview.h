@@ -28,7 +28,6 @@
 
 #include "../interfaces/view.h"
 
-#include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/viewstatusmsginterface.h>
 #include <ktexteditor/texthintinterface.h>
 
@@ -57,7 +56,6 @@ class QVBoxLayout;
 // Kate KTextEditor::View class ;)
 //
 class KateView : public Kate::View,
-                 public KTextEditor::SessionConfigInterface,
                  public KTextEditor::ViewStatusMsgInterface,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
@@ -283,7 +281,7 @@ class KateView : public Kate::View,
   //
   // Kate::View
   //
-  public:
+  public:  
     bool isOverwriteMode() const;
     void setOverwriteMode( bool b );
 
@@ -293,14 +291,12 @@ class KateView : public Kate::View,
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
     void insertText( const QString& text )
         { getDoc()->insertText( cursorLine(), cursorColumnReal(), text ); }
-    bool canDiscard();
     int tabWidth()                { return m_doc->config()->tabWidth(); }
     void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
     void setEncoding( QString e ) { m_doc->setEncoding(e);       }
     bool isLastView()             { return m_doc->isLastView(1); }
 
   public slots:
-    void flush();
     saveResult save();
     saveResult saveAs();
 
@@ -371,8 +367,7 @@ class KateView : public Kate::View,
     void shiftToMatchingBracket()  { m_viewInternal->cursorToMatchingBracket(true);}
 
     void gotoLine();
-    void gotoLineNumber( int linenumber );
-
+    
   // config file / session management functions
   public:
     void readSessionConfig(KConfig *);

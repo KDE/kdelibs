@@ -56,6 +56,8 @@ class KateBookmarks : public QObject
     void toggleBookmark();
     void clearBookmarks();
 
+    void gotoLine (int line);
+  
     void slotViewGotFocus( Kate::View * );
     void slotViewLostFocus( Kate::View * );
 

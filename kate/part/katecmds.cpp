@@ -207,7 +207,7 @@ bool KateCommands::CoreCommands::exec(Kate::View *view,
         KCC_ERR( i18n("Line must be at least 1") );
       if ( (uint)val > v->doc()->numLines() )
         KCC_ERR( i18n("There is not that many lines in this document") );
-      v->gotoLineNumber( val - 1 );
+      v->setCursorPositionReal( val - 1, 0 );
     }
     return true;
   }
@@ -564,12 +564,12 @@ bool KateCommands::Character::exec (Kate::View *view, const QString &_cmd, QStri
     char buf[2];
     buf[0]=(char)number;
     buf[1]=0;
-    view->insertText(QString(buf));
+    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QString(buf));
   }
   else
   { // do the unicode thing
     QChar c(number);
-    view->insertText(QString(&c, 1));
+    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QString(&c, 1));
   }
 
   return true;
@@ -583,9 +583,9 @@ bool KateCommands::Date::exec (Kate::View *view, const QString &cmd, QString &)
     return false;
 
   if (QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)).length() > 0)
-    view->insertText(QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
+    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
   else
-    view->insertText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
   return true;
 }

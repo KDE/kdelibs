@@ -189,7 +189,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
 
       menu.insertItem(
           QString("%1 - \"%2\"").arg( (*it)->line+1 ).arg( bText ),
-          m_view, SLOT(gotoLineNumber(int)), 0, (*it)->line, idx );
+          this, SLOT(gotoLine(int)), 0, (*it)->line, idx );
 
       if ( (*it)->line < line )
       {
@@ -223,6 +223,11 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
   if ( next || prev )
     menu.insertSeparator( idx );
 
+}
+
+void KateBookmarks::gotoLine (int line)
+{
+  m_view->setCursorPositionReal (line, 0);
 }
 
 void KateBookmarks::bookmarkMenuAboutToShow()
@@ -267,7 +272,7 @@ void KateBookmarks::goNext()
       found = m.at(z)->line;
 
   if (found != -1)
-    m_view->gotoLineNumber ( found );
+    gotoLine ( found );
 }
 
 void KateBookmarks::goPrevious()
@@ -284,7 +289,7 @@ void KateBookmarks::goPrevious()
       found = m.at(z)->line;
 
   if (found != -1)
-    m_view->gotoLineNumber ( found );
+    gotoLine ( found );
 }
 
 void KateBookmarks::marksChanged ()

@@ -868,16 +868,6 @@ void KateView::toggleInsert()
   emit newStatus();
 }
 
-bool KateView::canDiscard()
-{
-  return m_doc->closeURL();
-}
-
-void KateView::flush()
-{
-  m_doc->closeURL();
-}
-
 KateView::saveResult KateView::save()
 {
   if( !m_doc->url().isValid() || !doc()->isReadWrite() )
@@ -938,17 +928,9 @@ void KateView::gotoLine()
   KateGotoLineDialog *dlg = new KateGotoLineDialog (this, m_viewInternal->getCursor().line() + 1, m_doc->numLines());
 
   if (dlg->exec() == QDialog::Accepted)
-    gotoLineNumber( dlg->getLine() - 1 );
+    setCursorPositionInternal( dlg->getLine() - 1, 0 );
 
   delete dlg;
-}
-
-void KateView::gotoLineNumber( int line )
-{
-  // clear selection, unless we are in persistent selection mode
-  if ( !config()->persistentSelection() )
-    clearSelection();
-  setCursorPositionInternal ( line, 0, 1 );
 }
 
 void KateView::joinLines()
