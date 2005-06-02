@@ -161,7 +161,7 @@ public:
      * @since 3.5
      */
     static int depth( const QString & address )
-    { return address.indexOf('/'); }
+    { return address.count('/'); }
 
     /**
      * @return the common parent of both addresses which 
