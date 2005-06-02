@@ -1,3 +1,7 @@
+2005-06-02  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_block: Merge margin collapsing improvement from WebCore-146
+
 2005-06-01  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp: fixed prototype property lookup order of
