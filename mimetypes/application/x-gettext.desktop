@@ -67,7 +67,7 @@ Comment[zh_TW]=GNU Gettext 訊息型錄
 Icon=gettext
 Type=MimeType
 MimeType=application/x-gettext
-Patterns=*.po;*.pot;
+Patterns=*.po;*.pot;*.PO;*.POT;
 
 [Property::X-KDE-text]
 Type=bool
