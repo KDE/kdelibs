@@ -51,7 +51,7 @@ K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory)
 KInstance *KJavaAppletViewerFactory::s_instance = 0;
 
 KJavaAppletViewerFactory::KJavaAppletViewerFactory () {
-    s_instance = new KInstance ("KJavaAppletViewer");
+    s_instance = new KInstance ("kjava");
 }
 
 KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
@@ -199,11 +199,10 @@ void CoverWidget::resizeEvent (QResizeEvent * e) {
 class StatusBarIcon : public QLabel {
 public:
     StatusBarIcon (QWidget * parent) : QLabel (parent) {
-        setPixmap (SmallIcon (QString ("source_java")));
+        setPixmap (SmallIcon (QString ("java"), KJavaAppletViewerFactory::instance ()));
     }
 protected:
-    void mousePressEvent (QMouseEvent * e) {
-        kdDebug() << "clicked" << endl;
+    void mousePressEvent (QMouseEvent *) {
         serverMaintainer->server->showConsole ();
     }
 };
