@@ -50,7 +50,7 @@ public class KJASSwingConsole implements Console {
     private JButton closeButton;
     private JButton copyButton;
     final static int NR_BUFFERS = 3;
-    final static int MAX_BUF_LENGTH = 1000;
+    final static int MAX_BUF_LENGTH = 3000;
     private int queue_pos = 0;
     private StringBuffer [] output_buffer = new StringBuffer[NR_BUFFERS];
 
@@ -260,13 +260,16 @@ public class KJASSwingConsole implements Console {
                 textField.setForeground(java.awt.Color.red);
             }
             showHelp();
+        } else if (frame != null)
+            frame.setVisible(visible);
+
+        if (visible) {
             for (int i = 0; i < NR_BUFFERS; i++)
                 if (output_buffer[(queue_pos + i + 1) % 3] != null) {
                     textField.append(output_buffer[(queue_pos + i + 1) % 3].toString());
                     output_buffer[(queue_pos + i + 1) % 3] = null;
                 }
-        } else if (frame != null)
-            frame.setVisible(visible);
+        }
     }
     
     /**
@@ -291,7 +294,7 @@ public class KJASSwingConsole implements Console {
     public void append(String txt, boolean force) {
         if (txt == null)
             return;
-        if (frame == null || (!force && !frame.isVisible())) {
+        if (frame == null || !frame.isVisible()) {
             if (Main.Debug)
                 real_stderr.print(txt);
             if (output_buffer[queue_pos] != null &&
