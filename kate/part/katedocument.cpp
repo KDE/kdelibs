@@ -101,7 +101,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   lastUndoGroupWhenSaved( 0 ),
   docWasSavedWhenUndoWasEmpty( true ),
   m_modOnHd (false),
-  m_modOnHdReason (0),
+  m_modOnHdReason (OnDiskUnmodified),
   m_job (0),
   m_tempFile (0),
   m_tabInterceptor(0)
@@ -2374,8 +2374,8 @@ bool KateDocument::openFile(KIO::Job * job)
   if (m_modOnHd)
   {
     m_modOnHd = false;
-    m_modOnHdReason = 0;
-    emit modifiedOnDisc (this, m_modOnHd, 0);
+    m_modOnHdReason = OnDiskUnmodified;
+    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 
   //
@@ -2534,8 +2534,8 @@ bool KateDocument::saveFile()
   if (success && m_modOnHd)
   {
     m_modOnHd = false;
-    m_modOnHdReason = 0;
-    emit modifiedOnDisc (this, m_modOnHd, 0);
+    m_modOnHdReason = OnDiskUnmodified;
+    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 
   //
@@ -2679,8 +2679,8 @@ bool KateDocument::closeURL()
   if (m_modOnHd)
   {
     m_modOnHd = false;
-    m_modOnHdReason = 0;
-    emit modifiedOnDisc (this, m_modOnHd, 0);
+    m_modOnHdReason = OnDiskUnmodified;
+    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
   }
 
   // clear the buffer
@@ -4169,7 +4169,7 @@ void KateDocument::setDocName (QString name )
   emit nameChanged ((Kate::Document *) this);
 }
 
-void KateDocument::slotModifiedOnDisk( Kate::View * /*v*/ )
+void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )
 {
   if ( m_isasking < 0 )
   {
@@ -4204,7 +4204,7 @@ void KateDocument::slotModifiedOnDisk( Kate::View * /*v*/ )
             m_modOnHd = true;
           }
           else
-            emit modifiedOnDisc( this, false, 0 );
+            emit modifiedOnDisc( this, false, OnDiskUnmodified );
         }
         else // the save as dialog was cancelled, we are still modified on disk
         {
@@ -4217,20 +4217,20 @@ void KateDocument::slotModifiedOnDisk( Kate::View * /*v*/ )
 
       case KateModOnHdPrompt::Reload:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, 0 );
+        emit modifiedOnDisc( this, false, OnDiskUnmodified );
         reloadFile();
         m_isasking = 0;
         break;
 
       case KateModOnHdPrompt::Ignore:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, 0 );
+        emit modifiedOnDisc( this, false, OnDiskUnmodified );
         m_isasking = 0;
         break;
 
       case KateModOnHdPrompt::Overwrite:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, 0 );
+        emit modifiedOnDisc( this, false, OnDiskUnmodified );
         m_isasking = 0;
         save();
         break;
@@ -4241,11 +4241,11 @@ void KateDocument::slotModifiedOnDisk( Kate::View * /*v*/ )
   }
 }
 
-void KateDocument::setModifiedOnDisk( int reason )
+void KateDocument::setModifiedOnDisk( ModifiedOnDiskReason reason )
 {
   m_modOnHdReason = reason;
-  m_modOnHd = (reason > 0);
-  emit modifiedOnDisc( this, (reason > 0), reason );
+  m_modOnHd = (reason != OnDiskUnmodified);
+  emit modifiedOnDisc( this, (reason != OnDiskUnmodified), reason );
 }
 
 class KateDocumentTmpMark
@@ -4270,8 +4270,8 @@ void KateDocument::reloadFile()
         if (i == KMessageBox::No)
         {
           m_modOnHd = false;
-          m_modOnHdReason = 0;
-          emit modifiedOnDisc (this, m_modOnHd, 0);
+          m_modOnHdReason = OnDiskUnmodified;
+          emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
         }
 
         return;
@@ -4692,7 +4692,7 @@ QString KateDocument::variable( const QString &name ) const
 
 void KateDocument::slotModOnHdDirty (const QString &path)
 {
-  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != 1))
+  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != OnDiskModified))
   {
     // compare md5 with the one we have (if we have one)
     if ( ! m_digest.isEmpty() )
@@ -4703,7 +4703,7 @@ void KateDocument::slotModOnHdDirty (const QString &path)
     }
 
     m_modOnHd = true;
-    m_modOnHdReason = 1;
+    m_modOnHdReason = OnDiskModified;
 
     // reenable dialog if not running atm
     if (m_isasking == -1)
@@ -4715,10 +4715,10 @@ void KateDocument::slotModOnHdDirty (const QString &path)
 
 void KateDocument::slotModOnHdCreated (const QString &path)
 {
-  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != 2))
+  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != OnDiskCreated))
   {
     m_modOnHd = true;
-    m_modOnHdReason = 2;
+    m_modOnHdReason = OnDiskCreated;
 
     // reenable dialog if not running atm
     if (m_isasking == -1)
@@ -4730,10 +4730,10 @@ void KateDocument::slotModOnHdCreated (const QString &path)
 
 void KateDocument::slotModOnHdDeleted (const QString &path)
 {
-  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != 3))
+  if ((path == m_dirWatchFile) && (!m_modOnHd || m_modOnHdReason != OnDiskDeleted))
   {
     m_modOnHd = true;
-    m_modOnHdReason = 3;
+    m_modOnHdReason = OnDiskDeleted;
 
     // reenable dialog if not running atm
     if (m_isasking == -1)
@@ -4765,13 +4765,13 @@ QString KateDocument::reasonedMOHString() const
 {
   switch( m_modOnHdReason )
   {
-    case 1:
+    case OnDiskModified:
       return i18n("The file '%1' was modified by another program.").arg( url().prettyURL() );
       break;
-    case 2:
+    case OnDiskCreated:
       return i18n("The file '%1' was created by another program.").arg( url().prettyURL() );
       break;
-    case 3:
+    case OnDiskDeleted:
       return i18n("The file '%1' was deleted by another program.").arg( url().prettyURL() );
       break;
     default:

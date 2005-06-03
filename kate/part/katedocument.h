@@ -739,7 +739,7 @@ class KateDocument : public Kate::Document,
      */
     bool isModifiedOnDisc() { return m_modOnHd; };
 
-    void setModifiedOnDisk( int reason );
+    void setModifiedOnDisk( ModifiedOnDiskReason reason );
 
   public slots:
     /**
@@ -748,12 +748,21 @@ class KateDocument : public Kate::Document,
      *
      * @since 3.3
      */
-    void slotModifiedOnDisk( Kate::View *v=0 );
+    void slotModifiedOnDisk( KTextEditor::View *v = 0 );
 
     /**
      * Reloads the current document from disc if possible
      */
     void reloadFile();
+    
+  signals:
+    /**
+     * Indicate this file is modified on disk
+     * @param doc the Kate::Document object that represents the file on disk
+     * @param isModified indicates the file was modified rather than created or deleted
+     * @param reason the reason we are emitting the signal.
+     */
+    void modifiedOnDisc (KTextEditor::Document *doc, bool isModified, ModifiedOnDiskReason reason);
 
   private:
     int m_isasking; // don't reenter slotModifiedOnDisk when this is true
@@ -873,7 +882,7 @@ class KateDocument : public Kate::Document,
     bool hlSetByUser;
 
     bool m_modOnHd;
-    unsigned char m_modOnHdReason;
+    ModifiedOnDiskReason m_modOnHdReason;
     Q3CString m_digest; // MD5 digest, updated on load/save
 
     QString m_docName;

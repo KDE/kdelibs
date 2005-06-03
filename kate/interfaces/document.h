@@ -38,6 +38,7 @@
 #include <ktexteditor/printinterface.h>
 #include <ktexteditor/variableinterface.h>
 #include <ktexteditor/encodinginterface.h>
+#include <ktexteditor/modificationinterface.h>
 
 #include <kaction.h>
 
@@ -152,7 +153,8 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
                      public KTextEditor::EncodingInterface,
                      public KTextEditor::SelectionInterfaceExt,
                      public KTextEditor::DocumentInfoInterface,
-                     public KTextEditor::VariableInterface
+                     public KTextEditor::VariableInterface,
+                     public KTextEditor::ModificationInterface
 {
   Q_OBJECT
 
@@ -179,49 +181,6 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
      * Reloads the current document from disk if possible
      */
     virtual void reloadFile() = 0;
-
-  signals:
-    /**
-     * Indicate this file is modified on disk
-     * @param doc the Kate::Document object that represents the file on disk
-     * @param isModified indicates the file was modified rather than created or deleted
-     * @param reason the reason we are emitting the signal.
-     * @li 0  - nothing
-     * @li 1 - dirty
-     * @li 2 - created
-     * @li 3 - deleted
-     */
-    void modifiedOnDisc (Kate::Document *doc, bool isModified, unsigned char reason);
-    
-  public:
-    /**
-     * Reasons why a document is modified on disk.
-     */
-    enum ModifiedOnDiskReason {
-      Unmodified = 0, ///< Not modified
-      Modified = 1,   ///< The file was modified by another program
-      Created = 2,    ///< The file was created by another program
-      Deleted = 3     ///< The file was deleted
-    };
-
-  public:
-    /**
-     * For client apps that want to deal with files modified on disk, it is
-     * nessecary to reset this property.
-     * @p reason is a ModifiedOnDiskReason.
-     */
-    virtual void setModifiedOnDisk( int reason ) = 0;
-
-  /**
-   * These stuff is implemented as slots in the real document
-   */
-  public:
-    /**
-     * Ask the user what to do, if the file is modified on disk.
-     * The @p v argument is used to avoid asking again, when the
-     * editor regains focus after the dialog is hidden.
-     */
-    virtual void slotModifiedOnDisk( View *v=0 ) = 0;
 
   /*
    * there static methodes are usefull to turn on/off the dialogs
