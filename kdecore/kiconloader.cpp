@@ -23,9 +23,9 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <qicon.h>
-#include <qmovie.h>
 #include <qbitmap.h>
 #include <QPainter>
+#include <QMovie>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -916,7 +916,7 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 
 
 
-QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size) const
+QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size, QObject *parent) const
 {
     QString file = moviePath( name, group, size );
     if (file.isEmpty())
@@ -925,7 +925,7 @@ QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size
     QString icon = iconPath(name, size ? -size : group, true);
     if (!icon.isEmpty() && file.left(dirLen) != icon.left(dirLen))
 	return 0;
-    return new QMovie(file);
+    return new QMovie(file, QByteArray(), parent);
 }
 
 QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size) const
