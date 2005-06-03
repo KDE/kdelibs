@@ -49,6 +49,10 @@ public class KJASSwingConsole implements Console {
     private JTextArea textField;
     private JButton closeButton;
     private JButton copyButton;
+    final static int NR_BUFFERS = 3;
+    final static int MAX_BUF_LENGTH = 1000;
+    private int queue_pos = 0;
+    private StringBuffer [] output_buffer = new StringBuffer[NR_BUFFERS];
 
     private PrintStream real_stderr = new PrintStream(System.err);
     
@@ -57,21 +61,6 @@ public class KJASSwingConsole implements Console {
         PrintStream st = new PrintStream( new KJASConsoleStream(this) );
         System.setOut(st);
         System.setErr(st);
-        System.out.println( "Java VM version: " +
-                            System.getProperty("java.version") );
-        System.out.println( "Java VM vendor:  " +
-                            System.getProperty("java.vendor") );
-        String ph = System.getProperty("http.proxyHost");
-        String pp = System.getProperty("http.proxyPort");
-        if (ph != null) {
-            System.out.println("Proxy: " + ph + ":" + pp);
-        }
-        SecurityManager sec = System.getSecurityManager();
-        Main.debug("SecurityManager=" + sec);
-        if (sec == null) {
-            System.out.println( "WARNING: Security Manager disabled!" );
-            textField.setForeground(java.awt.Color.red);
-        }
     }
     
     private void initComponents() {
@@ -255,8 +244,28 @@ public class KJASSwingConsole implements Console {
         if (frame == null && visible) {
             initComponents();
             frame.setVisible(visible);
+            System.out.println( "Java VM version: " +
+                    System.getProperty("java.version") );
+            System.out.println( "Java VM vendor:  " +
+                    System.getProperty("java.vendor") );
+            String ph = System.getProperty("http.proxyHost");
+            String pp = System.getProperty("http.proxyPort");
+            if (ph != null) {
+                System.out.println("Proxy: " + ph + ":" + pp);
+            }
+            SecurityManager sec = System.getSecurityManager();
+            Main.debug("SecurityManager=" + sec);
+            if (sec == null) {
+                System.out.println( "WARNING: Security Manager disabled!" );
+                textField.setForeground(java.awt.Color.red);
+            }
             showHelp();
-        } else
+            for (int i = 0; i < NR_BUFFERS; i++)
+                if (output_buffer[(queue_pos + i + 1) % 3] != null) {
+                    textField.append(output_buffer[(queue_pos + i + 1) % 3].toString());
+                    output_buffer[(queue_pos + i + 1) % 3] = null;
+                }
+        } else if (frame != null)
             frame.setVisible(visible);
     }
     
@@ -278,12 +287,22 @@ public class KJASSwingConsole implements Console {
     public void append(String txt) {
         append(txt, false);
     }
-    
+
     public void append(String txt, boolean force) {
         if (txt == null)
             return;
         if (frame == null || (!force && !frame.isVisible())) {
-            real_stderr.print(txt);
+            if (Main.Debug)
+                real_stderr.print(txt);
+            if (output_buffer[queue_pos] != null &&
+                    output_buffer[queue_pos].length() > MAX_BUF_LENGTH) {
+                queue_pos = (++queue_pos) % NR_BUFFERS;
+                output_buffer[queue_pos] = null;
+            }
+            if (output_buffer[queue_pos] == null)
+                output_buffer[queue_pos] = new StringBuffer(txt);
+            else
+                output_buffer[queue_pos].append(txt);
             return;
         }
         int length = txt.length();

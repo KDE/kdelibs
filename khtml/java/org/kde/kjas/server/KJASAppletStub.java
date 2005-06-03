@@ -217,7 +217,8 @@ public final class KJASAppletStub
                     frame.setVisible(false);
                     break;
                 case DESTROYED:
-                    app.destroy();
+                    if (app != null)
+                        app.destroy();
                     frame.dispose();
                     app = null;
                     requestState(TERMINATE);
