@@ -319,6 +319,8 @@ void HTMLTokenizer::parseSpecial(TokenizerString &src)
         unsigned char ch = src->latin1();
         if ( !scriptCodeResync && !brokenComments && !textarea && !xmp && !title && ch == '-' && scriptCodeSize >= 3 && !src.escaped() && QConstString( scriptCode+scriptCodeSize-3, 3 ).string() == "<!-" ) {
             comment = true;
+            scriptCode[ scriptCodeSize++ ] = ch;
+            ++src;
             parseComment( src );
             continue;
         }
@@ -446,7 +448,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
     bool strict = !parser->doc()->inCompatMode();
     int delimiterCount = 0;
     bool canClose = false;
-    
+
     checkScriptBuffer(src.length());
     while ( src.length() ) {
         scriptCode[ scriptCodeSize++ ] = *src;
@@ -455,7 +457,7 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
         qDebug("comment is now: *%s*",
                QConstString((QChar*)src.current(), kMin(16U, src.length())).string().latin1());
 #endif
- 
+
         if (strict)
         {
             if (src->unicode() == '-') {
