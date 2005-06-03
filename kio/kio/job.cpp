@@ -2235,6 +2235,7 @@ void CopyJob::slotResultStating( Job *job )
     bool bDir = false;
     bool bLink = false;
     QString sName;
+    QString sLocalPath;
     UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
         if ( ((*it2).m_uds) == UDS_FILE_TYPE )
@@ -2243,6 +2244,8 @@ void CopyJob::slotResultStating( Job *job )
             bLink = !((*it2).m_str.isEmpty());
         else if ( ((*it2).m_uds) == UDS_NAME )
             sName = (*it2).m_str;
+        else if ( ((*it2).m_uds) == UDS_LOCAL_PATH )
+            sLocalPath = (*it2).m_str;
     }
 
     if ( destinationState == DEST_NOT_STATED )
@@ -2257,6 +2260,12 @@ void CopyJob::slotResultStating( Job *job )
         }
         if ( m_dest == d->m_globalDest )
             d->m_globalDestinationState = destinationState;
+
+        if ( !sLocalPath.isNull() ) {
+            m_dest = KURL();
+            m_dest.setPath(sLocalPath);
+        }
+	
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
 
@@ -2285,7 +2294,11 @@ void CopyJob::slotResultStating( Job *job )
     m_bCurrentSrcIsDir = false;
     slotEntries(job, lst);
 
-    KURL srcurl = ((SimpleJob*)job)->url();
+    KURL srcurl;
+    if (!sLocalPath.isNull())
+        srcurl.setPath(sLocalPath);
+    else
+        srcurl = ((SimpleJob*)job)->url();
 
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
