@@ -826,6 +826,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
 
 void Window::put(ExecState* exec, const Identifier &propertyName, const Value &value, int attr)
 {
+  // we don't want any operations on a closed window
+  if (m_frame.isNull() || m_frame->m_part.isNull()) {
+    // ### throw exception? allow setting of some props like location?
+    return;
+  }
+
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
   if ( (attr != None && attr != DontDelete) ||
