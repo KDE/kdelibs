@@ -14,6 +14,8 @@ kspell2include_HEADERS = dialog.h highlighter.h configdialog.h \
 libkspell2_noinst_la_SOURCES = kspell2ui.ui configwidget.cpp \
 	highlighter.cpp configui.ui configdialog.cpp
 
+dialog.lo: kspell2ui.h
+
 libkspell2_la_SOURCES = dialog.cpp
 libkspell2_la_LDFLAGS = -no-undefined -version-info 1:0:0 $(all_libraries)
 libkspell2_la_LIBADD = libkspell2_noinst.la ../libkspell2base.la
