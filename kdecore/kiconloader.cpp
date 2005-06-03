@@ -925,7 +925,13 @@ QMovie *KIconLoader::loadMovie(const QString& name, KIcon::Group group, int size
     QString icon = iconPath(name, size ? -size : group, true);
     if (!icon.isEmpty() && file.left(dirLen) != icon.left(dirLen))
 	return 0;
-    return new QMovie(file, QByteArray(), parent);
+    QMovie *movie = new QMovie(file, QByteArray(), parent);
+    if (!movie->isValid())
+    {
+        delete movie;
+        return 0;
+    }
+    return movie;
 }
 
 QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size) const

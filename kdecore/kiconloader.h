@@ -178,7 +178,7 @@ public:
      * @param size Override the default size for @p group.
      *             See KIcon::StdSizes.
      * @param parent The parent object of the returned QMovie.
-     * @return A QMovie object. Can be null if not found.
+     * @return A QMovie object. Can be null if not found or not valid.
      *         Ownership is passed to the caller.
      */
     QMovie *loadMovie(const QString& name, KIcon::Group group, int size=0, QObject *parent=0) const;
