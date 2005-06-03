@@ -4393,13 +4393,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     if (::qt_cast<KHTMLPart*>(part)) {
       static_cast<KHTMLPart*>(part)->d->m_frame = child;
     } else if (child->m_frame) {
-      KParts::StatusBarExtension *sb = KParts::StatusBarExtension::childObject(part);
-      if (sb)
-        sb->setStatusBar( d->m_statusBarExtension->statusBar() );
       child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
       if (child->m_liveconnect)
         connect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
     }
+    KParts::StatusBarExtension *sb = KParts::StatusBarExtension::childObject(part);
+    if (sb)
+      sb->setStatusBar( d->m_statusBarExtension->statusBar() );
 
     connect( part, SIGNAL( started( KIO::Job *) ),
              this, SLOT( slotChildStarted( KIO::Job *) ) );
