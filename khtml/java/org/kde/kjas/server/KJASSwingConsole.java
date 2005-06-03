@@ -300,7 +300,12 @@ public class KJASSwingConsole implements Console {
             if (output_buffer[queue_pos] != null &&
                     output_buffer[queue_pos].length() > MAX_BUF_LENGTH) {
                 queue_pos = (++queue_pos) % NR_BUFFERS;
-                output_buffer[queue_pos] = null;
+                if (output_buffer[queue_pos] != null) {
+                    // starting overwriting old log, clear textField if exists
+                    if (frame != null)
+                        textField.setText("");
+                    output_buffer[queue_pos] = null;
+                }
             }
             if (output_buffer[queue_pos] == null)
                 output_buffer[queue_pos] = new StringBuffer(txt);
