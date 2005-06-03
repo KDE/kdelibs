@@ -2261,7 +2261,7 @@ void CopyJob::slotResultStating( Job *job )
         if ( m_dest == d->m_globalDest )
             d->m_globalDestinationState = destinationState;
 
-        if ( !sLocalPath.isNull() ) {
+        if ( !sLocalPath.isEmpty() ) {
             m_dest = KURL();
             m_dest.setPath(sLocalPath);
         }
@@ -2295,7 +2295,7 @@ void CopyJob::slotResultStating( Job *job )
     slotEntries(job, lst);
 
     KURL srcurl;
-    if (!sLocalPath.isNull())
+    if (!sLocalPath.isEmpty())
         srcurl.setPath(sLocalPath);
     else
         srcurl = ((SimpleJob*)job)->url();
