@@ -462,6 +462,14 @@ public:
      * This returns the maximum width set by setComboWidth
      */
     virtual int comboWidth() const;
+    
+    /**
+     * Sets the maximum items that are visible at once if the action 
+     * is a combobox, that is the number of items in the combobox's viewport
+     * Only works before the action is plugged
+     * @since 3.5
+     */
+    void setMaxComboViewCount( int n );
 
     /**
      * Returns a pointer to the popup menu used by this action.

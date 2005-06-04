@@ -335,6 +335,7 @@ public:
     m_menu = 0;
     m_current = -1;
     m_comboWidth = -1;
+    m_maxComboViewCount = -1;
   }
   bool m_edit;
   bool m_menuAccelsEnabled;
@@ -342,6 +343,7 @@ public:
   int m_current;
   int m_comboWidth;
   QStringList m_list;
+  int m_maxComboViewCount;
 
   QString makeMenuText( const QString &_text )
   {
@@ -465,6 +467,12 @@ void KSelectAction::setComboWidth( int width )
     updateComboWidth( i );
 
 }
+
+void KSelectAction::setMaxComboViewCount( int n )
+{
+  d->m_maxComboViewCount = n;
+}
+
 QPopupMenu* KSelectAction::popupMenu() const
 {
 	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
@@ -668,6 +676,7 @@ int KSelectAction::plug( QWidget *widget, int index )
       }
       cb->setInsertionPolicy( QComboBox::NoInsertion );
       QWhatsThis::add( cb, whatsThis() );
+      if ( d->m_maxComboViewCount != -1 ) cb->setSizeLimit( d->m_maxComboViewCount );
     }
 
     addContainer( bar, id_ );
