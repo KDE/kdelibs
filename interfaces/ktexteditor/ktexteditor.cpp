@@ -24,6 +24,8 @@
 #include "plugin.h"
 #include "editor.h"
 
+#include "modificationinterface.h"
+
 #include <kaction.h>
 #include <kparts/factory.h>
 #include <kparts/componentfactory.h>
@@ -229,3 +231,10 @@ PluginViewInterface *KTextEditor::pluginViewInterface (Plugin *plugin)
   return dynamic_cast<PluginViewInterface*>(plugin);
 }
 
+KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
+}

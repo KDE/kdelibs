@@ -21,6 +21,8 @@
 
 #include "katecursor.h"
 
+#include <ktexteditor/cursorinterface.h>
+
 class KateDocument;
 class KateView;
 

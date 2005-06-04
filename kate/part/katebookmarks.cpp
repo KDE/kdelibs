@@ -114,21 +114,21 @@ void KateBookmarks::createActions( KActionCollection* ac )
 
 void KateBookmarks::toggleBookmark ()
 {
-  uint mark = m_view->getDoc()->mark( m_view->cursorLine() );
+  uint mark = m_view->doc()->mark( m_view->cursorLine() );
   if( mark & KTextEditor::MarkInterface::markType01 )
-    m_view->getDoc()->removeMark( m_view->cursorLine(),
+    m_view->doc()->removeMark( m_view->cursorLine(),
         KTextEditor::MarkInterface::markType01 );
   else
-    m_view->getDoc()->addMark( m_view->cursorLine(),
+    m_view->doc()->addMark( m_view->cursorLine(),
         KTextEditor::MarkInterface::markType01 );
 }
 
 void KateBookmarks::clearBookmarks ()
 {
 
-  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
   for (uint i=0; i < m.count(); i++)
-    m_view->getDoc()->removeMark( m.at(i)->line, KTextEditor::MarkInterface::markType01 );
+    m_view->doc()->removeMark( m.at(i)->line, KTextEditor::MarkInterface::markType01 );
 
   // just to be sure ;)
   marksChanged ();
@@ -155,7 +155,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
   KTextEditor::Mark *next = 0;
   KTextEditor::Mark *prev = 0;
 
-  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
   QVector<uint> sortArray( m.count() );
   Q3PtrListIterator<KTextEditor::Mark> it( m );
 
@@ -167,7 +167,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
     if( (*it)->type & KTextEditor::MarkInterface::markType01 )
     {
       QString bText = KStringHandler::rEmSqueeze
-                      ( m_view->getDoc()->textLine( (*it)->line ),
+                      ( m_view->doc()->textLine( (*it)->line ),
                         menu.fontMetrics(), 32 );
       bText.replace(re, "&&"); // kill undesired accellerators!
       bText.replace('\t', ' '); // kill tabs, as they are interpreted as shortcuts
@@ -209,14 +209,14 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
   if ( next )
   {
     m_goNext->setText( i18n("&Next: %1 - \"%2\"").arg( next->line + 1 )
-        .arg( KStringHandler::rsqueeze( m_view->getDoc()->textLine( next->line ), 24 ) ) );
+        .arg( KStringHandler::rsqueeze( m_view->doc()->textLine( next->line ), 24 ) ) );
     m_goNext->plug( &menu, idx );
     idx++;
   }
   if ( prev )
   {
     m_goPrevious->setText( i18n("&Previous: %1 - \"%2\"").arg(prev->line + 1 )
-        .arg( KStringHandler::rsqueeze( m_view->getDoc()->textLine( prev->line ), 24 ) ) );
+        .arg( KStringHandler::rsqueeze( m_view->doc()->textLine( prev->line ), 24 ) ) );
     m_goPrevious->plug( &menu, idx );
     idx++;
   }
@@ -233,10 +233,10 @@ void KateBookmarks::gotoLine (int line)
 void KateBookmarks::bookmarkMenuAboutToShow()
 {
 
-  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
 
   m_bookmarksMenu->clear();
-  m_bookmarkToggle->setChecked( m_view->getDoc()->mark( m_view->cursorLine() )
+  m_bookmarkToggle->setChecked( m_view->doc()->mark( m_view->cursorLine() )
                                 & KTextEditor::MarkInterface::markType01 );
   m_bookmarkToggle->plug( m_bookmarksMenu );
   m_bookmarkClear->plug( m_bookmarksMenu );
@@ -260,7 +260,7 @@ void KateBookmarks::bookmarkMenuAboutToHide()
 
 void KateBookmarks::goNext()
 {
-  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
   if (m.isEmpty())
     return;
 
@@ -277,7 +277,7 @@ void KateBookmarks::goNext()
 
 void KateBookmarks::goPrevious()
 {
-  Q3PtrList<KTextEditor::Mark> m = m_view->getDoc()->marks();
+  Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
   if (m.isEmpty())
     return;
 
@@ -294,7 +294,7 @@ void KateBookmarks::goPrevious()
 
 void KateBookmarks::marksChanged ()
 {
-  m_bookmarkClear->setEnabled( !m_view->getDoc()->marks().isEmpty() );
+  m_bookmarkClear->setEnabled( !m_view->doc()->marks().isEmpty() );
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -286,11 +286,11 @@ class KateView : public Kate::View,
     void setOverwriteMode( bool b );
 
     QString currentTextLine()
-        { return getDoc()->textLine( cursorLine() ); }
+        { return m_doc->textLine( cursorLine() ); }
     QString currentWord()
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
     void insertText( const QString& text )
-        { getDoc()->insertText( cursorLine(), cursorColumnReal(), text ); }
+        { m_doc->insertText( cursorLine(), cursorColumnReal(), text ); }
     int tabWidth()                { return m_doc->config()->tabWidth(); }
     void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
     void setEncoding( QString e ) { m_doc->setEncoding(e);       }

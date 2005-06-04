@@ -29,6 +29,9 @@
 
 #include "../interfaces/document.h"
 
+#include <ktexteditor/configinterface.h>
+#include <ktexteditor/configinterfaceextension.h>
+
 #include <klistview.h>
 #include <kdialogbase.h>
 #include <kmimetype.h>

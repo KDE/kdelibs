@@ -431,12 +431,12 @@ class KateViewHighlightAction: public KActionMenu
 
     ~KateViewHighlightAction(){;};
 
-    void updateMenu (Kate::Document *doc);
+    void updateMenu (KateDocument *doc);
 
   private:
     void init();
 
-    QPointer<Kate::Document> m_doc;
+    QPointer<KateDocument> m_doc;
     QStringList subMenusName;
     QStringList names;
     Q3PtrList<Q3PopupMenu> subMenus;

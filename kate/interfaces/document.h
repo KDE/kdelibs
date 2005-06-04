@@ -21,24 +21,6 @@
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
-#include <ktexteditor/editinterface.h>
-#include <ktexteditor/undointerface.h>
-#include <ktexteditor/cursorinterface.h>
-#include <ktexteditor/documentinfo.h>
-#include <ktexteditor/selectioninterface.h>
-#include <ktexteditor/selectioninterfaceext.h>
-#include <ktexteditor/blockselectioninterface.h>
-#include <ktexteditor/searchinterface.h>
-#include <ktexteditor/highlightinginterface.h>
-#include <ktexteditor/configinterface.h>
-#include <ktexteditor/configinterfaceextension.h>
-#include <ktexteditor/markinterface.h>
-#include <ktexteditor/markinterfaceextension.h>
-#include <ktexteditor/wordwrapinterface.h>
-#include <ktexteditor/printinterface.h>
-#include <ktexteditor/variableinterface.h>
-#include <ktexteditor/encodinginterface.h>
-#include <ktexteditor/modificationinterface.h>
 
 #include <kaction.h>
 
@@ -143,18 +125,7 @@ class CommandExtension
 
 /** This interface provides access to the Kate Document class.
 */
-class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public KTextEditor::EditInterface,
-                     public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
-                     public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
-                     public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface,
-                     public KTextEditor::ConfigInterface, public KTextEditor::MarkInterface,
-                     public KTextEditor::PrintInterface, public KTextEditor::WordWrapInterface,
-                     public KTextEditor::MarkInterfaceExtension,
-                     public KTextEditor::EncodingInterface,
-                     public KTextEditor::SelectionInterfaceExt,
-                     public KTextEditor::DocumentInfoInterface,
-                     public KTextEditor::VariableInterface,
-                     public KTextEditor::ModificationInterface
+class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document
 {
   Q_OBJECT
 
@@ -210,11 +181,6 @@ class KATEPARTINTERFACES_EXPORT Document : public KTextEditor::Document, public 
  * @return 0 if no success, else the Kate::Document
  */
 KATEPARTINTERFACES_EXPORT Document *document (KTextEditor::Document *doc);
-
-/**
- * Creates a new Kate::Document object
- */
-KATEPARTINTERFACES_EXPORT Document *createDocument ( QObject *parent = 0, const char *name = 0 );
 
 }
 

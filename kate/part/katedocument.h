@@ -34,6 +34,24 @@
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/editinterfaceext.h>
 #include <ktexteditor/templateinterface.h>
+#include <ktexteditor/editinterface.h>
+#include <ktexteditor/undointerface.h>
+#include <ktexteditor/cursorinterface.h>
+#include <ktexteditor/documentinfo.h>
+#include <ktexteditor/selectioninterface.h>
+#include <ktexteditor/selectioninterfaceext.h>
+#include <ktexteditor/blockselectioninterface.h>
+#include <ktexteditor/searchinterface.h>
+#include <ktexteditor/highlightinginterface.h>
+#include <ktexteditor/configinterface.h>
+#include <ktexteditor/configinterfaceextension.h>
+#include <ktexteditor/markinterface.h>
+#include <ktexteditor/markinterfaceextension.h>
+#include <ktexteditor/wordwrapinterface.h>
+#include <ktexteditor/printinterface.h>
+#include <ktexteditor/variableinterface.h>
+#include <ktexteditor/encodinginterface.h>
+#include <ktexteditor/modificationinterface.h>
 
 #include <dcopobject.h>
 
@@ -80,6 +98,18 @@ class KateDocument : public Kate::Document,
                      public KTextEditor::SessionConfigInterface,
                      public KTextEditor::EditInterfaceExt,
                      public KTextEditor::TemplateInterface,
+                     public KTextEditor::EditInterface,
+                     public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
+                     public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
+                     public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface,
+                     public KTextEditor::ConfigInterface, public KTextEditor::MarkInterface,
+                     public KTextEditor::PrintInterface, public KTextEditor::WordWrapInterface,
+                     public KTextEditor::MarkInterfaceExtension,
+                     public KTextEditor::EncodingInterface,
+                     public KTextEditor::SelectionInterfaceExt,
+                     public KTextEditor::DocumentInfoInterface,
+                     public KTextEditor::VariableInterface,
+                     public KTextEditor::ModificationInterface,
                      public DCOPObject
 {
   K_DCOP

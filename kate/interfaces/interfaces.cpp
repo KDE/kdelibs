@@ -90,11 +90,6 @@ Document *document (KTextEditor::Document *doc)
   return qobject_cast<Document*>(doc);
 }
 
-Document *createDocument ( QObject *parent, const char *name )
-{
-  return (Document* ) KTextEditor::createDocument ("libkatepart", parent, name);
-}
-
 View *view (KTextEditor::View *view)
 {
   if (!view)

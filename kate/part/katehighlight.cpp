@@ -3381,14 +3381,14 @@ void KateViewHighlightAction::init()
   connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
 }
 
-void KateViewHighlightAction::updateMenu (Kate::Document *doc)
+void KateViewHighlightAction::updateMenu (KateDocument *doc)
 {
   m_doc = doc;
 }
 
 void KateViewHighlightAction::slotAboutToShow()
 {
-  Kate::Document *doc=m_doc;
+  KateDocument *doc=m_doc;
   int count = KateHlManager::self()->highlights();
 
   for (int z=0; z<count; z++)
@@ -3440,7 +3440,7 @@ void KateViewHighlightAction::slotAboutToShow()
 
 void KateViewHighlightAction::setHl (int mode)
 {
-  Kate::Document *doc=m_doc;
+  KateDocument *doc=m_doc;
 
   if (doc)
     doc->setHlMode((uint)mode);

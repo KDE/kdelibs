@@ -564,12 +564,16 @@ bool KateCommands::Character::exec (Kate::View *view, const QString &_cmd, QStri
     char buf[2];
     buf[0]=(char)number;
     buf[1]=0;
-    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QString(buf));
+    
+    if (KTextEditor::editInterface(view->document()))
+      KTextEditor::editInterface(view->document())->insertText(view->cursorLine(), view->cursorColumnReal(), QString(buf));
   }
   else
   { // do the unicode thing
     QChar c(number);
-    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QString(&c, 1));
+    
+    if (KTextEditor::editInterface(view->document()))
+      KTextEditor::editInterface(view->document())->insertText(view->cursorLine(), view->cursorColumnReal(), QString(&c, 1));
   }
 
   return true;
@@ -583,9 +587,11 @@ bool KateCommands::Date::exec (Kate::View *view, const QString &cmd, QString &)
     return false;
 
   if (QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)).length() > 0)
-    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
+    if (KTextEditor::editInterface(view->document()))
+      KTextEditor::editInterface(view->document())->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
   else
-    view->getDoc()->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    if (KTextEditor::editInterface(view->document()))
+      KTextEditor::editInterface(view->document())->insertText(view->cursorLine(), view->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
   return true;
 }
