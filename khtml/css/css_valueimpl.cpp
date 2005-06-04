@@ -404,7 +404,7 @@ unsigned short CSSInheritedValueImpl::cssValueType() const
 
 DOM::DOMString CSSInheritedValueImpl::cssText() const
 {
-    return DOMString("inherited");
+    return DOMString("inherit");
 }
 
 unsigned short CSSInitialValueImpl::cssValueType() const
