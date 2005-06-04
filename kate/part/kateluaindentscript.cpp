@@ -57,7 +57,7 @@ extern "C" {
 
 //BEGIN temporary, try to use registry later
 static KateDocument *katelua_doc;
-static Kate::View *katelua_view;
+static KateView *katelua_view;
 //END
 
 
@@ -299,7 +299,7 @@ bool KateLUAIndentScriptImpl::setupInterpreter(QString &errorMsg)
 }
 
 
-bool KateLUAIndentScriptImpl::processChar(Kate::View *view, QChar c, QString &errorMsg )
+bool KateLUAIndentScriptImpl::processChar(KateView *view, QChar c, QString &errorMsg )
 {
   if (!setupInterpreter(errorMsg)) return false;
   katelua_doc=((KateView*)view)->doc();
@@ -322,13 +322,13 @@ bool KateLUAIndentScriptImpl::processChar(Kate::View *view, QChar c, QString &er
   return result;
 }
 
-bool KateLUAIndentScriptImpl::processLine(Kate::View *view, const KateDocCursor &line, QString &errorMsg )
+bool KateLUAIndentScriptImpl::processLine(KateView *view, const KateDocCursor &line, QString &errorMsg )
 {
   if (!setupInterpreter(errorMsg)) return false;
   return true;
 }
 
-bool KateLUAIndentScriptImpl::processNewline( class Kate::View *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg )
+bool KateLUAIndentScriptImpl::processNewline( KateView *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg )
 {
   if (!setupInterpreter(errorMsg)) return false;
   katelua_doc=((KateView*)view)->doc();

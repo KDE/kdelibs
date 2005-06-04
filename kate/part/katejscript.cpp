@@ -933,7 +933,7 @@ bool KateIndentJScriptImpl::setupInterpreter(QString &errorMsg)
 }
 
 
-inline static bool KateIndentJScriptCall(Kate::View *view, QString &errorMsg, KateJSDocument *docWrapper, KateJSView *viewWrapper,
+inline static bool KateIndentJScriptCall(KateView *view, QString &errorMsg, KateJSDocument *docWrapper, KateJSView *viewWrapper,
         KJS::Interpreter *interpreter, KJS::Object lookupobj,const KJS::Identifier& func,KJS::List params)
 {
  // no view, no fun
@@ -970,7 +970,7 @@ inline static bool KateIndentJScriptCall(Kate::View *view, QString &errorMsg, Ka
   return true;
 }
 
-bool KateIndentJScriptImpl::processChar(Kate::View *view, QChar c, QString &errorMsg )
+bool KateIndentJScriptImpl::processChar(KateView *view, QChar c, QString &errorMsg )
 {
 
   kdDebug(13050)<<"KateIndentJScriptImpl::processChar"<<endl;
@@ -980,14 +980,14 @@ bool KateIndentJScriptImpl::processChar(Kate::View *view, QChar c, QString &erro
   return KateIndentJScriptCall(view,errorMsg,m_docWrapper,m_viewWrapper,m_interpreter,*m_indenter,KJS::Identifier("onchar"),params);
 }
 
-bool KateIndentJScriptImpl::processLine(Kate::View *view, const KateDocCursor &line, QString &errorMsg )
+bool KateIndentJScriptImpl::processLine(KateView *view, const KateDocCursor &line, QString &errorMsg )
 {
   kdDebug(13050)<<"KateIndentJScriptImpl::processLine"<<endl;
   if (!setupInterpreter(errorMsg)) return false;
   return KateIndentJScriptCall(view,errorMsg,m_docWrapper,m_viewWrapper,m_interpreter,*m_indenter,KJS::Identifier("online"),KJS::List());
 }
 
-bool KateIndentJScriptImpl::processNewline( class Kate::View *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg )
+bool KateIndentJScriptImpl::processNewline( class KateView *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg )
 {
   kdDebug(13050)<<"KateIndentJScriptImpl::processNewline"<<endl;
   if (!setupInterpreter(errorMsg)) return false;

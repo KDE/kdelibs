@@ -21,13 +21,6 @@
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
-#include <ktexteditor/clipboardinterface.h>
-#include <ktexteditor/popupmenuinterface.h>
-#include <ktexteditor/markinterface.h>
-#include <ktexteditor/viewcursorinterface.h>
-#include <ktexteditor/codecompletioninterface.h>
-#include <ktexteditor/dynwordwrapinterface.h>
-#include <ktexteditor/sessionconfiginterface.h>
 
 class KConfig;
 
@@ -40,11 +33,7 @@ class Document;
   The Kate::View text editor interface.
   @author Cullmann Christoph, modified by rokrau (6/21/01)
 */
-class KATEPARTINTERFACES_EXPORT View : public KTextEditor::View, public KTextEditor::ClipboardInterface,
-              public KTextEditor::PopupMenuInterface, public KTextEditor::ViewCursorInterface,
-              public KTextEditor::CodeCompletionInterface, 
-              public KTextEditor::SessionConfigInterface,
-              public KTextEditor::DynWordWrapInterface
+class KATEPARTINTERFACES_EXPORT View : public KTextEditor::View
 {
   Q_OBJECT
 

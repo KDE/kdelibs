@@ -165,7 +165,7 @@ class KateJScriptManager : public Kate::Command
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec( class Kate::View *view, const QString &cmd, QString &errorMsg );
+    bool exec( Kate::View *view, const QString &cmd, QString &errorMsg );
 
     /**
      * get help for a command
@@ -174,7 +174,7 @@ class KateJScriptManager : public Kate::Command
      * @param msg help message
      * @return help available or not
      */
-    bool help( class Kate::View *view, const QString &cmd, QString &msg );
+    bool help( Kate::View *view, const QString &cmd, QString &msg );
 
     /**
      * supported commands as prefixes
@@ -196,9 +196,9 @@ class KateIndentJScriptImpl: public KateIndentScriptImplAbstract {
         const QString &copyright, double version);
     ~KateIndentJScriptImpl();
     
-    virtual bool processChar( class Kate::View *view, QChar c, QString &errorMsg );
-    virtual bool processLine( class Kate::View *view, const KateDocCursor &line, QString &errorMsg );
-    virtual bool processNewline( class Kate::View *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg );
+    virtual bool processChar( KateView *view, QChar c, QString &errorMsg );
+    virtual bool processLine( KateView *view, const KateDocCursor &line, QString &errorMsg );
+    virtual bool processNewline( KateView *view, const KateDocCursor &begin, bool needcontinue, QString &errorMsg );
   protected:
     virtual void decRef();
   private:

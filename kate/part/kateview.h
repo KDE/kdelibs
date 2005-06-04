@@ -30,6 +30,13 @@
 
 #include <ktexteditor/viewstatusmsginterface.h>
 #include <ktexteditor/texthintinterface.h>
+#include <ktexteditor/clipboardinterface.h>
+#include <ktexteditor/popupmenuinterface.h>
+#include <ktexteditor/markinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/codecompletioninterface.h>
+#include <ktexteditor/dynwordwrapinterface.h>
+#include <ktexteditor/sessionconfiginterface.h>
 
 #include <qpointer.h>
 #include <Q3PopupMenu>
@@ -60,7 +67,13 @@ class KateView : public Kate::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
                  public KTextEditor::SelectionInterfaceExt,
-                 public KTextEditor::BlockSelectionInterface
+                 public KTextEditor::BlockSelectionInterface,
+                 public KTextEditor::ClipboardInterface,
+                 public KTextEditor::PopupMenuInterface,
+                 public KTextEditor::ViewCursorInterface,
+                 public KTextEditor::CodeCompletionInterface, 
+                 public KTextEditor::SessionConfigInterface,
+                 public KTextEditor::DynWordWrapInterface
 {
     Q_OBJECT
 
