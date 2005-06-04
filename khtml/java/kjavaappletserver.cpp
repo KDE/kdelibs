@@ -275,11 +275,6 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     const QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
-    if( config.readBoolEntry( "ShowJavaConsole", false) )
-    {
-        p->setSystemProperty( "kjas.showConsole", QString::null );
-    }
-
     if( config.readBoolEntry( "UseSecurityManager", true ) )
     {
         QString class_file = locate( "data", "kjava/kjava.policy" );
