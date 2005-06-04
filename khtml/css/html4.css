@@ -483,6 +483,10 @@ ABBR, ACRONYM {
 	letter-spacing: 0.1em
 }
 
+pre[wrap] {
+    white-space: pre-wrap
+}
+
 :focus          { outline: 1px dotted invert }
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
