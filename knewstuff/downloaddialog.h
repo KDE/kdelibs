@@ -140,17 +140,6 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void clear();
 
     /**
-      Opens the download dialog.
-      This is a convenience method which automatically sets up the dialog.
-      @see setType()
-      @see load()
-
-      @param type a data type such as "korganizer/calendar"
-      @param caption the dialog caption
-    */
-    static void open(const QString& type, const QString& caption);
-
-    /**
       Constructor.
 
       @param engine a pre-built engine object, or NULL if the download
@@ -176,9 +165,20 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @see load()
 
       @param type a data type such as "korganizer/calendar"
+      @param caption the dialog caption
     */
-    static void open(QString type);
-    // ### KDE 4.0: remove and make caption/parent argument optional
+    static void open(const QString& type, const QString& caption);
+
+    /**
+      Opens the download dialog.
+      This is a convenience method which automatically sets up the dialog.
+      @see setType()
+      @see load()
+
+      @param type a data type such as "korganizer/calendar"
+      @deprecated use open( const QString& type, const QString& caption );
+    */
+    static void open(QString type) KDE_DEPRECATED; // ### KDE 4.0: remove and make caption/parent argument optional
 
   public slots:
     /**
