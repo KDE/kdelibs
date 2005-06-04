@@ -19,26 +19,24 @@
 #ifndef _KATE_CMD_H
 #define _KATE_CMD_H
 
-#include "document.h"
+#include <ktexteditor/commandinterface.h>
 
 #include <kcompletion.h>
 
 #include <q3dict.h>
 #include <qstringlist.h>
 
-class KATEPARTINTERFACES_EXPORT KateCmd
+class KateCmd
 {
-  private:
-    KateCmd ();
-
   public:
+    KateCmd ();
     ~KateCmd ();
 
     static KateCmd *self ();
 
-    bool registerCommand (Kate::Command *cmd);
-    bool unregisterCommand (Kate::Command *cmd);
-    Kate::Command *queryCommand (const QString &cmd);
+    bool registerCommand (KTextEditor::Command *cmd);
+    bool unregisterCommand (KTextEditor::Command *cmd);
+    KTextEditor::Command *queryCommand (const QString &cmd);
 
     QStringList cmds ();
     void appendHistory( const QString &cmd );
@@ -46,8 +44,7 @@ class KATEPARTINTERFACES_EXPORT KateCmd
     uint historyLength() const { return m_history.count(); }
 
   private:
-    static KateCmd *s_self;
-    Q3Dict<Kate::Command> m_dict;
+    Q3Dict<KTextEditor::Command> m_dict;
     QStringList m_cmds;
     QStringList m_history;
 };
@@ -58,7 +55,7 @@ class KATEPARTINTERFACES_EXPORT KateCmd
  * simply mimics shell tab completion by completing the last word in the
  * provided text.
  */
-class KATEPARTINTERFACES_EXPORT KateCmdShellCompletion : public KCompletion
+class KateCmdShellCompletion : public KCompletion
 {
   public:
     KateCmdShellCompletion();

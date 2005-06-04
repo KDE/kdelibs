@@ -17,14 +17,12 @@
 */
 
 #include "katecmd.h"
+#include "kateglobal.h"
 
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 
 //BEGIN KateCmd
 #define CMD_HIST_LENGTH 256
-
-KateCmd *KateCmd::s_self = 0;
 
 KateCmd::KateCmd ()
 {
@@ -34,7 +32,7 @@ KateCmd::~KateCmd ()
 {
 }
 
-bool KateCmd::registerCommand (Kate::Command *cmd)
+bool KateCmd::registerCommand (KTextEditor::Command *cmd)
 {
   QStringList l = cmd->cmds ();
 
@@ -52,10 +50,10 @@ bool KateCmd::registerCommand (Kate::Command *cmd)
   return true;
 }
 
-bool KateCmd::unregisterCommand (Kate::Command *cmd)
+bool KateCmd::unregisterCommand (KTextEditor::Command *cmd)
 {
   QStringList l;
-  Q3DictIterator<Kate::Command> it(m_dict);
+  Q3DictIterator<KTextEditor::Command> it(m_dict);
   for( ; it.current(); ++it )
     if (it.current()==cmd) l<<it.currentKey();
   for ( QStringList::Iterator it1 = l.begin(); it1 != l.end(); ++it1 ) {
@@ -65,7 +63,7 @@ bool KateCmd::unregisterCommand (Kate::Command *cmd)
   return true;
 }
 
-Kate::Command *KateCmd::queryCommand (const QString &cmd)
+KTextEditor::Command *KateCmd::queryCommand (const QString &cmd)
 {
   // a command can be named ".*[\w\-]+" with the constrain that it must
   // contain at least one letter.
@@ -86,14 +84,9 @@ QStringList KateCmd::cmds ()
   return m_cmds;
 }
 
-static KStaticDeleter<KateCmd> sdCmd;
-
 KateCmd *KateCmd::self ()
 {
-  if (!s_self)
-    sdCmd.setObject(s_self, new KateCmd ());
-
-  return s_self;
+  return KateGlobal::self()->cmdManager ();
 }
 
 void KateCmd::appendHistory( const QString &cmd )

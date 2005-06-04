@@ -26,6 +26,8 @@
 #include "katecursor.h"
 #include "../interfaces/document.h"
 
+#include <ktexteditor/commandinterface.h>
+
 #include <kdialogbase.h>
 
 #include <qstring.h>
@@ -212,15 +214,18 @@ class KateReplacePrompt : public KDialogBase
     void done (int result);
 };
 
-class SearchCommand : public Kate::Command, public Kate::CommandExtension
+class SearchCommand : public KTextEditor::Command, public KTextEditor::CommandExtension
 {
   public:
     SearchCommand() : m_ifindFlags(0) {;}
     bool exec(class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
     bool help(class KTextEditor::View *, const QString &, QString &);
-    QStringList cmds();
+    const QStringList &cmds();
     bool wantsToProcessText( const QString &/*cmdname*/ );
     void processText( KTextEditor::View *, const QString& );
+    
+    virtual void flagCompletions( QStringList& ) {}
+    virtual KCompletion *completionObject( const QString &, KTextEditor::View * ) { return 0; }
 
   private:
     /**

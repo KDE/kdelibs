@@ -28,8 +28,7 @@
 #include "kateglobal.h"
 #include "katejscript.h"
 #include "katerenderer.h"
-
-#include "../interfaces/katecmd.h"
+#include "katecmd.h"
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -69,9 +68,11 @@ static bool getBoolArg( QString s, bool *val  )
   return false;
 }
 
-QStringList KateCommands::CoreCommands::cmds()
+const QStringList &KateCommands::CoreCommands::cmds()
 {
-  QStringList l;
+  static QStringList l;
+  
+  if (l.isEmpty())
   l << "indent" << "unindent" << "cleanindent"
     << "comment" << "uncomment" << "goto" << "kill-line"
     << "set-tab-width" << "set-replace-tabs" << "set-show-tabs"
@@ -82,6 +83,7 @@ QStringList KateCommands::CoreCommands::cmds()
     << "set-word-wrap" << "set-word-wrap-column"
     << "set-replace-tabs-save" << "set-remove-trailing-space-save"
     << "set-highlight" << "run-myself" << "set-show-indent";
+  
   return l;
 }
 

@@ -48,6 +48,7 @@ class KateIndentScriptManagerAbstract;
 class KDirWatch;
 class KVMAllocator;
 class KateHlManager;
+class KateCmd;
 
 namespace Kate {
   class Command;
@@ -203,8 +204,15 @@ class KateGlobal : public QObject
     
     /**
      * hl manager
+     * @return hl manager
      */
     KateHlManager *hlManager () { return m_hlManager; }
+    
+    /**
+     * command manager
+     * @return command manager
+     */
+    KateCmd *cmdManager () { return m_cmdManager; }
 
   private:
     /**
@@ -280,7 +288,7 @@ class KateGlobal : public QObject
     /**
      * internal commands
      */
-    QList<Kate::Command *> m_cmds;
+    QList<KTextEditor::Command *> m_cmds;
 
     /**
      * js interpreter
@@ -301,6 +309,11 @@ class KateGlobal : public QObject
      * hl manager
      */
     KateHlManager *m_hlManager;
+    
+    /**
+     * command manager
+     */
+    KateCmd *m_cmdManager;
 };
 
 #endif

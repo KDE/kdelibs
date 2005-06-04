@@ -788,10 +788,11 @@ bool KateJScriptManager::help( KTextEditor::View *, const QString &cmd, QString 
   return true;
 }
 
-QStringList KateJScriptManager::cmds()
+const QStringList &KateJScriptManager::cmds()
 {
-   QStringList l;
+   static QStringList l;
 
+  l.clear ();
    Q3DictIterator<KateJScriptManager::Script> it( m_scripts );
    for( ; it.current(); ++it )
      l << it.current()->name;

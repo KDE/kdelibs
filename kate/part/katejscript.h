@@ -21,9 +21,15 @@
 #define __kate_jscript_h__
 
 #include "../interfaces/document.h"
+
 #include "kateindentscriptabstracts.h"
-#include <q3dict.h>
+
+#include <ktexteditor/commandinterface.h>
+
 #include <kdebug.h>
+
+#include <q3dict.h>
+
 /**
  * Some common stuff
  */
@@ -111,7 +117,7 @@ class KateJScript
     KJS::Object *m_view;
 };
 
-class KateJScriptManager : public Kate::Command
+class KateJScriptManager : public KTextEditor::Command
 {
   private:
     /**
@@ -155,7 +161,7 @@ class KateJScriptManager : public Kate::Command
     void collectScripts (bool force = false);
 
   //
-  // Here we deal with the Kate::Command stuff
+  // Here we deal with the KTextEditor::Command stuff
   //
   public:
     /**
@@ -180,7 +186,7 @@ class KateJScriptManager : public Kate::Command
      * supported commands as prefixes
      * @return prefix list
      */
-    QStringList cmds();
+    const QStringList &cmds();
 
   private:
     /**

@@ -31,7 +31,7 @@
 #include "katejscript.h"
 #endif
 #include "kateluaindentscript.h"
-#include "../interfaces/katecmd.h"
+#include "katecmd.h"
 
 #include <kvmallocator.h>
 #include <klocale.h>
@@ -96,6 +96,11 @@ KateGlobal::KateGlobal ()
   m_dirWatch = new KDirWatch ();
   
   //
+  // command manager
+  //
+  m_cmdManager = new KateCmd ();
+  
+  //
   // hl manager
   //
   m_hlManager = new KateHlManager ();
@@ -138,8 +143,8 @@ KateGlobal::KateGlobal ()
   m_cmds.push_back (new KateCommands::Date ());
   m_cmds.push_back (new SearchCommand());
 
-  for ( QList<Kate::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
-    KateCmd::self()->registerCommand (*it);
+  for ( QList<KTextEditor::Command *>::iterator it = m_cmds.begin(); it != m_cmds.end(); ++it )
+    m_cmdManager->registerCommand (*it);
 }
 
 KateGlobal::~KateGlobal()
@@ -168,6 +173,8 @@ KateGlobal::~KateGlobal()
   delete m_jscript;
   
   delete m_hlManager;
+  
+  delete m_cmdManager;
   
   s_self = 0;
 }

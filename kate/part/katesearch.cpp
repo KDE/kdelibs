@@ -801,10 +801,13 @@ bool SearchCommand::help(class KTextEditor::View *, const QString &cmd, QString 
   return true;
 }
 
-QStringList SearchCommand::cmds()
+const QStringList &SearchCommand::cmds()
 {
-  QStringList l;
-  l << "find" << "replace" << "ifind";
+  static QStringList l;
+  
+  if (l.isEmpty())
+    l << "find" << "replace" << "ifind";
+  
   return l;
 }
 

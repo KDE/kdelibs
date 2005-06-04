@@ -22,7 +22,7 @@
 #include "kateviewhelpers.moc"
 
 #include "../interfaces/document.h"
-#include "../interfaces/katecmd.h"
+#include "katecmd.h"
 #include "kateattribute.h"
 #include "katecodefoldinghelpers.h"
 #include "kateconfig.h"
@@ -283,7 +283,7 @@ QString KateCmdLine::helptext( const QPoint & ) const
         }
         else if ( ! name.isEmpty() )
         {
-          Kate::Command *cmd = KateCmd::self()->queryCommand( name );
+          KTextEditor::Command *cmd = KateCmd::self()->queryCommand( name );
           if ( cmd )
           {
             if ( cmd->help( (KTextEditor::View*)parentWidget(), name, s ) )
@@ -335,7 +335,7 @@ void KateCmdLine::slotReturnPressed ( const QString& text )
 
   if (cmd.length () > 0)
   {
-    Kate::Command *p = KateCmd::self()->queryCommand (cmd);
+    KTextEditor::Command *p = KateCmd::self()->queryCommand (cmd);
 
     m_oldText = cmd;
     m_msgMode = true;
@@ -489,7 +489,7 @@ void KateCmdLine::keyPressEvent( QKeyEvent *ev )
     if ( m_command )
     {
       //kdDebug(13025)<<"Checking for CommandExtension.."<<endl;
-      Kate::CommandExtension *ce = dynamic_cast<Kate::CommandExtension*>(m_command);
+      KTextEditor::CommandExtension *ce = dynamic_cast<KTextEditor::CommandExtension*>(m_command);
       if ( ce )
       {
         KCompletion *cmpl = ce->completionObject( text().left( m_cmdend ).stripWhiteSpace(), m_view );
@@ -509,7 +509,7 @@ void KateCmdLine::keyPressEvent( QKeyEvent *ev )
   }
   else if ( m_command )// check if we should call the commands processText()
   {
-    Kate::CommandExtension *ce = dynamic_cast<Kate::CommandExtension*>( m_command );
+    KTextEditor::CommandExtension *ce = dynamic_cast<KTextEditor::CommandExtension*>( m_command );
     if ( ce && ce->wantsToProcessText( text().left( m_cmdend ).stripWhiteSpace() )
          && ! ( ev->text().isNull() || ev->text().isEmpty() ) )
       ce->processText( m_view, text() );

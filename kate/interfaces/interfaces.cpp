@@ -19,8 +19,6 @@
 #include "document.h"
 #include "document.moc"
 
-#include "katecmd.h"
-
 namespace Kate
 {
 
@@ -54,21 +52,6 @@ void Document::setFileChangedDialogsActivated (bool on)
 const QString &Document::defaultEncoding ()
 {
   return s_defaultEncoding;
-}
-
-bool Document::registerCommand (Command *cmd)
-{
-  return KateCmd::self()->registerCommand (cmd);
-}
-
-bool Document::unregisterCommand (Command *cmd)
-{
-  return KateCmd::self()->unregisterCommand (cmd);
-}
-
-Command *Document::queryCommand (const QString &cmd)
-{
-  return KateCmd::self()->queryCommand (cmd);
 }
 
 Document *document (KTextEditor::Document *doc)

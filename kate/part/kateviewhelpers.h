@@ -34,7 +34,7 @@ class KateDocument;
 class KateView;
 class KateViewInternal;
 
-namespace Kate {
+namespace KTextEditor {
   class Command;
 }
 
@@ -115,7 +115,7 @@ class KateCmdLine : public KLineEdit
     QString m_oldText;
     uint m_histpos; ///< position in the history
     uint m_cmdend; ///< the point where a command ends in the text, if we have a valid one.
-    Kate::Command *m_command; ///< For completing flags/args and interactiveness
+    KTextEditor::Command *m_command; ///< For completing flags/args and interactiveness
     class KCompletion *m_oldCompletionObject; ///< save while completing command args.
     class KateCmdLnWhatsThis *m_help;
 };
