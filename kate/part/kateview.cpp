@@ -1850,7 +1850,7 @@ void KateView::exportAsHTML ()
     (*outputStream) << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" << endl;
     (*outputStream) << "<meta name=\"Generator\" content=\"Kate, the KDE Advanced Text Editor\" />" << endl;
     // for the title, we write the name of the file (/usr/local/emmanuel/myfile.cpp -> myfile.cpp)
-    (*outputStream) << "<title>" << m_doc->docName () << "</title>" << endl;
+    (*outputStream) << "<title>" << m_doc->documentName () << "</title>" << endl;
     (*outputStream) << "</head>" << endl;
     (*outputStream) << "<body>" << endl;
 

@@ -122,7 +122,7 @@ class KateViewFileTypeAction : public KActionMenu
 
     ~KateViewFileTypeAction(){;};
 
-    void updateMenu (Kate::Document *doc);
+    void updateMenu (KTextEditor::Document *doc);
 
   private:
     void init();

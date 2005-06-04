@@ -25,6 +25,8 @@
 #include "kateconfig.h"
 #include "katejscript.h"
 
+#include <kaction.h>
+
 class KateDocument;
 
 /**

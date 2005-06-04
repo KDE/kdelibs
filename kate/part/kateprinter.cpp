@@ -60,7 +60,7 @@ bool KatePrinter::print (KateDocument *doc)
   KPrinter printer;
 
   // docname is now always there, including the right Untitled name
-  printer.setDocName(doc->docName());
+  printer.setDocName(doc->documentName());
 
   KatePrintTextSettings *kpts = new KatePrintTextSettings(&printer, NULL);
   kpts->enableSelection( doc->hasSelection() );

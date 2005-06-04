@@ -30,6 +30,7 @@
 
 #include <klocale.h>
 #include <kstdaction.h>
+#include <kaction.h>
 #include <kmessagebox.h>
 #include <kstringhandler.h>
 #include <kdebug.h>

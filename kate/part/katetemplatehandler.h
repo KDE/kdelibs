@@ -26,6 +26,7 @@
 #include <q3dict.h>
 #include <q3ptrlist.h>
 #include <qstring.h>
+#include <Q3ValueList>
 
 class KateDocument;
 

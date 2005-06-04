@@ -24,9 +24,8 @@
 #include "katetextline.h"
 #include "kateattribute.h"
 
-#include "../interfaces/document.h"
-
 #include <kconfig.h>
+#include <kaction.h>
 
 #include <QVector>
 #include <QList>

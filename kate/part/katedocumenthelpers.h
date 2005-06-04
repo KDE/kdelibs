@@ -21,8 +21,6 @@
 #ifndef __KATE_DOCUMENT_HELPERS__
 #define __KATE_DOCUMENT_HELPERS__
 
-#include "../interfaces/document.h"
-
 #include <kparts/browserextension.h>
 
 #include <qstringlist.h>

@@ -21,9 +21,9 @@
 #ifndef __KATE_CMDS_H__
 #define __KATE_CMDS_H__
 
-#include "../interfaces/document.h"
-
 #include <ktexteditor/commandinterface.h>
+
+#include <QStringList>
 
 class KateDocument;
 class KCompletion;

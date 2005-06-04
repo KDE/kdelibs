@@ -21,7 +21,6 @@
 #include "kateviewhelpers.h"
 #include "kateviewhelpers.moc"
 
-#include "../interfaces/document.h"
 #include "katecmd.h"
 #include "kateattribute.h"
 #include "katecodefoldinghelpers.h"

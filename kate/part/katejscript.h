@@ -20,8 +20,6 @@
 #ifndef __kate_jscript_h__
 #define __kate_jscript_h__
 
-#include "../interfaces/document.h"
-
 #include "kateindentscriptabstracts.h"
 
 #include <ktexteditor/commandinterface.h>

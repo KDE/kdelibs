@@ -78,6 +78,9 @@
 #include <q3vbox.h>
 //END  includes
 
+static bool s_fileChangedDialogsActivated = false;
+static bool s_openErrorDialogsActivated = true;
+
 //BEGIN PRIVATE CLASSES
 class KatePartPluginItem
 {
@@ -93,7 +96,7 @@ class KatePartPluginItem
 KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
                              bool bReadOnly, QWidget *parentWidget,
                              const char *widgetName, QObject *parent, const char *name)
-: Kate::Document(parent, name),
+: KTextEditor::Document (parent, name),
   m_plugins (KateGlobal::self()->plugins().count()),
   m_activeView(0L),
   m_undoDontMerge(false),
@@ -2743,7 +2746,7 @@ void KateDocument::setModified(bool m) {
     }
 
     emit modifiedChanged ();
-    emit modStateChanged ((Kate::Document *)this);
+    emit modStateChanged ((KTextEditor::Document *)this);
   }
   if ( m == false && ! undoItems.isEmpty() )
   {
@@ -4137,7 +4140,7 @@ void KateDocument::setDocName (QString name )
     // TODO check for similarly named documents
     m_docName = name;
     updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
-    emit nameChanged((Kate::Document *) this);
+    emit nameChanged((KTextEditor::Document *) this);
     return;
   }
 
@@ -4166,7 +4169,7 @@ void KateDocument::setDocName (QString name )
     m_docName = QString(m_docName + " (%1)").arg(m_docNameNumber+1);
 
   updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
-  emit nameChanged ((Kate::Document *) this);
+  emit nameChanged ((KTextEditor::Document *) this);
 }
 
 void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )
@@ -4881,11 +4884,6 @@ bool KateDocument::checkOverwrite( KURL u )
           "Are you sure you want to overwrite it?" ).arg( info.fileName() ),
     i18n( "Overwrite File?" ),
     i18n( "&Overwrite" ) );
-}
-
-void KateDocument::setDefaultEncoding (const QString &encoding)
-{
-  s_defaultEncoding = encoding;
 }
 
 //BEGIN KTextEditor::TemplateInterface

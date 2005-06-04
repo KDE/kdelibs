@@ -47,6 +47,14 @@ class KTEXTEDITOR_EXPORT Document : public KTextEditor::Editor
      * Returns this document's DCOP suffix for identifiying its DCOP interface.
      */
     Q3CString documentDCOPSuffix () const;
+    
+    /**
+     * Returns this document's name
+     * The editor part should provide some meaningful name, like some unique
+     * Untitled XYZ for document without url or basename for documents with
+     * url
+     */
+    virtual const QString &documentName () const = 0;
 
     /**
     * Create a view that will display the document data. You can create as many

@@ -28,8 +28,7 @@
 #include "katebuffer.h"
 #include "katecodefoldinghelpers.h"
 
-#include "../interfaces/document.h"
-
+#include <ktexteditor/document.h>
 #include <ktexteditor/configinterfaceextension.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/editinterfaceext.h>
@@ -57,6 +56,7 @@
 
 #include <kmimetype.h>
 #include <klocale.h>
+#include <kshortcut.h>
 
 #include <q3intdict.h>
 #include <qmap.h>
@@ -93,7 +93,7 @@ class KateKeyInterceptorFunctor;
 //
 // Kate KTextEditor::Document class (and even KTextEditor::Editor ;)
 //
-class KateDocument : public Kate::Document,
+class KateDocument : public KTextEditor::Document,
                      public KTextEditor::ConfigInterfaceExtension,
                      public KTextEditor::SessionConfigInterface,
                      public KTextEditor::EditInterfaceExt,
@@ -752,8 +752,7 @@ class KateDocument : public Kate::Document,
     void guiActivateEvent( KParts::GUIActivateEvent *ev );
 
   public:
-
-    QString docName () {return m_docName;};
+    const QString &documentName () const { return m_docName; }
     
     void setDocName (QString docName);
 
@@ -774,7 +773,7 @@ class KateDocument : public Kate::Document,
   public slots:
     /**
      * Ask the user what to do, if the file has been modified on disc.
-     * Reimplemented from Kate::Document.
+     * Reimplemented from KTextEditor::Document.
      *
      * @since 3.3
      */
@@ -788,7 +787,7 @@ class KateDocument : public Kate::Document,
   signals:
     /**
      * Indicate this file is modified on disk
-     * @param doc the Kate::Document object that represents the file on disk
+     * @param doc the KTextEditor::Document object that represents the file on disk
      * @param isModified indicates the file was modified rather than created or deleted
      * @param reason the reason we are emitting the signal.
      */
@@ -814,8 +813,8 @@ class KateDocument : public Kate::Document,
     bool pageUpDownMovesCursor();
 
   signals:
-    void modStateChanged (Kate::Document *doc);
-    void nameChanged (Kate::Document *doc);
+    void modStateChanged (KTextEditor::Document *doc);
+    void nameChanged (KTextEditor::Document *doc);
 
   signals:
     /**
@@ -934,8 +933,6 @@ class KateDocument : public Kate::Document,
     void makeAttribs (bool needInvalidate = true);
 
     static bool checkOverwrite( KURL u );
-
-    static void setDefaultEncoding (const QString &encoding);
 
   /**
    * Configuration

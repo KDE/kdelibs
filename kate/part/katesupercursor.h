@@ -23,6 +23,8 @@
 
 #include <ktexteditor/cursorinterface.h>
 
+#include <QObject>
+
 class KateDocument;
 class KateView;
 

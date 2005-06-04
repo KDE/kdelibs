@@ -171,9 +171,9 @@ int KateFileTypeManager::fileType (KateDocument *doc)
   // Even try the document name, if the URL is empty
   // This is usefull if the document name is set for example by a plugin which
   // created the document
-  else if ( (result = wildcardsFind(doc->docName())) != -1)
+  else if ( (result = wildcardsFind(doc->documentName())) != -1)
   {
-    kdDebug(13020)<<"KateFiletype::filetype(): got type "<<result<<" using docName '"<<doc->docName()<<"'"<<endl;
+    kdDebug(13020)<<"KateFiletype::filetype(): got type "<<result<<" using docName '"<<doc->documentName()<<"'"<<endl;
     return result;
   }
 
@@ -521,7 +521,7 @@ void KateViewFileTypeAction::init()
   connect(popupMenu(),SIGNAL(aboutToShow()),this,SLOT(slotAboutToShow()));
 }
 
-void KateViewFileTypeAction::updateMenu (Kate::Document *doc)
+void KateViewFileTypeAction::updateMenu (KTextEditor::Document *doc)
 {
   m_doc = (KateDocument *)doc;
 }

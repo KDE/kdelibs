@@ -27,8 +27,6 @@
 #include "katehighlight.h"
 #include "kateattribute.h"
 
-#include "../interfaces/document.h"
-
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/configinterfaceextension.h>
 

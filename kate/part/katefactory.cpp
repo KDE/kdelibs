@@ -62,7 +62,7 @@ class KateFactory : public KParts::Factory
     KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList &args )
     {
       Q3CString classname( _classname );
-      bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "Kate::Document" );
+      bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "KTextEditor::Document" );
       bool bWantBrowserView = ( classname == "Browser/View" );
       bool bWantReadOnly = (bWantBrowserView || ( classname == "KParts::ReadOnlyPart" ));
     

@@ -22,7 +22,8 @@
 #ifndef kate_cursor_h
 #define kate_cursor_h
 
-#include "../interfaces/document.h"
+#include <Q3PtrList>
+#include <QString>
 
 class KateDocument;
 class KateAttribute;

@@ -25,6 +25,8 @@
 class KateRangeList;
 class KateRangeType;
 
+class KAction;
+
 /**
  * Represents a range of text, from the start() to the end().
  *

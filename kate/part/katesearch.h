@@ -24,7 +24,6 @@
 #define __KATE_SEARCH_H__
 
 #include "katecursor.h"
-#include "../interfaces/document.h"
 
 #include <ktexteditor/commandinterface.h>
 

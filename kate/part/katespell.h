@@ -25,9 +25,12 @@
 
 #include "katecursor.h"
 
+#include <QObject>
+
 class KateView;
 
 class KAction;
+class KActionCollection;
 class KSpell;
 
 class KateSpell : public QObject

@@ -421,7 +421,7 @@ class KateView : public KTextEditor::View,
     bool scrollBarMarks();
     int dynWrapIndicators();
     bool foldingMarkersOn();
-    Kate::Document* getDoc()    { return m_doc; }
+    KTextEditor::Document* getDoc()    { return m_doc; }
 
   public slots:
     void gotoMark( KTextEditor::Mark* mark ) { setCursorPositionInternal ( mark->line, 0, 1 ); }

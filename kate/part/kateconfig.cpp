@@ -446,9 +446,6 @@ void KateDocumentConfig::setEncoding (const QString &encoding)
 
   configStart ();
 
-  if (isGlobal())
-    KateDocument::setDefaultEncoding (enc);
-
   m_encodingSet = true;
   m_encoding = enc;
 
