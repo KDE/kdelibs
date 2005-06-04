@@ -35,7 +35,7 @@ ktexteditorinclude_HEADERS = document.h view.h editor.h plugin.h editinterface.h
                              encodinginterface.h viewstatusmsginterface.h  sessionconfiginterface.h editorchooser.h \
 			     documentinfo.h selectioninterfaceext.h selectionextdcopinterface.h texthintinterface.h \
 			     editinterfaceext.h variableinterface.h templateinterface.h \
-			     modificationinterface.h
+			     modificationinterface.h commandinterface.h
 
 ktexteditorincludedir = $(includedir)/ktexteditor
 
