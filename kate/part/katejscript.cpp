@@ -730,7 +730,7 @@ void KateJScriptManager::collectScripts (bool force)
   config.sync();
 }
 
-bool KateJScriptManager::exec( Kate::View *view, const QString &_cmd, QString &errorMsg )
+bool KateJScriptManager::exec( KTextEditor::View *view, const QString &_cmd, QString &errorMsg )
 {
   // cast it hardcore, we know that it is really a kateview :)
   KateView *v = (KateView*) view;
@@ -772,7 +772,7 @@ bool KateJScriptManager::exec( Kate::View *view, const QString &_cmd, QString &e
   return KateGlobal::self()->jscript()->execute(v, source, errorMsg);
 }
 
-bool KateJScriptManager::help( Kate::View *, const QString &cmd, QString &msg )
+bool KateJScriptManager::help( KTextEditor::View *, const QString &cmd, QString &msg )
 {
   if (!m_scripts[cmd] || !m_scripts[cmd]->desktopFileExists)
     return false;

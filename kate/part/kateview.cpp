@@ -84,14 +84,13 @@
 //END includes
 
 KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
-    : Kate::View( doc, parent, name )
+    : KTextEditor::View( doc, parent, name )
     , m_doc( doc )
     , m_search( new KateSearch( this ) )
     , m_spell( new KateSpell( this ) )
     , m_bookmarks( new KateBookmarks( this ) )
     , m_cmdLine (0)
     , m_cmdLineOn (false)
-    , m_active( false )
     , m_hasWrap( false )
     , m_startingUp (true)
     , m_updatingDocumentConfig (false)
@@ -631,9 +630,9 @@ void KateView::setupEditActions()
                 ac, "backspace");
   }
 
-  connect( this, SIGNAL(gotFocus(Kate::View*)),
+  connect( this, SIGNAL(gotFocus(KTextEditor::View*)),
            this, SLOT(slotGotFocus()) );
-  connect( this, SIGNAL(lostFocus(Kate::View*)),
+  connect( this, SIGNAL(lostFocus(KTextEditor::View*)),
            this, SLOT(slotLostFocus()) );
 
   m_editActions->readShortcutSettings( "Katepart Shortcuts" );

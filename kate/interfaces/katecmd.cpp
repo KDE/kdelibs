@@ -108,9 +108,9 @@ void KateCmd::appendHistory( const QString &cmd )
   m_history.append( cmd );
 }
 
-const QString KateCmd::fromHistory( uint index ) const
+const QString KateCmd::fromHistory( int index ) const
 {
-  if ( index > m_history.count() - 1 )
+  if ( index < 0 || index > m_history.count() - 1 )
     return QString();
   return m_history[ index ];
 }
@@ -176,7 +176,7 @@ void KateCmdShellCompletion::splitText(const QString &text, QString &text_start,
   int last_unquoted_space = -1;
   int end_space_len = 0;
 
-  for (uint pos = 0; pos < text.length(); pos++) {
+  for (int pos = 0; pos < text.length(); pos++) {
 
     end_space_len = 0;
 

@@ -165,7 +165,7 @@ class KateJScriptManager : public Kate::Command
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec( Kate::View *view, const QString &cmd, QString &errorMsg );
+    bool exec( KTextEditor::View *view, const QString &cmd, QString &errorMsg );
 
     /**
      * get help for a command
@@ -174,7 +174,7 @@ class KateJScriptManager : public Kate::Command
      * @param msg help message
      * @return help available or not
      */
-    bool help( Kate::View *view, const QString &cmd, QString &msg );
+    bool help( KTextEditor::View *view, const QString &cmd, QString &msg );
 
     /**
      * supported commands as prefixes

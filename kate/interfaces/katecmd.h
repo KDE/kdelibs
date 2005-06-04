@@ -42,7 +42,7 @@ class KATEPARTINTERFACES_EXPORT KateCmd
 
     QStringList cmds ();
     void appendHistory( const QString &cmd );
-    const QString fromHistory( uint i ) const;
+    const QString fromHistory( int i ) const;
     uint historyLength() const { return m_history.count(); }
 
   private:

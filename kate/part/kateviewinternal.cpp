@@ -3198,8 +3198,10 @@ void KateViewInternal::editEnd(int editTagLineStart, int editTagLineEnd, bool ta
     m_madeVisible = false;
     updateCursor ( cursor, true );
   }
-  else if ( m_view->isActive() )
+  else //if ( m_view->isActive() )
   {
+#warning fixme, this needs to be fixed app transparent to only be done if this view is the view where the editing did happen
+  
     makeVisible(displayCursor, displayCursor.col());
   }
 

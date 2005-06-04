@@ -85,7 +85,7 @@ QStringList KateCommands::CoreCommands::cmds()
   return l;
 }
 
-bool KateCommands::CoreCommands::exec(Kate::View *view,
+bool KateCommands::CoreCommands::exec(KTextEditor::View *view,
                             const QString &_cmd,
                             QString &errorMsg)
 {
@@ -275,7 +275,7 @@ bool KateCommands::CoreCommands::exec(Kate::View *view,
   KCC_ERR( i18n("Unknown command '%1'").arg(cmd) );
 }
 
-KCompletion *KateCommands::CoreCommands::completionObject( const QString &cmd, Kate::View *view )
+KCompletion *KateCommands::CoreCommands::completionObject( const QString &cmd, KTextEditor::View *view )
 {
   if ( cmd == "set-highlight" )
   {
@@ -463,7 +463,7 @@ int KateCommands::SedReplace::sedMagic( KateDocument *doc, int &line,
   return matches;
 }
 
-bool KateCommands::SedReplace::exec (Kate::View *view, const QString &cmd, QString &msg)
+bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd, QString &msg)
 {
    kdDebug(13025)<<"SedReplace::execCmd( "<<cmd<<" )"<<endl;
 
@@ -535,7 +535,7 @@ bool KateCommands::SedReplace::exec (Kate::View *view, const QString &cmd, QStri
 //END SedReplace
 
 //BEGIN Character
-bool KateCommands::Character::exec (Kate::View *view, const QString &_cmd, QString &)
+bool KateCommands::Character::exec (KTextEditor::View *view, const QString &_cmd, QString &)
 {
   if (!KTextEditor::viewCursorInterface (view))
     return false;
@@ -584,7 +584,7 @@ bool KateCommands::Character::exec (Kate::View *view, const QString &_cmd, QStri
 //END Character
 
 //BEGIN Date
-bool KateCommands::Date::exec (Kate::View *view, const QString &cmd, QString &)
+bool KateCommands::Date::exec (KTextEditor::View *view, const QString &cmd, QString &)
 {
   if (!KTextEditor::viewCursorInterface (view))
     return false;

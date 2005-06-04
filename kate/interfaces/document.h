@@ -34,8 +34,6 @@ class KCompletion;
 namespace Kate
 {
 
-class View;
-
 /**
  * Kate Commands
  */
@@ -56,13 +54,13 @@ class KATEPARTINTERFACES_EXPORT Command
      * Execute this command for the given view and cmd string, return a bool
      * about success, msg for status
      */
-    virtual bool exec (View *view, const QString &cmd, QString &msg) = 0;
+    virtual bool exec (KTextEditor::View *view, const QString &cmd, QString &msg) = 0;
 
     /**
      * Shows help for the given view and cmd string, return a bool
      * about success, msg for status
      */
-    virtual bool help (View *view, const QString &cmd, QString &msg) = 0;
+    virtual bool help (KTextEditor::View *view, const QString &cmd, QString &msg) = 0;
 };
 
 /**
@@ -100,7 +98,7 @@ class CommandExtension
      *
      * @param cmdname The command name associated with this request.
      */
-    virtual KCompletion *completionObject( const QString & cmdname, Kate::View * /*view*/ ) { Q_UNUSED(cmdname); return 0L; }
+    virtual KCompletion *completionObject( const QString & cmdname, KTextEditor::View * /*view*/ ) { Q_UNUSED(cmdname); return 0L; }
 
     /**
      * @return whether this command wants to process text interactively given the @p cmdname.
@@ -120,7 +118,7 @@ class CommandExtension
      * @param view The current view
      * @param text The current command text typed by the user.
      */ // ### yet to be tested. The obvious candidate is isearch.
-    virtual void processText( Kate::View *view, const QString &text ) { Q_UNUSED(view); Q_UNUSED(text); }
+    virtual void processText( KTextEditor::View *view, const QString &text ) { Q_UNUSED(view); Q_UNUSED(text); }
 };
 
 /** This interface provides access to the Kate Document class.

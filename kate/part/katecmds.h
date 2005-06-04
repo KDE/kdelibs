@@ -22,7 +22,6 @@
 #define __KATE_CMDS_H__
 
 #include "../interfaces/document.h"
-#include "../interfaces/view.h"
 
 class KateDocument;
 class KCompletion;
@@ -46,9 +45,9 @@ class CoreCommands : public Kate::Command, public Kate::CommandExtension
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec( class Kate::View *view, const QString &cmd, QString &errorMsg );
+    bool exec( class KTextEditor::View *view, const QString &cmd, QString &errorMsg );
 
-    bool help( class Kate::View *, const QString &, QString & ) {return false;};
+    bool help( class KTextEditor::View *, const QString &, QString & ) {return false;};
 
     /**
      * supported commands as prefixes
@@ -56,7 +55,7 @@ class CoreCommands : public Kate::Command, public Kate::CommandExtension
      */
     QStringList cmds();
 
-    KCompletion *completionObject( const QString &, Kate::View * );
+    KCompletion *completionObject( const QString &, KTextEditor::View * );
 };
 
 /**
@@ -79,9 +78,9 @@ class SedReplace : public Kate::Command
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec (class Kate::View *view, const QString &cmd, QString &errorMsg);
+    bool exec (class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
 
-    bool help (class Kate::View *, const QString &, QString &) { return false; };
+    bool help (class KTextEditor::View *, const QString &, QString &) { return false; };
 
     /**
      * supported commands as prefixes
@@ -133,9 +132,9 @@ class Character : public Kate::Command
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec (class Kate::View *view, const QString &cmd, QString &errorMsg);
+    bool exec (class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
 
-    bool help (class Kate::View *, const QString &, QString &) { return false; };
+    bool help (class KTextEditor::View *, const QString &, QString &) { return false; };
 
     /**
      * supported commands as prefixes
@@ -157,9 +156,9 @@ class Date : public Kate::Command
      * @param errorMsg error to return if no success
      * @return success
      */
-    bool exec (class Kate::View *view, const QString &cmd, QString &errorMsg);
+    bool exec (class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
 
-    bool help (class Kate::View *, const QString &, QString &) { return false; };
+    bool help (class KTextEditor::View *, const QString &, QString &) { return false; };
 
     /**
      * supported commands as prefixes

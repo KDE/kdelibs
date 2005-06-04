@@ -286,7 +286,7 @@ QString KateCmdLine::helptext( const QPoint & ) const
           Kate::Command *cmd = KateCmd::self()->queryCommand( name );
           if ( cmd )
           {
-            if ( cmd->help( (Kate::View*)parentWidget(), name, s ) )
+            if ( cmd->help( (KTextEditor::View*)parentWidget(), name, s ) )
               return beg + name + mid + s + end;
             else
               return beg + name + mid + i18n("No help for '%1'").arg( name ) + end;

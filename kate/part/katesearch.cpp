@@ -656,7 +656,7 @@ void KateReplacePrompt::done (int result)
 //END KateReplacePrompt
 
 //BEGIN SearchCommand
-bool SearchCommand::exec(class Kate::View *view, const QString &cmd, QString &msg)
+bool SearchCommand::exec(class KTextEditor::View *view, const QString &cmd, QString &msg)
 {
   QString flags, pattern, replacement;
   if ( cmd.startsWith( "find" ) )
@@ -762,7 +762,7 @@ while ( (p = pattern.find( '\\' + delim, p )) > -1 )\
   return false;
 }
 
-bool SearchCommand::help(class Kate::View *, const QString &cmd, QString &msg)
+bool SearchCommand::help(class KTextEditor::View *, const QString &cmd, QString &msg)
 {
   if ( cmd == "find" )
     msg = i18n("<p>Usage: <code>find[:bcersw] PATTERN</code></p>");
@@ -813,7 +813,7 @@ bool SearchCommand::wantsToProcessText( const QString &cmdname )
   return  cmdname == "ifind";
 }
 
-void SearchCommand::processText( Kate::View *view, const QString &cmd )
+void SearchCommand::processText( KTextEditor::View *view, const QString &cmd )
 {
   static QRegExp re_ifind("ifind(?::([bcrs]*))?\\s(.*)");
   if ( re_ifind.search( cmd ) > -1 )

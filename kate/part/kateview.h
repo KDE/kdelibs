@@ -26,8 +26,7 @@
 #include "kateviewinternal.h"
 #include "kateconfig.h"
 
-#include "../interfaces/view.h"
-
+#include <ktexteditor/view.h>
 #include <ktexteditor/viewstatusmsginterface.h>
 #include <ktexteditor/texthintinterface.h>
 #include <ktexteditor/clipboardinterface.h>
@@ -62,7 +61,7 @@ class QVBoxLayout;
 //
 // Kate KTextEditor::View class ;)
 //
-class KateView : public Kate::View,
+class KateView : public KTextEditor::View,
                  public KTextEditor::ViewStatusMsgInterface,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
@@ -292,9 +291,13 @@ class KateView : public Kate::View,
   //END
 
   //
-  // Kate::View
+  // KTextEditor::View
   //
   public:  
+    /**
+     Return values for "save" related commands.
+    */
+    enum saveResult { SAVE_OK, SAVE_CANCEL, SAVE_RETRY, SAVE_ERROR };
     bool isOverwriteMode() const;
     void setOverwriteMode( bool b );
 
@@ -397,7 +400,7 @@ class KateView : public Kate::View,
     void findAgain()              { findAgain( false );          }
     void findPrev()               { findAgain( true );           }
 
-    void setFoldingMarkersOn( bool enable ); // Not in Kate::View, but should be
+    void setFoldingMarkersOn( bool enable ); // Not in KTextEditor::View, but should be
     void setIconBorder( bool enable );
     void setLineNumbersOn( bool enable );
     void setScrollBarMarks( bool enable );
@@ -420,23 +423,20 @@ class KateView : public Kate::View,
     bool foldingMarkersOn();
     Kate::Document* getDoc()    { return m_doc; }
 
-    void setActive( bool b )    { m_active = b; }
-    bool isActive()             { return m_active; }
-
   public slots:
     void gotoMark( KTextEditor::Mark* mark ) { setCursorPositionInternal ( mark->line, 0, 1 ); }
     void slotSelectionChanged ();
 
   signals:
-    void gotFocus( Kate::View* );
-    void lostFocus( Kate::View* );
-    void newStatus(); // Not in Kate::View, but should be (Kate app connects to it)
+    void gotFocus( KTextEditor::View* );
+    void lostFocus( KTextEditor::View* );
+    void newStatus(); // Not in KTextEditor::View, but should be (Kate app connects to it)
 
   //
   // Extras
   //
   public:
-    // Is it really necessary to have 3 methods for this?! :)
+  
     KateDocument*  doc() const       { return m_doc; }
 
     KActionCollection* editActionCollection() const { return m_editActions; }
@@ -522,7 +522,6 @@ class KateView : public Kate::View,
 
     QVBoxLayout *m_vBox;
 
-    bool       m_active;
     bool       m_hasWrap;
 
   private slots:

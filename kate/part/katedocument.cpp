@@ -355,7 +355,7 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
   KateView* newView = new KateView( this, parent, name);
   connect(newView, SIGNAL(cursorPositionChanged()), SLOT(undoCancel()));
   if ( s_fileChangedDialogsActivated )
-    connect( newView, SIGNAL(gotFocus( Kate::View * )), this, SLOT(slotModifiedOnDisk()) );
+    connect( newView, SIGNAL(gotFocus( KTextEditor::View * )), this, SLOT(slotModifiedOnDisk()) );
   return newView;
 }
 

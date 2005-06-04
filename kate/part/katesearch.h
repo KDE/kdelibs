@@ -216,11 +216,11 @@ class SearchCommand : public Kate::Command, public Kate::CommandExtension
 {
   public:
     SearchCommand() : m_ifindFlags(0) {;}
-    bool exec(class Kate::View *view, const QString &cmd, QString &errorMsg);
-    bool help(class Kate::View *, const QString &, QString &);
+    bool exec(class KTextEditor::View *view, const QString &cmd, QString &errorMsg);
+    bool help(class KTextEditor::View *, const QString &, QString &);
     QStringList cmds();
     bool wantsToProcessText( const QString &/*cmdname*/ );
-    void processText( Kate::View *, const QString& );
+    void processText( KTextEditor::View *, const QString& );
 
   private:
     /**

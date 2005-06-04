@@ -221,7 +221,7 @@ KateJScript *KateGlobal::jscript ()
 KateIndentScript KateGlobal::indentScript (const QString &scriptname)
 {
   KateIndentScript result;
-  for(uint i=0;i<m_indentScriptManagers.count();i++)
+  for (int i=0;i<m_indentScriptManagers.count();i++)
   {
     result=m_indentScriptManagers.at(i)->script(scriptname);
     if (!result.isNull()) return result;

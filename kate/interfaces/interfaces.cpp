@@ -19,9 +19,6 @@
 #include "document.h"
 #include "document.moc"
 
-#include "view.h"
-#include "view.moc"
-
 #include "katecmd.h"
 
 namespace Kate
@@ -74,28 +71,12 @@ Command *Document::queryCommand (const QString &cmd)
   return KateCmd::self()->queryCommand (cmd);
 }
 
-View::View ( KTextEditor::Document *doc, QWidget *parent, const char *name ) : KTextEditor::View (doc, parent, name)
-{
-}
-
-View::~View ()
-{
-}
-
 Document *document (KTextEditor::Document *doc)
 {
   if (!doc)
     return 0;
 
   return qobject_cast<Document*>(doc);
-}
-
-View *view (KTextEditor::View *view)
-{
-  if (!view)
-    return 0;
-
-  return qobject_cast<View*>(view);
 }
 
 }
