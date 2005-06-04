@@ -85,7 +85,7 @@ class KTEXTEDITOR_EXPORT ModificationInterface
     virtual void modifiedOnDisc (Document *doc, bool isModified, ModifiedOnDiskReason reason) = 0;
 };
 
-Q_DECLARE_INTERFACE(ModificationInterface,"org.kde.KTextEditor.ModificationInterface/1.0")
+//Q_DECLARE_INTERFACE(ModificationInterface,"org.kde.KTextEditor.ModificationInterface/1.0")
 
 }
 
