@@ -1815,6 +1815,17 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
     return;
   }
+  KIO::TransferJob *tjob = ::qt_cast<KIO::TransferJob*>(job);
+  if (tjob && tjob->isErrorPage()) {
+    khtml::RenderPart *renderPart = d->m_frame->m_frame;
+    if (renderPart) {
+      HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
+      elt->renderAlternative();
+      checkCompleted();
+     }
+     if (d->m_bComplete) return;
+  }
+
   //kdDebug( 6050 ) << "slotFinished" << endl;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
