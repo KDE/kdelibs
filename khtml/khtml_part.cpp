@@ -2506,7 +2506,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
     }
   }
 
-  d->m_view->setContentsPos(gox, y-20);
+  d->m_view->setContentsPos(gox, y);
 
   return true;
 }
@@ -3269,11 +3269,11 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
           ->caretPos( d->m_startOffset, false, x, y, dummy, dummy ); // more precise than posOfChar
         //kdDebug(6050) << "topleft: " << x << "," << y << endl;
         if ( x != -1 || y != -1 )
-        {        
+        {
           int gox = d->m_view->contentsX();
           if (x+50 > d->m_view->contentsX() + d->m_view->visibleWidth())
               gox = x - d->m_view->visibleWidth() + 50;
-          if (x-10 < d->m_view->contentsX()) 
+          if (x-10 < d->m_view->contentsX())
               gox = x - d->m_view->visibleWidth() - 10;
           if (gox < 0) gox = 0;
           d->m_view->setContentsPos(gox, y-50);
