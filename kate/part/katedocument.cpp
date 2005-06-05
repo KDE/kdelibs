@@ -344,7 +344,7 @@ KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
   return newView;
 }
 
-Q3PtrList<KTextEditor::View> KateDocument::views () const
+const QList<KTextEditor::View*> &KateDocument::views () const
 {
   return m_textEditViews;
 }
@@ -2781,7 +2781,7 @@ void KateDocument::removeView(KTextEditor::View *view) {
     setActiveView(0L);
 
   m_views.removeRef( (KateView *) view );
-  m_textEditViews.removeRef( view  );
+  m_textEditViews.remove( view  );
 }
 
 void KateDocument::setActiveView(KTextEditor::View* view)

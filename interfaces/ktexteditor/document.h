@@ -21,8 +21,12 @@
 
 #include <kparts/part.h>
 
+#include <QList>
+
 namespace KTextEditor
 {
+
+class View;
 
 /**
  * The main class representing a text document.
@@ -35,11 +39,21 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
   Q_OBJECT
 
   public:
+    /**
+     * Document Constructor
+     * @param parent parent object
+     * @param name name
+     */
     Document ( QObject *parent = 0, const char *name = 0 );
+    
+    /**
+     * virtual destructor
+     */
     virtual ~Document ();
 
     /**
      * Returns the global number of this document in your app.
+     * @return document number
      */
     unsigned int documentNumber () const;
     
@@ -62,13 +76,17 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     * Create a view that will display the document data. You can create as many
     * views as you like. When the user modifies data in one view then all other
     * views will be updated as well.
+    * @param parent parent widget
+    * @param name name for view
+    * @return created KTextEditor::View
     */
-    virtual class View *createView ( QWidget *parent, const char *name = 0 ) = 0;
+    virtual View *createView ( QWidget *parent, const char *name = 0 ) = 0;
 
-    /*
-    * Returns a list of all views of this document.
-    */
-    virtual Q3PtrList<class View> views () const = 0;
+    /**
+     * Returns a list of all views of this document.
+     * @return list of all existing views
+     */
+    virtual const QList<View*> &views () const = 0;
 
   private:
     class PrivateDocument *d;
