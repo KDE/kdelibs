@@ -113,10 +113,16 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
             return "decimal-leading-zero";
         case khtml::ARABIC_INDIC:
             return "-khtml-arabic-indic";
+        case khtml::LAO:
+            return "-khtml-lao";
         case khtml::PERSIAN:
             return "-khtml-persian";
         case khtml::URDU:
             return "-khtml-urdu";
+        case khtml::THAI:
+            return "-khtml-thai";
+        case khtml::TIBETAN:
+            return "-khtml-tibetan";
         case khtml::LOWER_ROMAN:
             return "lower-roman";
         case khtml::UPPER_ROMAN:
@@ -129,6 +135,18 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
             return "georgian";
         case khtml::CJK_IDEOGRAPHIC:
             return "cjk-ideographic";
+        case khtml::JAPANESE_FORMAL:
+            return "-khtml-japanese-formal";
+        case khtml::JAPANESE_INFORMAL:
+            return "-khtml-japanese-informal";
+        case khtml::SIMP_CHINESE_FORMAL:
+            return "-khtml-simp-chinese-formal";
+        case khtml::SIMP_CHINESE_INFORMAL:
+            return "-khtml-simp-chinese-informal";
+        case khtml::TRAD_CHINESE_FORMAL:
+            return "-khtml-trad-chinese-formal";
+        case khtml::TRAD_CHINESE_INFORMAL:
+            return "-khtml-trad-chinese-informal";
         case khtml::LOWER_GREEK:
             return "lower-greek";
         case khtml::UPPER_GREEK:
