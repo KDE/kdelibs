@@ -33,24 +33,6 @@
 
 using namespace KTextEditor;
 
-unsigned int TemplateInterface::globalTemplateInterfaceNumber = 0;
-
-TemplateInterface::TemplateInterface()
-{
-  myTemplateInterfaceNumber = globalTemplateInterfaceNumber++;
-}
-
-TemplateInterface::~TemplateInterface()
-{}
-
-uint TemplateInterface::templateInterfaceNumber () const
-{
-  return myTemplateInterfaceNumber;
-}
-
-void TemplateInterface::setTemplateInterfaceDCOPSuffix ( const Q3CString &suffix )
-{}
-
 #define INITKABC do { \
   if (addrBook==0) { \
     addrBook=KABC::StdAddressBook::self(); \
@@ -173,8 +155,6 @@ bool TemplateInterface::insertTemplateText ( uint line, uint column, const QStri
   return expandMacros( enhancedInitValues, parentWindow )
          && insertTemplateTextImplementation( line, column, templateString, enhancedInitValues, parentWindow );
 }
-
-
 
 TemplateInterface *KTextEditor::templateInterface ( KTextEditor::Document *doc )
 {

@@ -2668,7 +2668,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       else
       {
         m_view->selectWord( cursor );
-        selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
+        selectAnchor = KateTextCursor (m_view->selectionEndLine(), m_view->selectionEndColumn());
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
       }

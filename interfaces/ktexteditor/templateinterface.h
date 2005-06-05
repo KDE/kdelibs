@@ -22,7 +22,6 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qwidget.h>
-#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -37,11 +36,8 @@ class Document;
  */
 class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInterface, but for consistency with the other classes it is not (for the 3.x release series)
 {
-  friend class PrivateTemplateInterface;
-
   public:
-    TemplateInterface();
-    virtual ~TemplateInterface();
+    virtual ~TemplateInterface() {}
 
     /**
      * Parses @p templateString for macros in the form [$%]{NAME} and finds
@@ -54,11 +50,6 @@ class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInt
      * @see insertTemplateText for a list of supported macros
      */
     static bool expandMacros( QMap<QString, QString> &initialValues, QWidget *parentWindow );
-
-    uint templateInterfaceNumber () const;
-
-  protected:
-    void setTemplateInterfaceDCOPSuffix (const Q3CString &suffix);
 
   public:
 
@@ -115,14 +106,6 @@ protected:
      * @return true if any text was inserted.
      */
     virtual bool insertTemplateTextImplementation ( uint line, uint column, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *parentWindow=0 )=0;
-
-  /**
-  * only for the interface itself - REAL PRIVATE
-  */
-  private:
-    class PrivateTemplateInterface *d;
-    static uint globalTemplateInterfaceNumber;
-    uint myTemplateInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT TemplateInterface *templateInterface (Document *doc);

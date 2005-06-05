@@ -32,7 +32,7 @@
 #include <ktexteditor/plugin.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/codecompletioninterface.h>
-#include <ktexteditor/configinterfaceextension.h>
+#include <ktexteditor/configinterface.h>
 #include <kxmlguiclient.h>
 
 #include <qevent.h>
@@ -41,8 +41,7 @@
 
 class DocWordCompletionPlugin
   : public KTextEditor::Plugin
-  , public KTextEditor::PluginViewInterface
-  , public KTextEditor::ConfigInterfaceExtension
+  , public KTextEditor::ConfigInterface
 {
   Q_OBJECT
 
@@ -56,7 +55,11 @@ class DocWordCompletionPlugin
     void removeView (KTextEditor::View *view);
 
     void readConfig();
-    void writeConfig();
+    void writeConfig();   
+    
+    virtual void readConfig (KConfig *) {}
+    virtual void writeConfig (KConfig *) {}
+    virtual void configDialog () {}
 
     // ConfigInterfaceExtention
     uint configPages() const { return 1; };

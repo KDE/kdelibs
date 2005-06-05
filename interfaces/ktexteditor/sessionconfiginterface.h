@@ -21,7 +21,6 @@
 
 #include <kdelibs_export.h>
 
-class Q3CString;
 class KConfig;
 
 namespace KTextEditor
@@ -33,16 +32,8 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT SessionConfigInterface
 {
-  friend class PrivateSessionConfigInterface;
-
   public:
-    SessionConfigInterface();
-    virtual ~SessionConfigInterface();
-
-    unsigned int configInterfaceNumber () const;
-
-  protected:
-    void setSessionConfigInterfaceDCOPSuffix (const Q3CString &suffix);
+    virtual ~SessionConfigInterface() {}
 
   //
   // slots !!!
@@ -55,11 +46,6 @@ class KTEXTEDITOR_EXPORT SessionConfigInterface
     */
     virtual void readSessionConfig (KConfig *) = 0;
     virtual void writeSessionConfig (KConfig *) = 0;
-
-  private:
-    class PrivateSessionConfigInterface *d;
-    static unsigned int globalSessionConfigInterfaceNumber;
-    unsigned int mySessionConfigInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT SessionConfigInterface *sessionConfigInterface (class Document *doc);

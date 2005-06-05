@@ -28,7 +28,6 @@
 #include "kateattribute.h"
 
 #include <ktexteditor/configinterface.h>
-#include <ktexteditor/configinterfaceextension.h>
 
 #include <klistview.h>
 #include <kdialogbase.h>

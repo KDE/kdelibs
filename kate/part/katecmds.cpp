@@ -493,6 +493,8 @@ bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd
   KateDocument *doc = ((KateView*)view)->doc();
   if ( ! doc ) return false;
 
+  KateView *kview = ((KateView*)view);
+
   doc->editStart();
 
   int res = 0;
@@ -508,23 +510,23 @@ bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd
   }
   else if (onlySelect)
   {
-    int startline = doc->selStartLine();
-    uint startcol = doc->selStartCol();
+    int startline = kview->selectionStartLine();
+    uint startcol = kview->selectionStartColumn();
     int endcol = -1;
     do {
-      if ( startline == doc->selEndLine() )
-        endcol = doc->selEndCol();
+      if ( startline == kview->selectionEndLine() )
+        endcol = kview->selectionEndColumn();
 
       res += sedMagic( doc, startline, find, replace, d, !noCase, repeat, startcol, endcol );
 
       /*if ( startcol )*/ startcol = 0;
 
       startline++;
-    } while ( (int)startline <= doc->selEndLine() );
+    } while ( (int)startline <= kview->selectionEndLine() );
   }
   else // just this line
   {
-    int line= KTextEditor::viewCursorInterface (view) ? KTextEditor::viewCursorInterface (view)->cursorLine() : 0;
+    int line= KTextEditor::cursorInterface (view) ? KTextEditor::cursorInterface (view)->cursorLine() : 0;
     res += sedMagic(doc, line, find, replace, d, !noCase, repeat);
   }
 
@@ -539,7 +541,7 @@ bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd
 //BEGIN Character
 bool KateCommands::Character::exec (KTextEditor::View *view, const QString &_cmd, QString &)
 {
-  if (!KTextEditor::viewCursorInterface (view))
+  if (!KTextEditor::cursorInterface (view))
     return false;
 
   QString cmd = _cmd;
@@ -571,14 +573,14 @@ bool KateCommands::Character::exec (KTextEditor::View *view, const QString &_cmd
     buf[1]=0;
     
     if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QString(buf));
+      KTextEditor::editInterface(view->document())->insertText(KTextEditor::cursorInterface (view)->cursorLine(), KTextEditor::cursorInterface (view)->cursorColumnReal(), QString(buf));
   }
   else
   { // do the unicode thing
     QChar c(number);
     
     if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QString(&c, 1));
+      KTextEditor::editInterface(view->document())->insertText(KTextEditor::cursorInterface (view)->cursorLine(), KTextEditor::cursorInterface (view)->cursorColumnReal(), QString(&c, 1));
   }
 
   return true;
@@ -588,7 +590,7 @@ bool KateCommands::Character::exec (KTextEditor::View *view, const QString &_cmd
 //BEGIN Date
 bool KateCommands::Date::exec (KTextEditor::View *view, const QString &cmd, QString &)
 {
-  if (!KTextEditor::viewCursorInterface (view))
+  if (!KTextEditor::cursorInterface (view))
     return false;
 
   if (cmd.left(4) != "date")
@@ -596,10 +598,10 @@ bool KateCommands::Date::exec (KTextEditor::View *view, const QString &cmd, QStr
 
   if (QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)).length() > 0)
     if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
+      KTextEditor::editInterface(view->document())->insertText(KTextEditor::cursorInterface (view)->cursorLine(), KTextEditor::cursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
   else
     if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+      KTextEditor::editInterface(view->document())->insertText(KTextEditor::cursorInterface (view)->cursorLine(), KTextEditor::cursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
   return true;
 }

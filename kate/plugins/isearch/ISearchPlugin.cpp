@@ -156,8 +156,8 @@ void ISearchPluginView::setView( KTextEditor::View* view )
 	m_view = view;
 	m_doc  = m_view->document();
 	m_searchIF = KTextEditor::searchInterface ( m_doc );
-	m_cursorIF = KTextEditor::viewCursorInterface ( m_view );
-	m_selectIF = KTextEditor::selectionInterface ( m_doc );
+	m_cursorIF = KTextEditor::cursorInterface ( m_view );
+	m_selectIF = KTextEditor::selectionInterface ( m_view );
 	if( !m_doc || !m_cursorIF || !m_selectIF ) {
 		m_view = 0L;
 		m_doc = 0L;

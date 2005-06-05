@@ -34,7 +34,7 @@ namespace KTextEditor
 
 class View;
 
-class KDataToolPlugin : public KTextEditor::Plugin, public KTextEditor::PluginViewInterface
+class KDataToolPlugin : public KTextEditor::Plugin
 {
 	Q_OBJECT
 

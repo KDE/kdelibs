@@ -21,28 +21,18 @@
 
 #include <kdelibs_export.h>
 
-class Q3CString;
-
 namespace KTextEditor
 {
 
 /**
- * An interface for the Document class which allows the selection
+ * An interface for the View class which allows the selection
  * method to be changed between selecting rectangular blocks of text and normal mode
  * (all text between the start cursor and the current cursor).
  */
 class KTEXTEDITOR_EXPORT BlockSelectionInterface
 {
-  friend class PrivateBlockSelectionInterface;
-
   public:
-    BlockSelectionInterface ();
-    virtual ~BlockSelectionInterface ();
-
-    unsigned int blockSelectionInterfaceNumber () const;
-    
-  protected:  
-    void setBlockSelectionInterfaceDCOPSuffix (const Q3CString &suffix);  
+    virtual ~BlockSelectionInterface () {}
 
   /**
   *  slots !!!
@@ -65,17 +55,12 @@ class KTEXTEDITOR_EXPORT BlockSelectionInterface
     * toggle block seletion mode
     */
     virtual bool toggleBlockSelectionMode () = 0;
-
-    private:
-      class PrivateBlockSelectionInterface *d;
-      static unsigned int globalBlockSelectionInterfaceNumber;
-      unsigned int myBlockSelectionInterfaceNumber;
 };
 
 /**
  * Access the block selection interface of document @param doc
  */
-KTEXTEDITOR_EXPORT BlockSelectionInterface *blockSelectionInterface (class Document *doc);
+KTEXTEDITOR_EXPORT BlockSelectionInterface *blockSelectionInterface (class View *view);
 
 }
 

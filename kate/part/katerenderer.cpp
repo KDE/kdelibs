@@ -1162,33 +1162,33 @@ bool KateRenderer::getSelectionBounds(uint line, uint lineLength, uint &start, u
   {
     if (m_view->lineIsSelection(line))
     {
-      start = m_view->selStartCol();
-      end = m_view->selEndCol();
+      start = m_view->selectionStartColumn();
+      end = m_view->selectionEndColumn();
       hasSel = true;
     }
-    else if ((int)line == m_view->selStartLine())
+    else if ((int)line == m_view->selectionStartLine())
     {
-      start = m_view->selStartCol();
+      start = m_view->selectionStartColumn();
       end = lineLength;
       hasSel = true;
     }
-    else if ((int)line > m_view->selStartLine() && (int)line < m_view->selEndLine())
+    else if ((int)line > m_view->selectionStartLine() && (int)line < m_view->selectionEndLine())
     {
       start = 0;
       end = lineLength;
       hasSel = true;
     }
-    else if ((int)line == m_view->selEndLine())
+    else if ((int)line == m_view->selectionEndLine())
     {
       start = 0;
-      end = m_view->selEndCol();
+      end = m_view->selectionEndColumn();
       hasSel = true;
     }
   }
   else if (m_view->lineHasSelected(line))
   {
-    start = m_view->selStartCol();
-    end = m_view->selEndCol();
+    start = m_view->selectionStartColumn();
+    end = m_view->selectionEndColumn();
     hasSel = true;
   }
 

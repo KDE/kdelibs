@@ -63,7 +63,10 @@ bool KatePrinter::print (KateDocument *doc)
   printer.setDocName(doc->documentName());
 
   KatePrintTextSettings *kpts = new KatePrintTextSettings(&printer, NULL);
-  kpts->enableSelection( doc->hasSelection() );
+  
+#warning fixme later
+  //kpts->enableSelection( doc->hasSelection() );
+  
   printer.addDialogPage( kpts );
   printer.addDialogPage( new KatePrintHeaderFooter(&printer, NULL) );
   printer.addDialogPage( new KatePrintLayout(&printer, NULL) );
@@ -94,8 +97,12 @@ bool KatePrinter::print (KateDocument *doc)
      bool pageStarted = true;
 
      // Text Settings Page
-     bool selectionOnly = ( doc->hasSelection() &&
-                           ( printer.option("app-kate-printselection") == "true" ) );
+     bool selectionOnly = false;
+     
+  #warning fixme later
+     //( doc->hasSelection() &&
+       //                    ( printer.option("app-kate-printselection") == "true" ) );
+     
      int selStartCol = 0;
      int selEndCol = 0;
 
@@ -154,11 +161,12 @@ bool KatePrinter::print (KateDocument *doc)
      {
        if ( selectionOnly )
        {
+#warning fixme later
          // set a line range from the first selected line to the last
-         firstline = doc->selStartLine();
-         selStartCol = doc->selStartCol();
-         lastline = doc->selEndLine();
-         selEndCol = doc->selEndCol();
+    //     firstline = doc->selectionStartLine();
+      //   selStartCol = doc->selectionStartColumn();
+       //  lastline = doc->selectionEndLine();
+       //  selEndCol = doc->selectionEndColumn();
 
          lineCount = firstline;
        }
@@ -580,6 +588,8 @@ bool KatePrinter::print (KateDocument *doc)
          bool skip = false;
          if ( selectionOnly )
          {
+#warning fixme later
+         /*
            bool inBlockSelection = ( doc->blockSelectionMode() && lineCount >= firstline && lineCount <= lastline );
            if ( lineCount == firstline || inBlockSelection )
            {
@@ -593,7 +603,7 @@ bool KatePrinter::print (KateDocument *doc)
                endCol = selEndCol;
                skip = true;
              }
-           }
+           }*/
          }
 
          // HA! this is where we print [part of] a line ;]]

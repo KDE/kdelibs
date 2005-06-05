@@ -27,15 +27,14 @@
 #include "kateconfig.h"
 
 #include <ktexteditor/view.h>
-#include <ktexteditor/viewstatusmsginterface.h>
 #include <ktexteditor/texthintinterface.h>
-#include <ktexteditor/clipboardinterface.h>
-#include <ktexteditor/popupmenuinterface.h>
+#include <ktexteditor/menuinterface.h>
 #include <ktexteditor/markinterface.h>
-#include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
-#include <ktexteditor/dynwordwrapinterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
+#include <ktexteditor/blockselectioninterface.h>
+#include <ktexteditor/selectioninterface.h>
 
 #include <qpointer.h>
 #include <Q3PopupMenu>
@@ -62,17 +61,13 @@ class QVBoxLayout;
 // Kate KTextEditor::View class ;)
 //
 class KateView : public KTextEditor::View,
-                 public KTextEditor::ViewStatusMsgInterface,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
-                 public KTextEditor::SelectionInterfaceExt,
                  public KTextEditor::BlockSelectionInterface,
-                 public KTextEditor::ClipboardInterface,
-                 public KTextEditor::PopupMenuInterface,
-                 public KTextEditor::ViewCursorInterface,
+                 public KTextEditor::MenuInterface,
+                 public KTextEditor::CursorInterface,
                  public KTextEditor::CodeCompletionInterface, 
-                 public KTextEditor::SessionConfigInterface,
-                 public KTextEditor::DynWordWrapInterface
+                 public KTextEditor::SessionConfigInterface
 {
     Q_OBJECT
 
@@ -131,8 +126,8 @@ class KateView : public KTextEditor::View,
   // KTextEditor::PopupMenuInterface
   //
   public:
-    void installPopup( Q3PopupMenu* menu ) { m_rmbMenu = menu; }
-    Q3PopupMenu* popup() const             { return m_rmbMenu; }
+    void installMenu( QMenu* menu ) { m_rmbMenu = menu; }
+    QMenu* popup() const             { return m_rmbMenu; }
 
   //
   // KTextEditor::ViewCursorInterface
@@ -216,10 +211,10 @@ class KateView : public KTextEditor::View,
     //
     // KTextEditor::SelectionInterfaceExt
     //
-    int selStartLine() { return selectStart.line(); };
-    int selStartCol()  { return selectStart.col(); };
-    int selEndLine()   { return selectEnd.line(); };
-    int selEndCol()    { return selectEnd.col(); };
+    int selectionStartLine() { return selectStart.line(); };
+    int selectionStartColumn()  { return selectStart.col(); };
+    int selectionEndLine()   { return selectEnd.line(); };
+    int selectionEndColumn()    { return selectEnd.col(); };
 
   signals:
     void selectionChanged ();
@@ -514,7 +509,7 @@ class KateView : public KTextEditor::View,
     KateSearch*            m_search;
     KateSpell             *m_spell;
     KateBookmarks*         m_bookmarks;
-    QPointer<Q3PopupMenu>  m_rmbMenu;
+    QPointer<QMenu>  m_rmbMenu;
     KateCodeCompletion*    m_codeCompletion;
 
     KateCmdLine *m_cmdLine;

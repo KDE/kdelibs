@@ -47,6 +47,12 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
       
     Document *document () const;
     
+    /*
+     * will be called from the part to bound the plugin to a view
+     */
+    virtual void addView (View *) = 0;
+    virtual void removeView (View *) = 0;
+    
   private:
     class PrivatePlugin *d;
     static unsigned int globalPluginNumber;
@@ -54,34 +60,6 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
 };
    
 KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char* libname, Document *document = 0, const char *name = 0 );
-
-/**
- * View plugin class.
- * This plugin will be bound to a View
- */
-class KTEXTEDITOR_EXPORT PluginViewInterface
-{
-  friend class PrivatePluginViewInterface;
-
-  public:
-    PluginViewInterface ();
-    virtual ~PluginViewInterface ();
-    
-    unsigned int pluginViewInterfaceNumber () const;
-  
-    /*
-     * will be called from the part to bound the plugin to a view
-     */
-    virtual void addView (View *) = 0;
-    virtual void removeView (View *) = 0;
-
-  private:
-    class PrivatePluginViewInterface *d;
-    static unsigned int globalPluginViewInterfaceNumber;
-    unsigned int myPluginViewInterfaceNumber;
-};
-
-KTEXTEDITOR_EXPORT PluginViewInterface *pluginViewInterface (Plugin *plugin);
 
 }
 

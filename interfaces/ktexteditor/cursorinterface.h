@@ -1,9 +1,10 @@
-/* This file is part of the KDE libraries
-   Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
+/* This file is part of the KDE project
+   Copyright (C) 2001 Christoph Cullmann (cullmann@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,66 +20,60 @@
 #ifndef __ktexteditor_cursorinterface_h__
 #define __ktexteditor_cursorinterface_h__
 
-#include <q3ptrlist.h>
-#include <qstring.h>
-#include <q3cstring.h>
-
 #include <kdelibs_export.h>
 
 namespace KTextEditor
 {
 
 /**
- * This class represents a text cursor.
- */
-class KTEXTEDITOR_EXPORT Cursor
-{
-  public:
-    virtual void position ( unsigned int *line, unsigned int *col ) const = 0;
-
-    virtual bool setPosition ( unsigned int line, unsigned int col ) = 0;
-
-    virtual bool insertText ( const QString& text ) = 0;
-
-    virtual bool removeText ( unsigned int numberOfCharacters ) = 0;
-
-    virtual QChar currentChar () const = 0;
-};
-
-/**
-*  This is an interface for accessing the cursor of the Document class.
+*  This is an interface to access the text cursor of a View class.
 */
 class KTEXTEDITOR_EXPORT CursorInterface
 {
-  friend class PrivateCursorInterface;
-
   public:
-    CursorInterface ();
-    virtual ~CursorInterface ();
+    virtual ~CursorInterface () {}
 
-    unsigned int cursorInterfaceNumber () const;
-
-  protected:
-    void setCursorInterfaceDCOPSuffix (const Q3CString &suffix);
-
+  //
+  // slots !!!
+  //
   public:
     /**
-    * Create a new cursor object
-    */
-    virtual Cursor *createCursor ( ) = 0;
+     * Get the current cursor coordinates in pixels.
+     */
+    virtual class QPoint cursorCoordinates () = 0;
 
-    /*
-    * Accessor to the list of cursors.
-    */
-    virtual Q3PtrList<Cursor> cursors () const = 0;
+    /**
+     * Get the cursor position
+     */
+    virtual void cursorPosition (unsigned int *line, unsigned int *col) = 0;
 
-    private:
-      class PrivateCursorInterface *d;
-      static unsigned int globalCursorInterfaceNumber;
-      unsigned int myCursorInterfaceNumber;
+    /**
+     * Get the cursor position, calculated with 1 character per tab
+     */
+    virtual void cursorPositionReal (unsigned int *line, unsigned int *col) = 0;
+
+    /**
+     * Set the cursor position
+     */
+    virtual bool setCursorPosition (unsigned int line, unsigned int col) = 0;
+
+    /**
+     * Set the cursor position, use 1 character per tab
+     */
+    virtual bool setCursorPositionReal (unsigned int line, unsigned int col) = 0;
+
+    virtual unsigned int cursorLine () = 0;
+    virtual unsigned int cursorColumn () = 0;
+    virtual unsigned int cursorColumnReal () = 0;
+
+  //
+  // signals !!!
+  //
+  public:
+    virtual void cursorPositionChanged () = 0;
 };
 
-KTEXTEDITOR_EXPORT CursorInterface *cursorInterface (class Document *doc);
+KTEXTEDITOR_EXPORT CursorInterface *cursorInterface (class View *view);
 
 }
 

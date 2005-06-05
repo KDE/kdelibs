@@ -27,7 +27,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/selectioninterface.h>
 #include <kpopupmenu.h>
-#include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/editinterface.h>
 #include <kmessagebox.h>
 //END includes
@@ -105,9 +105,9 @@ void KDataToolPluginView::aboutToShow()
 		delete m_notAvailable;
 		m_notAvailable=0;
 	}
-	if ( selectionInterface(m_view->document())->hasSelection() )
+	if ( selectionInterface(m_view)->hasSelection() )
 	{
-		word = selectionInterface(m_view->document())->selection();
+		word = selectionInterface(m_view)->selection();
 		if ( word.find(' ') == -1 && word.find('\t') == -1 && word.find('\n') == -1 )
 			m_singleWord = true;
 		else
@@ -115,10 +115,10 @@ void KDataToolPluginView::aboutToShow()
 	} else {
 		// No selection -> use word under cursor
 		KTextEditor::EditInterface *ei;
-		KTextEditor::ViewCursorInterface *ci;
+		KTextEditor::CursorInterface *ci;
 		KTextEditor::View *v = (KTextEditor::View*)m_view; 
 		ei = KTextEditor::editInterface(v->document());
-		ci = KTextEditor::viewCursorInterface(v);
+		ci = KTextEditor::cursorInterface(v);
 		uint line, col;
 		ci->cursorPositionReal(&line, &col);
 		QString tmp_line = ei->textLine(line);
@@ -197,8 +197,8 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 	}
 
 	QString text;
-	if ( selectionInterface(m_view->document())->hasSelection() )
-		text = selectionInterface(m_view->document())->selection();
+	if ( selectionInterface(m_view)->hasSelection() )
+		text = selectionInterface(m_view)->selection();
 	else
 		text = m_wordUnderCursor;
 
@@ -219,17 +219,17 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 		if ( origText != text )
 		{
 			uint line, col;
-			viewCursorInterface(m_view)->cursorPositionReal(&line, &col);
-			if ( ! selectionInterface(m_view->document())->hasSelection() )
+			cursorInterface(m_view)->cursorPositionReal(&line, &col);
+			if ( ! selectionInterface(m_view)->hasSelection() )
 			{
 				KTextEditor::SelectionInterface *si;
-				si = KTextEditor::selectionInterface(m_view->document());
+				si = KTextEditor::selectionInterface(m_view);
 				si->setSelection(m_singleWord_line, m_singleWord_start, m_singleWord_line, m_singleWord_end);
 			}
 		
 			// replace selection with 'text'
-			selectionInterface(m_view->document())->removeSelectedText();
-			viewCursorInterface(m_view)->cursorPositionReal(&line, &col);
+			selectionInterface(m_view)->removeSelectedText();
+			cursorInterface(m_view)->cursorPositionReal(&line, &col);
 			editInterface(m_view->document())->insertText(line, col, text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)

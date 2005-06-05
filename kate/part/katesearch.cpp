@@ -84,7 +84,7 @@ void KateSearch::find()
 {
   // if multiline selection around, search in it
   long searchf = KateViewConfig::global()->searchFlags();
-  if (m_view->hasSelection() && m_view->selStartLine() != m_view->selEndLine())
+  if (m_view->hasSelection() && m_view->selectionStartLine() != m_view->selectionEndLine())
     searchf |= KFindDialog::SelectedText;
 
   KFindDialog *findDialog = new KFindDialog (  m_view, "", searchf,
@@ -127,8 +127,8 @@ void KateSearch::find( const QString &pattern, long flags, bool add, bool showno
 
   if ( searchFlags.selected )
   {
-    s.selBegin = KateTextCursor( m_view->selStartLine(), m_view->selStartCol() );
-    s.selEnd   = KateTextCursor( m_view->selEndLine(),   m_view->selEndCol()   );
+    s.selBegin = KateTextCursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
+    s.selEnd   = KateTextCursor( m_view->selectionEndLine(),   m_view->selectionEndColumn()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
     s.cursor = getCursor();
@@ -147,7 +147,7 @@ void KateSearch::replace()
 
   // if multiline selection around, search in it
   long searchf = KateViewConfig::global()->searchFlags();
-  if (m_view->hasSelection() && m_view->selStartLine() != m_view->selEndLine())
+  if (m_view->hasSelection() && m_view->selectionStartLine() != m_view->selectionEndLine())
     searchf |= KFindDialog::SelectedText;
 
   KReplaceDialog *replaceDialog = new KReplaceDialog (  m_view, "", searchf,
@@ -193,8 +193,8 @@ void KateSearch::replace( const QString& pattern, const QString &replacement, lo
   searchFlags.useBackRefs = KateViewConfig::global()->searchFlags() & KReplaceDialog::BackReference;
   if ( searchFlags.selected )
   {
-    s.selBegin = KateTextCursor( m_view->selStartLine(), m_view->selStartCol() );
-    s.selEnd   = KateTextCursor( m_view->selEndLine(), m_view->selEndCol()   );
+    s.selBegin = KateTextCursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
+    s.selEnd   = KateTextCursor( m_view->selectionEndLine(), m_view->selectionEndColumn()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
     s.cursor = getCursor();
@@ -844,7 +844,7 @@ void SearchCommand::processText( KTextEditor::View *view, const QString &cmd )
       // of the selection.
       if ( pattern.startsWith( v->selection() ) &&
            v->selection().length() + 1 == pattern.length() )
-        v->setCursorPositionInternal( v->selStartLine(), v->selStartCol() );
+        v->setCursorPositionInternal( v->selectionStartLine(), v->selectionStartColumn() );
 
       v->find( pattern, m_ifindFlags, false );
     }

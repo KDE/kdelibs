@@ -24,7 +24,6 @@
 
 class QRegExp;
 class QString;
-class Q3CString;
 
 namespace KTextEditor
 {
@@ -34,28 +33,15 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT SearchInterface
 {
-  friend class PrivateSearchInterface;
-
   public:
-    SearchInterface();
-    virtual ~SearchInterface();
+    virtual ~SearchInterface() {}
 
-    unsigned int searchInterfaceNumber () const;
-
-  protected:  
-    void setSearchInterfaceDCOPSuffix (const Q3CString &suffix);  
-    
   //
   // slots !!!
   //
   public:
     virtual bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false) = 0;
     virtual bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false) = 0;
-
-  private:
-    class PrivateSearchInterface *d;
-    static unsigned int globalSearchInterfaceNumber;
-    unsigned int mySearchInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT SearchInterface *searchInterface (class Document *doc);

@@ -72,8 +72,8 @@ void KateSpell::spellcheckFromCursor()
 
 void KateSpell::spellcheckSelection()
 {
-  KateTextCursor from( m_view->selStartLine(), m_view->selStartCol() );
-  KateTextCursor to( m_view->selEndLine(), m_view->selEndCol() );
+  KateTextCursor from( m_view->selectionStartLine(), m_view->selectionStartColumn() );
+  KateTextCursor to( m_view->selectionEndLine(), m_view->selectionEndColumn() );
   spellcheck( from, to );
 }
 

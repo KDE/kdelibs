@@ -130,34 +130,3 @@ KTextEditor::Document *EditorChooser::createDocument(QObject *parent,const char*
 
 	return 0;
 }
-
-KTextEditor::Editor *EditorChooser::createEditor(QWidget *parentWidget,QObject *parent,const char* widgetName,
-	const char* name,const QString& postfix,bool fallBackToKatePart){
-
-        KTextEditor::Editor *tmpEd=0;
-
-        KConfig *cfg=kapp->config();
-        QString previousGroup=cfg->group();
-        cfg->setGroup("KTEXTEDITOR:"+postfix);
-        QString editor=cfg->readPathEntry("editor");
-        cfg->setGroup(previousGroup);
-        if (editor.isEmpty())
-        {
-                KConfig *config=new KConfig("default_components");
-                config->setGroup("KTextEditor");
-                editor = config->readPathEntry("embeddedEditor", "katepart");
-                delete config;
-        }
-
-        KService::Ptr serv=KService::serviceByDesktopName(editor);
-        if (serv)
-        {
-                tmpEd=KTextEditor::createEditor(serv->library().latin1(),parentWidget,widgetName,parent,name);
-                if (tmpEd) return tmpEd;
-        }
-        if (fallBackToKatePart)
-                return KTextEditor::createEditor("libkatepart",parentWidget,widgetName,parent,name);
-
-        return 0;
-}
-

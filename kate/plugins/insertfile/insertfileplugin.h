@@ -30,7 +30,7 @@
 #include <jobclasses.h>
 #include <kurl.h>
 
-class InsertFilePlugin : public KTextEditor::Plugin, public KTextEditor::PluginViewInterface
+class InsertFilePlugin : public KTextEditor::Plugin
 {             
   Q_OBJECT
 

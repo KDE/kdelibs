@@ -21,11 +21,48 @@
 
 #include <kdelibs_export.h>
 
-class Q3CString;
+#include <qwidget.h>
+#include <qpixmap.h>
+#include <kicontheme.h>
+
 class KConfig;
 
 namespace KTextEditor
 {
+
+class KTEXTEDITOR_EXPORT ConfigPage : public QWidget
+{
+  Q_OBJECT
+
+  public:
+    ConfigPage ( QWidget *parent=0, const char *name=0 ) : QWidget (parent, name) {}
+    virtual ~ConfigPage () {}
+
+  //
+  // slots !!!
+  //
+  public:
+    /**
+      Applies the changes to all documents
+    */
+    virtual void apply () = 0;
+    
+    /**
+      Reset the changes
+    */
+    virtual void reset () = 0;
+    
+    /**
+      Sets default options
+    */
+    virtual void defaults () = 0;
+
+  signals:
+    /**
+      Emitted when something changes
+    */
+    void changed();
+};
 
 /**
 * This is an interface for accessing the configuration of the
@@ -33,16 +70,8 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT ConfigInterface
 {
-  friend class PrivateConfigInterface;
-
   public:
-    ConfigInterface();
-    virtual ~ConfigInterface();
-
-    unsigned int configInterfaceNumber () const;
-    
-  protected:  
-    void setConfigInterfaceDCOPSuffix (const Q3CString &suffix); 
+    virtual ~ConfigInterface() {}
 
   //
   // slots !!!
@@ -64,22 +93,31 @@ class KTEXTEDITOR_EXPORT ConfigInterface
     virtual void writeConfig (KConfig *) = 0;
     
     /**
-      Read/Write session config of only this document/view/plugin 
-    */
-    virtual void readSessionConfig (KConfig *) = 0;
-    virtual void writeSessionConfig (KConfig *) = 0;
-    
-    /**
       Shows a config dialog for the part, changes will be applied
       to the part, but not saved anywhere automagically, call
       writeConfig to save it
     */
     virtual void configDialog () = 0;
-
-  private:
-    class PrivateConfigInterface *d;
-    static unsigned int globalConfigInterfaceNumber;
-    unsigned int myConfigInterfaceNumber;
+    
+   //
+  // slots !!!
+  //
+  public:
+    /**
+      Number of available config pages
+    */
+    virtual uint configPages () const = 0;
+    
+    /**
+      returns config page with the given number,
+      config pages from 0 to configPages()-1 are available
+      if configPages() > 0
+    */ 
+    virtual ConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0 ) = 0;
+  
+    virtual QString configPageName (uint number = 0) const = 0;
+    virtual QString configPageFullName (uint number = 0) const = 0;
+    virtual QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const = 0;
 };
 
 class Plugin;

@@ -28,7 +28,6 @@
 KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, const KateTextCursor& cursor, QObject* parent, const char* name)
   : QObject(parent, name)
   , KateDocCursor(cursor.line(), cursor.col(), doc)
-  , KTextEditor::Cursor ()
   , m_doc (doc)
 {
   m_moveOnInsert = false;
@@ -43,7 +42,6 @@ KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, const KateTex
 KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, int lineNum, int col, QObject* parent, const char* name)
   : QObject(parent, name)
   , KateDocCursor(lineNum, col, doc)
-  , KTextEditor::Cursor ()
   , m_doc (doc)
 {
   m_moveOnInsert = false;

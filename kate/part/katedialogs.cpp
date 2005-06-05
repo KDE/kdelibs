@@ -34,7 +34,6 @@
 #include "katesyntaxdocument.h"
 #include "kateview.h"
 
-#include <ktexteditor/configinterfaceextension.h>
 #include <ktexteditor/plugin.h>
 
 #include <kio/job.h>
@@ -1178,7 +1177,7 @@ void KatePartPluginConfigPage::slotCurrentChanged( Q3ListViewItem* i )
     // load this plugin, and see if it has config pages
     KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()));
     if ( plugin ) {
-      KTextEditor::ConfigInterfaceExtension *cie = KTextEditor::configInterfaceExtension( plugin );
+      KTextEditor::ConfigInterface *cie = KTextEditor::configInterface( plugin );
       b = ( cie && cie->configPages() );
     }
 
@@ -1194,8 +1193,8 @@ void KatePartPluginConfigPage::slotConfigure()
 
   if ( ! plugin ) return;
 
-  KTextEditor::ConfigInterfaceExtension *cife =
-    KTextEditor::configInterfaceExtension( plugin );
+  KTextEditor::ConfigInterface *cife =
+    KTextEditor::configInterface( plugin );
 
   if ( ! cife )
     return;

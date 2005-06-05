@@ -21,8 +21,6 @@
 
 #include "katecursor.h"
 
-#include <ktexteditor/cursorinterface.h>
-
 #include <QObject>
 
 class KateDocument;
@@ -49,7 +47,7 @@ class KateView;
  *
  * @author Hamish Rodda
  **/
-class KateSuperCursor : public QObject, public KateDocCursor, public KTextEditor::Cursor
+class KateSuperCursor : public QObject, public KateDocCursor
 {
   Q_OBJECT
 

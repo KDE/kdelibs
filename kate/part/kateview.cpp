@@ -148,14 +148,6 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   connect(&m_viewInternal->cursor, SIGNAL(positionChanged()), SLOT(slotCaretPositionChanged()));
   connect(&m_viewInternal->mouse, SIGNAL(positionChanged()), SLOT(slotMousePositionChanged()));
 
-  setClipboardInterfaceDCOPSuffix (viewDCOPSuffix());
-  setCodeCompletionInterfaceDCOPSuffix (viewDCOPSuffix());
-  setDynWordWrapInterfaceDCOPSuffix (viewDCOPSuffix());
-  setPopupMenuInterfaceDCOPSuffix (viewDCOPSuffix());
-  setSessionConfigInterfaceDCOPSuffix (viewDCOPSuffix());
-  setViewCursorInterfaceDCOPSuffix (viewDCOPSuffix());
-  setViewStatusMsgInterfaceDCOPSuffix (viewDCOPSuffix());
-
   setInstance( KateGlobal::self()->instance() );
   doc->addView( this );
 
@@ -934,8 +926,8 @@ void KateView::gotoLine()
 
 void KateView::joinLines()
 {
-  int first = selStartLine();
-  int last = selEndLine();
+  int first = selectionStartLine();
+  int last = selectionEndLine();
   //int left = m_doc->textLine( last ).length() - m_doc->selEndCol();
   if ( first == last )
   {

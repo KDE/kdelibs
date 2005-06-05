@@ -86,17 +86,8 @@ class KTEXTEDITOR_EXPORT CompletionEntry
  */
 class KTEXTEDITOR_EXPORT CodeCompletionInterface
 {
-  friend class PrivateCodeCompletionInterface;
-
   public:
-	CodeCompletionInterface();
-	virtual ~CodeCompletionInterface();
-
-	unsigned int codeCompletionInterfaceNumber () const;
-
-  protected:
-    void setCodeCompletionInterfaceDCOPSuffix (const Q3CString &suffix);
-
+  	virtual ~CodeCompletionInterface() {}
 
   public:
 	//
@@ -119,8 +110,6 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 	// signals !!!
 	//
 	public:
-
-
 	/**
 	 * This signal is emitted when the completion list disappears and no completion has
 	 * been done. This is the case e.g. when the user presses Escape.
@@ -188,12 +177,6 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 	 * function, if you support it, declare it as a signal
 	 */
     virtual void filterInsertString(CompletionEntry*,QString*)=0;
-
-
-  private:
-    class PrivateCodeCompletionInterface *d;
-    static unsigned int globalCodeCompletionInterfaceNumber;
-    unsigned int myCodeCompletionInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT CodeCompletionInterface *codeCompletionInterface (class View *view);

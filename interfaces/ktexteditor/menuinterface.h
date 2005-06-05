@@ -16,13 +16,12 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ktexteditor_popupmenuinterface_h__
-#define __ktexteditor_popupmenuinterface_h__
+#ifndef __ktexteditor_menuinterface_h__
+#define __ktexteditor_menuinterface_h__
 
 #include <kdelibs_export.h>
 
-class Q3CString;
-class Q3PopupMenu;
+class QMenu;
 
 namespace KTextEditor
 {
@@ -30,18 +29,10 @@ namespace KTextEditor
 /**
 *  This is an interface to provide custom popup menus for a View.
 */
-class KTEXTEDITOR_EXPORT PopupMenuInterface
+class KTEXTEDITOR_EXPORT MenuInterface
 {
-  friend class PrivatePopupMenuInterface;
-
   public:
-    PopupMenuInterface ();
-    virtual ~PopupMenuInterface ();
-
-    unsigned int popupMenuInterfaceNumber () const;
-    
-  protected:  
-    void setPopupMenuInterfaceDCOPSuffix (const Q3CString &suffix);  
+    virtual ~MenuInterface () {}
 
   //
   // normal methodes
@@ -51,15 +42,10 @@ class KTEXTEDITOR_EXPORT PopupMenuInterface
       Install a Popup Menu. The Popup Menu will be activated on
       a right mouse button press event.
     */
-    virtual void installPopup (Q3PopupMenu *rmb_Menu) = 0;
-
-  private:
-    class PrivatePopupMenuInterface *d;    
-    static unsigned int globalPopupMenuInterfaceNumber;
-    unsigned int myPopupMenuInterfaceNumber;
+    virtual void installMenu (QMenu *rmb_Menu) = 0;
 };
 
-KTEXTEDITOR_EXPORT PopupMenuInterface *popupMenuInterface (class View *view);
+KTEXTEDITOR_EXPORT MenuInterface *menuInterface (class View *view);
 
 }
 

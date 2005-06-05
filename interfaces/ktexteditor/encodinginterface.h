@@ -22,7 +22,6 @@
 #include <kdelibs_export.h>
 
 class QString;
-class Q3CString;
 
 namespace KTextEditor
 {
@@ -32,16 +31,8 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT EncodingInterface
 {
-  friend class PrivateEncodingInterface;
-
   public:
-    EncodingInterface();
-    virtual ~EncodingInterface();
-
-    unsigned int encodingInterfaceNumber () const;
-    
-  protected:  
-    void setEncodingInterfaceDCOPSuffix (const Q3CString &suffix);  
+    virtual ~EncodingInterface() {}
 
   //
   // slots !!!
@@ -49,11 +40,6 @@ class KTEXTEDITOR_EXPORT EncodingInterface
   public:
     virtual void setEncoding (const class QString &e) = 0;
     virtual class QString encoding() const = 0;
-
-  private:
-    class PrivateEncodingInterface *d;
-    static unsigned int globalEncodingInterfaceNumber;
-    unsigned int myEncodingInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT EncodingInterface *encodingInterface (class Document *doc);

@@ -20,21 +20,38 @@
 #include <config.h>
 
 #include "document.h"
-#include "view.h"
-#include "plugin.h"
-#include "editor.h"
+#include "document.moc"
 
+#include "view.h"
+#include "view.moc"
+
+#include "plugin.h"
+#include "plugin.moc"
+
+#include "blockselectioninterface.h"
+#include "codecompletioninterface.h"
 #include "commandinterface.h"
+#include "configinterface.h"
+#include "cursorinterface.h"
+#include "editinterface.h"
+#include "encodinginterface.h"
+#include "highlightinginterface.h"
+#include "markinterface.h"
+#include "menuinterface.h"
 #include "modificationinterface.h"
+#include "searchinterface.h"
+#include "selectioninterface.h"
+#include "sessionconfiginterface.h"
+#include "templateinterface.h"
+#include "texthintinterface.h"
+#include "variableinterface.h"
+#include "wordwrapinterface.h"
+
+#include "configinterface.moc"
 
 #include <kaction.h>
 #include <kparts/factory.h>
 #include <kparts/componentfactory.h>
-
-#include "document.moc"
-#include "view.moc"
-#include "plugin.moc"
-#include "editor.moc"
 
 using namespace KTextEditor;
 
@@ -77,39 +94,13 @@ namespace KTextEditor
     
     class Document *m_doc;
   };
-  
-  class PrivatePluginViewInterface
-  {
-  public:
-    PrivatePluginViewInterface ()
-    {
-    }
-
-    ~PrivatePluginViewInterface ()
-    {
-    }
-  };
-
-  class PrivateEditor
-  {
-  public:
-    PrivateEditor ()
-    {
-    }
-
-    ~PrivateEditor()
-    {
-    }
-  };
 }
 
 unsigned int Document::globalDocumentNumber = 0;
 unsigned int View::globalViewNumber = 0;
 unsigned int Plugin::globalPluginNumber = 0;
-unsigned int PluginViewInterface::globalPluginViewInterfaceNumber = 0;
-unsigned int Editor::globalEditorNumber = 0;
 
-Document::Document( QObject *parent, const char *name ) : KTextEditor::Editor (parent, name )
+Document::Document( QObject *parent, const char *name ) : KParts::ReadWritePart( parent, name )
 {
   globalDocumentNumber++;
   myDocumentNumber = globalDocumentNumber;
@@ -179,41 +170,6 @@ Document *Plugin::document () const
   return d->m_doc;
 }
 
-PluginViewInterface::PluginViewInterface()
-{
-  globalPluginViewInterfaceNumber++;
-  myPluginViewInterfaceNumber = globalPluginViewInterfaceNumber;
-}
-
-PluginViewInterface::~PluginViewInterface()
-{
-}
-
-unsigned int PluginViewInterface::pluginViewInterfaceNumber () const
-{
-  return myPluginViewInterfaceNumber;
-}
-
-Editor::Editor( QObject *parent, const char *name ) : KParts::ReadWritePart( parent, name )
-{
-  globalEditorNumber++;
-  myEditorNumber = globalEditorNumber;
-}
-
-Editor::~Editor()
-{
-}
-
-unsigned int Editor::editorNumber () const
-{
-  return myEditorNumber;
-}                         
-
-Editor *KTextEditor::createEditor ( const char* libname, QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name )
-{
-  return KParts::ComponentFactory::createPartInstanceFromLibrary<Editor>( libname, parentWidget, widgetName, parent, name );
-}
-
 Document *KTextEditor::createDocument ( const char* libname, QObject *parent, const char *name )
 {
   return KParts::ComponentFactory::createPartInstanceFromLibrary<Document>( libname, 0, 0, parent, name );
@@ -222,14 +178,6 @@ Document *KTextEditor::createDocument ( const char* libname, QObject *parent, co
 Plugin *KTextEditor::createPlugin ( const char* libname, Document *document, const char *name )
 {
   return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, document, name );
-}
-
-PluginViewInterface *KTextEditor::pluginViewInterface (Plugin *plugin)
-{       
-  if (!plugin)
-    return 0;
-
-  return dynamic_cast<PluginViewInterface*>(plugin);
 }
 
 KTextEditor::CommandInterface *KTextEditor::commandInterface (Document *doc)
@@ -246,4 +194,154 @@ KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document
     return 0;
 
   return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
+}
+
+KTextEditor::WordWrapInterface *KTextEditor::wordWrapInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::WordWrapInterface*>(doc );
+}
+
+KTextEditor::BlockSelectionInterface *KTextEditor::blockSelectionInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::BlockSelectionInterface*>(view);
+}
+
+EditInterface *KTextEditor::editInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::EditInterface*>( doc );
+}
+
+SelectionInterface *KTextEditor::selectionInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::SelectionInterface*>( view );
+}
+
+
+CodeCompletionInterface *KTextEditor::codeCompletionInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::CodeCompletionInterface*>( view );
+}
+
+ConfigInterface *KTextEditor::configInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::ConfigInterface*>( doc );
+}
+
+ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
+{
+  if (!plugin)
+    return 0;
+
+  return dynamic_cast<KTextEditor::ConfigInterface*>( plugin );
+}
+
+
+CursorInterface *KTextEditor::cursorInterface (View *view)
+{                   
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::CursorInterface*>(view);
+}
+
+HighlightingInterface *KTextEditor::highlightingInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::HighlightingInterface*>( doc );
+}
+
+
+EncodingInterface *KTextEditor::encodingInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<EncodingInterface*>( doc );
+}
+
+
+SearchInterface *KTextEditor::searchInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::SearchInterface*>( doc );
+}
+
+
+MarkInterface *KTextEditor::markInterface (Document *doc)
+{                                 
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<KTextEditor::MarkInterface*>(doc);
+}
+
+MenuInterface *KTextEditor::menuInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::MenuInterface*>( view );
+}
+
+TextHintInterface *textHintInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<KTextEditor::TextHintInterface*>( view );
+}
+
+VariableInterface *KTextEditor::variableInterface( Document *doc )
+{
+  if ( ! doc )
+    return 0;
+
+  return dynamic_cast<KTextEditor::VariableInterface*>( doc );
+}
+
+
+SessionConfigInterface *KTextEditor::sessionConfigInterface (Document *doc)
+{
+  if (!doc)
+    return 0;
+
+  return dynamic_cast<SessionConfigInterface*>( doc );
+}
+
+SessionConfigInterface *KTextEditor::sessionConfigInterface (View *view)
+{
+  if (!view)
+    return 0;
+
+  return dynamic_cast<SessionConfigInterface*>( view );
+}
+
+SessionConfigInterface *KTextEditor::sessionConfigInterface (Plugin *plugin)
+{
+  if (!plugin)
+    return 0;
+
+  return dynamic_cast<SessionConfigInterface*>( plugin );
 }

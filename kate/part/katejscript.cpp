@@ -592,16 +592,16 @@ KJS::Value KateJSView::getValueProperty(KJS::ExecState *exec, int token) const
 
   switch (token) {
     case KateJSView::SelStartLine:
-      return KJS::Number( view->selStartLine() );
+      return KJS::Number( view->selectionStartLine() );
 
     case KateJSView::SelStartCol:
-      return KJS::Number( view->selStartCol() );
+      return KJS::Number( view->selectionStartColumn() );
 
     case KateJSView::SelEndLine:
-      return KJS::Number( view->selEndLine() );
+      return KJS::Number( view->selectionEndLine() );
 
     case KateJSView::SelEndCol:
-      return KJS::Number( view->selEndCol() );
+      return KJS::Number( view->selectionEndColumn() );
     }
 
   return KJS::Undefined ();

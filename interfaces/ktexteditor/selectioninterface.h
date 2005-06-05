@@ -21,7 +21,6 @@
 #define __ktexteditor_selectioninterface_h__
 
 #include <qstring.h>
-#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -29,21 +28,12 @@ namespace KTextEditor
 {
 
 /**
-*  This is an interface to text selection for the Document class.
+*  This is an interface to text selection for the View class.
 */
 class KTEXTEDITOR_EXPORT SelectionInterface
 {
-  friend class PrivateSelectionInterface;
-
   public:
-    SelectionInterface();
-    virtual ~SelectionInterface();
-
-    unsigned int selectionInterfaceNumber () const;
-
-  protected:
-    void setSelectionInterfaceDCOPSuffix (const Q3CString &suffix);
-
+    virtual ~SelectionInterface() {}
   /*
   *  slots !!!
   */
@@ -77,23 +67,47 @@ class KTEXTEDITOR_EXPORT SelectionInterface
     *  select the whole text
     */
     virtual bool selectAll () = 0;
+    
+    /** The selection start line number */
+    virtual int selectionStartLine () = 0;
+    
+    /** The selection start col */
+    virtual int selectionStartColumn () = 0;
+    
+    /** The selection end line */
+    virtual int selectionEndLine () = 0;
+    
+    /** The selection end col */
+    virtual int selectionEndColumn () = 0;
+
+  /**
+   * Copy'n'Paste stuff
+   */
+  public:
+   /**
+    * copies selected text to clipboard
+    */
+    virtual void copy ( ) const = 0;
+
+    /**
+    * copies selected text
+    */
+    virtual void cut ( ) = 0;
+
+    /**
+    * copies selected text to clipboard
+    */
+    virtual void paste ( ) = 0;
 
 	//
 	// signals !!!
 	//
 	public:
 	  virtual void selectionChanged () = 0;
-
-  private:
-    class PrivateSelectionInterface *d;
-    static unsigned int globalSelectionInterfaceNumber;
-    unsigned int mySelectionInterfaceNumber;
 };
 
-class Document;
 class View;
 
-KTEXTEDITOR_EXPORT SelectionInterface *selectionInterface (Document *doc);
 KTEXTEDITOR_EXPORT SelectionInterface *selectionInterface (View *view);
 
 }

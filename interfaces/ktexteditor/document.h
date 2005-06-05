@@ -19,7 +19,7 @@
 #ifndef __ktexteditor_document_h__
 #define __ktexteditor_document_h__
 
-#include "editor.h"
+#include <kparts/part.h>
 
 namespace KTextEditor
 {
@@ -28,7 +28,7 @@ namespace KTextEditor
  * The main class representing a text document.
  * This class provides access to the document's views.
  */
-class KTEXTEDITOR_EXPORT Document : public KTextEditor::Editor
+class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 {
   friend class PrivateDocument;
 
@@ -53,8 +53,15 @@ class KTEXTEDITOR_EXPORT Document : public KTextEditor::Editor
      * The editor part should provide some meaningful name, like some unique
      * Untitled XYZ for document without url or basename for documents with
      * url
+     * @return readable document name
      */
     virtual const QString &documentName () const = 0;
+    
+    /**
+     * Returns this document's mimetype
+     * @return mimetype
+     */
+    virtual QString mimeType() = 0;
 
     /**
     * Create a view that will display the document data. You can create as many

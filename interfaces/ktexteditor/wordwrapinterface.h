@@ -22,8 +22,6 @@
 
 #include <kdelibs_export.h>
 
-class Q3CString;
-
 namespace KTextEditor
 {
 
@@ -32,16 +30,8 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT WordWrapInterface
 {
-  friend class PrivateWordWrapInterface;
-  
   public:
-    WordWrapInterface ();
-    virtual ~WordWrapInterface ();
-
-    unsigned int wordWrapInterfaceNumber () const;
-    
-  protected:  
-    void setWordWrapInterfaceDCOPSuffix (const Q3CString &suffix); 
+   virtual ~WordWrapInterface () {}
 
   //
   // slots !!!
@@ -52,11 +42,6 @@ class KTEXTEDITOR_EXPORT WordWrapInterface
 
     virtual void setWordWrapAt (unsigned int ) = 0;
     virtual unsigned int wordWrapAt () = 0;
-
-  private:
-    class PrivateWordWrapInterface *d;
-    static unsigned int globalWordWrapInterfaceNumber;
-    unsigned int myWordWrapInterfaceNumber;
 };
                           
 KTEXTEDITOR_EXPORT WordWrapInterface *wordWrapInterface (class Document *doc);

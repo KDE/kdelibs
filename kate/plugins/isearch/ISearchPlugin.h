@@ -23,7 +23,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/searchinterface.h>
-#include <ktexteditor/viewcursorinterface.h>
+#include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/selectioninterface.h>        
 
 #include <kxmlguiclient.h>
@@ -32,7 +32,7 @@
 
 class QLabel;
 
-class ISearchPlugin : public KTextEditor::Plugin, public KTextEditor::PluginViewInterface
+class ISearchPlugin : public KTextEditor::Plugin
 {
 	Q_OBJECT
 	
@@ -90,7 +90,7 @@ private:
 	KTextEditor::View*     m_view;
 	KTextEditor::Document* m_doc;
 	KTextEditor::SearchInterface* m_searchIF;
-	KTextEditor::ViewCursorInterface* m_cursorIF;
+	KTextEditor::CursorInterface* m_cursorIF;
 	KTextEditor::SelectionInterface* m_selectIF;
 	KAction*               m_searchForwardAction;
 	KAction*               m_searchBackwardAction;

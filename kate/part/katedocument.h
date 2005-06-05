@@ -29,25 +29,14 @@
 #include "katecodefoldinghelpers.h"
 
 #include <ktexteditor/document.h>
-#include <ktexteditor/configinterfaceextension.h>
 #include <ktexteditor/sessionconfiginterface.h>
-#include <ktexteditor/editinterfaceext.h>
 #include <ktexteditor/templateinterface.h>
 #include <ktexteditor/editinterface.h>
-#include <ktexteditor/undointerface.h>
-#include <ktexteditor/cursorinterface.h>
-#include <ktexteditor/documentinfo.h>
-#include <ktexteditor/selectioninterface.h>
-#include <ktexteditor/selectioninterfaceext.h>
-#include <ktexteditor/blockselectioninterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
-#include <ktexteditor/configinterfaceextension.h>
 #include <ktexteditor/markinterface.h>
-#include <ktexteditor/markinterfaceextension.h>
 #include <ktexteditor/wordwrapinterface.h>
-#include <ktexteditor/printinterface.h>
 #include <ktexteditor/variableinterface.h>
 #include <ktexteditor/encodinginterface.h>
 #include <ktexteditor/modificationinterface.h>
@@ -94,20 +83,15 @@ class KateKeyInterceptorFunctor;
 // Kate KTextEditor::Document class (and even KTextEditor::Editor ;)
 //
 class KateDocument : public KTextEditor::Document,
-                     public KTextEditor::ConfigInterfaceExtension,
                      public KTextEditor::SessionConfigInterface,
-                     public KTextEditor::EditInterfaceExt,
                      public KTextEditor::TemplateInterface,
                      public KTextEditor::EditInterface,
-                     public KTextEditor::UndoInterface, public KTextEditor::CursorInterface,
-                     public KTextEditor::SelectionInterface, public KTextEditor::SearchInterface,
-                     public KTextEditor::HighlightingInterface, public KTextEditor::BlockSelectionInterface,
-                     public KTextEditor::ConfigInterface, public KTextEditor::MarkInterface,
-                     public KTextEditor::PrintInterface, public KTextEditor::WordWrapInterface,
-                     public KTextEditor::MarkInterfaceExtension,
+                     public KTextEditor::SearchInterface,
+                     public KTextEditor::HighlightingInterface,
+                     public KTextEditor::ConfigInterface,
+                     public KTextEditor::MarkInterface,
+                     public KTextEditor::WordWrapInterface,
                      public KTextEditor::EncodingInterface,
-                     public KTextEditor::SelectionInterfaceExt,
-                     public KTextEditor::DocumentInfoInterface,
                      public KTextEditor::VariableInterface,
                      public KTextEditor::ModificationInterface,
                      public DCOPObject
@@ -401,16 +385,6 @@ class KateDocument : public KTextEditor::Document,
     void textInserted(int line,int column);
 
   //
-  // KTextEditor::CursorInterface stuff
-  //
-  public slots:
-    KTextEditor::Cursor *createCursor ();
-    Q3PtrList<KTextEditor::Cursor> cursors () const;
-
-  private:
-    Q3PtrList<KTextEditor::Cursor> myCursors;
-
-  //
   // KTextEditor::SearchInterface stuff
   //
   public slots:
@@ -487,7 +461,7 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     void marksChanged();
-    void markChanged( KTextEditor::Mark, KTextEditor::MarkInterfaceExtension::MarkChangeAction );
+    void markChanged( KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction );
 
   private:
     Q3IntDict<KTextEditor::Mark> m_marks;
@@ -1008,44 +982,7 @@ class KateDocument : public KTextEditor::Document,
       void testTemplateCode();
       void dumpRegionTree();
 
-  //BEGIN DEPRECATED
-  //
-  // KTextEditor::SelectionInterface stuff
-  // DEPRECATED, this will be removed for KDE 4.x !!!!!!!!!!!!!!!!!!!!
-  //
-  public slots:
-    bool setSelection ( uint startLine, uint startCol, uint endLine, uint endCol );
-    bool clearSelection ();
-    bool hasSelection () const;
-    QString selection () const;
-    bool removeSelectedText ();
-    bool selectAll();
-
-    //
-    // KTextEditor::SelectionInterfaceExt
-    //
-    int selStartLine();
-    int selStartCol();
-    int selEndLine();
-    int selEndCol();
-
-
-  // hack, only there to still support the deprecated stuff, will be removed for KDE 4.x
-  signals:
-    void selectionChanged ();
-
-  //
-  // KTextEditor::BlockSelectionInterface stuff
-  // DEPRECATED, this will be removed for KDE 4.x !!!!!!!!!!!!!!!!!!!!
-  //
-  public slots:
-    bool blockSelectionMode ();
-    bool setBlockSelectionMode (bool on);
-    bool toggleBlockSelectionMode ();
-
-  private:
-//END DEPRECATED
-
+public:
   k_dcop:
     uint documentNumber () const;
 };

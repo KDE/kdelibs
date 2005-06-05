@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 
-class Q3CString;
+class QPixmap;
 
 namespace KTextEditor
 {
@@ -41,16 +41,8 @@ class Mark
 */
 class KTEXTEDITOR_EXPORT MarkInterface
 {
-  friend class PrivateMarkInterface;
-  
   public:
-    MarkInterface ();
-    virtual ~MarkInterface ();
-
-    unsigned int markInterfaceNumber () const;
-    
-  protected:  
-    void setMarkInterfaceDCOPSuffix (const Q3CString &suffix);  
+    virtual ~MarkInterface () {}
 
   //
   // slots !!!
@@ -92,7 +84,7 @@ class KTEXTEDITOR_EXPORT MarkInterface
      * @return number of reserved marker types
      * @since 3.3
      */
-    static int reservedMarkersCount();
+    static int reservedMarkersCount() { return 7; }
 
     /**
      * Pre-defined mark types.
@@ -157,11 +149,24 @@ class KTEXTEDITOR_EXPORT MarkInterface
   //
   public:
     virtual void marksChanged () = 0;
+    
   
-  private:
-    class PrivateMarkInterface *d;
-    static unsigned int globalMarkInterfaceNumber;
-    unsigned int myMarkInterfaceNumber;
+  public:
+    virtual void setPixmap(MarkTypes, const QPixmap &)=0;
+    virtual void setDescription(MarkTypes, const QString &)=0;
+    virtual void setMarksUserChangable(uint markMask)=0;
+
+    enum MarkChangeAction {
+		MarkAdded=0,
+		MarkRemoved=1
+	};
+
+  //
+  // signals !!!
+  //
+  public:
+    virtual void markChanged (KTextEditor::Mark mark, 
+                              KTextEditor::MarkInterface::MarkChangeAction action) = 0;
 };
 
 KTEXTEDITOR_EXPORT MarkInterface *markInterface (class Document *doc);

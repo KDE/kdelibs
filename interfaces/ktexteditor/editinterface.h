@@ -20,7 +20,6 @@
 #define __ktexteditor_editinterface_h__
 
 #include <qstring.h>
-#include <Q3CString>
 #include <kdelibs_export.h>
 
 namespace KTextEditor
@@ -32,16 +31,25 @@ namespace KTextEditor
 */
 class KTEXTEDITOR_EXPORT EditInterface
 {
-  friend class PrivateEditInterface;
+  public:
+    virtual ~EditInterface() {}
 
   public:
-    EditInterface();
-    virtual ~EditInterface();
+    /**
+     * Begin an editing sequence.  Edit commands during this sequence will be
+     * bunched together such that they represent a single undo command in the
+     * editor, and so that repaint events do not occur inbetween.
+     *
+     * Your application should not return control to the event loop while it
+     * has an unterminated (no matching editEnd() call) editing sequence
+     * (result undefined) - so do all of your work in one go...
+     */
+    virtual void editBegin() = 0;
 
-    uint editInterfaceNumber () const;
-
-  protected:
-    void setEditInterfaceDCOPSuffix (const Q3CString &suffix);
+	  /**
+	   * End and editing sequence.
+	   */
+    virtual void editEnd() = 0;
 
   public:
   /**
@@ -120,14 +128,6 @@ class KTEXTEDITOR_EXPORT EditInterface
     virtual void textChanged () = 0;
 
     virtual void charactersInteractivelyInserted(int ,int ,const QString&)=0; //line, col, characters if you don't support this, don't create a signal, just overload it.
-
-  /**
-  * only for the interface itself - REAL PRIVATE
-  */
-  private:
-    class PrivateEditInterface *d;
-    static uint globalEditInterfaceNumber;
-    uint myEditInterfaceNumber;
 };
 
 KTEXTEDITOR_EXPORT EditInterface *editInterface (class Document *doc);
