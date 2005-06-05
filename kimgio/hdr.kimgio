@@ -2,6 +2,7 @@
 Type=HDR
 Header=^\x23\x3f(RGBE|RADIANCE)
 Name=High Dynamic Range Image
+Name[da]=Billede med højt dynamisk område
 Read=true
 Write=false
 Suffices=.hdr,.HDR,.pic,.PIC
