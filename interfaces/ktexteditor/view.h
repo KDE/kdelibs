@@ -21,7 +21,6 @@
 
 #include <qwidget.h>
 #include <kxmlguiclient.h>
-#include <q3cstring.h>
 
 namespace KTextEditor
 {
@@ -47,11 +46,6 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * Returns the number of this view
      */
     unsigned int viewNumber () const;
-
-    /**
-     * Returns the DCOP suffix to allow identification of this view's DCOP interface.
-     */
-    Q3CString viewDCOPSuffix () const;
 
     /**
     * Acess the parent Document.

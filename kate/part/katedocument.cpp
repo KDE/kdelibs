@@ -110,8 +110,12 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_tabInterceptor(0)
 {
   m_undoComplexMerge=false;
+  
+  Q3CString num;
+  num.setNum (documentNumber());
+  
   // my dcop object
-  setObjId ("KateDocument#"+documentDCOPSuffix());
+  setObjId ("KateDocument#"+num);
 
   // init local plugin array
   m_plugins.fill (0);

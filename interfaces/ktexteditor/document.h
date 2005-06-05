@@ -42,11 +42,6 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * Returns the global number of this document in your app.
      */
     unsigned int documentNumber () const;
-
-    /**
-     * Returns this document's DCOP suffix for identifiying its DCOP interface.
-     */
-    Q3CString documentDCOPSuffix () const;
     
     /**
      * Returns this document's name

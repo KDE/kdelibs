@@ -115,14 +115,6 @@ unsigned int Document::documentNumber () const
   return myDocumentNumber;
 }
 
-Q3CString Document::documentDCOPSuffix () const
-{
-  Q3CString num;
-  num.setNum (documentNumber());
-  
-  return num;
-}
-
 View::View( Document *, QWidget *parent, const char *name ) : QWidget( parent, name )
 {
   globalViewNumber++;
@@ -136,15 +128,6 @@ View::~View()
 unsigned int View::viewNumber () const
 {
   return myViewNumber;
-}
-
-Q3CString View::viewDCOPSuffix () const
-{
-  Q3CString num1, num2;
-  num1.setNum (viewNumber());
-  num2.setNum (document()->documentNumber());
-  
-  return num2 + "-" + num1;
 }
 
 Plugin::Plugin( Document *document, const char *name ) : QObject (document, name )
