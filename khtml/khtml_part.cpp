@@ -1879,15 +1879,11 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   m_url = url;
 
-  bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
   bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
-  // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
+  if ( servedAsXML ) { // any XML derivative, including XHTML
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
-    // HTML or XHTML? (#86446)
-    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
   }
 #ifndef KHTML_NO_CARET
 //  d->m_view->initCaret();
