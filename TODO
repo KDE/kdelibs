@@ -228,3 +228,4 @@ an alternative help->contents action)
   make SSL much easier to implement and allow removal of many hacks, mostly
   involving metadata.
 
+- KDE 4: Check if QTemporaryFile is good enough to dump KTempFile
