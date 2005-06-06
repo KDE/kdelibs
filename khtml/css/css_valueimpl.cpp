@@ -945,7 +945,7 @@ QString QuotesValueImpl::openQuote(int level) const
 //     kdDebug( 6080 ) << "Open quote level:" << level << endl;
     if (level < 0) level = 0;
     else
-    if (level >= levels) level = levels-1;
+    if (level >= (int) levels) level = (int) (levels-1);
     return data[level*2];
 }
 
@@ -955,7 +955,7 @@ QString QuotesValueImpl::closeQuote(int level) const
 //     kdDebug( 6080 ) << "Close quote level:" << level << endl;
     if (level < 0) level = 0;
     else
-    if (level >= levels) level = levels-1;
+    if (level >= (int) levels) level = (int) (levels-1);
     return data[level*2+1];
 }
 
