@@ -513,6 +513,17 @@ public:
   static QString protocolClass( const QString& protocol );
 
   /**
+   * Returns the parent URL for the specified protocol.
+   *
+   * This corresponds to the "Parent=" field in the protocol description file.
+   *
+   * @param protocol the protocol to check
+   * @return the parent URL of this protocol, or KURL() if unknown
+   * @since 3.5
+   */
+  static KURL parentURL( const QString& protocol );
+  
+  /**
    * Returns whether file previews should be shown for the specified protocol.
    *
    * This corresponds to the "ShowPreviews=" field in the protocol description file.
@@ -661,6 +672,7 @@ protected:
   bool canRenameToFile() const; // for kprotocolinfo_kdecore
   bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
   FileNameUsedForCopying fileNameUsedForCopying() const; // for kprotocolinfo_kdecore
+  KURL parentURL() const; // for kprotocolinfo_kdecore
   static KProtocolInfo* findProtocol(const KURL &url); // for kprotocolinfo_kdecore
 
 protected:

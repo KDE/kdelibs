@@ -24,6 +24,7 @@
 
 #include "kurl.h"
 
+// KDE_QT_ONLY is first used for dcop/client (e.g. marshalling)
 #ifndef KDE_QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
@@ -1851,7 +1852,21 @@ KURL KURL::upURL( ) const
   if (!hasSubURL())
   {
      KURL u(*this);
+     
+#ifndef KDE_QT_ONLY
+     if (u.path() == QChar('/'))
+     {
+         KURL parent = KProtocolInfo::parentURL(u.protocol());
+
+         if (parent.isValid())
+         {
+             return parent;
+	 }
+     }
+#endif
+     
      u.cd("../");
+     
      return u;
   }
 
