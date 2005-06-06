@@ -29,7 +29,7 @@ class KateView;
 /**
  * TODO:
  *  - use connect/disconnectNotify to know when to be bothered tracking/emitting positions.
- * 
+ *
  * Possible additional features:
  * - Notification when a cursor enters or exits a view
  * - suggest something :)
@@ -57,13 +57,10 @@ public:
      * all internally only used SuperCursors should be private or people could modify them from the
      * outside breaking kate's internals
      */
-    KateSuperCursor(KateDocument* doc, bool privateC, const KateTextCursor& cursor, QObject* parent = 0L, const char* name = 0L);
+    KateSuperCursor(KateDocument* doc, bool privateC, const KTextEditor::Cursor& cursor, QObject* parent = 0L, const char* name = 0L);
     KateSuperCursor(KateDocument* doc, bool privateC, int lineNum = 0, int col = 0, QObject* parent = 0L, const char* name = 0L);
     virtual ~KateSuperCursor();
 
-    // KTextEditor::Cursor interface
-    void position(uint *line, uint *col) const;
-    bool setPosition(uint line, uint col);
     bool insertText(const QString& text);
     bool removeText(uint numberOfCharacters);
     QChar currentChar() const;
@@ -98,9 +95,9 @@ public:
 
     // Reimplementations;
     virtual void setLine(int lineNum);
-    virtual void setCol(int colNum);
-    virtual void setPos(const KateTextCursor& pos);
-    virtual void setPos(int lineNum, int colNum);
+    virtual void setColumn(int colNum);
+    virtual void setPosition(const KTextEditor::Cursor& pos);
+    virtual void setPosition(int lineNum, int colNum);
 
     /**
      * Returns the document this cursor is attached to...

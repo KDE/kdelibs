@@ -89,7 +89,7 @@ KateSuperRange::KateSuperRange(KateDocument* doc, const KateSuperRange& range, K
   init();
 }
 
-KateSuperRange::KateSuperRange(KateDocument* doc, const KateTextCursor& start, const KateTextCursor& end, KateSuperRange* parent)
+KateSuperRange::KateSuperRange(KateDocument* doc, const KTextEditor::Cursor& start, const KTextEditor::Cursor& end, KateSuperRange* parent)
   : QObject(parent)
   , m_attribute(0L)
   , m_parentRange(0L)
@@ -163,22 +163,22 @@ KateSuperRange::~KateSuperRange()
   }
 }
 
-KateTextCursor& KateSuperRange::start()
+KTextEditor::Cursor& KateSuperRange::start()
 {
   return *m_start;
 }
 
-const KateTextCursor& KateSuperRange::start() const
+const KTextEditor::Cursor& KateSuperRange::start() const
 {
   return *m_start;
 }
 
-KateTextCursor& KateSuperRange::end()
+KTextEditor::Cursor& KateSuperRange::end()
 {
   return *m_end;
 }
 
-const KateTextCursor& KateSuperRange::end() const
+const KTextEditor::Cursor& KateSuperRange::end() const
 {
   return *m_end;
 }
@@ -332,7 +332,7 @@ void KateSuperRange::evaluatePositionChanged()
     emit positionChanged();
 }
 
-void KateSuperRange::slotMousePositionChanged(const KateTextCursor& newPosition)
+void KateSuperRange::slotMousePositionChanged(const KTextEditor::Cursor& newPosition)
 {
   bool includesMouse = includes(newPosition);
   if (includesMouse != m_mouseOver) {
@@ -342,7 +342,7 @@ void KateSuperRange::slotMousePositionChanged(const KateTextCursor& newPosition)
   }
 }
 
-void KateSuperRange::slotCaretPositionChanged(const KateTextCursor& newPosition)
+void KateSuperRange::slotCaretPositionChanged(const KTextEditor::Cursor& newPosition)
 {
   bool includesCaret = includes(newPosition);
   if (includesCaret != m_caretOver) {
@@ -403,7 +403,7 @@ KateSuperRange* KateSuperRange::findMostSpecificRange( const KateRange & input )
   }
 }
 
-KateSuperRange* KateSuperRange::firstRangeIncluding( const KateTextCursor & pos )
+KateSuperRange* KateSuperRange::firstRangeIncluding( const KTextEditor::Cursor & pos )
 {
   switch (includes(pos)) {
     case 0:
@@ -442,7 +442,7 @@ KateSuperRange* KateSuperRange::firstRangeIncluding( const KateTextCursor & pos 
   }
 }
 
-KateSuperRange* KateSuperRange::deepestRangeIncluding( const KateTextCursor & pos )
+KateSuperRange* KateSuperRange::deepestRangeIncluding( const KTextEditor::Cursor & pos )
 {
   switch (includes(pos)) {
     case 0:

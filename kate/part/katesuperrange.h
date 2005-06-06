@@ -52,7 +52,7 @@ class KateSuperRange : public QObject, public KateRange
      */
     KateSuperRange(KateSuperCursor* start, KateSuperCursor* end, KateSuperRange* parent = 0L);
     KateSuperRange(KateDocument* doc, const KateSuperRange& range, KateSuperRange* parent = 0L);
-    KateSuperRange(KateDocument* doc, const KateTextCursor& start, const KateTextCursor& end, KateSuperRange* parent = 0L);
+    KateSuperRange(KateDocument* doc, const KTextEditor::Cursor& start, const KTextEditor::Cursor& end, KateSuperRange* parent = 0L);
     KateSuperRange(KateDocument* doc, uint startLine = 0, uint startCol = 0, uint endLine = 0, uint endCol = 0, KateSuperRange* parent = 0L);
 
     virtual ~KateSuperRange();
@@ -60,10 +60,10 @@ class KateSuperRange : public QObject, public KateRange
     KateDocument* doc() const;
     virtual KateRangeList* owningList() const;
 
-    virtual KateTextCursor& start();
-    virtual KateTextCursor& end();
-    virtual const KateTextCursor& start() const;
-    virtual const KateTextCursor& end() const;
+    virtual KTextEditor::Cursor& start();
+    virtual KTextEditor::Cursor& end();
+    virtual const KTextEditor::Cursor& start() const;
+    virtual const KTextEditor::Cursor& end() const;
 
     KateSuperCursor& superStart();
     KateSuperCursor& superEnd();
@@ -144,12 +144,12 @@ class KateSuperRange : public QObject, public KateRange
     /**
      * Finds the first range which contains position \p pos.
      */
-    KateSuperRange* firstRangeIncluding(const KateTextCursor& pos);
+    KateSuperRange* firstRangeIncluding(const KTextEditor::Cursor& pos);
 
     /**
      * Finds the deepest range which contains position \p pos.
      */
-    KateSuperRange* deepestRangeIncluding(const KateTextCursor& pos);
+    KateSuperRange* deepestRangeIncluding(const KTextEditor::Cursor& pos);
 
     /**
      * Classify this range as belonging to a particular group.
@@ -216,8 +216,8 @@ class KateSuperRange : public QObject, public KateRange
   private slots:
     void slotEvaluateChanged();
     void slotEvaluateUnChanged();
-    void slotMousePositionChanged(const KateTextCursor& newPosition);
-    void slotCaretPositionChanged(const KateTextCursor& newPosition);
+    void slotMousePositionChanged(const KTextEditor::Cursor& newPosition);
+    void slotCaretPositionChanged(const KTextEditor::Cursor& newPosition);
 
   private:
     void init();

@@ -63,12 +63,12 @@ KateSuperRange* KateRangeList::findMostSpecificRange( const KateRange & input ) 
   return m_topRange->findMostSpecificRange(input);
 }
 
-KateSuperRange* KateRangeList::firstRangeIncluding( const KateTextCursor & pos ) const
+KateSuperRange* KateRangeList::firstRangeIncluding( const KTextEditor::Cursor & pos ) const
 {
   return m_topRange->firstRangeIncluding(pos);
 }
 
-KateSuperRange* KateRangeList::deepestRangeIncluding( const KateTextCursor & pos ) const
+KateSuperRange* KateRangeList::deepestRangeIncluding( const KTextEditor::Cursor & pos ) const
 {
   return m_topRange->deepestRangeIncluding(pos);
 }

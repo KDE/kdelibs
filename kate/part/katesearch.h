@@ -65,13 +65,13 @@ class KateSearch : public QObject
     {
       public:
         SearchFlags flags;
-        KateTextCursor cursor;
-        KateTextCursor wrappedEnd; // after wraping around, search/replace until here
+        KTextEditor::Cursor cursor;
+        KTextEditor::Cursor wrappedEnd; // after wraping around, search/replace until here
         bool wrapped; // have we allready wrapped around ?
         bool showNotFound; // pop up annoying dialogs?
         int matchedLength;
-        KateTextCursor selBegin;
-        KateTextCursor selEnd;
+        KTextEditor::Cursor selBegin;
+        KTextEditor::Cursor selEnd;
     };
 
   public:
@@ -139,9 +139,9 @@ class KateSearch : public QObject
     void skipOne();
 
     QString getSearchText();
-    KateTextCursor getCursor();
+    KTextEditor::Cursor getCursor();
     bool doSearch( const QString& text );
-    void exposeFound( KateTextCursor &cursor, int slen );
+    void exposeFound( KTextEditor::Cursor &cursor, int slen );
 
     inline KateView* view()    { return m_view; }
     inline KateDocument* doc() { return m_doc;  }

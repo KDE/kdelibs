@@ -51,8 +51,8 @@ KateTemplateHandler::KateTemplateHandler(
   }
 
   KateArbitraryHighlight *kah = doc->arbitraryHL();
-  /*KateArbitraryHighlightRange *hlr=new KateArbitraryHighlightRange(doc,KateTextCursor(line,column),
-   KateTextCursor(line,column+3));
+  /*KateArbitraryHighlightRange *hlr=new KateArbitraryHighlightRange(doc,KTextEditor::Cursor(line,column),
+   KTextEditor::Cursor(line,column+3));
   hlr->setUnderline(true);
   hlr->setOverline(true);
   l->append(hlr);*/
@@ -178,8 +178,8 @@ void KateTemplateHandler::generateRangeTable( uint insertLine, uint insertCol, c
       ++colInText;
     }
 
-    KateSuperRange *hlr = new KateSuperRange( m_doc, KateTextCursor( line, col ),
-                                       KateTextCursor( line, ( *it ).len + col ), ph->ranges.topRange() );
+    KateSuperRange *hlr = new KateSuperRange( m_doc, KTextEditor::Cursor( line, col ),
+                                       KTextEditor::Cursor( line, ( *it ).len + col ), ph->ranges.topRange() );
     colInText += ( *it ).len;
     col += ( *it ).len;
     hlr->allowZeroLength();
@@ -200,7 +200,7 @@ void KateTemplateHandler::slotTextInserted( int line, int col )
   if ( m_recursion ) return ;
 
   //if (m_editSessionNumber!=0) return; // assume that this is due an udno/redo operation right now
-  KateTextCursor cur( line, col );
+  KTextEditor::Cursor cur( line, col );
 
   if ( ( !m_currentRange ) ||
        ( ( !m_currentRange->includes( cur ) ) && ( ! ( ( m_currentRange->start() == m_currentRange->end() ) && m_currentRange->end() == cur ) )
@@ -210,8 +210,8 @@ void KateTemplateHandler::slotTextInserted( int line, int col )
 
   KateTemplatePlaceHolder *ph = m_tabOrder.at( m_currentTabStop );
 
-  QString sourceText = m_doc->text ( m_currentRange->start().line(), m_currentRange->start().col(),
-                                     m_currentRange->end().line(), m_currentRange->end().col(), false );
+  QString sourceText = m_doc->text ( m_currentRange->start().line(), m_currentRange->start().column(),
+                                     m_currentRange->end().line(), m_currentRange->end().column(), false );
 
   ph->isInitialValue = false;
   bool undoDontMerge = m_doc->m_undoDontMerge;
@@ -224,10 +224,10 @@ void KateTemplateHandler::slotTextInserted( int line, int col )
   {
     if ( range == m_currentRange ) continue;
 
-    KateTextCursor start = range->start();
-    KateTextCursor end = range->end();
-    m_doc->removeText( start.line(), start.col(), end.line(), end.col(), false );
-    m_doc->insertText( start.line(), start.col(), sourceText );
+    KTextEditor::Cursor start = range->start();
+    KTextEditor::Cursor end = range->end();
+    m_doc->removeText( start.line(), start.column(), end.line(), end.column(), false );
+    m_doc->insertText( start.line(), start.column(), sourceText );
   }
 
   m_doc->m_undoDontMerge = false;
@@ -240,7 +240,7 @@ void KateTemplateHandler::slotTextInserted( int line, int col )
   if ( ph->isCursor ) deleteLater();
 }
 
-void KateTemplateHandler::locateRange( const KateTextCursor& cursor )
+void KateTemplateHandler::locateRange( const KTextEditor::Cursor& cursor )
 {
   /* if (m_currentRange) {
     m_doc->tagLines(m_currentRange->start().line(),m_currentRange->end().line());
@@ -297,7 +297,7 @@ bool KateTemplateHandler::operator() ( KKey key )
   }
   else m_doc->activeView()->setSelection( m_currentRange->end(), m_currentRange->end() );
 
-  m_doc->activeView() ->setCursorPosition( m_currentRange->end().line(), m_currentRange->end().col() );
+  m_doc->activeView() ->setCursorPosition( m_currentRange->end().line(), m_currentRange->end().column() );
   m_doc->activeView() ->tagLine( m_currentRange->end() );
 
   return true;
@@ -329,6 +329,6 @@ void KateTemplateHandler::slotTextRemoved()
   if ( m_recursion ) return ;
   if ( !m_currentRange ) return ;
 
-  slotTextInserted( m_currentRange->start().line(), m_currentRange->start().col() );
+  slotTextInserted( m_currentRange->start().line(), m_currentRange->start().column() );
 }
 

@@ -153,8 +153,8 @@ class KateDocument : public KTextEditor::Document,
     inline KateView *activeView () const { return m_activeView; }
 
   signals:
-    void activeViewCaretPositionChanged(const KateTextCursor& newPosition);
-    void activeViewMousePositionChanged(const KateTextCursor& newPosition);
+    void activeViewCaretPositionChanged(const KTextEditor::Cursor& newPosition);
+    void activeViewMousePositionChanged(const KTextEditor::Cursor& newPosition);
 
   private:
     Q3PtrList<KateView> m_views;
@@ -586,7 +586,7 @@ class KateDocument : public KTextEditor::Document,
 
   public slots:    //please keep prototypes and implementations in same order
     void tagLines(int start, int end);
-    void tagLines(KateTextCursor start, KateTextCursor end);
+    void tagLines(KTextEditor::Cursor start, KTextEditor::Cursor end);
 
   //export feature, obsolute
   public slots:
@@ -610,11 +610,11 @@ class KateDocument : public KTextEditor::Document,
     bool ownedView(KateView *);
     bool isLastView(int numViews);
 
-    uint currentColumn( const KateTextCursor& );
-    void newLine(             KateTextCursor&, KateViewInternal * ); // Changes input
-    void backspace(     KateView *view, const KateTextCursor& );
-    void del(           KateView *view, const KateTextCursor& );
-    void transpose(     const KateTextCursor& );
+    uint currentColumn( const KTextEditor::Cursor& );
+    void newLine(             KTextEditor::Cursor&, KateViewInternal * ); // Changes input
+    void backspace(     KateView *view, const KTextEditor::Cursor& );
+    void del(           KateView *view, const KTextEditor::Cursor& );
+    void transpose(     const KTextEditor::Cursor& );
 
     void paste ( KateView* view, QClipboard::Mode = QClipboard::Clipboard );
 
@@ -634,7 +634,7 @@ class KateDocument : public KTextEditor::Document,
       lowercase the character right of the cursor is transformed, for capitalize
       the word under the cursor is transformed.
     */
-    void transform ( KateView *view, const KateTextCursor &, TextTransform );
+    void transform ( KateView *view, const KTextEditor::Cursor &, TextTransform );
     /**
       Unwrap a range of lines.
     */
@@ -689,7 +689,7 @@ class KateDocument : public KTextEditor::Document,
     /**
     *@see removeStartLineCommentFromSingleLine.
     */
-    bool removeStartStopCommentFromRegion(const KateTextCursor &start, const KateTextCursor &end, int attrib=0);
+    bool removeStartStopCommentFromRegion(const KTextEditor::Cursor &start, const KTextEditor::Cursor &end, int attrib=0);
 
     /**
      * Add a comment marker as defined by the language providing the attribute
@@ -714,13 +714,13 @@ class KateDocument : public KTextEditor::Document,
     bool removeStartLineCommentFromSelection( KateView *view, int attrib=0 );
 
   public:
-    QString getWord( const KateTextCursor& cursor );
+    QString getWord( const KTextEditor::Cursor& cursor );
 
   public:
     void tagAll();
 
-    void newBracketMark( const KateTextCursor& start, KateSuperRange& bm, int maxLines = -1 );
-    bool findMatchingBracket( KateTextCursor& start, KateTextCursor& end, int maxLines = -1 );
+    void newBracketMark( const KTextEditor::Cursor& start, KateSuperRange& bm, int maxLines = -1 );
+    bool findMatchingBracket( KTextEditor::Cursor& start, KTextEditor::Cursor& end, int maxLines = -1 );
 
   private:
     void guiActivateEvent( KParts::GUIActivateEvent *ev );

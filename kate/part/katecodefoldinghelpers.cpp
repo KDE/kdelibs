@@ -65,7 +65,7 @@ KateCodeFoldingNode::~KateCodeFoldingNode()
   clearChildren ();
 }
 
-bool KateCodeFoldingNode::getBegin(KateCodeFoldingTree *tree, KateTextCursor* begin) {
+bool KateCodeFoldingNode::getBegin(KateCodeFoldingTree *tree, KTextEditor::Cursor* begin) {
   if (!startLineValid) return false;
   unsigned int line=startLineRel;
   for (KateCodeFoldingNode *n=parentNode;n;n=n->parentNode)
@@ -73,12 +73,12 @@ bool KateCodeFoldingNode::getBegin(KateCodeFoldingTree *tree, KateTextCursor* be
 
   tree->m_buffer->codeFoldingColumnUpdate(line);
   begin->setLine(line);
-  begin->setCol(startCol);
+  begin->setColumn(startCol);
 
   return true;
 }
 
-bool KateCodeFoldingNode::getEnd(KateCodeFoldingTree *tree, KateTextCursor *end) {
+bool KateCodeFoldingNode::getEnd(KateCodeFoldingTree *tree, KTextEditor::Cursor *end) {
   if (!endLineValid) return false;
   unsigned int line=startLineRel+endLineRel;
   for (KateCodeFoldingNode *n=parentNode;n;n=n->parentNode)
@@ -86,14 +86,14 @@ bool KateCodeFoldingNode::getEnd(KateCodeFoldingTree *tree, KateTextCursor *end)
 
   tree->m_buffer->codeFoldingColumnUpdate(line);
   end->setLine(line);
-  end->setCol(endCol);
+  end->setColumn(endCol);
 
   return true;
 }
 
 int KateCodeFoldingNode::cmpPos(KateCodeFoldingTree *tree, uint line,uint col) {
-    KateTextCursor cur(line,col);
-    KateTextCursor start,end;
+    KTextEditor::Cursor cur(line,col);
+    KTextEditor::Cursor start,end;
     kdDebug(13000)<<"KateCodeFoldingNode::cmpPos (1)"<<endl;
     bool startValid=getBegin(tree, &start);
     kdDebug(13000)<<"KateCodeFoldingNode::cmpPos (2)"<<endl;

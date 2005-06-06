@@ -52,18 +52,18 @@ class KateRangeList : public QObject
     /**
      * Finds the first range which includes position \p pos.
      */
-    KateSuperRange* firstRangeIncluding(const KateTextCursor& pos) const;
+    KateSuperRange* firstRangeIncluding(const KTextEditor::Cursor& pos) const;
     
     /**
      * Finds the deepest range which includes position \p pos.
      */
-    KateSuperRange* deepestRangeIncluding(const KateTextCursor& pos) const;
+    KateSuperRange* deepestRangeIncluding(const KTextEditor::Cursor& pos) const;
 
     /**
      * @retval true if one of the ranges other than the topmost in the list includes @p cursor
      * @retval false otherwise
      */
-    bool rangesInclude(const KateTextCursor& cursor);
+    bool rangesInclude(const KTextEditor::Cursor& cursor);
 
     /**
      * @returns the top and all encompasing range

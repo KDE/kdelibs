@@ -39,7 +39,7 @@
      * @param text text removed/inserted
      */
     KateUndo (KateUndoGroup::UndoType type, uint line, uint col, uint len, const QString &text);
-    
+
     /**
      * Destructor
      */
@@ -67,7 +67,7 @@
      * @param doc document
      */
     void undo (KateDocument *doc);
-    
+
     /**
      * redo this item at given doc
      * @param doc document
@@ -77,12 +77,12 @@
     /**
      * The cursor before the action took place
      */
-    KateTextCursor cursorBefore() const;
-    
+    KTextEditor::Cursor cursorBefore() const;
+
     /**
      * The cursor after the action took place
      */
-    KateTextCursor cursorAfter() const;
+    KTextEditor::Cursor cursorAfter() const;
 
     /**
      * type of item
@@ -95,13 +95,13 @@
      * @return line
      */
     inline uint line () const { return m_line; }
-    
+
     /**
      * startcol of changes
      * @return column
      */
     inline uint col () const { return m_col; }
-    
+
     /**
      * length of changes
      * @return length
@@ -119,22 +119,22 @@
      * type
      */
     KateUndoGroup::UndoType m_type;
-    
+
     /**
      * line
      */
     uint m_line;
-    
+
     /**
      * column
      */
     uint m_col;
-    
+
     /**
      * length
      */
     uint m_len;
-    
+
     /**
      * text
      */
@@ -253,24 +253,24 @@ void KateUndo::redo (KateDocument *doc)
   }
 }
 
-KateTextCursor KateUndo::cursorBefore() const
+KTextEditor::Cursor KateUndo::cursorBefore() const
 {
   if (m_type == KateUndoGroup::editInsertLine || m_type == KateUndoGroup::editUnWrapLine)
-    return KateTextCursor(m_line+1, m_col);
+    return KTextEditor::Cursor(m_line+1, m_col);
   else if (m_type == KateUndoGroup::editRemoveText)
-    return KateTextCursor(m_line, m_col+m_len);
+    return KTextEditor::Cursor(m_line, m_col+m_len);
 
-  return KateTextCursor(m_line, m_col);
+  return KTextEditor::Cursor(m_line, m_col);
 }
 
-KateTextCursor KateUndo::cursorAfter() const
+KTextEditor::Cursor KateUndo::cursorAfter() const
 {
   if (m_type == KateUndoGroup::editRemoveLine || m_type == KateUndoGroup::editWrapLine)
-    return KateTextCursor(m_line+1, m_col);
+    return KTextEditor::Cursor(m_line+1, m_col);
   else if (m_type == KateUndoGroup::editInsertText)
-    return KateTextCursor(m_line, m_col+m_len);
+    return KTextEditor::Cursor(m_line, m_col+m_len);
 
-  return KateTextCursor(m_line, m_col);
+  return KTextEditor::Cursor(m_line, m_col);
 }
 
 KateUndoGroup::KateUndoGroup (KateDocument *doc)

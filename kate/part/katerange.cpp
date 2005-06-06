@@ -35,10 +35,10 @@ bool KateRange::includes(uint lineNum) const
 
 bool KateRange::includesCol( int col ) const
 {
-  return start().col() <= col && end().col() > col;
+  return start().column() <= col && end().column() > col;
 }
 
-int KateRange::includes( const KateTextCursor & cursor ) const
+int KateRange::includes( const KTextEditor::Cursor & cursor ) const
 {
   return ((cursor < start()) ? -1 : ((cursor > end()) ? 1:0));
 }
@@ -60,7 +60,7 @@ bool KateRange::overlaps( const KateRange & range ) const
     return contains(range);
 }
 
-bool KateRange::boundaryAt(const KateTextCursor& cursor) const
+bool KateRange::boundaryAt(const KTextEditor::Cursor& cursor) const
 {
   return isValid() && (cursor == start() || cursor == end());
 }
@@ -75,7 +75,7 @@ KateRange::operator QString( ) const
   if (!this)
     return QString("[No Range]");
   
-  return QString("[(%1, %2) to (%3, %4)]").arg(start().line()).arg(start().col()).arg(end().line()).arg(end().col());
+  return QString("[(%1, %2) to (%3, %4)]").arg(start().line()).arg(start().column()).arg(end().line()).arg(end().column());
 }
 
 KateTextRange::KateTextRange()
@@ -83,7 +83,7 @@ KateTextRange::KateTextRange()
 {
 }
 
-KateTextRange::KateTextRange( const KateTextCursor & start, const KateTextCursor & end )
+KateTextRange::KateTextRange( const KTextEditor::Cursor & start, const KTextEditor::Cursor & end )
   : m_start(start)
   , m_end(end)
   , m_valid(true)
@@ -101,22 +101,22 @@ KateTextRange::~KateTextRange()
 {
 }
 
-KateTextCursor& KateTextRange::start()
+KTextEditor::Cursor& KateTextRange::start()
 {
   return m_start;
 }
 
-KateTextCursor& KateTextRange::end()
+KTextEditor::Cursor& KateTextRange::end()
 {
   return m_end;
 }
 
-const KateTextCursor& KateTextRange::start() const
+const KTextEditor::Cursor& KateTextRange::start() const
 {
   return m_start;
 }
 
-const KateTextCursor& KateTextRange::end() const
+const KTextEditor::Cursor& KateTextRange::end() const
 {
   return m_end;
 }

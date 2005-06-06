@@ -22,67 +22,15 @@
 #ifndef kate_cursor_h
 #define kate_cursor_h
 
+#include <ktexteditor/cursor.h>
+
 #include <Q3PtrList>
 #include <QString>
 
 class KateDocument;
 class KateAttribute;
 
-/**
-  Simple cursor class with no document pointer.
-*/
-class KateTextCursor
-{
-  public:
-    KateTextCursor() : m_line(0), m_col(0) {};
-    KateTextCursor(int line, int col) : m_line(line), m_col(col) {};
-    virtual ~KateTextCursor () {};
-
-    friend bool operator==(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return c1.m_line == c2.m_line && c1.m_col == c2.m_col; }
-
-    friend bool operator!=(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return !(c1 == c2); }
-
-    friend bool operator>(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return c1.m_line > c2.m_line || (c1.m_line == c2.m_line && c1.m_col > c2.m_col); }
-
-    friend bool operator>=(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return c1.m_line > c2.m_line || (c1.m_line == c2.m_line && c1.m_col >= c2.m_col); }
-
-    friend bool operator<(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return !(c1 >= c2); }
-
-    friend bool operator<=(const KateTextCursor& c1, const KateTextCursor& c2)
-      { return !(c1 > c2); }
-      
-#ifndef Q_WS_WIN //not needed
-    friend void qSwap(KateTextCursor & c1, KateTextCursor & c2) {
-      KateTextCursor tmp = c1;
-      c1 = c2;
-      c2 = tmp;
-    }
-#endif
-
-    inline void pos(int *pline, int *pcol) const {
-      if(pline) *pline = m_line;
-      if(pcol) *pcol = m_col;
-    }
-
-    inline int line() const { return m_line; };
-    inline int col() const { return m_col; };
-
-    virtual void setLine(int line) { m_line = line; };
-    virtual void setCol(int col) { m_col = col; };
-    virtual void setPos(const KateTextCursor& pos) { m_line = pos.line(); m_col = pos.col(); };
-    virtual void setPos(int line, int col) { m_line = line; m_col = col; };
-
-  protected:
-    int m_line;
-    int m_col;
-};
-
-class KateTextCursorList : public Q3PtrList<KateTextCursor>
+class KateTextCursorList : public Q3PtrList<KTextEditor::Cursor>
 {
   protected:
     virtual int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2);
@@ -91,7 +39,7 @@ class KateTextCursorList : public Q3PtrList<KateTextCursor>
 /**
   Cursor class with a pointer to its document.
 */
-class KateDocCursor : public KateTextCursor
+class KateDocCursor : public KTextEditor::Cursor
 {
   public:
     KateDocCursor(KateDocument *doc);
@@ -110,9 +58,6 @@ class KateDocCursor : public KateTextCursor
     bool moveForward(uint nbChar);
     bool moveBackward(uint nbChar);
 
-    // KTextEditor::Cursor interface
-    void position(uint *line, uint *col) const;
-    bool setPosition(uint line, uint col);
     bool insertText(const QString& text);
     bool removeText(uint numberOfCharacters);
     QChar currentChar() const;

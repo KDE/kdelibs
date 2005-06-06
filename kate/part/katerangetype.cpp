@@ -92,9 +92,9 @@ void KateRangeType::connectMouse( KateSuperRange * range, bool doconnect )
   KateDocument* doc = m_ranges.first()->doc();
 
   if (doconnect)
-    QObject::connect(doc, SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)), range, SLOT(slotMousePositionChanged(const KateTextCursor&)));
+    QObject::connect(doc, SIGNAL(activeViewMousePositionChanged(const KTextEditor::Cursor&)), range, SLOT(slotMousePositionChanged(const KTextEditor::Cursor&)));
   else
-    QObject::disconnect(doc, SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)), range, SLOT(slotMousePositionChanged(const KateTextCursor&)));
+    QObject::disconnect(doc, SIGNAL(activeViewMousePositionChanged(const KTextEditor::Cursor&)), range, SLOT(slotMousePositionChanged(const KTextEditor::Cursor&)));
 }
 
 void KateRangeType::activateCaret( bool activate )
@@ -113,9 +113,9 @@ void KateRangeType::connectCaret( KateSuperRange * range, bool doconnect )
   KateDocument* doc = m_ranges.first()->doc();
 
   if (doconnect)
-    QObject::connect(doc, SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)), range, SLOT(slotCaretPositionChanged(const KateTextCursor&)));
+    QObject::connect(doc, SIGNAL(activeViewCaretPositionChanged(const KTextEditor::Cursor&)), range, SLOT(slotCaretPositionChanged(const KTextEditor::Cursor&)));
   else
-    QObject::disconnect(doc, SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)), range, SLOT(slotCaretPositionChanged(const KateTextCursor&)));
+    QObject::disconnect(doc, SIGNAL(activeViewCaretPositionChanged(const KTextEditor::Cursor&)), range, SLOT(slotCaretPositionChanged(const KTextEditor::Cursor&)));
 }
 
 void KateRangeType::tagAll( )

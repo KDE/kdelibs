@@ -175,10 +175,10 @@ public:
     uint spaceWidth();
     uint textWidth(const KateTextLine::Ptr &, int cursorCol);
     uint textWidth(const KateTextLine::Ptr &textLine, uint startcol, uint maxwidth, bool *needWrap, int *endX = 0);
-    uint textWidth(const KateTextCursor &cursor);
+    uint textWidth(const KTextEditor::Cursor &cursor);
 
     // Cursor constrainer
-    uint textWidth(KateTextCursor &cursor, int xPos, uint startCol = 0);
+    uint textWidth(KTextEditor::Cursor &cursor, int xPos, uint startCol = 0);
 
     // Column calculators
     /**
@@ -211,7 +211,7 @@ public:
      * The text line is painted from the upper limit of (0,0).  To move that,
      * apply a transform to your painter.
      */
-    void paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KateTextCursor* cursor = 0L);
+    void paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KTextEditor::Cursor* cursor = 0L);
 
     /**
      * Paint the background of a line

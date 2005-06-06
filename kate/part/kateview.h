@@ -145,12 +145,12 @@ class KateView : public KTextEditor::View,
         { return m_viewInternal->getCursor().line();                    }
     int cursorColumn() const;
     int cursorColumnReal() const
-        { return m_viewInternal->getCursor().col();                     }
+        { return m_viewInternal->getCursor().column();                     }
 
   signals:
     void cursorPositionChanged();
-    void caretPositionChanged(const KateTextCursor& newPosition);
-    void mousePositionChanged(const KateTextCursor& newPosition);
+    void caretPositionChanged(const KTextEditor::Cursor& newPosition);
+    void mousePositionChanged(const KTextEditor::Cursor& newPosition);
 
   private slots:
     void slotMousePositionChanged();
@@ -192,8 +192,8 @@ class KateView : public KTextEditor::View,
   // KTextEditor::SelectionInterface stuff
   //
   public slots:
-    bool setSelection ( const KateTextCursor & start,
-      const KateTextCursor & end );
+    bool setSelection ( const KTextEditor::Cursor & start,
+      const KTextEditor::Cursor & end );
     bool setSelection ( int startLine, int startCol,
       int endLine, int endCol );
     bool clearSelection ();
@@ -210,9 +210,9 @@ class KateView : public KTextEditor::View,
     // KTextEditor::SelectionInterfaceExt
     //
     int selectionStartLine() const { return selectStart.line(); };
-    int selectionStartColumn() const { return selectStart.col(); };
+    int selectionStartColumn() const { return selectStart.column(); };
     int selectionEndLine() const  { return selectEnd.line(); };
-    int selectionEndColumn()  const  { return selectEnd.col(); };
+    int selectionEndColumn()  const  { return selectEnd.column(); };
 
   signals:
     void selectionChanged ();
@@ -243,11 +243,11 @@ class KateView : public KTextEditor::View,
     bool lineHasSelected (int line);
     bool lineIsSelection (int line);
 
-    void tagSelection (const KateTextCursor &oldSelectStart, const KateTextCursor &oldSelectEnd);
+    void tagSelection (const KTextEditor::Cursor &oldSelectStart, const KTextEditor::Cursor &oldSelectEnd);
 
-    void selectWord(   const KateTextCursor& cursor );
-    void selectLine(   const KateTextCursor& cursor );
-    void selectLength( const KateTextCursor& cursor, int length );
+    void selectWord(   const KTextEditor::Cursor& cursor );
+    void selectLine(   const KTextEditor::Cursor& cursor );
+    void selectLength( const KTextEditor::Cursor& cursor, int length );
 
   //
   // KTextEditor::BlockSelectionInterface stuff
@@ -263,16 +263,16 @@ class KateView : public KTextEditor::View,
     void editStart ();
     void editEnd (int editTagLineStart, int editTagLineEnd, bool tagFrom);
 
-    void editSetCursor (const KateTextCursor &cursor);
+    void editSetCursor (const KTextEditor::Cursor &cursor);
   //END
 
   //BEGIN TAG & CLEAR
   public:
-    bool tagLine (const KateTextCursor& virtualCursor);
+    bool tagLine (const KTextEditor::Cursor& virtualCursor);
 
     bool tagRange (const KateRange& range, bool realLines = false);
     bool tagLines (int start, int end, bool realLines = false );
-    bool tagLines (KateTextCursor start, KateTextCursor end, bool realCursors = false);
+    bool tagLines (KTextEditor::Cursor start, KTextEditor::Cursor end, bool realCursors = false);
 
     void tagAll ();
 

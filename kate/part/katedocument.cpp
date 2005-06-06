@@ -1601,8 +1601,8 @@ bool KateDocument::searchText (int startLine, int startCol, const QString &text,
       if (found)
       {
        /* if ((uint) line == startLine && foundAt + myMatchLen >= (uint) col
-            && line == selectStart.line() && foundAt == (uint) selectStart.col()
-            && line == selectEnd.line() && foundAt + myMatchLen == (uint) selectEnd.col())
+            && line == selectStart.line() && foundAt == (uint) selectStart.column()
+            && line == selectEnd.line() && foundAt + myMatchLen == (uint) selectEnd.column())
         {
           // To avoid getting stuck at one match we skip a match if it is already
           // selected (most likely because it has just been found).
@@ -1697,8 +1697,8 @@ bool KateDocument::searchText (int startLine, int startCol, const QRegExp &regex
       if (found)
       {
         /*if ((uint) line == startLine && foundAt + myMatchLen >= (uint) col
-            && line == selectStart.line() && foundAt == (uint) selectStart.col()
-            && line == selectEnd.line() && foundAt + myMatchLen == (uint) selectEnd.col())
+            && line == selectStart.line() && foundAt == (uint) selectStart.column()
+            && line == selectEnd.line() && foundAt + myMatchLen == (uint) selectEnd.column())
         {
           // To avoid getting stuck at one match we skip a match if it is already
           // selected (most likely because it has just been found).
@@ -2789,15 +2789,15 @@ void KateDocument::setActiveView(KTextEditor::View* view)
   if ( m_activeView == view ) return;
 
   if (m_activeView) {
-    disconnect(m_activeView, SIGNAL(mousePositionChanged(const KateTextCursor&)), this, SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)));
-    disconnect(m_activeView, SIGNAL(caretPositionChanged(const KateTextCursor&)), this, SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)));
+    disconnect(m_activeView, SIGNAL(mousePositionChanged(const KTextEditor::Cursor&)), this, SIGNAL(activeViewMousePositionChanged(const KTextEditor::Cursor&)));
+    disconnect(m_activeView, SIGNAL(caretPositionChanged(const KTextEditor::Cursor&)), this, SIGNAL(activeViewCaretPositionChanged(const KTextEditor::Cursor&)));
   }
 
   m_activeView = (KateView*)view;
 
   if (m_activeView) {
-    connect(m_activeView, SIGNAL(mousePositionChanged(const KateTextCursor&)), SIGNAL(activeViewMousePositionChanged(const KateTextCursor&)));
-    connect(m_activeView, SIGNAL(caretPositionChanged(const KateTextCursor&)), SIGNAL(activeViewCaretPositionChanged(const KateTextCursor&)));
+    connect(m_activeView, SIGNAL(mousePositionChanged(const KTextEditor::Cursor&)), SIGNAL(activeViewMousePositionChanged(const KTextEditor::Cursor&)));
+    connect(m_activeView, SIGNAL(caretPositionChanged(const KTextEditor::Cursor&)), SIGNAL(activeViewCaretPositionChanged(const KTextEditor::Cursor&)));
   }
 }
 
@@ -2824,12 +2824,12 @@ bool KateDocument::isLastView(int numViews) {
   return ((int) m_views.count() == numViews);
 }
 
-uint KateDocument::currentColumn( const KateTextCursor& cursor )
+uint KateDocument::currentColumn( const KTextEditor::Cursor& cursor )
 {
   KateTextLine::Ptr textLine = m_buffer->plainLine(cursor.line());
 
   if (textLine)
-    return textLine->cursorX(cursor.col(), config()->tabWidth());
+    return textLine->cursorX(cursor.column(), config()->tabWidth());
   else
     return 0;
 }
@@ -2889,7 +2889,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   return true;
 }
 
-void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
+void KateDocument::newLine( KTextEditor::Cursor& c, KateViewInternal *v )
 {
   editStart();
 
@@ -2909,8 +2909,8 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
 
   KateTextLine::Ptr textLine = kateTextLine(c.line());
 
-  if (c.col() > (int)textLine->length())
-    c.setCol(textLine->length());
+  if (c.column() > (int)textLine->length())
+    c.setColumn(textLine->length());
 
   if (m_indenter->canProcessNewLine ())
   {
@@ -2920,20 +2920,20 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
     if (pos < 0)
       pos = textLine->length();
 
-    if (c.col() < pos)
-      c.setCol(pos); // place cursor on first char if before
+    if (c.column() < pos)
+      c.setColumn(pos); // place cursor on first char if before
 
-    editWrapLine (c.line(), c.col());
+    editWrapLine (c.line(), c.column());
 
     KateDocCursor cursor (c.line() + 1, pos, this);
     m_indenter->processNewline(cursor, true);
 
-    c.setPos(cursor);
+    c.setPosition(cursor);
   }
   else
   {
-    editWrapLine (c.line(), c.col());
-    c.setPos(c.line() + 1, 0);
+    editWrapLine (c.line(), c.column());
+    c.setPosition(c.line() + 1, 0);
   }
 
   removeTrailingSpace( ln );
@@ -2941,14 +2941,14 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
   editEnd();
 }
 
-void KateDocument::transpose( const KateTextCursor& cursor)
+void KateDocument::transpose( const KTextEditor::Cursor& cursor)
 {
   KateTextLine::Ptr textLine = m_buffer->plainLine(cursor.line());
 
   if (!textLine || (textLine->length() < 2))
     return;
 
-  uint col = cursor.col();
+  uint col = cursor.column();
 
   if (col > 0)
     col--;
@@ -2972,14 +2972,14 @@ void KateDocument::transpose( const KateTextCursor& cursor)
   editEnd ();
 }
 
-void KateDocument::backspace( KateView *view, const KateTextCursor& c )
+void KateDocument::backspace( KateView *view, const KTextEditor::Cursor& c )
 {
   if ( !view->config()->persistentSelection() && view->hasSelection() ) {
     view->removeSelectedText();
     return;
   }
 
-  uint col = QMAX( c.col(), 0 );
+  uint col = QMAX( c.column(), 0 );
   uint line = QMAX( c.line(), 0 );
 
   if ((col == 0) && (line == 0))
@@ -3062,20 +3062,20 @@ void KateDocument::backspace( KateView *view, const KateTextCursor& c )
   emit backspacePressed();
 }
 
-void KateDocument::del( KateView *view, const KateTextCursor& c )
+void KateDocument::del( KateView *view, const KTextEditor::Cursor& c )
 {
   if ( !view->config()->persistentSelection() && view->hasSelection() ) {
     view->removeSelectedText();
     return;
   }
 
-  if( c.col() < (int) m_buffer->plainLine(c.line())->length())
+  if( c.column() < (int) m_buffer->plainLine(c.line())->length())
   {
-    removeText(c.line(), c.col(), c.line(), c.col()+1);
+    removeText(c.line(), c.column(), c.line(), c.column()+1);
   }
   else if ( (uint)c.line() < lastLine() )
   {
-    removeText(c.line(), c.col(), c.line()+1, 0);
+    removeText(c.line(), c.column(), c.line()+1, 0);
   }
 }
 
@@ -3201,7 +3201,7 @@ void KateDocument::align(KateView *view, uint line)
       KateDocCursor curLine(line, 0, this);
       m_indenter->processLine (curLine);
       editEnd ();
-      activeView()->setCursorPosition (line, curLine.col());
+      activeView()->setCursorPosition (line, curLine.column());
     }
     else
     {
@@ -3513,9 +3513,9 @@ void KateDocument::addStartLineCommentToSelection( KateView *view, int attrib )
   // Set the new selection
 
   KateDocCursor end (view->selEnd());
-  end.setCol(view->selectionEndColumn() + ((el == view->selectionEndLine()) ? commentLineMark.length() : 0) );
+  end.setColumn(view->selectionEndColumn() + ((el == view->selectionEndLine()) ? commentLineMark.length() : 0) );
 
-  view->setSelection(view->selectionStartLine(), 0, end.line(), end.col());
+  view->setSelection(view->selectionStartLine(), 0, end.line(), end.column());
 }
 
 bool KateDocument::nextNonSpaceCharPos(int &line, int &col)
@@ -3609,20 +3609,20 @@ bool KateDocument::removeStartStopCommentFromSelection( KateView *view, int attr
   return remove;
 }
 
-bool KateDocument::removeStartStopCommentFromRegion(const KateTextCursor &start,const KateTextCursor &end,int attrib)
+bool KateDocument::removeStartStopCommentFromRegion(const KTextEditor::Cursor &start,const KTextEditor::Cursor &end,int attrib)
 {
   QString startComment = highlight()->getCommentStart( attrib );
   QString endComment = highlight()->getCommentEnd( attrib );
   int startCommentLen = startComment.length();
   int endCommentLen = endComment.length();
 
-    bool remove = m_buffer->plainLine(start.line())->stringAtPos(start.col(), startComment)
-      && ( (end.col() - endCommentLen ) >= 0 )
-      && m_buffer->plainLine(end.line())->stringAtPos(end.col() - endCommentLen , endComment);
+    bool remove = m_buffer->plainLine(start.line())->stringAtPos(start.column(), startComment)
+      && ( (end.column() - endCommentLen ) >= 0 )
+      && m_buffer->plainLine(end.line())->stringAtPos(end.column() - endCommentLen , endComment);
       if (remove)  {
         editStart();
-          removeText(end.line(),end.col()-endCommentLen,end.line(),end.col());
-          removeText(start.line(),start.col(),start.line(),start.col()+startCommentLen);
+          removeText(end.line(),end.column()-endCommentLen,end.line(),end.column());
+          removeText(start.line(),start.column(),start.line(),start.column()+startCommentLen);
         editEnd();
       }
       return remove;
@@ -3671,9 +3671,9 @@ bool KateDocument::removeStartLineCommentFromSelection( KateView *view, int attr
   {
     // Set the new selection
     KateDocCursor end (view->selEnd());
-    end.setCol(view->selectionEndColumn() - ((el == view->selectionEndLine()) ? removeLength : 0) );
+    end.setColumn(view->selectionEndColumn() - ((el == view->selectionEndLine()) ? removeLength : 0) );
 
-    view->setSelection(view->selectionStartLine(), view->selectionStartColumn(), end.line(), end.col());
+    view->setSelection(view->selectionStartLine(), view->selectionStartColumn(), end.line(), end.column());
   }
 
   return removed;
@@ -3773,9 +3773,9 @@ void KateDocument::comment( KateView *v, uint line,uint column, int change)
         if (commentRegion){
            KateCodeFoldingNode *n=foldingTree()->findNodeForPosition(line,column);
            if (n) {
-            KateTextCursor start,end;
+            KTextEditor::Cursor start,end;
             if ((n->nodeType()==(int)commentRegion) && n->getBegin(foldingTree(), &start) && n->getEnd(foldingTree(), &end)) {
-                kdDebug(13020)<<"Enclosing region found:"<<start.col()<<"/"<<start.line()<<"-"<<end.col()<<"/"<<end.line()<<endl;
+                kdDebug(13020)<<"Enclosing region found:"<<start.column()<<"/"<<start.line()<<"-"<<end.column()<<"/"<<end.line()<<endl;
                 removeStartStopCommentFromRegion(start,end,startAttrib);
              } else {
                   kdDebug(13020)<<"Enclosing region found, but not valid"<<endl;
@@ -3797,17 +3797,17 @@ void KateDocument::comment( KateView *v, uint line,uint column, int change)
   }
 }
 
-void KateDocument::transform( KateView *v, const KateTextCursor &c,
+void KateDocument::transform( KateView *v, const KTextEditor::Cursor &c,
                             KateDocument::TextTransform t )
 {
   editStart();
-  uint cl( c.line() ), cc( c.col() );
+  uint cl( c.line() ), cc( c.column() );
 
   if ( v->hasSelection() )
   {
     // cache the selection and cursor, so we can be sure to restore.
-    KateTextCursor s = v->selStart();
-    KateTextCursor e = v->selEnd();
+    KTextEditor::Cursor s = v->selStart();
+    KTextEditor::Cursor e = v->selEnd();
 
     int ln = v->selectionStartLine();
     while ( ln <= v->selectionEndLine() )
@@ -3923,12 +3923,12 @@ void KateDocument::joinLines( uint first, uint last )
   editEnd();
 }
 
-QString KateDocument::getWord( const KateTextCursor& cursor ) {
+QString KateDocument::getWord( const KTextEditor::Cursor& cursor ) {
   int start, end, len;
 
   KateTextLine::Ptr textLine = m_buffer->plainLine(cursor.line());
   len = textLine->length();
-  start = end = cursor.col();
+  start = end = cursor.column();
   if (start > len)        // Probably because of non-wrapping cursor mode.
     return QString("");
 
@@ -3944,13 +3944,13 @@ void KateDocument::tagLines(int start, int end)
     m_views.at(z)->tagLines (start, end, true);
 }
 
-void KateDocument::tagLines(KateTextCursor start, KateTextCursor end)
+void KateDocument::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor end)
 {
   // May need to switch start/end cols if in block selection mode
-/*  if (blockSelectionMode() && start.col() > end.col()) {
-    int sc = start.col();
-    start.setCol(end.col());
-    end.setCol(sc);
+/*  if (blockSelectionMode() && start.column() > end.column()) {
+    int sc = start.column();
+    start.setColumn(end.column());
+    end.setColumn(sc);
   }
 */
   for (uint z = 0; z < m_views.count(); z++)
@@ -3986,7 +3986,7 @@ inline bool isBracket     ( const QChar& c ) { return isStartBracket( c ) || isE
    to the right of the cursor is an ending bracket, match it. Otherwise, don't
    match anything.
 */
-void KateDocument::newBracketMark( const KateTextCursor& cursor, KateSuperRange& bm, int maxLines )
+void KateDocument::newBracketMark( const KTextEditor::Cursor& cursor, KateSuperRange& bm, int maxLines )
 {
   bm.setValid(false);
 
@@ -4003,14 +4003,14 @@ void KateDocument::newBracketMark( const KateTextCursor& cursor, KateSuperRange&
   //bm.setIndentMin(QMIN(indentStart, indentEnd));
 }
 
-bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& end, int maxLines )
+bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor::Cursor& end, int maxLines )
 {
   KateTextLine::Ptr textLine = m_buffer->plainLine( start.line() );
   if( !textLine )
     return false;
 
-  QChar right = textLine->getChar( start.col() );
-  QChar left  = textLine->getChar( start.col() - 1 );
+  QChar right = textLine->getChar( start.column() );
+  QChar left  = textLine->getChar( start.column() - 1 );
   QChar bracket;
 
   if ( config()->configFlags() & KateDocumentConfig::cfOvr ) {
@@ -4022,10 +4022,10 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
   } else if ( isStartBracket( right ) ) {
     bracket = right;
   } else if ( isEndBracket( left ) ) {
-    start.setCol(start.col() - 1);
+    start.setColumn(start.column() - 1);
     bracket = left;
   } else if ( isBracket( left ) ) {
-    start.setCol(start.col() - 1);
+    start.setColumn(start.column() - 1);
     bracket = left;
   } else if ( isBracket( right ) ) {
     bracket = right;
@@ -4046,7 +4046,7 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
   }
 
   bool forward = isStartBracket( bracket );
-  int startAttr = textLine->attribute( start.col() );
+  int startAttr = textLine->attribute( start.column() );
   uint count = 0;
   int lines = 0;
   end = start;
@@ -4054,21 +4054,21 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
   while( true ) {
     /* Increment or decrement, check base cases */
     if( forward ) {
-      end.setCol(end.col() + 1);
-      if( end.col() >= lineLength( end.line() ) ) {
+      end.setColumn(end.column() + 1);
+      if( end.column() >= lineLength( end.line() ) ) {
         if( end.line() >= (int)lastLine() )
           return false;
-        end.setPos(end.line() + 1, 0);
+        end.setPosition(end.line() + 1, 0);
         textLine = m_buffer->plainLine( end.line() );
         lines++;
       }
     } else {
-      end.setCol(end.col() - 1);
-      if( end.col() < 0 ) {
+      end.setColumn(end.column() - 1);
+      if( end.column() < 0 ) {
         if( end.line() <= 0 )
           return false;
         end.setLine(end.line() - 1);
-        end.setCol(lineLength( end.line() ) - 1);
+        end.setColumn(lineLength( end.line() ) - 1);
         textLine = m_buffer->plainLine( end.line() );
         lines++;
       }
@@ -4078,11 +4078,11 @@ bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& e
       return false;
 
     /* Easy way to skip comments */
-    if( textLine->attribute( end.col() ) != startAttr )
+    if( textLine->attribute( end.column() ) != startAttr )
       continue;
 
     /* Check for match */
-    QChar c = textLine->getChar( end.col() );
+    QChar c = textLine->getChar( end.column() );
     if( c == bracket ) {
       count++;
     } else if( c == opposite ) {

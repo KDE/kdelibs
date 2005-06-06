@@ -59,7 +59,7 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 		void generateRangeTable(uint insertLine,uint insertCol, const QString& insertString, const Q3ValueList<KateTemplateHandlerPlaceHolderInfo> &buildList);
 		int m_currentTabStop;
 		KateSuperRange *m_currentRange;
-		void locateRange(const KateTextCursor &cursor );
+		void locateRange(const KTextEditor::Cursor &cursor );
 		bool m_initOk;
 		bool m_recursion;
 	private slots:

@@ -234,7 +234,7 @@ void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
   paint.setPen( penBackup );
 }
 
-/*KateSuperRange* KateRenderer::advanceSyntaxHL(const KateTextCursor& currentPos, KateSuperRange* currentRange) const
+/*KateSuperRange* KateRenderer::advanceSyntaxHL(const KTextEditor::Cursor& currentPos, KateSuperRange* currentRange) const
 {
   bool outDebug = false;//currentPos.line() == 22;
 
@@ -245,7 +245,7 @@ void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
   // Check to see if we are exiting any ranges
   while (currentRange->end() <= currentPos) {
     if (outDebug)
-      kdDebug() << k_funcinfo << currentRange << "Leaving range " << *currentRange << " (current col: " << currentPos.col() << ")" << endl;
+      kdDebug() << k_funcinfo << currentRange << "Leaving range " << *currentRange << " (current col: " << currentPos.column() << ")" << endl;
 
     tmpRange = currentRange;
 
@@ -271,7 +271,7 @@ void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
       currentRange = *it;
 
       if (outDebug)
-        kdDebug() << k_funcinfo << currentRange << "Entering range " << *currentRange << " (current col: " << currentPos.col() << ")" << endl;
+        kdDebug() << k_funcinfo << currentRange << "Entering range " << *currentRange << " (current col: " << currentPos.column() << ")" << endl;
 
       goto doubleContinue;
       }
@@ -310,7 +310,7 @@ class RenderRange {
         addTo(range);
     }
 
-    bool advanceTo(const KateTextCursor& pos) const
+    bool advanceTo(const KTextEditor::Cursor& pos) const
     {
       if (!m_currentRange)
         return false;
@@ -376,7 +376,7 @@ class RenderRangeList : public QList<RenderRange>
         append(RenderRange(range));
     }
 
-    bool advanceTo(const KateTextCursor& pos) const
+    bool advanceTo(const KTextEditor::Cursor& pos) const
     {
       bool ret = false;
 
@@ -423,7 +423,7 @@ void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
   paint.setPen( penBackup );
 }
 
-void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KateTextCursor* cursor)
+void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KTextEditor::Cursor* cursor)
 {
   int line = range->line();
 
@@ -487,8 +487,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
   const QColor *cursorColor = &attr[0].textColor();
 
   // Start arbitrary highlighting
-  KateTextCursor currentPos(line, startcol);
-  KateTextCursor nextPos(line, startcol + 1);
+  KTextEditor::Cursor currentPos(line, startcol);
+  KTextEditor::Cursor nextPos(line, startcol + 1);
   KateAttribute currentHL;
 
   if (showSelections() && !selectionPainted)
@@ -554,7 +554,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       paint.setPen(QPen(*cursorColor, cursorWidth));
       
       // Draw the cursor, start drawing in the middle as the above sets the width from the centre of the line
-      range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->col() - range->startCol());
+      range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->column() - range->startCol());
       
       paint.restore();
     }
@@ -563,10 +563,10 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
   // Optimisation to quickly draw an empty line of text
   /*if (len < 1)
   {
-    if (showCursor && (cursor->col() >= int(startcol)))
+    if (showCursor && (cursor->column() >= int(startcol)))
     {
       cursorVisible = true;
-      cursorXPos = xPos + cursor->col() * fs->myFontMetrics.width(spaceChar);
+      cursorXPos = xPos + cursor->column() * fs->myFontMetrics.width(spaceChar);
     }
   }
   else
@@ -845,7 +845,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
         } // renderNow
 
         // determine cursor X position
-        if (showCursor && (cursor->col() == int(curCol)))
+        if (showCursor && (cursor->column() == int(curCol)))
         {
           cursorVisible = true;
           cursorXPos = xPos;
@@ -873,8 +873,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       // col move
       curCol++;
       nextCol++;
-      currentPos.setCol(currentPos.col() + 1);
-      nextPos.setCol(nextPos.col() + 1);
+      currentPos.setColumn(currentPos.column() + 1);
+      nextPos.setColumn(nextPos.column() + 1);
 
       //syntaxHL = nextSyntaxHL;
       //nextSyntaxHL = advanceSyntaxHL(nextPos, syntaxHL);
@@ -891,10 +891,10 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     }
 
     // Determine cursor position (if it is not within the range being drawn)
-    if (showCursor && (cursor->col() >= int(curCol)))
+    if (showCursor && (cursor->column() >= int(curCol)))
     {
       cursorVisible = true;
-      cursorXPos = xPos + (cursor->col() - int(curCol)) * fs->myFontMetrics.width(spaceChar);
+      cursorXPos = xPos + (cursor->column() - int(curCol)) * fs->myFontMetrics.width(spaceChar);
       cursorMaxWidth = xPosAfter - xPos;
       cursorColor = &oldAt->textColor();
     }
@@ -1048,15 +1048,15 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
   }
 }
 
-uint KateRenderer::textWidth(const KateTextCursor &cursor)
+uint KateRenderer::textWidth(const KTextEditor::Cursor &cursor)
 {
   int line = QMIN(QMAX(0, cursor.line()), (int)m_doc->numLines() - 1);
-  int col = QMAX(0, cursor.col());
+  int col = QMAX(0, cursor.column());
 
   return textWidth(m_doc->kateTextLine(line), col);
 }
 
-uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
+uint KateRenderer::textWidth( KTextEditor::Cursor &cursor, int xPos, uint startCol)
 {
   bool wrapCursor = m_view->wrapCursor();
   int len;
@@ -1097,7 +1097,7 @@ uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
     z--;
     x = oldX;
   }
-  cursor.setCol(z);
+  cursor.setColumn(z);
   return x;
 }
 
@@ -1244,10 +1244,10 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
   // FIXME update to new api... Retrieve decoration range list
   /*KateRangeList& ranges = m_doc->arbitraryHL()->rangesIncluding(range.line(), m_view);
 
-  KateTextCursor rangeStart = range.rangeStart();
+  KTextEditor::Cursor rangeStart = range.rangeStart();
 
-  for (KateTextCursor* r = ranges.firstBoundary(&rangeStart); r && r->line() == range.line(); r = ranges.nextBoundary())
-    l->setBoundary(r->col());*/
+  for (KTextEditor::Cursor* r = ranges.firstBoundary(&rangeStart); r && r->line() == range.line(); r = ranges.nextBoundary())
+    l->setBoundary(r->column());*/
 
   // Initialise syntax highlighting ranges
   QList<QTextLayout::FormatRange> formatRanges;

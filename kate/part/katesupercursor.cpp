@@ -25,9 +25,9 @@
 
 #include <qobject.h>
 
-KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, const KateTextCursor& cursor, QObject* parent, const char* name)
+KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, const KTextEditor::Cursor& cursor, QObject* parent, const char* name)
   : QObject(parent, name)
-  , KateDocCursor(cursor.line(), cursor.col(), doc)
+  , KateDocCursor(cursor.line(), cursor.column(), doc)
   , m_doc (doc)
 {
   m_moveOnInsert = false;
@@ -49,24 +49,13 @@ KateSuperCursor::KateSuperCursor(KateDocument* doc, bool privateC, int lineNum, 
   m_privateCursor = privateC;
 
   connect(this, SIGNAL(positionDirectlyChanged()), SIGNAL(positionChanged()));
-  
+
   m_doc->addSuperCursor (this, privateC);
 }
 
 KateSuperCursor::~KateSuperCursor ()
 {
   m_doc->removeSuperCursor (this, m_privateCursor);
-}
-
-void KateSuperCursor::position(uint *pline, uint *pcol) const
-{
-  KateDocCursor::position(pline, pcol);
-}
-
-bool KateSuperCursor::setPosition(uint line, uint col)
-{
-  if (line == uint(-2) && col == uint(-2)) { delete this; return true; }
-  return KateDocCursor::setPosition(line, col);
 }
 
 bool KateSuperCursor::insertText(const QString& s)
@@ -86,12 +75,12 @@ QChar KateSuperCursor::currentChar() const
 
 bool KateSuperCursor::atStartOfLine() const
 {
-  return col() == 0;
+  return column() == 0;
 }
 
 bool KateSuperCursor::atEndOfLine() const
 {
-  return col() >= (int)m_doc->kateTextLine(line())->length();
+  return column() >= (int)m_doc->kateTextLine(line())->length();
 }
 
 bool KateSuperCursor::moveOnInsert() const
@@ -106,33 +95,33 @@ void KateSuperCursor::setMoveOnInsert(bool moveOnInsert)
 
 void KateSuperCursor::setLine(int lineNum)
 {
-  int tempLine = line(), tempcol = col();
+  int tempLine = line(), tempcol = column();
   KateDocCursor::setLine(lineNum);
 
-  if (tempLine != line() || tempcol != col())
+  if (tempLine != line() || tempcol != column())
     emit positionDirectlyChanged();
 }
 
-void KateSuperCursor::setCol(int colNum)
+void KateSuperCursor::setColumn(int colNum)
 {
-  int tempLine = line(), tempcol = col();
-  KateDocCursor::setCol(colNum);
+  int tempLine = line(), tempcol = column();
+  KateDocCursor::setColumn(colNum);
 
-  if (tempLine != line() || tempcol != col())
+  if (tempLine != line() || tempcol != column())
     emit positionDirectlyChanged();
 }
 
-void KateSuperCursor::setPos(const KateTextCursor& pos)
+void KateSuperCursor::setPosition(const KTextEditor::Cursor& pos)
 {
-  setPos(pos.line(), pos.col());
+  setPosition(pos.line(), pos.column());
 }
 
-void KateSuperCursor::setPos(int lineNum, int colNum)
+void KateSuperCursor::setPosition(int lineNum, int colNum)
 {
-  int tempLine = line(), tempcol = col();
-  KateDocCursor::setPos(lineNum, colNum);
+  int tempLine = line(), tempcol = column();
+  KateDocCursor::setPosition(lineNum, colNum);
 
-  if (tempLine != line() || tempcol != col())
+  if (tempLine != line() || tempcol != column())
     emit positionDirectlyChanged();
 }
 
@@ -145,11 +134,11 @@ void KateSuperCursor::editTextInserted(uint line, uint col, uint len)
 {
   if (m_line == int(line))
   {
-    if ((m_col > int(col)) || (m_moveOnInsert && (m_col == int(col))))
+    if ((m_column > int(col)) || (m_moveOnInsert && (m_column == int(col))))
     {
-      bool insertedAt = m_col == int(col);
+      bool insertedAt = m_column == int(col);
 
-      m_col += len;
+      m_column += len;
 
       if (insertedAt)
         emit charInsertedAt();
@@ -166,17 +155,17 @@ void KateSuperCursor::editTextRemoved(uint line, uint col, uint len)
 {
   if (m_line == int(line))
   {
-    if (m_col > int(col))
+    if (m_column > int(col))
     {
-      if (m_col > int(col + len))
+      if (m_column > int(col + len))
       {
-        m_col -= len;
+        m_column -= len;
       }
       else
       {
-        bool prevCharDeleted = m_col == int(col + len);
+        bool prevCharDeleted = m_column == int(col + len);
 
-        m_col = col;
+        m_column = col;
 
         if (prevCharDeleted)
           emit charDeletedBefore();
@@ -188,7 +177,7 @@ void KateSuperCursor::editTextRemoved(uint line, uint col, uint len)
       return;
 
     }
-    else if (m_col == int(col))
+    else if (m_column == int(col))
     {
       emit charDeletedAfter();
     }
@@ -206,10 +195,10 @@ void KateSuperCursor::editLineWrapped(uint line, uint col, bool newLine)
     emit positionChanged();
     return;
   }
-  else if ( (m_line == int(line)) && (m_col > int(col)) || (m_moveOnInsert && (m_col == int(col))) )
+  else if ( (m_line == int(line)) && (m_column > int(col)) || (m_moveOnInsert && (m_column == int(col))) )
   {
     m_line++;
-    m_col -= col;
+    m_column -= col;
 
     emit positionChanged();
     return;
@@ -227,17 +216,17 @@ void KateSuperCursor::editLineUnWrapped(uint line, uint col, bool removeLine, ui
     emit positionChanged();
     return;
   }
-  else if ( (m_line == int(line+1)) && (removeLine || (m_col < int(length))) )
+  else if ( (m_line == int(line+1)) && (removeLine || (m_column < int(length))) )
   {
     m_line = line;
-    m_col += col;
+    m_column += col;
 
     emit positionChanged();
     return;
   }
-  else if ( (m_line == int(line+1)) && (m_col >= int(length)) )
+  else if ( (m_line == int(line+1)) && (m_column >= int(length)) )
   {
-    m_col -= length;
+    m_column -= length;
 
     emit positionChanged();
     return;
@@ -271,7 +260,7 @@ void KateSuperCursor::editLineRemoved(uint line)
   else if (m_line == int(line))
   {
     m_line = (line <= m_doc->lastLine()) ? line : (line - 1);
-    m_col = 0;
+    m_column = 0;
 
     emit positionDeleted();
 
@@ -284,7 +273,7 @@ void KateSuperCursor::editLineRemoved(uint line)
 
 KateSuperCursor::operator QString()
 {
-  return QString("[%1,%1]").arg(line()).arg(col());
+  return QString("[%1,%1]").arg(line()).arg(column());
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

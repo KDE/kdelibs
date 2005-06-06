@@ -331,7 +331,7 @@ bool KateNormalIndent::skipBlanks (KateDocCursor &cur, KateDocCursor &max, bool 
       if (!newline)
         break;
       curLine = cur.line();
-      cur.setCol(0);
+      cur.setColumn(0);
     }
   } while (cur < max);
 
@@ -343,9 +343,9 @@ bool KateNormalIndent::skipBlanks (KateDocCursor &cur, KateDocCursor &max, bool 
 uint KateNormalIndent::measureIndent (KateDocCursor &cur) const
 {
   if (useSpaces && !mixedIndent)
-    return cur.col();
+    return cur.column();
 
-  return doc->plainKateTextLine(cur.line())->cursorX(cur.col(), tabWidth);
+  return doc->plainKateTextLine(cur.line())->cursorX(cur.column(), tabWidth);
 }
 
 QString KateNormalIndent::tabString(uint pos) const
@@ -372,7 +372,7 @@ QString KateNormalIndent::tabString(uint pos) const
 void KateNormalIndent::processNewline (KateDocCursor &begin, bool /*needContinue*/)
 {
   int line = begin.line() - 1;
-  int pos = begin.col();
+  int pos = begin.column();
 
   while ((line > 0) && (pos < 0)) // search a not empty text line
     pos = doc->plainKateTextLine(--line)->firstChar();
@@ -381,10 +381,10 @@ void KateNormalIndent::processNewline (KateDocCursor &begin, bool /*needContinue
   {
     QString filler = doc->text(line, 0, line, pos);
     doc->insertText(begin.line(), 0, filler);
-    begin.setCol(filler.length());
+    begin.setColumn(filler.length());
   }
   else
-    begin.setCol(0);
+    begin.setColumn(0);
 }
 
 //END
@@ -511,7 +511,7 @@ void KateCSmartIndent::processLine (KateDocCursor &line)
     doc->removeText(line.line(), 0, line.line(), firstChar);
     QString filler = tabString(indent);
     if (indent > 0) doc->insertText(line.line(), 0, filler);
-    if (!processingBlock) line.setCol(filler.length());
+    if (!processingBlock) line.setColumn(filler.length());
   }
 }
 
@@ -574,7 +574,7 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
 
       doc->removeText (begin.line(), 0, begin.line(), first);
       doc->insertText (begin.line(), 0, filler);
-      begin.setCol(filler.length());
+      begin.setColumn(filler.length());
 
       return true;
     }
@@ -596,13 +596,13 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
     {
       QString filler = tabString (indent);
       doc->insertText (begin.line(), 0, filler);
-      begin.setCol(filler.length());
+      begin.setColumn(filler.length());
 
       // Handles cases where user hits enter at the beginning or middle of text
       if (inMiddle)
       {
         processLine(begin);
-        begin.setCol(textLine->firstChar());
+        begin.setColumn(textLine->firstChar());
       }
     }
     else
@@ -610,8 +610,8 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
       KateNormalIndent::processNewline (begin, needContinue);
     }
 
-    if (begin.col() < 0)
-      begin.setCol(0);
+    if (begin.column() < 0)
+      begin.setColumn(0);
   }
 }
 
@@ -631,7 +631,7 @@ void KateCSmartIndent::processChar(QChar c)
       return;
   }
 
-  if ( textLine->attribute( begin.col() ) == doxyCommentAttrib )
+  if ( textLine->attribute( begin.column() ) == doxyCommentAttrib )
   {
     // dominik: if line is "* /", change it to "*/"
     if ( c == '/' )
@@ -664,7 +664,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
   bool found = false;
   bool isSpecial = false;
 
-  //kdDebug(13030) << "calcIndent begin line:" << begin.line() << " col:" << begin.col() << endl;
+  //kdDebug(13030) << "calcIndent begin line:" << begin.line() << " col:" << begin.column() << endl;
 
   // Find Indent Anchor Point
   while (cur.gotoPreviousLine())
@@ -733,17 +733,17 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
           continue;
 
         KateDocCursor lineBegin = cur;
-        lineBegin.setCol(specialIndent);
+        lineBegin.setColumn(specialIndent);
         specialIndent = measureIndent(lineBegin);
         isSpecial = true;
       }
 
       // Move forward past blank lines
       KateDocCursor skip = cur;
-      skip.setCol(textLine->lastChar());
+      skip.setColumn(textLine->lastChar());
       bool result = skipBlanks(skip, begin, true);
 
-      anchorPos = skip.col();
+      anchorPos = skip.column();
       anchorIndent = measureIndent(skip);
 
       //kdDebug(13030) << "calcIndent anchorPos:" << anchorPos << " anchorIndent:" << anchorIndent << " at line:" << skip.line() << endl;
@@ -763,7 +763,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
       // Are these on a line by themselves? (i.e. both last and first char)
       if ((c == '{' || c == '}') && textLine->getChar(textLine->firstChar()) == c)
       {
-        cur.setCol(anchorPos = textLine->firstChar());
+        cur.setColumn(anchorPos = textLine->firstChar());
         anchorIndent = measureIndent (cur);
         break;
       }
@@ -795,7 +795,7 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
       return 0;
 
     QChar tc = cur.currentChar();
-    //kdDebug(13030) << "  cur.line:" << cur.line() << " cur.col:" << cur.col() << " currentChar '" << tc << "' " << textLine->attribute(cur.col()) << endl;
+    //kdDebug(13030) << "  cur.line:" << cur.line() << " cur.col:" << cur.column() << " currentChar '" << tc << "' " << textLine->attribute(cur.column()) << endl;
     if (cur == begin || tc.isNull())
       break;
 
@@ -866,60 +866,60 @@ uint KateCSmartIndent::calcContinue(KateDocCursor &start, KateDocCursor &end)
   KateTextLine::Ptr textLine = doc->plainKateTextLine(cur.line());
 
   // Handle cases such as  } while (s ... by skipping the leading symbol
-  if (textLine->attribute(cur.col()) == symbolAttrib)
+  if (textLine->attribute(cur.column()) == symbolAttrib)
   {
     cur.moveForward(1);
     skipBlanks(cur, end, false);
   }
 
-  if (textLine->getChar(cur.col()) == '}')
+  if (textLine->getChar(cur.column()) == '}')
   {
     skipBlanks(cur, end, true);
     if (cur.line() != start.line())
       textLine = doc->plainKateTextLine(cur.line());
 
-    if (textLine->stringAtPos(cur.col(), "else"))
-      cur.setCol(cur.col() + 4);
+    if (textLine->stringAtPos(cur.column(), "else"))
+      cur.setColumn(cur.column() + 4);
     else
       return indentWidth * 2;
 
     needsBalanced = false;
   }
-  else if (textLine->stringAtPos(cur.col(), "else"))
+  else if (textLine->stringAtPos(cur.column(), "else"))
   {
-    cur.setCol(cur.col() + 4);
+    cur.setColumn(cur.column() + 4);
     needsBalanced = false;
-    if (textLine->stringAtPos(textLine->nextNonSpaceChar(cur.col()), "if"))
+    if (textLine->stringAtPos(textLine->nextNonSpaceChar(cur.column()), "if"))
     {
-      cur.setCol(textLine->nextNonSpaceChar(cur.col()) + 2);
+      cur.setColumn(textLine->nextNonSpaceChar(cur.column()) + 2);
       needsBalanced = true;
     }
   }
-  else if (textLine->stringAtPos(cur.col(), "if"))
+  else if (textLine->stringAtPos(cur.column(), "if"))
   {
-    cur.setCol(cur.col() + 2);
+    cur.setColumn(cur.column() + 2);
   }
-  else if (textLine->stringAtPos(cur.col(), "do"))
+  else if (textLine->stringAtPos(cur.column(), "do"))
   {
-    cur.setCol(cur.col() + 2);
+    cur.setColumn(cur.column() + 2);
     needsBalanced = false;
   }
-  else if (textLine->stringAtPos(cur.col(), "for"))
+  else if (textLine->stringAtPos(cur.column(), "for"))
   {
-    cur.setCol(cur.col() + 3);
+    cur.setColumn(cur.column() + 3);
     isFor = true;
   }
-  else if (textLine->stringAtPos(cur.col(), "while"))
+  else if (textLine->stringAtPos(cur.column(), "while"))
   {
-    cur.setCol(cur.col() + 5);
+    cur.setColumn(cur.column() + 5);
   }
-  else if (textLine->stringAtPos(cur.col(), "switch"))
+  else if (textLine->stringAtPos(cur.column(), "switch"))
   {
-    cur.setCol(cur.col() + 6);
+    cur.setColumn(cur.column() + 6);
   }
-  else if (textLine->stringAtPos(cur.col(), "using"))
+  else if (textLine->stringAtPos(cur.column(), "using"))
   {
-    cur.setCol(cur.col() + 5);
+    cur.setColumn(cur.column() + 5);
   }
   else
   {
@@ -992,7 +992,7 @@ bool KateCSmartIndent::firstOpeningBrace(KateDocCursor &start)
       QChar ch = cur.currentChar();
       if (ch == '{')
         return false;
-      else if (ch == '}' && cur.col() == 0)
+      else if (ch == '}' && cur.column() == 0)
         break;
     }
   }
@@ -1065,7 +1065,7 @@ KatePythonIndent::~KatePythonIndent ()
 void KatePythonIndent::processNewline (KateDocCursor &begin, bool /*newline*/)
 {
   int prevLine = begin.line() - 1;
-  int prevPos = begin.col();
+  int prevPos = begin.column();
 
   while ((prevLine > 0) && (prevPos < 0)) // search a not empty text line
     prevPos = doc->plainKateTextLine(--prevLine)->firstChar();
@@ -1092,10 +1092,10 @@ void KatePythonIndent::processNewline (KateDocCursor &begin, bool /*newline*/)
   {
     QString filler = tabString (indent);
     doc->insertText (begin.line(), 0, filler);
-    begin.setCol(filler.length());
+    begin.setColumn(filler.length());
   }
   else
-    begin.setCol(0);
+    begin.setColumn(0);
 }
 
 int KatePythonIndent::calcExtra (int &prevBlock, int &pos, KateDocCursor &end)
@@ -1186,7 +1186,7 @@ KateXmlIndent::~KateXmlIndent ()
 
 void KateXmlIndent::processNewline (KateDocCursor &begin, bool /*newline*/)
 {
-  begin.setCol(processLine(begin.line()));
+  begin.setColumn(processLine(begin.line()));
 }
 
 void KateXmlIndent::processChar (QChar c)
@@ -1379,7 +1379,7 @@ void KateCSAndSIndent::processLine (KateDocCursor &line)
 
   updateIndentString();
 
-  const int oldCol = line.col();
+  const int oldCol = line.column();
   QString whitespace = calcIndent(line);
   // strip off existing whitespace
   int oldIndent = textLine->firstChar();
@@ -1392,9 +1392,9 @@ void KateCSAndSIndent::processLine (KateDocCursor &line)
 
   // try to preserve the cursor position in the line
   if ( int(oldCol + whitespace.length()) >= oldIndent )
-    line.setCol( oldCol + whitespace.length() - oldIndent );
+    line.setColumn( oldCol + whitespace.length() - oldIndent );
   else
-    line.setCol( 0 );
+    line.setColumn( 0 );
 }
 
 void KateCSAndSIndent::processSection (const KateDocCursor &begin, const KateDocCursor &end)
@@ -1495,7 +1495,7 @@ bool KateCSAndSIndent::handleDoxygen (KateDocCursor &begin)
 
   doc->removeText (begin.line(), 0, begin.line(), first);
   doc->insertText (begin.line(), 0, indent);
-  begin.setCol(indent.length());
+  begin.setColumn(indent.length());
 
   return true;
 }
@@ -1519,7 +1519,7 @@ void KateCSAndSIndent::processNewline (KateDocCursor &begin, bool /*needContinue
   int cursorPos = doc->plainKateTextLine( begin.line() )->firstChar();
   if ( cursorPos < 0 )
     cursorPos = doc->lineLength( begin.line() );
-  begin.setCol( cursorPos );
+  begin.setColumn( cursorPos );
 
   processLine( begin );
 }
@@ -1946,7 +1946,7 @@ void KateCSAndSIndent::processChar(QChar c)
       return;
   }
 
-  if ( textLine->attribute( begin.col() ) == doxyCommentAttrib )
+  if ( textLine->attribute( begin.column() ) == doxyCommentAttrib )
   {
     // dominik: if line is "* /", change it to "*/"
     if ( c == '/' )
@@ -2161,7 +2161,7 @@ void KateVarIndent::processLine ( KateDocCursor &line )
     doc->insertText (ln, 0, indent);
 
   // try to restore cursor ?
-  line.setCol( pos );
+  line.setColumn( pos );
 }
 
 void KateVarIndent::processSection (const KateDocCursor &begin, const KateDocCursor &end)

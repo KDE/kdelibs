@@ -39,17 +39,17 @@ class KateLineRange
     KateLineRange& operator=(const KateLineRange& r);
 
     KateDocument* doc() const;
-    KateTextCursor rangeStart() const;
+    KTextEditor::Cursor rangeStart() const;
 
     void clear();
     bool isValid() const;
 
-    bool includesCursor(const KateTextCursor& realCursor) const;
+    bool includesCursor(const KTextEditor::Cursor& realCursor) const;
 
-    friend bool operator> (const KateLineRange& r, const KateTextCursor& c);
-    friend bool operator>= (const KateLineRange& r, const KateTextCursor& c);
-    friend bool operator< (const KateLineRange& r, const KateTextCursor& c);
-    friend bool operator<= (const KateLineRange& r, const KateTextCursor& c);
+    friend bool operator> (const KateLineRange& r, const KTextEditor::Cursor& c);
+    friend bool operator>= (const KateLineRange& r, const KTextEditor::Cursor& c);
+    friend bool operator< (const KateLineRange& r, const KTextEditor::Cursor& c);
+    friend bool operator<= (const KateLineRange& r, const KTextEditor::Cursor& c);
 
     // Override current textLine. Only use when you know what you're doing.
     void setSpecial(const KateTextLine::Ptr& textLine);

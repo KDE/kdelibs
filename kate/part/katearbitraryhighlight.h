@@ -55,7 +55,7 @@ public:
   void addHighlightToDocument(KateRangeList* list);
   void addHighlightToView(KateRangeList* list, KateView* view);
 
-  QList<KateSuperRange*> startingRanges(const KateTextCursor& pos, KateView* view = 0L) const;
+  QList<KateSuperRange*> startingRanges(const KTextEditor::Cursor& pos, KateView* view = 0L) const;
   
 signals:
   void tagLines(KateView* view, KateRange* range);

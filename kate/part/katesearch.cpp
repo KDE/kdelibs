@@ -127,8 +127,8 @@ void KateSearch::find( const QString &pattern, long flags, bool add, bool showno
 
   if ( searchFlags.selected )
   {
-    s.selBegin = KateTextCursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
-    s.selEnd   = KateTextCursor( m_view->selectionEndLine(),   m_view->selectionEndColumn()   );
+    s.selBegin = KTextEditor::Cursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
+    s.selEnd   = KTextEditor::Cursor( m_view->selectionEndLine(),   m_view->selectionEndColumn()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
     s.cursor = getCursor();
@@ -193,8 +193,8 @@ void KateSearch::replace( const QString& pattern, const QString &replacement, lo
   searchFlags.useBackRefs = KateViewConfig::global()->searchFlags() & KReplaceDialog::BackReference;
   if ( searchFlags.selected )
   {
-    s.selBegin = KateTextCursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
-    s.selEnd   = KateTextCursor( m_view->selectionEndLine(), m_view->selectionEndColumn()   );
+    s.selBegin = KTextEditor::Cursor( m_view->selectionStartLine(), m_view->selectionStartColumn() );
+    s.selEnd   = KTextEditor::Cursor( m_view->selectionEndLine(), m_view->selectionEndColumn()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
     s.cursor = getCursor();
@@ -235,18 +235,18 @@ void KateSearch::search( SearchFlags flags )
 
   if( s.flags.fromBeginning ) {
     if( !s.flags.backward ) {
-      s.cursor.setPos(0, 0);
+      s.cursor.setPosition(0, 0);
     } else {
       s.cursor.setLine(doc()->numLines() - 1);
-      s.cursor.setCol(doc()->lineLength( s.cursor.line() ));
+      s.cursor.setColumn(doc()->lineLength( s.cursor.line() ));
     }
   }
 
   if((!s.flags.backward &&
-       s.cursor.col() == 0 &&
+       s.cursor.column() == 0 &&
        s.cursor.line() == 0 ) ||
      ( s.flags.backward &&
-       s.cursor.col() == doc()->lineLength( s.cursor.line() ) &&
+       s.cursor.column() == doc()->lineLength( s.cursor.line() ) &&
        s.cursor.line() == (((int)doc()->numLines()) - 1) ) ) {
     s.flags.finished = true;
   }
@@ -271,10 +271,10 @@ void KateSearch::wrapSearch()
   else
   {
     if( !s.flags.backward ) {
-      s.cursor.setPos(0, 0);
+      s.cursor.setPosition(0, 0);
     } else {
       s.cursor.setLine(doc()->numLines() - 1);
-      s.cursor.setCol(doc()->lineLength( s.cursor.line() ) );
+      s.cursor.setColumn(doc()->lineLength( s.cursor.line() ) );
     }
   }
 
@@ -372,9 +372,9 @@ void KateSearch::replaceOne()
   }
 
   doc()->editStart();
-  doc()->removeText( s.cursor.line(), s.cursor.col(),
-      s.cursor.line(), s.cursor.col() + s.matchedLength );
-  doc()->insertText( s.cursor.line(), s.cursor.col(), replaceWith );
+  doc()->removeText( s.cursor.line(), s.cursor.column(),
+      s.cursor.line(), s.cursor.column() + s.matchedLength );
+  doc()->insertText( s.cursor.line(), s.cursor.column(), replaceWith );
   doc()->editEnd(),
 
   replaces++;
@@ -386,7 +386,7 @@ void KateSearch::replaceOne()
     if ( ! s.flags.backward )
     {
       s.cursor.setLine( s.cursor.line() + newlines );
-      s.cursor.setCol( replaceWith.length() - replaceWith.findRev('\n') );
+      s.cursor.setColumn( replaceWith.length() - replaceWith.findRev('\n') );
     }
     // selection?
     if ( s.flags.selected )
@@ -397,23 +397,23 @@ void KateSearch::replaceOne()
   // adjust selection endcursor if needed
   if( s.flags.selected && s.cursor.line() == s.selEnd.line() )
   {
-    s.selEnd.setCol(s.selEnd.col() + replaceWith.length() - s.matchedLength );
+    s.selEnd.setColumn(s.selEnd.column() + replaceWith.length() - s.matchedLength );
   }
 
   // adjust wrap cursor if needed
-  if( s.cursor.line() == s.wrappedEnd.line() && s.cursor.col() <= s.wrappedEnd.col())
+  if( s.cursor.line() == s.wrappedEnd.line() && s.cursor.column() <= s.wrappedEnd.column())
   {
-    s.wrappedEnd.setCol(s.wrappedEnd.col() + replaceWith.length() - s.matchedLength );
+    s.wrappedEnd.setColumn(s.wrappedEnd.column() + replaceWith.length() - s.matchedLength );
   }
 
   if( !s.flags.backward ) {
-    s.cursor.setCol(s.cursor.col() + replaceWith.length());
-  } else if( s.cursor.col() > 0 ) {
-    s.cursor.setCol(s.cursor.col() - 1);
+    s.cursor.setColumn(s.cursor.column() + replaceWith.length());
+  } else if( s.cursor.column() > 0 ) {
+    s.cursor.setColumn(s.cursor.column() - 1);
   } else {
     s.cursor.setLine(s.cursor.line() - 1);
     if( s.cursor.line() >= 0 ) {
-      s.cursor.setCol(doc()->lineLength( s.cursor.line() ));
+      s.cursor.setColumn(doc()->lineLength( s.cursor.line() ));
     }
   }
 }
@@ -421,13 +421,13 @@ void KateSearch::replaceOne()
 void KateSearch::skipOne()
 {
   if( !s.flags.backward ) {
-    s.cursor.setCol(s.cursor.col() + s.matchedLength);
-  } else if( s.cursor.col() > 0 ) {
-    s.cursor.setCol(s.cursor.col() - 1);
+    s.cursor.setColumn(s.cursor.column() + s.matchedLength);
+  } else if( s.cursor.column() > 0 ) {
+    s.cursor.setColumn(s.cursor.column() - 1);
   } else {
     s.cursor.setLine(s.cursor.line() - 1);
     if( s.cursor.line() >= 0 ) {
-      s.cursor.setCol(doc()->lineLength(s.cursor.line()));
+      s.cursor.setColumn(doc()->lineLength(s.cursor.line()));
     }
   }
 }
@@ -521,15 +521,15 @@ QString KateSearch::getSearchText()
   return str;
 }
 
-KateTextCursor KateSearch::getCursor()
+KTextEditor::Cursor KateSearch::getCursor()
 {
-  return KateTextCursor(view()->cursorLine(), view()->cursorColumnReal());
+  return KTextEditor::Cursor(view()->cursorLine(), view()->cursorColumnReal());
 }
 
 bool KateSearch::doSearch( const QString& text )
 {
   int line = s.cursor.line();
-  int col = s.cursor.col();// + (result ? s.matchedLength : 0);
+  int col = s.cursor.column();// + (result ? s.matchedLength : 0);
   bool backward = s.flags.backward;
   bool caseSensitive = s.flags.caseSensitive;
   bool regExp = s.flags.regExp;
@@ -557,12 +557,12 @@ bool KateSearch::doSearch( const QString& text )
 
     if ( found && s.flags.selected )
     {
-      if ( !s.flags.backward && KateTextCursor( foundLine, foundCol ) >= s.selEnd
-        ||  s.flags.backward && KateTextCursor( foundLine, foundCol ) < s.selBegin )
+      if ( !s.flags.backward && KTextEditor::Cursor( foundLine, foundCol ) >= s.selEnd
+        ||  s.flags.backward && KTextEditor::Cursor( foundLine, foundCol ) < s.selBegin )
         found = false;
       else if (m_view->blockSelectionMode())
       {
-        if ((int)foundCol < s.selEnd.col() && (int)foundCol >= s.selBegin.col())
+        if ((int)foundCol < s.selEnd.column() && (int)foundCol >= s.selBegin.column())
           break;
       }
     }
@@ -575,7 +575,7 @@ bool KateSearch::doSearch( const QString& text )
   if( !found ) return false;
 
   // save the search result
-  s.cursor.setPos(foundLine, foundCol);
+  s.cursor.setPosition(foundLine, foundCol);
   s.matchedLength = matchLen;
 
   // we allready wrapped around one time
@@ -584,26 +584,26 @@ bool KateSearch::doSearch( const QString& text )
     if (s.flags.backward)
     {
       if ( (s.cursor.line() < s.wrappedEnd.line())
-           || ( (s.cursor.line() == s.wrappedEnd.line()) && ((s.cursor.col()+matchLen) <= uint(s.wrappedEnd.col())) ) )
+           || ( (s.cursor.line() == s.wrappedEnd.line()) && ((s.cursor.column()+matchLen) <= uint(s.wrappedEnd.column())) ) )
         return false;
     }
     else
     {
       if ( (s.cursor.line() > s.wrappedEnd.line())
-           || ( (s.cursor.line() == s.wrappedEnd.line()) && (s.cursor.col() > s.wrappedEnd.col()) ) )
+           || ( (s.cursor.line() == s.wrappedEnd.line()) && (s.cursor.column() > s.wrappedEnd.column()) ) )
         return false;
     }
   }
 
-//   kdDebug() << "Found at " << s.cursor.line() << ", " << s.cursor.col() << endl;
+//   kdDebug() << "Found at " << s.cursor.line() << ", " << s.cursor.column() << endl;
 
   return true;
 }
 
-void KateSearch::exposeFound( KateTextCursor &cursor, int slen )
+void KateSearch::exposeFound( KTextEditor::Cursor &cursor, int slen )
 {
-  view()->setCursorPositionInternal ( cursor.line(), cursor.col() + slen, 1 );
-  view()->setSelection( cursor.line(), cursor.col(), cursor.line(), cursor.col() + slen );
+  view()->setCursorPositionInternal ( cursor.line(), cursor.column() + slen, 1 );
+  view()->setSelection( cursor.line(), cursor.column(), cursor.line(), cursor.column() + slen );
 }
 //END KateSearch
 

@@ -106,9 +106,9 @@ KateLineRange& KateLineRange::operator= (const KateLineRange& r)
   return *this;
 }
 
-KateTextCursor KateLineRange::rangeStart() const
+KTextEditor::Cursor KateLineRange::rangeStart() const
 {
-  return KateTextCursor(line(), startCol());
+  return KTextEditor::Cursor(line(), startCol());
 }
 
 KateLineRange::~KateLineRange()
@@ -135,9 +135,9 @@ void KateLineRange::clear()
   m_layout = 0L;
 }
 
-bool KateLineRange::includesCursor(const KateTextCursor& realCursor) const
+bool KateLineRange::includesCursor(const KTextEditor::Cursor& realCursor) const
 {
-  return realCursor.line() == line() && realCursor.col() >= startCol() && (!wrap() || realCursor.col() < endCol());
+  return realCursor.line() == line() && realCursor.column() >= startCol() && (!wrap() || realCursor.column() < endCol());
 }
 
 int KateLineRange::xOffset() const
@@ -150,24 +150,24 @@ void KateLineRange::debugOutput() const
   kdDebug() << "KateLineRange: line " << line() << " cols [" << startCol() << " -> " << endCol() << "] x [" << startX() << " -> " << endX() << " off " << shiftX() << "] wrap " << wrap() << endl;
 }
 
-bool operator> (const KateLineRange& r, const KateTextCursor& c)
+bool operator> (const KateLineRange& r, const KTextEditor::Cursor& c)
 {
-  return r.line() > c.line() || r.endCol() > c.col();
+  return r.line() > c.line() || r.endCol() > c.column();
 }
 
-bool operator>= (const KateLineRange& r, const KateTextCursor& c)
+bool operator>= (const KateLineRange& r, const KTextEditor::Cursor& c)
 {
-  return r.line() > c.line() || r.endCol() >= c.col();
+  return r.line() > c.line() || r.endCol() >= c.column();
 }
 
-bool operator< (const KateLineRange& r, const KateTextCursor& c)
+bool operator< (const KateLineRange& r, const KTextEditor::Cursor& c)
 {
-  return r.line() < c.line() || r.startCol() < c.col();
+  return r.line() < c.line() || r.startCol() < c.column();
 }
 
-bool operator<= (const KateLineRange& r, const KateTextCursor& c)
+bool operator<= (const KateLineRange& r, const KTextEditor::Cursor& c)
 {
-  return r.line() < c.line() || r.startCol() <= c.col();
+  return r.line() < c.line() || r.startCol() <= c.column();
 }
 
 const KateTextLine::Ptr& KateLineRange::textLine() const

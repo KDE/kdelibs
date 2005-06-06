@@ -19,6 +19,8 @@
 
 #include <config.h>
 
+#include "cursor.h"
+
 #include "document.h"
 #include "document.moc"
 
@@ -67,7 +69,7 @@ namespace KTextEditor
     {
     }
   };
-  
+
   class PrivateView
   {
   public:
@@ -79,7 +81,7 @@ namespace KTextEditor
     {
     }
   };
-  
+
   class PrivatePlugin
   {
   public:
@@ -89,8 +91,8 @@ namespace KTextEditor
 
     ~PrivatePlugin ()
     {
-    }       
-    
+    }
+
     class Document *m_doc;
   };
 }
@@ -132,7 +134,7 @@ unsigned int View::viewNumber () const
 Plugin::Plugin( Document *document, const char *name ) : QObject (document, name )
 {
   globalPluginNumber++;
-  myPluginNumber = globalPluginNumber; 
+  myPluginNumber = globalPluginNumber;
   d = new PrivatePlugin ();
   d->m_doc = document;
 }
@@ -145,7 +147,7 @@ Plugin::~Plugin()
 unsigned int Plugin::pluginNumber () const
 {
   return myPluginNumber;
-}     
+}
 
 Document *Plugin::document () const
 {
@@ -155,7 +157,7 @@ Document *Plugin::document () const
 Document *KTextEditor::createDocument ( const char* libname, QObject *parent, const char *name )
 {
   return KParts::ComponentFactory::createPartInstanceFromLibrary<Document>( libname, 0, 0, parent, name );
-}     
+}
 
 Plugin *KTextEditor::createPlugin ( const char* libname, Document *document, const char *name )
 {
@@ -229,7 +231,7 @@ ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
 
 
 CursorInterface *KTextEditor::cursorInterface (View *view)
-{                   
+{
   if (!view)
     return 0;
 
@@ -264,7 +266,7 @@ SearchInterface *KTextEditor::searchInterface (Document *doc)
 
 
 MarkInterface *KTextEditor::markInterface (Document *doc)
-{                                 
+{
   if (!doc)
     return 0;
 

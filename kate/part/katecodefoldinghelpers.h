@@ -27,7 +27,7 @@
 #include <QVector>
 
 class KateCodeFoldingTree;
-class KateTextCursor;
+namespace KTextEditor { class Cursor; }
 class KateBuffer;
 
 class QString;
@@ -66,8 +66,8 @@ class KateCodeFoldingNode
 
     inline KateCodeFoldingNode *getParentNode () {return parentNode;}
 
-    bool getBegin (KateCodeFoldingTree *tree, KateTextCursor* begin);
-    bool getEnd (KateCodeFoldingTree *tree, KateTextCursor *end);
+    bool getBegin (KateCodeFoldingTree *tree, KTextEditor::Cursor* begin);
+    bool getEnd (KateCodeFoldingTree *tree, KTextEditor::Cursor *end);
 
   /**
    * accessors for the child nodes
@@ -80,11 +80,11 @@ class KateCodeFoldingNode
     inline KateCodeFoldingNode *child (uint index) const { return m_children[index]; }
 
     inline int findChild (KateCodeFoldingNode *node, uint start = 0) const
-    { 
+    {
       for (int i=start; i < m_children.size(); ++i)
         if (m_children[i] == node)
           return i;
-          
+
       return -1;
     }
 

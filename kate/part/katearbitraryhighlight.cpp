@@ -70,7 +70,7 @@ KateView* KateArbitraryHighlight::viewForRange(KateSuperRange* range)
   return 0L;
 }
 
-QList< KateSuperRange * > KateArbitraryHighlight::startingRanges( const KateTextCursor & pos, KateView * view ) const
+QList< KateSuperRange * > KateArbitraryHighlight::startingRanges( const KTextEditor::Cursor & pos, KateView * view ) const
 {
   QList<KateSuperRange*> ret;
 
