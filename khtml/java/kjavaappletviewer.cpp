@@ -77,7 +77,7 @@ public:
     KJavaAppletContext * getContext (QObject*, const QString &);
     void releaseContext (QObject*, const QString &);
     void setServer (KJavaAppletServer * s);
-    QGuardedPtr <KJavaAppletServer> server;
+    QPointer <KJavaAppletServer> server;
 private:
     typedef QMap <QPair <QObject*, QString>, QPair <KJavaAppletContext*, int> >
             ContextMap;

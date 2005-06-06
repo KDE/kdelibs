@@ -1814,7 +1814,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
     return;
   }
-  KIO::TransferJob *tjob = ::qt_cast<KIO::TransferJob*>(job);
+  KIO::TransferJob *tjob = ::qobject_cast<KIO::TransferJob*>(job);
   if (tjob && tjob->isErrorPage()) {
     khtml::RenderPart *renderPart = d->m_frame->m_frame;
     if (renderPart) {

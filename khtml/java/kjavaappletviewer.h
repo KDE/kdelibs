@@ -112,7 +112,7 @@ private:
     KJavaAppletViewerBrowserExtension * m_browserextension;
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     KParts::StatusBarExtension * m_statusbar;
-    QGuardedPtr <QLabel> m_statusbar_icon;
+    QPointer <QLabel> m_statusbar_icon;
     QString baseurl;
     bool m_closed;
 };

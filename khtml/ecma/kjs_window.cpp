@@ -1494,7 +1494,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), caption);
+    KMessageBox::error(widget, Q3StyleSheet::convertFromPlainText(str), caption);
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
@@ -1503,7 +1503,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), caption,
+    return Boolean((KMessageBox::warningYesNo(widget, Q3StyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())
