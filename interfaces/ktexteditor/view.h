@@ -61,6 +61,24 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      */
     Document *document ();
 
+  /**
+   * SIGNALS
+   * following signals should be emitted by the editor view
+   * if it looses or receives focus
+   */
+  private:
+    /**
+     * view got focus
+     * @param view view which got focus
+     */
+    virtual void gotFocus ( KTextEditor::View *view ) = 0;
+
+    /**
+     * view lost focus
+     * @param view view which lost focus
+     */
+    virtual void lostFocus ( KTextEditor::View *view ) = 0;
+
   private:
     /**
      * Private d-pointer
