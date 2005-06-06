@@ -73,6 +73,8 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 		box->setFixedHeight(24);
 		setFixedHeight(24);
 	}
+	mainLayout->setMargin(0);
+	mainLayout->setSpacing(0);
 	addChild(box);
 	setFrameStyle(NoFrame);
 	viewport()->setBackgroundMode(Qt::PaletteBackground);
