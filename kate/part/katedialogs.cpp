@@ -1175,7 +1175,7 @@ void KatePartPluginConfigPage::slotCurrentChanged( Q3ListViewItem* i )
   {
 
     // load this plugin, and see if it has config pages
-    KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()));
+    KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()), 0);
     if ( plugin ) {
       KTextEditor::ConfigInterface *cie = KTextEditor::configInterface( plugin );
       b = ( cie && cie->configPages() );
@@ -1189,7 +1189,7 @@ void KatePartPluginConfigPage::slotConfigure()
 {
   KatePartPluginListItem *item = static_cast<KatePartPluginListItem*>(listView->currentItem());
   KTextEditor::Plugin *plugin =
-    KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()));
+    KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()), 0);
 
   if ( ! plugin ) return;
 

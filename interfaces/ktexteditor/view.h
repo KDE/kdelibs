@@ -25,37 +25,45 @@
 namespace KTextEditor
 {
 
+class Document;
+
 /**
  * The View class represents a single view of a Document .
  */
 
 class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
 {
-  friend class PrivateView;
-
   Q_OBJECT
 
   public:
     /**
-    * Create a new view to the given document. The document must be non-null.
-    */
-    View ( class Document *, QWidget *parent, const char *name = 0 );
+     * Create a new view to the given document. The document must be non-null.
+     * @param document parent document
+     * @param parent parent widget
+     */
+    View ( Document *document, QWidget *parent );
+
+    /**
+     * virtual destructor
+     */
     virtual ~View ();
 
     /**
-     * Returns the number of this view
+     * Returns the global number of this view in your app.
+     * @return view number
      */
-    unsigned int viewNumber () const;
+    int viewNumber () const;
 
     /**
-    * Acess the parent Document.
-    */
-    virtual class Document *document () const = 0;
-    
+     * Access the parent Document.
+     * @return document
+     */
+    Document *document ();
+
   private:
-    class PrivateView *d;
-    static unsigned int globalViewNumber;
-    unsigned int myViewNumber;
+    class PrivateView *m_d;
+    int m_viewNumber;
+    Document *m_doc;
 };
 
 }

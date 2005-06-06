@@ -83,8 +83,8 @@
 #include <q3stylesheet.h>
 //END includes
 
-KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
-    : KTextEditor::View( doc, parent, name )
+KateView::KateView( KateDocument *doc, QWidget *parent )
+    : KTextEditor::View( doc, parent )
     , m_doc( doc )
     , m_search( new KateSearch( this ) )
     , m_spell( new KateSpell( this ) )

@@ -95,7 +95,7 @@ class KatePartPluginItem
 //
 KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
                              bool bReadOnly, QWidget *parentWidget,
-                             const char *widgetName, QObject *parent, const char *name)
+                             const char *, QObject *parent, const char *name)
 : KTextEditor::Document (parent, name),
   m_plugins (KateGlobal::self()->plugins().count()),
   m_activeView(0L),
@@ -200,7 +200,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   // if single view mode, like in the konqui embedding, create a default view ;)
   if ( m_bSingleViewMode )
   {
-    KTextEditor::View *view = createView( parentWidget, widgetName );
+    KTextEditor::View *view = createView( parentWidget );
     insertChildClient( view );
     view->show();
     setWidget( view );
@@ -335,9 +335,9 @@ void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin)
 
 //BEGIN KTextEditor::Document stuff
 
-KTextEditor::View *KateDocument::createView( QWidget *parent, const char *name )
+KTextEditor::View *KateDocument::createView( QWidget *parent )
 {
-  KateView* newView = new KateView( this, parent, name);
+  KateView* newView = new KateView( this, parent);
   connect(newView, SIGNAL(cursorPositionChanged()), SLOT(undoCancel()));
   if ( s_fileChangedDialogsActivated )
     connect( newView, SIGNAL(gotFocus( KTextEditor::View * )), this, SLOT(slotModifiedOnDisk()) );

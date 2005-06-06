@@ -145,7 +145,7 @@ class KateDocument : public KTextEditor::Document,
   // KTextEditor::Document stuff
   //
   public:
-    KTextEditor::View *createView( QWidget *parent, const char *name );
+    KTextEditor::View *createView( QWidget *parent );
     const QList<KTextEditor::View*> &views () const;
 
     inline KateView *activeView () const { return m_activeView; }

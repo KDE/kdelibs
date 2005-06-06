@@ -95,7 +95,7 @@ void EditorChooser::writeAppSetting(const QString& postfix){
 	QString previousGroup=cfg->group();
 	cfg->setGroup("KTEXTEDITOR:"+postfix);
 	cfg->writeEntry("DEVELOPER_INFO","NEVER TRY TO USE VALUES FROM THAT GROUP, THEY ARE SUBJECT TO CHANGES");
-	cfg->writePathEntry("editor", (d->chooser->editorCombo->currentItem()==0) ? 
+	cfg->writePathEntry("editor", (d->chooser->editorCombo->currentItem()==0) ?
 		QString() : QString(d->elements.at(d->chooser->editorCombo->currentItem()-1)));
 	cfg->sync();
 	cfg->setGroup(previousGroup);
@@ -122,11 +122,11 @@ KTextEditor::Document *EditorChooser::createDocument(QObject *parent,const char*
 	KService::Ptr serv=KService::serviceByDesktopName(editor);
 	if (serv)
 	{
-		tmpDoc=KTextEditor::createDocument(serv->library().latin1(),parent,name);
+		tmpDoc=KTextEditor::createDocument(serv->library().latin1(),parent);
 		if (tmpDoc) return tmpDoc;
 	}
 	if (fallBackToKatePart)
-		return KTextEditor::createDocument("libkatepart",parent,name);
+		return KTextEditor::createDocument("libkatepart",parent);
 
 	return 0;
 }

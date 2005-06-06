@@ -23,6 +23,9 @@
 
 #include <QList>
 
+/**
+ * Namespace for the KDE Text Editor Interfaces
+ */
 namespace KTextEditor
 {
 
@@ -34,8 +37,6 @@ class View;
  */
 class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 {
-  friend class PrivateDocument;
-
   Q_OBJECT
 
   public:
@@ -45,7 +46,7 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * @param name name
      */
     Document ( QObject *parent = 0, const char *name = 0 );
-    
+
     /**
      * virtual destructor
      */
@@ -55,8 +56,8 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * Returns the global number of this document in your app.
      * @return document number
      */
-    unsigned int documentNumber () const;
-    
+    int documentNumber () const;
+
     /**
      * Returns this document's name
      * The editor part should provide some meaningful name, like some unique
@@ -65,7 +66,7 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * @return readable document name
      */
     virtual const QString &documentName () const = 0;
-    
+
     /**
      * Returns this document's mimetype
      * @return mimetype
@@ -77,10 +78,9 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     * views as you like. When the user modifies data in one view then all other
     * views will be updated as well.
     * @param parent parent widget
-    * @param name name for view
     * @return created KTextEditor::View
     */
-    virtual View *createView ( QWidget *parent, const char *name = 0 ) = 0;
+    virtual View *createView ( QWidget *parent ) = 0;
 
     /**
      * Returns a list of all views of this document.
@@ -89,12 +89,11 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     virtual const QList<View*> &views () const = 0;
 
   private:
-    class PrivateDocument *d;
-    static unsigned int globalDocumentNumber;
-    unsigned int myDocumentNumber;
+    class PrivateDocument *m_d;
+    int m_documentNumber;
 };
 
-KTEXTEDITOR_EXPORT Document *createDocument ( const char* libname, QObject *parent = 0, const char *name = 0 );
+KTEXTEDITOR_EXPORT Document *createDocument ( const char* libname, QObject *parent );
 
 }
 

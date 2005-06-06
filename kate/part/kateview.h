@@ -74,14 +74,8 @@ class KateView : public KTextEditor::View,
     friend class KateCodeCompletion;
 
   public:
-    KateView( KateDocument* doc, QWidget* parent = 0L, const char* name = 0 );
+    KateView( KateDocument* doc, QWidget* parent );
     ~KateView ();
-
-  //
-  // KTextEditor::View
-  //
-  public:
-    KTextEditor::Document* document() const       { return m_doc; }
 
   //
   // KTextEditor::ClipboardInterface

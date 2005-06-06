@@ -32,34 +32,44 @@ class View;
 /**
  * Basic KTextEditor plugin class.
  * This plugin will be bound to a Document.
- */                     
+ */
 class KTEXTEDITOR_EXPORT Plugin : public QObject
 {
-  friend class PrivatePlugin;
-
   Q_OBJECT
 
   public:
     Plugin ( Document *document = 0, const char *name = 0 );
+
+    /**
+     * virtual destructor
+     */
     virtual ~Plugin ();
-    
-    unsigned int pluginNumber () const;
-      
-    Document *document () const;
-    
+
+    /**
+     * Returns the global number of this plugin in your app.
+     * @return plugin number
+     */
+    int pluginNumber () const;
+
+    /**
+     * Access the parent Document.
+     * @return document
+     */
+    Document *document ();
+
     /*
      * will be called from the part to bound the plugin to a view
      */
     virtual void addView (View *) = 0;
     virtual void removeView (View *) = 0;
-    
+
   private:
-    class PrivatePlugin *d;
-    static unsigned int globalPluginNumber;
-    unsigned int myPluginNumber;
+    class PrivatePlugin *m_d;
+    int m_pluginNumber;
+    Document *m_doc;
 };
-   
-KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char* libname, Document *document = 0, const char *name = 0 );
+
+KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char* libname, Document *document );
 
 }
 
