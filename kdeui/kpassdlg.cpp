@@ -64,6 +64,7 @@ static void cleanup_d_ptr() {
 static int * ourMaxLength( const KPasswordEdit* const e ) {
 	if ( !d_ptr ) {
 		d_ptr = new QPtrDict<int>;
+		d_ptr->setAutoDelete(true);
 		qAddPostRoutine( cleanup_d_ptr );
 	}
 	int* ret = d_ptr->find( (void*) e );
