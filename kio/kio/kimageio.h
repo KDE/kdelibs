@@ -52,15 +52,15 @@
  * \b Example:
  *
  * \code
-  #include<qpixmap.h>
-  #include<kimageio.h>
-
-  int main( int argc, char **argv )
-  {
-    ....
-    KImageIO::registerFormats();
-    ...   // start main program
-  }
+ * #include<qpixmap.h>
+ * #include<kimageio.h>
+ *
+ * int main( int argc, char **argv )
+ *  {
+ *   ....
+ *   KImageIO::registerFormats();
+ *   ...   // start main program
+ * }
  * \endcode
  *
  * @see KImageIO, QPixmap, QImage, QImageIO

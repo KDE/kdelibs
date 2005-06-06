@@ -1814,6 +1814,17 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
     return;
   }
+  KIO::TransferJob *tjob = ::qt_cast<KIO::TransferJob*>(job);
+  if (tjob && tjob->isErrorPage()) {
+    khtml::RenderPart *renderPart = d->m_frame->m_frame;
+    if (renderPart) {
+      HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
+      elt->renderAlternative();
+      checkCompleted();
+     }
+     if (d->m_bComplete) return;
+  }
+
   //kdDebug( 6050 ) << "slotFinished" << endl;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
@@ -1867,16 +1878,15 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   m_url = url;
 
-  bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
   bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
-  // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
-  if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
+  if ( servedAsXML ) { // any XML derivative, including XHTML
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
     // HTML or XHTML? (#86446)
-    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
+    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( true );
   }
+
 #ifndef KHTML_NO_CARET
 //  d->m_view->initCaret();
 #endif
@@ -2494,7 +2504,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
     }
   }
 
-  d->m_view->setContentsPos(gox, y-20);
+  d->m_view->setContentsPos(gox, y);
 
   return true;
 }
@@ -3257,11 +3267,11 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
           ->caretPos( d->m_startOffset, false, x, y, dummy, dummy ); // more precise than posOfChar
         //kdDebug(6050) << "topleft: " << x << "," << y << endl;
         if ( x != -1 || y != -1 )
-        {        
+        {
           int gox = d->m_view->contentsX();
           if (x+50 > d->m_view->contentsX() + d->m_view->visibleWidth())
               gox = x - d->m_view->visibleWidth() + 50;
-          if (x-10 < d->m_view->contentsX()) 
+          if (x-10 < d->m_view->contentsX())
               gox = x - d->m_view->visibleWidth() - 10;
           if (gox < 0) gox = 0;
           d->m_view->setContentsPos(gox, y-50);
@@ -4396,6 +4406,9 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       if (child->m_liveconnect)
         connect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
     }
+    KParts::StatusBarExtension *sb = KParts::StatusBarExtension::childObject(part);
+    if (sb)
+      sb->setStatusBar( d->m_statusBarExtension->statusBar() );
 
     connect( part, SIGNAL( started( KIO::Job *) ),
              this, SLOT( slotChildStarted( KIO::Job *) ) );

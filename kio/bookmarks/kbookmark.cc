@@ -357,18 +357,22 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     return grp.first();
 }
 
-QString KBookmark::commonParent(QString A, QString B)
+QString KBookmark::commonParent(const QString & A, const QString & B)
 {
-    while(depth(A) > depth(B))
-        A = parentAddress(A);
-    while(depth(B) > depth(A))
-        B = parentAddress(B);
-    while(A != B)
+    QString error("ERROR");
+    if(A == error || B == error)
+        return error;
+
+    uint lastCommonSlash = 0;
+    uint lastPos = A.length() < B.length() ? A.length() : B.length();
+    for(uint i=0; i < lastPos; ++i)
     {
-        A = parentAddress(A);
-        B = parentAddress(B);
+        if(A[i] != B[i])
+            return A.left(lastCommonSlash);
+        if(A[i] == '/')
+            lastCommonSlash = i;
     }
-    return A;
+    return A.left(lastPos);
 }
 
 static QDomNode cd_or_create(QDomNode node, QString name)

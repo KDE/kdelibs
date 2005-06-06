@@ -55,6 +55,10 @@ body {
   padding: 1em;
 }
 
+.toc .chapter {
+padding: 0em 0em 0em 1em;
+}
+
 .author {
   color: rgb(82,80,82);
   font-weight: bolder;

@@ -391,6 +391,7 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
       break;
     case KIO::ERR_UPGRADE_REQUIRED:
       result = i18n( "%1 is required by the server, but is not available." ).arg(errorText);
+      break;
     case KIO::ERR_POST_DENIED:
       result = i18n( "Access to restricted port in POST denied.");
       break;

@@ -43,6 +43,7 @@ public class KJASProtocolHandler
     private static final int PutURLDataCode      = 26;
     private static final int PutDataCode         = 27;
     private static final int SecurityConfirmCode = 28;
+    private static final int ShowConsole         = 29;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -313,6 +314,10 @@ public class KJASProtocolHandler
                     t.interrupt();
                 } catch (SecurityException se) {}
             }
+        } else
+        if (cmd_code_value == ShowConsole)
+        {
+            Main.console.setVisible(true);
         }
         else
         {

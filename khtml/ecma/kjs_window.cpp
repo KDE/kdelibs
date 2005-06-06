@@ -826,6 +826,12 @@ Value Window::get(ExecState *exec, const Identifier &p) const
 
 void Window::put(ExecState* exec, const Identifier &propertyName, const Value &value, int attr)
 {
+  // we don't want any operations on a closed window
+  if (m_frame.isNull() || m_frame->m_part.isNull()) {
+    // ### throw exception? allow setting of some props like location?
+    return;
+  }
+
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
   if ( (attr != None && attr != DontDelete) ||
@@ -1488,7 +1494,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    KMessageBox::error(widget, str, caption);
+    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), caption);
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
@@ -1497,7 +1503,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    return Boolean((KMessageBox::warningYesNo(widget, str, caption,
+    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())

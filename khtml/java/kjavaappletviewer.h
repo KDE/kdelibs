@@ -25,6 +25,7 @@
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
+#include <kparts/statusbarextension.h>
 #include <kparts/factory.h>
 #include <kdialogbase.h>
 #include <kurl.h>
@@ -35,6 +36,7 @@
 #include "kjavaappletwidget.h"
 
 class Q3Table;
+class QLabel;
 class KJavaProcess;
 class KJavaAppletViewer;
 class KAboutData;
@@ -109,6 +111,8 @@ private:
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
+    KParts::StatusBarExtension * m_statusbar;
+    QGuardedPtr <QLabel> m_statusbar_icon;
     QString baseurl;
     bool m_closed;
 };

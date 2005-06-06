@@ -21,6 +21,9 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml \
 kjavadata_DATA = kjava.jar kjava.policy pluginsinfo
 kjavadatadir = $(kde_datadir)/kjava/
 
+kjavaiconsdir = $(kde_datadir)/kjava/icons
+kjavaicons_ICON = AUTO
+
 SUBDIRS = . tests dummy
 
 kde_module_LTLIBRARIES= kjavaappletviewer.la

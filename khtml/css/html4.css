@@ -114,17 +114,6 @@ MAP {
 	display: inline;
 }
 
-object {
-        width: 50px;
-        height: 50px;
-}
-
-embed {
-        width: 50px;
-        height: 50px;
-}
-
-
 /*
  * heading elements
  * margin values rely on font-sizes ratio defined in CSS-2.1 15.7
@@ -492,6 +481,10 @@ SUP {
 ABBR, ACRONYM {
 	font-variant: small-caps;
 	letter-spacing: 0.1em
+}
+
+pre[wrap] {
+    white-space: pre-wrap
 }
 
 :focus          { outline: 1px dotted invert }

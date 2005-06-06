@@ -39,7 +39,7 @@
 	* - <a href="libkmid/html/index.html"><b>libkmid</b></a>
         *   (<a href="libkmid/html/classes.html">classes</a>)\n
 	*   <i>Midi library.</i>
-	* - <a href="kdeprint/html/index.html"><b>kprint</b></a>
+	* - <a href="kdeprint/html/index.html"><b>kdeprint</b></a>
         *   (<a href="kdeprint/html/classes.html">classes</a>)\n
 	*   <i>High level  printer control functionality.</i>
 	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>
@@ -61,9 +61,13 @@
 	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
         *   (<a href="knewstuff/html/classes.html">classes</a>)\n
 	*   <i>Upload and download of application data.</i>
-	* - <a href="dnssd/html/index.html"><b>kdnssd</b></a>
+	* - <a href="dnssd/html/index.html"><b>dnssd</b></a>
         *   (<a href="dnssd/html/classes.html">classes</a>)\n
 	*   <i>Network sevices publishing and discovery.</i>
+	* - <a href="kunittest/html/index.html"><b>kunittest</b></a>
+        *   (<a href="kunittest/html/classes.html">classes</a>)\n
+	*   <i>Unit testing framework in KDE.</i>
+
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
 	* and FAQs can be found at

@@ -83,6 +83,7 @@
 #define KJAS_PUT_URLDATA       (char)26
 #define KJAS_PUT_DATA          (char)27
 #define KJAS_SECURITY_CONFIRM  (char)28
+#define KJAS_SHOW_CONSOLE      (char)29
 
 
 class JSStackFrame;
@@ -275,11 +276,6 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     const QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
-    if( config.readBoolEntry( "ShowJavaConsole", false) )
-    {
-        p->setSystemProperty( "kjas.showConsole", QString::null );
-    }
-
     if( config.readBoolEntry( "UseSecurityManager", true ) )
     {
         QString class_file = locate( "data", "kjava/kjava.policy" );
@@ -434,6 +430,12 @@ void KJavaAppletServer::stopApplet( int contextId, int appletId )
     args.append( QString::number(appletId) );
 
     process->send( KJAS_STOP_APPLET, args );
+}
+
+void KJavaAppletServer::showConsole() {
+    if ( d->javaProcessFailed ) return;
+    QStringList args;
+    process->send( KJAS_SHOW_CONSOLE, args );
 }
 
 void KJavaAppletServer::sendURLData( int loaderID, int code, const QByteArray& data )

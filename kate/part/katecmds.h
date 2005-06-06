@@ -57,6 +57,9 @@ class CoreCommands : public KTextEditor::Command, public KTextEditor::CommandExt
      */
     const QStringList &cmds();
 
+    /**
+    * override completionObject from interfaces/document.h .
+    */
     KCompletion *completionObject( const QString &, KTextEditor::View * );
     
     virtual void flagCompletions( QStringList& ) {}

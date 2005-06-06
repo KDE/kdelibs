@@ -1,3 +1,15 @@
+2005-06-03  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp (put): don't crash on attempts to set a
+	property on a deleted window (bug #106697).
+
+2005-06-03  George Staikos <staikos@kde.org>
+        * ecma/kjs_window.cpp: Escape HTML in message boxes like window.alert()
+
+2005-06-02  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_block: Merge margin collapsing improvement from WebCore-146
+
 2005-06-01  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp: fixed prototype property lookup order of
