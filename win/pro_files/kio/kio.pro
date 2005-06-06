@@ -9,7 +9,7 @@ DEFINES += MAKE_KIO_LIB
 LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUFFIX \
 	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX
 
-system( bash kmoc kio kfile misc bookmarks )
+system( bash kmoc kio kfile misc bookmarks kssl )
 
 TARGET = kio$$KDEBUG
 
@@ -21,10 +21,10 @@ INCLUDEPATH += $(KDELIBS)/kdecore/network $(KDELIBS)/kio/kio $(KDELIBS)/kio/misc
   $(KDELIBS)/kio/bookmarks/moc \
   $(KDELIBS)/kio/kssl/moc $(KDELIBS)/kwallet/client 
 
-system( cd kio && dcopidl2cpp observer.kidl )
 system( cd kio && dcopidl kdirnotify.h > kdirnotify.kidl && dcopidl2cpp --no-stub kdirnotify.kidl )
+system( cd kio && dcopidl observer.h > observer.kidl && dcopidl2cpp observer.kidl )
 system( cd bookmarks && dcopidl kbookmarknotifier.h > kbookmarknotifier.kidl && dcopidl2cpp kbookmarknotifier.kidl )
-system( cd bookmarks && dcopidl kbookmarkmanager.h > kbookmarknotifier.kidl && dcopidl2cpp kbookmarkmanager.kidl )
+system( cd bookmarks && dcopidl kbookmarkmanager.h > kbookmarkmanager.kidl && dcopidl2cpp kbookmarkmanager.kidl )
 system( cd misc && dcopidl uiserver.h > uiserver.kidl && dcopidl2cpp uiserver.kidl )
 
 
@@ -86,6 +86,7 @@ kio/netaccess.cpp \
 kio/observer.cpp \
 kio/passdlg.cpp \
 kio/paste.cpp \
+kio/pastedialog.cpp \
 kio/previewjob.cpp \
 kio/progressbase.cpp \
 kio/renamedlg.cpp \
@@ -139,13 +140,10 @@ kfile/kicondialog.cpp \
 kfile/kimagefilepreview.cpp \
 kfile/kmetaprops.cpp \
 kfile/knotifydialog.cpp \
-kfile/knotifywidgetbase.cpp \
 kfile/kopenwith.cpp \
+kfile/kpreviewprops.cpp \
 kfile/kpreviewwidgetbase.cpp \
-kfile/kpropertiesdesktopadvbase.cpp \
-kfile/kpropertiesdesktopbase.cpp \
 kfile/kpropertiesdialog.cpp \
-kfile/kpropertiesmimetypebase.cpp \
 kfile/krecentdirs.cpp \
 kfile/krecentdocument.cpp \
 kfile/kurlbar.cpp \
@@ -206,4 +204,8 @@ misc/uiserver_skel.cpp
 
 FORMS = \
 kssl/keygenwizard.ui \
-kssl/keygenwizard2.ui
+kssl/keygenwizard2.ui \
+kfile/knotifywidgetbase.ui \
+kfile/kpropertiesdesktopadvbase.ui \
+kfile/kpropertiesdesktopbase.ui \
+kfile/kpropertiesmimetypebase.ui
