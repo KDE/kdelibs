@@ -27,22 +27,22 @@ namespace KTextEditor
 {
 
 /**
-*  This is an interface to provide custom popup menus for a View.
-*/
+ *  This is an interface to provide custom popup menus for a KTextEditor::View.
+ */
 class KTEXTEDITOR_EXPORT MenuInterface
 {
   public:
+    /**
+     * virtual destructor
+     */
     virtual ~MenuInterface () {}
 
-  //
-  // normal methodes
-  //
-  public:
-     /**
-      Install a Popup Menu. The Popup Menu will be activated on
-      a right mouse button press event.
-    */
-    virtual void installMenu (QMenu *rmb_Menu) = 0;
+    /**
+     * Install a Popup Menu. The Popup Menu will be activated on
+     * a context menu event (e.g. right mouse button press event).
+     * @param menu menu to install as popup menu for the view
+     */
+    virtual void installMenu (QMenu *menu) = 0;
 };
 
 KTEXTEDITOR_EXPORT MenuInterface *menuInterface (class View *view);
