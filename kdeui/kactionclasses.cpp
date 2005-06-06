@@ -673,7 +673,7 @@ int KSelectAction::plug( QWidget *widget, int index )
       }
       cb->setInsertionPolicy( QComboBox::NoInsert );
       cb->setWhatsThis(whatsThis() );
-      if ( d->m_maxComboViewCount != -1 ) cb->setSizeLimit( d->m_maxComboViewCount );
+      if ( d->m_maxComboViewCount != -1 ) cb->setMaxVisibleItems( d->m_maxComboViewCount );
     }
 
     addContainer( bar, id_ );
