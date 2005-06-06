@@ -71,6 +71,8 @@ class Cursor
 
     /**
      * Set the current cursor position
+     * This is virtual, to allow reimplementations to do checks here
+     * or to emit signals
      * @param pos new cursor position
      */
     virtual void setPosition (const Cursor& pos) { m_line = pos.line(); m_column = pos.column(); }
@@ -86,13 +88,13 @@ class Cursor
      * Set the cursor line
      * @param line new cursor line
      */
-    virtual void setLine (int line) { m_line = line; }
+    void setLine (int line) { setPosition (line, column()); }
 
     /**
      * Set the cursor column
      * @param column new cursor column
      */
-    virtual void setColumn (int column) { m_column = column; }
+    void setColumn (int column) { setPosition (line(), column); }
 
     /**
      * == operator

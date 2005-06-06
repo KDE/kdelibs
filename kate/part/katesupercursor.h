@@ -94,10 +94,8 @@ public:
     operator QString();
 
     // Reimplementations;
-    virtual void setLine(int lineNum);
-    virtual void setColumn(int colNum);
     virtual void setPosition(const KTextEditor::Cursor& pos);
-    virtual void setPosition(int lineNum, int colNum);
+    virtual void setPosition (int line, int column) { setPosition(Cursor (line, column)); }
 
     /**
      * Returns the document this cursor is attached to...

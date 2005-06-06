@@ -93,35 +93,12 @@ void KateSuperCursor::setMoveOnInsert(bool moveOnInsert)
   m_moveOnInsert = moveOnInsert;
 }
 
-void KateSuperCursor::setLine(int lineNum)
-{
-  int tempLine = line(), tempcol = column();
-  KateDocCursor::setLine(lineNum);
-
-  if (tempLine != line() || tempcol != column())
-    emit positionDirectlyChanged();
-}
-
-void KateSuperCursor::setColumn(int colNum)
-{
-  int tempLine = line(), tempcol = column();
-  KateDocCursor::setColumn(colNum);
-
-  if (tempLine != line() || tempcol != column())
-    emit positionDirectlyChanged();
-}
-
 void KateSuperCursor::setPosition(const KTextEditor::Cursor& pos)
 {
-  setPosition(pos.line(), pos.column());
-}
+  KTextEditor::Cursor tmp (pos);
+  KateDocCursor::setPosition(pos);
 
-void KateSuperCursor::setPosition(int lineNum, int colNum)
-{
-  int tempLine = line(), tempcol = column();
-  KateDocCursor::setPosition(lineNum, colNum);
-
-  if (tempLine != line() || tempcol != column())
+  if (tmp != *this)
     emit positionDirectlyChanged();
 }
 
