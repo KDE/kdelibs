@@ -46,7 +46,6 @@
 #include "templateinterface.h"
 #include "texthintinterface.h"
 #include "variableinterface.h"
-#include "wordwrapinterface.h"
 
 #include "configinterface.moc"
 
@@ -178,14 +177,6 @@ KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document
     return 0;
 
   return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
-}
-
-KTextEditor::WordWrapInterface *KTextEditor::wordWrapInterface (Document *doc)
-{
-  if (!doc)
-    return 0;
-
-  return dynamic_cast<KTextEditor::WordWrapInterface*>(doc );
 }
 
 EditInterface *KTextEditor::editInterface (Document *doc)

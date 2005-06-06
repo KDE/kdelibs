@@ -36,7 +36,6 @@
 #include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
-#include <ktexteditor/wordwrapinterface.h>
 #include <ktexteditor/variableinterface.h>
 #include <ktexteditor/encodinginterface.h>
 #include <ktexteditor/modificationinterface.h>
@@ -90,7 +89,6 @@ class KateDocument : public KTextEditor::Document,
                      public KTextEditor::HighlightingInterface,
                      public KTextEditor::ConfigInterface,
                      public KTextEditor::MarkInterface,
-                     public KTextEditor::WordWrapInterface,
                      public KTextEditor::EncodingInterface,
                      public KTextEditor::VariableInterface,
                      public KTextEditor::ModificationInterface,

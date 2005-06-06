@@ -11,7 +11,7 @@ ktexteditorinclude_HEADERS = document.h view.h plugin.h cursor.h \
                              selectioninterface.h cursorinterface.h \
                              menuinterface.h searchinterface.h highlightinginterface.h \
                              codecompletioninterface.h \
-                             configinterface.h markinterface.h wordwrapinterface.h \
+                             configinterface.h markinterface.h \
                              encodinginterface.h sessionconfiginterface.h editorchooser.h \
 			     texthintinterface.h variableinterface.h templateinterface.h \
 			     modificationinterface.h commandinterface.h
