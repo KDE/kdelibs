@@ -69,7 +69,7 @@ class KateSearch : public QObject
         KateTextCursor wrappedEnd; // after wraping around, search/replace until here
         bool wrapped; // have we allready wrapped around ?
         bool showNotFound; // pop up annoying dialogs?
-        uint matchedLength;
+        int matchedLength;
         KateTextCursor selBegin;
         KateTextCursor selEnd;
     };
@@ -222,7 +222,7 @@ class SearchCommand : public KTextEditor::Command, public KTextEditor::CommandEx
     const QStringList &cmds();
     bool wantsToProcessText( const QString &/*cmdname*/ );
     void processText( KTextEditor::View *, const QString& );
-    
+
     virtual void flagCompletions( QStringList& ) {}
     virtual KCompletion *completionObject( const QString &, KTextEditor::View * ) { return 0; }
 

@@ -28,7 +28,6 @@
 #include "plugin.h"
 #include "plugin.moc"
 
-#include "blockselectioninterface.h"
 #include "codecompletioninterface.h"
 #include "commandinterface.h"
 #include "configinterface.h"
@@ -185,14 +184,6 @@ KTextEditor::WordWrapInterface *KTextEditor::wordWrapInterface (Document *doc)
     return 0;
 
   return dynamic_cast<KTextEditor::WordWrapInterface*>(doc );
-}
-
-KTextEditor::BlockSelectionInterface *KTextEditor::blockSelectionInterface (View *view)
-{
-  if (!view)
-    return 0;
-
-  return dynamic_cast<KTextEditor::BlockSelectionInterface*>(view);
 }
 
 EditInterface *KTextEditor::editInterface (Document *doc)

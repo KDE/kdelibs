@@ -166,8 +166,8 @@ void InsertFilePluginView::insertFile()
   KTextEditor::View *v = (KTextEditor::View*)parent();
   ei = KTextEditor::editInterface( v->document() );
   ci = KTextEditor::cursorInterface( v );
-  uint line, col;
-  ci->cursorPositionReal( &line, &col );
+  int line, col;
+  ci->cursorPositionReal( line, col );
   ei->insertText( line, col, str );
 
   // move the cursor

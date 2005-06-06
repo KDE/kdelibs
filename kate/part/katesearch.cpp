@@ -73,7 +73,7 @@ void KateSearch::createActions( KActionCollection* ac )
 void KateSearch::addToList( QStringList& list, const QString& s )
 {
   list.removeAll (s);
-    
+
   if( list.count() >= 16 )
     list.removeLast();
 
@@ -528,13 +528,13 @@ KateTextCursor KateSearch::getCursor()
 
 bool KateSearch::doSearch( const QString& text )
 {
-  uint line = s.cursor.line();
-  uint col = s.cursor.col();// + (result ? s.matchedLength : 0);
+  int line = s.cursor.line();
+  int col = s.cursor.col();// + (result ? s.matchedLength : 0);
   bool backward = s.flags.backward;
   bool caseSensitive = s.flags.caseSensitive;
   bool regExp = s.flags.regExp;
   bool wholeWords = s.flags.wholeWords;
-  uint foundLine, foundCol, matchLen;
+  int foundLine, foundCol, matchLen;
   bool found = false;
   //kdDebug() << "Searching at " << line << ", " << col << endl;
 
@@ -805,10 +805,10 @@ bool SearchCommand::help(class KTextEditor::View *, const QString &cmd, QString 
 const QStringList &SearchCommand::cmds()
 {
   static QStringList l;
-  
+
   if (l.isEmpty())
     l << "find" << "replace" << "ifind";
-  
+
   return l;
 }
 

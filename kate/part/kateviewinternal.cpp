@@ -830,7 +830,7 @@ uint KateViewInternal::linesDisplayed() const
   return (h - (h % fh)) / fh;
 }
 
-QPoint KateViewInternal::cursorCoordinates()
+QPoint KateViewInternal::cursorCoordinates() const
 {
   int viewLine = displayViewLine(displayCursor, true);
 

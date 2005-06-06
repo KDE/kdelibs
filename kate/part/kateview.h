@@ -33,7 +33,6 @@
 #include <ktexteditor/cursorinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
-#include <ktexteditor/blockselectioninterface.h>
 #include <ktexteditor/selectioninterface.h>
 
 #include <qpointer.h>
@@ -63,10 +62,9 @@ class QVBoxLayout;
 class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
-                 public KTextEditor::BlockSelectionInterface,
                  public KTextEditor::MenuInterface,
                  public KTextEditor::CursorInterface,
-                 public KTextEditor::CodeCompletionInterface, 
+                 public KTextEditor::CodeCompletionInterface,
                  public KTextEditor::SessionConfigInterface
 {
     Q_OBJECT
@@ -133,20 +131,20 @@ class KateView : public KTextEditor::View,
   // KTextEditor::ViewCursorInterface
   //
   public slots:
-    QPoint cursorCoordinates()
+    QPoint cursorCoordinates() const
         { return m_viewInternal->cursorCoordinates();                 }
-    void cursorPosition( uint* l, uint* c )
-        { if( l ) *l = cursorLine(); if( c ) *c = cursorColumn();     }
-    void cursorPositionReal( uint* l, uint* c )
-        { if( l ) *l = cursorLine(); if( c ) *c = cursorColumnReal(); }
-    bool setCursorPosition( uint line, uint col )
+    void cursorPosition( int& l, int& c ) const
+        { l = cursorLine(); c = cursorColumn();     }
+    void cursorPositionReal( int& l, int& c ) const
+        { l = cursorLine(); c = cursorColumnReal(); }
+    bool setCursorPosition( int line, int col )
         { return setCursorPositionInternal( line, col, tabWidth(), true );  }
-    bool setCursorPositionReal( uint line, uint col)
+    bool setCursorPositionReal( int line, int col)
         { return setCursorPositionInternal( line, col, 1, true );           }
-    uint cursorLine()
+    int cursorLine() const
         { return m_viewInternal->getCursor().line();                    }
-    uint cursorColumn();
-    uint cursorColumnReal()
+    int cursorColumn() const;
+    int cursorColumnReal() const
         { return m_viewInternal->getCursor().col();                     }
 
   signals:
@@ -196,8 +194,8 @@ class KateView : public KTextEditor::View,
   public slots:
     bool setSelection ( const KateTextCursor & start,
       const KateTextCursor & end );
-    bool setSelection ( uint startLine, uint startCol,
-      uint endLine, uint endCol );
+    bool setSelection ( int startLine, int startCol,
+      int endLine, int endCol );
     bool clearSelection ();
     bool clearSelection (bool redraw, bool finishedChangingSelection = true);
 
@@ -211,10 +209,10 @@ class KateView : public KTextEditor::View,
     //
     // KTextEditor::SelectionInterfaceExt
     //
-    int selectionStartLine() { return selectStart.line(); };
-    int selectionStartColumn()  { return selectStart.col(); };
-    int selectionEndLine()   { return selectEnd.line(); };
-    int selectionEndColumn()    { return selectEnd.col(); };
+    int selectionStartLine() const { return selectStart.line(); };
+    int selectionStartColumn() const { return selectStart.col(); };
+    int selectionEndLine() const  { return selectEnd.line(); };
+    int selectionEndColumn()  const  { return selectEnd.col(); };
 
   signals:
     void selectionChanged ();
@@ -255,7 +253,7 @@ class KateView : public KTextEditor::View,
   // KTextEditor::BlockSelectionInterface stuff
   //
   public slots:
-    bool blockSelectionMode ();
+    bool blockSelectionMode () const;
     bool setBlockSelectionMode (bool on);
     bool toggleBlockSelectionMode ();
 
@@ -288,7 +286,7 @@ class KateView : public KTextEditor::View,
   //
   // KTextEditor::View
   //
-  public:  
+  public:
     /**
      Return values for "save" related commands.
     */
@@ -378,7 +376,7 @@ class KateView : public KTextEditor::View,
     void shiftToMatchingBracket()  { m_viewInternal->cursorToMatchingBracket(true);}
 
     void gotoLine();
-    
+
   // config file / session management functions
   public:
     void readSessionConfig(KConfig *);
@@ -431,7 +429,7 @@ class KateView : public KTextEditor::View,
   // Extras
   //
   public:
-  
+
     KateDocument*  doc() const       { return m_doc; }
 
     KActionCollection* editActionCollection() const { return m_editActions; }

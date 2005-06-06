@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2002 Joseph Wenninger <jowenn@jowenn.at> and Daniel Naber <daniel.naber@t-online.de>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -116,11 +116,11 @@ void KDataToolPluginView::aboutToShow()
 		// No selection -> use word under cursor
 		KTextEditor::EditInterface *ei;
 		KTextEditor::CursorInterface *ci;
-		KTextEditor::View *v = (KTextEditor::View*)m_view; 
+		KTextEditor::View *v = (KTextEditor::View*)m_view;
 		ei = KTextEditor::editInterface(v->document());
 		ci = KTextEditor::cursorInterface(v);
-		uint line, col;
-		ci->cursorPositionReal(&line, &col);
+		int line, col;
+		ci->cursorPositionReal(line, col);
 		QString tmp_line = ei->textLine(line);
 		m_wordUnderCursor = "";
 		// find begin of word:
@@ -150,7 +150,7 @@ void KDataToolPluginView::aboutToShow()
 			m_singleWord = true;
 			m_singleWord_line = line;
 		} else {
-			m_notAvailable = new KAction(i18n("(not available)"), QString::null, 0, this, 
+			m_notAvailable = new KAction(i18n("(not available)"), QString::null, 0, this,
 					SLOT(slotNotAvailable()), actionCollection(),"dt_n_av");
 			m_menu->insert(m_notAvailable);
 			return;
@@ -208,7 +208,7 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 	// If unsupported (and if we have a single word indeed), try application/x-singleword
 	if ( !info.mimeTypes().contains( mimetype ) && m_singleWord )
 		mimetype = "application/x-singleword";
-	
+
 	kdDebug() << "Running tool with datatype=" << datatype << " mimetype=" << mimetype << endl;
 
 	QString origText = text;
@@ -218,18 +218,18 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 		kdDebug() << "Tool ran. Text is now " << text << endl;
 		if ( origText != text )
 		{
-			uint line, col;
-			cursorInterface(m_view)->cursorPositionReal(&line, &col);
+			int line, col;
+			cursorInterface(m_view)->cursorPositionReal(line, col);
 			if ( ! selectionInterface(m_view)->hasSelection() )
 			{
 				KTextEditor::SelectionInterface *si;
 				si = KTextEditor::selectionInterface(m_view);
 				si->setSelection(m_singleWord_line, m_singleWord_start, m_singleWord_line, m_singleWord_end);
 			}
-		
+
 			// replace selection with 'text'
 			selectionInterface(m_view)->removeSelectedText();
-			cursorInterface(m_view)->cursorPositionReal(&line, &col);
+			cursorInterface(m_view)->cursorPositionReal(line, col);
 			editInterface(m_view->document())->insertText(line, col, text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)

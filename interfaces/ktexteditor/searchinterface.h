@@ -22,29 +22,57 @@
 
 #include <kdelibs_export.h>
 
-class QRegExp;
 class QString;
+class QRegExp;
 
 namespace KTextEditor
 {
 
+class Document;
+
 /**
-*  This is an interface to allow searching of a Document.
-*/
+ * This is an interface to search throught a KTextEditor::Document object.
+ * It allows to search for given text or regular expression
+ */
 class KTEXTEDITOR_EXPORT SearchInterface
 {
   public:
+    /**
+     * Virtual Destructor
+     */
     virtual ~SearchInterface() {}
 
-  //
-  // slots !!!
-  //
   public:
-    virtual bool searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive = true, bool backwards = false) = 0;
-    virtual bool searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards = false) = 0;
+    /**
+     * search for given text
+     * @param startLine line to start search
+     * @param startCol column to start search
+     * @param text text to search for
+     * @param foundAtLine line where match is found
+     * @param foundAtCol line where match is found
+     * @param matchLen match length
+     * @param casesensitive should we search casesensitive?
+     * @param backwards should we search backwards?
+     * @return text found?
+     */
+    virtual bool searchText (int startLine, int startCol, const QString &text, int *foundAtLine, int *foundAtCol, int *matchLen, bool casesensitive = true, bool backwards = false) = 0;
+
+
+    /**
+     * search for given regular expression
+     * @param startLine line to start search
+     * @param startCol column to start search
+     * @param regexp expression to search for
+     * @param foundAtLine line where match is found
+     * @param foundAtCol line where match is found
+     * @param matchLen match length
+     * @param backwards should we search backwards?
+     * @return text found?
+     */
+    virtual bool searchText (int startLine, int startCol, const QRegExp &regexp, int *foundAtLine, int *foundAtCol, int *matchLen, bool backwards = false) = 0;
 };
 
-KTEXTEDITOR_EXPORT SearchInterface *searchInterface (class Document *doc);
+KTEXTEDITOR_EXPORT SearchInterface *searchInterface (Document *doc);
 
 }
 

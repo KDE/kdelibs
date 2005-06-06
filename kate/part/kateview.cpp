@@ -112,36 +112,36 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
   m_doc->arbitraryHL()->addHighlightToView(m_internalHighlights, this);
 
   m_viewInternal = new KateViewInternal( this, doc );
-  
+
   // layouting ;)
-  
+
   m_vBox = new QVBoxLayout (this);
   m_vBox->setMargin (0);
   m_vBox->setSpacing (0);
-  
+
   QHBoxLayout *hbox = new QHBoxLayout ();
   m_vBox->addLayout (hbox);
   hbox->setMargin (0);
   hbox->setSpacing (0);
-  
+
   hbox->addWidget (m_viewInternal->leftBorder);
-  
+
   QVBoxLayout *vbox = new QVBoxLayout ();
   hbox->addLayout (vbox);
   vbox->setMargin (0);
   vbox->setSpacing (0);
-  
+
   vbox->addWidget (m_viewInternal);
   vbox->addWidget (m_viewInternal->m_columnScroll);
-  
+
   vbox = new QVBoxLayout ();
   hbox->addLayout (vbox);
   vbox->setMargin (0);
-  vbox->setSpacing (0); 
-  
+  vbox->setSpacing (0);
+
   vbox->addWidget (m_viewInternal->m_lineScroll);
   vbox->addWidget (m_viewInternal->m_dummy);
-  
+
   // this really is needed :)
   m_viewInternal->updateView ();
 
@@ -1338,7 +1338,7 @@ void KateView::slotHlChanged()
   updateFoldingConfig ();
 }
 
-uint KateView::cursorColumn()
+int KateView::cursorColumn() const
 {
   uint r = m_doc->currentColumn(m_viewInternal->getCursor());
   if ( !( m_doc->config()->configFlags() & KateDocumentConfig::cfWrapCursor ) &&
@@ -1388,7 +1388,7 @@ bool KateView::setSelection( const KateTextCursor& start, const KateTextCursor& 
   return true;
 }
 
-bool KateView::setSelection( uint startLine, uint startCol, uint endLine, uint endCol )
+bool KateView::setSelection( int startLine, int startCol, int endLine, int endCol )
 {
   if (hasSelection())
     clearSelection(false, false);
@@ -1868,7 +1868,7 @@ void KateView::exportAsHTML ()
 
 //BEGIN KTextEditor::BlockSelectionInterface stuff
 
-bool KateView::blockSelectionMode ()
+bool KateView::blockSelectionMode () const
 {
   return blockSelect;
 }

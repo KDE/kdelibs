@@ -27,21 +27,27 @@
 namespace KTextEditor
 {
 
+class View;
+
 /**
-*  This is an interface to text selection for the View class.
-*/
+ * This is an interface for the selection of a KTextEditor::View object.
+ * It allows to modify and query the selection state, turn block selection mode
+ * on/off and trigger the copy'n'paste actions
+ * Modifications will be signaled
+ */
 class KTEXTEDITOR_EXPORT SelectionInterface
 {
   public:
+    /**
+     * Virtual Destructor
+     */
     virtual ~SelectionInterface() {}
-  /*
-  *  slots !!!
-  */
+
   public:
     /**
     *  @return set the selection from line_start,col_start to line_end,col_end
     */
-    virtual bool setSelection ( unsigned int startLine, unsigned int startCol, unsigned int endLine, unsigned int endCol ) = 0;
+    virtual bool setSelection ( int startLine, int startCol, int endLine, int endCol ) = 0;
 
     /**
     *  removes the current Selection (not Text)
@@ -67,18 +73,35 @@ class KTEXTEDITOR_EXPORT SelectionInterface
     *  select the whole text
     */
     virtual bool selectAll () = 0;
-    
+
     /** The selection start line number */
-    virtual int selectionStartLine () = 0;
-    
+    virtual int selectionStartLine () const = 0;
+
     /** The selection start col */
-    virtual int selectionStartColumn () = 0;
-    
+    virtual int selectionStartColumn () const = 0;
+
     /** The selection end line */
-    virtual int selectionEndLine () = 0;
-    
+    virtual int selectionEndLine () const = 0;
+
     /** The selection end col */
-    virtual int selectionEndColumn () = 0;
+    virtual int selectionEndColumn () const = 0;
+
+  /**
+   * Blockselection stuff
+   */
+  public:
+   /**
+    * Returns the status of the selection mode - true indicates block selection mode is on.
+    * If this is true, selections applied via the SelectionInterface are handled as
+    * blockselections and the copy'n'paste functions works on
+    * rectangular blocks of text rather than normal.
+    */
+    virtual bool blockSelectionMode () const = 0;
+
+    /**
+    * Set block selection mode to state "on"
+    */
+    virtual bool setBlockSelectionMode (bool on) = 0;
 
   /**
    * Copy'n'Paste stuff
@@ -99,14 +122,15 @@ class KTEXTEDITOR_EXPORT SelectionInterface
     */
     virtual void paste ( ) = 0;
 
-	//
-	// signals !!!
-	//
-	public:
+	/**
+   * SIGNALS
+   * following signals should be emitted by the editor view
+   * if the selection state changes
+   * both on selection change itself and on change of blockselection mode!
+   */
+	private:
 	  virtual void selectionChanged () = 0;
 };
-
-class View;
 
 KTEXTEDITOR_EXPORT SelectionInterface *selectionInterface (View *view);
 

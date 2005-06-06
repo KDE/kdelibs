@@ -152,7 +152,7 @@ void KateCodeCompletion::showCompletionBox(
   m_caseSensitive = casesensitive;
   m_complList = complList;
   m_offset = offset;
-  m_view->cursorPositionReal( &m_lineCursor, &m_colCursor );
+  m_view->cursorPositionReal( m_lineCursor, m_colCursor );
   m_colCursor -= offset;
 
   updateBox( true );
@@ -321,8 +321,8 @@ void KateCodeCompletion::updateBox( bool )
 
 void KateCodeCompletion::showArgHint ( QStringList functionList, const QString& strWrapping, const QString& strDelimiter )
 {
-  unsigned int line, col;
-  m_view->cursorPositionReal( &line, &col );
+  int line, col;
+  m_view->cursorPositionReal( line, col );
   m_pArgHint->reset( line, col );
   m_pArgHint->setArgMarkInfos( strWrapping, strDelimiter );
 

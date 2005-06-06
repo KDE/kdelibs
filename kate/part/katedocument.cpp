@@ -110,10 +110,10 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_tabInterceptor(0)
 {
   m_undoComplexMerge=false;
-  
+
   Q3CString num;
   num.setNum (documentNumber());
-  
+
   // my dcop object
   setObjId ("KateDocument#"+num);
 
@@ -291,7 +291,7 @@ void KateDocument::unloadPlugin (uint pluginIndex)
 void KateDocument::enablePluginGUI (KTextEditor::Plugin *plugin, KateView *view)
 {
   if (!plugin) return;
-  
+
   KXMLGUIFactory *factory = view->factory();
   if ( factory )
     factory->removeClient( view );
@@ -313,7 +313,7 @@ void KateDocument::enablePluginGUI (KTextEditor::Plugin *plugin)
 void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin, KateView *view)
 {
   if (!plugin) return;
-  
+
   KXMLGUIFactory *factory = view->factory();
   if ( factory )
     factory->removeClient( view );
@@ -327,7 +327,7 @@ void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin, KateView *view
 void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin)
 {
   if (!plugin) return;
-  
+
   for (uint i=0; i< m_views.count(); i++)
     disablePluginGUI (plugin, m_views.at(i));
 }
@@ -997,7 +997,7 @@ void KateDocument::editEnd ()
 
   if (editWithUndo)
     undoEnd();
-    
+
   // edit end for all views !!!!!!!!!
   for (int z = 0; z < m_views.count(); z++)
     m_views.at(z)->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
@@ -1041,7 +1041,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
       // take tabs into account here, too
       uint x = 0;
       const QString & t = l->string();
-      uint z2 = 0;
+      int z2 = 0;
       for ( ; z2 < l->length(); z2++)
       {
         if (t[z2] == QChar('\t'))
@@ -1053,7 +1053,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
           break;
       }
 
-      uint searchStart = KMIN (z2, l->length()-1);
+      int searchStart = KMIN (z2, l->length()-1);
 
       // If where we are wrapping is an end of line and is a space we don't
       // want to wrap there
@@ -1549,7 +1549,7 @@ void KateDocument::clearRedo()
 
 //BEGIN KTextEditor::SearchInterface stuff
 
-bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool casesensitive, bool backwards)
+bool KateDocument::searchText (int startLine, int startCol, const QString &text, int *foundAtLine, int *foundAtCol, int *matchLen, bool casesensitive, bool backwards)
 {
   if (text.isEmpty())
     return false;
@@ -1631,7 +1631,7 @@ bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, co
   return false;
 }
 
-bool KateDocument::searchText (unsigned int startLine, unsigned int startCol, const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol, unsigned int *matchLen, bool backwards)
+bool KateDocument::searchText (int startLine, int startCol, const QRegExp &regexp, int *foundAtLine, int *foundAtCol, int *matchLen, bool backwards)
 {
   kdDebug(13020)<<"KateDocument::searchText( "<<startLine<<", "<<startCol<<", "<<regexp.pattern()<<", "<<backwards<<" )"<<endl;
   if (regexp.isEmpty() || !regexp.isValid())
@@ -4123,7 +4123,7 @@ void KateDocument::setDocName (QString name )
   for (uint z=0; z < KateGlobal::self()->documents().size(); z++)
   {
     KateDocument *doc = (KateGlobal::self()->documents())[z];
-  
+
     if ( (doc != this) && (doc->url().filename() == url().filename()) )
       if ( doc->m_docNameNumber > count )
         count = doc->m_docNameNumber;

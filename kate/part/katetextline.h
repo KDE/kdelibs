@@ -92,7 +92,7 @@ class KateTextLine : public KShared
      * Returns the length
      * @return length of text in line
      */
-    inline uint length() const { return m_text.length(); }
+    inline int length() const { return m_text.length(); }
 
     /**
      * has the line the hl continue flag set
@@ -281,7 +281,7 @@ class KateTextLine : public KShared
     inline const QVector<short> &ctxArray () const { return m_ctx; };
 
     /**
-     * @return true if any context at the line end has the noIndentBasedFolding flag set 
+     * @return true if any context at the line end has the noIndentBasedFolding flag set
      */
     inline const bool noIndentBasedFolding() const { return m_noIndentationBasedFolding;};
     inline const bool noIndentBasedFoldingAtStart() const { return m_noIndentationBasedFoldingAtStart;};
@@ -404,15 +404,15 @@ class KateTextLine : public KShared
      * @return buffer index after restoring
      */
     char *restore (char *buf);
-    
+
   /**
    * methodes to manipulate the attribute list
    */
   public:
     void addAttribute (int start, int length, int attribute);
-    
+
     void clearAttributes () { m_attributesList.clear (); }
-    
+
     const QVector<int> &attributesList () const { return m_attributesList; }
 
   /**
@@ -430,7 +430,7 @@ class KateTextLine : public KShared
      * Each letter in m_text has a uchar attribute
      */
     QVector<uchar> m_attributes;
-    
+
     /**
      * new kind to store the attribs, int array
      * one int len, next one len, next one attrib

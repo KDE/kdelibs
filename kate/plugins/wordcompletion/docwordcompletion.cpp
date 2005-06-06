@@ -231,8 +231,8 @@ void DocWordCompletionPluginView::shellComplete()
     // setup
   KTextEditor::EditInterface * ei = KTextEditor::editInterface(m_view->document());
     // find the word we are typing
-  uint cline, ccol;
-  cursorInterface(m_view)->cursorPositionReal(&cline, &ccol);
+  int cline, ccol;
+  cursorInterface(m_view)->cursorPositionReal(cline, ccol);
   QString wrd = word();
   if (wrd.isEmpty())
     return;
@@ -260,8 +260,8 @@ void DocWordCompletionPluginView::complete( bool fw )
   // setup
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   // find the word we are typing
-  uint cline, ccol;
-  cursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
+  int cline, ccol;
+  cursorInterface( m_view )->cursorPositionReal( cline, ccol );
   QString wrd = word();
   if ( wrd.isEmpty() ) return;
 
@@ -403,8 +403,8 @@ QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KText
 // Return the string to complete (the letters behind the cursor)
 QString DocWordCompletionPluginView::word()
 {
-  uint cline, ccol;
-  cursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
+  int cline, ccol;
+  cursorInterface( m_view )->cursorPositionReal( cline, ccol );
   if ( ! ccol ) return QString::null; // no word
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   d->re.setPattern( "\\b(\\w+)$" );

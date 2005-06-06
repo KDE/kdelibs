@@ -155,7 +155,7 @@ class KateDocument : public KTextEditor::Document,
   signals:
     void activeViewCaretPositionChanged(const KateTextCursor& newPosition);
     void activeViewMousePositionChanged(const KateTextCursor& newPosition);
-  
+
   private:
     Q3PtrList<KateView> m_views;
     QList<KTextEditor::View*> m_textEditViews;
@@ -388,12 +388,12 @@ class KateDocument : public KTextEditor::Document,
   // KTextEditor::SearchInterface stuff
   //
   public slots:
-    bool searchText (unsigned int startLine, unsigned int startCol,
-        const QString &text, unsigned int *foundAtLine, unsigned int *foundAtCol,
-        unsigned int *matchLen, bool casesensitive = true, bool backwards = false);
-    bool searchText (unsigned int startLine, unsigned int startCol,
-        const QRegExp &regexp, unsigned int *foundAtLine, unsigned int *foundAtCol,
-        unsigned int *matchLen, bool backwards = false);
+    bool searchText (int startLine, int startCol,
+        const QString &text, int *foundAtLine, int *foundAtCol,
+        int *matchLen, bool casesensitive = true, bool backwards = false);
+    bool searchText (int startLine, int startCol,
+        const QRegExp &regexp, int *foundAtLine, int *foundAtCol,
+        int *matchLen, bool backwards = false);
 
   //
   // KTextEditor::HighlightingInterface stuff
@@ -727,7 +727,7 @@ class KateDocument : public KTextEditor::Document,
 
   public:
     const QString &documentName () const { return m_docName; }
-    
+
     void setDocName (QString docName);
 
     void lineInfo (KateLineInfo *info, unsigned int line);
@@ -757,7 +757,7 @@ class KateDocument : public KTextEditor::Document,
      * Reloads the current document from disc if possible
      */
     void reloadFile();
-    
+
   signals:
     /**
      * Indicate this file is modified on disk

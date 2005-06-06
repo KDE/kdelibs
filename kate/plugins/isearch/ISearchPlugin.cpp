@@ -324,7 +324,7 @@ void ISearchPluginView::nextMatch( bool reverse )
 		}
 		state = MatchSearch;
 	}
-        
+
 	bool found = iSearch( m_searchLine, m_searchCol, text, reverse, m_autoWrap );
 	if( found ) {
 		m_searchLine = m_foundLine;
@@ -347,7 +347,7 @@ void ISearchPluginView::startSearch()
 	if( m_fromBeginning ) {
 		m_startLine = m_startCol = 0;
 	} else {
-		m_cursorIF->cursorPositionReal( &m_startLine, &m_startCol );
+		m_cursorIF->cursorPositionReal( m_startLine, m_startCol );
 	}
 	m_searchLine = m_startLine;
 	m_searchCol = m_startCol;
@@ -427,7 +427,7 @@ void ISearchPluginView::slotAddContextMenuItems( Q3PopupMenu *menu )
 }
 
 bool ISearchPluginView::iSearch(
-	uint startLine, uint startCol,
+	int startLine, int startCol,
 	const QString& text, bool reverse,
 	bool autoWrap )
 {

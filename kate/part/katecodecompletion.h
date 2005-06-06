@@ -106,8 +106,8 @@ class KateCodeCompletion : public QObject
     Q3VBox*          m_completionPopup;
     KateCCListBox*       m_completionListBox;
     Q3ValueList<KTextEditor::CompletionEntry> m_complList;
-    uint            m_lineCursor;
-    uint            m_colCursor;
+    int            m_lineCursor;
+    int            m_colCursor;
     int             m_offset;
     bool            m_caseSensitive;
     KateCodeCompletionCommentLabel* m_commentLabel;

@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 2001 Christoph Cullmann (cullmann@kde.org)
+   Copyright (C) 2001-2005 Christoph Cullmann (cullmann@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,58 +22,94 @@
 
 #include <kdelibs_export.h>
 
+#include <QPoint>
+
 namespace KTextEditor
 {
 
+class View;
+
 /**
-*  This is an interface to access the text cursor of a View class.
-*/
+ * This is an interface to access the text cursor of a KTextEditor::View object.
+ * It allows to set the cursor position or to locate it
+ * Modifications will be signaled
+ */
 class KTEXTEDITOR_EXPORT CursorInterface
 {
   public:
+    /**
+     * Virtual Destructor
+     */
     virtual ~CursorInterface () {}
 
-  //
-  // slots !!!
-  //
   public:
     /**
-     * Get the current cursor coordinates in pixels.
+     * Set the cursor position
+     * @param line new cursor line
+     * @param col new cursor column, tabs count as MULTIPLE chars
+     * @return success
      */
-    virtual class QPoint cursorCoordinates () = 0;
-
-    /**
-     * Get the cursor position
-     */
-    virtual void cursorPosition (unsigned int *line, unsigned int *col) = 0;
-
-    /**
-     * Get the cursor position, calculated with 1 character per tab
-     */
-    virtual void cursorPositionReal (unsigned int *line, unsigned int *col) = 0;
+    virtual bool setCursorPosition (int line, int col) = 0;
 
     /**
      * Set the cursor position
+     * @param line new cursor line
+     * @param col new cursor column, tabs count as ONE char
+     * @return success
      */
-    virtual bool setCursorPosition (unsigned int line, unsigned int col) = 0;
+    virtual bool setCursorPositionReal (int line, int col) = 0;
 
     /**
-     * Set the cursor position, use 1 character per tab
+     * Get the cursor position
+     * @param line cursor line
+     * @param col cursor column, tabs count as MULTIPLE chars
      */
-    virtual bool setCursorPositionReal (unsigned int line, unsigned int col) = 0;
+    virtual void cursorPosition (int &line, int &col) const = 0;
 
-    virtual unsigned int cursorLine () = 0;
-    virtual unsigned int cursorColumn () = 0;
-    virtual unsigned int cursorColumnReal () = 0;
+    /**
+     * Get the cursor position
+     * @param line cursor line
+     * @param col cursor column, tabs count as ONE char
+     */
+    virtual void cursorPositionReal (int &line, int &col) const = 0;
 
-  //
-  // signals !!!
-  //
-  public:
+    /**
+     * Get the cursor line
+     * @return line cursor line
+     */
+    virtual int cursorLine () const = 0;
+
+    /**
+     * Get the cursor column
+     * @return cursor column, tabs count as MULTIPLE chars
+     */
+    virtual int cursorColumn () const = 0;
+
+    /**
+     * Get the cursor column
+     * @return cursor column, tabs count as ONE char
+     */
+    virtual int cursorColumnReal () const = 0;
+
+    /**
+     * Get the current cursor coordinates in pixels.
+     * @return cursor screen coordinates
+     */
+    virtual QPoint cursorCoordinates () const = 0;
+
+  /**
+   * SIGNALS
+   * following signals should be emitted by the editor view
+   * if the cursor position changes
+   */
+  private:
+    /**
+     * cursor position changed!
+     */
     virtual void cursorPositionChanged () = 0;
 };
 
-KTEXTEDITOR_EXPORT CursorInterface *cursorInterface (class View *view);
+KTEXTEDITOR_EXPORT CursorInterface *cursorInterface (View *view);
 
 }
 

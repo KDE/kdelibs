@@ -154,8 +154,8 @@ class KateViewInternal : public QWidget
     void top_home(bool sel=false);
     void bottom_end(bool sel=false);
 
-    inline const KateTextCursor& getCursor() { return cursor; }
-    QPoint cursorCoordinates();
+    inline const KateTextCursor& getCursor() const { return cursor; }
+    QPoint cursorCoordinates() const;
 
   // EVENT HANDLING STUFF - IMPORTANT
   protected:
