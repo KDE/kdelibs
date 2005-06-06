@@ -2355,7 +2355,7 @@ bool KateDocument::openFile(KIO::Job * job)
   {
     m_modOnHd = false;
     m_modOnHdReason = OnDiskUnmodified;
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 
   //
@@ -2515,7 +2515,7 @@ bool KateDocument::saveFile()
   {
     m_modOnHd = false;
     m_modOnHdReason = OnDiskUnmodified;
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 
   //
@@ -2660,7 +2660,7 @@ bool KateDocument::closeURL()
   {
     m_modOnHd = false;
     m_modOnHdReason = OnDiskUnmodified;
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 
   // clear the buffer
@@ -4178,7 +4178,7 @@ void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )
             m_modOnHd = true;
           }
           else
-            emit modifiedOnDisc( this, false, OnDiskUnmodified );
+            emit modifiedOnDisk( this, false, OnDiskUnmodified );
         }
         else // the save as dialog was cancelled, we are still modified on disk
         {
@@ -4191,20 +4191,20 @@ void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )
 
       case KateModOnHdPrompt::Reload:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, OnDiskUnmodified );
+        emit modifiedOnDisk( this, false, OnDiskUnmodified );
         reloadFile();
         m_isasking = 0;
         break;
 
       case KateModOnHdPrompt::Ignore:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, OnDiskUnmodified );
+        emit modifiedOnDisk( this, false, OnDiskUnmodified );
         m_isasking = 0;
         break;
 
       case KateModOnHdPrompt::Overwrite:
         m_modOnHd = false;
-        emit modifiedOnDisc( this, false, OnDiskUnmodified );
+        emit modifiedOnDisk( this, false, OnDiskUnmodified );
         m_isasking = 0;
         save();
         break;
@@ -4219,7 +4219,7 @@ void KateDocument::setModifiedOnDisk( ModifiedOnDiskReason reason )
 {
   m_modOnHdReason = reason;
   m_modOnHd = (reason != OnDiskUnmodified);
-  emit modifiedOnDisc( this, (reason != OnDiskUnmodified), reason );
+  emit modifiedOnDisk( this, (reason != OnDiskUnmodified), reason );
 }
 
 class KateDocumentTmpMark
@@ -4245,7 +4245,7 @@ void KateDocument::reloadFile()
         {
           m_modOnHd = false;
           m_modOnHdReason = OnDiskUnmodified;
-          emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+          emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
         }
 
         return;
@@ -4676,7 +4676,7 @@ void KateDocument::slotModOnHdDirty (const QString &path)
     if (m_isasking == -1)
       m_isasking = false;
 
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 }
 
@@ -4691,7 +4691,7 @@ void KateDocument::slotModOnHdCreated (const QString &path)
     if (m_isasking == -1)
       m_isasking = false;
 
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 }
 
@@ -4706,7 +4706,7 @@ void KateDocument::slotModOnHdDeleted (const QString &path)
     if (m_isasking == -1)
       m_isasking = false;
 
-    emit modifiedOnDisc (this, m_modOnHd, m_modOnHdReason);
+    emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
   }
 }
 

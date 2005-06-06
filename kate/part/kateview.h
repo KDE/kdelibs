@@ -30,7 +30,7 @@
 #include <ktexteditor/texthintinterface.h>
 #include <ktexteditor/menuinterface.h>
 #include <ktexteditor/markinterface.h>
-#include <ktexteditor/cursorinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/selectioninterface.h>
@@ -63,7 +63,7 @@ class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
                  public KTextEditor::MenuInterface,
-                 public KTextEditor::CursorInterface,
+                 public KTextEditor::ViewCursorInterface,
                  public KTextEditor::CodeCompletionInterface,
                  public KTextEditor::SessionConfigInterface
 {

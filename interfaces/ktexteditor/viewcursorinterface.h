@@ -17,8 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __ktexteditor_cursorinterface_h__
-#define __ktexteditor_cursorinterface_h__
+#ifndef __ktexteditor_viewcursorinterface_h__
+#define __ktexteditor_viewcursorinterface_h__
 
 #include <kdelibs_export.h>
 
@@ -34,13 +34,13 @@ class View;
  * It allows to set the cursor position or to locate it
  * Modifications will be signaled
  */
-class KTEXTEDITOR_EXPORT CursorInterface
+class KTEXTEDITOR_EXPORT ViewCursorInterface
 {
   public:
     /**
      * Virtual Destructor
      */
-    virtual ~CursorInterface () {}
+    virtual ~ViewCursorInterface () {}
 
   public:
     /**
@@ -109,7 +109,7 @@ class KTEXTEDITOR_EXPORT CursorInterface
     virtual void cursorPositionChanged () = 0;
 };
 
-KTEXTEDITOR_EXPORT CursorInterface *cursorInterface (View *view);
+KTEXTEDITOR_EXPORT ViewCursorInterface *viewCursorInterface (View *view);
 
 }
 

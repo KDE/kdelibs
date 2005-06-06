@@ -33,7 +33,6 @@
 #include "codecompletioninterface.h"
 #include "commandinterface.h"
 #include "configinterface.h"
-#include "cursorinterface.h"
 #include "editinterface.h"
 #include "encodinginterface.h"
 #include "highlightinginterface.h"
@@ -46,6 +45,7 @@
 #include "templateinterface.h"
 #include "texthintinterface.h"
 #include "variableinterface.h"
+#include "viewcursorinterface.h"
 
 #include "configinterface.moc"
 
@@ -226,12 +226,12 @@ ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
 }
 
 
-CursorInterface *KTextEditor::cursorInterface (View *view)
+ViewCursorInterface *KTextEditor::viewCursorInterface (View *view)
 {
   if (!view)
     return 0;
 
-  return dynamic_cast<KTextEditor::CursorInterface*>(view);
+  return dynamic_cast<KTextEditor::ViewCursorInterface*>(view);
 }
 
 HighlightingInterface *KTextEditor::highlightingInterface (Document *doc)

@@ -8,7 +8,7 @@ libktexteditor_la_LIBADD = $(LIB_KPARTS) $(top_builddir)/kabc/libkabc.la
 
 ktexteditorinclude_HEADERS = document.h view.h plugin.h cursor.h \
                              editinterface.h \
-                             selectioninterface.h cursorinterface.h \
+                             selectioninterface.h viewcursorinterface.h \
                              menuinterface.h searchinterface.h highlightinginterface.h \
                              codecompletioninterface.h \
                              configinterface.h markinterface.h \

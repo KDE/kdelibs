@@ -29,7 +29,7 @@
 #include "docwordcompletion.h"
 
 #include <ktexteditor/document.h>
-#include <ktexteditor/cursorinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/editinterface.h>
 #include <ktexteditor/variableinterface.h>
 
@@ -232,7 +232,7 @@ void DocWordCompletionPluginView::shellComplete()
   KTextEditor::EditInterface * ei = KTextEditor::editInterface(m_view->document());
     // find the word we are typing
   int cline, ccol;
-  cursorInterface(m_view)->cursorPositionReal(cline, ccol);
+  viewCursorInterface(m_view)->cursorPositionReal(cline, ccol);
   QString wrd = word();
   if (wrd.isEmpty())
     return;
@@ -261,7 +261,7 @@ void DocWordCompletionPluginView::complete( bool fw )
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   // find the word we are typing
   int cline, ccol;
-  cursorInterface( m_view )->cursorPositionReal( cline, ccol );
+  viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
   QString wrd = word();
   if ( wrd.isEmpty() ) return;
 
@@ -404,7 +404,7 @@ QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KText
 QString DocWordCompletionPluginView::word()
 {
   int cline, ccol;
-  cursorInterface( m_view )->cursorPositionReal( cline, ccol );
+  viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
   if ( ! ccol ) return QString::null; // no word
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   d->re.setPattern( "\\b(\\w+)$" );

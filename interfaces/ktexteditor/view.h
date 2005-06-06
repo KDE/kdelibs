@@ -28,9 +28,10 @@ namespace KTextEditor
 class Document;
 
 /**
- * The View class represents a single view of a Document .
+ * The View class represents a single view of a KTextEditor::Document
+ * The view should provide both the graphical representation of the text
+ * and the xmlgui for the actions
  */
-
 class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
 {
   Q_OBJECT
@@ -61,11 +62,24 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
     Document *document ();
 
   private:
+    /**
+     * Private d-pointer
+     */
     class PrivateView *m_d;
+
+    /**
+     * view number
+     */
     int m_viewNumber;
+
+    /**
+     * parent document
+     */
     Document *m_doc;
 };
 
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

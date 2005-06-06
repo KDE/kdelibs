@@ -27,49 +27,136 @@ namespace KTextEditor
 
 /**
  * Class to represent a cursor in the text
+ * lines and columns start with 0,0
  */
 class Cursor
 {
   public:
+    /**
+     * Default constructor
+     * Creates a cursor at position 0,0
+     */
     Cursor() : m_line(0), m_column(0) {}
 
-    Cursor(int line, int col) : m_line(line), m_column(col) {}
+    /**
+     * Constructor, for line & column arguments
+     * @param line line for cursor
+     * @param column column for cursor
+     */
+    Cursor(int line, int column) : m_line(line), m_column(column) {}
 
+    /**
+     * Virtual destructor
+     */
     virtual ~Cursor () {}
 
+    /**
+     * Retrieve cursor position
+     * @param _line will be filled with current cursor line
+     * @param _column will be filled with current cursor column
+     */
+    inline void position (int &_line, int &_column) const { _line = line(); _column = column(); }
+
+    /**
+     * Retrieve cursor line
+     * @return cursor line
+     */
+    inline int line() const { return m_line; }
+
+    /**
+     * Retrieve cursor column
+     * @return cursor column
+     */
+    inline int column() const { return m_column; }
+
+    /**
+     * Set the current cursor position
+     * @param pos new cursor position
+     */
+    virtual void setPosition (const Cursor& pos) { m_line = pos.line(); m_column = pos.column(); }
+
+    /**
+     * Set the cursor position
+     * @param line new cursor line
+     * @param column new cursor column
+     */
+    virtual void setPosition (int line, int column) { m_line = line; m_column = column; }
+
+    /**
+     * Set the cursor line
+     * @param line new cursor line
+     */
+    virtual void setLine (int line) { m_line = line; }
+
+    /**
+     * Set the cursor column
+     * @param column new cursor column
+     */
+    virtual void setColumn (int column) { m_column = column; }
+
+    /**
+     * == operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator==(const Cursor& c1, const Cursor& c2)
       { return c1.line() == c2.line() && c1.column() == c2.column(); }
 
+    /**
+     * == operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator!=(const Cursor& c1, const Cursor& c2)
       { return !(c1 == c2); }
 
+    /**
+     * gt operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator>(const Cursor& c1, const Cursor& c2)
       { return c1.line() > c2.line() || (c1.line() == c2.line() && c1.m_column > c2.m_column); }
 
+    /**
+     * >= operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator>=(const Cursor& c1, const Cursor& c2)
       { return c1.line() > c2.line() || (c1.line() == c2.line() && c1.m_column >= c2.m_column); }
 
+    /**
+     * lt operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator<(const Cursor& c1, const Cursor& c2)
       { return !(c1 >= c2); }
 
+    /**
+     * <= operator
+     * @param c1 first cursor to compare
+     * @param c2 second cursor to compare
+     * @return result of compare
+     */
     friend bool operator<=(const Cursor& c1, const Cursor& c2)
       { return !(c1 > c2); }
 
-    inline void position (int &pline, int &pcol) const { pline = line(); pcol = m_column; }
-
-    inline int line() const { return m_line; }
-    inline int column() const { return m_column; }
-
-    virtual void setLine (int line) { m_line = line; }
-
-    virtual void setColumn (int col) { m_column = col; }
-
-    virtual void setPosition (const Cursor& pos) { m_line = pos.line(); m_column = pos.column(); }
-
-    virtual void setPosition (int line, int col) { m_line = line; m_column = col; }
-
   protected:
+    /**
+     * cursor line
+     */
     int m_line;
+
+    /**
+     * cursor column
+     */
     int m_column;
 };
 

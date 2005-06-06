@@ -37,7 +37,7 @@ class View;
 class KTEXTEDITOR_EXPORT ModificationInterface
 {
   public:
-    /** 
+    /**
      * virtual destructor
      */
     virtual ~ModificationInterface () {}
@@ -71,7 +71,7 @@ class KTEXTEDITOR_EXPORT ModificationInterface
      * editor regains focus after the dialog is hidden.
      */
     virtual void slotModifiedOnDisk( View *view = 0 ) = 0;
-    
+
   /**
    * These stuff is implemented as signals in the real document
    */
@@ -82,7 +82,7 @@ class KTEXTEDITOR_EXPORT ModificationInterface
      * @param isModified indicates the file was modified rather than created or deleted
      * @param reason the reason we are emitting the signal.
      */
-    virtual void modifiedOnDisc (Document *doc, bool isModified, ModifiedOnDiskReason reason) = 0;
+    virtual void modifiedOnDisk (Document *doc, bool isModified, ModifiedOnDiskReason reason) = 0;
 };
 
 /**

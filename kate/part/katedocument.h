@@ -763,7 +763,7 @@ class KateDocument : public KTextEditor::Document,
      * @param isModified indicates the file was modified rather than created or deleted
      * @param reason the reason we are emitting the signal.
      */
-    void modifiedOnDisc (KTextEditor::Document *doc, bool isModified, ModifiedOnDiskReason reason);
+    void modifiedOnDisk (KTextEditor::Document *doc, bool isModified, ModifiedOnDiskReason reason);
 
   private:
     int m_isasking; // don't reenter slotModifiedOnDisk when this is true

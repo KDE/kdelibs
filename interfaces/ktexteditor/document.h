@@ -59,6 +59,21 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     int documentNumber () const;
 
     /**
+     * Create a view that will display the document data. You can create as many
+     * views as you like. When the user modifies data in one view then all other
+     * views will be updated as well.
+     * @param parent parent widget
+     * @return created KTextEditor::View
+     */
+    virtual View *createView ( QWidget *parent ) = 0;
+
+    /**
+     * Returns a list of all views of this document.
+     * @return list of all existing views
+     */
+    virtual const QList<View*> &views () const = 0;
+
+    /**
      * Returns this document's name
      * The editor part should provide some meaningful name, like some unique
      * Untitled XYZ for document without url or basename for documents with
@@ -73,23 +88,15 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     virtual QString mimeType() = 0;
 
-    /**
-    * Create a view that will display the document data. You can create as many
-    * views as you like. When the user modifies data in one view then all other
-    * views will be updated as well.
-    * @param parent parent widget
-    * @return created KTextEditor::View
-    */
-    virtual View *createView ( QWidget *parent ) = 0;
-
-    /**
-     * Returns a list of all views of this document.
-     * @return list of all existing views
-     */
-    virtual const QList<View*> &views () const = 0;
-
   private:
+    /**
+     * Private d-pointer
+     */
     class PrivateDocument *m_d;
+
+    /**
+     * document number
+     */
     int m_documentNumber;
 };
 

@@ -27,7 +27,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/selectioninterface.h>
 #include <kpopupmenu.h>
-#include <ktexteditor/cursorinterface.h>
+#include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/editinterface.h>
 #include <kmessagebox.h>
 //END includes
@@ -115,10 +115,10 @@ void KDataToolPluginView::aboutToShow()
 	} else {
 		// No selection -> use word under cursor
 		KTextEditor::EditInterface *ei;
-		KTextEditor::CursorInterface *ci;
+		KTextEditor::ViewCursorInterface *ci;
 		KTextEditor::View *v = (KTextEditor::View*)m_view;
 		ei = KTextEditor::editInterface(v->document());
-		ci = KTextEditor::cursorInterface(v);
+		ci = KTextEditor::viewCursorInterface(v);
 		int line, col;
 		ci->cursorPositionReal(line, col);
 		QString tmp_line = ei->textLine(line);
@@ -219,7 +219,7 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 		if ( origText != text )
 		{
 			int line, col;
-			cursorInterface(m_view)->cursorPositionReal(line, col);
+			viewCursorInterface(m_view)->cursorPositionReal(line, col);
 			if ( ! selectionInterface(m_view)->hasSelection() )
 			{
 				KTextEditor::SelectionInterface *si;
@@ -229,7 +229,7 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 
 			// replace selection with 'text'
 			selectionInterface(m_view)->removeSelectedText();
-			cursorInterface(m_view)->cursorPositionReal(line, col);
+			viewCursorInterface(m_view)->cursorPositionReal(line, col);
 			editInterface(m_view->document())->insertText(line, col, text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)

@@ -38,6 +38,11 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
   Q_OBJECT
 
   public:
+    /**
+     * Plugin constructor
+     * @param document parent document
+     * @param name plugin name
+     */
     Plugin ( Document *document = 0, const char *name = 0 );
 
     /**
@@ -57,15 +62,34 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
      */
     Document *document ();
 
-    /*
-     * will be called from the part to bound the plugin to a view
+    /**
+     * this method is called if the plugin gui should be added
+     * to the given KTextEditor::View
+     * @param view view to hang the gui in
      */
-    virtual void addView (View *) = 0;
-    virtual void removeView (View *) = 0;
+    virtual void addView (View *view) = 0;
+
+    /**
+     * this method is called if the plugin gui should be removed
+     * from the given KTextEditor::View
+     * @param view view to hang the gui out from
+     */
+    virtual void removeView (View *view) = 0;
 
   private:
+    /**
+     * Private d-pointer
+     */
     class PrivatePlugin *m_d;
+
+    /**
+     * plugin number
+     */
     int m_pluginNumber;
+
+    /**
+     * parent document
+     */
     Document *m_doc;
 };
 
@@ -74,3 +98,5 @@ KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char* libname, Document *documen
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
