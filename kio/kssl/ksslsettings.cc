@@ -213,7 +213,7 @@ void KSSLSettings::load() {
   m_bUseTLSv1 = m_cfg->readBoolEntry("Enabled", true);
  
   m_cfg->setGroup("SSLv2");
-  m_bUseSSLv2 = m_cfg->readBoolEntry("Enabled", true);
+  m_bUseSSLv2 = m_cfg->readBoolEntry("Enabled", false);
  
   m_cfg->setGroup("SSLv3");
   m_bUseSSLv3 = m_cfg->readBoolEntry("Enabled", true);
@@ -248,7 +248,7 @@ void KSSLSettings::load() {
 
 void KSSLSettings::defaults() {
   m_bUseTLSv1 = true;
-  m_bUseSSLv2 = true;
+  m_bUseSSLv2 = false;
   m_bUseSSLv3 = true;
   m_bWarnOnEnter = false;
   m_bWarnOnLeave = true;
