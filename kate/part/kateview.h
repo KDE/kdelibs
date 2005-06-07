@@ -30,7 +30,6 @@
 #include <ktexteditor/texthintinterface.h>
 #include <ktexteditor/menuinterface.h>
 #include <ktexteditor/markinterface.h>
-#include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/selectioninterface.h>
@@ -63,7 +62,6 @@ class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::SelectionInterface,
                  public KTextEditor::MenuInterface,
-                 public KTextEditor::ViewCursorInterface,
                  public KTextEditor::CodeCompletionInterface,
                  public KTextEditor::SessionConfigInterface
 {
@@ -76,6 +74,8 @@ class KateView : public KTextEditor::View,
   public:
     KateView( KateDocument* doc, QWidget* parent );
     ~KateView ();
+
+    KTextEditor::Document *document () { return m_doc; }
 
   //
   // KTextEditor::ClipboardInterface
@@ -124,9 +124,19 @@ class KateView : public KTextEditor::View,
   //
   // KTextEditor::ViewCursorInterface
   //
-  public slots:
-    QPoint cursorCoordinates() const
-        { return m_viewInternal->cursorCoordinates();                 }
+  public:
+    bool setCursorPosition (const KTextEditor::Cursor &position)
+      { return setCursorPositionInternal( position.line(), position.column(), 1, true ); }
+
+    const KTextEditor::Cursor &cursorPosition () const
+     { return m_viewInternal->getCursor(); }
+
+    KTextEditor::Cursor cursorPositionVirtual () const
+     { return KTextEditor::Cursor (cursorLine(), cursorColumn()); }
+
+    QPoint cursorPositionCoordinates() const
+        { return m_viewInternal->cursorCoordinates(); }
+
     void cursorPosition( int& l, int& c ) const
         { l = cursorLine(); c = cursorColumn();     }
     void cursorPositionReal( int& l, int& c ) const
@@ -142,7 +152,7 @@ class KateView : public KTextEditor::View,
         { return m_viewInternal->getCursor().column();                     }
 
   signals:
-    void cursorPositionChanged();
+    void cursorPositionChanged(KTextEditor::View *view);
     void caretPositionChanged(const KTextEditor::Cursor& newPosition);
     void mousePositionChanged(const KTextEditor::Cursor& newPosition);
 

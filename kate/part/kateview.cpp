@@ -84,7 +84,7 @@
 //END includes
 
 KateView::KateView( KateDocument *doc, QWidget *parent )
-    : KTextEditor::View( doc, parent )
+    : KTextEditor::View( parent )
     , m_doc( doc )
     , m_search( new KateSearch( this ) )
     , m_spell( new KateSpell( this ) )

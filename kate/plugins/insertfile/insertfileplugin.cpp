@@ -20,7 +20,6 @@
 #include "insertfileplugin.moc"
 
 #include <ktexteditor/document.h>
-#include <ktexteditor/viewcursorinterface.h>
 
 #include <assert.h>
 #include <kio/job.h>
@@ -160,21 +159,18 @@ void InsertFilePluginView::insertFile()
   }
 
   // insert !!
-  KTextEditor::ViewCursorInterface *ci;
   KTextEditor::View *v = (KTextEditor::View*)parent();
-  ci = KTextEditor::viewCursorInterface( v );
   int line, col;
-  ci->cursorPositionReal( line, col );
-  v->document()->insertText( line, col, str );
+  line = v->cursorPosition().line();
+  col = v->cursorPosition().column();
+  v->document()->insertText( v->cursorPosition(), str );
 
   // move the cursor
-  ci->setCursorPositionReal( line + numlines - 1, numlines > 1 ? len : col + len  );
+  v->setCursorPosition ( KTextEditor::Cursor (line + numlines - 1, numlines > 1 ? len : col + len)  );
 
   // clean up
   _file = KURL ();
   _tmpfile.truncate( 0 );
-  v = 0;
-  ci = 0;
 }
 
 //END InsertFilePluginView

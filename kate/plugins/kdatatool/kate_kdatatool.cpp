@@ -27,7 +27,6 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/selectioninterface.h>
 #include <kpopupmenu.h>
-#include <ktexteditor/viewcursorinterface.h>
 #include <kmessagebox.h>
 //END includes
 
@@ -113,11 +112,10 @@ void KDataToolPluginView::aboutToShow()
 			m_singleWord = false;
 	} else {
 		// No selection -> use word under cursor
-		KTextEditor::ViewCursorInterface *ci;
 		KTextEditor::View *v = (KTextEditor::View*)m_view;
-		ci = KTextEditor::viewCursorInterface(v);
 		int line, col;
-		ci->cursorPositionReal(line, col);
+		line = v->cursorPosition().line();
+		col = v->cursorPosition().column();
 		QString tmp_line = v->document()->line(line);
 		m_wordUnderCursor = "";
 		// find begin of word:
@@ -133,7 +131,7 @@ void KDataToolPluginView::aboutToShow()
 		}
 		// find end of word:
 		m_singleWord_end = tmp_line.length();
-		for(uint i = col+1; i < tmp_line.length(); i++) {
+		for(int i = col+1; i < tmp_line.length(); i++) {
 			QChar ch = tmp_line.at(i);
 			if( ! (ch.isLetter() || ch == '-' || ch == '\'') )
 			{
@@ -216,7 +214,8 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 		if ( origText != text )
 		{
 			int line, col;
-			viewCursorInterface(m_view)->cursorPositionReal(line, col);
+			line = m_view->cursorPosition().line();
+      col = m_view->cursorPosition().column();
 			if ( ! selectionInterface(m_view)->hasSelection() )
 			{
 				KTextEditor::SelectionInterface *si;
@@ -226,8 +225,7 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 
 			// replace selection with 'text'
 			selectionInterface(m_view)->removeSelectedText();
-			viewCursorInterface(m_view)->cursorPositionReal(line, col);
-			m_view->document()->insertText(line, col, text);
+			m_view->document()->insertText(m_view->cursorPosition(), text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)
 			 for ( uint i = 0; i < text.length(); i++ ) {

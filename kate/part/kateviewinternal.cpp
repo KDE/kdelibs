@@ -2144,7 +2144,7 @@ void KateViewInternal::updateCursor( const KTextEditor::Cursor& newCursor, bool 
 
   update(); //paintText(0, 0, width(), height(), true);
 
-  emit m_view->cursorPositionChanged();
+  emit m_view->cursorPositionChanged(m_view);
 }
 
 void KateViewInternal::updateBracketMarks()

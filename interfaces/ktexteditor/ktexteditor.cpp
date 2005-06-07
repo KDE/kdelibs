@@ -44,7 +44,6 @@
 #include "templateinterface.h"
 #include "texthintinterface.h"
 #include "variableinterface.h"
-#include "viewcursorinterface.h"
 
 #include "configinterface.moc"
 
@@ -113,11 +112,10 @@ int Document::documentNumber () const
   return m_documentNumber;
 }
 
-View::View( Document *document, QWidget *parent )
+View::View( QWidget *parent )
  : QWidget( parent )
  , m_d (0)
  , m_viewNumber (++globalViewNumber)
- , m_doc (document)
 {
 }
 
@@ -128,11 +126,6 @@ View::~View()
 int View::viewNumber () const
 {
   return m_viewNumber;
-}
-
-Document *View::document ()
-{
-  return m_doc;
 }
 
 Plugin::Plugin( Document *document, const char *name )
@@ -214,15 +207,6 @@ ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
     return 0;
 
   return dynamic_cast<KTextEditor::ConfigInterface*>( plugin );
-}
-
-
-ViewCursorInterface *KTextEditor::viewCursorInterface (View *view)
-{
-  if (!view)
-    return 0;
-
-  return dynamic_cast<KTextEditor::ViewCursorInterface*>(view);
 }
 
 HighlightingInterface *KTextEditor::highlightingInterface (Document *doc)

@@ -140,16 +140,6 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     virtual QString text ( const Cursor &startPosition, const Cursor &endPosition ) const = 0;
 
     /**
-     * retrieve part of the document content
-     * @param startLine start line of text to retrieve
-     * @param startColumn start column of text to retrieve
-     * @param endLine end line of text to retrieve
-     * @param endColumn end column of text to retrieve
-     * @return the requested text part, "" for invalid areas
-     */
-    virtual QString text ( int startLine, int startCol, int endLine, int endCol ) const = 0;
-
-    /**
      * retrieve a single text line
      * @param line the wanted line
      * @return the requested line, "" for invalid line numbers
@@ -197,31 +187,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     virtual bool insertText ( const Cursor &position, const QString &text ) = 0;
 
     /**
-     * Inserts text at given position
-     * @param line line to insert the text
-     * @param column column to insert the text
-     * @param text text to insert
-     * @return success
-     */
-    virtual bool insertText ( int line, int column, const QString &text ) = 0;
-
-    /**
      * remove part of the document content
      * @param startPosition start position of text to remove
      * @param endPosition end position of text to remove
      * @return success
      */
     virtual bool removeText ( const Cursor &startPosition, const Cursor &endPosition ) = 0;
-
-    /**
-     * remove part of the document content
-     * @param startLine start line of text to remove
-     * @param startColumn start column of text to remove
-     * @param endLine end line of text to remove
-     * @param endColumn end column of text to remove
-     * @return success
-     */
-    virtual bool removeText ( int startLine, int startCol, int endLine, int endCol ) = 0;
 
     /**
      * Insert line(s) at the given line number.

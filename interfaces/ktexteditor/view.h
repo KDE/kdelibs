@@ -19,8 +19,14 @@
 #ifndef __ktexteditor_view_h__
 #define __ktexteditor_view_h__
 
-#include <qwidget.h>
+// the very important KTextEditor::Cursor class
+#include <ktexteditor/cursor.h>
+
+// gui merging
 #include <kxmlguiclient.h>
+
+// widget
+#include <qwidget.h>
 
 namespace KTextEditor
 {
@@ -42,7 +48,7 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param document parent document
      * @param parent parent widget
      */
-    View ( Document *document, QWidget *parent );
+    View ( QWidget *parent );
 
     /**
      * virtual destructor
@@ -59,7 +65,7 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * Access the parent Document.
      * @return document
      */
-    Document *document ();
+    virtual Document *document () = 0;
 
   /**
    * SIGNALS
@@ -79,6 +85,48 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      */
     virtual void lostFocus ( KTextEditor::View *view ) = 0;
 
+  /**
+   * Cursor handling
+   */
+  public:
+    /**
+     * Set the cursor position, position is in characters
+     * @param position new cursor position
+     * @return success
+     */
+    virtual bool setCursorPosition (const KTextEditor::Cursor &position) = 0;
+
+    /**
+     * Get the cursor position, position is in characters
+     * @return cursor position
+     */
+    virtual const KTextEditor::Cursor &cursorPosition () const = 0;
+
+    /**
+     * Get the virtual cursor position
+     * @return cursor position, tabs count as MULTIPLE chars, as configured by user
+     * this allows access to the user visible values of the cursor position
+     */
+    virtual KTextEditor::Cursor cursorPositionVirtual () const = 0;
+
+    /**
+     * Get the screen coordinates of the cursor position
+     * @return cursor screen coordinates
+     */
+    virtual QPoint cursorPositionCoordinates () const = 0;
+
+  /**
+   * SIGNALS
+   * following signals should be emitted by the editor view
+   * if the cursor position changes
+   */
+  private:
+    /**
+     * cursor position changed!
+     * @param view view which emitted the signal
+     */
+    virtual void cursorPositionChanged (View *view) = 0;
+
   private:
     /**
      * Private d-pointer
@@ -89,11 +137,6 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * view number
      */
     int m_viewNumber;
-
-    /**
-     * parent document
-     */
-    Document *m_doc;
 };
 
 }

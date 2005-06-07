@@ -29,7 +29,6 @@
 #include "docwordcompletion.h"
 
 #include <ktexteditor/document.h>
-#include <ktexteditor/viewcursorinterface.h>
 #include <ktexteditor/variableinterface.h>
 
 #include <kapplication.h>
@@ -228,8 +227,8 @@ void DocWordCompletionPluginView::autoPopupCompletionList()
 void DocWordCompletionPluginView::shellComplete()
 {
     // find the word we are typing
-  int cline, ccol;
-  viewCursorInterface(m_view)->cursorPositionReal(cline, ccol);
+  KTextEditor::Cursor pos = m_view->cursorPosition();
+
   QString wrd = word();
   if (wrd.isEmpty())
     return;
@@ -246,7 +245,7 @@ void DocWordCompletionPluginView::shellComplete()
   else
   {
     partial.remove(0, wrd.length());
-    m_view->document()->insertText(cline, ccol, partial);
+    m_view->document()->insertText(pos, partial);
   }
 }
 
@@ -256,7 +255,7 @@ void DocWordCompletionPluginView::complete( bool fw )
 {
   // find the word we are typing
   int cline, ccol;
-  viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
+  m_view->cursorPosition().position ( cline, ccol );
   QString wrd = word();
   if ( wrd.isEmpty() ) return;
 
@@ -306,8 +305,8 @@ void DocWordCompletionPluginView::complete( bool fw )
       {
         // we got good a match! replace text and return.
         if ( d->lilen )
-          m_view->document()->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
-        m_view->document()->insertText( d->cline, d->ccol, m );
+          m_view->document()->removeText( KTextEditor::Cursor (d->cline, d->ccol), KTextEditor::Cursor (d->cline, d->ccol + d->lilen) );
+        m_view->document()->insertText( KTextEditor::Cursor (d->cline, d->ccol), m );
 
         d->lastIns = m;
         d->lilen = m.length();
@@ -398,12 +397,15 @@ QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KText
 // Return the string to complete (the letters behind the cursor)
 QString DocWordCompletionPluginView::word()
 {
-  int cline, ccol;
-  viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
-  if ( ! ccol ) return QString::null; // no word
+  KTextEditor::Cursor end = m_view->cursorPosition();
+
+  if ( ! end.column() ) return QString::null; // no word
+
+  KTextEditor::Cursor start (end.line(), 0);
+
   d->re.setPattern( "\\b(\\w+)$" );
   if ( d->re.searchRev(
-        m_view->document()->text( cline, 0, cline, ccol )
+        m_view->document()->text( start, end )
         ) < 0 )
     return QString::null; // no word
   return d->re.cap( 1 );

@@ -298,7 +298,7 @@ void KateCodeCompletion::updateBox( bool )
 
     kdDebug(13035)<<"KateCodeCompletion::updateBox: Resizing widget"<<endl;
         m_completionPopup->resize(m_completionListBox->sizeHint() + QSize(2,2));
-    QPoint p = m_view->mapToGlobal( m_view->cursorCoordinates() );
+    QPoint p = m_view->mapToGlobal( m_view->cursorPositionCoordinates() );
         int x = p.x();
         int y = p.y() ;
         if ( y + m_completionPopup->height() + m_view->renderer()->config()->fontMetrics( )->height() > QApplication::desktop()->height() )
@@ -336,13 +336,13 @@ void KateCodeCompletion::showArgHint ( QStringList functionList, const QString& 
     nNum++;
   }
 
-  m_pArgHint->move(m_view->mapToGlobal(m_view->cursorCoordinates() + QPoint(0,m_view->renderer()->config()->fontMetrics( )->height())) );
+  m_pArgHint->move(m_view->mapToGlobal(m_view->cursorPositionCoordinates() + QPoint(0,m_view->renderer()->config()->fontMetrics( )->height())) );
   m_pArgHint->show();
 }
 
 void KateCodeCompletion::slotCursorPosChanged()
 {
-  m_pArgHint->cursorPositionChanged ( m_view, m_view->cursorLine(), m_view->cursorColumnReal() );
+  m_pArgHint->cursorPositionChanged ( m_view, m_view->cursorPosition().line(), m_view->cursorPosition().column() );
 }
 
 void KateCodeCompletion::showComment()
