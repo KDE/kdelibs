@@ -159,7 +159,7 @@ static QByteArray readQByteArray(QDataStream &ds)
 
 extern "C" {
 extern int _kde_IceTransWrite (void * ciptr, char *buf, int size);
-};
+}
 
 static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *ptr)
 {
@@ -979,7 +979,7 @@ static void sighandler(int sig)
 extern "C"
 {
 	extern int _kde_IceLastMajorOpcode; // from libICE
-};
+}
 
 DCOPServer::DCOPServer(bool _suicide)
     : QObject(0,0), currentClientNumber(0), appIds(263), clients(263)
