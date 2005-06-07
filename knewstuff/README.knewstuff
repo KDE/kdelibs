@@ -5,6 +5,9 @@ provides KDE applications with easy-to-use upload and download mechanisms,
 with optional popularity counters, ratings, digital signatures, uncompression
 and post-installation DCOP/scripting hooks.
 
+* GHNS Standard and related software
+  http://ghns.berlios.de/
+
 * Documentation
 - API docs
   http://developer.kde.org/documentation/library/cvs-api/knewstuff/html/
@@ -29,11 +32,16 @@ Immediate plans:
 - merge download dialog engine functionality into the engine class
 - incremental updates of directories,
   including cache
+- after installation, return QStringList of installed items so no scanning
+  will be necessary anymore
+- how to "fake" installations? (suggestions from TSDgeos)
+  knewstuff should know about already installed items
 Future plans:
 - kick-ass web interface with history and contributions
+- integration with KDE SOAP messaging framework and KWSDL to access DXS
 - hm.... :-)
 
-Josef Spillner, 01.04.2004, last updated 08.03.2005
+Josef Spillner, 01.04.2004, last updated 07.06.2005
 
 Add d pointers to ALL public classes for KDE 4 or maintaining binary
 compatibility is a nightmare. 12/3/05.
