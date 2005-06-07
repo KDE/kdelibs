@@ -624,6 +624,8 @@ public:
    *
    * This gives a wide range of possibilities to
    * change the layout of the page.
+   *
+   * To have an effect this function has to be called after calling begin().
    */
   void setUserStyleSheet( const KURL &url );
 
@@ -633,6 +635,8 @@ public:
    *
    * This gives a wide range of possibilities to
    * change the layout of the page.
+   *
+   * To have an effect this function has to be called after calling begin().
    */
   void setUserStyleSheet( const QString &styleSheet );
 
