@@ -242,8 +242,8 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
     QCString fName = ::getenv("DCOPAUTHORITY");
     if (!old && !fName.isEmpty())
         return fName;
-    
-	fName = QDir::homeDirPath();
+
+    fName = QFile::encodeName( QDir::homeDirPath() );
 //    fName = ::getenv("HOME");
     if (fName.isEmpty())
     {
