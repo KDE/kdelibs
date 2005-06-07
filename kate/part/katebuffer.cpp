@@ -40,6 +40,7 @@
 #include <qtimer.h>
 #include <qtextcodec.h>
 #include <qdatetime.h>
+#include <q3popupmenu.h>
 
 /**
  * loader block size, load 256 kb at once per default
