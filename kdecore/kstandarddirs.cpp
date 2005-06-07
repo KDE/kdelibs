@@ -1178,7 +1178,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
           if (KDE_lstat(baseEncoded, &st) == 0)
               (void)unlink(baseEncoded); // try removing
 
-	  if ( mkdir(baseEncoded, (mode_t) mode) != 0) {
+	  if ( KDE_mkdir(baseEncoded, (mode_t) mode) != 0) {
             baseEncoded.prepend( "trying to create local folder " );
 	    perror(baseEncoded.data());
 	    return false; // Couldn't create it :-(
