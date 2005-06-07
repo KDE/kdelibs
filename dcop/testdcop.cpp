@@ -174,9 +174,11 @@ void TestObject::slotCallBack(int callId, const QCString &replyType, const QByte
    qWarning("Value = %s", arg1.latin1());
 }
 
-extern KDEWIN32_EXPORT void kde_bootstrap();
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
-int kdemain(int argc, char **argv)
+int main(int argc, char **argv)
 {
   QApplication app(argc, argv, "testdcop");
 

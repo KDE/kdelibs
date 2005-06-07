@@ -751,8 +751,11 @@ int runDCOP( QCStringList args, UserList users, Session session,
     return retval;
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
-int kdemain( int argc, char** argv )
+int main( int argc, char** argv )
 {
     bool readStdin = false;
     int numOptions = 0;

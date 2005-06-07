@@ -74,9 +74,11 @@ void startApp(const char *_app, int argc, const char **args)
     }
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
-
-int kdemain( int argc, char** argv )
+int main( int argc, char** argv )
 {
     if (( argc < 2) || (argv[1][0] == '-' )) {
 	fprintf( stderr, "Usage: dcopstart <application> [url1] [url2] ...\n" );

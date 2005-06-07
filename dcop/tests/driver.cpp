@@ -44,7 +44,11 @@ void Driver::test()
 
 #include "driver.moc"
 
-int kdemain(int argc, char** argv)
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
+
+int main(int argc, char** argv)
 {
 	if ( argc < 2 ) { qWarning("Usage: driver <appid>"); return 1; }
 	const char* appname = strdup( argv[ 1 ] );
