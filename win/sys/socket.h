@@ -22,6 +22,10 @@
 
 #include <sys/time.h>
 
+//#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+
+#if 0
 #ifdef __cplusplus
 /*extern "C" {*/
 #endif
@@ -52,8 +56,16 @@
 
 /*defined in winsock:  struct servent *getservbyname (const char *__name, const char *__proto); */
 
+//#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+
+#if 0
 #ifdef __cplusplus
 /*};*/
+#endif
+
+#endif
+
 #endif
 
 #endif /* _SYS_SOCKET_H */

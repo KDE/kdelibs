@@ -8,6 +8,8 @@ TARGET		= kdewin32$$KDEBUG
 QMAKE_CXXFLAGS += /FI$(KDELIBS)/kdecore/kdelibs_export.h
 QMAKE_CFLAGS += /FI$(KDELIBS)/kdecore/kdelibs_export.h
 
+system( moc qeventloopex.h -o moc/qeventloopex.moc )
+
 WIN9x {
 	DEFINES += KDEWIN32_9x
 
@@ -42,6 +44,7 @@ win32_utils2.cpp \
 kde_file_win.c \
 mmap.c \
 getenv.c \
+qeventloopex.cpp \
 bootstrap.cpp
 
 #mkdir.c

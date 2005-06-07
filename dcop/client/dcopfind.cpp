@@ -197,7 +197,7 @@ void usage()
 }
 
 
-int main( int argc, char** argv )
+int kdemain( int argc, char** argv )
 {
     int argi = 1;
 

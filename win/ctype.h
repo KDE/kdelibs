@@ -26,7 +26,11 @@
 # include <bcc/ctype.h>
 #endif
 
-int KDE_isspace(int c) { return ((unsigned)(c + 1) <= 256) && isspace(c); }
+#ifdef __cplusplus
+inline int KDE_isspace(int c) { return ((unsigned)(c + 1) <= 256) && isspace(c); }
+#else
+#define KDE_isspace(__c) (((unsigned)(__c + 1) <= 256) && isspace(__c))
+#endif
 
 #define isspace KDE_isspace
 

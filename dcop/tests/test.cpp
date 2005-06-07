@@ -21,7 +21,7 @@ void batch()
 #include "batch.generated"
 }
 
-int main(int argc, char** argv)
+int kdemain(int argc, char** argv)
 {
 	if ( argc > 1 ) {
 		batch();
@@ -29,7 +29,9 @@ int main(int argc, char** argv)
 	}
 	KCmdLineArgs::init( argc, argv, "TestApp", "Tests the dcop familly of tools + libraries", "1.0" ); // FIXME
 	KApplication app;
-	app.dcopClient()->attach(  );
+	if(!app.dcopClient()->attach(  ))
+		return 1;
+
 	app.dcopClient()->registerAs( "TestApp" );
 	new Test;
 	return app.exec();

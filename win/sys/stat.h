@@ -41,7 +41,7 @@ typedef short nlink_t;
 extern "C" {
 #endif
 
-/*#ifndef _STAT_H_*/
+#if !defined _STAT_H_ && !defined _INC_DIRECT
 
 #define	_IFMT		0170000	// type of file 
 #define		_IFDIR	0040000	// directory 
@@ -86,12 +86,13 @@ extern "C" {
 
 KDEWIN32_EXPORT int lstat( const char *__path, struct stat *__buf);
 
- KDEWIN32_EXPORT int	mkdir( const char *_path, mode_t __mode );
+// KDEWIN32_EXPORT int mkdir( const char *_path, mode_t __mode );
+ extern int mkdir( const char *_path );
  extern int chdir( const char *dirname );
  extern char *getcwd( char *buffer, int maxlen );
  extern int rmdir( const char *dirname );
 
-/*#endif*/
+#endif
 
 #ifdef __cplusplus
 }

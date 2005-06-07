@@ -4,7 +4,7 @@
 #
 
 # to avoid a need for using Q_WS_WIN in C source code
-DEFINES += _WINDOWS
+DEFINES += _WINDOWS WIN32_LEAN_AND_MEAN
 
 # custom definitions, options on which KDElibs do not depend
 exists( custom_defs.pro ) {
@@ -57,6 +57,7 @@ isEmpty( KDEBUG ) {
   contains(CONFIG,debug) {
 		KDEBUG=_d
 		KDELIBDEBUG=_d
+		KDELIBDEBUGLIB=_d.lib
   }
   !contains(CONFIG,debug) {
 		KDEBUG=_
@@ -66,6 +67,7 @@ isEmpty( KDEBUG ) {
 		!contains(CONFIG,kde3lib) {
 			KDELIBDEBUG=_
 		}
+		KDELIBDEBUGLIB=.lib
   }
 }
 KDELIB_SUFFIX=$$KDEBUG$(KDE_VER).lib
@@ -78,9 +80,15 @@ contains( TEMPLATE, app ) {
 #  !contains(CONFIG,debug) {
 #    DESTDIR = $$KDEBINDESTDIR\release-bin
 #  }
-  LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX \
-		$$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX \
-		$$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX
+	!contains(CONFIG,nokdecore) {
+			LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX
+	}
+	!contains(CONFIG,nokdeui) {
+			LIBS += $$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX
+	}
+	!contains(CONFIG,nokdefx) {
+			LIBS += $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX
+	}
 }
 # default template is "lib"
 isEmpty( TEMPLATE ) {
@@ -163,7 +171,7 @@ QMAKE_LFLAGS += /FORCE:MULTIPLE
 # a .cpp or .cxx extension, thus .cc files are compiled properly with msvc
 QMAKE_CXXFLAGS += /TP
 
-INCLUDEPATH	+= moc $(KDELIBS)/win
+INCLUDEPATH	+= moc $(KDELIBS)/win $(KDELIBS)
 
 contains(KW_CONFIG,release) {
 OBJECTS_DIR = obj_rel
@@ -182,5 +190,5 @@ MOC_DIR = moc
 QMAKE_LFLAGS += /NODEFAULTLIB:MSVCRTD /NODEFAULTLIB:MSVCR71D /NODEFAULTLIB:MSVCP71D
 }
 contains(CONFIG,debug) {
-QMAKE_LFLAGS += /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCR71 /NODEFAULTLIB:MSVCP71
+QMAKE_LFLAGS += /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCR71 /NODEFAULTLIB:MSVCP71 /NODEFAULTLIB:libc
 }

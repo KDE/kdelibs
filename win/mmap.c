@@ -23,7 +23,7 @@
 #include <sys/mman.h>
 #include <assert.h>
 
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #define MORECORE_FAILURE    ((void*)(-1))

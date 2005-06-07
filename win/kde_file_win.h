@@ -72,6 +72,11 @@ KDEWIN32_EXPORT FILE *kdewin32_freopen(const char *path, const char *mode, FILE 
 */
 KDEWIN32_EXPORT int kdewin32_rename(const char *src, const char *dest);
 
+/**
+ A wrapped for ::mkdir() used by KDE_mkdir().
+*/
+KDEWIN32_EXPORT int kdewin32_mkdir(const char *path, mode_t mode);
+
 #ifdef __cplusplus
 }
 #endif

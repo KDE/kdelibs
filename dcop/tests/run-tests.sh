@@ -25,7 +25,7 @@ echo -n '* Comparing ... '
 
 compare() 
 {
-if ! diff -q $1 $2; then
+if ! diff -q --strip-trailing-cr $1 $2; then
 	echo "FAILED:"
 	diff -u $1 $2
 	exit 1;

@@ -37,8 +37,6 @@
 #define DCOPReplyDelayed 6
 #define DCOPFind 7
 
-#ifdef Q_OS_UNIX
-
 #define INT32 QINT32
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -82,7 +80,5 @@ struct DCOPMsg {
   CARD32 length B32;
   CARD32 key;
 };
-
-#endif /* Q_OS_UNIX */
 
 #endif

@@ -55,9 +55,14 @@ char		*errorStringRet;
 
     while ((result < 0) && (count < 5))
     {
-       char buf[128];
-       sprintf(buf, "dcop%d-%ld", getpid(), time(NULL)+count);
-       result = _kde_IceTransMakeAllCOTSServerListeners (buf, &partial,
+       char port[128];
+#ifdef _WIN32
+       int nTCPPort = ((getpid() + time(NULL) + count) % 32768) + 1024;
+       sprintf(port, "%d", nTCPPort);
+#else
+       sprintf(port, "dcop%d-%ld", getpid(), time(NULL)+count);
+#endif
+       result = _kde_IceTransMakeAllCOTSServerListeners (port, &partial,
                                               &transCount, &transConns);
        count++;
     }

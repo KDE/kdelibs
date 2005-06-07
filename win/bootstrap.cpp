@@ -24,11 +24,15 @@
 #include <sys/file.h>
 #include <stdio.h>
 
+#include "qeventloopex.h"
+
+QEventLoopEx* qeventloopex = 0;
+
 /**
  Actions to perform at very early stage of KDE application life on MS Windows.
  Currently not much is performed here but later, who knows...
 
- Additional algorithm for win9x (including Millenium), whare are problems with 
+ Additional algorithm for win9x (including Millenium), where are problems with 
  easy setting environment variables:
 
  - try to find HOME env. variable
@@ -48,6 +52,11 @@ KDEWIN32_EXPORT void kde_bootstrap()
 	OSVERSIONINFOA osver;
 	osver.dwOSVersionInfoSize = sizeof(osver);
 	DWORD rc = GetVersionExA( &osver );
+
+	WSADATA wsadata;
+	WSAStartup(MAKEWORD(2,2),&wsadata);
+
+	qeventloopex = new QEventLoopEx();
 
 	//for win9x only:
 	if (osver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
@@ -115,3 +124,12 @@ KDEWIN32_EXPORT void kde_bootstrap()
 	}
 }
 
+/**
+ Actions to perform after destroying KDE application on MS Windows.
+
+ Currently, custom even loop (QEventLoopEx) is deleted here.
+*/
+KDEWIN32_EXPORT void kde_destroy()
+{
+	delete qeventloopex;
+}

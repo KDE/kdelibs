@@ -17,10 +17,10 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kde_file_win.h"
-
 #include <sys/stat.h>
 #include <stdarg.h>
+
+#include "kde_file_win.h"
 
 KDEWIN32_EXPORT int kdewin32_stat(const char *file_name, struct stat *buf)
 {
@@ -131,3 +131,7 @@ KDEWIN32_EXPORT int kdewin32_rename(const char *src, const char *dest)
 	return rename(src, dest);
 }
 
+KDEWIN32_EXPORT int kdewin32_mkdir(const char *path, mode_t mode)
+{
+	return mkdir(path);
+}

@@ -752,7 +752,7 @@ int runDCOP( QCStringList args, UserList users, Session session,
 }
 
 
-int main( int argc, char** argv )
+int kdemain( int argc, char** argv )
 {
     bool readStdin = false;
     int numOptions = 0;

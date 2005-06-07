@@ -61,9 +61,10 @@ from The Open Group.
  * of these values are also defined by the ChangeHost protocol message.
  */
 
-#define FamilyInternet		0
+#define FamilyInternet		0	/* IPv4 */
 #define FamilyDECnet		1
 #define FamilyChaos		2
+#define FamilyInternet6		6
 #define FamilyAmoeba		33
 #define FamilyLocalHost		252
 #define FamilyKrb5Principal	253
@@ -281,7 +282,7 @@ TRANS(GetMyNetworkId) (XtransConnInfo ciptr)
 static jmp_buf env;
 
 #ifdef SIGALRM
-static int nameserver_timedout = 0;
+static volatile int nameserver_timedout = 0;
 
 static
 #ifdef SIGNALRETURNSINT
@@ -333,7 +334,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 	struct sockaddr_in *saddr = (struct sockaddr_in *) peer_addr;
 	struct hostent * hostp = NULL;
 
-#ifdef SIGALRM
+#if defined(SIGALRM) && !defined(_WIN32)
 	/*
 	 * gethostbyaddr can take a LONG time if the host does not exist.
 	 * Assume that if it does not respond in NAMESERVER_TIMEOUT seconds
@@ -349,7 +350,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #endif
 	    hostp = gethostbyaddr ((char *) &saddr->sin_addr,
 		sizeof (saddr->sin_addr), AF_INET);
-#ifdef SIGALRM
+#if defined(SIGALRM) && !defined(_WIN32)
 	}
 	alarm (0);
 #endif
@@ -418,7 +419,7 @@ TRANS(GetPeerNetworkId) (XtransConnInfo ciptr)
 #endif /* ICE_t */
 
 
-#if defined(WIN32) && (defined(TCPCONN) || defined(DNETCONN))
+#if defined(_WIN32) && (defined(TCPCONN) || defined(DNETCONN))
 int
 TRANS(WSAStartup) (void)
 {

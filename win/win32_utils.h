@@ -50,7 +50,7 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 }
 
 /**
- \return registry value from MS Windows native registry.
+ \return a value from MS Windows native registry.
  @param key is usually one of HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE
         constants defined in WinReg.h. 
  @param subKey is a registry subkey defined as a path to a registry folder, eg.
@@ -63,7 +63,15 @@ KDEWIN32_EXPORT QString getWin32RegistryValue(HKEY key, const QString& subKey,
 	const QString& item, bool *ok = 0);
 
 /**
- Shows native MS Windows file property dialog.
+ \return a value from MS Windows native registry for shell folder \a folder.
+*/
+inline QString getWin32ShellFoldersPath(const QString& folder) {
+	return getWin32RegistryValue(HKEY_CURRENT_USER, 
+			"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", folder);
+}
+
+/**
+ Shows native MS Windows file property dialog for a file \a fileName.
  Return true on success. Only works for local absolute paths.
  Used by KPropertiesDialog, if possible.
 */

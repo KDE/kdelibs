@@ -8,7 +8,9 @@
 
 using namespace std;
 
-
+#ifdef _MSC_VER
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
 
 Driver::Driver(const char* app)
 	:Test_stub( app, "TestInterface" ),
@@ -42,7 +44,7 @@ void Driver::test()
 
 #include "driver.moc"
 
-int main(int argc, char** argv)
+int kdemain(int argc, char** argv)
 {
 	if ( argc < 2 ) { qWarning("Usage: driver <appid>"); return 1; }
 	const char* appname = strdup( argv[ 1 ] );
