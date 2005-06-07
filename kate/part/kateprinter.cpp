@@ -63,10 +63,10 @@ bool KatePrinter::print (KateDocument *doc)
   printer.setDocName(doc->documentName());
 
   KatePrintTextSettings *kpts = new KatePrintTextSettings(&printer, NULL);
-  
+
 #warning fixme later
   //kpts->enableSelection( doc->hasSelection() );
-  
+
   printer.addDialogPage( kpts );
   printer.addDialogPage( new KatePrintHeaderFooter(&printer, NULL) );
   printer.addDialogPage( new KatePrintLayout(&printer, NULL) );
@@ -98,11 +98,11 @@ bool KatePrinter::print (KateDocument *doc)
 
      // Text Settings Page
      bool selectionOnly = false;
-     
+
   #warning fixme later
      //( doc->hasSelection() &&
        //                    ( printer.option("app-kate-printselection") == "true" ) );
-     
+
      int selStartCol = 0;
      int selEndCol = 0;
 
@@ -174,7 +174,7 @@ bool KatePrinter::print (KateDocument *doc)
        if ( printLineNumbers )
        {
          // figure out the horiizontal space required
-         QString s( QString("%1 ").arg( doc->numLines() ) );
+         QString s( QString("%1 ").arg( doc->lines() ) );
          s.fill('5', -1); // some non-fixed fonts haven't equally wide numbers
                           // FIXME calculate which is actually the widest...
          lineNumberWidth = renderer.currentFontMetrics()->width( s );

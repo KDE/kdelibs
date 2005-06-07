@@ -317,7 +317,7 @@ bool KateJScript::execute (KateView *view, const QString &script, QString &error
 #
   textFull       KateJSDocument::FullText      DontDelete|Function 0
   textRange      KateJSDocument::Text          DontDelete|Function 4
-  textLine       KateJSDocument::TextLine      DontDelete|Function 1
+  line           KateJSDocument::TextLine      DontDelete|Function 1
   lines          KateJSDocument::Lines         DontDelete|Function 0
   length         KateJSDocument::Length        DontDelete|Function 0
   lineLength     KateJSDocument::LineLength    DontDelete|Function 1
@@ -377,10 +377,10 @@ Value KateJSDocumentProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, 
       return KJS::String (doc->text(args[0].toUInt32(exec), args[1].toUInt32(exec), args[2].toUInt32(exec), args[3].toUInt32(exec)));
 
     case KateJSDocument::TextLine:
-      return KJS::String (doc->textLine (args[0].toUInt32(exec)));
+      return KJS::String (doc->line (args[0].toUInt32(exec)));
 
     case KateJSDocument::Lines:
-      return KJS::Number (doc->numLines());
+      return KJS::Number (doc->lines());
 
     case KateJSDocument::Length:
       return KJS::Number (doc->length());
@@ -886,7 +886,7 @@ bool KateIndentJScriptImpl::setupInterpreter(QString &errorMsg)
     m_indenter=new KJS::Object(new KateJSIndenter(m_interpreter->globalExec()));
     m_interpreter->globalObject().put(m_interpreter->globalExec(),"document",KJS::Object(m_docWrapper),KJS::DontDelete | KJS::ReadOnly);
     m_interpreter->globalObject().put(m_interpreter->globalExec(),"view",KJS::Object(m_viewWrapper),KJS::DontDelete | KJS::ReadOnly);
-    m_interpreter->globalObject().put(m_interpreter->globalExec(),"debug", KJS::Object(new 
+    m_interpreter->globalObject().put(m_interpreter->globalExec(),"debug", KJS::Object(new
               KateJSGlobalFunctions(KateJSGlobalFunctions::Debug,1)));
     m_interpreter->globalObject().put(m_interpreter->globalExec(),"indenter",*m_indenter,KJS::DontDelete | KJS::ReadOnly);
     QFile file (filePath());

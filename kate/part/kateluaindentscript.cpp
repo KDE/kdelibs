@@ -36,7 +36,7 @@
 #include <klocale.h>
 
 extern "C" {
-#include <lua.h> 
+#include <lua.h>
 #include <lualib.h>
 }
 
@@ -123,14 +123,14 @@ static int katelua_indenter_register(lua_State *L) {
 
 static int katelua_document_textline(lua_State *L) {
   if (lua_gettop(L)!=1) {
-      lua_pushstring(L,i18n("document.textLine:One parameter (line number) required").utf8().data());
+      lua_pushstring(L,i18n("document.line:One parameter (line number) required").utf8().data());
       lua_error(L);
   }
   if (!lua_isnumber(L,1)) {
-      lua_pushstring(L,i18n("document.textLine:One parameter (line number) required (number)").utf8().data());
+      lua_pushstring(L,i18n("document.line:One parameter (line number) required (number)").utf8().data());
       lua_error(L);
   }
-  lua_pushstring(L,katelua_doc->textLine((uint)lua_tonumber(L,1)).utf8().data());
+  lua_pushstring(L,katelua_doc->line(lua_tonumber(L,1)).utf8().data());
   return 1;
 }
 
@@ -179,7 +179,7 @@ static int katelua_view_setcursorpositionreal(lua_State *L) {
 }
 
 static const struct KATELUA_FUNCTIONS katelua_documenttable[4]= {
-{"textLine",katelua_document_textline},
+{"line",katelua_document_textline},
 {"removeText",katelua_document_removeText},
 {"insertText",katelua_document_insertText},
 {0,0}
@@ -207,7 +207,7 @@ static void  kateregistertable(lua_State* m_interpreter,const KATELUA_FUNCTIONS 
   lua_pop(m_interpreter,1);
 
 }
-  
+
 //END STATIC BINDING FUNCTIONS
 
 

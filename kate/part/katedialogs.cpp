@@ -1650,9 +1650,9 @@ void KateModOnHdPrompt::slotDiff()
 
   p->start( KProcess::NotifyOnExit, true );
 
-  uint lastln =  m_doc->numLines();
-  for ( uint l = 0; l <  lastln; l++ )
-    p->writeStdin(  m_doc->textLine( l ), l < lastln );
+  int lastln =  m_doc->lines();
+  for ( int l = 0; l <  lastln; ++l )
+    p->writeStdin(  m_doc->line( l ), l < lastln );
 
   p->closeWhenDone();
 }

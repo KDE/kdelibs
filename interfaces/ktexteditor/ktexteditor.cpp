@@ -33,7 +33,6 @@
 #include "codecompletioninterface.h"
 #include "commandinterface.h"
 #include "configinterface.h"
-#include "editinterface.h"
 #include "encodinginterface.h"
 #include "highlightinginterface.h"
 #include "markinterface.h"
@@ -182,14 +181,6 @@ KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document
     return 0;
 
   return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
-}
-
-EditInterface *KTextEditor::editInterface (Document *doc)
-{
-  if (!doc)
-    return 0;
-
-  return dynamic_cast<KTextEditor::EditInterface*>( doc );
 }
 
 SelectionInterface *KTextEditor::selectionInterface (View *view)

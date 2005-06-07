@@ -79,6 +79,8 @@ class Cursor
 
     /**
      * Set the cursor position
+     * This is virtual, to allow reimplementations to do checks here
+     * or to emit signals
      * @param line new cursor line
      * @param column new cursor column
      */
@@ -86,15 +88,19 @@ class Cursor
 
     /**
      * Set the cursor line
+     * This is virtual, to allow reimplementations to do checks here
+     * or to emit signals
      * @param line new cursor line
      */
-    void setLine (int line) { setPosition (line, column()); }
+    virtual void setLine (int line) { m_line = line; }
 
     /**
      * Set the cursor column
+     * This is virtual, to allow reimplementations to do checks here
+     * or to emit signals
      * @param column new cursor column
      */
-    void setColumn (int column) { setPosition (line(), column); }
+    virtual void setColumn (int column) { m_column = column; }
 
     /**
      * == operator
@@ -102,7 +108,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator==(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator==(const Cursor& c1, const Cursor& c2)
       { return c1.line() == c2.line() && c1.column() == c2.column(); }
 
     /**
@@ -111,7 +117,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator!=(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator!=(const Cursor& c1, const Cursor& c2)
       { return !(c1 == c2); }
 
     /**
@@ -120,7 +126,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator>(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator>(const Cursor& c1, const Cursor& c2)
       { return c1.line() > c2.line() || (c1.line() == c2.line() && c1.m_column > c2.m_column); }
 
     /**
@@ -129,7 +135,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator>=(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator>=(const Cursor& c1, const Cursor& c2)
       { return c1.line() > c2.line() || (c1.line() == c2.line() && c1.m_column >= c2.m_column); }
 
     /**
@@ -138,7 +144,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator<(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator<(const Cursor& c1, const Cursor& c2)
       { return !(c1 >= c2); }
 
     /**
@@ -147,7 +153,7 @@ class Cursor
      * @param c2 second cursor to compare
      * @return result of compare
      */
-    friend bool operator<=(const Cursor& c1, const Cursor& c2)
+    inline friend bool operator<=(const Cursor& c1, const Cursor& c2)
       { return !(c1 > c2); }
 
   protected:

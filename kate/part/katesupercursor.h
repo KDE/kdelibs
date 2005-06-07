@@ -96,6 +96,8 @@ public:
     // Reimplementations;
     virtual void setPosition(const KTextEditor::Cursor& pos);
     virtual void setPosition (int line, int column) { setPosition(Cursor (line, column)); }
+    virtual void setLine (int line) { setPosition(Cursor (line, column())); }
+    virtual void setColumn (int column) { setPosition(Cursor (line(), column)); }
 
     /**
      * Returns the document this cursor is attached to...

@@ -659,7 +659,7 @@ void KateView::setupCodeFolding()
 
 void KateView::slotExpandToplevel()
 {
-  m_doc->foldingTree()->expandToplevelNodes(m_doc->numLines());
+  m_doc->foldingTree()->expandToplevelNodes(m_doc->lines());
 }
 
 void KateView::slotCollapseLocal()
@@ -673,7 +673,7 @@ void KateView::slotCollapseLocal()
 
 void KateView::slotExpandLocal()
 {
-  m_doc->foldingTree()->expandOne(cursorLine(), m_doc->numLines());
+  m_doc->foldingTree()->expandOne(cursorLine(), m_doc->lines());
 }
 
 void KateView::setupCodeCompletion()
@@ -748,13 +748,13 @@ bool KateView::isOverwriteMode() const
 void KateView::reloadFile()
 {
   // save cursor position
-  uint cl = cursorLine();
-  uint cc = cursorColumn();
+  int cl = cursorLine();
+  int cc = cursorColumn();
 
   // save bookmarks
   m_doc->reloadFile();
 
-  if (m_doc->numLines() >= cl)
+  if (m_doc->lines() >= cl)
     // Explicitly call internal function because we want this to be registered as a non-external call
     setCursorPositionInternal( cl, cc, tabWidth(), false );
 
@@ -829,7 +829,7 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bo
   if (!l)
     return false;
 
-  QString line_str = m_doc->textLine( line );
+  QString line_str = m_doc->line( line );
 
   int x = 0;
   for (int z = 0; z < line_str.length() && (uint)z < col; z++) {
@@ -916,7 +916,7 @@ void KateView::slotSaveCanceled( const QString& error )
 
 void KateView::gotoLine()
 {
-  KateGotoLineDialog *dlg = new KateGotoLineDialog (this, m_viewInternal->getCursor().line() + 1, m_doc->numLines());
+  KateGotoLineDialog *dlg = new KateGotoLineDialog (this, m_viewInternal->getCursor().line() + 1, m_doc->lines());
 
   if (dlg->exec() == QDialog::Accepted)
     setCursorPositionInternal( dlg->getLine() - 1, 0 );
@@ -928,7 +928,7 @@ void KateView::joinLines()
 {
   int first = selectionStartLine();
   int last = selectionEndLine();
-  //int left = m_doc->textLine( last ).length() - m_doc->selEndCol();
+  //int left = m_doc->line( last ).length() - m_doc->selEndCol();
   if ( first == last )
   {
     first = cursorLine();
@@ -1342,8 +1342,8 @@ int KateView::cursorColumn() const
 {
   uint r = m_doc->currentColumn(m_viewInternal->getCursor());
   if ( !( m_doc->config()->configFlags() & KateDocumentConfig::cfWrapCursor ) &&
-       m_viewInternal->getCursor().column() > m_doc->textLine( m_viewInternal->getCursor().line() ).length()  )
-    r += m_viewInternal->getCursor().column() - m_doc->textLine( m_viewInternal->getCursor().line() ).length();
+       m_viewInternal->getCursor().column() > m_doc->line( m_viewInternal->getCursor().line() ).length()  )
+    r += m_viewInternal->getCursor().column() - m_doc->line( m_viewInternal->getCursor().line() ).length();
 
   return r;
 }
@@ -1698,7 +1698,7 @@ void KateView::textAsHtmlStream ( uint startLine, uint startCol, uint endLine, u
   {
     (*ts) << "<pre>" << endl;
 
-    for (uint i = startLine; (i <= endLine) && (i < m_doc->numLines()); i++)
+    for (int i = startLine; (i <= endLine) && (i < m_doc->lines()); ++i)
     {
       KateTextLine::Ptr textLine = m_doc->kateTextLine(i);
 

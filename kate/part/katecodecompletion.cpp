@@ -445,7 +445,7 @@ void KateArgHint::cursorPositionChanged( KateView* view, int line, int col )
     int nCountDelimiter = 0;
     int count = 0;
 
-    QString currentTextLine = view->doc()->textLine( line );
+    QString currentTextLine = view->doc()->line( line );
     QString text = currentTextLine.mid( m_currentCol, col - m_currentCol );
     QRegExp strconst_rx( "\"[^\"]*\"" );
     QRegExp chrconst_rx( "'[^']*'" );

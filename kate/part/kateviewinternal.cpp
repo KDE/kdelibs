@@ -946,7 +946,7 @@ public:
   CalculatingCursor& operator--() { return operator-=( 1 ); }
 
   void makeValid() {
-    m_line = QMAX( 0, QMIN( int( m_vi->m_doc->numLines() - 1 ), line() ) );
+    m_line = QMAX( 0, QMIN( int( m_vi->m_doc->lines() - 1 ), line() ) );
     if (m_vi->m_view->wrapCursor())
       m_column = QMAX( 0, QMIN( m_vi->m_doc->lineLength( line() ), column() ) );
     else
@@ -973,7 +973,7 @@ public:
 protected:
   bool valid() const {
     return line() >= 0 &&
-            uint( line() ) < m_vi->m_doc->numLines() &&
+            uint( line() ) < m_vi->m_doc->lines() &&
             column() >= 0 &&
             (!m_vi->m_view->wrapCursor() || column() <= m_vi->m_doc->lineLength( line() ));
   }
@@ -1051,7 +1051,7 @@ public:
     if (n >= 0) {
       for (int i = 0; i < n; i++) {
         if (m_column == m_vi->m_doc->lineLength(line())) {
-          if (uint(line()) >= m_vi->m_doc->numLines() - 1)
+          if (uint(line()) >= m_vi->m_doc->lines() - 1)
             break;
 
           m_column = 0;
@@ -1126,7 +1126,7 @@ void KateViewInternal::moveWord( KateViewInternal::Bias bias, bool sel )
     KateHighlighting* h = m_doc->highlight();
 
     bool moved = false;
-    while( !c.atEdge( bias ) && !h->isInWord( m_doc->textLine( c.line() )[ c.column() - (bias == left ? 1 : 0) ] ) )
+    while( !c.atEdge( bias ) && !h->isInWord( m_doc->line( c.line() )[ c.column() - (bias == left ? 1 : 0) ] ) )
     {
       c += bias;
       moved = true;
@@ -1134,11 +1134,11 @@ void KateViewInternal::moveWord( KateViewInternal::Bias bias, bool sel )
 
     if ( bias != right || !moved )
     {
-      while( !c.atEdge( bias ) &&  h->isInWord( m_doc->textLine( c.line() )[ c.column() - (bias == left ? 1 : 0) ] ) )
+      while( !c.atEdge( bias ) &&  h->isInWord( m_doc->line( c.line() )[ c.column() - (bias == left ? 1 : 0) ] ) )
         c += bias;
       if ( bias == right )
       {
-        while ( !c.atEdge( bias ) && m_doc->textLine( c.line() )[ c.column() ].isSpace() )
+        while ( !c.atEdge( bias ) && m_doc->line( c.line() )[ c.column() ].isSpace() )
           c+= bias;
       }
     }
@@ -2040,7 +2040,7 @@ void KateViewInternal::updateSelection( const KTextEditor::Cursor& _newCursor, b
           if ( newCursor.line() > selStartCached.line() )
           {
             selectAnchor = selStartCached;
-            newCursor.setColumn( m_doc->textLine( newCursor.line() ).length() );
+            newCursor.setColumn( m_doc->line( newCursor.line() ).length() );
           }
           else if ( newCursor.line() < selStartCached.line() )
           {

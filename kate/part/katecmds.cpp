@@ -71,7 +71,7 @@ static bool getBoolArg( QString s, bool *val  )
 const QStringList &KateCommands::CoreCommands::cmds()
 {
   static QStringList l;
-  
+
   if (l.isEmpty())
   l << "indent" << "unindent" << "cleanindent"
     << "comment" << "uncomment" << "goto" << "kill-line"
@@ -83,7 +83,7 @@ const QStringList &KateCommands::CoreCommands::cmds()
     << "set-word-wrap" << "set-word-wrap-column"
     << "set-replace-tabs-save" << "set-remove-trailing-space-save"
     << "set-highlight" << "run-myself" << "set-show-indent";
-  
+
   return l;
 }
 
@@ -207,7 +207,7 @@ bool KateCommands::CoreCommands::exec(KTextEditor::View *view,
     {
       if ( val < 1 )
         KCC_ERR( i18n("Line must be at least 1") );
-      if ( (uint)val > v->doc()->numLines() )
+      if ( val > v->doc()->lines() )
         KCC_ERR( i18n("There is not that many lines in this document") );
       v->setCursorPositionReal( val - 1, 0 );
     }
@@ -433,8 +433,8 @@ int KateCommands::SedReplace::sedMagic( KateDocument *doc, int &line,
     replace(rep, "\\\\", "\\");
     replace(rep, "\\" + delim, delim);
 
-    doc->removeText( line, startcol, line, startcol + len );
-    doc->insertText( line, startcol, rep );
+    doc->removeText( KTextEditor::Cursor (line, startcol), KTextEditor::Cursor (line, startcol + len) );
+    doc->insertText( KTextEditor::Cursor (line, startcol), rep );
 
     // TODO if replace contains \n,
     // change the line number and
@@ -501,8 +501,8 @@ bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd
 
   if (fullFile)
   {
-    uint numLines=doc->numLines();
-    for (int line=0; (uint)line < numLines; line++)
+    int numLines = doc->lines();
+    for (int line=0; line < numLines; ++line)
     {
       res += sedMagic( doc, line, find, replace, d, !noCase, repeat );
       if ( ! repeat && res ) break;
@@ -571,16 +571,14 @@ bool KateCommands::Character::exec (KTextEditor::View *view, const QString &_cmd
     char buf[2];
     buf[0]=(char)number;
     buf[1]=0;
-    
-    if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QString(buf));
+
+    view->document()->insertText(KTextEditor::Cursor (KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal()), QString(buf));
   }
   else
   { // do the unicode thing
     QChar c(number);
-    
-    if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QString(&c, 1));
+
+    view->document()->insertText(KTextEditor::Cursor (KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal()), QString(&c, 1));
   }
 
   return true;
@@ -597,11 +595,9 @@ bool KateCommands::Date::exec (KTextEditor::View *view, const QString &cmd, QStr
     return false;
 
   if (QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)).length() > 0)
-    if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
+    view->document()->insertText(KTextEditor::Cursor (KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal()), QDateTime::currentDateTime().toString(cmd.mid(5, cmd.length()-5)));
   else
-    if (KTextEditor::editInterface(view->document()))
-      KTextEditor::editInterface(view->document())->insertText(KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal(), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    view->document()->insertText(KTextEditor::Cursor (KTextEditor::viewCursorInterface (view)->cursorLine(), KTextEditor::viewCursorInterface (view)->cursorColumnReal()), QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 
   return true;
 }

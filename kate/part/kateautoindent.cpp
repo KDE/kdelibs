@@ -2117,20 +2117,20 @@ void KateVarIndent::processLine ( KateDocCursor &line )
   // check if the above line indicates that we shuld add indentation
   int matchpos = 0;
   if ( ktl && ! d->reIndentAfter.isEmpty()
-       && (matchpos = d->reIndentAfter.search( doc->textLine( ln ) )) > -1
+       && (matchpos = d->reIndentAfter.search( doc->line( ln ) )) > -1
        && ! ISCOMMENT )
     adjustment++;
 
   // else, check if this line should indent unless ...
   ktl = doc->plainKateTextLine( line.line() );
   if ( ! d->reIndent.isEmpty()
-         && (matchpos = d->reIndent.search( doc->textLine( line.line() ) )) > -1
+         && (matchpos = d->reIndent.search( doc->line( line.line() ) )) > -1
          && ! ISCOMMENT )
     adjustment++;
 
   // else, check if the current line indicates if we should remove indentation unless ...
   if ( ! d->reUnindent.isEmpty()
-       && (matchpos = d->reUnindent.search( doc->textLine( line.line() ) )) > -1
+       && (matchpos = d->reUnindent.search( doc->line( line.line() ) )) > -1
        && ! ISCOMMENT )
     adjustment--;
 

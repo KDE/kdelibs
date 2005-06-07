@@ -237,7 +237,7 @@ void KateSearch::search( SearchFlags flags )
     if( !s.flags.backward ) {
       s.cursor.setPosition(0, 0);
     } else {
-      s.cursor.setLine(doc()->numLines() - 1);
+      s.cursor.setLine(doc()->lines() - 1);
       s.cursor.setColumn(doc()->lineLength( s.cursor.line() ));
     }
   }
@@ -247,7 +247,7 @@ void KateSearch::search( SearchFlags flags )
        s.cursor.line() == 0 ) ||
      ( s.flags.backward &&
        s.cursor.column() == doc()->lineLength( s.cursor.line() ) &&
-       s.cursor.line() == (((int)doc()->numLines()) - 1) ) ) {
+       s.cursor.line() == (((int)doc()->lines()) - 1) ) ) {
     s.flags.finished = true;
   }
 
@@ -273,7 +273,7 @@ void KateSearch::wrapSearch()
     if( !s.flags.backward ) {
       s.cursor.setPosition(0, 0);
     } else {
-      s.cursor.setLine(doc()->numLines() - 1);
+      s.cursor.setLine(doc()->lines() - 1);
       s.cursor.setColumn(doc()->lineLength( s.cursor.line() ) );
     }
   }
@@ -372,9 +372,9 @@ void KateSearch::replaceOne()
   }
 
   doc()->editStart();
-  doc()->removeText( s.cursor.line(), s.cursor.column(),
-      s.cursor.line(), s.cursor.column() + s.matchedLength );
-  doc()->insertText( s.cursor.line(), s.cursor.column(), replaceWith );
+
+  doc()->removeText( s.cursor, KTextEditor::Cursor (s.cursor.line(), s.cursor.column() + s.matchedLength) );
+  doc()->insertText( s.cursor, replaceWith );
   doc()->editEnd(),
 
   replaces++;
@@ -584,7 +584,7 @@ bool KateSearch::doSearch( const QString& text )
     if (s.flags.backward)
     {
       if ( (s.cursor.line() < s.wrappedEnd.line())
-           || ( (s.cursor.line() == s.wrappedEnd.line()) && ((s.cursor.column()+matchLen) <= uint(s.wrappedEnd.column())) ) )
+           || ( (s.cursor.line() == s.wrappedEnd.line()) && ((s.cursor.column()+matchLen) <= s.wrappedEnd.column()) ) )
         return false;
     }
     else

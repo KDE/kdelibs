@@ -167,7 +167,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
     if( (*it)->type & KTextEditor::MarkInterface::markType01 )
     {
       QString bText = KStringHandler::rEmSqueeze
-                      ( m_view->doc()->textLine( (*it)->line ),
+                      ( m_view->doc()->line( (*it)->line ),
                         menu.fontMetrics(), 32 );
       bText.replace(re, "&&"); // kill undesired accellerators!
       bText.replace('\t', ' '); // kill tabs, as they are interpreted as shortcuts
@@ -176,7 +176,7 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
       {
         sortArray[i] = (*it)->line;
         ssort( sortArray, i );
-        
+
         for (int i=0; i < sortArray.size(); ++i)
         {
           if (sortArray[i] == (*it)->line)
@@ -209,14 +209,14 @@ void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
   if ( next )
   {
     m_goNext->setText( i18n("&Next: %1 - \"%2\"").arg( next->line + 1 )
-        .arg( KStringHandler::rsqueeze( m_view->doc()->textLine( next->line ), 24 ) ) );
+        .arg( KStringHandler::rsqueeze( m_view->doc()->line( next->line ), 24 ) ) );
     m_goNext->plug( &menu, idx );
     idx++;
   }
   if ( prev )
   {
     m_goPrevious->setText( i18n("&Previous: %1 - \"%2\"").arg(prev->line + 1 )
-        .arg( KStringHandler::rsqueeze( m_view->doc()->textLine( prev->line ), 24 ) ) );
+        .arg( KStringHandler::rsqueeze( m_view->doc()->line( prev->line ), 24 ) ) );
     m_goPrevious->plug( &menu, idx );
     idx++;
   }

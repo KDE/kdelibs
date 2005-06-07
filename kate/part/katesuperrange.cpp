@@ -496,7 +496,7 @@ KateSuperRange* KateSuperRange::firstChildRange( ) const
 {
   if (m_childRanges.count())
     return m_childRanges.first();
-   
+
   return 0L;
 }
 
@@ -562,7 +562,7 @@ KateSuperRange* KateSuperRange::rangeBefore( KateSuperRange* range ) const
 }
 
 KateTopRange::KateTopRange( KateDocument * doc, KateRangeList * ownerList )
-  : KateSuperRange(new KateSuperCursor(doc, 0, 0), new KateSuperCursor(doc, doc->numLines() - 1, doc->kateTextLine(doc->numLines() - 1)->length()), ownerList)
+  : KateSuperRange(new KateSuperCursor(doc, 0, 0), new KateSuperCursor(doc, doc->lines() - 1, doc->kateTextLine(doc->lines() - 1)->length()), ownerList)
 {
   setBehaviour(KateSuperRange::ExpandRight);
 }

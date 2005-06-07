@@ -30,7 +30,6 @@
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/viewcursorinterface.h>
-#include <ktexteditor/editinterface.h>
 #include <ktexteditor/variableinterface.h>
 
 #include <kapplication.h>
@@ -228,8 +227,6 @@ void DocWordCompletionPluginView::autoPopupCompletionList()
 // Contributed by <brain@hdsnet.hu>
 void DocWordCompletionPluginView::shellComplete()
 {
-    // setup
-  KTextEditor::EditInterface * ei = KTextEditor::editInterface(m_view->document());
     // find the word we are typing
   int cline, ccol;
   viewCursorInterface(m_view)->cursorPositionReal(cline, ccol);
@@ -249,7 +246,7 @@ void DocWordCompletionPluginView::shellComplete()
   else
   {
     partial.remove(0, wrd.length());
-    ei->insertText(cline, ccol, partial);
+    m_view->document()->insertText(cline, ccol, partial);
   }
 }
 
@@ -257,8 +254,6 @@ void DocWordCompletionPluginView::shellComplete()
 // if possible
 void DocWordCompletionPluginView::complete( bool fw )
 {
-  // setup
-  KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   // find the word we are typing
   int cline, ccol;
   viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
@@ -293,7 +288,7 @@ void DocWordCompletionPluginView::complete( bool fw )
   d->re.setPattern( "\\b" + wrd + "(\\w+)" );
   int inc = fw ? 1 : -1;
   int pos ( 0 );
-  QString ln = ei->textLine( d->line );
+  QString ln = m_view->document()->line( d->line );
 
   if ( ! fw )
     ln = ln.mid( 0, d->col );
@@ -311,8 +306,8 @@ void DocWordCompletionPluginView::complete( bool fw )
       {
         // we got good a match! replace text and return.
         if ( d->lilen )
-          ei->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
-        ei->insertText( d->cline, d->ccol, m );
+          m_view->document()->removeText( d->cline, d->ccol, d->cline, d->ccol + d->lilen );
+        m_view->document()->insertText( d->cline, d->ccol, m );
 
         d->lastIns = m;
         d->lilen = m.length();
@@ -337,7 +332,7 @@ void DocWordCompletionPluginView::complete( bool fw )
             if ( d->line > 0 )
             {
               d->line += inc;
-              ln = ei->textLine( d->line );
+              ln = m_view->document()->line( d->line );
               d->col = ln.length();
             }
             else
@@ -359,7 +354,7 @@ void DocWordCompletionPluginView::complete( bool fw )
         KNotifyClient::beep();
         return;
       }
-      else if ( fw && d->line >= ei->numLines() )
+      else if ( fw && d->line >= m_view->document()->lines() )
       {
         KNotifyClient::beep();
         return;
@@ -369,7 +364,7 @@ void DocWordCompletionPluginView::complete( bool fw )
       if ( fw )
         d->col++;
 
-      ln = ei->textLine( d->line );
+      ln = m_view->document()->line( d->line );
       d->col = fw ? 0 : ln.length();
     }
   } // while true
@@ -406,10 +401,9 @@ QString DocWordCompletionPluginView::word()
   int cline, ccol;
   viewCursorInterface( m_view )->cursorPositionReal( cline, ccol );
   if ( ! ccol ) return QString::null; // no word
-  KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   d->re.setPattern( "\\b(\\w+)$" );
   if ( d->re.searchRev(
-        ei->text( cline, 0, cline, ccol )
+        m_view->document()->text( cline, 0, cline, ccol )
         ) < 0 )
     return QString::null; // no word
   return d->re.cap( 1 );
@@ -424,13 +418,12 @@ Q3ValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatche
   int pos( 0 );
   d->re.setPattern( "\\b("+word+"\\w+)" );
   QString s, m;
-  KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   Q3Dict<int> seen; // maybe slow with > 17 matches
   int sawit(1);    // to ref for the dict
 
-  while( i < ei->numLines() )
+  while( i < m_view->document()->lines() )
   {
-    s = ei->textLine( i );
+    s = m_view->document()->line( i );
     pos = 0;
     while ( pos >= 0 )
     {

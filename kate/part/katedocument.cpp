@@ -527,7 +527,7 @@ QString KateDocument::text() const
 {
   QString s;
 
-  for (uint i = 0; i < m_buffer->count(); i++)
+  for (int i = 0; i < m_buffer->count(); i++)
   {
     KateTextLine::Ptr textLine = m_buffer->plainLine(i);
 
@@ -543,12 +543,12 @@ QString KateDocument::text() const
   return s;
 }
 
-QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint endCol ) const
+QString KateDocument::text ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition ) const
 {
-  return text(startLine, startCol, endLine, endCol, false);
+  return text(startPosition.line(), startPosition.column(), endPosition.line(), endPosition.column(), false);
 }
 
-QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise) const
+QString KateDocument::text ( int startLine, int startCol, int endLine, int endCol, bool blockwise) const
 {
   if ( blockwise && (startCol > endCol) )
     return QString ();
@@ -570,7 +570,7 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
   else
   {
 
-    for (uint i = startLine; (i <= endLine) && (i < m_buffer->count()); i++)
+    for (int i = startLine; (i <= endLine) && (i < m_buffer->count()); ++i)
     {
       KateTextLine::Ptr textLine = m_buffer->plainLine(i);
 
@@ -596,7 +596,7 @@ QString KateDocument::text ( uint startLine, uint startCol, uint endLine, uint e
   return s;
 }
 
-QString KateDocument::textLine( uint line ) const
+QString KateDocument::line( int line ) const
 {
   KateTextLine::Ptr l = m_buffer->plainLine(line);
 
@@ -623,7 +623,7 @@ bool KateDocument::setText(const QString &s)
   clear();
 
   // insert the new text
-  insertText (0, 0, s);
+  insertText (KTextEditor::Cursor(), s);
 
   editEnd ();
 
@@ -646,15 +646,15 @@ bool KateDocument::clear()
 
   clearMarks ();
 
-  return removeText (0,0,lastLine()+1, 0);
+  return removeText (KTextEditor::Cursor(), KTextEditor::Cursor(lastLine()+1, 0));
 }
 
-bool KateDocument::insertText( uint line, uint col, const QString &s)
+bool KateDocument::insertText( const KTextEditor::Cursor &position, const QString &s)
 {
-  return insertText (line, col, s, false);
+  return insertText (position.line(), position.column(), s, false);
 }
 
-bool KateDocument::insertText( uint line, uint col, const QString &s, bool blockwise )
+bool KateDocument::insertText( int line, int col, const QString &s, bool blockwise )
 {
   if (!isReadWrite())
     return false;
@@ -662,7 +662,7 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
   if (s.isEmpty())
     return true;
 
-  if (line == numLines())
+  if (line == lines())
     editInsertLine(line,"");
   else if (line > lastLine())
     return false;
@@ -723,12 +723,12 @@ bool KateDocument::insertText( uint line, uint col, const QString &s, bool block
   return true;
 }
 
-bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uint endCol )
+bool KateDocument::removeText ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition )
 {
-  return removeText (startLine, startCol, endLine, endCol, false);
+  return removeText (startPosition.line(), startPosition.column(), endPosition.line(), endPosition.column(), false);
 }
 
-bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise)
+bool KateDocument::removeText ( int startLine, int startCol, int endLine, int endCol, bool blockwise)
 {
   if (!isReadWrite())
     return false;
@@ -816,33 +816,33 @@ bool KateDocument::removeText ( uint startLine, uint startCol, uint endLine, uin
   return true;
 }
 
-bool KateDocument::insertLine( uint l, const QString &str )
+bool KateDocument::insertLine( int l, const QString &str )
 {
   if (!isReadWrite())
     return false;
 
-  if (l > numLines())
+  if (l < 0 || l > lines())
     return false;
 
   return editInsertLine (l, str);
 }
 
-bool KateDocument::removeLine( uint line )
+bool KateDocument::removeLine( int line )
 {
   if (!isReadWrite())
     return false;
 
-  if (line > lastLine())
+  if (line < 0 || line > lastLine())
     return false;
 
   return editRemoveLine (line);
 }
 
-uint KateDocument::length() const
+int KateDocument::length() const
 {
-  uint l = 0;
+  int l = 0;
 
-  for (uint i = 0; i < m_buffer->count(); i++)
+  for (int i = 0; i < m_buffer->count(); ++i)
   {
     KateTextLine::Ptr line = m_buffer->plainLine(i);
 
@@ -853,18 +853,21 @@ uint KateDocument::length() const
   return l;
 }
 
-uint KateDocument::numLines() const
+int KateDocument::lines() const
 {
   return m_buffer->count();
 }
 
-uint KateDocument::numVisLines() const
+int KateDocument::numVisLines() const
 {
   return m_buffer->countVisible ();
 }
 
-int KateDocument::lineLength ( uint line ) const
+int KateDocument::lineLength ( int line ) const
 {
+  if (line < 0 || line > lastLine())
+    return -1;
+
   KateTextLine::Ptr l = m_buffer->plainLine(line);
 
   if (!l)
@@ -1005,7 +1008,7 @@ void KateDocument::editEnd ()
   if (m_buffer->editChanged())
   {
     setModified(true);
-    emit textChanged ();
+    emit textChanged (this);
   }
 
   editIsRunning = false;
@@ -1020,7 +1023,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
 
   editStart ();
 
-  for (uint line = startLine; (line <= endLine) && (line < numLines()); line++)
+  for (uint line = startLine; (line <= endLine) && (line < lines()); line++)
   {
     KateTextLine::Ptr l = m_buffer->line(line);
 
@@ -1371,7 +1374,7 @@ bool KateDocument::editInsertLine ( uint line, const QString &s )
   if (!isReadWrite())
     return false;
 
-  if ( line > numLines() )
+  if ( line > lines() )
     return false;
 
   editStart ();
@@ -1420,12 +1423,12 @@ bool KateDocument::editRemoveLine ( uint line )
   if ( line > lastLine() )
     return false;
 
-  if ( numLines() == 1 )
+  if ( lines() == 1 )
     return editRemoveText (0, 0, m_buffer->line(0)->length());
 
   editStart ();
 
-  editAddUndo (KateUndoGroup::editRemoveLine, line, 0, lineLength(line), textLine(line));
+  editAddUndo (KateUndoGroup::editRemoveLine, line, 0, lineLength(line), this->line(line));
 
   m_buffer->removeLine(line);
 
@@ -2133,9 +2136,9 @@ KMimeType::Ptr KateDocument::mimeTypeForContent()
   QByteArray buf (1024);
   uint bufpos = 0;
 
-  for (uint i=0; i < numLines(); i++)
+  for (int i=0; i < lines(); ++i)
   {
-    QString line = textLine( i );
+    QString line = this->line( i );
     uint len = line.length() + 1;
 
     if (bufpos + len > 1024)
@@ -3997,9 +4000,9 @@ void KateDocument::newBracketMark( const KTextEditor::Cursor& cursor, KateSuperR
 
   bm.setValid(true);
 
-  const int tw = config()->tabWidth();
-  const int indentStart = m_buffer->plainLine(bm.start().line())->indentDepth(tw);
-  const int indentEnd = m_buffer->plainLine(bm.end().line())->indentDepth(tw);
+ // const int tw = config()->tabWidth();
+ // const int indentStart = m_buffer->plainLine(bm.start().line())->indentDepth(tw);
+ // const int indentEnd = m_buffer->plainLine(bm.end().line())->indentDepth(tw);
   //bm.setIndentMin(QMIN(indentStart, indentEnd));
 }
 
@@ -4120,7 +4123,7 @@ void KateDocument::setDocName (QString name )
 
   int count = -1;
 
-  for (uint z=0; z < KateGlobal::self()->documents().size(); z++)
+  for (int z=0; z < KateGlobal::self()->documents().size(); ++z)
   {
     KateDocument *doc = (KateGlobal::self()->documents())[z];
 
@@ -4258,7 +4261,7 @@ void KateDocument::reloadFile()
     {
       KateDocumentTmpMark m;
 
-      m.line = textLine (it.current()->line);
+      m.line = line (it.current()->line);
       m.mark = *it.current();
 
       tmp.append (m);
@@ -4275,9 +4278,9 @@ void KateDocument::reloadFile()
 
     for (int z=0; z < tmp.size(); z++)
     {
-      if (z < (int)numLines())
+      if (z < (int)lines())
       {
-        if (textLine(tmp[z].mark.line) == tmp[z].line)
+        if (line(tmp[z].mark.line) == tmp[z].line)
           setMark (tmp[z].mark.line, tmp[z].mark.type);
       }
     }
@@ -4413,15 +4416,15 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
     v->renderer()->config()->configStart();
   }
   // read a number of lines in the top/bottom of the document
-  for (uint i=0; i < kMin( (uint)9, numLines() ); ++i )
+  for (int i=0; i < kMin( 9, lines() ); ++i )
   {
-    readVariableLine( textLine( i ), onlyViewAndRenderer );
+    readVariableLine( line( i ), onlyViewAndRenderer );
   }
-  if ( numLines() > 10 )
+  if ( lines() > 10 )
   {
-    for ( uint i = kMax( (uint)10, numLines() - 10); i < numLines(); ++i )
+    for ( int i = kMax( 10, lines() - 10); i < lines(); i++ )
     {
-      readVariableLine( textLine( i ), onlyViewAndRenderer );
+      readVariableLine( line( i ), onlyViewAndRenderer );
     }
   }
 
@@ -4756,13 +4759,13 @@ void KateDocument::removeTrailingSpace( uint line )
     if ( ! ln ) return;
 
     if ( line == activeView()->cursorLine()
-         && activeView()->cursorColumnReal() >= (uint)QMAX(0,ln->lastChar()) )
+         && activeView()->cursorColumnReal() >= QMAX(0,ln->lastChar()) )
       return;
 
     if ( ln->length() )
     {
-      uint p = ln->lastChar() + 1;
-      uint l = ln->length() - p;
+      int p = ln->lastChar() + 1;
+      int l = ln->length() - p;
       if ( l )
         editRemoveText( line, p, l);
     }

@@ -28,7 +28,6 @@
 #include <ktexteditor/selectioninterface.h>
 #include <kpopupmenu.h>
 #include <ktexteditor/viewcursorinterface.h>
-#include <ktexteditor/editinterface.h>
 #include <kmessagebox.h>
 //END includes
 
@@ -114,14 +113,12 @@ void KDataToolPluginView::aboutToShow()
 			m_singleWord = false;
 	} else {
 		// No selection -> use word under cursor
-		KTextEditor::EditInterface *ei;
 		KTextEditor::ViewCursorInterface *ci;
 		KTextEditor::View *v = (KTextEditor::View*)m_view;
-		ei = KTextEditor::editInterface(v->document());
 		ci = KTextEditor::viewCursorInterface(v);
 		int line, col;
 		ci->cursorPositionReal(line, col);
-		QString tmp_line = ei->textLine(line);
+		QString tmp_line = v->document()->line(line);
 		m_wordUnderCursor = "";
 		// find begin of word:
 		m_singleWord_start = 0;
@@ -230,7 +227,7 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 			// replace selection with 'text'
 			selectionInterface(m_view)->removeSelectedText();
 			viewCursorInterface(m_view)->cursorPositionReal(line, col);
-			editInterface(m_view->document())->insertText(line, col, text);
+			m_view->document()->insertText(line, col, text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)
 			 for ( uint i = 0; i < text.length(); i++ ) {

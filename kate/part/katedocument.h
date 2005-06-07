@@ -31,7 +31,6 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/templateinterface.h>
-#include <ktexteditor/editinterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
@@ -84,7 +83,6 @@ class KateKeyInterceptorFunctor;
 class KateDocument : public KTextEditor::Document,
                      public KTextEditor::SessionConfigInterface,
                      public KTextEditor::TemplateInterface,
-                     public KTextEditor::EditInterface,
                      public KTextEditor::SearchInterface,
                      public KTextEditor::HighlightingInterface,
                      public KTextEditor::ConfigInterface,
@@ -175,30 +173,39 @@ class KateDocument : public KTextEditor::Document,
   public slots:
     QString text() const;
 
-    QString text ( uint startLine, uint startCol, uint endLine, uint endCol ) const;
-    QString text ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise ) const;
+    QString text ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition ) const;
+    QString text ( int startLine, int startCol, int endLine, int endCol ) const
+     { return text (KTextEditor::Cursor(startLine, startCol), KTextEditor::Cursor(endLine, endCol)); }
 
-    QString textLine ( uint line ) const;
+    QString text ( int startLine, int startCol, int endLine, int endCol, bool blockwise ) const;
+
+    QString line ( int line ) const;
 
     bool setText(const QString &);
     bool clear ();
 
-    bool insertText ( uint line, uint col, const QString &s );
-    bool insertText ( uint line, uint col, const QString &s, bool blockwise );
+    bool insertText ( const KTextEditor::Cursor &position, const QString &s );
+    bool insertText ( int line, int column, const QString &text )
+     { return insertText (KTextEditor::Cursor(line, column), text); }
 
-    bool removeText ( uint startLine, uint startCol, uint endLine, uint endCol );
-    bool removeText ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise );
+    bool insertText ( int line, int col, const QString &s, bool blockwise );
 
-    bool insertLine ( uint line, const QString &s );
-    bool removeLine ( uint line );
+    bool removeText ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition );
+    bool removeText ( int startLine, int startCol, int endLine, int endCol )
+     { return removeText (KTextEditor::Cursor(startLine, startCol), KTextEditor::Cursor(endLine, endCol)); }
 
-    uint numLines() const;
-    uint numVisLines() const;
-    uint length () const;
-    int lineLength ( uint line ) const;
+    bool removeText ( int startLine, int startCol, int endLine, int endCol, bool blockwise );
+
+    bool insertLine ( int line, const QString &s );
+    bool removeLine ( int line );
+
+    int lines() const;
+    int numVisLines() const;
+    int length () const;
+    int lineLength ( int line ) const;
 
   signals:
-    void textChanged ();
+    void textChanged (KTextEditor::Document *doc);
     void charactersInteractivelyInserted(int ,int ,const QString&);
     void charactersSemiInteractivelyInserted(int ,int ,const QString&);
     void backspacePressed();
@@ -573,7 +580,7 @@ class KateDocument : public KTextEditor::Document,
     /**
      * gets the last line number (numLines() -1)
      */
-    inline uint lastLine() const { return numLines()-1; }
+    inline int lastLine() const { return lines()-1; }
 
     // Repaint all of all of the views
     void repaintViews(bool paintOnlyDirty = true);

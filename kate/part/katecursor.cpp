@@ -39,9 +39,9 @@ KateDocCursor::KateDocCursor(int line, int col, KateDocument *doc)
 {
 }
 
-bool KateDocCursor::validPosition(uint line, uint col)
+bool KateDocCursor::validPosition(int line, int col)
 {
-  return line < m_doc->numLines() && (int)col <= m_doc->lineLength(line);
+  return line >= 0 && col >= 0 && line < m_doc->lines() && col <= m_doc->lineLength(line);
 }
 
 bool KateDocCursor::validPosition()
@@ -51,7 +51,7 @@ bool KateDocCursor::validPosition()
 
 bool KateDocCursor::gotoNextLine()
 {
-  bool ok = (line() + 1 < (int)m_doc->numLines());
+  bool ok = (line() + 1 < m_doc->lines());
 
   if (ok) {
     m_line++;
@@ -121,7 +121,7 @@ bool KateDocCursor::moveBackward(uint nbChar)
 
 bool KateDocCursor::insertText(const QString& s)
 {
-  return m_doc->insertText(line(), column(), s);
+  return m_doc->insertText(*this, s);
 }
 
 bool KateDocCursor::removeText(uint nbChar)
@@ -131,8 +131,7 @@ bool KateDocCursor::removeText(uint nbChar)
   endCursor.moveForward(nbChar);
 
   // Remove the text
-  return m_doc->removeText((uint)line(), (uint)column(),
-         (uint)endCursor.line(), (uint)endCursor.column());
+  return m_doc->removeText(*this, endCursor);
 }
 
 QChar KateDocCursor::currentChar() const
@@ -147,7 +146,7 @@ uchar KateDocCursor::currentAttrib() const
 
 bool KateDocCursor::nextNonSpaceChar()
 {
-  for(; m_line < (int)m_doc->numLines(); m_line++) {
+  for(; m_line < m_doc->lines(); ++m_line) {
     m_column = m_doc->plainKateTextLine(line())->nextNonSpaceChar(column());
     if(m_column != -1)
       return true; // Next non-space char found

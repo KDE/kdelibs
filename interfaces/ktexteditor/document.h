@@ -19,8 +19,13 @@
 #ifndef __ktexteditor_document_h__
 #define __ktexteditor_document_h__
 
+// the very important KTextEditor::Cursor class
+#include <ktexteditor/cursor.h>
+
+// our main baseclass of the KTextEditor::Document
 #include <kparts/part.h>
 
+// the list of views
 #include <QList>
 
 /**
@@ -58,6 +63,10 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     int documentNumber () const;
 
+  /**
+   * Stuff to create and manage the views of this document
+   */
+  public:
     /**
      * Create a view that will display the document data. You can create as many
      * views as you like. When the user modifies data in one view then all other
@@ -73,6 +82,10 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     virtual const QList<View*> &views () const = 0;
 
+  /**
+   * General information about this document and it's content
+   */
+  public:
     /**
      * Returns this document's name
      * The editor part should provide some meaningful name, like some unique
@@ -87,6 +100,156 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * @return mimetype
      */
     virtual QString mimeType() = 0;
+
+ /**
+  * Methodes to create/end editing sequences
+  */
+ public:
+    /**
+     * Begin an editing sequence.  Edit commands during this sequence will be
+     * bunched together such that they represent a single undo command in the
+     * editor, and so that repaint events do not occur inbetween.
+     *
+     * Your application should not return control to the event loop while it
+     * has an unterminated (no matching editEnd() call) editing sequence
+     * (result undefined) - so do all of your work in one go...
+     */
+    virtual void editBegin () = 0;
+
+	  /**
+	   * End an editing sequence.
+	   */
+    virtual void editEnd () = 0;
+
+  /**
+   * General access to the document's text content
+   */
+  public:
+    /**
+     * retrieve the document content
+     * @return the complete document content
+     */
+    virtual QString text () const = 0;
+
+    /**
+     * retrieve part of the document content
+     * @param startPosition start position of text to retrieve
+     * @param endPosition end position of text to retrieve
+     * @return the requested text part, "" for invalid areas
+     */
+    virtual QString text ( const Cursor &startPosition, const Cursor &endPosition ) const = 0;
+
+    /**
+     * retrieve part of the document content
+     * @param startLine start line of text to retrieve
+     * @param startColumn start column of text to retrieve
+     * @param endLine end line of text to retrieve
+     * @param endColumn end column of text to retrieve
+     * @return the requested text part, "" for invalid areas
+     */
+    virtual QString text ( int startLine, int startCol, int endLine, int endCol ) const = 0;
+
+    /**
+     * retrieve a single text line
+     * @param line the wanted line
+     * @return the requested line, "" for invalid line numbers
+     */
+    virtual QString line ( int line ) const = 0;
+
+    /**
+     * count of lines in document
+     * @return The current number of lines in the document
+     */
+    virtual int lines () const = 0;
+
+    /**
+     * count of characters in document
+     * @return the number of characters in the document
+     */
+    virtual int length () const = 0;
+
+    /**
+     * retrieve the length of a given line in characters
+     * @param line line to get length from
+     * @return the number of characters in the line (-1 if no line "line")
+     */
+    virtual int lineLength ( int line ) const = 0;
+
+    /**
+     * Set the given text as new document content
+     * @param text new content for the document
+     * @return success
+     */
+    virtual bool setText ( const QString &text ) = 0;
+
+    /**
+     * Removes the whole content of the document
+     * @return success
+     */
+    virtual bool clear () = 0;
+
+    /**
+     * Inserts text at given position
+     * @param position position to insert the text
+     * @param text text to insert
+     * @return success
+     */
+    virtual bool insertText ( const Cursor &position, const QString &text ) = 0;
+
+    /**
+     * Inserts text at given position
+     * @param line line to insert the text
+     * @param column column to insert the text
+     * @param text text to insert
+     * @return success
+     */
+    virtual bool insertText ( int line, int column, const QString &text ) = 0;
+
+    /**
+     * remove part of the document content
+     * @param startPosition start position of text to remove
+     * @param endPosition end position of text to remove
+     * @return success
+     */
+    virtual bool removeText ( const Cursor &startPosition, const Cursor &endPosition ) = 0;
+
+    /**
+     * remove part of the document content
+     * @param startLine start line of text to remove
+     * @param startColumn start column of text to remove
+     * @param endLine end line of text to remove
+     * @param endColumn end column of text to remove
+     * @return success
+     */
+    virtual bool removeText ( int startLine, int startCol, int endLine, int endCol ) = 0;
+
+    /**
+     * Insert line(s) at the given line number.
+     * Use insertLine(numLines(), text) to append line at end of document
+     * @param line line where to insert
+     * @param text text which should be inserted
+     * @return success
+     */
+    virtual bool insertLine ( int line, const QString &text ) = 0;
+
+    /**
+     * Remove line at the given line number.
+     * @param line line to remove
+     * @return success
+     */
+    virtual bool removeLine ( int line ) = 0;
+
+  /**
+   * SIGNALS
+   * following signals should be emitted by the document
+   * if the text content is changed
+   */
+	private:
+	  /**
+	   * Text changed!
+	   * @param document document which emited this signal
+	   */
+	  virtual void textChanged (Document *document) = 0;
 
   private:
     /**

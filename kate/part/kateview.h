@@ -289,11 +289,11 @@ class KateView : public KTextEditor::View,
     void setOverwriteMode( bool b );
 
     QString currentTextLine()
-        { return m_doc->textLine( cursorLine() ); }
+        { return m_doc->line( cursorLine() ); }
     QString currentWord()
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
     void insertText( const QString& text )
-        { m_doc->insertText( cursorLine(), cursorColumnReal(), text ); }
+        { m_doc->insertText( m_viewInternal->getCursor(), text ); }
     int tabWidth()                { return m_doc->config()->tabWidth(); }
     void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
     void setEncoding( QString e ) { m_doc->setEncoding(e);       }

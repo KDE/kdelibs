@@ -80,7 +80,7 @@ KateAttribute * KateRenderer::specificAttribute( int context )
 {
   if (context >= 0 && context < m_attributes->count())
     return &(*m_attributes)[context];
-    
+
   return &(*m_attributes)[0];
 }
 
@@ -454,7 +454,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
   bool hasSel = false;
   uint startSel = 0;
   uint endSel = 0;
-  
+
   int minIndent = 0;
 
   // was the selection background already completely painted ?
@@ -518,48 +518,48 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
         for (uint i = 0; i+2 < al.count(); i += 3) {
           if (al[i] + al[i+1] <= startSel)
             continue;
-          
+
           QTextLayout::FormatRange fr;
           fr.start = QMAX(al[i], (int)startSel) - range->startCol();
           fr.length = QMIN(al[i+1], (int)endSel - range->startCol() - fr.start);
           fr.format.setBackground(config()->selectionColor());
-          
+
           KateAttribute* a = specificAttribute(al[i+2]);
           if (a->itemSet(KateAttribute::SelectedTextColor))
             fr.format.setForeground(a->selectedTextColor());
-          
+
           selections.append(fr);
-          
+
           if (al[i+1] > endSel)
             break;
         }
       }
-      
+
       // Draw the text :)
       range->layout()->draw(&paint, QPoint(-xStart,0), selections);
     }
-    
+
     // Draw selection outside of areas where text is rendered
     if (hasSel && m_view->lineEndSelected(range->line(), range->endCol())) {
       QRect area((len ? range->endX() - range->startX() + range->xOffset() - xStart : 0), 0, xEnd - xStart, fs->fontHeight);
       paint.fillRect(area, config()->selectionColor());
     }
-    
+
     // Draw cursor
     if (showCursor) {
       paint.save();
-      
+
       // Make the cursor the desired width
       uint cursorWidth = (caretStyle() == Replace && (cursorMaxWidth > 2)) ? cursorMaxWidth : 2;
       paint.setPen(QPen(*cursorColor, cursorWidth));
-      
+
       // Draw the cursor, start drawing in the middle as the above sets the width from the centre of the line
       range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->column() - range->startCol());
-      
+
       paint.restore();
     }
   }
-  
+
   // Optimisation to quickly draw an empty line of text
   /*if (len < 1)
   {
@@ -1050,7 +1050,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
 
 uint KateRenderer::textWidth(const KTextEditor::Cursor &cursor)
 {
-  int line = QMIN(QMAX(0, cursor.line()), (int)m_doc->numLines() - 1);
+  int line = QMIN(QMAX(0, cursor.line()), (int)m_doc->lines() - 1);
   int col = QMAX(0, cursor.column());
 
   return textWidth(m_doc->kateTextLine(line), col);
@@ -1151,7 +1151,7 @@ uint KateRenderer::fontHeight()
 
 uint KateRenderer::documentHeight()
 {
-  return m_doc->numLines() * fontHeight();
+  return m_doc->lines() * fontHeight();
 }
 
 bool KateRenderer::getSelectionBounds(uint line, uint lineLength, uint &start, uint &end)
@@ -1226,7 +1226,7 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
     range.setWrap(false);
     return;
   }
-  
+
   range.setLayout(new QTextLayout(range.textLine()->string().mid(range.startCol()), config()->fontStruct()->font(false, false)), true);
 
   Q_ASSERT(currentFont());
@@ -1235,7 +1235,7 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
   l->setCacheEnabled(true);
 
   // Initial setup of the QTextLayout.
-  
+
   // Tab width
   QTextOption opt;
   opt.setTabStop(m_doc->config()->tabWidth());
@@ -1257,7 +1257,7 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
     fr.start = al[i] - range.startCol();
     fr.length = al[i+1];
     fr.format = specificAttribute(al[i+2])->toFormat();
-    
+
     //kdDebug() << k_funcinfo << "Adding attribute from " << fr.start << " length " << fr.length << " (colour "<< fr.format.foreground() <<" bold " << fr.format.fontWeight() << ")" << endl;
     formatRanges.append(fr);
   }
@@ -1265,23 +1265,23 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
 
   // Begin layouting
   l->beginLayout();
-  
+
   QTextLine line = l->createLine();
   if (line.isValid()) {
     if (maxwidth > 0)
       line.setLineWidth(maxwidth);
-    
+
     //if (range.startX())
       //kdDebug() << "offset " << range.xOffset() << " pixels " << (range.xOffset() * spaceWidth()) << endl;
-    
+
     line.setPosition(QPoint(range.xOffset(), 0));
   }
 
   range.setEndCol(range.startCol() + line.textLength());
   range.setEndX(range.startX() + line.naturalTextWidth());
   range.setWrap(range.endCol() < range.textLine()->length());
-  
+
   l->endLayout();
 }
-  
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -46,7 +46,7 @@ class KateDocCursor : public KTextEditor::Cursor
     KateDocCursor(int line, int col, KateDocument *doc);
     virtual ~KateDocCursor() {};
 
-    bool validPosition(uint line, uint col);
+    bool validPosition(int line, int col);
     bool validPosition();
 
     bool gotoNextLine();
