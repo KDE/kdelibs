@@ -100,19 +100,18 @@ public:
     virtual void attach();
 
 protected:
+    void updateFrame();
+
     HTMLTableSectionElementImpl *head;
     HTMLTableSectionElementImpl *foot;
     HTMLTableSectionElementImpl *firstBody;
     HTMLTableCaptionElementImpl *tCaption;
 
-#if 0
-    Frame frame;
-    Rules rules;
-#endif
+    Frame frame : 4;
+    Rules rules : 4;
 
-    bool m_noBorder     : 1;
     bool m_solid        : 1;
-    uint unused		: 14;
+    uint unused		: 7;
     ushort padding	: 16;
     friend class HTMLTableCellElementImpl;
 };
