@@ -899,13 +899,6 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         a = khtml::getAttrID(cBuffer, cBufferPos);
                         if ( !a )
                             attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
-#if 0
-			else {
-				attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
-				attrNamePresent = !attrName.isEmpty();
-				if (currToken.id == ID_SCRIPT 
-			}
-#endif
 
                         dest = buffer;
                         *dest++ = a;
