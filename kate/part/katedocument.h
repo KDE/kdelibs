@@ -208,7 +208,6 @@ class KateDocument : public KTextEditor::Document,
     void textChanged (KTextEditor::Document *doc);
     void charactersInteractivelyInserted(int ,int ,const QString&);
     void charactersSemiInteractivelyInserted(int ,int ,const QString&);
-    void backspacePressed();
 
   public:
 //BEGIN editStart/editEnd (start, end, undo, cursor update, view update)

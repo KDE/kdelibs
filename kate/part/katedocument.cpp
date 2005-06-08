@@ -3049,8 +3049,6 @@ void KateDocument::backspace( KateView *view, const KTextEditor::Cursor& c )
         removeText (line-1, textLine->length(), line, 0);
     }
   }
-
-  emit backspacePressed();
 }
 
 void KateDocument::del( KateView *view, const KTextEditor::Cursor& c )
