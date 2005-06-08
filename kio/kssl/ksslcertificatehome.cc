@@ -42,7 +42,7 @@ return list;
 void KSSLCertificateHome::setDefaultCertificate(QString name, QString host, bool send, bool prompt) {
 KSimpleConfig cfg("ksslauthmap", false);
 
-   cfg.setGroup(host);
+   cfg.setGroup(host.lower());
    cfg.writeEntry("certificate", name);
    cfg.writeEntry("send", send);
    cfg.writeEntry("prompt", prompt);
@@ -150,11 +150,11 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString pass
 QString KSSLCertificateHome::getDefaultCertificateName(QString host, KSSLAuthAction *aa) {
 KSimpleConfig cfg("ksslauthmap", false);
 
-   if (!cfg.hasGroup(host)) {
+   if (!cfg.hasGroup(host.lower())) {
       if (aa) *aa = AuthNone;
       return QString::null;
    } else {
-      cfg.setGroup(host);
+      cfg.setGroup(host.lower());
       if (aa) {
          bool tmp = cfg.readBoolEntry("send", false);
          *aa = AuthSend; 
