@@ -204,7 +204,6 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     void textChanged (KTextEditor::Document *doc);
-    void charactersInteractivelyInserted(int ,int ,const QString&);
     void charactersSemiInteractivelyInserted(int ,int ,const QString&);
 
   public:
@@ -780,13 +779,7 @@ class KateDocument : public KTextEditor::Document,
   signals:
     void modStateChanged (KTextEditor::Document *doc);
     void documentNameChanged (KTextEditor::Document *doc);
-
-  signals:
-    /**
-     * The file has been saved (perhaps the name has changed). The main window
-     * can use this to change its caption
-     */
-    void fileNameChanged ();
+    void documentUrlChanged (KTextEditor::Document *doc);
 
   public slots:
      void applyWordWrap ();

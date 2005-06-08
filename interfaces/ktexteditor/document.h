@@ -112,9 +112,15 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
   private:
     /**
      * document name changed
-     * @param document document which changed name
+     * @param document document which changed it's name
      */
     virtual void documentNameChanged ( Document *document ) = 0;
+
+    /**
+     * document URL changed
+     * @param document document which changed it's URL
+     */
+    virtual void documentUrlChanged ( Document *document ) = 0;
 
   /**
    * VERY IMPORTANT: Methodes to set and query the current encoding of the

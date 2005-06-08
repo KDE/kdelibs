@@ -2337,7 +2337,7 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   // emit the signal we need for example for kate app
   //
-  emit fileNameChanged ();
+  emit documentUrlChanged (this);
 
   //
   // set doc name, dummy value as arg, don't need it
@@ -2538,7 +2538,7 @@ bool KateDocument::saveAs( const KURL &u )
     if ( u.directory() != oldDir )
       readDirConfig();
 
-    emit fileNameChanged();
+    emit documentUrlChanged (this);
     return true;
   }
 
@@ -2685,7 +2685,7 @@ bool KateDocument::closeURL()
   }
 
   // uh, filename changed
-  emit fileNameChanged ();
+  emit documentUrlChanged (this);
 
   // update doc name
   setDocName (QString::null);
@@ -2865,9 +2865,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   if (!view->config()->persistentSelection() && view->hasSelection() )
     view->removeSelectedText();
 
-  int oldLine = view->cursorLine ();
-  int oldCol = view->cursorColumnReal ();
-
+  KTextEditor::Cursor oldCur (view->cursorPosition());
 
   if (config()->configFlags()  & KateDocumentConfig::cfOvr)
     removeText (view->cursorLine(), view->cursorColumnReal(), view->cursorLine(), QMIN( view->cursorColumnReal()+buf.length(), textLine->length() ) );
@@ -2880,7 +2878,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   if (bracketInserted)
     view->setCursorPositionInternal (view->cursorLine(), view->cursorColumnReal()-1);
 
-  emit charactersInteractivelyInserted (oldLine, oldCol, chars);
+  view->slotTextInserted (view, oldCur, chars);
 
   return true;
 }

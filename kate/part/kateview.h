@@ -462,6 +462,11 @@ class KateView : public KTextEditor::View,
   signals:
     void dropEventPass(QDropEvent*);
     void viewStatusMsg (const QString &msg);
+    void textInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text );
+
+  public:
+    void slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text )
+     { emit textInserted ( view, position, text ); }
 
   public:
     bool setCursorPositionInternal( uint line, uint col, uint tabwidth = 1, bool calledExternally = false );

@@ -109,6 +109,14 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      */
     virtual void viewModeChanged ( View *view ) = 0;
 
+    /**
+     * text inserted by user (typing)
+     * @param view view in which the user typed the text
+     * @param position position where the text was inserted
+     * @param text the text the user has typed into the editor
+     */
+    virtual void textInserted ( View *view, const Cursor &position, const QString &text ) = 0;
+
   /**
    * Context menu handling
    */
@@ -134,20 +142,20 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param position new cursor position
      * @return success
      */
-    virtual bool setCursorPosition (const KTextEditor::Cursor &position) = 0;
+    virtual bool setCursorPosition (const Cursor &position) = 0;
 
     /**
      * Get the cursor position, position is in characters
      * @return cursor position
      */
-    virtual const KTextEditor::Cursor &cursorPosition () const = 0;
+    virtual const Cursor &cursorPosition () const = 0;
 
     /**
      * Get the virtual cursor position
      * @return cursor position, tabs count as MULTIPLE chars, as configured by user
      * this allows access to the user visible values of the cursor position
      */
-    virtual KTextEditor::Cursor cursorPositionVirtual () const = 0;
+    virtual Cursor cursorPositionVirtual () const = 0;
 
     /**
      * Get the screen coordinates of the cursor position

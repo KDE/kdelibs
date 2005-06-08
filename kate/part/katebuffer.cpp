@@ -45,6 +45,7 @@
 /**
  * loader block size, load 256 kb at once per default
  * if file size is smaller, fall back to file size
+ * must be a multiple of 2
  */
 static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
 
@@ -55,7 +56,7 @@ static const qint64 KATE_FILE_LOADER_BS  = 256 * 1024;
  * BLOCK_LINES lines (after load, later that won't be tracked)
  */
 static const int KATE_AVG_BLOCK_SIZE  = 2048 * 80;
-static const Q_ULONG KATE_MAX_BLOCK_LINES = 2048;
+static const int KATE_MAX_BLOCK_LINES = 2048;
 
 /**
  * hl will look at the next KATE_HL_LOOKAHEAD lines
