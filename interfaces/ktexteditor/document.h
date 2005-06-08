@@ -101,6 +101,17 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     virtual QString mimeType() = 0;
 
+  /**
+   * SIGNALS
+   * following signals should be emitted by the editor document
+   */
+  private:
+    /**
+     * document name changed
+     * @param document document which changed name
+     */
+    virtual void documentNameChanged ( Document *document ) = 0;
+
  /**
   * Methodes to create/end editing sequences
   */

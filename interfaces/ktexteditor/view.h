@@ -61,6 +61,10 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      */
     int viewNumber () const;
 
+  /**
+   * Accessor for the document
+   */
+  public:
     /**
      * Access the parent Document.
      * @return document
@@ -68,22 +72,40 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
     virtual Document *document () = 0;
 
   /**
+   * General information about this view
+   */
+  public:
+    /**
+     * Current view state
+     * This can be used for example to show up that this view is now
+     * in INSERT mode, or OVERWRITE mode, or COMMAND mode, or whatever
+     * The string should be i18n, as this is a user aimed representation
+     * of the view state, which should be shown in the GUI
+     */
+    virtual QString viewMode () const = 0;
+
+  /**
    * SIGNALS
    * following signals should be emitted by the editor view
-   * if it looses or receives focus
    */
   private:
     /**
      * view got focus
      * @param view view which got focus
      */
-    virtual void gotFocus ( KTextEditor::View *view ) = 0;
+    virtual void focusIn ( View *view ) = 0;
 
     /**
      * view lost focus
      * @param view view which lost focus
      */
-    virtual void lostFocus ( KTextEditor::View *view ) = 0;
+    virtual void focusOut ( View *view ) = 0;
+
+    /**
+     * view mode changed
+     * @param view view which changed mode
+     */
+    virtual void viewModeChanged ( View *view ) = 0;
 
   /**
    * Cursor handling

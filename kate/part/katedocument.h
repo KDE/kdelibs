@@ -778,7 +778,7 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     void modStateChanged (KTextEditor::Document *doc);
-    void nameChanged (KTextEditor::Document *doc);
+    void documentNameChanged (KTextEditor::Document *doc);
 
   signals:
     /**

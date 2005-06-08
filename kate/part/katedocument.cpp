@@ -4102,7 +4102,7 @@ void KateDocument::setDocName (QString name )
     // TODO check for similarly named documents
     m_docName = name;
     updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
-    emit nameChanged((KTextEditor::Document *) this);
+    emit documentNameChanged (this);
     return;
   }
 
@@ -4131,7 +4131,7 @@ void KateDocument::setDocName (QString name )
     m_docName = QString(m_docName + " (%1)").arg(m_docNameNumber+1);
 
   updateFileType (KateGlobal::self()->fileTypeManager()->fileType (this));
-  emit nameChanged ((KTextEditor::Document *) this);
+  emit documentNameChanged (this);
 }
 
 void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )

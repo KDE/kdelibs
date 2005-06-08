@@ -75,6 +75,11 @@ class KateView : public KTextEditor::View,
 
     KTextEditor::Document *document () { return m_doc; }
 
+    QString viewMode () const;
+
+  signals:
+    void viewModeChanged ( KTextEditor::View *view );
+
   //
   // KTextEditor::ClipboardInterface
   //
@@ -438,9 +443,8 @@ class KateView : public KTextEditor::View,
     void slotSelectionChanged ();
 
   signals:
-    void gotFocus( KTextEditor::View* );
-    void lostFocus( KTextEditor::View* );
-    void newStatus(); // Not in KTextEditor::View, but should be (Kate app connects to it)
+    void focusIn( KTextEditor::View* );
+    void focusOut( KTextEditor::View* );
 
   //
   // Extras
@@ -479,7 +483,6 @@ class KateView : public KTextEditor::View,
     void slotGotFocus();
     void slotLostFocus();
     void slotDropEventPass( QDropEvent* ev );
-    void slotStatusMsg();
     void slotSaveCanceled( const QString& error );
     void slotExpandToplevel();
     void slotCollapseLocal();

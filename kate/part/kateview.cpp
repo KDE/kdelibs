@@ -212,9 +212,6 @@ void KateView::setupConnections()
            this, SLOT(slotSaveCanceled(const QString&)) );
   connect( m_viewInternal, SIGNAL(dropEventPass(QDropEvent*)),
            this,           SIGNAL(dropEventPass(QDropEvent*)) );
-  connect(this,SIGNAL(cursorPositionChanged()),this,SLOT(slotStatusMsg()));
-  connect(this,SIGNAL(newStatus()),this,SLOT(slotStatusMsg()));
-  connect(m_doc, SIGNAL(undoChanged()), this, SLOT(slotStatusMsg()));
 
   if ( m_doc->browserView() )
   {
@@ -691,11 +688,14 @@ void KateView::setupCodeCompletion()
            this,             SIGNAL(filterInsertString(KTextEditor::CompletionEntry*,QString*)));
 }
 
+QString KateView::viewMode () const
+{
+  return isOverwriteMode() ? i18n("OVR") : i18n ("NORM");
+}
+
 void KateView::slotGotFocus()
 {
   m_editActions->accel()->setEnabled( true );
-
-  slotStatusMsg ();
 }
 
 void KateView::slotLostFocus()
@@ -708,36 +708,9 @@ void KateView::setDynWrapIndicators(int mode)
   config()->setDynWordWrapIndicators (mode);
 }
 
-void KateView::slotStatusMsg ()
-{
-  QString ovrstr;
-  if (m_doc->isReadWrite())
-  {
-    if (m_doc->config()->configFlags() & KateDocumentConfig::cfOvr)
-      ovrstr = i18n(" OVR ");
-    else
-      ovrstr = i18n(" INS ");
-  }
-  else
-    ovrstr = i18n(" R/O ");
-
-  uint r = cursorLine() + 1;
-  uint c = cursorColumn() + 1;
-
-  QString s1 = i18n(" Line: %1").arg(KGlobal::locale()->formatNumber(r, 0));
-  QString s2 = i18n(" Col: %1").arg(KGlobal::locale()->formatNumber(c, 0));
-
-  QString modstr = m_doc->isModified() ? QString (" * ") : QString ("   ");
-  QString blockstr = blockSelectionMode() ? i18n(" BLK ") : i18n(" NORM ");
-
-  emit viewStatusMsg (s1 + s2 + " " + ovrstr + blockstr + modstr);
-}
-
 void KateView::slotSelectionTypeChanged()
 {
   m_toggleBlockSelection->setChecked( blockSelectionMode() );
-
-  emit newStatus();
 }
 
 bool KateView::isOverwriteMode() const
@@ -757,14 +730,10 @@ void KateView::reloadFile()
   if (m_doc->lines() >= cl)
     // Explicitly call internal function because we want this to be registered as a non-external call
     setCursorPositionInternal( cl, cc, tabWidth(), false );
-
-  emit newStatus();
 }
 
 void KateView::slotUpdate()
 {
-  emit newStatus();
-
   slotNewUndo();
 }
 
@@ -856,7 +825,7 @@ void KateView::toggleInsert()
   m_doc->config()->setConfigFlags(m_doc->config()->configFlags() ^ KateDocumentConfig::cfOvr);
   m_toggleInsert->setChecked (isOverwriteMode ());
 
-  emit newStatus();
+  emit viewModeChanged(this);
 }
 
 KateView::saveResult KateView::save()

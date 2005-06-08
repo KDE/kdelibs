@@ -2980,7 +2980,7 @@ void KateViewInternal::focusInEvent (QFocusEvent *)
 
   m_doc->setActiveView( m_view );
 
-  emit m_view->gotFocus( m_view );
+  emit m_view->focusIn( m_view );
 }
 
 void KateViewInternal::focusOutEvent (QFocusEvent *)
@@ -2991,7 +2991,7 @@ void KateViewInternal::focusOutEvent (QFocusEvent *)
 
     m_view->renderer()->setDrawCaret(true);
     paintCursor();
-    emit m_view->lostFocus( m_view );
+    emit m_view->focusOut( m_view );
   }
 
   m_textHintTimer.stop();

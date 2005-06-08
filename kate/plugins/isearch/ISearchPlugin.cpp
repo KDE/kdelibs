@@ -204,16 +204,16 @@ bool ISearchPluginView::eventFilter( QObject* o, QEvent* e )
 
 	if( e->type() == QEvent::FocusIn ) {
 		QFocusEvent* focusEvent = (QFocusEvent*)e;
-		if( focusEvent->reason() == QFocusEvent::ActiveWindow ||
-		    focusEvent->reason() == QFocusEvent::Popup )
+		if( focusEvent->reason() == Qt::ActiveWindowFocusReason ||
+		    focusEvent->reason() == Qt::PopupFocusReason )
 			return false;
 		startSearch();
 	}
 
 	if( e->type() == QEvent::FocusOut ) {
 		QFocusEvent* focusEvent = (QFocusEvent*)e;
-		if( focusEvent->reason() == QFocusEvent::ActiveWindow ||
-		    focusEvent->reason() == QFocusEvent::Popup )
+		if( focusEvent->reason() == Qt::ActiveWindowFocusReason ||
+		    focusEvent->reason() == Qt::PopupFocusReason )
 			return false;
 		endSearch();
 	}
