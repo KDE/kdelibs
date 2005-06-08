@@ -744,6 +744,11 @@ private slots:
      */
     void addContextMenuItems( QMenu* );
 
+    /**
+     * Used to emit the activated(QString) signal when enter is pressed
+     */
+    void slotSimulateActivated( const QString& );
+
 private:
     void init( bool useCompletion );
     void rotateUp();

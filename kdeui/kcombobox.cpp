@@ -378,6 +378,7 @@ void KHistoryCombo::init( bool useCompletion )
              SLOT(addContextMenuItems(QMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
+    connect( this, SIGNAL( returnPressed(const QString&) ), SLOT( slotSimulateActivated(const QString&) ) );
 }
 
 KHistoryCombo::~KHistoryCombo()
@@ -672,6 +673,16 @@ void KHistoryCombo::slotClear()
 {
     clearHistory();
     emit cleared();
+}
+
+void KHistoryCombo::slotSimulateActivated( const QString& text )
+{
+    /* With the insertion policy NoInsertion, which we use by default, 
+       Qt doesn't emit activated on typed text if the item is not already there,
+       which is perhaps reasonable. Generate the signal ourselves if that's the case
+    */
+    if (insertionPolicy() == NoInsertion && findText(text) == -1)
+        emit activated(text);
 }
 
 void KComboBox::virtual_hook( int id, void* data )
