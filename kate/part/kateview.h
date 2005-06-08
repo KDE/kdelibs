@@ -28,7 +28,6 @@
 
 #include <ktexteditor/view.h>
 #include <ktexteditor/texthintinterface.h>
-#include <ktexteditor/menuinterface.h>
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
@@ -59,7 +58,6 @@ class QVBoxLayout;
 //
 class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
-                 public KTextEditor::MenuInterface,
                  public KTextEditor::CodeCompletionInterface,
                  public KTextEditor::SessionConfigInterface
 {
@@ -121,8 +119,8 @@ class KateView : public KTextEditor::View,
   // KTextEditor::PopupMenuInterface
   //
   public:
-    void installMenu( QMenu* menu ) { m_rmbMenu = menu; }
-    QMenu* popup() const             { return m_rmbMenu; }
+    void setContextMenu( QMenu* menu ) { m_rmbMenu = menu; }
+    QMenu* contextMenu()              { return m_rmbMenu; }
 
   //
   // KTextEditor::ViewCursorInterface

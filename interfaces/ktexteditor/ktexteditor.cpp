@@ -36,7 +36,6 @@
 #include "encodinginterface.h"
 #include "highlightinginterface.h"
 #include "markinterface.h"
-#include "menuinterface.h"
 #include "modificationinterface.h"
 #include "searchinterface.h"
 #include "sessionconfiginterface.h"
@@ -232,14 +231,6 @@ MarkInterface *KTextEditor::markInterface (Document *doc)
     return 0;
 
   return dynamic_cast<KTextEditor::MarkInterface*>(doc);
-}
-
-MenuInterface *KTextEditor::menuInterface (View *view)
-{
-  if (!view)
-    return 0;
-
-  return dynamic_cast<KTextEditor::MenuInterface*>( view );
 }
 
 TextHintInterface *textHintInterface (View *view)

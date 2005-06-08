@@ -28,6 +28,8 @@
 // widget
 #include <qwidget.h>
 
+class QMenu;
+
 namespace KTextEditor
 {
 
@@ -106,6 +108,22 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param view view which changed mode
      */
     virtual void viewModeChanged ( View *view ) = 0;
+
+  /**
+   * Context menu handling
+   */
+  public:
+    /**
+     * Set a context menu for this view
+     * @param menu new context menu object for this view
+     */
+    virtual void setContextMenu ( QMenu *menu ) = 0;
+
+    /**
+     * Retrieve the context menu for this view
+     * @return context menu object for this view or 0
+     */
+    virtual QMenu *contextMenu () = 0;
 
   /**
    * Cursor handling
