@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include <kdatatool.h>
 #include <ktexteditor/document.h>
-#include <ktexteditor/selectioninterface.h>
 #include <kpopupmenu.h>
 #include <kmessagebox.h>
 //END includes
@@ -103,9 +102,9 @@ void KDataToolPluginView::aboutToShow()
 		delete m_notAvailable;
 		m_notAvailable=0;
 	}
-	if ( selectionInterface(m_view)->hasSelection() )
+	if ( m_view->selection() )
 	{
-		word = selectionInterface(m_view)->selection();
+		word = m_view->selectionText();
 		if ( word.find(' ') == -1 && word.find('\t') == -1 && word.find('\n') == -1 )
 			m_singleWord = true;
 		else
@@ -192,8 +191,8 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 	}
 
 	QString text;
-	if ( selectionInterface(m_view)->hasSelection() )
-		text = selectionInterface(m_view)->selection();
+	if ( m_view->selection() )
+		text = m_view->selectionText();
 	else
 		text = m_wordUnderCursor;
 
@@ -216,15 +215,14 @@ void KDataToolPluginView::slotToolActivated( const KDataToolInfo &info, const QS
 			int line, col;
 			line = m_view->cursorPosition().line();
       col = m_view->cursorPosition().column();
-			if ( ! selectionInterface(m_view)->hasSelection() )
+			if ( !m_view->selection() )
 			{
-				KTextEditor::SelectionInterface *si;
-				si = KTextEditor::selectionInterface(m_view);
-				si->setSelection(m_singleWord_line, m_singleWord_start, m_singleWord_line, m_singleWord_end);
+				m_view->setSelection(KTextEditor::Cursor (m_singleWord_line, m_singleWord_start),
+				       KTextEditor::Cursor (m_singleWord_line, m_singleWord_end));
 			}
 
 			// replace selection with 'text'
-			selectionInterface(m_view)->removeSelectedText();
+			m_view->removeSelectionText();
 			m_view->document()->insertText(m_view->cursorPosition(), text);
 			 // fixme: place cursor at the end:
 			 /* No idea yet (Joseph Wenninger)

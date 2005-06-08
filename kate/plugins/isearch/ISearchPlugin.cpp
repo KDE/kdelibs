@@ -38,7 +38,6 @@ ISearchPluginView::ISearchPluginView( KTextEditor::View *view )
 	, m_view( 0L )
 	, m_doc( 0L )
 	, m_searchIF( 0L )
-	, m_selectIF( 0L )
 //	, m_toolBarAction( 0L )
 	, m_searchForwardAction( 0L )
 	, m_searchBackwardAction( 0L )
@@ -155,12 +154,10 @@ void ISearchPluginView::setView( KTextEditor::View* view )
 	m_view = view;
 	m_doc  = m_view->document();
 	m_searchIF = KTextEditor::searchInterface ( m_doc );
-	m_selectIF = KTextEditor::selectionInterface ( m_view );
-	if( !m_doc || !m_selectIF ) {
+	if( !m_doc ) {
 		m_view = 0L;
 		m_doc = 0L;
 		m_searchIF = 0L;
-		m_selectIF = 0L;
 	}
 
 	readConfig();
@@ -354,7 +351,7 @@ void ISearchPluginView::startSearch()
 
 	m_combo->blockSignals( true );
 
-	QString text = m_selectIF->selection();
+	QString text = m_view->selectionText();
 	if( text.isEmpty() )
 		text = m_lastString;
 	m_combo->setCurrentText( text );
@@ -455,7 +452,7 @@ bool ISearchPluginView::iSearch(
 //		kdDebug() << "Found '" << text << "' at " << m_foundLine << ", " << m_foundCol << endl;
 //		v->gotoLineNumber( m_foundLine );
 		m_view->setCursorPosition( KTextEditor::Cursor (m_foundLine, m_foundCol + m_matchLen) );
-		m_selectIF->setSelection( m_foundLine, m_foundCol, m_foundLine, m_foundCol + m_matchLen );
+		m_view->setSelection( KTextEditor::Cursor (m_foundLine, m_foundCol), KTextEditor::Cursor (m_foundLine, m_foundCol + m_matchLen) );
 	} else if ( autoWrap ) {
 		m_wrapped = true;
 		found = iSearch( 0, 0, text, reverse, false );

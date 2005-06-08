@@ -1381,9 +1381,7 @@ bool KateView::setSelection( const KTextEditor::Cursor& start, const KTextEditor
 
   repaintText(true);
 
-  emit selectionChanged ();
-  // attic for compat
-  //emit m_doc->selectionChanged ();
+  emit selectionChanged (this);
 
   return true;
 }
@@ -1421,11 +1419,7 @@ bool KateView::clearSelection(bool redraw, bool finishedChangingSelection)
     repaintText(true);
 
   if (finishedChangingSelection)
-  {
-    emit selectionChanged();
-    // attic for compat
-    //emit m_doc->selectionChanged ();
-  }
+    emit selectionChanged(this);
 
   return true;
 }
@@ -1435,7 +1429,7 @@ bool KateView::hasSelection() const
   return selectStart != selectEnd;
 }
 
-QString KateView::selection() const
+QString KateView::selectionText() const
 {
   int sc = selectStart.column();
   int ec = selectEnd.column();
@@ -1617,7 +1611,7 @@ void KateView::copy() const
   if (!hasSelection())
     return;
 
-  QApplication::clipboard()->setText(selection ());
+  QApplication::clipboard()->setText(selectionText ());
 }
 
 void KateView::copyHTML()
@@ -1631,7 +1625,7 @@ void KateView::copyHTML()
   htmltextdrag->setSubtype("html");
 
   drag->addDragObject( htmltextdrag);
-  drag->addDragObject( new Q3TextDrag( selection()));
+  drag->addDragObject( new Q3TextDrag( selectionText()));
 
   QApplication::clipboard()->setData(drag);
 }

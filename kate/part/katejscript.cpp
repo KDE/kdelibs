@@ -550,10 +550,10 @@ Value KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
 
     // SelectionInterface goes in the view, in anticipation of the future
     case KateJSView::Selection:
-      return KJS::String( view->selection() );
+      return KJS::String( view->selectionText() );
 
     case KateJSView::HasSelection:
-      return KJS::Boolean( view->hasSelection() );
+      return KJS::Boolean( view->selection() );
 
     case KateJSView::SetSelection:
       return KJS::Boolean( view->setSelection(args[0].toUInt32(exec),
@@ -562,7 +562,7 @@ Value KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
                                               args[3].toUInt32(exec)) );
 
     case KateJSView::RemoveSelectedText:
-      return KJS::Boolean( view->removeSelectedText() );
+      return KJS::Boolean( view->removeSelectionText() );
 
     case KateJSView::SelectAll:
       return KJS::Boolean( view->selectAll() );

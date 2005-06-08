@@ -113,13 +113,23 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * Your application should not return control to the event loop while it
      * has an unterminated (no matching editEnd() call) editing sequence
      * (result undefined) - so do all of your work in one go...
+     *
+     * This call stacks, like the endEditing calls, this means you can safe
+     * call it three times in a row for example if you call editEnd three times, too,
+     * it internaly just does counting the running editing sessions
+     *
+     * If the texteditor part doesn't support this kind of transactions, both calls
+     * just do nothing.
+     *
+	   * @return success, parts not supporting it should return false
      */
-    virtual void editBegin () = 0;
+    virtual bool startEditing () = 0;
 
 	  /**
 	   * End an editing sequence.
+	   * @return success, parts not supporting it should return false
 	   */
-    virtual void editEnd () = 0;
+    virtual bool endEditing () = 0;
 
   /**
    * General access to the document's text content

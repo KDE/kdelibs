@@ -2119,18 +2119,6 @@ QString KateDocument::mimeType()
   return result->name();
 }
 
-// TODO implement this -- how to calculate?
-long KateDocument::fileSize()
-{
-  return 0;
-}
-
-// TODO implement this
-QString KateDocument::niceFileSize()
-{
-  return "UNKNOWN";
-}
-
 KMimeType::Ptr KateDocument::mimeTypeForContent()
 {
   QByteArray buf (1024);

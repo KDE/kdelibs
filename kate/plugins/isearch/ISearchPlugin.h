@@ -23,7 +23,6 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/document.h>
 #include <ktexteditor/searchinterface.h>
-#include <ktexteditor/selectioninterface.h>
 
 #include <kxmlguiclient.h>
 #include <qobject.h>
@@ -89,7 +88,6 @@ private:
 	KTextEditor::View*     m_view;
 	KTextEditor::Document* m_doc;
 	KTextEditor::SearchInterface* m_searchIF;
-	KTextEditor::SelectionInterface* m_selectIF;
 	KAction*               m_searchForwardAction;
 	KAction*               m_searchBackwardAction;
 	KWidgetAction*         m_comboAction;

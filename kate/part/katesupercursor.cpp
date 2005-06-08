@@ -236,7 +236,7 @@ void KateSuperCursor::editLineRemoved(uint line)
   }
   else if (m_line == int(line))
   {
-    m_line = (line <= m_doc->lastLine()) ? line : (line - 1);
+    m_line = (int(line) <= m_doc->lastLine()) ? line : (line - 1);
     m_column = 0;
 
     emit positionDeleted();

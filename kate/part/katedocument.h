@@ -226,6 +226,9 @@ class KateDocument : public KTextEditor::Document,
      */
     void editEnd ();
 
+    bool startEditing () { editStart (); return true; }
+    bool endEditing () { editEnd (); return true; }
+
 //END editStart/editEnd
 
 //BEGIN LINE BASED INSERT/REMOVE STUFF (editStart() and editEnd() included)
@@ -495,24 +498,6 @@ class KateDocument : public KTextEditor::Document,
      * @since Kate 2.3
      */
     QString mimeType();
-
-    /**
-     * @return the calculated size in bytes that the document would have when saved to
-     * disk.
-     *
-     * @since Kate 2.3
-     * @todo implement this (it returns 0 right now)
-     */
-    long fileSize();
-
-    /**
-     * @return the calculated size the document would have when saved to disk
-     * as a human readable string.
-     *
-     * @since Kate 2.3
-     * @todo implement this (it returns "UNKNOWN")
-     */
-    QString niceFileSize();
 
     /**
      * @return a pointer to the KMimeType for this document, found by analyzing the

@@ -32,7 +32,6 @@
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
-#include <ktexteditor/selectioninterface.h>
 
 #include <qpointer.h>
 #include <Q3PopupMenu>
@@ -60,7 +59,6 @@ class QVBoxLayout;
 //
 class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
-                 public KTextEditor::SelectionInterface,
                  public KTextEditor::MenuInterface,
                  public KTextEditor::CodeCompletionInterface,
                  public KTextEditor::SessionConfigInterface
@@ -196,15 +194,30 @@ class KateView : public KTextEditor::View,
   // KTextEditor::SelectionInterface stuff
   //
   public slots:
-    bool setSelection ( const KTextEditor::Cursor & start,
-      const KTextEditor::Cursor & end );
+    virtual bool setSelection ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition );
+
+    virtual bool selection () const { return hasSelection(); }
+
+    virtual QString selectionText () const;
+
+    virtual bool removeSelection () { return clearSelection(); }
+
+    virtual bool removeSelectionText () { return removeSelectedText(); }
+
+    virtual const KTextEditor::Cursor &selectionStart () const { return selectStart; }
+
+    virtual const KTextEditor::Cursor &selectionEnd () const { return selectEnd; }
+
+    virtual bool setBlockSelection (bool on) { return setBlockSelectionMode (on); }
+
+    virtual bool blockSelection () const { return blockSelectionMode (); }
+
     bool setSelection ( int startLine, int startCol,
       int endLine, int endCol );
     bool clearSelection ();
     bool clearSelection (bool redraw, bool finishedChangingSelection = true);
 
     bool hasSelection () const;
-    QString selection () const ;
 
     bool removeSelectedText ();
 
@@ -219,7 +232,7 @@ class KateView : public KTextEditor::View,
     int selectionEndColumn()  const  { return selectEnd.column(); };
 
   signals:
-    void selectionChanged ();
+    void selectionChanged (KTextEditor::View *view);
 
   //
   // internal helper stuff, for katerenderer and so on

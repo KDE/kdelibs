@@ -973,7 +973,7 @@ public:
 protected:
   bool valid() const {
     return line() >= 0 &&
-            uint( line() ) < m_vi->m_doc->lines() &&
+            line() < m_vi->m_doc->lines() &&
             column() >= 0 &&
             (!m_vi->m_view->wrapCursor() || column() <= m_vi->m_doc->lineLength( line() ));
   }
@@ -2004,7 +2004,7 @@ void KateViewInternal::updateSelection( const KTextEditor::Cursor& _newCursor, b
         case Word:
         {
           bool same = ( newCursor.line() == selStartCached.line() );
-          uint c;
+          int c;
           if ( newCursor.line() > selStartCached.line() ||
                ( same && newCursor.column() > selEndCached.column() ) )
           {
@@ -2546,8 +2546,8 @@ void KateViewInternal::keyReleaseEvent( QKeyEvent* e )
 
       if (m_selChangedByUser)
       {
-        if (m_view->hasSelection())
-          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
+        if (m_view->selection())
+          QApplication::clipboard()->setText(m_view->selectionText (), QClipboard::Selection);
 
         m_selChangedByUser = false;
       }
@@ -2575,7 +2575,7 @@ void KateViewInternal::contextMenuEvent ( QContextMenuEvent * e )
     makeVisible( cursor, 0 );
     p = cursorCoordinates();
   }
-  else if ( ! m_view->hasSelection() || m_view->config()->persistentSelection() )
+  else if ( ! m_view->selection() || m_view->config()->persistentSelection() )
     placeCursor( e->pos() );
 
   // popup is a qguardedptr now
@@ -2607,8 +2607,8 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
             m_view->selectLine( cursor );
           }
 
-          if (m_view->hasSelection())
-            QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
+          if (m_view->selection())
+            QApplication::clipboard()->setText(m_view->selectionText (), QClipboard::Selection);
 
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
@@ -2674,10 +2674,9 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       }
 
       // Move cursor to end of selected word
-      if (m_view->hasSelection())
+      if (m_view->selection())
       {
-        if (m_view->hasSelection())
-          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
+        QApplication::clipboard()->setText(m_view->selectionText (), QClipboard::Selection);
 
         cursor.setPosition(m_view->selectEnd);
         updateCursor( cursor );
@@ -2713,8 +2712,8 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
 
       if (m_selChangedByUser)
       {
-        if (m_view->hasSelection())
-          QApplication::clipboard()->setText(m_view->selection (), QClipboard::Selection);
+        if (m_view->selection())
+          QApplication::clipboard()->setText(m_view->selectionText (), QClipboard::Selection);
 
         m_selChangedByUser = false;
       }
@@ -3001,7 +3000,7 @@ void KateViewInternal::focusOutEvent (QFocusEvent *)
 void KateViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
-  dragInfo.dragObject = new Q3TextDrag(m_view->selection(), this);
+  dragInfo.dragObject = new Q3TextDrag(m_view->selectionText(), this);
   dragInfo.dragObject->drag();
 }
 
@@ -3219,7 +3218,7 @@ void KateViewInternal::editSetCursor (const KTextEditor::Cursor &_cursor)
 
 void KateViewInternal::viewSelectionChanged ()
 {
-  if (!m_view->hasSelection())
+  if (!m_view->selection())
     selectAnchor.setPosition (-1, -1);
 }
 

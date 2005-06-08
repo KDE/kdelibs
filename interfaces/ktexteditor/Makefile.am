@@ -7,7 +7,6 @@ libktexteditor_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 libktexteditor_la_LIBADD = $(LIB_KPARTS) $(top_builddir)/kabc/libkabc.la
 
 ktexteditorinclude_HEADERS = document.h view.h plugin.h cursor.h \
-                             selectioninterface.h \
                              menuinterface.h searchinterface.h highlightinginterface.h \
                              codecompletioninterface.h \
                              configinterface.h markinterface.h \

@@ -39,7 +39,6 @@
 #include "menuinterface.h"
 #include "modificationinterface.h"
 #include "searchinterface.h"
-#include "selectioninterface.h"
 #include "sessionconfiginterface.h"
 #include "templateinterface.h"
 #include "texthintinterface.h"
@@ -175,15 +174,6 @@ KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document
 
   return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
 }
-
-SelectionInterface *KTextEditor::selectionInterface (View *view)
-{
-  if (!view)
-    return 0;
-
-  return dynamic_cast<KTextEditor::SelectionInterface*>( view );
-}
-
 
 CodeCompletionInterface *KTextEditor::codeCompletionInterface (View *view)
 {

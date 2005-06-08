@@ -127,6 +127,85 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      */
     virtual void cursorPositionChanged (View *view) = 0;
 
+  /**
+   * Selection methodes
+   * This deals with text selection & copy'n'paste
+   */
+  public:
+    /**
+     * Set selection of view, old selection will be discarded
+     * @param startPosition start of the new selection
+     * @param endPosition end of the new selection
+     * @return success
+     */
+    virtual bool setSelection ( const Cursor &startPosition, const Cursor &endPosition ) = 0;
+
+    /**
+     * Is there any non-empty selection?
+     * @return true if some text is selected
+     */
+    virtual bool selection () const = 0;
+
+    /**
+     * Retrieve the selected text
+     * @return the selected text
+     */
+    virtual QString selectionText () const = 0;
+
+    /**
+     * Remove the current Selection (not Text)
+     * @return success
+     */
+    virtual bool removeSelection () = 0;
+
+    /**
+     * Remove the current Selection together with the selected text!
+     * @return success
+     */
+    virtual bool removeSelectionText () = 0;
+
+    /**
+     * Retrieve selection start position
+     * @return selection start
+     */
+    virtual const Cursor &selectionStart () const = 0;
+
+    /**
+     * Retrieve selection end position
+     * @return selection end
+     */
+    virtual const Cursor &selectionEnd () const = 0;
+
+  /**
+   * Blockselection stuff
+   */
+  public:
+   /**
+    * Set block selection mode to state "on"
+    * @param on should block selection be active?
+    * @return success
+    */
+    virtual bool setBlockSelection (bool on) = 0;
+
+   /**
+    * Returns the status of the selection mode - true indicates block selection mode is on.
+    * If this is true, selections applied via the SelectionInterface are handled as
+    * blockselections and the copy'n'paste functions works on
+    * rectangular blocks of text rather than normal.
+    * @return is block selection enabled?
+    */
+    virtual bool blockSelection () const = 0;
+
+  /**
+   * SIGNALS
+   * following signals should be emitted by the editor view
+   * if the selection state changes both on selection change itself and on change
+   * of blockselection mode!
+   * @param view view in which the selection has changed
+   */
+  private:
+    virtual void selectionChanged (View *view) = 0;
+
   private:
     /**
      * Private d-pointer
