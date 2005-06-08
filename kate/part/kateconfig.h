@@ -186,9 +186,9 @@ class KateDocumentConfig : public KateConfig
     void setConfigFlags (uint fullFlags);
 
     const QString &encoding () const;
-    QTextCodec *codec ();
+    QTextCodec *codec () const;
 
-    void setEncoding (const QString &encoding);
+    bool setEncoding (const QString &encoding);
 
     bool isSetEncoding () const;
 
@@ -501,7 +501,7 @@ class KateRendererConfig : public KateConfig
     uint m_schema;
     KateFontStruct *m_font;
     bool m_wordWrapMarker;
-    bool m_showIndentationLines;    
+    bool m_showIndentationLines;
     QColor m_backgroundColor;
     QColor m_selectionColor;
     QColor m_highlightedLineColor;
@@ -515,7 +515,7 @@ class KateRendererConfig : public KateConfig
     bool m_schemaSet : 1;
     bool m_fontSet : 1;
     bool m_wordWrapMarkerSet : 1;
-    bool m_showIndentationLinesSet : 1;    
+    bool m_showIndentationLinesSet : 1;
     bool m_backgroundColorSet : 1;
     bool m_selectionColorSet : 1;
     bool m_highlightedLineColorSet : 1;

@@ -414,7 +414,7 @@ const QString &KateDocumentConfig::encoding () const
   return s_global->encoding();
 }
 
-QTextCodec *KateDocumentConfig::codec ()
+QTextCodec *KateDocumentConfig::codec () const
 {
   if (m_encodingSet || isGlobal())
   {
@@ -429,7 +429,7 @@ QTextCodec *KateDocumentConfig::codec ()
   return s_global->codec ();
 }
 
-void KateDocumentConfig::setEncoding (const QString &encoding)
+bool KateDocumentConfig::setEncoding (const QString &encoding)
 {
   QString enc = encoding;
 
@@ -439,7 +439,7 @@ void KateDocumentConfig::setEncoding (const QString &encoding)
     QTextCodec *codec = KGlobal::charsets()->codecForName (encoding, found);
 
     if (!found || !codec)
-      return;
+      return false;
 
     enc = codec->name();
   }
@@ -450,6 +450,8 @@ void KateDocumentConfig::setEncoding (const QString &encoding)
   m_encoding = enc;
 
   configEnd ();
+
+  return true;
 }
 
 bool KateDocumentConfig::isSetEncoding () const

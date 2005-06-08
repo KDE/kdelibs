@@ -4387,12 +4387,12 @@ KateCodeFoldingTree *KateDocument::foldingTree ()
   return m_buffer->foldingTree();
 }
 
-void KateDocument::setEncoding (const QString &e)
+bool KateDocument::setEncoding (const QString &e)
 {
-  m_config->setEncoding(e);
+  return m_config->setEncoding(e);
 }
 
-QString KateDocument::encoding() const
+const QString &KateDocument::encoding() const
 {
   return m_config->encoding();
 }

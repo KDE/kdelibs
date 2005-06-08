@@ -33,7 +33,6 @@
 #include "codecompletioninterface.h"
 #include "commandinterface.h"
 #include "configinterface.h"
-#include "encodinginterface.h"
 #include "highlightinginterface.h"
 #include "markinterface.h"
 #include "modificationinterface.h"
@@ -205,16 +204,6 @@ HighlightingInterface *KTextEditor::highlightingInterface (Document *doc)
 
   return dynamic_cast<KTextEditor::HighlightingInterface*>( doc );
 }
-
-
-EncodingInterface *KTextEditor::encodingInterface (Document *doc)
-{
-  if (!doc)
-    return 0;
-
-  return dynamic_cast<EncodingInterface*>( doc );
-}
-
 
 SearchInterface *KTextEditor::searchInterface (Document *doc)
 {

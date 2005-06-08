@@ -113,6 +113,32 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     virtual void documentNameChanged ( Document *document ) = 0;
 
   /**
+   * VERY IMPORTANT: Methodes to set and query the current encoding of the
+   * document
+   */
+  public:
+    /**
+     * Set the encoding for this document. This encoding will be used
+     * while loading and saving files, it won't affect the already existing
+     * content of the document, e.g. if the file has already be opened without
+     * the correct encoding, this won't fix it, you would for example need to
+     * trigger reload for this.
+     * @param encoding new encoding for the document, name must be accepted
+     * by the QTextCodec, if empty encoding name given, the part should fallback
+     * to it's own default encoding, e.g. the system encoding or the global user
+     * settings
+     * @return success, return false, if the encoding could not be set
+     */
+    virtual bool setEncoding (const QString &encoding) = 0;
+
+    /**
+     * Returns the current chosen encoding
+     * @return current encoding of the document, will return empty string if the
+     * document uses the default encoding of the editor and no own special encoding
+     */
+    virtual const QString &encoding () const = 0;
+
+  /**
    * General file related actions
    * All this actions cause user interaction in some cases
    */

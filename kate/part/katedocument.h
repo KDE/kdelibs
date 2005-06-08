@@ -36,7 +36,6 @@
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/variableinterface.h>
-#include <ktexteditor/encodinginterface.h>
 #include <ktexteditor/modificationinterface.h>
 
 #include <dcopobject.h>
@@ -87,7 +86,6 @@ class KateDocument : public KTextEditor::Document,
                      public KTextEditor::HighlightingInterface,
                      public KTextEditor::ConfigInterface,
                      public KTextEditor::MarkInterface,
-                     public KTextEditor::EncodingInterface,
                      public KTextEditor::VariableInterface,
                      public KTextEditor::ModificationInterface,
                      public DCOPObject
@@ -764,9 +762,9 @@ class KateDocument : public KTextEditor::Document,
     int m_isasking; // don't reenter slotModifiedOnDisk when this is true
                     // -1: ignore once, 0: false, 1: true
 
-  public slots:
-    void setEncoding (const QString &e);
-    QString encoding() const;
+  public:
+    bool setEncoding (const QString &e);
+    const QString &encoding() const;
 
   public slots:
     void setWordWrap (bool on);
