@@ -216,16 +216,16 @@ class KateDocument : public KTextEditor::Document,
      * them.
      * @param withUndo if true, add undo history
      */
-    void editStart (bool withUndo = true);
+    void editStart (bool withUndo = true, KTextEditor::View *view = 0);
     /** @see Same as editStart() with undo */
-    void editBegin () { editStart(); }
+    void editBegin (KTextEditor::View *view = 0) { editStart(true, view); }
     /**
      * End a editor operation.
      * @see editStart()
      */
     void editEnd ();
 
-    bool startEditing () { editStart (); return true; }
+    bool startEditing (KTextEditor::View *view = 0) { editStart (true, view); return true; }
     bool endEditing () { editEnd (); return true; }
 
 //END editStart/editEnd
@@ -347,6 +347,7 @@ class KateDocument : public KTextEditor::Document,
     uint editSessionNumber;
     bool editIsRunning;
     bool editWithUndo;
+    KateView *editView;
     bool m_undoComplexMerge;
     KateUndoGroup* m_editCurrentUndo;
 

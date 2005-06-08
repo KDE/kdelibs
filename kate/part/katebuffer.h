@@ -95,7 +95,7 @@ class KateBufBlock
      * @param i line to return
      * @return line pointer
      */
-    KateTextLine::Ptr line(uint i);
+    KateTextLine::Ptr line(int i);
 
     /**
      * insert @p line in front of line @p i
@@ -103,14 +103,14 @@ class KateBufBlock
      * @param i where to insert
      * @param line line pointer
      */
-    void insertLine(uint i, KateTextLine::Ptr line);
+    void insertLine(int i, KateTextLine::Ptr line);
 
     /**
      * remove line @p i
      * marks the block dirty
      * @param i line to remove
      */
-    void removeLine(uint i);
+    void removeLine(int i);
 
     /**
      * mark this block as dirty, will invalidate the swap data
@@ -123,25 +123,25 @@ class KateBufBlock
      * startLine
      * @return first line in block
      */
-    inline uint startLine () const { return m_startLine; };
+    inline int startLine () const { return m_startLine; };
 
     /**
      * update the first line, needed to keep it up to date
      * @param line new startLine
      */
-    inline void setStartLine (uint line) { m_startLine = line; }
+    inline void setStartLine (int line) { m_startLine = line; }
 
     /**
      * first line behind this block
      * @return line behind block
      */
-    inline uint endLine () const { return m_startLine + m_lines; }
+    inline int endLine () const { return m_startLine + m_lines; }
 
     /**
      * lines in this block
      * @return lines
      */
-    inline uint lines () const { return m_lines; }
+    inline int lines () const { return m_lines; }
 
     /**
      * prev block
@@ -179,12 +179,12 @@ class KateBufBlock
     /**
      * IMPORTANT, start line
      */
-    uint m_startLine;
+    int m_startLine;
 
     /**
      * IMPORTANT, line count
      */
-    uint m_lines;
+    int m_lines;
 
     /**
      * here we swap our stuff
@@ -194,7 +194,7 @@ class KateBufBlock
     /**
      * swapped size
      */
-    uint m_vmblockSize;
+    int m_vmblockSize;
 
     /**
      * list of textlines
@@ -255,7 +255,7 @@ class KateBufBlockList
      * count of blocks in this list
      * @return count of blocks
      */
-    inline uint count() const { return m_count; }
+    inline int count() const { return m_count; }
 
     /**
      * first block in this list or 0
@@ -311,7 +311,7 @@ class KateBufBlockList
     /**
      * count of blocks in list
      */
-    uint m_count;
+    int m_count;
 
     /**
      * first block
@@ -346,19 +346,19 @@ class KateBuffer : public QObject
      * maximal loaded block count
      * @return max loaded blocks
      */
-    inline static uint maxLoadedBlocks () { return m_maxLoadedBlocks; }
+    inline static int maxLoadedBlocks () { return m_maxLoadedBlocks; }
 
     /**
      * modifier for max loaded blocks limit
      * @param count new limit
      */
-    static void setMaxLoadedBlocks (uint count);
+    static void setMaxLoadedBlocks (int count);
 
   private:
     /**
      * global max loaded blocks limit
      */
-    static uint m_maxLoadedBlocks;
+    static int m_maxLoadedBlocks;
 
   public:
     /**
@@ -394,13 +394,13 @@ class KateBuffer : public QObject
      * dirty lines start
      * @return start line
      */
-    inline uint editTagStart () const { return editTagLineStart; }
+    inline int editTagStart () const { return editTagLineStart; }
 
     /**
      * dirty lines end
      * @return end line
      */
-    inline uint editTagEnd () const { return editTagLineEnd; }
+    inline int editTagEnd () const { return editTagLineEnd; }
 
     /**
      * line inserted/removed?
@@ -412,7 +412,7 @@ class KateBuffer : public QObject
     /**
      * edit session recursion
      */
-    uint editSessionNumber;
+    int editSessionNumber;
 
     /**
      * is a edit session running
@@ -422,12 +422,12 @@ class KateBuffer : public QObject
     /**
      * dirty lines start at line
      */
-    uint editTagLineStart;
+    int editTagLineStart;
 
     /**
      * dirty lines end at line
      */
-    uint editTagLineEnd;
+    int editTagLineEnd;
 
     /**
      * a line was inserted or removed
@@ -482,7 +482,7 @@ class KateBuffer : public QObject
     /**
      * Return line @p i
      */
-    inline KateTextLine::Ptr line(uint i)
+    inline KateTextLine::Ptr line(int i)
     {
       KateBufBlock *buf = findBlock(i);
       if (!buf)
@@ -498,15 +498,16 @@ class KateBuffer : public QObject
     /**
      * line needs hl
      */
-     KateTextLine::Ptr line_internal (KateBufBlock *buf, uint i);
+     KateTextLine::Ptr line_internal (KateBufBlock *buf, int i);
 
-     inline void addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,uint deindent);
-     inline void updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,bool addindent,uint deindent);
+     inline void addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,int deindent);
+     inline void updatePreviousNotEmptyLine(KateBufBlock *blk,int current_line,bool addindent,int deindent);
+
   public:
     /**
      * Return line @p i without triggering highlighting
      */
-    inline KateTextLine::Ptr plainLine(uint i)
+    inline KateTextLine::Ptr plainLine(int i)
     {
       KateBufBlock *buf = findBlock(i);
       if (!buf)
@@ -518,7 +519,7 @@ class KateBuffer : public QObject
     /**
      * Return the total number of lines in the buffer.
      */
-    inline uint count() const { return m_lines; }
+    inline int count() const { return m_lines; }
 
   private:
     /**
@@ -526,10 +527,10 @@ class KateBuffer : public QObject
      * index pointer gets filled with index of block in m_blocks
      * index only valid if returned block != 0 !
      */
-    KateBufBlock *findBlock (uint i, int *index = 0)
+    KateBufBlock *findBlock (int i, int *index = 0)
     {
       // out of range !
-      if (i >= m_lines)
+      if (i < 0 || i >= m_lines)
         return 0;
 
       if ((m_blocks[m_lastFoundBlock]->startLine() <= i) && (m_blocks[m_lastFoundBlock]->endLine() > i))
@@ -543,37 +544,37 @@ class KateBuffer : public QObject
       return findBlock_internal (i, index);
     }
 
-    KateBufBlock *findBlock_internal (uint i, int *index = 0);
+    KateBufBlock *findBlock_internal (int i, int *index = 0);
 
   public:
     /**
      * Mark line @p i as changed !
      */
-    void changeLine(uint i);
+    void changeLine(int i);
 
     /**
      * Insert @p line in front of line @p i
      */
-    void insertLine(uint i, KateTextLine::Ptr line);
+    void insertLine(int i, KateTextLine::Ptr line);
 
     /**
      * Remove line @p i
      */
-    void removeLine(uint i);
+    void removeLine(int i);
 
   public:
-    inline uint countVisible () { return m_lines - m_regionTree.getHiddenLinesCount(m_lines); }
+    inline int countVisible () { return m_lines - m_regionTree.getHiddenLinesCount(m_lines); }
 
-    inline uint lineNumber (uint visibleLine) { return m_regionTree.getRealLine (visibleLine); }
+    inline int lineNumber (int visibleLine) { return m_regionTree.getRealLine (visibleLine); }
 
-    inline uint lineVisibleNumber (uint line) { return m_regionTree.getVirtualLine (line); }
+    inline int lineVisibleNumber (int line) { return m_regionTree.getVirtualLine (line); }
 
-    inline void lineInfo (KateLineInfo *info, unsigned int line) { m_regionTree.getLineInfo(info,line); }
+    inline void lineInfo (KateLineInfo *info, int line) { m_regionTree.getLineInfo(info,line); }
 
-    inline uint tabWidth () const { return m_tabWidth; }
+    inline int tabWidth () const { return m_tabWidth; }
 
   public:
-    void setTabWidth (uint w);
+    void setTabWidth (int w);
 
     /**
      * Use @p highlight for highlighting
@@ -581,7 +582,7 @@ class KateBuffer : public QObject
      * @p highlight may be 0 in which case highlighting
      * will be disabled.
      */
-    void setHighlight (uint hlMode);
+    void setHighlight (int hlMode);
 
     KateHighlighting *highlight () { return m_highlight; };
 
@@ -592,8 +593,7 @@ class KateBuffer : public QObject
 
     KateCodeFoldingTree *foldingTree () { return &m_regionTree; };
 
-  public slots:
-    void codeFoldingColumnUpdate(unsigned int lineNr);
+    void codeFoldingColumnUpdate(int lineNr);
 
   private:
     /**
@@ -608,7 +608,7 @@ class KateBuffer : public QObject
      * @returns true when the highlighting in the next block needs to be updated,
      * false otherwise.
      */
-    bool doHighlight (KateBufBlock *buf, uint from, uint to, bool invalidate);
+    bool doHighlight (KateBufBlock *buf, int from, int to, bool invalidate);
 
   signals:
     /**
@@ -631,7 +631,7 @@ class KateBuffer : public QObject
     /**
      * current line count
      */
-    uint m_lines;
+    int m_lines;
 
     /**
      * ALL blocks
@@ -681,15 +681,15 @@ class KateBuffer : public QObject
     KateCodeFoldingTree m_regionTree;
 
     // for the scrapty indent sensitive langs
-    uint m_tabWidth;
+    int m_tabWidth;
 
-    uint m_lineHighlightedMax;
-    uint m_lineHighlighted;
+    int m_lineHighlightedMax;
+    int m_lineHighlighted;
 
   /**
      * number of dynamic contexts causing a full invalidation
      */
-    uint m_maxDynamicContexts;
+    int m_maxDynamicContexts;
 
   /**
    * only used from the KateBufBlocks !

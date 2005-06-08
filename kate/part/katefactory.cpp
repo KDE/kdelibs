@@ -59,16 +59,16 @@ class KateFactory : public KParts::Factory
      * @param args additional arguments
      * @return constructed part object
      */
-    KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList &args )
+    KParts::Part *createPartObject ( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *_classname, const QStringList & )
     {
       Q3CString classname( _classname );
       bool bWantSingleView = ( classname != "KTextEditor::Document" && classname != "KTextEditor::Document" );
       bool bWantBrowserView = ( classname == "Browser/View" );
       bool bWantReadOnly = (bWantBrowserView || ( classname == "KParts::ReadOnlyPart" ));
-    
+
       KParts::ReadWritePart *part = new KateDocument (bWantSingleView, bWantBrowserView, bWantReadOnly, parentWidget, widgetName, parent, name);
       part->setReadWrite( !bWantReadOnly );
-    
+
       return part;
     }
 };

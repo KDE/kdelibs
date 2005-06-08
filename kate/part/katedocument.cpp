@@ -143,6 +143,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   editIsRunning = false;
   m_editCurrentUndo = 0L;
   editWithUndo = false;
+  editView = 0;
 
   m_docNameNumber = 0;
   m_docName = "need init";
@@ -881,7 +882,7 @@ int KateDocument::lineLength ( int line ) const
 //
 // Starts an edit session with (or without) undo, update of view disabled during session
 //
-void KateDocument::editStart (bool withUndo)
+void KateDocument::editStart (bool withUndo, KTextEditor::View *view)
 {
   editSessionNumber++;
 
@@ -890,6 +891,9 @@ void KateDocument::editStart (bool withUndo)
 
   editIsRunning = true;
   editWithUndo = withUndo;
+
+  if (view && view->document() == static_cast<KTextEditor::Document*>(this))
+    editView = qobject_cast<KateView*>(view);
 
   if (editWithUndo)
     undoStart();
@@ -1011,6 +1015,7 @@ void KateDocument::editEnd ()
     emit textChanged (this);
   }
 
+  editView = 0;
   editIsRunning = false;
 }
 

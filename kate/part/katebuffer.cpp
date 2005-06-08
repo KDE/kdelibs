@@ -62,23 +62,23 @@ static const Q_ULONG KATE_MAX_BLOCK_LINES = 2048;
  * or until the current block ends if a line is requested
  * will avoid to run doHighlight too often
  */
-static const uint KATE_HL_LOOKAHEAD = 64;
+static const int KATE_HL_LOOKAHEAD = 64;
 
 /**
  * KATE_MAX_BLOCKS_LOADED should be at least 4, as some
  * methodes will cause heavy trashing, if not at least the
  * latest 2-3 used blocks are alive
  */
-uint KateBuffer::m_maxLoadedBlocks = 16;
+int KateBuffer::m_maxLoadedBlocks = 16;
 
 /**
  * Initial value for m_maxDynamicContexts
  */
-static const uint KATE_MAX_DYNAMIC_CONTEXTS = 512;
+static const int KATE_MAX_DYNAMIC_CONTEXTS = 512;
 
-void KateBuffer::setMaxLoadedBlocks (uint count)
+void KateBuffer::setMaxLoadedBlocks (int count)
 {
-  m_maxLoadedBlocks = KMAX ((uint)4, count);
+  m_maxLoadedBlocks = KMAX ((int)4, count);
 }
 
 class KateFileLoader
@@ -190,7 +190,7 @@ class KateFileLoader
           {
             int c = m_file.readBlock (m_buffer.data(), m_buffer.size());
 
-            uint readString = 0;
+            int readString = 0;
             if (c > 0)
             {
               processNull (c);
@@ -274,11 +274,11 @@ class KateFileLoader
 
     // this nice methode will kill all 0 bytes (or double bytes)
     // and remember if this was a binary or not ;)
-    void processNull (uint length)
+    void processNull (int length)
     {
       if (m_twoByteEncoding)
       {
-        for (uint i=1; i < length; i+=2)
+        for (int i=1; i < length; i+=2)
         {
           if ((m_buffer[i] == '\0') && (m_buffer[i-1] == '\0'))
           {
@@ -289,7 +289,7 @@ class KateFileLoader
       }
       else
       {
-        for (uint i=0; i < length; i++)
+        for (int i=0; i < length; i++)
         {
           if (m_buffer[i] == '\0')
           {
@@ -547,7 +547,7 @@ bool KateBuffer::canEncode ()
   if ((QString(codec->name()) == "UTF-8") || (QString(codec->name()) == "ISO-10646-UCS-2"))
     return true;
 
-  for (uint i=0; i < m_lines; i++)
+  for (int i=0; i < m_lines; i++)
   {
     if (!codec->canEncode (plainLine(i)->string()))
     {
@@ -586,7 +586,7 @@ bool KateBuffer::saveFile (const QString &m_file)
   bool removeTrailingSpaces = m_doc->config()->configFlags() & KateDocumentConfig::cfRemoveSpaces;
 
   // just dump the lines out ;)
-  for (uint i=0; i < m_lines; i++)
+  for (int i=0; i < m_lines; i++)
   {
     KateTextLine::Ptr textline = plainLine(i);
 
@@ -614,13 +614,13 @@ bool KateBuffer::saveFile (const QString &m_file)
   return (file.error() == QFile::NoError);
 }
 
-KateTextLine::Ptr KateBuffer::line_internal (KateBufBlock *buf, uint i)
+KateTextLine::Ptr KateBuffer::line_internal (KateBufBlock *buf, int i)
 {
   // update hl until this line + max KATE_HL_LOOKAHEAD
   KateBufBlock *buf2 = 0;
   while ((i >= m_lineHighlighted) && (buf2 = findBlock(m_lineHighlighted)))
   {
-    uint end = kMin(i + KATE_HL_LOOKAHEAD, buf2->endLine());
+    int end = kMin(i + KATE_HL_LOOKAHEAD, buf2->endLine());
 
     doHighlight ( buf2,
                   kMax(m_lineHighlighted, buf2->startLine()),
@@ -637,9 +637,9 @@ KateTextLine::Ptr KateBuffer::line_internal (KateBufBlock *buf, uint i)
   return buf->line (i - buf->startLine());
 }
 
-KateBufBlock *KateBuffer::findBlock_internal (uint i, int *index)
+KateBufBlock *KateBuffer::findBlock_internal (int i, int *index)
 {
-  uint lastLine = m_blocks[m_lastInSyncBlock]->endLine ();
+  int lastLine = m_blocks[m_lastInSyncBlock]->endLine ();
 
   if (lastLine > i) // we are in a allready known area !
   {
@@ -699,7 +699,7 @@ KateBufBlock *KateBuffer::findBlock_internal (uint i, int *index)
   return 0;
 }
 
-void KateBuffer::changeLine(uint i)
+void KateBuffer::changeLine(int i)
 {
   KateBufBlock *buf = findBlock(i);
 
@@ -720,7 +720,7 @@ void KateBuffer::changeLine(uint i)
     editTagLineEnd = i;
 }
 
-void KateBuffer::insertLine(uint i, KateTextLine::Ptr line)
+void KateBuffer::insertLine(int i, KateTextLine::Ptr line)
 {
   int index = 0;
   KateBufBlock *buf;
@@ -769,7 +769,7 @@ void KateBuffer::insertLine(uint i, KateTextLine::Ptr line)
   m_regionTree.lineHasBeenInserted (i);
 }
 
-void KateBuffer::removeLine(uint i)
+void KateBuffer::removeLine(int i)
 {
    int index = 0;
    KateBufBlock *buf = findBlock(i, &index);
@@ -838,7 +838,7 @@ void KateBuffer::removeLine(uint i)
   m_regionTree.lineHasBeenRemoved (i);
 }
 
-void KateBuffer::setTabWidth (uint w)
+void KateBuffer::setTabWidth (int w)
 {
   if ((m_tabWidth != w) && (m_tabWidth > 0))
   {
@@ -849,7 +849,7 @@ void KateBuffer::setTabWidth (uint w)
   }
 }
 
-void KateBuffer::setHighlight(uint hlMode)
+void KateBuffer::setHighlight(int hlMode)
 {
   KateHighlighting *h = KateHlManager::self()->getHl(hlMode);
 
@@ -888,14 +888,14 @@ void KateBuffer::invalidateHighlighting()
 }
 
 
-void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,bool addindent,uint deindent)
+void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,int current_line,bool addindent,int deindent)
 {
   KateTextLine::Ptr textLine;
   do {
     if (current_line>0) current_line--;
     else
     {
-      uint line=blk->startLine()+current_line;
+      int line=blk->startLine()+current_line;
       if (line==0) return;
       line--;
       blk=findBlock(line);
@@ -919,7 +919,7 @@ void KateBuffer::updatePreviousNotEmptyLine(KateBufBlock *blk,uint current_line,
   emit tagLines (blk->startLine()+current_line, blk->startLine()+current_line);
 }
 
-void KateBuffer::addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,uint deindent)
+void KateBuffer::addIndentBasedFoldingInformation(QVector<int> &foldingList,bool addindent,int deindent)
 {
   if (addindent) {
     //kdDebug(13020)<<"adding indent for line :"<<current_line + buf->startLine()<<"  textLine->noIndentBasedFoldingAtStart"<<textLine->noIndentBasedFoldingAtStart()<<endl;
@@ -941,7 +941,7 @@ void KateBuffer::addIndentBasedFoldingInformation(QVector<int> &foldingList,bool
   }
 }
 
-bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, bool invalidate)
+bool KateBuffer::doHighlight (KateBufBlock *buf, int startLine, int endLine, bool invalidate)
 {
   // no hl around, no stuff to do
   if (!m_highlight)
@@ -982,7 +982,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
         KateBufBlock *buf = 0;
         while ((endLine > m_lineHighlighted) && (buf = findBlock(m_lineHighlighted)))
         {
-          uint end = kMin(endLine, buf->endLine());
+          int end = kMin(endLine, buf->endLine());
 
           doHighlight ( buf,
                         kMax(m_lineHighlighted, buf->startLine()),
@@ -1019,7 +1019,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
   bool codeFoldingUpdate = false;
 
   // here we are atm, start at start line in the block
-  uint current_line = startLine - buf->startLine();
+  int current_line = startLine - buf->startLine();
 
   // do we need to continue
   bool stillcontinue=false;
@@ -1059,7 +1059,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
       QVector<unsigned short> indentDepth (prevLine->indentationDepthArray());
 
       // current indentation of this line
-      uint iDepth = textLine->indentDepth(m_tabWidth);
+      int iDepth = textLine->indentDepth(m_tabWidth);
       if ((current_line+buf->startLine())==0)
       {
           indentDepth.resize (1);
@@ -1088,7 +1088,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
 
       // query the next line indentation, if we are at the end of the block
       // use the first line of the next buf block
-      uint nextLineIndentation = 0;
+      int nextLineIndentation = 0;
       bool nextLineIndentationValid=true;
       indentContinueNextWhitespace=false;
       if ((current_line+1) < buf->lines())
@@ -1150,7 +1150,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
           {
             kdDebug(13020)<<"nextLineIndentation:"<<nextLineIndentation<<endl;
             bool addindent=false;
-            uint deindent=0;
+            int deindent=0;
             if (!indentDepth.isEmpty())
               kdDebug()<<"indentDepth[indentDepth.size()-1]:"<<indentDepth[indentDepth.size()-1]<<endl;
             if ((nextLineIndentation>0) && ( indentDepth.isEmpty() || (indentDepth[indentDepth.size()-1]<nextLineIndentation)))
@@ -1257,7 +1257,7 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, uint startLine, uint endLine, b
   return stillcontinue && ((current_line+1) == buf->lines());
 }
 
-void KateBuffer::codeFoldingColumnUpdate(unsigned int lineNr) {
+void KateBuffer::codeFoldingColumnUpdate(int lineNr) {
   KateTextLine::Ptr line=plainLine(lineNr);
   if (!line) return;
   if (line->foldingColumnsOutdated()) {
@@ -1377,7 +1377,7 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
       int pos = size;
 
       // calc new size
-      size = size + 1 + sizeof(uint) + (sizeof(QChar)*length);
+      size = size + 1 + sizeof(int) + (sizeof(QChar)*length);
 
       if (size > rawData.size ())
       {
@@ -1388,8 +1388,8 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
       memcpy(buf+pos, (char *) &attr, 1);
       pos += 1;
 
-      memcpy(buf+pos, (char *) &length, sizeof(uint));
-      pos += sizeof(uint);
+      memcpy(buf+pos, (char *) &length, sizeof(int));
+      pos += sizeof(int);
 
       memcpy(buf+pos, (char *) unicodeData, sizeof(QChar)*length);
       pos += sizeof(QChar)*length;
@@ -1436,7 +1436,7 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
   kdDebug (13020) << "A BLOCK LOADED WITH LINES: " << m_lines << endl;
 }
 
-KateTextLine::Ptr KateBufBlock::line(uint i)
+KateTextLine::Ptr KateBufBlock::line(int i)
 {
   // take care that the string list is around !!!
   if (m_state == KateBufBlock::stateSwapped)
@@ -1449,7 +1449,7 @@ KateTextLine::Ptr KateBufBlock::line(uint i)
   return m_stringList[i];
 }
 
-void KateBufBlock::insertLine(uint i, KateTextLine::Ptr line)
+void KateBufBlock::insertLine(int i, KateTextLine::Ptr line)
 {
   // take care that the string list is around !!!
   if (m_state == KateBufBlock::stateSwapped)
@@ -1461,7 +1461,7 @@ void KateBufBlock::insertLine(uint i, KateTextLine::Ptr line)
   markDirty ();
 }
 
-void KateBufBlock::removeLine(uint i)
+void KateBufBlock::removeLine(int i)
 {
   // take care that the string list is around !!!
   if (m_state == KateBufBlock::stateSwapped)
@@ -1511,7 +1511,7 @@ void KateBufBlock::swapIn ()
   m_stringList.reserve (m_lines);
 
   char *buf = rawData.data();
-  for (uint i=0; i < m_lines; i++)
+  for (int i=0; i < m_lines; i++)
   {
     KateTextLine::Ptr textLine = new KateTextLine ();
     buf = textLine->restore (buf);
@@ -1537,15 +1537,15 @@ void KateBufBlock::swapOut ()
     bool haveHl = m_parent->m_highlight && !m_parent->m_highlight->noHighlighting();
 
     // Calculate size.
-    uint size = 0;
-    for (uint i=0; i < m_lines; i++)
+    int size = 0;
+    for (int i=0; i < m_lines; i++)
       size += m_stringList[i]->dumpSize (haveHl);
 
     QByteArray rawData (size);
     char *buf = rawData.data();
 
     // Dump textlines
-    for (uint i=0; i < m_lines; i++)
+    for (int i=0; i < m_lines; i++)
       buf = m_stringList[i]->dump (buf, haveHl);
 
     m_vmblock = KateGlobal::self()->vm()->allocate(rawData.size());

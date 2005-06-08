@@ -162,9 +162,14 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * If the texteditor part doesn't support this kind of transactions, both calls
      * just do nothing.
      *
+     * @param view here you can optional give a view which does the editing
+     *             this can cause the editor part implementation to do some special
+     *             cursor handling in this view, important: this only will work
+     *             if you pass here a view which parent document is this document,
+     *             otherwise, the view is just ignored
 	   * @return success, parts not supporting it should return false
      */
-    virtual bool startEditing () = 0;
+    virtual bool startEditing (View *view = 0) = 0;
 
 	  /**
 	   * End an editing sequence.
