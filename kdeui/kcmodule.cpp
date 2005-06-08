@@ -40,7 +40,8 @@ public:
     KCModulePrivate():
         _about( 0 ),
         _useRootOnlyMsg( false ),
-        _hasOwnInstance( true )
+        _hasOwnInstance( true ),
+        _unmanagedWidgetChangeState( false )
         { }
 
     KInstance *_instance;
@@ -51,6 +52,11 @@ public:
     QPtrList<KConfigDialogManager> managers;
     QString _quickHelp;
 
+    // this member is used to record the state on non-automatically
+    // managed widgets, allowing for mixed KConfigXT-drive and manual
+    // widgets to coexist peacefully and do the correct thing with
+    // the changed(bool) signal
+    bool _unmanagedWidgetChangeState;
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
@@ -124,11 +130,26 @@ void KCModule::defaults()
 
 void KCModule::widgetChanged()
 {
+    emit changed(d->_unmanagedWidgetChangeState || managedWidgetChangeState());
+}
+
+bool KCModule::managedWidgetChangeState() const
+{
     bool bChanged = false;
     KConfigDialogManager* manager;
     for( manager = d->managers.first(); manager; manager = d->managers.next() )
-        bChanged |= manager->hasChanged();
-    emit( changed( bChanged ));
+    {
+        if ( manager->hasChanged() )
+            return true;
+    }
+
+    return false;
+}
+
+void KCModule::unmanagedWidgetChangeState(bool changed)
+{
+    d->_unmanagedWidgetChangeState = changed;
+    widgetChanged();
 }
 
 const KAboutData *KCModule::aboutData() const
