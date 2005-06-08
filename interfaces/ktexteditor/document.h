@@ -112,6 +112,36 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     virtual void documentNameChanged ( Document *document ) = 0;
 
+  /**
+   * General file related actions
+   * All this actions cause user interaction in some cases
+   */
+  public:
+    /**
+     * Reload the current file
+     * The user will get prompted by the part on changes and more
+     * and can cancel this action if it can harm
+     * @return success, has the reload been done? if the document
+     * has no url set, it will just return false
+     */
+    virtual bool documentReload () = 0;
+
+    /**
+     * save the current file
+     * The user will get prompted by the part on, asked for filename if
+     * needed and more
+     * @return success, has the save been done?
+     */
+    virtual bool documentSave () = 0;
+
+    /**
+     * save the current file with a different name
+     * The user will get prompted by the part on, asked for filename
+     * and more
+     * @return success, has the save as been done?
+     */
+    virtual bool documentSaveAs () = 0;
+
  /**
   * Methodes to create/end editing sequences
   */

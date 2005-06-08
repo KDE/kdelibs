@@ -241,7 +241,7 @@ void KateView::setupActions()
 
   if (!m_doc->readOnly())
   {
-    a=KStdAction::save(this, SLOT(save()), ac);
+    a=KStdAction::save(m_doc, SLOT(documentSave()), ac);
     a->setWhatsThis(i18n("Save the current document"));
 
     a=m_editUndo = KStdAction::undo(m_doc, SLOT(undo()), ac);
@@ -316,7 +316,7 @@ void KateView::setupActions()
   a=new KAction(i18n("Reloa&d"), "reload", KStdAccel::reload(), this, SLOT(reloadFile()), ac, "file_reload");
   a->setWhatsThis(i18n("Reload the current document from disk."));
 
-  a=KStdAction::saveAs(this, SLOT(saveAs()), ac);
+  a=KStdAction::saveAs(m_doc, SLOT(documentSaveAs()), ac);
   a->setWhatsThis(i18n("Save the current document to disk, with a name of your choice."));
 
   a=KStdAction::gotoLine(this, SLOT(gotoLine()), ac);
@@ -725,7 +725,7 @@ void KateView::reloadFile()
   int cc = cursorColumn();
 
   // save bookmarks
-  m_doc->reloadFile();
+  m_doc->documentReload();
 
   if (m_doc->lines() >= cl)
     // Explicitly call internal function because we want this to be registered as a non-external call
@@ -826,55 +826,6 @@ void KateView::toggleInsert()
   m_toggleInsert->setChecked (isOverwriteMode ());
 
   emit viewModeChanged(this);
-}
-
-KateView::saveResult KateView::save()
-{
-  if( !m_doc->url().isValid() || !doc()->isReadWrite() )
-    return saveAs();
-
-  if( m_doc->save() )
-    return SAVE_OK;
-
-  return SAVE_ERROR;
-}
-
-KateView::saveResult KateView::saveAs()
-{
-
-  KEncodingFileDialog::Result res=KEncodingFileDialog::getSaveURLAndEncoding(doc()->config()->encoding(),
-                m_doc->url().url(),QString::null,this,i18n("Save File"));
-
-//   kdDebug()<<"urllist is emtpy?"<<res.URLs.isEmpty()<<endl;
-//   kdDebug()<<"url is:"<<res.URLs.first()<<endl;
-  if( res.URLs.isEmpty() || !checkOverwrite( res.URLs.first() ) )
-    return SAVE_CANCEL;
-
-  m_doc->setEncoding( res.encoding );
-
-  if( m_doc->saveAs( res.URLs.first() ) )
-    return SAVE_OK;
-
-  return SAVE_ERROR;
-}
-
-bool KateView::checkOverwrite( KURL u )
-{
-  if( !u.isLocalFile() )
-    return true;
-
-  QFileInfo info( u.path() );
-  if( !info.exists() )
-    return true;
-
-  return KMessageBox::Yes
-         == KMessageBox::warningYesNo
-              ( this,
-                i18n( "A file named \"%1\" already exists. Are you sure you want to overwrite it?" ).arg( info.fileName() ),
-                i18n( "Overwrite File?" ),
-                KGuiItem( i18n( "&Overwrite" ), "filesave", i18n( "Overwrite the file" ) ),
-                KStdGuiItem::cancel()
-              );
 }
 
 void KateView::slotSaveCanceled( const QString& error )

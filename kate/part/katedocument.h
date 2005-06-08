@@ -746,7 +746,10 @@ class KateDocument : public KTextEditor::Document,
     /**
      * Reloads the current document from disc if possible
      */
-    void reloadFile();
+    bool documentReload ();
+
+    bool documentSave ();
+    bool documentSaveAs ();
 
   signals:
     /**

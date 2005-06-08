@@ -312,7 +312,6 @@ class KateView : public KTextEditor::View,
     /**
      Return values for "save" related commands.
     */
-    enum saveResult { SAVE_OK, SAVE_CANCEL, SAVE_RETRY, SAVE_ERROR };
     bool isOverwriteMode() const;
     void setOverwriteMode( bool b );
 
@@ -328,9 +327,6 @@ class KateView : public KTextEditor::View,
     bool isLastView()             { return m_doc->isLastView(1); }
 
   public slots:
-    saveResult save();
-    saveResult saveAs();
-
     void indent()             { m_doc->indent( this, cursorLine(), 1 );  }
     void unIndent()           { m_doc->indent( this, cursorLine(), -1 ); }
     void cleanIndent()        { m_doc->indent( this, cursorLine(), 0 );  }
@@ -474,7 +470,6 @@ class KateView : public KTextEditor::View,
 
   protected:
     void contextMenuEvent( QContextMenuEvent* );
-    bool checkOverwrite( KURL );
 
   public slots:
     void slotSelectionTypeChanged();

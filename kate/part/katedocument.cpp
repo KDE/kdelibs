@@ -4183,7 +4183,7 @@ void KateDocument::slotModifiedOnDisk( KTextEditor::View * /*v*/ )
       case KateModOnHdPrompt::Reload:
         m_modOnHd = false;
         emit modifiedOnDisk( this, false, OnDiskUnmodified );
-        reloadFile();
+        documentReload();
         m_isasking = 0;
         break;
 
@@ -4220,7 +4220,7 @@ class KateDocumentTmpMark
     KTextEditor::Mark mark;
 };
 
-void KateDocument::reloadFile()
+bool KateDocument::documentReload()
 {
   if ( !url().isEmpty() )
   {
@@ -4239,7 +4239,7 @@ void KateDocument::reloadFile()
           emit modifiedOnDisk (this, m_modOnHd, m_modOnHdReason);
         }
 
-        return;
+        return false;
       }
     }
 
@@ -4275,7 +4275,51 @@ void KateDocument::reloadFile()
 
     if (byUser)
       setHlMode (mode);
+
+    return true;
   }
+
+  return false;
+}
+
+static bool checkOverwrite( KURL u )
+{
+  if( !u.isLocalFile() )
+    return true;
+
+  QFileInfo info( u.path() );
+  if( !info.exists() )
+    return true;
+
+  return KMessageBox::Yes
+         == KMessageBox::warningYesNo
+              ( 0,
+                i18n( "A file named \"%1\" already exists. Are you sure you want to overwrite it?" ).arg( info.fileName() ),
+                i18n( "Overwrite File?" ),
+                KGuiItem( i18n( "&Overwrite" ), "filesave", i18n( "Overwrite the file" ) ),
+                KStdGuiItem::cancel()
+              );
+}
+
+bool KateDocument::documentSave()
+{
+  if( !url().isValid() || !isReadWrite() )
+    return documentSaveAs();
+
+  return save();
+}
+
+bool KateDocument::documentSaveAs()
+{
+  KEncodingFileDialog::Result res=KEncodingFileDialog::getSaveURLAndEncoding(config()->encoding(),
+                url().url(),QString::null,0,i18n("Save File"));
+
+  if( res.URLs.isEmpty() || !checkOverwrite( res.URLs.first() ) )
+    return false;
+
+  setEncoding( res.encoding );
+
+  return saveAs( res.URLs.first() );
 }
 
 void KateDocument::setWordWrap (bool on)
