@@ -30,7 +30,7 @@ libkjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp
 	kjs_navigator.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp kjs_mozilla.cpp xmlhttprequest.cpp \
-        xmlserializer.cpp
+        xmlserializer.cpp domparser.cpp
 #libkjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
 libkjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la # ../libkhtml.la
 libkjs_html_la_METASOURCES = AUTO
@@ -76,6 +76,9 @@ xmlhttprequest.lo: xmlhttprequest.lut.h
 xmlserializer.lut.h : $(srcdir)/xmlserializer.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/xmlserializer.cpp > $@
 xmlserializer.lo: xmlserializer.lut.h
+domparser.lut.h : $(srcdir)/domparser.cpp $(CREATE_HASH_TABLE)
+	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/domparser.cpp > $@
+domparser.lo: domparser.lut.h
 
 
 CLEANFILES = $(LUT_FILES)
@@ -83,5 +86,5 @@ CLEANFILES = $(LUT_FILES)
 # interactive test program
 #check_PROGRAMS = testecma
 #testecma_SOURCES = testecma.cpp
-#testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
+#testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la
 
