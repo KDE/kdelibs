@@ -29,7 +29,10 @@
 #include <QList>
 
 /**
- * Namespace for the KDE Text Editor Interfaces
+ * Namespace for the KDE Text Editor Interfaces.
+ * These interfaces provide easy access to editor parts for the
+ * applications embedding them. At the moment they are at least
+ * supported by both the Kate Part and the Yzis Part.
  */
 namespace KTextEditor
 {
@@ -38,7 +41,8 @@ class View;
 
 /**
  * The main class representing a text document.
- * This class provides access to the document's views.
+ * This class provides access to the document content, allows
+ * modifications and other stuff.
  */
 class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 {
