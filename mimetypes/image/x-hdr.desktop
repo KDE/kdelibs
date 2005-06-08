@@ -5,3 +5,4 @@ MimeType=image/x-hdr
 Icon=image
 Patterns=*.hdr;*.HDR;*.pic;*.PIC
 Comment=High Dynamic Range Image
+Comment[da]=Billede med højt dynamisk område
