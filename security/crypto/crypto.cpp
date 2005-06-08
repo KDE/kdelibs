@@ -985,7 +985,7 @@ void KCryptoConfig::load()
     else if (authcfg->readBoolEntry("prompt", false) == true)
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
-                                       *i,
+                                       (*i).lower(),
                                        authcfg->readEntry("certificate"),
                                        this );
     j->setAction(aa);
@@ -1193,7 +1193,7 @@ void KCryptoConfig::save()
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     authcfg->setGroup(x->configName());
+     authcfg->setGroup(x->configName().lower());
      authcfg->writeEntry("certificate", x->getCertName());
      authcfg->writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
      authcfg->writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
