@@ -75,9 +75,6 @@ class KateView : public KTextEditor::View,
 
     QString viewMode () const;
 
-  signals:
-    void viewModeChanged ( KTextEditor::View *view );
-
   //
   // KTextEditor::ClipboardInterface
   //
@@ -153,7 +150,6 @@ class KateView : public KTextEditor::View,
         { return m_viewInternal->getCursor().column();                     }
 
   signals:
-    void cursorPositionChanged(KTextEditor::View *view);
     void caretPositionChanged(const KTextEditor::Cursor& newPosition);
     void mousePositionChanged(const KTextEditor::Cursor& newPosition);
 
@@ -233,9 +229,6 @@ class KateView : public KTextEditor::View,
     int selectionStartColumn() const { return selectStart.column(); };
     int selectionEndLine() const  { return selectEnd.line(); };
     int selectionEndColumn()  const  { return selectEnd.column(); };
-
-  signals:
-    void selectionChanged (KTextEditor::View *view);
 
   //
   // internal helper stuff, for katerenderer and so on
@@ -436,10 +429,6 @@ class KateView : public KTextEditor::View,
     void gotoMark( KTextEditor::Mark* mark ) { setCursorPositionInternal ( mark->line, 0, 1 ); }
     void slotSelectionChanged ();
 
-  signals:
-    void focusIn( KTextEditor::View* );
-    void focusOut( KTextEditor::View* );
-
   //
   // Extras
   //
@@ -462,7 +451,6 @@ class KateView : public KTextEditor::View,
   signals:
     void dropEventPass(QDropEvent*);
     void viewStatusMsg (const QString &msg);
-    void textInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text );
 
   public:
     void slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text )

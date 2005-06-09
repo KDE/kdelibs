@@ -27,7 +27,8 @@
 #include "katehighlight.h"
 #include "kateattribute.h"
 
-#include <ktexteditor/configinterface.h>
+#include <ktexteditor/document.h>
+#include <ktexteditor/configpage.h>
 
 #include <klistview.h>
 #include <kdialogbase.h>
@@ -84,7 +85,7 @@ class KateConfigPage : public KTextEditor::ConfigPage
 
   public:
     bool changed () { return m_changed; }
-  
+
   protected slots:
     void slotChanged();
 

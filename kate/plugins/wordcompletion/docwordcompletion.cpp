@@ -457,8 +457,8 @@ void DocWordCompletionPluginView::slotVariableChanged( const QString &var, const
 //END
 
 //BEGIN DocWordCompletionConfigPage
-DocWordCompletionConfigPage::DocWordCompletionConfigPage( DocWordCompletionPlugin *completion, QWidget *parent, const char *name )
-  : KTextEditor::ConfigPage( parent, name )
+DocWordCompletionConfigPage::DocWordCompletionConfigPage( DocWordCompletionPlugin *completion, QWidget *parent, const char * )
+  : KTextEditor::ConfigPage( parent )
   , m_completion( completion )
 {
   QVBoxLayout *lo = new QVBoxLayout( this );

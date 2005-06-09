@@ -33,6 +33,7 @@
 #include <ktexteditor/view.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/configinterface.h>
+#include <ktexteditor/configpage.h>
 #include <kxmlguiclient.h>
 
 #include <qevent.h>
@@ -55,8 +56,8 @@ class DocWordCompletionPlugin
     void removeView (KTextEditor::View *view);
 
     void readConfig();
-    void writeConfig();   
-    
+    void writeConfig();
+
     virtual void readConfig (KConfig *) {}
     virtual void writeConfig (KConfig *) {}
     virtual void configDialog () {}

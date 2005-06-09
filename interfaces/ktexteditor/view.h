@@ -90,24 +90,24 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
    * SIGNALS
    * following signals should be emitted by the editor view
    */
-  private:
+  signals:
     /**
      * view got focus
      * @param view view which got focus
      */
-    virtual void focusIn ( View *view ) = 0;
+    void focusIn ( View *view );
 
     /**
      * view lost focus
      * @param view view which lost focus
      */
-    virtual void focusOut ( View *view ) = 0;
+    void focusOut ( View *view );
 
     /**
      * view mode changed
      * @param view view which changed mode
      */
-    virtual void viewModeChanged ( View *view ) = 0;
+    void viewModeChanged ( View *view );
 
     /**
      * text inserted by user (typing)
@@ -115,7 +115,7 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param position position where the text was inserted
      * @param text the text the user has typed into the editor
      */
-    virtual void textInserted ( View *view, const Cursor &position, const QString &text ) = 0;
+    void textInserted ( View *view, const Cursor &position, const QString &text );
 
   /**
    * Context menu handling
@@ -168,12 +168,12 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
    * following signals should be emitted by the editor view
    * if the cursor position changes
    */
-  private:
+  signals:
     /**
      * cursor position changed!
      * @param view view which emitted the signal
      */
-    virtual void cursorPositionChanged (View *view) = 0;
+    void cursorPositionChanged (View *view);
 
   /**
    * Selection methodes
@@ -251,8 +251,8 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
    * of blockselection mode!
    * @param view view in which the selection has changed
    */
-  private:
-    virtual void selectionChanged (View *view) = 0;
+  signals:
+    void selectionChanged (View *view);
 
   private:
     /**

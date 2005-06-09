@@ -108,8 +108,8 @@
 //END
 
 //BEGIN KateConfigPage
-KateConfigPage::KateConfigPage ( QWidget *parent, const char *name )
-  : KTextEditor::ConfigPage (parent, name)
+KateConfigPage::KateConfigPage ( QWidget *parent, const char * )
+  : KTextEditor::ConfigPage (parent)
   , m_changed (false)
 {
   connect (this, SIGNAL(changed()), this, SLOT(somethingHasChanged ()));

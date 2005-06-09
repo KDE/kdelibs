@@ -21,6 +21,9 @@
 
 #include "cursor.h"
 
+#include "configpage.h"
+#include "configpage.moc"
+
 #include "factory.h"
 #include "factory.moc"
 
@@ -47,8 +50,6 @@
 #include "templateinterface.h"
 #include "texthintinterface.h"
 #include "variableinterface.h"
-
-#include "configinterface.moc"
 
 #include <kaction.h>
 #include <kparts/factory.h>

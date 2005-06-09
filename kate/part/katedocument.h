@@ -205,7 +205,6 @@ class KateDocument : public KTextEditor::Document,
     int lineLength ( int line ) const;
 
   signals:
-    void textChanged (KTextEditor::Document *doc);
     void charactersSemiInteractivelyInserted(int ,int ,const QString&);
 
   public:
@@ -780,8 +779,6 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     void modStateChanged (KTextEditor::Document *doc);
-    void documentNameChanged (KTextEditor::Document *doc);
-    void documentUrlChanged (KTextEditor::Document *doc);
 
   public slots:
      void applyWordWrap ();

@@ -113,18 +113,18 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
    * SIGNALS
    * following signals should be emitted by the editor document
    */
-  private:
+  signals:
     /**
      * document name changed
      * @param document document which changed it's name
      */
-    virtual void documentNameChanged ( Document *document ) = 0;
+    void documentNameChanged ( Document *document );
 
     /**
      * document URL changed
      * @param document document which changed it's URL
      */
-    virtual void documentUrlChanged ( Document *document ) = 0;
+    void documentUrlChanged ( Document *document );
 
   /**
    * VERY IMPORTANT: Methodes to set and query the current encoding of the
@@ -311,12 +311,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
    * following signals should be emitted by the document
    * if the text content is changed
    */
-	private:
+	signals:
 	  /**
 	   * Text changed!
 	   * @param document document which emited this signal
 	   */
-	  virtual void textChanged (Document *document) = 0;
+	  void textChanged (Document *document);
 
   private:
     /**

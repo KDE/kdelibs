@@ -22,6 +22,8 @@
 #ifndef __ktexteditor_cursor_h__
 #define __ktexteditor_cursor_h__
 
+#include <kdelibs_export.h>
+
 namespace KTextEditor
 {
 
@@ -29,7 +31,7 @@ namespace KTextEditor
  * Class to represent a cursor in the text
  * lines and columns start with 0,0
  */
-class Cursor
+class KTEXTEDITOR_EXPORT Cursor
 {
   public:
     /**
