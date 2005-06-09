@@ -43,7 +43,8 @@ KateGlobal *KateGlobal::s_self = 0;
 int KateGlobal::s_ref = 0;
 
 KateGlobal::KateGlobal ()
- : m_aboutData ("katepart", I18N_NOOP("Kate Part"), KATEPART_VERSION,
+ : KTextEditor::Editor (0)
+ , m_aboutData ("katepart", I18N_NOOP("Kate Part"), KATEPART_VERSION,
              I18N_NOOP( "Embeddable editor component" ), KAboutData::License_LGPL_V2,
              I18N_NOOP( "(c) 2000-2005 The Kate Authors" ), 0, "http://kate.kde.org")
  , m_instance (&m_aboutData)
@@ -94,12 +95,12 @@ KateGlobal::KateGlobal ()
   // dir watch
   //
   m_dirWatch = new KDirWatch ();
-  
+
   //
   // command manager
   //
   m_cmdManager = new KateCmd ();
-  
+
   //
   // hl manager
   //
@@ -165,18 +166,28 @@ KateGlobal::~KateGlobal()
 
   // cu manager
   delete m_jscriptManager;
-  
+
   // cu ;)
   qDeleteAll (m_indentScriptManagers);
-  
+
   // cu jscript
   delete m_jscript;
-  
+
   delete m_hlManager;
-  
+
   delete m_cmdManager;
-  
+
   s_self = 0;
+}
+
+KTextEditor::Document *KateGlobal::createDocument ( QObject *parent )
+{
+  return new KateDocument (false, false, false, 0, "", parent, "");
+}
+
+const QList<KTextEditor::Document*> &KateGlobal::documents ()
+{
+  return m_docs;
 }
 
 KateGlobal *KateGlobal::self ()
@@ -184,7 +195,7 @@ KateGlobal *KateGlobal::self ()
   if (!s_self) {
     new KateGlobal ();
   }
-  
+
   return s_self;
 }
 
@@ -192,10 +203,12 @@ void KateGlobal::registerDocument ( KateDocument *doc )
 {
   KateGlobal::incRef ();
   m_documents.append( doc );
+  m_docs.append (doc);
 }
 
 void KateGlobal::deregisterDocument ( KateDocument *doc )
 {
+  m_docs.remove (doc);
   m_documents.remove( doc );
   KateGlobal::decRef ();
 }

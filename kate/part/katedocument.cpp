@@ -345,9 +345,14 @@ KTextEditor::View *KateDocument::createView( QWidget *parent )
   return newView;
 }
 
-const QList<KTextEditor::View*> &KateDocument::views () const
+const QList<KTextEditor::View*> &KateDocument::views ()
 {
   return m_textEditViews;
+}
+
+KTextEditor::Editor *KateDocument::editor ()
+{
+  return KateGlobal::self();
 }
 
 //BEGIN KTextEditor::ConfigInterfaceExtension stuff
@@ -4112,9 +4117,9 @@ void KateDocument::setDocName (QString name )
 
   int count = -1;
 
-  for (int z=0; z < KateGlobal::self()->documents().size(); ++z)
+  for (int z=0; z < KateGlobal::self()->kateDocuments().size(); ++z)
   {
-    KateDocument *doc = (KateGlobal::self()->documents())[z];
+    KateDocument *doc = (KateGlobal::self()->kateDocuments())[z];
 
     if ( (doc != this) && (doc->url().filename() == url().filename()) )
       if ( doc->m_docNameNumber > count )
@@ -4281,25 +4286,6 @@ bool KateDocument::documentReload()
   }
 
   return false;
-}
-
-static bool checkOverwrite( KURL u )
-{
-  if( !u.isLocalFile() )
-    return true;
-
-  QFileInfo info( u.path() );
-  if( !info.exists() )
-    return true;
-
-  return KMessageBox::Yes
-         == KMessageBox::warningYesNo
-              ( 0,
-                i18n( "A file named \"%1\" already exists. Are you sure you want to overwrite it?" ).arg( info.fileName() ),
-                i18n( "Overwrite File?" ),
-                KGuiItem( i18n( "&Overwrite" ), "filesave", i18n( "Overwrite the file" ) ),
-                KStdGuiItem::cancel()
-              );
 }
 
 bool KateDocument::documentSave()

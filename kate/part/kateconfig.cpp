@@ -234,8 +234,8 @@ void KateDocumentConfig::updateConfig ()
 
   if (isGlobal())
   {
-    for (int z=0; z < KateGlobal::self()->documents().size(); ++z)
-      (KateGlobal::self()->documents())[z]->updateConfig ();
+    for (int z=0; z < KateGlobal::self()->kateDocuments().size(); ++z)
+      (KateGlobal::self()->kateDocuments())[z]->updateConfig ();
   }
 }
 

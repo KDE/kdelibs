@@ -103,6 +103,8 @@ class KateDocument : public KTextEditor::Document,
 
     bool closeURL();
 
+    KTextEditor::Editor *editor ();
+
   //
   // Plugins section
   //
@@ -142,7 +144,7 @@ class KateDocument : public KTextEditor::Document,
   //
   public:
     KTextEditor::View *createView( QWidget *parent );
-    const QList<KTextEditor::View*> &views () const;
+    const QList<KTextEditor::View*> &views ();
 
     inline KateView *activeView () const { return m_activeView; }
 

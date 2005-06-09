@@ -6,7 +6,7 @@ libktexteditor_la_SOURCES = ktexteditor.cpp templateinterface.cpp editorchooser.
 libktexteditor_la_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 libktexteditor_la_LIBADD = $(LIB_KPARTS) $(top_builddir)/kabc/libkabc.la
 
-ktexteditorinclude_HEADERS = document.h view.h plugin.h cursor.h \
+ktexteditorinclude_HEADERS = factory.h editor.h document.h view.h plugin.h cursor.h \
                              searchinterface.h highlightinginterface.h \
                              codecompletioninterface.h \
                              configinterface.h markinterface.h \

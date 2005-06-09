@@ -28,15 +28,10 @@
 // the list of views
 #include <QList>
 
-/**
- * Namespace for the KDE Text Editor Interfaces.
- * These interfaces provide easy access to editor parts for the
- * applications embedding them. At the moment they are at least
- * supported by both the Kate Part and the Yzis Part.
- */
 namespace KTextEditor
 {
 
+class Editor;
 class View;
 
 /**
@@ -68,7 +63,8 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
     int documentNumber () const;
 
   /**
-   * Stuff to create and manage the views of this document
+   * Stuff to create and manage the views of this document and access the global
+   * editor object
    */
   public:
     /**
@@ -84,7 +80,15 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * Returns a list of all views of this document.
      * @return list of all existing views
      */
-    virtual const QList<View*> &views () const = 0;
+    virtual const QList<View*> &views () = 0;
+
+    /**
+     * Retrieve the global editor object, the editor part
+     * implementation must ensure that this object lives as long
+     * as any factory object exists or any document
+     * @return global KTextEditor::Editor object
+     */
+    virtual Editor *editor () = 0;
 
   /**
    * General information about this document and it's content

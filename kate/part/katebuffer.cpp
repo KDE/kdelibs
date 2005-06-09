@@ -975,8 +975,8 @@ bool KateBuffer::doHighlight (KateBufBlock *buf, int startLine, int endLine, boo
         // avoid recursive invalidation
         KateHlManager::self()->setForceNoDCReset(true);
 
-        for (int i=0; i < KateGlobal::self()->documents().size(); ++i)
-          (KateGlobal::self()->documents())[i]->makeAttribs();
+        for (int i=0; i < KateGlobal::self()->kateDocuments().size(); ++i)
+          (KateGlobal::self()->kateDocuments())[i]->makeAttribs();
 
         // doHighlight *shall* do his work. After invalidation, some highlight has
         // been recalculated, but *maybe not* until endLine ! So we shall force it manually...

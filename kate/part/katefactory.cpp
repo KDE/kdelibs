@@ -21,14 +21,14 @@
 #include "kateglobal.h"
 #include "katedocument.h"
 
-#include <kparts/factory.h>
+#include <ktexteditor/factory.h>
 
 /**
  * wrapper factory to be sure nobody external deletes our kateglobal object
  * each instance will just increment the reference counter of our internal
  * super private global instance ;)
  */
-class KateFactory : public KParts::Factory
+class KateFactory : public KTextEditor::Factory
 {
   public:
     /**
@@ -37,7 +37,7 @@ class KateFactory : public KParts::Factory
      * @param name name of factory
      */
     KateFactory ( QObject *parent = 0, const char *name = 0 )
-      : KParts::Factory (parent, name)
+      : KTextEditor::Factory (parent)
     {
       KateGlobal::incRef ();
     }
@@ -49,6 +49,8 @@ class KateFactory : public KParts::Factory
     {
       KateGlobal::decRef ();
     }
+
+    KTextEditor::Editor *editor () { return KateGlobal::self(); }
 
     /**
      * reimplemented create object method

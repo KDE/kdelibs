@@ -21,6 +21,8 @@
 
 #include "katejscript.h"
 
+#include <ktexteditor/editor.h>
+
 #include <ktrader.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -61,7 +63,7 @@ namespace Kate {
  * or view stay around, here is the place to put things
  * which are needed and shared by all this objects ;)
  */
-class KateGlobal : public QObject
+class KateGlobal : public KTextEditor::Editor
 {
   Q_OBJECT
 
@@ -78,16 +80,30 @@ class KateGlobal : public QObject
     ~KateGlobal ();
 
     /**
+     * Create a new document object
+     * @param parent parent object
+     * @return created KTextEditor::Document
+     */
+    virtual KTextEditor::Document *createDocument ( QObject *parent );
+
+    /**
+     * Returns a list of all documents of this editor.
+     * @return list of all existing documents
+     */
+    virtual const QList<KTextEditor::Document*> &documents ();
+
+
+    /**
      * singleton accessor
      * @return instance of the factory
      */
     static KateGlobal *self ();
-    
+
     /**
      * increment reference counter
      */
     static void incRef () { ++s_ref; }
-     
+
     /**
      * decrement reference counter
      */
@@ -129,7 +145,7 @@ class KateGlobal : public QObject
      * return a list of all registered docs
      * @return all known documents
      */
-    QList<KateDocument*> &documents () { return m_documents; };
+    QList<KateDocument*> &kateDocuments () { return m_documents; };
 
     /**
      * return a list of all registered views
@@ -201,13 +217,13 @@ class KateGlobal : public QObject
      * one matching, the first found will be taken
      */
     KateIndentScript indentScript (const QString &scriptname);
-    
+
     /**
      * hl manager
      * @return hl manager
      */
     KateHlManager *hlManager () { return m_hlManager; }
-    
+
     /**
      * command manager
      * @return command manager
@@ -219,7 +235,7 @@ class KateGlobal : public QObject
      * instance of this factory
      */
     static KateGlobal *s_self;
-    
+
     /**
      * reference counter
      */
@@ -309,11 +325,13 @@ class KateGlobal : public QObject
      * hl manager
      */
     KateHlManager *m_hlManager;
-    
+
     /**
      * command manager
      */
     KateCmd *m_cmdManager;
+
+    QList<KTextEditor::Document*> m_docs;
 };
 
 #endif

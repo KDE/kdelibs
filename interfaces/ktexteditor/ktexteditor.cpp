@@ -21,6 +21,12 @@
 
 #include "cursor.h"
 
+#include "factory.h"
+#include "factory.moc"
+
+#include "editor.h"
+#include "editor.moc"
+
 #include "document.h"
 #include "document.moc"
 
@@ -92,6 +98,24 @@ namespace KTextEditor
 static int globalDocumentNumber = 0;
 static int globalViewNumber = 0;
 static int globalPluginNumber = 0;
+
+Factory::Factory( QObject *parent )
+ : KParts::Factory( parent )
+{
+}
+
+Factory::~Factory()
+{
+}
+
+Editor::Editor( QObject *parent )
+ : QObject ( parent )
+{
+}
+
+Editor::~Editor()
+{
+}
 
 Document::Document( QObject *parent, const char *name )
  : KParts::ReadWritePart( parent, name )
