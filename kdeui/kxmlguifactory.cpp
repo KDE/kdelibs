@@ -532,8 +532,12 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     QString attrName = attribute.name();
     // If the attribute is a deprecated "accel", change to "shortcut".
-    if ( attrName.lower() == "accel" )
+    if ( attrName.lower() == QLatin1String("accel") )
         attrName = attrShortcut;
+
+    // No need to re-set name, particularly since it's "objectName" in Qt4
+    if ( attrName.lower() == QLatin1String("name") )
+        return;
 
     QVariant propertyValue;
 
