@@ -1749,13 +1749,16 @@ void KURL::addPath( const QString& _txt )
 
   // No double '/' characters
   i = 0;
+  const int _txtlen=_txt.length();
   if ( len != 0 && m_strPath[ len - 1 ] == '/' )
   {
-    while( _txt[i] == '/' )
+    while ( (i<_txtlen) && ( _txt[i] == '/' ) )
       ++i;
   }
 
   m_strPath += _txt.mid( i );
+  //kdDebug(126)<<"addPath: resultpath="<<m_strPath<<endl;
+
 }
 
 QString KURL::directory( bool _strip_trailing_slash_from_result,
