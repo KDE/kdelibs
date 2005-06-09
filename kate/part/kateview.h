@@ -33,7 +33,7 @@
 #include <ktexteditor/sessionconfiginterface.h>
 
 #include <qpointer.h>
-#include <Q3PopupMenu>
+#include <QMenu>
 
 class KateDocument;
 class KateBookmarks;
@@ -310,8 +310,8 @@ class KateView : public KTextEditor::View,
         { return m_doc->line( cursorLine() ); }
     QString currentWord()
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
-    void insertText( const QString& text )
-        { m_doc->insertText( m_viewInternal->getCursor(), text ); }
+    /*bool insertText( const QString& text )
+        { return m_doc->insertText( m_viewInternal->getCursor(), text ); } */
     int tabWidth()                { return m_doc->config()->tabWidth(); }
     void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
     void setEncoding( QString e ) { m_doc->setEncoding(e);       }
@@ -513,7 +513,7 @@ class KateView : public KTextEditor::View,
     KateSearch*            m_search;
     KateSpell             *m_spell;
     KateBookmarks*         m_bookmarks;
-    QPointer<QMenu>  m_rmbMenu;
+    QPointer<QMenu>        m_rmbMenu;
     KateCodeCompletion*    m_codeCompletion;
 
     KateCmdLine *m_cmdLine;

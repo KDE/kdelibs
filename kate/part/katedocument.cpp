@@ -2772,6 +2772,7 @@ void KateDocument::addView(KTextEditor::View *view) {
   readVariables (true);
 
   setActiveView(view);
+  emit newViewsCreated(QList<KTextEditor::View*>()<<view);
 }
 
 void KateDocument::removeView(KTextEditor::View *view) {
