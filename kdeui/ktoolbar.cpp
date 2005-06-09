@@ -1422,9 +1422,15 @@ void KToolBar::show()
 
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
-    bool b = isUpdatesEnabled();
+    bool b       = isUpdatesEnabled();
+    bool restore = !testAttribute(Qt::WA_ForceUpdatesDisabled);
     setUpdatesEnabled( false );
     Q3ToolBar::resizeEvent( e );
+    // Restore the updates enabled flag -- not that we use
+    // the "force" flags, since Qt itself may suspend
+    // repaints in a way that shows up in isUpdatesEnabled,
+    // and we don't want to get stuck non-repainting due to that
+    setUpdatesEnabled( restore );
     if (b)
     {
       if (layoutTimer->isActive())
