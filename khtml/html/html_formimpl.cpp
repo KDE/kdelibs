@@ -51,7 +51,9 @@
 #include <kmessagebox.h>
 #include <kapplication.h>
 #include <klocale.h>
+#ifndef KHTML_NO_WALLET
 #include <kwallet.h>
+#endif
 #include <netaccess.h>
 #include <kfileitem.h>
 #include <qfile.h>
@@ -458,7 +460,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
             }
         }
     }
-#endif
+#endif // KHTML_NO_WALLET
 }
 
 void HTMLFormElementImpl::submitFromKeyboard()

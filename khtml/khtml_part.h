@@ -73,7 +73,7 @@ namespace khtml
   class DocLoader;
   class RenderPart;
   class RenderPartObject;
-  struct ChildFrame;
+  class ChildFrame;
   class MouseEvent;
   class MousePressEvent;
   class MouseDoubleClickEvent;

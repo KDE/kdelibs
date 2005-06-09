@@ -37,7 +37,7 @@ namespace DOM
 
 namespace khtml
 {
-    struct ChildFrame;
+    class ChildFrame;
 
 class RenderFrameSet : public RenderBox
 {
