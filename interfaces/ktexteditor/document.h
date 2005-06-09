@@ -90,6 +90,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     virtual Editor *editor () = 0;
 
+  signals:
+   /**
+    * Should be emitted at appropriate times to help applications / plugins to attach to new views
+    */
+    void newViewsCreated(const QList<View*> &views);
+
   /**
    * General information about this document and it's content
    */
@@ -289,6 +295,14 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      * @return success
      */
     virtual bool removeText ( const Cursor &startPosition, const Cursor &endPosition ) = 0;
+
+    /**
+     * checks if a cursor specifies a valid position in a document
+     * could be overridden by an implementor, but does not have to
+     * @param cursor which should be checked
+     * @return check result
+     */
+    virtual bool cursorInText(const Cursor &cursor);
 
     /**
      * Insert line(s) at the given line number.

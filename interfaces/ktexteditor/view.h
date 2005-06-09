@@ -189,6 +189,14 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
     virtual bool setSelection ( const Cursor &startPosition, const Cursor &endPosition ) = 0;
 
     /**
+     * Convenience method for setting a selection. An existing old selection will be discarded
+     * Implementers should replace the default implementation with a more efficient one, if possible
+     * @param position start/end position of selection, depending on the length parameter.
+     * @param length if >0 position is start pos, if <0 position is end pos.
+     * @param wrap if false selection doesn't wrap lines, and reaches only to start/end of the cursors line. (default is true)
+     */
+    virtual bool setSelection( const Cursor &position, int length,bool wrap=true);
+    /**
      * Is there any non-empty selection?
      * @return true if some text is selected
      */
@@ -254,6 +262,15 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
   signals:
     void selectionChanged (View *view);
 
+
+  public:
+    /**
+     * Convenience function inserts the given text at the view's current cursor position
+     * It's not needed to reimplement it, except you want to do some special things with it
+     * @param text Text to be inserted
+     * @return success of insertion
+     */
+    virtual bool insertText (const QString &text );
   private:
     /**
      * Private d-pointer

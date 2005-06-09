@@ -54,6 +54,7 @@
 #include <kaction.h>
 #include <kparts/factory.h>
 #include <kparts/componentfactory.h>
+#include <kdebug.h>
 
 using namespace KTextEditor;
 
@@ -141,8 +142,39 @@ View::View( QWidget *parent )
 {
 }
 
+bool Document::cursorInText(const Cursor& cursor)
+{
+  if ( (cursor.line()<0) || (cursor.line()>=lines())) return false;
+  return (cursor.column()>=0) && (cursor.column()<=lineLength(cursor.line())); // = because new line isn't usually contained in line length
+}
+
 View::~View()
 {
+}
+
+bool View::setSelection(const Cursor& position, int length,bool wrap)
+{
+  KTextEditor::Document *doc=document();
+  if (!document()) return false;
+  if (length==0) return false;
+  if (!doc->cursorInText(position)) return false;
+  Cursor end=Cursor(position.line(),position.column());
+  if (!wrap) {
+    int col=end.column()+length;
+    if (col<0) col=0;
+    if (col>doc->lineLength(end.line())) col=doc->lineLength(end.line());
+    end.setColumn(col);
+  } else {
+    kdDebug()<<"KTextEditor::View::setSelection(pos,len,true) not implemented yet"<<endl;
+  }
+  return setSelection(position,end);
+}
+
+bool View::insertText (const QString &text )
+{
+  KTextEditor::Document *doc=document();
+  if (!doc) return false;
+  return doc->insertText(cursorPosition(),text);
 }
 
 int View::viewNumber () const
@@ -287,3 +319,5 @@ SessionConfigInterface *KTextEditor::sessionConfigInterface (Plugin *plugin)
 
   return dynamic_cast<SessionConfigInterface*>( plugin );
 }
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
