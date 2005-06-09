@@ -1577,7 +1577,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
         dlg.setSelection( dir ); // may also be a filename
@@ -1598,7 +1598,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
                                      WId parent_id,
                                      const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
 #ifdef Q_WS_X11
@@ -1626,7 +1626,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     KFileDialog dlg(specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
