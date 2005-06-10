@@ -244,7 +244,7 @@ void KListBox::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
   QListBox::contentsMouseDoubleClickEvent( e );
 
-  QListBoxItem* item = itemAt( e->pos() );
+  QListBoxItem* item = itemAt( contentsToViewport( e->pos() ) );
 
   if( item ) {
     emit doubleClicked( item, e->globalPos() );
