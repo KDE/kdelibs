@@ -164,10 +164,13 @@ KNFSShare::KNFSShare() {
     KDirWatch::self()->addFile(d->exportsFile);
     connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
    	        SLOT(slotFileChange(const QString&)));
-  } 
+  }
 }
 
 KNFSShare::~KNFSShare() {
+  if (QFile::exists(d->exportsFile)) {
+    KDirWatch::self()->removeFile(d->exportsFile);
+  }
   delete d;
 }
 
