@@ -31,7 +31,6 @@
 #include <pwd.h>
 #include <unistd.h>
 
-#include <kcombobox.h>
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
 #include <qfile.h>
@@ -49,6 +48,8 @@
 #include <qvgroupbox.h>
 #include <qwhatsthis.h>
 
+#include <kaboutdata.h>
+#include <kcombobox.h>
 #include <kconfig.h>
 #include <kdatepicker.h>
 #include <kdebug.h>
@@ -61,7 +62,9 @@
 #include <kmdcodec.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
+#include <kprocess.h>
 #include <kpushbutton.h>
+#include <kresolver.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
 #include <kurllabel.h>
@@ -87,8 +90,8 @@
 #include "crypto.h"
 #include "certexport.h"
 #include "kdatetimedlg.h"
-#include <kaboutdata.h>
-#include <kprocess.h>
+
+using namespace KNetwork;
 
 typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
 K_EXPORT_COMPONENT_FACTORY( kcm_crypto, KryptoFactory("kcmcrypto") )
@@ -985,7 +988,7 @@ void KCryptoConfig::load()
     else if (authcfg->readBoolEntry("prompt", false) == true)
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
-                                       (*i).lower(),
+                                       KResolver::domainToAscii(*i),
                                        authcfg->readEntry("certificate"),
                                        this );
     j->setAction(aa);
@@ -1193,7 +1196,7 @@ void KCryptoConfig::save()
         static_cast<HostAuthItem *>(hostAuthList->firstChild());
                                                               x;
              x = static_cast<HostAuthItem *>(x->nextSibling())) {
-     authcfg->setGroup(x->configName().lower());
+     authcfg->setGroup(KResolver::domainToAscii(x->configName()));
      authcfg->writeEntry("certificate", x->getCertName());
      authcfg->writeEntry("prompt", (x->getAction() == KSSLCertificateHome::AuthPrompt));
      authcfg->writeEntry("send", (x->getAction() == KSSLCertificateHome::AuthSend));
