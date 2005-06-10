@@ -335,16 +335,28 @@ DOMStringImpl *DOMStringImpl::upper() const
 
 DOMStringImpl *DOMStringImpl::capitalize() const
 {
+    bool canCapitalize=true;
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;
-
+    
     c->s = QT_ALLOC_QCHAR_VEC(l);
     c->l = l;
 
-    if ( l ) c->s[0] = s[0].upper();
-    for (unsigned int i = 1; i < l; i++)
-	c->s[i] = s[i-1].isLetterOrNumber() ? s[i] : s[i].upper();
-
+    for (unsigned int i=0; i<l; i++)
+    {
+        if (s[i].isLetterOrNumber() && canCapitalize)
+        {
+            c->s[i]=s[i].upper();
+            canCapitalize=false;
+        }
+        else
+        {
+            c->s[i]=s[i];
+            if (s[i].isSpace())
+                canCapitalize=true;
+        }
+    }
+    
     return c;
 }
 
