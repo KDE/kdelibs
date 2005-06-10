@@ -59,7 +59,6 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
 
     if ( parent ) {
-        kdDebug()<<"KCompletionBox has a parent"<<endl;
         setFocusProxy( parent );
     } else
         setFocusPolicy( Qt::NoFocus );
@@ -112,17 +111,13 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
     if ((o==this) && (type==QEvent::KeyPress)) {
 	//not sure if this is a work around for a Qt bug or a fix for changed qt behaviour, at least it makes the kcombobox work again for me
-	kdDebug()<<"Got a keypress myself"<<endl;
 	QApplication::sendEvent(d->m_parent,e);
 	return true;
     }
 
     if ( o == d->m_parent ) {
-        kdDebug()<<"KCompletionBox::eventFilter object is parent"<<endl;
         if ( isVisible() ) {
-            kdDebug()<<"KCompletionBox::eventFilter box visible"<<endl;
             if ( type == QEvent::KeyPress ) {
-                kdDebug()<<"KCompletionBox::eventFilter handling key events"<<endl;
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
                     case Qt::Key_Backtab:

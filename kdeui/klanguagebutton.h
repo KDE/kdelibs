@@ -33,7 +33,8 @@
 
 class KLanguageButtonPrivate;
 class QIcon;
-class Q3PopupMenu;
+class QMenu;
+class QAction;
 
 /**
  * KLanguageButton provides a combobox with a 2-D dataset. It also supports icons.
@@ -163,18 +164,17 @@ signals:
   void highlighted( const QString & id );
 
 private slots:
-  void slotActivated( int );
-  void slotHighlighted( int );
+  void slotTriggered( QAction* );
+  void slotHovered( QAction* );
 
 private:
-  int currentItem() const;
-  void setCurrentItem( int );
+  void setCurrentItem( QAction* );
   void init(const char * name);
 
   // work space for the new class
   QStringList *m_ids;
-  Q3PopupMenu *m_popup, *m_oldPopup;
-  int m_current;
+  QMenu *m_popup, *m_oldPopup;
+  QString m_current;
 
   KLanguageButtonPrivate * d;
 };
