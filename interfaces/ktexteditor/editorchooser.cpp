@@ -78,7 +78,10 @@ EditorChooser:: ~EditorChooser(){
 void EditorChooser::readAppSetting(const QString& postfix){
 	KConfig *cfg=kapp->config();
 	QString previousGroup=cfg->group();
-	cfg->setGroup("KTEXTEDITOR:"+postfix);
+        if (postfix.isEmpty())
+		cfg->setGroup("KTEXTEDITOR:");
+	else
+		cfg->setGroup("KTEXTEDITOR:"+postfix);
 	QString editor=cfg->readPathEntry("editor");
 	if (editor.isEmpty()) d->chooser->editorCombo->setCurrentItem(0);
 	else
@@ -93,7 +96,10 @@ void EditorChooser::readAppSetting(const QString& postfix){
 void EditorChooser::writeAppSetting(const QString& postfix){
 	KConfig *cfg=kapp->config();
 	QString previousGroup=cfg->group();
-	cfg->setGroup("KTEXTEDITOR:"+postfix);
+	if (postfix.isEmpty())
+		cfg->setGroup("KTEXTEDITOR:");
+	else
+		cfg->setGroup("KTEXTEDITOR:"+postfix);
 	cfg->writeEntry("DEVELOPER_INFO","NEVER TRY TO USE VALUES FROM THAT GROUP, THEY ARE SUBJECT TO CHANGES");
 	cfg->writePathEntry("editor", (d->chooser->editorCombo->currentItem()==0) ?
 		QString() : QString(d->elements.at(d->chooser->editorCombo->currentItem()-1)));
@@ -108,7 +114,10 @@ KTextEditor::Document *EditorChooser::createDocument(QObject *parent,const char*
 
 	KConfig *cfg=kapp->config();
         QString previousGroup=cfg->group();
-        cfg->setGroup("KTEXTEDITOR:"+postfix);
+	if (postfix.isEmpty())
+	        cfg->setGroup("KTEXTEDITOR:");
+	else
+        	cfg->setGroup("KTEXTEDITOR:"+postfix);
         QString editor=cfg->readPathEntry("editor");
 	cfg->setGroup(previousGroup);
 	if (editor.isEmpty())
@@ -130,3 +139,36 @@ KTextEditor::Document *EditorChooser::createDocument(QObject *parent,const char*
 
 	return 0;
 }
+
+KTextEditor::Editor *EditorChooser::getEditor(const QString& postfix,bool fallBackToKatePart){
+
+	KTextEditor::Editor *tmpEd=0;
+
+	KConfig *cfg=kapp->config();
+        QString previousGroup=cfg->group();
+	if (postfix.isEmpty())
+	        cfg->setGroup("KTEXTEDITOR:");
+	else
+        	cfg->setGroup("KTEXTEDITOR:"+postfix);
+        QString editor=cfg->readPathEntry("editor");
+	cfg->setGroup(previousGroup);
+	if (editor.isEmpty())
+	{
+		KConfig *config=new KConfig("default_components");
+  		config->setGroup("KTextEditor");
+	  	editor = config->readPathEntry("embeddedEditor", "katepart");
+		delete config;
+	}
+
+	KService::Ptr serv=KService::serviceByDesktopName(editor);
+	if (serv)
+	{
+		tmpEd=KTextEditor::getEditor(serv->library().latin1());
+		if (tmpEd) return tmpEd;
+	}
+	if (fallBackToKatePart)
+		return KTextEditor::getEditor("libkatepart");
+
+	return 0;
+}
+

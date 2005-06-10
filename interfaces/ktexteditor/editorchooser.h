@@ -2,6 +2,7 @@
 #define  _EDITOR_CHOOSER_H_
 
 #include <ktexteditor/document.h>
+#include <ktexteditor/editor.h>
 
 #include <qwidget.h>
 
@@ -27,6 +28,7 @@ class KTEXTEDITOR_EXPORT EditorChooser: public QWidget
     void writeAppSetting(const QString& postfix=QString::null);
 
     static KTextEditor::Document *createDocument(QObject* parent=0,const char *name=0,const QString& postfix=QString::null, bool fallBackToKatePart=true);
+    static KTextEditor::Editor *getEditor(const QString& postfix=QString::null, bool fallBackToKatePart=true);
    
   private:
     class PrivateEditorChooser *d;
