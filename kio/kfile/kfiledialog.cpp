@@ -1583,6 +1583,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
         dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( Saving );
+    dlg.setMode( KFile::File );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -1612,6 +1613,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
         dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( KFileDialog::Saving);
+    dlg.setMode( KFile::File );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -1633,6 +1635,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
+    dlg.setMode( KFile::File );
 
     dlg.exec();
 

@@ -173,6 +173,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveFileNameAndEncoding(cons
     bool specialDir = dir.at(0) == ':';
     KEncodingFileDialog dlg(specialDir?dir:QString::null, encoding,filter,caption.isNull() ? i18n("Save As") : caption,
 	Saving,parent, "filedialog", true);
+    dlg.setMode(KFile::File);
 
     if ( !specialDir )
         dlg.setSelection( dir ); // may also be a filename
@@ -196,7 +197,7 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QS
     bool specialDir = !dir.isEmpty() && dir.at(0) == ':';
     KEncodingFileDialog dlg(specialDir?dir:QString::null, encoding,filter,caption.isNull() ? i18n("Save As") : 
 	caption, Saving,parent, "filedialog", true);
-
+    dlg.setMode(KFile::File);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
