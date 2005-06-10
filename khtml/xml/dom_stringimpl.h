@@ -37,6 +37,9 @@ namespace DOM {
 class DOMStringImpl : public khtml::Shared<DOMStringImpl>
 {
 private:
+    struct WithOneRef { };
+    DOMStringImpl(WithOneRef) { s = 0; l = 0; ref(); }
+            
     DOMStringImpl(const DOMStringImpl&);
     DOMStringImpl& operator=(const DOMStringImpl&);
 protected:
@@ -89,6 +92,8 @@ public:
     DOMStringImpl *upper() const;
     DOMStringImpl *capitalize() const;
 
+    static DOMStringImpl* empty();
+    
     unsigned int l;
     QChar *s;
 };
