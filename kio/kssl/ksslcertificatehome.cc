@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000-2005 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,8 +22,10 @@
 #include <ksslcertificate.h>
 #include <ksslpkcs12.h>
 
+#include <kresolver.h>
 #include <ksimpleconfig.h>
 
+using namespace KNetwork;
 
 QStringList KSSLCertificateHome::getCertificateList() {
 KSimpleConfig cfg("ksslcertificates", false);
@@ -42,7 +44,7 @@ return list;
 void KSSLCertificateHome::setDefaultCertificate(QString name, QString host, bool send, bool prompt) {
 KSimpleConfig cfg("ksslauthmap", false);
 
-   cfg.setGroup(host.lower());
+   cfg.setGroup(KResolver::domainToAscii(host));
    cfg.writeEntry("certificate", name);
    cfg.writeEntry("send", send);
    cfg.writeEntry("prompt", prompt);
@@ -150,11 +152,11 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString pass
 QString KSSLCertificateHome::getDefaultCertificateName(QString host, KSSLAuthAction *aa) {
 KSimpleConfig cfg("ksslauthmap", false);
 
-   if (!cfg.hasGroup(host.lower())) {
+   if (!cfg.hasGroup(KResolver::domainToAscii(host))) {
       if (aa) *aa = AuthNone;
       return QString::null;
    } else {
-      cfg.setGroup(host.lower());
+      cfg.setGroup(KResolver::domainToAscii(host));
       if (aa) {
          bool tmp = cfg.readBoolEntry("send", false);
          *aa = AuthSend; 
@@ -229,8 +231,4 @@ void KSSLCertificateHome::setDefaultCertificate(KSSLPKCS12 *cert, bool send, boo
    if (cert)
    KSSLCertificateHome::setDefaultCertificate(cert->name(), send, prompt);
 }
-
-
-
-
 
