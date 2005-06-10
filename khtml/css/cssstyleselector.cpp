@@ -3203,10 +3203,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #else
                 int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
                 if (attrID)
-                {
-                    DOMStringImpl *v = element->getAttribute(attrID).implementation();
-                    style->setContent(v != NULL ? v : DOMStringImpl::empty(), i != 0);
-                }  
+                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
 #endif
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)

@@ -33,12 +33,6 @@
 using namespace DOM;
 using namespace khtml;
 
-DOMStringImpl* DOMStringImpl::empty()
-{
-    static WithOneRef w;
-    static DOMStringImpl e(w);
-    return &e;
-}
 
 DOMStringImpl::DOMStringImpl(const char *str)
 {
