@@ -935,8 +935,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      // broken mail-/news-clients omit the time zone
      if (*dateString) {
 
-       if ( (dateString[0] == 'G' && dateString[1] == 'M' && dateString[2] == 'T')
-            || (dateString[0] == 'U' && dateString[1] == 'T' && dateString[2] == 'C') )
+       if (strncasecmp(dateString, "GMT", 3) == 0 ||
+	   strncasecmp(dateString, "UTC", 3) == 0) 
        {
          dateString += 3;
          have_tz = true;

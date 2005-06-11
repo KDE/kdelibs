@@ -2,9 +2,9 @@
 
 	* date_object.cpp (KRFCDate_parseDate): parse AM and PM. Fixed
 	version of JavaScriptCore patch.
-
-	* date_object.cpp (KRFCDate_parseDate): fix time zone parsing
+	(KRFCDate_parseDate): fix time zone parsing
 	that broke due to a compiler warning fix in 2003 (r275385).
+	(KRFCDate_parseDate): case insensitive parsing of GMT and UTC
 
 2005-05-28  Harri Porten  <porten@kde.org>
 
