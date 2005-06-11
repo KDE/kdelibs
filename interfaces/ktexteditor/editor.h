@@ -22,6 +22,8 @@
 // our main baseclass of the KTextEditor::Editor
 #include <QObject>
 
+class KAboutData;
+
 namespace KTextEditor
 {
 
@@ -65,6 +67,10 @@ class KTEXTEDITOR_EXPORT Editor : public QObject
      */
     virtual const QList<Document*> &documents () = 0;
 
+    /**
+     * return the about data
+     */
+    virtual const KAboutData* aboutData() const =0;
   signals:
     /**
      * emit this after successfull document creation in createDocument

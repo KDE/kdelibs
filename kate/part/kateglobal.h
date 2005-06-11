@@ -253,6 +253,7 @@ class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterf
      */
     KTextEditor::Command *queryCommand (const QString &cmd);
 
+    const KAboutData *aboutData() const {return &m_aboutData;}
 
   private:
     /**
