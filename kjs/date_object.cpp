@@ -640,7 +640,7 @@ static double ymdhms_to_seconds(int year, int mon, int day, int hour, int minute
 
 // we follow the recommendation of rfc2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000"
-static const struct {
+static const struct KnownZone {
 #ifdef _WIN32
     char tzName[4];
 #else
@@ -657,8 +657,7 @@ static const struct {
     { "MST", -420 },
     { "MDT", -360 },
     { "PST", -480 },
-    { "PDT", -420 },
-    { { 0, 0, 0, 0 }, 0 }
+    { "PDT", -420 }
 };
 
 double KJS::makeTime(struct tm *t, int ms, bool utc)
@@ -967,7 +966,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
            offset = ((offset / 100)*60 + (offset % 100))*sgn;
          have_tz = true;
        } else {
-         for (int i=0; known_zones[i].tzName != 0; i++) {
+         for (int i=0; i < int(sizeof(known_zones)/sizeof(KnownZone)); i++) {
            if (0 == strncasecmp(dateString, known_zones[i].tzName, strlen(known_zones[i].tzName))) {
              offset = known_zones[i].tzOffset;
              have_tz = true;
