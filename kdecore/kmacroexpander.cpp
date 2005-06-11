@@ -25,6 +25,8 @@
 #include <q3valuestack.h>
 #include <qregexp.h>
 
+#include <kdebug.h>
+
 KMacroExpanderBase::KMacroExpanderBase( QChar c )
 {
     escapechar = c;
@@ -360,8 +362,8 @@ KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, int pos, QS
     }
     const KMacroMapExpander<QChar,VT> *const_this = this;
     typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
-    if (it != macromap.end()) {
-       ret += it.data();
+    if (it != const_this->macromap.end()) {
+       ret += it.value();
        return 2;
     }
 
