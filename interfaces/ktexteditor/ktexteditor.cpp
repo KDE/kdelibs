@@ -204,24 +204,21 @@ Document *Plugin::document ()
   return m_doc;
 }
 
-Document *KTextEditor::createDocument ( const char* libname, QObject *parent )
-{
-  return KParts::ComponentFactory::createPartInstanceFromLibrary<Document>( libname, 0, 0, parent, "" );
-}
-
 Plugin *KTextEditor::createPlugin ( const char* libname, Document *document )
 {
   return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, document, "" );
 }
 
-Editor *KTextEditor::getEditor(const char *libname) {
+Editor *KTextEditor::editor(const char *libname)
+{
   KLibFactory *fact=KLibLoader::self()->factory(libname);
+
   KTextEditor::Factory *ef=qobject_cast<KTextEditor::Factory*>(fact);
+
   if (!ef) return 0;
+
   return ef->editor();
 }
-
-
 
 KTextEditor::CommandInterface *KTextEditor::commandInterface (Document *doc)
 {

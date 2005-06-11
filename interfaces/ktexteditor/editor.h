@@ -65,16 +65,16 @@ class KTEXTEDITOR_EXPORT Editor : public QObject
      */
     virtual const QList<Document*> &documents () = 0;
 
-    
   signals:
     /**
      * emit this after successfull document creation in createDocument
+     * @param editor editor which created the new document
      * @param document the newly created document instance
      */
-    void documentCreated(Document* document);
+    void documentCreated (Editor *editor, Document *document);
 };
 
-KTEXTEDITOR_EXPORT Editor *getEditor ( const char* libname);
+KTEXTEDITOR_EXPORT Editor *editor ( const char *libname );
 
 }
 

@@ -342,6 +342,9 @@ KTextEditor::View *KateDocument::createView( QWidget *parent )
   connect(newView, SIGNAL(cursorPositionChanged()), SLOT(undoCancel()));
   if ( s_fileChangedDialogsActivated )
     connect( newView, SIGNAL(gotFocus( KTextEditor::View * )), this, SLOT(slotModifiedOnDisk()) );
+
+  emit viewCreated (this, newView);
+
   return newView;
 }
 
@@ -2772,7 +2775,6 @@ void KateDocument::addView(KTextEditor::View *view) {
   readVariables (true);
 
   setActiveView(view);
-  emit newViewsCreated(QList<KTextEditor::View*>()<<view);
 }
 
 void KateDocument::removeView(KTextEditor::View *view) {

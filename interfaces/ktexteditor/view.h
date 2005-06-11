@@ -195,7 +195,8 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param length if >0 position is start pos, if <0 position is end pos.
      * @param wrap if false selection doesn't wrap lines, and reaches only to start/end of the cursors line. (default is true)
      */
-    virtual bool setSelection( const Cursor &position, int length,bool wrap=true);
+    virtual bool setSelection ( const Cursor &position, int length, bool wrap = true );
+
     /**
      * Is there any non-empty selection?
      * @return true if some text is selected
@@ -262,7 +263,6 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
   signals:
     void selectionChanged (View *view);
 
-
   public:
     /**
      * Convenience function inserts the given text at the view's current cursor position
@@ -270,7 +270,8 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @param text Text to be inserted
      * @return success of insertion
      */
-    virtual bool insertText (const QString &text );
+    virtual bool insertText (const QString &text);
+
   private:
     /**
      * Private d-pointer

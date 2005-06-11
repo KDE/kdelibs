@@ -13,7 +13,7 @@ namespace KTextEditor
 {
 
 class KTEXTEDITOR_EXPORT EditorChooser: public QWidget
-{                    
+{
   friend class PrivateEditorChooser;
 
   Q_OBJECT
@@ -21,15 +21,14 @@ class KTEXTEDITOR_EXPORT EditorChooser: public QWidget
   public:
     EditorChooser(QWidget *parent=0,const char *name=0);
     virtual ~EditorChooser();
-    
+
    /* void writeSysDefault();*/
 
     void readAppSetting(const QString& postfix=QString::null);
     void writeAppSetting(const QString& postfix=QString::null);
 
-    static KTextEditor::Document *createDocument(QObject* parent=0,const char *name=0,const QString& postfix=QString::null, bool fallBackToKatePart=true);
-    static KTextEditor::Editor *getEditor(const QString& postfix=QString::null, bool fallBackToKatePart=true);
-   
+    static KTextEditor::Editor *editor (const QString& postfix=QString::null, bool fallBackToKatePart = true);
+
   private:
     class PrivateEditorChooser *d;
 };

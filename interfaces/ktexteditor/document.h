@@ -92,9 +92,13 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 
   signals:
    /**
-    * Should be emitted at appropriate times to help applications / plugins to attach to new views
+    * Should be emitted at appropriate times to help applications / plugins to attach to a new view
+    * Important: this signal should be emitted after the view constructor is completed, e.g.
+    * in the createView () method
+    * @param document the document for which a new view is created
+    * @param view the new created view
     */
-    void newViewsCreated(const QList<View*> &views);
+    void viewCreated (Document *document, View *view);
 
   /**
    * General information about this document and it's content
@@ -343,8 +347,6 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     int m_documentNumber;
 };
-
-KTEXTEDITOR_EXPORT Document *createDocument ( const char* libname, QObject *parent );
 
 }
 
