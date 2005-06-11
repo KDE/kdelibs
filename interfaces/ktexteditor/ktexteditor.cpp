@@ -191,12 +191,12 @@ Editor *KTextEditor::editor(const char *libname)
   return ef->editor();
 }
 
-KTextEditor::CommandInterface *KTextEditor::commandInterface (Document *doc)
+KTextEditor::CommandInterface *KTextEditor::commandInterface (Editor *editor)
 {
-  if (!doc)
+  if (!editor)
     return 0;
 
-  return dynamic_cast<KTextEditor::CommandInterface*>( doc );
+  return dynamic_cast<KTextEditor::CommandInterface*>( editor );
 }
 
 KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document *doc)

@@ -37,15 +37,8 @@ EditorChooser::EditorChooser(QWidget *parent,const char *name)
   {
   d = new PrivateEditorChooser ();
 
-  // sizemanagment
-  QGridLayout *grid = new QGridLayout( this, 1, 1 );
-
-
   d->chooser = new Ui::EditorChooser();
   d->chooser->setupUi(this);
-
-  //grid->addWidget( d->chooser, 0, 0);
-
 
 	KTrader::OfferList offers = KTrader::self()->query("text/plain", "'KTextEditor/Document' in ServiceTypes");
 	KConfig *config=new KConfig("default_components");
@@ -58,7 +51,7 @@ EditorChooser::EditorChooser(QWidget *parent,const char *name)
 	{
     		if ((*it)->desktopEntryName().contains(editor))
 		{
-			d->chooser->editorCombo->insertItem(i18n("System Default (%1)").arg((*it)->name()));
+			d->chooser->editorCombo->insertItem(i18n("System Default (currently: %1)").arg((*it)->name()));
 			break;
 		}
   	}
@@ -69,6 +62,8 @@ EditorChooser::EditorChooser(QWidget *parent,const char *name)
 		d->elements.append((*it)->desktopEntryName());
   	}
     	d->chooser->editorCombo->setCurrentItem(0);
+	
+	connect(d->chooser->editorCombo,SIGNAL(activated(int)),this,SIGNAL(changed()));
 }
 
 EditorChooser:: ~EditorChooser(){

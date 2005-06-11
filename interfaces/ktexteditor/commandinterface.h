@@ -29,6 +29,7 @@ namespace KTextEditor
 {
 
 class Document;
+class Editor;
 class View;
 
 /**
@@ -119,7 +120,7 @@ class KTEXTEDITOR_EXPORT CommandExtension
 
 /**
  * CommandInterface
- * This interfaces is aimed for the KTextEditor::Document and provides
+ * This interfaces is aimed for the KTextEditor::Editor and provides
  * a way for applications to enhance the editor command line with own
  * commands
  */
@@ -163,7 +164,7 @@ class KTEXTEDITOR_EXPORT CommandInterface
  * @param doc document to test for interface
  * @return pointer to interface, or 0 if this document doesn't support it
  */
-KTEXTEDITOR_EXPORT CommandInterface *commandInterface (Document *doc);
+KTEXTEDITOR_EXPORT CommandInterface *commandInterface (Editor *editor);
 
 }
 

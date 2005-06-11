@@ -29,6 +29,8 @@ class KTEXTEDITOR_EXPORT EditorChooser: public QWidget
 
     static KTextEditor::Editor *editor (const QString& postfix=QString::null, bool fallBackToKatePart = true);
 
+  signals:
+    void changed();
   private:
     class PrivateEditorChooser *d;
 };
