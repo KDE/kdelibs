@@ -574,6 +574,11 @@ class KateView : public KTextEditor::View,
     uint m_imSelStart;
     uint m_imSelEnd;
     bool m_imComposeEvent;
+
+
+  protected:
+    void focusInEvent (QFocusEvent *);
+    void focusOutEvent (QFocusEvent *);
 };
 
 #endif

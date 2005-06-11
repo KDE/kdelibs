@@ -2970,6 +2970,7 @@ void KateViewInternal::textHintTimeout ()
 
 void KateViewInternal::focusInEvent (QFocusEvent *)
 {
+  kdDebug()<<"KateViewInternal::focusInEvent"<<endl;
   if (KApplication::cursorFlashTime() > 0)
     m_cursorTimer.start ( KApplication::cursorFlashTime() / 2 );
 
@@ -2985,6 +2986,8 @@ void KateViewInternal::focusInEvent (QFocusEvent *)
 
 void KateViewInternal::focusOutEvent (QFocusEvent *)
 {
+  kdDebug()<<"KateViewInternal::focusOutEvent"<<endl;
+
   if( ! m_view->m_codeCompletion->codeCompletionVisible() )
   {
     m_cursorTimer.stop();

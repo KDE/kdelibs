@@ -619,9 +619,9 @@ void KateView::setupEditActions()
                 ac, "backspace");
   }
 
-  connect( this, SIGNAL(gotFocus(KTextEditor::View*)),
+  connect( this, SIGNAL(focusIn(KTextEditor::View*)),
            this, SLOT(slotGotFocus()) );
-  connect( this, SIGNAL(lostFocus(KTextEditor::View*)),
+  connect( this, SIGNAL(focusOut(KTextEditor::View*)),
            this, SLOT(slotLostFocus()) );
 
   m_editActions->readShortcutSettings( "Katepart Shortcuts" );
@@ -695,6 +695,7 @@ QString KateView::viewMode () const
 
 void KateView::slotGotFocus()
 {
+  kdDebug()<<"slotGotFocus"<<endl;
   m_editActions->accel()->setEnabled( true );
 }
 
@@ -1853,5 +1854,17 @@ void KateView::getIMSelectionValue( uint *imStartLine, uint *imStart, uint *imEn
   *imSelEnd = m_imSelEnd;
 }
 //END IM INPUT STUFF
+
+void KateView::focusInEvent (QFocusEvent *e) {
+ kdDebug()<<"KateView::focusInEvent"<<endl;
+ KTextEditor::View::focusInEvent(e );
+}
+
+void KateView::focusOutEvent (QFocusEvent *e) {
+ kdDebug()<<"KateView::focusOutEvent"<<endl;
+ KTextEditor::View::focusOutEvent(e );
+}
+
+
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
