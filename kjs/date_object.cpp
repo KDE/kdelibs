@@ -909,6 +909,24 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
           while(*dateString && isspace(*dateString))
             dateString++;
+
+	  if (strncasecmp(dateString, "AM", 2) == 0) {
+	    if (hour > 12)
+	      return invalidDate;
+	    if (hour == 12)
+	      hour = 0;
+	    dateString += 2;
+	    while (isspace(*dateString))
+	      dateString++;
+	  } else if (strncasecmp(dateString, "PM", 2) == 0) {
+	    if (hour > 12)
+	      return invalidDate;
+	    if (hour != 12)
+	      hour += 12;
+	    dateString += 2;
+	    while (isspace(*dateString))
+	      dateString++;
+	  }
         }
      } else {
        dateString = newPosStr;

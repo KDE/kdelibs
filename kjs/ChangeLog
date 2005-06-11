@@ -1,3 +1,8 @@
+2005-06-11  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp (KRFCDate_parseDate): parse AM and PM. Fixed
+	version of JavaScriptCore patch.
+
 2005-05-28  Harri Porten  <porten@kde.org>
 
 	* nodes.cpp: fixed override of properties on variable
