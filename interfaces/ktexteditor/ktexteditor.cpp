@@ -72,18 +72,6 @@ namespace KTextEditor
     }
   };
 
-  class PrivateView
-  {
-  public:
-    PrivateView ()
-    {
-    }
-
-    ~PrivateView()
-    {
-    }
-  };
-
   class PrivatePlugin
   {
   public:
@@ -98,7 +86,6 @@ namespace KTextEditor
 }
 
 static int globalDocumentNumber = 0;
-static int globalViewNumber = 0;
 static int globalPluginNumber = 0;
 
 Factory::Factory( QObject *parent )
@@ -135,21 +122,10 @@ int Document::documentNumber () const
   return m_documentNumber;
 }
 
-View::View( QWidget *parent )
- : QWidget( parent )
- , m_d (0)
- , m_viewNumber (++globalViewNumber)
-{
-}
-
 bool Document::cursorInText(const Cursor& cursor)
 {
   if ( (cursor.line()<0) || (cursor.line()>=lines())) return false;
   return (cursor.column()>=0) && (cursor.column()<=lineLength(cursor.line())); // = because new line isn't usually contained in line length
-}
-
-View::~View()
-{
 }
 
 bool View::setSelection(const Cursor& position, int length,bool wrap)
@@ -175,11 +151,6 @@ bool View::insertText (const QString &text )
   KTextEditor::Document *doc=document();
   if (!doc) return false;
   return doc->insertText(cursorPosition(),text);
-}
-
-int View::viewNumber () const
-{
-  return m_viewNumber;
 }
 
 Plugin::Plugin( Document *document, const char *name )

@@ -46,22 +46,15 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
 
   public:
     /**
-     * Create a new view to the given document. The document must be non-null.
-     * @param document parent document
+     * View Constructor
      * @param parent parent widget
      */
-    View ( QWidget *parent );
+    View ( QWidget *parent ) : QWidget( parent ) {}
 
     /**
      * virtual destructor
      */
-    virtual ~View ();
-
-    /**
-     * Returns the global number of this view in your app.
-     * @return view number
-     */
-    int viewNumber () const;
+    virtual ~View () {}
 
   /**
    * Accessor for the document
@@ -271,17 +264,6 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
      * @return success of insertion
      */
     virtual bool insertText (const QString &text);
-
-  private:
-    /**
-     * Private d-pointer
-     */
-    class PrivateView *m_d;
-
-    /**
-     * view number
-     */
-    int m_viewNumber;
 };
 
 }
