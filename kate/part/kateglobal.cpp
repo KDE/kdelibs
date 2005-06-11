@@ -253,4 +253,9 @@ KateIndentScript KateGlobal::indentScript (const QString &scriptname)
   return result;
 }
 
+bool KateGlobal::registerCommand (KTextEditor::Command *cmd) {return m_cmdManager->registerCommand(cmd);}
+bool KateGlobal::unregisterCommand (KTextEditor::Command *cmd) {return m_cmdManager->unregisterCommand(cmd);}
+KTextEditor::Command *KateGlobal::queryCommand (const QString &cmd) {return m_cmdManager->queryCommand(cmd);}
+
+
 // kate: space-indent on; indent-width 2; replace-tabs on;

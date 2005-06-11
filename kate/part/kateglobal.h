@@ -26,7 +26,7 @@
 #include <ktrader.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
-
+#include <ktexteditor/commandinterface.h>
 #include <QList>
 
 /**
@@ -63,7 +63,7 @@ namespace Kate {
  * or view stay around, here is the place to put things
  * which are needed and shared by all this objects ;)
  */
-class KateGlobal : public KTextEditor::Editor
+class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterface
 {
   Q_OBJECT
 
@@ -229,6 +229,30 @@ class KateGlobal : public KTextEditor::Editor
      * @return command manager
      */
     KateCmd *cmdManager () { return m_cmdManager; }
+
+    /**
+     * register given command
+     * this works global, for all documents
+     * @param cmd command to register
+     * @return success
+     */
+    bool registerCommand (KTextEditor::Command *cmd);
+
+    /**
+     * unregister given command
+     * this works global, for all documents
+     * @param cmd command to unregister
+     * @return success
+     */
+    bool unregisterCommand (KTextEditor::Command *cmd);
+
+    /**
+     * query for command
+     * @param cmd name of command to query for
+     * @return found command or 0
+     */
+    KTextEditor::Command *queryCommand (const QString &cmd);
+
 
   private:
     /**
