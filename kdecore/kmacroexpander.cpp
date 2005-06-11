@@ -414,13 +414,15 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
     int sl, rsl, rpos;
     if (str[pos + 1] == '{') {
         rpos = pos + 2;
-        for (sl = 0; str.length() > rpos + sl && str[rpos + sl] != '}'; sl++)
-            if (rpos + sl >= str.length())
-                return 0;
+        sl = str.indexOf('}', rpos);
+        if (sl == -1)
+            return 0;
+        else
+          sl -= rpos;
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; str.length() > rpos + sl && isIdentifier( str[rpos + sl] ); sl++);
+        for (sl = 0; (rpos + sl < str.length()) && isIdentifier( str[rpos + sl] ); sl++);
         rsl = sl + 1;
     }
     if (!sl)
