@@ -361,7 +361,7 @@ KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, int pos, QS
         return 2;
     }
     const KMacroMapExpander<QChar,VT> *const_this = this;
-    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
+    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos+1]);
     if (it != const_this->macromap.end()) {
        ret += it.value();
        return 2;
@@ -409,6 +409,9 @@ template<class VT>
 int
 KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
+    if (str.length() <= pos + 1)
+      return 0;
+
     if (str[pos + 1] == escapeChar()) {
         ret += QString( escapeChar() );
         return 2;
