@@ -659,7 +659,7 @@ void KateView::slotCollapseLocal()
   if (realLine != -1)
     // TODO rodda: fix this to only set line and allow internal view to chose column
     // Explicitly call internal because we want this to be registered as an internal call
-    setCursorPositionInternal(realLine, cursorColumn(), tabWidth(), false);
+    setCursorPositionInternal(realLine, cursorColumn(), m_doc->config()->tabWidth(), false);
 }
 
 void KateView::slotExpandLocal()
@@ -734,7 +734,7 @@ void KateView::reloadFile()
 
   if (m_doc->lines() >= cl)
     // Explicitly call internal function because we want this to be registered as a non-external call
-    setCursorPositionInternal( cl, cc, tabWidth(), false );
+    setCursorPositionInternal( cl, cc, m_doc->config()->tabWidth(), false );
 }
 
 void KateView::slotUpdate()
@@ -922,11 +922,6 @@ void KateView::toggleScrollBarMarks()
 void KateView::toggleDynWordWrap()
 {
   config()->setDynWordWrap( !config()->dynWordWrap() );
-}
-
-void KateView::setDynWordWrap( bool b )
-{
-  config()->setDynWordWrap( b );
 }
 
 void KateView::toggleWWMarker()

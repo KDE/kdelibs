@@ -579,7 +579,6 @@ class KateDocument : public KTextEditor::Document,
     void removeSuperCursor(class KateSuperCursor *, bool privateC);
 
     bool ownedView(KateView *);
-    bool isLastView(int numViews);
 
     uint currentColumn( const KTextEditor::Cursor& );
     void newLine(             KTextEditor::Cursor&, KateViewInternal * ); // Changes input

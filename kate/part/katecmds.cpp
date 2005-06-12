@@ -189,7 +189,7 @@ bool KateCommands::CoreCommands::exec(KTextEditor::View *view,
     {
       if ( val < 1 )
         KCC_ERR( i18n("Width must be at least 1.") );
-      v->setTabWidth( val );
+      v->doc()->config()->setTabWidth( val );
     }
     else if ( cmd == "set-indent-width" )
     {
@@ -258,7 +258,7 @@ bool KateCommands::CoreCommands::exec(KTextEditor::View *view,
         {
           setDocFlag(  KateDocumentConfig::cfSpaceIndent, enable, v->doc() );
           if ( ! v->doc()->config()->indentationWidth() )
-            v->doc()->config()->setIndentationWidth( v->tabWidth()/2 );
+            v->doc()->config()->setIndentationWidth( v->doc()->config()->tabWidth()/2 );
         }
       }
       else if ( cmd == "set-word-wrap" )

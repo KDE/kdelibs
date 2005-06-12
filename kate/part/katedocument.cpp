@@ -2557,10 +2557,6 @@ bool KateDocument::ownedView(KateView *view) {
   return (m_views.containsRef(view) > 0);
 }
 
-bool KateDocument::isLastView(int numViews) {
-  return ((int) m_views.count() == numViews);
-}
-
 uint KateDocument::currentColumn( const KTextEditor::Cursor& cursor )
 {
   KateTextLine::Ptr textLine = m_buffer->plainLine(cursor.line());

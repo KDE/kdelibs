@@ -141,7 +141,7 @@ class KateView : public KTextEditor::View,
     void cursorPositionReal( int& l, int& c ) const
         { l = cursorLine(); c = cursorColumnReal(); }
     bool setCursorPosition( int line, int col )
-        { return setCursorPositionInternal( line, col, tabWidth(), true );  }
+        { return setCursorPositionInternal( line, col, m_doc->config()->tabWidth(), true );  }
     bool setCursorPositionReal( int line, int col)
         { return setCursorPositionInternal( line, col, 1, true );           }
     int cursorLine() const
@@ -183,11 +183,7 @@ class KateView : public KTextEditor::View,
   signals:
     void needTextHint(int line, int col, QString &text);
 
-  //
-  // KTextEditor::DynWordWrapInterface
-  //
   public:
-    void setDynWordWrap( bool b );
     bool dynWordWrap() const      { return m_hasWrap; }
 
   //
@@ -311,12 +307,6 @@ class KateView : public KTextEditor::View,
         { return m_doc->line( cursorLine() ); }
     QString currentWord()
         { return m_doc->getWord( m_viewInternal->getCursor() ); }
-    /*bool insertText( const QString& text )
-        { return m_doc->insertText( m_viewInternal->getCursor(), text ); } */
-    int tabWidth()                { return m_doc->config()->tabWidth(); }
-    void setTabWidth( int w )     { m_doc->config()->setTabWidth(w);  }
-    void setEncoding( QString e ) { m_doc->setEncoding(e);       }
-    bool isLastView()             { return m_doc->isLastView(1); }
 
   public slots:
     void indent()             { m_doc->indent( this, cursorLine(), 1 );  }
