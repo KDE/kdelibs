@@ -47,7 +47,7 @@ bool HSpellDict::check( const QString& word )
 {
     kdDebug() << "HSpellDict::check word = " << word <<endl;
     int preflen;
-    QCString wordISO = codec->fromUnicode( word );
+    QByteArray wordISO = codec->fromUnicode( word );
     /* returns 1 if the word is correct, 0 otherwise */
     int correct = hspell_check_word ( m_speller,
 		                      wordISO,
