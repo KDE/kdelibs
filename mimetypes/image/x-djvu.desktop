@@ -5,6 +5,7 @@ MimeType=image/x-djvu
 Icon=djvu
 Patterns=*.djvu;*.DJVU;*.djv;*.DJV;
 Comment=DjVu Document
+Comment[bg]=Документ DjVu
 Comment[da]=DjVU-dokument
 Comment[ga]=Cáipéis DjVu
 Comment[ko]=DjVu 문서
