@@ -85,6 +85,7 @@
 
 KateView::KateView( KateDocument *doc, QWidget *parent )
     : KTextEditor::View( parent )
+    , m_editActions (0)
     , m_doc( doc )
     , m_search( new KateSearch( this ) )
     , m_spell( new KateSpell( this ) )
@@ -442,7 +443,7 @@ void KateView::setupActions()
 
   slotSelectionChanged ();
 
-  connect (this, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()));
+  connect (this, SIGNAL(selectionChanged(KTextEditor::View *)), this, SLOT(slotSelectionChanged()));
 }
 
 void KateView::setupEditActions()
@@ -614,19 +615,12 @@ void KateView::setupEditActions()
                 ac, "backspace");
   }
 
-  connect( this, SIGNAL(focusIn(KTextEditor::View*)),
-           this, SLOT(slotGotFocus()) );
-  connect( this, SIGNAL(focusOut(KTextEditor::View*)),
-           this, SLOT(slotLostFocus()) );
-
   m_editActions->readShortcutSettings( "Katepart Shortcuts" );
 
   if( hasFocus() )
     slotGotFocus();
   else
     slotLostFocus();
-
-
 }
 
 void KateView::setupCodeFolding()
@@ -685,18 +679,28 @@ void KateView::setupCodeCompletion()
 
 QString KateView::viewMode () const
 {
+  if (!m_doc->isReadWrite())
+    return i18n ("R/O");
+
   return isOverwriteMode() ? i18n("OVR") : i18n ("NORM");
 }
 
 void KateView::slotGotFocus()
 {
   kdDebug()<<"slotGotFocus"<<endl;
-  m_editActions->accel()->setEnabled( true );
+
+  if (m_editActions)
+    m_editActions->accel()->setEnabled( true );
+
+  emit focusIn ( this );
 }
 
 void KateView::slotLostFocus()
 {
-  m_editActions->accel()->setEnabled( false );
+  if (m_editActions)
+    m_editActions->accel()->setEnabled( false );
+
+  emit focusOut ( this );
 }
 
 void KateView::setDynWrapIndicators(int mode)
@@ -1839,17 +1843,5 @@ void KateView::getIMSelectionValue( KateRange* imRange, KateRange* imSelection )
   *imSelection = m_imSelection;
 }
 //END IM INPUT STUFF
-
-void KateView::focusInEvent (QFocusEvent *e) {
- kdDebug()<<"KateView::focusInEvent"<<endl;
- KTextEditor::View::focusInEvent(e );
-}
-
-void KateView::focusOutEvent (QFocusEvent *e) {
- kdDebug()<<"KateView::focusOutEvent"<<endl;
- KTextEditor::View::focusOutEvent(e );
-}
-
-
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

@@ -569,11 +569,6 @@ class KateView : public KTextEditor::View,
   private:
     KateTextRange m_imRange, m_imSelection;
     bool m_imComposeEvent;
-
-
-  protected:
-    void focusInEvent (QFocusEvent *);
-    void focusOutEvent (QFocusEvent *);
 };
 
 #endif

@@ -2962,7 +2962,8 @@ void KateViewInternal::focusInEvent (QFocusEvent *)
 
   m_doc->setActiveView( m_view );
 
-  emit m_view->focusIn( m_view );
+  // this will handle focus stuff in kateview
+  m_view->slotGotFocus ();
 }
 
 void KateViewInternal::focusOutEvent (QFocusEvent *)
@@ -2974,8 +2975,11 @@ void KateViewInternal::focusOutEvent (QFocusEvent *)
     m_cursorTimer.stop();
 
     m_view->renderer()->setDrawCaret(true);
+
     paintCursor();
-    emit m_view->focusOut( m_view );
+
+    // this will handle focus stuff in kateview
+    m_view->slotLostFocus ();
   }
 
   m_textHintTimer.stop();
