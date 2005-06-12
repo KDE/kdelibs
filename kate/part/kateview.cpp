@@ -448,7 +448,7 @@ void KateView::setupActions()
 
 void KateView::slotConfigDialog ()
 {
-  KateGlobal::self ()->configDialog ();
+  KateGlobal::self ()->configDialog (this);
 }
 
 void KateView::setupEditActions()

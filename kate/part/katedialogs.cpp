@@ -35,7 +35,6 @@
 #include "kateview.h"
 
 #include <ktexteditor/plugin.h>
-#include <ktexteditor/configinterface.h>
 
 #include <kio/job.h>
 #include <kio/jobclasses.h>
@@ -1180,16 +1179,15 @@ void KatePartPluginConfigPage::slotCurrentChanged( Q3ListViewItem* i )
     bool b = false;
   if ( item->isOn() )
   {
-
     // load this plugin, and see if it has config pages
     KTextEditor::Plugin *plugin = KTextEditor::createPlugin(QFile::encodeName((KateGlobal::self()->plugins())[item->pluginIndex()]->library()), 0);
     if ( plugin ) {
-      KTextEditor::ConfigInterface *cie = KTextEditor::configInterface( plugin );
-      b = ( cie && cie->configPages() );
+      b = plugin->configDialogSupported();
+      delete plugin;
     }
-
   }
-    btnConfigure->setEnabled( b );
+
+  btnConfigure->setEnabled( b );
 }
 
 void KatePartPluginConfigPage::slotConfigure()
@@ -1200,61 +1198,9 @@ void KatePartPluginConfigPage::slotConfigure()
 
   if ( ! plugin ) return;
 
-  KTextEditor::ConfigInterface *cife =
-    KTextEditor::configInterface( plugin );
+  plugin->configDialog (this);
 
-  if ( ! cife )
-    return;
-
-  if ( ! cife->configPages() )
-    return;
-
-  // If we have only one page, we use a simple dialog, else an icon list type
-  KDialogBase::DialogType dt =
-    cife->configPages() > 1 ?
-      KDialogBase::IconList :     // still untested
-      KDialogBase::Plain;
-
-  QString name = (KateGlobal::self()->plugins())[item->pluginIndex()]->name();
-  KDialogBase *kd = new KDialogBase ( dt,
-              i18n("Configure %1").arg( name ),
-              KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
-              KDialogBase::Ok,
-              this );
-
-  Q3PtrList<KTextEditor::ConfigPage> editorPages;
-
-  for (uint i = 0; i < cife->configPages (); i++)
-  {
-    QWidget *page;
-    if ( dt == KDialogBase::IconList )
-    {
-      QStringList path;
-      path.clear();
-      path << cife->configPageName( i );
-      page = kd->addVBoxPage( path, cife->configPageFullName (i),
-                                cife->configPagePixmap(i, KIcon::SizeMedium) );
-    }
-    else
-    {
-      page = kd->plainPage();
-      QVBoxLayout *_l = new QVBoxLayout( page );
-      _l->setAutoAdd( true );
-    }
-
-    editorPages.append( cife->configPage( i, page ) );
-  }
-
-  if (kd->exec())
-  {
-
-    for( uint i=0; i<editorPages.count(); i++ )
-    {
-      editorPages.at( i )->apply();
-    }
-  }
-
-  delete kd;
+  delete plugin;
 }
 //END KatePartPluginConfigPage
 

@@ -40,7 +40,7 @@ K_EXPORT_COMPONENT_FACTORY( ktexteditor_insertfile, KGenericFactory<InsertFilePl
 
 //BEGIN InsertFilePlugin
 InsertFilePlugin::InsertFilePlugin( QObject *parent, const char* name, const QStringList& )
-	: KTextEditor::Plugin ( (KTextEditor::Document*) parent, name )
+	: KTextEditor::Plugin ( parent )
 {
 }
 

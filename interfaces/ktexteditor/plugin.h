@@ -23,6 +23,8 @@
 
 #include <kdelibs_export.h>
 
+class KConfig;
+
 namespace KTextEditor
 {
 
@@ -40,60 +42,78 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
   public:
     /**
      * Plugin constructor
-     * @param document parent document
-     * @param name plugin name
+     * @param parent parent object
      */
-    Plugin ( Document *document = 0, const char *name = 0 );
+    Plugin ( QObject *parent ) : QObject (parent) {}
 
     /**
      * virtual destructor
      */
-    virtual ~Plugin ();
+    virtual ~Plugin () {}
 
-    /**
-     * Returns the global number of this plugin in your app.
-     * @return plugin number
-     */
-    int pluginNumber () const;
-
-    /**
-     * Access the parent Document.
-     * @return document
-     */
-    Document *document ();
-
+  /**
+   * Following methodes allow the plugin to react on view and document
+   * creation
+   */
+  public:
     /**
      * this method is called if the plugin gui should be added
      * to the given KTextEditor::View
      * @param view view to hang the gui in
      */
-    virtual void addView (View *view) = 0;
+    virtual void addView (View *view) { Q_UNUSED(view); }
 
     /**
      * this method is called if the plugin gui should be removed
      * from the given KTextEditor::View
      * @param view view to hang the gui out from
      */
-    virtual void removeView (View *view) = 0;
+    virtual void removeView (View *view) { Q_UNUSED(view); }
 
-  private:
+  /**
+   * Configuration management
+   * Default implementation just for convenience, does nothing
+   * and says this plugin supports no config dialog
+   */
+  public:
     /**
-     * Private d-pointer
+     * Read editor configuration from it's standard config
      */
-    class PrivatePlugin *m_d;
+    virtual void readConfig () {}
 
     /**
-     * plugin number
+     * Write editor configuration to it's standard config
      */
-    int m_pluginNumber;
+    virtual void writeConfig () {}
 
     /**
-     * parent document
+     * Read editor configuration from given config object
+     * @param config config object
      */
-    Document *m_doc;
+    virtual void readConfig (KConfig *config) { Q_UNUSED(config); }
+
+    /**
+     * Write editor configuration to given config object
+     * @param config config object
+     */
+    virtual void writeConfig (KConfig *config) { Q_UNUSED(config); }
+
+    /**
+     * Does this plugin support a config dialog
+     * @return does this plugin have a config dialog?
+     */
+    virtual bool configDialogSupported () const { return false; }
+
+    /**
+     * Shows a config dialog for the part, changes will be applied
+     * to the editor, but not saved anywhere automagically, call
+     * writeConfig to save them
+     * @param parent parent widget
+     */
+    virtual void configDialog (QWidget *parent) { Q_UNUSED(parent); }
 };
 
-KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char* libname, Document *document );
+KTEXTEDITOR_EXPORT Plugin *createPlugin ( const char *libname, QObject *parent );
 
 }
 

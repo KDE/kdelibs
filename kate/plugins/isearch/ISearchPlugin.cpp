@@ -467,7 +467,7 @@ bool ISearchPluginView::iSearch(
 }
 
 ISearchPlugin::ISearchPlugin( QObject *parent, const char* name, const QStringList& )
-	: KTextEditor::Plugin ( (KTextEditor::Document*) parent, name )
+	: KTextEditor::Plugin ( parent )
 {
 }
 

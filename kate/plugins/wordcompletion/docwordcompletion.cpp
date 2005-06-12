@@ -40,6 +40,7 @@
 #include <knotifyclient.h>
 #include <kparts/part.h>
 #include <kiconloader.h>
+#include <kdialogbase.h>
 
 #include <qregexp.h>
 #include <qstring.h>
@@ -48,6 +49,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <q3hbox.h>
+#include <q3vbox.h>
 #include <qcheckbox.h>
 
 // #include <kdebug.h>
@@ -58,9 +60,58 @@ K_EXPORT_COMPONENT_FACTORY( ktexteditor_docwordcompletion, KGenericFactory<DocWo
 DocWordCompletionPlugin::DocWordCompletionPlugin( QObject *parent,
                             const char* name,
                             const QStringList& /*args*/ )
-	: KTextEditor::Plugin ( (KTextEditor::Document*) parent, name )
+	: KTextEditor::Plugin ( parent )
 {
   readConfig();
+}
+
+void DocWordCompletionPlugin::configDialog (QWidget *parent)
+{
+ // If we have only one page, we use a simple dialog, else an icon list type
+  KDialogBase::DialogType dt =
+    configPages() > 1 ?
+      KDialogBase::IconList :     // still untested
+      KDialogBase::Plain;
+
+  KDialogBase *kd = new KDialogBase ( dt,
+              i18n("Configure"),
+              KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
+              KDialogBase::Ok,
+              parent );
+
+  Q3PtrList<KTextEditor::ConfigPage> editorPages;
+
+  for (uint i = 0; i < configPages (); i++)
+  {
+    QWidget *page;
+    if ( dt == KDialogBase::IconList )
+    {
+      QStringList path;
+      path.clear();
+      path << configPageName( i );
+      page = kd->addVBoxPage( path, configPageFullName (i),
+                                configPagePixmap(i, KIcon::SizeMedium) );
+    }
+    else
+    {
+      page = kd->plainPage();
+      QVBoxLayout *_l = new QVBoxLayout( page );
+      _l->setAutoAdd( true );
+    }
+
+    editorPages.append( configPage( i, page, "" ) );
+  }
+
+  if (kd->exec())
+  {
+
+    for( uint i=0; i<editorPages.count(); i++ )
+    {
+      editorPages.at( i )->apply();
+    }
+  }
+
+  delete kd;
 }
 
 void DocWordCompletionPlugin::readConfig()

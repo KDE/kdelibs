@@ -246,13 +246,13 @@ void KateGlobal::writeConfig()
 }
 
 
-void KateGlobal::configDialog()
+void KateGlobal::configDialog(QWidget *parent)
 {
   KDialogBase *kd = new KDialogBase ( KDialogBase::IconList,
                                       i18n("Configure"),
                                       KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
                                       KDialogBase::Ok,
-                                      kapp->mainWidget() );
+                                      parent );
 
 #ifndef Q_WS_WIN //TODO: reenable
   KWin::setIcons( kd->winId(), kapp->icon(), kapp->miniIcon() );

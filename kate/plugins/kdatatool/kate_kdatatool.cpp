@@ -35,7 +35,7 @@ K_EXPORT_COMPONENT_FACTORY( ktexteditor_kdatatool, KGenericFactory<KTextEditor::
 namespace KTextEditor {
 
 KDataToolPlugin::KDataToolPlugin( QObject *parent, const char* name, const QStringList& )
-	: KTextEditor::Plugin ( (KTextEditor::Document*) parent, name )
+	: KTextEditor::Plugin ( parent )
 {
 }
 

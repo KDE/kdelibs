@@ -32,7 +32,6 @@
 #include <ktexteditor/plugin.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/codecompletioninterface.h>
-#include <ktexteditor/configinterface.h>
 #include <ktexteditor/configpage.h>
 #include <kxmlguiclient.h>
 
@@ -42,7 +41,6 @@
 
 class DocWordCompletionPlugin
   : public KTextEditor::Plugin
-  , public KTextEditor::ConfigInterface
 {
   Q_OBJECT
 
@@ -60,10 +58,11 @@ class DocWordCompletionPlugin
 
     virtual void readConfig (KConfig *) {}
     virtual void writeConfig (KConfig *) {}
-    virtual void configDialog () {}
+    virtual void configDialog (QWidget *parent);
 
     // ConfigInterfaceExtention
-    uint configPages() const { return 1; };
+    uint configPages() const { return 1; }
+    bool configDialogSupported () const { return true; }
     KTextEditor::ConfigPage * configPage( uint number, QWidget *parent, const char *name );
     QString configPageName( uint ) const;
     QString configPageFullName( uint ) const;

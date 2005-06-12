@@ -133,7 +133,7 @@ class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterf
      * to the editor, but not saved anywhere automagically, call
      * writeConfig to save them
     */
-    void configDialog ();
+    void configDialog (QWidget *parent);
 
     /**
      * Number of available config pages

@@ -83,7 +83,7 @@ class KTEXTEDITOR_EXPORT Editor : public QObject
      * return the about data
      * @return about data of this editor part
      */
-    virtual const KAboutData *aboutData() const = 0;
+    virtual const KAboutData *aboutData () const = 0;
 
   /**
    * Configuration management
@@ -115,8 +115,9 @@ class KTEXTEDITOR_EXPORT Editor : public QObject
      * Shows a config dialog for the part, changes will be applied
      * to the editor, but not saved anywhere automagically, call
      * writeConfig to save them
-    */
-    virtual void configDialog () = 0;
+     * @param parent parent widget
+     */
+    virtual void configDialog (QWidget *parent) = 0;
 
     /**
      * Number of available config pages

@@ -41,7 +41,6 @@
 
 #include "codecompletioninterface.h"
 #include "commandinterface.h"
-#include "configinterface.h"
 #include "highlightinginterface.h"
 #include "markinterface.h"
 #include "modificationinterface.h"
@@ -71,22 +70,9 @@ namespace KTextEditor
     {
     }
   };
-
-  class PrivatePlugin
-  {
-  public:
-    PrivatePlugin ()
-    {
-    }
-
-    ~PrivatePlugin ()
-    {
-    }
-  };
 }
 
 static int globalDocumentNumber = 0;
-static int globalPluginNumber = 0;
 
 Factory::Factory( QObject *parent )
  : KParts::Factory( parent )
@@ -153,31 +139,9 @@ bool View::insertText (const QString &text )
   return doc->insertText(cursorPosition(),text);
 }
 
-Plugin::Plugin( Document *document, const char *name )
- : QObject (document, name )
- , m_d (0)
- , m_pluginNumber (++globalPluginNumber)
- , m_doc (document)
+Plugin *KTextEditor::createPlugin ( const char *libname, QObject *parent )
 {
-}
-
-Plugin::~Plugin()
-{
-}
-
-int Plugin::pluginNumber () const
-{
-  return m_pluginNumber;
-}
-
-Document *Plugin::document ()
-{
-  return m_doc;
-}
-
-Plugin *KTextEditor::createPlugin ( const char* libname, Document *document )
-{
-  return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, document, "" );
+  return KParts::ComponentFactory::createInstanceFromLibrary<Plugin>( libname, parent, "" );
 }
 
 Editor *KTextEditor::editor(const char *libname)
@@ -213,22 +177,6 @@ CodeCompletionInterface *KTextEditor::codeCompletionInterface (View *view)
     return 0;
 
   return dynamic_cast<KTextEditor::CodeCompletionInterface*>( view );
-}
-
-ConfigInterface *KTextEditor::configInterface (Document *doc)
-{
-  if (!doc)
-    return 0;
-
-  return dynamic_cast<KTextEditor::ConfigInterface*>( doc );
-}
-
-ConfigInterface *KTextEditor::configInterface (Plugin *plugin)
-{
-  if (!plugin)
-    return 0;
-
-  return dynamic_cast<KTextEditor::ConfigInterface*>( plugin );
 }
 
 HighlightingInterface *KTextEditor::highlightingInterface (Document *doc)
