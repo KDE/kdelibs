@@ -291,7 +291,6 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, "KSpell" );
-    config->reparseConfiguration();
     d->disablePercentage = config->readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
     d->disablePercentage = QMIN( d->disablePercentage, 101 );
 
