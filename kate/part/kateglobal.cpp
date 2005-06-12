@@ -245,6 +245,10 @@ void KateGlobal::writeConfig()
   config->sync();
 }
 
+bool KateGlobal::configDialogSupported () const
+{
+  return true;
+}
 
 void KateGlobal::configDialog(QWidget *parent)
 {

@@ -112,6 +112,12 @@ class KTEXTEDITOR_EXPORT Editor : public QObject
     virtual void writeConfig (KConfig *config) = 0;
 
     /**
+     * Does this editor support a config dialog
+     * @return does this editor have a config dialog?
+     */
+    virtual bool configDialogSupported () const = 0;
+
+    /**
      * Shows a config dialog for the part, changes will be applied
      * to the editor, but not saved anywhere automagically, call
      * writeConfig to save them
