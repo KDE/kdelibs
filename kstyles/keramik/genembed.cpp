@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QColor>
 #include <QFileInfo>
 #include <QImage>
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 	if (argc < 2)
 		return 0;
 
-	QApplication qapp(argc, argv);
+	QCoreApplication qapp(argc, argv);
 	QVector<KeramikEmbedImage> images;
 
 	cout<<"#include <QHash>\n\n";
