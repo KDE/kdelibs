@@ -35,6 +35,7 @@
 #include "kateview.h"
 
 #include <ktexteditor/plugin.h>
+#include <ktexteditor/configinterface.h>
 
 #include <kio/job.h>
 #include <kio/jobclasses.h>
@@ -816,6 +817,9 @@ KateEditKeyConfiguration::KateEditKeyConfiguration( QWidget* parent, KateDocumen
 
 void KateEditKeyConfiguration::showEvent ( QShowEvent * )
 {
+#warning fixme, to work without a document object, perhaps create some own internally
+  return ;
+
   if (!m_ready)
   {
     (new QVBoxLayout(this))->setAutoAdd(true);
@@ -833,6 +837,9 @@ void KateEditKeyConfiguration::showEvent ( QShowEvent * )
 
 void KateEditKeyConfiguration::apply()
 {
+#warning fixme, to work without a document object, perhaps create some own internally
+  return ;
+
   if ( ! changed() )
     return;
   m_changed = false;

@@ -46,7 +46,6 @@
 #include <kio/netaccess.h>
 #include <kio/kfileitem.h>
 
-
 #include <kparts/event.h>
 
 #include <klocale.h>
@@ -57,14 +56,12 @@
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kstdaction.h>
-#include <kiconloader.h>
 #include <kxmlguifactory.h>
 #include <kdialogbase.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <klibloader.h>
 #include <kdirwatch.h>
-#include <kwin.h>
 #include <kencodingfiledialog.h>
 #include <ktempfile.h>
 #include <kmdcodec.h>
@@ -75,7 +72,6 @@
 #include <qtextstream.h>
 #include <qtextcodec.h>
 #include <qmap.h>
-#include <q3vbox.h>
 //END  includes
 
 static bool s_fileChangedDialogsActivated = false;
@@ -357,178 +353,6 @@ KTextEditor::Editor *KateDocument::editor ()
 {
   return KateGlobal::self();
 }
-
-//BEGIN KTextEditor::ConfigInterfaceExtension stuff
-
-uint KateDocument::configPages () const
-{
-  return 10;
-}
-
-KTextEditor::ConfigPage *KateDocument::configPage (uint number, QWidget *parent, const char * )
-{
-  switch( number )
-  {
-    case 0:
-      return new KateViewDefaultsConfig (parent);
-
-    case 1:
-      return new KateSchemaConfigPage (parent, this);
-
-    case 2:
-      return new KateSelectConfigTab (parent);
-
-    case 3:
-      return new KateEditConfigTab (parent);
-
-    case 4:
-      return new KateIndentConfigTab (parent);
-
-    case 5:
-      return new KateSaveConfigTab (parent);
-
-    case 6:
-      return new KateHlConfigPage (parent);
-
-    case 7:
-      return new KateFileTypeConfigTab (parent);
-
-    case 8:
-      return new KateEditKeyConfiguration (parent, this);
-
-    case 9:
-      return new KatePartPluginConfigPage (parent);
-
-    default:
-      return 0;
-  }
-
-  return 0;
-}
-
-QString KateDocument::configPageName (uint number) const
-{
-  switch( number )
-  {
-    case 0:
-      return i18n ("Appearance");
-
-    case 1:
-      return i18n ("Fonts & Colors");
-
-    case 2:
-      return i18n ("Cursor & Selection");
-
-    case 3:
-      return i18n ("Editing");
-
-    case 4:
-      return i18n ("Indentation");
-
-    case 5:
-      return i18n("Open/Save");
-
-    case 6:
-      return i18n ("Highlighting");
-
-    case 7:
-      return i18n("Filetypes");
-
-    case 8:
-      return i18n ("Shortcuts");
-
-    case 9:
-      return i18n ("Plugins");
-
-    default:
-      return QString ("");
-  }
-
-  return QString ("");
-}
-
-QString KateDocument::configPageFullName (uint number) const
-{
-  switch( number )
-  {
-    case 0:
-      return i18n("Appearance");
-
-    case 1:
-      return i18n ("Font & Color Schemas");
-
-    case 2:
-      return i18n ("Cursor & Selection Behavior");
-
-    case 3:
-      return i18n ("Editing Options");
-
-    case 4:
-      return i18n ("Indentation Rules");
-
-    case 5:
-      return i18n("File Opening & Saving");
-
-    case 6:
-      return i18n ("Highlighting Rules");
-
-    case 7:
-      return i18n("Filetype Specific Settings");
-
-    case 8:
-      return i18n ("Shortcuts Configuration");
-
-    case 9:
-      return i18n ("Plugin Manager");
-
-    default:
-      return QString ("");
-  }
-
-  return QString ("");
-}
-
-QPixmap KateDocument::configPagePixmap (uint number, int size) const
-{
-  switch( number )
-  {
-    case 0:
-      return BarIcon("view_text",size);
-
-    case 1:
-      return BarIcon("colorize", size);
-
-    case 2:
-        return BarIcon("frame_edit", size);
-
-    case 3:
-      return BarIcon("edit", size);
-
-    case 4:
-      return BarIcon("rightjust", size);
-
-    case 5:
-      return BarIcon("filesave", size);
-
-    case 6:
-      return BarIcon("source", size);
-
-    case 7:
-      return BarIcon("edit", size);
-
-    case 8:
-      return BarIcon("key_enter", size);
-
-    case 9:
-      return BarIcon("connect_established", size);
-
-    default:
-      return BarIcon("edit", size);
-  }
-
-  return BarIcon("edit", size);
-}
-//END
 
 //BEGIN KTextEditor::EditInterface stuff
 
@@ -1794,51 +1618,6 @@ void KateDocument::setDontChangeHlOnSave()
 //END
 
 //BEGIN KTextEditor::ConfigInterface stuff
-void KateDocument::readConfig(KConfig *config)
-{
-  config->setGroup("Kate Document Defaults");
-
-  // read max loadable blocks, more blocks will be swapped out
-  KateBuffer::setMaxLoadedBlocks (config->readNumEntry("Maximal Loaded Blocks", KateBuffer::maxLoadedBlocks()));
-
-  KateDocumentConfig::global()->readConfig (config);
-
-  config->setGroup("Kate View Defaults");
-  KateViewConfig::global()->readConfig (config);
-
-  config->setGroup("Kate Renderer Defaults");
-  KateRendererConfig::global()->readConfig (config);
-}
-
-void KateDocument::writeConfig(KConfig *config)
-{
-  config->setGroup("Kate Document Defaults");
-
-  // write max loadable blocks, more blocks will be swapped out
-  config->writeEntry("Maximal Loaded Blocks", KateBuffer::maxLoadedBlocks());
-
-  KateDocumentConfig::global()->writeConfig (config);
-
-  config->setGroup("Kate View Defaults");
-  KateViewConfig::global()->writeConfig (config);
-
-  config->setGroup("Kate Renderer Defaults");
-  KateRendererConfig::global()->writeConfig (config);
-}
-
-void KateDocument::readConfig()
-{
-  KConfig *config = kapp->config();
-  readConfig (config);
-}
-
-void KateDocument::writeConfig()
-{
-  KConfig *config = kapp->config();
-  writeConfig (config);
-  config->sync();
-}
-
 void KateDocument::readSessionConfig(KConfig *kconfig)
 {
   // restore the url
@@ -1889,52 +1668,6 @@ void KateDocument::writeSessionConfig(KConfig *kconfig)
      marks << it.current()->line;
 
   kconfig->writeEntry( "Bookmarks", marks );
-}
-
-void KateDocument::configDialog()
-{
-  KDialogBase *kd = new KDialogBase ( KDialogBase::IconList,
-                                      i18n("Configure"),
-                                      KDialogBase::Ok | KDialogBase::Cancel | KDialogBase::Help,
-                                      KDialogBase::Ok,
-                                      kapp->mainWidget() );
-
-#ifndef Q_WS_WIN //TODO: reenable
-  KWin::setIcons( kd->winId(), kapp->icon(), kapp->miniIcon() );
-#endif
-
-  Q3PtrList<KTextEditor::ConfigPage> editorPages;
-
-  for (uint i = 0; i < KTextEditor::configInterface (this)->configPages (); i++)
-  {
-    QStringList path;
-    path.clear();
-    path << KTextEditor::configInterface (this)->configPageName (i);
-    Q3VBox *page = kd->addVBoxPage(path, KTextEditor::configInterface (this)->configPageFullName (i),
-                              KTextEditor::configInterface (this)->configPagePixmap(i, KIcon::SizeMedium) );
-
-    editorPages.append (KTextEditor::configInterface (this)->configPage(i, page));
-  }
-
-  if (kd->exec())
-  {
-    KateDocumentConfig::global()->configStart ();
-    KateViewConfig::global()->configStart ();
-    KateRendererConfig::global()->configStart ();
-
-    for (uint i=0; i<editorPages.count(); i++)
-    {
-      editorPages.at(i)->apply();
-    }
-
-    KateDocumentConfig::global()->configEnd ();
-    KateViewConfig::global()->configEnd ();
-    KateRendererConfig::global()->configEnd ();
-
-    writeConfig ();
-  }
-
-  delete kd;
 }
 
 uint KateDocument::mark( uint line )

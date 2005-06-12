@@ -318,7 +318,7 @@ void KateView::setupActions()
   a=KStdAction::gotoLine(this, SLOT(gotoLine()), ac);
   a->setWhatsThis(i18n("This command opens a dialog and lets you choose a line that you want the cursor to move to."));
 
-  a=new KAction(i18n("&Configure Editor..."), 0, m_doc, SLOT(configDialog()),ac, "set_confdlg");
+  a=new KAction(i18n("&Configure Editor..."), 0, this, SLOT(slotConfigDialog()),ac, "set_confdlg");
   a->setWhatsThis(i18n("Configure various aspects of this editor."));
 
   KateViewHighlightAction *menu = new KateViewHighlightAction (i18n("&Highlighting"), ac, "set_highlight");
@@ -444,6 +444,11 @@ void KateView::setupActions()
   slotSelectionChanged ();
 
   connect (this, SIGNAL(selectionChanged(KTextEditor::View *)), this, SLOT(slotSelectionChanged()));
+}
+
+void KateView::slotConfigDialog ()
+{
+  KateGlobal::self ()->configDialog ();
 }
 
 void KateView::setupEditActions()

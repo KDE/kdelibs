@@ -84,15 +84,82 @@ class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterf
      * @param parent parent object
      * @return created KTextEditor::Document
      */
-    virtual KTextEditor::Document *createDocument ( QObject *parent );
+    KTextEditor::Document *createDocument ( QObject *parent );
 
     /**
      * Returns a list of all documents of this editor.
      * @return list of all existing documents
      */
-    virtual const QList<KTextEditor::Document*> &documents ();
+    const QList<KTextEditor::Document*> &documents ();
 
+  /**
+   * General Information about this editor
+   */
+  public:
+    /**
+     * return the about data
+     * @return about data of this editor part
+     */
+    const KAboutData* aboutData() const { return &m_aboutData; }
 
+   /**
+   * Configuration management
+   */
+  public:
+    /**
+     * Read editor configuration from it's standard config
+     */
+    void readConfig ();
+
+    /**
+     * Write editor configuration to it's standard config
+     */
+    void writeConfig ();
+
+    /**
+     * Read editor configuration from given config object
+     * @param config config object
+     */
+    void readConfig (KConfig *config);
+
+    /**
+     * Write editor configuration to given config object
+     * @param config config object
+     */
+    void writeConfig (KConfig *config);
+
+    /**
+     * Shows a config dialog for the part, changes will be applied
+     * to the editor, but not saved anywhere automagically, call
+     * writeConfig to save them
+    */
+    void configDialog ();
+
+    /**
+     * Number of available config pages
+     * If the editor returns a number < 1, it doesn't support this
+     * and the embedding app should use the configDialog () instead
+     * @return number of config pages
+     */
+    int configPages () const;
+
+    /**
+     * returns config page with the given number,
+     * config pages from 0 to configPages()-1 are available
+     * if configPages() > 0
+     */
+    KTextEditor::ConfigPage *configPage (int number, QWidget *parent);
+
+    QString configPageName (int number) const;
+
+    QString configPageFullName (int number) const;
+
+    QPixmap configPagePixmap (int number, int size = KIcon::SizeSmall) const;
+
+  /**
+   * Kate Part Internal stuff ;)
+   */
+  public:
     /**
      * singleton accessor
      * @return instance of the factory
@@ -252,8 +319,6 @@ class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterf
      * @return found command or 0
      */
     KTextEditor::Command *queryCommand (const QString &cmd);
-
-    const KAboutData *aboutData() const {return &m_aboutData;}
 
   private:
     /**

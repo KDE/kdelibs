@@ -33,7 +33,6 @@
 #include <ktexteditor/templateinterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
-#include <ktexteditor/configinterface.h>
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/variableinterface.h>
 #include <ktexteditor/modificationinterface.h>
@@ -84,7 +83,6 @@ class KateDocument : public KTextEditor::Document,
                      public KTextEditor::TemplateInterface,
                      public KTextEditor::SearchInterface,
                      public KTextEditor::HighlightingInterface,
-                     public KTextEditor::ConfigInterface,
                      public KTextEditor::MarkInterface,
                      public KTextEditor::VariableInterface,
                      public KTextEditor::ModificationInterface,
@@ -156,16 +154,6 @@ class KateDocument : public KTextEditor::Document,
     Q3PtrList<KateView> m_views;
     QList<KTextEditor::View*> m_textEditViews;
     KateView *m_activeView;
-
-  //
-  // KTextEditor::ConfigInterfaceExtension stuff
-  //
-  public slots:
-    uint configPages () const;
-    KTextEditor::ConfigPage *configPage (uint number = 0, QWidget *parent = 0, const char *name=0 );
-    QString configPageName (uint number = 0) const;
-    QString configPageFullName (uint number = 0) const;
-    QPixmap configPagePixmap (uint number = 0, int size = KIcon::SizeSmall) const;
 
   //
   // KTextEditor::EditInterface stuff
@@ -432,14 +420,9 @@ class KateDocument : public KTextEditor::Document,
   //
   // KTextEditor::ConfigInterface stuff
   //
-  public slots:
-    void readConfig ();
-    void writeConfig ();
-    void readConfig (KConfig *);
-    void writeConfig (KConfig *);
+  public:
     void readSessionConfig (KConfig *);
     void writeSessionConfig (KConfig *);
-    void configDialog ();
 
   //
   // KTextEditor::MarkInterface and MarkInterfaceExtension

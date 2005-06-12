@@ -474,6 +474,7 @@ class KateView : public KTextEditor::View,
     void slotExpandToplevel();
     void slotCollapseLocal();
     void slotExpandLocal();
+    void slotConfigDialog ();
 
   private:
     void setupConnections();
