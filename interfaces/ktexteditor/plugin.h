@@ -58,6 +58,20 @@ class KTEXTEDITOR_EXPORT Plugin : public QObject
   public:
     /**
      * this method is called if the plugin gui should be added
+     * to the given KTextEditor::Document
+     * @param document document to hang the gui in
+     */
+    virtual void addDocument (Document *document) { Q_UNUSED(document); }
+
+    /**
+     * this method is called if the plugin gui should be removed
+     * from the given KTextEditor::Document
+     * @param document document to hang the gui out from
+     */
+    virtual void removeDocument (Document *document) { Q_UNUSED(document); }
+
+    /**
+     * this method is called if the plugin gui should be added
      * to the given KTextEditor::View
      * @param view view to hang the gui in
      */
