@@ -33,7 +33,7 @@
 #include <qpainter.h>
 #include <q3popupmenu.h>
 #include <QTextLayout>
-#include <Q3ValueStack>
+#include <QStack>
 
 static const QChar tabChar('\t');
 static const QChar spaceChar(' ');
@@ -68,7 +68,7 @@ void KateRenderer::updateAttributes ()
   m_attributes = m_doc->highlight()->attributes (m_schema);
 }
 
-KateAttribute* KateRenderer::attribute(uint pos)
+KateAttribute* KateRenderer::attribute(uint pos) const
 {
   if (pos < (uint)m_attributes->size())
     return &(*m_attributes)[pos];
@@ -76,7 +76,7 @@ KateAttribute* KateRenderer::attribute(uint pos)
   return &(*m_attributes)[0];
 }
 
-KateAttribute * KateRenderer::specificAttribute( int context )
+KateAttribute * KateRenderer::specificAttribute( int context ) const
 {
   if (context >= 0 && context < m_attributes->count())
     return &(*m_attributes)[context];
@@ -306,8 +306,20 @@ class RenderRange {
     {
       // Might happen if we ask for a non-existing range in RenderRangeList
       //Q_ASSERT(range);
-      if (range)
+      if (range) {
         addTo(range);
+        m_currentPos = range->start();
+      }
+    }
+
+    KTextEditor::Cursor nextBoundary() const
+    {
+      KateSuperRange* r = m_currentRange->deepestRangeIncluding(m_currentPos);
+      foreach (KateSuperRange* child, m_currentRange->childRanges()) {
+        if (child->start() > m_currentPos)
+          return child->start();
+      }
+      return m_currentRange->end();
     }
 
     bool advanceTo(const KTextEditor::Cursor& pos) const
@@ -346,7 +358,7 @@ class RenderRange {
     void addTo(KateSuperRange* range) const
     {
       KateSuperRange* r = range;
-      Q3ValueStack<KateSuperRange*> reverseStack;
+      QStack<KateSuperRange*> reverseStack;
       while (r != m_currentRange) {
         reverseStack.append(r);
         r = r->parentRange();
@@ -364,7 +376,8 @@ class RenderRange {
     }
 
     mutable KateSuperRange* m_currentRange;
-    mutable Q3ValueStack<KateAttribute> m_attribs;
+    mutable KTextEditor::Cursor m_currentPos;
+    mutable QStack<KateAttribute> m_attribs;
 };
 
 class RenderRangeList : public QList<RenderRange>
@@ -374,6 +387,24 @@ class RenderRangeList : public QList<RenderRange>
     {
       foreach (KateSuperRange* range, startingRanges)
         append(RenderRange(range));
+    }
+
+    KTextEditor::Cursor nextBoundary() const
+    {
+      KTextEditor::Cursor ret = m_currentPos;
+      bool first = true;
+      foreach (const RenderRange& r, *this) {
+        if (first) {
+          ret = r.nextBoundary();
+          first = false;
+
+        } else {
+          KTextEditor::Cursor nb = r.nextBoundary();
+          if (ret > nb)
+            ret = nb;
+        }
+      }
+      return ret;
     }
 
     bool advanceTo(const KTextEditor::Cursor& pos) const
@@ -396,6 +427,9 @@ class RenderRangeList : public QList<RenderRange>
 
       return a;
     }
+    
+  private:
+    KTextEditor::Cursor m_currentPos;
 };
 
 void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
@@ -1056,7 +1090,7 @@ uint KateRenderer::textWidth(const KTextEditor::Cursor &cursor)
   return textWidth(m_doc->kateTextLine(line), col);
 }
 
-uint KateRenderer::textWidth( KTextEditor::Cursor &cursor, int xPos, uint startCol)
+uint KateRenderer::constrainCursor( KTextEditor::Cursor &cursor, int xPos, uint startCol)
 {
   bool wrapCursor = m_view->wrapCursor();
   int len;
@@ -1101,12 +1135,12 @@ uint KateRenderer::textWidth( KTextEditor::Cursor &cursor, int xPos, uint startC
   return x;
 }
 
-const QFont *KateRenderer::currentFont()
+const QFont *KateRenderer::currentFont() const
 {
   return config()->font();
 }
 
-const QFontMetrics* KateRenderer::currentFontMetrics()
+const QFontMetrics* KateRenderer::currentFontMetrics() const
 {
   return config()->fontMetrics();
 }
@@ -1215,7 +1249,7 @@ uint KateRenderer::spaceWidth()
   return attribute(0)->width(*config()->fontStruct(), spaceChar, m_tabWidth);
 }
 
-void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
+void KateRenderer::layoutLine(KateLineRange& range, int maxwidth) const
 {
   // if maxwidth == -1 we have no wrap
 
@@ -1282,6 +1316,63 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth)
   range.setWrap(range.endCol() < range.textLine()->length());
 
   l->endLayout();
+}
+
+int KateRenderer::cursorToX( KateLineRange & range, int col, bool doLayout, int maxwidth ) const
+{
+  return cursorToX(range, KTextEditor::Cursor(range.line(), col), doLayout, maxwidth);
+}
+
+int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & pos, bool doLayout, int maxwidth ) const
+{
+  //kdDebug() << k_funcinfo << pos.column() << " doLayout " << doLayout << endl;
+  //range.debugOutput();
+  if (!range.layout() && !doLayout)
+    return -1;
+    
+  if (!range.layout() || !range.includesCursor(pos)) {
+    do {
+      range.setStartCol(range.endCol());
+      range.setStartX(range.endX());
+      layoutLine(range, maxwidth);
+      // FIXME most likely an infinite loop here      
+    } while (!range.includesCursor(pos));
+  }
+
+  if (range.isEmpty())
+    if (pos.column() == 0)
+      return 0;
+    else
+      return -1;
+
+  return range.layout()->lineAt(0).cursorToX(pos.column() - range.startCol());
+}
+
+int KateRenderer::cursorToX( const KTextEditor::Cursor & pos, int maxwidth ) const
+{
+  KateLineRange range(m_doc);
+  range.setLine(pos.line());
+  return cursorToX(range, pos, true, maxwidth);
+}
+
+int KateRenderer::xToCursor( KateLineRange & range, int x ) const
+{
+  // TODO: do we want to return endCol for out-of-bounds requests?
+
+  if (!range.layout()) {
+    if (range.isEmpty())
+      return 0;
+
+    kdDebug() << k_funcinfo << range.layout() << " " << x << endl;
+    return -1;
+  }
+
+  if (x <  range.xOffset())
+    x = range.xOffset();
+  else if (x > range.width() + range.xOffset())
+    x = range.width() + range.xOffset();
+
+  return range.layout()->lineAt(0).xToCursor(x) + range.startCol();
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

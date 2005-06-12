@@ -159,22 +159,23 @@ class KateViewInternal : public QWidget
 
   // EVENT HANDLING STUFF - IMPORTANT
   protected:
-    void paintEvent(QPaintEvent *e);
-    bool eventFilter( QObject *obj, QEvent *e );
-    void keyPressEvent( QKeyEvent* );
-    void keyReleaseEvent( QKeyEvent* );
-    void resizeEvent( QResizeEvent* );
-    void mousePressEvent(       QMouseEvent* );
-    void mouseDoubleClickEvent( QMouseEvent* );
-    void mouseReleaseEvent(     QMouseEvent* );
-    void mouseMoveEvent(        QMouseEvent* );
-    void dragEnterEvent( QDragEnterEvent* );
-    void dragMoveEvent( QDragMoveEvent* );
-    void dropEvent( QDropEvent* );
-    void showEvent ( QShowEvent *);
-    void wheelEvent(QWheelEvent* e);
-    void focusInEvent (QFocusEvent *);
-    void focusOutEvent (QFocusEvent *);
+    virtual void paintEvent(QPaintEvent *e);
+    virtual bool eventFilter( QObject *obj, QEvent *e );
+    virtual void keyPressEvent( QKeyEvent* );
+    virtual void keyReleaseEvent( QKeyEvent* );
+    virtual void resizeEvent( QResizeEvent* );
+    virtual void mousePressEvent(       QMouseEvent* );
+    virtual void mouseDoubleClickEvent( QMouseEvent* );
+    virtual void mouseReleaseEvent(     QMouseEvent* );
+    virtual void mouseMoveEvent(        QMouseEvent* );
+    virtual void dragEnterEvent( QDragEnterEvent* );
+    virtual void dragMoveEvent( QDragMoveEvent* );
+    virtual void dropEvent( QDropEvent* );
+    virtual void showEvent ( QShowEvent *);
+    virtual void wheelEvent(QWheelEvent* e);
+    virtual void focusInEvent (QFocusEvent *);
+    virtual void focusOutEvent (QFocusEvent *);
+    virtual void inputMethodEvent(QInputMethodEvent* e);
 
     void contextMenuEvent ( QContextMenuEvent * e );
 
@@ -201,6 +202,7 @@ class KateViewInternal : public QWidget
     uint linesDisplayed() const;
 
     int lineToY(uint viewLine) const;
+    int cursorToX(const KTextEditor::Cursor& c) const;
 
     void updateSelection( const KTextEditor::Cursor&, bool keepSel );
     void updateCursor( const KTextEditor::Cursor& newCursor, bool force = false, bool center = false, bool calledExternally = false );
@@ -306,7 +308,7 @@ class KateViewInternal : public QWidget
     KateLineRange nextRange();
 
     // Finds the lineRange currently occupied by the cursor.
-    KateLineRange range(const KTextEditor::Cursor& realCursor);
+    KateLineRange range(const KTextEditor::Cursor& realCursor) const;
 
     // Returns the lineRange of the specified realLine + viewLine.
     KateLineRange range(uint realLine, int viewLine);
@@ -395,10 +397,8 @@ class KateViewInternal : public QWidget
 #endif
 
   private:
-    int m_imPreeditStartLine;
-    int m_imPreeditStart;
-    int m_imPreeditLength;
-    int m_imPreeditSelStart;
+    KateTextRange m_imPreedit;
+    KTextEditor::Cursor m_imPreeditSelStart;
 };
 
 #endif

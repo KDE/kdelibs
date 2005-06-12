@@ -120,3 +120,16 @@ const KTextEditor::Cursor& KateTextRange::end() const
 {
   return m_end;
 }
+
+KateRange& KateRange::operator= (const KateRange& rhs)
+{
+  start() = rhs.start();
+  end() = rhs.end();
+  return *this;
+}
+
+KateTextRange & KateTextRange::operator =( const KateRange & rhs )
+{
+  KateRange::operator=(rhs);
+  return *this;
+}

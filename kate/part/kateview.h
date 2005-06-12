@@ -25,6 +25,7 @@
 #include "katedocument.h"
 #include "kateviewinternal.h"
 #include "kateconfig.h"
+#include "katerange.h"
 
 #include <ktexteditor/view.h>
 #include <ktexteditor/texthintinterface.h>
@@ -559,20 +560,14 @@ class KateView : public KTextEditor::View,
    * IM input stuff
    */
   public:
-    void setIMSelectionValue( uint imStartLine, uint imStart, uint imEnd,
-                              uint imSelStart, uint imSelEnd, bool m_imComposeEvent );
-    void getIMSelectionValue( uint *imStartLine, uint *imStart, uint *imEnd,
-                              uint *imSelStart, uint *imSelEnd );
-    bool isIMSelection( int _line, int _column );
-    bool isIMEdit( int _line, int _column );
+    void setIMSelectionValue( const KateRange& imRange, const KateRange& imSelection, bool imComposeEvent );
+    void getIMSelectionValue( KateRange* imRange, KateRange* imSelection );
+    bool isIMSelection( const KTextEditor::Cursor& pos );
+    bool isIMEdit( const KTextEditor::Cursor& pos );
     bool imComposeEvent () const { return m_imComposeEvent; }
 
   private:
-    uint m_imStartLine;
-    uint m_imStart;
-    uint m_imEnd;
-    uint m_imSelStart;
-    uint m_imSelEnd;
+    KateTextRange m_imRange, m_imSelection;
     bool m_imComposeEvent;
 
 

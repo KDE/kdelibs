@@ -98,11 +98,6 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
     , selectStart (m_doc, true)
     , selectEnd (m_doc, true)
     , blockSelect (false)
-    , m_imStartLine( 0 )
-    , m_imStart( 0 )
-    , m_imEnd( 0 )
-    , m_imSelStart( 0 )
-    , m_imSelEnd( 0 )
     , m_imComposeEvent( false )
 {
   KateGlobal::self()->registerView( this );
@@ -1821,37 +1816,27 @@ bool KateView::wrapCursor ()
 //END
 
 //BEGIN IM INPUT STUFF
-void KateView::setIMSelectionValue( uint imStartLine, uint imStart, uint imEnd,
-                                        uint imSelStart, uint imSelEnd, bool imComposeEvent )
+void KateView::setIMSelectionValue( const KateRange& imRange, const KateRange& imSelection, bool imComposeEvent )
 {
-  m_imStartLine = imStartLine;
-  m_imStart = imStart;
-  m_imEnd = imEnd;
-  m_imSelStart = imSelStart;
-  m_imSelEnd = imSelEnd;
+  m_imRange = imRange;
+  m_imSelection = imSelection;
   m_imComposeEvent = imComposeEvent;
 }
 
-bool KateView::isIMSelection( int _line, int _column )
+bool KateView::isIMSelection( const KTextEditor::Cursor& pos )
 {
-  return ( ( int( m_imStartLine ) == _line ) && ( m_imSelStart < m_imSelEnd ) && ( _column >= int( m_imSelStart ) ) &&
-    ( _column < int( m_imSelEnd ) ) );
+  return m_imSelection.includes(pos);
 }
 
-bool KateView::isIMEdit( int _line, int _column )
+bool KateView::isIMEdit( const KTextEditor::Cursor& pos )
 {
-  return ( ( int( m_imStartLine ) == _line ) && ( m_imStart < m_imEnd ) && ( _column >= int( m_imStart ) ) &&
-    ( _column < int( m_imEnd ) ) );
+  return m_imRange.includes(pos);
 }
 
-void KateView::getIMSelectionValue( uint *imStartLine, uint *imStart, uint *imEnd,
-                                        uint *imSelStart, uint *imSelEnd )
+void KateView::getIMSelectionValue( KateRange* imRange, KateRange* imSelection )
 {
-  *imStartLine = m_imStartLine;
-  *imStart = m_imStart;
-  *imEnd = m_imEnd;
-  *imSelStart = m_imSelStart;
-  *imSelEnd = m_imSelEnd;
+  *imRange = m_imRange;
+  *imSelection = m_imSelection;
 }
 //END IM INPUT STUFF
 

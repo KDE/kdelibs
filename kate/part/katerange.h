@@ -44,6 +44,8 @@ class KateRange
     virtual KTextEditor::Cursor& end() = 0;
     virtual const KTextEditor::Cursor& start() const = 0;
     virtual const KTextEditor::Cursor& end() const = 0;
+    
+    virtual KateRange& operator= (const KateRange& rhs);
 };
 
 class KateTextRange : public KateRange
@@ -80,6 +82,8 @@ class KateTextRange : public KateRange
         m_end = tmp;
       }
     }
+    
+    virtual KateTextRange& operator= (const KateRange& rhs);
 
   protected:
     KTextEditor::Cursor m_start, m_end;

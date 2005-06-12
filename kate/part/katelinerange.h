@@ -73,6 +73,9 @@ class KateLineRange
 
     int endCol() const;
     void setEndCol(int endCol);
+    
+    int length() const { return endCol() - startCol(); }
+    bool isEmpty() const { return startCol() == 0 && endCol() == 0; }
 
     bool wrap() const;
     void setWrap(bool wrap);
@@ -85,6 +88,8 @@ class KateLineRange
 
     int endX() const;
     void setEndX(int endX);
+    
+    int width() const { return endX() - startX(); }
 
     // This variable is used as follows:
     // non-dynamic-wrapping mode: unused

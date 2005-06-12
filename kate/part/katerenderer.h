@@ -150,8 +150,8 @@ public:
      */
     void increaseFontSizes();
     void decreaseFontSizes();
-    const QFont* currentFont();
-    const QFontMetrics* currentFontMetrics();
+    const QFont* currentFont() const;
+    const QFontMetrics* currentFontMetrics() const;
 
     /**
      * @return whether the renderer is configured to paint in a
@@ -169,16 +169,33 @@ public:
     /**
      * Text width & height calculation functions...
      */
-    void layoutLine(KateLineRange& range, int maxwidth = -1);
+    void layoutLine(KateLineRange& range, int maxwidth = -1) const;
 
     // Width calculators
     uint spaceWidth();
-    uint textWidth(const KateTextLine::Ptr &, int cursorCol);
-    uint textWidth(const KateTextLine::Ptr &textLine, uint startcol, uint maxwidth, bool *needWrap, int *endX = 0);
-    uint textWidth(const KTextEditor::Cursor &cursor);
+    uint textWidth(const KateTextLine::Ptr &, int cursorCol) KDE_DEPRECATED;
+    uint textWidth(const KateTextLine::Ptr &textLine, uint startcol, uint maxwidth, bool *needWrap, int *endX = 0)  KDE_DEPRECATED;
+    uint textWidth(const KTextEditor::Cursor& cursor)  KDE_DEPRECATED;
+    
+    /**
+     * Returns the x position of cursor \p col on the line \p range. If \p doLayout
+     * is false, \p col must be on the line laid out in \p range, else the function
+     * will return -1.  If \p doLayout is true, the text will be laid out until the
+     * answer is found.
+     */
+    int cursorToX(KateLineRange& range, int col, bool doLayout = false, int maxwidth = -1) const;
+    /// \overload
+    int cursorToX(KateLineRange& range, const KTextEditor::Cursor& pos, bool doLayout = false, int maxwidth = -1) const;
+    /**
+     * Returns the x position of cursor \p pos. Text will be
+     * laid out until the answer is found.
+     */
+    int cursorToX(const KTextEditor::Cursor& pos, int maxwidth = -1) const;
+
+    int xToCursor(KateLineRange& range, int x) const;
 
     // Cursor constrainer
-    uint textWidth(KTextEditor::Cursor &cursor, int xPos, uint startCol = 0);
+    uint constrainCursor(KTextEditor::Cursor &cursor, int xPos, uint startCol = 0) KDE_DEPRECATED;
 
     // Column calculators
     /**
@@ -189,11 +206,11 @@ public:
      * @p xPos is returned. If @p nearest is false, the index of the character
      * containing @p xPos is returned.
      **/
-    uint textPos(uint line, int xPos, uint startCol = 0, bool nearest=true);
+    uint textPos(uint line, int xPos, uint startCol = 0, bool nearest=true) KDE_DEPRECATED;
     /**
      * @overload
      */
-    uint textPos(const KateTextLine::Ptr &, int xPos, uint startCol = 0, bool nearest=true);
+    uint textPos(const KateTextLine::Ptr &, int xPos, uint startCol = 0, bool nearest=true) KDE_DEPRECATED;
 
     // Font height
     uint fontHeight();
@@ -231,8 +248,8 @@ public:
      *
      *   attribute(myktextline->attribute(position));
      */
-    KateAttribute* attribute(uint pos);
-    KateAttribute* specificAttribute(int context);
+    KateAttribute* attribute(uint pos) const;
+    KateAttribute* specificAttribute(int context) const;
 
   private:
     /**
@@ -266,7 +283,7 @@ public:
    * Configuration
    */
   public:
-    inline KateRendererConfig *config () { return m_config; };
+    inline KateRendererConfig *config () const { return m_config; };
 
     void updateConfig ();
 
