@@ -7223,7 +7223,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
-        QToolTip::add( d->m_statusBarPopupLabel, i18n("Konqueror prevented this site from opening a popup window." ) );
+        QToolTip::add( d->m_statusBarPopupLabel, i18n("This page was prevented from opening a popup window." ) );
     } else if ( !enable && d->m_statusBarPopupLabel ) {
         QToolTip::remove( d->m_statusBarPopupLabel );
         d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarPopupLabel );
