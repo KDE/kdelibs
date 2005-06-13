@@ -551,14 +551,10 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
-<<<<<<< .working
-    qsnprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
-=======
 #ifdef Q_OS_WIN
     snprintf (tempFile, PATH_MAX, "%s\\%sXXXXXX", path, prefix);
 #else
     snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
->>>>>>> .merge-rechts.r424790
 #endif
     ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
@@ -753,15 +749,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-<<<<<<< .working
 //   QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend", length, fromApp.data(), toApp.data());//, fun.data());
-=======
-   QCString obj = readQCString(ds);
-   QCString fun = readQCString(ds);
-   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
->>>>>>> .merge-rechts.r424790
 }
 //#endif
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
@@ -785,15 +775,9 @@ if (opcode == DCOPSend)
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
-<<<<<<< .working
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend ", length, fromApp.data(), toApp.data());//, fun.data());
-=======
-   QCString obj = readQCString(ds);
-   QCString fun = readQCString(ds);
-   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
->>>>>>> .merge-rechts.r424790
 }
 //#endif
 		// handle a multicast.
@@ -834,15 +818,9 @@ if (opcode == DCOPSend)
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPCall)
 {
-<<<<<<< .working
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPCall ", length, fromApp.data(), toApp.data());//, fun.data());
-=======
-   QCString obj = readQCString(ds);
-   QCString fun = readQCString(ds);
-   qWarning("Sending %d bytes from %s to %s. DCOPCall %s", length, fromApp.data(), toApp.data(), fun.data());
->>>>>>> .merge-rechts.r424790
 }
 //#endif
 		target->waitingForReply.append( iceConn );
@@ -1060,12 +1038,8 @@ DCOPServer::DCOPServer(bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
-<<<<<<< .working
-	    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
-=======
 #ifndef Q_OS_WIN32
-	    if (QCString(getenv("DCOPAUTHORITY")).isEmpty())
->>>>>>> .merge-rechts.r424790
+	    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
 	    {
                 // Create a link named like the old-style (KDE 2.x) naming
                 QByteArray compatName = DCOPClient::dcopServerFileOld();
@@ -1753,12 +1727,8 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     // check if we are already running
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
-<<<<<<< .working
-    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty() &&
-=======
 #ifndef Q_OS_WIN32
-    if (QCString(getenv("DCOPAUTHORITY")).isEmpty() &&
->>>>>>> .merge-rechts.r424790
+    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty() &&
         isRunning(DCOPClient::dcopServerFileOld()))
     {
        // Make symlink for compatibility
@@ -1837,17 +1807,12 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
-<<<<<<< .working
-    QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0);
-    server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
-=======
 #ifdef Q_OS_WIN
 	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,TRUE);
 #else
 	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
 		server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
 #endif
->>>>>>> .merge-rechts.r424790
 
     int ret = a.exec();
     delete server;
