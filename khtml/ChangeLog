@@ -1,3 +1,7 @@
+2005-06-13  George Staikos <staikos@kde.org>
+        * ecma/xmlhttprequest.{h,cpp}: Disallow duplicated headers, and always
+	                               disallow Content-Length setting.
+
 2005-06-09  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implementing Mozilla extension DOMParser

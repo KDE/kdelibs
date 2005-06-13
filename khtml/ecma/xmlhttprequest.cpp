@@ -280,7 +280,7 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
   aborted = false;
 
   // clear stuff from possible previous load
-  requestHeaders = QString();
+  requestHeaders.clear();
   responseHeaders = QString();
   response = QString();
   createdDocument = false;
@@ -319,8 +319,17 @@ void XMLHttpRequest::send(const QString& _body)
   {
      job = KIO::get( url, false, false );
   }
-  if (requestHeaders.length() > 0) {
-    job->addMetaData("customHTTPHeader", requestHeaders);
+  if (!requestHeaders.isEmpty()) {
+    QString rh;
+    QMap<QString, QString>::ConstIterator begin = requestHeaders.begin();
+    QMap<QString, QString>::ConstIterator end = requestHeaders.end();
+    for (QMap<QString, QString>::ConstIterator i = begin; i != end; ++i) {
+      if (i != begin) {
+	rh += "\r\n";
+      }
+      rh += i.key() + ": " + i.data();
+    }
+    job->addMetaData("customHTTPHeader", rh);
   }
   job->addMetaData( "PropagateHttpHeader", "true" );
 
@@ -379,12 +388,10 @@ void XMLHttpRequest::setRequestHeader(const QString& name, const QString &value)
     contentType = "Content-type: " + value;
     return;
   }
-  if (requestHeaders.length() > 0) {
-    requestHeaders += "\r\n";
+  if(name.lower() == "content-length") {
+    return; // Denied - we set it ourselves.
   }
-  requestHeaders += name;
-  requestHeaders += ": ";
-  requestHeaders += value;
+  requestHeaders[name] = value;
 }
 
 Value XMLHttpRequest::getAllResponseHeaders() const
