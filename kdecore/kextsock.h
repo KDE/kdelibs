@@ -81,8 +81,8 @@ class KExtendedSocketPrivate;
  * support newer IP protocols, ipv4Socket | ipv6Socket is your guy.
  *
  * @deprecated
- *	This class is now deprecated. Please use the classes in @ref KNetwork for
- *	new programs. In special, this class is replaced by @ref KNetwork::KStreamSocket
+ *	This class is now deprecated. Please use the classes in KNetwork for
+ *	new programs. In particular, this class is replaced by KNetwork::KStreamSocket
  *	and @ref KNetwork::KServerSocket.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>

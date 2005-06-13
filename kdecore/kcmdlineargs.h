@@ -391,7 +391,7 @@ public:
    *
    * @param id if 0, print all options. If id is set, only print the
    *        option specified by id. The id is the value set by
-   *        #ref addCmdLineOptions().
+   *        addCmdLineOptions().
    **/
   static void usage(const char *id = 0);
 

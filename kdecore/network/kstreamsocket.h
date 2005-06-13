@@ -29,6 +29,7 @@
 
 #include "kclientsocketbase.h"
 
+/** A namespace to store all networking-related (socket) classes. */
 namespace KNetwork {
 
 class KResolverEntry;
