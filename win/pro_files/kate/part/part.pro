@@ -29,9 +29,10 @@ SOURCES = \
   katecodefoldinghelpers.cpp kateviewinternal.cpp katebookmarks.cpp \
   katefont.cpp katelinerange.cpp katesupercursor.cpp \
   katearbitraryhighlight.cpp katerenderer.cpp kateattribute.cpp \
+  kateindentscriptabstracts.cpp \
   kateautoindent.cpp katefiletype.cpp kateschema.cpp \
   katetemplatehandler.cpp \
-  kateprinter.cpp 
+  kateprinter.cpp katespell.cpp
 
 #todo:	katejscript.cpp
 

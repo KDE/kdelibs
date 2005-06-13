@@ -55,8 +55,8 @@ extern char* getenv(const char*);
 #ifndef X_NOT_POSIX
 #include <unistd.h>
 #else
-#ifndef WIN32
-extern unsigned	sleep ();
+#ifndef _WIN32
+extern unsigned sleep ();
 #else
 #define link rename
 #endif
@@ -70,7 +70,7 @@ static Status write_string (FILE *file, char *string);
 static Status write_counted_string (FILE *file, unsigned short count, char *string);
 
 
-
+
 /*
  * The following routines are for manipulating the .ICEauthority file
  * These are utility functions - they are not part of the standard
@@ -81,12 +81,16 @@ char *
 IceAuthFileName ()
 
 {
+#ifdef _WIN32
+    static char slashDotICEauthority[] = "\\.ICEauthority";
+#else
     static char slashDotICEauthority[] = "/.ICEauthority";
+#endif
     char    	*name;
     static char	*buf;
     static int	bsize;
     int	    	size;
-#if defined(WIN32) || defined(__EMX__)
+#if defined(_WIN32) || defined(__EMX__)
     char    	dir[128];
 #endif
 
@@ -98,13 +102,19 @@ IceAuthFileName ()
 
     if (!name)
     {
-#ifdef WIN32
-	strcpy (dir, "/users/");
-	if (name = getenv ("USERNAME"))
+#ifdef _WIN32
+		if(name = getenv ("HOMEDRIVE"))
 	{
+			strcpy (dir, name);
+			if(name = getenv ("HOMEPATH"))
 	    strcat (dir, name);
-	    name = dir;
 	}
+		else
+		{
+			if(name = getenv ("USERPROFILE"))
+				strcpy (dir, name);
+    }
+	    name = dir;
 	if (!name)
 #endif
 #ifdef __EMX__
@@ -134,7 +144,7 @@ IceAuthFileName ()
 }
 
 
-
+
 int
 IceLockAuthFile (file_name, retries, timeout, dead)
 
@@ -211,36 +221,36 @@ long	dead;
 }
 
 
-
+
 void
 IceUnlockAuthFile (file_name)
 
 char	*file_name;
 
 {
-#ifndef WIN32
-    char	creat_name[1025];
+#ifndef _WIN32
+    char creat_name[1025];
 #endif
-    char	link_name[1025];
+    char link_name[1025];
 
     if ((int) strlen (file_name) > 1022)
 	return;
 
-#ifndef WIN32
+#ifndef _WIN32
     strcpy (creat_name, file_name);
     strcat (creat_name, "-c");
 #endif
     strcpy (link_name, file_name);
     strcat (link_name, "-l");
 
-#ifndef WIN32
+#ifndef _WIN32
     unlink (creat_name);
 #endif
     unlink (link_name);
 }
 
 
-
+
 IceAuthFileEntry *
 IceReadAuthFileEntry (auth_file)
 
@@ -292,7 +302,7 @@ FILE	*auth_file;
 }
 
 
-
+
 void
 IceFreeAuthFileEntry (auth)
 
@@ -311,7 +321,7 @@ IceAuthFileEntry	*auth;
 }
 
 
-
+
 Status
 IceWriteAuthFileEntry (auth_file, auth)
 
@@ -340,7 +350,7 @@ IceAuthFileEntry	*auth;
 }
 
 
-
+
 IceAuthFileEntry *
 IceGetAuthFileEntry (protocol_name, network_id, auth_name)
 
@@ -383,7 +393,7 @@ const char	*auth_name;
 }
 
 
-
+
 /*
  * local routines
  */

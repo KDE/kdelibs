@@ -374,7 +374,7 @@ using namespace std;
     else \
     { \
         failure(QString(__FILE__) + "[" + QString::number(__LINE__) + QString("]: failed to throw " \
-                "an exception on:") + #expression); \
+                "an exception on: ") + #expression); \
     } \
     setExceptionRaised(false);
 

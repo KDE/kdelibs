@@ -37,6 +37,8 @@ CipherBlockChain::CipherBlockChain(BlockCipher *cipher) : _cipher(cipher) {
 CipherBlockChain::~CipherBlockChain() {
 	delete[] (char *)_register;
 	_register = 0L;
+	delete[] (char *)_next;
+	_next = 0L;
 }
 
 

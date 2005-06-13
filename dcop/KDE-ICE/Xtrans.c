@@ -131,12 +131,11 @@ Xtransport_table Xtransports[] = {
 #define NUMTRANS	(sizeof(Xtransports)/sizeof(Xtransport_table))
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define ioctl ioctlsocket
 #endif
 
 
-
 /*
  * These are a few utility function used by the public interface functions.
  */
@@ -176,7 +175,8 @@ TRANS(SelectTransport) (char *protocol)
      * a case insensitive match.
      */
 
-    strncpy (protobuf, protocol, PROTOBUFSIZE);
+    strncpy (protobuf, protocol, PROTOBUFSIZE - 1);
+    protobuf[PROTOBUFSIZE-1] = '\0';
 
     for (i = 0; i < PROTOBUFSIZE && protobuf[i] != '\0'; i++)
 	if (isupper (protobuf[i]))
@@ -230,7 +230,9 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
 
     _protocol = mybuf;
 
-    if ((mybuf = strpbrk (mybuf,"/:")) == NULL)
+
+   if ( ((mybuf = strchr (mybuf,'/')) == NULL) &&
+      ((mybuf = strrchr (tmpptr,':')) == NULL) )
     {
 	/* address is in a bad format */
 	*protocol = NULL;
@@ -243,7 +245,7 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
     if (*mybuf == ':')
     {
 	/*
-	 * If there is a hostname, then assume inet, otherwise
+	 * If there is a hostname, then assume tcp, otherwise
 	 * it must be local.
 	 */
 	if (mybuf == tmpptr)
@@ -383,7 +385,7 @@ TRANS(Open) (int type, char *address)
 
     PRMSG (2,"Open(%d,%s)\n", type, address, 0);
 
-#if defined(WIN32) && (defined(TCPCONN) || defined(DNETCONN))
+#if defined(_WIN32) && (defined(TCPCONN) || defined(DNETCONN))
     if (TRANS(WSAStartup)())
     {
 	PRMSG (1,"Open: WSAStartup failed\n", 0, 0, 0);
@@ -537,7 +539,7 @@ TRANS(Reopen) (int type, int trans_id, int fd, char *port)
 #endif /* TRANS_REOPEN */
 
 
-
+
 /*
  * These are the public interfaces to this Transport interface.
  * These are the only functions that should have knowledge of the transport
@@ -688,7 +690,7 @@ TRANS(SetOption) (XtransConnInfo ciptr, int option, int arg)
 	    ret = ioctl (fd, FIOSNBIO, &arg);
 	}
 #else
-#if (defined(AIXV3) || defined(uniosu) || defined(WIN32) || defined(__EMX__) || defined(__QNX__)) && defined(FIONBIO)
+#if (defined(AIXV3) || defined(uniosu) || defined(_WIN32) || defined(__EMX__) || defined(__QNX__)) && defined(FIONBIO)
 	{
 	    int arg;
 	    arg = 1;
@@ -957,7 +959,7 @@ TRANS(GetConnectionNumber) (XtransConnInfo ciptr)
     return ciptr->fd;
 }
 
-
+
 /*
  * These functions are really utility functions, but they require knowledge
  * of the internal data structures, so they have to be part of the Transport
@@ -1198,7 +1200,7 @@ TRANS(MakeAllCLTSServerListeners) (char *port, int *partial, int *count_ret,
 #endif /* TRANS_SERVER */
 
 
-
+
 /*
  * These routines are not part of the X Transport Interface, but they
  * may be used by it.
@@ -1242,7 +1244,7 @@ static int TRANS(WriteV) (XtransConnInfo ciptr, struct iovec *iov, int iovcnt)
 
 #endif /* CRAY */
 
-#if (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(WIN32) || defined(__sxg__) || defined(__EMX__)
+#if (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(_WIN32) || defined(__sxg__) || defined(__EMX__)
 
 /*
  * emulate readv
@@ -1272,9 +1274,9 @@ static int TRANS(ReadV) (XtransConnInfo ciptr, struct iovec *iov, int iovcnt)
     return total;
 }
 
-#endif /* SYSV && i386 || WIN32 || __sxg__ */
+#endif /* SYSV && i386 || _WIN32 || __sxg__ */
 
-#if (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(WIN32) || defined(__sxg__) || defined(__EMX__)
+#if (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(_WIN32) || defined(__sxg__) || defined(__EMX__)
 
 /*
  * emulate writev
@@ -1304,7 +1306,7 @@ static int TRANS(WriteV) (XtransConnInfo ciptr, struct iovec *iov, int iovcnt)
     return total;
 }
 
-#endif /* SYSV && i386 || WIN32 || __sxg__ */
+#endif /* SYSV && i386 || _WIN32 || __sxg__ */
 
 
 #if (defined(_POSIX_SOURCE) && !defined(AIXV3) && !defined(__QNX__)) || defined(hpux) || defined(USG) || defined(SVR4) || defined(SCO)

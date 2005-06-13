@@ -37,9 +37,13 @@ fi
 for d in \
 win \
 libltdl \
+dcop/KDE-ICE \
 dcop \
 dcop/dcopidl \
 dcop/dcopidl2cpp \
+dcop/dcopserver \
+dcop/dcopserver_shutdown \
+dcop/iceauth \
 kdefx \
 $additional \
 kdecore \

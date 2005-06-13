@@ -37,7 +37,6 @@ DCOPSignals::DCOPSignals()
 void
 DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QByteArray &data, bool excludeSelf)
 {
-#ifdef Q_OS_UNIX
    DCOPCString senderObj;
    DCOPCString fun = _fun;
    int i = fun.indexOf('#');
@@ -82,7 +81,6 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QB
                                  current->slot, data);
       }
    }
-#endif //Q_OS_UNIX
 }
 
 /**
@@ -101,7 +99,6 @@ DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &sender
                        DCOPConnection *conn, const DCOPCString &receiverObj,
                        const DCOPCString &slot, bool Volatile)
 {
-#ifdef Q_OS_UNIX
    // TODO: Check if signal and slot match
    DCOPCString signalArgs, slotArgs;
    int i,j;
@@ -157,9 +154,6 @@ DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &sender
    if (senderConn)
       senderConn->signalConnectionList()->append(current);
    return true;
-#else //!Q_OS_UNIX
-   return false;
-#endif
 }
 
 /**
@@ -190,7 +184,6 @@ DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &sen
    DCOPSignalConnection *next = 0;
    bool result = false;
 
-#ifdef Q_OS_UNIX
    for(DCOPSignalConnection *current = list->first(); current; current = next)
    {
       next = list->next();
@@ -225,7 +218,6 @@ DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &sen
          current->senderConn->signalConnectionList()->removeRef(current);
       delete current;
    }
-#endif //Q_OS_UNIX
    return result;
 }
 
@@ -238,7 +230,6 @@ DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &sen
 void
 DCOPSignals::removeConnections(DCOPConnection *conn, const DCOPCString &obj)
 {
-#ifdef Q_OS_UNIX
    DCOPSignalConnectionList *list = conn->_signalConnectionList;
    if (!list)
       return; // Nothing to do...
@@ -278,7 +269,6 @@ DCOPSignals::removeConnections(DCOPConnection *conn, const DCOPCString &obj)
       list->removeRef(current);
       delete current;
    }
-#endif //Q_OS_UNIX
 }
 
 

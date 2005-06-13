@@ -43,6 +43,10 @@
 #include "kcalendarsystemfactory.h"
 #include "klocale.h"
 
+#ifdef Q_WS_WIN
+#include <windows.h>
+#endif
+
 static const char * const SYSTEM_MESSAGES = "kdelibs";
 
 static const char *maincatalogue = 0;
@@ -69,6 +73,9 @@ public:
   KCalendarSystem * calendar;
   bool utf8FileEncoding;
   QString appName;
+#ifdef Q_WS_WIN
+  char win32SystemEncoding[3+7]; //"cp " + lang ID
+#endif
 };
 
 static KLocale *this_klocale = 0;
@@ -2115,6 +2122,18 @@ QString KLocale::defaultCountry()
 
 const char * KLocale::encoding() const
 {
+#ifdef Q_WS_WIN
+  if (0==qstrcmp("System", codecForEncoding()->name()))
+  {
+    //win32 returns "System" codec name here but KDE apps expect a real name:
+    strcpy(d->win32SystemEncoding, "cp ");
+    if (GetLocaleInfoA( MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT), 
+      LOCALE_IDEFAULTANSICODEPAGE, d->win32SystemEncoding+3, sizeof(d->win32SystemEncoding)-3-1 ))
+    {
+      return d->win32SystemEncoding;
+    }
+  }
+#endif
   return codecForEncoding()->name();
 }
 

@@ -1,3 +1,15 @@
+2005-06-09  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implementing Mozilla extension DOMParser
+
+        * ecma/domparser.{h,cpp}: Implementation
+        * ecma/kjs_window.{h,cpp}: Exposing DOMParser
+        * misc/shared.h: khtml::SharedPtr<>
+
+2005-06-08  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/html_tableimpl.{h,cpp}: Implement FRAME attribute
+
 2005-06-03  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_window.cpp (put): don't crash on attempts to set a

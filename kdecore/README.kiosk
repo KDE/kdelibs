@@ -429,6 +429,9 @@ start_new_session
 	- defines whether the user may start a second X session.
           See also the kdm configuration.
 
+switch_user
+        - defines whether user switching via kdm is allowed
+
 skip_drm
 	- defines if the user may omit DRM checking.
           Currently only used by kpdf

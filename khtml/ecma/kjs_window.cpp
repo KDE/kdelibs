@@ -55,6 +55,7 @@
 #include "kjs_events.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
+#include "domparser.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -268,6 +269,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   Option	Window::Option		DontDelete|ReadOnly
   XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
   XMLSerializer	Window::XMLSerializer	DontDelete|ReadOnly
+  DOMParser	Window::DOMParser	DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
   prompt	Window::Prompt		DontDelete|Function 2
@@ -692,6 +694,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return Value(new XMLHttpRequestConstructorImp(exec, part->document()));
     case XMLSerializer:
       return Value(new XMLSerializerConstructorImp(exec));
+    case DOMParser:
+      return Value(new DOMParserConstructorImp(exec, part->xmlDocImpl()));
     case Scroll: // compatibility
     case ScrollBy:
     case ScrollTo:

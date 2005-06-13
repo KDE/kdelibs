@@ -17,15 +17,37 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <sys/types.h>
+#include <windows.h>
+#include <errno.h>
+
 KDEWIN32_EXPORT int kill(pid_t pid, int sig)
 {
-	/*! @todo win32 */
-	return 0;
+	int	ret;
+	HANDLE h = OpenProcess(PROCESS_TERMINATE,FALSE,(DWORD)pid);
+	ret = (h != NULL)?0:ESRCH;
+	if(h) 
+	{
+		TerminateProcess(h,sig);
+		CloseHandle(h);
+	}
+	return ret;
 }
 
 KDEWIN32_EXPORT pid_t waitpid(pid_t p, int *a, int b)
 {
-	/*! @todo win32 */
-	return -1;
+	int	ret;
+	HANDLE h = OpenProcess(PROCESS_TERMINATE,FALSE,(DWORD)p);
+	ret = (h != NULL)?p:-1;
+	if(h) 
+	{
+		DWORD dw;
+		WaitForSingleObject(h,INFINITE);
+		GetExitCodeProcess(h,&dw);
+		CloseHandle(h);
+	}
+	else
+		errno = ECHILD;
+	return ret;
 }
 

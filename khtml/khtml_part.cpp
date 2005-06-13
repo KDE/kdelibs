@@ -6971,6 +6971,7 @@ void KHTMLPart::restoreScrollPosition()
 
 void KHTMLPart::openWallet(DOM::HTMLFormElementImpl *form)
 {
+#ifndef KHTML_NO_WALLET
   KHTMLPart *p;
 
   for (p = parentPart(); p && p->parentPart(); p = p->parentPart()) {
@@ -7006,11 +7007,13 @@ void KHTMLPart::openWallet(DOM::HTMLFormElementImpl *form)
   }
   assert(form);
   d->m_wq->callers.append(KHTMLWalletQueue::Caller(form, form->getDocument()));
+#endif // KHTML_NO_WALLET
 }
 
 
 void KHTMLPart::saveToWallet(const QString& key, const QMap<QString,QString>& data)
 {
+#ifndef KHTML_NO_WALLET
   KHTMLPart *p;
 
   for (p = parentPart(); p && p->parentPart(); p = p->parentPart()) {
@@ -7045,10 +7048,12 @@ void KHTMLPart::saveToWallet(const QString& key, const QMap<QString,QString>& da
     connect(d->m_wq, SIGNAL(walletOpened(KWallet::Wallet*)), this, SLOT(walletOpened(KWallet::Wallet*)));
   }
   d->m_wq->savers.append(qMakePair(key, data));
+#endif // KHTML_NO_WALLET
 }
 
 
 void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
+#ifndef KHTML_NO_WALLET
   KHTMLPart *p;
 
   for (p = parentPart(); p && p->parentPart(); p = p->parentPart()) {
@@ -7062,10 +7067,12 @@ void KHTMLPart::dequeueWallet(DOM::HTMLFormElementImpl *form) {
   if (d->m_wq) {
     d->m_wq->callers.remove(KHTMLWalletQueue::Caller(form, form->getDocument()));
   }
+#endif // KHTML_NO_WALLET
 }
 
 
 void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
+#ifndef KHTML_NO_WALLET
   assert(!d->m_wallet);
   assert(d->m_wq);
 
@@ -7094,11 +7101,13 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     QToolTip::remove(d->m_statusBarWalletLabel);
   }
   QToolTip::add(d->m_statusBarWalletLabel, i18n("The wallet '%1' is open and being used for form data and passwords.").arg(KWallet::Wallet::NetworkWallet()));
+#endif // KHTML_NO_WALLET
 }
 
 
 KWallet::Wallet *KHTMLPart::wallet()
 {
+#ifndef KHTML_NO_WALLET
   KHTMLPart *p;
 
   for (p = parentPart(); p && p->parentPart(); p = p->parentPart())
@@ -7107,12 +7116,14 @@ KWallet::Wallet *KHTMLPart::wallet()
   if (p)
     return p->wallet();
 
+#endif // KHTML_NO_WALLET
   return d->m_wallet;
 }
 
 
 void KHTMLPart::slotWalletClosed()
 {
+#ifndef KHTML_NO_WALLET
   if (d->m_wallet) {
     d->m_wallet->deleteLater();
     d->m_wallet = 0L;
@@ -7123,10 +7134,12 @@ void KHTMLPart::slotWalletClosed()
     delete d->m_statusBarWalletLabel;
     d->m_statusBarWalletLabel = 0L;
   }
+#endif // KHTML_NO_WALLET
 }
 
 void KHTMLPart::launchWalletManager()
 {
+#ifndef KHTML_NO_WALLET
   if (!DCOPClient::mainClient()->isApplicationRegistered("kwalletmanager")) {
     KApplication::startServiceByDesktopName("kwalletmanager_show");
   } else {
@@ -7134,13 +7147,16 @@ void KHTMLPart::launchWalletManager()
     r.send("show");
     r.send("raise");
   }
+#endif // KHTML_NO_WALLET
 }
 
 void KHTMLPart::walletMenu()
 {
+#ifndef KHTML_NO_WALLET
   KPopupMenu *m = new KPopupMenu(0L);
   m->insertItem(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
   m->popup(QCursor::pos());
+#endif // KHTML_NO_WALLET
 }
 
 void KHTMLPart::slotToggleCaretMode()

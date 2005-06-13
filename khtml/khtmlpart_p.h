@@ -33,7 +33,9 @@
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
+#ifndef KHTML_NO_WALLET
 #include <kwallet.h>
+#endif
 
 #include <qpointer.h>
 #include <qmap.h>

@@ -587,17 +587,28 @@ public:
      * fashion.  The options are all enabled by default but can be turned
      * off if desired through the params or if the prereqs don't exists.
      *
-     * @p defaultSize The default size of the window
-     *
      * Typically this function replaces createGUI().
      *
      * @see StandardWindowOptions
      *
      * @since 3.3
      */
-    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
-
     void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
+
+    /**
+     * Configures the current windows and its actions in the typical KDE
+     * fashion.  The options are all enabled by default but can be turned
+     * off if desired through the params or if the prereqs don't exists.
+     *
+     * @p defaultSize The default size of the window
+     *
+     * Typically this function replaces createGUI().
+     *
+     * @see StandardWindowOptions
+     *
+     * @since 3.5
+     */
+    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu

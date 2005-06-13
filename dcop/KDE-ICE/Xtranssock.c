@@ -51,7 +51,7 @@ from The Open Group.
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifndef WIN32
+#ifndef _WIN32
 
 #if defined(TCPCONN) || defined(UNIXCONN)
 #include <netinet/in.h>
@@ -105,21 +105,32 @@ from The Open Group.
 #endif
 #endif /* i386 && SYSV || _SEQUENT_ */
 
-#else /* !WIN32 */
+#else /* !_WIN32 */
 
+#ifdef _WIN32
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <winsock2.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <io.h>
+#else
 #include <X11/Xwinsock.h>
 #include <X11/Xw32defs.h>
+#endif
 #undef close
 #define close closesocket
 #define ECONNREFUSED WSAECONNREFUSED
 #define EADDRINUSE WSAEADDRINUSE
 #define EPROTOTYPE WSAEPROTOTYPE
+#define EINPROGRESS WSAEINPROGRESS
 #undef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #undef EINTR
 #define EINTR WSAEINTR
 #include <netdb.h>
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 #if defined(SO_DONTLINGER) && defined(SO_LINGER)
 #undef SO_DONTLINGER
@@ -705,7 +716,7 @@ TRANS(SocketSetOption) (XtransConnInfo ciptr, int option, int arg)
     return -1;
 }
 
-
+#ifdef UNIXCONN
 static int
 set_sun_path(const char *port, const char *upath, char *path)
 {
@@ -726,6 +737,7 @@ set_sun_path(const char *port, const char *upath, char *path)
     }
     return 0;
 }
+#endif
 
 #ifdef TRANS_SERVER
 
@@ -1065,7 +1077,7 @@ TRANS(SocketINETAccept) (XtransConnInfo ciptr, int *status)
     int namelen = sizeof(sockname);
 #endif
 
-    PRMSG (2, "SocketINETAccept(%x,%d)\n", ciptr, ciptr->fd, 0);
+    PRMSG (2, "SocketINETAccept(%p,%d)\n", ciptr, ciptr->fd, 0);
 
     if ((newciptr = (XtransConnInfo) xcalloc (
 	1, sizeof(struct _XtransConnInfo))) == NULL)
@@ -1145,7 +1157,7 @@ TRANS(SocketUNIXAccept) (XtransConnInfo ciptr, int *status)
     int namelen = sizeof sockname;
 #endif
 
-    PRMSG (2, "SocketUNIXAccept(%x,%d)\n", ciptr, ciptr->fd, 0);
+    PRMSG (2, "SocketUNIXAccept(%p,%d)\n", ciptr, ciptr->fd, 0);
 
     if ((newciptr = (XtransConnInfo) xcalloc (
 	1, sizeof(struct _XtransConnInfo))) == NULL)
@@ -1288,7 +1300,11 @@ TRANS(SocketINETConnect) (XtransConnInfo ciptr, char *host, char *port)
 
     if (tmpaddr == -1)
     {
+#ifdef _WIN32
+	if ((hostp = gethostbyname(host)) == NULL)
+#else
 	if ((hostp = gethostbyname(host,hparams)) == NULL)
+#endif
 	{
 	    PRMSG (1,"SocketINETConnect: Can't get address for %s\n",
 		  host, 0, 0);
@@ -1359,7 +1375,7 @@ else
 
     if (connect (ciptr->fd, (struct sockaddr *) &sockname, namelen) < 0)
     {
-#ifdef WIN32
+#ifdef _WIN32
 	int olderrno = WSAGetLastError();
 #else
 	int olderrno = errno;
@@ -1666,7 +1682,7 @@ TRANS(SocketBytesReadable) (XtransConnInfo ciptr, BytesReadable_t *pend)
 #if defined(QNX4)
     *pend = 0L; /* FIONREAD only returns a short. Zero out upper bits */
 #endif
-#ifdef WIN32
+#ifdef _WIN32
     return ioctlsocket ((SOCKET) ciptr->fd, FIONREAD, (u_long *) pend);
 #else
 #if (defined(i386) && defined(SYSV)) || defined(_SEQUENT_)
@@ -1678,7 +1694,7 @@ TRANS(SocketBytesReadable) (XtransConnInfo ciptr, BytesReadable_t *pend)
     return ioctl (ciptr->fd, FIONREAD, (char *) pend);
 #endif /* __EMX__ */
 #endif /* i386 && SYSV && !SCO || _SEQUENT_ */
-#endif /* WIN32 */
+#endif /* _WIN32 */
 }
 
 
@@ -1688,11 +1704,11 @@ TRANS(SocketRead) (XtransConnInfo ciptr, char *buf, int size)
 {
     PRMSG (2,"SocketRead(%d,%x,%d)\n", ciptr->fd, buf, size);
 
-#if defined(WIN32) || defined(__EMX__)
+#if defined(_WIN32) || defined(__EMX__)
     return recv ((SOCKET)ciptr->fd, buf, size, 0);
 #else
     return read (ciptr->fd, buf, size);
-#endif /* WIN32 */
+#endif /* _WIN32 */
 }
 
 
@@ -1702,11 +1718,11 @@ TRANS(SocketWrite) (XtransConnInfo ciptr, char *buf, int size)
 {
     PRMSG (2,"SocketWrite(%d,%x,%d)\n", ciptr->fd, buf, size);
 
-#if defined(WIN32) || defined(__EMX__)
+#if defined(_WIN32) || defined(__EMX__)
     return send ((SOCKET)ciptr->fd, buf, size, 0);
 #else
     return write (ciptr->fd, buf, size);
-#endif /* WIN32 */
+#endif /* _WIN32 */
 }
 
 

@@ -199,6 +199,9 @@ void usage()
    exit(0);
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
 int main( int argc, char** argv )
 {

@@ -894,6 +894,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     m_part = part;
 
     m_popup = new Q3PopupMenu;
+    // xgettext: no-c-format
     m_popup->insertItem( i18n( "Default Font Size (100%)" ) );
 
     int m = m_direction ? 1 : -1;
@@ -906,6 +907,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
         QString numStr = QString::number( num );
         if ( num > 0 ) numStr.prepend( QLatin1Char('+') );
 
+        // xgettext: no-c-format
         m_popup->insertItem( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );
     }
 

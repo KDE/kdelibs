@@ -9,10 +9,11 @@ TARGET		= dcop$$KDEBUG
 
 system( bash kmoc )
 
+LIBS += $$KDELIBDESTDIR/kdeice$$KDELIB_SUFFIX
+
 SOURCES = \
 dcopref.cpp \
 dcopobject.cpp \
 dcopclient.cpp \
-dcopstub.cpp \
-dcopsignals.cpp
+dcopstub.cpp
 

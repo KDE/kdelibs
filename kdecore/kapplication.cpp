@@ -1359,6 +1359,11 @@ void KApplication::dcopFailure(const QString &msg)
   }
   if (failureCount == 2)
   {
+#ifdef Q_WS_WIN
+     KGlobal::config()->setGroup("General");
+     if (KGlobal::config()->readBoolEntry("ignoreDCOPFailures", false))
+         return;
+#endif
      QString msgStr(i18n("There was an error setting up inter-process "
                       "communications for KDE. The message returned "
                       "by the system was:\n\n"));

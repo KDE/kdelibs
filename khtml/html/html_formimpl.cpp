@@ -51,7 +51,9 @@
 #include <kmessagebox.h>
 #include <kapplication.h>
 #include <klocale.h>
+#ifndef KHTML_NO_WALLET
 #include <kwallet.h>
+#endif
 #include <netaccess.h>
 #include <kfileitem.h>
 #include <qfile.h>
@@ -420,6 +422,7 @@ static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
 
 void HTMLFormElementImpl::doAutoFill()
 {
+#ifndef KHTML_NO_WALLET
     const QString key = calculateAutoFillKey(*this);
 
     if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
@@ -429,10 +432,12 @@ void HTMLFormElementImpl::doAutoFill()
 
     // assert(view())
     getDocument()->view()->part()->openWallet(this);
+#endif // KHTML_NO_WALLET
 }
 
 
 void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
+#ifndef KHTML_NO_WALLET
     assert(w);
     const QString key = calculateAutoFillKey(*this);
     if (!w->hasFolder(KWallet::Wallet::FormDataFolder())) {
@@ -455,6 +460,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
             }
         }
     }
+#endif // KHTML_NO_WALLET
 }
 
 void HTMLFormElementImpl::submitFromKeyboard()
@@ -496,6 +502,7 @@ void HTMLFormElementImpl::submitFromKeyboard()
 
 void HTMLFormElementImpl::gatherWalletData()
 {
+#ifndef KHTML_NO_WALLET
     KHTMLView* const view = getDocument()->view();
     // check if we have any password input's
     m_walletMap.clear();
@@ -519,6 +526,7 @@ void HTMLFormElementImpl::gatherWalletData()
                 m_haveTextarea = true;
         }
     }
+#endif // KHTML_NO_WALLET
 }
 
 
@@ -592,6 +600,7 @@ void HTMLFormElementImpl::submit(  )
                 }
             }
 
+#ifndef KHTML_NO_WALLET
             if ( doesnotexist || !w || login_changed ) {
                 // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
                 KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
@@ -619,6 +628,7 @@ void HTMLFormElementImpl::submit(  )
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
             }
+#endif // KHTML_NO_WALLET
         }
 
         const DOMString url(khtml::parseURL(getAttribute(ATTR_ACTION)));

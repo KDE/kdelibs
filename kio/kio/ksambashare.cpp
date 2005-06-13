@@ -187,6 +187,10 @@ KSambaShare::KSambaShare() {
 }
 
 KSambaShare::~KSambaShare() {
+  if (QFile::exists(d->smbConf)) {
+        KDirWatch::self()->removeFile(d->smbConf);
+        KDirWatch::self()->removeFile(FILESHARECONF);
+  }
   delete d;
 }
 

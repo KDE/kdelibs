@@ -23,18 +23,27 @@ echo "-------------------------------------------------"
 echo
 
 pwd=`pwd`
+make="nmake -nologo"
 
 # special
-cd win/9x && nmake -nologo -f Makefile.rel $1 || exit 1
+cd win/9x || exit 1
+if [ "$1" != "noclean" ] ; then
+	$make -f Makefile.rel clean
+fi
+$make -f Makefile.rel || exit 1
 cd $pwd
 
 # all
 for d in \
 win \
 libltdl \
+dcop/KDE-ICE \
 dcop \
 dcop/dcopidl \
 dcop/dcopidl2cpp \
+dcop/dcopserver \
+dcop/dcopserver_shutdown \
+dcop/iceauth \
 kdefx \
 kdecore \
 kdeui \
@@ -55,7 +64,7 @@ kate/part \
 	echo ================== $d =================
 	cd $d || exit 1
 	if [ -z $noclean ] ; then
-		$make clean
+		$make -f Makefile.release clean
 	fi
 	mkrel || exit 1
 	cd $pwd

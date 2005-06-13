@@ -7,7 +7,9 @@
 
 using namespace std;
 
-
+#ifdef _MSC_VER
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
 
 Driver::Driver(const char* app)
 	:Test_stub( app, "TestInterface" ),
@@ -40,6 +42,10 @@ void Driver::test()
 }
 
 #include "driver.moc"
+
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
 int main(int argc, char** argv)
 {

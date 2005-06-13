@@ -43,7 +43,7 @@ class DOMStringImpl;
 class KHTML_EXPORT DOMString
 {
     friend class CharacterDataImpl;
-    friend bool operator==( const DOMString &a, const char *b );
+    friend KHTML_EXPORT bool operator==( const DOMString &a, const char *b );
 public:
     /**
      * default constructor. Gives an empty DOMString

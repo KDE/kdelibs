@@ -32,7 +32,7 @@ class KHTMLPart;
 
 namespace khtml
 {
-  struct ChildFrame;
+  class ChildFrame;
 }
 
 class KHTMLRun : public KParts::BrowserRun

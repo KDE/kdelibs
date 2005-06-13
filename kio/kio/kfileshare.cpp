@@ -61,7 +61,7 @@ KFileSharePrivate::KFileSharePrivate()
 
 KFileSharePrivate::~KFileSharePrivate()
 {
-  
+  KDirWatch::self()->removeFile(FILESHARECONF);
 }
 
 KFileSharePrivate *KFileSharePrivate::_self=0L;
@@ -80,7 +80,7 @@ void KFileSharePrivate::slotFileChange(const QString &file)
   if(file==FILESHARECONF) {
      KFileShare::readConfig();
      KFileShare::readShareList();
-  }    
+  }
 }
 
 void KFileShare::readConfig() // static

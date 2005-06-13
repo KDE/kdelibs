@@ -252,7 +252,7 @@ register char	 *ptr;
 
 	if (nread <= 0)
 	{
-#ifdef WIN32
+#ifdef _WIN32
 	    errno = WSAGetLastError();
 #endif
             if( nread < 0 && errno == EINTR )
@@ -379,7 +379,7 @@ register char	 *ptr;
 
 	if (nwritten <= 0)
 	{
-#ifdef WIN32
+#ifdef _WIN32
 	    errno = WSAGetLastError();
 #endif
             if( nwritten < 0 && errno == EINTR )

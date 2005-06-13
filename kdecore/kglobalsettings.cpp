@@ -33,6 +33,7 @@
 #ifdef Q_WS_WIN
 #include <windows.h>
 #include "qt_windows.h"
+#include <win32_utils.h>
 static QRgb qt_colorref2qrgb(COLORREF col)
 {
     return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
@@ -516,7 +517,13 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
       s_autostartPath->append(QLatin1Char('/'));
 
     // Document Path
-    *s_documentPath = g.readPathEntry( "Documents", QDir::homePath() );
+    *s_documentPath = g.readPathEntry( "Documents", 
+#ifdef Q_WS_WIN
+        getWin32ShellFoldersPath("Personal")
+#else
+        QDir::homeDirPath()
+#endif
+    );
     *s_documentPath = QDir::cleanPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
       s_documentPath->append(QLatin1Char('/'));

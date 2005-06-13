@@ -225,6 +225,17 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ALIGN:
 	addHTMLAlignment( attr->value() );
 	break;
+    case ATTR_VSPACE:
+        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        break;
+    case ATTR_HSPACE:
+        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
+        break;
+    case ATTR_VALIGN:
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
+        break;
     default:
         HTMLObjectBaseElementImpl::parseAttribute(attr);
     }
@@ -365,6 +376,20 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ONUNLOAD:
         setHTMLEventListener(EventImpl::UNLOAD_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onunload", this));
+        break;
+     case ATTR_VSPACE:
+        addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+        break;
+     case ATTR_HSPACE:
+        addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value());
+        addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
+        break;
+     case ATTR_ALIGN:
+	addHTMLAlignment( attr->value() );
+	break;
+     case ATTR_VALIGN:
+        addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
         break;
     default:
       HTMLObjectBaseElementImpl::parseAttribute( attr );

@@ -85,6 +85,14 @@ template class Q3PtrList<DCOPListener>;
 
 static QByteArray findDcopserverShutdown()
 {
+#ifdef Q_OS_WIN32
+	char szPath[512];
+	char *pszFilePart;
+	int ret;
+	ret = SearchPathA(NULL,"dcopserver_shutdown","exe",sizeof(szPath)/sizeof(szPath[0]),szPath,&pszFilePart);
+	if(ret != 0)
+		return QCString(szPath);
+#else
    QByteArray path = getenv("PATH");
    char *dir = strtok(path.data(), ":");
    while (dir)
@@ -99,7 +107,7 @@ static QByteArray findDcopserverShutdown()
    file += "/dcopserver_shutdown";
    if (access(file.data(), X_OK) == 0)
       return file;
-
+#endif
    return QByteArray("dcopserver_shutdown");
 }
 
@@ -138,6 +146,10 @@ static QByteArray readQByteArray(QDataStream &ds)
    return result;
 }
 
+extern "C" {
+extern int _kde_IceTransWrite (void * ciptr, char *buf, int size);
+}
+
 static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, const char *ptr)
 {
     int fd = IceConnectionNumber(iceConn);
@@ -147,7 +159,21 @@ static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, const c
 	int nwritten;
 
 	if (iceConn->io_ok)
-	    nwritten = write(fd, ptr, (int) nleft);
+	{
+		
+//		nwritten = _kde_IceTransWrite (iceConn->trans_conn, ptr, (int) nleft);
+
+		/*
+		Use special write handling on windows platform. The write function from
+		the runtime library (on MSVC) does not allow to write on sockets.
+		*/
+#ifdef Q_OS_WIN
+		nwritten = send(fd, ptr, (int) nleft, 0);
+#else
+		nwritten = write(fd, ptr, (int) nleft);
+#endif
+
+	}
 	else
 	    return 0;
 
@@ -313,7 +339,17 @@ void DCOPConnection::slotOutputReady()
 
    long fd_fl = fcntl(fd, F_GETFL, 0);
    fcntl(fd, F_SETFL, fd_fl | O_NDELAY);
-   int nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
+   /*
+	Use special write handling on windows platform. The write function from
+	the runtime library (on MSVC) does not allow to write on sockets.
+   */
+   int nwritten;
+#ifdef Q_OS_WIN
+   nwritten = ::send(fd,data.data()+outputBufferStart,data.size()-outputBufferStart,0);
+#else
+   nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
+#endif
+   
    int e = errno;
    fcntl(fd, F_SETFL, fd_fl);
 
@@ -515,12 +551,29 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
+<<<<<<< .working
     qsnprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
+=======
+#ifdef Q_OS_WIN
+    snprintf (tempFile, PATH_MAX, "%s\\%sXXXXXX", path, prefix);
+#else
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
+>>>>>>> .merge-rechts.r424790
+#endif
     ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
 	{
+		int fd = mkstemps(tempFile, 0);
+		if(fd >= 0)
+		{
+			*pFd = fd;
 	    strcpy(ptr, tempFile);
-	    *pFd =  mkstemps(ptr, 0);
+		}
+		else
+		{
+			free(ptr);
+			ptr = NULL;
+		}
 	}
     return ptr;
 }
@@ -540,9 +593,21 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     original_umask = umask (0077);      /* disallow non-owner access */
 
+#ifdef Q_OS_WIN
+	char temppath[512];
+	DWORD dw = GetTempPathA(sizeof(temppath),temppath);
+	if(dw != 0)
+	{
+		temppath[dw - 1] = 0;
+		path = temppath;
+	}
+	else
+		path = ".";
+#else
     path = getenv ("DCOP_SAVE_DIR");
     if (!path)
 	path = "/tmp";
+#endif
     if ((addAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
 	goto bad;
 
@@ -688,9 +753,15 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
+<<<<<<< .working
 //   QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend", length, fromApp.data(), toApp.data());//, fun.data());
+=======
+   QCString obj = readQCString(ds);
+   QCString fun = readQCString(ds);
+   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
+>>>>>>> .merge-rechts.r424790
 }
 //#endif
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
@@ -714,9 +785,15 @@ if (opcode == DCOPSend)
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPSend)
 {
+<<<<<<< .working
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPSend ", length, fromApp.data(), toApp.data());//, fun.data());
+=======
+   QCString obj = readQCString(ds);
+   QCString fun = readQCString(ds);
+   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
+>>>>>>> .merge-rechts.r424790
 }
 //#endif
 		// handle a multicast.
@@ -757,9 +834,15 @@ if (opcode == DCOPSend)
 //#ifdef DCOP_DEBUG
 if (opcode == DCOPCall)
 {
+<<<<<<< .working
    //QByteArray obj = readQByteArray(obj);
    //QByteArray fun = readQByteArray(fun);
    qWarning("Sending %d bytes from %s to %s. DCOPCall ", length, fromApp.data(), toApp.data());//, fun.data());
+=======
+   QCString obj = readQCString(ds);
+   QCString fun = readQCString(ds);
+   qWarning("Sending %d bytes from %s to %s. DCOPCall %s", length, fromApp.data(), toApp.data(), fun.data());
+>>>>>>> .merge-rechts.r424790
 }
 //#endif
 		target->waitingForReply.append( iceConn );
@@ -879,7 +962,7 @@ static Status DCOPServerProtocolSetupProc ( IceConn /*iceConn*/,
 					    int majorVersion, int minorVersion,
 					    char* vendor, char* release,
 					    IcePointer *clientDataRet,
-					    char **/*failureReasonRet*/)
+					    char ** /*failureReasonRet*/)
 {
     /*
      * vendor/release are undefined for ProtocolSetup in DCOP
@@ -895,6 +978,7 @@ static Status DCOPServerProtocolSetupProc ( IceConn /*iceConn*/,
     return (majorVersion == DCOPVersionMajor && minorVersion == DCOPVersionMinor);
 }
 
+#ifndef Q_OS_WIN
 static int pipeOfDeath[2];
 
 static void sighandler(int sig)
@@ -905,6 +989,12 @@ static void sighandler(int sig)
     }
 
     write(pipeOfDeath[1], "x", 1);
+}
+#endif
+
+extern "C"
+{
+	extern int _kde_IceLastMajorOpcode; // from libICE
 }
 
 DCOPServer::DCOPServer(bool _suicide)
@@ -917,7 +1007,6 @@ DCOPServer::DCOPServer(bool _suicide)
 
     dcopSignals = new DCOPSignals;
 
-    extern int _kde_IceLastMajorOpcode; // from libICE
     if (_kde_IceLastMajorOpcode < 1 )
         IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
 				    const_cast<char *>("DUMMY"),
@@ -971,12 +1060,18 @@ DCOPServer::DCOPServer(bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
+<<<<<<< .working
 	    if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty())
+=======
+#ifndef Q_OS_WIN32
+	    if (QCString(getenv("DCOPAUTHORITY")).isEmpty())
+>>>>>>> .merge-rechts.r424790
 	    {
                 // Create a link named like the old-style (KDE 2.x) naming
                 QByteArray compatName = DCOPClient::dcopServerFileOld();
                 ::symlink(fName,compatName);
             }
+#endif // Q_OS_WIN32
 	}
 
 #if 0
@@ -1006,6 +1101,16 @@ DCOPServer::DCOPServer(bool _suicide)
     m_deadConnectionTimer->setSingleShot(true);
     connect( m_deadConnectionTimer, SIGNAL(timeout()), this, SLOT(slotCleanDeadConnections()) );
 
+#ifdef Q_OS_WIN
+	char szEventName[256];
+	sprintf(szEventName,"dcopserver%i",GetCurrentProcessId());
+	m_evTerminate = CreateEventA(NULL,TRUE,FALSE,(LPCSTR)szEventName);
+	ResetEvent(m_evTerminate);
+	m_hTerminateThread = CreateThread(NULL,0,TerminatorThread,this,0,&m_dwTerminateThreadId);
+	if(m_hTerminateThread)
+		CloseHandle(m_hTerminateThread);
+#endif
+
 #ifdef DCOP_LOG
     char hostname_buffer[256];
     memset( hostname_buffer, 0, sizeof( hostname_buffer ) );
@@ -1029,8 +1134,11 @@ DCOPServer::~DCOPServer()
     m_logger->close();
     delete m_logger;
 #endif
+#ifdef Q_OS_WIN
+	SetEvent(m_evTerminate);
+	CloseHandle(m_evTerminate);
+#endif
 }
-
 
 DCOPConnection* DCOPServer::findApp( const DCOPCString& appId )
 {
@@ -1239,7 +1347,9 @@ void DCOPServer::slotShutdown()
     fprintf( stderr, "DCOPServer : slotShutdown() -> waiting for clients to disconnect.\n" );
 #endif
     char c;
+#ifndef Q_OS_WIN
     read(pipeOfDeath[0], &c, 1);
+#endif
     if (!shutdown)
     {
        shutdown = true;
@@ -1254,9 +1364,15 @@ void DCOPServer::slotShutdown()
 void DCOPServer::slotExit()
 {
 #ifndef NDEBUG
-    fprintf( stderr, "DCOPServer : slotExit() -> exit.\n" );
+	fprintf( stderr, "DCOPServer : slotExit() -> exit.\n" );
 #endif
-    exit(0);
+#ifdef Q_OS_WIN
+	SetEvent(m_evTerminate);
+	if(m_dwTerminateThreadId != GetCurrentThreadId())
+		WaitForSingleObject(m_hTerminateThread,INFINITE);
+	CloseHandle(m_hTerminateThread);
+#endif
+	exit(0);
 }
 
 bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
@@ -1637,7 +1753,12 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     // check if we are already running
     if (isRunning(DCOPClient::dcopServerFile()))
        return 0;
+<<<<<<< .working
     if (QByteArray(getenv("DCOPAUTHORITY")).isEmpty() &&
+=======
+#ifndef Q_OS_WIN32
+    if (QCString(getenv("DCOPAUTHORITY")).isEmpty() &&
+>>>>>>> .merge-rechts.r424790
         isRunning(DCOPClient::dcopServerFileOld()))
     {
        // Make symlink for compatibility
@@ -1664,9 +1785,10 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
           }
        }
     }
-
+#endif
     pipe(ready);
 
+#ifndef Q_OS_WIN32
     if (!nofork) {
         pid_t pid = fork();
 	if (pid > 0) {
@@ -1700,7 +1822,14 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     signal(SIGHUP, sighandler);
     signal(SIGTERM, sighandler);
     signal(SIGPIPE, SIG_IGN);
-
+#else
+	{
+		char c = 1;
+		close(ready[1]);
+		read(ready[0], &c, 1); // Wait till dcopserver is started
+		close(ready[0]);
+	}
+#endif
     putenv(strdup("SESSION_MANAGER="));
 
     QApplication a( argc, argv, false );
@@ -1708,12 +1837,25 @@ extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
     IceSetIOErrorHandler (IoErrorHandler );
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
+<<<<<<< .working
     QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0);
     server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
+=======
+#ifdef Q_OS_WIN
+	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,TRUE);
+#else
+	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
+		server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
+#endif
+>>>>>>> .merge-rechts.r424790
 
     int ret = a.exec();
     delete server;
     return ret;
 }
+
+#ifdef Q_OS_WIN
+#include "dcopserver_win.cpp"
+#endif
 
 #include "dcopserver.moc"

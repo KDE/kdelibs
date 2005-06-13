@@ -321,7 +321,7 @@ protected:
   void setRootOnlyMsg(const QString& msg);
 
   /**
-   * Change wether or not the RootOnly message should be shown.
+   * Change whether or not the RootOnly message should be shown.
    *
    * Following the value of @p on, the RootOnly message will be
    * shown or not.
@@ -329,6 +329,19 @@ protected:
    * @see KCModule::useRootOnlyMsg
    */
   void setUseRootOnlyMsg(bool on);
+
+  /**
+   * Returns the changed state of automatically managed widgets in this dialog
+   * @since 3.5
+   */
+  bool managedWidgetChangeState() const;
+
+  /**
+   * Call this method when your manually managed widgets change state between
+   * changed and not changed
+   * @since 3.5
+   */
+  void unmanagedWidgetChangeState(bool);
 
 private:
 

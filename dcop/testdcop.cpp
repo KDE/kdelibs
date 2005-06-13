@@ -27,6 +27,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtimer.h>
 #include <assert.h>
 
+#include <assert.h>
+
 DCOPClientTransaction *countDownAction = 0;
 int countDownCount = 0;
 
@@ -183,6 +185,10 @@ void TestObject::slotCallBack(int callId, const DCOPCString &replyType, const QB
    qWarning("Value = %s", arg1.latin1());
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
+
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv, "testdcop");
@@ -310,6 +316,7 @@ qDebug("Calling countDown() in object1");
 	foundApp.data(), foundObj.data());
 
   client->detach();
+  return 0;
 }
 
 #include "testdcop.moc"

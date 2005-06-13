@@ -1,9 +1,11 @@
 /**
- * \mainpage Framework for KDE graphical components
+ * @mainpage Framework for KDE graphical components
+ *
+ * .
  *
  * This library implements the framework for KDE parts, which are
  * elaborate widgets with a user-interface defined in terms of actions
- * (menu items, toolbar icons...). See KParts::Part.
+ * (menu items, toolbar icons). See KParts::Part.
  *
  * The library also provides a framework for applications that want to
  * use parts. Such applications need to inherit their main window

@@ -21,6 +21,10 @@ void batch()
 #include "batch.generated"
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
+
 int main(int argc, char** argv)
 {
 	if ( argc > 1 ) {
@@ -29,7 +33,8 @@ int main(int argc, char** argv)
 	}
 	QApplication app( argc, argv );
         DCOPClient* dcopClient = new DCOPClient;
-	dcopClient->attach();
+	if (!dcopClient->attach())
+		return -1;
 	dcopClient->registerAs( "TestApp" );
 	new Test;
 	return app.exec();

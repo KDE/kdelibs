@@ -28,7 +28,9 @@
 #ifdef MAKE_KDECORE_LIB
 # define KDECORE_EXPORT KDE_EXPORT
 #else
-# define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
+# ifndef KDECORE_EXPORT
+#  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
+# endif
 #endif
 
 #ifdef MAKE_KDEWIN32_LIB

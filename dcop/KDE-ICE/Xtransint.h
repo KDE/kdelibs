@@ -74,7 +74,7 @@ from The Open Group.
 #define XTRANSDEBUG 1
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define _WILLWINSOCK_
 #endif
 
@@ -89,7 +89,7 @@ from The Open Group.
 extern int  errno;		/* Internal system error number. */
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 #ifndef MINIX
 #ifndef Lynx
 #include <sys/socket.h>
@@ -174,14 +174,14 @@ extern int  errno;		/* Internal system error number. */
 #endif
 #define EGET() errno
 
-#else /* WIN32 */
+#else /* _WIN32 */
 
 #include <limits.h>	/* for USHRT_MAX */
 
 #define ESET(val) WSASetLastError(val)
 #define EGET() WSAGetLastError()
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 #ifndef NULL
 #define NULL 0
@@ -376,7 +376,7 @@ typedef struct _Xtransport_table {
  * systems, so they may be emulated.
  */
 
-#if defined(CRAY) || (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(WIN32) || defined(__sxg__) || defined(__EMX__)
+#if defined(CRAY) || (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(_WIN32) || defined(__sxg__) || defined(__EMX__)
 
 #define READV(ciptr, iov, iovcnt)	TRANS(ReadV)(ciptr, iov, iovcnt)
 
@@ -390,10 +390,10 @@ static	int TRANS(ReadV)(
 
 #define READV(ciptr, iov, iovcnt)	readv(ciptr->fd, iov, iovcnt)
 
-#endif /* CRAY || (SYSV && i386) || WIN32 || __sxg__ || */
+#endif /* CRAY || (SYSV && i386) || _WIN32 || __sxg__ || */
 
 
-#if defined(CRAY) || (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(WIN32) || defined(__sxg__) || defined(__EMX__)
+#if defined(CRAY) || (defined(SYSV) && defined(i386) && !defined(SCO325)) || defined(_WIN32) || defined(__sxg__) || defined(__EMX__)
 
 #define WRITEV(ciptr, iov, iovcnt)	TRANS(WriteV)(ciptr, iov, iovcnt)
 
@@ -407,7 +407,7 @@ static int TRANS(WriteV)(
 
 #define WRITEV(ciptr, iov, iovcnt)	writev(ciptr->fd, iov, iovcnt)
 
-#endif /* CRAY || WIN32 || __sxg__ */
+#endif /* CRAY || _WIN32 || __sxg__ */
 
 
 static int is_numeric (

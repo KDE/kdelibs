@@ -24,8 +24,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qobject.h>
 
-#ifdef Q_OS_UNIX //not available yet for win32
-
 
 #include <q3asciidict.h>
 #include <QByteArray>
@@ -150,6 +148,12 @@ private slots:
     void slotCleanDeadConnections();
     void slotOutputReady(int socket );
 
+#ifdef Q_OS_WIN
+public:
+    static BOOL WINAPI dcopServerConsoleProc(DWORD dwCtrlType);
+private:
+    static DWORD WINAPI TerminatorThread(void * pParam);
+#endif
 private:
     void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
         const QByteArray& data );
@@ -167,6 +171,12 @@ private:
     Q3IntDict<DCOPConnection> fd_clients; // index on fd
     Q3PtrList<_IceConn> deadConnections;
 
+#ifdef Q_OS_WIN
+    HANDLE m_evTerminate;
+    HANDLE m_hTerminateThread;
+    DWORD m_dwTerminateThreadId;
+#endif
+
 #ifdef DCOP_LOG
     QTextStream *m_stream;
     QFile *m_logger;
@@ -174,7 +184,5 @@ private:
 };
 
 extern DCOPServer* the_server;
-
-#endif //Q_OS_UNIX
 
 #endif

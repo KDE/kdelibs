@@ -745,6 +745,9 @@ int runDCOP( DCOPCStringList args, UserList users, Session session,
     return retval;
 }
 
+#ifdef Q_OS_WIN
+# define main kdemain
+#endif
 
 int main( int argc, char** argv )
 {

@@ -55,13 +55,11 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     foot = 0;
     firstBody = 0;
 
-#if 0
     rules = None;
     frame = Void;
-#endif
+
     padding = 1;
 
-    m_noBorder = true;
     m_solid = false;
 
     // reset font color and sizes here, if we don't have strict parse mode.
@@ -385,16 +383,17 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 #ifdef DEBUG_DRAW_BORDER
         border=1;
 #endif
-        m_noBorder = !border;
         DOMString v = QString::number( border );
         addCSSLength(CSS_PROP_BORDER_WIDTH, v );
-#if 0
+
         // wanted by HTML4 specs
         if(!border)
             frame = Void, rules = None;
         else
             frame = Box, rules = All;
-#endif
+
+
+        if (attached()) updateFrame();
         break;
     }
     case ATTR_BGCOLOR:
@@ -406,12 +405,10 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
             addHTMLColor(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
             m_solid = true;
         }
+
+        if (attached()) updateFrame();
         break;
     case ATTR_BACKGROUND:
     {
@@ -425,7 +422,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     }
     case ATTR_FRAME:
-#if 0
+
         if ( strcasecmp( attr->value(), "void" ) == 0 )
             frame = Void;
         else if ( strcasecmp( attr->value(), "border" ) == 0 )
@@ -444,10 +441,10 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             frame = Lhs;
         else if ( strcasecmp( attr->value(), "rhs" ) == 0 )
             frame = Rhs;
-#endif
+
+        if (attached()) updateFrame();
         break;
     case ATTR_RULES:
-#if 0
         if ( strcasecmp( attr->value(), "none" ) == 0 )
             rules = None;
         else if ( strcasecmp( attr->value(), "groups" ) == 0 )
@@ -458,7 +455,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             rules = Cols;
         else if ( strcasecmp( attr->value(), "all" ) == 0 )
             rules = All;
-#endif
+        if (attached()) updateFrame();
         break;
    case ATTR_CELLSPACING:
         if (!attr->value().isEmpty())
@@ -509,17 +506,31 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLTableElementImpl::attach()
 {
-    if (!m_noBorder) {
-        int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
-        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
-        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, v);
-        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
-        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
-    }
-
+    updateFrame();
     HTMLElementImpl::attach();
     if ( m_render && m_render->isTable() )
-	static_cast<RenderTable *>(m_render)->setCellPadding( padding );
+        static_cast<RenderTable *>(m_render)->setCellPadding( padding );
+}
+
+void HTMLTableElementImpl::updateFrame()
+{
+    int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
+    if ( frame & Above )
+         addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
+    else
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_NONE);
+    if ( frame & Below )
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, v);
+    else
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_NONE);
+    if ( frame & Lhs )
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
+    else
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_NONE);
+    if ( frame & Rhs )
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
+    else
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_NONE);
 }
 
 // --------------------------------------------------------------------------
@@ -842,8 +853,11 @@ void HTMLTableCellElementImpl::attach()
 
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
-        if (table->m_noBorder) {
-            removeCSSProperty(CSS_PROP_BORDER_WIDTH);
+        if (table->rules == HTMLTableElementImpl::None) {
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_NONE);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_NONE);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_NONE);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_NONE);
         }
         else {
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");

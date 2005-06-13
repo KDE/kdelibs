@@ -3,7 +3,7 @@ Type=MimeType
 Encoding=UTF-8
 MimeType=application/x-xliff
 Icon=gettext
-Patterns=*.xliff;
+Patterns=*.xlf;*.XLF;*.xliff;
 Comment=XLIFF Translation File
 Comment[af]=XLIFF Vertaal Lêer
 Comment[bg]=Съобщения за превод (XLIFF)
@@ -49,3 +49,6 @@ Comment[tr]=XLIFF Çeviri Dosyası
 Comment[uk]=Файл перекладу XLIFF
 Comment[xx]=xxXLIFF Translation Filexx
 Comment[zh_CN]=XLIFF 翻译文件
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.xlf
