@@ -51,10 +51,10 @@ void KPreviewPropsPlugin::createLayout()
 
     QVBoxLayout* tmp = new QVBoxLayout(topframe);
 
-    KFileMetaPreview* preview = new KFileMetaPreview(topframe);
+    preview = new KFileMetaPreview(topframe);
 
     tmp->addWidget(preview) ;
-    preview->showPreview(properties->item()->url());
+    connect( properties, SIGNAL( aboutToShowPage( QWidget * ) ), SLOT( aboutToShowPage( QWidget* ) ) );
 }
 
 KPreviewPropsPlugin::~KPreviewPropsPlugin()
@@ -66,6 +66,15 @@ bool KPreviewPropsPlugin::supports( KFileItemList _items )
 {
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
     return _items.count() == 1 && metaDataEnabled;
+}
+
+void KPreviewPropsPlugin::aboutToShowPage( QWidget* widget )
+{
+    if ( widget != preview->parent() )
+        return;
+
+    disconnect( properties, SIGNAL( aboutToShowPage( QWidget * ) ), this, SLOT( aboutToShowPage( QWidget* ) ) );
+    preview->showPreview(properties->item()->url());
 }
 
 #include "kpreviewprops.moc"

@@ -22,6 +22,8 @@
 
 #include <kpropertiesdialog.h>
 
+class KFileMetaPreview;
+
 /*!
  * PreviewProps plugin
  * This plugin displays a preview of the given file
@@ -41,7 +43,11 @@ public:
    */
   static bool supports( KFileItemList _items );
 
+private slots:
+  void aboutToShowPage( QWidget* );
+
 private:
+  KFileMetaPreview* preview;
   void createLayout();
 
   class KPreviewPropsPluginPrivate;
