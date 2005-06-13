@@ -427,7 +427,7 @@ class RenderRangeList : public QList<RenderRange>
 
       return a;
     }
-    
+
   private:
     KTextEditor::Cursor m_currentPos;
 };
@@ -1196,33 +1196,33 @@ bool KateRenderer::getSelectionBounds(uint line, uint lineLength, uint &start, u
   {
     if (m_view->lineIsSelection(line))
     {
-      start = m_view->selectionStartColumn();
-      end = m_view->selectionEndColumn();
+      start = m_view->selectionStart().column();
+      end = m_view->selectionEnd().column();
       hasSel = true;
     }
-    else if ((int)line == m_view->selectionStartLine())
+    else if ((int)line == m_view->selectionStart().line())
     {
-      start = m_view->selectionStartColumn();
+      start = m_view->selectionStart().column();
       end = lineLength;
       hasSel = true;
     }
-    else if ((int)line > m_view->selectionStartLine() && (int)line < m_view->selectionEndLine())
+    else if ((int)line > m_view->selectionStart().line() && (int)line < m_view->selectionEnd().line())
     {
       start = 0;
       end = lineLength;
       hasSel = true;
     }
-    else if ((int)line == m_view->selectionEndLine())
+    else if ((int)line == m_view->selectionEnd().line())
     {
       start = 0;
-      end = m_view->selectionEndColumn();
+      end = m_view->selectionEnd().column();
       hasSel = true;
     }
   }
   else if (m_view->lineHasSelected(line))
   {
-    start = m_view->selectionStartColumn();
-    end = m_view->selectionEndColumn();
+    start = m_view->selectionStart().column();
+    end = m_view->selectionEnd().column();
     hasSel = true;
   }
 
@@ -1329,13 +1329,13 @@ int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & 
   //range.debugOutput();
   if (!range.layout() && !doLayout)
     return -1;
-    
+
   if (!range.layout() || !range.includesCursor(pos)) {
     do {
       range.setStartCol(range.endCol());
       range.setStartX(range.endX());
       layoutLine(range, maxwidth);
-      // FIXME most likely an infinite loop here      
+      // FIXME most likely an infinite loop here
     } while (!range.includesCursor(pos));
   }
 

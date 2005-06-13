@@ -622,7 +622,7 @@ void KateCSmartIndent::processChar(QChar c)
     return;
 
   KateView *view = doc->activeView();
-  KateDocCursor begin(view->cursorLine(), 0, doc);
+  KateDocCursor begin(view->cursorPosition().line(), 0, doc);
 
   KateTextLine::Ptr textLine = doc->plainKateTextLine(begin.line());
   if (c == 'n')
@@ -642,7 +642,7 @@ void KateCSmartIndent::processChar(QChar c)
       if ( first != -1
            && textLine->getChar( first ) == '*'
            && textLine->nextNonSpaceChar( first+1 ) == (int)view->cursorColumn()-1 )
-        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
+        doc->removeText( view->cursorPosition().line(), first+1, view->cursorPosition().line(), view->cursorColumn()-1);
     }
 
     // anders: don't change the indent of doxygen lines here.
@@ -1195,11 +1195,11 @@ void KateXmlIndent::processChar (QChar c)
 
   // only alter lines that start with a close element
   KateView *view = doc->activeView();
-  QString text = doc->plainKateTextLine(view->cursorLine())->string();
+  QString text = doc->plainKateTextLine(view->cursorPosition().line())->string();
   if(text.find(startsWithCloseTag) == -1) return;
 
   // process it
-  processLine(view->cursorLine());
+  processLine(view->cursorPosition().line());
 }
 
 void KateXmlIndent::processLine (KateDocCursor &line)
@@ -1936,7 +1936,7 @@ void KateCSAndSIndent::processChar(QChar c)
   // for historic reasons, processChar doesn't get a cursor
   // to work on. so fabricate one.
   KateView *view = doc->activeView();
-  KateDocCursor begin(view->cursorLine(), 0, doc);
+  KateDocCursor begin(view->cursorPosition().line(), 0, doc);
 
   KateTextLine::Ptr textLine = doc->plainKateTextLine(begin.line());
   if ( c == 'n' )
@@ -1957,7 +1957,7 @@ void KateCSAndSIndent::processChar(QChar c)
       if ( first != -1
            && textLine->getChar( first ) == '*'
            && textLine->nextNonSpaceChar( first+1 ) == (int)view->cursorColumn()-1 )
-        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
+        doc->removeText( view->cursorPosition().line(), first+1, view->cursorPosition().line(), view->cursorColumn()-1);
     }
 
     // anders: don't change the indent of doxygen lines here.
@@ -2014,12 +2014,12 @@ void KateVarIndent::processChar ( QChar c )
   // process line if the c is in our list, and we are not in comment text
   if ( d->triggers.contains( c ) )
   {
-    KateTextLine::Ptr ln = doc->plainKateTextLine( doc->activeView()->cursorLine() );
+    KateTextLine::Ptr ln = doc->plainKateTextLine( doc->activeView()->cursorPosition().line() );
     if ( ln->attribute( doc->activeView()->cursorColumn()-1 ) == commentAttrib )
       return;
 
     KateView *view = doc->activeView();
-    KateDocCursor begin( view->cursorLine(), 0, doc );
+    KateDocCursor begin( view->cursorPosition().line(), 0, doc );
     kdDebug(13030)<<"variable indenter: process char '"<<c<<", line "<<begin.line()<<endl;
     processLine( begin );
   }
@@ -2040,7 +2040,7 @@ void KateVarIndent::processLine ( KateDocCursor &line )
 
   // skip blank lines, except for the cursor line
   KateView *v = doc->activeView();
-  if ( (ktl->firstChar() < 0) && (!v || (int)v->cursorLine() != ln ) )
+  if ( (ktl->firstChar() < 0) && (!v || (int)v->cursorPosition().line() != ln ) )
     return;
 
   int fc;
@@ -2220,7 +2220,7 @@ int KateVarIndent::coupleBalance ( int line, const QChar &open, const QChar &clo
   KateTextLine::Ptr ln = doc->plainKateTextLine( line );
   if ( ! ln || ! ln->length() ) return 0;
 
-  for ( uint z=0; z < ln->length(); z++ )
+  for ( int z=0; z < ln->length(); ++z )
   {
     QChar c = ln->getChar( z );
     if ( ln->attribute(z) == d->coupleAttrib )

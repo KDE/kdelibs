@@ -771,7 +771,7 @@ void KateViewInternal::makeVisible (const KTextEditor::Cursor& c, uint endCol, b
 
   if (!m_view->dynWordWrap() && endCol != (uint)-1)
   {
-    int sX = cursorToX(c); 
+    int sX = cursorToX(c);
 
     int sXborder = sX-8;
     if (sXborder < 0)
@@ -1036,7 +1036,7 @@ public:
         if (m_column == thisRange.endCol()) {
           if (!thisRange.wrap()) {
             // Have come to the end of a line
-            if (uint(line()) >= m_vi->m_doc->lines() - 1)
+            if (line() >= m_vi->m_doc->lines() - 1)
               // Have come to the end of the document
               break;
 
@@ -1282,7 +1282,7 @@ KateLineRange KateViewInternal::range(int realLine, const KateLineRange* previou
     ret.setStartX(0);
     ret.setViewLine(0);
   }
-  
+
   m_view->renderer()->layoutLine(ret, width());
 
   if (!previous) {
@@ -2418,7 +2418,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
 
   if ((key == Qt::Key_Return) || (key == Qt::Key_Enter))
   {
-    m_view->keyReturn();
+    doReturn();
     e->accept();
     return;
   }
@@ -2649,7 +2649,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       else
       {
         m_view->selectWord( cursor );
-        selectAnchor = KTextEditor::Cursor (m_view->selectionEndLine(), m_view->selectionEndColumn());
+        selectAnchor = m_view->selectionEnd();
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
       }
@@ -3225,7 +3225,7 @@ int KateViewInternal::cursorToX( const KTextEditor::Cursor& c ) const
     KateLineRange r = range(c);
     return m_view->renderer()->cursorToX(r, c, false, -1);
   }
-  
+
   return m_view->renderer()->cursorToX(c, m_view->dynWordWrap() ? width() : -1);
 }
 
@@ -3242,7 +3242,7 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent* e)
   m_imPreeditSelStart = m_imPreedit.end() = m_imPreedit.start() = cursor;
 
   m_view->setIMSelectionValue( m_imPreedit, m_imPreedit, true );
-  
+
   QWidget::inputMethodEvent(e);
 }
 

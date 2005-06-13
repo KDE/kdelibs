@@ -34,6 +34,11 @@ KateDocCursor::KateDocCursor(KateDocument *doc) : KTextEditor::Cursor(), m_doc(d
 {
 }
 
+KateDocCursor::KateDocCursor(const KTextEditor::Cursor &position, KateDocument *doc)
+  : KTextEditor::Cursor(position), m_doc(doc)
+{
+}
+
 KateDocCursor::KateDocCursor(int line, int col, KateDocument *doc)
   : KTextEditor::Cursor(line, col), m_doc(doc)
 {

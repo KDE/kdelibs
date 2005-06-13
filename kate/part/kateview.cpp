@@ -655,7 +655,7 @@ void KateView::slotExpandToplevel()
 
 void KateView::slotCollapseLocal()
 {
-  int realLine = m_doc->foldingTree()->collapseOne(cursorLine());
+  int realLine = m_doc->foldingTree()->collapseOne(cursorPosition().line());
   if (realLine != -1)
     // TODO rodda: fix this to only set line and allow internal view to chose column
     // Explicitly call internal because we want this to be registered as an internal call
@@ -664,7 +664,7 @@ void KateView::slotCollapseLocal()
 
 void KateView::slotExpandLocal()
 {
-  m_doc->foldingTree()->expandOne(cursorLine(), m_doc->lines());
+  m_doc->foldingTree()->expandOne(cursorPosition().line(), m_doc->lines());
 }
 
 void KateView::setupCodeCompletion()
@@ -713,11 +713,6 @@ void KateView::setDynWrapIndicators(int mode)
   config()->setDynWordWrapIndicators (mode);
 }
 
-void KateView::slotSelectionTypeChanged()
-{
-  m_toggleBlockSelection->setChecked( blockSelectionMode() );
-}
-
 bool KateView::isOverwriteMode() const
 {
   return m_doc->config()->configFlags() & KateDocumentConfig::cfOvr;
@@ -726,7 +721,7 @@ bool KateView::isOverwriteMode() const
 void KateView::reloadFile()
 {
   // save cursor position
-  int cl = cursorLine();
+  int cl = cursorPosition().line();
   int cc = cursorColumn();
 
   // save bookmarks
@@ -815,16 +810,6 @@ bool KateView::setCursorPositionInternal( uint line, uint col, uint tabwidth, bo
   return true;
 }
 
-void KateView::setOverwriteMode( bool b )
-{
-  if ( isOverwriteMode() && !b )
-    m_doc->config()->setConfigFlags( m_doc->config()->configFlags() ^ KateDocumentConfig::cfOvr );
-  else
-    m_doc->config()->setConfigFlags( m_doc->config()->configFlags() | KateDocumentConfig::cfOvr );
-
-  m_toggleInsert->setChecked (isOverwriteMode ());
-}
-
 void KateView::toggleInsert()
 {
   m_doc->config()->setConfigFlags(m_doc->config()->configFlags() ^ KateDocumentConfig::cfOvr);
@@ -851,12 +836,12 @@ void KateView::gotoLine()
 
 void KateView::joinLines()
 {
-  int first = selectionStartLine();
-  int last = selectionEndLine();
+  int first = selectionStart().line();
+  int last = selectionEnd().line();
   //int left = m_doc->line( last ).length() - m_doc->selEndCol();
   if ( first == last )
   {
-    first = cursorLine();
+    first = cursorPosition().line();
     last = first + 1;
   }
   m_doc->joinLines( first, last );
@@ -1306,14 +1291,6 @@ bool KateView::setSelection( const KTextEditor::Cursor& start, const KTextEditor
   return true;
 }
 
-bool KateView::setSelection( int startLine, int startCol, int endLine, int endCol )
-{
-  if (hasSelection())
-    clearSelection(false, false);
-
-  return setSelection( KTextEditor::Cursor(startLine, startCol), KTextEditor::Cursor(endLine, endCol) );
-}
-
 bool KateView::clearSelection()
 {
   return clearSelection(true);
@@ -1400,7 +1377,7 @@ bool KateView::selectAll()
 {
   setBlockSelectionMode (false);
 
-  return setSelection (0, 0, m_doc->lastLine(), m_doc->lineLength(m_doc->lastLine()));
+  return setSelection (KTextEditor::Cursor (0,0), KTextEditor::Cursor(m_doc->lastLine(), m_doc->lineLength(m_doc->lastLine())));
 }
 
 bool KateView::lineColSelected (int line, int col)
@@ -1493,28 +1470,12 @@ void KateView::selectWord( const KTextEditor::Cursor& cursor )
   while (end < len && m_doc->highlight()->isInWord(textLine->getChar(end), textLine->attribute(start - 1))) end++;
   if (end <= start) return;
 
-  setSelection (cursor.line(), start, cursor.line(), end);
+  setSelection (KTextEditor::Cursor(cursor.line(), start), end-start);
 }
 
 void KateView::selectLine( const KTextEditor::Cursor& cursor )
 {
-  setSelection (cursor.line(), 0, cursor.line()+1, 0);
-}
-
-void KateView::selectLength( const KTextEditor::Cursor& cursor, int length )
-{
-  int start, end;
-
-  KateTextLine::Ptr textLine = m_doc->plainKateTextLine(cursor.line());
-
-  if (!textLine)
-    return;
-
-  start = cursor.column();
-  end = start + length;
-  if (end <= start) return;
-
-  setSelection (cursor.line(), start, cursor.line(), end);
+  setSelection (KTextEditor::Cursor (cursor.line(), 0), KTextEditor::Cursor (cursor.line()+1, 0));
 }
 
 void KateView::cut()
@@ -1800,7 +1761,7 @@ bool KateView::setBlockSelectionMode (bool on)
 
     setSelection(oldSelectStart, oldSelectEnd);
 
-    slotSelectionTypeChanged();
+    m_toggleBlockSelection->setChecked( blockSelectionMode() );
   }
 
   return true;

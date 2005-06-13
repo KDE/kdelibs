@@ -131,24 +131,23 @@ class KateView : public KTextEditor::View,
      { return m_viewInternal->getCursor(); }
 
     KTextEditor::Cursor cursorPositionVirtual () const
-     { return KTextEditor::Cursor (cursorLine(), cursorColumn()); }
+     { return KTextEditor::Cursor (m_viewInternal->getCursor().line(), cursorColumn()); }
 
     QPoint cursorPositionCoordinates() const
         { return m_viewInternal->cursorCoordinates(); }
 
-    void cursorPosition( int& l, int& c ) const
-        { l = cursorLine(); c = cursorColumn();     }
-    void cursorPositionReal( int& l, int& c ) const
-        { l = cursorLine(); c = cursorColumnReal(); }
     bool setCursorPosition( int line, int col )
         { return setCursorPositionInternal( line, col, m_doc->config()->tabWidth(), true );  }
+
     bool setCursorPositionReal( int line, int col)
         { return setCursorPositionInternal( line, col, 1, true );           }
-    int cursorLine() const
-        { return m_viewInternal->getCursor().line();                    }
+
+    /**
+     * calculate the virtual column position of the cursor
+     * one tab maybe multiple columns
+     * @return virtual cursor column
+     */
     int cursorColumn() const;
-    int cursorColumnReal() const
-        { return m_viewInternal->getCursor().column();                     }
 
   signals:
     void caretPositionChanged(const KTextEditor::Cursor& newPosition);
@@ -192,6 +191,9 @@ class KateView : public KTextEditor::View,
   public slots:
     virtual bool setSelection ( const KTextEditor::Cursor &startPosition, const KTextEditor::Cursor &endPosition );
 
+    virtual bool setSelection ( const KTextEditor::Cursor &position, int length, bool wrap = true )
+    { return KTextEditor::View::setSelection (position, length, wrap); }
+
     virtual bool selection () const { return hasSelection(); }
 
     virtual QString selectionText () const;
@@ -208,8 +210,6 @@ class KateView : public KTextEditor::View,
 
     virtual bool blockSelection () const { return blockSelectionMode (); }
 
-    bool setSelection ( int startLine, int startCol,
-      int endLine, int endCol );
     bool clearSelection ();
     bool clearSelection (bool redraw, bool finishedChangingSelection = true);
 
@@ -219,30 +219,10 @@ class KateView : public KTextEditor::View,
 
     bool selectAll();
 
-    //
-    // KTextEditor::SelectionInterfaceExt
-    //
-    int selectionStartLine() const { return selectStart.line(); };
-    int selectionStartColumn() const { return selectStart.column(); };
-    int selectionEndLine() const  { return selectEnd.line(); };
-    int selectionEndColumn()  const  { return selectEnd.column(); };
-
   //
   // internal helper stuff, for katerenderer and so on
   //
   public:
-    /**
-     * accessors to the selection start
-     * @return selection start cursor (read-only)
-     */
-    inline const KateSuperCursor &selStart () const { return selectStart; }
-
-    /**
-     * accessors to the selection end
-     * @return selection end cursor (read-only)
-     */
-    inline const KateSuperCursor &selEnd () const { return selectEnd; }
-
     // should cursor be wrapped ? take config + blockselection state in account
     bool wrapCursor ();
 
@@ -257,7 +237,6 @@ class KateView : public KTextEditor::View,
 
     void selectWord(   const KTextEditor::Cursor& cursor );
     void selectLine(   const KTextEditor::Cursor& cursor );
-    void selectLength( const KTextEditor::Cursor& cursor, int length );
 
   //
   // KTextEditor::BlockSelectionInterface stuff
@@ -301,21 +280,20 @@ class KateView : public KTextEditor::View,
      Return values for "save" related commands.
     */
     bool isOverwriteMode() const;
-    void setOverwriteMode( bool b );
 
     QString currentTextLine()
-        { return m_doc->line( cursorLine() ); }
+        { return m_doc->line( cursorPosition().line() ); }
     QString currentWord()
-        { return m_doc->getWord( m_viewInternal->getCursor() ); }
+        { return m_doc->getWord( cursorPosition() ); }
 
   public slots:
-    void indent()             { m_doc->indent( this, cursorLine(), 1 );  }
-    void unIndent()           { m_doc->indent( this, cursorLine(), -1 ); }
-    void cleanIndent()        { m_doc->indent( this, cursorLine(), 0 );  }
-    void align()              { m_doc->align( this, cursorLine() ); }
-    void comment()            { m_doc->comment( this, cursorLine(), cursorColumnReal(), 1 );  }
-    void uncomment()          { m_doc->comment( this, cursorLine(), cursorColumnReal(),-1 ); }
-    void killLine()           { m_doc->removeLine( cursorLine() ); }
+    void indent()             { m_doc->indent( this, cursorPosition().line(), 1 );  }
+    void unIndent()           { m_doc->indent( this, cursorPosition().line(), -1 ); }
+    void cleanIndent()        { m_doc->indent( this, cursorPosition().line(), 0 );  }
+    void align()              { m_doc->align( this, cursorPosition().line() ); }
+    void comment()            { m_doc->comment( this, cursorPosition().line(), cursorPosition().column(), 1 );  }
+    void uncomment()          { m_doc->comment( this, cursorPosition().line(), cursorPosition().column(),-1 ); }
+    void killLine()           { m_doc->removeLine( cursorPosition().line() ); }
 
     /**
       Uppercases selected text, or an alphabetic character next to the cursor.
@@ -335,8 +313,6 @@ class KateView : public KTextEditor::View,
     */
     void joinLines();
 
-
-    void keyReturn()          { m_viewInternal->doReturn();          }
     void backspace()          { m_viewInternal->doBackspace();       }
     void deleteWordLeft()     { m_viewInternal->doDeleteWordLeft();  }
     void keyDelete()          { m_viewInternal->doDelete();          }
@@ -414,18 +390,19 @@ class KateView : public KTextEditor::View,
     bool scrollBarMarks();
     int dynWrapIndicators();
     bool foldingMarkersOn();
-    KTextEditor::Document* getDoc()    { return m_doc; }
 
-  public slots:
-    void gotoMark( KTextEditor::Mark* mark ) { setCursorPositionInternal ( mark->line, 0, 1 ); }
+  private slots:
+    /**
+     * used to update actions after selection changed
+     */
     void slotSelectionChanged ();
 
-  //
-  // Extras
-  //
   public:
-
-    KateDocument*  doc() const       { return m_doc; }
+    /**
+     * accessor to katedocument pointer
+     * @return pointer to document
+     */
+    inline KateDocument*  doc() { return m_doc; }
 
     KActionCollection* editActionCollection() const { return m_editActions; }
 
@@ -441,7 +418,6 @@ class KateView : public KTextEditor::View,
 
   signals:
     void dropEventPass(QDropEvent*);
-    void viewStatusMsg (const QString &msg);
 
   public:
     void slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text )
@@ -452,9 +428,6 @@ class KateView : public KTextEditor::View,
 
   protected:
     void contextMenuEvent( QContextMenuEvent* );
-
-  public slots:
-    void slotSelectionTypeChanged();
 
   private slots:
     void slotGotFocus();

@@ -84,7 +84,7 @@ void KateSearch::find()
 {
   // if multiline selection around, search in it
   long searchf = KateViewConfig::global()->searchFlags();
-  if (m_view->selection() && m_view->selectionStartLine() != m_view->selectionEndLine())
+  if (m_view->selection() && m_view->selectionStart().line() != m_view->selectionEnd().line())
     searchf |= KFindDialog::SelectedText;
 
   KFindDialog *findDialog = new KFindDialog (  m_view, "", searchf,
@@ -147,7 +147,7 @@ void KateSearch::replace()
 
   // if multiline selection around, search in it
   long searchf = KateViewConfig::global()->searchFlags();
-  if (m_view->selection() && m_view->selectionStartLine() != m_view->selectionEndLine())
+  if (m_view->selection() && m_view->selectionStart().line() != m_view->selectionEnd().line())
     searchf |= KFindDialog::SelectedText;
 
   KReplaceDialog *replaceDialog = new KReplaceDialog (  m_view, "", searchf,
@@ -523,7 +523,7 @@ QString KateSearch::getSearchText()
 
 KTextEditor::Cursor KateSearch::getCursor()
 {
-  return KTextEditor::Cursor(view()->cursorLine(), view()->cursorColumnReal());
+  return view()->cursorPosition();
 }
 
 bool KateSearch::doSearch( const QString& text )
@@ -603,7 +603,7 @@ bool KateSearch::doSearch( const QString& text )
 void KateSearch::exposeFound( KTextEditor::Cursor &cursor, int slen )
 {
   view()->setCursorPositionInternal ( cursor.line(), cursor.column() + slen, 1 );
-  view()->setSelection( cursor.line(), cursor.column(), cursor.line(), cursor.column() + slen );
+  view()->setSelection( cursor, slen );
 }
 //END KateSearch
 
@@ -844,7 +844,7 @@ void SearchCommand::processText( KTextEditor::View *view, const QString &cmd )
       // of the selection.
       if ( pattern.startsWith( v->selectionText() ) &&
            v->selectionText().length() + 1 == pattern.length() )
-        v->setCursorPositionInternal( v->selectionStartLine(), v->selectionStartColumn() );
+        v->setCursorPositionInternal( v->selectionStart().line(), v->selectionStart().column() );
 
       v->find( pattern, m_ifindFlags, false );
     }

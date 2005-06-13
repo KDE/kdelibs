@@ -497,7 +497,6 @@ KateJSDocument::KateJSDocument (KJS::ExecState *exec, KateDocument *_doc)
   cursorColumn        KateJSView::CursorColumn          DontDelete|Function 0
   cursorColumnReal    KateJSView::CursorColumnReal      DontDelete|Function 0
   setCursorPosition   KateJSView::SetCursorPosition     DontDelete|Function 2
-  setCursorPositionReal KateJSView::SetCursorPositionReal DontDelete|Function 2
   selection           KateJSView::Selection             DontDelete|Function 0
   hasSelection        KateJSView::HasSelection          DontDelete|Function 0
   setSelection        KateJSView::SetSelection          DontDelete|Function 4
@@ -534,19 +533,16 @@ Value KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
   switch (id)
   {
     case KateJSView::CursorLine:
-      return KJS::Number (view->cursorLine());
+      return KJS::Number (view->cursorPosition().line());
 
     case KateJSView::CursorColumn:
-      return KJS::Number (view->cursorColumn());
+      return KJS::Number (view->cursorPositionVirtual().column());
 
     case KateJSView::CursorColumnReal:
-      return KJS::Number (view->cursorColumnReal());
+      return KJS::Number (view->cursorPosition().column());
 
     case KateJSView::SetCursorPosition:
-      return KJS::Boolean( view->setCursorPosition( args[0].toUInt32(exec), args[1].toUInt32(exec) ) );
-
-    case KateJSView::SetCursorPositionReal:
-      return KJS::Boolean( view->setCursorPositionReal( args[0].toUInt32(exec), args[1].toUInt32(exec) ) );
+      return KJS::Boolean( view->setCursorPosition( KTextEditor::Cursor (args[0].toUInt32(exec), args[1].toUInt32(exec)) ) );
 
     // SelectionInterface goes in the view, in anticipation of the future
     case KateJSView::Selection:
@@ -556,10 +552,8 @@ Value KateJSViewProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
       return KJS::Boolean( view->selection() );
 
     case KateJSView::SetSelection:
-      return KJS::Boolean( view->setSelection(args[0].toUInt32(exec),
-                                              args[1].toUInt32(exec),
-                                              args[2].toUInt32(exec),
-                                              args[3].toUInt32(exec)) );
+      return KJS::Boolean( view->setSelection(KTextEditor::Cursor (args[0].toInt32(exec), args[1].toInt32(exec)),
+                                              KTextEditor::Cursor (args[2].toUInt32(exec), args[3].toUInt32(exec))) );
 
     case KateJSView::RemoveSelectedText:
       return KJS::Boolean( view->removeSelectionText() );
@@ -592,16 +586,16 @@ KJS::Value KateJSView::getValueProperty(KJS::ExecState *exec, int token) const
 
   switch (token) {
     case KateJSView::SelStartLine:
-      return KJS::Number( view->selectionStartLine() );
+      return KJS::Number( view->selectionStart().line() );
 
     case KateJSView::SelStartCol:
-      return KJS::Number( view->selectionStartColumn() );
+      return KJS::Number( view->selectionStart().column() );
 
     case KateJSView::SelEndLine:
-      return KJS::Number( view->selectionEndLine() );
+      return KJS::Number( view->selectionEnd().line() );
 
     case KateJSView::SelEndCol:
-      return KJS::Number( view->selectionEndColumn() );
+      return KJS::Number( view->selectionEnd().column() );
     }
 
   return KJS::Undefined ();

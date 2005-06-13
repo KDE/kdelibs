@@ -2569,7 +2569,7 @@ uint KateDocument::currentColumn( const KTextEditor::Cursor& cursor )
 
 bool KateDocument::typeChars ( KateView *view, const QString &chars )
 {
-  KateTextLine::Ptr textLine = m_buffer->plainLine(view->cursorLine ());
+  KateTextLine::Ptr textLine = m_buffer->plainLine(view->cursorPosition().line ());
 
   if (!textLine)
     return false;
@@ -2605,15 +2605,15 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
   KTextEditor::Cursor oldCur (view->cursorPosition());
 
   if (config()->configFlags()  & KateDocumentConfig::cfOvr)
-    removeText (view->cursorLine(), view->cursorColumnReal(), view->cursorLine(), QMIN( view->cursorColumnReal()+buf.length(), textLine->length() ) );
+    removeText (view->cursorPosition().line(), view->cursorPosition().column(), view->cursorPosition().line(), QMIN( view->cursorPosition().column()+buf.length(), textLine->length() ) );
 
-  insertText (view->cursorLine(), view->cursorColumnReal(), buf);
+  insertText (view->cursorPosition().line(), view->cursorPosition().column(), buf);
   m_indenter->processChar(c);
 
   editEnd ();
 
   if (bracketInserted)
-    view->setCursorPositionInternal (view->cursorLine(), view->cursorColumnReal()-1);
+    view->setCursorPositionInternal (view->cursorPosition().line(), view->cursorPosition().column()-1);
 
   view->slotTextInserted (view, oldCur, chars);
 
@@ -2824,8 +2824,8 @@ void KateDocument::paste ( KateView* view, QClipboard::Mode )
   if (!view->config()->persistentSelection() && view->hasSelection() )
     view->removeSelectedText();
 
-  uint line = view->cursorLine ();
-  uint column = view->cursorColumnReal ();
+  uint line = view->cursorPosition().line ();
+  uint column = view->cursorPosition().column ();
 
   insertText ( line, column, s, view->blockSelectionMode() );
 
@@ -2861,12 +2861,12 @@ void KateDocument::insertIndentChars ( KateView *view )
   if (config()->configFlags() & KateDocumentConfig::cfSpaceIndent)
   {
     int width = config()->indentationWidth();
-    s.fill (' ', width - (view->cursorColumnReal() % width));
+    s.fill (' ', width - (view->cursorPosition().column() % width));
   }
   else
     s.append (QChar::fromAscii ('\t'));
 
-  insertText (view->cursorLine(), view->cursorColumnReal(), s);
+  insertText (view->cursorPosition().line(), view->cursorPosition().column(), s);
 
   editEnd ();
 }
@@ -2882,9 +2882,9 @@ void KateDocument::indent ( KateView *v, uint line, int change)
   }
   else
   {
-    int sl = v->selectionStartLine();
-    int el = v->selectionEndLine();
-    int ec = v->selectionEndColumn();
+    int sl = v->selectionStart().line();
+    int el = v->selectionEnd().line();
+    int ec = v->selectionEnd().column();
 
     if ((ec == 0) && ((el-1) >= 0))
     {
@@ -2934,7 +2934,7 @@ void KateDocument::align(KateView *view, uint line)
     }
     else
     {
-      m_indenter->processSection (view->selStart(), view->selEnd());
+      m_indenter->processSection (KateDocCursor (view->selectionStart(), this), KateDocCursor (view->selectionEnd(), this));
       editEnd ();
     }
   }
@@ -3190,10 +3190,10 @@ void KateDocument::addStartStopCommentToSelection( KateView *view, int attrib )
   QString startComment = highlight()->getCommentStart( attrib );
   QString endComment = highlight()->getCommentEnd( attrib );
 
-  int sl = view->selectionStartLine();
-  int el = view->selectionEndLine();
-  int sc = view->selectionStartColumn();
-  int ec = view->selectionEndColumn();
+  int sl = view->selectionStart().line();
+  int el = view->selectionEnd().line();
+  int sc = view->selectionStart().column();
+  int ec = view->selectionEnd().column();
 
   if ((ec == 0) && ((el-1) >= 0))
   {
@@ -3210,7 +3210,7 @@ void KateDocument::addStartStopCommentToSelection( KateView *view, int attrib )
 
   // Set the new selection
   ec += endComment.length() + ( (el == sl) ? startComment.length() : 0 );
-  view->setSelection(sl, sc, el, ec);
+  view->setSelection(KTextEditor::Cursor(sl, sc), KTextEditor::Cursor(el, ec));
 }
 
 /*
@@ -3221,10 +3221,10 @@ void KateDocument::addStartLineCommentToSelection( KateView *view, int attrib )
 {
   QString commentLineMark = highlight()->getCommentSingleLineStart( attrib ) + " ";
 
-  int sl = view->selectionStartLine();
-  int el = view->selectionEndLine();
+  int sl = view->selectionStart().line();
+  int el = view->selectionEnd().line();
 
-  if ((view->selectionEndColumn() == 0) && ((el-1) >= 0))
+  if ((view->selectionEnd().column() == 0) && ((el-1) >= 0))
   {
     el--;
   }
@@ -3241,10 +3241,10 @@ void KateDocument::addStartLineCommentToSelection( KateView *view, int attrib )
 
   // Set the new selection
 
-  KateDocCursor end (view->selEnd());
-  end.setColumn(view->selectionEndColumn() + ((el == view->selectionEndLine()) ? commentLineMark.length() : 0) );
+  KateDocCursor end (view->selectionEnd(), this);
+  end.setColumn(view->selectionEnd().column() + ((el == view->selectionEnd().line()) ? commentLineMark.length() : 0) );
 
-  view->setSelection(view->selectionStartLine(), 0, end.line(), end.column());
+  view->setSelection(KTextEditor::Cursor(view->selectionStart().line(), 0), end);
 }
 
 bool KateDocument::nextNonSpaceCharPos(int &line, int &col)
@@ -3296,10 +3296,10 @@ bool KateDocument::removeStartStopCommentFromSelection( KateView *view, int attr
   QString startComment = highlight()->getCommentStart( attrib );
   QString endComment = highlight()->getCommentEnd( attrib );
 
-  int sl = kMax<int> (0, view->selectionStartLine());
-  int el = kMin<int>  (view->selectionEndLine(), lastLine());
-  int sc = view->selectionStartColumn();
-  int ec = view->selectionEndColumn();
+  int sl = kMax<int> (0, view->selectionStart().line());
+  int el = kMin<int>  (view->selectionEnd().line(), lastLine());
+  int sc = view->selectionStart().column();
+  int ec = view->selectionEnd().column();
 
   // The selection ends on the char before selectEnd
   if (ec != 0) {
@@ -3332,7 +3332,7 @@ bool KateDocument::removeStartStopCommentFromSelection( KateView *view, int attr
 
     // Set the new selection
     ec -= endCommentLen + ( (el == sl) ? startCommentLen : 0 );
-    view->setSelection(sl, sc, el, ec + 1);
+    view->setSelection(KTextEditor::Cursor(sl, sc), KTextEditor::Cursor(el, ec + 1));
   }
 
   return remove;
@@ -3366,10 +3366,10 @@ bool KateDocument::removeStartLineCommentFromSelection( KateView *view, int attr
   QString shortCommentMark = highlight()->getCommentSingleLineStart( attrib );
   QString longCommentMark = shortCommentMark + " ";
 
-  int sl = view->selectionStartLine();
-  int el = view->selectionEndLine();
+  int sl = view->selectionStart().line();
+  int el = view->selectionEnd().line();
 
-  if ((view->selectionEndColumn() == 0) && ((el-1) >= 0))
+  if ((view->selectionEnd().column() == 0) && ((el-1) >= 0))
   {
     el--;
   }
@@ -3399,10 +3399,10 @@ bool KateDocument::removeStartLineCommentFromSelection( KateView *view, int attr
   if (removed)
   {
     // Set the new selection
-    KateDocCursor end (view->selEnd());
-    end.setColumn(view->selectionEndColumn() - ((el == view->selectionEndLine()) ? removeLength : 0) );
+    KateDocCursor end (view->selectionEnd(), this);
+    end.setColumn(view->selectionEnd().column() - ((el == view->selectionEnd().line()) ? removeLength : 0) );
 
-    view->setSelection(view->selectionStartLine(), view->selectionStartColumn(), end.line(), end.column());
+    view->setSelection(view->selectionStart(), end);
   }
 
   return removed;
@@ -3422,12 +3422,12 @@ void KateDocument::comment( KateView *v, uint line,uint column, int change)
   int startAttrib, endAttrib;
   if ( hassel )
   {
-    KateTextLine::Ptr ln = kateTextLine( v->selectionStartLine() );
-    int l = v->selectionStartLine(), c = v->selectionStartColumn();
+    KateTextLine::Ptr ln = kateTextLine( v->selectionStart().line() );
+    int l = v->selectionStart().line(), c = v->selectionStart().column();
     startAttrib = nextNonSpaceCharPos( l, c ) ? kateTextLine( l )->attribute( c ) : 0;
 
-    ln = kateTextLine( v->selectionEndLine() );
-    l = v->selectionEndLine(), c = v->selectionEndColumn();
+    ln = kateTextLine( v->selectionEnd().line() );
+    l = v->selectionEnd().line(), c = v->selectionEnd().column();
     endAttrib = previousNonSpaceCharPos( l, c ) ? kateTextLine( l )->attribute( c ) : 0;
   }
   else
@@ -3480,8 +3480,8 @@ void KateDocument::comment( KateView *v, uint line,uint column, int change)
       // line ignored
       if ( hasStartStopCommentMark &&
            ( !hasStartLineCommentMark || (
-           ( v->selectionStartColumn() > m_buffer->plainLine( v->selectionStartLine() )->firstChar() ) ||
-           ( v->selectionEndColumn() < ((int)m_buffer->plainLine( v->selectionEndLine() )->length()) )
+           ( v->selectionStart().column() > m_buffer->plainLine( v->selectionStart().line() )->firstChar() ) ||
+           ( v->selectionEnd().column() < ((int)m_buffer->plainLine( v->selectionEnd().line() )->length()) )
          ) ) )
         addStartStopCommentToSelection( v, startAttrib );
       else if ( hasStartLineCommentMark )
@@ -3535,17 +3535,17 @@ void KateDocument::transform( KateView *v, const KTextEditor::Cursor &c,
   if ( v->hasSelection() )
   {
     // cache the selection and cursor, so we can be sure to restore.
-    KTextEditor::Cursor s = v->selStart();
-    KTextEditor::Cursor e = v->selEnd();
+    KTextEditor::Cursor s = v->selectionStart();
+    KTextEditor::Cursor e = v->selectionEnd();
 
-    int ln = v->selectionStartLine();
-    while ( ln <= v->selectionEndLine() )
+    int ln = v->selectionStart().line();
+    while ( ln <= v->selectionEnd().line() )
     {
       uint start, end;
-      start = (ln == v->selectionStartLine() || v->blockSelectionMode()) ?
-          v->selectionStartColumn() : 0;
-      end = (ln == v->selectionEndLine() || v->blockSelectionMode()) ?
-          v->selectionEndColumn() : lineLength( ln );
+      start = (ln == v->selectionStart().line() || v->blockSelectionMode()) ?
+          v->selectionStart().column() : 0;
+      end = (ln == v->selectionEnd().line() || v->blockSelectionMode()) ?
+          v->selectionEnd().column() : lineLength( ln );
       QString s = text( ln, start, ln, end );
 
       if ( t == Uppercase )
@@ -3563,7 +3563,7 @@ void KateDocument::transform( KateView *v, const KTextEditor::Cursor &c,
           // 2. if blockselect or first line, and p == 0 and start-1 is not in a word, upper
           // 3. if p-1 is not in a word, upper.
           if ( ( ! start && ! p ) ||
-                   ( ( ln == v->selectionStartLine() || v->blockSelectionMode() ) &&
+                   ( ( ln == v->selectionStart().line() || v->blockSelectionMode() ) &&
                    ! p && ! highlight()->isInWord( l->getChar( start - 1 )) ) ||
                    ( p && ! highlight()->isInWord( s.at( p-1 ) ) )
              )
@@ -4509,8 +4509,8 @@ void KateDocument::removeTrailingSpace( uint line )
 
     if ( ! ln ) return;
 
-    if ( line == activeView()->cursorLine()
-         && activeView()->cursorColumnReal() >= QMAX(0,ln->lastChar()) )
+    if ( line == activeView()->cursorPosition().line()
+         && activeView()->cursorPosition().column() >= QMAX(0,ln->lastChar()) )
       return;
 
     if ( ln->length() )
@@ -4610,8 +4610,8 @@ bool KateDocument::insertTemplateTextImplementation ( uint line, uint column, co
 }
 
 void KateDocument::testTemplateCode() {
-  int col=activeView()->cursorColumn();
-  int line=activeView()->cursorLine();
+  int col=activeView()->cursorPosition().column();
+  int line=activeView()->cursorPosition().line();
   insertTemplateText(line,col,"for ${index} \\${NOPLACEHOLDER} ${index} ${blah} ${fullname} \\$${Placeholder} \\${${PLACEHOLDER2}}\n next line:${ANOTHERPLACEHOLDER} $${DOLLARBEFOREPLACEHOLDER} {NOTHING} {\n${cursor}\n}",QMap<QString,QString>());
 }
 

@@ -510,19 +510,19 @@ bool KateCommands::SedReplace::exec (KTextEditor::View *view, const QString &cmd
   }
   else if (onlySelect)
   {
-    int startline = kview->selectionStartLine();
-    uint startcol = kview->selectionStartColumn();
+    int startline = kview->selectionStart().line();
+    int startcol = kview->selectionStart().column();
     int endcol = -1;
     do {
-      if ( startline == kview->selectionEndLine() )
-        endcol = kview->selectionEndColumn();
+      if ( startline == kview->selectionEnd().line() )
+        endcol = kview->selectionEnd().column();
 
       res += sedMagic( doc, startline, find, replace, d, !noCase, repeat, startcol, endcol );
 
       /*if ( startcol )*/ startcol = 0;
 
       startline++;
-    } while ( (int)startline <= kview->selectionEndLine() );
+    } while ( startline <= kview->selectionEnd().line() );
   }
   else // just this line
   {

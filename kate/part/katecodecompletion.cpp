@@ -152,7 +152,7 @@ void KateCodeCompletion::showCompletionBox(
   m_caseSensitive = casesensitive;
   m_complList = complList;
   m_offset = offset;
-  m_view->cursorPositionReal( m_lineCursor, m_colCursor );
+  m_view->cursorPosition().position( m_lineCursor, m_colCursor );
   m_colCursor -= offset;
 
   updateBox( true );
@@ -218,7 +218,7 @@ void KateCodeCompletion::doComplete()
 
   QString text = item->m_entry.text;
   QString currentLine = m_view->currentTextLine();
-  int len = m_view->cursorColumnReal() - m_colCursor;
+  int len = m_view->cursorPosition().column() - m_colCursor;
   QString currentComplText = currentLine.mid(m_colCursor,len);
   QString add = text.mid(currentComplText.length());
   if( item->m_entry.postfix == "()" )
@@ -250,10 +250,10 @@ void KateCodeCompletion::complete( KTextEditor::CompletionEntry entry )
 
 void KateCodeCompletion::updateBox( bool )
 {
-  if( m_colCursor > m_view->cursorColumnReal() ) {
+  if( m_colCursor > m_view->cursorPosition().column() ) {
     // the cursor is too far left
     kdDebug(13035) << "Aborting Codecompletion after sendEvent" << endl;
-    kdDebug(13035) << m_view->cursorColumnReal() << endl;
+    kdDebug(13035) << m_view->cursorPosition().column() << endl;
     abortCompletion();
     m_view->setFocus();
     return;
@@ -262,7 +262,7 @@ void KateCodeCompletion::updateBox( bool )
   m_completionListBox->clear();
 
   QString currentLine = m_view->currentTextLine();
-  int len = m_view->cursorColumnReal() - m_colCursor;
+  int len = m_view->cursorPosition().column() - m_colCursor;
   QString currentComplText = currentLine.mid(m_colCursor,len);
 /* No-one really badly wants those, or?
   kdDebug(13035) << "Column: " << m_colCursor << endl;
@@ -322,7 +322,7 @@ void KateCodeCompletion::updateBox( bool )
 void KateCodeCompletion::showArgHint ( QStringList functionList, const QString& strWrapping, const QString& strDelimiter )
 {
   int line, col;
-  m_view->cursorPositionReal( line, col );
+  m_view->cursorPosition().position( line, col );
   m_pArgHint->reset( line, col );
   m_pArgHint->setArgMarkInfos( strWrapping, strDelimiter );
 

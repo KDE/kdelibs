@@ -62,7 +62,7 @@ KateBookmarks::KateBookmarks( KateView* view, Sorting sort )
   , m_view( view )
   , m_sorting( sort )
 {
-  connect (view->getDoc(), SIGNAL(marksChanged()), this, SLOT(marksChanged()));
+  connect (view->doc(), SIGNAL(marksChanged()), this, SLOT(marksChanged()));
   _tries=0;
   m_bookmarksMenu = 0L;
 }
@@ -114,12 +114,12 @@ void KateBookmarks::createActions( KActionCollection* ac )
 
 void KateBookmarks::toggleBookmark ()
 {
-  uint mark = m_view->doc()->mark( m_view->cursorLine() );
+  uint mark = m_view->doc()->mark( m_view->cursorPosition().line() );
   if( mark & KTextEditor::MarkInterface::markType01 )
-    m_view->doc()->removeMark( m_view->cursorLine(),
+    m_view->doc()->removeMark( m_view->cursorPosition().line(),
         KTextEditor::MarkInterface::markType01 );
   else
-    m_view->doc()->addMark( m_view->cursorLine(),
+    m_view->doc()->addMark( m_view->cursorPosition().line(),
         KTextEditor::MarkInterface::markType01 );
 }
 
@@ -148,7 +148,7 @@ void KateBookmarks::slotViewLostFocus( KTextEditor::View *v )
 
 void KateBookmarks::insertBookmarks( Q3PopupMenu& menu )
 {
-  uint line = m_view->cursorLine();
+  uint line = m_view->cursorPosition().line();
   const QRegExp re("&(?!&)");
   int idx( -1 );
   int old_menu_count = menu.count();
@@ -236,7 +236,7 @@ void KateBookmarks::bookmarkMenuAboutToShow()
   Q3PtrList<KTextEditor::Mark> m = m_view->doc()->marks();
 
   m_bookmarksMenu->clear();
-  m_bookmarkToggle->setChecked( m_view->doc()->mark( m_view->cursorLine() )
+  m_bookmarkToggle->setChecked( m_view->doc()->mark( m_view->cursorPosition().line() )
                                 & KTextEditor::MarkInterface::markType01 );
   m_bookmarkToggle->plug( m_bookmarksMenu );
   m_bookmarkClear->plug( m_bookmarksMenu );
@@ -264,7 +264,7 @@ void KateBookmarks::goNext()
   if (m.isEmpty())
     return;
 
-  uint line = m_view->cursorLine();
+  uint line = m_view->cursorPosition().line();
   int found = -1;
 
   for (uint z=0; z < m.count(); z++)
@@ -281,7 +281,7 @@ void KateBookmarks::goPrevious()
   if (m.isEmpty())
     return;
 
-  uint line = m_view->cursorLine();
+  uint line = m_view->cursorPosition().line();
   int found = -1;
 
   for (uint z=0; z < m.count(); z++)

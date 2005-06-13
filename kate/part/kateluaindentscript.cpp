@@ -161,16 +161,16 @@ static int katelua_document_insertText(lua_State *L) {
 }
 
 static int katelua_view_cursorline(lua_State *L) {
-  lua_pushnumber(L,katelua_view->cursorLine());
+  lua_pushnumber(L,katelua_view->cursorPosition().line());
   return 1;
 }
 static int katelua_view_cursorcolumn(lua_State *L) {
-  lua_pushnumber(L,katelua_view->cursorColumn());
+  lua_pushnumber(L,katelua_view->cursorPosition().column());
   return 1;
 }
 static int katelua_view_cursorposition(lua_State *L) {
-  lua_pushnumber(L,katelua_view->cursorLine());
-  lua_pushnumber(L,katelua_view->cursorColumn());
+  lua_pushnumber(L,katelua_view->cursorPosition().line());
+  lua_pushnumber(L,katelua_view->cursorPosition().column());
   return 2;
 
 }

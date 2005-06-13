@@ -67,13 +67,13 @@ void KateSpell::updateActions ()
 
 void KateSpell::spellcheckFromCursor()
 {
-  spellcheck( KTextEditor::Cursor(m_view->cursorLine(), m_view->cursorColumnReal()) );
+  spellcheck( m_view->cursorPosition() );
 }
 
 void KateSpell::spellcheckSelection()
 {
-  KTextEditor::Cursor from( m_view->selectionStartLine(), m_view->selectionStartColumn() );
-  KTextEditor::Cursor to( m_view->selectionEndLine(), m_view->selectionEndColumn() );
+  KTextEditor::Cursor from ( m_view->selectionStart() );
+  KTextEditor::Cursor to( m_view->selectionEnd() );
   spellcheck( from, to );
 }
 
@@ -160,7 +160,7 @@ void KateSpell::misspelling( const QString& origword, const QStringList&, unsign
   locatePosition( pos, line, col );
 
   m_view->setCursorPositionInternal (line, col, 1);
-  m_view->setSelection( line, col, line, col + origword.length() );
+  m_view->setSelection( KTextEditor::Cursor (line, col), origword.length() );
 }
 
 void KateSpell::corrected( const QString& originalword, const QString& newword, unsigned int pos )
