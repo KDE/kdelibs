@@ -4,6 +4,8 @@
 #include "kkeyserver_x11.h"
 #include <qtimer.h>
 
+class KAccelAction;
+
 /**
  * @internal
  */
@@ -33,7 +35,10 @@ class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 
  signals:
 	void menuItemActivated();
-	void activateInt( int );
+	void menuItemActivated(KAccelAction*);
+
+ private:
+	void emitActivatedSignal(KAccelAction*);
 
  private slots:
 	void slotKeyPressed( int id );
