@@ -11,6 +11,7 @@ Comment[rw]=OpenOffice.org Ububikoshingiro
 Comment[sv]=OpenOffice.org databas
 Comment[ta]=ழ-ஓப்பன்ஆபீஸ் தரவுதளம்
 Comment[tr]=OpenOffice.org Veritabanı
+Comment[zh_CN]=OpenOffice.org 数据库
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.odb;*.ODB;
