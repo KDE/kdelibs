@@ -430,25 +430,27 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                     cx = _tx + xp;
                 else {
                     cx = _tx;
-                    if (pixw == 0)
-                        sx = 0;
-                    else {
+                    if (pixw > 0) {
                         sx = -xp;
                         cw += xp;
                     }
                 }
                 cx += bleft;
             } else {
+                // repeat over x or background is wider than box
                 cw = w;
                 cx = _tx;
-                if (pixw == 0)
-                    sx = 0;
-                else {
-                    sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
-                    sx -= bleft % pixw;
+                if (pixw > 0) {
+                    int xp = sptr->backgroundXPosition().minWidth(pw-pixw);
+                    if ((xp > 0) && (bgr == NO_REPEAT)) {
+                        cx += xp;
+                        cw -= xp;
+                    } else {
+                        sx =  pixw - (xp % pixw );
+                        sx -= bleft % pixw;
+                    }
                 }
             }
-
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
                 int yp = sptr->backgroundYPosition().minWidth(ph-pixh);
@@ -456,9 +458,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                     cy = _ty + yp;
                 else {
                     cy = _ty;
-                    if (pixh == 0) {
-                        sy = 0;
-                    } else {
+                    if (pixh > 0) {
                         sy = -yp;
                         ch += yp;
                     }
@@ -466,16 +466,20 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
 
                 cy += borderTop();
             } else {
+                // repeat over y or background is taller than box
                 ch = h;
                 cy = _ty;
-                if (pixh == 0) {
-                    sy = 0;
-                } else {
-                    sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
-                    sy -= borderTop() % pixh;
+                if (pixh > 0) {
+                    int yPosition = sptr->backgroundYPosition().minWidth(ph-pixh);
+                    if ((yPosition > 0) && (bgr == NO_REPEAT)) {
+                        cy += yPosition;
+                        ch -= yPosition;
+                    } else {
+                        sy = pixh - (yPosition % pixh );
+                        sy -= borderTop() % pixh;
+                    }
                 }
             }
-
 	    if (layer())
 		layer()->scrollOffset(sx, sy);
         }
