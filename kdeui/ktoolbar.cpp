@@ -1274,7 +1274,8 @@ void KToolBar::childEvent( QChildEvent *e )
             if ( !dynamic_cast<Q3PopupMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
-                if ( !widget2id.contains( w ) )
+                if ( !widget2id.contains( w ) && 
+		     !d->idleButtons.contains( w ) )
                 {
                     int dummy = -1;
                     insertWidgetInternal( w, dummy, -1 );
@@ -1307,7 +1308,7 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
              this, SLOT( widgetDestroyed() ) );
     if ( index == -1 || index > (int)widgets.count() ) {
         index = (int)widgets.count();
-        widgets.append( w );
+        widgets.append( w );	
     }
     else
         widgets.insert( index, w );
