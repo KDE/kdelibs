@@ -664,6 +664,11 @@ void KToolBar::setItemAutoSized (int id, bool yes )
 
 void KToolBar::clear ()
 {
+    /* Delete any idle buttons, so QToolBar doesn't delete them itself, making a mess */
+    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+       w->blockSignals(false);    
+    d->idleButtons.clear();
+     
     QToolBar::clear();
     widget2id.clear();
     id2widget.clear();
