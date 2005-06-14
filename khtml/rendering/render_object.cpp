@@ -745,6 +745,20 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         p->setPen(QPen(c, width, Qt::DotLine));
         /* nobreak; */
     case DASHED:
+        /** 
+            We are actually going to draw this as a line, so adjust to Arthur's semantics. 
+            We have a bounding box around the line. We want midpoints of endpoints
+        */
+        x1 += width/2;
+        x2 -= width/2;
+        y1 += width/2;
+        y2 -= width/2;
+        if (width & 1) //odd width - fix rounding...
+        {
+            --y2;
+            --x2;
+        }
+    
         if(style == DASHED)
             p->setPen(QPen(c, width == 1 ? 0 : width, width == 1 ? Qt::DotLine : Qt::DashLine));
 
@@ -759,7 +773,6 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                 p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
                 break;
             }
-
         break;
     case DOUBLE:
     {
