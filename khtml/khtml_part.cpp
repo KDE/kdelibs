@@ -1820,6 +1820,8 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     khtml::RenderPart *renderPart = d->m_frame->m_frame;
     if (renderPart) {
       HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
+      if (!elt)
+        return;
       elt->renderAlternative();
       checkCompleted();
      }
