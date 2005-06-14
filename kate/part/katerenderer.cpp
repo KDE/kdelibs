@@ -1331,12 +1331,19 @@ int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & 
     return -1;
 
   if (!range.layout() || !range.includesCursor(pos)) {
+    bool first = true;
     do {
-      range.setStartCol(range.endCol());
-      range.setStartX(range.endX());
+      if (first) {
+        first = false;
+      } else {
+        range.setStartCol(range.endCol());
+        range.setStartX(range.endX());
+      }
       layoutLine(range, maxwidth);
+      range.debugOutput();
       // FIXME most likely an infinite loop here
     } while (!range.includesCursor(pos));
+    //Q_ASSERT(range.layout());
   }
 
   if (range.isEmpty())
@@ -1352,6 +1359,8 @@ int KateRenderer::cursorToX( const KTextEditor::Cursor & pos, int maxwidth ) con
 {
   KateLineRange range(m_doc);
   range.setLine(pos.line());
+  range.setStartCol(0);
+  range.setStartX(0);
   return cursorToX(range, pos, true, maxwidth);
 }
 
@@ -1372,6 +1381,8 @@ int KateRenderer::xToCursor( KateLineRange & range, int x ) const
   else if (x > range.width() + range.xOffset())
     x = range.width() + range.xOffset();
 
+  Q_ASSERT(range.layout());
+  Q_ASSERT(range.layout()->lineCount() >= 1);
   return range.layout()->lineAt(0).xToCursor(x) + range.startCol();
 }
 

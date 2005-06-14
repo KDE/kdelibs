@@ -52,7 +52,7 @@ class KateLineRange
     friend bool operator<= (const KateLineRange& r, const KTextEditor::Cursor& c);
 
     // Override current textLine. Only use when you know what you're doing.
-    void setSpecial(const KateTextLine::Ptr& textLine);
+    //void setSpecial(const KateTextLine::Ptr& textLine);
 
     const KateTextLine::Ptr& textLine() const;
 

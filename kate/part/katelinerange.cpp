@@ -303,11 +303,11 @@ KateDocument* KateLineRange::doc() const
   return m_doc;
 }
 
-void KateLineRange::setSpecial( const KateTextLine::Ptr & textLine )
+/*void KateLineRange::setSpecial( const KateTextLine::Ptr & textLine )
 {
   m_textLine = textLine;
   m_special = true;
-}
+}*/
 
 bool KateLineRange::isValid( ) const
 {
