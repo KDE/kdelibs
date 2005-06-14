@@ -21,14 +21,16 @@
  */
 
 #include "ecma/kjs_proxy.h"
-#define QT_NO_XRANDR 1
-#define QT_NO_XFTFREETYPE 1
+
+#define QT_NO_FONTCONFIG 1
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
 #include <qfont.h>
 #include "khtml_settings.h"
 #include <qwidget.h>
 #include <assert.h>
+#include <QX11Info>
+#include <fixx11h.h>
 
 class QFakeFontEngine : public QFontEngineXLFD
 {
@@ -50,6 +52,28 @@ public:
     int minRightBearing() const { return 0; }
     int cmap() const;
 #endif
+    qreal ascent() const 
+    {
+      qreal val = QFontEngineXLFD::ascent();
+      //qDebug("ascent: %f", val);
+      return val;
+    }
+
+    qreal descent() const 
+    {
+      qreal val = QFontEngineXLFD::descent();
+      //qDebug("descent: %f", val);
+      return val;
+    }
+
+    qreal leading() const
+    {
+      qreal val = QFontEngineXLFD::leading();
+      //qDebug("leading: %f", val);
+      return val - 1;
+    }
+
+
     bool canRender( const QChar *string,  int len );
 };
 
@@ -162,20 +186,22 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 }
 
 QFontEngine *
-QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
+QFontDatabase::findFont( int script, const QFontPrivate *fp,
 			 const QFontDef &request, int )
 {
     QString xlfd;
     QString family = request.family.lower();
     if ( family == "adobe courier" || family == "courier" || family == "fixed" ) {
-        xlfd = courier_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
+        xlfd = courier_pickxlfd( request.pixelSize, request.style == QFont::StyleItalic, request.weight > 50 );
     }
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
     else if ( family == "ahem" )
         xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
     else
-        xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
+        xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
+
+     qDebug("name:%s", xlfd.latin1());
 
     QFontEngine *fe = 0;
 
@@ -229,12 +255,12 @@ bool KHTMLSettings::unfinishedImageFrame() const
   return false;
 }
 
-int QPaintDevice::x11AppDpiY( int )
+int QX11Info::appDpiY( int )
 {
     return 100;
 }
 
-int QPaintDevice::x11AppDpiX( int )
+int QX11Info::appDpiX( int )
 {
     return 100;
 }
@@ -288,6 +314,7 @@ void DCOPClient::processSocketData( int )
 #include <qapplication.h>
 #include <qpalette.h>
 
+#if 0
 void QApplication::setPalette( const QPalette &, bool ,
                                const char*  )
 {
@@ -300,6 +327,7 @@ void QApplication::setPalette( const QPalette &, bool ,
 	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
     done = true;
 }
+#endif
 
 #include <kapplication.h>
 void KApplication::dcopFailure( const QString & )

@@ -302,7 +302,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             PartMonitor pm(m_part);
             m_part->openURL(url);
             pm.waitForCompletion();
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
             break;
         }
 	case OpenPageAsUrl: {
@@ -339,7 +339,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 		m_part->end();
 		pm.waitForCompletion();
 	    }
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
 	case Begin: {
@@ -354,7 +354,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
         }
         case End: {
             m_part->end();
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
             break;
         }
 	case ExecuteScript: {
@@ -364,11 +364,11 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    proxy->evaluate("",0,code,0,&comp);
 	    if (comp.complType() == Throw)
 		exec->setException(comp.value());
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
 	case ProcessEvents: {
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
     }
@@ -414,6 +414,7 @@ int main(int argc, char *argv[])
     setenv( "KDEHOME", kh.latin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
+    qDebug("home:%s", kh.latin1());
 
     signal( SIGALRM, signal_handler );
 
@@ -542,13 +543,13 @@ int main(int argc, char *argv[])
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
     bool result = false;
-    QCStringList tests = args->getOptionList("test");
+    QByteArrayList tests = args->getOptionList("test");
     // merge testcases specified on command line
     for (; testcase_index < args->count(); testcase_index++)
         tests << args->arg(testcase_index);
     if (tests.count() > 0)
-        for (Q3ValueListConstIterator<Q3CString> it = tests.begin(); it != tests.end(); ++it) {
-	    result = regressionTest->runTests(*it,true);
+        foreach (QByteArray test, tests) {
+	    result = regressionTest->runTests(test,true);
             if (!result) break;
         }
     else
@@ -877,7 +878,7 @@ QString RegressionTest::getPartOutput( OutputType type)
 {
     // dump out the contents of the rendering & DOM trees
     QString dump;
-    QTextStream outputStream(dump,QIODevice::WriteOnly);
+    QTextStream outputStream(&dump, QIODevice::WriteOnly);
 
     if ( type == RenderTree ) {
         dumpRenderTree( outputStream, m_part );
@@ -901,7 +902,7 @@ QImage RegressionTest::renderToImage()
     QImage img( ew, eh, 32 );
     img.fill( 0xff0000 );
     if (!m_paintBuffer )
-        m_paintBuffer = new QPixmap( 512, 128, -1, QPixmap::MemoryOptim );
+        m_paintBuffer = new QPixmap( 512, 128 );
 
     for ( int py = 0; py < eh; py += 128 ) {
         for ( int px = 0; px < ew; px += 512 ) {
@@ -1041,7 +1042,7 @@ static QString makeRelativePath(const QString &base, const QString &path)
         QConstString relPath(absPath.unicode() + pathpos, absPath.length() - pathpos);
         // generate as many .. as there are path elements in relBase
         if (relBase.string().length() > 0) {
-            for (int i = relBase.string().contains('/'); i > 0; --i)
+            for (int i = relBase.string().count('/'); i > 0; --i)
                 rel += "../";
             rel += "..";
             if (relPath.string().length() > 0) rel += "/";
@@ -1084,7 +1085,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->eof(); ++line ) {
+        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
             line = line.replace( '<', "&lt;" );
             line = line.replace( '>', "&gt;" );
@@ -1100,7 +1101,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->eof(); ++line ) {
+        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
             line = line.replace( '<', "&lt;" );
             line = line.replace( '>', "&gt;" );
