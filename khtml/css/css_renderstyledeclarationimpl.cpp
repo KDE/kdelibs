@@ -167,10 +167,6 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
             return "hiragana-iroha";
         case khtml::KATAKANA_IROHA:
             return "katakana_iroha";
-        case khtml::OPEN_QUOTE:
-            return "-khtml-open-quote";
-        case khtml::CLOSE_QUOTE:
-            return "-khtml-close-quote";
         case khtml::LNONE:
             return "none";
     }

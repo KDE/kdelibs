@@ -5,6 +5,7 @@
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -606,7 +607,7 @@ enum EListStyleType {
      LOWER_GREEK, UPPER_GREEK, LOWER_ALPHA, LOWER_LATIN, UPPER_ALPHA, UPPER_LATIN,
      HIRAGANA, KATAKANA, HIRAGANA_IROHA, KATAKANA_IROHA,
     // Special:
-     OPEN_QUOTE, CLOSE_QUOTE, LNONE
+     LNONE
 };
 
 enum EListStylePosition { OUTSIDE, INSIDE };
@@ -623,9 +624,13 @@ enum EUserInput {
     UI_ENABLED, UI_DISABLED, UI_NONE
 };
 
+enum EQuoteContent {
+    NO_QUOTE, OPEN_QUOTE, CLOSE_QUOTE, NO_OPEN_QUOTE, NO_CLOSE_QUOTE
+};
+
 enum ContentType {
     CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
-    CONTENT_ATTR, CONTENT_COUNTER
+    CONTENT_ATTR, CONTENT_COUNTER, CONTENT_QUOTE
 };
 
 struct ContentData {
@@ -641,11 +646,14 @@ struct ContentData {
     { if (_contentType == CONTENT_OBJECT) return _content.object; return 0; }
     DOM::CounterImpl* contentCounter()
     { if (_contentType == CONTENT_COUNTER) return _content.counter; return 0; }
+    EQuoteContent contentQuote()
+    { if (_contentType == CONTENT_QUOTE) return _content.quote; return NO_QUOTE; }
 
     union {
         CachedObject* object;
         DOM::DOMStringImpl* text;
         DOM::CounterImpl* counter;
+        EQuoteContent quote;
     } _content ;
 
     ContentData* _nextContent;
@@ -1175,14 +1183,13 @@ public:
     void setContent(DOM::DOMStringImpl* s, bool add);
     void setContent(CachedObject* o, bool add);
     void setContent(DOM::CounterImpl* c, bool add);
+    void setContent(EQuoteContent q, bool add);
 
     DOM::CSSValueListImpl* counterReset() const { return counter_reset; }
     DOM::CSSValueListImpl* counterIncrement() const { return counter_increment; }
     bool counterDataEquivalent(RenderStyle* otherStyle);
     void setCounterReset(DOM::CSSValueListImpl* v);
     void setCounterIncrement(DOM::CSSValueListImpl* v);
-    void addCounterReset(DOM::CounterActImpl *c);
-    void addCounterIncrement(DOM::CounterActImpl *c);
     bool hasCounterReset(const DOM::DOMString& c) const;
     bool hasCounterIncrement(const DOM::DOMString& c) const;
     short counterReset(const DOM::DOMString& c) const;

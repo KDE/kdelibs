@@ -1,7 +1,7 @@
 /**
  * This file is part of the HTML rendering engine for KDE.
  *
- * Copyright (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,12 +31,12 @@ using namespace Enumerate;
 
 // -------------------------------------------------------------------------
 
-RenderCounter::RenderCounter(DOM::NodeImpl* node, const DOM::CounterImpl* counter)
-    : RenderText(node,0), m_counter(counter), m_counterNode(0)
+RenderCounterBase::RenderCounterBase(DOM::NodeImpl* node)
+    : RenderText(node,0), m_counterNode(0)
 {
 }
 
-void RenderCounter::layout()
+void RenderCounterBase::layout()
 {
     KHTMLAssert( needsLayout() );
 
@@ -44,6 +44,32 @@ void RenderCounter::layout()
         calcMinMaxWidth();
 
     RenderText::layout();
+}
+
+void RenderCounterBase::calcMinMaxWidth()
+{
+    KHTMLAssert( !minMaxKnown() );
+
+    generateContent();
+
+    if (str) str->deref();
+    str = new DOM::DOMStringImpl(m_item.unicode(), m_item.length());
+    str->ref();
+
+    RenderText::calcMinMaxWidth();
+}
+
+
+void RenderCounterBase::updateContent()
+{
+    setMinMaxKnown(false);
+}
+
+// -------------------------------------------------------------------------
+
+RenderCounter::RenderCounter(DOM::NodeImpl* node, const DOM::CounterImpl* counter)
+    : RenderCounterBase(node), m_counter(counter)
+{
 }
 
 QString RenderCounter::toListStyleType(int value, int total, EListStyleType type)
@@ -166,13 +192,6 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
     case TRAD_CHINESE_INFORMAL:
         item = toTradChineseInformal( value );
         break;
-// Quotes:
-    case OPEN_QUOTE:
-        item = style()->openQuote( value );
-        break;
-    case CLOSE_QUOTE:
-        item = style()->closeQuote( value );
-        break;
     default:
         item.setNum ( value );
         break;
@@ -180,12 +199,8 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
     return item;
 }
 
-void RenderCounter::calcMinMaxWidth()
+void RenderCounter::generateContent()
 {
-    KHTMLAssert( !minMaxKnown() );
-
-    if (!style()) return;
-
     bool counters;
     counters = !m_counter->separator().isEmpty();
 
@@ -209,9 +224,48 @@ void RenderCounter::calcMinMaxWidth()
         };
     }
 
-    if (str) str->deref();
-    str = new DOM::DOMStringImpl(m_item.unicode(), m_item.length());
-    str->ref();
+}
 
-    RenderText::calcMinMaxWidth();
+RenderQuote::RenderQuote(DOM::NodeImpl* node, EQuoteContent type)
+    : RenderCounterBase(node), m_quoteType(type)
+{
+}
+
+
+int RenderQuote::quoteCount() const
+{
+    switch(m_quoteType) {
+         case OPEN_QUOTE:
+         case NO_OPEN_QUOTE:
+            return 1;
+         case CLOSE_QUOTE:
+         case NO_CLOSE_QUOTE:
+            return -1;
+    }
+}
+
+void RenderQuote::generateContent()
+{
+    bool visual;
+    if (m_quoteType == NO_CLOSE_QUOTE || m_quoteType == NO_OPEN_QUOTE)
+        visual = false;
+    else
+        visual = true;
+
+    if (!m_counterNode)
+        m_counterNode = getCounter("-khtml-quotes", visual, false);
+
+    int value = m_counterNode->count();
+    if (m_counterNode->isReset()) value = m_counterNode->value();
+    switch (m_quoteType) {
+         case OPEN_QUOTE:
+            m_item = style()->openQuote( value );
+            break;
+         case CLOSE_QUOTE:
+            m_item = style()->closeQuote( value );
+            break;
+         case NO_OPEN_QUOTE:
+         case NO_CLOSE_QUOTE:
+            m_item = QString();
+    }
 }

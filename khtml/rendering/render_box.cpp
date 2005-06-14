@@ -117,7 +117,7 @@ void RenderBox::setStyle(RenderStyle *_style)
          (!_style->isFloating() && _style->position() != ABSOLUTE && _style->position() != FIXED) &&
          parent() && (parent()->isBlockFlow() || parent()->isInlineFlow());
 
-    RenderObject::setStyle(_style);
+    RenderContainer::setStyle(_style);
 
     // The root always paints its background/border.
     if (isRoot())

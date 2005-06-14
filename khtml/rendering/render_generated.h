@@ -1,7 +1,7 @@
 /*
  * This file is part of the HTML rendering engine for KDE.
  *
- * Copyright (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright (C) 2004,2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,7 +33,28 @@ namespace khtml {
 
 // -----------------------------------------------------------------------------
 
-class RenderCounter : public RenderText
+class RenderCounterBase : public RenderText
+{
+public:
+    RenderCounterBase(DOM::NodeImpl* node);
+
+    virtual const char *renderName() const { return "RenderCounterBase"; }
+
+    virtual void layout( );
+    virtual void calcMinMaxWidth();
+    virtual bool isCounter() const { return true; }
+
+    virtual void generateContent() = 0;
+    void updateContent();
+
+protected:
+    QString m_item;
+    CounterNode *m_counterNode; // Cache of the counternode
+};
+
+// -----------------------------------------------------------------------------
+
+class RenderCounter : public RenderCounterBase
 {
 public:
     RenderCounter(DOM::NodeImpl* node, const DOM::CounterImpl* counter);
@@ -41,15 +62,31 @@ public:
 
     virtual const char *renderName() const { return "RenderCounter"; }
 
-    virtual void layout( );
-    virtual void calcMinMaxWidth();
+    virtual void generateContent();
 
 protected:
     QString toListStyleType(int value, int total, EListStyleType type);
 
-    QString m_item;
     const DOM::CounterImpl* m_counter;
-    CounterNode *m_counterNode;
+};
+
+// -----------------------------------------------------------------------------
+
+class RenderQuote : public RenderCounterBase
+{
+public:
+    RenderQuote(DOM::NodeImpl* node, EQuoteContent type);
+    virtual ~RenderQuote() {};
+
+    virtual const char *renderName() const { return "RenderQuote"; }
+
+    virtual bool isQuote() const { return true; }
+    virtual int quoteCount() const;
+
+    virtual void generateContent();
+
+protected:
+    EQuoteContent m_quoteType;
 };
 
 } //namespace

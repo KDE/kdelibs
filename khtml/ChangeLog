@@ -1,3 +1,12 @@
+2005-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_style.{h,cpp}: Remove the quotes as counters hack
+        * css/cssstyleselectors.cpp: ditto
+        * rendering/render_container.{h,cpp} (updatePseudoChild): Clean and simplify
+        * rendering/render_generated.{h,cpp}: Split quotes from counters and
+        create new base class RenderCounterBase.
+        * rendering/render_object.cpp: Count quotes correctly
+
 2005-06-14  Dirk Mueller <mueller@kde.org>
         * ecma/domparser.{h,cpp}: Unbreak compilation.
 

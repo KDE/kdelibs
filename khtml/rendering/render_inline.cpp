@@ -56,9 +56,8 @@ void RenderInline::setStyle(RenderStyle* _style)
         currCont = currCont->continuation();
     }
 
-    // Update pseudos for :before and :after now.
-    updatePseudoChild(RenderStyle::BEFORE, firstChild());
-    updatePseudoChild(RenderStyle::AFTER, lastChild());
+    // Update pseudos for ::before and ::after now.
+    updatePseudoChildren();
 }
 
 bool RenderInline::isInlineContinuation() const
@@ -567,7 +566,7 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
             if (newPnt.x()>lastPnt.x() && !left)
                 pointArray.back().setY( kMin(lastPnt.y(), root->topOverflow()) );
             else if (newPnt.x()<lastPnt.x() && left)
-                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()) );                
+                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()) );
             QPoint insPnt(newPnt.x(), pointArray.back().y());
 //         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
             appendPoint(pointArray, insPnt);

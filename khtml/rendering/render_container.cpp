@@ -144,7 +144,6 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 	// just add it...
 	insertChildNode(newChild, beforeChild);
     }
-//    newChild->setNeedsLayoutAndMinMaxRecalc();
 }
 
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
@@ -196,20 +195,48 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
 
-//    setNeedsLayoutAndMinMaxRecalc();
-
     return oldChild;
+}
+
+void RenderContainer::setStyle(RenderStyle* _style)
+{
+    RenderObject::setStyle(_style);
+
+    // If we are a pseudo-container we need to restyle the children
+    if (style()->styleType() == RenderStyle::BEFORE
+     || style()->styleType() == RenderStyle::AFTER)
+    {
+        // ### we could save this call when the change only affected
+        // non inherited properties
+        RenderStyle *pseudoStyle = new RenderStyle();
+        pseudoStyle->inheritFrom(style());
+        pseudoStyle->ref();
+        RenderObject *child = firstChild();
+        while (child != 0)
+        {
+            child->setStyle(pseudoStyle);
+            child = child->nextSibling();
+        }
+        pseudoStyle->deref();
+    }
+}
+
+void RenderContainer::updatePseudoChildren()
+{
+    // In CSS2, before/after pseudo-content cannot nest.  Check this first.
+    // Remove when CSS 3 Generated Content becomes Candidate Recommendation
+    if (style()->styleType() == RenderStyle::BEFORE
+     || style()->styleType() == RenderStyle::AFTER)
+        return;
+
+    updatePseudoChild(RenderStyle::BEFORE, firstChild());
+    updatePseudoChild(RenderStyle::AFTER, lastChild());
+    // updatePseudoChild(RenderStyle::MARKER, marker());
 }
 
 void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject* child)
 {
-    // In CSS2, before/after pseudo-content cannot nest.  Check this first.
-    if (style()->styleType() == RenderStyle::BEFORE || style()->styleType() == RenderStyle::AFTER)
-        return;
-
-
     RenderStyle* pseudo = style()->getPseudoStyle(type);
-
 
     // Whether or not we currently have generated content attached.
     bool oldContentPresent = child && (child->style()->styleType() == type);
@@ -217,27 +244,39 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     // Whether or not we now want generated content.
     bool newContentWanted = pseudo && pseudo->display() != NONE;
 
-    // For <q><p/></q>, if this object is the inline continuation of the <q>, we only want to generate
-    // :after content and not :before content.
+    // For <q><p/></q>, if this object is the inline continuation of the <q>,
+    // we only want to generate ::after content and not ::before content.
     if (type == RenderStyle::BEFORE && isInlineContinuation())
         newContentWanted = false;
 
-    // Similarly, if we're the beginning of a <q>, and there's an inline continuation for our object,
-    // then we don't generate the :after content.
+    // Similarly, if we're the beginning of a <q>, and there's an inline continuation for
+    // our object, then we don't generate the :after content.
     if (type == RenderStyle::AFTER && isRenderInline() && continuation())
         newContentWanted = false;
 
-    // If we don't want generated content any longer, or if we have generated content, but it's no longer
-    // identical to the new content data we want to build render objects for, then we nuke all
-    // of the old generated content.
-    if (!newContentWanted ||
-        (oldContentPresent && !child->style()->contentDataEquivalent(pseudo))) {
-        if (child && child->style()->styleType() == type) {
-            // The child needs to be removed.
-            oldContentPresent = false;
-            removeChild(child);
-            child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
-        }
+    // No generated content
+    if (!oldContentPresent && !newContentWanted)
+        return;
+
+    // Whether or not we want the same old content.
+    bool sameOldContent = oldContentPresent && newContentWanted
+                       && (child->style()->contentDataEquivalent(pseudo));
+
+    // No change in content, update style
+    if( sameOldContent ) {
+        child->setStyle(pseudo);
+        return;
+    }
+
+    // If we don't want generated content any longer, or if we have generated content,
+    // but it's no longer identical to the new content data we want to build
+    // render objects for, then we nuke all of the old generated content.
+    if (oldContentPresent && (!newContentWanted || !sameOldContent))
+    {
+        // The child needs to be removed.
+        oldContentPresent = false;
+        removeChild(child);
+        child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
     }
 
     // If we have no pseudo-style or if the pseudo's display type is NONE, then we
@@ -252,83 +291,68 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         // inline should be mutated to INLINE.
         pseudo->setDisplay(INLINE);
 
-    RenderStyle* style = new RenderStyle();
-    style->inheritFrom(pseudo);
-    if (oldContentPresent) {
-        if (child && child->style()->styleType() == type) {
-            // We have generated content present still.  We want to walk this content and update our
-            // style information with the new pseudo style.
-            child->setStyle(pseudo);
-
-            // Note that if we ever support additional types of generated content (which should be way off
-            // in the future), this code will need to be patched.
-            for (RenderObject* genChild = child->firstChild(); genChild; genChild = genChild->nextSibling()) {
-                if (genChild->style()->styleType() == RenderStyle::FIRST_LETTER) {
-                    // We can't properly update, so remove the child and bail
-                    oldContentPresent = false;
-                    removeChild(child);
-                    child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
-                    break;
-                } else if (genChild->isText()) {
-                    // Generated text content is a child whose style also needs to be set to the pseudo
-                    // style.
-                    genChild->setStyle(style);
-                } else {
-                    // Images get an empty style that inherits from the pseudo.
-                    genChild->setStyle(style);
-                }
-            }
-        }
-        if (oldContentPresent)
-            return; // We've updated the generated content. That's all we needed to do.
-    }
-
     RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? child : 0;
 
     // Generated content consists of a single container that houses multiple children (specified
     // by the content property).  This pseudo container gets the pseudo style set on it.
-    RenderObject* pseudoContainer = 0;
+    RenderContainer* pseudoContainer = 0;
+    pseudoContainer = RenderFlow::createFlow(element(), pseudo, renderArena());
+    pseudoContainer->setIsAnonymous( true );
+    pseudoContainer->createCSSContent();
+
+    // Only add the container if it had content
+    if (pseudoContainer->firstChild()) {
+        // Add the pseudo after we've installed all our content, so that addChild will be able
+        // to find the text inside the inline for e.g., first-letter styling.
+        addChild(pseudoContainer, insertBefore);
+        pseudoContainer->close();
+    }
+}
+
+void RenderContainer::createCSSContent()
+{
+    RenderStyle* pseudo = style();
+    RenderStyle* style = new RenderStyle();
+    style->ref();
+    style->inheritFrom(pseudo);
 
     // Now walk our list of generated content and create render objects for every type
     // we encounter.
     for (ContentData* contentData = pseudo->contentData();
-         contentData; contentData = contentData->_nextContent) {
-        if (!pseudoContainer) {
-            pseudoContainer = RenderFlow::createFlow(element(), pseudo, renderArena());
-            pseudoContainer->setIsAnonymous( true );
-        }
-
+         contentData; contentData = contentData->_nextContent)
+    {
         if (contentData->_contentType == CONTENT_TEXT)
         {
-            RenderText* t = new (renderArena()) RenderText( element(), 0);
+            RenderText* t = new (renderArena()) RenderText( node(), 0);
             t->setIsAnonymous( true );
             t->setStyle(style);
             t->setText(contentData->contentText());
-            pseudoContainer->addChild(t);
+            addChild(t);
         }
         else if (contentData->_contentType == CONTENT_OBJECT)
         {
-            RenderImage* img = new (renderArena()) RenderImage(element());
+            RenderImage* img = new (renderArena()) RenderImage(node());
             img->setIsAnonymous( true );
             img->setStyle(style);
             img->setContentObject(contentData->contentObject());
-            pseudoContainer->addChild(img);
+            addChild(img);
         }
         else if (contentData->_contentType == CONTENT_COUNTER)
         {
-            RenderCounter* t = new (renderArena()) RenderCounter( element(), contentData->contentCounter() );
+            RenderCounter* t = new (renderArena()) RenderCounter( node(), contentData->contentCounter() );
             t->setIsAnonymous( true );
             t->setStyle(style);
-            pseudoContainer->addChild(t);
+            addChild(t);
+        }
+        else if (contentData->_contentType == CONTENT_QUOTE)
+        {
+            RenderQuote* t = new (renderArena()) RenderQuote( node(), contentData->contentQuote() );
+            t->setIsAnonymous( true );
+            t->setStyle(style);
+            addChild(t);
         }
     }
-
-    if (pseudoContainer) {
-        // Add the pseudo after we've installed all our content, so that addChild will be able to find the text
-        // inside the inline for e.g., first-letter styling.
-        addChild(pseudoContainer, insertBefore);
-        pseudoContainer->close();
-    }
+    style->deref();
 }
 
 void RenderContainer::appendChildNode(RenderObject* newChild)

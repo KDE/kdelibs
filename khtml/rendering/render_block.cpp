@@ -92,8 +92,7 @@ void RenderBlock::setStyle(RenderStyle* _style)
     }
 
     // Update pseudos for :before and :after now.
-    updatePseudoChild(RenderStyle::BEFORE, firstChild());
-    updatePseudoChild(RenderStyle::AFTER, lastChild());
+    updatePseudoChildren();
 
     // handled by close() during parsing
     if (!document()->parsing())

@@ -728,6 +728,33 @@ void RenderStyle::setContent(DOM::CounterImpl* c, bool add)
     newContentData->_contentType = CONTENT_COUNTER;
 }
 
+void RenderStyle::setContent(EQuoteContent q, bool add)
+{
+    if (q == NO_QUOTE)
+        return;
+
+    ContentData* lastContent = content;
+    while (lastContent && lastContent->_nextContent)
+        lastContent = lastContent->_nextContent;
+
+    bool reuseContent = !add;
+    ContentData* newContentData = 0;
+    if (reuseContent && content) {
+        content->clearContent();
+        newContentData = content;
+    }
+    else
+        newContentData = new ContentData;
+
+    if (lastContent && !reuseContent)
+        lastContent->_nextContent = newContentData;
+    else
+        content = newContentData;
+
+    newContentData->_content.quote = q;
+    newContentData->_contentType = CONTENT_QUOTE;
+}
+
 ContentData::~ContentData()
 {
     clearContent();
@@ -860,26 +887,6 @@ void RenderStyle::setCounterIncrement(CSSValueListImpl *l)
     counter_increment = l;
     if (l) l->ref();
     if (t) t->deref();
-}
-
-void RenderStyle::addCounterReset(CounterActImpl *c)
-{
-    if (!counter_reset) {
-        counter_reset = new CSSValueListImpl;
-        counter_reset->ref();
-    }
-
-    counter_reset->append(c);
-}
-
-void RenderStyle::addCounterIncrement(CounterActImpl *c)
-{
-    if (!counter_increment) {
-        counter_increment = new CSSValueListImpl;
-        counter_increment->ref();
-    }
-
-    counter_increment->append(c);
 }
 
 #ifdef ENABLE_DUMP
