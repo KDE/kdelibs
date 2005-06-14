@@ -357,6 +357,17 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
     return grp.first();
 }
 
+// For some strange reason QString("").left(0) returns QString::null;
+// That breaks commonParent()
+QString KBookmark::left(const QString & str, uint len)
+{
+    //kdDebug()<<"********"<<QString("").left(0).isNull()<<endl;
+    if(len == 0)
+        return QString("");
+    else
+        return str.left(len);
+}
+
 QString KBookmark::commonParent(const QString & A, const QString & B)
 {
     QString error("ERROR");
@@ -368,11 +379,11 @@ QString KBookmark::commonParent(const QString & A, const QString & B)
     for(uint i=0; i < lastPos; ++i)
     {
         if(A[i] != B[i])
-            return A.left(lastCommonSlash);
+            return left(A, lastCommonSlash);
         if(A[i] == '/')
             lastCommonSlash = i;
     }
-    return A.left(lastPos);
+    return left(A, lastPos);
 }
 
 static QDomNode cd_or_create(QDomNode node, QString name)
