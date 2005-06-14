@@ -1311,8 +1311,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if (value.isNull()) return false;
             QString langAttr = value.string();
             QString langSel = sel->string_arg.string();
-//            kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
-            return langAttr.startsWith(langSel);
+
+            if(langAttr.length() < langSel.length()) return false;
+
+            if (!strictParsing) {
+                langAttr = langAttr.lower();
+                langSel = langSel.lower();
+            }
+//             kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
+            return (langAttr == langSel || langAttr.startsWith(langSel+"-"));
         }
         case CSSSelector::PseudoNot: {
             // check the simple selector
