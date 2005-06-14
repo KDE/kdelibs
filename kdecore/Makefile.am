@@ -154,7 +154,7 @@ EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
 kcharsets.lo: kentities.c
 
 parser: kentities.gperf
-	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
+	cd $(srcdir) && gperf -a -L "ANSI-C" -E -C -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
 
 bin_PROGRAMS = kde-config kgrantpty
 
