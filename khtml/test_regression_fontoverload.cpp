@@ -32,9 +32,159 @@
 #include <QX11Info>
 #include <fixx11h.h>
 
+struct MetricsInfo {
+    const char* name;
+    int ascent;
+    int descent;
+    int leading;
+};
+
+static MetricsInfo compatMetrics[] = {
+    {"-Adobe-Courier-Medium-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Medium-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Bold-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Bold-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Medium-R-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Medium-O-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Bold-R-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Bold-O-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Medium-R-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Medium-O-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Bold-R-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Bold-O-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Medium-R-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Medium-O-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Bold-R-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Bold-O-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--10-100-75-75-P-56-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Medium-O-Normal--10-100-75-75-P-57-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Bold-R-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Bold-O-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--12-120-75-75-P-67-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Medium-O-Normal--12-120-75-75-P-67-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Bold-R-Normal--12-120-75-75-P-70-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Bold-O-Normal--12-120-75-75-P-69-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--18-180-75-75-P-98-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Medium-O-Normal--18-180-75-75-P-98-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Bold-R-Normal--18-180-75-75-P-103-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Bold-O-Normal--18-180-75-75-P-104-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Medium-R-Normal--24-240-75-75-P-130-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Medium-O-Normal--24-240-75-75-P-130-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Bold-R-Normal--24-240-75-75-P-138-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Bold-O-Normal--24-240-75-75-P-138-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Courier-Medium-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Medium-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Bold-R-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Bold-O-Normal--10-100-75-75-M-60-ISO10646-1", 8, 1, 2},
+    {"-Adobe-Courier-Medium-R-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Medium-O-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Bold-R-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Bold-O-Normal--12-120-75-75-M-70-ISO10646-1", 10, 2, 2},
+    {"-Adobe-Courier-Medium-R-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Medium-O-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Bold-R-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Bold-O-Normal--18-180-75-75-M-110-ISO10646-1", 14, 3, 3},
+    {"-Adobe-Courier-Medium-R-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Medium-O-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Bold-R-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Courier-Bold-O-Normal--24-240-75-75-M-150-ISO10646-1", 19, 4, 4},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--10-100-75-75-P-56-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Medium-O-Normal--10-100-75-75-P-57-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Bold-R-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Bold-O-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--12-120-75-75-P-67-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Medium-O-Normal--12-120-75-75-P-67-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Bold-R-Normal--12-120-75-75-P-70-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Bold-O-Normal--12-120-75-75-P-69-ISO10646-1", 11, 2, 2},
+    {"-Adobe-Helvetica-Medium-R-Normal--18-180-75-75-P-98-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Medium-O-Normal--18-180-75-75-P-98-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Bold-R-Normal--18-180-75-75-P-103-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Bold-O-Normal--18-180-75-75-P-104-ISO10646-1", 16, 4, 3},
+    {"-Adobe-Helvetica-Medium-R-Normal--24-240-75-75-P-130-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Medium-O-Normal--24-240-75-75-P-130-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Bold-R-Normal--24-240-75-75-P-138-ISO10646-1", 22, 4, 4},
+    {"-Adobe-Helvetica-Bold-O-Normal--24-240-75-75-P-138-ISO10646-1", 22, 4, 4},
+    {0, 0, 0, 0}
+};
+
+static MetricsInfo* grabMetrics(QString name)
+{
+    for (int pos = 0; compatMetrics[pos].name; ++pos)
+        if (name == QLatin1String(compatMetrics[pos].name))
+            return &compatMetrics[pos];
+    qDebug("DON'T KNOW:%s", name.latin1());
+    return 0;
+}
+
 class QFakeFontEngine : public QFontEngineXLFD
 {
 public:
+    QString name;
+
     QFakeFontEngine( XFontStruct *fs, const char *name, int size );
     ~QFakeFontEngine();
 #if 0
@@ -54,23 +204,26 @@ public:
 #endif
     qreal ascent() const 
     {
-      qreal val = QFontEngineXLFD::ascent();
-      //qDebug("ascent: %f", val);
-      return val;
+      if (grabMetrics(name))
+        return grabMetrics(name)->ascent;
+      else
+        return QFontEngineXLFD::ascent();
     }
 
     qreal descent() const 
     {
-      qreal val = QFontEngineXLFD::descent();
-      //qDebug("descent: %f", val);
-      return val;
+      if (grabMetrics(name))
+        return grabMetrics(name)->descent;
+      else
+        return QFontEngineXLFD::descent();
     }
 
     qreal leading() const
     {
-      qreal val = QFontEngineXLFD::leading();
-      //qDebug("leading: %f", val);
-      return val - 1;
+      if (grabMetrics(name))
+        return grabMetrics(name)->leading;
+      else
+        return QFontEngineXLFD::leading();
     }
 
 
@@ -80,7 +233,7 @@ public:
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
-
+    this->name = QLatin1String(name);
 }
 
 QFakeFontEngine::~QFakeFontEngine()
@@ -200,8 +353,6 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
         xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
     else
         xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
-
-     qDebug("name:%s", xlfd.latin1());
 
     QFontEngine *fe = 0;
 

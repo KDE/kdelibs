@@ -434,6 +434,9 @@ int main(int argc, char *argv[])
     int testcase_index = 0;
     if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
 
+    QFileInfo bdInfo(baseDir);
+    baseDir = QFile::encodeName(bdInfo.absoluteFilePath());
+
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
         QFileInfo sourceDir(QFile::encodeName( baseDir ) + "/" + subdirs[i]);
@@ -1198,7 +1201,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
-    qApp->mainWidget()->resize( 800, 600); // restore size
+    qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // load page
     KURL url;
@@ -1206,6 +1209,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
+    qDebug("open:%s", url.prettyURL().latin1());
     pm.waitForCompletion();
     m_part->closeURL();
 
@@ -1337,7 +1341,7 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename )
 {
-    qApp->mainWidget()->resize( 800, 600); // restore size
+    qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // create interpreter
     // note: this is different from the interpreter used by the part,
