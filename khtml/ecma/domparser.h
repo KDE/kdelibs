@@ -18,8 +18,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DOMPARSER_H
-#define _DOMPARSER_H_
+#ifndef DOMPARSER_H
+#define DOMPARSER_H
 
 #include <qguardedptr.h>
 #include <kjs/object.h>
