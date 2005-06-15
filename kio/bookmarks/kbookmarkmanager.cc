@@ -529,7 +529,8 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     return parentBookmark;
 }
 
-void KBookmarkManager::emitChanged( KBookmarkGroup & group )
+
+void KBookmarkManager::emitChanged( /*KDE4 const*/ KBookmarkGroup & group )
 {
     save();
 
@@ -562,10 +563,6 @@ void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
     // Tell our GUI
     // (emit where group is "" to directly mark the root menu as dirty)
     emit changed( "", caller );
-    // Also tell specifically about the toolbar - unless it's the root as well
-    KBookmarkGroup tbGroup = toolbar();
-    if (!tbGroup.isNull() && !tbGroup.groupAddress().isEmpty())
-        emit changed( tbGroup.groupAddress(), caller );
 }
 
 void KBookmarkManager::notifyConfigChanged() // DCOP call

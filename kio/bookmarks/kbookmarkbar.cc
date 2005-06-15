@@ -167,7 +167,8 @@ void KBookmarkBar::slotBookmarksChanged( const QString & group )
     if ( tb.isNull() )
         return;
 
-    if ( tb.address() == group || KBookmarkSettings::self()->m_filteredtoolbar )
+    if ( KBookmark::commonParent(group, tb.address()) == group  // Is group a parent of tb.address?
+         || KBookmarkSettings::self()->m_filteredtoolbar )
     {
         clear();
         fillBookmarkBar( tb );
