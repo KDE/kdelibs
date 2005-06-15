@@ -140,7 +140,7 @@ KActionCollection::~KActionCollection()
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
   foreach ( KAction* pAction, d->m_actionDict ) {
     Q_ASSERT (pAction != 0);
-  
+
     if ( pAction->m_parentCollection == this )
       pAction->m_parentCollection = 0L;
   }
@@ -324,17 +324,17 @@ void KActionCollection::_insert( KAction* action )
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
      name = unnamed_name;
   }
-  
+
   // look if we already have THIS action under THIS name ;)
-  QHash<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name); 
+  QHash<QByteArray, KAction*>::const_iterator it = d->m_actionDict.find (name);
   while (it != d->m_actionDict.end() && it.key() == name)
   {
     if ( it.value() == action )
       return;
-      
+
     ++it;
   }
-  
+
   // really insert action
   d->m_actionDict.insertMulti (name, action);
 
@@ -348,6 +348,9 @@ void KActionCollection::_remove( KAction* action )
 
 KAction* KActionCollection::_take( KAction* action )
 {
+  if (!action)
+    return 0;
+
   char unnamed_name[100];
   const char *name = action->name();
   if( action->objectName().isEmpty() )
