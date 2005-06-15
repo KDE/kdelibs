@@ -68,7 +68,8 @@ void BackgroundChecker::checkText( const QString& text )
 void BackgroundChecker::start()
 {
     d->currentText = getMoreText();
-    kdDebug()<<"Starting with : \"" << d->currentText << "\""<<endl;
+    // ## what if d->currentText.isEmpty()?
+    //kdDebug()<<"KSpell BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
     //d->thread.setText( d->currentText );
     d->engine->setText( d->currentText );
     d->engine->start();
