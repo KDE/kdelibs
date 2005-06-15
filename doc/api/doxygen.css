@@ -138,6 +138,18 @@ text-decoration: underline;
   text-decoration: underline;
 }
 
+.nav_list ul {
+margin: 0px;
+padding: 0em;
+}
+
+.nav_list ul li {
+list-style-type: none;
+position: relative;
+left: -2em;
+padding: 0px;
+}
+
 /* main color definitions */
 
 .invisible {
@@ -209,6 +221,7 @@ margin-left: 1em;
   border-top: 1px solid #000000;
   background-image: url(/media/images/footer_bg.png);
   background-repeat: repeat-x;
+  background: #418ADE;
   width: 100%;
   height: 100px;
   bottom:0px;
