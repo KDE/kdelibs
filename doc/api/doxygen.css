@@ -235,6 +235,10 @@ margin-left: 1em;
   z-index: 5;
 }
 
+#footer_right img {
+display: none;
+}
+
 /* left footer, contains the text */
 #footer_left {
   position: absolute;
