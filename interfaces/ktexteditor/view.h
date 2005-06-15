@@ -103,6 +103,13 @@ class KTEXTEDITOR_EXPORT View : public QWidget, public KXMLGUIClient
     void viewModeChanged ( View *view );
 
     /**
+     * information message
+     * @param view view which sends out information
+     * @param message information message
+     */
+    void informationMessage ( View *view, const QString &message );
+
+    /**
      * text inserted by user (typing)
      * @param view view in which the user typed the text
      * @param position position where the text was inserted
