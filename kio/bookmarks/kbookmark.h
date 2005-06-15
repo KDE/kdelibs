@@ -190,7 +190,7 @@ protected:
 
 private:
     bool hasMetaData() const;
-    static QString KBookmark::left(const QString & str, uint len);
+    static QString left(const QString & str, uint len);
 };
 
 /**
