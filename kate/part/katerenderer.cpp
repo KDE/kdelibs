@@ -1253,13 +1253,14 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth) const
 {
   // if maxwidth == -1 we have no wrap
 
-  if (!range.textLine() || range.textLine()->string().isEmpty()) {
-    Q_ASSERT(range.textLine());
+  Q_ASSERT(range.textLine());
+
+  /*if (!range.textLine() || range.textLine()->string().isEmpty()) {
     range.setEndCol(0);
     range.setEndX(0);
     range.setWrap(false);
     return;
-  }
+  }*/
 
   range.setLayout(new QTextLayout(range.textLine()->string().mid(range.startCol()), config()->fontStruct()->font(false, false)), true);
 
@@ -1346,11 +1347,11 @@ int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & 
     //Q_ASSERT(range.layout());
   }
 
-  if (range.isEmpty())
+  /*if (range.isEmpty() || range.layout()->lineCount() < 1)
     if (pos.column() == 0)
       return 0;
     else
-      return -1;
+      return -1;*/
 
   return range.layout()->lineAt(0).cursorToX(pos.column() - range.startCol());
 }

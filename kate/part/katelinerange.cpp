@@ -72,8 +72,8 @@ KateLineRange& KateLineRange::operator= (KateLineRange& r)
   m_dirty = r.isDirty();
   m_special = false;
   Q_ASSERT(!r.m_special);
-  if (m_ownsLayout) delete m_layout;
-  m_ownsLayout = r.takeLayoutOwnership();
+  //if (m_ownsLayout) delete m_layout;
+  m_ownsLayout = false;//r.takeLayoutOwnership();
   m_layout = r.layout();
   
   return *this;
@@ -99,7 +99,7 @@ KateLineRange& KateLineRange::operator= (const KateLineRange& r)
   m_dirty = r.isDirty();
   m_special = false;
   Q_ASSERT(!r.m_special);
-  if (m_ownsLayout) delete m_layout;
+  //if (m_ownsLayout) delete m_layout;
   m_ownsLayout = false;
   m_layout = r.layout();
   
@@ -113,7 +113,7 @@ KTextEditor::Cursor KateLineRange::rangeStart() const
 
 KateLineRange::~KateLineRange()
 {
-  if (m_ownsLayout) delete m_layout;
+  //if (m_ownsLayout) delete m_layout;
 }
 
 void KateLineRange::clear()
