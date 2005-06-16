@@ -1225,7 +1225,6 @@ void KThemeStyle::drawControl( ControlElement element,
                 break;
             }
             
-#if (QT_VERSION-0 >= 0x030100)
         case CE_MenuBarEmptyArea:
             {
                 //Expand to cover entire region
@@ -1235,8 +1234,6 @@ void KThemeStyle::drawControl( ControlElement element,
                 handled = true;
                 break;
             }
-#endif
-        
 
         case CE_TabBarTab:
             {

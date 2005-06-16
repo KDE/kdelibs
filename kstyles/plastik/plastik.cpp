@@ -3275,19 +3275,15 @@ int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
             return 1;
         }
 
-#if (QT_VERSION >= 0x030300) // requires Qt 3.3
     // extra space between menubar items
         case PM_MenuBarItemSpacing: {
             return 6;
         }
-#endif
 
-// #if (QT_VERSION >= 0x030300) // requires Qt 3.3
 //     // extra space between toolbar items
 //         case PM_ToolBarItemSpacing: {
 //             return 4;
 //         }
-// #endif
 
     // SCROLL BAR
         case PM_ScrollBarSliderMin: {

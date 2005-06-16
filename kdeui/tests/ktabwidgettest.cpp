@@ -85,16 +85,6 @@ Test::Test( QWidget* parent, const char *name )
   QCheckBox * showlabels = new QCheckBox( "Show labels", grid );
   gridlayout->addWidget( showlabels, 4, 1 );
   connect( showlabels, SIGNAL( toggled(bool) ), this, SLOT( toggleLabels(bool) ) );
-
-#if QT_VERSION < 0x030200
-  mLeftButton->setChecked(false);
-  mLeftButton->setEnabled(false);
-  mRightButton->setChecked(false);
-  mRightButton->setEnabled(false);
-  leftPopup->setEnabled(false);
-  rightPopup->setEnabled(false);
-  showlabels->setEnabled(false);
-#endif
 }
 
 void Test::currentChanged(QWidget* w)
@@ -154,14 +144,9 @@ void Test::toggleLeftButton(bool state)
       mLeftWidget->adjustSize();
     //mLeftWidget->setGeometry( 0, 0, h, h );
       mLeftWidget->setPopup(mLeftPopup);
-#if QT_VERSION >= 0x030200
       mWidget->setCornerWidget( mLeftWidget, TopLeft );
     }
     mLeftWidget->show();
-#else
-    }
-    mLeftWidget->hide();
-#endif
   }
   else
     mLeftWidget->hide();
@@ -210,14 +195,9 @@ if (state) {
       mRightWidget->adjustSize();
     //mRightButton->setGeometry( 0, 0, h, h );
       mRightWidget->setPopup(mRightPopup);
-#if QT_VERSION >= 0x030200
       mWidget->setCornerWidget( mRightWidget, TopRight );
     }
     mRightWidget->show();
-#else
-    }
-    mRightWidget->hide();
-#endif
   }
   else
     mRightWidget->hide();
@@ -316,11 +296,9 @@ void Test::tabbarContextMenu(const QPoint &p)
       delete mTabbarContextPopup;
 
   mTabbarContextPopup = new QPopupMenu(this);
-#if QT_VERSION >= 0x030200
   mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
   mTabbarContextPopup->insertSeparator();
-#endif
   mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::Top ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
   connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
 

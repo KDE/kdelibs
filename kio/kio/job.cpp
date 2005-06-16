@@ -118,14 +118,16 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
                  Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
     // Don't exit while this job is running
-    kapp->ref();
+    if (kapp)
+        kapp->ref();
 }
 
 Job::~Job()
 {
     delete m_speedTimer;
     delete d;
-    kapp->deref();
+    if (kapp)
+        kapp->deref();
 }
 
 int& Job::extraFlags()
@@ -2098,7 +2100,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 
 void ListJob::start(Slave *slave)
 {
-    if (!kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    if (kapp && !kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
         m_error = ERR_ACCESS_DENIED;
         m_errorText = m_url.url();
@@ -3272,7 +3274,7 @@ void CopyJob::copyNextFile()
                        QDataStream streamout(param,IO_WriteOnly);
                        streamout<<(*it).uSource;
                        streamout<<(*it).uDest;
-                       if ( kapp->dcopClient()->call( "kded",
+                       if ( kapp && kapp->dcopClient()->call( "kded",
                             "mountwatcher", "createLink(KURL, KURL)", param,retType,data,false ) )
                        {
                           QDataStream streamin(data,IO_ReadOnly);
@@ -4335,7 +4337,7 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
-  if (!kapp->authorizeURLAction("redirect", m_url, url))
+  if (kapp && !kapp->authorizeURLAction("redirect", m_url, url))
   {
      kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url << " to " << url << " REJECTED!" << endl;
      return;

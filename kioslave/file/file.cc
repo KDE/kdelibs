@@ -218,11 +218,7 @@ void FileProtocol::get( const KURL& url )
     if ( !resumeOffset.isEmpty() )
     {
         bool ok;
-#if QT_VERSION >= 0x030200
         KIO::fileoffset_t offset = resumeOffset.toLongLong(&ok);
-#else
-        KIO::fileoffset_t offset = resumeOffset.toULong(&ok);
-#endif
         if (ok && (offset > 0) && (offset < buff.st_size))
         {
             if (KDE_lseek(fd, offset, SEEK_SET) == offset)

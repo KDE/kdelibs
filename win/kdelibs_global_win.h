@@ -77,14 +77,6 @@ int kde_start
 #endif
 */
 
-#if QT_VERSION <= 0x030100  
-typedef __int64 Q_LONG64;
-typedef __int64 Q_LLONG;
-typedef __int64 Q_SIGNED_LONG64;
-typedef unsigned __int64 Q_ULONG64;
-typedef __int64 Q_ULLONG;
-#endif
-
 # ifndef __pid_t_defined
   //typedef __pid_t pid_t;
   typedef unsigned int pid_t;

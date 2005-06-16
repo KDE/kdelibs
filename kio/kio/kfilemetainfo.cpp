@@ -1616,7 +1616,6 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
                 s = KGlobal::locale()->formatNumber( value.toInt() , 0);
             break;
 
-#if QT_VERSION >= 0x030200
         case QVariant::LongLong :
             s = KGlobal::locale()->formatNumber( value.toLongLong(), 0 );
             break;
@@ -1629,7 +1628,7 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
             else
                 s = KGlobal::locale()->formatNumber( value.toULongLong(), 0 );
             break;
-#endif
+
         case QVariant::UInt :
             s = KGlobal::locale()->formatNumber( value.toUInt() , 0);
             break;

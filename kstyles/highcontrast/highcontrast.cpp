@@ -744,13 +744,11 @@ void HighContrastStyle::drawControl (ControlElement element,
 	{
 		// TABS
 		// -------------------------------------------------------------------
-#if (QT_VERSION-0 >= 0x030200)
 		case CE_ToolBoxTab: {
 			setColorsNormal (p, cg, flags, Style_Selected);
 			drawRoundRect (p, r);
 			break;
 		}
-#endif
 
 		case CE_TabBarTab: {
 			setColorsNormal (p, cg, flags, Style_Selected);

@@ -2001,12 +2001,7 @@ void KToggleFullScreenAction::setChecked( bool c )
 bool KToggleFullScreenAction::eventFilter( QObject* o, QEvent* e )
 {
     if( o == window )
-#if QT_VERSION >= 0x030300
         if( e->type() == QEvent::WindowStateChange )
-#else
-        if( e->type() == QEvent::ShowFullScreen || e->type() == QEvent::ShowNormal
-            || e->type() == QEvent::ShowMaximized || e->type() == QEvent::ShowMinimized )
-#endif
             {
             if( window->isFullScreen() != isChecked())
                 slotActivated(); // setChecked( window->isFullScreen()) wouldn't emit signals

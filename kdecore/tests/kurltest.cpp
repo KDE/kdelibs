@@ -28,10 +28,6 @@ static bool check(QString txt, QString a, QString b)
   return true;
 }
 
-#if QT_VERSION < 300
-extern void qt_set_locale_codec( QTextCodec *codec );
-#endif
-
 int main(int argc, char *argv[])
 {
   KApplication::disableAutoDcopRegistration();

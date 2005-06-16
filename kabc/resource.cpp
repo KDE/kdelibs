@@ -217,12 +217,7 @@ Resource::Iterator Resource::begin()
 Resource::ConstIterator Resource::begin() const
 {
   ConstIterator it;
-#if QT_VERSION >= 0x030200
   it.d->mIt = mAddrMap.constBegin();
-#else
-  it.d->mIt = mAddrMap.begin();
-#endif
-
   return it;
 }
 
@@ -237,12 +232,7 @@ Resource::Iterator Resource::end()
 Resource::ConstIterator Resource::end() const
 {
   ConstIterator it;
-#if QT_VERSION >= 0x030200
   it.d->mIt = mAddrMap.constEnd();
-#else
-  it.d->mIt = mAddrMap.end();
-#endif
-
   return it;
 }
 

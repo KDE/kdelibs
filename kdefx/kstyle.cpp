@@ -983,13 +983,12 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		case PM_MaximumDragDistance:
 			return -1;
 
-#if QT_VERSION >= 0x030300
 		case PM_MenuBarItemSpacing:
 			return 5;
 
 		case PM_ToolBarItemSpacing:
 			return 0;
-#endif
+
 		case PM_PopupMenuScrollerHeight:
 			return pixelMetric( PM_ScrollBarExtent, 0);
 
