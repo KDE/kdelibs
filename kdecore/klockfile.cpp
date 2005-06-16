@@ -51,6 +51,7 @@ public:
    int staleTime;
    bool isLocked;
    bool recoverLock;
+   bool linkCountSupport;
    QTime staleTimer;
    KDE_struct_stat statBuf;
    int pid;
@@ -68,6 +69,7 @@ KLockFile::KLockFile(const QString &file)
   d->staleTime = 30;
   d->isLocked = false;
   d->recoverLock = false;
+  d->linkCountSupport = true;
 }
 
 KLockFile::~KLockFile()
@@ -97,7 +99,17 @@ static bool statResultIsEqual(KDE_struct_stat &st_buf1, KDE_struct_stat &st_buf2
 #undef FIELD_EQ
 }
 
-static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf)
+static bool testLinkCountSupport(const QCString &fileName)
+{
+   KDE_struct_stat st_buf;
+   // Check if hardlinks raise the link count at all?
+   ::link( fileName, fileName+".test" );
+   int result = KDE_lstat( fileName, &st_buf );
+   ::unlink( fileName+".test" );
+   return ((result == 0) && (st_buf.st_nlink == 2));
+}
+
+static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
 {
   QCString lockFileName = QFile::encodeName( lockFile );
   int result = KDE_lstat( lockFileName, &st_buf );
@@ -127,7 +139,9 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   result = ::link( uniqueName, lockFileName );
   if (result != 0)
      return KLockFile::LockError;
-
+     
+  if (!linkCountSupport)
+     return KLockFile::LockOK;
 #else
   //TODO for win32
   return KLockFile::LockOK;
@@ -143,12 +157,21 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
      return KLockFile::LockError;
 
   if (!statResultIsEqual(st_buf, st_buf2) || S_ISLNK(st_buf.st_mode) || S_ISLNK(st_buf2.st_mode))
+  {
+     // SMBFS supports hardlinks by copying the file, as a result the above test will always fail
+     if ((st_buf.st_nlink == 1) && (st_buf2.st_nlink == 1) && (st_buf.st_ino != st_buf2.st_ino))
+     {
+        linkCountSupport = testLinkCountSupport(uniqueName);
+        if (!linkCountSupport)
+           return KLockFile::LockOK; // Link count support is missing... assume everything is OK.
+     }
      return KLockFile::LockFail;
+  }
 
   return KLockFile::LockOK;
 }
 
-static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf)
+static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct_stat &st_buf, bool &linkCountSupport)
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
@@ -158,7 +181,7 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
    if (ktmpFile.status() != 0)
       return KLockFile::LockError;
               
-   QCString lckFile = QFile::encodeName( lockFile );
+   QCString lckFile = QFile::encodeName(lockFile);
    QCString tmpFile = QFile::encodeName(ktmpFile.name());
    ktmpFile.close();
    ktmpFile.unlink();
@@ -189,6 +212,24 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
          return KLockFile::LockOK;
       }
    }
+   
+   // SMBFS supports hardlinks by copying the file, as a result the above test will always fail
+   if (linkCountSupport)
+   {
+      linkCountSupport = testLinkCountSupport(tmpFile);
+   }
+
+   if (!linkCountSupport && 
+       (KDE_lstat(lckFile, &st_buf2) == 0) && 
+       statResultIsEqual(st_buf, st_buf2))
+   {
+      // Without support for link counts we will have a little race condition
+      qWarning("WARNING: deleting stale lockfile %s", lckFile.data());
+      ::unlink(lckFile);
+      ::unlink(tmpFile);
+      return KLockFile::LockOK;
+   }
+   
    // Failed to delete stale lock file
    qWarning("WARNING: Problem deleting stale lockfile %s", lckFile.data());
    ::unlink(tmpFile);
@@ -207,7 +248,7 @@ KLockFile::LockResult KLockFile::lock(int options)
   while(true)
   {
      KDE_struct_stat st_buf;
-     result = lockFile(d->file, st_buf);
+     result = lockFile(d->file, st_buf, d->linkCountSupport);
      if (result == KLockFile::LockOK)
      {
         d->staleTimer = QTime();
@@ -253,7 +294,7 @@ KLockFile::LockResult KLockFile::lock(int options)
               if ((options & LockForce) == 0)
                  return KLockFile::LockStale;
                  
-              result = deleteStaleLock(d->file, d->statBuf);
+              result = deleteStaleLock(d->file, d->statBuf, d->linkCountSupport);
 
               if (result == KLockFile::LockOK)
               {
