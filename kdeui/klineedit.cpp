@@ -1051,6 +1051,7 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(userCancelled( const QString& )) );
 
+        // TODO: we need our own slot, and to call setModified(true) if Qt4 has that.
         connect( d->completionBox, SIGNAL( activated( const QString& )),
                  SIGNAL(completionBoxActivated( const QString& )) );
     }
@@ -1060,6 +1061,7 @@ void KLineEdit::userCancelled(const QString & cancelText)
 {
     if ( completionMode() != KGlobalSettings::CompletionPopupAuto )
     {
+      // TODO: this sets modified==false. But maybe it was true before...
       setText(cancelText);
     }
     else if (hasSelectedText() )

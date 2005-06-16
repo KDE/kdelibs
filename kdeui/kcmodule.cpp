@@ -24,7 +24,7 @@
 #include <qlayout.h>
 
 #include <kaboutdata.h>
-#include <kconfigskeleton.h> 
+#include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -85,7 +85,7 @@ KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
 }
 
 void KCModule::init()
-{ 
+{
     d = new KCModulePrivate;
    _btn = Help|Default|Apply;
 }
@@ -135,7 +135,6 @@ void KCModule::widgetChanged()
 
 bool KCModule::managedWidgetChangeState() const
 {
-    bool bChanged = false;
     KConfigDialogManager* manager;
     for( manager = d->managers.first(); manager; manager = d->managers.next() )
     {
