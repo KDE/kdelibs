@@ -1,4 +1,4 @@
-SUBDIRS = vcard vcardparser . formats plugins scripts
+SUBDIRS = vcard vcardparser . formats plugins scripts tests
 
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
@@ -55,59 +55,6 @@ bin_PROGRAMS = kab2kabc
 kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kab2kabc_LDADD = libkabc.la ../kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
-
-check_PROGRAMS = testlock
-
-testlock_LDFPLAGS = $(all_libraries)
-testlock_LDADD = libkabc.la
-testlock_SOURCES = testlock.cpp
-
-EXTRA_PROGRAMS = testkabc testkabcdlg testdistlist bigread bigwrite testdb \
-  testaddressee testaddresseelist testaddressfmt kabcargl testaddresslineedit
-
-testkabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testkabc_LDADD = libkabc.la
-testkabc_SOURCES = testkabc.cpp
-
-testaddressee_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testaddressee_LDADD = libkabc.la
-testaddressee_SOURCES = testaddressee.cpp
-
-testaddresseelist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testaddresseelist_LDADD = libkabc.la
-testaddresseelist_SOURCES = testaddresseelist.cpp
-
-testaddressfmt_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testaddressfmt_LDADD = libkabc.la
-testaddressfmt_SOURCES = testaddressfmt.cpp
-
-testkabcdlg_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testkabcdlg_LDADD = libkabc.la
-testkabcdlg_SOURCES = testkabcdlg.cpp
-
-testdistlist_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testdistlist_LDADD = libkabc.la
-testdistlist_SOURCES = testdistlist.cpp
-
-testaddresslineedit_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testaddresslineedit_LDADD = libkabc.la
-testaddresslineedit_SOURCES = testaddresslineedit.cpp
-
-bigread_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigread_LDADD = libkabc.la $(top_builddir)/kabc/plugins/file/libkabc_file.la
-bigread_SOURCES = bigread.cpp
-
-bigwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigwrite_LDADD = libkabc.la $(top_builddir)/kabc/plugins/file/libkabc_file.la
-bigwrite_SOURCES = bigwrite.cpp
-
-testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testdb_LDADD = libkabc.la
-testdb_SOURCES = testdb.cpp
-
-kabcargl_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kabcargl_LDADD = libkabc.la
-kabcargl_SOURCES = kabcargl.cpp
 
 autostart_DATA = kab2kabc.desktop
 autostartdir = $(datadir)/autostart

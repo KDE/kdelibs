@@ -209,15 +209,17 @@ void LdapClient::parseLDIF( const QByteArray& data )
 
   LDIF::ParseVal ret;
   QString name;
-  QByteArray value;
   do {
     ret = d->ldif.nextItem();
     switch ( ret ) {
       case LDIF::Item:
+      {
         name = d->ldif.attr();
-        value = d->ldif.val();
+        // Must make a copy! QByteArray is explicitely shared
+        QByteArray value = d->ldif.val().copy();
         mCurrentObject.attrs[ name ].append( value );
         break;
+      }
      case LDIF::EndEntry:
         mCurrentObject.dn = d->ldif.dn();
         mCurrentObject.client = this;

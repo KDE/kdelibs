@@ -6,8 +6,8 @@
 #include <kstandarddirs.h>
 
 #include "addressbook.h"
-#include "resourcefile.h"
-#include "binaryformat.h"
+#include "plugins/file/resourcefile.h"
+#include "formats/binaryformat.h"
 #include "vcardformat.h"
 #include "phonenumber.h"
 
