@@ -1171,20 +1171,9 @@ QString KLocale::formatMoney(const QString &numStr) const
 
 QString KLocale::formatNumber(double num, int precision) const
 {
-  bool neg = num < 0;
   if (precision == -1) precision = 2;
-  QString res = QString::number(neg?-num:num, 'f', precision);
-  int pos = res.find('.');
-  if (pos == -1) pos = res.length();
-  else res.replace(pos, 1, decimalSymbol());
-
-  while (0 < (pos -= 3))
-    res.insert(pos, thousandsSeparator()); // thousand sep
-
-  // How can we know where we should put the sign?
-  res.prepend(neg?negativeSign():positiveSign());
-
-  return res;
+  // no need to round since QString::number does this for us
+  return formatNumber(QString::number(num, 'f', precision), false, 0);
 }
 
 QString KLocale::formatLong(long num) const
@@ -1194,7 +1183,139 @@ QString KLocale::formatLong(long num) const
 
 QString KLocale::formatNumber(const QString &numStr) const
 {
-  return formatNumber(numStr.toDouble());
+  return formatNumber(numStr, true, 2);
+}
+
+// increase the digit at 'position' by one
+static void _inc_by_one(QString &str, int position)
+{
+  for (int i = position; i >= 0; i--)
+    {
+      char last_char = str[i].latin1();
+      switch(last_char)
+	{
+	case '0':
+	  str[i] = '1';
+	  break;
+	case '1':
+	  str[i] = '2';
+	  break;
+	case '2':
+	  str[i] = '3';
+	  break;
+	case '3':
+	  str[i] = '4';
+	  break;
+	case '4':
+	  str[i] = '5';
+	  break;
+	case '5':
+	  str[i] = '6';
+	  break;
+	case '6':
+	  str[i] = '7';
+	  break;
+	case '7':
+	  str[i] = '8';
+	  break;
+	case '8':
+	  str[i] = '9';
+	  break;
+	case '9':
+	  str[i] = '0';
+	  if (i == 0) str.prepend('1');
+	  continue;
+	case '.':
+	  continue;
+	}
+      break;
+    }
+}
+
+// Cut off if more digits in fractional part than 'precision'
+static void _round(QString &str, int precision)
+{
+  int decimalSymbolPos = str.find('.');
+
+  if (decimalSymbolPos == -1)
+    if (precision == 0)  return;
+    else if (precision > 0) // add dot if missing (and needed)
+      {
+	str.append('.');
+	decimalSymbolPos = str.length() - 1;
+      }
+
+  // fill up with more than enough zeroes (in case fractional part too short)
+  str.append(QString().fill('0', precision));
+
+  // Now decide whether to round up or down
+  char last_char = str[decimalSymbolPos + precision + 1].latin1();
+  switch (last_char)
+    {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+      // nothing to do, rounding down
+      break;
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      _inc_by_one(str, decimalSymbolPos + precision);
+      break;
+    default:
+      break;
+    }
+
+  decimalSymbolPos = str.find('.');
+  str.truncate(decimalSymbolPos + precision + 1);
+  
+  // if precision == 0 delete also '.'
+  if (precision == 0) str = str.section('.', 0, 0);
+}
+
+
+QString KLocale::formatNumber(const QString &numStr, bool round,
+			      int precision) const
+{
+  QString tmpString = numStr;
+  if ((round  && precision < 0)  ||
+      ! QRegExp("^[+-]?\\d+(\\.\\d+)*(e[+-]?\\d+)?$").exactMatch(tmpString))
+    return numStr;
+
+  
+  // Skip the sign (for now)
+  bool neg = (tmpString[0] == '-');
+  if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
+
+  // Split off exponential part (including 'e'-symbol)
+  QString firstString = tmpString.section('e', 0, 0,
+					 QString::SectionCaseInsensitiveSeps);
+  QString secondString = tmpString.section('e', 1, 1,
+					QString::SectionCaseInsensitiveSeps |
+					QString::SectionIncludeLeadingSep);
+
+  if (round) _round(firstString, precision);
+ 
+  // Replace dot with locale decimal separator
+  firstString.replace(QChar('.'), decimalSymbol());
+  
+  // Insert the thousand separators
+  // don't need fractional part anymore
+  secondString = firstString.section(decimalSymbol(), 1, 1, QString::SectionIncludeLeadingSep) + secondString;
+  firstString = firstString.section(decimalSymbol(), 0, 0);
+
+  for (int index=1, pos = firstString.length() - 1; pos>0; pos--, index++)
+    if (index%3 == 0)
+      firstString.insert(pos, thousandsSeparator());
+
+  // How can we know where we should put the sign?
+  firstString.prepend(neg?negativeSign():positiveSign());
+  
+  return firstString +  secondString;
 }
 
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
