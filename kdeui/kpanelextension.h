@@ -104,6 +104,7 @@ public:
     /// The type of the extension (TODO)
     enum Type { Normal = 0, Stretch };
     // KDE4: Merge these with KPanelApplet's enums
+    /// An action to be taken sometime.
     enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
     enum Position { Left = 0, Right, Top, Bottom, Floating };
     enum Alignment { LeftTop = 0, Center, RightBottom };
@@ -157,7 +158,7 @@ public:
 
     /**
      * @return int indicating the supported RMB menu actions.
-     * #Action
+     * Action
      **/
     int actions() const { return _actions; }
 
@@ -244,7 +245,7 @@ protected:
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your extension supports the About action.
-     * See #Action.
+     * See Action.
      **/
     virtual void about() {}
 
@@ -253,7 +254,7 @@ protected:
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your extension supports the Help action.
-     * See #Action.
+     * See Action.
      **/
     virtual void help() {}
 
@@ -262,7 +263,7 @@ protected:
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your extension supports the preferences action.
-     * See #Action.
+     * See Action.
      **/
     virtual void preferences() {}
 
@@ -272,7 +273,7 @@ protected:
      *
      * Note that this is called only when your applet supports the ReportBug
      * action.
-     * See #Action.
+     * See Action.
      **/
     virtual void reportBug() {}
 
