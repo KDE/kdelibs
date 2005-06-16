@@ -204,6 +204,12 @@ void KToggleAction::updateChecked( int id )
           pm->changeItem( itemId_, gui->iconSet( KIcon::Small ), gui->text() );
       else
           pm->changeItem( itemId_, gui->text() );
+
+      // If the text doesn't change, then set the icon to be "pressed", otherwise
+      // there is too little difference between checked and unchecked.
+      if ( d->m_checkedGuiItem->text() == guiItem().text() )
+           pm->setItemChecked( itemId_, d->m_checked );
+
       if ( !d->m_checkedGuiItem->whatsThis().isEmpty() ) // if empty, we keep the initial one
           pm->setWhatsThis( itemId_, gui->whatsThis() );
       updateShortcut( pm, itemId_ );
