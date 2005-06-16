@@ -2161,6 +2161,7 @@ Completion ForNode::execute(ExecState *exec)
   Value v, cval;
 
   if (expr1) {
+    currentVarType = VarStatementNode::Variable;
     v = expr1->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
@@ -2194,8 +2195,10 @@ Completion ForNode::execute(ExecState *exec)
 
 void ForNode::processVarDecls(ExecState *exec)
 {
-  if (expr1)
+  if (expr1) {
+    currentVarType = VarStatementNode::Variable;
     expr1->processVarDecls(exec);
+  }
 
   statement->processVarDecls(exec);
 }

@@ -1,3 +1,8 @@
+2005-06-16  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: fixed side effect of const declarations on for(;;)
+	variable declarations.
+
 2005-06-11  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp (KRFCDate_parseDate): parse AM and PM. Fixed
