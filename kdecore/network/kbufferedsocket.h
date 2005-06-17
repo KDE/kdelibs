@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -47,7 +47,13 @@ class KBufferedSocketPrivate;
  * Objects of this type operate only in non-blocking mode. A call to
  * setBlocking(true) will result in an error.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @note Buffered sockets only make sense if you're using them from
+ *       the main (event-loop) thread. This is actually a restriction
+ *       imposed by Qt's QSocketNotifier. If you want to use a socket
+ *       in an auxiliary thread, please use KStreamSocket.
+ *
+ * @see KNetwork::KStreamSocket, KNetwork::KServerSocket
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KBufferedSocket: public KStreamSocket
 {

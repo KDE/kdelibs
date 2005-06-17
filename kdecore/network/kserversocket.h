@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -82,17 +82,27 @@ class KServerSocketPrivate;
  *     ss->close();
  *   }
  *   if( !found ) {
- *     //Couldn't connect to any port.
+ *     // Couldn't connect to any port.
  *   } else {
  *     connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
  *     connect(ss, SIGNAL(gotError(int)), this, SLOT(slotSocketError(int)));
  *     ss->listen();
  *   }
  * \endcode
+ *
  * The called slot slotReadyAccept() is responsible for calling
  * @ref accept.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * It is important to note that @ref accept can return either an
+ * object of type KNetwork::KStreamSocket or
+ * KNetwork::KBufferedSocket (default). If you want to accept a
+ * non-buffered socket, you must first call setAcceptBuffered.
+ *
+ * @warning If you use KServerSocket in an auxiliary (non-GUI) thread,
+ *          you need to accept only KNetwork::KStreamSocket objects.
+ *
+ * @see KNetwork::KStreamSocket, KNetwork::KBufferedSocket
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KServerSocket: public QObject, public KPassiveSocketBase
 {

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -47,6 +47,10 @@ class KStreamSocketPrivate;
  * Objects of this class start, by default, on non-blocking mode. Call
  * setBlocking if you wish to change that.
  *
+ * KStreamSocket objects are thread-safe and can be used in auxiliary
+ * threads (i.e., not the thread in which the Qt event loop runs in).
+ * Note that KBufferedSocket cannot be used reliably in an auxiliary thread.
+ *
  * Sample usage:
  * \code
  *   QByteArray httpGet(const QString& hostname)
@@ -86,8 +90,8 @@ class KStreamSocketPrivate;
  *  }
  * \endcode
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
- * @version 0.9
+ * @see KNetwork::KBufferedSocket, KNetwork::KServerSocket
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KStreamSocket: public KClientSocketBase
 {
