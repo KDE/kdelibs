@@ -646,7 +646,7 @@ void MkdirJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
-    
+
     SimpleJob::start(slave);
 }
 
@@ -2267,7 +2267,7 @@ void CopyJob::slotResultStating( Job *job )
             m_dest = KURL();
             m_dest.setPath(sLocalPath);
         }
-	
+
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
 
@@ -2973,8 +2973,11 @@ void CopyJob::createNextDir()
     }
     else // we have finished creating dirs
     {
+        emit processedDirs( this, m_processedDirs ); // make sure final number appears
+        if (m_progressId) Observer::self()->slotProcessedDirs( this, m_processedDirs );
+
         state = STATE_COPYING_FILES;
-        m_processedFiles++; // Ralf wants it to start a 1, not 0
+        m_processedFiles++; // Ralf wants it to start at 1, not 0
         copyNextFile();
     }
 }
@@ -3433,8 +3436,11 @@ void CopyJob::deleteNextDir()
                 allDirNotify.FilesRemoved( m_srcList );
             }
         }
-        if (m_reportTimer!=0)
+        if (m_reportTimer)
             m_reportTimer->stop();
+        --m_processedFiles; // undo the "start at 1" hack
+        slotReport(); // display final numbers, important if progress dialog stays up
+
         emitResult();
     }
 }

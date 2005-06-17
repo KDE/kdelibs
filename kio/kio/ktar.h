@@ -73,7 +73,7 @@ public:
      * Null if you used the QIODevice constructor.
      * @return the name of the file, or QString::null if unknown
      */
-    QString fileName() { return m_filename; }
+    QString fileName() { return m_filename; } // TODO KDE4 const
 
     /**
      * Special function for setting the "original file name" in the gzip header,
