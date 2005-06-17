@@ -45,7 +45,7 @@
 class KTar::KTarPrivate
 {
 public:
-    KTarPrivate() : tarEnd( 0 ) {}
+    KTarPrivate() : tarEnd( 0 ), tmpFile( 0 ) {}
     QStringList dirList;
     int tarEnd;
     KTempFile* tmpFile;
@@ -57,12 +57,10 @@ public:
 };
 
 KTar::KTar( const QString& filename, const QString & _mimetype )
-    : KArchive( 0L )
+    : KArchive( 0 )
 {
     m_filename = filename;
     d = new KTarPrivate;
-    d->tmpFile = 0L;
-    d->mimetype = _mimetype;
     QString mimetype( _mimetype );
     bool forced = true;
     if ( mimetype.isEmpty() ) // Find out mimetype manually
@@ -107,8 +105,8 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             file.close();
         }
         forced = false;
+    }
         d->mimetype = mimetype;
-    } // END mimetype.isEmpty()
 
     prepareDevice( filename, mimetype, forced );
 }
@@ -144,6 +142,7 @@ void KTar::prepareDevice( const QString & filename,
 KTar::KTar( QIODevice * dev )
     : KArchive( dev )
 {
+    Q_ASSERT( dev );
     d = new KTarPrivate;
 }
 
