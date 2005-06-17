@@ -33,10 +33,10 @@
 #include "context.h"
 
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <errno.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -693,16 +693,18 @@ ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
 
 Value ActivationImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  if (propertyName == argumentsPropertyName) {
-    ValueImp *imp = getDirect(propertyName);
-    if (imp)
-      return Value(imp);
+    if (propertyName == argumentsPropertyName) {
+        // check for locally declared arguments property
+        ValueImp *v = getDirect(propertyName);
+        if (v)
+            return Value(v);
 
-    if (!_argumentsObject)
-      _argumentsObject = new ArgumentsImp(exec, _function, _arguments, const_cast<ActivationImp*>(this));
-    return Value(_argumentsObject);
-  }
-  return ObjectImp::get(exec, propertyName);
+        // default: return builtin arguments array
+        if (!_argumentsObject)
+            _argumentsObject = new ArgumentsImp(exec, _function, _arguments, const_cast<ActivationImp*>(this));
+        return Value(_argumentsObject);
+    }
+    return ObjectImp::get(exec, propertyName);
 }
 
 bool ActivationImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
