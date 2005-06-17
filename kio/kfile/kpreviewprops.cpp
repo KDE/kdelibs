@@ -65,7 +65,14 @@ KPreviewPropsPlugin::~KPreviewPropsPlugin()
 bool KPreviewPropsPlugin::supports( KFileItemList _items )
 {
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-    return _items.count() == 1 && metaDataEnabled;
+    KMimeType::Ptr mt = KMimeType::findByURL( _items.first()->url() );
+
+    if ( _items.count() != 1 || !metaDataEnabled || mt->name() == "inode/directory" )
+        return false;
+
+    //TODO Copy everything of KFileMetaPreview::previewProviderFor() ?
+
+    return true;
 }
 
 void KPreviewPropsPlugin::aboutToShowPage( QWidget* widget )
