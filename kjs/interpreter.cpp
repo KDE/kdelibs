@@ -65,7 +65,7 @@ const Context Context::callingContext() const
 
 CodeType Context::codeType() const
 {
-  return rep->codeType;
+  return rep->codeType();
 }
 
 int Context::sourceId() const

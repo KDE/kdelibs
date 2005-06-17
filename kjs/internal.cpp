@@ -370,7 +370,7 @@ ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV,
                        ContextImp *callingCon, FunctionImp *func, const List *args)
   : _interpreter(interpreter), _function(func), _arguments(args)
 {
-  codeType = type;
+  m_codeType = type;
   _callingContext = callingCon;
   tryCatch = 0;
 

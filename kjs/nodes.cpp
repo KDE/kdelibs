@@ -168,8 +168,7 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg,
   char *vStr = strdup(v.toString(exec).ascii());
   char *exprStr = strdup(expr->toCode().ascii());
 
-  int length =  strlen(msg) - 4 /* two %s */ + strlen(vStr) + strlen(exprStr) +
- 1 /* null terminator */;
+  int length =  strlen(msg) - 4 /* two %s */ + strlen(vStr) + strlen(exprStr) + 1 /* null terminator */;
   char *str = new char[length];
   sprintf(str, msg, vStr, exprStr);
   free(vStr);
@@ -1633,7 +1632,7 @@ Value CommaNode::evaluate(ExecState *exec) const
 StatListNode::StatListNode(StatementNode *s)
   : statement(s), list(this)
 {
-  setLoc(s->firstLine(),s->lastLine(),s->code());
+  setLoc(s->firstLine(), s->lastLine(), s->code());
 }
 
 StatListNode::StatListNode(StatListNode *l, StatementNode *s)
@@ -1775,7 +1774,7 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
-  if (exec->_context->type() != EvalCode)
+  if (exec->_context->codeType() != EvalCode)
     flags |= DontDelete;
   if (currentVarType == VarStatementNode::Constant)
     flags |= ReadOnly;
@@ -1794,7 +1793,7 @@ void VarDeclNode::processVarDecls(ExecState *exec)
   // ### avoid duplication with actions performed in evaluate()?
   if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
     int flags = None;
-    if (exec->_context->type() != EvalCode)
+    if (exec->_context->codeType() != EvalCode)
       flags |= DontDelete;
     if (currentVarType == VarStatementNode::Constant)
       flags |= ReadOnly;
@@ -2976,10 +2975,12 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS: new function %s in %p\n", ident.ustring().cstring().c_str(), ctx->variableObject().imp());
 #endif
-  if (exec->_context->type() == EvalCode)
-    ctx->variableObject().put(exec,ident,func,Internal);
-  else
-    ctx->variableObject().put(exec,ident,func,DontDelete|Internal);
+  if (exec->_context->codeType() == EvalCode) {
+      // ECMA 10.2.2
+      ctx->variableObject().put(exec, ident, func, Internal);
+  } else {
+      ctx->variableObject().put(exec, ident, func, DontDelete | Internal);
+  }
 
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope
@@ -3078,8 +3079,8 @@ Completion SourceElementsNode::execute(ExecState *exec)
   if (c1.complType() != Normal)
     return c1;
 
-  for (SourceElementsNode *node = elements; node; node = node->elements) {
-    Completion c2 = node->element->execute(exec);
+  for (SourceElementsNode *n = elements; n; n = n->elements) {
+    Completion c2 = n->element->execute(exec);
     if (c2.complType() != Normal)
       return c2;
     // The spec says to return c2 here, but it seems that mozilla returns c1 if
