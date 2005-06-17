@@ -1103,6 +1103,21 @@ static inline void put_it_in( QChar *buffer, uint& index, int number )
   buffer[index++] = number % 10 + '0';
 }
 
+// insert (thousands)-"separator"s into the non-fractional part of str 
+static void _insertSeparator(QString &str, const QString &separator,
+			     const QString &decimalSymbol)
+{
+  // leave fractional part untouched
+  QString mainPart = str.section(decimalSymbol, 0, 0);
+  QString fracPart = str.section(decimalSymbol, 1, 1,
+				 QString::SectionIncludeLeadingSep);
+  
+  for (int pos = mainPart.length() - 3; pos > 0; pos -= 3)
+    mainPart.insert(pos, separator);
+
+  str = mainPart + fracPart;
+}
+
 QString KLocale::formatMoney(double num,
 			     const QString & symbol,
 			     int precision) const
@@ -1116,12 +1131,12 @@ QString KLocale::formatMoney(double num,
   // the number itself
   bool neg = num < 0;
   QString res = QString::number(neg?-num:num, 'f', precision);
-  int pos = res.find('.');
-  if (pos == -1) pos = res.length();
-  else res.replace(pos, 1, monetaryDecimalSymbol());
 
-  while (0 < (pos -= 3))
-    res.insert(pos, monetaryThousandsSeparator()); // thousend sep
+  // Replace dot with locale decimal separator
+  res.replace(QChar('.'), monetaryDecimalSymbol());
+
+  // Insert the thousand separators
+  _insertSeparator(res, monetaryThousandsSeparator(), monetaryDecimalSymbol());
 
   // set some variables we need later
   int signpos = neg
@@ -1277,7 +1292,6 @@ static void _round(QString &str, int precision)
   if (precision == 0) str = str.section('.', 0, 0);
 }
 
-
 QString KLocale::formatNumber(const QString &numStr, bool round,
 			      int precision) const
 {
@@ -1292,30 +1306,24 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
 
   // Split off exponential part (including 'e'-symbol)
-  QString firstString = tmpString.section('e', 0, 0,
+  QString mantString = tmpString.section('e', 0, 0,
 					 QString::SectionCaseInsensitiveSeps);
-  QString secondString = tmpString.section('e', 1, 1,
+  QString expString = tmpString.section('e', 1, 1,
 					QString::SectionCaseInsensitiveSeps |
 					QString::SectionIncludeLeadingSep);
 
-  if (round) _round(firstString, precision);
+  if (round) _round(mantString, precision);
  
   // Replace dot with locale decimal separator
-  firstString.replace(QChar('.'), decimalSymbol());
+  mantString.replace(QChar('.'), decimalSymbol());
   
   // Insert the thousand separators
-  // don't need fractional part anymore
-  secondString = firstString.section(decimalSymbol(), 1, 1, QString::SectionIncludeLeadingSep) + secondString;
-  firstString = firstString.section(decimalSymbol(), 0, 0);
-
-  for (int index=1, pos = firstString.length() - 1; pos>0; pos--, index++)
-    if (index%3 == 0)
-      firstString.insert(pos, thousandsSeparator());
+  _insertSeparator(mantString, thousandsSeparator(), decimalSymbol());
 
   // How can we know where we should put the sign?
-  firstString.prepend(neg?negativeSign():positiveSign());
+  mantString.prepend(neg?negativeSign():positiveSign());
   
-  return firstString +  secondString;
+  return mantString +  expString;
 }
 
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const

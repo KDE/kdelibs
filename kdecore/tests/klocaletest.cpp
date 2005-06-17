@@ -82,7 +82,7 @@ void Test::createFields()
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
   string+="\nLocalized monetary numbers: ";
-  string+=KGlobal::locale()->formatMoney(1234567.89) + " / " +KGlobal::locale()->formatMoney(-1234567.89);
+  string+=KGlobal::locale()->formatMoney(1234567.89) + " / \n" +KGlobal::locale()->formatMoney(-1234567.89);
   // This will not work
   // but you can copy other *.mo file
   string+="\nSome localized strings:\n";
@@ -117,6 +117,7 @@ int main( int argc, char ** argv )
   formatted = KGlobal::locale()->formatNumber("70"); check("formatNumber(\"70\")",formatted,"70.00");
   formatted = KGlobal::locale()->formatNumber("70", true, 2); check("formatNumber(\"70\", true, 2)",formatted,"70.00");
   formatted = KGlobal::locale()->formatNumber("70", true, 0); check("formatNumber(\"70\", true, 0)",formatted,"70");
+  formatted = KGlobal::locale()->formatNumber("70.9123", true, 0); check("formatNumber(\"70.9123\", true, 0)",formatted,"71"); /* rounded */
   formatted = KGlobal::locale()->formatNumber("-70.2", true, 2); check("formatNumber(\"-70.2\", true, 2)",formatted,"-70.20");
   formatted = KGlobal::locale()->formatNumber("+70.24", true, 2); check("formatNumber(\"+70.24\", true, 2)",formatted,"70.24");
   formatted = KGlobal::locale()->formatNumber("70.245", true, 2); check("formatNumber(\"70.245\", true, 2)",formatted,"70.25"); /*rounded*/
