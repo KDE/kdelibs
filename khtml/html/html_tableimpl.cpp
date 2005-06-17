@@ -791,7 +791,17 @@ HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 
 long HTMLTableCellElementImpl::cellIndex() const
 {
-    return nodeIndex();
+    int cIndex = 0;
+    const NodeImpl *n = this;
+    do {
+        n = n->previousSibling();
+        if (n && (n->isElementNode() && n->id() == ID_TD ||
+                  n->isElementNode() && n->id() == ID_TH))
+            cIndex++;
+    }
+    while (n);
+
+    return cIndex;
 }
 
 void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
