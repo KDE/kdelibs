@@ -54,18 +54,16 @@ BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
   Value protect(this);
   // The constructor will be added later by InterpreterImp::InterpreterImp()
 
-  putDirect(toStringPropertyName,
-	    new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0,toStringPropertyName), DontEnum);
-  putDirect(valueOfPropertyName,
-	    new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0,valueOfPropertyName),  DontEnum);
+  putDirect(toStringPropertyName, new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0,toStringPropertyName), DontEnum);
+  putDirect(valueOfPropertyName, new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0,valueOfPropertyName),  DontEnum);
   setInternalValue(Boolean(false));
 }
 
 
 // ------------------------------ BooleanProtoFuncImp --------------------------
 
-BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState * /*exec*/, FunctionPrototypeImp *funcProto,
-                                         int i, int len, const Identifier &_ident)
+BooleanProtoFuncImp::BooleanProtoFuncImp(ExecState * /*exec*/,
+                                         FunctionPrototypeImp *funcProto, int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
   Value protect(this);
@@ -93,8 +91,7 @@ Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*
 
   if (id == ToString)
     return String(v.toString(exec));
-  else
-    return Boolean(v.toBoolean(exec)); /* TODO: optimize for bool case */
+  return Boolean(v.toBoolean(exec)); /* TODO: optimize for bool case */
 }
 
 // ------------------------------ BooleanObjectImp -----------------------------

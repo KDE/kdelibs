@@ -484,14 +484,18 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   Value result;
   switch (id) {
   case ToLocaleString:
+    // TODO  - see 15.4.4.3
     // fall through
   case ToString:
+
     if (!thisObj.inherits(&ArrayInstanceImp::info)) {
       Object err = Error::create(exec,TypeError);
       exec->setException(err);
       return err;
     }
+
     // fall through
+
   case Join: {
     UString separator = ",";
     UString str = "";
