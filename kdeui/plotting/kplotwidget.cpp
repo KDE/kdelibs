@@ -261,7 +261,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 	p->setPen( fgColor() );
 	p->setBrush( Qt::NoBrush );
 
-	if (XAxis.isVisible() || YAxis.isVisible())  p->drawRect( PixRect ); //box outline
+	if (BottomAxis.isVisible() || LeftAxis.isVisible())  p->drawRect( PixRect ); //box outline
 
 	if ( ShowTickMarks ) {
 		//spacing between minor tickmarks (in data units)
@@ -274,8 +274,8 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		f.setPointSize( s - 2 );
 		p->setFont( f );
 
-		//--- Draw X Axis ---//
-		if (XAxis.isVisible()) {
+		//--- Draw bottom X Axis ---//
+		if (BottomAxis.isVisible()) {
 			// Draw X tickmarks
 			double x0 = x() - dmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
 			if ( x() < 0.0 ) x0 -= dXtick;
@@ -294,7 +294,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					double lab = x0 + ix*dXtick;
 					if ( fabs(lab)/dXtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 		
-					QString str = QString( "%1" ).arg( lab, XAxis.labelFieldWidth(), XAxis.labelFmt(), XAxis.labelPrec() );
+					QString str = QString( "%1" ).arg( lab, BottomAxis.labelFieldWidth(), BottomAxis.labelFmt(), BottomAxis.labelPrec() );
 					if ( px > 0 && px < PixRect.width() ) {
 						QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
 						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
@@ -314,15 +314,15 @@ void KPlotWidget::drawBox( QPainter *p ) {
 			} // end draw X tickmarks
 
 			// Draw X Axis Label
-			if ( ! XAxis.label().isEmpty() ) {
+			if ( ! BottomAxis.label().isEmpty() ) {
 				QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
-				p->drawText( r, Qt::AlignCenter, XAxis.label() );
+				p->drawText( r, Qt::AlignCenter, BottomAxis.label() );
 			}
 
 		}
 
-		//--- Draw Y Axis ---//
-		if (YAxis.isVisible()) {
+		//--- Draw left Y Axis ---//
+		if (LeftAxis.isVisible()) {
 			// Draw Y tickmarks
 			double y0 = y() - dmod( y(), dYtick ); //zeropoint; tickmark i is this plus i*dYtick1 (in data units)
 			if ( y() < 0.0 ) y0 -= dYtick;
@@ -340,7 +340,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					double lab = y0 + iy*dYtick;
 					if ( fabs(lab)/dYtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
 	
-					QString str = QString( "%1" ).arg( lab, YAxis.labelFieldWidth(), YAxis.labelFmt(), YAxis.labelPrec() );
+					QString str = QString( "%1" ).arg( lab, LeftAxis.labelFieldWidth(), LeftAxis.labelFmt(), LeftAxis.labelPrec() );
 					if ( py > 0 && py < PixRect.height() ) {
 						QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
 						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
@@ -359,7 +359,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 			} // end draw Y tickmarks
 
 			//Draw Y Axis Label.  We need to draw the text sideways.
-			if ( ! YAxis.label().isEmpty() ) {
+			if ( ! LeftAxis.label().isEmpty() ) {
 				//store current painter translation/rotation state
 				p->save();
 		
@@ -368,7 +368,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 				p->rotate( -90.0 );
 		
 				QRect r( 0, 0, PixRect.height(), XPADDING );
-				p->drawText( r, Qt::AlignCenter, YAxis.label() ); //draw the label, now that we are sideways
+				p->drawText( r, Qt::AlignCenter, LeftAxis.label() ); //draw the label, now that we are sideways
 		
 				p->restore();  //restore translation/rotation state
 			}
@@ -381,8 +381,8 @@ void KPlotWidget::drawBox( QPainter *p ) {
 
 int KPlotWidget::leftPadding() const {
 	if ( LeftPadding >= 0 ) return LeftPadding;
-	if ( ! YAxis.label().isEmpty() && ShowTickLabels ) return 3*XPADDING;
-	if ( ! YAxis.label().isEmpty() || ShowTickLabels ) return 2*XPADDING;
+	if ( ! LeftAxis.label().isEmpty() && ShowTickLabels ) return 3*XPADDING;
+	if ( ! LeftAxis.label().isEmpty() || ShowTickLabels ) return 2*XPADDING;
 	return XPADDING;
 }
 
@@ -398,8 +398,8 @@ int KPlotWidget::topPadding() const {
 
 int KPlotWidget::bottomPadding() const {
 	if ( BottomPadding >= 0 ) return BottomPadding;
-	if ( ! XAxis.label().isEmpty() && ShowTickLabels ) return 3*YPADDING;
-	if ( ! XAxis.label().isEmpty() || ShowTickLabels ) return 2*YPADDING;
+	if ( ! BottomAxis.label().isEmpty() && ShowTickLabels ) return 3*YPADDING;
+	if ( ! BottomAxis.label().isEmpty() || ShowTickLabels ) return 2*YPADDING;
 	return YPADDING;
 }
 

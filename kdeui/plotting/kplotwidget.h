@@ -138,7 +138,7 @@ public:
 		*@param show if true, axes will be drawn.
 		*The axes are just a box outline around the plot.
 		*/
-	virtual void setShowAxes( bool show ) { XAxis.setVisible(show); YAxis.setVisible(show); }
+	virtual void setShowAxes( bool show ) { BottomAxis.setVisible(show); LeftAxis.setVisible(show); ShowAxes = show; }
 	/**@short toggle whether tick marks are drawn along the axes.
 		*@param show if true, tick marks will be drawn.
 		*/
@@ -156,12 +156,12 @@ public:
 		*@param xlabel a short string describing the data plotted on the x-axis.
 		*Set the label to an empty string to omit the axis label.
 		*/
-	virtual void setXAxisLabel( QString xlabel ) { XAxis.setLabel(xlabel); }
+	virtual void setXAxisLabel( QString xlabel ) { BottomAxis.setLabel(xlabel); XAxisLabel = xlabel; }
 	/**@short set the Y-axis label
 		*@param ylabel a short string describing the data plotted on the y-axis.
 		*Set the label to an empty string to omit the axis label.
 		*/
-	virtual void setYAxisLabel( QString ylabel ) { YAxis.setLabel(ylabel); }
+	virtual void setYAxisLabel( QString ylabel ) { LeftAxis.setLabel(ylabel); YAxisLabel = ylabel; }
 
 	/**@returns the number of pixels to the left of the plot area.  Padding values
 		*are set to -1 by default; if unchanged, this function will try to guess
@@ -204,10 +204,10 @@ public:
 	/**@short revert all four padding values to be automatically determined. */
 	virtual void setDefaultPadding() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
 
-	/**@short The X axis. */
-	KPlotAxis 	XAxis;
-	/**@short The Y axis. */
-	KPlotAxis 	YAxis;
+	/**@short The bottom X axis. */
+	KPlotAxis 	BottomAxis;
+	/**@short The left Y axis. */
+	KPlotAxis 	LeftAxis;
 
 protected:
 	/**@short the paint event handler, executed when update() or repaint() is called.
@@ -251,11 +251,18 @@ protected:
 	//Colors
 	QColor cBackground, cForeground, cGrid;
 	//draw options
-	bool ShowAxes, ShowTickMarks, ShowTickLabels, ShowGrid;
+	bool ShowTickMarks, ShowTickLabels, ShowGrid;
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
 
 	QPixmap *buffer;
+
+	// Deprecated properties, kept for compatibility for KStars subclassed widget
+    // In new code DO NOT use them directly!
+
+	//Axis Labels
+	bool ShowAxes;
+	QString XAxisLabel, YAxisLabel;
 };
 
 #endif
