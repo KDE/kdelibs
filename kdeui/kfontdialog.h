@@ -205,6 +205,16 @@ public:
   }
 
   /**
+   * Shows or hides the sample text box.
+   *
+   * @param visible Set it to true to show the box, to false to hide it.
+   */
+  void setSampleBoxVisible( bool visible )
+  {
+    ( visible ) ? sampleEdit->show() : sampleEdit->hide();
+  }
+
+  /**
    * Converts a QFont into the corresponding X Logical Font
    * Description (XLFD).
    *
