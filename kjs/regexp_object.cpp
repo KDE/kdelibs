@@ -39,6 +39,8 @@ using namespace KJS;
 
 // ECMA 15.9.4
 
+const ClassInfo RegExpPrototypeImp::info = {"RegExp", 0, 0, 0};
+
 RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
                                        FunctionPrototypeImp *funcProto)
@@ -77,7 +79,16 @@ bool RegExpProtoFuncImp::implementsCall() const
 
 Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJS_CHECK_THIS( RegExpImp, thisObj );
+  if (!thisObj.inherits(&RegExpImp::info)) {
+    if (thisObj.inherits(&RegExpPrototypeImp::info)) {
+      switch (id) {
+        case ToString: return String("//"); // FireFox returns /(?:)/
+      }
+    }
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
 
   RegExpImp *reimp = static_cast<RegExpImp*>(thisObj.imp());
   RegExp *re = reimp->regExp();

@@ -2,6 +2,11 @@
 
 	* regexp_object.cpp: some regexp property fixes from JSC 
 
+	* regexp_object.cpp: fixed RegExp.prototype name
+	
+	* regexp_object.cpp: allow RegExp.prototype.toString() on the
+	prototype itself (patch from JSC).
+	
 	* array_object.cpp: also do Array length check in constructor like
 	JSC does.
 
