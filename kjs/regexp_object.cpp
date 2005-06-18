@@ -101,7 +101,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       if (id == Test)
         return Boolean(false);
       else
-        Null();
+        return Null();
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( re, s.value() );
@@ -131,7 +131,15 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     str = "/";
     str += s.value();
     str += "/";
-    // TODO append the flags
+    if (thisObj.get(exec,"global").toBoolean(exec)) {
+      str += "g";
+    }
+    if (thisObj.get(exec,"ignoreCase").toBoolean(exec)) {
+      str += "i";
+    }
+    if (thisObj.get(exec,"multiline").toBoolean(exec)) {
+      str += "m";
+    }
     return String(str);
   }
 
@@ -256,11 +264,11 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   bool multiline = (flags.find("m") >= 0);
   // TODO: throw a syntax error on invalid flags
 
-  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse);
-  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse);
-  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse);
+  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
+  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
+  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
 
-  dat->putDirect("source", new StringImp(p));
+  dat->putDirect("source", new StringImp(p), DontDelete | ReadOnly | DontEnum);
   dat->putDirect("lastIndex", NumberImp::zero(), DontDelete | DontEnum);
 
   int reflags = RegExp::None;
@@ -291,5 +299,7 @@ bool RegExpObjectImp::implementsCall() const
 Value RegExpObjectImp::call(ExecState *exec, Object &/*thisObj*/,
 			    const List &args)
 {
+  // TODO: handle RegExp argument case (15.10.3.1)
+
   return construct(exec, args);
 }

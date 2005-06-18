@@ -1,5 +1,7 @@
 2005-06-18  Harri Porten  <porten@kde.org>
 
+	* regexp_object.cpp: some regexp property fixes from JSC 
+
 	* array_object.cpp: also do Array length check in constructor like
 	JSC does.
 
