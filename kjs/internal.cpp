@@ -1,9 +1,9 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2004 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -74,6 +74,7 @@ namespace KJS {
 #ifdef KJS_THREADSUPPORT
 static pthread_once_t interpreterLockOnce = PTHREAD_ONCE_INIT;
 static pthread_mutex_t interpreterLock;
+static int interpreterLockCount = 0;
 
 static void initializeInterpreterLock()
 {
@@ -91,15 +92,19 @@ static inline void lockInterpreter()
 #ifdef KJS_THREADSUPPORT
   pthread_once(&interpreterLockOnce, initializeInterpreterLock);
   pthread_mutex_lock(&interpreterLock);
+  interpreterLockCount++;
 #endif
 }
 
 static inline void unlockInterpreter()
 {
 #ifdef KJS_THREADSUPPORT
+  interpreterLockCount--;
   pthread_mutex_unlock(&interpreterLock);
 #endif
 }
+
+
 
 // ------------------------------ UndefinedImp ---------------------------------
 
@@ -772,6 +777,8 @@ void InterpreterImp::mark()
     UndefinedImp::staticUndefined->mark();
   if (NullImp::staticNull && !NullImp::staticNull->marked())
     NullImp::staticNull->mark();
+  if (NumberImp::staticNaN && !NumberImp::staticNaN->marked())
+    NumberImp::staticNaN->mark();
   if (BooleanImp::staticTrue && !BooleanImp::staticTrue->marked())
     BooleanImp::staticTrue->mark();
   if (BooleanImp::staticFalse && !BooleanImp::staticFalse->marked())
