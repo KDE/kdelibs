@@ -354,16 +354,9 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
     args->arguments.clear();
     args->arguments.append(va);
     args->arguments.append(vb);
-    double v = args->compareFunction->call(args->exec, args->globalObject, args->arguments)
-        .toNumber(args->exec);
-
-    // v may be outside integer range; check sign
-    if (v > 0)
-      return 1;
-    else if (v < 0)
-      return -1;
-    else
-      return 0;
+    double compareResult = args->compareFunction->call
+	(args->exec, args->globalObject, args->arguments).toNumber(args->exec);
+    return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
 }
 
 void ArrayInstanceImp::sort(ExecState *exec, Object &compareFunction)
@@ -828,8 +821,15 @@ bool ArrayObjectImp::implementsConstruct() const
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
 {
   // a single numeric argument denotes the array size (!)
-  if (args.size() == 1 && args[0].type() == NumberType)
-    return Object(new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype().imp(), args[0].toUInt32(exec)));
+  if (args.size() == 1 && args[0].type() == NumberType) {
+    unsigned int n = args[0].toUInt32(exec);
+    if (n != args[0].toNumber(exec)) {
+      Object error = Error::create(exec, RangeError, "Invalid array length.");
+      exec->setException(error);
+      return error;
+    }
+    return Object(new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype().imp(), n));
+  }
 
   // otherwise the array is constructed with the arguments in it
   return Object(new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype().imp(), args));

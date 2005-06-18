@@ -1,5 +1,8 @@
 2005-06-18  Harri Porten  <porten@kde.org>
 
+	* array_object.cpp: also do Array length check in constructor like
+	JSC does.
+
 	* math_object.cpp: fix for Math.max() handling of negative zero
 	from JSC.
 
