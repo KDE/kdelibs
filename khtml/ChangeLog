@@ -1,3 +1,8 @@
+2005-06-18  Harri Porten  <porten@kde.org>
+
+	* ecma/kjs_window.cpp (openWindow): patch by Andreas Kling that
+	adds support for "scrollbars" option to window.open().
+
 2005-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/render_style.{h,cpp}: Remove the quotes as counters hack
