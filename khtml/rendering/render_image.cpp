@@ -235,7 +235,8 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
+    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
+                     oimage->pixmap_size() == image->pixmap_size()
                      ? oimage : image;
 
     // paint frame around image as long as it is not completely loaded from web.
