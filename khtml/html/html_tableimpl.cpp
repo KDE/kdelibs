@@ -727,7 +727,7 @@ long HTMLTableRowElementImpl::sectionRowIndex() const
     const NodeImpl *n = this;
     do {
         n = n->previousSibling();
-        if (n && n->isElementNode() && n->id() == ID_TR)
+        if (n && n->id() == ID_TR)
             rIndex++;
     }
     while (n);
@@ -791,17 +791,13 @@ HTMLTableCellElementImpl::~HTMLTableCellElementImpl()
 
 long HTMLTableCellElementImpl::cellIndex() const
 {
-    int cIndex = 0;
-    const NodeImpl *n = this;
-    do {
-        n = n->previousSibling();
-        if (n && (n->isElementNode() && n->id() == ID_TD ||
-                  n->isElementNode() && n->id() == ID_TH))
-            cIndex++;
+    int index = 0;
+    for (const NodeImpl * node = previousSibling(); node; node = node->previousSibling()) {
+        if (node->id() == ID_TD || node->id() == ID_TH)
+            index++;
     }
-    while (n);
-
-    return cIndex;
+    
+    return index;
 }
 
 void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
