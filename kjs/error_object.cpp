@@ -110,8 +110,8 @@ bool ErrorObjectImp::implementsConstruct() const
 // ECMA 15.9.3
 Object ErrorObjectImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *proto = exec->interpreter()->builtinErrorPrototype().imp();
-  ObjectImp *imp = new ErrorInstanceImp(proto);
+  Object proto = Object::dynamicCast(exec->lexicalInterpreter()->builtinErrorPrototype());
+  ObjectImp *imp = new ErrorInstanceImp(proto.imp());
   Object obj(imp);
 
   if (!args.isEmpty() && args[0].type() != UndefinedType) {

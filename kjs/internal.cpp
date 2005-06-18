@@ -192,7 +192,7 @@ Object BooleanImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<BooleanImp*>(this));
-  return Object::dynamicCast(exec->interpreter()->builtinBoolean().construct(exec,args));
+  return Object::dynamicCast(exec->lexicalInterpreter()->builtinBoolean().construct(exec,args));
 }
 
 // ------------------------------ StringImp ------------------------------------
@@ -221,7 +221,7 @@ Object StringImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<StringImp*>(this));
-  return Object::dynamicCast(exec->interpreter()->builtinString().construct(exec,args));
+  return Object(static_cast<ObjectImp *>(exec->lexicalInterpreter()->builtinString().construct(exec, args).imp()));
 }
 
 // ------------------------------ NumberImp ------------------------------------
@@ -274,7 +274,7 @@ Object NumberImp::toObject(ExecState *exec) const
 {
   List args;
   args.append(const_cast<NumberImp*>(this));
-  return Object::dynamicCast(exec->interpreter()->builtinNumber().construct(exec,args));
+  return Object::dynamicCast(exec->lexicalInterpreter()->builtinNumber().construct(exec,args));
 }
 
 bool NumberImp::toUInt32(unsigned& uint32) const
