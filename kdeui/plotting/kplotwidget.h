@@ -138,7 +138,7 @@ public:
 		*@param show if true, axes will be drawn.
 		*The axes are just a box outline around the plot.
 		*/
-	virtual void setShowAxes( bool show ) { BottomAxis.setVisible(show); LeftAxis.setVisible(show); ShowAxes = show; }
+	virtual void setShowAxes( bool show ) { BottomAxis.setVisible(show); LeftAxis.setVisible(show); }
 	/**@short toggle whether tick marks are drawn along the axes.
 		*@param show if true, tick marks will be drawn.
 		*/
@@ -152,16 +152,18 @@ public:
 		*/
 	virtual void setShowGrid( bool show ) { ShowGrid = show; }
 
-	/**@short set the X-axis label
+	/**@short (Deprecated) Sets the X-axis label
 		*@param xlabel a short string describing the data plotted on the x-axis.
 		*Set the label to an empty string to omit the axis label.
+        *This function is deprecated, set the label property in the BottomAxis directly.
 		*/
-	virtual void setXAxisLabel( QString xlabel ) { BottomAxis.setLabel(xlabel); XAxisLabel = xlabel; }
-	/**@short set the Y-axis label
+	virtual void setXAxisLabel( QString xlabel ) { BottomAxis.setLabel(xlabel); }
+	/**@short (Deprecated) Sets the Y-axis label
 		*@param ylabel a short string describing the data plotted on the y-axis.
 		*Set the label to an empty string to omit the axis label.
+        *This function is deprecated, set the label property in the LeftAxis directly.
 		*/
-	virtual void setYAxisLabel( QString ylabel ) { LeftAxis.setLabel(ylabel); YAxisLabel = ylabel; }
+	virtual void setYAxisLabel( QString ylabel ) { LeftAxis.setLabel(ylabel); }
 
 	/**@returns the number of pixels to the left of the plot area.  Padding values
 		*are set to -1 by default; if unchanged, this function will try to guess
@@ -256,13 +258,6 @@ protected:
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
 
 	QPixmap *buffer;
-
-	// Deprecated properties, kept for compatibility for KStars subclassed widget
-    // In new code DO NOT use them directly!
-
-	//Axis Labels
-	bool ShowAxes;
-	QString XAxisLabel, YAxisLabel;
 };
 
 #endif
