@@ -21,14 +21,14 @@
 #include <qpixmap.h>
 
 #include "kplotwidget.h"
+#include "kplotwidget.moc"
 
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent, const char* name )
  : QWidget( parent, name, WNoAutoErase ),
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
-   ShowAxes( true ), ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false ),
-   XAxisLabel(), YAxisLabel() {
-
+   ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
+ {
 	setBackgroundMode( QWidget::NoBackground );
 
 	//set DataRect
@@ -261,7 +261,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 	p->setPen( fgColor() );
 	p->setBrush( Qt::NoBrush );
 
-	if ( ShowAxes ) p->drawRect( PixRect ); //box outline
+	if (XAxis.isVisible() || YAxis.isVisible())  p->drawRect( PixRect ); //box outline
 
 	if ( ShowTickMarks ) {
 		//spacing between minor tickmarks (in data units)
@@ -274,105 +274,115 @@ void KPlotWidget::drawBox( QPainter *p ) {
 		f.setPointSize( s - 2 );
 		p->setFont( f );
 
-		//--- Draw X tickmarks---//
-		double x0 = x() - dmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
-		if ( x() < 0.0 ) x0 -= dXtick;
-
-		for ( int ix = 0; ix <= nmajX+1; ix++ ) {
-			//position of tickmark i (in screen units)
-			int px = int( PixRect.width() * ( (x0 + ix*dXtick - x() )/dataWidth() ) );
-
-			if ( px > 0 && px < PixRect.width() ) {
-				p->drawLine( px, PixRect.height() - 2, px, PixRect.height() - BIGTICKSIZE - 2 );
-				p->drawLine( px, 0, px, BIGTICKSIZE );
-			}
-
-			//tick label
-			if ( ShowTickLabels ) {
-				double lab = x0 + ix*dXtick;
-				if ( fabs(lab)/dXtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
-
-				QString str = QString( "%1" ).arg( lab, 0, 'g', 2 );
+		//--- Draw X Axis ---//
+		if (XAxis.isVisible()) {
+			// Draw X tickmarks
+			double x0 = x() - dmod( x(), dXtick ); //zeropoint; tickmark i is this plus i*dXtick (in data units)
+			if ( x() < 0.0 ) x0 -= dXtick;
+		
+			for ( int ix = 0; ix <= nmajX+1; ix++ ) {
+				//position of tickmark i (in screen units)
+				int px = int( PixRect.width() * ( (x0 + ix*dXtick - x() )/dataWidth() ) );
+		
 				if ( px > 0 && px < PixRect.width() ) {
-					QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
-					p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+					p->drawLine( px, PixRect.height() - 2, px, PixRect.height() - BIGTICKSIZE - 2 );
+					p->drawLine( px, 0, px, BIGTICKSIZE );
 				}
+		
+				//tick label
+				if ( ShowTickLabels ) {
+					double lab = x0 + ix*dXtick;
+					if ( fabs(lab)/dXtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
+		
+					QString str = QString( "%1" ).arg( lab, XAxis.labelFieldWidth(), XAxis.labelFmt(), XAxis.labelPrec() );
+					if ( px > 0 && px < PixRect.width() ) {
+						QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
+						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+					}
+				}
+		
+				//draw minor ticks
+				for ( int j=0; j < nminX; j++ ) {
+					//position of minor tickmark j (in screen units)
+					int pmin = int( px + PixRect.width()*j*dminX/dataWidth() );
+		
+					if ( pmin > 0 && pmin < PixRect.width() ) {
+						p->drawLine( pmin, PixRect.height() - 2, pmin, PixRect.height() - SMALLTICKSIZE - 2 );
+						p->drawLine( pmin, 0, pmin, SMALLTICKSIZE );
+					}
+				}
+			} // end draw X tickmarks
+
+			// Draw X Axis Label
+			if ( ! XAxis.label().isEmpty() ) {
+				QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
+				p->drawText( r, Qt::AlignCenter, XAxis.label() );
 			}
 
-			//draw minor ticks
-			for ( int j=0; j < nminX; j++ ) {
-				//position of minor tickmark j (in screen units)
-				int pmin = int( px + PixRect.width()*j*dminX/dataWidth() );
+		}
 
-				if ( pmin > 0 && pmin < PixRect.width() ) {
-					p->drawLine( pmin, PixRect.height() - 2, pmin, PixRect.height() - SMALLTICKSIZE - 2 );
-					p->drawLine( pmin, 0, pmin, SMALLTICKSIZE );
+		//--- Draw Y Axis ---//
+		if (YAxis.isVisible()) {
+			// Draw Y tickmarks
+			double y0 = y() - dmod( y(), dYtick ); //zeropoint; tickmark i is this plus i*dYtick1 (in data units)
+			if ( y() < 0.0 ) y0 -= dYtick;
+	
+			for ( int iy = 0; iy <= nmajY+1; iy++ ) {
+				//position of tickmark i (in screen units)
+				int py = PixRect.height() - int( PixRect.height() * ( (y0 + iy*dYtick - y())/dataHeight() ) );
+				if ( py > 0 && py < PixRect.height() ) {
+					p->drawLine( 0, py, BIGTICKSIZE, py );
+					p->drawLine( PixRect.width()-2, py, PixRect.width()-BIGTICKSIZE-2, py );
 				}
+	
+				//tick label
+				if ( ShowTickLabels ) {
+					double lab = y0 + iy*dYtick;
+					if ( fabs(lab)/dYtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
+	
+					QString str = QString( "%1" ).arg( lab, YAxis.labelFieldWidth(), YAxis.labelFmt(), YAxis.labelPrec() );
+					if ( py > 0 && py < PixRect.height() ) {
+						QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
+						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+					}
+				}
+	
+				//minor ticks
+				for ( int j=0; j < nminY; j++ ) {
+					//position of minor tickmark j (in screen units)
+					int pmin = int( py - PixRect.height()*j*dminY/dataHeight() );
+					if ( pmin > 0 && pmin < PixRect.height() ) {
+						p->drawLine( 0, pmin, SMALLTICKSIZE, pmin );
+						p->drawLine( PixRect.width()-2, pmin, PixRect.width()-SMALLTICKSIZE-2, pmin );
+					}
+				}
+			} // end draw Y tickmarks
+
+			//Draw Y Axis Label.  We need to draw the text sideways.
+			if ( ! YAxis.label().isEmpty() ) {
+				//store current painter translation/rotation state
+				p->save();
+		
+				//translate coord sys to left corner of axis label rectangle, then rotate 90 degrees.
+				p->translate( -3*XPADDING, PixRect.height() );
+				p->rotate( -90.0 );
+		
+				QRect r( 0, 0, PixRect.height(), XPADDING );
+				p->drawText( r, Qt::AlignCenter, YAxis.label() ); //draw the label, now that we are sideways
+		
+				p->restore();  //restore translation/rotation state
 			}
 		}
 
-		//--- Draw Y tickmarks---//
-		double y0 = y() - dmod( y(), dYtick ); //zeropoint; tickmark i is this plus i*dYtick1 (in data units)
-		if ( y() < 0.0 ) y0 -= dYtick;
-
-		for ( int iy = 0; iy <= nmajY+1; iy++ ) {
-			//position of tickmark i (in screen units)
-			int py = PixRect.height() - int( PixRect.height() * ( (y0 + iy*dYtick - y())/dataHeight() ) );
-			if ( py > 0 && py < PixRect.height() ) {
-				p->drawLine( 0, py, BIGTICKSIZE, py );
-				p->drawLine( PixRect.width()-2, py, PixRect.width()-BIGTICKSIZE-2, py );
-			}
-
-			//tick label
-			if ( ShowTickLabels ) {
-				double lab = y0 + iy*dYtick;
-				if ( fabs(lab)/dYtick < 0.00001 ) lab = 0.0; //fix occassional roundoff error with "0.0" label
-
-				QString str = QString( "%1" ).arg( lab, 0, 'g', 2 );
-				if ( py > 0 && py < PixRect.height() ) {
-					QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
-					p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
-				}
-			}
-
-			//minor ticks
-			for ( int j=0; j < nminY; j++ ) {
-				//position of minor tickmark j (in screen units)
-				int pmin = int( py - PixRect.height()*j*dminY/dataHeight() );
-				if ( pmin > 0 && pmin < PixRect.height() ) {
-					p->drawLine( 0, pmin, SMALLTICKSIZE, pmin );
-					p->drawLine( PixRect.width()-2, pmin, PixRect.width()-SMALLTICKSIZE-2, pmin );
-				}
-			}
-		} //end draw Y tickmarks
 	} //end if ( ShowTickMarks )
 
-	//Draw X Axis Label
-	if ( ! XAxisLabel.isEmpty() ) {
-		QRect r( 0, PixRect.height() + 2*YPADDING, PixRect.width(), YPADDING );
-		p->drawText( r, Qt::AlignCenter, XAxisLabel );
-	}
 
-	//Draw Y Axis Label.  We need to draw the text sideways.
-	if ( ! YAxisLabel.isEmpty() ) {
-		//store current painter translation/rotation state
-		p->save();
-
-		//translate coord sys to left corner of axis label rectangle, then rotate 90 degrees.
-		p->translate( -3*XPADDING, PixRect.height() );
-		p->rotate( -90.0 );
-
-		QRect r( 0, 0, PixRect.height(), XPADDING );
-		p->drawText( r, Qt::AlignCenter, YAxisLabel ); //draw the label, now that we are sideways
-
-		p->restore();  //restore translation/rotation state
-	}
 }
 
 int KPlotWidget::leftPadding() const {
 	if ( LeftPadding >= 0 ) return LeftPadding;
-	if ( ! YAxisLabel.isEmpty() && ShowTickLabels ) return 3*XPADDING;
-	if ( ! YAxisLabel.isEmpty() || ShowTickLabels ) return 2*XPADDING;
+	if ( ! YAxis.label().isEmpty() && ShowTickLabels ) return 3*XPADDING;
+	if ( ! YAxis.label().isEmpty() || ShowTickLabels ) return 2*XPADDING;
 	return XPADDING;
 }
 
@@ -388,9 +398,8 @@ int KPlotWidget::topPadding() const {
 
 int KPlotWidget::bottomPadding() const {
 	if ( BottomPadding >= 0 ) return BottomPadding;
-	if ( ! XAxisLabel.isEmpty() && ShowTickLabels ) return 3*YPADDING;
-	if ( ! XAxisLabel.isEmpty() || ShowTickLabels ) return 2*YPADDING;
+	if ( ! XAxis.label().isEmpty() && ShowTickLabels ) return 3*YPADDING;
+	if ( ! XAxis.label().isEmpty() || ShowTickLabels ) return 2*YPADDING;
 	return YPADDING;
 }
 
-#include "kplotwidget.moc"

@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include "kplotobject.h"
+#include "kplotaxis.h"
 
 #define BIGTICKSIZE 10
 #define SMALLTICKSIZE 4
@@ -32,9 +33,9 @@ class QPixmap;
 /**@class KPlotWidget
 	*@short Genric data plotting widget.
 	*@author Jason Harris
-	*@version 1.0
-	*Widget for drawing plots.  Includes adjustable axes with
- 	*tickmarks and labels, and a list of KPlotObjects to be drawn.
+	*@version 1.1
+	*Widget for drawing plots.  Includes adjustable axes (KPlotAxis) with
+ 	*tickmarks and labels and a list of KPlotObjects to be drawn.
 	*/
 
 class KDE_EXPORT KPlotWidget : public QWidget {
@@ -137,7 +138,7 @@ public:
 		*@param show if true, axes will be drawn.
 		*The axes are just a box outline around the plot.
 		*/
-	virtual void setShowAxes( bool show ) { ShowAxes = show; }
+	virtual void setShowAxes( bool show ) { XAxis.setVisible(show); YAxis.setVisible(show); }
 	/**@short toggle whether tick marks are drawn along the axes.
 		*@param show if true, tick marks will be drawn.
 		*/
@@ -155,12 +156,12 @@ public:
 		*@param xlabel a short string describing the data plotted on the x-axis.
 		*Set the label to an empty string to omit the axis label.
 		*/
-	virtual void setXAxisLabel( QString xlabel ) { XAxisLabel = xlabel; }
+	virtual void setXAxisLabel( QString xlabel ) { XAxis.setLabel(xlabel); }
 	/**@short set the Y-axis label
 		*@param ylabel a short string describing the data plotted on the y-axis.
 		*Set the label to an empty string to omit the axis label.
 		*/
-	virtual void setYAxisLabel( QString ylabel ) { YAxisLabel = ylabel; }
+	virtual void setYAxisLabel( QString ylabel ) { YAxis.setLabel(ylabel); }
 
 	/**@returns the number of pixels to the left of the plot area.  Padding values
 		*are set to -1 by default; if unchanged, this function will try to guess
@@ -200,9 +201,13 @@ public:
 		*/
 	virtual void setBottomPadding( int pad ) { BottomPadding = pad; }
 
-	/**@short revert all four padding values to be automatically determined.
-		*/
+	/**@short revert all four padding values to be automatically determined. */
 	virtual void setDefaultPadding() { LeftPadding = -1; RightPadding = -1; TopPadding = -1; BottomPadding = -1; }
+
+	/**@short The X axis. */
+	KPlotAxis 	XAxis;
+	/**@short The Y axis. */
+	KPlotAxis 	YAxis;
 
 protected:
 	/**@short the paint event handler, executed when update() or repaint() is called.
@@ -247,12 +252,8 @@ protected:
 	QColor cBackground, cForeground, cGrid;
 	//draw options
 	bool ShowAxes, ShowTickMarks, ShowTickLabels, ShowGrid;
-
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
-
-	//Axis Labels
-	QString XAxisLabel, YAxisLabel;
 
 	QPixmap *buffer;
 };
