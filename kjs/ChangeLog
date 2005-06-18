@@ -1,3 +1,8 @@
+2005-06-18  Harri Porten  <porten@kde.org>
+
+	* math_object.cpp: fix for Math.max() handling of negative zero
+	from JSC.
+
 2005-06-16  Harri Porten  <porten@kde.org>
 
 	* nodes.cpp: fixed side effect of const declarations on for(;;)
