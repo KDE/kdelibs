@@ -1,5 +1,13 @@
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge handling of dynamically inserted scripts.
+
+        * html/html_headimpl.{h,cpp}: Load and execute dynamic scripts
+        * html/htmlparser.cpp: Set a createdByParser to not execute scripts twice.
+        * xml/xml_tokenizer.cpp: Ditto.
+
 2005-06-19  George Staikos <staikos@kde.org>
-        * css/css_renderstyledeclarationimpl.{h,cpp}: Merge crash fix from 
+        * css/css_renderstyledeclarationimpl.{h,cpp}: Merge crash fix from
 	webcore (See bug #107460).
         * css/css_valueimpl.{h,cpp}: Make m_node SharedPtr<>.
 

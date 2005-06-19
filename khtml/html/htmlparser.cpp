@@ -969,8 +969,12 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLParamElementImpl(document);
         break;
     case ID_SCRIPT:
-        n = new HTMLScriptElementImpl(document);
+    {
+        HTMLScriptElementImpl *scriptElement = new HTMLScriptElementImpl(document);
+        scriptElement->setCreatedByParser(true);
+        n = scriptElement;
         break;
+    }
 
 // tables
     case ID_TABLE:
