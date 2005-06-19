@@ -353,6 +353,13 @@ void KJSProxyImpl::applyUserAgent()
     }
 }
 
+// Helper method, so that all classes which need jScript() don't need to be added
+// as friend to KHTMLPart
+KJSProxy * KJSProxy::proxy( KHTMLPart *part )
+{
+    return part->jScript();
+}
+
 // initialize HTML module
 KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
 {
