@@ -177,12 +177,13 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl( 0 )
 {
-    m_node = node;
-    m_renderer = m_node->renderer();
+    setNode(node);
+    kdDebug() << "Render Style Declaration created" << endl;
 }
 
 RenderStyleDeclarationImpl::~RenderStyleDeclarationImpl()
 {
+    kdDebug() << "Render Style Declaration destroyed" << endl;
 }
 
 DOM::DOMString RenderStyleDeclarationImpl::cssText() const
@@ -197,22 +198,34 @@ void RenderStyleDeclarationImpl::setCssText( DOM::DOMString )
 
 CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) const
 {
+    NodeImpl *node = m_node.get();
+    if (!node)
+        return 0;
+
     // Make sure our layout is up to date before we allow a query on these attributes.
-    DocumentImpl* docimpl = m_node->getDocument();
-    if (docimpl)
+    DocumentImpl* docimpl = node->getDocument();
+    if (docimpl) {
         docimpl->updateLayout();
+    }
+
+    RenderObject *renderer = m_node->renderer();
+    if (!renderer)
+        return 0;
+    RenderStyle *style = renderer->style();
+    if (!style)
+        return 0;
 
     switch(propertyID)
     {
     case CSS_PROP_BACKGROUND_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->backgroundColor().rgb());
+        return new CSSPrimitiveValueImpl(style->backgroundColor().rgb());
     case CSS_PROP_BACKGROUND_IMAGE:
-        if (m_renderer->style()->backgroundImage())
-            return new CSSPrimitiveValueImpl(m_renderer->style()->backgroundImage()->url(),
+        if (style->backgroundImage())
+            return new CSSPrimitiveValueImpl(style->backgroundImage()->url(),
                                              CSSPrimitiveValue::CSS_URI);
         return 0;
     case CSS_PROP_BACKGROUND_REPEAT:
-        switch (m_renderer->style()->backgroundRepeat()) {
+        switch (style->backgroundRepeat()) {
         case khtml::REPEAT:
             return new CSSPrimitiveValueImpl("repeat", CSSPrimitiveValue::CSS_STRING);
         case khtml::REPEAT_X:
@@ -225,77 +238,77 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             Q_ASSERT( 0 );
         }
     case CSS_PROP_BACKGROUND_ATTACHMENT:
-        if (m_renderer->style()->backgroundAttachment())
+        if (style->backgroundAttachment())
             return new CSSPrimitiveValueImpl("scroll", CSSPrimitiveValue::CSS_STRING);
         else
             return new CSSPrimitiveValueImpl("fixed", CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BACKGROUND_POSITION:
     {
         DOMString string;
-        Length length(m_renderer->style()->backgroundXPosition());
+        Length length(style->backgroundXPosition());
         if (length.isPercent())
             string = QString::number(length._length) + "%";
         else
-            string = QString::number(length.minWidth(m_renderer->contentWidth()));
+            string = QString::number(length.minWidth(renderer->contentWidth()));
         string += " ";
-        length = m_renderer->style()->backgroundYPosition();
+        length = style->backgroundYPosition();
         if (length.isPercent())
             string += QString::number(length._length) + "%";
         else
-            string += QString::number(length.minWidth(m_renderer->contentWidth()));
+            string += QString::number(length.minWidth(renderer->contentWidth()));
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_BACKGROUND_POSITION_X:
-        return valueForLength(m_renderer->style()->backgroundXPosition(), m_renderer->contentWidth());
+        return valueForLength(style->backgroundXPosition(), renderer->contentWidth());
     case CSS_PROP_BACKGROUND_POSITION_Y:
-        return valueForLength(m_renderer->style()->backgroundYPosition(), m_renderer->contentHeight());
+        return valueForLength(style->backgroundYPosition(), renderer->contentHeight());
     case CSS_PROP_BORDER_COLLAPSE:
-        if (m_renderer->style()->borderCollapse())
+        if (style->borderCollapse())
             return new CSSPrimitiveValueImpl("collapse", CSSPrimitiveValue::CSS_STRING);
         else
             return new CSSPrimitiveValueImpl("separate", CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BORDER_SPACING:
     {
-        QString string(QString::number(m_renderer->style()->borderHorizontalSpacing()) +
+        QString string(QString::number(style->borderHorizontalSpacing()) +
                        "px " +
-                       QString::number(m_renderer->style()->borderVerticalSpacing()) +
+                       QString::number(style->borderVerticalSpacing()) +
                        "px");
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderHorizontalSpacing(),
+        return new CSSPrimitiveValueImpl(style->borderHorizontalSpacing(),
                                          CSSPrimitiveValue::CSS_PX);
     case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderVerticalSpacing(),
+        return new CSSPrimitiveValueImpl(style->borderVerticalSpacing(),
                                          CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_BORDER_TOP_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderLeftColor().rgb());
+        return new CSSPrimitiveValueImpl(style->borderLeftColor().rgb());
     case CSS_PROP_BORDER_RIGHT_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderRightColor().rgb());
+        return new CSSPrimitiveValueImpl(style->borderRightColor().rgb());
     case CSS_PROP_BORDER_BOTTOM_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderBottomColor().rgb());
+        return new CSSPrimitiveValueImpl(style->borderBottomColor().rgb());
     case CSS_PROP_BORDER_LEFT_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->borderLeftColor().rgb());
+        return new CSSPrimitiveValueImpl(style->borderLeftColor().rgb());
     case CSS_PROP_BORDER_TOP_STYLE:
-        return new CSSPrimitiveValueImpl(stringForBorderStyle(m_renderer->style()->borderTopStyle()),
+        return new CSSPrimitiveValueImpl(stringForBorderStyle(style->borderTopStyle()),
                                          CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BORDER_RIGHT_STYLE:
-        return new CSSPrimitiveValueImpl(stringForBorderStyle(m_renderer->style()->borderRightStyle()),
+        return new CSSPrimitiveValueImpl(stringForBorderStyle(style->borderRightStyle()),
                                          CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BORDER_BOTTOM_STYLE:
-        return new CSSPrimitiveValueImpl(stringForBorderStyle(m_renderer->style()->borderBottomStyle()),
+        return new CSSPrimitiveValueImpl(stringForBorderStyle(style->borderBottomStyle()),
                                          CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BORDER_LEFT_STYLE:
-        return new CSSPrimitiveValueImpl(stringForBorderStyle(m_renderer->style()->borderLeftStyle()),
+        return new CSSPrimitiveValueImpl(stringForBorderStyle(style->borderLeftStyle()),
                                          CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_BORDER_TOP_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->style()->borderTopWidth(), CSSPrimitiveValue::CSS_PX );
+        return new CSSPrimitiveValueImpl( style->borderTopWidth(), CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_BORDER_RIGHT_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->style()->borderRightWidth(), CSSPrimitiveValue::CSS_PX );
+        return new CSSPrimitiveValueImpl( style->borderRightWidth(), CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_BORDER_BOTTOM_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->style()->borderBottomWidth(), CSSPrimitiveValue::CSS_PX );
+        return new CSSPrimitiveValueImpl( style->borderBottomWidth(), CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_BORDER_LEFT_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->style()->borderLeftWidth(), CSSPrimitiveValue::CSS_PX );
+        return new CSSPrimitiveValueImpl( style->borderLeftWidth(), CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_BOTTOM:
         break;
     case CSS_PROP_CAPTION_SIDE:
@@ -305,7 +318,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_CLIP:
         break;
     case CSS_PROP_COLOR:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->color().rgb());
+        return new CSSPrimitiveValueImpl(style->color().rgb());
     case CSS_PROP_CONTENT:
         break;
     case CSS_PROP_COUNTER_INCREMENT:
@@ -317,7 +330,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_DIRECTION:
         break;
     case CSS_PROP_DISPLAY:
-        switch (m_renderer->style()->display()) {
+        switch (style->display()) {
         case khtml::INLINE:
             return new CSSPrimitiveValueImpl("inline", CSSPrimitiveValue::CSS_STRING);
         case khtml::BLOCK:
@@ -356,7 +369,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             Q_ASSERT( 0 );
         }
     case CSS_PROP_EMPTY_CELLS:
-        switch (m_renderer->style()->emptyCells()) {
+        switch (style->emptyCells()) {
             case khtml::SHOW:
                 return new CSSPrimitiveValueImpl("show", CSSPrimitiveValue::CSS_STRING);
             case khtml::HIDE:
@@ -365,7 +378,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP_FLOAT:
     {
-        switch (m_renderer->style()->floating()) {
+        switch (style->floating()) {
         case khtml::FNONE:
             return new CSSPrimitiveValueImpl("none", CSSPrimitiveValue::CSS_STRING);
         case khtml::FLEFT:
@@ -376,18 +389,18 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     }
     case CSS_PROP_FONT_FAMILY:
     {
-        FontDef def = m_renderer->style()->htmlFont().getFontDef();
+        FontDef def = style->htmlFont().getFontDef();
         return new CSSPrimitiveValueImpl(def.family, CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_FONT_SIZE:
     {
-        FontDef def = m_renderer->style()->htmlFont().getFontDef();
+        FontDef def = style->htmlFont().getFontDef();
         return new CSSPrimitiveValueImpl(def.size, CSSPrimitiveValue::CSS_PX);
     }
     case CSS_PROP_FONT_STYLE:
     {
         // FIXME: handle oblique
-        FontDef def = m_renderer->style()->htmlFont().getFontDef();
+        FontDef def = style->htmlFont().getFontDef();
         if (def.italic)
             return new CSSPrimitiveValueImpl("italic", CSSPrimitiveValue::CSS_STRING);
         else
@@ -395,7 +408,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     }
     case CSS_PROP_FONT_VARIANT:
     {
-        FontDef def = m_renderer->style()->htmlFont().getFontDef();
+        FontDef def = style->htmlFont().getFontDef();
         if (def.smallCaps)
             return new CSSPrimitiveValueImpl("small-caps", CSSPrimitiveValue::CSS_STRING);
         else
@@ -405,26 +418,26 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     {
         // FIXME: this does not reflect the full range of weights
         // that can be expressed with CSS
-        FontDef def = m_renderer->style()->htmlFont().getFontDef();
+        FontDef def = style->htmlFont().getFontDef();
         if (def.weight == QFont::Bold)
             return new CSSPrimitiveValueImpl("bold", CSSPrimitiveValue::CSS_STRING);
         else
             return new CSSPrimitiveValueImpl("normal", CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_HEIGHT:
-        return new CSSPrimitiveValueImpl(m_renderer->contentHeight(), CSSPrimitiveValue::CSS_PX);
+        return new CSSPrimitiveValueImpl(renderer->contentHeight(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_LEFT:
         break;
     case CSS_PROP_LETTER_SPACING:
-        if (m_renderer->style()->letterSpacing() == 0)
+        if (style->letterSpacing() == 0)
             return new CSSPrimitiveValueImpl("normal", CSSPrimitiveValue::CSS_STRING);
-        return new CSSPrimitiveValueImpl(m_renderer->style()->letterSpacing(), CSSPrimitiveValue::CSS_PX);
+        return new CSSPrimitiveValueImpl(style->letterSpacing(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_LINE_HEIGHT:
     {
-        Length length(m_renderer->style()->lineHeight());
+        Length length(style->lineHeight());
         if (length.isPercent()) {
             //XXX: merge from webcore the computedStyle/specifiedStyle distinction in rendering/font.h
-            float computedSize = m_renderer->style()->htmlFont().getFontDef().size;
+            float computedSize = style->htmlFont().getFontDef().size;
             return new CSSPrimitiveValueImpl((int)(length._length * computedSize) / 100, CSSPrimitiveValue::CSS_PX);
         }
         else {
@@ -434,7 +447,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_LIST_STYLE_IMAGE:
         break;
     case CSS_PROP_LIST_STYLE_POSITION:
-        switch (m_renderer->style()->listStylePosition()) {
+        switch (style->listStylePosition()) {
         case OUTSIDE:
             return new CSSPrimitiveValueImpl("outside", CSSPrimitiveValue::CSS_STRING);
         case INSIDE:
@@ -443,29 +456,29 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         Q_ASSERT( 0 );
         break;
     case CSS_PROP_LIST_STYLE_TYPE:
-        return new CSSPrimitiveValueImpl(stringForListStyleType(m_renderer->style()->listStyleType()), CSSPrimitiveValue::CSS_STRING);
+        return new CSSPrimitiveValueImpl(stringForListStyleType(style->listStyleType()), CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_MARGIN_TOP:
-        return valueForLength(m_renderer->style()->marginTop(), m_renderer->contentHeight());
+        return valueForLength(style->marginTop(), renderer->contentHeight());
     case CSS_PROP_MARGIN_RIGHT:
-        return valueForLength(m_renderer->style()->marginRight(), m_renderer->contentWidth());
+        return valueForLength(style->marginRight(), renderer->contentWidth());
     case CSS_PROP_MARGIN_BOTTOM:
-        return valueForLength(m_renderer->style()->marginBottom(), m_renderer->contentHeight());
+        return valueForLength(style->marginBottom(), renderer->contentHeight());
     case CSS_PROP_MARGIN_LEFT:
-        return valueForLength(m_renderer->style()->marginLeft(), m_renderer->contentWidth());
+        return valueForLength(style->marginLeft(), renderer->contentWidth());
     case CSS_PROP_MAX_HEIGHT:
-        return new CSSPrimitiveValueImpl( m_renderer->availableHeight(),
+        return new CSSPrimitiveValueImpl( renderer->availableHeight(),
                                           CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_MAX_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->maxWidth(),
+        return new CSSPrimitiveValueImpl( renderer->maxWidth(),
                                           CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_MIN_HEIGHT:
-        return new CSSPrimitiveValueImpl( m_renderer->contentHeight(),
+        return new CSSPrimitiveValueImpl( renderer->contentHeight(),
                                           CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_MIN_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->minWidth(),
+        return new CSSPrimitiveValueImpl( renderer->minWidth(),
                                           CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_OPACITY:
@@ -482,7 +495,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP_OVERFLOW:
     {
-        switch (m_renderer->style()->overflow()) {
+        switch (style->overflow()) {
         case khtml::OVISIBLE:
             return new CSSPrimitiveValueImpl("visible", CSSPrimitiveValue::CSS_STRING);
         case khtml::OHIDDEN:
@@ -496,13 +509,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         }
     }
     case CSS_PROP_PADDING_TOP:
-        return valueForLength(m_renderer->style()->paddingTop(), m_renderer->contentHeight());
+        return valueForLength(style->paddingTop(), renderer->contentHeight());
     case CSS_PROP_PADDING_RIGHT:
-        return valueForLength(m_renderer->style()->paddingRight(), m_renderer->contentWidth());
+        return valueForLength(style->paddingRight(), renderer->contentWidth());
     case CSS_PROP_PADDING_BOTTOM:
-        return valueForLength(m_renderer->style()->paddingBottom(), m_renderer->contentHeight());
+        return valueForLength(style->paddingBottom(), renderer->contentHeight());
     case CSS_PROP_PADDING_LEFT:
-        return valueForLength(m_renderer->style()->paddingLeft(), m_renderer->contentWidth());
+        return valueForLength(style->paddingLeft(), renderer->contentWidth());
     case CSS_PROP_PAGE_BREAK_AFTER:
         break;
     case CSS_PROP_PAGE_BREAK_BEFORE:
@@ -520,23 +533,23 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_TABLE_LAYOUT:
         break;
     case CSS_PROP_TEXT_ALIGN:
-        return new CSSPrimitiveValueImpl(stringForTextAlign(m_renderer->style()->textAlign()), CSSPrimitiveValue::CSS_STRING);
+        return new CSSPrimitiveValueImpl(stringForTextAlign(style->textAlign()), CSSPrimitiveValue::CSS_STRING);
     case CSS_PROP_TEXT_DECORATION:
     {
         QString string;
-        if (m_renderer->style()->textDecoration() & khtml::UNDERLINE)
+        if (style->textDecoration() & khtml::UNDERLINE)
             string += "underline";
-        if (m_renderer->style()->textDecoration() & khtml::OVERLINE) {
+        if (style->textDecoration() & khtml::OVERLINE) {
             if (string.length() > 0)
                 string += " ";
             string += "overline";
         }
-        if (m_renderer->style()->textDecoration() & khtml::LINE_THROUGH) {
+        if (style->textDecoration() & khtml::LINE_THROUGH) {
             if (string.length() > 0)
                 string += " ";
             string += "line-through";
         }
-        if (m_renderer->style()->textDecoration() & khtml::BLINK) {
+        if (style->textDecoration() & khtml::BLINK) {
             if (string.length() > 0)
                 string += " ";
             string += "blink";
@@ -546,7 +559,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_TEXT_INDENT:
-        return valueForLength(m_renderer->style()->textIndent(), m_renderer->contentWidth());
+        return valueForLength(style->textIndent(), renderer->contentWidth());
     case CSS_PROP_TEXT_TRANSFORM:
         break;
     case CSS_PROP_TOP:
@@ -555,7 +568,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP_VERTICAL_ALIGN:
     {
-        switch (m_renderer->style()->verticalAlign()) {
+        switch (style->verticalAlign()) {
         case khtml::BASELINE:
             return new CSSPrimitiveValueImpl("baseline", CSSPrimitiveValue::CSS_STRING);
         case khtml::MIDDLE:
@@ -575,11 +588,11 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         case khtml::BASELINE_MIDDLE:
             return new CSSPrimitiveValueImpl("baseline-middle", CSSPrimitiveValue::CSS_STRING);
         case khtml::LENGTH:
-            return valueForLength(m_renderer->style()->verticalAlignLength(), m_renderer->contentWidth());
+            return valueForLength(style->verticalAlignLength(), renderer->contentWidth());
         }
     }
     case CSS_PROP_VISIBILITY:
-        switch (m_renderer->style()->visibility()) {
+        switch (style->visibility()) {
             case khtml::VISIBLE:
                 return new CSSPrimitiveValueImpl("visible", CSSPrimitiveValue::CSS_STRING);
             case khtml::HIDDEN:
@@ -590,7 +603,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         break;
     case CSS_PROP_WHITE_SPACE:
     {
-        switch (m_renderer->style()->whiteSpace()) {
+        switch (style->whiteSpace()) {
             case khtml::NORMAL:
                 return new CSSPrimitiveValueImpl("normal", CSSPrimitiveValue::CSS_STRING);
             case khtml::NOWRAP:
@@ -609,10 +622,10 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_WIDOWS:
         break;
     case CSS_PROP_WIDTH:
-        return new CSSPrimitiveValueImpl( m_renderer->contentWidth(),
+        return new CSSPrimitiveValueImpl( renderer->contentWidth(),
                                          CSSPrimitiveValue::CSS_PX );
     case CSS_PROP_WORD_SPACING:
-        return new CSSPrimitiveValueImpl(m_renderer->style()->wordSpacing(), CSSPrimitiveValue::CSS_PX);
+        return new CSSPrimitiveValueImpl(style->wordSpacing(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_Z_INDEX:
         break;
     case CSS_PROP_BACKGROUND:
@@ -624,19 +637,19 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_BORDER_STYLE:
         break;
     case CSS_PROP_BORDER_TOP:
-        return new CSSPrimitiveValueImpl( m_renderer->borderTop(),
+        return new CSSPrimitiveValueImpl( renderer->borderTop(),
                                          CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_RIGHT:
-        return new CSSPrimitiveValueImpl( m_renderer->borderRight(),
+        return new CSSPrimitiveValueImpl( renderer->borderRight(),
                                          CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_BOTTOM:
-        return new CSSPrimitiveValueImpl( m_renderer->borderBottom(),
+        return new CSSPrimitiveValueImpl( renderer->borderBottom(),
                                          CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_LEFT:
-        return new CSSPrimitiveValueImpl( m_renderer->borderLeft(),
+        return new CSSPrimitiveValueImpl( renderer->borderLeft(),
                                          CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_WIDTH:

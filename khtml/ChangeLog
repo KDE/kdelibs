@@ -1,6 +1,11 @@
+2005-06-19  George Staikos <staikos@kde.org>
+        * css/css_renderstyledeclarationimpl.{h,cpp}: Merge crash fix from 
+	webcore (See bug #107460).
+        * css/css_valueimpl.{h,cpp}: Make m_node SharedPtr<>.
+
 2005-06-18  Harri Porten  <porten@kde.org>
 
-	* ecma/kjs_window.cpp (openWindow): patch by Andreas Kling that
+        * ecma/kjs_window.cpp (openWindow): patch by Andreas Kling that
 	adds support for "scrollbars" option to window.open().
 
 2005-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
