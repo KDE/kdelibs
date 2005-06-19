@@ -464,13 +464,13 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
                 delimiterCount++;
                 if (delimiterCount == 2) {
                     delimiterCount = 0;
-                    canClose = !canClose;    
+                    canClose = !canClose;
                 }
             }
             else
                 delimiterCount = 0;
         }
-                         
+
         if ((!strict || canClose) && src->unicode() == '>')
         {
             bool handleBrokenComments =  brokenComments && !( script || style );
@@ -1095,6 +1095,10 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
+            // If the tag requires a end tag it cannot be flat unless we are parsing XHTML delivered as HTML
+            if (parser->doc()->htmlMode() != DocumentImpl::XHtml && tagID < ID_CLOSE_TAG && DOM::endTag[tagID] == DOM::REQUIRED)
+                currToken.flat = false;
+
             bool beginTag = !currToken.flat && (tagID < ID_CLOSE_TAG);
 
             if(tagID >= ID_CLOSE_TAG)
