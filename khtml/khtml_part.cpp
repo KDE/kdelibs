@@ -113,6 +113,7 @@ using namespace DOM;
 #include <private/qucomextra_p.h>
 
 #include "khtmlpart_p.h"
+#include "kpassivepopup.h"
 #include "kpopupmenu.h"
 #include "rendering/render_form.h"
 #include <kwin.h>
@@ -7232,13 +7233,34 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
         QToolTip::add( d->m_statusBarPopupLabel, i18n("This page was prevented from opening a new window via JavaScript." ) );
-        connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(launchJSConfigDialog()));
+
+        connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(suppressedPopupMenu()));
+        if (d->m_settings->jsPopupBlockerPassivePopup()) {
+            QPixmap px;
+            px = MainBarIcon( "window_suppressed" );
+            KPassivePopup::message(i18n("Popup Window Blocked"),i18n("This page has attempted to open a popup window but was blocked.\n You can click on this icon in the status bar to control this behavior."),px,d->m_statusBarPopupLabel);
+        }
     } else if ( !enable && d->m_statusBarPopupLabel ) {
         QToolTip::remove( d->m_statusBarPopupLabel );
         d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarPopupLabel );
         delete d->m_statusBarPopupLabel;
         d->m_statusBarPopupLabel = 0L;
     }
+}
+
+void KHTMLPart::suppressedPopupMenu() {
+  KPopupMenu *m = new KPopupMenu(0L);
+  m->setCheckable(true);
+  m->insertItem(i18n("&Show Blocked Window Passive Popup Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
+  m->setItemChecked(57,d->m_settings->jsPopupBlockerPassivePopup());
+  m->insertItem(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));
+  m->popup(QCursor::pos());
+}
+
+void KHTMLPart::togglePopupPassivePopup() {
+  // Same hack as in disableJSErrorExtension()
+  d->m_settings->setJSPopupBlockerPassivePopup( !d->m_settings->jsPopupBlockerPassivePopup() );
+  DCOPClient::mainClient()->send("konqueror*", "KonquerorIface", "reparseConfiguration()", QByteArray());
 }
 
 // Extension to use for "view document source", "save as" etc.

@@ -1477,6 +1477,16 @@ private slots:
   /**
    * @internal
    */
+  void suppressedPopupMenu();
+
+  /**
+   * @internal
+   */
+  void togglePopupPassivePopup();
+
+  /**
+   * @internal
+   */
   void launchJSConfigDialog();
 
   /**

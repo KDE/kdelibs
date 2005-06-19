@@ -210,6 +210,11 @@ public:
     
     QValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
+    // Whether to show passive popup when windows are blocked
+    // @since 3.5
+    void setJSPopupBlockerPassivePopup(bool enabled);
+    bool jsPopupBlockerPassivePopup() const;
+
 private:
     friend class KHTMLFactory;
     QString lookupFont(int i) const;
