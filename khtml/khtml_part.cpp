@@ -1127,6 +1127,12 @@ void KHTMLPart::launchJSErrorDialog() {
   }
 }
 
+void KHTMLPart::launchJSConfigDialog() {
+  QStringList args;
+  args << "khtml_java_js";
+  KApplication::kdeinitExec( "kcmshell", args );
+}
+
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
 {
 #ifdef KJS_VERBOSE
@@ -7225,7 +7231,8 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );
         d->m_statusBarPopupLabel->setPixmap( SmallIcon( "window_suppressed", instance() ) );
-        QToolTip::add( d->m_statusBarPopupLabel, i18n("This page was prevented from opening a popup window." ) );
+        QToolTip::add( d->m_statusBarPopupLabel, i18n("This page was prevented from opening a new window via JavaScript." ) );
+        connect(d->m_statusBarPopupLabel, SIGNAL(leftClickedURL()), SLOT(launchJSConfigDialog()));
     } else if ( !enable && d->m_statusBarPopupLabel ) {
         QToolTip::remove( d->m_statusBarPopupLabel );
         d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarPopupLabel );

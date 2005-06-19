@@ -1477,6 +1477,11 @@ private slots:
   /**
    * @internal
    */
+  void launchJSConfigDialog();
+
+  /**
+   * @internal
+   */
   void launchJSErrorDialog();
 
   /**
