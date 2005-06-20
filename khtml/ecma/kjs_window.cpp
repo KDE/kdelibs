@@ -1343,15 +1343,15 @@ Value Window::openWindow(ExecState *exec, const List& args)
     KParts::WindowArgs winargs;
 
     // scan feature argument
-    QString features;
-    if (args.size()>2) {
-      features = args[2].toString(exec).qstring();
-      // specifying window params means false defaults
+    KJS::Value v = args[2];
+    if (!v.isNull() && v.type() != UndefinedType && v.toString(exec).size() > 0) {
+      QString features = v.toString(exec).qstring();
 
       // Buggy scripts have ' at beginning and end, cut those
       if (features.startsWith("\'") && features.endsWith("\'"))
         features = features.mid(1, features.length()-2);
 
+      // specifying window params means false defaults
       winargs.menuBarVisible = false;
       winargs.toolBarsVisible = false;
       winargs.statusBarVisible = false;
