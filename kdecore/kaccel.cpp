@@ -370,7 +370,7 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
 {
 	if( pAction ) {
-		QGuardedPtr<KAccelPrivate> me = this;
+		QPointer<KAccelPrivate> me = this;
 		QRegExp reg( "([ ]*KAccelAction.*)" );
 		if( reg.search( pAction->methodSlotPtr()) >= 0 ) {
 			connect( this, SIGNAL(menuItemActivated(KAccelAction*)),
