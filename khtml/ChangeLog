@@ -1,5 +1,9 @@
 2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        * ecma/kjs_events.cpp: Respect the DOM for MouseEvent::Button atleast when simulating Mozilla
+
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * html/doctypes.gperf: Add Xhtml doctypes
         * html/html_documentimpl.cpp: Recognize XHTML served as HTML parsing type
 
