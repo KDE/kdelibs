@@ -547,6 +547,12 @@ public slots:
     virtual void setEnabled(bool enable);
 
     /**
+     * Calls setEnabled( !disable ).
+     * @since 3.5
+     */    
+    void setDisabled(bool disable) { return setEnabled(!disable); }
+
+    /**
      * Indicate whether the user may configure the action's shortcut.
      */
     virtual void setShortcutConfigurable( bool );
