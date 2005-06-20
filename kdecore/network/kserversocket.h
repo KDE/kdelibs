@@ -94,9 +94,6 @@ class KServerSocketPrivate;
  * The called slot slotReadyAccept() is responsible for calling
  * @ref accept.
  *
-<<<<<<< .working
- * @author Thiago Macieira <thiago@kde.org>
-=======
  * It is important to note that @ref accept can return either an
  * object of type KNetwork::KStreamSocket or
  * KNetwork::KBufferedSocket (default). If you want to accept a
@@ -107,7 +104,6 @@ class KServerSocketPrivate;
  *
  * @see KNetwork::KStreamSocket, KNetwork::KBufferedSocket
  * @author Thiago Macieira <thiago@kde.org>
->>>>>>> .merge-rechts.r427285
  */
 class KDECORE_EXPORT KServerSocket: public QObject, public KPassiveSocketBase
 {
