@@ -21,17 +21,26 @@
  */
 
 #include "kjs_binding.h"
+
 #include "kjs_dom.h"
+#include "kjs_window.h"
+#include <kjs/internal.h> // for InterpreterImp
+#include <kjs/collector.h>
 
 #include "dom/dom_exception.h"
+#include "dom/dom2_events.h"
 #include "dom/dom2_range.h"
+#include "xml/dom_nodeimpl.h"
 #include "xml/dom2_eventsimpl.h"
+
 #include "khtmlpart_p.h"
 
 #include <kdebug.h>
 #include <kparts/browserextension.h>
 
 #include <assert.h>
+
+using DOM::NodeImpl;
 
 using namespace KJS;
 
@@ -144,8 +153,29 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
 typedef QPtrList<ScriptInterpreter> InterpreterList;
 static InterpreterList *interpreterList;
 
+static QPtrDict<DOMObject> * staticDomObjects = 0;
+QPtrDict< QPtrDict<DOMNode> > * staticDOMNodesPerDocument = 0;
+
+QPtrDict<DOMObject> & ScriptInterpreter::domObjects()
+{
+    if (!staticDomObjects) {
+        staticDomObjects = new QPtrDict<DOMObject>(1021);
+    }
+    return *staticDomObjects;
+}
+
+QPtrDict< QPtrDict<DOMNode> > & ScriptInterpreter::domNodesPerDocument()
+{
+    if (!staticDOMNodesPerDocument) {
+        staticDOMNodesPerDocument = new QPtrDict<QPtrDict<DOMNode> >();
+        staticDOMNodesPerDocument->setAutoDelete(true);
+    }
+    return *staticDOMNodesPerDocument;
+}
+
+
 ScriptInterpreter::ScriptInterpreter( const Object &global, khtml::ChildFrame* frame )
-  : Interpreter( global ), m_frame( frame ), m_domObjects(1021),
+  : Interpreter( global ), m_frame( frame ),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
@@ -180,15 +210,64 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
   }
 }
 
+DOMNode *ScriptInterpreter::getDOMNodeForDocument(DOM::DocumentImpl *document, DOM::NodeImpl *node)                                                             {
+    QPtrDict<DOMNode> *documentDict = (QPtrDict<DOMNode> *)domNodesPerDocument()[document];
+    if (documentDict)
+        return (*documentDict)[node];
+
+    return NULL;
+}
+
+void ScriptInterpreter::forgetDOMNodeForDocument(DOM::DocumentImpl *document, NodeImpl *node)
+{
+    QPtrDict<DOMNode> *documentDict = domNodesPerDocument()[document];
+    if (documentDict)
+        documentDict->remove(node);
+}
+
+void ScriptInterpreter::putDOMNodeForDocument(DOM::DocumentImpl *document, NodeImpl *nodeHandle, DOMNode *nodeWrapper)
+{
+    QPtrDict<DOMNode> *documentDict = domNodesPerDocument()[document];
+    if (!documentDict) {
+        documentDict = new QPtrDict<DOMNode>();
+        domNodesPerDocument().insert(document, documentDict);
+    }
+
+    documentDict->insert(nodeHandle, nodeWrapper);
+}
+
+void ScriptInterpreter::forgetAllDOMNodesForDocument(DOM::DocumentImpl *document)
+{
+    domNodesPerDocument().remove(document);
+}
+
 void ScriptInterpreter::mark()
 {
-  Interpreter::mark();
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.count() << " DOM objects" << endl;
-#endif
-  QPtrDictIterator<DOMObject> it( m_domObjects );
-  for( ; it.current(); ++it )
-    it.current()->mark();
+    QPtrDictIterator<QPtrDict<DOMNode> > dictIterator(domNodesPerDocument());
+
+    QPtrDict<DOMNode> *nodeDict;
+    while ((nodeDict = dictIterator.current())) {
+        QPtrDictIterator<DOMNode> nodeIterator(*nodeDict);
+
+        DOMNode *node;
+        while ((node = nodeIterator.current())) {
+            // don't mark wrappers for nodes that are no longer in the
+            // document - they should not be saved if the node is not
+            // otherwise reachable from JS.
+            if (node->toNode().handle()->inDocument() && !node->marked())
+                node->mark();
+
+            ++nodeIterator;
+        }
+        ++dictIterator;
+    }
+}
+
+void ScriptInterpreter::updateDOMNodeDocument(NodeImpl *node, DOM::DocumentImpl *oldDoc, DOM::DocumentImpl *newDoc)
+{
+    DOMNode *cachedObject = getDOMNodeForDocument(oldDoc, node);
+    if (cachedObject)
+        putDOMNodeForDocument(newDoc, node, cachedObject);
 }
 
 KParts::ReadOnlyPart* ScriptInterpreter::part() const {

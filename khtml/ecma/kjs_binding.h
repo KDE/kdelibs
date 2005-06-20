@@ -31,6 +31,12 @@
 #include <kurl.h>
 #include <kjs/lookup.h>
 
+namespace DOM {
+  class DocumentImpl;
+  class EventImpl;
+  class NodeImpl;
+}
+
 namespace KParts {
   class ReadOnlyPart;
   class LiveConnectExtension;
@@ -85,6 +91,8 @@ namespace KJS {
     virtual bool toBoolean(ExecState *) const { return true; }
   };
 
+  class DOMNode;
+
   /**
    * We inherit from Interpreter, to save a pointer to the HTML part
    * that the interpreter runs for.
@@ -97,21 +105,30 @@ namespace KJS {
     virtual ~ScriptInterpreter();
 
     DOMObject* getDOMObject( void* objectHandle ) const {
-      return m_domObjects[objectHandle];
+      return domObjects()[objectHandle];
     }
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
-      m_domObjects.insert( objectHandle, obj );
+      domObjects().insert( objectHandle, obj );
     }
     bool deleteDOMObject( void* objectHandle ) {
-      return m_domObjects.remove( objectHandle );
+      return domObjects().remove( objectHandle );
     }
     void clear() {
-      m_domObjects.clear();
+      domObjects().clear();
     }
     /**
      * Static method. Makes all interpreters forget about the object
      */
     static void forgetDOMObject( void* objectHandle );
+
+
+    static DOMNode *getDOMNodeForDocument(DOM::DocumentImpl *document, DOM::NodeImpl *node);
+    static void putDOMNodeForDocument(DOM::DocumentImpl *document, DOM::NodeImpl *nodeHandle, DOMNode *nodeWrapper);
+    static void forgetDOMNodeForDocument(DOM::DocumentImpl *document, DOM::NodeImpl *node);
+    static void forgetAllDOMNodesForDocument(DOM::DocumentImpl *document);
+    static void updateDOMNodeDocument(DOM::NodeImpl *nodeHandle, DOM::DocumentImpl *oldDoc, DOM::DocumentImpl *newDoc);
+
+
 
     /**
      * Mark objects in the DOMObject cache.
@@ -134,7 +151,10 @@ namespace KJS {
 
   private:
     khtml::ChildFrame* m_frame;
-    QPtrDict<DOMObject> m_domObjects;
+
+    static QPtrDict<DOMObject> &domObjects();
+    static QPtrDict<QPtrDict<DOMNode> > &domNodesPerDocument();
+
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;
