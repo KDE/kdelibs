@@ -56,12 +56,14 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     : StyleBaseImpl(parent)
 {
     m_lstValues = 0;
+    m_node = 0;
 }
 
 CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<CSSProperty> *lstValues)
     : StyleBaseImpl(parent)
 {
     m_lstValues = lstValues;
+    m_node = 0;
 }
 
 CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDeclarationImpl& o)
@@ -249,7 +251,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
 
 void CSSStyleDeclarationImpl::setChanged()
 {
-    if (!m_node.isNull()) {
+    if (m_node) {
         m_node->setChanged();
         return;
     }
