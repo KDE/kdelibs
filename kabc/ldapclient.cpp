@@ -208,16 +208,13 @@ void LdapClient::parseLDIF( const QByteArray& data )
   }
 
   LDIF::ParseVal ret;
-  QString name;
   do {
     ret = d->ldif.nextItem();
     switch ( ret ) {
       case LDIF::Item:
       {
-        name = d->ldif.attr();
-        // Must make a copy! QByteArray is explicitely shared
-#warning "Porting qt4: d->ldif.val().copy() => QByteArray(d->ldif.val()); correct ?"
-        QByteArray value = QByteArray(d->ldif.val());
+        QString name = d->ldif.attr();
+        QByteArray value = d->ldif.val();
         mCurrentObject.attrs[ name ].append( value );
         break;
       }
