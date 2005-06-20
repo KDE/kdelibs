@@ -236,8 +236,6 @@ public:
     // DOM's ownerDocument() which is null for Document nodes (and sometimes DocumentType nodes).
     DocumentImpl* getDocument() const { return document->document(); }
 
-    void setDocument(DocumentPtr *doc);
-
     void addEventListener(int id, EventListener *listener, const bool useCapture);
     void removeEventListener(int id, EventListener *listener, bool useCapture);
     void removeHTMLEventListener(int id);

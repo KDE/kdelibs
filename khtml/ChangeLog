@@ -1,7 +1,3 @@
-2005-06-20  George Staikos <staikos@kde.org>
-        * ecma/kjs_binding.{h,cpp}, xml/dom_nodeimpl.{h,cpp}: Merge WebCore fix
-	for replaceChild(). (see bug #100457)
-
 2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge handling of dynamically inserted scripts.

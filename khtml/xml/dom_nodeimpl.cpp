@@ -38,7 +38,6 @@
 #include "rendering/render_flow.h"
 #include "rendering/render_line.h"
 
-#include "ecma/kjs_binding.h"
 #include "ecma/kjs_proxy.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -78,20 +77,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
 {
     if (document)
         document->ref();
-}
-
-void NodeImpl::setDocument(DocumentPtr *doc)
-{
-    if (inDocument())
-        return;
-
-    if (doc)
-        doc->ref();
-
-    if (document)
-        document->deref();
-
-    document = doc;
 }
 
 NodeImpl::~NodeImpl()
@@ -775,38 +760,41 @@ void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
         return;
     }
 
-    bool shouldAdoptChild = false;
-
     // WRONG_DOCUMENT_ERR: Raised if newChild was created from a different document than the one that
     // created this node.
     // We assume that if newChild is a DocumentFragment, all children are created from the same document
     // as the fragment itself (otherwise they could not have been added as children)
     if (newChild->getDocument() != getDocument()) {
-        // but if the child is not in a document yet then loosen the
-        // restriction, so that e.g. creating an element with the Option()
-        // constructor and then adding it to a different document works,
-        // as it does in Mozilla and Mac IE.
-        if (!newChild->inDocument()) {
-            shouldAdoptChild = true;
-        } else {
-            exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-            return;
-        }
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     // HIERARCHY_REQUEST_ERR: Raised if this node is of a type that does not allow children of the type of the
     // newChild node, or if the node to append is one of this node's ancestors.
 
     // check for ancestor/same node
-    if (newChild == this || isAncestor(newChild)) {
+    if (isAncestor(newChild)) {
         exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
         return;
     }
 
-    // only do this once we know there won't be an exception
-    if (shouldAdoptChild) {
-        KJS::ScriptInterpreter::updateDOMNodeDocument(newChild, newChild->getDocument(), getDocument());
-        newChild->setDocument(getDocument()->docPtr());
+    // check node allowed
+    if (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
+        // newChild is a DocumentFragment... check all its children instead of newChild itself
+        NodeImpl *child;
+        for (child = newChild->firstChild(); child; child = child->nextSibling()) {
+            if (!childAllowed(child)) {
+                exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+                return;
+            }
+        }
+    }
+    else {
+        // newChild is not a DocumentFragment... check if it's allowed directly
+        if(!childAllowed(newChild)) {
+            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+            return;
+        }
     }
 }
 
@@ -1111,8 +1099,6 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 {
     exceptioncode = 0;
 
-    SharedPtr<NodeImpl> protectNewChild(newChild); // make sure the new child is ref'd and deref'd so we don't leak it
-
     if ( oldChild == newChild ) // nothing to do
 	return oldChild;
 
@@ -1131,6 +1117,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
+
     // Remove the old child
     NodeImpl *prev = oldChild->previousSibling();
     NodeImpl *next = oldChild->nextSibling();
@@ -1145,6 +1132,10 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
         // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
+	if ( child == next )
+	    next = child->nextSibling();
+	if ( child == prev )
+	    prev = child->previousSibling();
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if (exceptioncode)
