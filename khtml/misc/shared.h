@@ -61,6 +61,7 @@ public:
     ~SharedPtr() { if (m_ptr) m_ptr->deref(); }
 
     bool isNull() const { return m_ptr == 0; }
+    bool notNull() const { return m_ptr != 0; }
 
     void reset() { if (m_ptr) m_ptr->deref(); m_ptr = 0; }
     void reset(T *o) { if (o) o->ref(); if (m_ptr) m_ptr->deref(); m_ptr = o; }
