@@ -1,3 +1,8 @@
+2005-06-20  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: JSC patch that helps setting exception details (line
+	number) where they had been missing before.
+
 2005-06-18  Harri Porten  <porten@kde.org>
 
 	* regexp_object.cpp: some regexp property fixes from JSC 

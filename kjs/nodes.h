@@ -116,6 +116,7 @@ namespace KJS {
     Value throwError(ExecState *exec, ErrorType e, const char *msg,
                      const Value &v, const Node *expr) const;
     Value throwError(ExecState *exec, ErrorType e, const char *msg, Identifier label) const;
+    void setExceptionDetailsIfNeeded(ExecState *exec) const;
     int line;
     unsigned int refcount;
     virtual int sourceId() const { return -1; }
