@@ -151,7 +151,7 @@ bool KHTMLImage::openURL( const KURL &url )
     // Need to keep a copy of the offsets since they are cleared when emitting completed
     m_xOffset = args.xOffset;
     m_yOffset = args.yOffset;
-    
+
     m_khtml->begin( m_url );
     m_khtml->setAutoloadImages( true );
 
@@ -340,6 +340,12 @@ void KHTMLImageBrowserExtension::reparseConfiguration()
 {
     static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->reparseConfiguration();
     m_imgPart->doc()->setAutoloadImages( true );
+}
+
+
+void KHTMLImageBrowserExtension::disableScrolling()
+{
+    static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->disableScrolling();
 }
 
 using namespace KParts;

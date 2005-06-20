@@ -110,6 +110,7 @@ public:
 protected slots:
     void print();
     void reparseConfiguration();
+    void disableScrolling();
 
 private:
     KHTMLImage *m_imgPart;
