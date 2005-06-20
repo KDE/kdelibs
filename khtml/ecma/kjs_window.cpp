@@ -1453,8 +1453,8 @@ Value Window::openWindow(ExecState *exec, const List& args)
       khtmlpart->setOpener(p);
       khtmlpart->setOpenedByJS(true);
       if (!showScrollbars) {
-        khtmlpart->view()->setVScrollBarMode(QScrollView::AlwaysOff);
-        khtmlpart->view()->setHScrollBarMode(QScrollView::AlwaysOff);
+        khtmlpart->view()->setVScrollBarMode(Q3ScrollView::AlwaysOff);
+        khtmlpart->view()->setHScrollBarMode(Q3ScrollView::AlwaysOff);
       }
       if (khtmlpart->document().isNull()) {
         khtmlpart->begin();
