@@ -216,7 +216,8 @@ void LdapClient::parseLDIF( const QByteArray& data )
       {
         name = d->ldif.attr();
         // Must make a copy! QByteArray is explicitely shared
-        QByteArray value = d->ldif.val().copy();
+#warning "Porting qt4: d->ldif.val().copy() => QByteArray(d->ldif.val()); correct ?"
+        QByteArray value = QByteArray(d->ldif.val());
         mCurrentObject.attrs[ name ].append( value );
         break;
       }
