@@ -243,7 +243,7 @@ WindowArgs::WindowArgs( const WindowArgs &args )
     (*this) = args;
 }
 
-WindowArgs::~WindowArgs();
+WindowArgs::~WindowArgs()
 {
     delete d;
 }
