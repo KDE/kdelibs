@@ -290,7 +290,7 @@ KPasswdServer::addAuthInfo(KIO::AuthInfo info, long windowId)
 }
 
 bool
-KPasswdServer::openWallet( WId windowId )
+KPasswdServer::openWallet( int windowId )
 {
     if ( m_wallet && !m_wallet->isOpen() ) { // forced closed
         delete m_wallet;

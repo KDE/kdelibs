@@ -64,7 +64,7 @@ protected:
   KIO::AuthInfo copyAuthInfo(const AuthInfo *);
   void updateAuthExpire(const QString &key, const AuthInfo *, long windowId, bool keep);
   int findWalletEntry( const QMap<QString,QString>& map, const QString& username );
-  bool openWallet( WId windowId );
+  bool openWallet( int windowId );
 
   struct AuthInfo {
     AuthInfo() { expire = expNever; isCanceled = false; seqNr = 0; }
