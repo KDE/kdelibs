@@ -1,3 +1,37 @@
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge handling of dynamically inserted scripts.
+
+        * html/html_headimpl.{h,cpp}: Load and execute dynamic scripts
+        * html/htmlparser.cpp: Set a createdByParser to not execute scripts twice.
+        * xml/xml_tokenizer.cpp: Ditto.
+
+2005-06-19  George Staikos <staikos@kde.org>
+        * css/css_renderstyledeclarationimpl.{h,cpp}: Merge crash fix from
+	webcore (See bug #107460).
+        * css/css_valueimpl.{h,cpp}: Make m_node SharedPtr<>.
+
+2005-06-18  Harri Porten  <porten@kde.org>
+
+        * ecma/kjs_window.cpp (openWindow): patch by Andreas Kling that
+	adds support for "scrollbars" option to window.open().
+
+2005-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_style.{h,cpp}: Remove the quotes as counters hack
+        * css/cssstyleselectors.cpp: ditto
+        * rendering/render_container.{h,cpp} (updatePseudoChild): Clean and simplify
+        * rendering/render_generated.{h,cpp}: Split quotes from counters and
+        create new base class RenderCounterBase.
+        * rendering/render_object.cpp: Count quotes correctly
+
+2005-06-14  Dirk Mueller <mueller@kde.org>
+        * ecma/domparser.{h,cpp}: Unbreak compilation.
+
+2005-06-13  George Staikos <staikos@kde.org>
+        * ecma/xmlhttprequest.{h,cpp}: Disallow duplicated headers, and always
+	                               disallow Content-Length setting.
+
 2005-06-09  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implementing Mozilla extension DOMParser

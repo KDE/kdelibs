@@ -1,3 +1,23 @@
+2005-06-18  Harri Porten  <porten@kde.org>
+
+	* regexp_object.cpp: some regexp property fixes from JSC 
+
+	* regexp_object.cpp: fixed RegExp.prototype name
+	
+	* regexp_object.cpp: allow RegExp.prototype.toString() on the
+	prototype itself (patch from JSC).
+	
+	* array_object.cpp: also do Array length check in constructor like
+	JSC does.
+
+	* math_object.cpp: fix for Math.max() handling of negative zero
+	from JSC.
+
+2005-06-16  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: fixed side effect of const declarations on for(;;)
+	variable declarations.
+
 2005-06-11  Harri Porten  <porten@kde.org>
 
 	* date_object.cpp (KRFCDate_parseDate): parse AM and PM. Fixed

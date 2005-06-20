@@ -1311,8 +1311,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if (value.isNull()) return false;
             QString langAttr = value.string();
             QString langSel = sel->string_arg.string();
-//            kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
-            return langAttr.startsWith(langSel);
+
+            if(langAttr.length() < langSel.length()) return false;
+
+            if (!strictParsing) {
+                langAttr = langAttr.lower();
+                langSel = langSel.lower();
+            }
+//             kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
+            return (langAttr == langSel || langAttr.startsWith(langSel+"-"));
         }
         case CSSSelector::PseudoNot: {
             // check the simple selector
@@ -3198,13 +3205,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             {
 #ifdef APPLE_CHANGES
                 int attrID = element->getDocument()->attrId(0, val->getStringValue(), false);
-                if (attrID)
-                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
 #else
                 int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
+#endif
                 if (attrID)
                     style->setContent(element->getAttribute(attrID).implementation(), i != 0);
-#endif
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
@@ -3217,29 +3222,28 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
             {
-                DOM::DOMString quotes("-khtml-quotes");
-                CounterActImpl *act = 0;
-                CounterImpl *counter = new CounterImpl;
-                counter->m_identifier = quotes;
-                counter->m_listStyle = LNONE;
+                //DOM::DOMString quotes("-khtml-quotes");
+                //CounterImpl *counter = new CounterImpl;
+                //counter->m_identifier = quotes;
+                //counter->m_listStyle = LNONE;
+                EQuoteContent quote;
                 switch (val->getIdent()) {
                     case CSS_VAL_OPEN_QUOTE:
-                        counter->m_listStyle = OPEN_QUOTE;
-                        // no break
+                        quote = OPEN_QUOTE;
+                        break;
                     case CSS_VAL_NO_OPEN_QUOTE:
-                        act = new CounterActImpl(quotes, 1);
+                        quote = NO_OPEN_QUOTE;
                         break;
                     case CSS_VAL_CLOSE_QUOTE:
-                        counter->m_listStyle = CLOSE_QUOTE;
-                        // no break
+                        quote = CLOSE_QUOTE;
+                        break;
                     case CSS_VAL_NO_CLOSE_QUOTE:
-                        act = new CounterActImpl(quotes, -1);
+                        quote = NO_CLOSE_QUOTE;
                         break;
                     default:
                         assert(false);
                 }
-                style->setContent(counter, i != 0);
-                style->addCounterIncrement(act);
+                style->setContent(quote, i != 0);
             }
 
         }

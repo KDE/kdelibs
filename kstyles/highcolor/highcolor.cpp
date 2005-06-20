@@ -1212,7 +1212,6 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
-#if (QT_VERSION-0 >= 0x030200)
 		// TOOLBOX TAB
 		// -------------------------------------------------------------------
 		case CE_ToolBoxTab:
@@ -1240,7 +1239,6 @@ void HighColorStyle::drawControl( ControlElement element,
 						fill, false);
 			break;
 		}
-#endif
 
 		// MENUBAR BACKGROUND
 		// -------------------------------------------------------------------

@@ -171,6 +171,9 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         pushNode( implicitTBody );
     }
 
+    if (newElement->id() == ID_SCRIPT)
+        static_cast<HTMLScriptElementImpl *>(newElement)->setCreatedByParser(true);
+
     //this is tricky. in general the node doesn't have to attach to the one it's in. as far
     //as standards go this is wrong, but there's literally thousands of documents where
     //we see <p><ul>...</ul></p>. the following code is there for those cases.

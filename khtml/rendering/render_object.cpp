@@ -34,6 +34,7 @@
 #include "rendering/render_inline.h"
 #include "rendering/render_text.h"
 #include "rendering/render_replaced.h"
+#include "rendering/render_generated.h"
 #include "rendering/counter_tree.h"
 
 #include "xml/dom_elementimpl.h"
@@ -439,7 +440,7 @@ RenderObject* RenderObject::offsetParent() const
         // match IE in strict mode
         if (isRoot()||isBody())
             return 0;
-        return containingBlock();   
+        return containingBlock();
     }
     bool skipTables = isPositioned() || isRelPositioned();
     RenderObject* curr = parent();
@@ -1958,7 +1959,7 @@ bool RenderObject::usesLineWidth() const
 
 bool RenderObject::hasCounter(const QString& counter) const
 {
-    if (style()) {
+    if (style() && (!isText() || isCounter())) {
         if (lookupCounter(counter)) return true;
         if (style()->hasCounterReset(counter)) {
             return true;
@@ -1975,6 +1976,9 @@ bool RenderObject::hasCounter(const QString& counter) const
                 element()->id() == ID_MENU ||
                 element()->id() == ID_DIR))
             return true;
+    } else
+    if (counter == "-khtml-quotes" && isQuote()) {
+        return (static_cast<const RenderQuote*>(this)->quoteCount() != 0);
     }
     return false;
 }
@@ -1984,6 +1988,8 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
 //     kdDebug( 6040 ) << renderName() << " getCounter(" << counter << ")" << endl;
 
     if (!style()) return 0;
+
+    if (isText() && !isCounter()) return 0;
 
     CounterNode *i = lookupCounter(counter);
     if (i) return i;
@@ -2037,6 +2043,11 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
 //             kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
         }
     }
+    else if (counter == "-khtml-quotes" && isQuote()) {
+        i = new CounterNode(this);
+        val = static_cast<RenderQuote*>(this)->quoteCount();
+    }
+
     if (!i) {
         i = new CounterNode(this);
         val = 0;

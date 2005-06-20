@@ -390,12 +390,39 @@ public:
    * e.g. given 123456.78F, return "123,456.78" (for some European country).
    * If precision isn't specified, 2 is used.
    *
+   * This function is a wrapper that is provided for convenience.
+   *
    * @param num The number to convert
    * @param precision Number of fractional digits used.
    *
    * @return The number as a localized string
+   * @see formatNumber(const QString, bool, int)
    */
   QString formatNumber(double num, int precision = -1) const;
+
+  /**
+   * @deprecated
+   *
+   * KDE 4.0: merge with formatNumber(const QString int)
+   *
+   * calls formatNumber(numStr, 2)
+   */
+  QString formatNumber(const QString &numStr) const KDE_DEPRECATED;
+
+  /**
+   * Given a string representing a number, converts that to a numeric
+   * string containing the localized numeric equivalent.
+   *
+   * e.g. given 123456.78F, return "123,456.78" (for some European country).
+   *
+   * @param numStr The number to convert
+   * @param round Round  fractional digits.
+   * @param precision Number of fractional digits used.
+   *
+   * @return The number as a localized string
+   * @since 3.5
+   */
+  QString formatNumber(const QString &numStr, bool round, int precision) const;
 
   /**
    * Given an integer, converts that to a numeric string containing
@@ -1116,12 +1143,6 @@ private:
    * use formatMoney(double)
    */
   QString formatMoney(const QString &numStr) const KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * use formatNumber(double)
-   */
-  QString formatNumber(const QString &numStr) const KDE_DEPRECATED;
 
   /**
    * @deprecated

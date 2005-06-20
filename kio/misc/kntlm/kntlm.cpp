@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2004 Szombathelyi György <gyurco@freemail.hu>
+   Copyright (c) 2004 Szombathelyi Gyï¿½gy <gyurco@freemail.hu>
 
    The implementation is based on the documentation and sample code
    at http://davenport.sourceforge.net/ntlm.html
@@ -77,10 +77,10 @@ void KNTLM::addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool
 
 void KNTLM::addBuf( QByteArray &buf, SecBuf &secbuf, QByteArray &data )
 {
-  secbuf.offset = buf.size();
+  secbuf.offset = (buf.size() + 1) & 0xfffffffe;
   secbuf.len = data.size();
   secbuf.maxlen = data.size();
-  buf.resize( buf.size() + data.size() );
+  buf.resize( secbuf.offset + data.size() );
   memcpy( buf.data() + secbuf.offset, data.data(), data.size() );
 }
 
@@ -130,7 +130,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( forceNTLMv2 || !targetInfo.isEmpty() /* may support NTLMv2 */ ) {
+  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (ch->flags & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
     if ( ch->flags & Negotiate_NTLM ) {
       if ( targetInfo.isEmpty() ) return false;
       response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );

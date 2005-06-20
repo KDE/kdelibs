@@ -85,7 +85,7 @@ void Test::createFields()
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
   string+="\nLocalized monetary numbers: ";
-  string+=KGlobal::locale()->formatMoney(1234567.89) + " / " +KGlobal::locale()->formatMoney(-1234567.89);
+  string+=KGlobal::locale()->formatMoney(1234567.89) + " / \n" +KGlobal::locale()->formatMoney(-1234567.89);
   // This will not work
   // but you can copy other *.mo file
   string+="\nSome localized strings:\n";
@@ -119,6 +119,18 @@ int main( int argc, char ** argv )
   formatted = KGlobal::locale()->formatNumber( 70.24 ); check("formatNumber(70.24)",formatted,"70.24");
   formatted = KGlobal::locale()->formatNumber( 70.245 ); check("formatNumber(70.245)",formatted,"70.25"); /*rounded*/
   formatted = KGlobal::locale()->formatNumber(1234567.89123456789,8); check("formatNumber(1234567.89123456789,8)",formatted,"1,234,567.89123457");
+
+  formatted = KGlobal::locale()->formatNumber("70"); check("formatNumber(\"70\")",formatted,"70.00");
+  formatted = KGlobal::locale()->formatNumber("70", true, 2); check("formatNumber(\"70\", true, 2)",formatted,"70.00");
+  formatted = KGlobal::locale()->formatNumber("70", true, 0); check("formatNumber(\"70\", true, 0)",formatted,"70");
+  formatted = KGlobal::locale()->formatNumber("70.9123", true, 0); check("formatNumber(\"70.9123\", true, 0)",formatted,"71"); /* rounded */
+  formatted = KGlobal::locale()->formatNumber("-70.2", true, 2); check("formatNumber(\"-70.2\", true, 2)",formatted,"-70.20");
+  formatted = KGlobal::locale()->formatNumber("+70.24", true, 2); check("formatNumber(\"+70.24\", true, 2)",formatted,"70.24");
+  formatted = KGlobal::locale()->formatNumber("70.245", true, 2); check("formatNumber(\"70.245\", true, 2)",formatted,"70.25"); /*rounded*/
+  formatted = KGlobal::locale()->formatNumber("99.996", true, 2); check("formatNumber(\"99.996\", true, 2)",formatted,"100.00"); /*rounded*/
+  formatted = KGlobal::locale()->formatNumber("12345678901234567.89123456789", false, 0); check("formatNumber(\"12345678901234567.89123456789\", false, 0)",formatted,"12,345,678,901,234,567.89123456789");
+
+
 
   double num;
   bool ok;

@@ -187,7 +187,7 @@ namespace KStdAction
 	 */
 	KDEUI_EXPORT const char* name( StdAction id );
 
-        /// @obsolete. Use #name
+        /// @obsolete. Use name()
 	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
 
        /**

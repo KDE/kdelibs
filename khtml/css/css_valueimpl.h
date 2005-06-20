@@ -79,7 +79,7 @@ public:
     virtual bool getPropertyPriority( int propertyID ) const;
 
     Q3PtrList<CSSProperty> *values() const { return m_lstValues; }
-    void setNode(NodeImpl *_node) { m_node = _node; }
+    void setNode(NodeImpl *_node) { m_node.reset(_node); }
 
     void setChanged();
 
@@ -90,7 +90,7 @@ protected:
     DOMString get4Values( const int* properties ) const;
 
     Q3PtrList<CSSProperty> *m_lstValues;
-    NodeImpl *m_node;
+    khtml::SharedPtr<NodeImpl> m_node;
 
 private:
     // currently not needed - make sure its not used

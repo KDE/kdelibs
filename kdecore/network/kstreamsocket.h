@@ -29,6 +29,7 @@
 
 #include "kclientsocketbase.h"
 
+/** A namespace to store all networking-related (socket) classes. */
 namespace KNetwork {
 
 class KResolverEntry;
@@ -45,6 +46,10 @@ class KStreamSocketPrivate;
  *
  * Objects of this class start, by default, on non-blocking mode. Call
  * setBlocking if you wish to change that.
+ *
+ * KStreamSocket objects are thread-safe and can be used in auxiliary
+ * threads (i.e., not the thread in which the Qt event loop runs in).
+ * Note that KBufferedSocket cannot be used reliably in an auxiliary thread.
  *
  * Sample usage:
  * \code
@@ -85,6 +90,7 @@ class KStreamSocketPrivate;
  *  }
  * \endcode
  *
+ * @see KNetwork::KBufferedSocket, KNetwork::KServerSocket
  * @author Thiago Macieira <thiago@kde.org>
  * @version 0.9
  */

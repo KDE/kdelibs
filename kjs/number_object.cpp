@@ -201,7 +201,8 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case ValueOf:
     result = Number(v.toNumber(exec));
     break;
-  case ToFixed: {
+  case ToFixed:
+  {
     Value fractionDigits = args[0];
     int f = fractionDigits.toInteger(exec);
     if (f < 0 || f > 20) {
@@ -335,7 +336,8 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
     return String(UString(buf));
   }
-  case ToPrecision: {
+  case ToPrecision:
+  {
     int e = 0;
     UString m;
 
@@ -351,7 +353,8 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
 
     if (p < 1 || p > 21) {
-      Object err = Error::create(exec,RangeError);
+      Object err = Error::create(exec, RangeError,
+				 "toPrecision() argument must be between 1 and 21");
       exec->setException(err);
       return err;
     }
@@ -460,7 +463,7 @@ bool NumberObjectImp::implementsConstruct() const
 // ECMA 15.7.1
 Object NumberObjectImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *proto = exec->interpreter()->builtinNumberPrototype().imp();
+  ObjectImp *proto = exec->lexicalInterpreter()->builtinNumberPrototype().imp();
   Object obj(new NumberInstanceImp(proto));
 
   Number n;

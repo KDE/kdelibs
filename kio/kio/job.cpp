@@ -118,14 +118,16 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
                  Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
     // Don't exit while this job is running
-    kapp->ref();
+    if (kapp)
+        kapp->ref();
 }
 
 Job::~Job()
 {
     delete m_speedTimer;
     delete d;
-    kapp->deref();
+    if (kapp)
+        kapp->deref();
 }
 
 int& Job::extraFlags()
@@ -643,7 +645,7 @@ void MkdirJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
-    
+
     SimpleJob::start(slave);
 }
 
@@ -2097,7 +2099,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 
 void ListJob::start(Slave *slave)
 {
-    if (!kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    if (kapp && !kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
         m_error = ERR_ACCESS_DENIED;
         m_errorText = m_url.url();
@@ -2264,7 +2266,7 @@ void CopyJob::slotResultStating( Job *job )
             m_dest = KURL();
             m_dest.setPath(sLocalPath);
         }
-	
+
         subjobs.remove( job );
         assert ( subjobs.isEmpty() );
 
@@ -2970,8 +2972,11 @@ void CopyJob::createNextDir()
     }
     else // we have finished creating dirs
     {
+        emit processedDirs( this, m_processedDirs ); // make sure final number appears
+        if (m_progressId) Observer::self()->slotProcessedDirs( this, m_processedDirs );
+
         state = STATE_COPYING_FILES;
-        m_processedFiles++; // Ralf wants it to start a 1, not 0
+        m_processedFiles++; // Ralf wants it to start at 1, not 0
         copyNextFile();
     }
 }
@@ -3402,8 +3407,11 @@ void CopyJob::deleteNextDir()
                 allDirNotify.FilesRemoved( m_srcList );
             }
         }
-        if (m_reportTimer!=0)
+        if (m_reportTimer)
             m_reportTimer->stop();
+        --m_processedFiles; // undo the "start at 1" hack
+        slotReport(); // display final numbers, important if progress dialog stays up
+
         emitResult();
     }
 }
@@ -4306,7 +4314,7 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
-  if (!kapp->authorizeURLAction("redirect", m_url, url))
+  if (kapp && !kapp->authorizeURLAction("redirect", m_url, url))
   {
      kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url << " to " << url << " REJECTED!" << endl;
      return;

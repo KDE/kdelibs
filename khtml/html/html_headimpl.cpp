@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,6 +37,8 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/csshelper.h"
+
+#include "ecma/kjs_proxy.h"
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -319,29 +321,188 @@ void HTMLMetaElementImpl::process()
 
 // -------------------------------------------------------------------------
 
+HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentPtr *doc)
+    : HTMLElementImpl(doc), m_cachedScript(0), m_createdByParser(false), m_evaluated(false)
+{
+}
+
+HTMLScriptElementImpl::~HTMLScriptElementImpl()
+{
+    if (m_cachedScript)
+        m_cachedScript->deref(this);
+}
+
 NodeImpl::Id HTMLScriptElementImpl::id() const
 {
     return ID_SCRIPT;
 }
 
-DOMString HTMLScriptElementImpl::text() const
+bool HTMLScriptElementImpl::isURLAttribute(AttributeImpl *attr) const
 {
-    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
-        return firstChild()->nodeValue();
-    }
-    return "";
+    return attr->id() == ATTR_SRC;
 }
 
-void HTMLScriptElementImpl::setText(const DOMString& str)
+void HTMLScriptElementImpl::childrenChanged()
 {
-    int exceptioncode = 0;
-    if (firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
-        static_cast<DOM::TextImpl *>(firstChild())->setData(str, exceptioncode);
+    // If a node is inserted as a child of the script element
+    // and the script element has been inserted in the document
+    // we evaluate the script.
+    if (!m_createdByParser && inDocument() && firstChild())
+        evaluateScript(getDocument()->URL().url(), text());
+}
+
+void HTMLScriptElementImpl::insertedIntoDocument()
+{
+    HTMLElementImpl::insertedIntoDocument();
+
+    assert(!m_cachedScript);
+
+    if (m_createdByParser)
+        return;
+
+    QString url = getAttribute(ATTR_SRC).string();
+    if (!url.isEmpty()) {
+        QString charset = getAttribute(ATTR_CHARSET).string();
+        m_cachedScript = getDocument()->docLoader()->requestScript(DOMString(url), charset);
+        m_cachedScript->ref(this);
         return;
     }
-    // No child text node found, creating one
-    DOM::TextImpl* t = getDocument()->createTextNode(str.implementation());
-    appendChild(t, exceptioncode);
+
+    // If there's an empty script node, we shouldn't evaluate the script
+    // because if a script is inserted afterwards (by setting text or innerText)
+    // it should be evaluated, and evaluateScript only evaluates a script once.
+    DOMString scriptString = text();
+    if (!scriptString.isEmpty())
+        evaluateScript(getDocument()->URL().url(), scriptString);
+}
+
+void HTMLScriptElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+
+    if (m_cachedScript) {
+        m_cachedScript->deref(this);
+        m_cachedScript = 0;
+    }
+}
+
+void HTMLScriptElementImpl::notifyFinished(CachedObject* o)
+{
+    CachedScript *cs = static_cast<CachedScript *>(o);
+
+    assert(cs == m_cachedScript);
+
+    evaluateScript(cs->url().string(), cs->script());
+
+    cs->deref(this);
+    m_cachedScript = 0;
+}
+
+void HTMLScriptElementImpl::evaluateScript(const QString &URL, const DOMString &script)
+{
+    if (m_evaluated)
+        return;
+
+    KHTMLPart *part = getDocument()->part();
+    if (part) {
+        KJSProxy *proxy = KJSProxy::proxy(part);
+        if (proxy) {
+            m_evaluated = true;
+            proxy->evaluate(URL, 0, script.string(), 0);
+            DocumentImpl::updateDocumentsRendering();
+        }
+    }
+}
+
+DOMString HTMLScriptElementImpl::text() const
+{
+    DOMString val = "";
+
+    for (NodeImpl *n = firstChild(); n; n = n->nextSibling()) {
+        if (n->isTextNode())
+            val += static_cast<TextImpl *>(n)->data();
+    }
+
+    return val;
+}
+
+void HTMLScriptElementImpl::setText(const DOMString &value)
+{
+    int exceptioncode = 0;
+    int numChildren = childNodeCount();
+
+    if (numChildren == 1 && firstChild()->isTextNode()) {
+        static_cast<DOM::TextImpl *>(firstChild())->setData(value, exceptioncode);
+        return;
+    }
+
+    if (numChildren > 0) {
+        removeChildren();
+    }
+
+    appendChild(getDocument()->createTextNode(value.implementation()), exceptioncode);
+}
+
+DOMString HTMLScriptElementImpl::htmlFor() const
+{
+    // DOM Level 1 says: reserved for future use.
+    return DOMString();
+}
+
+void HTMLScriptElementImpl::setHtmlFor(const DOMString &/*value*/)
+{
+    // DOM Level 1 says: reserved for future use.
+}
+
+DOMString HTMLScriptElementImpl::event() const
+{
+    // DOM Level 1 says: reserved for future use.
+    return DOMString();
+}
+
+void HTMLScriptElementImpl::setEvent(const DOMString &/*value*/)
+{
+    // DOM Level 1 says: reserved for future use.
+}
+
+DOMString HTMLScriptElementImpl::charset() const
+{
+    return getAttribute(ATTR_CHARSET);
+}
+
+void HTMLScriptElementImpl::setCharset(const DOMString &value)
+{
+    setAttribute(ATTR_CHARSET, value);
+}
+
+bool HTMLScriptElementImpl::defer() const
+{
+    return !getAttribute(ATTR_DEFER).isNull();
+}
+
+void HTMLScriptElementImpl::setDefer(bool defer)
+{
+    setAttribute(ATTR_DEFER, defer ? "" : 0);
+}
+
+DOMString HTMLScriptElementImpl::src() const
+{
+    return getDocument()->completeURL(getAttribute(ATTR_SRC).string());
+}
+
+void HTMLScriptElementImpl::setSrc(const DOMString &value)
+{
+    setAttribute(ATTR_SRC, value);
+}
+
+DOMString HTMLScriptElementImpl::type() const
+{
+    return getAttribute(ATTR_TYPE);
+}
+
+void HTMLScriptElementImpl::setType(const DOMString &value)
+{
+    setAttribute(ATTR_TYPE, value);
 }
 
 // -------------------------------------------------------------------------

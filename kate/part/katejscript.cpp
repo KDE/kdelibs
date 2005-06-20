@@ -222,7 +222,8 @@ class KateJSIndenter : public KJS::ObjectImp
 
     enum { OnChar,
           OnLine,
-          OnNewline
+          OnNewline,
+          Dummy
     };
 
   public:
@@ -803,7 +804,8 @@ const QStringList &KateJScriptManager::cmds()
 
 // -------------------------------------------------------------------------
 /* Source for KateJSIndenterProtoTable.
-@begin KateJSIndenterProtoTable 0
+@begin KateJSIndenterProtoTable 1
+  Dummy                 KateJSIndenter::Dummy             DontDelete
 @end
 */
 

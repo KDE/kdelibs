@@ -175,7 +175,7 @@ Value StringPrototypeImp::get(ExecState *exec, const Identifier &propertyName) c
 
 StringProtoFuncImp::StringProtoFuncImp(ExecState *exec, int i, int len)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype().imp())
     ), id(i)
 {
   Value protect(this);
@@ -300,7 +300,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  delete [] *ovector;
 	  mstr = reg->match(s, pos, &pos, ovector);
 	}
-	result = exec->interpreter()->builtinArray().construct(exec, list);
+	result = exec->lexicalInterpreter()->builtinArray().construct(exec, list);
       }
     }
     delete tmpReg;
@@ -315,7 +315,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       if (tmp.type() != UndefinedType && tmp.toBoolean(exec) == true)
         global = true;
 
-      RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+      RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp().imp());
       int lastIndex = 0;
       Object o1;
       // Test if 2nd arg is a function (new in JS 1.3)
@@ -408,8 +408,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         result = String(s.substr(begin, end-begin));
         break;
     }
-    case Split: { // 15.5.4.14
-    Object constructor = exec->interpreter()->builtinArray();
+    case Split: {
+    Object constructor = exec->lexicalInterpreter()->builtinArray();
     Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
     result = res;
     i = p0 = 0;
@@ -587,7 +587,7 @@ bool StringObjectImp::implementsConstruct() const
 // ECMA 15.5.2
 Object StringObjectImp::construct(ExecState *exec, const List &args)
 {
-  ObjectImp *proto = exec->interpreter()->builtinStringPrototype().imp();
+  ObjectImp *proto = exec->lexicalInterpreter()->builtinStringPrototype().imp();
   if (args.size() == 0)
     return Object(new StringInstanceImp(proto));
   return Object(new StringInstanceImp(proto, args.begin()->dispatchToString(exec)));

@@ -97,7 +97,7 @@ namespace KJS {
     KURL url;
     QString method;
     bool async;
-    QString requestHeaders;
+    QMap<QString,QString> requestHeaders;
     QString contentType;
 
     KIO::TransferJob * job;

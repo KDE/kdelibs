@@ -61,12 +61,8 @@ Object DOMParserConstructorImp::construct(ExecState *exec, const List &)
   return Object(new DOMParser(exec, doc.get()));
 }
 
-const ClassInfo DOMParser::info = { "DOMParser", 0, &DOMParserTable, 0 };
+const ClassInfo DOMParser::info = { "DOMParser", 0, 0 /* &DOMParserTable*/, 0 };
 
-/* Source for DOMParserTable
-@begin DOMParserTable 0
-@end
-*/
 
 DOMParser::DOMParser(ExecState *exec, DOM::DocumentImpl *d)
   : DOMObject(DOMParserProto::self(exec)), doc(d)

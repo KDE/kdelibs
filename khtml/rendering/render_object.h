@@ -233,6 +233,8 @@ public:
     virtual bool isBox() const { return false; }
     virtual bool isRenderReplaced() const { return false; }
 
+    virtual bool isCounter() const { return false; }
+    virtual bool isQuote() const { return false; }
     virtual bool isListItem() const { return false; }
     virtual bool isListMarker() const { return false; }
     virtual bool isCanvas() const { return false; }

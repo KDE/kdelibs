@@ -131,10 +131,10 @@ public:
      * fields found in the .desktop files.
      *
      * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
-     * @param constraint  A constraint to limit the choices returned, QString::null to 
+     * @param constraint  A constraint to limit the choices returned, QString::null to
      *                    get all services of the given @p servicetype
      * @param preferences Indicates a particular preference to return, QString::null to ignore.
-     *                    Uses an expression in the constraint language that must return 
+     *                    Uses an expression in the constraint language that must return
      *                    a number
      *
      * @return A list of services that satisfy the query
@@ -150,16 +150,18 @@ public:
      * in the constraints of the other query call, because this one
      * takes into account user preferences for this combination of service types.
      *
-     * Typically, this is used for getting the list of embeddable components
-     * that can handle a given mimetype.
-     * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
+     * Example usage:
+     * To get list of applications that can handle a given mimetype,
+     * set @p servicetype to the mimetype and @p genericServiceType is "Application".
+     * To get list of embeddable components that can handle a given mimetype,
+     * set @p servicetype to the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
      *
      * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
-     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart'
-     * @param constraint  A constraint to limit the choices returned, QString::null to 
+     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
+     * @param constraint  A constraint to limit the choices returned, QString::null to
      *                    get all services of the given @p servicetype
      * @param preferences Indicates a particular preference to return, QString::null to ignore.
-     *                    Uses an expression in the constraint language that must return 
+     *                    Uses an expression in the constraint language that must return
      *                    a number
      *
      * @return A list of services that satisfy the query

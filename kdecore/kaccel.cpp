@@ -23,6 +23,7 @@
 #include <qevent.h>
 #include <qpointer.h>
 #include <q3popupmenu.h>
+#include <qregexp.h>
 #include <qstring.h>
 #include <qtimer.h>
 
@@ -240,7 +241,7 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
-		((Q3Accel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
+		((Q3Accel*)m_pAccel)->connectItem( nID, this, SLOT(slotKeyPressed(int)));
 		if( !action.isEnabled() )
 			((Q3Accel*)m_pAccel)->setItemEnabled( nID, false );
 	}
@@ -333,11 +334,7 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 {
 	kdDebug(125) << "KAccelPrivate::slotMenuActivated( " << iAction << " )" << endl;
 	KAccelAction* pAction = actions().actionPtr( iAction );
-	if( pAction ) {
-		connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-		emit menuItemActivated();
-		disconnect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-	}
+        emitActivatedSignal( pAction );
 }
 
 bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
@@ -357,12 +354,7 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 					KAccelAction* pAction = m_mapIDToAction[nID];
 					if( !pAction->isEnabled() )
 						continue;
-					QPointer<KAccelPrivate> me = this;
-					connect( this, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-					emit menuItemActivated();
-					if (me) {
-						disconnect( me, SIGNAL(menuItemActivated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-					}
+					emitActivatedSignal( pAction );
 				} else
 					slotKeyPressed( nID );
 
@@ -374,6 +366,31 @@ bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 	}
 	return false;
 }
+
+void KAccelPrivate::emitActivatedSignal( KAccelAction* pAction )
+{
+	if( pAction ) {
+		QGuardedPtr<KAccelPrivate> me = this;
+		QRegExp reg( "([ ]*KAccelAction.*)" );
+		if( reg.search( pAction->methodSlotPtr()) >= 0 ) {
+			connect( this, SIGNAL(menuItemActivated(KAccelAction*)),
+				pAction->objSlotPtr(), pAction->methodSlotPtr() );
+			emit menuItemActivated( pAction );
+			if (me)
+				disconnect( me, SIGNAL(menuItemActivated(KAccelAction*)),
+					pAction->objSlotPtr(), pAction->methodSlotPtr() );
+		} else {
+			connect( this, SIGNAL(menuItemActivated()),
+				pAction->objSlotPtr(), pAction->methodSlotPtr() );
+			emit menuItemActivated();
+			if (me)
+				disconnect( me, SIGNAL(menuItemActivated()),
+					pAction->objSlotPtr(), pAction->methodSlotPtr() );
+
+		}
+	}
+}
+
 
 //---------------------------------------------------------------------
 // KAccel

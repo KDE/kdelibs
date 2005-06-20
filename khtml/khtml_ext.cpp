@@ -258,9 +258,12 @@ void KHTMLPartBrowserExtension::copy()
 
 void KHTMLPartBrowserExtension::searchProvider()
 {
+    // action name is of form "previewProvider[<searchproviderprefix>:]"
+    const QString searchProviderPrefix = QString( sender()->name() ).mid( 14 );
+
     KURIFilterData data;
     QStringList list;
-    data.setData( m_part->selectedText() );
+    data.setData( searchProviderPrefix + m_part->selectedText() );
     list << "kurisearchfilter" << "kuriikwsfilter";
 
     if( !KURIFilter::self()->filterURI(data, list) )
@@ -417,9 +420,11 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
       actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
 
+
+      // Fill search provider entries
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
-      QString engine = config.readEntry("DefaultSearchEngine");
+      const QString defaultEngine = config.readEntry("DefaultSearchEngine", "google");
 
       // search text
       QString selectedText = khtml->selectedText();
@@ -428,8 +433,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
         selectedText+="...";
       }
 
-      // search provider name
-      KDesktopFile file("searchproviders/" + engine + ".desktop", true, "services");
+      // default search provider
+      KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
 
       // search provider icon
       QPixmap icon;
@@ -446,7 +451,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
           icon = SmallIcon("find");
         else
           icon = QPixmap( iconPath );
-        name = file.readName();
+        name = service->name();
       }
       else
       {
@@ -456,6 +461,40 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       new KAction( i18n( "Search '%1' at %2" ).arg( selectedText ).arg( name ), icon, 0, d->m_khtml->browserExtension(),
                      SLOT( searchProvider() ), actionCollection(), "searchProvider" );
+
+      // favorite search providers
+      QStringList favoriteEngines;
+      favoriteEngines << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia" ;
+      favoriteEngines = config.readListEntry("FavoriteSearchEngines", favoriteEngines);
+
+      if ( !favoriteEngines.isEmpty()) {
+        KActionMenu* providerList = new KActionMenu( i18n( "Search '%1' At" ).arg( selectedText ), actionCollection(), "searchProviderList" );
+
+        QStringList::ConstIterator it = favoriteEngines.begin();
+        for ( ; it != favoriteEngines.end(); ++it ) {
+          if (*it==defaultEngine)
+            continue;
+          service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
+          if (!service)
+            continue;
+          const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + ':';
+          data.setData( searchProviderPrefix + "some keyword" );
+
+          if ( KURIFilter::self()->filterURI(data, list) )
+          {
+            QString iconPath = locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+            if ( iconPath.isEmpty() )
+              icon = SmallIcon("find");
+            else
+              icon = QPixmap( iconPath );
+            name = service->name();
+
+            providerList->insert( new KAction( name, icon, 0, d->m_khtml->browserExtension(),
+              SLOT( searchProvider() ), actionCollection(), QString( "searchProvider" + searchProviderPrefix ).latin1() ) );
+          }
+        }
+      }
+
 
       if ( selectedText.contains("://") && KURL(selectedText).isValid() )
          new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0,

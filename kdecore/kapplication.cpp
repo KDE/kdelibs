@@ -576,14 +576,10 @@ static Q3PtrList<KSessionManaged>* sessionClients()
  */
 QString KApplication::sessionConfigName() const
 {
-#if QT_VERSION < 0x030100
-    return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(d->sessionKey);
-#else
     QString sessKey = sessionKey();
     if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
         sessKey = d->sessionKey;
     return QString("session/%1_%2_%3").arg(name()).arg(sessionId()).arg(sessKey);
-#endif
 }
 
 #ifdef Q_WS_X11
@@ -1245,15 +1241,6 @@ void KApplication::saveState( QSessionManager& sm )
     else
 	sm.setRestartHint( QSessionManager::RestartIfRunning );
 
-#if QT_VERSION < 0x030100
-    {
-        // generate a new session key
-        timeval tv;
-        gettimeofday( &tv, 0 );
-        d->sessionKey  = QString::number( tv.tv_sec ) + "_" + QString::number(tv.tv_usec);
-    }
-#endif
-
     if ( firstTime ) {
         firstTime = false;
 	d->session_save = false;
@@ -1273,12 +1260,6 @@ void KApplication::saveState( QSessionManager& sm )
 
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
-#if QT_VERSION < 0x030100
-    restartCommand.clear();
-    restartCommand  << argv()[0] << "-session" << sm.sessionId() << "-smkey" << d->sessionKey;
-    sm.setRestartCommand( restartCommand );
-#endif
-
 
     QByteArray multiHead = getenv("KDE_MULTIHEAD");
     if (multiHead.toLower() == "true") {
@@ -1437,13 +1418,9 @@ static const KCmdLineOptions kde_options[] =
    { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager"), 0},
    { "style <style>", I18N_NOOP("sets the application GUI style"), 0},
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget - see man X for the argument format"), 0},
-#if QT_VERSION < 0x030100
-   { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
-#else
    { "smkey <sessionKey>", 0, 0}, // this option is obsolete and exists only to allow smooth upgrades from sessions
                                   // saved under Qt 3.0.x -- Qt 3.1.x includes the session key now automatically in
 				  // the session id (Simon)
-#endif
    KCmdLineLastOption
 };
 
@@ -2155,14 +2132,9 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KIntNumInput", "value" );
     kdeMap->insert( "KIntSpinBox", "value" );
     kdeMap->insert( "KDoubleNumInput", "value" );
-    #if QT_VERSION < 0x030200
-      kdeMap->insert( "QRadioButton", "checked" );
-    #endif
-    //#if QT_VERSION < 0x030300
-      // Temp til fixed in QT then enable ifdef with the correct version num
-      kdeMap->insert( "QGroupBox", "checked" );
-      kdeMap->insert( "QTabWidget", "currentPage" );
-    //#endif
+    // Temp til fixed in QT then enable ifdef with the correct version num
+    kdeMap->insert( "QGroupBox", "checked" );
+    kdeMap->insert( "QTabWidget", "currentPage" );
     Q3SqlPropertyMap::installDefaultMap( kdeMap );
 #endif
 }

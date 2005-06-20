@@ -82,6 +82,7 @@ public:
     bool m_autoSpellCheck : 1;
     bool m_adFilterEnabled : 1;
     bool m_hideAdsEnabled : 1;
+    bool m_jsPopupBlockerPassivePopup : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -468,6 +469,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // The global setting for JavaScript error reporting
     if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )
       d->m_bEnableJavaScriptErrorReporting = config->readBoolEntry( "ReportJavaScriptErrors", false );
+
+    // The global setting for popup block passive popup
+    if ( reset || config->hasKey( "PopupBlockerPassivePopup" ) )
+      d->m_jsPopupBlockerPassivePopup = config->readBoolEntry("PopupBlockerPassivePopup", true);
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
@@ -997,4 +1002,19 @@ bool KHTMLSettings::autoSpellCheck() const
 Q3ValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
 {
     return d->m_fallbackAccessKeysAssignments;
+}
+
+void KHTMLSettings::setJSPopupBlockerPassivePopup(bool enabled)
+{
+    d->m_jsPopupBlockerPassivePopup = enabled;
+    // save it
+    KConfig *config = KGlobal::config();
+    config->setGroup("Java/JavaScript Settings");
+    config->writeEntry("PopupBlockerPassivePopup", enabled);
+    config->sync();
+}
+
+bool KHTMLSettings::jsPopupBlockerPassivePopup() const
+{
+    return d->m_jsPopupBlockerPassivePopup;
 }

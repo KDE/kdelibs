@@ -21,10 +21,6 @@ bool check(QString txt, time_t a, time_t b)
   return true;
 }
 
-#if QT_VERSION < 300
-extern void qt_set_locale_codec( QTextCodec *codec );
-#endif
-
 int main(int argc, char *argv[])
 {
   KAboutData about("krfcdatetest", "krfcdatetest", "version");

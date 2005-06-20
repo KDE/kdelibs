@@ -96,6 +96,8 @@ public:
   /**
    * set separator position.
    * @param pos the separator position in range [0..100000]. 100000 is 100%.
+   * @param do_resize if this is true, then a resize event is generated.
+   *                  This may cause the size to change.
    */
   void setSeparatorPos(int pos, bool do_resize = true);
   /**

@@ -450,7 +450,18 @@ namespace KJS {
      * @return The interpreter executing the script
      */
     // ### make non-const or provide an overload pair
-    Interpreter *interpreter() const { return _interpreter; }
+    Interpreter *dynamicInterpreter() const { return _interpreter; }
+
+    // for compatibility
+    Interpreter *interpreter() const { return dynamicInterpreter(); }
+
+    /**
+     * Returns the interpreter associated with the current scope's
+     * global object
+     *
+     * @return The interpreter currently in scope
+     */
+    Interpreter *lexicalInterpreter() const;
 
     /**
      * Returns the execution context associated with this execution state

@@ -223,7 +223,8 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    //CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size()
+    //CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
+    //		       oimage->pixmap_size() == image->pixmap_size()
     //                 ? oimage : image;
 #warning "FIXME: when isComplete added, use this"
     CachedImage* i = image;

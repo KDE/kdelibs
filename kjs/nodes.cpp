@@ -55,8 +55,8 @@ using namespace KJS;
     return Completion(Normal);
 
 #define KJS_ABORTPOINT \
-  if (exec->interpreter()->imp()->debugger() && \
-      exec->interpreter()->imp()->debugger()->imp()->aborted()) \
+  if (exec->dynamicInterpreter()->imp()->debugger() && \
+      exec->dynamicInterpreter()->imp()->debugger()->imp()->aborted()) \
     return Completion(Normal);
 
 #define KJS_CHECKEXCEPTION \
@@ -168,8 +168,7 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg,
   char *vStr = strdup(v.toString(exec).ascii());
   char *exprStr = strdup(expr->toCode().ascii());
 
-  int length =  strlen(msg) - 4 /* two %s */ + strlen(vStr) + strlen(exprStr) +
- 1 /* null terminator */;
+  int length =  strlen(msg) - 4 /* two %s */ + strlen(vStr) + strlen(exprStr) + 1 /* null terminator */;
   char *str = new char[length];
   sprintf(str, msg, vStr, exprStr);
   free(vStr);
@@ -224,7 +223,7 @@ bool StatementNode::hitStatement(ExecState *exec)
   assert(sourceCode);
   assert(exec->context().imp()->sourceId == sourceCode->sid);
   exec->context().imp()->setLines(l0,l1);
-  Debugger *dbg = exec->interpreter()->imp()->debugger();
+  Debugger *dbg = exec->dynamicInterpreter()->imp()->debugger();
   if (dbg)
     return dbg->atStatement(exec);
   else
@@ -234,7 +233,7 @@ bool StatementNode::hitStatement(ExecState *exec)
 // return true if the debugger wants us to stop at this point
 bool StatementNode::abortStatement(ExecState *exec)
 {
-  Debugger *dbg = exec->interpreter()->imp()->debugger();
+  Debugger *dbg = exec->dynamicInterpreter()->imp()->debugger();
   if (dbg)
     return dbg->imp()->aborted();
   else
@@ -343,7 +342,7 @@ Value RegExpNode::evaluate(ExecState *exec) const
   list.append(p);
   list.append(f);
 
-  Object reg = exec->interpreter()->imp()->builtinRegExp();
+  Object reg = exec->lexicalInterpreter()->imp()->builtinRegExp();
   return reg.construct(exec,list);
 }
 
@@ -447,7 +446,7 @@ bool ElementNode::deref()
 // ECMA 11.1.4
 Value ElementNode::evaluate(ExecState *exec) const
 {
-  Object array = exec->interpreter()->builtinArray().construct(exec, List::empty());
+  Object array = exec->lexicalInterpreter()->builtinArray().construct(exec, List::empty());
   int length = 0;
   for (const ElementNode *n = this; n; n = n->list) {
     Value val = n->node->evaluate(exec);
@@ -485,7 +484,7 @@ Value ArrayNode::evaluate(ExecState *exec) const
     KJS_CHECKEXCEPTIONVALUE
     length = opt ? array.get(exec,lengthPropertyName).toInt32(exec) : 0;
   } else {
-    Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
+    Value newArr = exec->lexicalInterpreter()->builtinArray().construct(exec,List::empty());
     array = Object(static_cast<ObjectImp*>(newArr.imp()));
     length = 0;
   }
@@ -518,7 +517,7 @@ Value ObjectLiteralNode::evaluate(ExecState *exec) const
   if (list)
     return list->evaluate(exec);
 
-  return exec->interpreter()->builtinObject().construct(exec,List::empty());
+  return exec->lexicalInterpreter()->builtinObject().construct(exec,List::empty());
 }
 
 // ----------------------------- PropertyValueNode ----------------------------
@@ -552,7 +551,7 @@ bool PropertyValueNode::deref()
 // ECMA 11.1.5
 Value PropertyValueNode::evaluate(ExecState *exec) const
 {
-  Object obj = exec->interpreter()->builtinObject().construct(exec, List::empty());
+  Object obj = exec->lexicalInterpreter()->builtinObject().construct(exec, List::empty());
 
   for (const PropertyValueNode *p = this; p; p = p->list) {
     Value n = p->name->evaluate(exec);
@@ -843,7 +842,7 @@ Value FunctionCallNode::evaluate(ExecState *exec) const
     // of implementation we use the global object anyway here. This guarantees
     // that in host objects you always get a valid object for this.
     // thisVal = Null();
-    thisVal = exec->interpreter()->globalObject();
+    thisVal = exec->dynamicInterpreter()->globalObject();
   }
 
   Object thisObj = Object::dynamicCast(thisVal);
@@ -1633,7 +1632,7 @@ Value CommaNode::evaluate(ExecState *exec) const
 StatListNode::StatListNode(StatementNode *s)
   : statement(s), list(this)
 {
-  setLoc(s->firstLine(),s->lastLine(),s->code());
+  setLoc(s->firstLine(), s->lastLine(), s->code());
 }
 
 StatListNode::StatListNode(StatListNode *l, StatementNode *s)
@@ -1775,7 +1774,7 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
-  if (exec->_context->type() != EvalCode)
+  if (exec->_context->codeType() != EvalCode)
     flags |= DontDelete;
   if (currentVarType == VarStatementNode::Constant)
     flags |= ReadOnly;
@@ -1794,7 +1793,7 @@ void VarDeclNode::processVarDecls(ExecState *exec)
   // ### avoid duplication with actions performed in evaluate()?
   if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
     int flags = None;
-    if (exec->_context->type() != EvalCode)
+    if (exec->_context->codeType() != EvalCode)
       flags |= DontDelete;
     if (currentVarType == VarStatementNode::Constant)
       flags |= ReadOnly;
@@ -2161,6 +2160,7 @@ Completion ForNode::execute(ExecState *exec)
   Value v, cval;
 
   if (expr1) {
+    currentVarType = VarStatementNode::Variable;
     v = expr1->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
@@ -2194,8 +2194,10 @@ Completion ForNode::execute(ExecState *exec)
 
 void ForNode::processVarDecls(ExecState *exec)
 {
-  if (expr1)
+  if (expr1) {
+    currentVarType = VarStatementNode::Variable;
     expr1->processVarDecls(exec);
+  }
 
   statement->processVarDecls(exec);
 }
@@ -2958,9 +2960,9 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   FunctionImp *fimp = new DeclaredFunctionImp(exec, ident, body, exec->context().imp()->scopeChain());
   Object func(fimp); // protect from GC
 
-  //  Value proto = exec->interpreter()->builtinObject().construct(exec,List::empty());
+  //  Value proto = exec->lexicalInterpreter()->builtinObject().construct(exec,List::empty());
   List empty;
-  Object proto = exec->interpreter()->builtinObject().construct(exec,empty);
+  Object proto = exec->lexicalInterpreter()->builtinObject().construct(exec,empty);
   proto.put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
   func.put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
@@ -2973,10 +2975,12 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS: new function %s in %p\n", ident.ustring().cstring().c_str(), ctx->variableObject().imp());
 #endif
-  if (exec->_context->type() == EvalCode)
-    ctx->variableObject().put(exec,ident,func,Internal);
-  else
-    ctx->variableObject().put(exec,ident,func,DontDelete|Internal);
+  if (exec->_context->codeType() == EvalCode) {
+      // ECMA 10.2.2
+      ctx->variableObject().put(exec, ident, func, Internal);
+  } else {
+      ctx->variableObject().put(exec, ident, func, DontDelete | Internal);
+  }
 
   if (body) {
     // hack the scope so that the function gets put as a property of func, and it's scope
@@ -3017,7 +3021,7 @@ Value FuncExprNode::evaluate(ExecState *exec) const
   FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null(), body, exec->context().imp()->scopeChain());
   Value ret(fimp);
   List empty;
-  Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
+  Value proto = exec->lexicalInterpreter()->builtinObject().construct(exec,empty);
   fimp->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
   for(const ParameterNode *p = param; p != 0L; p = p->nextParam())
@@ -3032,7 +3036,7 @@ SourceElementsNode::SourceElementsNode(StatementNode *s1)
 {
   element = s1;
   elements = this;
-  setLoc(s1->firstLine(),s1->lastLine(),s1->code());
+  setLoc(s1->firstLine(), s1->lastLine(), s1->code());
 }
 
 SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2)
@@ -3040,7 +3044,7 @@ SourceElementsNode::SourceElementsNode(SourceElementsNode *s1, StatementNode *s2
   elements = s1->elements;
   s1->elements = this;
   element = s2;
-  setLoc(s1->firstLine(),s2->lastLine(),s1->code());
+  setLoc(s1->firstLine(), s2->lastLine(), s1->code());
 }
 
 void SourceElementsNode::ref()
@@ -3075,8 +3079,8 @@ Completion SourceElementsNode::execute(ExecState *exec)
   if (c1.complType() != Normal)
     return c1;
 
-  for (SourceElementsNode *node = elements; node; node = node->elements) {
-    Completion c2 = node->element->execute(exec);
+  for (SourceElementsNode *n = elements; n; n = n->elements) {
+    Completion c2 = n->element->execute(exec);
     if (c2.complType() != Normal)
       return c2;
     // The spec says to return c2 here, but it seems that mozilla returns c1 if

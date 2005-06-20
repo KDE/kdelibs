@@ -33,10 +33,10 @@
 #include "context.h"
 
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <errno.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -309,7 +309,7 @@ namespace KJS {
 
 FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
   : InternalFunctionImp(
-      static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+      static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype().imp())
       ), param(0L), line0(-1), line1(-1), sid(-1)
 {
   //fprintf(stderr,"FunctionImp::FunctionImp this=%p\n");
@@ -328,12 +328,12 @@ bool FunctionImp::implementsCall() const
 
 Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  Object &globalObj = exec->interpreter()->globalObject();
+  Object &globalObj = exec->dynamicInterpreter()->globalObject();
 
   // enter a new execution context
-  ContextImp ctx(globalObj, exec->interpreter()->imp(), thisObj, sid, codeType(),
+  ContextImp ctx(globalObj, exec->dynamicInterpreter()->imp(), thisObj, sid, codeType(),
                  exec->context().imp(), this, &args);
-  ExecState newExec(exec->interpreter(), &ctx);
+  ExecState newExec(exec->dynamicInterpreter(), &ctx);
   newExec.setException(exec->exception()); // could be null
 
   // assign user supplied arguments to parameters
@@ -562,7 +562,7 @@ Object DeclaredFunctionImp::construct(ExecState *exec, const List &args)
   if (p.type() == ObjectType)
     proto = Object(static_cast<ObjectImp*>(p.imp()));
   else
-    proto = exec->interpreter()->builtinObjectPrototype();
+    proto = exec->lexicalInterpreter()->builtinObjectPrototype();
 
   Object obj(new ObjectImp(proto));
 
@@ -624,7 +624,7 @@ const ClassInfo ArgumentsImp::info = {"Arguments", 0, 0, 0};
 // ECMA 10.1.8
 ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args,
 			   ActivationImp *act)
-  : ObjectImp(exec->interpreter()->builtinObjectPrototype()), activation(act)
+  : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype()), activation(act)
 {
   Value protect(this);
   putDirect(calleePropertyName, func, DontEnum);
@@ -693,16 +693,18 @@ ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
 
 Value ActivationImp::get(ExecState *exec, const Identifier &propertyName) const
 {
-  if (propertyName == argumentsPropertyName) {
-    ValueImp *imp = getDirect(propertyName);
-    if (imp)
-      return Value(imp);
+    if (propertyName == argumentsPropertyName) {
+        // check for locally declared arguments property
+        ValueImp *v = getDirect(propertyName);
+        if (v)
+            return Value(v);
 
-    if (!_argumentsObject)
-      _argumentsObject = new ArgumentsImp(exec, _function, _arguments, const_cast<ActivationImp*>(this));
-    return Value(_argumentsObject);
-  }
-  return ObjectImp::get(exec, propertyName);
+        // default: return builtin arguments array
+        if (!_argumentsObject)
+            _argumentsObject = new ArgumentsImp(exec, _function, _arguments, const_cast<ActivationImp*>(this));
+        return Value(_argumentsObject);
+    }
+    return ObjectImp::get(exec, propertyName);
 }
 
 bool ActivationImp::hasProperty(ExecState *exec, const Identifier &propertyName) const
@@ -807,14 +809,14 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       progNode->ref();
 
       // enter a new execution context
-      ContextImp ctx(exec->interpreter()->globalObject(),
-                     exec->interpreter()->imp(),
+      ContextImp ctx(exec->dynamicInterpreter()->globalObject(),
+                     exec->dynamicInterpreter()->imp(),
                      thisObj,
                      source->sid,
                      EvalCode,
                      exec->context().imp());
 
-      ExecState newExec(exec->interpreter(), &ctx);
+      ExecState newExec(exec->dynamicInterpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 
       ctx.setLines(progNode->firstLine(),progNode->firstLine());

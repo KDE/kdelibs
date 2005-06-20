@@ -312,11 +312,15 @@ public:
 	 */
         bool insert(KActionCollection *, const QString &title);
 
+	/**
+	 * Run the dialog and call commitChanges() if @p bSaveSettings
+	 * is true.
+	 */
 	bool configure( bool bSaveSettings = true );
 
 	/**
 	 * Commit key setting changes so that changed settings actually become active.
-	 * This method is implicitly called from #configure if
+	 * This method is implicitly called from configure(bool) if
 	 * @p bSaveSettings is true.
 	 */
 	void commitChanges();

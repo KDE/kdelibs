@@ -65,7 +65,7 @@ const Context Context::callingContext() const
 
 CodeType Context::codeType() const
 {
-  return rep->codeType;
+  return rep->codeType();
 }
 
 int Context::sourceId() const
@@ -390,3 +390,24 @@ bool ExecState::hadException()
 
 void Interpreter::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+
+Interpreter *ExecState::lexicalInterpreter() const
+{
+  // TODO: use proper implementation
+#if 1
+  return dynamicInterpreter();
+#else
+  if (!_context) {
+    return dynamicInterpreter();
+  }
+
+  InterpreterImp *result = InterpreterImp::interpreterWithGlobalObject(_context->scopeChain().bottom());
+
+  if (!result) {
+    return dynamicInterpreter();
+  }
+
+  return result->interpreter();
+#endif
+}

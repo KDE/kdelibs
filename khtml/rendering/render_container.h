@@ -54,14 +54,21 @@ public:
 
     virtual void removeLeftoverAnonymousBoxes();
 
+    virtual void setStyle(RenderStyle* _style);
+
+protected:
+    // Generate CSS content
+    void createCSSContent();
+
+    void updatePseudoChildren();
+    void updatePseudoChild(RenderStyle::PseudoId type, RenderObject* child);
+
 private:
 
     void setFirstChild(RenderObject *first) { m_first = first; }
     void setLastChild(RenderObject *last) { m_last = last; }
 
 protected:
-
-    void updatePseudoChild(RenderStyle::PseudoId type, RenderObject* child);
 
     RenderObject *m_first;
     RenderObject *m_last;

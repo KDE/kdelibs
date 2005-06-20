@@ -322,7 +322,7 @@ struct CompareWithCompareFunctionArguments {
     CompareWithCompareFunctionArguments(ExecState *e, ObjectImp *cf)
         : exec(e)
         , compareFunction(cf)
-        , globalObject(e->interpreter()->globalObject())
+        , globalObject(e->dynamicInterpreter()->globalObject())
     {
         arguments.append(Undefined());
         arguments.append(Undefined());
@@ -354,16 +354,9 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
     args->arguments.clear();
     args->arguments.append(va);
     args->arguments.append(vb);
-    double v = args->compareFunction->call(args->exec, args->globalObject, args->arguments)
-        .toNumber(args->exec);
-
-    // v may be outside integer range; check sign
-    if (v > 0)
-      return 1;
-    else if (v < 0)
-      return -1;
-    else
-      return 0;
+    double compareResult = args->compareFunction->call
+	(args->exec, args->globalObject, args->arguments).toNumber(args->exec);
+    return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
 }
 
 void ArrayInstanceImp::sort(ExecState *exec, Object &compareFunction)
@@ -453,7 +446,7 @@ Value ArrayPrototypeImp::get(ExecState *exec, const Identifier &propertyName) co
 
 ArrayProtoFuncImp::ArrayProtoFuncImp(ExecState *exec, int i, int len)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype().imp())
     ), id(i)
 {
   Value protect(this);
@@ -484,14 +477,18 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   Value result;
   switch (id) {
   case ToLocaleString:
+    // TODO  - see 15.4.4.3
     // fall through
   case ToString:
+
     if (!thisObj.inherits(&ArrayInstanceImp::info)) {
       Object err = Error::create(exec,TypeError);
       exec->setException(err);
       return err;
     }
+
     // fall through
+
   case Join: {
     UString separator = ",";
     UString str = "";
@@ -511,7 +508,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     break;
   }
   case Concat: {
-    Object arr = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
+    Object arr = Object::dynamicCast(exec->lexicalInterpreter()->builtinArray().construct(exec,List::empty()));
     int n = 0;
     Value curArg = thisObj;
     Object curObj = Object::dynamicCast(thisObj);
@@ -613,7 +610,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713 or 15.4.4.10
 
     // We return a new array
-    Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
+    Object resObj = Object::dynamicCast(exec->lexicalInterpreter()->builtinArray().construct(exec,List::empty()));
     result = resObj;
     int begin = 0;
     if (args[0].type() != UndefinedType) {
@@ -693,7 +690,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
                 List l;
                 l.append(jObj);
                 l.append(minObj);
-                cmp = sortFunction.call(exec, exec->interpreter()->globalObject(), l).toNumber(exec);
+                cmp = sortFunction.call(exec, exec->dynamicInterpreter()->globalObject(), l).toNumber(exec);
             } else {
               cmp = (jObj.toString(exec) < minObj.toString(exec)) ? -1 : 1;
             }
@@ -721,7 +718,7 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   }
   case Splice: {
     // 15.4.4.12 - oh boy this is huge
-    Object resObj = Object::dynamicCast(exec->interpreter()->builtinArray().construct(exec,List::empty()));
+    Object resObj = Object::dynamicCast(exec->lexicalInterpreter()->builtinArray().construct(exec,List::empty()));
     result = resObj;
     int begin = args[0].toUInt32(exec);
     if ( begin < 0 )
@@ -824,11 +821,18 @@ bool ArrayObjectImp::implementsConstruct() const
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
 {
   // a single numeric argument denotes the array size (!)
-  if (args.size() == 1 && args[0].type() == NumberType)
-    return Object(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp(), args[0].toUInt32(exec)));
+  if (args.size() == 1 && args[0].type() == NumberType) {
+    unsigned int n = args[0].toUInt32(exec);
+    if (n != args[0].toNumber(exec)) {
+      Object error = Error::create(exec, RangeError, "Invalid array length.");
+      exec->setException(error);
+      return error;
+    }
+    return Object(new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype().imp(), n));
+  }
 
   // otherwise the array is constructed with the arguments in it
-  return Object(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp(), args));
+  return Object(new ArrayInstanceImp(exec->lexicalInterpreter()->builtinArrayPrototype().imp(), args));
 }
 
 bool ArrayObjectImp::implementsCall() const

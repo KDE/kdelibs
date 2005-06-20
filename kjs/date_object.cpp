@@ -231,7 +231,7 @@ Value DatePrototypeImp::get(ExecState *exec, const Identifier &propertyName) con
 
 DateProtoFuncImp::DateProtoFuncImp(ExecState *exec, int i, int len)
   : InternalFunctionImp(
-    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    static_cast<FunctionPrototypeImp*>(exec->lexicalInterpreter()->builtinFunctionPrototype().imp())
     ), id(abs(i)), utc(i<0)
   // We use a negative ID to denote the "UTC" variant.
 {
@@ -375,7 +375,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     break;
   case GetYear:
     // IE returns the full year even in getYear.
-    if ( exec->interpreter()->compatMode() != Interpreter::IECompat )
+    if ( exec->dynamicInterpreter()->compatMode() != Interpreter::IECompat )
       result = Number(t->tm_year);
     else
       result = Number(1900 + t->tm_year);
@@ -546,7 +546,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     value = makeTime(&t, ms, false);
   }
 
-  Object proto = exec->interpreter()->builtinDatePrototype();
+  Object proto = exec->lexicalInterpreter()->builtinDatePrototype();
   Object ret(new DateInstanceImp(proto.imp()));
   ret.setInternalValue(Number(timeClip(value)));
   return ret;

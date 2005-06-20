@@ -39,6 +39,8 @@ using namespace KJS;
 
 // ECMA 15.9.4
 
+const ClassInfo RegExpPrototypeImp::info = {"RegExp", 0, 0, 0};
+
 RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
                                        FunctionPrototypeImp *funcProto)
@@ -77,7 +79,16 @@ bool RegExpProtoFuncImp::implementsCall() const
 
 Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  KJS_CHECK_THIS( RegExpImp, thisObj );
+  if (!thisObj.inherits(&RegExpImp::info)) {
+    if (thisObj.inherits(&RegExpPrototypeImp::info)) {
+      switch (id) {
+        case ToString: return String("//"); // FireFox returns /(?:)/
+      }
+    }
+    Object err = Error::create(exec,TypeError);
+    exec->setException(err);
+    return err;
+  }
 
   RegExpImp *reimp = static_cast<RegExpImp*>(thisObj.imp());
   RegExp *re = reimp->regExp();
@@ -101,9 +112,9 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       if (id == Test)
         return Boolean(false);
       else
-        Null();
+        return Null();
     }
-    RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
+    RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( re, s.value() );
 
     str = re->match(s.value(), i, 0L, ovector);
@@ -131,7 +142,15 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     str = "/";
     str += s.value();
     str += "/";
-    // TODO append the flags
+    if (thisObj.get(exec,"global").toBoolean(exec)) {
+      str += "g";
+    }
+    if (thisObj.get(exec,"ignoreCase").toBoolean(exec)) {
+      str += "i";
+    }
+    if (thisObj.get(exec,"multiline").toBoolean(exec)) {
+      str += "m";
+    }
     return String(str);
   }
 
@@ -193,7 +212,7 @@ Object RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result) c
       UString substring = lastString.substr( lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );
       list.append(String(substring));
     }
-  Object arr = exec->interpreter()->builtinArray().construct(exec, list);
+  Object arr = exec->lexicalInterpreter()->builtinArray().construct(exec, list);
   arr.put(exec, "index", Number(lastOvector[0]));
   arr.put(exec, "input", String(lastString));
   return arr;
@@ -247,7 +266,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
     }
   }
 
-  RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->interpreter()->builtinRegExpPrototype().imp());
+  RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->lexicalInterpreter()->builtinRegExpPrototype().imp());
   RegExpImp *dat = new RegExpImp(proto);
   Object obj(dat); // protect from GC
 
@@ -256,11 +275,11 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
   bool multiline = (flags.find("m") >= 0);
   // TODO: throw a syntax error on invalid flags
 
-  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse);
-  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse);
-  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse);
+  dat->putDirect("global", global ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
+  dat->putDirect("ignoreCase", ignoreCase ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
+  dat->putDirect("multiline", multiline ? BooleanImp::staticTrue : BooleanImp::staticFalse, DontDelete | ReadOnly | DontEnum);
 
-  dat->putDirect("source", new StringImp(p));
+  dat->putDirect("source", new StringImp(p), DontDelete | ReadOnly | DontEnum);
   dat->putDirect("lastIndex", NumberImp::zero(), DontDelete | DontEnum);
 
   int reflags = RegExp::None;
@@ -291,5 +310,7 @@ bool RegExpObjectImp::implementsCall() const
 Value RegExpObjectImp::call(ExecState *exec, Object &/*thisObj*/,
 			    const List &args)
 {
+  // TODO: handle RegExp argument case (15.10.3.1)
+
   return construct(exec, args);
 }

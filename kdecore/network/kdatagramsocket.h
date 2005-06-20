@@ -222,7 +222,7 @@ public:
    *
    * Connecting means only to designate the given address as the default
    * destination address for datagrams sent without destination addresses
-   * (@ref writeBlock(const char*, qint64).
+   * ( writeBlock(const char*, qint64).
    *
    * @note Calling connect will not cause the socket to be bound. You have
    *       to call @ref bind explicitly.

@@ -548,14 +548,7 @@ void RenderLineEdit::updateFromElement()
         ml = 1024;
 
      if ( widget()->maxLength() != ml )  {
-#if QT_VERSION == 0x030201 || QT_VERSION == 0x030202
-         // workaround QT 3.2.1/2 bug
-         widget()->blockSignals(true);
-#endif
          widget()->setMaxLength( ml );
-#if QT_VERSION == 0x030201 || QT_VERSION == 0x030202
-         widget()->blockSignals(false);
-#endif
      }
 
     if (element()->value().string() != widget()->text()) {

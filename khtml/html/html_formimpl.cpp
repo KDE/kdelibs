@@ -2454,9 +2454,13 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ROWS:
         m_rows = attr->val() ? attr->val()->toInt() : 3;
+        if (renderer())
+            renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
     case ATTR_COLS:
         m_cols = attr->val() ? attr->val()->toInt() : 60;
+        if (renderer())
+            renderer()->setNeedsLayoutAndMinMaxRecalc();
         break;
     case ATTR_WRAP:
         // virtual / physical is Netscape extension of HTML 3.0, now deprecated

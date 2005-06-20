@@ -291,11 +291,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     {
         if( parentWidget() && obj == parentWidget()->topLevelWidget())
         {
-#if QT_VERSION >= 0x030300
             if( ev->type() == QEvent::WindowStateChange
-#else
-            if( ( ev->type() == QEvent::ShowNormal || ev->type() == QEvent::ShowMaximized )
-#endif
                 && !parentWidget()->topLevelWidget()->isFullScreen() )
                 setTopLevelMenuInternal( d->wasTopLevel );
         }
@@ -343,11 +339,7 @@ void KMenuBar::selectionTimeout()
         int screen = xineramaConfig.readNumEntry("MenubarScreen",
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);
-#if QT_VERSION < 0x030200
-        int margin = frameWidth() + 2;
-#else  // hopefully I'll manage to persuade TT on Fitts' Law for QMenuBar for Qt-3.2
         int margin = 0;
-#endif
 	move(area.left() - margin, area.top() - margin); 
         setFixedSize(area.width() + 2* margin , heightForWidth( area.width() + 2 * margin ) );
 #ifdef Q_WS_X11

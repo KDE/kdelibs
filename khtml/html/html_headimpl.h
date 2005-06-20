@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -135,16 +135,49 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLScriptElementImpl : public HTMLElementImpl
+class HTMLScriptElementImpl : public HTMLElementImpl, public khtml::CachedObjectClient
 {
 public:
-    HTMLScriptElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc) {}
+    HTMLScriptElementImpl(DocumentPtr *doc);
+    ~HTMLScriptElementImpl();
+
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+    virtual void notifyFinished(khtml::CachedObject *finishedObj);
+    virtual void childrenChanged();
 
     virtual Id id() const;
+    virtual bool isURLAttribute(AttributeImpl *attr) const;
+
+    void setCreatedByParser(bool createdByParser) { m_createdByParser = createdByParser; }
+
+    void evaluateScript(const QString &, const DOMString &);
 
     DOMString text() const;
     void setText( const DOMString& str );
+
+    DOMString htmlFor() const;
+    void setHtmlFor(const DOMString &);
+
+    DOMString event() const;
+    void setEvent(const DOMString &);
+
+    DOMString charset() const;
+    void setCharset(const DOMString &);
+
+    bool defer() const;
+    void setDefer(bool);
+
+    DOMString src() const;
+    void setSrc(const DOMString &);
+
+    DOMString type() const;
+    void setType(const DOMString &);
+
+private:
+    khtml::CachedScript *m_cachedScript;
+    bool m_createdByParser;
+    bool m_evaluated;
 };
 
 // -------------------------------------------------------------------------

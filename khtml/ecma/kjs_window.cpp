@@ -1294,6 +1294,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 Value Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
+  bool showScrollbars = true;
   if (!part)
     return Undefined();
   KHTMLView *widget = part->view();
@@ -1407,6 +1408,8 @@ Value Window::openWindow(ExecState *exec, const List& args)
           winargs.resizable = (val == "1" || val == "yes");
         else if (key == "fullscreen")
           winargs.fullscreen = (val == "1" || val == "yes");
+        else if (key == "scrollbars")
+          showScrollbars = (val == "1" || val == "yes");
       }
     }
 
@@ -1449,6 +1452,10 @@ Value Window::openWindow(ExecState *exec, const List& args)
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
       khtmlpart->setOpener(p);
       khtmlpart->setOpenedByJS(true);
+      if (!showScrollbars) {
+        khtmlpart->view()->setVScrollBarMode(QScrollView::AlwaysOff);
+        khtmlpart->view()->setHScrollBarMode(QScrollView::AlwaysOff);
+      }
       if (khtmlpart->document().isNull()) {
         khtmlpart->begin();
         khtmlpart->write("<HTML><BODY>");

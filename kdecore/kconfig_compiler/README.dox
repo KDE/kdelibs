@@ -205,10 +205,12 @@ Example 1:
 
 The above describes 4 color configuration entries with the following defaults:
 
+\verbatim
 color_0=#ff0000
 color_1=#00ff00
 color_2=#0000ff
 color_3=#ffff00
+\endverbatim
 
 The configuration options will be accessible to the application via
 a QColor color(int ColorIndex) and a 

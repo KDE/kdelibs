@@ -61,9 +61,6 @@ public:
 
 protected:
     DOM::CSSProperty property( int id ) const;
-
-protected:
-    khtml::RenderObject *m_renderer;
 };
 
 

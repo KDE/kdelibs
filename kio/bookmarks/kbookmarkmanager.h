@@ -259,7 +259,8 @@ k_dcop:
 
 signals:
     /**
-     * Signals that the group with the address @p groupAddress (e.g. "/4/5")
+     * Signals that the group (or any of its children) with the address 
+     * @p groupAddress (e.g. "/4/5")
      * has been modified by the caller @p caller.
      */
     void changed( const QString & groupAddress, const QString & caller );

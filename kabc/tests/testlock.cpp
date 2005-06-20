@@ -37,7 +37,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <q3listview.h>
+#include <qlistview.h>
 #include <qdir.h>
 
 #include <iostream>
@@ -84,7 +84,7 @@ LockWidget::LockWidget( const QString &identifier )
     connect( button, SIGNAL( clicked() ), SLOT( unlock() ) );
   }
 
-  mLockView = new Q3ListView( this );
+  mLockView = new QListView( this );
   topLayout->addWidget( mLockView );
   mLockView->addColumn( "Lock File" );
   mLockView->addColumn( "PID" );
@@ -129,7 +129,7 @@ void LockWidget::updateLockView()
     if ( !Lock::readLockFile( dir.filePath( *it ), pid, app ) ) {
       kdWarning() << "Unable to open lock file '" << *it << "'" << endl; 
     } else {
-      new Q3ListViewItem( mLockView, *it, QString::number( pid ), app );
+      new QListViewItem( mLockView, *it, QString::number( pid ), app );
     }
   }
 }

@@ -78,7 +78,7 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const QString& serviceType, const QString& value, 
+    KOpenWithDlg( const QString& serviceType, const QString& value,
                   QWidget *parent = 0L );
 
     /**
@@ -189,7 +189,7 @@ protected:
  *
  *
  */
-class KIO_EXPORT KFileOpenWithHandler : public KOpenWithHandler
+class KIO_EXPORT_DEPRECATED KFileOpenWithHandler : public KOpenWithHandler
 {
 public:
   KFileOpenWithHandler() : KOpenWithHandler() {}

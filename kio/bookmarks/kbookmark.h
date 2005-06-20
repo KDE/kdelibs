@@ -190,6 +190,7 @@ protected:
 
 private:
     bool hasMetaData() const;
+    static QString left(const QString & str, uint len);
 };
 
 /**
