@@ -382,18 +382,20 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  KAction* ft = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
+  d->m_paFindAheadText = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
       actionCollection(), "findAheadText");
-  KAction* fl = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
+  d->m_paFindAheadLinks = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
       actionCollection(), "findAheadLink");
+  d->m_paFindAheadText->setEnabled( false );
+  d->m_paFindAheadLinks->setEnabled( false );
 
   if ( parentPart() )
   {
       d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindNext->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindPrev->setShortcut( KShortcut() ); // avoid clashes
-      ft->setShortcut( KShortcut());
-      fl->setShortcut( KShortcut());
+      d->m_paFindAheadText->setShortcut( KShortcut());
+      d->m_paFindAheadLinks->setShortcut( KShortcut());
   }
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
@@ -2922,6 +2924,16 @@ void KHTMLPart::slotFindAheadLink()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
+}
+
+void KHTMLPart::enableFindAheadActions( bool enable )
+{
+  // only the topmost one has shortcuts
+  KHTMLPart* p = this;
+  while( p->parentPart())
+    p = p->parentPart();
+  p->d->m_paFindAheadText->setEnabled( enable );
+  p->d->m_paFindAheadLinks->setEnabled( enable );
 }
 
 void KHTMLPart::slotFindDialogDestroyed()
