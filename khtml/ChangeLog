@@ -1,3 +1,8 @@
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/doctypes.gperf: Add Xhtml doctypes
+        * html/html_documentimpl.cpp: Recognize XHTML served as HTML parsing type
+
 2005-06-20  David Faure  <faure@kde.org>
 
         * ecma/kjs_window.cpp (openWindow):  Treat empty string the same

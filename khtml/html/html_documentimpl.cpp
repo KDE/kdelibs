@@ -432,9 +432,9 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     // This code more or less mimics Mozilla's implementation (specifically the
     // doctype parsing implemented by David Baron in Mozilla's nsParser.cpp).
     //
-    // There are three possible parse modes:
-    // COMPAT - quirks mode emulates WinIE
-    // and NS4.  CSS parsing is also relaxed in this mode, e.g., unit types can
+    // There are four possible parse modes:
+    // COMPAT - quirks mode emulates WinIE and NS4.
+    // CSS parsing is also relaxed in this mode, e.g., unit types can
     // be omitted from numbers.
     // ALMOST STRICT - This mode is identical to strict mode
     // except for its treatment of line-height in the inline box model.  For
@@ -442,6 +442,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     // to STANDARDS mode.
     // STRICT - no quirks apply.  Web pages will obey the specifications to
     // the letter.
+    // COMPAT XHTML - XHTML served as HTML
 
     QString systemID, publicID;
     int resultFlags = 0;
@@ -493,6 +494,12 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
                 case PubIDInfo::eAlmostStandards:
                     pMode = Transitional;
                     hMode = Html4;
+                    break;
+                case PubIDInfo::eXhtml:
+                    // Even XHTML 1.0 strict and XHTML 1.1 doctypes are treated as
+                    // transitional when served as HTML
+                    pMode = Transitional;
+                    hMode = XHtml;
                     break;
                  default:
                     assert(false);
