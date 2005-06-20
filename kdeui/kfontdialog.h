@@ -208,6 +208,7 @@ public:
    * Shows or hides the sample text box.
    *
    * @param visible Set it to true to show the box, to false to hide it.
+   * @since 3.5
    */
   void setSampleBoxVisible( bool visible )
   {
