@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+   Copyright (C) 2002-2005 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2002 John Firebaugh <jfirebaugh@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
@@ -86,7 +87,7 @@ class KateViewInternal : public QWidget
     bool tagLines (int start, int end, bool realLines = false);
     bool tagLines (KTextEditor::Cursor start, KTextEditor::Cursor end, bool realCursors = false);
 
-    bool tagRange(const KateRange& range, bool realLines);
+    bool tagRange(const KTextEditor::Range& range, bool realLines);
 
     void tagAll ();
 
@@ -105,7 +106,7 @@ class KateViewInternal : public QWidget
     KTextEditor::Cursor endPos () const;
     uint endLine () const;
 
-    const KateLineRange& yToKateLineRange(uint y) const;
+    KateTextLayout yToKateTextLayout(int y) const;
 
     void prepareForDynWrapChange();
     void dynWrapChanged();
@@ -286,48 +287,21 @@ class KateViewInternal : public QWidget
     KTextEditor::Cursor selStartCached;
     KTextEditor::Cursor selEndCached;
 
-    //
-    // Cache information about each view line.
-    //
-    mutable QVector<KateLineRange> lineRanges;
-
     // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
     bool scrollbarVisible(uint startLine);
     int maxLen(uint startLine);
 
     // returns the maximum X value / col value a cursor can take for a specific line range
-    int lineMaxCursorX(const KateLineRange& range);
-    int lineMaxCol(const KateLineRange& range);
+    int lineMaxCursorX(const KateTextLayout& line);
+    int lineMaxCol(const KateTextLayout& line);
 
-    // get the values for a specific range.
-    // specify lastLine to get the next line of a range.
-    KateLineRange range(int realLine, const KateLineRange* previous = 0L) const;
+    class KateLayoutCache* cache() const;
+    KateLayoutCache* m_layoutCache;
 
-    KateLineRange currentRange();
-    KateLineRange previousRange();
-    KateLineRange nextRange();
-
-    // Finds the lineRange currently occupied by the cursor.
-    KateLineRange range(const KTextEditor::Cursor& realCursor) const;
-
-    // Returns the lineRange of the specified realLine + viewLine.
-    KateLineRange range(uint realLine, int viewLine);
-
-    // Returns the lineRange of the corresponding view line.
-    KateLineRange viewRange(int viewLine) const;
-
-    // find the view line of cursor c (0 = same line, 1 = down one, etc.)
-    uint viewLine(const KTextEditor::Cursor& realCursor) const;
-
-    // find the view line of the cursor, relative to the display (0 = top line of view, 1 = second line, etc.)
-    // if limitToVisible is true, only lines which are currently visible will be searched for, and -1 returned if the line is not visible.
-    int displayViewLine(const KTextEditor::Cursor& virtualCursor, bool limitToVisible = false) const;
-
-    // find the index of the last view line for a specific line
-    uint lastViewLine(uint realLine) const;
-
-    // count the number of view lines for a real line
-    uint viewLineCount(uint realLine) const;
+    // convenience methods
+    KateTextLayout currentLayout() const;
+    KateTextLayout previousLayout() const;
+    KateTextLayout nextLayout() const;
 
     // find the cursor offset by (offset) view lines from a cursor.
     // when keepX is true, the column position will be calculated based on the x
@@ -397,7 +371,7 @@ class KateViewInternal : public QWidget
 #endif
 
   private:
-    KateTextRange m_imPreedit;
+    KTextEditor::Range m_imPreedit;
     KTextEditor::Cursor m_imPreeditSelStart;
 };
 

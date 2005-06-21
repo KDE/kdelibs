@@ -28,12 +28,11 @@
 
 KateSuperRange::KateSuperRange(KateSuperCursor* start, KateSuperCursor* end, KateSuperRange* parent)
   : QObject(parent)
+  , KTextEditor::Range(start, end)
   , m_attribute(0L)
   , m_parentRange(0L)
   , m_attachedView(0L)
   , m_attachActions(TagLines)
-  , m_start(start)
-  , m_end(end)
   , m_valid(true)
   , m_ownsAttribute(true)
   , m_evaluate(false)
@@ -49,12 +48,11 @@ KateSuperRange::KateSuperRange(KateSuperCursor* start, KateSuperCursor* end, Kat
 
 KateSuperRange::KateSuperRange( KateSuperCursor * start, KateSuperCursor * end, QObject * parent )
   : QObject(parent)
+  , KTextEditor::Range(start, end)
   , m_attribute(0L)
   , m_parentRange(0L)
   , m_attachedView(0L)
   , m_attachActions(TagLines)
-  , m_start(start)
-  , m_end(end)
   , m_valid(true)
   , m_ownsAttribute(true)
   , m_evaluate(false)
@@ -70,12 +68,11 @@ KateSuperRange::KateSuperRange( KateSuperCursor * start, KateSuperCursor * end, 
 
 KateSuperRange::KateSuperRange(KateDocument* doc, const KateSuperRange& range, KateSuperRange* parent)
   : QObject(parent)
+  , KTextEditor::Range(new KateSuperCursor(doc, true, range.start()), new KateSuperCursor(doc, true, range.end()))
   , m_attribute(0L)
   , m_parentRange(0L)
   , m_attachedView(0L)
   , m_attachActions(TagLines)
-  , m_start(new KateSuperCursor(doc, true, range.start()))
-  , m_end(new KateSuperCursor(doc, true, range.end()))
   , m_valid(true)
   , m_ownsAttribute(true)
   , m_evaluate(false)
@@ -91,12 +88,11 @@ KateSuperRange::KateSuperRange(KateDocument* doc, const KateSuperRange& range, K
 
 KateSuperRange::KateSuperRange(KateDocument* doc, const KTextEditor::Cursor& start, const KTextEditor::Cursor& end, KateSuperRange* parent)
   : QObject(parent)
+  , KTextEditor::Range(new KateSuperCursor(doc, true, start), new KateSuperCursor(doc, true, end))
   , m_attribute(0L)
   , m_parentRange(0L)
   , m_attachedView(0L)
   , m_attachActions(TagLines)
-  , m_start(new KateSuperCursor(doc, true, start))
-  , m_end(new KateSuperCursor(doc, true, end))
   , m_valid(true)
   , m_ownsAttribute(true)
   , m_evaluate(false)
@@ -112,12 +108,11 @@ KateSuperRange::KateSuperRange(KateDocument* doc, const KTextEditor::Cursor& sta
 
 KateSuperRange::KateSuperRange( KateDocument * doc, uint startLine, uint startCol, uint endLine, uint endCol, KateSuperRange * parent )
   : QObject(parent)
+  , KTextEditor::Range(new KateSuperCursor(doc, true, startLine, startCol), new KateSuperCursor(doc, true, endLine, endCol))
   , m_attribute(0L)
   , m_parentRange(0L)
   , m_attachedView(0L)
   , m_attachActions(TagLines)
-  , m_start(new KateSuperCursor(doc, true, startLine, startCol))
-  , m_end(new KateSuperCursor(doc, true, endLine, endCol))
   , m_valid(true)
   , m_ownsAttribute(true)
   , m_evaluate(false)
@@ -133,74 +128,55 @@ KateSuperRange::KateSuperRange( KateDocument * doc, uint startLine, uint startCo
 void KateSuperRange::init()
 {
   Q_ASSERT(isValid());
-  Q_ASSERT(m_start->doc() == m_end->doc());
+  Q_ASSERT(superStart().doc() == superStart().doc());
 
-  insertChild(m_start);
-  insertChild(m_end);
+  insertChild(&superStart());
+  insertChild(&superEnd());
 
   setBehaviour(DoNotExpand);
 
   // Not necessarily the best implementation
-  connect(m_start, SIGNAL(positionDirectlyChanged()),  SIGNAL(contentsChanged()));
-  connect(m_end, SIGNAL(positionDirectlyChanged()),  SIGNAL(contentsChanged()));
+  connect(&superStart(), SIGNAL(positionDirectlyChanged()),  SIGNAL(contentsChanged()));
+  connect(&superEnd(), SIGNAL(positionDirectlyChanged()),  SIGNAL(contentsChanged()));
 
-  connect(m_start, SIGNAL(positionChanged()),  SLOT(slotEvaluateChanged()));
-  connect(m_end, SIGNAL(positionChanged()),  SLOT(slotEvaluateChanged()));
-  connect(m_start, SIGNAL(positionUnChanged()), SLOT(slotEvaluateUnChanged()));
-  connect(m_end, SIGNAL(positionUnChanged()), SLOT(slotEvaluateUnChanged()));
-  connect(m_start, SIGNAL(positionDeleted()), SIGNAL(boundaryDeleted()));
-  connect(m_end, SIGNAL(positionDeleted()), SIGNAL(boundaryDeleted()));
+  connect(&superStart(), SIGNAL(positionChanged()),  SLOT(slotEvaluateChanged()));
+  connect(&superEnd(), SIGNAL(positionChanged()),  SLOT(slotEvaluateChanged()));
+  connect(&superStart(), SIGNAL(positionUnChanged()), SLOT(slotEvaluateUnChanged()));
+  connect(&superEnd(), SIGNAL(positionUnChanged()), SLOT(slotEvaluateUnChanged()));
+  connect(&superStart(), SIGNAL(positionDeleted()), SIGNAL(boundaryDeleted()));
+  connect(&superEnd(), SIGNAL(positionDeleted()), SIGNAL(boundaryDeleted()));
 }
 
 KateSuperRange::~KateSuperRange()
 {
   if (m_ownsAttribute) delete m_attribute;
 
-  if (m_deleteCursors)
+  if (!m_deleteCursors)
   {
-    delete m_start;
-    delete m_end;
+    // Save from deletion in the parent
+    m_start = 0L;
+    m_end = 0L;
   }
-}
-
-KTextEditor::Cursor& KateSuperRange::start()
-{
-  return *m_start;
-}
-
-const KTextEditor::Cursor& KateSuperRange::start() const
-{
-  return *m_start;
-}
-
-KTextEditor::Cursor& KateSuperRange::end()
-{
-  return *m_end;
-}
-
-const KTextEditor::Cursor& KateSuperRange::end() const
-{
-  return *m_end;
 }
 
 KateSuperCursor& KateSuperRange::superStart()
 {
-  return *m_start;
+  return *dynamic_cast<KateSuperCursor*>(m_start);
 }
 
 const KateSuperCursor& KateSuperRange::superStart() const
 {
-  return *m_start;
+  return *dynamic_cast<KateSuperCursor*>(m_start);
 }
 
 KateSuperCursor& KateSuperRange::superEnd()
 {
-  return *m_end;
+  return *dynamic_cast<KateSuperCursor*>(m_end);
 }
 
 const KateSuperCursor& KateSuperRange::superEnd() const
 {
-  return *m_end;
+  return *dynamic_cast<KateSuperCursor*>(m_end);
 }
 
 void KateSuperRange::attachToView(KateView* view, int actions)
@@ -211,13 +187,13 @@ void KateSuperRange::attachToView(KateView* view, int actions)
 
 int KateSuperRange::behaviour() const
 {
-  return (m_start->moveOnInsert() ? DoNotExpand : ExpandLeft) | (m_end->moveOnInsert() ? ExpandRight : DoNotExpand);
+  return (superStart().moveOnInsert() ? DoNotExpand : ExpandLeft) | (superEnd().moveOnInsert() ? ExpandRight : DoNotExpand);
 }
 
 void KateSuperRange::setBehaviour(int behaviour)
 {
-  m_start->setMoveOnInsert(behaviour & ExpandLeft);
-  m_end->setMoveOnInsert(!(behaviour & ExpandRight));
+  superStart().setMoveOnInsert(behaviour & ExpandLeft);
+  superEnd().setMoveOnInsert(!(behaviour & ExpandRight));
 }
 
 bool KateSuperRange::isValid() const
@@ -227,7 +203,7 @@ bool KateSuperRange::isValid() const
 
 void KateSuperRange::slotEvaluateChanged()
 {
-  if (sender() == static_cast<QObject*>(m_start)) {
+  if (sender() == dynamic_cast<QObject*>(m_start)) {
     if (m_evaluate) {
       if (!m_endChanged) {
         // Only one was changed
@@ -265,7 +241,7 @@ void KateSuperRange::slotEvaluateChanged()
 
 void KateSuperRange::slotEvaluateUnChanged()
 {
-  if (sender() == static_cast<QObject*>(m_start)) {
+  if (sender() == dynamic_cast<QObject*>(m_start)) {
     if (m_evaluate) {
       if (m_endChanged) {
         // Only one changed
@@ -386,7 +362,7 @@ int KateSuperRange::depth( ) const
   return parentRange() ? parentRange()->depth() + 1 : 0;
 }
 
-KateSuperRange* KateSuperRange::findMostSpecificRange( const KateRange & input )
+KateSuperRange* KateSuperRange::findMostSpecificRange( const KTextEditor::Range & input )
 {
   if (contains(input)) {
     for (QList<KateSuperRange*>::ConstIterator it = m_childRanges.constBegin(); it != m_childRanges.constEnd(); ++it)
@@ -508,7 +484,7 @@ const QList< KateSuperRange * > & KateSuperRange::childRanges( ) const
 void KateSuperRange::clearAllChildRanges()
 {
   while (m_childRanges.count()) {
-    KateRange* r = m_childRanges.first();
+    KTextEditor::Range* r = m_childRanges.first();
     m_childRanges.remove(m_childRanges.begin());
 
     delete r;
@@ -518,7 +494,7 @@ void KateSuperRange::clearAllChildRanges()
 void KateSuperRange::deleteAllChildRanges()
 {
   while (m_childRanges.count()) {
-    KateRange* r = m_childRanges.first();
+    KTextEditor::Range* r = m_childRanges.first();
     m_childRanges.remove(m_childRanges.begin());
 
     // FIXME editDeleteText here? or a call to delete the text on the range object

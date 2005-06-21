@@ -30,7 +30,7 @@ class KateDocument;
 class KateView;
 class KateAttribute;
 class KateRangeList;
-class KateRange;
+namespace KTextEditor { class Range; }
 class KateSuperRange;
 
 /**
@@ -58,7 +58,7 @@ public:
   QList<KateSuperRange*> startingRanges(const KTextEditor::Cursor& pos, KateView* view = 0L) const;
   
 signals:
-  void tagLines(KateView* view, KateRange* range);
+  void tagLines(KateView* view, KTextEditor::Range* range);
 
 private slots:
   void slotTagRange(KateSuperRange* range);

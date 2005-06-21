@@ -20,7 +20,7 @@
 #define KATESUPERRANGE_H
 
 #include "katesupercursor.h"
-#include "katerange.h"
+#include <ktexteditor/range.h>
 
 class KateRangeList;
 class KateRangeType;
@@ -32,7 +32,7 @@ class KAction;
  *
  * Also tracks its position and emits useful signals.
  */
-class KateSuperRange : public QObject, public KateRange
+class KateSuperRange : public QObject, public KTextEditor::Range
 {
   Q_OBJECT
 
@@ -59,11 +59,6 @@ class KateSuperRange : public QObject, public KateRange
 
     KateDocument* doc() const;
     virtual KateRangeList* owningList() const;
-
-    virtual KTextEditor::Cursor& start();
-    virtual KTextEditor::Cursor& end();
-    virtual const KTextEditor::Cursor& start() const;
-    virtual const KTextEditor::Cursor& end() const;
 
     KateSuperCursor& superStart();
     KateSuperCursor& superEnd();
@@ -139,7 +134,7 @@ class KateSuperRange : public QObject, public KateRange
      * Finds the most specific range in a heirachy for the given input range
      * (ie. the smallest range which wholly contains the input range)
      */
-    KateSuperRange* findMostSpecificRange(const KateRange& input);
+    KateSuperRange* findMostSpecificRange(const KTextEditor::Range& input);
 
     /**
      * Finds the first range which contains position \p pos.
@@ -230,8 +225,6 @@ class KateSuperRange : public QObject, public KateRange
 
     KateView* m_attachedView;
     int m_attachActions;
-    KateSuperCursor* m_start;
-    KateSuperCursor* m_end;
     QList<KAction*> m_associatedActions;
     bool  m_valid           :1,
           m_ownsAttribute   :1,

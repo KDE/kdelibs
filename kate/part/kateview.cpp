@@ -692,8 +692,6 @@ QString KateView::viewMode () const
 
 void KateView::slotGotFocus()
 {
-  kdDebug()<<"slotGotFocus"<<endl;
-
   if (m_editActions)
     m_editActions->accel()->setEnabled( true );
 
@@ -1189,7 +1187,7 @@ bool KateView::tagLine (const KTextEditor::Cursor& virtualCursor)
   return m_viewInternal->tagLine (virtualCursor);
 }
 
-bool KateView::tagRange(const KateRange& range, bool realLines)
+bool KateView::tagRange(const KTextEditor::Range& range, bool realLines)
 {
   return m_viewInternal->tagRange(range, realLines);
 }
@@ -1781,7 +1779,7 @@ bool KateView::wrapCursor ()
 //END
 
 //BEGIN IM INPUT STUFF
-void KateView::setIMSelectionValue( const KateRange& imRange, const KateRange& imSelection, bool imComposeEvent )
+void KateView::setIMSelectionValue( const KTextEditor::Range& imRange, const KTextEditor::Range& imSelection, bool imComposeEvent )
 {
   m_imRange = imRange;
   m_imSelection = imSelection;
@@ -1798,7 +1796,7 @@ bool KateView::isIMEdit( const KTextEditor::Cursor& pos )
   return m_imRange.includes(pos);
 }
 
-void KateView::getIMSelectionValue( KateRange* imRange, KateRange* imSelection )
+void KateView::getIMSelectionValue( KTextEditor::Range* imRange, KTextEditor::Range* imSelection )
 {
   *imRange = m_imRange;
   *imSelection = m_imSelection;

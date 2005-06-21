@@ -25,314 +25,181 @@
 
 #include "katedocument.h"
 
-KateLineRange::KateLineRange(KateDocument* doc)
+KateLineLayout::KateLineLayout(KateDocument* doc)
   : m_doc(doc)
   , m_textLine(0L)
   , m_line(-1)
   , m_virtualLine(-1)
-  , m_viewLine(-1)
-  , m_startCol(-1)
-  , m_endCol(-1)
-  , m_startX(-1)
-  , m_endX(-1)
   , m_shiftX(0)
   , m_dirty(true)
-  , m_wrap(false)
-  , m_startsInvisibleBlock(false)
-  , m_special(false)
-  , m_ownsLayout(false)
   , m_layout(0L)
 {
+  Q_ASSERT(doc);
 }
 
-KateLineRange::KateLineRange(const KateLineRange& copy)
-  : m_ownsLayout(false)
-  , m_layout(0L)
+KateLineLayout::~KateLineLayout()
 {
-  *this = copy;
+  delete m_layout;
 }
 
-KateLineRange& KateLineRange::operator= (KateLineRange& r)
-{
-  if (this == &r)
-    return *this;
-
-  m_doc = r.doc();
-  m_textLine = 0L;
-  m_line = r.line();
-  m_virtualLine = r.virtualLine();
-  m_viewLine = r.viewLine();
-  m_startCol = r.startCol();
-  m_endCol = r.endCol();
-  m_startX = r.startX();
-  m_endX = r.endX();
-  m_shiftX = r.shiftX();
-  m_wrap = r.wrap();
-  m_startsInvisibleBlock = r.startsInvisibleBlock();
-  m_dirty = r.isDirty();
-  m_special = false;
-  Q_ASSERT(!r.m_special);
-  //if (m_ownsLayout) delete m_layout;
-  m_ownsLayout = false;//r.takeLayoutOwnership();
-  m_layout = r.layout();
-  
-  return *this;
-}
-
-KateLineRange& KateLineRange::operator= (const KateLineRange& r)
-{
-  if (this == &r)
-    return *this;
-
-  m_doc = r.doc();
-  m_textLine = 0L;
-  m_line = r.line();
-  m_virtualLine = r.virtualLine();
-  m_viewLine = r.viewLine();
-  m_startCol = r.startCol();
-  m_endCol = r.endCol();
-  m_startX = r.startX();
-  m_endX = r.endX();
-  m_shiftX = r.shiftX();
-  m_wrap = r.wrap();
-  m_startsInvisibleBlock = r.startsInvisibleBlock();
-  m_dirty = r.isDirty();
-  m_special = false;
-  Q_ASSERT(!r.m_special);
-  //if (m_ownsLayout) delete m_layout;
-  m_ownsLayout = false;
-  m_layout = r.layout();
-  
-  return *this;
-}
-
-KTextEditor::Cursor KateLineRange::rangeStart() const
-{
-  return KTextEditor::Cursor(line(), startCol());
-}
-
-KateLineRange::~KateLineRange()
-{
-  //if (m_ownsLayout) delete m_layout;
-}
-
-void KateLineRange::clear()
+void KateLineLayout::clear()
 {
   m_textLine = 0L;
   m_line = -1;
   m_virtualLine = -1;
-  m_startCol = -1;
-  m_endCol = -1;
-  m_startX = -1;
   m_shiftX = 0;
-  m_endX = -1;
-  m_viewLine = -1;
-  m_wrap = false;
-  m_startsInvisibleBlock = false;
   // not touching dirty
-  if (m_ownsLayout) delete m_layout;
-  m_ownsLayout = false;
+  delete m_layout;
   m_layout = 0L;
 }
 
-bool KateLineRange::includesCursor(const KTextEditor::Cursor& realCursor) const
+bool KateLineLayout::includesCursor(const KTextEditor::Cursor& realCursor) const
 {
-  return realCursor.line() == line() && realCursor.column() >= startCol() && (!wrap() || realCursor.column() < endCol());
+  return realCursor.line() == line();
 }
 
-int KateLineRange::xOffset() const
+const KateTextLine::Ptr& KateLineLayout::textLine() const
 {
-  return startX() ? shiftX() : 0;
-}
-
-void KateLineRange::debugOutput() const
-{
-  kdDebug() << "KateLineRange: line " << line() << " cols [" << startCol() << " -> " << endCol() << "] x [" << startX() << " -> " << endX() << " off " << shiftX() << "] wrap " << wrap() << endl;
-}
-
-bool operator> (const KateLineRange& r, const KTextEditor::Cursor& c)
-{
-  return r.line() > c.line() || r.endCol() > c.column();
-}
-
-bool operator>= (const KateLineRange& r, const KTextEditor::Cursor& c)
-{
-  return r.line() > c.line() || r.endCol() >= c.column();
-}
-
-bool operator< (const KateLineRange& r, const KTextEditor::Cursor& c)
-{
-  return r.line() < c.line() || r.startCol() < c.column();
-}
-
-bool operator<= (const KateLineRange& r, const KTextEditor::Cursor& c)
-{
-  return r.line() < c.line() || r.startCol() <= c.column();
-}
-
-const KateTextLine::Ptr& KateLineRange::textLine() const
-{
-  if (m_special)
-    return m_textLine;
-  
   if (!m_textLine)
     m_textLine = m_doc->kateTextLine(line());
-  
-  if (!m_textLine)
-    Q_ASSERT(m_textLine);
-    
+
+  Q_ASSERT(m_textLine);
+
   return m_textLine;
 }
 
-int KateLineRange::line( ) const
+int KateLineLayout::line( ) const
 {
   return m_line;
 }
 
-void KateLineRange::setLine( int line, int virtualLine )
+void KateLineLayout::setLine( int line, int virtualLine )
 {
   m_line = line;
   m_virtualLine = (virtualLine == -1) ? m_doc->getVirtualLine(line) : virtualLine;
   m_textLine = 0L;
-  Q_ASSERT(!m_special);
 }
 
-int KateLineRange::virtualLine( ) const
+int KateLineLayout::virtualLine( ) const
 {
   return m_virtualLine;
 }
 
-void KateLineRange::setVirtualLine( int virtualLine )
+void KateLineLayout::setVirtualLine( int virtualLine )
 {
   m_virtualLine = virtualLine;
 }
 
-int KateLineRange::viewLine( ) const
+bool KateLineLayout::startsInvisibleBlock() const
 {
-  return m_viewLine;
+  if (!isValid() || virtualLine() == 0)
+    return false;
+
+  return virtualLine() - 1 != m_doc->getVirtualLine(line() - 1);
 }
 
-void KateLineRange::setViewLine( int viewLine )
-{
-  m_viewLine = viewLine;
-}
-
-int KateLineRange::startCol( ) const
-{
-  return m_startCol;
-}
-
-void KateLineRange::setStartCol( int startCol )
-{
-  m_startCol = startCol;
-}
-
-int KateLineRange::endCol( ) const
-{
-  return m_endCol;
-}
-
-void KateLineRange::setEndCol( int endCol )
-{
-  m_endCol = endCol;
-}
-
-bool KateLineRange::wrap( ) const
-{
-  return m_wrap;
-}
-
-void KateLineRange::setWrap( bool wrap )
-{
-  m_wrap = wrap;
-}
-
-bool KateLineRange::isDirty( ) const
-{
-  return m_dirty;
-}
-
-bool KateLineRange::setDirty( bool dirty )
-{
-  m_dirty = dirty;
-  return m_dirty;
-}
-
-int KateLineRange::startX( ) const
-{
-  return m_startX;
-}
-
-void KateLineRange::setStartX( int startX )
-{
-  m_startX = startX;
-}
-
-int KateLineRange::endX( ) const
-{
-  return m_endX;
-}
-
-void KateLineRange::setEndX(int endX)
-{
-  m_endX = endX;
-}
-
-bool KateLineRange::startsInvisibleBlock() const
-{
-  return m_startsInvisibleBlock;
-}
-
-void KateLineRange::setStartsInvisibleBlock(bool sib)
-{
-  m_startsInvisibleBlock = sib;
-}
-
-int KateLineRange::shiftX() const
+int KateLineLayout::shiftX() const
 {
   return m_shiftX;
 }
 
-void KateLineRange::setShiftX(int shiftX)
+void KateLineLayout::setShiftX(int shiftX)
 {
   m_shiftX = shiftX;
 }
 
-KateDocument* KateLineRange::doc() const
+KateDocument* KateLineLayout::doc() const
 {
   return m_doc;
 }
 
-/*void KateLineRange::setSpecial( const KateTextLine::Ptr & textLine )
+bool KateLineLayout::isValid( ) const
 {
-  m_textLine = textLine;
-  m_special = true;
-}*/
-
-bool KateLineRange::isValid( ) const
-{
-  return line() != -1 && textLine();
+  return line() != -1 && textLine() && layout();
 }
 
-QTextLayout* KateLineRange::layout() const
+QTextLayout* KateLineLayout::layout() const
 {
   return m_layout;
 }
 
-void KateLineRange::setLayout(QTextLayout* layout, bool ownsLayout)
+void KateLineLayout::setLayout(QTextLayout* layout)
 {
-  if (m_ownsLayout) delete m_layout;
+  delete m_layout;
   m_layout = layout;
-  m_ownsLayout = ownsLayout;
+  m_dirtyList.clear();
+  if (m_layout)
+    for (int i = 0; i < QMAX(1, m_layout->lineCount()); ++i)
+      m_dirtyList.append(true);
 }
 
-bool KateLineRange::takeLayoutOwnership( )
+void KateLineLayout::invalidateLayout( )
 {
-  if (m_ownsLayout) {
-    m_ownsLayout = false;
-    return true;
+  setLayout(0L);
+}
+
+bool KateLineLayout::isDirty( int viewLine ) const
+{
+  Q_ASSERT(isValid() && viewLine >= 0 && viewLine < viewLineCount());
+  return m_dirtyList[viewLine];
+}
+
+bool KateLineLayout::setDirty( int viewLine, bool dirty )
+{
+  Q_ASSERT(isValid() && viewLine >= 0 && viewLine < viewLineCount());
+  m_dirtyList[viewLine] = dirty;
+  return dirty;
+}
+
+KTextEditor::Cursor KateLineLayout::start( ) const
+{
+  return KTextEditor::Cursor(line(), 0);
+}
+
+int KateLineLayout::length( ) const
+{
+  return textLine()->length();
+}
+
+int KateLineLayout::viewLineCount( ) const
+{
+  return m_layout->lineCount();
+}
+
+KateTextLayout KateLineLayout::viewLine( int viewLine ) const
+{
+  if (viewLine < 0)
+    viewLine += viewLineCount();
+  Q_ASSERT(isValid());
+  Q_ASSERT(viewLine >= 0 && viewLine < viewLineCount());
+  return KateTextLayout(const_cast<KateLineLayout*>(this), viewLine);
+}
+
+int KateLineLayout::width( ) const
+{
+  return layout()->boundingRect().width();
+}
+
+bool KateLineLayout::isOutsideDocument( ) const
+{
+  return line() < 0 || line() >= m_doc->lines();
+}
+
+void KateLineLayout::debugOutput() const
+{
+  kdDebug() << "KateLineLayout: " << this << " valid " << isValid() << " line " << line() << " length " << length() << " width " << width() << " viewLineCount " << viewLineCount() << endl;
+}
+
+int KateLineLayout::viewLineForColumn( int column ) const
+{
+  int len = 0;
+  int i = 0;
+  for (; i < m_layout->lineCount() - 1; ++i) {
+    len += m_layout->lineAt(i).textLength();
+    if (column < len)
+      return i;
   }
-  return false;
+  return i;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

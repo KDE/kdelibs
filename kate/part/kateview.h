@@ -259,7 +259,7 @@ class KateView : public KTextEditor::View,
   public:
     bool tagLine (const KTextEditor::Cursor& virtualCursor);
 
-    bool tagRange (const KateRange& range, bool realLines = false);
+    bool tagRange (const KTextEditor::Range& range, bool realLines = false);
     bool tagLines (int start, int end, bool realLines = false );
     bool tagLines (KTextEditor::Cursor start, KTextEditor::Cursor end, bool realCursors = false);
 
@@ -524,14 +524,14 @@ class KateView : public KTextEditor::View,
    * IM input stuff
    */
   public:
-    void setIMSelectionValue( const KateRange& imRange, const KateRange& imSelection, bool imComposeEvent );
-    void getIMSelectionValue( KateRange* imRange, KateRange* imSelection );
+    void setIMSelectionValue( const KTextEditor::Range& imRange, const KTextEditor::Range& imSelection, bool imComposeEvent );
+    void getIMSelectionValue( KTextEditor::Range* imRange, KTextEditor::Range* imSelection );
     bool isIMSelection( const KTextEditor::Cursor& pos );
     bool isIMEdit( const KTextEditor::Cursor& pos );
     bool imComposeEvent () const { return m_imComposeEvent; }
 
   private:
-    KateTextRange m_imRange, m_imSelection;
+    KTextEditor::Range m_imRange, m_imSelection;
     bool m_imComposeEvent;
 };
 

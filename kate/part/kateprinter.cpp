@@ -56,6 +56,7 @@
 //BEGIN KatePrinter
 bool KatePrinter::print (KateDocument *doc)
 {
+#if 0
 #ifndef Q_WS_WIN //TODO: reenable
   KPrinter printer;
 
@@ -608,7 +609,7 @@ bool KatePrinter::print (KateDocument *doc)
 
          // HA! this is where we print [part of] a line ;]]
          // FIXME Convert this function + related functionality to a separate KatePrintView
-         KateLineRange range(doc);
+         KateLineLayout range(doc);
          range.setLine(lineCount);
          range.setStartCol(startCol);
          range.setEndCol(endCol);
@@ -637,6 +638,7 @@ bool KatePrinter::print (KateDocument *doc)
 
 #endif //!Q_WS_WIN
   return false;
+#endif
 }
 //END KatePrinter
 

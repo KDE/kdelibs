@@ -58,7 +58,7 @@ KateRangeList::operator KateDocument*() const
   return m_doc;
 }
 
-KateSuperRange* KateRangeList::findMostSpecificRange( const KateRange & input ) const
+KateSuperRange* KateRangeList::findMostSpecificRange( const KTextEditor::Range & input ) const
 {
   return m_topRange->findMostSpecificRange(input);
 }
@@ -130,7 +130,7 @@ QPtrCollection::Item KateRangeList::newItem(QPtrCollection::Item d)
     m_columnBoundaries.append(&(simpleRange->end()));
   }
 
-  return QPtrList<KateRange>::newItem(d);
+  return QPtrList<KTextEditor::Range>::newItem(d);
 }*/
 
 #include "katerangelist.moc"

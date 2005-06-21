@@ -179,7 +179,7 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   connect(KateHlManager::self(),SIGNAL(changed()),SLOT(internalHlChanged()));
 
   // signal for the arbitrary HL
-  connect(m_arbitraryHL, SIGNAL(tagLines(KateView*, KateRange*)), SLOT(tagArbitraryLines(KateView*, KateRange*)));
+  connect(m_arbitraryHL, SIGNAL(tagLines(KateView*, KTextEditor::Range*)), SLOT(tagArbitraryLines(KateView*, KTextEditor::Range*)));
 
   // signals for mod on hd
   connect( KateGlobal::self()->dirWatch(), SIGNAL(dirty (const QString &)),
@@ -576,7 +576,7 @@ bool KateDocument::removeText ( int startLine, int startCol, int endLine, int en
     return false;
 
   if (!blockwise) {
-    emit aboutToRemoveText(KateTextRange(startLine, startCol, endLine, endCol));
+    emit aboutToRemoveText(KTextEditor::Range(startLine, startCol, endLine, endCol));
   }
   editStart ();
 
@@ -1004,9 +1004,11 @@ bool KateDocument::editInsertText ( uint line, uint col, const QString &str )
   m_buffer->changeLine(line);
 
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
-    it.current()->editTextInserted (line, col, s.length());
+    it.current()->editTextInserted(line, col, s.length());
 
-  editEnd ();
+  emit KTextEditor::Document::textInserted(this, KTextEditor::Range(line, col, line, col + s.length()));
+
+  editEnd();
 
   return true;
 }
@@ -1032,6 +1034,8 @@ bool KateDocument::editRemoveText ( uint line, uint col, uint len )
 
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editTextRemoved (line, col, len);
+
+  emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, col, line, col + len));
 
   editEnd ();
 
@@ -1132,6 +1136,8 @@ bool KateDocument::editWrapLine ( uint line, uint col, bool newLine, bool *newLi
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineWrapped (line, col, !nextLine || newLine);
 
+  emit KTextEditor::Document::textInserted(this, KTextEditor::Range(line, col, line+1, 0));
+
   editEnd ();
 
   return true;
@@ -1201,6 +1207,8 @@ bool KateDocument::editUnWrapLine ( uint line, bool removeLine, uint length )
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineUnWrapped (line, col, removeLine, length);
 
+  emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, col, line+1, 0));
+
   editEnd ();
 
   return true;
@@ -1246,6 +1254,8 @@ bool KateDocument::editInsertLine ( uint line, const QString &s )
 
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineInserted (line);
+
+  emit KTextEditor::Document::textInserted(this, KTextEditor::Range(line, 0, line+1, 0));
 
   editEnd ();
 
@@ -1294,6 +1304,8 @@ bool KateDocument::editRemoveLine ( uint line )
 
   for( Q3PtrListIterator<KateSuperCursor> it (m_superCursors); it.current(); ++it )
     it.current()->editLineRemoved (line);
+
+  emit KTextEditor::Document::textRemoved(this, KTextEditor::Range(line, 0, line+1, 0));
 
   editEnd();
 
@@ -3719,9 +3731,9 @@ void KateDocument::newBracketMark( const KTextEditor::Cursor& cursor, KateSuperR
 {
   bm.setValid(false);
 
-  bm.start() = cursor;
+  bm.setStart(cursor);
 
-  if( !findMatchingBracket( bm.start(), bm.end(), maxLines ) )
+  if( !findMatchingBracket( bm, maxLines ) )
     return;
 
   bm.setValid(true);
@@ -3732,14 +3744,14 @@ void KateDocument::newBracketMark( const KTextEditor::Cursor& cursor, KateSuperR
   //bm.setIndentMin(QMIN(indentStart, indentEnd));
 }
 
-bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor::Cursor& end, int maxLines )
+bool KateDocument::findMatchingBracket( KTextEditor::Range& range, int maxLines )
 {
-  KateTextLine::Ptr textLine = m_buffer->plainLine( start.line() );
+  KateTextLine::Ptr textLine = m_buffer->plainLine( range.start().line() );
   if( !textLine )
     return false;
 
-  QChar right = textLine->getChar( start.column() );
-  QChar left  = textLine->getChar( start.column() - 1 );
+  QChar right = textLine->getChar( range.start().column() );
+  QChar left  = textLine->getChar( range.start().column() - 1 );
   QChar bracket;
 
   if ( config()->configFlags() & KateDocumentConfig::cfOvr ) {
@@ -3751,10 +3763,10 @@ bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor:
   } else if ( isStartBracket( right ) ) {
     bracket = right;
   } else if ( isEndBracket( left ) ) {
-    start.setColumn(start.column() - 1);
+    range.setStartColumn(range.start().column() - 1);
     bracket = left;
   } else if ( isBracket( left ) ) {
-    start.setColumn(start.column() - 1);
+    range.setStartColumn(range.start().column() - 1);
     bracket = left;
   } else if ( isBracket( right ) ) {
     bracket = right;
@@ -3775,30 +3787,33 @@ bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor:
   }
 
   bool forward = isStartBracket( bracket );
-  int startAttr = textLine->attribute( start.column() );
+  int startAttr = textLine->attribute( range.start().column() );
   uint count = 0;
   int lines = 0;
-  end = start;
+  range.setEnd(range.start());
 
   while( true ) {
     /* Increment or decrement, check base cases */
     if( forward ) {
-      end.setColumn(end.column() + 1);
-      if( end.column() >= lineLength( end.line() ) ) {
-        if( end.line() >= (int)lastLine() )
+      if( range.end().column() + 1 < lineLength( range.end().line() ) ) {
+        range.setEndColumn(range.end().column() + 1);
+
+      } else {
+        if( range.end().line() >= (int)lastLine() )
           return false;
-        end.setPosition(end.line() + 1, 0);
-        textLine = m_buffer->plainLine( end.line() );
+        range.setEnd(range.end().line() + 1, 0);
+        textLine = m_buffer->plainLine( range.end().line() );
         lines++;
       }
     } else {
-      end.setColumn(end.column() - 1);
-      if( end.column() < 0 ) {
-        if( end.line() <= 0 )
+      if( range.end().column() > 0 ) {
+        range.setEndColumn(range.end().column() - 1);
+
+      } else {
+        if( range.end().line() <= 0 )
           return false;
-        end.setLine(end.line() - 1);
-        end.setColumn(lineLength( end.line() ) - 1);
-        textLine = m_buffer->plainLine( end.line() );
+        range.setEnd(range.end().line() - 1, lineLength( range.end().line() ) - 1);
+        textLine = m_buffer->plainLine( range.end().line() );
         lines++;
       }
     }
@@ -3807,11 +3822,11 @@ bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor:
       return false;
 
     /* Easy way to skip comments */
-    if( textLine->attribute( end.column() ) != startAttr )
+    if( textLine->attribute( range.end().column() ) != startAttr )
       continue;
 
     /* Check for match */
-    QChar c = textLine->getChar( end.column() );
+    QChar c = textLine->getChar( range.end().column() );
     if( c == bracket ) {
       count++;
     } else if( c == opposite ) {
@@ -3819,7 +3834,6 @@ bool KateDocument::findMatchingBracket( KTextEditor::Cursor& start, KTextEditor:
         return true;
       count--;
     }
-
   }
 }
 
@@ -4085,7 +4099,7 @@ void KateDocument::dumpRegionTree()
 }
 //END
 
-void KateDocument::tagArbitraryLines(KateView* view, KateRange* range)
+void KateDocument::tagArbitraryLines(KateView* view, KTextEditor::Range* range)
 {
   if (view)
     view->tagLines(range->start(), range->end());

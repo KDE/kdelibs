@@ -159,10 +159,10 @@ void KateRenderer::setPrinterFriendly(bool printerFriendly)
   setDrawCaret(false);
 }
 
-bool KateRenderer::paintTextLineBackground(QPainter& paint, int line, bool isCurrentLine, int xStart, int xEnd)
+void KateRenderer::paintTextLineBackground(QPainter& paint, KateLineLayoutPtr layout, int currentViewLine, int xStart, int xEnd)
 {
   if (isPrinterFriendly())
-    return false;
+    return;
 
   // font data
   KateFontStruct *fs = config()->fontStruct();
@@ -170,58 +170,62 @@ bool KateRenderer::paintTextLineBackground(QPainter& paint, int line, bool isCur
   // Normal background color
   QColor backgroundColor( config()->backgroundColor() );
 
-  bool selectionPainted = false;
-  /*if (showSelections() && m_view->lineSelected(line))
-  {
-    backgroundColor = config()->selectionColor();
-    selectionPainted = true;
-  }
-  else*/
-  {
-    // paint the current line background if we're on the current line
-    if (isCurrentLine)
-      backgroundColor = config()->highlightedLineColor();
+  // paint the current line background if we're on the current line
+  QColor currentLineColor = config()->highlightedLineColor();
 
-    // Check for mark background
-    int markRed = 0, markGreen = 0, markBlue = 0, markCount = 0;
+  // Check for mark background
+  int markRed = 0, markGreen = 0, markBlue = 0, markCount = 0;
 
-    // Retrieve marks for this line
-    uint mrk = m_doc->mark( line );
-    if (mrk)
+  // Retrieve marks for this line
+  uint mrk = m_doc->mark( layout->line() );
+  if (mrk)
+  {
+    for (uint bit = 0; bit < 32; bit++)
     {
-      for (uint bit = 0; bit < 32; bit++)
+      KTextEditor::MarkInterface::MarkTypes markType = (KTextEditor::MarkInterface::MarkTypes)(1<<bit);
+      if (mrk & markType)
       {
-        KTextEditor::MarkInterface::MarkTypes markType = (KTextEditor::MarkInterface::MarkTypes)(1<<bit);
-        if (mrk & markType)
-        {
-          QColor markColor = config()->lineMarkerColor(markType);
+        QColor markColor = config()->lineMarkerColor(markType);
 
-          if (markColor.isValid()) {
-            markCount++;
-            markRed += markColor.red();
-            markGreen += markColor.green();
-            markBlue += markColor.blue();
-          }
+        if (markColor.isValid()) {
+          markCount++;
+          markRed += markColor.red();
+          markGreen += markColor.green();
+          markBlue += markColor.blue();
         }
-      } // for
-    } // Marks
+      }
+    } // for
+  } // Marks
 
+  if (markCount) {
+    markRed /= markCount;
+    markGreen /= markCount;
+    markBlue /= markCount;
+    backgroundColor.setRgb(
+      int((backgroundColor.red() * 0.9) + (markRed * 0.1)),
+      int((backgroundColor.green() * 0.9) + (markGreen * 0.1)),
+      int((backgroundColor.blue() * 0.9) + (markBlue * 0.1))
+    );
+  }
+
+  // Draw line background
+  paint.fillRect(0, 0, xEnd - xStart, fs->fontHeight * layout->viewLineCount(), backgroundColor);
+
+  // paint the current line background if we're on the current line
+  if (currentViewLine != -1) {
     if (markCount) {
       markRed /= markCount;
       markGreen /= markCount;
       markBlue /= markCount;
-      backgroundColor.setRgb(
-        int((backgroundColor.red() * 0.9) + (markRed * 0.1)),
-        int((backgroundColor.green() * 0.9) + (markGreen * 0.1)),
-        int((backgroundColor.blue() * 0.9) + (markBlue * 0.1))
+      currentLineColor.setRgb(
+        int((currentLineColor.red() * 0.9) + (markRed * 0.1)),
+        int((currentLineColor.green() * 0.9) + (markGreen * 0.1)),
+        int((currentLineColor.blue() * 0.9) + (markBlue * 0.1))
       );
     }
-  } // background preprocessing
 
-  // Draw line background
-  paint.fillRect(0, 0, xEnd - xStart, fs->fontHeight, backgroundColor);
-
-  return selectionPainted;
+    paint.fillRect(0, fs->fontHeight * currentViewLine, xEnd - xStart, fs->fontHeight, currentLineColor);
+  }
 }
 
 void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
@@ -286,7 +290,7 @@ void KateRenderer::paintWhitespaceMarker(QPainter &paint, uint x, uint y)
   return currentRange;
 }
 
-KateAttribute merge(QPtrList<KateRange> ranges)
+KateAttribute merge(QPtrList<KTextEditor::Range> ranges)
 {
   ranges.sort();
 
@@ -315,7 +319,7 @@ class RenderRange {
     KTextEditor::Cursor nextBoundary() const
     {
       KateSuperRange* r = m_currentRange->deepestRangeIncluding(m_currentPos);
-      foreach (KateSuperRange* child, m_currentRange->childRanges()) {
+      foreach (KateSuperRange* child, r->childRanges()) {
         if (child->start() > m_currentPos)
           return child->start();
       }
@@ -457,7 +461,7 @@ void KateRenderer::paintIndentMarker(QPainter &paint, uint x, uint row)
   paint.setPen( penBackup );
 }
 
-void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KTextEditor::Cursor* cursor)
+void KateRenderer::paintTextLine(QPainter& paint, KateLineLayoutPtr range, int xStart, int xEnd, const KTextEditor::Cursor* cursor)
 {
   int line = range->line();
 
@@ -470,14 +474,9 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
   bool showCursor = drawCaret() && cursor && range->includesCursor(*cursor);
 
-  RenderRangeList renderRanges(m_doc->arbitraryHL()->startingRanges(range->rangeStart(), m_view));
-
-  // length, chars + raw attribs
-  uint len = textLine->length();
-  uint oldLen = len;
+  RenderRangeList renderRanges(m_doc->arbitraryHL()->startingRanges(range->start(), m_view));
 
   // should the cursor be painted (if it is in the current xstart - xend range)
-  bool cursorVisible = false;
   int cursorMaxWidth = 0;
 
   // font data
@@ -489,62 +488,30 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
   uint startSel = 0;
   uint endSel = 0;
 
-  int minIndent = 0;
+  int currentViewLine = -1;
+  if (cursor && cursor->line() == range->line())
+    currentViewLine = range->viewLineForColumn(cursor->column());
 
-  // was the selection background already completely painted ?
-  bool selectionPainted = false;
-  bool isCurrentLine = (cursor && range->includesCursor(*cursor));
-  selectionPainted = paintTextLineBackground(paint, line, isCurrentLine, xStart, xEnd);
-  if (selectionPainted)
-  {
-    hasSel = true;
-    startSel = 0;
-    endSel = len + 1;
-  }
-
-  int startcol = range->startCol();
-  if (startcol > (int)len)
-    startcol = len;
-
-  if (startcol < 0)
-    startcol = 0;
-
-  int endcol = range->wrap() ? range->endCol() : -1;
-  if (endcol < 0)
-    len = len - startcol;
-  else
-    len = endcol - startcol;
+  paintTextLineBackground(paint, range, currentViewLine, xStart, xEnd);
 
   // text attribs font/style data
   KateAttribute* attr = m_doc->highlight()->attributes(m_schema)->data();
 
   const QColor *cursorColor = &attr[0].textColor();
 
-  // Start arbitrary highlighting
-  KTextEditor::Cursor currentPos(line, startcol);
-  KTextEditor::Cursor nextPos(line, startcol + 1);
-  KateAttribute currentHL;
-
-  if (showSelections() && !selectionPainted)
-    hasSel = getSelectionBounds(line, oldLen, startSel, endSel);
+  if (showSelections())
+    hasSel = getSelectionBounds(line, range->length(), startSel, endSel);
 
   // Draws the dashed underline at the start of a folded block of text.
   if (range->startsInvisibleBlock()) {
     paint.setPen(QPen(config()->wordWrapMarkerColor(), 1, Qt::DashLine));
-    paint.drawLine(0, fs->fontHeight - 1, xEnd - xStart, fs->fontHeight - 1);
-  }
-
-  // draw word-wrap-honor-indent filling
-  if (range->xOffset() && range->xOffset() > xStart)
-  {
-    paint.fillRect(0, 0, range->xOffset() - xStart, fs->fontHeight,
-      QBrush(config()->wordWrapMarkerColor(), Qt::DiagCrossPattern));
+    paint.drawLine(0, (fs->fontHeight * range->viewLineCount()) - 1, xEnd - xStart, (fs->fontHeight * range->viewLineCount()) - 1);
   }
 
   KateAttribute customHL = renderRanges.generateAttribute();
 
   if (range->layout()) {
-    if (len > 0) {
+    if (range->length() > 0) {
       // Set up the selection backgrounds
       QVector<QTextLayout::FormatRange> selections;
       if (hasSel) {
@@ -554,8 +521,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
             continue;
 
           QTextLayout::FormatRange fr;
-          fr.start = QMAX(al[i], (int)startSel) - range->startCol();
-          fr.length = QMIN(al[i+1], (int)endSel - range->startCol() - fr.start);
+          fr.start = QMAX(al[i], (int)startSel);
+          fr.length = QMIN(al[i+1], (int)endSel - fr.start);
           fr.format.setBackground(config()->selectionColor());
 
           KateAttribute* a = specificAttribute(al[i+2]);
@@ -573,10 +540,21 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       range->layout()->draw(&paint, QPoint(-xStart,0), selections);
     }
 
-    // Draw selection outside of areas where text is rendered
-    if (hasSel && m_view->lineEndSelected(range->line(), range->endCol())) {
-      QRect area((len ? range->endX() - range->startX() + range->xOffset() - xStart : 0), 0, xEnd - xStart, fs->fontHeight);
-      paint.fillRect(area, config()->selectionColor());
+    // Loop each individual line for additional text decoration etc.
+    for (int i = 0; i < range->viewLineCount(); ++i) {
+      KateTextLayout line = range->viewLine(i);
+      // Draw selection outside of areas where text is rendered
+      if (hasSel && m_view->lineEndSelected(range->line(), line.endCol())) {
+        QRect area(line.endX() - line.startX() + line.xOffset() - xStart, 0, xEnd - xStart, fs->fontHeight);
+        paint.fillRect(area, config()->selectionColor());
+      }
+    }
+
+    // draw word-wrap-honor-indent filling
+    if (range->viewLineCount() && range->shiftX() && range->shiftX() > xStart)
+    {
+      paint.fillRect(0, fs->fontHeight, range->shiftX() - xStart, fs->fontHeight * (range->viewLineCount() - 1),
+        QBrush(config()->wordWrapMarkerColor(), Qt::DiagCrossPattern));
     }
 
     // Draw cursor
@@ -588,7 +566,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       paint.setPen(QPen(*cursorColor, cursorWidth));
 
       // Draw the cursor, start drawing in the middle as the above sets the width from the centre of the line
-      range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->column() - range->startCol());
+      range->layout()->drawCursor(&paint, QPoint(cursorWidth/2 - xStart,0), cursor->column());
 
       paint.restore();
     }
@@ -1249,25 +1227,15 @@ uint KateRenderer::spaceWidth()
   return attribute(0)->width(*config()->fontStruct(), spaceChar, m_tabWidth);
 }
 
-void KateRenderer::layoutLine(KateLineRange& range, int maxwidth) const
+void KateRenderer::layoutLine(KateLineLayoutPtr lineLayout, int maxwidth, bool cacheLayout) const
 {
   // if maxwidth == -1 we have no wrap
 
-  Q_ASSERT(range.textLine());
-
-  /*if (!range.textLine() || range.textLine()->string().isEmpty()) {
-    range.setEndCol(0);
-    range.setEndX(0);
-    range.setWrap(false);
-    return;
-  }*/
-
-  range.setLayout(new QTextLayout(range.textLine()->string().mid(range.startCol()), config()->fontStruct()->font(false, false)), true);
-
+  Q_ASSERT(lineLayout->textLine());
   Q_ASSERT(currentFont());
 
-  QTextLayout* l = range.layout();
-  l->setCacheEnabled(true);
+  QTextLayout* l = new QTextLayout(lineLayout->textLine()->string(), config()->fontStruct()->font(false, false));
+  l->setCacheEnabled(cacheLayout);
 
   // Initial setup of the QTextLayout.
 
@@ -1286,10 +1254,10 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth) const
 
   // Initialise syntax highlighting ranges
   QList<QTextLayout::FormatRange> formatRanges;
-  const QVector<int> &al = range.textLine()->attributesList();
+  const QVector<int> &al = lineLayout->textLine()->attributesList();
   for (int i = 0; i+2 < al.count(); i += 3) {
     QTextLayout::FormatRange fr;
-    fr.start = al[i] - range.startCol();
+    fr.start = al[i];
     fr.length = al[i+1];
     fr.format = specificAttribute(al[i+2])->toFormat();
 
@@ -1301,37 +1269,59 @@ void KateRenderer::layoutLine(KateLineRange& range, int maxwidth) const
   // Begin layouting
   l->beginLayout();
 
-  QTextLine line = l->createLine();
-  if (line.isValid()) {
+  int height = 0;
+  int shiftX = 0;
+
+  forever {
+    QTextLine line = l->createLine();
+    if (!line.isValid())
+      break;
+
     if (maxwidth > 0)
       line.setLineWidth(maxwidth);
 
-    //if (range.startX())
-      //kdDebug() << "offset " << range.xOffset() << " pixels " << (range.xOffset() * spaceWidth()) << endl;
+    //kdDebug() << k_funcinfo << "Laid out line at " << shiftX << ", " << height << endl;
+    line.setPosition(QPoint(line.lineNumber() ? shiftX : 0, height));
 
-    line.setPosition(QPoint(range.xOffset(), 0));
+    if (!line.lineNumber() && maxwidth != -1) {
+      // Determine x offset for subsequent-lines-of-paragraph indenting
+      if (m_view->config()->dynWordWrapAlignIndent() > 0)
+      {
+        if (shiftX == 0)
+        {
+          int pos = lineLayout->textLine()->nextNonSpaceChar(0);
+
+          if (pos > 0) {
+            shiftX = line.cursorToX(pos);
+          }
+
+          if (shiftX > ((double)maxwidth / 100 * m_view->config()->dynWordWrapAlignIndent()) || shiftX == -1)
+            shiftX = 0;
+        }
+      }
+      lineLayout->setShiftX(shiftX);
+    }
+
+    height += config()->fontStruct()->fontHeight;
   }
 
-  range.setEndCol(range.startCol() + line.textLength());
-  range.setEndX(range.startX() + line.naturalTextWidth());
-  range.setWrap(range.endCol() < range.textLine()->length());
-
   l->endLayout();
+
+  lineLayout->setLayout(l);
 }
 
-int KateRenderer::cursorToX( KateLineRange & range, int col, bool doLayout, int maxwidth ) const
+int KateRenderer::cursorToX(const KateTextLayout& range, int col, int maxwidth ) const
 {
-  return cursorToX(range, KTextEditor::Cursor(range.line(), col), doLayout, maxwidth);
+  return cursorToX(range, KTextEditor::Cursor(range.line(), col), maxwidth);
 }
 
-int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & pos, bool doLayout, int maxwidth ) const
+int KateRenderer::cursorToX(const KateTextLayout& range, const KTextEditor::Cursor & pos, int maxwidth ) const
 {
   //kdDebug() << k_funcinfo << pos.column() << " doLayout " << doLayout << endl;
   //range.debugOutput();
-  if (!range.layout() && !doLayout)
-    return -1;
+  Q_ASSERT(range.isValid());
 
-  if (!range.layout() || !range.includesCursor(pos)) {
+  /*if (!range.layout() || !range.includesCursor(pos)) {
     bool first = true;
     do {
       if (first) {
@@ -1345,7 +1335,7 @@ int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & 
       // FIXME most likely an infinite loop here
     } while (!range.includesCursor(pos));
     //Q_ASSERT(range.layout());
-  }
+  }*/
 
   /*if (range.isEmpty() || range.layout()->lineCount() < 1)
     if (pos.column() == 0)
@@ -1353,38 +1343,39 @@ int KateRenderer::cursorToX( KateLineRange & range, const KTextEditor::Cursor & 
     else
       return -1;*/
 
-  return range.layout()->lineAt(0).cursorToX(pos.column() - range.startCol());
+  return range.lineLayout().cursorToX(pos.column());
 }
 
-int KateRenderer::cursorToX( const KTextEditor::Cursor & pos, int maxwidth ) const
+/*int KateRenderer::cursorToX( const KTextEditor::Cursor & pos, int maxwidth ) const
 {
-  KateLineRange range(m_doc);
+  KateLineLayout range(m_doc);
   range.setLine(pos.line());
   range.setStartCol(0);
   range.setStartX(0);
   return cursorToX(range, pos, true, maxwidth);
-}
+}*/
 
-int KateRenderer::xToCursor( KateLineRange & range, int x ) const
+int KateRenderer::xToCursor(const KateTextLayout & range, int x ) const
 {
   // TODO: do we want to return endCol for out-of-bounds requests?
 
-  if (!range.layout()) {
+  /*if (!range.layout()) {
     if (range.isEmpty())
       return 0;
 
     kdDebug() << k_funcinfo << range.layout() << " " << x << endl;
     return -1;
-  }
+  }*/
+
+  Q_ASSERT(range.isValid());
 
   if (x <  range.xOffset())
     x = range.xOffset();
   else if (x > range.width() + range.xOffset())
     x = range.width() + range.xOffset();
 
-  Q_ASSERT(range.layout());
-  Q_ASSERT(range.layout()->lineCount() >= 1);
-  return range.layout()->lineAt(0).xToCursor(x) + range.startCol();
+  Q_ASSERT(range.isValid());
+  return range.lineLayout().xToCursor(x);
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

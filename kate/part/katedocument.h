@@ -289,17 +289,6 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     /**
-     * Emitted each time text is inserted into a pre-existing line, including appends.
-     * Does not include newly inserted lines at the moment. ### needed?
-     */
-    void editTextInserted ( uint line, uint col, uint len);
-
-    /**
-     * Emitted each time text is removed from a line, including truncates and space removal.
-     */
-    void editTextRemoved ( uint line, uint col, uint len);
-
-    /**
      * Emmitted when text from @p line was wrapped at position pos onto line @p nextLine.
      */
     void editLineWrapped ( uint line, uint col, uint len );
@@ -308,16 +297,6 @@ class KateDocument : public KTextEditor::Document,
      * Emitted each time text from @p nextLine was upwrapped onto @p line.
      */
     void editLineUnWrapped ( uint line, uint col );
-
-    /**
-     * Emitted whenever a line is inserted before @p line, becoming itself line @ line.
-     */
-    void editLineInserted ( uint line );
-
-    /**
-     * Emitted when a line is deleted.
-     */
-    void editLineRemoved ( uint line );
 
   private:
     void undoStart();
@@ -415,7 +394,7 @@ class KateDocument : public KTextEditor::Document,
     KateArbitraryHighlight* arbitraryHL() const { return m_arbitraryHL; };
 
   private slots:
-    void tagArbitraryLines(KateView* view, KateRange* range);
+    void tagArbitraryLines(KateView* view, KTextEditor::Range* range);
 
   //
   // KTextEditor::ConfigInterface stuff
@@ -690,7 +669,7 @@ class KateDocument : public KTextEditor::Document,
     void tagAll();
 
     void newBracketMark( const KTextEditor::Cursor& start, KateSuperRange& bm, int maxLines = -1 );
-    bool findMatchingBracket( KTextEditor::Cursor& start, KTextEditor::Cursor& end, int maxLines = -1 );
+    bool findMatchingBracket( KTextEditor::Range& range, int maxLines = -1 );
 
   private:
     void guiActivateEvent( KParts::GUIActivateEvent *ev );
@@ -794,7 +773,7 @@ class KateDocument : public KTextEditor::Document,
 
   signals:
     void codeFoldingUpdated();
-    void aboutToRemoveText(const KateRange&);
+    void aboutToRemoveText(const KTextEditor::Range&);
     void textRemoved();
 
   private slots:

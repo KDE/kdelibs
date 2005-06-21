@@ -264,7 +264,7 @@ void KateGlobal::configDialog(QWidget *parent)
 
   Q3PtrList<KTextEditor::ConfigPage> editorPages;
 
-  for (uint i = 0; i < configPages (); i++)
+  for (int i = 0; i < configPages (); i++)
   {
     QStringList path;
     path.clear();

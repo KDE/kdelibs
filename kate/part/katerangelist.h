@@ -22,7 +22,7 @@
 #include "katesuperrange.h"
 
 /**
- * A class which contains a list of KateRanges. Mostly a convenience class,
+ * A class which contains a list of KTextEditor::Ranges. Mostly a convenience class,
  * as storage of the relationships is done within the ranges themselves.
  */
 class KateRangeList : public QObject
@@ -47,7 +47,7 @@ class KateRangeList : public QObject
      * Finds the most specific range in a heirachy for the given input range
      * (ie. the smallest range which wholly contains the input range)
      */
-    KateSuperRange* findMostSpecificRange(const KateRange& input) const;
+    KateSuperRange* findMostSpecificRange(const KTextEditor::Range& input) const;
 
     /**
      * Finds the first range which includes position \p pos.

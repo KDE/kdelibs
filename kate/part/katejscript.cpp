@@ -842,7 +842,7 @@ Value KateJSIndenterProtoFunc::call(KJS::ExecState *exec, KJS::Object &thisObj, 
 KateIndentJScriptImpl::KateIndentJScriptImpl(const QString& internalName,
         const QString  &filePath, const QString &niceName,
         const QString &copyright, double version):
-          KateIndentScriptImplAbstract(internalName,filePath,niceName,copyright,version),m_interpreter(0),m_indenter(0)
+          KateIndentScriptImplAbstract(internalName,filePath,niceName,copyright,version),m_indenter(0),m_interpreter(0)
 {
 }
 

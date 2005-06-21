@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002,2003 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2002-2005 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2003      Anakim Border <aborder@sources.sourceforge.net>
 
    This library is free software; you can redistribute it and/or
@@ -22,74 +22,54 @@
 
 #include "katecursor.h"
 #include "katetextline.h"
+#include "katetextlayout.h"
 
 class QTextLayout;
 class KateDocument;
 
-class KateLineRange
+class KateLineLayout : public KShared
 {
   public:
-    KateLineRange(KateDocument* doc = 0L);
-    KateLineRange(const KateLineRange& copy);
-    ~KateLineRange();
-
-    // This takes ownership of the layout from the range being copied
-    KateLineRange& operator=(KateLineRange& r);
-    // This leaves ownership intact
-    KateLineRange& operator=(const KateLineRange& r);
+    KateLineLayout(KateDocument* doc = 0L);
+    ~KateLineLayout();
 
     KateDocument* doc() const;
-    KTextEditor::Cursor rangeStart() const;
+    void debugOutput() const;
 
     void clear();
     bool isValid() const;
+    bool isOutsideDocument() const;
 
     bool includesCursor(const KTextEditor::Cursor& realCursor) const;
 
-    friend bool operator> (const KateLineRange& r, const KTextEditor::Cursor& c);
-    friend bool operator>= (const KateLineRange& r, const KTextEditor::Cursor& c);
-    friend bool operator< (const KateLineRange& r, const KTextEditor::Cursor& c);
-    friend bool operator<= (const KateLineRange& r, const KTextEditor::Cursor& c);
-
-    // Override current textLine. Only use when you know what you're doing.
-    //void setSpecial(const KateTextLine::Ptr& textLine);
+    friend bool operator> (const KateLineLayout& r, const KTextEditor::Cursor& c);
+    friend bool operator>= (const KateLineLayout& r, const KTextEditor::Cursor& c);
+    friend bool operator< (const KateLineLayout& r, const KTextEditor::Cursor& c);
+    friend bool operator<= (const KateLineLayout& r, const KTextEditor::Cursor& c);
 
     const KateTextLine::Ptr& textLine() const;
+    int length() const;
 
     int line() const;
     /**
      * Only pass virtualLine if you know it (and thus we shouldn't try to look it up)
      */
     void setLine(int line, int virtualLine = -1);
+    KTextEditor::Cursor start() const;
 
     int virtualLine() const;
     void setVirtualLine(int virtualLine);
 
-    int viewLine() const;
-    void setViewLine(int viewLine);
+    bool isDirty(int viewLine) const;
+    bool setDirty(int viewLine, bool dirty = true);
 
-    int startCol() const;
-    void setStartCol(int startCol);
+    int width() const;
 
-    int endCol() const;
-    void setEndCol(int endCol);
-    
-    int length() const { return endCol() - startCol(); }
-    bool isEmpty() const { return startCol() == 0 && endCol() == 0; }
+    int viewLineCount() const;
+    KateTextLayout viewLine(int viewLine) const;
+    int viewLineForColumn(int column) const;
 
-    bool wrap() const;
-    void setWrap(bool wrap);
-
-    bool isDirty() const;
-    bool setDirty(bool dirty = true);
-
-    int startX() const;
-    void setStartX(int startX);
-
-    int endX() const;
-    void setEndX(int endX);
-    
-    int width() const { return endX() - startX(); }
+    bool startsInvisibleBlock() const;
 
     // This variable is used as follows:
     // non-dynamic-wrapping mode: unused
@@ -101,38 +81,28 @@ class KateLineRange
     int shiftX() const;
     void setShiftX(int shiftX);
 
-    int xOffset() const;
-
-    bool startsInvisibleBlock() const;
-    void setStartsInvisibleBlock(bool sib);
-
     QTextLayout* layout() const;
-    void setLayout(QTextLayout* layout, bool ownsLayout);
-    bool takeLayoutOwnership();
-    
-    void debugOutput() const;
+    void setLayout(QTextLayout* layout);
+    void invalidateLayout();
 
 private:
+    // Disable copy
+    KateLineLayout(const KateLineLayout& copy);
+
     QTextLayout* takeLayout() const;
 
     KateDocument* m_doc;
     mutable KateTextLine::Ptr m_textLine;
     int m_line;
     int m_virtualLine;
-    int m_viewLine;
-    int m_startCol;
-    int m_endCol;
-    int m_startX;
-    int m_endX;
     int m_shiftX;
 
     bool m_dirty : 1;
-    bool m_wrap : 1;
-    bool m_startsInvisibleBlock : 1;
-    bool m_special : 1;
-    bool m_ownsLayout : 1;
 
     QTextLayout* m_layout;
+    QList<bool> m_dirtyList;
 };
+
+typedef KSharedPtr<KateLineLayout> KateLineLayoutPtr;
 
 #endif

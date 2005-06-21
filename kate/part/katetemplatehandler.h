@@ -65,7 +65,7 @@ class KateTemplateHandler: public QObject, public KateKeyInterceptorFunctor {
 	private slots:
 		void slotTextInserted(int,int);
 		void slotDocumentDestroyed();
-		void slotAboutToRemoveText(const KateRange& range);
+		void slotAboutToRemoveText(const KTextEditor::Range& range);
 		void slotTextRemoved();
 };
 #endif

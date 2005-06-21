@@ -121,7 +121,7 @@ KateTemplateHandler::KateTemplateHandler(
    connect(doc,SIGNAL(charactersSemiInteractivelyInserted(int ,int ,const QString&)),this,
    SLOT(slotCharactersInteractivlyInserted(int,int,const QString&)));*/
   connect( doc, SIGNAL( textInserted( int, int ) ), this, SLOT( slotTextInserted( int, int ) ) );
-  connect( doc, SIGNAL( aboutToRemoveText( const KateRange& ) ), this, SLOT( slotAboutToRemoveText( const KateRange& ) ) );
+  connect( doc, SIGNAL( aboutToRemoveText( const KTextEditor::Range& ) ), this, SLOT( slotAboutToRemoveText( const KTextEditor::Range& ) ) );
   connect( doc, SIGNAL( textRemoved() ), this, SLOT( slotTextRemoved() ) );
 
   ( *this ) ( Qt::Key_Tab );
@@ -303,7 +303,7 @@ bool KateTemplateHandler::operator() ( KKey key )
   return true;
 }
 
-void KateTemplateHandler::slotAboutToRemoveText( const KateRange& range )
+void KateTemplateHandler::slotAboutToRemoveText( const KTextEditor::Range& range )
 {
   if ( m_recursion ) return ;
 
@@ -317,7 +317,7 @@ void KateTemplateHandler::slotAboutToRemoveText( const KateRange& range )
   if ( m_doc )
   {
     disconnect( m_doc, SIGNAL( textInserted( int, int ) ), this, SLOT( slotTextInserted( int, int ) ) );
-    disconnect( m_doc, SIGNAL( aboutToRemoveText( const KateRange& ) ), this, SLOT( slotAboutToRemoveText( const KateRange& ) ) );
+    disconnect( m_doc, SIGNAL( aboutToRemoveText( const KTextEditor::Range& ) ), this, SLOT( slotAboutToRemoveText( const KTextEditor::Range& ) ) );
     disconnect( m_doc, SIGNAL( textRemoved() ), this, SLOT( slotTextRemoved() ) );
   }
 

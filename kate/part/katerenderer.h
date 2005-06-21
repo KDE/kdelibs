@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2003 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2003-2005 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2001 Christoph Cullmann <cullmann@kde.org>
    Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 1999 Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
@@ -25,6 +25,7 @@
 #include "katecursor.h"
 #include "kateattribute.h"
 #include "katetextline.h"
+#include "katelinerange.h"
 
 #include <qfont.h>
 #include <qfontmetrics.h>
@@ -33,9 +34,11 @@
 
 class KateDocument;
 class KateView;
-class KateLineRange;
 class KateRendererConfig;
-class KateRange;
+namespace  KTextEditor { class Range; }
+
+class KateLineLayout;
+typedef KSharedPtr<KateLineLayout> KateLineLayoutPtr;
 
 /**
  * Handles all of the work of rendering the text
@@ -64,6 +67,16 @@ public:
      * Destructor
      */
     ~KateRenderer();
+
+    /**
+     * Returns the document to which this renderer is bound
+     */
+    KateDocument* doc() const { return m_doc; }
+
+    /**
+     * Returns the view to which this renderer is bound
+     */
+    KateView* view() const { return m_view; }
 
     /**
      * update the highlighting attributes
@@ -169,30 +182,25 @@ public:
     /**
      * Text width & height calculation functions...
      */
-    void layoutLine(KateLineRange& range, int maxwidth = -1) const;
+    void layoutLine(KateLineLayoutPtr line, int maxwidth = -1, bool cacheLayout = false) const;
 
     // Width calculators
     uint spaceWidth();
     uint textWidth(const KateTextLine::Ptr &, int cursorCol) KDE_DEPRECATED;
     uint textWidth(const KateTextLine::Ptr &textLine, uint startcol, uint maxwidth, bool *needWrap, int *endX = 0)  KDE_DEPRECATED;
     uint textWidth(const KTextEditor::Cursor& cursor)  KDE_DEPRECATED;
-    
+
     /**
      * Returns the x position of cursor \p col on the line \p range. If \p doLayout
      * is false, \p col must be on the line laid out in \p range, else the function
      * will return -1.  If \p doLayout is true, the text will be laid out until the
      * answer is found.
      */
-    int cursorToX(KateLineRange& range, int col, bool doLayout = false, int maxwidth = -1) const;
+    int cursorToX(const KateTextLayout& range, int col, int maxwidth = -1) const;
     /// \overload
-    int cursorToX(KateLineRange& range, const KTextEditor::Cursor& pos, bool doLayout = false, int maxwidth = -1) const;
-    /**
-     * Returns the x position of cursor \p pos. Text will be
-     * laid out until the answer is found.
-     */
-    int cursorToX(const KTextEditor::Cursor& pos, int maxwidth = -1) const;
+    int cursorToX(const KateTextLayout& range, const KTextEditor::Cursor& pos, int maxwidth = -1) const;
 
-    int xToCursor(KateLineRange& range, int x) const;
+    int xToCursor(const KateTextLayout& range, int x) const;
 
     // Cursor constrainer
     uint constrainCursor(KTextEditor::Cursor &cursor, int xPos, uint startCol = 0) KDE_DEPRECATED;
@@ -228,7 +236,7 @@ public:
      * The text line is painted from the upper limit of (0,0).  To move that,
      * apply a transform to your painter.
      */
-    void paintTextLine(QPainter& paint, const KateLineRange* range, int xStart, int xEnd, const KTextEditor::Cursor* cursor = 0L);
+    void paintTextLine(QPainter& paint, KateLineLayoutPtr range, int xStart, int xEnd, const KTextEditor::Cursor* cursor = 0L);
 
     /**
      * Paint the background of a line
@@ -237,9 +245,10 @@ public:
      * called only once per line it shouldn't noticably affect performance and it
      * helps readability a LOT.
      *
+     * @param currentViewLine if one of the view lines is the current line, set this to the index; otherwise -1.
      * @return whether the selection has been painted or not
      */
-    bool paintTextLineBackground(QPainter& paint, int line, bool isCurrentLine, int xStart, int xEnd);
+    void paintTextLineBackground(QPainter& paint, KateLineLayoutPtr layout, int currentViewLine, int xStart, int xEnd);
 
     /**
      * This takes an in index, and returns all the attributes for it.

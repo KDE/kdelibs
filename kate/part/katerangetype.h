@@ -27,7 +27,7 @@ class KAction;
 class KateAttribute;
 
 /**
- * Allows a group of KateRanges to be characterised and manipulated in a
+ * Allows a group of KTextEditor::Ranges to be characterised and manipulated in a
  * convenient manner.
  */
 class KateRangeType
