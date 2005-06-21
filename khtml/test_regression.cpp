@@ -63,6 +63,7 @@
 #include <qwidget.h>
 #include <qfileinfo.h>
 #include <qtimer.h>
+#include <kstatusbar.h>
 
 #include "misc/decoder.h"
 #include "dom/dom2_range.h"
@@ -520,6 +521,9 @@ int main(int argc, char *argv[])
     a.setMainWidget( toplevel );
     if ( visual )
         toplevel->show();
+
+    // we're not interested
+    toplevel->statusBar()->hide();
 
     if (!getenv("KDE_DEBUG")) {
         // set ulimits
