@@ -307,34 +307,36 @@ bool CSSSelector::operator == ( const CSSSelector &other ) const
 
 DOMString CSSSelector::selectorText() const
 {
-    // #### fix namespace
+    // FIXME: Support namespaces when dumping the selector text.  This requires preserving
+    // the original namespace prefix used. Ugh. -dwh
     DOMString str;
     const CSSSelector* cs = this;
-    if ( cs->tag == 0xffffffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
+    Q_UINT16 tag = localNamePart(cs->tag);
+    if ( tag == anyLocalName && cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
     {
         str = "#";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffffffff && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+    else if ( tag == anyLocalName && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
     {
         str = ".";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::PseudoClass )
+    else if ( tag == anyLocalName && cs->match == CSSSelector::PseudoClass )
     {
         str = ":";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::PseudoElement )
+    else if ( tag == anyLocalName && cs->match == CSSSelector::PseudoElement )
     {
         str = "::";
         str += cs->value;
     }
     else
     {
-        if ( cs->tag == 0xffffffff )
+        if ( tag == anyLocalName )
             str = "*";
-        else if ( cs->tag != 0xffff )
+        else if ( tag != anyLocalName )
             str = getTagName( cs->tag );
         if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
         {
