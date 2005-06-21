@@ -14,6 +14,7 @@ common_DATA = artistic-license.html bottom1.png bottom2.png bsd-license.html \
 	7.png 8.png 9.png 10.png \
 	doxygen.css header.html footer.html mainheader.html appheader.html \
 	mainfooter.html fdl-notice.html \
+	favicon.ico kde_gear_64.png \
 	docheadergears.png headerbg.png grad.png kmenu.png \
 	kde_logo.png kde_logo_bg.png bottom-left.png bottom-middle.png bottom-right.png \
 	top-left.png top-middle.png top-right-konqueror.png
