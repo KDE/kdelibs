@@ -355,7 +355,7 @@ KateFileTypeConfigTab::KateFileTypeConfigTab( QWidget *parent )
 
 void KateFileTypeConfigTab::apply()
 {
-  if (!changed())
+  if (!hasChanged())
     return;
 
   save ();

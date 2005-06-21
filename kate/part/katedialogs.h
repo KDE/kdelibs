@@ -84,7 +84,7 @@ class KateConfigPage : public KTextEditor::ConfigPage
     virtual ~KateConfigPage ();
 
   public:
-    bool changed () { return m_changed; }
+    bool hasChanged () { return m_changed; }
 
   protected slots:
     void slotChanged();

@@ -307,7 +307,7 @@ void KateIndentConfigTab::configPage()
 void KateIndentConfigTab::apply ()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
@@ -427,7 +427,7 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 void KateSelectConfigTab::apply ()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
@@ -601,7 +601,7 @@ KateEditConfigTab::KateEditConfigTab(QWidget *parent)
 void KateEditConfigTab::apply ()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
@@ -765,7 +765,7 @@ KateViewDefaultsConfig::~KateViewDefaultsConfig()
 void KateViewDefaultsConfig::apply ()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
@@ -839,7 +839,7 @@ void KateEditKeyConfiguration::apply()
 #warning fixme, to work without a document object, perhaps create some own internally
   return ;
 
-  if ( ! changed() )
+  if ( ! hasChanged() )
     return;
   m_changed = false;
 
@@ -969,7 +969,7 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
 void KateSaveConfigTab::apply()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
@@ -1152,10 +1152,13 @@ KatePartPluginConfigPage::~KatePartPluginConfigPage ()
 
 void KatePartPluginConfigPage::apply ()
 {
+  kdDebug()<<"KatePartPluginConfigPage::apply (entered)"<<endl;
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
+
+  kdDebug()<<"KatePartPluginConfigPage::apply (need to store configuration)"<<endl;
 
   KateDocumentConfig::global()->configStart ();
 
@@ -1312,7 +1315,7 @@ KateHlConfigPage::~KateHlConfigPage ()
 void KateHlConfigPage::apply ()
 {
   // nothing changed, no need to apply stuff
-  if (!changed())
+  if (!hasChanged())
     return;
   m_changed = false;
 
