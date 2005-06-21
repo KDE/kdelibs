@@ -1929,18 +1929,10 @@ void KateViewInternal::paintCursor()
 void KateViewInternal::placeCursor( const QPoint& p, bool keepSelection, bool updateSelection )
 {
   KateTextLayout thisLine = yToKateTextLayout(p.y());
+  if (!thisLine.isValid())
+    return;
 
-  /*int realLine = thisLine.line();
-  int visibleLine = thisLine.virtualLine();
-  int startCol = thisLine.startCol();
-
-  visibleLine = QMAX( 0, QMIN( visibleLine, int(m_doc->numVisLines()) - 1 ) );*/
-
-  KTextEditor::Cursor c(thisLine.line(), m_view->renderer()->xToCursor(thisLine, p.x()));
-
-  /*int x = QMIN(QMAX(0, p.x() - thisLine.xOffset()), lineMaxCursorX(thisLine) - thisLine.startX());
-
-  m_view->renderer()->constrainCursor( c, startX() + x, startCol);*/
+  KTextEditor::Cursor c(thisLine.line(), m_view->renderer()->xToCursor(thisLine, startX() + p.x()));
 
   if (updateSelection)
     KateViewInternal::updateSelection( c, keepSelection );
