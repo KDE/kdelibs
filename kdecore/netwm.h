@@ -1251,6 +1251,14 @@ public:
     void setKDESystemTrayWinFor(Window window);
 
     /**
+       Set the frame decoration strut, i.e. the width of the decoration borders.
+       
+       @param strut the new strut
+       @since 3.5
+    **/
+    void setFrameExtents(NETStrut strut);
+
+    /**
        Set the frame decoration strut.  This is a KDE 2.0 extension to aid in
        writing pager applications.
 
