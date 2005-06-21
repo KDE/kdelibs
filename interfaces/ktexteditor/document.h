@@ -21,6 +21,7 @@
 
 // the very important KTextEditor::Cursor class
 #include <ktexteditor/cursor.h>
+#include <ktexteditor/range.h>
 
 // our main baseclass of the KTextEditor::Document
 #include <kparts/part.h>
@@ -334,7 +335,30 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 	   * Text changed!
 	   * @param document document which emited this signal
 	   */
-	  void textChanged (Document *document);
+	  void textChanged(Document *document);
+
+    /**
+     * Text was inserted at range.start() up to range.end().
+     * @param document document which emited this signal
+     * @param range range that the newly inserted text occupies
+     */
+    void textInserted(KTextEditor::Document *document, const KTextEditor::Range& range);
+
+    /**
+     * Text was removed from range.start() to range.end().
+     * @param document document which emited this signal
+     * @param range range that the removed text previously occupied
+     */
+    void textRemoved(KTextEditor::Document *document, const KTextEditor::Range& range);
+
+    /**
+     * Text previously within oldRange was removed and replaced with the text now in newRange.
+     * oldRange.start() is guaranteed to equal newRange.start().
+     * @param document document which emited this signal
+     * @param oldRange range that the text previously occupied
+     * @param newRange range that the changed text now occupies
+     */
+    void textChanged(KTextEditor::Document *document, const KTextEditor::Range& oldRange, const KTextEditor::Range& newRange);
 
   private:
     /**

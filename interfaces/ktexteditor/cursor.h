@@ -114,7 +114,7 @@ class KTEXTEDITOR_EXPORT Cursor
       { return c1.line() == c2.line() && c1.column() == c2.column(); }
 
     /**
-     * == operator
+     * != operator
      * @param c1 first cursor to compare
      * @param c2 second cursor to compare
      * @return result of compare
