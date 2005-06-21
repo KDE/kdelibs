@@ -367,11 +367,14 @@ BUTTON:active {
         border-style: inset;
 }
 
+INPUT, TEXTAREA {
+        text-align: -khtml-auto;
+}
+
 INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         margin: 0__qem;
-        text-align: -khtml-auto;
         border: 0px -khtml-native;
 }
 
@@ -487,7 +490,7 @@ pre[wrap] {
     white-space: pre-wrap
 }
 
-:focus          { outline: 1px dotted invert }
+*|:focus          { outline: 1px dotted invert }
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
 
