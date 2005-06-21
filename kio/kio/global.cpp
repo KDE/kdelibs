@@ -68,9 +68,14 @@ KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
         s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Just byte
-    else
+    else if ( size > 0 )
     {
         s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
+    }
+    // Nothing
+    else
+    {
+        s = i18n( "0 B" );
     }
     return s;
 }
