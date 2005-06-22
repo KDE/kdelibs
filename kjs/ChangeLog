@@ -1,3 +1,8 @@
+2005-06-22  Harri Porten  <porten@kde.org>
+
+	* regexp_object.cpp (construct): don't misinterpret an undefined
+	flags parameter.
+
 2005-06-21  Harri Porten  <porten@kde.org>
 
 	* string_object.cpp: fixed length properties of indexOf() and
