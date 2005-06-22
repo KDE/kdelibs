@@ -268,6 +268,12 @@ public slots:
      */
     virtual void show();
 
+    /**
+     * Shows the popup in the given point
+     * @since 3.5
+     */
+    void show(const QPoint &p);
+
 signals:
     /**
      * Emitted when the popup is clicked.
