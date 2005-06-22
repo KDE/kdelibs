@@ -270,7 +270,6 @@ void KHTMLParser::parseToken(Token *t)
     switch(t->tid) {
     case ID_SELECT:
     case ID_OPTION:
-    case ID_HTML:
         t->flat = false;
     }
 
