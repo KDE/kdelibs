@@ -507,8 +507,8 @@ int Lexer::lex()
 
   restrKeyword = false;
   delimited = false;
-  yylloc.first_line = yylineno; // ???
-  yylloc.last_line = yylineno;
+  kjsyylloc.first_line = yylineno; // ???
+  kjsyylloc.last_line = yylineno;
 
   switch (state) {
   case Eof:

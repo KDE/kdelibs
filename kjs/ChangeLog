@@ -1,5 +1,9 @@
 2005-06-22  Harri Porten  <porten@kde.org>
 
+	* function.cpp: pre-process var declaration in eval() 
+
+	* nodes.cpp: picked up "const" support improvment from JSC	
+
 	* regexp_object.cpp (construct): don't misinterpret an undefined
 	flags parameter.
 

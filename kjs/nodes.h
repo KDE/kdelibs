@@ -677,20 +677,22 @@ namespace KJS {
 
   class VarDeclNode : public Node {
   public:
-    VarDeclNode(const Identifier &id, AssignExprNode *in);
+    enum Type { Variable, Constant };
+    VarDeclNode(const Identifier &id, AssignExprNode *in, Type t);
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    Type varType;
     Identifier ident;
     AssignExprNode *init;
   };
 
   class VarDeclListNode : public Node {
   public:
-    // list is circular until cracked in VarStatementNode/ForNode ctor
+    // list pointer is tail of a circular list, cracked in the ForNode/VarStatementNode ctor
     VarDeclListNode(VarDeclNode *v) : list(this), var(v) {}
     VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
       : list(l->list), var(v) { l->list = this; }
@@ -708,16 +710,13 @@ namespace KJS {
 
   class VarStatementNode : public StatementNode {
   public:
-    enum Type { Variable, Constant };
-    VarStatementNode(Type t, VarDeclListNode *l)
-      : varType(t), list(l->list) { l->list = 0; }
+    VarStatementNode(VarDeclListNode *l) : list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    Type varType;
     VarDeclListNode *list;
   };
 
@@ -868,7 +867,7 @@ namespace KJS {
     StatementNode *statement;
   };
 
-  class CaseClauseNode: public Node {
+  class CaseClauseNode : public Node {
   public:
     CaseClauseNode(Node *e) : expr(e), list(0) { }
     CaseClauseNode(Node *e, StatListNode *l)

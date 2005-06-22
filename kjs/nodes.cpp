@@ -1751,8 +1751,8 @@ Value AssignExprNode::evaluate(ExecState *exec) const
 
 // ----------------------------- VarDeclNode ----------------------------------
 
-VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in)
-    : ident(id), init(in)
+VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in, Type t)
+    : varType(t), ident(id), init(in)
 {
 }
 
@@ -1769,9 +1769,6 @@ bool VarDeclNode::deref()
     delete init;
   return Node::deref();
 }
-
-// global var/const flag
-static VarStatementNode::Type currentVarType;
 
 // ECMA 12.2
 Value VarDeclNode::evaluate(ExecState *exec) const
@@ -1795,9 +1792,9 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
-  if (exec->_context->codeType() != EvalCode)
+  if (exec->context().imp()->codeType() != EvalCode)
     flags |= DontDelete;
-  if (currentVarType == VarStatementNode::Constant)
+  if (varType == VarDeclNode::Constant)
     flags |= ReadOnly;
   variable.put(exec, ident, val, flags);
 
@@ -1816,12 +1813,11 @@ void VarDeclNode::processVarDecls(ExecState *exec)
     int flags = None;
     if (exec->_context->codeType() != EvalCode)
       flags |= DontDelete;
-    if (currentVarType == VarStatementNode::Constant)
+    if (varType == VarDeclNode::Constant)
       flags |= ReadOnly;
     // TODO: check for forbidden redeclaration of consts
-    variable.put(exec,ident, Undefined(), flags);
+    variable.put(exec, ident, Undefined(), flags);
   }
-  //else warning "variable %1 hides argument"
 }
 
 // ----------------------------- VarDeclListNode ------------------------------
@@ -1886,9 +1882,6 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  // set global var/const flag
-  currentVarType = varType;
-
   (void) list->evaluate(exec);
   KJS_CHECKEXCEPTION
 
@@ -1897,9 +1890,6 @@ Completion VarStatementNode::execute(ExecState *exec)
 
 void VarStatementNode::processVarDecls(ExecState *exec)
 {
-  // set global var/const flag
-  currentVarType = varType;
-
   list->processVarDecls(exec);
 }
 
@@ -2181,7 +2171,6 @@ Completion ForNode::execute(ExecState *exec)
   Value v, cval;
 
   if (expr1) {
-    currentVarType = VarStatementNode::Variable;
     v = expr1->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
@@ -2215,10 +2204,8 @@ Completion ForNode::execute(ExecState *exec)
 
 void ForNode::processVarDecls(ExecState *exec)
 {
-  if (expr1) {
-    currentVarType = VarStatementNode::Variable;
+  if (expr1)
     expr1->processVarDecls(exec);
-  }
 
   statement->processVarDecls(exec);
 }
@@ -2234,7 +2221,7 @@ ForInNode::ForInNode(const Identifier &i, AssignExprNode *in, Node *e, Statement
   : ident(i), init(in), expr(e), statement(s)
 {
   // for( var foo = bar in baz )
-  varDecl = new VarDeclNode(ident, init);
+  varDecl = new VarDeclNode(ident, init, VarDeclNode::Variable);
   lexpr = new ResolveNode(ident);
 }
 

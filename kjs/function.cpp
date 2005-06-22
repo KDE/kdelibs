@@ -832,6 +832,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       }
 
       // execute the code
+      progNode->processVarDecls(&newExec);
       Completion c = progNode->execute(&newExec);
 
       res = Undefined();
