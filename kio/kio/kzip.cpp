@@ -421,6 +421,9 @@ bool KZip::openArchive( int mode )
     QAsciiDict<ParseFileInfo> pfi_map(1009, true /*case sensitive */, true /*copy keys*/);
     pfi_map.setAutoDelete(true);
 
+    // We set a bool for knowing if we are allowed to skip the start of the file
+    bool startOfFile = true;
+
     for (;;) // repeat until 'end of entries' signature is reached
     {
 kdDebug(7040) << "loop starts" << endl;
@@ -437,12 +440,14 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
         if ( !memcmp( buffer, "PK\5\6", 4 ) ) // 'end of entries'
         {
 	    kdDebug(7040) << "PK56 found end of archive" << endl;
+            startOfFile = false;
 	    break;
 	}
 
 	if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
 	    kdDebug(7040) << "PK34 found local file header" << endl;
+            startOfFile = false;
             // can this fail ???
 	    dev->at( dev->at() + 2 ); // skip 'version needed to extract'
 
@@ -643,6 +648,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
         else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
         {
 	    kdDebug(7040) << "PK12 found central block" << endl;
+            startOfFile = false;
 
             // so we reached the central header at the end of the zip file
             // here we get all interesting data out of the central header
@@ -790,6 +796,50 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             Q_ASSERT( b );
             if ( !b )
               return false;
+        }
+        else if ( startOfFile )
+        {
+            // The file does not start with any ZIP header (e.g. self-extractable ZIP files)
+            // Therefore we need to find the first PK\003\004 (local header)
+            kdDebug(7040) << "Try to skip start of file" << endl;
+            startOfFile = false;
+            bool foundSignature = false;
+
+            while (!foundSignature)
+            {
+                n = dev->readBlock( buffer, 1 );
+                if (n < 1)
+                {
+                    kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo << endl;
+                    return false;
+                }
+
+                if ( buffer[0] != 'P' )
+                    continue;
+
+                n = dev->readBlock( buffer, 3 );
+                if (n < 3)
+                {
+                    kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo << endl;
+                    return false;
+                }
+
+                // We have to detect the magic token for a local header: PK\003\004
+                /*
+                 * Note: we do not need to check the other magics, if the ZIP file has no
+                 * local header, then it has not any files!
+                 */
+                if ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 )
+                {
+                    foundSignature = true;
+                    dev->at( dev->at() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
+                }
+                else if ( buffer[0] == 'P' || buffer[1] == 'P' || buffer[2] == 'P' )
+                {
+                        // We have another P character so we must go back a little to check if it is a magic
+                    dev->at( dev->at() - 3 );
+                }
+            }
         }
         else
         {
