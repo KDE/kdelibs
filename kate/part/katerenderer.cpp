@@ -516,9 +516,20 @@ void KateRenderer::paintTextLine(QPainter& paint, KateLineLayoutPtr range, int x
       QVector<QTextLayout::FormatRange> selections;
       if (hasSel) {
         const QVector<int> &al = range->textLine()->attributesList();
-        for (uint i = 0; i+2 < al.count(); i += 3) {
-          if (al[i] + al[i+1] <= startSel)
+        int lastCol = 0;
+        for (int i = 0; i+2 < al.count(); i += 3) {
+          if (al[i] + al[i+1] <= startSel) {
+            lastCol = al[i] + al[i+1];
             continue;
+          }
+
+          if (al[i] > lastCol) {
+            QTextLayout::FormatRange fr;
+            fr.start = QMAX(lastCol, (int)startSel);
+            fr.length = QMIN(al[i] - lastCol, (int)endSel - fr.start);
+            fr.format.setBackground(config()->selectionColor());
+            selections.append(fr);
+          }
 
           QTextLayout::FormatRange fr;
           fr.start = QMAX(al[i], (int)startSel);
@@ -531,7 +542,9 @@ void KateRenderer::paintTextLine(QPainter& paint, KateLineLayoutPtr range, int x
 
           selections.append(fr);
 
-          if (al[i+1] > endSel)
+          lastCol = al[i] + al[i+1];
+
+          if (al[i] + al[i+1] > endSel)
             break;
         }
       }
@@ -544,7 +557,7 @@ void KateRenderer::paintTextLine(QPainter& paint, KateLineLayoutPtr range, int x
     for (int i = 0; i < range->viewLineCount(); ++i) {
       KateTextLayout line = range->viewLine(i);
       // Draw selection outside of areas where text is rendered
-      if (hasSel && m_view->lineEndSelected(range->line(), line.endCol())) {
+      if (hasSel && m_view->lineEndSelected(line.end())) {
         QRect area(line.endX() - line.startX() + line.xOffset() - xStart, 0, xEnd - xStart, fs->fontHeight);
         paint.fillRect(area, config()->selectionColor());
       }
@@ -1068,51 +1081,6 @@ uint KateRenderer::textWidth(const KTextEditor::Cursor &cursor)
   return textWidth(m_doc->kateTextLine(line), col);
 }
 
-uint KateRenderer::constrainCursor( KTextEditor::Cursor &cursor, int xPos, uint startCol)
-{
-  bool wrapCursor = m_view->wrapCursor();
-  int len;
-  int x, oldX;
-
-  KateFontStruct *fs = config()->fontStruct();
-
-  if (cursor.line() < 0) cursor.setLine(0);
-  if (cursor.line() > (int)m_doc->lastLine()) cursor.setLine(m_doc->lastLine());
-  KateTextLine::Ptr textLine = m_doc->kateTextLine(cursor.line());
-
-  if (!textLine) return 0;
-
-  len = textLine->length();
-
-  x = oldX = 0;
-  int z = startCol;
-  while (x < xPos && (!wrapCursor || z < len)) {
-    oldX = x;
-
-    KateAttribute* a = attribute(textLine->attribute(z));
-
-    int width = 0;
-
-    if (z < len)
-      width = a->width(*fs, textLine->string(), z, m_tabWidth);
-    else
-      width = a->width(*fs, spaceChar, m_tabWidth);
-
-    x += width;
-
-    if (textLine->getChar(z) == tabChar)
-      x -= x % width;
-
-    z++;
-  }
-  if (xPos - oldX < x - xPos && z > 0) {
-    z--;
-    x = oldX;
-  }
-  cursor.setColumn(z);
-  return x;
-}
-
 const QFont *KateRenderer::currentFont() const
 {
   return config()->font();
@@ -1222,7 +1190,7 @@ void KateRenderer::updateConfig ()
     m_view->updateRendererConfig();
 }
 
-uint KateRenderer::spaceWidth()
+uint KateRenderer::spaceWidth() const
 {
   return attribute(0)->width(*config()->fontStruct(), spaceChar, m_tabWidth);
 }
@@ -1317,65 +1285,29 @@ int KateRenderer::cursorToX(const KateTextLayout& range, int col, int maxwidth )
 
 int KateRenderer::cursorToX(const KateTextLayout& range, const KTextEditor::Cursor & pos, int maxwidth ) const
 {
-  //kdDebug() << k_funcinfo << pos.column() << " doLayout " << doLayout << endl;
-  //range.debugOutput();
   Q_ASSERT(range.isValid());
-
-  /*if (!range.layout() || !range.includesCursor(pos)) {
-    bool first = true;
-    do {
-      if (first) {
-        first = false;
-      } else {
-        range.setStartCol(range.endCol());
-        range.setStartX(range.endX());
-      }
-      layoutLine(range, maxwidth);
-      range.debugOutput();
-      // FIXME most likely an infinite loop here
-    } while (!range.includesCursor(pos));
-    //Q_ASSERT(range.layout());
-  }*/
-
-  /*if (range.isEmpty() || range.layout()->lineCount() < 1)
-    if (pos.column() == 0)
-      return 0;
-    else
-      return -1;*/
 
   return range.lineLayout().cursorToX(pos.column());
 }
 
-/*int KateRenderer::cursorToX( const KTextEditor::Cursor & pos, int maxwidth ) const
+KTextEditor::Cursor KateRenderer::xToCursor(const KateTextLayout & range, int x, bool returnPastLine ) const
 {
-  KateLineLayout range(m_doc);
-  range.setLine(pos.line());
-  range.setStartCol(0);
-  range.setStartX(0);
-  return cursorToX(range, pos, true, maxwidth);
-}*/
-
-int KateRenderer::xToCursor(const KateTextLayout & range, int x ) const
-{
-  // TODO: do we want to return endCol for out-of-bounds requests?
-
-  /*if (!range.layout()) {
-    if (range.isEmpty())
-      return 0;
-
-    kdDebug() << k_funcinfo << range.layout() << " " << x << endl;
-    return -1;
-  }*/
-
   Q_ASSERT(range.isValid());
 
-  if (x <  range.xOffset())
-    x = range.xOffset();
-  else if (x > range.width() + range.xOffset())
-    x = range.width() + range.xOffset();
+  int adjustedX = x;
+
+  if (adjustedX <  range.xOffset())
+    adjustedX = range.xOffset();
+  else if (adjustedX > range.width() + range.xOffset())
+    adjustedX = range.width() + range.xOffset();
 
   Q_ASSERT(range.isValid());
-  return range.lineLayout().xToCursor(x);
+  KTextEditor::Cursor ret(range.line(), range.lineLayout().xToCursor(adjustedX));
+
+  if (returnPastLine && x > range.width() + range.xOffset())
+    ret.setColumn(ret.column() + ((x - (range.width() + range.xOffset())) / spaceWidth()));
+
+  return ret;
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

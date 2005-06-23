@@ -238,9 +238,9 @@ class KateView : public KTextEditor::View,
     bool wrapCursor ();
 
     // some internal functions to get selection state of a line/col
-    bool lineColSelected (int line, int col);
+    bool cursorSelected(const KTextEditor::Cursor& cursor);
     bool lineSelected (int line);
-    bool lineEndSelected (int line, int endCol);
+    bool lineEndSelected (const KTextEditor::Cursor& lineEndPos);
     bool lineHasSelected (int line);
     bool lineIsSelection (int line);
 

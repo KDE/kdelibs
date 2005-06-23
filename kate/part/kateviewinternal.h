@@ -216,6 +216,9 @@ class KateViewInternal : public QWidget
 
     void doDrag();
 
+    inline KateView* view() const { return m_view; }
+    KateRenderer* renderer() const;
+
     KateView *m_view;
     KateDocument* m_doc;
     class KateIconBorder *leftBorder;
@@ -307,6 +310,9 @@ class KateViewInternal : public QWidget
     // when keepX is true, the column position will be calculated based on the x
     // position of the specified cursor.
     KTextEditor::Cursor viewLineOffset(const KTextEditor::Cursor& virtualCursor, int offset, bool keepX = false);
+
+    KTextEditor::Cursor toRealCursor(const KTextEditor::Cursor& virtualCursor) const;
+    KTextEditor::Cursor toVirtualCursor(const KTextEditor::Cursor& realCursor) const;
 
     // These variable holds the most recent maximum real & visible column number
     bool m_preserveMaxX;

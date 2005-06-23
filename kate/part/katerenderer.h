@@ -185,7 +185,7 @@ public:
     void layoutLine(KateLineLayoutPtr line, int maxwidth = -1, bool cacheLayout = false) const;
 
     // Width calculators
-    uint spaceWidth();
+    uint spaceWidth() const;
     uint textWidth(const KateTextLine::Ptr &, int cursorCol) KDE_DEPRECATED;
     uint textWidth(const KateTextLine::Ptr &textLine, uint startcol, uint maxwidth, bool *needWrap, int *endX = 0)  KDE_DEPRECATED;
     uint textWidth(const KTextEditor::Cursor& cursor)  KDE_DEPRECATED;
@@ -200,10 +200,12 @@ public:
     /// \overload
     int cursorToX(const KateTextLayout& range, const KTextEditor::Cursor& pos, int maxwidth = -1) const;
 
-    int xToCursor(const KateTextLayout& range, int x) const;
-
-    // Cursor constrainer
-    uint constrainCursor(KTextEditor::Cursor &cursor, int xPos, uint startCol = 0) KDE_DEPRECATED;
+    /**
+     * Returns the real cursor which is occupied by the specified x value, or that closest to it.
+     * If \p returnPastLine is true, the column will be extrapolated out with the assumption
+     * that the extra characters are spaces.
+     */
+    KTextEditor::Cursor xToCursor(const KateTextLayout& range, int x, bool returnPastLine = false) const;
 
     // Column calculators
     /**

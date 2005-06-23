@@ -77,7 +77,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_selChangedByUser (false)
   , selectAnchor (-1, -1)
   , m_selectionMode( Default )
-  , m_layoutCache(new KateLayoutCache(m_view->renderer()))
+  , m_layoutCache(new KateLayoutCache(renderer()))
   , m_preserveMaxX(false)
   , m_currentMaxX(0)
   , m_usePlainLines(false)
@@ -297,7 +297,7 @@ KateTextLayout KateViewInternal::yToKateTextLayout(int y) const
   if (y < 0 || y > size().height())
     return KateTextLayout::invalid();
 
-  int range = y / m_view->renderer()->fontHeight();
+  int range = y / renderer()->fontHeight();
 
   // lineRanges is always bigger than 0, after the initial updateView call
   if (range > 0 && range <= cache()->viewCacheLineCount())
@@ -308,17 +308,17 @@ KateTextLayout KateViewInternal::yToKateTextLayout(int y) const
 
 int KateViewInternal::lineToY(uint viewLine) const
 {
-  return (viewLine-startLine()) * m_view->renderer()->fontHeight();
+  return (viewLine-startLine()) * renderer()->fontHeight();
 }
 
 void KateViewInternal::slotIncFontSizes()
 {
-  m_view->renderer()->increaseFontSizes();
+  renderer()->increaseFontSizes();
 }
 
 void KateViewInternal::slotDecFontSizes()
 {
-  m_view->renderer()->decreaseFontSizes();
+  renderer()->decreaseFontSizes();
 }
 
 /**
@@ -439,7 +439,7 @@ void KateViewInternal::scrollPos(KTextEditor::Cursor& c, bool force, bool called
     {
       updateView(false, viewLinesScrolled);
 
-      int scrollHeight = -(viewLinesScrolled * (int)m_view->renderer()->fontHeight());
+      int scrollHeight = -(viewLinesScrolled * (int)renderer()->fontHeight());
       int scrollbarWidth = m_lineScroll->width();
 
       //
@@ -490,27 +490,13 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
   if (changed)
     cache()->clear();
 
-  uint contentLines = m_doc->visibleLines();
-
   m_lineScroll->blockSignals(true);
 
   if (width() != cache()->viewWidth())
     cache()->setViewWidth(width());
 
-  int newSize = (height() / m_view->renderer()->fontHeight()) + 1;
+  int newSize = (height() / renderer()->fontHeight()) + 1;
   cache()->updateViewCache(startPos(), newSize, viewLinesScrolled);
-
-  //if (newSize != cache()->viewCacheLineCount()) {
-    //cache()->resizeViewCache(newSize);
-    //cache()->setViewCacheStartPos(startPos());
-
-  // Move the lineRanges data if we've just scrolled...
-  /*} else if (viewLinesScrolled) {
-    cache()->scrollViewCache(viewLinesScrolled);
-
-  } else {
-    cache()->setViewCacheStartPos(startPos());
-  }*/
 
   KTextEditor::Cursor maxStart = maxStartPos(changed);
   int maxLineScrollRange = maxStart.line();
@@ -524,41 +510,10 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
   } else {
     m_lineScroll->setValue(startPos().line());
   }
-  m_lineScroll->setSteps(1, height() / m_view->renderer()->fontHeight());
+  m_lineScroll->setSteps(1, height() / renderer()->fontHeight());
   m_lineScroll->blockSignals(false);
 
-  /*if (m_view->dynWordWrap())
-  {
-    for(; (z + startLine() < contentLines) && (z < cache()->viewLineCount); z++)
-    {
-      if (cache()->viewLine(z).isDirty() || cache()->viewLine(z).line() != (int)m_doc->getRealLine(z + startLine())) {
-        cache()->viewLine(z).setDirty();
-
-        cache()->viewLine(z).setLine(m_doc->getRealLine(z + startLine()), z + startLine());
-        if (z)
-          lineRanges[z-1].setStartsInvisibleBlock(cache()->viewLine(z).line() != lineRanges[z-1].line() + 1);
-
-        cache()->viewLine(z).setStartCol(0);
-        cache()->viewLine(z).setStartX(0);
-        cache()->viewLine(z).setShiftX(0);
-        cache()->viewLine(z).setViewLine(0);
-
-        m_view->renderer()->layoutLine(cache()->viewLine(z));
-      }
-      else if (z && lineRanges[z-1].isDirty())
-      {
-        lineRanges[z-1].setStartsInvisibleBlock(cache()->viewLine(z).line() != lineRanges[z-1].line() + 1);
-      }
-    }
-
-    for (; z < cache()->viewLineCount; z++)
-    {
-      if (cache()->viewLine(z).line() != -1)
-        cache()->viewLine(z).setDirty();
-
-      cache()->viewLine(z).clear();
-    }
-
+  /*
     if (scrollbarVisible(startLine()))
     {
       m_columnScroll->blockSignals(true);
@@ -572,7 +527,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
       m_columnScroll->setValue(m_startX);
 
       // Approximate linescroll
-      m_columnScroll->setSteps(m_view->renderer()->config()->fontMetrics()->width('a'), width());
+      m_columnScroll->setSteps(renderer()->config()->fontMetrics()->width('a'), width());
 
       m_columnScroll->blockSignals(false);
 
@@ -692,7 +647,7 @@ void KateViewInternal::showEvent ( QShowEvent *e )
 uint KateViewInternal::linesDisplayed() const
 {
   int h = height();
-  int fh = m_view->renderer()->fontHeight();
+  int fh = renderer()->fontHeight();
 
   return (h - (h % fh)) / fh;
 }
@@ -704,7 +659,7 @@ QPoint KateViewInternal::cursorCoordinates() const
   if (viewLine < 0 || viewLine >= cache()->viewCacheLineCount())
     return QPoint(-1, -1);
 
-  uint y = viewLine * m_view->renderer()->fontHeight();
+  uint y = viewLine * renderer()->fontHeight();
   uint x = cXPos - m_startX - cache()->viewLine(viewLine).startX() + leftBorder->width() + cache()->viewLine(viewLine).xOffset();
 
   return QPoint(x, y);
@@ -718,7 +673,7 @@ QVariant KateViewInternal::inputMethodQuery ( Qt::InputMethodQuery query ) const
       if (line < 0 || line >= cache()->viewLineCount)
           return QWidget::inputMethodQuery(query);
 
-      KateRenderer *renderer = m_view->renderer();
+      KateRenderer *renderer = renderer();
 
       // Cursor placement code is changed for Asian input method that
       // shows candidate window. This behavior is same as Qt/E 2.3.7
@@ -1141,15 +1096,13 @@ KTextEditor::Cursor KateViewInternal::viewLineOffset(const KTextEditor::Cursor& 
 
     if (keepX) {
       int realLine = m_doc->getRealLine(ret.line());
-      ret.setColumn(m_doc->lineLength(realLine) - 1);
+      KateTextLayout t = cache()->textLayout(realLine, 0);
+      Q_ASSERT(t.isValid());
 
       if (m_currentMaxX > cXPos)
         cXPos = m_currentMaxX;
 
-      if (m_view->wrapCursor())
-        cXPos = QMIN(cXPos, cursorToX(KTextEditor::Cursor(realLine, m_doc->lineLength(realLine))));
-
-      m_view->renderer()->constrainCursor(ret, cXPos);
+      ret.setColumn(renderer()->xToCursor(t, cXPos, !m_view->wrapCursor()).column());
     }
 
     return ret;
@@ -1215,18 +1168,16 @@ KTextEditor::Cursor KateViewInternal::viewLineOffset(const KTextEditor::Cursor& 
         // keep column position
         if (keepX) {
           ret.setColumn(thisViewLine.endCol() - 1);
-          KTextEditor::Cursor realCursorTemp(m_doc->getRealLine(virtualCursor.line()), virtualCursor.column());
-          int visibleX = cursorToX(realCursorTemp) - cache()->textLayout(realCursorTemp).startX();
-          int xOffset = thisViewLine.startX();
+          KTextEditor::Cursor realCursor = toRealCursor(virtualCursor);
+          KateTextLayout t = cache()->textLayout(realCursor);
+          cXPos = renderer()->cursorToX(t, realCursor);
 
-          if (m_currentMaxX > visibleX)
-            visibleX = m_currentMaxX;
+          if (m_currentMaxX > cXPos) {
+            cXPos = m_currentMaxX;
 
-          cXPos = xOffset + visibleX;
-
-          cXPos = QMIN(cXPos, lineMaxCursorX(thisViewLine));
-
-          m_view->renderer()->constrainCursor(ret, cXPos);
+            realCursor = renderer()->xToCursor(t, cXPos, !m_view->wrapCursor());
+            ret.setColumn(realCursor.column());
+          }
         }
 
         return ret;
@@ -1258,7 +1209,7 @@ int KateViewInternal::lineMaxCursorX(const KateTextLayout& range)
 
   if (maxX && range.wrap()) {
     QChar lastCharInLine = textLine(range.line())->getChar(range.endCol() - 1);
-    maxX -= m_view->renderer()->config()->fontMetrics()->width(lastCharInLine);
+    maxX -= renderer()->config()->fontMetrics()->width(lastCharInLine);
   }
 
   return maxX;
@@ -1285,40 +1236,24 @@ void KateViewInternal::cursorUp(bool sel)
   if (displayCursor.line() == 0 && (!m_view->dynWordWrap() || cache()->viewLine(cursor) == 0))
     return;
 
-  int newLine = cursor.line(), newCol = 0;
   m_preserveMaxX = true;
 
-  if (m_view->dynWordWrap()) {
-    // Dynamic word wrapping - navigate on visual lines rather than real lines
-    KateTextLayout thisLine = currentLayout();
-    // This is not the first line because that is already simplified out above
-    KateTextLayout pRange = previousLayout();
+  KateTextLayout thisLine = currentLayout();
+  // This is not the first line because that is already simplified out above
+  KateTextLayout pRange = previousLayout();
 
-    // Ensure we're in the right spot
-    Q_ASSERT((cursor.line() == thisLine.line()) &&
-        (cursor.column() >= thisLine.startCol()) &&
-        (!thisLine.wrap() || cursor.column() < thisLine.endCol()));
+  // Ensure we're in the right spot
+  Q_ASSERT((cursor.line() == thisLine.line()) &&
+      (cursor.column() >= thisLine.startCol()) &&
+      (!thisLine.wrap() || cursor.column() < thisLine.endCol()));
 
-    // VisibleX is the distance from the start of the text to the cursor on the current line.
-    int visibleX = cursorToX(cursor);
+  // Retrieve current cursor x position
+  cXPos = renderer()->cursorToX(thisLine, cursor);
 
-    newLine = pRange.line();
-    newCol = m_view->renderer()->xToCursor(pRange, visibleX);
+  if (m_currentMaxX > cXPos)
+    cXPos = m_currentMaxX;
 
-    /*thisLine.debugOutput();
-    pRange.debugOutput();
-    kdDebug() << k_funcinfo << visibleX << " " << newCol << " " << newLine << endl;*/
-
-  } else {
-    newLine = m_doc->getRealLine(displayCursor.line() - 1);
-
-    if ((m_view->wrapCursor()) && m_currentMaxX > cXPos)
-      cXPos = m_currentMaxX;
-  }
-
-  KTextEditor::Cursor c(newLine, newCol);
-  if (!m_view->dynWordWrap())
-    m_view->renderer()->constrainCursor(c, cXPos);
+  KTextEditor::Cursor c = renderer()->xToCursor(pRange, cXPos, !m_view->wrapCursor());
 
   updateSelection( c, sel );
   updateCursor( c );
@@ -1335,38 +1270,24 @@ void KateViewInternal::cursorDown(bool sel)
   if ((displayCursor.line() >= (int)m_doc->numVisLines() - 1) && (!m_view->dynWordWrap() || cache()->viewLine(cursor) == cache()->lastViewLine(cursor.line())))
     return;
 
-  int newLine = cursor.line(), newCol = 0;
   m_preserveMaxX = true;
 
-  if (m_view->dynWordWrap()) {
-    // Dynamic word wrapping - navigate on visual lines rather than real lines
-    KateTextLayout thisLine = currentLayout();
-    // This is not the last line because that is already simplified out above
-    KateTextLayout nRange = nextLayout();
+  KateTextLayout thisLine = currentLayout();
+  // This is not the last line because that is already simplified out above
+  KateTextLayout nRange = nextLayout();
 
-    // Ensure we're in the right spot
-    Q_ASSERT((cursor.line() == thisLine.line()) &&
-        (cursor.column() >= thisLine.startCol()) &&
-        (!thisLine.wrap() || cursor.column() < thisLine.endCol()));
+  // Ensure we're in the right spot
+  Q_ASSERT((cursor.line() == thisLine.line()) &&
+      (cursor.column() >= thisLine.startCol()) &&
+      (!thisLine.wrap() || cursor.column() < thisLine.endCol()));
 
-    // VisibleX is the distance from the start of the text to the cursor on the current line.
-    int visibleX = cursorToX(cursor);
-    newCol = m_view->renderer()->xToCursor(nRange, visibleX);
-    newLine = nRange.line();
-    /*thisLine.debugOutput();
-    nRange.debugOutput();
-    kdDebug() << k_funcinfo << visibleX << " " << newCol << " " << newLine << endl;*/
+  // Retrieve current cursor x position
+  cXPos = renderer()->cursorToX(thisLine, cursor);
 
-  } else {
-    newLine = m_doc->getRealLine(displayCursor.line() + 1);
+  if (m_currentMaxX > cXPos)
+    cXPos = m_currentMaxX;
 
-    if ((m_view->wrapCursor()) && m_currentMaxX > cXPos)
-      cXPos = m_currentMaxX;
-  }
-
-  KTextEditor::Cursor c(newLine, newCol);
-  if (!m_view->dynWordWrap())
-    m_view->renderer()->constrainCursor(c, cXPos);
+  KTextEditor::Cursor c = renderer()->xToCursor(nRange, cXPos, !m_view->wrapCursor());
 
   updateSelection(c, sel);
   updateCursor(c);
@@ -1472,23 +1393,20 @@ void KateViewInternal::pageUp( bool sel )
   }
 
   if (!m_doc->pageUpDownMovesCursor () && !atTop) {
-    int xPos = cursorToX(cursor) - currentLayout().startX();
+    cXPos = renderer()->cursorToX(currentLayout(), cursor);
 
     KTextEditor::Cursor newStartPos = viewLineOffset(startPos(), linesToScroll - 1);
     scrollPos(newStartPos);
 
     // put the cursor back approximately where it was
-    KTextEditor::Cursor newPos = viewLineOffset(newStartPos, viewLine, true);
-    newPos.setLine(m_doc->getRealLine(newPos.line()));
+    KTextEditor::Cursor newPos = toRealCursor(viewLineOffset(newStartPos, viewLine, true));
 
     KateTextLayout newLine = cache()->textLayout(newPos);
 
-    if (m_currentMaxX - newLine.xOffset() > xPos)
-      xPos = m_currentMaxX - newLine.xOffset();
+    if (m_currentMaxX> cXPos)
+      cXPos = m_currentMaxX;
 
-    cXPos = QMIN(newLine.startX() + xPos, lineMaxCursorX(newLine));
-
-    m_view->renderer()->constrainCursor( newPos, cXPos );
+    newPos = renderer()->xToCursor(newLine, cXPos, !view()->wrapCursor());
 
     m_preserveMaxX = true;
     updateSelection( newPos, sel );
@@ -1534,23 +1452,20 @@ void KateViewInternal::pageDown( bool sel )
   }
 
   if (!m_doc->pageUpDownMovesCursor () && !atEnd) {
-    int xPos = cursorToX(cursor) - currentLayout().startX();
+    cXPos = renderer()->cursorToX(currentLayout(), cursor);
 
     KTextEditor::Cursor newStartPos = viewLineOffset(startPos(), linesToScroll + 1);
     scrollPos(newStartPos);
 
     // put the cursor back approximately where it was
-    KTextEditor::Cursor newPos = viewLineOffset(newStartPos, viewLine, true);
-    newPos.setLine(m_doc->getRealLine(newPos.line()));
+    KTextEditor::Cursor newPos = toRealCursor(viewLineOffset(newStartPos, viewLine, true));
 
     KateTextLayout newLine = cache()->textLayout(newPos);
 
-    if (m_currentMaxX - newLine.xOffset() > xPos)
-      xPos = m_currentMaxX - newLine.xOffset();
+    if (m_currentMaxX> cXPos)
+      cXPos = m_currentMaxX;
 
-    cXPos = QMIN(newLine.startX() + xPos, lineMaxCursorX(newLine));
-
-    m_view->renderer()->constrainCursor( newPos, cXPos );
+    newPos = renderer()->xToCursor(newLine, cXPos, !view()->wrapCursor());
 
     m_preserveMaxX = true;
     updateSelection( newPos, sel );
@@ -1570,7 +1485,7 @@ int KateViewInternal::maxLen(uint startLine)
 {
   Q_ASSERT(!m_view->dynWordWrap());
 
-  int displayLines = (m_view->height() / m_view->renderer()->fontHeight()) + 1;
+  int displayLines = (m_view->height() / renderer()->fontHeight()) + 1;
 
   int maxLen = 0;
 
@@ -1588,18 +1503,30 @@ int KateViewInternal::maxLen(uint startLine)
 
 void KateViewInternal::top( bool sel )
 {
-  KTextEditor::Cursor c( 0, cursor.column() );
-  m_view->renderer()->constrainCursor( c, cXPos );
-  updateSelection( c, sel );
-  updateCursor( c );
+  cXPos = renderer()->cursorToX(currentLayout(), cursor);
+
+  KTextEditor::Cursor newCursor(0, 0);
+
+  if (m_currentMaxX > cXPos)
+    cXPos = m_currentMaxX;
+
+  newCursor = renderer()->xToCursor(cache()->textLayout(newCursor), cXPos, !view()->wrapCursor());
+
+  updateSelection( newCursor, sel );
+  updateCursor( newCursor );
 }
 
 void KateViewInternal::bottom( bool sel )
 {
-  KTextEditor::Cursor c( m_doc->lastLine(), cursor.column() );
-  m_view->renderer()->constrainCursor( c, cXPos );
-  updateSelection( c, sel );
-  updateCursor( c );
+  KTextEditor::Cursor newCursor(m_doc->lastLine(), 0);
+
+  if (m_currentMaxX > cXPos)
+    cXPos = m_currentMaxX;
+
+  newCursor = renderer()->xToCursor(cache()->textLayout(newCursor), cXPos, !view()->wrapCursor());
+
+  updateSelection( newCursor, sel );
+  updateCursor( newCursor );
 }
 
 void KateViewInternal::top_home( bool sel )
@@ -1769,7 +1696,7 @@ void KateViewInternal::updateCursor( const KTextEditor::Cursor& newCursor, bool 
   {
     if ( KApplication::cursorFlashTime() > 0 )
       m_cursorTimer.start( KApplication::cursorFlashTime() / 2 );
-    m_view->renderer()->setDrawCaret(true);
+    renderer()->setDrawCaret(true);
   }
 
   // Remember the maximum X position if requested
@@ -1826,7 +1753,7 @@ bool KateViewInternal::tagLine(const KTextEditor::Cursor& virtualCursor)
   int viewLine = cache()->displayViewLine(virtualCursor, true);
   if (viewLine >= 0 && viewLine < cache()->viewCacheLineCount()) {
     cache()->viewLine(viewLine).setDirty();
-    leftBorder->update (0, lineToY(viewLine), leftBorder->width(), m_view->renderer()->fontHeight());
+    leftBorder->update (0, lineToY(viewLine), leftBorder->width(), renderer()->fontHeight());
     return true;
   }
   return false;
@@ -1874,7 +1801,7 @@ bool KateViewInternal::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor e
   {
     int y = lineToY( start.line() );
     // FIXME is this enough for when multiple lines are deleted
-    int h = (end.line() - start.line() + 2) * m_view->renderer()->fontHeight();
+    int h = (end.line() - start.line() + 2) * renderer()->fontHeight();
     if (end.line() == (int)m_doc->numVisLines() - 1)
       h = height();
 
@@ -1889,7 +1816,7 @@ bool KateViewInternal::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor e
       if ((cache()->viewLine(z).virtualLine() > start.line() || (cache()->viewLine(z).virtualLine() == start.line() && cache()->viewLine(z).endCol() >= start.column() && start.column() != -1)) && (cache()->viewLine(z).virtualLine() < end.line() || (cache()->viewLine(z).virtualLine() == end.line() && (cache()->viewLine(z).startCol() <= end.column() || end.column() == -1))))
       {
         //justTagged = true;
-        leftBorder->update (0, z * m_view->renderer()->fontHeight(), leftBorder->width(), leftBorder->height());
+        leftBorder->update (0, z * renderer()->fontHeight(), leftBorder->width(), leftBorder->height());
         break;
       }
       /*else if (justTagged)
@@ -1932,7 +1859,7 @@ void KateViewInternal::placeCursor( const QPoint& p, bool keepSelection, bool up
   if (!thisLine.isValid())
     return;
 
-  KTextEditor::Cursor c(thisLine.line(), m_view->renderer()->xToCursor(thisLine, startX() + p.x()));
+  KTextEditor::Cursor c = renderer()->xToCursor(thisLine, startX() + p.x(), !view()->wrapCursor());
 
   if (updateSelection)
     KateViewInternal::updateSelection( c, keepSelection );
@@ -1947,13 +1874,7 @@ bool KateViewInternal::isTargetSelected( const QPoint& p )
   if (!thisLine.isValid())
     return false;
 
-  KateTextLine::Ptr l = textLine( thisLine.line() );
-  if( !l )
-    return false;
-
-  int col = m_view->renderer()->xToCursor(thisLine, p.x());
-
-  return m_view->lineColSelected( thisLine.line(), col );
+  return m_view->cursorSelected(renderer()->xToCursor(thisLine, p.x(), !view()->wrapCursor()));
 }
 
 //BEGIN EVENT HANDLING STUFF
@@ -2376,8 +2297,7 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
   // FIXME only do this if needing to track mouse movement
   const KateTextLayout& thisLine = yToKateTextLayout(e->y());
   if (thisLine.isValid()) {
-    int col = m_view->renderer()->xToCursor(thisLine, e->x());
-    mouse.setPosition(thisLine.line(), col);
+    mouse.setPosition(renderer()->xToCursor(thisLine, e->x(), !view()->wrapCursor()));
   } else {
     mouse.setPosition(0,0);
   }
@@ -2402,7 +2322,7 @@ void KateViewInternal::mouseMoveEvent( QMouseEvent* e )
 
     scrollX = 0;
     scrollY = 0;
-    int d = m_view->renderer()->fontHeight();
+    int d = renderer()->fontHeight();
 
     if (mouseX < 0)
       scrollX = -d;
@@ -2458,7 +2378,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
 
   int xStart = startX() + e->rect().x();
   int xEnd = xStart + e->rect().width();
-  uint h = m_view->renderer()->fontHeight();
+  uint h = renderer()->fontHeight();
   uint startz = (e->rect().y() / h);
   uint endz = startz + 1 + (e->rect().height() / h);
   uint lineRangesSize = cache()->viewCacheLineCount();
@@ -2467,8 +2387,8 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
   QPainter paint(this);
 
   // TODO put in the proper places
-  m_view->renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
-  m_view->renderer()->setShowTabs(m_doc->config()->configFlags() & KateDocumentConfig::cfShowTabs);
+  renderer()->setCaretStyle(m_view->isOverwriteMode() ? KateRenderer::Replace : KateRenderer::Insert);
+  renderer()->setShowTabs(m_doc->config()->configFlags() & KateDocumentConfig::cfShowTabs);
 
   int sy = startz * h;
   paint.translate(e->rect().x(), startz * h);
@@ -2480,7 +2400,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
       if (!(z >= lineRangesSize))
         cache()->viewLine(z).setDirty(false);
 
-      paint.fillRect( 0, 0, e->rect().width(), h, m_view->renderer()->config()->backgroundColor() );
+      paint.fillRect( 0, 0, e->rect().width(), h, renderer()->config()->backgroundColor() );
     }
     else if (!paintOnlyDirty || cache()->viewLine(z).isDirty())
     {
@@ -2493,7 +2413,7 @@ void KateViewInternal::paintEvent(QPaintEvent *e)
         if (cache()->viewLine(z).viewLine())
           paint.translate(0, h * - cache()->viewLine(z).viewLine());
 
-        m_view->renderer()->paintTextLine(paint, cache()->viewLine(z).kateLineLayout(), xStart, xEnd, &cursor);
+        renderer()->paintTextLine(paint, cache()->viewLine(z).kateLineLayout(), xStart, xEnd, &cursor);
 
         if (cache()->viewLine(z).viewLine())
           paint.translate(0, h * cache()->viewLine(z).viewLine());
@@ -2543,7 +2463,7 @@ void KateViewInternal::resizeEvent(QResizeEvent* e)
         if (cursor.column() > m_doc->lineLength(cursor.line())) {
           KateTextLayout thisLine = currentLayout();
 
-          KTextEditor::Cursor newCursor(cursor.line(), thisLine.endCol() + ((width() - thisLine.xOffset() - (thisLine.endX() - thisLine.startX())) / m_view->renderer()->spaceWidth()) - 1);
+          KTextEditor::Cursor newCursor(cursor.line(), thisLine.endCol() + ((width() - thisLine.xOffset() - (thisLine.endX() - thisLine.startX())) / renderer()->spaceWidth()) - 1);
           updateCursor(newCursor);
         }
       }
@@ -2567,14 +2487,14 @@ void KateViewInternal::scrollTimeout ()
 {
   if (scrollX || scrollY)
   {
-    scrollLines (startPos().line() + (scrollY / (int)m_view->renderer()->fontHeight()));
+    scrollLines (startPos().line() + (scrollY / (int)renderer()->fontHeight()));
     placeCursor( QPoint( mouseX, mouseY ), true );
   }
 }
 
 void KateViewInternal::cursorTimeout ()
 {
-  m_view->renderer()->setDrawCaret(!m_view->renderer()->drawCaret());
+  renderer()->setDrawCaret(!renderer()->drawCaret());
   paintCursor();
 }
 
@@ -2592,7 +2512,7 @@ void KateViewInternal::textHintTimeout ()
   int startCol = thisLine.startCol();
 
   KTextEditor::Cursor c(realLine, 0);
-  m_view->renderer()->constrainCursor( c, startX() + m_textHintMouseX, startCol);
+  c = renderer()->xToCursor(cache()->textLayout(c), m_textHintMouseX, !view()->wrapCursor());
 
   QString tmp;
 
@@ -2623,7 +2543,7 @@ void KateViewInternal::focusOutEvent (QFocusEvent *)
   {
     m_cursorTimer.stop();
 
-    m_view->renderer()->setDrawCaret(true);
+    renderer()->setDrawCaret(true);
 
     paintCursor();
 
@@ -2861,7 +2781,7 @@ void KateViewInternal::viewSelectionChanged ()
 
 int KateViewInternal::cursorToX( const KTextEditor::Cursor& c ) const
 {
-  return m_view->renderer()->cursorToX(cache()->textLayout(c), c, m_view->dynWordWrap() ? width() : -1);
+  return renderer()->cursorToX(cache()->textLayout(c), c, m_view->dynWordWrap() ? width() : -1);
 }
 
 void KateViewInternal::inputMethodEvent(QInputMethodEvent* e)
@@ -2885,6 +2805,21 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent* e)
 KateLayoutCache* KateViewInternal::cache( ) const
 {
   return m_layoutCache;
+}
+
+KTextEditor::Cursor KateViewInternal::toRealCursor( const KTextEditor::Cursor & virtualCursor ) const
+{
+  return KTextEditor::Cursor(m_doc->getRealLine(virtualCursor.line()), virtualCursor.column());
+}
+
+KTextEditor::Cursor KateViewInternal::toVirtualCursor( const KTextEditor::Cursor & realCursor ) const
+{
+  return KTextEditor::Cursor(m_doc->getVirtualLine(realCursor.line()), realCursor.column());
+}
+
+KateRenderer * KateViewInternal::renderer( ) const
+{
+  return m_view->renderer();
 }
 
 #if 0

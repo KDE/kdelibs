@@ -1383,17 +1383,16 @@ bool KateView::selectAll()
   return setSelection (KTextEditor::Cursor (0,0), KTextEditor::Cursor(m_doc->lastLine(), m_doc->lineLength(m_doc->lastLine())));
 }
 
-bool KateView::lineColSelected (int line, int col)
+bool KateView::cursorSelected(const KTextEditor::Cursor& cursor)
 {
-  if ( (!blockSelect) && (col < 0) )
-    col = 0;
-
-  KTextEditor::Cursor cursor(line, col);
+  KTextEditor::Cursor ret = cursor;
+  if ( (!blockSelect) && (ret.column() < 0) )
+    ret.setColumn(0);
 
   if (blockSelect)
-    return cursor.line() >= selectStart.line() && cursor.line() <= selectEnd.line() && cursor.column() >= selectStart.column() && cursor.column() < selectEnd.column();
+    return cursor.line() >= selectStart.line() && ret.line() <= selectEnd.line() && ret.column() >= selectStart.column() && ret.column() < selectEnd.column();
   else
-    return (cursor >= selectStart) && (cursor < selectEnd);
+    return (ret >= selectStart) && (ret < selectEnd);
 }
 
 bool KateView::lineSelected (int line)
@@ -1403,11 +1402,11 @@ bool KateView::lineSelected (int line)
     && (line < selectEnd.line());
 }
 
-bool KateView::lineEndSelected (int line, int endCol)
+bool KateView::lineEndSelected (const KTextEditor::Cursor& lineEndPos)
 {
   return (!blockSelect)
-    && (line > selectStart.line() || (line == selectStart.line() && (selectStart.column() < endCol || endCol == -1)))
-    && (line < selectEnd.line() || (line == selectEnd.line() && (endCol <= selectEnd.column() && endCol != -1)));
+    && (lineEndPos.line() > selectStart.line() || (lineEndPos.line() == selectStart.line() && (selectStart.column() < lineEndPos.column() || lineEndPos.column() == -1)))
+    && (lineEndPos.line() < selectEnd.line() || (lineEndPos.line() == selectEnd.line() && (lineEndPos.column() <= selectEnd.column() && lineEndPos.column() != -1)));
 }
 
 bool KateView::lineHasSelected (int line)
