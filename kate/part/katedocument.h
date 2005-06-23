@@ -151,7 +151,7 @@ class KateDocument : public KTextEditor::Document,
     void activeViewMousePositionChanged(const KTextEditor::Cursor& newPosition);
 
   private:
-    Q3PtrList<KateView> m_views;
+    QLinkedList<KateView*> m_views;
     QList<KTextEditor::View*> m_textEditViews;
     KateView *m_activeView;
 
@@ -418,8 +418,8 @@ class KateDocument : public KTextEditor::Document,
     Q3PtrList<KTextEditor::Mark> marks();
     void clearMarks();
 
-    void setPixmap( MarkInterface::MarkTypes, const QPixmap& );
-    void setDescription( MarkInterface::MarkTypes, const QString& );
+    void setMarkPixmap( MarkInterface::MarkTypes, const QPixmap& );
+    void setMarkDescription( MarkInterface::MarkTypes, const QString& );
     QString markDescription( MarkInterface::MarkTypes );
     QPixmap *markPixmap( MarkInterface::MarkTypes );
     QColor markColor( MarkInterface::MarkTypes );

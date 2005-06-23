@@ -108,8 +108,8 @@ void KateBookmarks::createActions( KActionCollection* ac )
   marksChanged ();
   bookmarkMenuAboutToHide();
 
-  connect( m_view, SIGNAL( gotFocus( KTextEditor::View * ) ), this, SLOT( slotViewGotFocus( KTextEditor::View * ) ) );
-  connect( m_view, SIGNAL( lostFocus( KTextEditor::View * ) ), this, SLOT( slotViewLostFocus( KTextEditor::View * ) ) );
+  connect( m_view, SIGNAL( focusIn( KTextEditor::View * ) ), this, SLOT( slotViewGotFocus( KTextEditor::View * ) ) );
+  connect( m_view, SIGNAL( focusOut( KTextEditor::View * ) ), this, SLOT( slotViewLostFocus( KTextEditor::View * ) ) );
 }
 
 void KateBookmarks::toggleBookmark ()

@@ -37,16 +37,16 @@ KateTextLine::~KateTextLine()
 {
 }
 
-void KateTextLine::insertText (uint pos, uint insLen, const QChar *insText, const uchar *insAttribs)
+void KateTextLine::insertText (int pos, uint insLen, const QChar *insText, const uchar *insAttribs)
 {
   // nothing to do
   if (insLen == 0)
     return;
 
   // calc new textLen, store old
-  uint oldTextLen = m_text.length();
+  int oldTextLen = m_text.length();
   m_text.insert (pos, insText, insLen);
-  uint textLen = m_text.length();
+  int textLen = m_text.length();
 
   // resize the array
   m_attributes.resize (textLen);
@@ -54,7 +54,7 @@ void KateTextLine::insertText (uint pos, uint insLen, const QChar *insText, cons
   // HA, insert behind text end, fill with spaces
   if (pos >= oldTextLen)
   {
-    for (uint z = oldTextLen; z < pos; z++)
+    for (int z = oldTextLen; z < pos; z++)
       m_attributes[z] = 0;
   }
   // HA, insert in text, move the old text behind pos

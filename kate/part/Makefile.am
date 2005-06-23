@@ -1,6 +1,6 @@
-kde_module_LTLIBRARIES = libkatepart.la
+kde_module_LTLIBRARIES = katepart.la
 
-libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
+katepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
 		kateundo.cpp katecursor.cpp katedialogs.cpp katedocument.cpp katefactory.cpp \
 		katehighlight.cpp katesyntaxdocument.cpp katetextline.cpp kateview.cpp kateconfig.cpp \
 		kateviewhelpers.cpp katecodecompletion.cpp katedocumenthelpers.cpp \
@@ -12,9 +12,9 @@ libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
 		katerangetype.cpp katesuperrange.cpp kateglobal.cpp katecmd.cpp katelayoutcache.cpp \
 	katetextlayout.cpp
 
-libkatepart_la_LIBADD = $(top_builddir)/interfaces/ktexteditor/libktexteditor.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
+katepart_la_LIBADD = $(top_builddir)/interfaces/ktexteditor/libktexteditor.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
 
-libkatepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
+katepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint -I$(top_srcdir)/interfaces -I$(top_srcdir)/interfaces/kregexpeditor -I$(top_srcdir)/kdefx -I$(top_srcdir)/kutils -I$(top_builddir)/kjs $(LUA_INCLUDES) $(all_includes)
 

@@ -30,7 +30,7 @@
 
 #include <ktexteditor/codecompletioninterface.h>
 
-#include <q3valuelist.h>
+#include <QList>
 #include <qstringlist.h>
 #include <qlabel.h>
 #include <q3frame.h>
@@ -75,10 +75,12 @@ class KateCodeCompletion : public QObject
 
     bool codeCompletionVisible ();
 
+    void showCompletion(const KTextEditor::Cursor &position,const QLinkedList<KTextEditor::CompletionData> &data);
+
     void showArgHint(
         QStringList functionList, const QString& strWrapping, const QString& strDelimiter );
     void showCompletionBox(
-        Q3ValueList<KTextEditor::CompletionEntry> entries, int offset = 0, bool casesensitive = true );
+        QList<KTextEditor::CompletionItem> entries, int offset = 0, bool casesensitive = true );
     bool eventFilter( QObject* o, QEvent* e );
 
     void handleKey (QKeyEvent *e);
@@ -92,20 +94,20 @@ class KateCodeCompletion : public QObject
     void completionAborted();
     void completionDone();
     void argHintHidden();
-    void completionDone(KTextEditor::CompletionEntry);
-    void filterInsertString(KTextEditor::CompletionEntry*,QString *);
+    void completionDone(KTextEditor::CompletionItem);
+    void filterInsertString(KTextEditor::CompletionItem*,QString *);
 
   private:
     void doComplete();
     void abortCompletion();
-    void complete( KTextEditor::CompletionEntry );
+    void complete( KTextEditor::CompletionItem );
     void updateBox( bool newCoordinate );
 
     KateArgHint*    m_pArgHint;
     KateView*       m_view;
     Q3VBox*          m_completionPopup;
     KateCCListBox*       m_completionListBox;
-    Q3ValueList<KTextEditor::CompletionEntry> m_complList;
+    QList<KTextEditor::CompletionItem> m_complList;
     int            m_lineCursor;
     int            m_colCursor;
     int             m_offset;

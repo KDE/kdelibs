@@ -95,7 +95,7 @@ class KateCCListBox : public Q3ListBox
 class KateCompletionItem : public Q3ListBoxText
 {
   public:
-    KateCompletionItem( Q3ListBox* lb, KTextEditor::CompletionEntry entry )
+    KateCompletionItem( Q3ListBox* lb, KTextEditor::CompletionItem entry )
       : Q3ListBoxText( lb )
       , m_entry( entry )
     {
@@ -106,7 +106,7 @@ class KateCompletionItem : public Q3ListBoxText
       }
     }
 
-    KTextEditor::CompletionEntry m_entry;
+    KTextEditor::CompletionItem m_entry;
 };
 
 
@@ -125,7 +125,6 @@ KateCodeCompletion::KateCodeCompletion( KateView* view )
   m_completionListBox->setFocusProxy( m_view->m_viewInternal );
 
   m_completionListBox->installEventFilter( this );
-
   m_completionPopup->resize(m_completionListBox->sizeHint() + QSize(2,2));
   m_completionPopup->installEventFilter( this );
   m_completionPopup->setFocusProxy( m_view->m_viewInternal );
@@ -142,8 +141,20 @@ bool KateCodeCompletion::codeCompletionVisible () {
   return m_completionPopup->isVisible();
 }
 
+
+void KateCodeCompletion::showCompletion(const KTextEditor::Cursor &position,const QLinkedList<KTextEditor::CompletionData> &data) {
+  kdDebug(13034)<<"KateCodeCompletion::showCompletion"<<endl;
+  if (data.isEmpty()) return;
+  kdDebug(13034)<<"KateCodeCompletion::showCompletion (currently handling first provider only)"<<endl;
+  KTextEditor::CompletionData cd(data.first());
+  if (cd.items().isEmpty()) return;
+  kdDebug(13034)<<"KateCodeCompletion::showCompletion: There is data"<<endl;
+  showCompletionBox(cd.items(),cd.offset(),cd.casesensitive());
+}
+
+
 void KateCodeCompletion::showCompletionBox(
-    Q3ValueList<KTextEditor::CompletionEntry> complList, int offset, bool casesensitive )
+    QList<KTextEditor::CompletionItem> complList, int offset, bool casesensitive )
 {
   kdDebug(13035) << "showCompletionBox " << endl;
 
@@ -160,9 +171,15 @@ void KateCodeCompletion::showCompletionBox(
 
 bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
 {
+  kdDebug()<<"KateCodeCompletion::eventFilter"<<endl;
   if ( o != m_completionPopup &&
        o != m_completionListBox &&
-       o != m_completionListBox->viewport() )
+       o != m_completionListBox->viewport()
+       #if 0 
+       && o != m_view /*TEST*/ &&
+       o != m_view->m_viewInternal /*TEST*/
+ #endif
+    )
     return false;
 
    if( e->type() == QEvent::Hide )
@@ -181,6 +198,8 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
     return false;
    }
 
+  if ((e->type()==QEvent::KeyPress) && (o!=m_view->m_viewInternal)) QApplication::sendEvent(m_view->m_viewInternal,e);
+    QApplication::sendEvent( m_view->window(), (QEvent*)e );
   return false;
 }
 
@@ -239,7 +258,7 @@ void KateCodeCompletion::abortCompletion()
   emit completionAborted();
 }
 
-void KateCodeCompletion::complete( KTextEditor::CompletionEntry entry )
+void KateCodeCompletion::complete( KTextEditor::CompletionItem entry )
 {
   m_completionPopup->hide();
   delete m_commentLabel;
@@ -272,7 +291,7 @@ void KateCodeCompletion::updateBox( bool )
   kdDebug(13035) << "Text: '" << currentComplText << "'" << endl;
   kdDebug(13035) << "Count: " << m_complList.count() << endl;
 */
-  Q3ValueList<KTextEditor::CompletionEntry>::Iterator it;
+  QList<KTextEditor::CompletionItem>::Iterator it;
   if( m_caseSensitive ) {
     for( it = m_complList.begin(); it != m_complList.end(); ++it ) {
       if( (*it).text.startsWith(currentComplText) ) {

@@ -185,11 +185,14 @@ struct DocWordCompletionPluginViewPrivate
 DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool autopopup, KTextEditor::View *view, const char *name )
   : QObject( view, name ),
     KXMLGUIClient( view ),
+    KTextEditor::CompletionProvider(),
     m_view( view ),
     d( new DocWordCompletionPluginViewPrivate )
 {
   d->treshold = treshold;
   view->insertChildClient( this );
+  KTextEditor::CodeCompletionInterface *cci=KTextEditor::codeCompletionInterface(view);
+  if (cci) cci->registerCompletionProvider(this);
   setInstance( KGenericFactory<DocWordCompletionPlugin>::instance() );
 
   (void) new KAction( i18n("Reuse Word Above"), Qt::CTRL+Qt::Key_8, this,
@@ -220,6 +223,15 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
   }
 }
 
+DocWordCompletionPluginView::~DocWordCompletionPluginView()
+{
+  KTextEditor::CodeCompletionInterface *cci=KTextEditor::codeCompletionInterface(m_view);
+  if (cci) cci->unregisterCompletionProvider(this);
+
+  delete d;
+  d=0;
+}
+
 void DocWordCompletionPluginView::settreshold( uint t )
 {
   d->treshold = t;
@@ -244,7 +256,7 @@ void DocWordCompletionPluginView::popupCompletionList( QString w )
     return;
 
   KTextEditor::CodeCompletionInterface *cci = codeCompletionInterface( m_view );
-  cci->showCompletionBox( allMatches( w ), w.length() );
+  #warning cci->showCompletionBox( allMatches( w ), w.length() );
 }
 
 void DocWordCompletionPluginView::toggleAutoPopup()
@@ -263,6 +275,20 @@ void DocWordCompletionPluginView::toggleAutoPopup()
   }
 }
 
+const KTextEditor::CompletionData DocWordCompletionPluginView::completionData(KTextEditor::View*,enum KTextEditor::CompletionType comptype, const KTextEditor::Cursor& pos , const QString& line)
+{
+  kdDebug()<<"Should we provide a completion list?"<<endl;
+  if ((!d->autopopup->isChecked()) && (comptype==KTextEditor::CompletionAsYouType)) return KTextEditor::CompletionData::Null();
+  QString w=word(pos.column(),line);
+  kdDebug()<<"Checking word length"<<endl;
+  if (w.length() >=d->treshold) {
+    {  //showCompletionBox( allMatches( w ), w.length() );
+      kdDebug()<<"About to return a completion list"<<endl;
+      return KTextEditor::CompletionData(allMatches(w),w.length(),true);
+    }
+  } else return KTextEditor::CompletionData::Null();
+}
+
 // for autopopup FIXME - don't pop up if reuse word is inserting
 void DocWordCompletionPluginView::autoPopupCompletionList()
 {
@@ -277,6 +303,8 @@ void DocWordCompletionPluginView::autoPopupCompletionList()
 // Contributed by <brain@hdsnet.hu>
 void DocWordCompletionPluginView::shellComplete()
 {
+#warning reimplement me
+#if 0
     // find the word we are typing
   KTextEditor::Cursor pos = m_view->cursorPosition();
 
@@ -298,6 +326,7 @@ void DocWordCompletionPluginView::shellComplete()
     partial.remove(0, wrd.length());
     m_view->document()->insertText(pos, partial);
   }
+#endif
 }
 
 // Do one completion, searching in the desired direction,
@@ -446,11 +475,28 @@ QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KText
 }
 
 // Return the string to complete (the letters behind the cursor)
+QString DocWordCompletionPluginView::word(int col, const QString& line)
+{
+  //KTextEditor::Cursor end = m_view->cursorPosition();
+
+  if ( ! col) return QString::null; // no word
+
+  //KTextEditor::Cursor start (end.line(), 0);
+
+  d->re.setPattern( "\\b(\\w+)$" );
+  if ( d->re.searchRev(line.left(col)
+        //m_view->document()->text( start, end )
+        ) < 0 )
+    return QString::null; // no word
+  return d->re.cap( 1 );
+}
+
+// Return the string to complete (the letters behind the cursor)
 QString DocWordCompletionPluginView::word()
 {
   KTextEditor::Cursor end = m_view->cursorPosition();
 
-  if ( ! end.column() ) return QString::null; // no word
+  if ( ! end.column()) return QString::null; // no word
 
   KTextEditor::Cursor start (end.line(), 0);
 
@@ -462,11 +508,12 @@ QString DocWordCompletionPluginView::word()
   return d->re.cap( 1 );
 }
 
+
 // Scan throught the entire document for possible completions,
 // ignoring any dublets
-Q3ValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatches( const QString &word )
+QList<KTextEditor::CompletionItem> DocWordCompletionPluginView::allMatches( const QString &word )
 {
-  Q3ValueList<KTextEditor::CompletionEntry> l;
+  QList<KTextEditor::CompletionItem> l;
   uint i( 0 );
   int pos( 0 );
   d->re.setPattern( "\\b("+word+"\\w+)" );
@@ -486,7 +533,7 @@ Q3ValueList<KTextEditor::CompletionEntry> DocWordCompletionPluginView::allMatche
         m = d->re.cap( 1 );
         if ( ! seen[ m ] ) {
           seen.insert( m, &sawit );
-          KTextEditor::CompletionEntry e;
+          KTextEditor::CompletionItem e;
           e.text = m;
           l.append( e );
         }

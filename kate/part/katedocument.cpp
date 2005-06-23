@@ -226,8 +226,10 @@ KateDocument::~KateDocument()
   if (!singleViewMode())
   {
     // clean up remaining views
-    m_views.setAutoDelete( true );
-    m_views.clear();
+    //m_views.setAutoDelete( true );
+    //m_views.clear();
+    while (m_views.count()>0)
+	delete m_views.takeFirst();
   }
 
   delete m_editCurrentUndo;
@@ -268,8 +270,10 @@ void KateDocument::disableAllPluginsGUI (KateView *view)
 
 void KateDocument::loadPlugin (uint pluginIndex)
 {
+  kdDebug()<<"loadPlugin (entered)"<<endl;
   if (m_plugins[pluginIndex]) return;
 
+  kdDebug()<<"loadPlugin (loading plugin)"<<endl;
   m_plugins[pluginIndex] = KTextEditor::createPlugin (QFile::encodeName((KateGlobal::self()->plugins())[pluginIndex]->library()), this);
 
   enablePluginGUI (m_plugins[pluginIndex]);
@@ -287,6 +291,7 @@ void KateDocument::unloadPlugin (uint pluginIndex)
 
 void KateDocument::enablePluginGUI (KTextEditor::Plugin *plugin, KateView *view)
 {
+  kdDebug()<<"KateDocument::enablePluginGUI(plugin,view):"<<"plugin"<<endl;
   if (!plugin) return;
 
   KXMLGUIFactory *factory = view->factory();
@@ -301,10 +306,11 @@ void KateDocument::enablePluginGUI (KTextEditor::Plugin *plugin, KateView *view)
 
 void KateDocument::enablePluginGUI (KTextEditor::Plugin *plugin)
 {
+  kdDebug()<<"KateDocument::enablePluginGUI(plugin):"<<"plugin"<<endl;  
   if (!plugin) return;
 
-  for (uint i=0; i< m_views.count(); i++)
-    enablePluginGUI (plugin, m_views.at(i));
+  foreach(KateView *view,m_views)
+    enablePluginGUI (plugin, view);
 }
 
 void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin, KateView *view)
@@ -325,8 +331,8 @@ void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin)
 {
   if (!plugin) return;
 
-  for (uint i=0; i< m_views.count(); i++)
-    disablePluginGUI (plugin, m_views.at(i));
+  foreach(KateView *view,m_views)
+    disablePluginGUI (plugin, view);
 }
 //END
 
@@ -447,7 +453,7 @@ bool KateDocument::setText(const QString &s)
   Q3PtrList<KTextEditor::Mark> m = marks ();
   Q3ValueList<KTextEditor::Mark> msave;
 
-  for (uint i=0; i < m.count(); i++)
+  for (int i=0; i < m.count(); i++)
     msave.append (*m.at(i));
 
   editStart ();
@@ -471,7 +477,7 @@ bool KateDocument::clear()
   if (!isReadWrite())
     return false;
 
-  for (KateView * view = m_views.first(); view != 0L; view = m_views.next() ) {
+  foreach (KateView *view, m_views) {
     view->clear();
     view->tagAll();
     view->update();
@@ -602,7 +608,7 @@ bool KateDocument::removeText ( int startLine, int startCol, int endLine, int en
     }
     else
     {
-      for (uint line = endLine; line >= startLine; line--)
+      for (int line = endLine; line >= startLine; line--)
       {
         if ((line > startLine) && (line < endLine))
         {
@@ -634,7 +640,7 @@ bool KateDocument::removeText ( int startLine, int startCol, int endLine, int en
     if ( endLine > lastLine() )
       endLine = lastLine ();
 
-    for (uint line = endLine; line >= startLine; line--)
+    for (int line = endLine; line >= startLine; line--)
     {
 
       editRemoveText (line, startCol, endCol-startCol);
@@ -732,9 +738,9 @@ void KateDocument::editStart (bool withUndo, KTextEditor::View *view)
   else
     undoCancel();
 
-  for (uint z = 0; z < m_views.count(); z++)
+  foreach(KateView *view,m_views)
   {
-    m_views.at(z)->editStart ();
+    view->editStart ();
   }
 
   m_buffer->editStart ();
@@ -838,8 +844,8 @@ void KateDocument::editEnd ()
     undoEnd();
 
   // edit end for all views !!!!!!!!!
-  for (int z = 0; z < m_views.count(); z++)
-    m_views.at(z)->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
+  foreach(KateView *view, m_views)
+    view->editEnd (m_buffer->editTagStart(), m_buffer->editTagEnd(), m_buffer->editTagFrom());
 
   if (m_buffer->editChanged())
   {
@@ -1156,7 +1162,7 @@ bool KateDocument::editUnWrapLine ( uint line, bool removeLine, uint length )
 
   editStart ();
 
-  uint col = l->length ();
+  int col = l->length ();
 
   editAddUndo (KateUndoGroup::editUnWrapLine, line, col, length, removeLine ? "1" : "0");
 
@@ -1807,12 +1813,12 @@ void KateDocument::clearMarks()
   repaintViews(true);
 }
 
-void KateDocument::setPixmap( MarkInterface::MarkTypes type, const QPixmap& pixmap )
+void KateDocument::setMarkPixmap( MarkInterface::MarkTypes type, const QPixmap& pixmap )
 {
   m_markPixmaps.replace( type, new QPixmap( pixmap ) );
 }
 
-void KateDocument::setDescription( MarkInterface::MarkTypes type, const QString& description )
+void KateDocument::setMarkDescription( MarkInterface::MarkTypes type, const QString& description )
 {
   m_markDescriptions.replace( type, new QString( description ) );
 }
@@ -2082,7 +2088,7 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   // update views
   //
-  for (KateView * view = m_views.first(); view != 0L; view = m_views.next() )
+  foreach (KateView * view, m_views)
   {
     view->updateView(true);
   }
@@ -2429,7 +2435,7 @@ bool KateDocument::closeURL()
   m_buffer->setHighlight(0);
 
   // update all our views
-  for (KateView * view = m_views.first(); view != 0L; view = m_views.next() )
+  foreach (KateView * view, m_views )
   {
     // Explicitly call the internal version because we don't want this to look like
     // an external request (and thus have the view not QWidget::scroll()ed.
@@ -2453,7 +2459,7 @@ void KateDocument::setReadWrite( bool rw )
   {
     KParts::ReadWritePart::setReadWrite (rw);
 
-    for( KateView* view = m_views.first(); view != 0L; view = m_views.next() )
+    foreach( KateView* view, m_views)
     {
       view->slotUpdate();
       view->slotReadWriteChanged ();
@@ -2466,7 +2472,7 @@ void KateDocument::setModified(bool m) {
   if (isModified() != m) {
     KParts::ReadWritePart::setModified (m);
 
-    for( KateView* view = m_views.first(); view != 0L; view = m_views.next() )
+    foreach( KateView* view,m_views)
     {
       view->slotUpdate();
     }
@@ -2489,8 +2495,8 @@ void KateDocument::makeAttribs(bool needInvalidate)
 {
   highlight()->clearAttributeArrays ();
 
-  for (uint z = 0; z < m_views.count(); z++)
-    m_views.at(z)->renderer()->updateAttributes ();
+  foreach(KateView *view,m_views)
+    view->renderer()->updateAttributes ();
 
   if (needInvalidate)
     m_buffer->invalidateHighlighting();
@@ -2529,8 +2535,9 @@ void KateDocument::removeView(KTextEditor::View *view) {
   if (activeView() == view)
     setActiveView(0L);
 
-  m_views.removeRef( (KateView *) view );
+  m_views.removeAll( (KateView *) view );
   m_textEditViews.remove( view  );
+  delete view;
 }
 
 void KateDocument::setActiveView(KTextEditor::View* view)
@@ -2566,7 +2573,7 @@ void KateDocument::removeSuperCursor(KateSuperCursor *cursor, bool privateC) {
 
 bool KateDocument::ownedView(KateView *view) {
   // do we own the given view?
-  return (m_views.containsRef(view) > 0);
+  return (m_views.contains(view) > 0);
 }
 
 uint KateDocument::currentColumn( const KTextEditor::Cursor& cursor )
@@ -2628,7 +2635,6 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
     view->setCursorPositionInternal (view->cursorPosition().line(), view->cursorPosition().column()-1);
 
   view->slotTextInserted (view, oldCur, chars);
-
   return true;
 }
 
@@ -2814,7 +2820,7 @@ void KateDocument::del( KateView *view, const KTextEditor::Cursor& c )
   {
     removeText(c.line(), c.column(), c.line(), c.column()+1);
   }
-  else if ( (uint)c.line() < lastLine() )
+  else if ( c.line() < lastLine() )
   {
     removeText(c.line(), c.column(), c.line()+1, 0);
   }
@@ -3681,8 +3687,8 @@ QString KateDocument::getWord( const KTextEditor::Cursor& cursor ) {
 
 void KateDocument::tagLines(int start, int end)
 {
-  for (uint z = 0; z < m_views.count(); z++)
-    m_views.at(z)->tagLines (start, end, true);
+  foreach(KateView *view,m_views)
+    view->tagLines (start, end, true);
 }
 
 void KateDocument::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor end)
@@ -3694,22 +3700,22 @@ void KateDocument::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor end)
     end.setColumn(sc);
   }
 */
-  for (uint z = 0; z < m_views.count(); z++)
-    m_views.at(z)->tagLines(start, end, true);
+  foreach (KateView* view, m_views)
+    view->tagLines(start, end, true);
 }
 
 void KateDocument::repaintViews(bool paintOnlyDirty)
 {
-  for (uint z = 0; z < m_views.count(); z++)
-    m_views.at(z)->repaintText(paintOnlyDirty);
+  foreach(KateView *view,m_views)
+    view->repaintText(paintOnlyDirty);
 }
 
 void KateDocument::tagAll()
 {
-  for (uint z = 0; z < m_views.count(); z++)
+  foreach(KateView *view,m_views)
   {
-    m_views.at(z)->tagAll();
-    m_views.at(z)->updateView (true);
+    view->tagAll();
+    view->updateView (true);
   }
 }
 
@@ -4132,7 +4138,7 @@ void KateDocument::updateConfig ()
   emit undoChanged ();
   tagAll();
 
-  for (KateView * view = m_views.first(); view != 0L; view = m_views.next() )
+  foreach (KateView * view,m_views)
   {
     view->updateDocumentConfig ();
   }
@@ -4175,7 +4181,7 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
 
   // views!
   KateView *v;
-  for (v = m_views.first(); v != 0L; v= m_views.next() )
+  foreach (v,m_views)
   {
     v->config()->configStart();
     v->renderer()->config()->configStart();
@@ -4196,7 +4202,7 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
   if (!onlyViewAndRenderer)
     m_config->configEnd();
 
-  for (v = m_views.first(); v != 0L; v= m_views.next() )
+  foreach (v,m_views)
   {
     v->config()->configEnd();
     v->renderer()->config()->configEnd();
@@ -4330,7 +4336,7 @@ void KateDocument::setViewVariable( QString var, QString val )
   bool state;
   int n;
   QColor c;
-  for (v = m_views.first(); v != 0L; v= m_views.next() )
+  foreach (v,m_views)
   {
     if ( var == "dynamic-word-wrap" && checkBoolValue( val, &state ) )
       v->config()->setDynWordWrap( state );
@@ -4551,7 +4557,7 @@ void KateDocument::updateFileType (int newType, bool user)
         m_config->configStart();
         // views!
         KateView *v;
-        for (v = m_views.first(); v != 0L; v= m_views.next() )
+        foreach (v,m_views)
         {
           v->config()->configStart();
           v->renderer()->config()->configStart();
@@ -4560,7 +4566,7 @@ void KateDocument::updateFileType (int newType, bool user)
         readVariableLine( t->varLine );
 
         m_config->configEnd();
-        for (v = m_views.first(); v != 0L; v= m_views.next() )
+        foreach (v,m_views)
         {
           v->config()->configEnd();
           v->renderer()->config()->configEnd();

@@ -443,7 +443,7 @@ void KateView::setupActions()
 
   slotSelectionChanged ();
 
-  connect (this, SIGNAL(selectionChanged(KTextEditor::View *)), this, SLOT(slotSelectionChanged()));
+  connect (this, SIGNAL(selectionChanged(KTextEditor::View*)), this, SLOT(slotSelectionChanged()));
 }
 
 void KateView::slotConfigDialog ()
@@ -692,6 +692,7 @@ QString KateView::viewMode () const
 
 void KateView::slotGotFocus()
 {
+  kdDebug()<<"KateView::slotGotFocus()"<<endl;
   if (m_editActions)
     m_editActions->accel()->setEnabled( true );
 
@@ -700,6 +701,7 @@ void KateView::slotGotFocus()
 
 void KateView::slotLostFocus()
 {
+  kdDebug()<<"KateView::slotLostFocus()"<<endl;
   if (m_editActions)
     m_editActions->accel()->setEnabled( false );
 
@@ -1043,6 +1045,8 @@ void KateView::switchToCmdLine ()
   m_cmdLine->setFocus ();
 }
 
+
+#if 0
 void KateView::showArgHint( QStringList arg1, const QString& arg2, const QString& arg3 )
 {
   m_codeCompletion->showArgHint( arg1, arg2, arg3 );
@@ -1053,6 +1057,7 @@ void KateView::showCompletionBox( Q3ValueList<KTextEditor::CompletionEntry> arg1
   emit aboutToShowCompletionBox();
   m_codeCompletion->showCompletionBox( arg1, offset, cs );
 }
+#endif 
 
 KateRenderer *KateView::renderer ()
 {
@@ -1802,5 +1807,52 @@ void KateView::getIMSelectionValue( KTextEditor::Range* imRange, KTextEditor::Ra
   *imSelection = m_imSelection;
 }
 //END IM INPUT STUFF
+
+void KateView::slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text)
+{
+  emit textInserted ( view, position, text);
+  kdDebug()<<"Checking if cc provider list is empty"<<endl;
+  if (m_completionProviders.isEmpty()) return;
+  QLinkedList<KTextEditor::CompletionData> newdata;
+  bool needupdate=false;
+  KTextEditor::Cursor c=cursorPosition();
+  QString lineText=m_doc->line(c.line());
+  kdDebug()<<"Checking state for all providers"<<endl;
+  foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
+  {
+//cursor should be newpos here though
+    const KTextEditor::CompletionData &nd=provider->completionData(view,KTextEditor::CompletionAsYouType,c,lineText);
+    if ((!m_completionProviderData.contains(provider)) || (!(nd==m_completionProviderData[provider])) )
+    {
+      m_completionProviderData.insert(provider,nd);
+      needupdate=true;
+    }
+    newdata.append(nd);
+  }
+  if (needupdate)
+    m_codeCompletion->showCompletion(position,newdata);
+}
+
+
+//BEGIN Code completion new
+bool KateView::registerCompletionProvider(KTextEditor::CompletionProvider* provider)
+{
+  kdDebug()<<"Registering completion provider:"<<provider<<endl;
+  if (!provider) return false;
+  if (m_completionProviders.contains(provider)) return false;
+  m_completionProviders.append(provider);
+  return true;	
+}
+
+bool KateView::unregisterCompletionProvider(KTextEditor::CompletionProvider* provider)
+{
+  kdDebug()<<"Unregistering completion provider:"<<provider<<endl;
+  if (!provider) return false;
+  m_completionProviderData.remove(provider);
+  return m_completionProviders.removeAll(provider);
+}
+
+
+//END Code completion new
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

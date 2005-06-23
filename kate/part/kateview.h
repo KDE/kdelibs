@@ -35,6 +35,10 @@
 
 #include <qpointer.h>
 #include <QMenu>
+#include <QLinkedList>
+#include <QHash>
+
+#include <kdebug.h>
 
 class KateDocument;
 class KateBookmarks;
@@ -160,6 +164,13 @@ class KateView : public KTextEditor::View,
   //
   // KTextEditor::CodeCompletionInterface
   //
+  public:
+    bool registerCompletionProvider(KTextEditor::CompletionProvider*);
+    bool unregisterCompletionProvider(KTextEditor::CompletionProvider*);
+  private:
+    QLinkedList<KTextEditor::CompletionProvider*> m_completionProviders;
+    QHash<KTextEditor::CompletionProvider*,KTextEditor::CompletionData> m_completionProviderData;
+#if 0
   public slots:
     void showArgHint( QStringList arg1, const QString& arg2, const QString& arg3 );
     void showCompletionBox( Q3ValueList<KTextEditor::CompletionEntry> arg1, int offset = 0, bool cs = true );
@@ -171,7 +182,7 @@ class KateView : public KTextEditor::View,
     void completionDone(KTextEditor::CompletionEntry);
     void filterInsertString(KTextEditor::CompletionEntry*,QString *);
     void aboutToShowCompletionBox();
-
+#endif
   //
   // KTextEditor::TextHintInterface
   //
@@ -330,7 +341,7 @@ class KateView : public KTextEditor::View,
     void shiftHome()          { m_viewInternal->home(true);          }
     void end()                { m_viewInternal->end();               }
     void shiftEnd()           { m_viewInternal->end(true);           }
-    void up()                 { m_viewInternal->cursorUp();          }
+    void up()                 { kdDebug()<<"KateView::up()"<<endl;m_viewInternal->cursorUp();          }
     void shiftUp()            { m_viewInternal->cursorUp(true);      }
     void down()               { m_viewInternal->cursorDown();        }
     void shiftDown()          { m_viewInternal->cursorDown(true);    }
@@ -420,8 +431,7 @@ class KateView : public KTextEditor::View,
     void dropEventPass(QDropEvent*);
 
   public:
-    void slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text )
-     { emit textInserted ( view, position, text ); }
+    void slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text);
 
   public:
     bool setCursorPositionInternal( uint line, uint col, uint tabwidth = 1, bool calledExternally = false );

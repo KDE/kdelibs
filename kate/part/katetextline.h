@@ -304,7 +304,7 @@ class KateTextLine : public KShared
      * @param insText text to insert
      * @param insAttribs attributes for the insert text
      */
-    void insertText (uint pos, uint insLen, const QChar *insText, const uchar *insAttribs = 0);
+    void insertText (int pos, uint insLen, const QChar *insText, const uchar *insAttribs = 0);
 
     /**
      * remove text at given position

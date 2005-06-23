@@ -82,16 +82,22 @@ class DocWordCompletionPlugin
 };
 
 class DocWordCompletionPluginView
-   : public QObject, public KXMLGUIClient
+   : public QObject, public KXMLGUIClient,public KTextEditor::CompletionProvider
 {
   Q_OBJECT
 
   public:
     DocWordCompletionPluginView( uint treshold=3, bool autopopup=true, KTextEditor::View *view=0,
                                const char *name=0 );
-    ~DocWordCompletionPluginView() {};
+    ~DocWordCompletionPluginView();
 
     void settreshold( uint treshold );
+
+
+    const KTextEditor::CompletionData completionData(KTextEditor::View*, enum KTextEditor::CompletionType, const KTextEditor::Cursor&, const QString&);
+    const KTextEditor::ArgHintData argHintData(KTextEditor::View *,const KTextEditor::Cursor&, const QString&)
+        {return KTextEditor::ArgHintData::Null();};
+    void filterInsertString(KTextEditor::View*,const KTextEditor::CompletionItem&,QString*){};
 
   private slots:
     void completeBackwards();
@@ -108,7 +114,8 @@ class DocWordCompletionPluginView
     void complete( bool fw=true );
 
     QString word();
-    Q3ValueList<KTextEditor::CompletionEntry> allMatches( const QString &word );
+    QString word(int col, const QString& line);
+    QList<KTextEditor::CompletionItem> allMatches( const QString &word );
     QString findLongestUnique(const Q3ValueList < KTextEditor::CompletionEntry > &matches);
     KTextEditor::View *m_view;
     struct DocWordCompletionPluginViewPrivate *d;
