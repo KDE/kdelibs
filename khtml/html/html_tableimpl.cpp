@@ -309,11 +309,15 @@ NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 {
     if(child->id() == ID_TR) { // #105586, allow javascript to insert a TR inside a TABLE, creation section as needed
         // See insertRow
-        if (!firstBody && !head && !foot && !hasChildNodes())
+        if (!firstBody && !head && !foot && !hasChildNodes()) {
             setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
-        if (firstBody) // can be 0, e.g. with <table><col><tr> (htmlparser creates tbody after this appendChild call fails)
+        }
+        // firstBody can be 0, e.g. with <table><col><tr> (htmlparser creates tbody after this appendChild call fails)
+        if (firstBody && !head && !foot) {
             return firstBody->appendChild( child, exceptioncode );
+        }
     }
+
     return HTMLElementImpl::appendChild( child, exceptioncode );
 }
 
@@ -796,7 +800,7 @@ long HTMLTableCellElementImpl::cellIndex() const
         if (node->id() == ID_TD || node->id() == ID_TH)
             index++;
     }
-    
+
     return index;
 }
 
