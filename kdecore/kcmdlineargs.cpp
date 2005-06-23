@@ -204,7 +204,7 @@ const char * KCmdLineArgs::appName()
 
 void
 KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *name,
-				 const char *id, const char *afterId)
+         const char *id, const char *afterId)
 {
    if (!argsList)
       argsList = new KCmdLineArgsList();
@@ -222,7 +222,7 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *nam
          return; // Options already present.
 
       if (id && args->id && (::qstrcmp(id, args->id) == 0))
-	 return; // Options already present.
+   return; // Options already present.
 
       if (afterId && args->id && (::qstrcmp(afterId, args->id) == 0))
          pos = i+1;
@@ -343,9 +343,9 @@ void KCmdLineArgs::removeArgs(const char *id)
 /*
  * @return:
  *  0 - option not found.
- *  1 - option found			// -fork
- *  2 - inverse option found ('no')	// -nofork
- *  3 - option + arg found		// -fork now
+ *  1 - option found      // -fork
+ *  2 - inverse option found ('no') // -nofork
+ *  3 - option + arg found    // -fork now
  *
  *  +4 - no more options follow         // !fork
  */
@@ -592,7 +592,7 @@ KCmdLineArgs::parseAllArgs()
             printQ( QString("Qt: %1\n").arg(qVersion()));
             printQ( QString("KDE: %1\n").arg(KDE_VERSION_STRING));
             printQ( QString("%1: %2\n").
-			arg(about->programName()).arg(about->version()));
+      arg(about->programName()).arg(about->version()));
             exit(0);
          } else if ( (::qstrcmp(option, "license") == 0) )
          {
@@ -602,29 +602,33 @@ KCmdLineArgs::parseAllArgs()
             exit(0);
          } else if ( ::qstrcmp( option, "author") == 0 ) {
              enable_i18n();
-	     if ( about ) {
-		 const QValueList<KAboutPerson> authors = about->authors();
-		 if ( !authors.isEmpty() ) {
-                     QString authorlist;
-		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
-			 QString email;
-			 if ( !(*it).emailAddress().isEmpty() )
-				 email = " <" + (*it).emailAddress() + ">";
-			 authorlist += QString("    ") + (*it).name() + email + "\n";
-		     }
-		     printQ( i18n("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
-		 }
-	     } else {
-		 printQ( i18n("%1 was written by somebody who wants to remain anonymous.").arg(about->programName()) );
-	     }
-	     if (!about->bugAddress().isEmpty())
-	     {
-		if (about->bugAddress() == "submit@bugs.kde.org")
-		    printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
-		else
-		    printQ( i18n( "Please use %1 to report bugs, do not mail the authors directly.\n" ).arg(about->bugAddress()) );
-	     }
-	     exit(0);
+       if ( about ) {
+         const QValueList<KAboutPerson> authors = about->authors();
+         if ( !authors.isEmpty() ) {
+           QString authorlist;
+           for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
+             QString email;
+             if ( !(*it).emailAddress().isEmpty() )
+               email = " <" + (*it).emailAddress() + ">";
+             authorlist += QString("    ") + (*it).name() + email + "\n";
+           }
+           printQ( i18n("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
+         }
+       } else {
+         printQ( i18n("This application was written by somebody who wants to remain anonymous.") );
+       }
+       if (!about->bugAddress().isEmpty())
+       {
+         if ( about->bugAddress() == "submit@bugs.kde.org" )
+           printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
+         else {
+           if( about->authors().count() == 1 && about->authors().first().emailAddress() == about->bugAddress() )
+             printQ( i18n( "Please use %1 to report bugs.\n" ).arg( about->authors().first().emailAddress() ) );
+           else
+             printQ( i18n( "Please use %1 to report bugs, do not mail the authors directly.\n" ).arg(about->bugAddress()) );
+         }
+       }
+       exit(0);
          } else {
            if ((option[0] == 'n') && (option[1] == 'o'))
            {
@@ -729,12 +733,12 @@ KCmdLineArgs::enable_i18n()
 {
     // called twice or too late
     if (KGlobal::_locale)
-	    return;
+      return;
 
     if (!KGlobal::_instance) {
-	KInstance *instance = new KInstance(about);
-	(void) instance->config();
-	// Don't delete instance!
+  KInstance *instance = new KInstance(about);
+  (void) instance->config();
+  // Don't delete instance!
     }
 }
 
@@ -744,7 +748,7 @@ KCmdLineArgs::usage(const QString &error)
     assert(KGlobal::_locale);
     QCString localError = error.local8Bit();
     if (localError[error.length()-1] == '\n')
-	localError = localError.left(error.length()-1);
+  localError = localError.left(error.length()-1);
     fprintf(stderr, "%s: %s\n", argv[0], localError.data());
 
     QString tmp = i18n("Use --help to get a list of available command line options.");
@@ -760,8 +764,8 @@ KCmdLineArgs::usage(const char *id)
    assert(argsList != 0); // It's an error to call usage(...) without
                           // having done addCmdLineOptions first!
 
-   QString optionFormatString		= "  %1 %2\n";
-   QString optionFormatStringDef	= "  %1 %2 [%3]\n";
+   QString optionFormatString   = "  %1 %2\n";
+   QString optionFormatStringDef  = "  %1 %2 [%3]\n";
    QString optionHeaderString = i18n("\n%1:\n");
    QString tmp;
    QString usage;
@@ -908,9 +912,9 @@ KCmdLineArgs::usage(const char *id)
 
             name = name.mid(1);
             if ((name[0] == '[') && (name[name.length()-1] == ']'))
-	       name = name.mid(1, name.length()-2);
+         name = name.mid(1, name.length()-2);
             printQ(optionFormatString.arg(name, -25)
-		 .arg(description));
+     .arg(description));
          }
          else
          {
@@ -1061,8 +1065,8 @@ KCmdLineArgs::setOption(const QCString &opt, bool enabled)
       addArgument(arg);
    }
    if (!parsedOptionList) {
- 	parsedOptionList = new KCmdLineParsedOptions;
-	parsedOptionList->setAutoDelete(true);
+  parsedOptionList = new KCmdLineParsedOptions;
+  parsedOptionList->setAutoDelete(true);
    }
 
    if (enabled)
@@ -1091,8 +1095,8 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
 #endif
    }
    if (!parsedOptionList) {
-	parsedOptionList = new KCmdLineParsedOptions;
-	parsedOptionList->setAutoDelete(true);
+  parsedOptionList = new KCmdLineParsedOptions;
+  parsedOptionList->setAutoDelete(true);
    }
 
    parsedOptionList->insert( opt, new QCString(value) );
