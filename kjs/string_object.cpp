@@ -123,8 +123,8 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
   charAt		StringProtoFuncImp::CharAt	DontEnum|Function	1
   charCodeAt		StringProtoFuncImp::CharCodeAt	DontEnum|Function	1
   concat		StringProtoFuncImp::Concat	DontEnum|Function	0
-  indexOf		StringProtoFuncImp::IndexOf	DontEnum|Function	2
-  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|Function	2
+  indexOf		StringProtoFuncImp::IndexOf	DontEnum|Function	1
+  lastIndexOf		StringProtoFuncImp::LastIndexOf	DontEnum|Function	1
   match			StringProtoFuncImp::Match	DontEnum|Function	1
   replace		StringProtoFuncImp::Replace	DontEnum|Function	2
   search		StringProtoFuncImp::Search	DontEnum|Function	1

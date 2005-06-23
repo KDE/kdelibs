@@ -1544,6 +1544,7 @@ void KHTMLView::findTimeout()
 	d->typeAheadActivated = false;
 	d->findString = "";
 	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
+	m_part->enableFindAheadActions( true );
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 }
 
@@ -1565,6 +1566,8 @@ void KHTMLView::startFindAhead( bool linksOnly )
 
 	m_part->findTextBegin();
 	d->typeAheadActivated = true;
+        // disable, so that the shortcut ( / or ' by default ) doesn't interfere
+	m_part->enableFindAheadActions( false );
 	d->timer.start(3000, true);
 }
 
@@ -2250,7 +2253,9 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             guard = node;
 	}
         // Set focus node on the document
+        QFocusEvent::setReason( QFocusEvent::Shortcut );
         m_part->xmlDocImpl()->setFocusNode(node);
+        QFocusEvent::resetReason();
         if( node != NULL && node->hasOneRef()) // deleted, only held by guard
             return true;
         emit m_part->nodeActivated(Node(node));
@@ -3152,6 +3157,9 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    m_part->enableFindAheadActions( true );
+#endif
     DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
     if (fn && fn->renderer() && fn->renderer()->isWidget() &&
         (e->reason() != Qt::MouseFocusReason) &&
@@ -3186,6 +3194,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
     {
         findTimeout();
     }
+    m_part->enableFindAheadActions( false );
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 
 #ifndef KHTML_NO_CARET

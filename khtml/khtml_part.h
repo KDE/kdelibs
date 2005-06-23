@@ -1543,6 +1543,8 @@ private:
   void openWallet(DOM::HTMLFormElementImpl*);
   void saveToWallet(const QString& key, const QMap<QString,QString>& data);
   void dequeueWallet(DOM::HTMLFormElementImpl*);
+  
+  void enableFindAheadActions(bool);
 
   /**
    * @internal

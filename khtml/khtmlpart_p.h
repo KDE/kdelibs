@@ -396,6 +396,8 @@ public:
   KAction *m_paFind;
   KAction *m_paFindNext;
   KAction *m_paFindPrev;
+  KAction *m_paFindAheadText;
+  KAction *m_paFindAheadLinks;
   KAction *m_paPrintFrame;
   KAction *m_paSelectAll;
   KAction *m_paDebugScript;

@@ -20,7 +20,7 @@
  * program (X11 and DCOP cookies).
  */
 
-class KCookie
+class KDESU_EXPORT KCookie
 {
 public:
     KCookie();

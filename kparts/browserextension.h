@@ -184,6 +184,7 @@ struct WindowArgsPrivate;
 struct KPARTS_EXPORT WindowArgs
 {
     WindowArgs();
+    ~WindowArgs();
     WindowArgs( const WindowArgs &args );
     WindowArgs &operator=( const WindowArgs &args );
     WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarVisible,
@@ -205,6 +206,7 @@ struct KPARTS_EXPORT WindowArgs
     bool resizable; //defaults to true
 
     bool lowerWindow; //defaults to false
+    bool scrollBarsVisible; //defaults to true
 
     WindowArgsPrivate *d; // yes, I am paranoid :-)
 };
@@ -294,6 +296,7 @@ class BrowserExtensionPrivate;
   * [configuration slot]
   * @li @p setSaveViewPropertiesLocally( bool ): If @p true, view properties are saved into .directory
   *                                       otherwise, they are saved globally.
+  * @li @p disableScrolling: no scrollbars
   */
 class KPARTS_EXPORT BrowserExtension : public QObject
 {

@@ -1,3 +1,26 @@
+2005-06-23  David Faure  <faure@kde.org>
+
+        * html/html_tableimpl.cpp (appendChild): Improve fix for bug #105586 to avoid
+        side effects with tfoot.
+
+        * khtml_run.cpp (foundMimeType): Mark child object (e.g. <embed>) as completed
+        after saving, running in external viewer, or cancelling, so that e.g. scheduled redirects
+        can happen. Patch by Andreas Kling <keso@impul.se>.
+
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * ecma/kjs_events.cpp: Respect the DOM for MouseEvent::Button atleast when simulating Mozilla
+
+2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/doctypes.gperf: Add Xhtml doctypes
+        * html/html_documentimpl.cpp: Recognize XHTML served as HTML parsing type
+
+2005-06-20  David Faure  <faure@kde.org>
+
+        * ecma/kjs_window.cpp (openWindow):  Treat empty string the same
+        as missing for third argument of window.open().
+
 2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge handling of dynamically inserted scripts.

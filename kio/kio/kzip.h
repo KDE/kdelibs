@@ -86,8 +86,8 @@ public:
     /**
      * Describes the contents of the "extra field" for a given file in the Zip archive.
      */
-    enum ExtraField { NoExtraField = 0,      /// No extra field
-                      ModificationTime = 1,  /// Modification time ("extended timestamp" header)
+    enum ExtraField { NoExtraField = 0,      ///< No extra field
+                      ModificationTime = 1,  ///< Modification time ("extended timestamp" header)
                       DefaultExtraField = 1
     };
 

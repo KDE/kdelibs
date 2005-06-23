@@ -83,6 +83,7 @@ static Atom net_wm_handled_icons     = 0;
 static Atom net_startup_id           = 0;
 static Atom net_wm_allowed_actions   = 0;
 static Atom wm_window_role           = 0;
+static Atom net_frame_extents        = 0;
 
 // KDE extensions
 static Atom kde_net_system_tray_windows       = 0;
@@ -230,7 +231,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 76;
+static const int netAtomCount = 77;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -272,6 +273,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_PING",
             "_NET_WM_TAKE_ACTIVITY",
             "WM_WINDOW_ROLE",
+            "_NET_FRAME_EXTENTS",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
@@ -359,6 +361,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_ping,
             &net_wm_take_activity,
             &wm_window_role,
+            &net_frame_extents,
 
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
@@ -1301,8 +1304,10 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & WMKDESystemTrayWinFor)
 	atoms[pnum++] = kde_net_wm_system_tray_window_for;
 
-    if (p->properties[ PROTOCOLS ] & WMKDEFrameStrut)
+    if (p->properties[ PROTOCOLS ] & WMFrameExtents) {
+	atoms[pnum++] = net_frame_extents;
 	atoms[pnum++] = kde_net_wm_frame_strut;
+    }
 
     if (p->properties[ PROTOCOLS2 ] & WM2KDETemporaryRules)
 	atoms[pnum++] = kde_net_wm_temporary_rules;
@@ -1516,6 +1521,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == kde_net_wm_system_tray_window_for )
         p->properties[ PROTOCOLS ] |= WMKDESystemTrayWinFor;
 
+    else if( atom == net_frame_extents )
+        p->properties[ PROTOCOLS ] |= WMFrameExtents;
     else if( atom == kde_net_wm_frame_strut )
         p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
 
@@ -3401,6 +3408,10 @@ void NETWinInfo::setKDESystemTrayWinFor(Window window) {
 
 
 void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
+    setFrameExtents( strut );
+}
+
+void NETWinInfo::setFrameExtents(NETStrut strut) {
     if (role != WindowManager) return;
 
     p->frame_strut = strut;
@@ -3411,6 +3422,8 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
     d[2] = strut.top;
     d[3] = strut.bottom;
 
+    XChangeProperty(p->display, p->window, net_frame_extents, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *) d, 4);
     XChangeProperty(p->display, p->window, kde_net_wm_frame_strut, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) d, 4);
 }
@@ -3633,6 +3646,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMKDESystemTrayWinFor;
 	    else if (pe.xproperty.atom == xa_wm_state)
 		dirty |= XAWMState;
+	    else if (pe.xproperty.atom == net_frame_extents)
+		dirty |= WMFrameExtents;
 	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
 		dirty |= WMKDEFrameStrut;
 	    else if (pe.xproperty.atom == net_wm_icon_name)
@@ -4041,12 +4056,29 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         }
     }
 
-    if (dirty & WMKDEFrameStrut) {
+    if (dirty & WMFrameExtents) {
         p->frame_strut = NETStrut();
-	if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_strut,
+        bool ok = false;
+	if (XGetWindowProperty(p->display, p->window, net_frame_extents,
 			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
+                ok = true;
+		long *d = (long *) data_ret;
+
+		p->frame_strut.left   = d[0];
+		p->frame_strut.right  = d[1];
+		p->frame_strut.top    = d[2];
+		p->frame_strut.bottom = d[3];
+	    }
+	    if ( data_ret )
+		XFree(data_ret);
+        }
+	if (!ok && XGetWindowProperty(p->display, p->window, kde_net_wm_frame_strut,
+			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
+			       &nitems_ret, &unused, &data_ret) == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
+                ok = true;
 		long *d = (long *) data_ret;
 
 		p->frame_strut.left   = d[0];

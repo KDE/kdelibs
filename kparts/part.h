@@ -228,7 +228,12 @@ public:
     PartManager * manager() const;
 
     /**
-     * @internal
+     * Returns the part (this, or a child part) at the given global position.
+     * This is called by the part manager to ask whether a part should be activated
+     * when clicking somewhere. In most cases the default implementation is enough.
+     * Reimplement this if your part has child parts in some areas (like in khtml or koffice)
+     * @param widget the part widget being clicked - usually the same as widget(), except in koffice.
+     * @param globalPos the mouse coordinates in global coordinates
      */
     virtual Part *hitTest( QWidget *widget, const QPoint &globalPos );
 

@@ -535,7 +535,8 @@ public:
 	WMPing                = 1<<25,
 	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
 	XAWMState             = 1<<27, // NOT STANDARD
-	WMKDEFrameStrut       = 1<<28, // NOT STANDARD
+        WMFrameExtents        = 1<<28, ///< @since 3.5
+	WMKDEFrameStrut       = WMFrameExtents, // NOT STANDARD
 
 	// Need to be reordered
 	WMIconName            = 1<<29,

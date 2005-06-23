@@ -247,7 +247,6 @@ bool RegExpObjectImp::implementsConstruct() const
 Object RegExpObjectImp::construct(ExecState *exec, const List &args)
 {
   UString p;
-  UString flags = args[1].toString(exec);
   if (args.isEmpty()) {
       p = "";
   } else {
@@ -265,6 +264,7 @@ Object RegExpObjectImp::construct(ExecState *exec, const List &args)
       p = a0.toString(exec);
     }
   }
+  UString flags = args[1].type() == UndefinedType ? UString("") : args[1].toString(exec);
 
   RegExpPrototypeImp *proto = static_cast<RegExpPrototypeImp*>(exec->lexicalInterpreter()->builtinRegExpPrototype().imp());
   RegExpImp *dat = new RegExpImp(proto);

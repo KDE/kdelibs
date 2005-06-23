@@ -63,6 +63,7 @@
 #include <qwidget.h>
 #include <qfileinfo.h>
 #include <qtimer.h>
+#include <kstatusbar.h>
 
 #include "misc/decoder.h"
 #include "dom/dom2_range.h"
@@ -71,6 +72,7 @@
 #include "html/htmltokenizer.h"
 #include "khtml_part.h"
 #include "khtmlpart_p.h"
+#include <kparts/browserextension.h>
 
 #include "khtmlview.h"
 #include "rendering/render_replaced.h"
@@ -524,6 +526,9 @@ int main(int argc, char *argv[])
     a.setMainWidget( toplevel );
     if ( visual )
         toplevel->show();
+
+    // we're not interested
+    toplevel->statusBar()->hide();
 
     if (!getenv("KDE_DEBUG")) {
         // set ulimits
@@ -1203,6 +1208,12 @@ void RegressionTest::testStaticFile(const QString & filename)
 {
     qApp->mainWidget()->resize( 800, 598 ); // restore size
 
+    // Set arguments
+    KParts::URLArgs args;
+    if (filename.endsWith(".html") || filename.endsWith(".htm")) args.serviceType = "text/html";
+    else if (filename.endsWith(".xhtml")) args.serviceType = "application/xhtml+xml";
+    else if (filename.endsWith(".xml")) args.serviceType = "text/xml";
+    m_part->browserExtension()->setURLArgs(args);
     // load page
     KURL url;
     url.setProtocol("file");

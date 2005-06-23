@@ -175,6 +175,7 @@ signals:
     void zoomView( int );
     void hideAccessKeys();
     void repaintAccessKeys();
+    void findAheadActive( bool );
 
 protected:
     void clear();

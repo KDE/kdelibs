@@ -60,26 +60,34 @@ using namespace KJS;
     return Completion(Normal);
 
 #define KJS_CHECKEXCEPTION \
-  if (exec->hadException()) \
+  if (exec->hadException()) { \
+    setExceptionDetailsIfNeeded(exec); \
     return Completion(Throw, exec->exception()); \
+  } \
   if (Collector::outOfMemory()) \
     return Completion(Throw, Error::create(exec,GeneralError,"Out of memory"));
 
 #define KJS_CHECKEXCEPTIONVALUE \
-  if (exec->hadException()) \
+  if (exec->hadException()) { \
+    setExceptionDetailsIfNeeded(exec); \
     return exec->exception(); \
+  } \
   if (Collector::outOfMemory()) \
     return Undefined(); // will be picked up by KJS_CHECKEXCEPTION
 
 #define KJS_CHECKEXCEPTIONREFERENCE \
-  if (exec->hadException()) \
+  if (exec->hadException()) { \
+    setExceptionDetailsIfNeeded(exec); \
     return Reference::makeValueReference(Undefined()); \
+  } \
   if (Collector::outOfMemory()) \
     return Reference::makeValueReference(Undefined()); // will be picked up by KJS_CHECKEXCEPTION
 
 #define KJS_CHECKEXCEPTIONLIST \
-  if (exec->hadException()) \
+  if (exec->hadException()) { \
+    setExceptionDetailsIfNeeded(exec); \
     return List(); \
+  } \
   if (Collector::outOfMemory()) \
     return List(); // will be picked up by KJS_CHECKEXCEPTION
 
@@ -191,6 +199,19 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg, Identifier
   delete [] message;
 
   return result;
+}
+
+
+void Node::setExceptionDetailsIfNeeded(ExecState *exec) const
+{
+    if (exec->hadException()) {
+        Object exception = exec->exception().toObject(exec);
+        if (!exception.hasProperty(exec, "line") /* &&
+            !exception.hasProperty(exec, "sourceURL")*/ ) {
+            exception.put(exec, "line", Number(line));
+//             exception.put(exec, "sourceURL", String(sourceURL));
+        }
+    }
 }
 
 // ----------------------------- StatementNode --------------------------------
@@ -1730,8 +1751,8 @@ Value AssignExprNode::evaluate(ExecState *exec) const
 
 // ----------------------------- VarDeclNode ----------------------------------
 
-VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in)
-    : ident(id), init(in)
+VarDeclNode::VarDeclNode(const Identifier &id, AssignExprNode *in, Type t)
+    : varType(t), ident(id), init(in)
 {
 }
 
@@ -1748,9 +1769,6 @@ bool VarDeclNode::deref()
     delete init;
   return Node::deref();
 }
-
-// global var/const flag
-static VarStatementNode::Type currentVarType;
 
 // ECMA 12.2
 Value VarDeclNode::evaluate(ExecState *exec) const
@@ -1774,9 +1792,9 @@ Value VarDeclNode::evaluate(ExecState *exec) const
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
   int flags = Internal;
-  if (exec->_context->codeType() != EvalCode)
+  if (exec->context().imp()->codeType() != EvalCode)
     flags |= DontDelete;
-  if (currentVarType == VarStatementNode::Constant)
+  if (varType == VarDeclNode::Constant)
     flags |= ReadOnly;
   variable.put(exec, ident, val, flags);
 
@@ -1789,18 +1807,17 @@ Value VarDeclNode::evaluate(ExecState *exec) const
 void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
-  // ### use getDirect()? Check attributes? 
+  // ### use getDirect()? Check attributes?
   // ### avoid duplication with actions performed in evaluate()?
   if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
     int flags = None;
     if (exec->_context->codeType() != EvalCode)
       flags |= DontDelete;
-    if (currentVarType == VarStatementNode::Constant)
+    if (varType == VarDeclNode::Constant)
       flags |= ReadOnly;
     // TODO: check for forbidden redeclaration of consts
-    variable.put(exec,ident, Undefined(), flags);
+    variable.put(exec, ident, Undefined(), flags);
   }
-  //else warning "variable %1 hides argument"
 }
 
 // ----------------------------- VarDeclListNode ------------------------------
@@ -1865,9 +1882,6 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  // set global var/const flag
-  currentVarType = varType;
-
   (void) list->evaluate(exec);
   KJS_CHECKEXCEPTION
 
@@ -1876,9 +1890,6 @@ Completion VarStatementNode::execute(ExecState *exec)
 
 void VarStatementNode::processVarDecls(ExecState *exec)
 {
-  // set global var/const flag
-  currentVarType = varType;
-
   list->processVarDecls(exec);
 }
 
@@ -2160,7 +2171,6 @@ Completion ForNode::execute(ExecState *exec)
   Value v, cval;
 
   if (expr1) {
-    currentVarType = VarStatementNode::Variable;
     v = expr1->evaluate(exec);
     KJS_CHECKEXCEPTION
   }
@@ -2194,10 +2204,8 @@ Completion ForNode::execute(ExecState *exec)
 
 void ForNode::processVarDecls(ExecState *exec)
 {
-  if (expr1) {
-    currentVarType = VarStatementNode::Variable;
+  if (expr1)
     expr1->processVarDecls(exec);
-  }
 
   statement->processVarDecls(exec);
 }
@@ -2213,7 +2221,7 @@ ForInNode::ForInNode(const Identifier &i, AssignExprNode *in, Node *e, Statement
   : ident(i), init(in), expr(e), statement(s)
 {
   // for( var foo = bar in baz )
-  varDecl = new VarDeclNode(ident, init);
+  varDecl = new VarDeclNode(ident, init, VarDeclNode::Variable);
   lexpr = new ResolveNode(ident);
 }
 

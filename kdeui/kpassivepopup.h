@@ -31,6 +31,9 @@ class Q3VBox;
  * @li Skip Taskbar Windows: The popup is placed adjact to the window
  *     itself if it is visible, and at the edge of the desktop otherwise.
  *
+ * You also have the option of calling show with a QPoint as a parameter that
+ * removes the automatic placing of KPassivePopup and shows it in the point you want.
+ *
  * The most basic use of KPassivePopup displays a popup containing a piece of text:
  * \code
  *    KPassivePopup::message( "This is the message", this );
@@ -176,6 +179,9 @@ public:
      */
     void setAnchor( const QPoint& anchor );
 
+    // TODO KDE4: give all the statics method a const QPoint p = QPoint() that in 
+    // case the point is not null calls the show(cosnt QPoint &p) method instead
+    // the show() one.
     /**
      * Convenience method that displays popup with the specified  message  beside the
      * icon of the specified widget.
@@ -267,6 +273,12 @@ public slots:
      * Reimplemented to reposition the popup.
      */
     virtual void show();
+
+    /**
+     * Shows the popup in the given point
+     * @since 3.5
+     */
+    void show(const QPoint &p);
 
 signals:
     /**

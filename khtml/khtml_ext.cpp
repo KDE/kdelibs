@@ -374,6 +374,15 @@ void KHTMLPartBrowserExtension::print()
   m_part->view()->print();
 }
 
+void KHTMLPartBrowserExtension::disableScrolling()
+{
+  QScrollView *scrollView = m_part->view();
+  if (scrollView) {
+    scrollView->setVScrollBarMode(QScrollView::AlwaysOff);
+    scrollView->setHScrollBarMode(QScrollView::AlwaysOff);
+  }
+}
+
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {
 public:

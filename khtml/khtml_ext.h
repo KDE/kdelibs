@@ -66,6 +66,7 @@ public slots:
     void openSelection();
     void reparseConfiguration();
     void print();
+    void disableScrolling();
 
     // internal . updates the state of the cut/copt/paste action based
     // on whether data is available in the clipboard

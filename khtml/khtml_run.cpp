@@ -20,6 +20,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "khtmlpart_p.h"
 #include "khtml_run.h"
 #include <kio/job.h>
 #include <kdebug.h>
@@ -57,8 +58,10 @@ void KHTMLRun::foundMimeType( const QString &_type )
         if ( res == KParts::BrowserRun::Delayed )
             return;
         m_bFinished = ( res == KParts::BrowserRun::Handled );
-        if ( m_bFinished ) // saved or canceled -> stop the wheel
-            emit static_cast<KHTMLPart *>(m_part)->canceled(QString::null);
+        if ( m_bFinished ) { // saved or canceled -> flag completed
+            m_child->m_bCompleted = true;
+            static_cast<KHTMLPart *>(m_part)->checkCompleted();
+        }
     }
 
     if ( m_bFinished )
@@ -69,6 +72,10 @@ void KHTMLRun::foundMimeType( const QString &_type )
 
     //kdDebug(6050) << "KHTMLRun::foundMimeType " << _type << " couldn't open" << endl;
     KRun::foundMimeType( mimeType );
+
+    // "open" is finished -> flag completed
+    m_child->m_bCompleted = true;
+    static_cast<KHTMLPart *>(m_part)->checkCompleted();
 }
 
 void KHTMLRun::save( const KURL & url, const QString & suggestedFilename )

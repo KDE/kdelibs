@@ -231,6 +231,7 @@ WindowArgs::WindowArgs()
     menuBarVisible = true;
     toolBarsVisible = true;
     statusBarVisible = true;
+    scrollBarsVisible = true;
     resizable = true;
     lowerWindow = false;
     d = 0;
@@ -240,6 +241,11 @@ WindowArgs::WindowArgs( const WindowArgs &args )
 {
     d = 0;
     (*this) = args;
+}
+
+WindowArgs::~WindowArgs()
+{
+    delete d;
 }
 
 WindowArgs &WindowArgs::operator=( const WindowArgs &args )
@@ -256,6 +262,7 @@ WindowArgs &WindowArgs::operator=( const WindowArgs &args )
     menuBarVisible = args.menuBarVisible;
     toolBarsVisible = args.toolBarsVisible;
     statusBarVisible = args.statusBarVisible;
+    scrollBarsVisible = args.scrollBarsVisible;
     resizable = args.resizable;
     lowerWindow = args.lowerWindow;
 

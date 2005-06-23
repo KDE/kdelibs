@@ -975,7 +975,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                 if (child->maxBottomMargin(false) > prevNegMargin)
                     prevNegMargin = child->maxBottomMargin(false);
 
-                if (!canCollapseTopWithChildren || !topMarginContributor)
+                if (!topMarginContributor)
                     // We need to make sure that the position of the self-collapsing block
                     // is correct, since it could have overflowing content
                     // that needs to be positioned correctly (e.g., a block that
@@ -1209,7 +1209,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         canCollapseBottomWithChildren = false;
 
     // If we can't collapse with children then go ahead and add in the bottom margins.
-    if (!canCollapseBottomWithChildren && (!topMarginContributor || !canCollapseTopWithChildren)
+    if (!canCollapseBottomWithChildren && !topMarginContributor
         && (strictMode || !quirkContainer || !bottomChildQuirk))
         m_height += prevPosMargin - prevNegMargin;
 
@@ -1224,7 +1224,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     if (m_overflowHeight < m_height)
         m_overflowHeight = m_height;
 
-    if (canCollapseBottomWithChildren && (!topMarginContributor || !canCollapseTopWithChildren)) {
+    if (canCollapseBottomWithChildren && !topMarginContributor) {
         // Update our max pos/neg bottom margins, since we collapsed our bottom margins
         // with our children.
         if (prevPosMargin > m_maxBottomPosMargin)

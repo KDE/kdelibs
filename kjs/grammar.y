@@ -74,7 +74,6 @@ using namespace KJS;
   PropertyNode        *pnode;
   CatchNode           *cnode;
   FinallyNode         *fnode;
-  VarStatementNode::Type vtype;
 }
 
 %start Program
@@ -128,12 +127,11 @@ using namespace KJS;
 %type <node>  ConditionalExpr AssignmentExpr
 %type <node>  ExprOpt
 
-
 %type <cnode> Catch
 %type <fnode> Finally
 
 %type <stat>  Statement Block
-%type <stat>  VariableStatement EmptyStatement ExprStatement
+%type <stat>  VariableStatement ConstStatement EmptyStatement ExprStatement
 %type <stat>  IfStatement IterationStatement ContinueStatement
 %type <stat>  BreakStatement ReturnStatement WithStatement
 %type <stat>  SwitchStatement LabelledStatement
@@ -151,8 +149,8 @@ using namespace KJS;
 %type <prog>  Program
 %type <args>  Arguments
 %type <alist> ArgumentList
-%type <vlist> VariableDeclarationList
-%type <decl>  VariableDeclaration
+%type <vlist> VariableDeclarationList ConstDeclarationList
+%type <decl>  VariableDeclaration ConstDeclaration
 %type <cblk>  CaseBlock
 %type <ccl>   CaseClause DefaultClause
 %type <clist> CaseClauses  CaseClausesOpt
@@ -160,7 +158,6 @@ using namespace KJS;
 %type <elm>   ElementList
 %type <plist> PropertyNameAndValueList
 %type <pnode> PropertyName
-%type <vtype> Var
 
 %%
 
@@ -385,6 +382,7 @@ Expr:
 Statement:
     Block
   | VariableStatement
+  | ConstStatement 
   | EmptyStatement
   | ExprStatement
   | IfStatement
@@ -409,16 +407,11 @@ StatementList:
   | StatementList Statement        { $$ = new StatListNode($1, $2); }
 ;
 
-Var:
-    VAR                            { $$ = VarStatementNode::Variable; }
-  | CONST                          { $$ = VarStatementNode::Constant; }
-;
-
 VariableStatement:
-    Var VariableDeclarationList ';' { $$ = new VarStatementNode($1, $2);
+    VAR VariableDeclarationList ';' { $$ = new VarStatementNode($2);
                                       DBG($$, @1, @3); }
-  | Var VariableDeclarationList error { if (automatic()) {
-                                          $$ = new VarStatementNode($1, $2);
+  | VAR VariableDeclarationList error { if (automatic()) {
+                                          $$ = new VarStatementNode($2);
 					  DBG($$, @1, @2);
                                         } else {
 					  YYABORT;
@@ -433,8 +426,31 @@ VariableDeclarationList:
 ;
 
 VariableDeclaration:
-    IDENT                          { $$ = new VarDeclNode(*$1, 0); }
-  | IDENT Initializer              { $$ = new VarDeclNode(*$1, $2); }
+    IDENT                          { $$ = new VarDeclNode(*$1, 0, VarDeclNode::Variable); }
+  | IDENT Initializer              { $$ = new VarDeclNode(*$1, $2, VarDeclNode::Variable); }
+;
+
+ConstStatement:
+    CONST ConstDeclarationList ';' { $$ = new VarStatementNode($2);
+                                      DBG($$, @1, @3); }
+  | CONST ConstDeclarationList error { if (automatic()) {
+                                          $$ = new VarStatementNode($2);
+					  DBG($$, @1, @2);
+                                        } else {
+					  YYABORT;
+					}
+                                      }
+;
+
+ConstDeclarationList:
+    ConstDeclaration            { $$ = new VarDeclListNode($1); }
+  | ConstDeclarationList ',' VariableDeclaration
+                                   { $$ = new VarDeclListNode($1, $3); }
+;
+
+ConstDeclaration:
+    IDENT                          { $$ = new VarDeclNode(*$1, 0, VarDeclNode::Constant); }
+  | IDENT Initializer              { $$ = new VarDeclNode(*$1, $2, VarDeclNode::Constant); }
 ;
 
 Initializer:
@@ -642,10 +658,10 @@ SourceElement:
 
 %%
 
-int yyerror (const char *)  /* Called by yyparse on error */
+int yyerror (const char * /* s */)  /* Called by yyparse on error */
 {
-//  fprintf(stderr, "ERROR: %s at line %d\n",
-//	  s, KJScript::lexer()->lineNo());
+  //  fprintf(stderr, "ERROR: %s at line %d\n",
+  //	  s, KJS::Lexer::curr()->lineNo());
   return 1;
 }
 

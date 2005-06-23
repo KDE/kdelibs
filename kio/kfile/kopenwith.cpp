@@ -621,7 +621,8 @@ void KOpenWithDlg::setSaveNewApplications(bool b)
 
 void KOpenWithDlg::slotOK()
 {
-  QString fullExec(edit->url());
+  QString typedExec(edit->url());
+  QString fullExec(typedExec);
 
   QString serviceName;
   QString initialServiceName;
@@ -631,7 +632,7 @@ void KOpenWithDlg::slotOK()
     // No service selected - check the command line
 
     // Find out the name of the service from the command line, removing args and paths
-    serviceName = KRun::binaryName( fullExec, true );
+    serviceName = KRun::binaryName( typedExec, true );
     if (serviceName.isEmpty())
     {
       // TODO add a KMessageBox::error here after the end of the message freeze
@@ -650,6 +651,7 @@ void KOpenWithDlg::slotOK()
         if ( serv && serv->type() == "Application")
         {
             QString exec = serv->exec();
+            fullExec = exec;
             exec.replace("%u", "", false);
             exec.replace("%f", "", false);
             exec.replace("-caption %c", "");
@@ -657,7 +659,7 @@ void KOpenWithDlg::slotOK()
             exec.replace("%i", "");
             exec.replace("%m", "");
             exec = exec.simplifyWhiteSpace();
-            if (exec == fullExec)
+            if (exec == typedExec)
             {
                 ok = true;
                 m_pService = serv;
@@ -677,6 +679,7 @@ void KOpenWithDlg::slotOK()
     // Existing service selected
     serviceName = m_pService->name();
     initialServiceName = serviceName;
+    fullExec = m_pService->exec();
   }
 
   if (terminal->isChecked())

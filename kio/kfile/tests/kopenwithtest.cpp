@@ -31,15 +31,36 @@ int main(int argc, char **argv)
     KApplication app(argc, argv, "kopenwithtest");
     KURL::List list;
 
-    list += KURL("file:///home/testfile");
-    list += KURL("http://www.kde.org/index.html");
+    list += KURL("file:///tmp/testfile.txt");
 
+    // Test with one URL
     KOpenWithDlg* dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
     }
     else
         kdDebug() << "Dialog was canceled." << endl;
+    delete dlg;
+
+    // Test with two URLs
+    list += KURL("http://www.kde.org/index.html");
+    dlg = new KOpenWithDlg(list, "OpenWith_Text", "OpenWith_Value", 0);
+    if(dlg->exec()) {
+        kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
+    }
+    else
+        kdDebug() << "Dialog was canceled." << endl;
+    delete dlg;
+
+    // Test with a mimetype
+    QString mimetype = "text/plain";
+    dlg = new KOpenWithDlg( mimetype, "kedit", 0);
+    if(dlg->exec()) {
+        kdDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
+    }
+    else
+        kdDebug() << "Dialog was canceled." << endl;
+    delete dlg;
 
     return 0;
 }

@@ -175,9 +175,8 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
 }
 
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
-    : CSSStyleDeclarationImpl( 0 )
+    : CSSStyleDeclarationImpl(0), m_node(node)
 {
-    setNode(node);
     kdDebug() << "Render Style Declaration created" << endl;
 }
 

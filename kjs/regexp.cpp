@@ -163,7 +163,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
       // We set m_notEmpty ourselves, to look for a non-empty match
       // (see man pcretest or pcretest.c for details).
       // So we don't stop here, we want to try again at i+1.
-#ifndef NDEBUG
+#ifdef KJS_VERBOSE
       fprintf(stderr, "No match after m_notEmpty. +1 and keep going.\n");
 #endif
       m_notEmpty = 0;

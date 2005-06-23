@@ -61,6 +61,9 @@ public:
 
 protected:
     DOM::CSSProperty property( int id ) const;
+
+protected:
+    SharedPtr<DOM::NodeImpl> m_node;
 };
 
 

@@ -381,18 +381,20 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
-  KAction* ft = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
+  d->m_paFindAheadText = new KAction( "Find Text as You Type", KShortcut( '/' ), this, SLOT( slotFindAheadText()),
       actionCollection(), "findAheadText");
-  KAction* fl = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
+  d->m_paFindAheadLinks = new KAction( "Find Links as You Type", KShortcut( '\'' ), this, SLOT( slotFindAheadLink()),
       actionCollection(), "findAheadLink");
+  d->m_paFindAheadText->setEnabled( false );
+  d->m_paFindAheadLinks->setEnabled( false );
 
   if ( parentPart() )
   {
       d->m_paFind->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindNext->setShortcut( KShortcut() ); // avoid clashes
       d->m_paFindPrev->setShortcut( KShortcut() ); // avoid clashes
-      ft->setShortcut( KShortcut());
-      fl->setShortcut( KShortcut());
+      d->m_paFindAheadText->setShortcut( KShortcut());
+      d->m_paFindAheadLinks->setShortcut( KShortcut());
   }
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), "frameprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
@@ -1887,15 +1889,16 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   m_url = url;
 
+  bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
   bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
-  if ( servedAsXML ) { // any XML derivative, including XHTML
+  // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
+  if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   } else {
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
     // HTML or XHTML? (#86446)
-    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( true );
+    static_cast<HTMLDocumentImpl *>(d->m_doc)->setHTMLRequested( !servedAsXHTML );
   }
-
 #ifndef KHTML_NO_CARET
 //  d->m_view->initCaret();
 #endif
@@ -2921,6 +2924,16 @@ void KHTMLPart::slotFindAheadLink()
       return;
   }
   static_cast<KHTMLPart *>( part )->view()->startFindAhead( true );
+}
+
+void KHTMLPart::enableFindAheadActions( bool enable )
+{
+  // only the topmost one has shortcuts
+  KHTMLPart* p = this;
+  while( p->parentPart())
+    p = p->parentPart();
+  p->d->m_paFindAheadText->setEnabled( enable );
+  p->d->m_paFindAheadLinks->setEnabled( enable );
 }
 
 void KHTMLPart::slotFindDialogDestroyed()

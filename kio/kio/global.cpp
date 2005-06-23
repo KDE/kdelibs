@@ -68,9 +68,14 @@ KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
         s = i18n( "%1 KB" ).arg( KGlobal::locale()->formatNumber(fsize, 1));
     }
     // Just byte
-    else
+    else if ( size > 0 )
     {
         s = i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(fsize, 0));
+    }
+    // Nothing
+    else
+    {
+        s = i18n( "0 B" );
     }
     return s;
 }
@@ -469,21 +474,21 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
          QString::fromLatin1( "</b></p><p>" ) + description +
          QString::fromLatin1( "</p>" );
   ret2 = QString::fromLatin1( "<qt><p>" );
-  if ( !techName.isNull() )
+  if ( !techName.isEmpty() )
     ret2 += i18n( "<b>Technical reason</b>: " ) + techName + QString::fromLatin1( "</p>" );
   ret2 += i18n( "</p><p><b>Details of the request</b>:" );
   ret2 += i18n( "</p><ul><li>URL: %1</li>" ).arg( url );
-  if ( !protocol.isNull() ) {
+  if ( !protocol.isEmpty() ) {
     ret2 += i18n( "<li>Protocol: %1</li>" ).arg( protocol );
   }
   ret2 += i18n( "<li>Date and time: %1</li>" ).arg( datetime );
   ret2 += i18n( "<li>Additional information: %1</li></ul>" ).arg( m_errorText );
-  if ( causes.count() ) {
+  if ( !causes.isEmpty() ) {
     ret2 += i18n( "<p><b>Possible causes</b>:</p><ul><li>" );
     ret2 += causes.join( "</li><li>" );
     ret2 += QString::fromLatin1( "</li></ul>" );
   }
-  if ( solutions.count() ) {
+  if ( !solutions.isEmpty() ) {
     ret2 += i18n( "<p><b>Possible solutions</b>:</p><ul><li>" );
     ret2 += solutions.join( "</li><li>" );
     ret2 += QString::fromLatin1( "</li></ul>" );

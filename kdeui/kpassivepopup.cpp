@@ -41,6 +41,7 @@ public:
   int popupStyle;
   Q3PointArray surround;
   QPoint                    anchor;
+  QPoint                    fixedPosition;
 };
 
 static const int DEFAULT_POPUP_TYPE = KPassivePopup::Boxed;
@@ -202,7 +203,10 @@ void KPassivePopup::show()
     if ( size() != sizeHint() )
 	resize( sizeHint() );
 
-    positionSelf();
+    if ( d->fixedPosition.isNull() )
+	positionSelf();
+    else
+	setAnchor( d->fixedPosition );
     Q3Frame::show();
 
     int delay = hideDelay;
@@ -213,6 +217,12 @@ void KPassivePopup::show()
     if ( delay > 0 ) {
         hideTimer->start( delay );
     }
+}
+
+void KPassivePopup::show(const QPoint &p)
+{
+    d->fixedPosition = p;
+    show();
 }
 
 void KPassivePopup::hideEvent( QHideEvent * )

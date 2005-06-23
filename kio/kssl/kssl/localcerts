@@ -30,3 +30,5 @@ gd-class2-root.pem
 sf-class2-root.pem
 geotrust-global-1.pem
 geotrust-global-2.pem
+GeoTrust_Universal_CA.pem
+GeoTrust_Universal_CA2.pem

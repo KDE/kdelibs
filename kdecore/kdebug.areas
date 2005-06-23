@@ -457,6 +457,9 @@
 26600  KDOM Catalog
 26650  KDOM kxmllint
 
+# XSLT on top of KDOM
+27000  KXSLT
+
 # libkscan / kooka
 28000   Kooka
 29000   libkscan
