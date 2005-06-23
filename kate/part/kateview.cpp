@@ -100,6 +100,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
     , selectEnd (m_doc, true)
     , blockSelect (false)
     , m_imComposeEvent( false )
+    , m_destructing(false)
 {
   KateGlobal::self()->registerView( this );
   m_config = new KateViewConfig (this);
@@ -184,6 +185,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
 
 KateView::~KateView()
 {
+  m_destructing=true;
   if (!m_doc->singleViewMode())
     m_doc->disableAllPluginsGUI (this);
 

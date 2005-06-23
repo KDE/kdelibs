@@ -80,6 +80,8 @@ class KateView : public KTextEditor::View,
 
     QString viewMode () const;
 
+    inline bool destructing() {return m_destructing;}
+
   //
   // KTextEditor::ClipboardInterface
   //
@@ -96,6 +98,7 @@ class KateView : public KTextEditor::View,
 
   // helper to export text as html stuff
   private:
+    bool m_destructing;
     QString selectionAsHtml ();
     QString textAsHtml ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise);
     void textAsHtmlStream ( uint startLine, uint startCol, uint endLine, uint endCol, bool blockwise, QTextStream *ts);

@@ -205,6 +205,7 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
 
 void KateCodeCompletion::handleKey (QKeyEvent *e)
 {
+  kdDebug()<<"KateCodeCompletion::handleKey"<<endl;
   // close completion if you move out of range
   if ((e->key() == Qt::Key_Up) && (m_completionListBox->currentItem() == 0))
   {

@@ -38,6 +38,7 @@
 #include <qevent.h>
 #include <qobject.h>
 #include <q3valuelist.h>
+#include <kdebug.h>
 
 class DocWordCompletionPlugin
   : public KTextEditor::Plugin
@@ -48,7 +49,7 @@ class DocWordCompletionPlugin
     DocWordCompletionPlugin( QObject *parent = 0,
                             const char* name = 0,
                             const QStringList &args = QStringList() );
-    virtual ~DocWordCompletionPlugin() {};
+    virtual ~DocWordCompletionPlugin(){kdDebug()<<"~DocWordCompletionPlugin"<<endl;};
 
     void addView (KTextEditor::View *view);
     void removeView (KTextEditor::View *view);

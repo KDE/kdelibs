@@ -322,9 +322,6 @@ void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin, KateView *view
     factory->removeClient( view );
 
   plugin->removeView( view );
-
-  if ( factory )
-    factory->addClient( view );
 }
 
 void KateDocument::disablePluginGUI (KTextEditor::Plugin *plugin)
@@ -2537,7 +2534,7 @@ void KateDocument::removeView(KTextEditor::View *view) {
 
   m_views.removeAll( (KateView *) view );
   m_textEditViews.remove( view  );
-  delete view;
+  if (!((KateView*)view)->destructing()) delete view;
 }
 
 void KateDocument::setActiveView(KTextEditor::View* view)
