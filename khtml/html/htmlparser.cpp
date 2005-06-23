@@ -614,6 +614,9 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                             ((node->id() == ID_TR ) ? parentparent : parent);
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
+#ifdef PARSER_DEBUG
+                    kdDebug( 6035 ) << "calling insertBefore(" << n->nodeName().string() << "," << node->nodeName().string() << endl;
+#endif
                     parent->insertBefore(n, node, exceptioncode);
                     if (exceptioncode) {
 #ifdef PARSER_DEBUG
@@ -1497,7 +1500,7 @@ void KHTMLParser::popOneBlock(bool delBlock)
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id).string() << "(" << Elem->id << ")" << endl;
+    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
 #if SPEED_DEBUG < 1
