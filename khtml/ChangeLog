@@ -1,3 +1,9 @@
+2005-06-23  David Faure  <faure@kde.org>
+
+        * khtml_run.cpp (foundMimeType): Mark child object (e.g. <embed>) as completed
+        after saving, running in external viewer, or cancelling, so that e.g. scheduled redirects
+        can happen. Patch by Andreas Kling <keso@impul.se>.
+
 2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * ecma/kjs_events.cpp: Respect the DOM for MouseEvent::Button atleast when simulating Mozilla
