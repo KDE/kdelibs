@@ -307,13 +307,14 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
 
 NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 {
-    if(child->id() == ID_TR) { // #105586, allow javascript to insert a TR inside a TABLE, creation section as needed
+    // #105586, allow javascript to insert a TR inside a TABLE, creation section as needed
+    if(child->id() == ID_TR && !getDocument()->parsing()) {
         // See insertRow
         if (!firstBody && !head && !foot && !hasChildNodes()) {
             setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
         }
-        // firstBody can be 0, e.g. with <table><col><tr> (htmlparser creates tbody after this appendChild call fails)
-        if (firstBody && !head && !foot) {
+        Q_ASSERT( firstBody );
+        if (firstBody) {
             return firstBody->appendChild( child, exceptioncode );
         }
     }
