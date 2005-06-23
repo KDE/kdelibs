@@ -515,6 +515,13 @@ void HTMLTableElementImpl::attach()
         static_cast<RenderTable *>(m_render)->setCellPadding( padding );
 }
 
+void HTMLTableElementImpl::close()
+{
+    if (firstBody && !firstBody->closed())
+        firstBody->close();
+    HTMLElementImpl::close();
+}
+
 void HTMLTableElementImpl::updateFrame()
 {
     int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
