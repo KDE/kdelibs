@@ -85,9 +85,10 @@ class KateViewInternal : public QWidget
     bool tagLine (const KTextEditor::Cursor& virtualCursor);
 
     bool tagLines (int start, int end, bool realLines = false);
+    // cursors not const references as they are manipulated within
     bool tagLines (KTextEditor::Cursor start, KTextEditor::Cursor end, bool realCursors = false);
 
-    bool tagRange(const KTextEditor::Range& range, bool realLines);
+    bool tagRange(const KTextEditor::Range& range, bool realCursors);
 
     void tagAll ();
 
@@ -155,7 +156,7 @@ class KateViewInternal : public QWidget
     void top_home(bool sel=false);
     void bottom_end(bool sel=false);
 
-    inline const KTextEditor::Cursor& getCursor() const { return cursor; }
+    inline const KTextEditor::Cursor& getCursor() const { return m_cursor; }
     QPoint cursorCoordinates() const;
 
   // EVENT HANDLING STUFF - IMPORTANT
@@ -203,7 +204,6 @@ class KateViewInternal : public QWidget
     uint linesDisplayed() const;
 
     int lineToY(uint viewLine) const;
-    int cursorToX(const KTextEditor::Cursor& c) const;
 
     void updateSelection( const KTextEditor::Cursor&, bool keepSel );
     void updateCursor( const KTextEditor::Cursor& newCursor, bool force = false, bool center = false, bool calledExternally = false );
@@ -221,25 +221,25 @@ class KateViewInternal : public QWidget
 
     KateView *m_view;
     KateDocument* m_doc;
-    class KateIconBorder *leftBorder;
+    class KateIconBorder *m_leftBorder;
 
-    int mouseX;
-    int mouseY;
-    int scrollX;
-    int scrollY;
+    int m_mouseX;
+    int m_mouseY;
+    int m_scrollX;
+    int m_scrollY;
 
     Qt::CursorShape m_mouseCursor;
 
-    KateSuperCursor cursor;
+    KateSuperCursor m_cursor;
     // FIXME probably a bug here, the mouse position shouldn't change just because text gets changed
-    KateSuperCursor mouse;
-    KTextEditor::Cursor displayCursor;
-    int cXPos;
+    KateSuperCursor m_mouse;
+    KTextEditor::Cursor m_displayCursor;
+    int m_cursorX;
 
-    bool possibleTripleClick;
+    bool m_possibleTripleClick;
 
     // Bracket mark and corresponding decorative ranges
-    KateSuperRange bm, bmStart, bmEnd;
+    KateSuperRange m_bm, m_bmStart, m_bmEnd;
 
     enum DragState { diNone, diPending, diDragging };
 
@@ -247,9 +247,9 @@ class KateViewInternal : public QWidget
       DragState    state;
       QPoint       start;
       Q3TextDrag*   dragObject;
-    } dragInfo;
+    } m_dragInfo;
 
-    uint iconBorderHeight;
+    uint m_iconBorderHeight;
 
     //
     // line scrollbar + first visible (virtual) line in the current view
@@ -280,15 +280,15 @@ class KateViewInternal : public QWidget
 
     // has selection changed while your mouse or shift key is pressed
     bool m_selChangedByUser;
-    KTextEditor::Cursor selectAnchor;
+    KTextEditor::Cursor m_selectAnchor;
 
     enum SelectionMode { Default=0, Word, Line }; ///< for drag selection. @since 2.3
     uint m_selectionMode;
     // when drag selecting after double/triple click, keep the initial selected
     // word/line independant of direction.
     // They get set in the event of a double click, and is used with mouse move + leftbutton
-    KTextEditor::Cursor selStartCached;
-    KTextEditor::Cursor selEndCached;
+    KTextEditor::Cursor m_selStartCached;
+    KTextEditor::Cursor m_selEndCached;
 
     // Used to determine if the scrollbar will appear/disappear in non-wrapped mode
     bool scrollbarVisible(uint startLine);
@@ -344,8 +344,8 @@ class KateViewInternal : public QWidget
     QTimer m_cursorTimer;
     QTimer m_textHintTimer;
 
-    static const int scrollTime = 30;
-    static const int scrollMargin = 16;
+    static const int s_scrollTime = 30;
+    static const int s_scrollMargin = 16;
 
     // needed to stop the column scroll bar from hiding / unhiding during a dragScroll.
     bool m_suppressColumnScrollBar;

@@ -92,6 +92,7 @@ public:
     * Debug: output the position.
     */
     operator QString();
+    inline KateSuperCursor& operator= (const KTextEditor::Cursor& rhs) { setPosition(rhs); return *this; }
 
     // Reimplementations;
     virtual void setPosition(const KTextEditor::Cursor& pos);

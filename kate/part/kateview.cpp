@@ -121,7 +121,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
   hbox->setMargin (0);
   hbox->setSpacing (0);
 
-  hbox->addWidget (m_viewInternal->leftBorder);
+  hbox->addWidget (m_viewInternal->m_leftBorder);
 
   QVBoxLayout *vbox = new QVBoxLayout ();
   hbox->addLayout (vbox);
@@ -142,8 +142,8 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
   // this really is needed :)
   m_viewInternal->updateView ();
 
-  connect(&m_viewInternal->cursor, SIGNAL(positionChanged()), SLOT(slotCaretPositionChanged()));
-  connect(&m_viewInternal->mouse, SIGNAL(positionChanged()), SLOT(slotMousePositionChanged()));
+  connect(&m_viewInternal->m_cursor, SIGNAL(positionChanged()), SLOT(slotCaretPositionChanged()));
+  connect(&m_viewInternal->m_mouse, SIGNAL(positionChanged()), SLOT(slotMousePositionChanged()));
 
   setInstance( KateGlobal::self()->instance() );
   doc->addView( this );
@@ -856,8 +856,8 @@ void KateView::readSessionConfig(KConfig *config)
 
 void KateView::writeSessionConfig(KConfig *config)
 {
-  config->writeEntry("CursorLine",m_viewInternal->cursor.line());
-  config->writeEntry("CursorColumn",m_viewInternal->cursor.column());
+  config->writeEntry("CursorLine",m_viewInternal->m_cursor.line());
+  config->writeEntry("CursorColumn",m_viewInternal->m_cursor.column());
 }
 
 int KateView::getEol()
@@ -927,11 +927,11 @@ void KateView::toggleFoldingMarkers()
 }
 
 bool KateView::iconBorder() {
-  return m_viewInternal->leftBorder->iconBorderOn();
+  return m_viewInternal->m_leftBorder->iconBorderOn();
 }
 
 bool KateView::lineNumbersOn() {
-  return m_viewInternal->leftBorder->lineNumbersOn();
+  return m_viewInternal->m_leftBorder->lineNumbersOn();
 }
 
 bool KateView::scrollBarMarks() {
@@ -939,11 +939,11 @@ bool KateView::scrollBarMarks() {
 }
 
 int KateView::dynWrapIndicators() {
-  return m_viewInternal->leftBorder->dynWrapIndicators();
+  return m_viewInternal->m_leftBorder->dynWrapIndicators();
 }
 
 bool KateView::foldingMarkersOn() {
-  return m_viewInternal->leftBorder->foldingMarkersOn();
+  return m_viewInternal->m_leftBorder->foldingMarkersOn();
 }
 
 void KateView::showCmdLine ( bool enabled )
@@ -1085,15 +1085,15 @@ void KateView::updateConfig ()
     m_toggleDynWrap->setChecked( config()->dynWordWrap() );
   }
 
-  m_viewInternal->leftBorder->setDynWrapIndicators( config()->dynWordWrapIndicators() );
+  m_viewInternal->m_leftBorder->setDynWrapIndicators( config()->dynWordWrapIndicators() );
   m_setDynWrapIndicators->setCurrentItem( config()->dynWordWrapIndicators() );
 
   // line numbers
-  m_viewInternal->leftBorder->setLineNumbersOn( config()->lineNumbers() );
+  m_viewInternal->m_leftBorder->setLineNumbersOn( config()->lineNumbers() );
   m_toggleLineNumbers->setChecked( config()->lineNumbers() );
 
   // icon bar
-  m_viewInternal->leftBorder->setIconBorderOn( config()->iconBar() );
+  m_viewInternal->m_leftBorder->setIconBorderOn( config()->iconBar() );
   m_toggleIconBar->setChecked( config()->iconBar() );
 
   // scrollbar marks
@@ -1145,8 +1145,8 @@ void KateView::updateRendererConfig()
   m_viewInternal->repaint ();
 
   // update the left border right, for example linenumbers
-  m_viewInternal->leftBorder->updateFont();
-  m_viewInternal->leftBorder->repaint ();
+  m_viewInternal->m_leftBorder->updateFont();
+  m_viewInternal->m_leftBorder->repaint ();
 
 // @@ showIndentLines is not cached anymore.
 //  m_renderer->setShowIndentLines (m_renderer->config()->showIndentationLines());
@@ -1156,7 +1156,7 @@ void KateView::updateFoldingConfig ()
 {
   // folding bar
   bool doit = config()->foldingBar() && m_doc->highlight() && m_doc->highlight()->allowsFolding();
-  m_viewInternal->leftBorder->setFoldingMarkersOn(doit);
+  m_viewInternal->m_leftBorder->setFoldingMarkersOn(doit);
   m_toggleFoldingMarkers->setChecked( doit );
   m_toggleFoldingMarkers->setEnabled( m_doc->highlight() && m_doc->highlight()->allowsFolding() );
 
@@ -1228,7 +1228,7 @@ void KateView::repaintText (bool paintOnlyDirty)
 void KateView::updateView (bool changed)
 {
   m_viewInternal->updateView (changed);
-  m_viewInternal->leftBorder->update();
+  m_viewInternal->m_leftBorder->update();
 }
 
 //END

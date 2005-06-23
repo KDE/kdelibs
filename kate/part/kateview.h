@@ -312,16 +312,16 @@ class KateView : public KTextEditor::View,
     /**
       Uppercases selected text, or an alphabetic character next to the cursor.
     */
-    void uppercase() { m_doc->transform( this, m_viewInternal->cursor, KateDocument::Uppercase ); }
+    void uppercase() { m_doc->transform( this, m_viewInternal->m_cursor, KateDocument::Uppercase ); }
     /**
       Lowercases selected text, or an alphabetic character next to the cursor.
     */
-    void lowercase() { m_doc->transform( this, m_viewInternal->cursor, KateDocument::Lowercase ); }
+    void lowercase() { m_doc->transform( this, m_viewInternal->m_cursor, KateDocument::Lowercase ); }
     /**
       Capitalizes the selection (makes each word start with an uppercase) or
       the word under the cursor.
     */
-    void capitalize() { m_doc->transform( this, m_viewInternal->cursor, KateDocument::Capitalize ); }
+    void capitalize() { m_doc->transform( this, m_viewInternal->m_cursor, KateDocument::Capitalize ); }
     /**
       Joins lines touched by the selection
     */
