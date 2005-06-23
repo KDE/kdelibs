@@ -152,8 +152,8 @@ class KTEXTEDITOR_EXPORT MarkInterface
     
   
   public:
-    virtual void setPixmap(MarkTypes, const QPixmap &)=0;
-    virtual void setDescription(MarkTypes, const QString &)=0;
+    virtual void setMarkPixmap(MarkTypes, const QPixmap &)=0;
+    virtual void setMarkDescription(MarkTypes, const QString &)=0;
     virtual void setMarksUserChangable(uint markMask)=0;
 
     enum MarkChangeAction {

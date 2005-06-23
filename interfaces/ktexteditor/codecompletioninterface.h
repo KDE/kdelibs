@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
+   Copyright (C) 2001,2005 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,9 +24,14 @@
 #include <Q3ValueList>
 #include <q3cstring.h>
 #include <kdelibs_export.h>
+#include <QVariant>
+#include <QIcon>
 
 namespace KTextEditor
 {
+
+class View;
+class Cursor;
 
 /**
  * An item for the completion popup. <code>text</code> is the completed string,
@@ -40,16 +45,18 @@ namespace KTextEditor
  *
  *
  */
+
 class KTEXTEDITOR_EXPORT CompletionEntry
 {
   public:
+    QIcon   icon;
     QString type;
     QString text;
     QString prefix;
     QString postfix;
     QString comment;
 
-    QString userdata;
+    QVariant userdata;
 
     bool operator==( const CompletionEntry &c ) const {
       return ( c.type == type &&
@@ -57,9 +64,138 @@ class KTEXTEDITOR_EXPORT CompletionEntry
 	       c.postfix == postfix &&
 	       c.prefix == prefix &&
 	       c.comment == comment &&
-               c.userdata == userdata);
+               c.userdata == userdata &&
+               c.icon.serialNumber()==icon.serialNumber());
     }
 };
+
+
+class CompletionProvider;
+
+class KTEXTEDITOR_EXPORT CompletionItem
+{
+  public:
+    QIcon icon;
+    QString type;
+    QString text;
+    QString prefix;
+    QString postfix;
+    QString comment;
+
+    QVariant userdata;
+    CompletionProvider *provider; //only needs to be set if userdata should be handled
+
+    bool operator==( const CompletionItem &c ) const {
+      return ( c.type == type &&
+	       c.text == text &&
+	       c.postfix == postfix &&
+	       c.prefix == prefix &&
+	       c.comment == comment &&
+               c.userdata == userdata &&
+               c.provider==provider &&
+               c.icon.serialNumber()==icon.serialNumber());
+
+    }
+};
+
+
+
+
+class KTEXTEDITOR_EXPORT CompletionData {
+  public:
+     CompletionData():m_id(0) {} //You should never use that yourself
+     CompletionData(QList<CompletionItem> items,int offset,bool casesensitive):
+       m_items(items),m_offset(offset),m_casesensitive(casesensitive),m_id(((++s_id)==0)?(++s_id):s_id){ }
+     inline const QList<CompletionItem>& items()const {return m_items;}
+     inline int offset() const {return m_offset;}
+     inline bool casesensitive() const {return m_casesensitive;}
+     inline bool operator==( const CompletionData &d ) const { return m_id==d.m_id;}
+     inline static const CompletionData Null() {return CompletionData();}
+  private:
+     QList<CompletionItem> m_items;
+     int m_offset;
+     bool m_casesensitive;
+     long m_id;
+     static long s_id;
+  };
+
+
+class KTEXTEDITOR_EXPORT ArgHintData {
+  public:
+    ArgHintData():m_id(0) {} //You should never use that yourself
+    ArgHintData(const QString& wrapping, const QString& delimiter, const QStringList& items) :
+        m_wrapping(wrapping),m_delimiter(delimiter),m_items(items),m_id(((++s_id)==0)?(++s_id):s_id) {}
+    inline const QString& wrapping() const {return m_wrapping;}
+    inline const QString& delimiter() const {return m_delimiter;}
+    inline const QStringList& items() const {return m_items;}
+    inline bool operator==( const ArgHintData &d ) const { return m_id==d.m_id;}
+    inline static const ArgHintData Null() {return ArgHintData();}
+  private:
+    QString m_wrapping;
+    QString m_delimiter;
+    QStringList m_items;
+    long m_id;
+    static long s_id;
+};
+
+    enum CompletionType
+    {
+      CompletionType0 =0x00000000,
+      CompletionType1 =0x00000001,
+      CompletionType2 =0x00000002,
+      CompletionType3 =0x00000004,
+      CompletionType4 =0x00000008,
+      CompletionType5 =0x00000010,
+      CompletionType6 =0x00000020,
+      CompletionType7 =0x00000040,
+      CompletionType8 =0x00000080,
+      CompletionType9=0x00000100,
+      CompletionType10=0x00000200,
+      CompletionType11=0x00000400,
+      CompletionType12=0x00000800,
+      CompletionType13=0x00001000,
+      CompletionType14=0x00002000,
+      CompletionType15=0x00004000,
+      CompletionType16=0x00008000,
+      CompletionType17=0x00010000,
+      CompletionType18=0x00020000,
+      CompletionType19=0x00040000,
+      CompletionType20=0x00080000,
+      CompletionType21=0x00100000,
+      CompletionType22=0x00200000,
+      CompletionType23=0x00400000,
+      CompletionType24=0x00800000,
+      CompletionType25=0x01000000,
+      CompletionType26=0x02000000,
+      CompletionType27=0x04000000,
+      CompletionType28=0x08000000,
+      CompletionType29=0x10000000,
+      CompletionType30=0x20000000,
+      CompletionType31=0x40000000,
+      CompletionType32=0x80000000,
+
+      CompletionNone=CompletionType0,
+      CompletionAsYouType=CompletionType1,
+      CompletionReinvokeAsYouType=CompletionType2,
+      CompletionContextIndependent=CompletionType3,
+      CompletionContextDependent=CompletionType4
+    };
+
+class KTEXTEDITOR_EXPORT CompletionProvider
+{
+  public:
+    virtual ~CompletionProvider(){;}
+  public:
+
+    
+    virtual const CompletionData completionData(View*,enum CompletionType, const Cursor&, const QString&)=0;
+    virtual const ArgHintData argHintData(View *,const Cursor&, const QString&)=0;
+    /*this function is called if a valid userdata is set for the chosen completion item*/
+    virtual void filterInsertString(View*,const CompletionItem&,QString*)=0;
+
+};
+
+
 
 /**
  * This is an interface for the KTextEditor::View class. It can be used
@@ -89,94 +225,9 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
   public:
   	virtual ~CodeCompletionInterface() {}
 
-  public:
-	//
-	// slots !!!
-	//
-    /**
-     * This shows an argument hint.
-     */
-    virtual void showArgHint (QStringList functionList, const QString& strWrapping, const QString& strDelimiter) = 0;
+        virtual bool registerCompletionProvider(CompletionProvider*)=0;
+        virtual bool unregisterCompletionProvider(CompletionProvider*)=0;
 
-    /**
-     * This shows a completion list. @p offset is the real start of the text that
-     * should be completed. <code>0</code> means that the text starts at the current cursor
-     * position. if @p casesensitive is @p true, the popup will only contain completions
-     * that match the input text regarding case.
-     */
-    virtual void showCompletionBox (Q3ValueList<CompletionEntry> complList,int offset=0, bool casesensitive=true)=0;
-
-	//
-	// signals !!!
-	//
-	public:
-	/**
-	 * This signal is emitted when the completion list disappears and no completion has
-	 * been done. This is the case e.g. when the user presses Escape.
-	 *
-	 * IMPORTANT: Please check if a connect to this signal worked, and implement some fallback
-	 * when the implementation doesn't support it
-	 *
-	 * IMPORTANT FOR IMPLEMENTERS: When you don't support this signal, please just override the inherited
-	 * function, if you support it, declare it as a signal
-	 */
-    virtual void completionAborted()=0;
-
-	/**
-	 * This signal is emitted when the completion list disappears and a completion has
-	 * been inserted into text. This is the case e.g. when the user presses Return
-	 * on a selected item in the completion list.
-	 *
-	 * IMPORTANT: Please check if a connect to this signal worked, and implement some fallback
-	 * when the implementation doesn't support it
-	 *
-	 * IMPORTANT FOR IMPLEMENTERS: When you don't support this signal, please just override the inherited
-	 * function, if you support it, declare it as a signal
-	 */
-    virtual void completionDone()=0;
-
-	/**
-	 * This signal is the same as completionDone(), but additionally it carries
-	 * the information which completion item was used.
-	 *
-	 * IMPORTANT: Please check if a connect to this signal worked, and implement some fallback
-	 * when the implementation doesn't support it
-         *
-         * IMPORTANT: The pointer to the CompleteionEntry, is only valid in the slots connected to this signal
-         * when the connected slots are left, the data element may be destroyed, depending on the implementation
-	 *
-	 * IMPORTANT FOR IMPLEMENTERS: When you don't support this signal, please just override the inherited
-	 * function, if you support it, declare it as a signal.
-         *
-	 */
-    virtual void completionDone(CompletionEntry)=0;
-
-	/**
-	 * This signal is emitted when the argument hint disappears.
-	 * This is the case e.g. when the user moves the cursor somewhere else.
-	 *
-	 * IMPORTANT: Please check if a connect to this signal worked, and implement some fallback
-	 * when the implementation doesn't support it
-	 *
-	 * IMPORTANT FOR IMPLEMENTERS: When you don't support this signal, please just override the inherited
-	 * function, if you support it, declare it as a signal
-	 */
-    virtual void argHintHidden()=0;
-
-	/**
-	 * This signal is emitted just before a completion takes place.
-	 * You can use it to modify the CompletionEntry. The modified
-	 * entry will not be visible in the completion list (because that has
-	 * just disappeared) but it will be used when the completion is
-	 * inserted into the text.
-	 *
-	 * IMPORTANT: Please check if a connect to this signal worked, and implement some fallback
-	 * when the implementation doesn't support it
-	 *
-	 * IMPORTANT FOR IMPLEMENTERS: When you don't support this signal, please just override the inherited
-	 * function, if you support it, declare it as a signal
-	 */
-    virtual void filterInsertString(CompletionEntry*,QString*)=0;
 };
 
 KTEXTEDITOR_EXPORT CodeCompletionInterface *codeCompletionInterface (class View *view);

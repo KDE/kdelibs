@@ -171,6 +171,10 @@ KTextEditor::ModificationInterface *KTextEditor::modificationInterface (Document
   return dynamic_cast<KTextEditor::ModificationInterface*>( doc );
 }
 
+
+
+long ArgHintData::s_id=0;
+long CompletionData::s_id=0;
 CodeCompletionInterface *KTextEditor::codeCompletionInterface (View *view)
 {
   if (!view)
