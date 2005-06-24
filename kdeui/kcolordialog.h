@@ -341,7 +341,7 @@ private:
 /**
  * @short A color selection dialog.
  *
- * <b>Features:</b>
+ * <b>Features:</b>\n
  *
  * @li Color selection from a wide range of palettes.
  * @li Color selection from a palette of H vs S and V selectors.
