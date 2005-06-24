@@ -1,3 +1,8 @@
+2005-06-25  David Faure  <faure@kde.org>
+
+        * html/htmlparser.cpp (insertNode): Fix parsing of <table><tr><caption>,
+        with code from WebCore, http://www.cs.cornell.edu/~maksim/WC/changesets/3747.html
+
 2005-06-23  David Faure  <faure@kde.org>
 
         * html/html_tableimpl.cpp (appendChild): Improve fix for bug #105586 to avoid
