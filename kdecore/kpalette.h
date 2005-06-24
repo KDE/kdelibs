@@ -19,8 +19,8 @@
 //-----------------------------------------------------------------------------
 // KDE color palette.
 
-#ifndef __KPALETTE_H__
-#define __KPALETTE_H__
+#ifndef KDELIBS_KPALETTE_H
+#define KDELIBS_KPALETTE_H
 
 #include <qcolor.h>
 #include <qptrlist.h>
@@ -224,5 +224,5 @@ private:
 };
 
 
-#endif		// __KPALETTE_H__
+#endif		// KDELIBS_KPALETTE_H
 
