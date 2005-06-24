@@ -38,6 +38,10 @@ class KLocalePrivate;
 class KCatalogue;
 class KCalendarSystem;
 
+/**
+ * \file klocale.h
+ */
+
 #ifndef I18N_NOOP
 /**
  * \relates KLocale
@@ -68,7 +72,7 @@ class KCalendarSystem;
  *
  *  The argument must be an UTF-8 encoded string (If you only use
  *  characters that are in US-ASCII, you're on the safe side. But
- *  for e.g. german umlauts or french accents should be recoded to
+ *  for e.g. German umlauts or French accents should be recoded to
  *  UTF-8)
  **/
 KDECORE_EXPORT QString i18n(const char *text);
