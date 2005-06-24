@@ -228,3 +228,4 @@ an alternative help->contents action)
   make SSL much easier to implement and allow removal of many hacks, mostly
   involving metadata.
 
+- Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
