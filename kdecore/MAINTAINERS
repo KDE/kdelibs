@@ -76,10 +76,41 @@ kwinmodule.cpp  	Lubos Lunak <l.lunak@kde.org>
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
 kxerrorhandler.cpp	Lubos Lunak <l.lunak@kde.org>
 libintl.cpp		Hans Petter Bieker <bieker@kde.org>
+akasyncio.cpp		Thiago Macieira <thiago@kde.org>
 kbufferedio.cpp		Thiago Macieira <thiago@kde.org>
 kextsock.cpp		Thiago Macieira <thiago@kde.org>
+kidna.cpp		Thiago Macieira <thiago@kde.org>
 ksock.cpp		Thiago Macieira <thiago@kde.org>
 ksockaddr.cpp		Thiago Macieira <thiago@kde.org>
 netsupp.cpp		Thiago Macieira <thiago@kde.org>
 network/		Thiago Macieira <thiago@kde.org>
 netwm.cpp       	Lubos Lunak <l.lunak@kde.org>
+kapplication_win.cpp	Jaroslaw Staniek <js@iidea.pl> (copyright)
+kcalendarsystem.cpp
+kcalendarsystemfactory.cpp
+kcalendarsystemgregorian.cpp
+kcalendarsystemhebrew.cpp	Hans Petter Bieker <bieker@kde.org> (copyright)
+kcalendarsystemhijri.cpp
+kcalendarsystemjalali.cpp	Arash Bijanzadeh  and FarsiKDE Project <www.farsikde.org> (copyright)
+kcheckaccelerators.cpp	Matthias Kalle Dalheimer (kalle@kde.org) (copyright)
+kclipboard.cpp		Carsten Pfeiffer <pfeiffer@kde.org> (copyright)
+kconfigdialogmanager.cpp
+kconfigskeleton.cpp
+kdebugdcopiface.cpp	Andreas Beckermann (b_mann@gmx.de) (copyright)
+kdeversion.cpp
+kglobalaccel_win.cpp	Ellis Whitehead <ellis@kde.org> (copyright)
+kkeyserver_x11.cpp
+klockfile.cpp		Waldo Bastian <bastian@kde.org> (copyright)
+kmacroexpander.cpp
+kmanagerselection.cpp	Lubos Lunak        <l.lunak@kde.org> (copyright)
+kmountpoint.cpp		Waldo Bastian <bastian@kde.org> (copyright)
+kprotocolinfo_kdecore.cpp	Torben Weis <weis@kde.org> (copyright)
+kprotocolinfofactory.cpp	Torben Weis <weis@kde.org> (copyright)
+kprotocolinfofactory.cpp	Waldo Bastian <bastian@kde.org> (copyright)
+kpty.cpp
+kshell.cpp		Oswald Buddenhagen <ossi@kde.org> (copyright)
+kshortcutmenu.cpp	Ellis Whitehead <ellis@kde.org> (copyright)
+ktempdir.cpp		Joseph Wenninger <jowenn@kde.org> (copyright)
+kuser.cpp		Tim Jansen <tim@tjansen.de> (copyright)
+kvmallocator.cpp	Waldo Bastian (bastian@kde.org) (copyright)
+netsupp_win32.cpp
