@@ -64,6 +64,7 @@
 #include <qfileinfo.h>
 #include <qtimer.h>
 #include <kstatusbar.h>
+#include <qfileinfo.h>
 
 #include "misc/decoder.h"
 #include "dom/dom2_range.h"
@@ -435,6 +436,9 @@ int main(int argc, char *argv[])
     int testcase_index = 0;
     if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
 
+    QFileInfo bdInfo(baseDir);
+    baseDir = QFile::encodeName(bdInfo.absFilePath());
+
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
         QFileInfo sourceDir(QFile::encodeName( baseDir ) + "/" + subdirs[i]);
@@ -456,7 +460,7 @@ int main(int argc, char *argv[])
         if ( !xvfb ) {
             char buffer[1000];
             sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", (const char *)baseDir );
-            execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", 0 );
+            execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-once", "-render", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", 0 );
         }
 
         setenv( "DISPLAY", ":47", 1 );

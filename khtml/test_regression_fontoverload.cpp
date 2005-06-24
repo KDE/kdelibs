@@ -30,6 +30,9 @@
 #include <qwidget.h>
 #include <assert.h>
 
+#define AHEM  "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1"
+//#define AHEM "-misc-ahem-medium-r-normal--0-0-0-0-m-0-adobe-fontspecific"
+
 class QFakeFontEngine : public QFontEngineXLFD
 {
 public:
@@ -62,7 +65,6 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
 QFakeFontEngine::~QFakeFontEngine()
 {
 }
-
 #if 0
 QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *str, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored) const
 {
@@ -126,7 +128,6 @@ int QFakeFontEngine::cmap() const
 }
 
 #endif
-
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
     return true;
@@ -173,7 +174,7 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
     else if ( family == "ahem" )
-        xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+        xlfd = AHEM;
     else
         xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
@@ -194,6 +195,8 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
         XFree( n );
 
     fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
+
+    qDebug("fe %s ascent %d descent %d minLeftBearing %d leading %d maxCharWidth %d minRightBearing %d", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
 
     // fe->setScale( scale );
 
@@ -293,11 +296,12 @@ KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
 {
     static bool done = false;
     if (done) return;
-    QString xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+    QString xlfd = AHEM;
     XFontStruct *xfs;
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
 	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
+    XFreeFont(QPaintDevice::x11AppDisplay(), xfs);
     done = true;
 }
 
