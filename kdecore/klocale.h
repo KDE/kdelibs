@@ -561,7 +561,7 @@ public:
    * Typically the correct replacement for this deprecated class is
    * calendar()->monthNamePossessive(), which requires a QDate (rather than
    * an integer month) or both a month and a year.
-   * This will work across dfferent calendars.
+   * This will work across different calendars.
    * Note that you also need to add 
    * \code
    * #include <kcalendarsystem.h>
