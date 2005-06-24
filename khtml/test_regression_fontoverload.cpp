@@ -161,7 +161,7 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 
 }
 
-QFontEngine *
+KDE_EXPORT QFontEngine *
 QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 			 const QFontDef &request, int )
 {
@@ -202,13 +202,13 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     return fe;
 }
 
-bool QFontDatabase::isBitmapScalable( const QString &,
+KDE_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const
 {
     return true;
 }
 
-bool  QFontDatabase::isSmoothlyScalable( const QString &,
+KDE_EXPORT bool  QFontDatabase::isSmoothlyScalable( const QString &,
                                          const QString &) const
 {
     return true;
@@ -229,22 +229,22 @@ bool KHTMLSettings::unfinishedImageFrame() const
   return false;
 }
 
-int QPaintDevice::x11AppDpiY( int )
+KDE_EXPORT int QPaintDevice::x11AppDpiY( int )
 {
     return 100;
 }
 
-int QPaintDevice::x11AppDpiX( int )
+KDE_EXPORT int QPaintDevice::x11AppDpiX( int )
 {
     return 100;
 }
 
-void QFont::insertSubstitution(const QString &,
+KDE_EXPORT void QFont::insertSubstitution(const QString &,
                                const QString &)
 {
 }
 
-void QFont::insertSubstitutions(const QString &,
+KDE_EXPORT void QFont::insertSubstitutions(const QString &,
                                 const QStringList &)
 {
 }
@@ -288,7 +288,7 @@ void DCOPClient::processSocketData( int )
 #include <qapplication.h>
 #include <qpalette.h>
 
-void QApplication::setPalette( const QPalette &, bool ,
+KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
                                const char*  )
 {
     static bool done = false;
