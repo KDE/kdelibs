@@ -341,10 +341,10 @@ private:
 /**
  * @short A color selection dialog.
  *
- * <b>Features:</b>\n
+ * <b>Features:</b>
  *
  * @li Color selection from a wide range of palettes.
- * @li Color selection from a palette of H vs S and V selectors (similar to windoze).
+ * @li Color selection from a palette of H vs S and V selectors.
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
  *
