@@ -101,25 +101,26 @@ void RenderFormElement::layout()
         setNeedsLayout(false);
 }
 
-Qt::AlignmentFlags RenderFormElement::textAlignment() const
+
+Qt::AlignmentFlag RenderFormElement::textAlignment() const
 {
     switch (style()->textAlign()) {
         case LEFT:
         case KHTML_LEFT:
-            return AlignLeft;
+            return Qt::AlignLeft;
         case RIGHT:
         case KHTML_RIGHT:
-            return AlignRight;
+            return Qt::AlignRight;
         case CENTER:
         case KHTML_CENTER:
-            return AlignHCenter;
+            return Qt::AlignHCenter;
         case JUSTIFY:
             // Just fall into the auto code for justify.
         case TAAUTO:
-            return style()->direction() == RTL ? AlignRight : AlignLeft;
+            return style()->direction() == RTL ? Qt::AlignRight : Qt::AlignLeft;
     }
     assert(false); // Should never be reached.
-    return AlignLeft;
+    return Qt::AlignLeft;
 }
 
 // -------------------------------------------------------------------------
