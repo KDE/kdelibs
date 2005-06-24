@@ -64,7 +64,7 @@ public:
     /**
      * Creates an instance that operates on the given device.
      * The device can be compressed (KFilterDev) or not (QFile, etc.).
-     * WARNING: don't assume that giving a QFile here will decompress the file,
+     * @warning Do not assume that giving a QFile here will decompress the file,
      * in case it's compressed!
      * @param dev the device to access
      */
@@ -254,7 +254,7 @@ public:
     unsigned long crc32() const { return m_crc; }
     void setCRC32(unsigned long crc32) { m_crc=crc32; }
 
-    // Name with complete path - KArchiveFile::name() is the filename only (no path)
+    /// Name with complete path - KArchiveFile::name() is the filename only (no path)
     QString path() const { return m_path; }
 
     /**
