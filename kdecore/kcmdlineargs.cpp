@@ -623,9 +623,9 @@ KCmdLineArgs::parseAllArgs()
            printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
          else {
            if( about->authors().count() == 1 && about->authors().first().emailAddress() == about->bugAddress() )
-             printQ( i18n( "Please use %1 to report bugs.\n" ).arg( about->authors().first().emailAddress() ) );
+             printQ( i18n( "Please report bugs to %1.\n" ).arg( about->authors().first().emailAddress() ) );
            else
-             printQ( i18n( "Please use %1 to report bugs, do not mail the authors directly.\n" ).arg(about->bugAddress()) );
+             printQ( i18n( "Please report bugs to %1, do not mail the authors directly.\n" ).arg(about->bugAddress()) );
          }
        }
        exit(0);

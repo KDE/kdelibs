@@ -112,10 +112,10 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     else {
        if( aboutData->authors().count() == 1 && ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) )
        {
-         text = i18n( "Please use <a href=\"mailto:%1\">%2</a> to report bugs." ).arg( aboutData->authors().first().emailAddress() ).arg( aboutData->authors().first().emailAddress() );
+         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>." ).arg( aboutData->authors().first().emailAddress() ).arg( aboutData->authors().first().emailAddress() );
        }
        else {
-         text = i18n( "Please use <a href=\"mailto:%1\">%2</a> to report bugs, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress() );
+         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress() );
        }
     }
     activeLabel->setText( text );
