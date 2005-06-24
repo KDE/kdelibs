@@ -978,13 +978,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		    if (widget)
 			{
-#warning "QT4 ???? QFocusEvent::setReason ????"
-					widget->setFocus( k->key() == Qt::Key_Tab ? Qt::TabFocusReason : Qt::BacktabFocusReason );
                         static_cast<FocusHandleWidget *>(widget)
 			    ->focusNextPrev(k->key() == Qt::Key_Tab);
-#warning "Port to qt4 QFocusEvent::resetReason() ???? clearFocus???"
-				widget->clearFocus();
-		    	//QFocusEvent::resetReason();
 			}
                     evt->setDefaultHandled();
 	        }
