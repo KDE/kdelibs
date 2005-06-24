@@ -14,7 +14,6 @@ kallocator.cpp		Waldo Bastian <bastian@kde.org>
 kappdcopiface.cpp
 kapplication.cpp	Waldo Bastian <bastian@kde.org>
 kaudioplayer.cpp
-kbufferedio.cpp
 kcatalogue.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp		Lars Knoll <knoll@kde.org>
 kckey.cpp
@@ -28,7 +27,6 @@ kcrash.cpp		Waldo Bastian <bastian@kde.org>
 kdcoppropertyproxy.cpp
 kdebug.cpp		Stephan Kulow <coolo@kde.org>
 kdesktopfile.cpp
-kextsock.cpp
 kglobal.cpp		Stephan Kulow <coolo@kde.org>
 kglobalaccel.cpp	Ellis Whitehead <ellis@kde.org>
 kglobalaccel_x11.cpp	Ellis Whitehead <ellis@kde.org>
@@ -60,8 +58,6 @@ krootprop.cpp   	Lubos Lunak <l.lunak@kde.org>
 ksavefile.cpp		Waldo Bastian <bastian@kde.org>
 kshortcut.cpp		Ellis Whitehead <ellis@kde.org>
 ksimpleconfig.cpp	Waldo Bastian <bastian@kde.org>
-ksock.cpp
-ksockaddr.cpp
 ksocks.cpp
 kstandarddirs.cpp	Waldo Bastian <bastian@kde.org>
 kstartupinfo.cpp	Lubos Lunak <l.lunak@kde.org>
@@ -80,5 +76,10 @@ kwinmodule.cpp  	Lubos Lunak <l.lunak@kde.org>
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
 kxerrorhandler.cpp	Lubos Lunak <l.lunak@kde.org>
 libintl.cpp		Hans Petter Bieker <bieker@kde.org>
-netsupp.cpp
+kbufferedio.cpp		Thiago Macieira <thiago@kde.org>
+kextsock.cpp		Thiago Macieira <thiago@kde.org>
+ksock.cpp		Thiago Macieira <thiago@kde.org>
+ksockaddr.cpp		Thiago Macieira <thiago@kde.org>
+netsupp.cpp		Thiago Macieira <thiago@kde.org>
+network/		Thiago Macieira <thiago@kde.org>
 netwm.cpp       	Lubos Lunak <l.lunak@kde.org>
