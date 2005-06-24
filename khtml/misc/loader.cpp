@@ -729,6 +729,7 @@ void CachedImage::movieStatus(int status)
         }
         for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
             it()->notifyFinished( this );
+	m_status = Cached; //all done
     }
 
 #if 0
@@ -842,6 +843,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
             for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
                 it()->notifyFinished( this );
+	    m_status = Cached; //all done
         }
     }
 }
