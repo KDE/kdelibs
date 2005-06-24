@@ -68,8 +68,6 @@ KPalette::KPalette(const QString &name)
   if (paletteFile.readLine(line, maxLength) == -1) return;
   if (line.find(" Palette") == -1) return;
 
-  char *buffer = new char[maxLength];
-
   while( paletteFile.readLine(line, maxLength) != -1)
   {
      if (line[0] == '#') 
@@ -89,7 +87,6 @@ KPalette::KPalette(const QString &name)
         if (line.isEmpty()) continue;
         int red, green, blue;
         int pos = 0;
-        buffer[0] = '\0'; // Make string empty
         if (sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos) >= 3)
         {
            if (red > 255) red = 255;
@@ -106,7 +103,6 @@ KPalette::KPalette(const QString &name)
         }
      }
   }
-  delete [] buffer;
 }
 
 KPalette::KPalette(const KPalette &p)
