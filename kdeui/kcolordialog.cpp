@@ -73,8 +73,23 @@ typedef int (*QX11EventFilter) (XEvent*);
 extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 #endif
 
-static const char * const recentColors = "Recent_Colors";
-static const char * const customColors = "Custom_Colors";
+struct ColorPaletteNameType
+{
+    const char* m_fileName;
+    const char* m_displayName;
+};
+
+const ColorPaletteNameType colorPaletteName[]=
+{
+    { "Recent_Colors", I18N_NOOP2( "palette name", "* Recent Colors *" ) },
+    { "Custom_Colors", I18N_NOOP2( "palette name", "* Custom Colors *" ) },
+    { "40.colors",     I18N_NOOP2( "palette name", "Forty Colors" ) },
+    { "Royal.colors",  I18N_NOOP2( "palette name", "Royal Colors" ) },
+    { "Web.colors",    I18N_NOOP2( "palette name", "Web Colors" ) },
+    { 0, 0 } // end of data
+};
+
+const int recentColorIndex = 0;
 
 class KColorSpinBox : public QSpinBox
 {
@@ -539,21 +554,22 @@ public:
 };
 
 KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
-	: QWidget( parent ), mMinWidth(minWidth), mCols(cols)
+    : QWidget( parent ), cells(0), mPalette(0), mMinWidth(minWidth), mCols(cols)
 {
   d = new KPaletteTablePrivate;
   
-  cells = 0;
-  mPalette = 0;
-  i18n_customColors = i18n("* Custom Colors *");
-  i18n_recentColors = i18n("* Recent Colors *");
   i18n_namedColors  = i18n("Named Colors");
 
-  QStringList paletteList = KPalette::getPaletteList();
-  paletteList.remove(customColors);
-  paletteList.remove(recentColors);
-  paletteList.prepend(i18n_customColors);
-  paletteList.prepend(i18n_recentColors);
+  QStringList diskPaletteList = KPalette::getPaletteList();
+  QStringList paletteList;
+
+  // We must replace the untranslated file names by translate names (of course only for KDE's standard palettes)
+  for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
+  {
+      diskPaletteList.remove( colorPaletteName[i].m_fileName );
+      paletteList.append( i18n( "palette name", colorPaletteName[i].m_displayName ) );
+  }
+  paletteList += diskPaletteList;
   paletteList.append( i18n_namedColors );
 
   QVBoxLayout *layout = new QVBoxLayout( this );
@@ -763,10 +779,15 @@ KPaletteTable::setPalette( const QString &_paletteName )
      }
   }
 
-  if (paletteName == i18n_customColors)
-     paletteName = customColors;
-  else if (paletteName == i18n_recentColors)
-     paletteName = recentColors;
+  // We must again find the file name of the palette from the eventual translation
+  for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
+  {
+      if ( paletteName == i18n( "palette name", colorPaletteName[i].m_displayName ) )
+      {
+          paletteName = colorPaletteName[i].m_fileName;
+          break;
+      }
+  }
 
 
   //
@@ -863,13 +884,13 @@ KPaletteTable::addToRecentColors( const QColor &color)
   // The 'mPalette' is always 0 when current mode is i18n_namedColors
   //
   bool recentIsSelected = false;
-  if ( mPalette && mPalette->name() == recentColors)
+  if ( mPalette && mPalette->name() == colorPaletteName[ recentColorIndex ].m_fileName )
   {
      delete mPalette;
      mPalette = 0;
      recentIsSelected = true;
   }
-  KPalette *recentPal = new KPalette(recentColors);
+  KPalette *recentPal = new KPalette( colorPaletteName[ recentColorIndex ].m_fileName );
   if (recentPal->findColor(color) == -1)
   {
      recentPal->addColor( color );
@@ -877,7 +898,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
   }
   delete recentPal;
   if (recentIsSelected)
-     setPalette(i18n_recentColors);
+      setPalette( i18n( "palette name", colorPaletteName[ recentColorIndex ].m_displayName ) );
 }
 
 class KColorDialog::KColorDialogPrivate {

@@ -22,8 +22,8 @@
 // layout management added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 
-#ifndef __KCOLORDIALOG_H__
-#define __KCOLORDIALOG_H__
+#ifndef KDELIBS_KCOLORDIALOG_H
+#define KDELIBS_KCOLORDIALOG_H
 
 #ifdef Q_WS_QWS
 // FIXME(E): Do we need the KColorDialog extra functionality in Qt Embedded?
@@ -221,8 +221,10 @@ protected:
   void readNamedColor( void );
 
 protected:
-  QString i18n_customColors;
-  QString i18n_recentColors;
+  /// \deprecated
+  QString i18n_customColors; /// ### KDE4: remove
+  /// \deprecated
+  QString i18n_recentColors; /// ### KDE4: remove
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
@@ -490,5 +492,5 @@ class KDEUI_EXPORT KColorDialog : public KDialogBase
 };
 
 #endif		// !Q_WS_QWS
-#endif		// __KCOLORDIALOG_H__
+#endif		// KDELIBS_KCOLORDIALOG_H
 
