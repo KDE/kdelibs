@@ -2,7 +2,7 @@ Here are the code maintainers for each part of this library.  Any problems or
 suggested patches for a class should be directed to the responsible person for
 that class.
 
-When adding yourself as a maintainer, on't be afraid to reorder the files to a
+When adding yourself as a maintainer, don't be afraid to reorder the files to a
 more logical grouping.
 
 dmalloc.cpp
