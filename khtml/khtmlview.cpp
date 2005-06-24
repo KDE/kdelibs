@@ -2253,9 +2253,11 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             guard = node;
 	}
         // Set focus node on the document
-        QFocusEvent::setReason( QFocusEvent::Shortcut );
+#warning "port QFocusEvent::setReason( QFocusEvent::Shortcut ); to qt4" 
+        //QFocusEvent::setReason( QFocusEvent::Shortcut );
         m_part->xmlDocImpl()->setFocusNode(node);
-        QFocusEvent::resetReason();
+#warning "port QFocusEvent::resetReason(); to qt4"
+        //QFocusEvent::resetReason();
         if( node != NULL && node->hasOneRef()) // deleted, only held by guard
             return true;
         emit m_part->nodeActivated(Node(node));
