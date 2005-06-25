@@ -53,6 +53,7 @@
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
 #include "rendering/render_frames.h"
+#include "rendering/render_image.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -221,7 +222,8 @@ QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257)
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257), 
+      m_imageLoadEventTimer(0)
 {
     document->doc = this;
     m_paintDeviceMetrics = 0;
@@ -1099,6 +1101,11 @@ void DocumentImpl::detach()
     delete m_tokenizer;
     m_tokenizer = 0;
 
+    // Empty out these lists as a performance optimization, since detaching
+    // all the individual render objects will cause all the RenderImage
+    // objects to remove themselves from the lists.
+    m_imageLoadEventDispatchSoonList.clear();
+    m_imageLoadEventDispatchingList.clear();
     NodeBaseImpl::detach();
 
     if ( render )
@@ -2383,6 +2390,59 @@ bool DocumentImpl::hasWindowEventListener(int id)
 EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node)
 {
     return part() ? part()->createHTMLEventListener(code, name, node) : 0;
+}
+
+void DocumentImpl::dispatchImageLoadEventSoon(khtml::RenderImage *image)
+{
+    m_imageLoadEventDispatchSoonList.append(image);
+    if (!m_imageLoadEventTimer) {
+        m_imageLoadEventTimer = startTimer(0);
+    }
+}
+
+void DocumentImpl::removeImage(khtml::RenderImage *image)
+{
+    // Remove instances of this image from both lists.
+    // Use loops because we allow multiple instances to get into the lists.
+    while (m_imageLoadEventDispatchSoonList.removeRef(image)) { }
+    while (m_imageLoadEventDispatchingList.removeRef(image)) { }
+    if (m_imageLoadEventDispatchSoonList.isEmpty() && m_imageLoadEventTimer) {
+        killTimer(m_imageLoadEventTimer);
+        m_imageLoadEventTimer = 0;
+    }
+}
+
+void DocumentImpl::dispatchImageLoadEventsNow()
+{
+    // need to avoid re-entering this function; if new dispatches are
+    // scheduled before the parent finishes processing the list, they
+    // will set a timer and eventually be processed
+    if (!m_imageLoadEventDispatchingList.isEmpty()) {
+        return;
+    }
+
+    if (m_imageLoadEventTimer) {
+        killTimer(m_imageLoadEventTimer);
+        m_imageLoadEventTimer = 0;
+    }
+    
+    m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
+    m_imageLoadEventDispatchSoonList.clear();
+    for (QPtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
+        khtml::RenderImage* image = it.current();
+        // Must advance iterator *before* dispatching call.
+        // Otherwise, it might be advanced automatically if dispatching the call had a side effect
+        // of destroying the current HTMLImageLoader, and then we would advance past the *next* item,
+        // missing one altogether.
+        ++it;
+        image->dispatchLoadEvent();
+    }
+    m_imageLoadEventDispatchingList.clear();
+}
+
+void DocumentImpl::timerEvent(QTimerEvent *)
+{
+    dispatchImageLoadEventsNow();
 }
 
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)

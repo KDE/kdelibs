@@ -413,11 +413,14 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj && !loadEventSent && element()) {
-        loadEventSent = true;
-        element()->dispatchHTMLEvent(
-            image->isErrorImage() ? EventImpl::ERROR_EVENT : EventImpl::LOAD_EVENT,
-            false,false);
+    if (image == finishedObj) {
+        NodeImpl *node = element();
+        if (node) {
+            DocumentImpl *document = node->getDocument();
+            if (document) {
+                document->dispatchImageLoadEventSoon(this);
+            }
+        }
     }
 
     if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
@@ -427,6 +430,33 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
     }
 
     RenderReplaced::notifyFinished(finishedObj);
+}
+
+void RenderImage::dispatchLoadEvent()
+{
+    if (!loadEventSent) {
+        NodeImpl *node = element();
+        if (node) {
+            loadEventSent = true;
+            if (image->isErrorImage()) {
+                node->dispatchHTMLEvent(EventImpl::ERROR_EVENT, false, false);
+            } else {
+                node->dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
+            }
+        }
+    }
+}
+
+void RenderImage::detach()
+{
+    NodeImpl *node = element();
+    if (node) {
+        DocumentImpl *document = node->getDocument();
+        if (document) {
+            document->removeImage(this);
+        }
+    }
+    RenderReplaced::detach();
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)

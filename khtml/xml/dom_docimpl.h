@@ -56,6 +56,7 @@ namespace khtml {
     class CounterNode;
     class CachedObject;
     class CachedCSSStyleSheet;
+    class RenderImage;
 }
 
 namespace DOM {
@@ -441,6 +442,11 @@ public:
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
 
+    void dispatchImageLoadEventSoon(khtml::RenderImage *);
+    void dispatchImageLoadEventsNow();
+    void removeImage(khtml::RenderImage *);
+    virtual void timerEvent(QTimerEvent *);
+
     // Returns the owning element in the parent document.
     // Returns 0 if this is the top level document.
     ElementImpl *ownerElement() const;
@@ -548,6 +554,10 @@ protected:
     khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
 
     int m_decoderMibEnum;
+
+    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
+    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
+    int m_imageLoadEventTimer;
 
     khtml::RenderArena* m_renderArena;
 private:
