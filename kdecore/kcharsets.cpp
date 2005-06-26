@@ -612,7 +612,6 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
     dir = KGlobal::config()->readPathEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
-    dir += "/";
     }
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap
@@ -624,6 +623,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     cname = cname.upper();
 
     const QString basicName = QString::fromLatin1(cname);
+    kdDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir << endl;
     
     QString charMapFileName;
     bool gzipped = false; 
@@ -666,14 +666,17 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
     
     if (gzipped && !charMapFileName.isEmpty()) {
-        KQIODeviceGZip gzip(dir + charMapFileName);
+        KQIODeviceGZip gzip(dir + "/" + charMapFileName);
         if (gzip.open(IO_ReadOnly)) {
+            kdDebug() << "Loading gzipped charset..." << endl;
             codec = QTextCodec::loadCharmap(&gzip);
             gzip.close();
         }
+        else
+            kdWarning() << "Could not open gzipped charset!" << endl;
     }
     else if (!charMapFileName.isEmpty()) {
-        codec = QTextCodec::loadCharmapFile(dir + charMapFileName);
+        codec = QTextCodec::loadCharmapFile(dir + "/" + charMapFileName);
     }
 
     if(codec) {
