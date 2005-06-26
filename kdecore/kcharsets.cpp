@@ -400,7 +400,7 @@ QChar KCharsets::fromEntity(const QString &str)
             QString tmp(str.unicode()+pos, str.length()-pos);
             res = tmp.toInt(&ok, 16);
         } else {
-            //  '&#0000', deciaml character reference
+            //  '&#0000', decimal character reference
             QString tmp(str.unicode()+pos, str.length()-pos);
             res = tmp.toInt(&ok, 10);
         }
