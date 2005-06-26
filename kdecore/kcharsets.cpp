@@ -18,6 +18,7 @@
 */
 #include "kcharsets.h"
 
+#include "kqiodevicegzip_p.h"
 #include "kentities.c"
 
 #include <kapplication.h>
@@ -665,14 +666,15 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
     
     if (gzipped && !charMapFileName.isEmpty()) {
-        // ### TODO We have found a gzipped charmap!
-        codec = 0;
+        KQIODeviceGZip gzip(dir + charMapFileName);
+        if (gzip.open(IO_ReadOnly)) {
+            codec = QTextCodec::loadCharmap(&gzip);
+            gzip.close();
+        }
     }
     else if (!charMapFileName.isEmpty()) {
         codec = QTextCodec::loadCharmapFile(dir + charMapFileName);
     }
-    else
-        codec = 0;
 
     if(codec) {
         d->codecForNameDict.replace(key, codec);
