@@ -175,6 +175,7 @@ static struct LanguageForEncoding
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
     { "winsami2", 16},
+    // ### TODO: Qt has ISO-8859-16 now too (but from which version on?)
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
@@ -247,8 +248,10 @@ static struct Builtin
     { "x-windows-1255", "cp 1255" },
     { "x-windows-1256", "cp 1256" },
     { "x-windows-1257", "cp 1257" },
+    { "cp819", "iso 8859-1" },
     { "cp850", "ibm850" },
     { "cp866", "ibm866" },
+    { "cp-819", "iso 8859-1" },
     { "cp-850", "ibm850" },
     { "cp-866", "ibm866" },
     { "cp-1250", "cp 1250" },
@@ -271,6 +274,7 @@ static struct Builtin
     { "x-cp-1256", "cp 1256" },
     { "x-cp-1257", "cp 1257" },
     { "x-cp-10000", "apple roman" },
+    { "ibm819", "iso 8859-1" },
     { "tis620", "iso 8859-11" },
     { "tis-620", "iso 8859-11" },
     { "thai-tis620", "iso 8859-11" },
