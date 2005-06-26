@@ -33,6 +33,8 @@
 #include <qtextcodec.h>
 #include <qmap.h>
 #include <qcstring.h>
+#include <qdir.h>
+#include <qregexp.h>
 
 #include <assert.h>
 
@@ -605,7 +607,6 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
-    // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
@@ -621,7 +622,57 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         cname = name;
     cname = cname.upper();
 
-    codec = QTextCodec::loadCharmapFile((QString)(dir + cname.data()));
+    const QString basicName = QString::fromLatin1(cname);
+    
+    QString charMapFileName;
+    bool gzipped = false; 
+    QDir qdir(dir);
+    if (!qdir.exists()) {
+        // The directory for the charmaps does not even exist... (That is common!)
+    }
+    else if (qdir.exists(basicName, false)) {
+        charMapFileName = basicName;
+    }
+    else if (qdir.exists(basicName+".gz", false)) {
+        charMapFileName = basicName + ".gz";
+        gzipped = true;
+    }
+    else {
+        // Check if we are asking a code page
+        // If yes, then check "CP99999" and "IBM99999"
+        // First we need to find the number of the codepage
+        QRegExp regexp("^(X-)?(CP|IBM)(-| )?(0-9)+");
+        if ( regexp.search(basicName) != -1) {
+            const QString num = regexp.cap(4);
+            if (num.isEmpty()) {
+                // No number, not a code page (or something went wrong)
+            }
+            else if (qdir.exists("IBM"+num)) {
+                charMapFileName = "IBM"+num;
+            }
+            else if (qdir.exists("IBM"+num+".gz")) {
+                charMapFileName = "IBM"+num+".gz";
+                gzipped = true;
+            }
+            else if (qdir.exists("CP"+num)) {
+                charMapFileName = "CP"+num;
+            }
+            else if (qdir.exists("CP"+num+".gz")) {
+                charMapFileName = "CP"+num+".gz";
+                gzipped = true;
+            }
+        }
+    }
+    
+    if (gzipped && !charMapFileName.isEmpty()) {
+        // ### TODO We have found a gzipped charmap!
+        codec = 0;
+    }
+    else if (!charMapFileName.isEmpty()) {
+        codec = QTextCodec::loadCharmapFile(dir + charMapFileName);
+    }
+    else
+        codec = 0;
 
     if(codec) {
         d->codecForNameDict.replace(key, codec);
@@ -630,8 +681,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // this also failed, the last resort is now to take some compatibility charmap
 
-    cname = cname.lower();
-    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)cname );
+    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)name.data() );
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
