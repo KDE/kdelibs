@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __KSCONFIG_H__
-#define __KSCONFIG_H__
+#ifndef KDELIBS_KSCONFIG_H
+#define KDELIBS_KSCONFIG_H
 
 #include <qwidget.h>
 #include <qstring.h>
@@ -31,21 +31,25 @@ class QLabel;
 class KConfig;
 class KSpellConfigPrivate;
 
-// Should be replaced by the charset strings
-// because the config file would be more stable
-// when inserting entries in the list
+/**
+ * @brief Encoding for the spell checker
+ * @note In the identifier names LATIN means ISO-8859, not ECMA Latin
+ * @todo Should be replaced by the charset strings
+ * because the config file would be more stable 
+ * when inserting entries in the list
+ */
 enum Encoding {
   KS_E_ASCII=0,
-  KS_E_LATIN1=1,
+  KS_E_LATIN1=1, 
   KS_E_LATIN2=2,
   KS_E_LATIN3=3,
   KS_E_LATIN4=4,
-  KS_E_LATIN5=5,
-  KS_E_LATIN7=6,
-  KS_E_LATIN8=7,
-  KS_E_LATIN9=8,
-  KS_E_LATIN13=9,
-  KS_E_LATIN15=10,
+  KS_E_LATIN5=5, ///< ISO-8859-5 (Cyrillic)
+  KS_E_LATIN7=6, ///< ISO-8859-6 (Arabic)
+  KS_E_LATIN8=7, ///< ISO-8859-7 (Greek)
+  KS_E_LATIN9=8, ///< ISO-8859-8 (Hebrew)
+  KS_E_LATIN13=9, ///< ISO-8859-13 (Latin 7)
+  KS_E_LATIN15=10, ///< ISO-8859-15 (Latin 9)
   KS_E_UTF8=11,
   KS_E_KOI8R=12,
   KS_E_KOI8U=13,
@@ -77,7 +81,6 @@ enum KSpellClients {
  * writing papers in their word processor.
  *
  * @author David Sweet <dsweet@kde.org>
- * @version $Id$
  * @see KSpell
  */
 
@@ -192,7 +195,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     QStringList ignoreList() const;
     QStringList replaceAllList() const;
 
-    int client() const; //see enums at top of file
+    int client() const; ///< Spell checker client, @see KSpellClients
 
     /**
      * Call this method before this class is deleted  if you want
@@ -252,7 +255,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
 
   protected:
     // The options
-    int enc;			//1 ==> -Tlatin1
+    int enc;			// 1 ==> -Tlatin1
     bool bnorootaffix;		// -m
     bool bruntogether;		// -B
     bool dictfromlist;
@@ -282,7 +285,7 @@ private:
     void getAvailDictsAspell();
 };
 
-#endif
+#endif // KDELIBS_KSCONFIG_H
 
 
 
