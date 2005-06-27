@@ -1531,6 +1531,8 @@ private:
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
+  bool urlSelectedIntern( const QString &url, int button, int state,
+                          const QString &_target, KParts::URLArgs args = KParts::URLArgs());
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
