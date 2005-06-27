@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-MimeType=application/x-rar
+MimeType=application/x-rar-compressed
 Icon=tgz
 Patterns=*.rar;*.RAR;
 Comment=Rar Archive
