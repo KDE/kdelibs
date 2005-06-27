@@ -38,6 +38,8 @@
 #include <q3intdict.h>
 #include <q3dict.h>
 #include <qmap.h>
+//Added by qt3to4:
+#include <QTimerEvent>
 
 #include <kurl.h>
 
@@ -555,8 +557,8 @@ protected:
 
     int m_decoderMibEnum;
 
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
+    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
+    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
 
     khtml::RenderArena* m_renderArena;

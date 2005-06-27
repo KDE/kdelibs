@@ -43,6 +43,9 @@
 
 #include <q3ptrstack.h>
 #include <q3paintdevicemetrics.h>
+//Added by qt3to4:
+#include <QTimerEvent>
+#include <Q3PtrList>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>
@@ -2427,7 +2430,7 @@ void DocumentImpl::dispatchImageLoadEventsNow()
     
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (QPtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
+    for (Q3PtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
         khtml::RenderImage* image = it.current();
         // Must advance iterator *before* dispatching call.
         // Otherwise, it might be advanced automatically if dispatching the call had a side effect
