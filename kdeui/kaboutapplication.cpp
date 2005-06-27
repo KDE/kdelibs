@@ -23,6 +23,9 @@
 // I (espen) prefer that header files are included alphabetically
 
 #include <qlabel.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3ValueList>
 #include <kaboutapplication.h>
 #include <kaboutdialog_private.h>
 #include <kaboutdata.h>
@@ -121,13 +124,11 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     activeLabel->setText( text );
     authorPage->addWidget( activeLabel );
 
-    QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->authors().begin();
-         it != aboutData->authors().end(); ++it)
-    {
-      authorPage->addPerson( (*it).name(), (*it).emailAddress(),
-                             (*it).webAddress(), (*it).task() );
-    }
+	QList<KAboutPerson> lst = aboutData->authors();
+	for (int i = 0; i < lst.size(); ++i) {
+		authorPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+                             lst.at(i).webAddress(), lst.at(i).task() );
+	}
   }
 
   int creditsCount = aboutData->credits().count();
@@ -135,14 +136,12 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   {
     KAboutContainer *creditsPage =
       addScrolledContainerPage( i18n("&Thanks To") );
-      
-    QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->credits().begin();
-         it != aboutData->credits().end(); ++it)
-    {
-      creditsPage->addPerson( (*it).name(), (*it).emailAddress(),
-                              (*it).webAddress(), (*it).task() );
-    }
+    
+	QList<KAboutPerson> lst = aboutData->credits();
+	for (int i = 0; i < lst.size(); ++i) {
+		creditsPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+	                           lst.at(i).webAddress(), lst.at(i).task() );
+	}
   }
 
   const Q3ValueList<KAboutTranslator> translatorList = aboutData->translators();
