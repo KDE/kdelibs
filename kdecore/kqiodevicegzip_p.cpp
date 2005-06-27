@@ -27,7 +27,8 @@ KQIODeviceGZip::KQIODeviceGZip(const QString& filename)
     m_gzfile=0;
     m_ungetchar=-1;
     m_filename=filename;
-    setFlags(IO_Sequential); // We have no direct access, so it is sequential!
+#warning "QT4 porting ???? setFlags(IO_Sequential); ";	
+    //setFlags(IO_Sequential); // We have no direct access, so it is sequential!
     // NOTE: "sequential" also means that you cannot use size()
 }
 
@@ -44,11 +45,11 @@ bool KQIODeviceGZip::open(int mode)
     if (m_filename.isEmpty())
         return false; // No file name, cannot open!
 
-    if (IO_ReadOnly==mode)
+    if (QIODevice::ReadOnly==mode)
     {
         m_gzfile=gzopen(QFile::encodeName(m_filename),"rb");
     }
-    else if (IO_WriteOnly==mode)
+    else if (QIODevice::WriteOnly==mode)
     {
         m_gzfile=gzopen(QFile::encodeName(m_filename),"wb9"); // Always set best compression
     }
@@ -78,19 +79,19 @@ void KQIODeviceGZip::flush(void)
     }
 }
 
-QIODevice::Offset KQIODeviceGZip::size(void) const
+qlonglong KQIODeviceGZip::size(void) const
 {
     return 0; // You cannot determine size!
 }
 
-QIODevice::Offset  KQIODeviceGZip::at() const
+qlonglong  KQIODeviceGZip::at() const
 {
     if (!m_gzfile)
         return 0;
     return gztell(m_gzfile);
 }
 
-bool KQIODeviceGZip::at(QIODevice::Offset pos)
+bool KQIODeviceGZip::at(qlonglong pos)
 {
     if (!m_gzfile)
         return false;
