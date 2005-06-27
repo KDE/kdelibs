@@ -1172,6 +1172,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             switch( tagID ) {
             case ID_PRE:
                 pre = beginTag;
+                discard = AllDiscard;
                 prePos = 0;
                 break;
             case ID_BR:
@@ -1404,15 +1405,16 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             }; // end case
 
             // According to SGML any LF immediately after a starttag, or
-            // immediately after an endtag should be ignored.
+            // immediately before an endtag should be ignored.
+            // ### Gecko and MSIE though only ignores LF immediately after
+            // starttags and only for PRE elements
             if ( pending )
-                if (!select && (!endTag || pending != LFPending))
+                if (!select)
                     addPending();
                 else
                     pending = NonePending;
 
-            // AllDiscard is misnamed an only discard any immediate LF
-            if (!endTag) discard = AllDiscard;
+            // if (!endTag) discard = AllDiscard;
 
             processToken();
 
