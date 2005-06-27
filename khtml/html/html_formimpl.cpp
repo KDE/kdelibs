@@ -1051,6 +1051,8 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ACCESSKEY:
         break;
+    case ATTR_ALIGN:
+        break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
@@ -1340,6 +1342,10 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_USEMAP:
         // ### ignore for the moment
+        break;
+    case ATTR_ALIGN:
+        if ( m_inited && m_type == IMAGE )
+            addHTMLAlignment( attr->value() );
         break;
     case ATTR_ACCESSKEY:
         break;
@@ -2060,6 +2066,9 @@ void HTMLSelectElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_ACCESSKEY:
         break;
+    case ATTR_ALIGN:
+        addHTMLAlignment( attr->value() );
+        break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
             getDocument()->createHTMLEventListener(attr->value().string(), "onchange", this));
@@ -2477,6 +2486,8 @@ void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
             m_wrap = ta_NoWrap;
         break;
     case ATTR_ACCESSKEY:
+        break;
+    case ATTR_ALIGN:
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
