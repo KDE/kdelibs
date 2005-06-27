@@ -784,6 +784,7 @@ void CachedImage::movieStatus(int status)
         }
         for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
             it()->notifyFinished( this );
+	m_status = Cached; //all done
     }
 
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
@@ -913,6 +914,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
             for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
                 it()->notifyFinished( this );
+	    m_status = Cached; //all done
         }
 #endif
     //}

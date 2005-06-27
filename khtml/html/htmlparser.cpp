@@ -514,6 +514,34 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             else
                 return false;
         }
+        case ID_CAPTION: {
+            switch (current->id()) {
+                case ID_THEAD:
+                case ID_TBODY:
+                case ID_TFOOT:
+                case ID_TR:
+                case ID_TH:
+                case ID_TD: {
+                    NodeImpl* tsection = current;
+                    if (current->id() == ID_TR)
+                        tsection = current->parent();
+                    else if (current->id() == ID_TD || current->id() == ID_TH)
+                        tsection = current->parent()->parent();
+                    NodeImpl* table = tsection->parent();
+                    int exceptioncode = 0;
+                    table->insertBefore(n, tsection, exceptioncode);
+                    pushBlock(id, tagPriority[id]);
+                    setCurrent(n);
+                    //inStrayTableContent++;
+                    //blockStack->strayTableContent = true;
+                    return true;
+                }
+                default:
+                    break;
+            }
+            break;
+        }
+
         case ID_THEAD:
         case ID_TBODY:
         case ID_TFOOT:
@@ -611,9 +639,12 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                      parent->id() == ID_TABLE ) )
                 {
                     node = (node->id() == ID_TABLE) ? node :
-                            ((node->id() == ID_TR ) ? parentparent : parent);
+                           ((node->id() == ID_TR ) ? parentparent : parent);
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
+#ifdef PARSER_DEBUG
+                    kdDebug( 6035 ) << "calling insertBefore(" << n->nodeName().string() << "," << node->nodeName().string() << ")" << endl;
+#endif
                     parent->insertBefore(n, node, exceptioncode);
                     if (exceptioncode) {
 #ifdef PARSER_DEBUG
@@ -1497,7 +1528,7 @@ void KHTMLParser::popOneBlock(bool delBlock)
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id).string() << "(" << Elem->id << ")" << endl;
+    kdDebug( 6035 ) << "popping block: " << getTagName(Elem->id) << "(" << Elem->id << ")" << endl;
 #endif
 
 #if SPEED_DEBUG < 1

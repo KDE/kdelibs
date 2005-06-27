@@ -18,6 +18,7 @@
 */
 #include "kcharsets.h"
 
+#include "kqiodevicegzip_p.h"
 #include "kentities.c"
 
 #include <kapplication.h>
@@ -33,6 +34,8 @@
 #include <qtextcodec.h>
 #include <qmap.h>
 #include <q3cstring.h>
+#include <qdir.h>
+#include <qregexp.h>
 
 #include <assert.h>
 #include <QHash>
@@ -176,6 +179,7 @@ static struct LanguageForEncoding
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
     { "winsami2", 16},
+    // ### TODO: Qt has ISO-8859-16 now too (but from which version on?)
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
@@ -248,8 +252,10 @@ static struct Builtin
     { "x-windows-1255", "cp 1255" },
     { "x-windows-1256", "cp 1256" },
     { "x-windows-1257", "cp 1257" },
+    { "cp819", "iso 8859-1" },
     { "cp850", "ibm850" },
     { "cp866", "ibm866" },
+    { "cp-819", "iso 8859-1" },
     { "cp-850", "ibm850" },
     { "cp-866", "ibm866" },
     { "cp-1250", "cp 1250" },
@@ -272,6 +278,7 @@ static struct Builtin
     { "x-cp-1256", "cp 1256" },
     { "x-cp-1257", "cp 1257" },
     { "x-cp-10000", "apple roman" },
+    { "ibm819", "iso 8859-1" },
     { "tis620", "iso 8859-11" },
     { "tis-620", "iso 8859-11" },
     { "thai-tis620", "iso 8859-11" },
@@ -398,7 +405,7 @@ QChar KCharsets::fromEntity(const QString &str)
             QString tmp(str.unicode()+pos, str.length()-pos);
             res = tmp.toInt(&ok, 16);
         } else {
-            //  '&#0000', deciaml character reference
+            //  '&#0000', decimal character reference
             QString tmp(str.unicode()+pos, str.length()-pos);
             res = tmp.toInt(&ok, 10);
         }
@@ -617,7 +624,6 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
     dir = KGlobal::config()->readPathEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
-    dir += "/";
     }
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap
@@ -628,7 +634,62 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         cname = name;
     cname = cname.upper();
 
-    codec = QTextCodec::loadCharmapFile(dir+cname); ###
+    const QString basicName = QString::fromLatin1(cname);
+    kdDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir << endl;
+    
+    QString charMapFileName;
+    bool gzipped = false; 
+    QDir qdir(dir);
+    if (!qdir.exists()) {
+        // The directory for the charmaps does not even exist... (That is common!)
+    }
+    else if (qdir.exists(basicName, false)) {
+        charMapFileName = basicName;
+    }
+    else if (qdir.exists(basicName+".gz", false)) {
+        charMapFileName = basicName + ".gz";
+        gzipped = true;
+    }
+    else {
+        // Check if we are asking a code page
+        // If yes, then check "CP99999" and "IBM99999"
+        // First we need to find the number of the codepage
+        QRegExp regexp("^(X-)?(CP|IBM)(-| )?(0-9)+");
+        if ( regexp.search(basicName) != -1) {
+            const QString num = regexp.cap(4);
+            if (num.isEmpty()) {
+                // No number, not a code page (or something went wrong)
+            }
+            else if (qdir.exists("IBM"+num)) {
+                charMapFileName = "IBM"+num;
+            }
+            else if (qdir.exists("IBM"+num+".gz")) {
+                charMapFileName = "IBM"+num+".gz";
+                gzipped = true;
+            }
+            else if (qdir.exists("CP"+num)) {
+                charMapFileName = "CP"+num;
+            }
+            else if (qdir.exists("CP"+num+".gz")) {
+                charMapFileName = "CP"+num+".gz";
+                gzipped = true;
+            }
+        }
+    }
+    
+    if (gzipped && !charMapFileName.isEmpty()) {
+        KQIODeviceGZip gzip(dir + "/" + charMapFileName);
+        if (gzip.open(IO_ReadOnly)) {
+            kdDebug() << "Loading gzipped charset..." << endl;
+            codec = QTextCodec::loadCharmap(&gzip);
+            gzip.close();
+        }
+        else
+            kdWarning() << "Could not open gzipped charset!" << endl;
+    }
+    else if (!charMapFileName.isEmpty()) {
+        codec = QTextCodec::loadCharmapFile(dir + "/" + charMapFileName);
+    }
 
     if(codec) {
         d->codecForNameDict.replace(key, codec);
@@ -637,8 +698,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 
     // this also failed, the last resort is now to take some compatibility charmap
 
-    cname = cname.lower();
-    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)cname );
+    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)name.data() );
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);

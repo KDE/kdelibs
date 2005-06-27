@@ -260,21 +260,32 @@ KSpell::startIspell()
       case KS_E_LATIN8:
       case KS_E_LATIN9:
       case KS_E_LATIN13:
-      case KS_E_LATIN15:
 	// will work, if this is the default charset in the dictionary
-	kdError(750) << "charsets iso-8859-4 .. iso-8859-15 not supported yet" << endl;
+	kdError(750) << "charsets ISO-8859-4, -5, -7, -8, -9 and -13 not supported yet" << endl;
 	break;
+      case KS_E_LATIN15: // ISO-8859-15 (Latin 9)
+        if (ksconfig->client() == KS_CLIENT_ISPELL)
+        {
+          /*
+           * As far as I know, there are no ispell dictionary using ISO-8859-15
+           * but users have the tendency to select this encoding instead of ISO-8859-1
+           * So put ispell in ISO-8859-1 (Latin 1) mode.
+           */
+          *proc << "-Tlatin1";
+        }
+        else
+          kdError(750) << "ISO-8859-15 not supported for aspell yet." << endl;
+        break;
       case KS_E_UTF8:
         *proc << "-Tutf8";
         if (ksconfig->client() == KS_CLIENT_ASPELL)
           *proc << "--encoding=utf-8";
-        else
-          *proc << "-Tutf8";
-
         break;
       case KS_E_KOI8U:
 	*proc << "-w'"; // add ' as a word char
 	break;
+      default:
+        break;
       }
     }
 

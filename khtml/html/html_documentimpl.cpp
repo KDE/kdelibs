@@ -266,6 +266,9 @@ void HTMLDocumentImpl::close()
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
         //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+
+        //Make sure to flush any pending image events now, as we want them out before the document's load event
+        dispatchImageLoadEventsNow();
         getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway

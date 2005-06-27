@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE Libraries
- * Copyright (C) 2000 Waldo Bastian (bastian@kde.org) and 
+ * Copyright (C) 2000 Waldo Bastian (bastian@kde.org) and
  * Espen Sand (espen@kde.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -34,11 +34,11 @@
 #include "ktextedit.h"
 
 KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
-				      bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, 
-                 kapp ? kapp->caption() : QString::null, 
+              bool modal )
+  :KAboutDialog( AbtTabbed|AbtProduct,
+                 kapp ? kapp->caption() : QString::null,
                  Close, Close,
-		 parent, name, modal )
+     parent, name, modal )
 {
   buildDialog(KGlobal::instance()->aboutData());
 }
@@ -46,7 +46,7 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent,
                                       const char *name, bool modal )
   :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close,
-		 parent, name, modal )
+     parent, name, modal )
 {
   buildDialog(aboutData);
 }
@@ -63,14 +63,14 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
     QString appPageText =
       i18n("No information available.\n"
-	   "The supplied KAboutData object does not exist.");
+     "The supplied KAboutData object does not exist.");
     QLabel *appPageLabel = new QLabel( "\n\n\n\n"+appPageText+"\n\n\n\n", 0 );
     appPage->addWidget( appPageLabel );
     return;
   }
 
   setProduct( aboutData->programName(), aboutData->version(),
-	      QString::null, QString::null );
+        QString::null, QString::null );
 
   if (!aboutData->programLogo().isNull())
     setProgramLogo( QPixmap::fromImage(aboutData->programLogo()) );
@@ -105,34 +105,43 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
       i18n("A&uthor") : i18n("A&uthors");
     KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
 
+    QString text;
     KActiveLabel* activeLabel = new KActiveLabel( authorPage );
-    if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
-       activeLabel->setText( i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly." ) );
-    else
-       activeLabel->setText( i18n( "Please use <a href=\"mailto:%1\">%1</a> to report bugs, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress()) );
+    if ( aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
+       text = i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly.\n" );
+    else {
+       if( aboutData->authors().count() == 1 && ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) )
+       {
+         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>." ).arg( aboutData->authors().first().emailAddress() ).arg( aboutData->authors().first().emailAddress() );
+       }
+       else {
+         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress() );
+       }
+    }
+    activeLabel->setText( text );
     authorPage->addWidget( activeLabel );
 
-    QListIterator<KAboutPerson> it(aboutData->authors());
-    while (it.hasNext())
+    QValueList<KAboutPerson>::ConstIterator it;
+    for (it = aboutData->authors().begin();
+         it != aboutData->authors().end(); ++it)
     {
-      const KAboutPerson& person = it.next();
-      authorPage->addPerson( person.name(), person.emailAddress(),
-			     person.webAddress(), person.task() );
+      authorPage->addPerson( (*it).name(), (*it).emailAddress(),
+                             (*it).webAddress(), (*it).task() );
     }
   }
 
   int creditsCount = aboutData->credits().count();
   if (creditsCount)
   {
-    KAboutContainer *creditsPage = 
+    KAboutContainer *creditsPage =
       addScrolledContainerPage( i18n("&Thanks To") );
       
-    QListIterator<KAboutPerson> it(aboutData->credits());
-    while (it.hasNext())
+    QValueList<KAboutPerson>::ConstIterator it;
+    for (it = aboutData->credits().begin();
+         it != aboutData->credits().end(); ++it)
     {
-      const KAboutPerson& person = it.next();
-      creditsPage->addPerson( person.name(), person.emailAddress(),
-			     person.webAddress(), person.task() );
+      creditsPage->addPerson( (*it).name(), (*it).emailAddress(),
+                              (*it).webAddress(), (*it).task() );
     }
   }
 
@@ -145,11 +154,11 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
       Q3ValueList<KAboutTranslator>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
-	 text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
-			 "<a href=\"mailto:%2\">%2</a></p>")
-	   .arg((*it).name())
-	   .arg((*it).emailAddress())
-	   .arg((*it).emailAddress());
+   text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
+       "<a href=\"mailto:%2\">%2</a></p>")
+     .arg((*it).name())
+     .arg((*it).emailAddress())
+     .arg((*it).emailAddress());
       }
 
       text += KAboutData::aboutTranslationTeam() + "</qt>";
@@ -162,7 +171,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   }
 
   //
-  // Make sure the dialog has a reasonable width 
+  // Make sure the dialog has a reasonable width
   //
   setInitialSize( QSize(400,1) );
 }

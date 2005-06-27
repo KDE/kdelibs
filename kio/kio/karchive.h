@@ -134,9 +134,9 @@ public:
      * @param name the name of the directory
      * @param user the user that owns the directory
      * @param group the group that owns the directory
-     * // TODO(BIC): make this a thin wrapper around
-     * // writeDir(name,user,group,perm,atime,mtime,ctime)
-     * // or elimitate it
+     * @todo TODO(BIC): make this a thin wrapper around
+     * writeDir(name,user,group,perm,atime,mtime,ctime)
+     * or elimitate it
      */
     virtual bool writeDir( const QString& name, const QString& user, const QString& group ) = 0;
 
@@ -155,7 +155,7 @@ public:
      * @param mtime modification time of the file
      * @param ctime creation time of the file
      * @since 3.2
-     * // TODO(BIC): make this virtual. For now use virtual hook
+     * @todo TODO(BIC): make this virtual. For now use virtual hook
      */
     bool writeDir( const QString& name, const QString& user, const QString& group,
     			mode_t perm, time_t atime, time_t mtime, time_t ctime );
@@ -172,7 +172,7 @@ public:
      * @param mtime modification time of the file
      * @param ctime creation time of the file
      * @since 3.2
-     * // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
+     * @todo TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
      */
     bool writeSymLink(const QString &name, const QString &target,
     			const QString &user, const QString &group,
@@ -188,8 +188,8 @@ public:
      * @param group the group that owns the file
      * @param size the size of the file
      * @param data the data to write (@p size bytes)
-     * // TODO(BIC): make this a thin non-virtual wrapper around
-     * // writeFile(name,user,group,size,perm,atime,mtime,ctime,data)
+     * @todo TODO(BIC): make this a thin non-virtual wrapper around
+     *   writeFile(name,user,group,size,perm,atime,mtime,ctime,data)
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
 
@@ -212,7 +212,7 @@ public:
      * @param ctime creation time of the file
      * @param data the data to write (@p size bytes)
      * @since 3.2
-     * // TODO(BIC): make virtual. For now use virtual hook
+     * @todo TODO(BIC): make virtual. For now use virtual hook
      */
     bool writeFile( const QString& name, const QString& user, const QString& group,
     			uint size, mode_t perm, time_t atime, time_t mtime,
@@ -229,8 +229,8 @@ public:
      * @param user the user that owns the file
      * @param group the group that owns the file
      * @param size the size of the file
-     * // TODO(BIC): make this a thin non-virtual wrapper around
-     * // prepareWriting(name,user,group,size,perm,atime,mtime,ctime) or eliminate it.
+     * @todo TODO(BIC): make this a thin non-virtual wrapper around
+     *   prepareWriting(name,user,group,size,perm,atime,mtime,ctime) or eliminate it.
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
 
@@ -253,7 +253,7 @@ public:
      * @param mtime modification time of the file
      * @param ctime creation time of the file
      * @since 3.2
-     * // TODO(BIC): make this virtual. For now use virtual hook.
+     * @todo TODO(BIC): make this virtual. For now use virtual hook.
      */
     bool prepareWriting( const QString& name, const QString& user,
     			const QString& group, uint size, mode_t perm,
@@ -261,7 +261,7 @@ public:
 
     /**
      * Write data into the current file - to be called after calling prepareWriting
-     * // TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
+     * @todo TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
      */
     bool writeData( const char* data, uint size );
 

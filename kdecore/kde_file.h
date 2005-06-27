@@ -22,9 +22,12 @@
 #define _KDE_FILE_H_
 
 /**
- * This file provides portable defines for file support.
+ * \file kde_file.h
+ * \brief This file provides portable defines for file support.
+ *
  * Use the KDE_xxx defines instead of the normal C
  * functions and structures.
+ * \since 3.3
  */
 
 #include <unistd.h>
@@ -33,7 +36,7 @@
 #endif
  
 #if (defined _LFS64_LARGEFILE) && (defined _LARGEFILE64_SOURCE)
-/**
+/*
  * This section provides portable defines for large file support.
  * To use this you must compile your code with _LARGEFILE64_SOURCE 
  * defined and use the KDE_xxx defines instead of the normal
@@ -69,7 +72,7 @@
 
 #else /* !_LFS64_LARGEFILE */
 
-/**
+/*
  * This section defines portable defines for standard file support.
  */
 #ifdef _WIN32

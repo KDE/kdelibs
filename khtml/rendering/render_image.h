@@ -64,10 +64,13 @@ public:
     virtual void updateFromElement();
 
     virtual void notifyFinished(CachedObject *finishedObj);
+    void dispatchLoadEvent();
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction hitTestAction, bool inside);
 
     virtual short calcReplacedWidth() const;
     virtual int   calcReplacedHeight() const;
+
+    virtual void detach();
 
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }

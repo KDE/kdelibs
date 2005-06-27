@@ -180,6 +180,9 @@ static MetricsInfo* grabMetrics(QString name)
     return 0;
 }
 
+#define AHEM  "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1"
+//#define AHEM "-misc-ahem-medium-r-normal--0-0-0-0-m-0-adobe-fontspecific"
+
 class QFakeFontEngine : public QFontEngineXLFD
 {
 public:
@@ -239,7 +242,6 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
 QFakeFontEngine::~QFakeFontEngine()
 {
 }
-
 #if 0
 QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *str, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored) const
 {
@@ -303,7 +305,6 @@ int QFakeFontEngine::cmap() const
 }
 
 #endif
-
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
     return true;
@@ -338,7 +339,7 @@ static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 
 }
 
-QFontEngine *
+KDE_EXPORT QFontEngine *
 QFontDatabase::findFont( int script, const QFontPrivate *fp,
 			 const QFontDef &request, int )
 {
@@ -350,7 +351,7 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
     else if ( family == "ahem" )
-        xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+        xlfd = AHEM;
     else
         xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
 
@@ -372,6 +373,8 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
 
     fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
 
+    qDebug("fe %s ascent %d descent %d minLeftBearing %d leading %d maxCharWidth %d minRightBearing %d", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
+
     // fe->setScale( scale );
 
     QFontCache::Key key( request, script, fp->screen );
@@ -379,13 +382,13 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
     return fe;
 }
 
-bool QFontDatabase::isBitmapScalable( const QString &,
+KDE_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const
 {
     return true;
 }
 
-bool  QFontDatabase::isSmoothlyScalable( const QString &,
+KDE_EXPORT bool  QFontDatabase::isSmoothlyScalable( const QString &,
                                          const QString &) const
 {
     return true;
@@ -406,22 +409,22 @@ bool KHTMLSettings::unfinishedImageFrame() const
   return false;
 }
 
-int QX11Info::appDpiY( int )
+KDE_EXPORT int QX11Info::appDpiY( int )
 {
     return 100;
 }
 
-int QX11Info::appDpiX( int )
+KDE_EXPORT int QX11Info::appDpiX( int )
 {
     return 100;
 }
 
-void QFont::insertSubstitution(const QString &,
+KDE_EXPORT void QFont::insertSubstitution(const QString &,
                                const QString &)
 {
 }
 
-void QFont::insertSubstitutions(const QString &,
+KDE_EXPORT void QFont::insertSubstitutions(const QString &,
                                 const QStringList &)
 {
 }
@@ -466,16 +469,17 @@ void DCOPClient::processSocketData( int )
 #include <qpalette.h>
 
 #if 0
-void QApplication::setPalette( const QPalette &, bool ,
+KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
                                const char*  )
 {
     static bool done = false;
     if (done) return;
-    QString xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+    QString xlfd = AHEM;
     XFontStruct *xfs;
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
 	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
+    XFreeFont(QPaintDevice::x11AppDisplay(), xfs);
     done = true;
 }
 #endif

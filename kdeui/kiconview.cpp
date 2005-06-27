@@ -54,6 +54,7 @@ public:
     int textHeight;
     Q3IconViewItem *dragHoldItem;
     QTimer dragHoldTimer;
+    QTimer doubleClickIgnoreTimer;
 };
 
 KIconView::KIconView( QWidget *parent, const char *name, Qt::WFlags f )
@@ -315,11 +316,15 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
     emit doubleClicked( item, e->globalPos() );
   }
+  d->doubleClickIgnoreTimer.start(0, true);
 }
 
 void KIconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
 {
   //kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
+  if( d->doubleClickIgnoreTimer.isActive() )
+    return; // Ignore double click
+    
   if( (btn == Qt::LeftButton) && item )
     emitExecute( item, pos );
 }

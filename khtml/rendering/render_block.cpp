@@ -1209,7 +1209,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         canCollapseBottomWithChildren = false;
 
     // If we can't collapse with children then go ahead and add in the bottom margins.
-    if (!canCollapseBottomWithChildren && !topMarginContributor
+    if (!canCollapseBottomWithChildren && (!topMarginContributor || !canCollapseTopWithChildren)
         && (strictMode || !quirkContainer || !bottomChildQuirk))
         m_height += prevPosMargin - prevNegMargin;
 

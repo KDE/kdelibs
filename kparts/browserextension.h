@@ -208,7 +208,7 @@ struct KPARTS_EXPORT WindowArgs
     bool lowerWindow; //defaults to false
     bool scrollBarsVisible; //defaults to true
 
-    WindowArgsPrivate *d; // yes, I am paranoid :-)
+    WindowArgsPrivate *d; // don't use before KDE4, many KDE-3.x didn't have an explicit destructor
 };
 
 class KPARTS_EXPORT OpenURLEvent : public Event
