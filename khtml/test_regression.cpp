@@ -101,11 +101,13 @@ PartMonitor *PartMonitor::sm_highestMonitor = NULL;
 
 PartMonitor::PartMonitor(KHTMLPart *_part)
 {
+    qDebug("PartMonitor::PartMonitor %p(%p)", this, _part);
     m_part = _part;
     m_completed = false;
     m_ownLoopLevel = 0;
     connect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
     m_timer_waits = 200;
+    m_timeout_timer = new QTimer(this);
 }
 
 void PartMonitor::waitForCompletion()
@@ -113,47 +115,67 @@ void PartMonitor::waitForCompletion()
     if (!m_completed) {
 	m_ownLoopLevel = ++sm_loopLevel;
 	m_previousMonitor = sm_highestMonitor;
+         
+        if (sm_highestMonitor)
+		return;
+
 	sm_highestMonitor = this;
 
+
+        qDebug("%p PartMonitor::waitForCompletion enter loop", this);
         kapp->enter_loop();
 
 	if (--sm_loopLevel) {
 	    assert(m_previousMonitor);
-	    QTimer::singleShot( visual ? 100 : 10 , m_previousMonitor, SLOT( timeout() ) );
+            qDebug("%p QTimer::singleShot in wait %p", this, m_previousMonitor);
+            connect(m_timeout_timer, SIGNAL(timeout()), m_previousMonitor, SLOT( timeout() ) );
+            m_timeout_timer->stop();
+	    m_timeout_timer->start( visual ? 100 : 2, true );
 	}
 	sm_highestMonitor = m_previousMonitor;
     }
 
     QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
+    qDebug("%p enter loop for finish timers", this);
     kapp->enter_loop();
+    qDebug("%p completed", this);
 }
 
 void PartMonitor::timeout()
 {
+    qDebug("%p timeout: exit loop", this);
     kapp->exit_loop();
 }
 
 void PartMonitor::finishTimers()
 {
+    qDebug("%p finishTimers", this);
     KJS::Window *w = KJS::Window::retrieveWindow( m_part );
     --m_timer_waits;
-    if ( (m_timer_waits && w && w->winq->hasTimers()) || m_part->inProgress()) {
+    if ( m_timer_waits && ((w && w->winq->hasTimers()) || m_part->inProgress()) || m_part->formPending()) {
         // wait a bit
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
     }
+    qDebug("%p exit loop %d", this, m_part->formPending());
     kapp->exit_loop();
+    if (false && m_part->formPending())
+        QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
 }
 
 void PartMonitor::partCompleted()
 {
+    qDebug("%p PartMonitor::partCompleted %d", this, m_ownLoopLevel);
     if (m_ownLoopLevel == 0) {
         m_completed = true;
     }
     else if (m_ownLoopLevel == sm_loopLevel)
     {
         RenderWidget::flushWidgetResizes();
-        QTimer::singleShot( visual ? 100 : 2, this, SLOT( timeout() ) );
+        qDebug("%p singleShot in partCompleted %p", this, m_previousMonitor);
+        m_timeout_timer->stop();
+        connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
+        m_timeout_timer->start( visual ? 100 : 2, true );
     }
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
@@ -305,6 +327,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             PartMonitor pm(m_part);
             m_part->openURL(url);
             pm.waitForCompletion();
+            qDebug("KHTMLPartFunction::call completed");
 	    kapp->processEvents(60000);
             break;
         }
@@ -341,6 +364,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 		m_part->write(contents);
 		m_part->end();
 		pm.waitForCompletion();
+                qDebug("KHTMLPartFunction::call completed 2");
 	    }
 	    kapp->processEvents(60000);
 	    break;
@@ -1221,6 +1245,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
+    qDebug("closeURL");
     m_part->closeURL();
 
     if ( filename.startsWith( "domts/" ) ) {
@@ -1553,9 +1578,11 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
 {
     m_part->browserExtension()->setURLArgs( args );
 
-    PartMonitor pm(m_part);
+    qDebug("slotOpenURL");
+    //PartMonitor pm(m_part);
     m_part->openURL(url);
-    pm.waitForCompletion();
+    //pm.waitForCompletion();
+    qDebug("RegressionTest::slotOpenURL completed");
 }
 
 bool RegressionTest::svnIgnored( const QString &filename )

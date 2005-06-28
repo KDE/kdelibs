@@ -1041,6 +1041,12 @@ public:
    */
   bool inProgress() const;
 
+  /**
+   * @internal
+   * @since 3.5
+   */
+  bool formPending() const;
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

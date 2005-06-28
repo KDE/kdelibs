@@ -196,7 +196,7 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 
     fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
 
-    qDebug("fe %s ascent %d descent %d minLeftBearing %d leading %d maxCharWidth %d minRightBearing %d", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
+    // qDebug("fe %s ascent %d descent %d minLeftBearing %d leading %d maxCharWidth %d minRightBearing %d", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
 
     // fe->setScale( scale );
 
