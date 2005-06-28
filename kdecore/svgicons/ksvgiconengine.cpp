@@ -23,7 +23,7 @@
 #include <qcolor.h>
 #include <qimage.h>
 #include <qmatrix.h>
-#include <Q3MemArray>
+#include <QVector>
 #include <Q3PointArray>
 #include <q3ptrlist.h>
 
@@ -53,7 +53,7 @@ public:
 
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
-		Q3MemArray<ArtGradientStop> *stopArray = new Q3MemArray<ArtGradientStop>();
+		QVector<ArtGradientStop> *stopArray = new QVector<ArtGradientStop>();
 
 		float oldOffset = -1, newOffset = -1;
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())

@@ -36,7 +36,7 @@
 #include <klocale.h>
 #include <qfile.h>
 #include <q3intdict.h>
-#include <q3memarray.h>
+
 #include <qstring.h>
 #include <qdatetime.h>
 #include <qpoint.h>
@@ -454,7 +454,7 @@ kdbgstream& kdbgstream::operator<<( const QRect& r ) {
 kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
     *this<< "[ ";
 
-    Q3MemArray<QRect>rs=reg.rects();
+    QVector<QRect>rs=reg.rects();
     for (uint i=0;i<rs.size();++i)
         *this << QString("[%1,%2 - %3x%4] ").arg(rs[i].x()).arg(rs[i].y()).arg(rs[i].width()).arg(rs[i].height() ) ;
 

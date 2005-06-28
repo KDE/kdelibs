@@ -23,7 +23,7 @@
 
 
 #include <qstring.h>
-#include <q3memarray.h>
+
 #include <q3valuelist.h>
 #include <qobject.h>
 
@@ -72,7 +72,7 @@ private:
 
   QString        m_pureText,  m_origText;
   int            m_accel, m_orig_accel;
-  Q3MemArray<int> m_weight;
+  QVector<int> m_weight;
 
 };
 

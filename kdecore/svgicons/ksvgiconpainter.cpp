@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <Q3MemArray>
+#include <QVector>
 #include <Q3PointArray>
 #include <q3valuevector.h>
 #include <qstringlist.h>
@@ -127,7 +127,7 @@ public:
 		return art_new(ArtBpath, number);
 	}
 
-	void ensureSpace(Q3MemArray<ArtBpath> &vec, int index)
+	void ensureSpace(QVector<ArtBpath> &vec, int index)
 	{
 		if(vec.size() == (unsigned int) index)
 			vec.resize(index + 1);
@@ -677,7 +677,7 @@ public:
 		  }
 	}
 
-	void calculateArc(bool relative, Q3MemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
+	void calculateArc(bool relative, QVector<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
 	{
 		double sin_th, cos_th;
 		double a00, a01, a10, a11;
@@ -1727,7 +1727,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	{
 	QString value = data;
 
-	Q3MemArray<ArtBpath> vec;
+	QVector<ArtBpath> vec;
 	int index = -1;
 
 	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0, xc, yc;
