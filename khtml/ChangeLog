@@ -1,6 +1,11 @@
+2005-06-28  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/html_tableimpl.cpp (appendChild): Always add TBody to XHTML rows
+        * xml/xml_tokenizer.cpp (startElement): Remove hack for adding TBody to any row
+
 2005-06-27  Stephan Kulow  <coolo@kde.org>
 
-        * html/html_formimpl.cpp (parseAttribute): Fix ignoring of align 
+        * html/html_formimpl.cpp (parseAttribute): Fix ignoring of align
         attribute on form elements !image (patch by OpenDarwing #3360)
 
 2005-06-25  David Faure  <faure@kde.org>
