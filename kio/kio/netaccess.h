@@ -259,11 +259,13 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
+     * @since 3.2
      */
     static bool exists(const KURL& url, bool source, QWidget* window);
 
     /**
      * @deprecated. Use the function above instead.
+     * @since 3.2
      */
     static bool exists(const KURL& url, QWidget* window) KDE_DEPRECATED;
 
