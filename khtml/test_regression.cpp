@@ -137,7 +137,7 @@ void PartMonitor::finishTimers()
 {
     KJS::Window *w = KJS::Window::retrieveWindow( m_part );
     --m_timer_waits;
-    if ( m_timer_waits && w && w->winq->hasTimers() ) {
+    if ( (m_timer_waits && w && w->winq->hasTimers()) || m_part->inProgress()) {
         // wait a bit
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;

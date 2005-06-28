@@ -1035,6 +1035,12 @@ public:
    */
   void setSuppressedPopupIndicator( bool enable );
 
+  /**
+   * @internal
+   * @since 3.5
+   */
+  bool inProgress() const;
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

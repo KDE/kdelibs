@@ -7324,6 +7324,11 @@ QString KHTMLPart::defaultExtension() const
     return d->m_doc->htmlMode() == DOM::DocumentImpl::XHtml ? ".xhtml" : ".html";
 }
 
+bool KHTMLPart::inProgress() const
+{
+    return (d->m_runningScripts || (d->m_doc && d->m_doc->parsing()) || d->m_submitForm );
+}
+
 using namespace KParts;
 #include "khtml_part.moc"
 #include "khtmlpart_p.moc"
