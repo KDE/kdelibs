@@ -7326,20 +7326,18 @@ QString KHTMLPart::defaultExtension() const
 
 bool KHTMLPart::inProgress() const
 {
-    qDebug("inProgress %d %d %p %s", d->m_runningScripts, (d->m_doc && d->m_doc->parsing()), d->m_submitForm, d->m_redirectURL.latin1());
-    return (d->m_runningScripts || (d->m_doc && d->m_doc->parsing()));
-}
+    if (d->m_runningScripts || (d->m_doc && d->m_doc->parsing()))
+        return true;
 
-bool KHTMLPart::formPending() const
-{
-   qDebug("KHTMLPart::formPending %p %s %d %p %p", d->m_submitForm, d->m_redirectURL.latin1(), d->m_redirectionTimer.isActive(), d->m_job, (khtml::ChildFrame*)d->m_frame );
-  // Any frame that hasn't completed yet ?
-  ConstFrameIt it = d->m_frames.begin();
-  const ConstFrameIt end = d->m_frames.end();
-  for (; it != end; ++it ) 
-      qDebug("waiting for %p %d %d %d", (void*)(*it)->m_part, (*it)->m_bCompleted, (*it)->m_bPendingRedirection, (*it)->m_bNotify);
+    // Any frame that hasn't completed yet ?
+    ConstFrameIt it = d->m_frames.begin();
+    const ConstFrameIt end = d->m_frames.end();
+    for (; it != end; ++it ) {
+        if ((*it)->m_run || !(*it)->m_bCompleted)
+	    return true;
+    }
 
-   return d->m_submitForm || !d->m_redirectURL.isEmpty() || d->m_redirectionTimer.isActive() || d->m_job;
+    return d->m_submitForm || !d->m_redirectURL.isEmpty() || d->m_redirectionTimer.isActive() || d->m_job;
 }
 
 using namespace KParts;
