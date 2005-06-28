@@ -1201,8 +1201,6 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
                 }
                 int end = i-1;
                 reverseRuns(start, end);
-                i++;
-                if(i >= count) break;
             }
             levelHigh--;
         }
