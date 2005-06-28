@@ -27,7 +27,7 @@
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
 #include "xml/dom_docimpl.h"
-#include <Q3MemArray>
+#include <QVector>
 
 #include "kdebug.h"
 #include "qdatetime.h"
@@ -91,7 +91,7 @@ static bool sBuildingCompactRuns;
 // Midpoint globals.  The goal is not to do any allocation when dealing with
 // these midpoints, so we just keep an array around and never clear it.  We track
 // the number of items and position using the two other variables.
-static Q3MemArray<BidiIterator> *smidpoints;
+static QVector<BidiIterator> *smidpoints;
 static uint sNumMidpoints;
 static uint sCurrMidpoint;
 static bool betweenMidpoints;
@@ -1331,7 +1331,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
         m_firstLine = true;
 
         if (!smidpoints)
-            smidpoints = new Q3MemArray<BidiIterator>;
+            smidpoints = new QVector<BidiIterator>;
 
         sNumMidpoints = 0;
         sCurrMidpoint = 0;

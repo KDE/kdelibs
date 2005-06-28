@@ -830,7 +830,7 @@ void RenderTable::dump(QTextStream &stream, const QString &ind) const
 	stream << " foot";
 
     stream << " [cspans:";
-    for ( unsigned int i = 0; i < columns.size(); i++ )
+    for ( int i = 0; i < columns.size(); i++ )
 	stream << " " << columns[i].span;
     stream << "]";
 }
@@ -1009,7 +1009,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 {
     int rSpan = cell->rowSpan();
     int cSpan = cell->colSpan();
-    Q3MemArray<RenderTable::ColumnStruct> &columns = table()->columns;
+    QVector<RenderTable::ColumnStruct> &columns = table()->columns;
     int nCols = columns.size();
 
     // ### mozilla still seems to do the old HTML way, even for strict DTD
@@ -1115,7 +1115,7 @@ void RenderTableSection::setCellWidths()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table, this=0x" << this << ")::setCellWidths()" << endl;
 #endif
-    Q3MemArray<int> &columnPos = table()->columnPos;
+    QVector<int> &columnPos = table()->columnPos;
 
 	int rows = grid.size();
     for ( int i = 0; i < rows; i++ ) {
@@ -1576,7 +1576,7 @@ void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
     RenderContainer::dump(stream,ind);
 
     stream << " grid=(" << grid.size() << "," << table()->numEffCols() << ")";
-    for ( unsigned int r = 0; r < grid.size(); r++ ) {
+    for ( int r = 0; r < grid.size(); r++ ) {
 	for ( int c = 0; c < table()->numEffCols(); c++ ) {
 	    if ( cellAt( r,  c ) && cellAt( r, c ) != (RenderTableCell *)-1 )
 		stream << " (" << cellAt( r, c )->row() << "," << cellAt( r, c )->col() << ","

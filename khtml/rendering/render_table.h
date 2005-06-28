@@ -29,7 +29,7 @@
 
 #include <qcolor.h>
 #include <q3ptrvector.h>
-#include <Q3MemArray>
+#include <QVector>
 
 #include "rendering/render_box.h"
 #include "rendering/render_block.h"
@@ -138,8 +138,8 @@ public:
 	ushort width; // the calculated position of the column
     };
 
-    Q3MemArray<int> columnPos;
-    Q3MemArray<ColumnStruct> columns;
+    QVector<int> columnPos;
+    QVector<ColumnStruct> columns;
 
     void splitColumn( int pos, int firstSpan );
     void appendColumn( int span );
@@ -248,7 +248,7 @@ public:
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()); }
 
-    typedef Q3MemArray<RenderTableCell *> Row;
+    typedef QVector<RenderTableCell *> Row;
     struct RowStruct {
 	Row *row;
 	int baseLine;
@@ -276,8 +276,8 @@ public:
 
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
-    Q3MemArray<RowStruct> grid;
-    Q3MemArray<int> rowPos;
+    QVector<RowStruct> grid;
+    QVector<int> rowPos;
 
     signed short cRow : 16;
     ushort cCol : 15;

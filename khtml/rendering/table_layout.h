@@ -23,7 +23,7 @@
 #ifndef TABLE_LAYOUT_H
 #define TABLE_LAYOUT_H
 
-#include <q3memarray.h>
+
 #include <misc/khtmllayout.h>
 
 namespace khtml {
@@ -60,7 +60,7 @@ public:
 protected:
     int calcWidthArray();
 
-    Q3MemArray<Length> width;
+    QVector<Length> width;
 };
 
 // -------------------------------------------------------------------------
@@ -100,8 +100,8 @@ protected:
 	short calcWidth;
     };
 
-    Q3MemArray<Layout> layoutStruct;
-    Q3MemArray<RenderTableCell *>spanCells;
+    QVector<Layout> layoutStruct;
+    QVector<RenderTableCell *>spanCells;
     bool hasPercent : 1;
     mutable bool percentagesDirty : 1;
     mutable bool effWidthDirty : 1;

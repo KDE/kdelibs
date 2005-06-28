@@ -265,7 +265,7 @@ void FixedTableLayout::layout()
 #endif
 
 
-    Q3MemArray<int> calcWidth;
+    QVector<int> calcWidth;
     calcWidth.resize( nEffCols );
     calcWidth.fill( -1 );
 

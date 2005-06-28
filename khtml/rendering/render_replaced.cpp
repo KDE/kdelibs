@@ -37,7 +37,7 @@
 #include <kglobalsettings.h>
 #include <qobject.h>
 #include <q3valuevector.h>
-#include <Q3MemArray>
+#include <QVector>
 #include <qpaintengine.h>
 
 #include "khtml_ext.h"
@@ -521,7 +521,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 			}
         }
     }
-    Q3MemArray<QRect> br = blit.rects();
+    QVector<QRect> br = blit.rects();
 
     const int cnt = br.size();
     const bool external = p->device()->paintEngine()->type() >= QPaintEngine::PostScript;
