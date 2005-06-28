@@ -31,7 +31,7 @@
 #include <q3valuelist.h>
 #include <q3ptrlist.h>
 #include <q3cstring.h>
-#include <q3memarray.h>
+
 
 class KHTMLView;
 class QTextCodec;
@@ -410,7 +410,7 @@ public:
 
     void setRecalcListItems();
 
-    Q3MemArray<HTMLGenericFormElementImpl*> listItems() const
+    QVector<HTMLGenericFormElementImpl*> listItems() const
      {
          if (m_recalcListItems) const_cast<HTMLSelectElementImpl*>(this)->recalcListItems();
          return m_listItems;
@@ -422,7 +422,7 @@ private:
     void recalcListItems();
 
 protected:
-    mutable Q3MemArray<HTMLGenericFormElementImpl*> m_listItems;
+    mutable QVector<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
     signed short m_size : 15;
     bool m_multiple : 1;

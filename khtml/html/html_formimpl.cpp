@@ -1865,7 +1865,7 @@ long HTMLSelectElementImpl::selectedIndex() const
 {
     // return the number of the first option selected
     uint o = 0;
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     const unsigned int itemsSize = items.size();
     for (unsigned int i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION) {
@@ -1881,7 +1881,7 @@ long HTMLSelectElementImpl::selectedIndex() const
 void HTMLSelectElementImpl::setSelectedIndex( long  index )
 {
     // deselect all other options and select only the new one
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     int listIndex;
     const int itemsSize = int(items.size());
     for (listIndex = 0; listIndex < itemsSize; ++listIndex) {
@@ -1899,7 +1899,7 @@ long HTMLSelectElementImpl::length() const
 {
     int len = 0;
     uint i;
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     const uint itemsSize = items.size();
     for (i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION)
@@ -1923,7 +1923,7 @@ void HTMLSelectElementImpl::remove( long index )
     int exceptioncode = 0;
     const int listIndex = optionToListIndex(index);
 
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     if(listIndex < 0 || index >= int(items.size()))
         return; // ### what should we do ? remove the last item?
 
@@ -1947,7 +1947,7 @@ void HTMLSelectElementImpl::focus()
 DOMString HTMLSelectElementImpl::value( ) const
 {
     uint i;
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     const uint itemsSize = items.size();
     for (i = 0; i < itemsSize; ++i) {
         if ( items[i]->id() == ID_OPTION
@@ -1961,8 +1961,8 @@ void HTMLSelectElementImpl::setValue(DOMStringImpl* value)
 {
     // find the option with value() matching the given parameter
     // and make it the current selection.
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
-    for (unsigned i = 0; i < items.size(); i++)
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
+    for (int i = 0; i < items.size(); i++)
         if (items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->value() == value) {
             static_cast<HTMLOptionElementImpl*>(items[i])->setSelected(true);
             return;
@@ -1972,7 +1972,7 @@ void HTMLSelectElementImpl::setValue(DOMStringImpl* value)
 QString HTMLSelectElementImpl::state( )
 {
     QString state;
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
 
     const int l = items.count();
 
@@ -1994,7 +1994,7 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
         state[0] = 'X';
     }
 
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
 
     const int l = items.count();
     for(int i = 0; i < l; ++i) {
@@ -2090,7 +2090,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 {
     bool successful = false;
     const Q3CString enc_name = fixUpfromUnicode(codec, name().string());
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
 
     uint i;
     const uint itemsSize = items.size();
@@ -2124,7 +2124,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
 
 int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
 {
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     const int itemsSize = int(items.size());
     if (optionIndex < 0 || optionIndex >= itemsSize)
         return -1;
@@ -2143,7 +2143,7 @@ int HTMLSelectElementImpl::optionToListIndex(int optionIndex) const
 
 int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 {
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     if (listIndex < 0 || listIndex >= int(items.size()) ||
         items[listIndex]->id() != ID_OPTION)
         return -1;
@@ -2207,7 +2207,7 @@ void HTMLSelectElementImpl::setRecalcListItems()
 
 void HTMLSelectElementImpl::reset()
 {
-    Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+    QVector<HTMLGenericFormElementImpl*> items = listItems();
     uint i;
     const uint itemsSize = items.size();
     for (i = 0; i < itemsSize; ++i) {
@@ -2226,7 +2226,7 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
 {
     if (selected && !m_multiple) {
         // deselect all other options
-        Q3MemArray<HTMLGenericFormElementImpl*> items = listItems();
+        QVector<HTMLGenericFormElementImpl*> items = listItems();
         uint i;
 	const uint itemsSize = items.size();
         for (i = 0; i < itemsSize; ++i) {
@@ -2335,7 +2335,7 @@ long HTMLOptionElementImpl::index() const
 {
     // Let's do this dynamically. Might be a bit slow, but we're sure
     // we won't forget to update a member variable in some cases...
-    Q3MemArray<HTMLGenericFormElementImpl*> items = getSelect()->listItems();
+    QVector<HTMLGenericFormElementImpl*> items = getSelect()->listItems();
     const int l = items.count();
     int optionIndex = 0;
     for(int i = 0; i < l; ++i) {

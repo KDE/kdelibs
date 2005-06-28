@@ -639,9 +639,10 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     int secondLen = addValues ? addValues->count() : 0;
     int totalLen = firstLen + secondLen;
 
-    if (inlineProps.size() < (uint)totalLen)
+    if (inlineProps.size() < (int)totalLen)
+	{
         inlineProps.resize(totalLen + 1);
-
+	}
     if (numProps + totalLen >= propsToApplySize ) {
         propsToApplySize += propsToApplySize;
         propsToApply = (CSSOrderedProperty **)realloc( propsToApply, propsToApplySize*sizeof( CSSOrderedProperty * ) );
