@@ -1,6 +1,6 @@
-AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes) -DQT_NO_CAST_ASCII
+AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kunittest $(all_includes) -DQT_NO_CAST_ASCII -DSRCDIR=\"$(srcdir)\"
 
-check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9
+check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9 test_dpointer
 
 CLEANFILES = test1.cpp test1.h \
              test2.cpp test2.h \
@@ -11,6 +11,7 @@ CLEANFILES = test1.cpp test1.h \
              test7.cpp test7.h \
              test8a.cpp test8a.h test8b.cpp test8b.h \
              test9.cpp test9.h \
+						 test_dpointer.cpp test_dpointer.h \
              md5sums
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
@@ -48,6 +49,16 @@ test8_SOURCES = test8main.cpp test8a.cpp test8b.cpp
 test9_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test9_LDADD = $(LIB_KDECORE)
 test9_SOURCES = test9main.cpp test9.cpp
+
+test_dpointer_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+test_dpointer_LDADD = $(LIB_KDECORE)
+test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
+
+check_LTLIBRARIES = kunittest_kconfigcompiler_test.la
+
+kunittest_kconfigcompiler_test_la_SOURCES = kconfigcompiler_test.cpp
+kunittest_kconfigcompiler_test_la_LIBADD = -lkunittest
+kunittest_kconfigcompiler_test_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
 
 
 test1main.o test1.o: test1.h
@@ -107,6 +118,11 @@ test9.cpp: test9.h
 test9.cpp test9.h: $(srcdir)/test9.kcfg ../kconfig_compiler $(srcdir)/test9.kcfgc
 	../kconfig_compiler $(srcdir)/test9.kcfg $(srcdir)/test9.kcfgc
 
+test_dpointer_main.o test_dpointer.o: test_dpointer.h
+# avoid running the below command in parallel
+test_dpointer.cpp: test_dpointer.h
+test_dpointer.cpp test_dpointer.h: $(srcdir)/test_dpointer.kcfg ../kconfig_compiler $(srcdir)/test_dpointer.kcfgc
+	../kconfig_compiler $(srcdir)/test_dpointer.kcfg $(srcdir)/test_dpointer.kcfgc
 
 md5sums:
 	$(MD5SUM) $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums
