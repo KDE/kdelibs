@@ -48,7 +48,6 @@
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
 #include <kio/renamedlg.h>
-#include <kio/kprotocolinfo.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
 #include <kstdaccel.h>
@@ -677,11 +676,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     // enable/disable actions
     forwardAction->setEnabled( !forwardStack.isEmpty() );
     backAction->setEnabled( !backStack.isEmpty() );
-
-    QString protocol = currUrl.protocol();
-    KURL parent = KProtocolInfo::parentURL(protocol);
-    upAction->setEnabled( !isRoot()
-                       || parent.isValid() );
+    upAction->setEnabled( !isRoot() );
 
     dir->openURL( newurl );
 }
@@ -771,7 +766,8 @@ KURL KDirOperator::url() const
 
 void KDirOperator::cdUp()
 {
-    KURL tmp = currUrl.upURL();;
+    KURL tmp(currUrl);
+    tmp.cd(QString::fromLatin1(".."));
     setURL(tmp, true);
 }
 
