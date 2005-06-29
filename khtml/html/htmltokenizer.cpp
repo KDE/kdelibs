@@ -1427,12 +1427,14 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             ++src;
             if ( pending )
                 addPending();
+            discard = NoneDiscard;
             parseEntity(src, dest, true);
         }
         else if ( cc == '<' && !src.escaped())
         {
             tagStartLineno = lineno+src.lineCount();
             ++src;
+            discard = NoneDiscard;
             startTag = true;
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
