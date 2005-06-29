@@ -51,8 +51,11 @@ static const KCmdLineOptions options[] =
 
 bool globalEnums;
 bool itemAccessors;
+bool dpointer;
 QStringList allNames;
 QRegExp *validNameRegexp;
+QString This;
+QString Const;  
 
 class CfgEntry
 {
@@ -181,10 +184,32 @@ public:
   QString type;
 };
 
+// returns the name of an member variable
+// use itemPath to know the full path
+// like using d-> in case of dpointer
 static QString varName(const QString &n)
 {
-  QString result = "m"+n;
-  result[1] = result[1].upper();
+  QString result;
+  if ( !dpointer ) {
+    result = "m"+n;
+    result[1] = result[1].upper();
+  }
+  else {
+    result = n;
+    result[0] = result[0].lower();
+  }
+  return result;
+}
+
+static QString varPath(const QString &n)
+{
+  QString result;
+  if ( dpointer ) {
+    result = "d->"+varName(n);
+  }
+  else {
+    result = varName(n);
+  }
   return result;
 }
 
@@ -195,18 +220,24 @@ static QString enumName(const QString &n)
   return result;
 }
 
-static QString setFunction(const QString &n)
+static QString setFunction(const QString &n, const QString &className = QString::null)
 {
   QString result = "set"+n;
   result[3] = result[3].upper();
+
+  if ( !className.isEmpty() )
+    result = className + "::" + result;
   return result;
 }
 
 
-static QString getFunction(const QString &n)
+static QString getFunction(const QString &n, const QString &className = QString::null)
 {
   QString result = n;
   result[0] = result[0].lower();
+
+  if ( !className.isEmpty() )
+    result = className + "::" + result;
   return result;
 }
 
@@ -673,26 +704,58 @@ static QString itemDeclaration(const CfgEntry *e)
   if (itemAccessors)
      return QString::null;
 
+  QString fCap = e->name();
+  fCap[0] = fCap[0].upper();
   return "  KConfigSkeleton::Item"+itemType( e->type() ) +
-         "  *item" + e->name() +
+         "  *item" + fCap +
          ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString::null) +
          ";\n";
 }
 
+// returns the name of an item variable
+// use itemPath to know the full path
+// like using d-> in case of dpointer
 static QString itemVar(const CfgEntry *e)
 {
+  QString result;
   if (itemAccessors)
-     return varName( e->name() ) + "Item";
+  {
+    if ( !dpointer )  
+    {
+      result = "m" + e->name() + "Item";
+      result[1] = result[1].upper();
+    }
+    else
+    {
+      result = e->name() + "Item";
+      result[0] = result[0].lower();
+    }
+  }
+  else
+  {
+    result = "item" + e->name();
+    result[4] = result[4].upper();
+  }
+  return result;
+}
 
-  return "item" + e->name();
-
+static QString itemPath(const CfgEntry *e)
+{
+  QString result;
+  if ( dpointer ) {
+    result = "d->"+itemVar(e);
+  }
+  else {
+    result = itemVar(e);
+  }
+  return result;
 }
 
 QString newItem( const QString &type, const QString &name, const QString &key,
                  const QString &defaultValue, const QString &param = QString::null)
 {
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
-              "( currentGroup(), " + key + ", " + varName( name ) + param;
+              "( currentGroup(), " + key + ", " + varPath( name ) + param;
   if ( type == "Enum" ) t += ", values" + name;
   if ( !defaultValue.isEmpty() ) {
     t += ", ";
@@ -751,7 +814,7 @@ QString paramString(const QString &group, const QValueList<Param> &parameters)
 QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QString i=QString::null )
 {
   QString txt;
-  if (itemVarStr.isNull()) itemVarStr=itemVar(e);
+  if (itemVarStr.isNull()) itemVarStr=itemPath(e);
   if ( !e->label().isEmpty() ) {
     txt += "  " + itemVarStr + "->setLabel( i18n(";
     if ( !e->param().isEmpty() )
@@ -771,6 +834,122 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QStri
   return txt;
 }
 
+// returns the member accesor implementation
+// which should go in the h file if inline
+// or the cpp file if not inline
+QString memberAccessorBody( CfgEntry *e )
+{    
+    QString result;
+    QTextStream out(&result, IO_WriteOnly);
+    QString n = e->name();
+    QString t = e->type();
+
+    out << "return " << This << varPath(n);
+    if (!e->param().isEmpty()) out << "[i]";
+    out << ";" << endl;
+   
+    return result;
+}
+
+// returns the member mutator implementation
+// which should go in the h file if inline
+// or the cpp file if not inline
+QString memberMutatorBody( CfgEntry *e )
+{
+  QString result;
+  QTextStream out(&result, IO_WriteOnly);
+  QString n = e->name();
+  QString t = e->type();
+
+  if (!e->minValue().isEmpty())
+  {
+    out << "if (v < " << e->minValue() << ")" << endl;
+    out << "{" << endl;
+    out << "  kdDebug() << \"" << setFunction(n);
+    out << ": value \" << v << \" is less than the minimum value of ";
+    out << e->minValue()<< "\" << endl;" << endl;
+    out << "  v = " << e->minValue() << ";" << endl;
+    out << "}" << endl;
+  }
+  
+  if (!e->maxValue().isEmpty())
+  {
+    out << endl << "if (v > " << e->maxValue() << ")" << endl;
+    out << "{" << endl;
+    out << "  kdDebug() << \"" << setFunction(n);
+    out << ": value \" << v << \" is greater than the maximum value of ";
+    out << e->maxValue()<< "\" << endl;" << endl;
+    out << "  v = " << e->maxValue() << ";" << endl;
+    out << "}" << endl << endl;
+  }
+
+  out << "if (!" << This << "isImmutable( QString::fromLatin1( \"";
+  if (!e->param().isEmpty())
+  {
+    out << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
+    if ( e->paramType() == "Enum" ) {
+      out << "QString::fromLatin1( ";
+
+      if (globalEnums)
+        out << enumName(e->param()) << "ToString[i]";
+      else
+        out << enumName(e->param()) << "::enumToString[i]";
+        
+        out << " )";
+    }
+    else
+    {
+      out << "i";
+    }
+    out << " )";
+  }
+  else
+  {
+    out << n << "\" )";
+  }
+  out << " ))" << endl;
+  out << "  " << This << varPath(n);
+  if (!e->param().isEmpty())
+    out << "[i]";
+  out << " = v;" << endl;    
+
+  return result;
+}
+
+// returns the item accesor implementation
+// which should go in the h file if inline
+// or the cpp file if not inline
+QString itemAccessorBody( CfgEntry *e )
+{    
+    QString result;
+    QTextStream out(&result, IO_WriteOnly);
+
+    out << "return " << itemPath(e);
+    if (!e->param().isEmpty()) out << "[i]";
+    out << ";" << endl;
+
+    return result;
+}
+
+//indents text adding X spaces per line
+QString indent(QString text, int spaces)
+{    
+    QString result;
+    QTextStream out(&result, IO_WriteOnly);
+    QTextStream in(&text, IO_ReadOnly);
+    QString currLine;
+    while ( !in.atEnd() )
+    {
+      currLine = in.readLine();
+      if (!currLine.isEmpty())
+        for (int i=0; i < spaces; i++)
+          out << " ";
+      out << currLine << endl;
+    }
+    return result;
+}
+
+
 int main( int argc, char **argv )
 {
   KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.3",
@@ -780,6 +959,8 @@ int main( int argc, char **argv )
   aboutData.addAuthor( "Zack Rusin", 0, "zack@kde.org" );
   aboutData.addCredit( "Reinhold Kainhofer", "Fix for parametrized entries",
       "reinhold@kainhofer.com", "http://reinhold.kainhofer.com" );
+  aboutData.addCredit( "Duncan Mac-Vicar P.", "dpointer support",
+      "duncan@kde.org", "http://www.mac-vicar.com/~duncan" );
 
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
@@ -823,6 +1004,7 @@ int main( int argc, char **argv )
   if (!visibility.isEmpty()) visibility+=" ";
   bool singleton = codegenConfig.readBoolEntry("Singleton", false);
   bool staticAccessors = singleton;
+  //bool useDPointer = codegenConfig.readBoolEntry("DPointer", false);
   bool customAddons = codegenConfig.readBoolEntry("CustomAdditions");
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList headerIncludes = codegenConfig.readListEntry("IncludeFiles");
@@ -834,6 +1016,8 @@ int main( int argc, char **argv )
   bool setUserTexts = codegenConfig.readBoolEntry( "SetUserTexts", false );
 
   globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
+
+  dpointer = (memberVariables == "dpointer");
 
   QFile input( inputFilename );
 
@@ -981,6 +1165,10 @@ int main( int argc, char **argv )
   if ( !nameSpace.isEmpty() )
     h << "namespace " << nameSpace << " {" << endl << endl;
 
+  // Private class declaration
+  if ( dpointer )
+    h << "class " << className << "Private;" << endl << endl;
+
   // Class declaration header
   h << "class " << visibility << className << " : public " << inherits << endl;
   h << "{" << endl;
@@ -1050,8 +1238,7 @@ int main( int argc, char **argv )
   // Destructor
   h << "    ~" << className << "();" << endl << endl;
 
-  QString This;
-  QString Const;
+  // global variables
   if (staticAccessors)
     This = "self()->";
   else
@@ -1072,55 +1259,21 @@ int main( int argc, char **argv )
       h << "    void " << setFunction(n) << "( ";
       if (!e->param().isEmpty())
         h << cppType(e->paramType()) << " i, ";
-      h << param( t ) << " v )" << endl;
-      h << "    {" << endl;
-
-      if (!e->minValue().isEmpty())
+      h << param( t ) << " v )";
+      // function body inline only if not using dpointer
+      // for BC mode
+      if ( !dpointer )
       {
-        h << "      if (v < " << e->minValue() << ")" << endl;
-        h << "      {" << endl;
-        h << "        kdDebug() << \"" << setFunction(n);
-        h << ": value \" << v << \" is less than the minimum value of ";
-        h << e->minValue()<< "\" << endl;" << endl;
-        h << "        v = " << e->minValue() << ";" << endl;
-        h << "      }" << endl << endl;
+        h << endl << "    {" << endl;
+        h << indent(memberMutatorBody(e), 6 );      
+        h << "    }" << endl;
       }
-
-      if (!e->maxValue().isEmpty())
+      else
       {
-        h << "      if (v > " << e->maxValue() << ")" << endl;
-        h << "      {" << endl;
-        h << "        kdDebug() << \"" << setFunction(n);
-        h << ": value \" << v << \" is greater than the maximum value of ";
-        h << e->maxValue()<< "\" << endl;" << endl;
-        h << "        v = " << e->maxValue() << ";" << endl;
-        h << "      }" << endl << endl;
+        h << ";" << endl;
       }
-
-      h << "      if (!" << This << "isImmutable( QString::fromLatin1( \"";
-      if (!e->param().isEmpty()) {
-        h << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
-        if ( e->paramType() == "Enum" ) {
-          h << "QString::fromLatin1( ";
-          if (globalEnums)
-            h << enumName(e->param()) << "ToString[i]";
-          else
-            h << enumName(e->param()) << "::enumToString[i]";
-          h << " )";
-        } else {
-          h << "i";
-        }
-        h << " )";
-      } else
-        h << n << "\" )";
-      h << " ))" << endl;
-      h << "        " << This << varName(n);
-      if (!e->param().isEmpty())
-        h << "[i]";
-      h << " = v;" << endl;
-      h << "    }" << endl << endl;
     }
-
+    h << endl;
     // Accessor
     h << "    /**" << endl;
     h << "      Get " << e->label() << endl;
@@ -1130,12 +1283,19 @@ int main( int argc, char **argv )
     h << "    " << cppType(t) << " " << getFunction(n) << "(";
     if (!e->param().isEmpty())
       h << " " << cppType(e->paramType()) <<" i ";
-    h << ")" << Const << endl;
-    h << "    {" << endl;
-    h << "      return " << This << varName(n);
-    if (!e->param().isEmpty()) h << "[i]";
-    h << ";" << endl;
-    h << "    }" << endl;
+    h << ")" << Const;
+    // function body inline only if not using dpointer
+    // for BC mode
+    if ( !dpointer )
+    {
+       h << endl << "    {" << endl;
+      h << indent(memberAccessorBody(e), 6 );      
+       h << "    }" << endl;
+    }
+    else
+    {
+      h << ";" << endl;
+    }
 
     // Item accessor
     if ( itemAccessors ) {
@@ -1149,12 +1309,17 @@ int main( int argc, char **argv )
       if (!e->param().isEmpty()) {
         h << " " << cppType(e->paramType()) << " i ";
       }
-      h << ")" << endl;
-      h << "    {" << endl;
-      h << "      return " << itemVar(e);
-      if (!e->param().isEmpty()) h << "[i]";
-      h << ";" << endl;
-      h << "    }" << endl;
+      h << ")";
+      if (! dpointer )
+      {
+        h << endl << "    {" << endl;
+        h << indent( itemAccessorBody(e), 6);
+        h << "    }" << endl;
+      }
+      else
+      {
+        h << ";" << endl;
+      }
     }
 
     h << endl;
@@ -1181,7 +1346,7 @@ int main( int argc, char **argv )
   }
 
   // Member variables
-  if ( !memberVariables.isEmpty() && memberVariables != "private" ) {
+  if ( !memberVariables.isEmpty() && memberVariables != "private" && memberVariables != "dpointer") {
     h << "  " << memberVariables << ":" << endl;
   }
 
@@ -1192,30 +1357,40 @@ int main( int argc, char **argv )
      h << "    " << cppType((*it).type) << " mParam" << (*it).name << ";" << endl;
   }
 
-  QString group;
-  for( e = entries.first(); e; e = entries.next() ) {
-    if ( e->group() != group ) {
-      group = e->group();
-      h << endl;
-      h << "    // " << group << endl;
-    }
-    h << "    " << cppType(e->type()) << " " << varName(e->name());
-    if (!e->param().isEmpty())
-    {
-      h << QString("[%1]").arg(e->paramMax()+1);
-    }
-    h << ";" << endl;
-  }
-
-  h << endl << "  private:" << endl;
-  if ( itemAccessors ) {
+  if ( memberVariables != "dpointer" )
+  {
+    QString group;
     for( e = entries.first(); e; e = entries.next() ) {
-      h << "    Item" << itemType( e->type() ) << " *" << itemVar( e );
-      if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 );
+      if ( e->group() != group ) {
+        group = e->group();
+        h << endl;
+        h << "    // " << group << endl;
+      }
+      h << "    " << cppType(e->type()) << " " << varName(e->name());
+      if (!e->param().isEmpty())
+      {
+        h << QString("[%1]").arg(e->paramMax()+1);
+      }
       h << ";" << endl;
     }
-  }
 
+    h << endl << "  private:" << endl;
+    if ( itemAccessors ) {
+      for( e = entries.first(); e; e = entries.next() ) {
+        h << "    Item" << itemType( e->type() ) << " *" << itemVar( e );
+        if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 );
+        h << ";" << endl;
+      }
+    }
+  
+  }
+  else
+  {
+    // use a private class for both member variables and items
+    h << "  private:" << endl;
+    h << "    " + className + "Private *d;" << endl;
+  }
+  
   if (customAddons)
   {
      h << "    // Include custom additions" << endl;
@@ -1256,6 +1431,37 @@ int main( int argc, char **argv )
 
   if ( !nameSpace.isEmpty() )
     cpp << "using namespace " << nameSpace << ";" << endl << endl;
+
+  QString group;
+
+  // private class implementation
+  if ( dpointer )
+  {
+    cpp << "class " << className << "Private" << endl;
+    cpp << "{" << endl;
+    cpp << "  public:" << endl;
+    for( e = entries.first(); e; e = entries.next() ) {
+      if ( e->group() != group ) {
+        group = e->group();
+        cpp << endl;
+        cpp << "    // " << group << endl;
+      }
+      cpp << "    " << cppType(e->type()) << " " << varName(e->name());
+      if (!e->param().isEmpty())
+      {
+        cpp << QString("[%1]").arg(e->paramMax()+1);
+      }
+      cpp << ";" << endl;
+    }
+    cpp << endl << "    // items" << endl;
+    for( e = entries.first(); e; e = entries.next() ) {
+      cpp << "    KConfigSkeleton::Item" << itemType( e->type() ) << " *" << itemVar( e );
+      if (!e->param().isEmpty() ) cpp << QString("[%1]").arg( e->paramMax()+1 );
+        cpp << ";" << endl;
+    }
+
+    cpp << "};" << endl << endl;
+  }
 
   // Singleton implementation
   if ( singleton ) {
@@ -1326,6 +1532,8 @@ int main( int argc, char **argv )
 
   cpp << "{" << endl;
 
+  if (dpointer)
+    cpp << "  d = new " + className + "Private;" << endl;
   // Needed in case the singleton class is used as baseclass for
   // another singleton.
   if ( singleton )
@@ -1367,18 +1575,18 @@ int main( int argc, char **argv )
     if (e->param().isEmpty())
     {
       // Normal case
-      cpp << "  " << itemVar(e) << " = "
+      cpp << "  " << itemPath(e) << " = "
           << newItem( e->type(), e->name(), key, e->defaultValue() ) << endl;
 
       if ( !e->minValue().isEmpty() )
-        cpp << "  " << itemVar(e) << "->setMinValue(" << e->minValue() << ");" << endl;
+        cpp << "  " << itemPath(e) << "->setMinValue(" << e->minValue() << ");" << endl;
       if ( !e->maxValue().isEmpty() )
-        cpp << "  " << itemVar(e) << "->setMaxValue(" << e->maxValue() << ");" << endl;
+        cpp << "  " << itemPath(e) << "->setMaxValue(" << e->maxValue() << ");" << endl;
 
       if ( setUserTexts )
         cpp << userTextsFunctions( e );
 
-      cpp << "  addItem( " << itemVar(e);
+      cpp << "  addItem( " << itemPath(e);
       QString quotedName = e->name();
       addQuotes( quotedName );
       if ( quotedName != key ) cpp << ", QString::fromLatin1( \"" << e->name() << "\" )";
@@ -1390,7 +1598,7 @@ int main( int argc, char **argv )
       for(int i = 0; i <= e->paramMax(); i++)
       {
         QString defaultStr;
-        QString itemVarStr(itemVar(e)+QString("[%1]").arg(i));
+        QString itemVarStr(itemPath(e)+QString("[%1]").arg(i));
 
         if ( !e->paramDefaultValue(i).isEmpty() )
           defaultStr = e->paramDefaultValue(i);
@@ -1422,10 +1630,64 @@ int main( int argc, char **argv )
 
   cpp << "}" << endl << endl;
 
+  if (dpointer)
+  {
+    // setters and getters go in Cpp if in dpointer mode
+    for( e = entries.first(); e; e = entries.next() )
+    {
+      QString n = e->name();
+      QString t = e->type();
+  
+      // Manipulator
+      if (allMutators || mutators.contains(n))
+      {
+        cpp << "void " << setFunction(n, className) << "( ";
+        if (!e->param().isEmpty())
+          cpp << cppType(e->paramType()) << " i, ";
+        cpp << param( t ) << " v )" << endl;
+        // function body inline only if not using dpointer
+        // for BC mode
+        cpp << "{" << endl;
+        cpp << indent(memberMutatorBody(e), 6);      
+        cpp << "}" << endl << endl;
+      }
+  
+      // Accessor
+      cpp << cppType(t) << " " << getFunction(n, className) << "(";
+      if (!e->param().isEmpty())
+        cpp << " " << cppType(e->paramType()) <<" i ";
+      cpp << ")" << Const << endl;
+      // function body inline only if not using dpointer
+      // for BC mode
+      cpp << "{" << endl;
+      cpp << indent(memberAccessorBody(e), 2);      
+      cpp << "}" << endl << endl;
+  
+      // Item accessor
+      if ( itemAccessors )
+      {
+        cpp << endl;
+        cpp << "KConfigSkeleton::Item" << itemType( e->type() ) << " *"
+          << getFunction( n, className ) << "Item(";
+        if (!e->param().isEmpty()) {
+          cpp << " " << cppType(e->paramType()) << " i ";
+        }
+        cpp << ")" << endl;
+        cpp << "{" << endl;
+        cpp << indent(itemAccessorBody(e), 2);
+        cpp << "}" << endl;
+      }
+  
+      cpp << endl;
+    }
+  }
+
   // Destructor
   cpp << className << "::~" << className << "()" << endl;
   cpp << "{" << endl;
   if ( singleton ) {
+    if ( dpointer )
+      cpp << "  delete d;" << endl;
     cpp << "  if ( mSelf == this )" << endl;
     cpp << "    static" << className << "Deleter.setObject( mSelf, 0, false );" << endl;
   }
