@@ -1,6 +1,6 @@
 KDEINIT_USE_XFT=1
 dnl check if Qt is linked against Xft
-KDE_CHECK_LIB(qt-mt,XftInit,[],[KDEINIT_USE_XFT=])
+KDE_CHECK_LIB(libQtGui_debug,XftInit,[],[KDEINIT_USE_XFT=])
 
 dnl Xft requires freetype to compile
 KDE_FIND_PATH(fontconfig-config, FONTCONFIG_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin], [ KDE_FIND_PATH(pkg-config, PKGCONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/bin /usr/local/bin /opt/local/bin], [AC_MSG_WARN([Could not find neither pkg-config nor fontconfig-config, check http://www.fontconfig.org/ ])
