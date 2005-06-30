@@ -24,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kpanelextension_h__
 #define __kpanelextension_h__
 
-class Q3PopupMenu;
+class QMenu;
 class KConfig;
 class KPanelExtensionPrivate;
 
@@ -214,7 +214,7 @@ public:
      * @see setCustomMenu(QPopupMenu*)
      * @since 3.4
      */
-    Q3PopupMenu* customMenu() const;
+    QMenu* customMenu() const;
 
     /**
      * @return whether or not to set a desktop geometry claiming strut for this panel
@@ -322,7 +322,7 @@ protected:
      * with the new menu (or 0) to avoid crashes
      * @since 3.4
      */
-    void setCustomMenu(Q3PopupMenu*);
+    void setCustomMenu(QMenu*);
 
     /**
      * Use this method to set the return value for reserveStrut

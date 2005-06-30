@@ -37,7 +37,7 @@ public:
       hasFocus(false)
       {}
 
-  const Q3PopupMenu* customMenu;
+  const QMenu* customMenu;
   KSharedConfig::Ptr sharedConfig;
   Q3PtrList<QObject> watchedForFocus;
   bool hasFocus;
@@ -128,12 +128,12 @@ void KPanelApplet::action( Action a )
     reportBug();
 }
 
-const Q3PopupMenu* KPanelApplet::customMenu() const
+const QMenu* KPanelApplet::customMenu() const
 {
     return d->customMenu;
 }
 
-void KPanelApplet::setCustomMenu(const Q3PopupMenu* menu)
+void KPanelApplet::setCustomMenu(const QMenu* menu)
 {
     d->customMenu = menu;
 }

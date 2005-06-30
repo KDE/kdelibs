@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#include <q3popupmenu.h>
+#include <QMenu>
 
 #include <kconfig.h>
 
@@ -39,7 +39,7 @@ public:
     {}
 
     KPanelExtension::Size _size;
-    Q3PopupMenu* _customMenu;
+    QMenu* _customMenu;
     int _customSize;
     bool _reserveStrut;
 };
@@ -138,12 +138,12 @@ int KPanelExtension::sizeInPixels() const
   return d->_customSize;
 }
 
-Q3PopupMenu* KPanelExtension::customMenu() const
+QMenu* KPanelExtension::customMenu() const
 {
     return d->_customMenu;
 }
 
-void KPanelExtension::setCustomMenu(Q3PopupMenu* menu)
+void KPanelExtension::setCustomMenu(QMenu* menu)
 {
     d->_customMenu = menu;
 }

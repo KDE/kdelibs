@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kpanelapplet_h__
 
 class KConfig;
-class Q3PopupMenu;
+class QMenu;
 
 #include <q3frame.h>
 #include <kconfig.h>
@@ -213,9 +213,9 @@ public:
 
     /**
      * @return the applet's custom menu, usually the same as the context menu, or 0 if none
-     * see setCustomMenu(QPopupMenu*)
+     * see setCustomMenu(QMenu*)
      */
-    const Q3PopupMenu* customMenu() const;
+    const QMenu* customMenu() const;
 
     /**
      * @internal
@@ -335,7 +335,7 @@ protected:
      * If the menu is deleted during the life of the applet, be sure to call this method again
      * with the new menu (or 0) to avoid crashes
      */
-    void setCustomMenu(const Q3PopupMenu*);
+    void setCustomMenu(const QMenu*);
 
     /**
      * Register widgets that can receive keyboard focus with this this method
