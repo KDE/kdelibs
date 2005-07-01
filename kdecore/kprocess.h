@@ -439,7 +439,10 @@ public:
   bool closePty();
 
   /**
-   * Calls the above four close* functions in a row.
+   * @brief Close stdin, stdout, stderr and the pty
+   * 
+   * This is the same that calling all close* functions in a row:
+   * @see closeStdin, @see closeStdout, @see closeStderr and @see closePty
    */
   void closeAll();
 
