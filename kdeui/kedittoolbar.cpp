@@ -1056,11 +1056,11 @@ void KEditToolbarWidget::slotDropped(KListView *list, QDropEvent *e, QListViewIt
 
   if (list == m_activeList) {
     if (e->source() == m_activeList) {
-      // has been dragged within the active list (moved) -> remove the old item.
-      removeActive(item);
+      // has been dragged within the active list (moved).
+      moveActive(item, after);
     }
-
-    insertActive(item, after, true);
+    else
+      insertActive(item, after, true);
   } else if (list == m_inactiveList) {
     // has been dragged to the inactive list -> remove from the active list.
     removeActive(item);
@@ -1176,49 +1176,51 @@ void KEditToolbarWidget::slotUpButton()
   if (!item->itemAbove())
     return;
 
-  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
-
   // we're modified, so let this change
   emit enableOk(true);
 
-  // now iterate through to find where we are
-  QDomElement elem = d->findElementForToolbarItem( item );
-  if ( !elem.isNull() )
-  {
-    // cool, i found me.  now clone myself
-    ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                         item->itemAbove()->itemAbove(),
-                                         item->internalTag(),
-                                         item->internalName(),
-                                         item->statusText());
-    clone->setText(1, item->text(1));
+  moveActive( item, item->itemAbove()->itemAbove() );
+  delete item;
+}
 
-    // only set new pixmap if exists
-    if( item->pixmap(0) )
-      clone->setPixmap(0, *item->pixmap(0));
+void KEditToolbarWidget::moveActive( ToolbarItem* item, QListViewItem* before )
+{
+  QDomElement e = d->findElementForToolbarItem( item );
 
-    // remove the old me
-    m_activeList->takeItem(item);
-    delete item;
+  if ( e.isNull() )
+    return;
 
-    // select my clone
-    m_activeList->setSelected(clone, true);
+  // cool, i found me.  now clone myself
+  ToolbarItem *clone = new ToolbarItem(m_activeList,
+                                       before,
+                                       item->internalTag(),
+                                       item->internalName(),
+                                       item->statusText());
 
-    // make clone visible
-    m_activeList->ensureItemVisible(clone);
+  clone->setText(1, item->text(1));
 
-    // and do the real move in the DOM
-    QDomNode prev = elem.previousSibling();
-    while ( prev.toElement().tagName() == QString( "WeakSeparator" ) )
-        prev = prev.previousSibling();
-    d->m_currentToolbarElem.insertBefore(elem, prev);
+  // only set new pixmap if exists
+  if( item->pixmap(0) )
+    clone->setPixmap(0, *item->pixmap(0));
 
-    // and set this container as a noMerge
-    d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
+  // select my clone
+  m_activeList->setSelected(clone, true);
 
-    // update the local doc
-    updateLocal(d->m_currentToolbarElem);
-  }
+  // make clone visible
+  m_activeList->ensureItemVisible(clone);
+
+  // and do the real move in the DOM
+  if ( !before )
+    d->m_currentToolbarElem.insertBefore(e, d->m_currentToolbarElem.firstChild() );
+  else
+    d->m_currentToolbarElem.insertAfter(e, d->findElementForToolbarItem( (ToolbarItem*)before ));
+
+  // and set this container as a noMerge
+  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
+  d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
+
+  // update the local doc
+  updateLocal(d->m_currentToolbarElem);
 }
 
 void KEditToolbarWidget::slotDownButton()
@@ -1229,49 +1231,11 @@ void KEditToolbarWidget::slotDownButton()
   if (!item->itemBelow())
     return;
 
-  static const QString &attrNoMerge = KGlobal::staticQString( "noMerge" );
-
   // we're modified, so let this change
   emit enableOk(true);
 
-  // now iterate through to find where we are
-  QDomElement elem = d->findElementForToolbarItem( item );
-  if ( !elem.isNull() )
-  {
-    // cool, i found me.  now clone myself
-    ToolbarItem *clone = new ToolbarItem(m_activeList,
-                                         item->itemBelow(),
-                                         item->internalTag(),
-                                         item->internalName(),
-                                         item->statusText());
-    clone->setText(1, item->text(1));
-
-    // only set new pixmap if exists
-    if( item->pixmap(0) )
-      clone->setPixmap(0, *item->pixmap(0));
-
-    // remove the old me
-    m_activeList->takeItem(item);
-    delete item;
-
-    // select my clone
-    m_activeList->setSelected(clone, true);
-
-    // make clone visible
-    m_activeList->ensureItemVisible(clone);
-
-    // and do the real move in the DOM
-    QDomNode next = elem.nextSibling();
-    while ( next.toElement().tagName() == QString( "WeakSeparator" ) )
-      next = next.nextSibling();
-    d->m_currentToolbarElem.insertAfter(elem, next);
-
-    // and set this container as a noMerge
-    d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
-
-    // update the local doc
-    updateLocal(d->m_currentToolbarElem);
-  }
+  moveActive( item, item->itemBelow() );
+  delete item;
 }
 
 void KEditToolbarWidget::updateLocal(QDomElement& elem)
