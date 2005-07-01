@@ -700,15 +700,18 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 {
     if (d->m_adFilterEnabled)
     {
-        QValueVector<QRegExp>::iterator it;
-        for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
+        if (!url.startsWith("data:"))
         {
-            if ((*it).search(url) != -1)
+            QValueVector<QRegExp>::iterator it;
+            for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
             {
-                kdDebug( 6080 ) << "Filtered: " << url << endl;
-                return true;
+                if ((*it).search(url) != -1)
+                {
+                    kdDebug( 6080 ) << "Filtered: " << url << endl;
+                    return true;
+                }
             }
-        }        
+        }
     }
     return false;
 }
