@@ -83,7 +83,7 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		/**
 		 * Reimplemented from QPushButton.
 		 */
-		virtual void drawButton(QPainter *);
+		virtual void paintEvent(QPaintEvent*);
 
 	protected:
 		virtual void virtual_hook( int id, void* data );

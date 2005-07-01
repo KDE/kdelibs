@@ -58,8 +58,9 @@ Qt::ArrowType KArrowButton::arrowType() const
 	return d->arrow;
 }
 
-void KArrowButton::drawButton(QPainter *p)
+void KArrowButton::paintEvent(QPaintEvent*)
 {
+	QPainter p(this);
 	const unsigned int arrowSize = 8;
 	const unsigned int margin = 2;
 
@@ -68,8 +69,9 @@ void KArrowButton::drawButton(QPainter *p)
 	opt.lineWidth    = 2;
 	opt.midLineWidth = 0;
 	
-        p->fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
-	style()->drawPrimitive( QStyle::PE_Frame, &opt, p, this);
+        p.fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
+        
+	style()->drawPrimitive( QStyle::PE_Frame, &opt, &p, this);
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
 	    static_cast<unsigned int>(height()) < arrowSize + margin)
@@ -107,7 +109,7 @@ void KArrowButton::drawButton(QPainter *p)
 	opt.state |= QStyle::State_Enabled;
 	opt.rect   = QRect( x, y, arrowSize, arrowSize);
 
-	style()->drawPrimitive( e, &opt, p, this );
+	style()->drawPrimitive( e, &opt, &p, this );
 }
 
 void KArrowButton::virtual_hook( int, void* )
