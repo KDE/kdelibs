@@ -326,6 +326,11 @@ Resource *ManagerImpl::readResourceConfig( const QString &identifier,
 {
   kdDebug(5650) << "ManagerImpl::readResourceConfig() " << identifier << endl;
 
+  if ( !mFactory ) {
+    kdError(5650) << "ManagerImpl::readResourceConfig: mFactory is 0. Did the app forget to call readConfig?" << endl;
+    return 0;
+  }
+
   mConfig->setGroup( "Resource_" + identifier );
 
   QString type = mConfig->readEntry( "ResourceType" );
