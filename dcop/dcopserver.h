@@ -156,7 +156,7 @@ private:
 #endif
 private:
     void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
-        const QByteArray& data );
+        const DCOPCString& data );
     bool suicide;
     bool shutdown;
     int majorOpcode;
