@@ -236,7 +236,8 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         return;
 
     CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
-                     oimage->pixmap_size() == image->pixmap_size()
+                     oimage->pixmap_size().width()  == intrinsicWidth() &&
+                     oimage->pixmap_size().height() == intrinsicHeight()
                      ? oimage : image;
 
     // paint frame around image as long as it is not completely loaded from web.
