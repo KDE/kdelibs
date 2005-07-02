@@ -97,7 +97,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
                 while (c < payload.size() && d[c] && d[c]!='\r'
                         && d[c] != '\n')
                     c++;
-                QCString s(d+f,c-f+1);
+                Q3CString s(d+f,c-f+1);
                 if ( s[0] != '#' ) // non-comment?
                     uris.append(stringToUrl(s));
                 // Skip junk

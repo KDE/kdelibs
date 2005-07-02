@@ -1184,7 +1184,7 @@ void KEditToolbarWidget::slotUpButton()
   delete item;
 }
 
-void KEditToolbarWidget::moveActive( ToolbarItem* item, QListViewItem* before )
+void KEditToolbarWidget::moveActive( ToolbarItem* item, Q3ListViewItem* before )
 {
   QDomElement e = d->findElementForToolbarItem( item );
 
