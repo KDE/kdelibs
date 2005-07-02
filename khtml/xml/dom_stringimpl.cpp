@@ -308,7 +308,7 @@ khtml::Length* DOMStringImpl::toLengthArray(int& len) const
     QString str(s, l);
     str = str.simplifyWhiteSpace();
 
-    len = str.contains(',') + 1;
+    len = str.count(',') + 1;
     khtml::Length* r = new khtml::Length[len];
 
     int i = 0;
