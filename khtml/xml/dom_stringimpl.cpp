@@ -275,16 +275,12 @@ static Length parseLength(const QChar *s, unsigned int l)
 
 khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
 {
-    QChar spacified[l];
-    QChar space(' ');
+    QString str(s, l);
     for(unsigned int i=0; i < l; i++) {
         QChar cc = s[i];
         if (cc > '9' || (cc < '0' && cc != '-' && cc != '*' && cc != '.'))
-            spacified[i] = space;
-        else
-            spacified[i] = cc;
+            str[i] = ' ';
     }
-    QString str(spacified, l);
     str = str.simplifyWhiteSpace();
 
     len = str.contains(' ') + 1;
