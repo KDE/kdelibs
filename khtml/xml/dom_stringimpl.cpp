@@ -294,7 +294,7 @@ khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
     int pos = 0;
     int pos2;
 
-    while((pos2 = str.find(' ', pos)) != -1) {
+    while((pos2 = str.find(QLatin1Char(' '), pos)) != -1) {
         r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
         pos = pos2+1;
     }
@@ -308,14 +308,14 @@ khtml::Length* DOMStringImpl::toLengthArray(int& len) const
     QString str(s, l);
     str = str.simplifyWhiteSpace();
 
-    len = str.count(',') + 1;
+    len = str.count(QLatin1Char(',')) + 1;
     khtml::Length* r = new khtml::Length[len];
 
     int i = 0;
     int pos = 0;
     int pos2;
 
-    while((pos2 = str.find(',', pos)) != -1) {
+    while((pos2 = str.find(QLatin1Char(','), pos)) != -1) {
         r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
         pos = pos2+1;
     }
