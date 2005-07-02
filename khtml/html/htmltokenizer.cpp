@@ -464,13 +464,13 @@ void HTMLTokenizer::parseComment(TokenizerString &src)
                 delimiterCount++;
                 if (delimiterCount == 2) {
                     delimiterCount = 0;
-                    canClose = !canClose;    
+                    canClose = !canClose;
                 }
             }
             else
                 delimiterCount = 0;
         }
-                         
+
         if ((!strict || canClose) && src->unicode() == '>')
         {
             bool handleBrokenComments =  brokenComments && !( script || style );
@@ -1172,8 +1172,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             switch( tagID ) {
             case ID_PRE:
                 pre = beginTag;
-                prePos = 0;
                 discard = AllDiscard;
+                prePos = 0;
                 break;
             case ID_BR:
                 prePos = 0;
@@ -1353,9 +1353,11 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         else if ( startTag )
         {
             startTag = false;
+            bool endTag = false;
 
             switch(cc) {
             case '/':
+                endTag = true;
                 break;
             case '!':
             {
@@ -1402,19 +1404,17 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             }
             }; // end case
 
-            if ( pending ) {
-                // pre context always gets its spaces/linefeeds
-                // only add in existing inline context or if
-                // we just started one, i.e. we're about to insert real text
-                if ( pre || script || (!parser->selectMode() &&
-                          ( !parser->noSpaces() || dest > buffer ))) {
+            // According to SGML any LF immediately after a starttag, or
+            // immediately before an endtag should be ignored.
+            // ### Gecko and MSIE though only ignores LF immediately after
+            // starttags and only for PRE elements
+            if ( pending )
+                if (!select)
                     addPending();
-		    discard = AllDiscard;
-                }
-                // just forget it
                 else
                     pending = NonePending;
-            }
+
+            // if (!endTag) discard = AllDiscard;
 
             processToken();
 
@@ -1427,12 +1427,14 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             ++src;
             if ( pending )
                 addPending();
+            discard = NoneDiscard;
             parseEntity(src, dest, true);
         }
         else if ( cc == '<' && !src.escaped())
         {
             tagStartLineno = lineno+src.lineCount();
             ++src;
+            discard = NoneDiscard;
             startTag = true;
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
@@ -1484,7 +1486,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 else if(discard == AllDiscard)
                 { }
                 else
-                        pending = SpacePending;
+                    pending = SpacePending;
 
             }
             else {

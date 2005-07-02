@@ -375,7 +375,7 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_COORDS:
         delete [] m_coords;
-        m_coords = attr->val()->toLengthArray(m_coordsLen);
+        m_coords = attr->val()->toCoordsArray(m_coordsLen);
         break;
     case ATTR_NOHREF:
         nohref = attr->val() != 0;

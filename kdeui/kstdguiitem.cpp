@@ -239,7 +239,7 @@ KGuiItem KStdGuiItem::reset()
 
 KGuiItem KStdGuiItem::insert()
 {
-  return KGuiItem( i18n( "&Insert"));
+  return KGuiItem( i18n( "Verb", "&Insert" ) );
 }
 
 KGuiItem KStdGuiItem::configure()

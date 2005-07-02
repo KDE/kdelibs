@@ -2377,6 +2377,7 @@ void KHTMLPart::slotRedirect()
       write( res.asString() );
       end();
     }
+    emit completed();
     return;
   }
   KParts::URLArgs args;
@@ -2390,6 +2391,7 @@ void KHTMLPart::slotRedirect()
   if (!kapp || !kapp->authorizeURLAction("redirect", cUrl, url))
   {
     kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!" << endl;
+    emit completed();
     return;
   }
 
@@ -2408,7 +2410,12 @@ void KHTMLPart::slotRedirect()
 
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
+
+  d->m_urlSelectedOpenedURL = true; // In case overriden, default to success
   urlSelected( u, 0, 0, "_self", args );
+
+  if ( !d->m_urlSelectedOpenedURL ) // urlSelected didn't open a url, so emit completed ourselves
+    emit completed();
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
@@ -3840,6 +3847,15 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 //
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
+  // The member var is so that slotRedirection still calls the virtual urlSelected
+  // but is able to know if is opened a url. KDE4: just make urlSelected return a bool
+  // and move the urlSelectedIntern code back here.
+  d->m_urlSelectedOpenedURL = urlSelectedIntern( url, button, state, _target, args );
+}
+
+// Return value: true if an url was opened, false if not (e.g. error, or jumping to anchor)
+bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
+{
   bool hasTarget = false;
 
   QString target = _target;
@@ -3851,7 +3867,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
     crossFrameExecuteScript( target, KURL::decode_string( url.mid( 11 ) ) );
-    return;
+    return false;
   }
 
   KURL cURL = completeURL(url);
@@ -3861,7 +3877,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( !cURL.isValid() )
     // ### ERROR HANDLING
-    return;
+    return false;
 
   kdDebug(6050) << this << " urlSelected: complete URL:" << cURL.url() << " target=" << target << endl;
 
@@ -3869,7 +3885,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   {
     args.setNewTab(true);
     emit d->m_extension->createNewWindow( cURL, args );
-    return;
+    return true;
   }
 
   if ( button == Qt::LeftButton && ( state & Qt::ShiftModifier ) )
@@ -3877,13 +3893,13 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     KIO::MetaData metaData;
     metaData["referrer"] = d->m_referrer;
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), cURL, metaData );
-    return;
+    return false;
   }
 
   if (!checkLinkSecurity(cURL,
 			 i18n( "<qt>This untrusted page links to<BR><B>%1</B>.<BR>Do you want to follow the link?" ),
 			 i18n( "Follow" )))
-    return;
+    return false;
 
   args.frameName = target;
 
@@ -3903,12 +3919,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     {
       args.metaData()["referrer"] = d->m_referrer;
       requestObject( frame, cURL, args );
-      return;
+      return true;
     }
   }
-
-  if ( !d->m_bComplete && !hasTarget )
-    closeURL();
 
   if (!d->m_referrer.isEmpty() && !args.metaData().contains("referrer"))
     args.metaData()["referrer"] = d->m_referrer;
@@ -3916,7 +3929,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( button == Qt::NoButton && (state & Qt::ShiftModifier) && (state & Qt::ControlModifier) )
   {
     emit d->m_extension->createNewWindow( cURL, args );
-    return;
+    return true;
   }
 
   if ( state & Qt::ShiftModifier)
@@ -3925,11 +3938,34 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     winArgs.lowerWindow = true;
     KParts::ReadOnlyPart *newPart = 0;
     emit d->m_extension->createNewWindow( cURL, args, winArgs, newPart );
-    return;
+    return true;
   }
+
+  //If we're asked to open up an anchor in the current URL, in current window, 
+  //merely gotoanchor, and do not reload the new page. Note that this does 
+  //not apply if the URL is the same page, but without a ref
+  if (cURL.hasRef() && (!hasTarget || target == "_self")) 
+  {
+    KURL curUrl = this->url();
+    if (urlcmp(cURL.url(), curUrl.url(),
+              false,  // ignore trailing / diff, IE does, even if FFox doesn't
+              true))  // don't care if the ref changes!
+    {
+      m_url = cURL;
+      if ( !gotoAnchor( m_url.encodedHtmlRef()) )
+        gotoAnchor( m_url.htmlRef() );
+      emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+      emit d->m_extension->openURLNotify();
+      return false; // we jumped, but we didn't open a URL
+    }
+  }
+
+  if ( !d->m_bComplete && !hasTarget )
+    closeURL();
 
   view()->viewport()->unsetCursor();
   emit d->m_extension->openURLRequest( cURL, args );
+  return true;
 }
 
 void KHTMLPart::slotViewDocumentSource()
@@ -7283,6 +7319,22 @@ QString KHTMLPart::defaultExtension() const
     if ( !d->m_doc->isHTMLDocument() )
         return ".xml";
     return d->m_doc->htmlMode() == DOM::DocumentImpl::XHtml ? ".xhtml" : ".html";
+}
+
+bool KHTMLPart::inProgress() const
+{
+    if (d->m_runningScripts || (d->m_doc && d->m_doc->parsing()))
+        return true;
+
+    // Any frame that hasn't completed yet ?
+    ConstFrameIt it = d->m_frames.begin();
+    const ConstFrameIt end = d->m_frames.end();
+    for (; it != end; ++it ) {
+        if ((*it)->m_run || !(*it)->m_bCompleted)
+	    return true;
+    }
+
+    return d->m_submitForm || !d->m_redirectURL.isEmpty() || d->m_redirectionTimer.isActive() || d->m_job;
 }
 
 using namespace KParts;

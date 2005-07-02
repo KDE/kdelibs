@@ -402,6 +402,7 @@ protected: // KDE4: make private
 
   void insertActive(ToolbarItem *item, Q3ListViewItem *before, bool prepend = false);
   void removeActive(ToolbarItem *item);
+  void moveActive(ToolbarItem *item, QListViewItem *before);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
   void loadToolbarCombo(const QString& defaultToolbar = QString::null);

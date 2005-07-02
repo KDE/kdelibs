@@ -238,6 +238,7 @@ static void close_fds()
 
 static void exitWithErrorMsg(const QString &errorMsg)
 {
+   fprintf( stderr, "%s\n", errorMsg.local8Bit().data() );
    QByteArray utf8ErrorMsg = errorMsg.utf8();
    d.result = 3; // Error with msg
    write(d.fd[1], &d.result, 1);

@@ -198,6 +198,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    mPoolSocket.setAcceptBuffered(false); // we use KStreamSockets
    connect(&mPoolSocket, SIGNAL(readyAccept()),
            SLOT(acceptSlave()));
+   mPoolSocket.listen();
 
    connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 

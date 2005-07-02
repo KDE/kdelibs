@@ -37,17 +37,29 @@ const QString Wallet::LocalWallet() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
 	if (!cfg.readBoolEntry("Use One Wallet", true)) {
-		return cfg.readEntry("Local Wallet", "localwallet");
+		QString tmp = cfg.readEntry("Local Wallet", "localwallet");
+		if (tmp.isEmpty()) {
+			return "localwallet";
+		}
+		return tmp;
 	}
 
-	return cfg.readEntry("Default Wallet", "kdewallet");
+	QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
+	if (tmp.isEmpty()) {
+		return "kdewallet";
+	}
+	return tmp;
 }
 
 const QString Wallet::NetworkWallet() {
 	KConfig cfg("kwalletrc");
 	cfg.setGroup("Wallet");
 
-	return cfg.readEntry("Default Wallet", "kdewallet");
+	QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
+	if (tmp.isEmpty()) {
+		return "kdewallet";
+	}
+	return tmp;
 }
 
 const QString Wallet::PasswordFolder() {

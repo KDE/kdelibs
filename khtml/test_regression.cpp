@@ -96,32 +96,38 @@ pid_t xvfb;
 
 // -------------------------------------------------------------------------
 
-int PartMonitor::sm_loopLevel = 0;
 PartMonitor *PartMonitor::sm_highestMonitor = NULL;
 
 PartMonitor::PartMonitor(KHTMLPart *_part)
 {
     m_part = _part;
     m_completed = false;
-    m_ownLoopLevel = 0;
     connect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
     m_timer_waits = 200;
+    m_timeout_timer = new QTimer(this);
 }
+
+PartMonitor::~PartMonitor()
+{
+   if (this == sm_highestMonitor)
+	sm_highestMonitor = 0;
+}
+
 
 void PartMonitor::waitForCompletion()
 {
     if (!m_completed) {
-	m_ownLoopLevel = ++sm_loopLevel;
-	m_previousMonitor = sm_highestMonitor;
+         
+        if (sm_highestMonitor)
+		return;
+
 	sm_highestMonitor = this;
 
         kapp->enter_loop();
 
-	if (--sm_loopLevel) {
-	    assert(m_previousMonitor);
-	    QTimer::singleShot( visual ? 100 : 10 , m_previousMonitor, SLOT( timeout() ) );
-	}
-	sm_highestMonitor = m_previousMonitor;
+        //connect(m_timeout_timer, SIGNAL(timeout()), this, SLOT( timeout() ) );
+        //m_timeout_timer->stop();
+	//m_timeout_timer->start( visual ? 100 : 2, true );
     }
 
     QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
@@ -137,7 +143,7 @@ void PartMonitor::finishTimers()
 {
     KJS::Window *w = KJS::Window::retrieveWindow( m_part );
     --m_timer_waits;
-    if ( m_timer_waits && w && w->winq->hasTimers() ) {
+    if ( m_timer_waits && (w && w->winq->hasTimers()) || m_part->inProgress()) {
         // wait a bit
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
@@ -147,14 +153,11 @@ void PartMonitor::finishTimers()
 
 void PartMonitor::partCompleted()
 {
-    if (m_ownLoopLevel == 0) {
-        m_completed = true;
-    }
-    else if (m_ownLoopLevel == sm_loopLevel)
-    {
-        RenderWidget::flushWidgetResizes();
-        QTimer::singleShot( visual ? 100 : 2, this, SLOT( timeout() ) );
-    }
+    m_completed = true;
+    RenderWidget::flushWidgetResizes();
+    m_timeout_timer->stop();
+    connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
+    m_timeout_timer->start( visual ? 100 : 2, true );
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 

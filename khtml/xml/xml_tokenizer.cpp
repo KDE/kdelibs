@@ -157,20 +157,6 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
             return false;
     }
 
-    // FIXME: This hack ensures implicit table bodies get constructed in XHTML and XML files.
-    // We want to consolidate this with the HTML parser and HTML DOM code at some point.
-    // For now, it's too risky to rip that code up.
-    if (currentNode()->id() == ID_TABLE &&
-        newElement->id() == ID_TR &&
-        currentNode()->isHTMLElement() && newElement->isHTMLElement()) {
-        NodeImpl* implicitTBody =
-            new HTMLTableSectionElementImpl( m_doc, ID_TBODY, true /* implicit */ );
-        currentNode()->addChild(implicitTBody);
-        if (m_view && !implicitTBody->attached() && !m_doc->document()->hasPendingSheets())
-            implicitTBody->attach();
-        pushNode( implicitTBody );
-    }
-
     if (newElement->id() == ID_SCRIPT)
         static_cast<HTMLScriptElementImpl *>(newElement)->setCreatedByParser(true);
 
@@ -210,7 +196,7 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
     if ( node ) {
         node->close();
         while ( currentNode()  && currentNode()->implicitNode() ) //for the implicit HTMLTableSectionElementImpl
-            popNode();
+            popNode()->close();
     } else
         return false;
 

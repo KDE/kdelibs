@@ -31,6 +31,7 @@
 #include <kjs/interpreter.h>
 
 class RegressionTest;
+class QTimer;
 
 /**
  * @internal
@@ -40,14 +41,13 @@ class PartMonitor : public QObject
   Q_OBJECT
 public:
     PartMonitor(KHTMLPart *_part);
+    ~PartMonitor();
     void waitForCompletion();
-    static int sm_loopLevel;
     static PartMonitor* sm_highestMonitor;
-    int m_ownLoopLevel;
-    PartMonitor *m_previousMonitor;
     bool m_completed;
     KHTMLPart *m_part;
     int m_timer_waits;
+    QTimer *m_timeout_timer;
 public slots:
     void partCompleted();
     void timeout();

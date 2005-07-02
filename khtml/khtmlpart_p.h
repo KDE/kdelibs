@@ -334,6 +334,7 @@ public:
   bool m_restoreScrollPosition :1;
   bool m_statusMessagesEnabled :1;
   bool m_bWalletOpened :1;
+  bool m_urlSelectedOpenedURL:1; // KDE4: remove
   int m_frameNameId;
   int m_dcop_counter;
   DCOPObject *m_dcopobject;

@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2005 Harri Porten (porten@kde.org)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2004 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -936,7 +936,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if (*dateString) {
 
        if (strncasecmp(dateString, "GMT", 3) == 0 ||
-	   strncasecmp(dateString, "UTC", 3) == 0) 
+	   strncasecmp(dateString, "UTC", 3) == 0)
        {
          dateString += 3;
          have_tz = true;

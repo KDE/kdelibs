@@ -86,6 +86,29 @@ KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QStrin
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
+    if ( e->provides( "application/x-kde-urilist" ) ) {
+        QByteArray payload = e->encodedData( "application/x-kde-urilist" );
+        if ( payload.size() ) {
+            uint c=0;
+            const char* d = payload.data();
+            while (c < payload.size() && d[c]) {
+                uint f = c;
+                // Find line end
+                while (c < payload.size() && d[c] && d[c]!='\r'
+                        && d[c] != '\n')
+                    c++;
+                QCString s(d+f,c-f+1);
+                if ( s[0] != '#' ) // non-comment?
+                    uris.append(stringToUrl(s));
+                // Skip junk
+                while (c < payload.size() && d[c] &&
+                        (d[c]=='\n' || d[c]=='\r'))
+                    c++;
+            }
+            return !uris.isEmpty();
+        }
+    }
+    
     Q3StrList lst;
     Q3UriDrag::decode( e, lst );
     for (Q3StrListIterator it(lst); *it; ++it)

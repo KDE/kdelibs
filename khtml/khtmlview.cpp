@@ -3042,26 +3042,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
             swallowEvent = true;
         me->deref();
 
-	// Special case: If it's a click event, we also send the KHTML_CLICK or KHTML_DBLCLICK event. This is not part
-	// of the DOM specs, but is used for compatibility with the traditional onclick="" and ondblclick="" attributes,
-	// as there is no way to tell the difference between single & double clicks using DOM (only the click count is
-	// stored, which is not necessarily the same)
-	if (eventId == EventImpl::CLICK_EVENT) {
-	    me = new MouseEventImpl(dblclick ? EventImpl::KHTML_ECMA_DBLCLICK_EVENT : EventImpl::KHTML_ECMA_CLICK_EVENT,
-				    true,cancelable,m_part->xmlDocImpl()->defaultView(),
-				    detail,screenX,screenY,clientX,clientY,pageX,pageY,
-				    ctrlKey,altKey,shiftKey,metaKey,
-				    button,0, _mouse, dblclick);
-
-	    me->ref();
-	    if (defaultHandled)
-		me->setDefaultHandled();
-	    targetNode->dispatchEvent(me,exceptioncode,true);
-            if (me->defaultHandled() || me->defaultPrevented())
-                swallowEvent = true;
-	    me->deref();
-        }
-        else if (eventId == EventImpl::MOUSEDOWN_EVENT) {
+        if (eventId == EventImpl::MOUSEDOWN_EVENT) {
             // Focus should be shifted on mouse down, not on a click.  -dwh
             // Blur current focus node when a link/button is clicked; this
             // is expected by some sites that rely on onChange handlers running

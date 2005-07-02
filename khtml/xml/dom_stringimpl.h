@@ -84,6 +84,7 @@ public:
     int toInt(bool* ok = 0) const;
 
     khtml::Length* toLengthArray(int& len) const;
+    khtml::Length* toCoordsArray(int& len) const;
     bool isLower() const;
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;

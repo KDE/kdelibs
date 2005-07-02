@@ -46,7 +46,6 @@ public:
   KURL::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
-  KURL parentURL;
 };
 
 //
@@ -132,7 +131,6 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->capabilities = config.readListEntry( "Capabilities" );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
-  d->parentURL = config.readEntry( "Parent" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -161,7 +159,6 @@ KProtocolInfo::load( QDataStream& _str)
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
           i_uriMode, i_canRenameFromFile, i_canRenameToFile,
           i_canDeleteRecursive, i_fileNameUsedForCopying;
-   QString s_parentUrl;
 
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
@@ -177,10 +174,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> d->extraFields >> i_showPreviews >> i_uriMode
         >> d->capabilities >> d->proxyProtocol
         >> i_canRenameFromFile >> i_canRenameToFile
-        >> i_canDeleteRecursive >> i_fileNameUsedForCopying
-        >> s_parentUrl;
-
-   d->parentURL = KURL(s_parentUrl);
+        >> i_canDeleteRecursive >> i_fileNameUsedForCopying;
 
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
@@ -256,8 +250,7 @@ KProtocolInfo::save( QDataStream& _str)
         << d->extraFields << i_showPreviews << i_uriMode
         << d->capabilities << d->proxyProtocol
         << i_canRenameFromFile << i_canRenameToFile
-        << i_canDeleteRecursive << i_fileNameUsedForCopying
-        << d->parentURL.url();
+        << i_canDeleteRecursive << i_fileNameUsedForCopying;
 }
 
 
@@ -493,15 +486,6 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
   return prot->d->protClass;
 }
 
-KURL KProtocolInfo::parentURL( const QString & _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return KURL();
-  
-  return prot->parentURL();
-}
-
 bool KProtocolInfo::showFilePreview( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
@@ -556,11 +540,6 @@ bool KProtocolInfo::canDeleteRecursive() const
 KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() const
 {
   return d->fileNameUsedForCopying ? Name : FromURL;
-}
-
-KURL KProtocolInfo::parentURL() const
-{
-  return d->parentURL;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

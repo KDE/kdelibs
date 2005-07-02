@@ -1861,18 +1861,6 @@ KURL KURL::upURL( ) const
   {
      KURL u(*this);
      
-#ifndef KDE_QT_ONLY
-     if (u.path() == QString('/'))
-     {
-         KURL parent = KProtocolInfo::parentURL(u.protocol());
-
-         if (parent.isValid())
-         {
-             return parent;
-	 }
-     }
-#endif
-     
      u.cd("../");
      
      return u;
