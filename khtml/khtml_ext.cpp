@@ -422,10 +422,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     isImage=true;
   }
 
-  if ( url.isEmpty() && !isImage )
+  if (hasSelection)
   {
-    if (hasSelection)
-    {
       KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
       copyAction->setText(i18n("&Copy Text"));
       copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
@@ -510,14 +508,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       if ( selectedText.contains("://") && KURL(selectedText).isValid() )
          new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0,
          d->m_khtml->browserExtension(), SLOT( openSelection() ), actionCollection(), "openSelection" );
-    }
-    else
-    {
+  }
+  else if ( url.isEmpty() && !isImage )
+  {
       actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
       actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
       new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
                    actionCollection(), "stopanimations" );
-    }
   }
 
   if ( !url.isEmpty() )
