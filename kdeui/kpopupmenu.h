@@ -19,9 +19,8 @@
 #ifndef _KPOPUP_H
 #define _KPOPUP_H
 
-#define INCLUDE_MENUITEM_DEF
-
 #include <Q3PopupMenu>
+#include <QMenuItem>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
@@ -186,6 +185,18 @@ public:
     virtual void activateItemAt(int index) KDE_DEPRECATED;
     // END compat methods
 
+#ifdef QT3_SUPPORT
+    /**
+     * Helper for porting things. Returns ID of action, or -1 if passed null.
+     * ### KDE4: remove once we've cleaned up stuff
+     */
+    static int actionId(QAction* action) KDE_DEPRECATED
+    {
+        if (!action)
+            return -1;
+        return static_cast<QMenuItem*>(action)->id();
+    }
+#endif
 signals:
     /**
      * connect to this signal to be notified when a context menu is about to be shown
