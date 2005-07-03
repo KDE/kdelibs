@@ -1147,14 +1147,15 @@ void KApplication::propagateSessionManager()
 {
 #ifdef Q_WS_X11
     QByteArray fName = QFile::encodeName(locateLocal("socket", "KSMserver"));
-    QString display = ::getenv(DISPLAY);
+    QString display = QString::fromLocal8Bit( ::getenv(DISPLAY) );
     // strip the screen number from the display
-    display.replace(QRegExp("\\.[0-9]+$"), "");
+    display.remove(QRegExp("\\.[0-9]+$"));
     int i;
     while( (i = display.indexOf(':')) >= 0)
        display[i] = '_';
 
-    fName += "_"+display;
+    fName += '_';
+    fName += display.toLocal8Bit();
     QByteArray smEnv = ::getenv("SESSION_MANAGER");
     bool check = smEnv.isEmpty();
     if ( !check && smModificationTime ) {
