@@ -1033,7 +1033,7 @@ void TransferJob::slotDataReq()
           return;
     }
 
-    static const size_t max_size = 14 * 1024 * 1024;
+    static const int max_size = 14 * 1024 * 1024;
     if (dataForSlave.size() > max_size)
     {
        kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";

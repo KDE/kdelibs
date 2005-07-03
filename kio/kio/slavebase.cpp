@@ -667,7 +667,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
          }
 //if we can send all list entries of this dir which have not yet been sent
 //within maximum_updatetime, then make listEntryCurrentSize big enough for all of them
-         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > (d->totalSize-d->sentListEntries))
+         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > static_cast<long>(d->totalSize-d->sentListEntries))
             listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
 //if we are below minimum_updatetime, estimate how much we will get within
 //maximum_updatetime

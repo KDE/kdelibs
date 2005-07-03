@@ -360,7 +360,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         size_t ln = strxfrm( key.data(), name.local8Bit().data(), key.size());
         if( ln != size_t( -1 ))
         {
-            if( ln >= key.size())
+            if( (int)ln >= key.size())
             { // didn't fit?
                 key.resize( ln + 1 );
                 if( strxfrm( key.data(), name.local8Bit().data(), key.size()) == size_t( -1 ))

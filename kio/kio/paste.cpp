@@ -95,7 +95,7 @@ static KIO::CopyJob* pasteDataAsyncTo( const KURL& new_url, const QByteArray& _d
 
 #ifndef QT_NO_MIMECLIPBOARD
 static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
-                                     const QStringList formats,
+                                     const QStringList& formats,
                                      const QString& text,
                                      QWidget* widget,
                                      bool clipboard )
@@ -137,7 +137,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     if ( clipboard ) {
         data = QApplication::clipboard()->data();
     }
-    const QByteArray ba = data->encodedData( chosenFormat );
+    const QByteArray ba = data->encodedData( chosenFormat.latin1() );
     return pasteDataAsyncTo( new_url, ba );
 }
 #endif
@@ -191,7 +191,7 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
       if ( formats.size() > 1 ) {
           return chooseAndPaste( dest_url, data, formats, dialogText, widget, clipboard );
       }
-      ba = data->encodedData( formats.first() );
+      ba = data->encodedData( formats.first().latin1() );
   }
   if ( ba.size() == 0 )
   {

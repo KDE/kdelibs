@@ -808,7 +808,7 @@ public:
 
 protected:
     UDSEntryList pendingListEntries;
-    uint listEntryCurrentSize;
+    int listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
     Connection *appconn;
     QString mPoolSocket;
