@@ -149,8 +149,8 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-    QString symname;
-    symname.sprintf("init_%s", name().toLatin1().data() );
+    QByteArray symname = "init_";
+    symname += name().toLatin1();
 
     void* sym = symbol( symname );
     if ( !sym )
