@@ -473,7 +473,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       // favorite search providers
       QStringList favoriteEngines;
-      favoriteEngines << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia" ;
+      favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
       favoriteEngines = config.readListEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
