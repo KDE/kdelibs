@@ -52,6 +52,12 @@ protected:
     type *m_parent;
 };
 
+template <class T> class SharedPtr;
+
+template <class T> bool operator==(const SharedPtr<T> &a, const SharedPtr<T> &b);
+template <class T> bool operator==(const SharedPtr<T> &a, const T *b);
+template <class T> bool operator==(const T *a, const SharedPtr<T> &b);
+
 template <class T> class SharedPtr
 {
 public:
