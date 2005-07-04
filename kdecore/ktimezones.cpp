@@ -83,7 +83,7 @@ int KTimezone::offset(Qt::TimeSpec basisSpec) const
     QDateTime localTime = QDateTime::currentDateTime(basisSpec);
 
     // Set the given timezone and find out what time it is there and GMT.
-    ::putenv(strdup(QString("TZ=:").append(m_name).latin1()));
+    ::putenv(strdup(QString("TZ=:").append(m_name).utf8()));
     tzset();
     QDateTime remoteTime = QDateTime::currentDateTime(Qt::LocalTime);
     int offset = remoteTime.secsTo(localTime);
@@ -95,7 +95,7 @@ int KTimezone::offset(Qt::TimeSpec basisSpec) const
     }
     else
     {
-        ::putenv(strdup(QString("TZ=").append(originalZone).latin1()));
+        ::putenv(strdup(QString("TZ=").append(originalZone).utf8()));
     }
     tzset();
     return offset;
@@ -152,15 +152,15 @@ const KTimezones::ZoneMap KTimezones::allZones()
 
                 // Solaris support. Synthesise something that looks like a zone.tab.
                 //
-                // grep -h ^Zone /usr/share/lib/zoneinfo/src/* | awk '{print "??\t+9999+99999\t" $2}'
+                // /bin/grep -h ^Zone /usr/share/lib/zoneinfo/src/* | /bin/awk '{print "??\t+9999+99999\t" $2}'
                 //
                 // where the country code is set to "??" and the lattitude/longitude
                 // values are dummies.
                 m_zoneinfoDir = "/usr/share/lib/zoneinfo";
                 KTempFile temp;
                 KShellProcess *reader = new KShellProcess();
-                *reader << "grep" << "-h" << "^Zone" << m_zoneinfoDir << "/src/*" << temp.name() << "|" <<
-                    "awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
+                *reader << "/bin/grep" << "-h" << "^Zone" << m_zoneinfoDir << "/src/*" << temp.name() << "|" <<
+                    "/bin/awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
                 // Note the use of blocking here...it is a trivial amount of data!
                 temp.close();
                 reader->start(KProcess::Block);
@@ -238,16 +238,54 @@ float KTimezones::convertOrdinate(const QString& ordinate)
 
 const KTimezone *KTimezones::local()
 {
-    // First try the simplest solution of checking for well-formed TZ setting.
-    char *originalZone = ::getenv("TZ");
     const KTimezone *local = 0;
-    if (originalZone)
+
+    // First try the simplest solution of checking for well-formed TZ setting.
+    char *envZone = ::getenv("TZ");
+    if (envZone)
     {
-        if (originalZone[0] == ':')
+        if (envZone[0] == ':')
         {
-            originalZone++;
+            envZone++;
         }
-        local = zone(originalZone);
+        local = zone(envZone);
+        if (local)
+            return local;
+    }
+
+    // BSD support.
+    QFile f;
+    f.setName("/etc/timezone");
+    if (!f.open(IO_ReadOnly))
+    {
+        kdDebug() << "Can't open " << f.name() << endl;
+        if (!f.open(IO_ReadOnly))
+        {
+            // Solaris support.
+            //
+            // /bin/fgrep 'TZ=' /etc/default/init | /bin/head -n 1 | /bin/cut -b 4-
+            //
+            KTempFile temp;
+            KShellProcess *reader = new KShellProcess();
+            *reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
+                "/bin/head" << "-n" << "1" << "|" <<
+                "/bin/cut" << "-b" << "4-";
+            // Note the use of blocking here...it is a trivial amount of data!
+            temp.close();
+            reader->start(KProcess::Block);
+            f.setName(temp.name());
+            if (!temp.status() || !f.open(IO_ReadOnly))
+            {
+                kdDebug() << "Can't open " << f.name() << endl;
+            }
+        }
+    }
+    if (f.isOpen())
+    {
+        QString fileZone;
+        QTextStream ts(&f);
+        ts >> fileZone;
+        local = zone(fileZone);
         if (local)
             return local;
     }
