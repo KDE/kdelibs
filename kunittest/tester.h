@@ -678,7 +678,6 @@ namespace KUnitTest
 
         void allTests();
 
-        using Tester::results;
         TestResults *results(const char *sl);
 
         TestResultsListType &resultsList() { return m_resultsList; }
