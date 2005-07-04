@@ -41,7 +41,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
     public:
         /**
           Create Dialog.
-          
+
           @param parent parent widget
           @param name   name
         */
@@ -62,7 +62,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         void setPluginInfos( const QValueList<KPluginInfo *> &plugins );
 
         /**
-         * @reimplemented
+         * reimplemented
          */
         void show();
 

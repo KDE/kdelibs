@@ -35,31 +35,31 @@ class KProcess;
 
 /**
  *
- * @brief Encapsulates a @ref KCModule for embedding.
+ * @brief Encapsulates a @see KCModule for embedding.
  *
- * @ref KCModuleProxy is a wrapper for KCModule intended for cases where 
- * modules are to be displayed. It ensures layout is consistent, handles 
- * root/administrator modules and in general takes care of the details 
- * needed for making a module available in an interface. A KCModuleProxy 
- * can be treated as a QWidget, without worrying about the details specific 
- * for modules such as library loading. KCModuleProxy is not a sub class of KCModule 
+ * @see KCModuleProxy is a wrapper for KCModule intended for cases where
+ * modules are to be displayed. It ensures layout is consistent, handles
+ * root/administrator modules and in general takes care of the details
+ * needed for making a module available in an interface. A KCModuleProxy
+ * can be treated as a QWidget, without worrying about the details specific
+ * for modules such as library loading. KCModuleProxy is not a sub class of KCModule
  * but its API closely resembles KCModule's.\n
- * Usually, an instance is created by passing one of the constructors a @ref KService::Ptr, 
- * @ref KCModuleInfo or simply the name of the module and then added to the layout as any 
+ * Usually, an instance is created by passing one of the constructors a @see KService::Ptr,
+ * @see KCModuleInfo or simply the name of the module and then added to the layout as any
  * other widget. \n
- * When the user have changed the module, @ref changed( bool ) as well as @ref changed ( KCModuleProxy * )
- * is emitted. KCModuleProxy does not take care of prompting for saving - if the object is deleted while 
- * changes is not saved the changes will be lost. @ref changed() returns true if changes are unsaved. \n
+ * When the user have changed the module, @see changed( bool ) as well as @see changed ( KCModuleProxy * )
+ * is emitted. KCModuleProxy does not take care of prompting for saving - if the object is deleted while
+ * changes is not saved the changes will be lost. @see changed() returns true if changes are unsaved. \n
  * \n
  * KCModuleProxy does not take care of authorization of KCModules. \n
- * KCModuleProxy do lazy loading, meaning the library will not be loaded or 
- * any other initialization done before its show() function is called. This means 
- * modules will only be loaded when they are actually needed as well as it is possible to 
+ * KCModuleProxy do lazy loading, meaning the library will not be loaded or
+ * any other initialization done before its show() function is called. This means
+ * modules will only be loaded when they are actually needed as well as it is possible to
  * load many KCModuleProxy without any speed penalty.
  *
- * KCModuleProxy should be used in all cases where modules are embedded in order to 
+ * KCModuleProxy should be used in all cases where modules are embedded in order to
  * promote code efficiency and usability consistency.
- * 
+ *
  * @author Frans Englich <frans.englich@telia.com>
  * @author Matthias Kretz <kretz@kde.org>
  *
@@ -76,36 +76,52 @@ public:
 	 * Constructs a KCModuleProxy from a KCModuleInfo class.
 	 *
 	 * @param info The KCModuleInfo to construct the module from.
-	 *
-	 * @param withFallback If set to true and loading of the module fails, 
-	 * a alternative will be tried, resulting in the module appearing in its 
+	 * @param withFallback If set to true and loading of the module fails,
+	 * a alternative will be tried, resulting in the module appearing in its
 	 * own window, if at all.
 	 * The embedded module will be load()ed.
-	 *
-	 * @param args This is used in the implementation and is internal. Use the 
-	 * default.
+	 * @param parent the parent QWidget.
+	 * @param name the module's name.
+	 * @param args This is used in the implementation and is internal.
+	 * Use the default.
 	 */
 	KCModuleProxy( const KCModuleInfo & info, bool withFallback = true,
 			QWidget * parent = 0, const char * name = 0,
 			const QStringList & args = QStringList() );
 
 	/**
-	 * Constructs a KCModuleProxy from a module's service name, which is 
-	 * equivalent to the desktop file for the kcm without the ".desktop" part. 
+	 * Constructs a KCModuleProxy from a module's service name, which is
+	 * equivalent to the desktop file for the kcm without the ".desktop" part.
 	 * Otherwise equal to the one above.
 	 *
 	 * @param serviceName The module's service name to construct from.
+	 * @param withFallback If set to true and loading of the module fails,
+	 * a alternative will be tried, resulting in the module appearing in its
+	 * own window, if at all.
+	 * The embedded module will be load()ed.
+	 * @param parent the parent QWidget.
+	 * @param name the module's name.
+	 * @param args This is used in the implementation and is internal.
+	 * Use the default.
 	 */
-	KCModuleProxy( const QString& serviceName, bool withFallback = true, 
+	KCModuleProxy( const QString& serviceName, bool withFallback = true,
 			QWidget * parent = 0, const char * name = 0,
 			const QStringList & args = QStringList() );
-			
+
 	/**
 	 * Constructs a KCModuleProxy from KService. Otherwise equal to the one above.
 	 *
 	 * @param service The KService to construct from.
+	 * @param withFallback If set to true and loading of the module fails,
+	 * a alternative will be tried, resulting in the module appearing in its
+	 * own window, if at all.
+	 * The embedded module will be load()ed.
+	 * @param parent the parent QWidget.
+	 * @param name the module's name.
+	 * @param args This is used in the implementation and is internal.
+	 * Use the default.
 	 */
-	KCModuleProxy( const KService::Ptr& service, bool withFallback = true, 
+	KCModuleProxy( const KService::Ptr& service, bool withFallback = true,
 			QWidget  * parent = 0, const char * name = 0,
 			const QStringList & args = QStringList() );
 
@@ -115,13 +131,13 @@ public:
 	~KCModuleProxy();
 
 	/**
-	 * Calling it will cause the contained module to 
+	 * Calling it will cause the contained module to
 	 * run its load() routine.
 	 */
 	void load();
 
 	/**
-	 * Calling it will cause the contained module to 
+	 * Calling it will cause the contained module to
 	 * run its save() routine.
 	 *
 	 * If the module was not modified, it will not be asked
@@ -146,12 +162,12 @@ public:
 	int buttons() const;
 
 	/**
-	 * @return The module's custom root 
+	 * @return The module's custom root
 	 * message, if it has one
 	 * @deprecated
 	 */
 	QString rootOnlyMsg() const;
-	//KDE4 remove. There's a limit for convenience functions, 
+	//KDE4 remove. There's a limit for convenience functions,
 	// this one's available via moduleInfo()-> and realModule()->
 
 	/**
@@ -159,7 +175,7 @@ public:
 	 * @deprecated
 	 */
 	bool useRootOnlyMsg() const;
-	//KDE4 remove. There's a limit for convenience functions, 
+	//KDE4 remove. There's a limit for convenience functions,
 	// this one's available via moduleInfo()-> and realModule()->
 
 	/**
@@ -168,18 +184,18 @@ public:
 	 * @deprecated
 	 */
 	KInstance * instance() const;
-	//KDE4 remove. There's a limit for convenience functions, 
+	//KDE4 remove. There's a limit for convenience functions,
 	// this one's available via realModule()
 
 	/**
-	 * @return true if the module is modified 
+	 * @return true if the module is modified
 	 * and needs to be saved.
 	 */
 	bool changed() const;
 
 	/**
 	 * Returns whether the module is running in root mode. A module is in root mode
-	 * when @ref runAsRoot() has been called. A session under root user will never reach 
+	 * when @see runAsRoot() has been called. A session under root user will never reach
 	 * root mode.
 	 *
 	 * @note realModule() will return null when the module is running in root mode.
@@ -190,12 +206,12 @@ public:
 	bool rootMode() const;
 
 	/**
-	 * Access to the actual module. However, if the module is 
-	 * running in root mode, see @ref rootMode(), this function returns 
-	 * a NULL pointer, since the module is in another process. It may also 
+	 * Access to the actual module. However, if the module is
+	 * running in root mode, see @see rootMode(), this function returns
+	 * a NULL pointer, since the module is in another process. It may also
 	 * return NULL if anything goes wrong.
 	 *
-	 * @return the encapsulated module. 
+	 * @return the encapsulated module.
 	 */
 	KCModule* realModule() const;
 
@@ -206,17 +222,17 @@ public:
 	const KCModuleInfo& moduleInfo() const;
 
 	/**
-	 * Returns the DCOP the module's @ref DCOPClient 
-	 * and @ref DCOPObject has(they are identical).
+	 * Returns the DCOP the module's @see DCOPClient
+	 * and @see DCOPObject has(they are identical).
 	 *
 	 * @since 3.4
 	 */
 	QCString dcopName() const;
 
 public slots:
-	
+
 	/**
-	 * Calling this will cause the module to be run in 
+	 * Calling this will cause the module to be run in
 	 * "administrator mode".
 	 *
 	 * @since 3.4
@@ -224,13 +240,13 @@ public slots:
 	void runAsRoot();
 
 	/**
-	 * Calling it will cause the contained module to 
+	 * Calling it will cause the contained module to
 	 * load its default values.
 	 */
 	void defaults();
-	
+
 	/**
-	 * Calling this, results in deleting the contained 
+	 * Calling this, results in deleting the contained
 	 * module, and unregistering from DCOP. A similar result is achieved
 	 * by deleting the KCModuleProxy itself.
 	 *
@@ -244,9 +260,9 @@ signals:
 	 * This signal is emitted when the contained module is changed.
 	 */
 	void changed( bool state );
-	
+
 	/**
-	 * This is emitted in the same situations as in the one above. Practical 
+	 * This is emitted in the same situations as in the one above. Practical
 	 * when several KCModuleProxys are loaded.
 	 *
 	 * @since 3.4
@@ -254,7 +270,7 @@ signals:
 	void changed( KCModuleProxy* mod );
 
 	/**
-	 * When a module running with root privileges and exits, returns to normal mode, the 
+	 * When a module running with root privileges and exits, returns to normal mode, the
 	 * childClosed() signal is emitted.
 	 *
 	 * @since 3.4
@@ -262,7 +278,7 @@ signals:
 	void childClosed();
 
 	/*
-	 * This signal is relayed from the encapsulated module, and 
+	 * This signal is relayed from the encapsulated module, and
 	 * is equivalent to the module's own quickHelpChanged() signal.
 	 *
 	 * @since 3.4
@@ -272,7 +288,7 @@ signals:
 protected:
 
 	/**
-	 * Reimplemented for internal purposes. Makes sure the encapsulated 
+	 * Reimplemented for internal purposes. Makes sure the encapsulated
 	 * module is loaded before the show event is taken care of.
 	 */
 	void showEvent( QShowEvent * );
@@ -295,16 +311,16 @@ protected:
 private slots:
 
    /**
-	* Calls the function @p function of the root module's KCModuleProxy 
+	* Calls the function @p function of the root module's KCModuleProxy
 	* DCOP interface.
-	* 
+	*
 	* @param function the function signature of the function to call.
 	* @since 3.4
 	*/
 	void callRootModule( const QCString& function );
 
 	/**
-	 * This is called when the module exits from root mode. It zeroes 
+	 * This is called when the module exits from root mode. It zeroes
 	 * pointers, deletes the embed window, and so forth.
 	 *
 	 * @since 3.4
@@ -323,7 +339,7 @@ private slots:
 
 	/**
 	 * Gets called by DCOP when an application closes.
-	 * Is used to (try to) reload a KCM which previously 
+	 * Is used to (try to) reload a KCM which previously
 	 * was loaded.
 	 *
 	 * @since 3.4
@@ -331,7 +347,7 @@ private slots:
 	void applicationRemoved( const QCString& app );
 
 private:
-	
+
 	class KCModuleProxyPrivate;
 	KCModuleProxyPrivate * d;
 };
