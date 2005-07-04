@@ -30,6 +30,7 @@ class KTimezonesPrivate;
 /**
  * The KTimezone class contains functions related to a system timezone.
  *
+ * @since 3.5
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KTimezone
