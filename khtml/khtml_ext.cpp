@@ -53,6 +53,7 @@
 #include <kurldrag.h>
 #include <kstringhandler.h>
 #include <kapplication.h>
+#include <klineedit.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <krun.h>
@@ -605,7 +606,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
     {
-      new KAction( i18n( "Block Image" ), 0, this, SLOT( slotBlockImage() ),
+      new KAction( i18n( "Block Image..." ), 0, this, SLOT( slotBlockImage() ),
                    actionCollection(), "blockimage" );
 
       if (!d->m_imageURL.host().isEmpty() &&
@@ -666,7 +667,19 @@ void KHTMLPopupGUIClient::slotBlockHost()
 
 void KHTMLPopupGUIClient::slotBlockImage()
 {
-    KHTMLFactory::defaultHTMLSettings()->addAdFilter( d->m_imageURL.url() );
+  KDialogBase dlg( 0, 0, true,
+                   i18n("Add URL to filter"),
+                   KDialogBase::Ok | KDialogBase::Cancel);
+  
+  KLineEdit *edit = new KLineEdit( &dlg );
+  edit->setText( d->m_imageURL.url() );
+  edit->setFocus();
+  edit->setMinimumSize( 300, 0 );
+  dlg.setMainWidget( edit );
+  dlg.adjustSize();
+  
+  if ( dlg.exec() == QDialog::Accepted )
+    KHTMLFactory::defaultHTMLSettings()->addAdFilter( edit->text() );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
