@@ -17,25 +17,27 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <cerrno>
-#include <climits>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
+#include "ktimezones.h"
 #include "kdebug.h"
 #include "kprocess.h"
 #include "kstringhandler.h"
-#include "ktimezones.h"
 #include "ktempfile.h"
+
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qregexp.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+
 const float KTimezone::UNKNOWN = 1000.0;
 
-KTimezone::KTimezone(QString name, QString countryCode, float latitude, float longitude, QString comment) :
+KTimezone::KTimezone(const QString& name, const QString& countryCode, float latitude, float longitude, const QString& comment) :
     m_name(name),
     m_countryCode(countryCode),
     m_latitude(latitude),
@@ -110,16 +112,20 @@ KTimezones::~KTimezones()
 {
     // FIXME when needed:
     // delete d;
+
+    // autodelete behavior
+    if ( m_zones )
+        for( ZoneMap::ConstIterator it = m_zones->begin(); it != m_zones->end(); ++it )
+            delete it.data();
     delete m_zones;
 }
 
-const QPtrList<KTimezone> *KTimezones::allZones()
+const KTimezones::ZoneMap KTimezones::allZones()
 {
     // Have we already done all the hard work? If not, create the cache.
     if (m_zones)
-        return m_zones;
-    m_zones = new QPtrList<KTimezone>();
-    m_zones->setAutoDelete(true);
+        return *m_zones;
+    m_zones = new ZoneMap();
 
     // Go read the database.
     //
@@ -162,7 +168,7 @@ const QPtrList<KTimezone> *KTimezones::allZones()
                 if (!temp.status() || !f.open(IO_ReadOnly))
                 {
                     kdDebug() << "Can't open " << f.name() << endl;
-                    return m_zones;
+                    return *m_zones;
                 }
             }
         }
@@ -197,15 +203,15 @@ const QPtrList<KTimezone> *KTimezones::allZones()
 
         // Add entry to list.
         KTimezone *timezone = new KTimezone(tokens[2], tokens[0], latitude, longitude, tokens[3]);
-        m_zones->append(timezone);
+        m_zones->insert(tokens[2], timezone);
     }
-    return m_zones;
+    return *m_zones;
 }
 
 /**
  * Convert sHHMM or sHHMMSS to a floating point number of degrees.
  */
-float KTimezones::convertOrdinate(QString ordinate)
+float KTimezones::convertOrdinate(const QString& ordinate)
 {
     int value = ordinate.toInt();
     int degrees = 0;
@@ -252,23 +258,20 @@ const KTimezone *KTimezones::local()
     // Try to find a matching timezone abbreviation...that way, we'll
     // try to return a value in the user's own country.
     allZones();
-    QPtrListIterator<KTimezone> it(*m_zones);
-    const KTimezone *zone;
     if (!m_zoneinfoDir.isEmpty())
     {
         tzset();
         QString stdZone = tzname[0];
         QString dstZone = tzname[1];
-        it.toFirst();
-        while ((zone = it.current()))
+        for( ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it )
         {
+            const KTimezone *zone = it.data();
             if (matchAbbreviations(m_zoneinfoDir + '/' + zone->name(), stdZone, dstZone))
             {
                 // kdError() << "local=" << zone->name() << endl;
                 local = zone;
                 break;
             }
-            ++it;
         }
     }
     return local;
@@ -276,7 +279,7 @@ const KTimezone *KTimezones::local()
 
 // Parse a zoneinfo binary, and see if the abbreviations it contains match
 // the pair of Standard and DaylightSavings abbreviations passed in.
-bool KTimezones::matchAbbreviations(QString zoneFile, QString stdZone, QString dstZone)
+bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZone, const QString& dstZone)
 {
     QFile f(zoneFile);
     if (!f.open(IO_ReadOnly))
@@ -374,14 +377,9 @@ bool KTimezones::matchAbbreviations(QString zoneFile, QString stdZone, QString d
 const KTimezone *KTimezones::zone(const QString &name)
 {
     allZones();
-    QPtrListIterator<KTimezone> it(*m_zones);
-    KTimezone *zone;
-    while ((zone = it.current()))
-    {
-        if (zone->name() == name)
-            return zone;
-        ++it;
-    }
+    ZoneMap::ConstIterator it = m_zones->find( name );
+    if ( it != m_zones->end() )
+        return it.data();
 
     // Error.
     return 0;

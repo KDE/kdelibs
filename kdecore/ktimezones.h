@@ -22,7 +22,7 @@
 
 #include "kdelibs_export.h"
 #include <qnamespace.h>
-#include <qptrlist.h>
+#include <qmap.h>
 #include <qstring.h>
 class KTimezonePrivate;
 class KTimezonesPrivate;
@@ -38,7 +38,7 @@ class KDECORE_EXPORT KTimezone
 public:
     static const float UNKNOWN;
 
-    KTimezone(QString name, QString countryCode = "??", float latitude = UNKNOWN, float longitude = UNKNOWN, QString comment = "");
+    KTimezone(const QString& name, const QString& countryCode = "??", float latitude = UNKNOWN, float longitude = UNKNOWN, const QString& comment = "");
 
     /**
      * Returns the name of the timezone.
@@ -86,7 +86,7 @@ public:
      */
     QString comment() const;
 
-protected:
+private:
     QString m_name;
     QString m_countryCode;
     float m_latitude;
@@ -119,18 +119,21 @@ public:
      */
     const KTimezone *zone(const QString &name);
 
+    typedef QMap<QString, KTimezone *> ZoneMap;
     /**
      * Parse system timezone database.
-     * @return known timezones, NULL on error.
+     * @return known timezones.
      */
-    const QPtrList<KTimezone> *allZones();
+    const ZoneMap allZones();
 
-protected:
+private:
+    float convertOrdinate(const QString& ordinate);
+    bool matchAbbreviations(const QString& zoneFile, const QString& stdZone, const QString& dstZone);
+
+private:
     QString m_zoneinfoDir;
-    QPtrList<KTimezone> *m_zones;
-    float convertOrdinate(QString ordinate);
+    ZoneMap * m_zones;
     KTimezonesPrivate *d;
-    bool matchAbbreviations(QString zoneFile, QString stdZone, QString dstZone);
 };
 
 #endif
