@@ -135,8 +135,17 @@ public class Main
                     Provider p = (Provider) provider.newInstance();
                     Security.addProvider(p);
                 } else {
-                    Main.debug("could not get class: com.sun.net.ssl.internal.ssl.Provider");
-                    hasHTTPS = false;
+                    // Try jessie (http://www.nongnu.org/jessie/) as a fallback
+                    // available in the Free World
+                    provider = Class.forName("org.metastatic.jessie.provider.Jessie");
+                    if (provider != null) {
+                        Main.debug("adding Jessie as Security Provider");
+                        Provider p = (Provider) provider.newInstance();
+                        Security.addProvider(p);
+                    } else {
+                        Main.debug("could not get class: com.sun.net.ssl.internal.ssl.Provider");
+                        hasHTTPS = false;
+                    }
                 }
             }
 

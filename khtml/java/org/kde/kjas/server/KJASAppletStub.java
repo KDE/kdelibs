@@ -343,8 +343,12 @@ public final class KJASAppletStub
             }
         );
         frame.getContentPane().add( panel, BorderLayout.CENTER );
-        if (Main.java_version > 1.399)
-            frame.setUndecorated(true);
+	try {
+            if (Main.java_version > 1.399)
+                frame.setUndecorated(true);
+	} catch(java.awt.IllegalComponentStateException e) {
+            // This happens with gcj 4.0.1, ignore for now...
+	}
         frame.setLocation( 0, 0 );
         frame.pack();
         // resize frame for j2sdk1.5beta1..
