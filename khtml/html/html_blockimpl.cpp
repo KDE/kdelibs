@@ -319,9 +319,29 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
             else if (attr->value().lower() == "inherit")
                 addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_INHERIT);
             break;
+        case ATTR_NAME:
+            if (id() == ID_LAYER && inDocument() && m_name != attr->value()) {
+                getDocument()->underDocNamedCache().remove(m_name.string(),        this);
+                getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+            }
+            //fallthrough
         default:
             HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLLayerElementImpl::removedFromDocument()
+{
+    if (id() == ID_LAYER)
+      getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    HTMLDivElementImpl::removedFromDocument();
+}
+
+void HTMLLayerElementImpl::insertedIntoDocument()
+{
+    if (id() == ID_LAYER)
+      getDocument()->underDocNamedCache().add(m_name.string(), this);
+    HTMLDivElementImpl::insertedIntoDocument();
 }
 
 NodeImpl *HTMLLayerElementImpl::addChild(NodeImpl *child)

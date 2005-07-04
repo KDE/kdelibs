@@ -217,6 +217,67 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
+
+ElementMappingCache::ElementMappingCache():m_dict(71)
+{}
+
+void ElementMappingCache::add(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    if (info)
+    {
+        info->ref++;
+        info->nd = 0; //Now ambigous
+    }
+    else
+    {
+        ItemInfo* info = new ItemInfo();
+        info->ref = 1;
+        info->nd  = nd;
+        m_dict.insert(id, info);
+    }
+}
+
+void ElementMappingCache::set(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    info->nd = nd;
+}
+
+void ElementMappingCache::remove(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    info->ref--;
+    if (info->ref == 0)
+    {
+        m_dict.take(id);
+        delete info;
+    }
+    else
+    {
+        if (info->nd == nd)
+            info->nd = 0;
+    }
+}
+
+bool ElementMappingCache::contains(const QString& id)
+{
+    if (id.isEmpty()) return false;
+    return m_dict.find(id);
+}
+
+ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
+{
+    if (id.isEmpty()) return 0;
+    return m_dict.find(id);
+}
+
 static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
 QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 

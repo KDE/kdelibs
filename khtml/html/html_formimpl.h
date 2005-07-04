@@ -69,6 +69,9 @@ public:
 
     virtual Id id() const;
 
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+
     long length() const;
 
     QByteArray formData(bool& ok);
@@ -118,6 +121,7 @@ private:
     bool m_malformed : 1;
     bool m_haveTextarea : 1; // for wallet storage
     bool m_havePassword : 1; // for wallet storage
+    DOMString m_name;        // our name
     QMap<QString, QString> m_walletMap; // for wallet storage
 };
 

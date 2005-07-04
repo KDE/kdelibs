@@ -1399,7 +1399,10 @@ void KHTMLPart::clear()
 
 
   if ( d->m_doc )
-    d->m_doc->detach();
+  {
+    if (d->m_doc->attached()) //the view may have detached it already
+	d->m_doc->detach();
+  }
 
   // Moving past doc so that onUnload works.
   if ( d->m_frame && d->m_frame->m_jscript )

@@ -76,8 +76,11 @@ public:
 
     virtual void parseAttribute(AttributeImpl *token);
     virtual void attach();
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
 
 protected:
+    DOMString     m_name;
     khtml::VAlign valign;
 };
 

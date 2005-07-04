@@ -145,9 +145,15 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         setHTMLEventListener(EventImpl::LOAD_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onload", this));
         break;
-    case ATTR_NAME:
     case ATTR_NOSAVE:
 	break;
+    case ATTR_NAME:
+        if (inDocument() && m_name != attr->value()) {
+            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
+            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+        }
+        m_name = attr->value();
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -191,9 +197,22 @@ void HTMLImageElementImpl::attach()
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
     _style->deref();
+    
     NodeBaseImpl::attach();
     if (m_render)
         m_render->updateFromElement();
+}
+
+void HTMLImageElementImpl::removedFromDocument()
+{
+    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    HTMLElementImpl::removedFromDocument();
+}
+
+void HTMLImageElementImpl::insertedIntoDocument()
+{
+    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    HTMLElementImpl::insertedIntoDocument();
 }
 
 long HTMLImageElementImpl::width() const

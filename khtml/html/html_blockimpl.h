@@ -93,7 +93,10 @@ public:
     virtual void parseAttribute(AttributeImpl *);
     virtual NodeImpl *addChild(NodeImpl *child);
 
+    virtual void removedFromDocument();
+    virtual void insertedIntoDocument();
 private:
+    DOMString m_name;
     bool fixed;
     bool transparent;
 };

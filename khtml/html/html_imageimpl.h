@@ -47,6 +47,8 @@ public:
     virtual void parseAttribute(AttributeImpl *);
 
     virtual void attach();
+    virtual void removedFromDocument();
+    virtual void insertedIntoDocument();
 
     long width() const;
     long height() const;
@@ -72,6 +74,7 @@ protected:
     DOMString usemap;
     bool ismap;
     HTMLFormElementImpl *m_form;
+    DOMString            m_name;
 };
 
 
