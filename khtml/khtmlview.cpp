@@ -2676,7 +2676,7 @@ void KHTMLView::print(bool quick)
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
 
         int headerHeight = 0;
-        QFont headerFont("helvetica", 8);
+        QFont headerFont("Sans Serif", 8);
 
         QString headerLeft = KGlobal::locale()->formatDate(QDate::currentDate(),true);
         QString headerMid = docname;
