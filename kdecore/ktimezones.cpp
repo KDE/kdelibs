@@ -114,8 +114,8 @@ KTimezones::~KTimezones()
     // delete d;
 
     // autodelete behavior
-    if ( m_zones )
-        for( ZoneMap::ConstIterator it = m_zones->begin(); it != m_zones->end(); ++it )
+    if (m_zones)
+        for (ZoneMap::ConstIterator it = m_zones->begin(); it != m_zones->end(); ++it)
             delete it.data();
     delete m_zones;
 }
@@ -291,10 +291,12 @@ const KTimezone *KTimezones::local()
     }
 
     // FIXME. Is there a way to use /etc/localtime? What if it is a copy of the
-    // zoneinfo file instead of a link?
+    // zoneinfo file instead of a link? Perhaps the only safe thing to do is to
+    // "diff" for a matching file? Gulp...let's not do this for now.
 
-    // Try to find a matching timezone abbreviation...that way, we'll
-    // try to return a value in the user's own country.
+    // None of the deterministic stuff above has worked: try a heuristic. We
+    // try to find a pair of matching timezone abbreviations...that way, we'll
+    // likely return a value in the user's own country.
     allZones();
     if (!m_zoneinfoDir.isEmpty())
     {

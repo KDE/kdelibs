@@ -108,7 +108,16 @@ public:
     ~KTimezones();
 
     /**
-     * Returns the local timezone.
+     * Returns the local timezone. The idea of this routine is to provide a
+     * robust lookup of the local timezone.
+     *
+     * The problem is that on Unix systems, there are a variety of mechanisms
+     * for setting this information, and no real way of getting it. For example,
+     * if you set your timezone to "Europe/London", then the tzname[]
+     * maintained by tzset() typically returns { "GMT", "BST" }. The point of
+     * this routine is to actually return "Europe/London" (or rather, the 
+     * corresponding KTimezone).
+     *
      * @return local timezone. If necessary, we will return a guess.
      */
     const KTimezone *local();
