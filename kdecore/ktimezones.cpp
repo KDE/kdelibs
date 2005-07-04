@@ -75,10 +75,10 @@ float KTimezone::longitude() const
     return m_longitude;
 }
 
-int KTimezone::offset() const
+int KTimezone::offset(Qt::TimeSpec basisSpec) const
 {
     char *originalZone = ::getenv("TZ");
-    QDateTime localTime = QDateTime::currentDateTime(Qt::LocalTime);
+    QDateTime localTime = QDateTime::currentDateTime(basisSpec);
 
     // Set the given timezone and find out what time it is there and GMT.
     ::putenv(strdup(QString("TZ=:").append(m_name).latin1()));
@@ -350,8 +350,6 @@ bool KTimezones::matchAbbreviations(QString zoneFile, QString stdZone, QString d
     {
         return true;
     }
-/*
-This lot is not needed...
     for (i = 0; i < tzh.leapcnt; i++)
     {
         str >> leapTime >> leapSeconds;
@@ -367,7 +365,6 @@ This lot is not needed...
         str >> isUTC;
         // kdError() << "UTC: " << isUTC << endl;
     }
-*/
     return false;
 }
 

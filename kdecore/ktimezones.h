@@ -21,6 +21,7 @@
 #define _KTIMEZONES_H
 
 #include "kdelibs_export.h"
+#include <qnamespace.h>
 #include <qptrlist.h>
 #include <qstring.h>
 class KTimezonePrivate;
@@ -67,16 +68,18 @@ public:
     float longitude() const;
 
     /**
-     * Returns the current offset of the given timezone to UTC in seconds.
+     * Returns the current offset of the given timezone to UTC or the local
+     * timezone in seconds.
+     *
      * Take care if you cache the results of this routine; that would
-     * break if the result were stored across a daylight change.
+     * break if the result were stored across a daylight savings change.
      *
      * @return offset in seconds, INT_MAX on error.
      */
-    int offset() const;
+    int offset(Qt::TimeSpec basisSpec = Qt::UTC) const;
 
     /**
-     * Returns any comment of the timezone.
+     * Returns any comment for the timezone.
      *
      * @return comment, may be empty.
      */
