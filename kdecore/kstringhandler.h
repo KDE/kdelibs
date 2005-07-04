@@ -431,7 +431,7 @@ public:
 private:
 #endif
     /**
-     * @deprecated Use @see matchFileName () instead.
+     * @deprecated Use matchFileName () instead.
      */
     static KDE_DEPRECATED bool matchFilename( const QString& filename, const QString& pattern )
     {

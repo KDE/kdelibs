@@ -450,7 +450,7 @@ public:
 
   /**
    * Returns whether only file:/ or data:/ references are allowed
-   * to be loaded ( default false ). @see setOnlyLocalReferences.
+   * to be loaded ( default false ).  See setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
 

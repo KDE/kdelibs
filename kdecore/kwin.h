@@ -488,7 +488,7 @@ public:
 
     /**
      * @deprecated
-     * Use @see windowInfo() .
+     * Use windowInfo() .
      */
     static Info info( WId win ) KDE_DEPRECATED;
 

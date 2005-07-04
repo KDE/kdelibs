@@ -340,9 +340,9 @@ namespace KNetwork
       friend class KNetwork::KResolverWorkerBase;
 
     public:
-      bool checkResolver();	// @see KResolverWorkerBase::checkResolver
-      void acquireResolver();	// @see KResolverWorkerBase::acquireResolver
-      void releaseResolver();	// @see KResolverWorkerBase::releaseResolver
+      bool checkResolver();	// see KResolverWorkerBase::checkResolver
+      void acquireResolver();	// see KResolverWorkerBase::acquireResolver
+      void releaseResolver();	// see KResolverWorkerBase::releaseResolver
     };
 
   } // namespace Internal

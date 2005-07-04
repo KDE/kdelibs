@@ -416,8 +416,8 @@ public:
   static Ptr serviceByName( const QString& _name );
 
   /**
-   * Find a service based on its path as returned by @see desktopEntryPath().
-   * It's usually better to use @see serviceByStorageId() instead.
+   * Find a service based on its path as returned by desktopEntryPath().
+   * It's usually better to use serviceByStorageId() instead.
    *
    * @param _path the path of the configuration file
    * @return a pointer to the requested service or 0 if the service is

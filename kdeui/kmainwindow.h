@@ -559,25 +559,25 @@ public:
 
         /**
          * adds action to show/hide the statusbar if the
-         * statusbar exists.  @see createStandardStatusBarAction
+         * statusbar exists.  See createStandardStatusBarAction
          */
         StatusBar = 4,
 
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
-         * window size using the default name.  @see setAutoSaveSettings
+         * window size using the default name.  See setAutoSaveSettings
          *
          * Typically you want to let the default window size be determined by
          * the widgets size hints. Make sure that setupGUI() is called after
          * all the widgets are created ( including setCentralWidget ) so the
-         * default size's will be correct. @see setAutoSaveSettings for
+         * default size's will be correct. See setAutoSaveSettings for
          * more information on this topic.
          */
         Save = 8,
 
         /**
          * calls createGUI() once ToolBar, Keys and Statusbar have been
-         * taken care of.  @see createGUI
+         * taken care of.  See createGUI
          */
         Create = 16
     };

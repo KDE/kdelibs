@@ -58,8 +58,8 @@ public:
 	~KAudioPlayStream();
 
 	/**
-	 * Controls wether this Stream should poll the data from you via the signal @see requestData()
-	 * or you use @see write() to fill the inputbuffer.
+	 * Controls wether this Stream should poll the data from you via the signal requestData()
+	 * or you use write() to fill the inputbuffer.
 	 *
 	 * Default is true
 	*/
@@ -94,7 +94,7 @@ public slots:
 
 	/**
 	 * Write data into the inputbuffer.
-	 * If you ignore the signal @see noData() it will play 0 ( silence ).
+	 * If you ignore the signal noData() it will play 0 ( silence ).
 	*/
 	void write( QByteArray& data );
 signals:

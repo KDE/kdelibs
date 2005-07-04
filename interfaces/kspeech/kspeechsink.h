@@ -45,7 +45,7 @@ class KSpeechSink : virtual public DCOPObject {
     public:
         /**
         * @enum kttsdJobState
-        * Job states returned by method @see getTextJobState.
+        * Job states returned by method getTextJobState.
         */
         enum kttsdJobState
         {
@@ -128,7 +128,7 @@ class KSpeechSink : virtual public DCOPObject {
          * This signal is emitted whenever a text job is finished.  The job has
          * been marked for deletion from the queue and will be deleted when another
          * job reaches the Finished state. (Only one job in the text queue may be
-         * in state Finished at one time.)  If @see startText or @see resumeText is
+         * in state Finished at one time.)  If startText or resumeText is
          * called before the job is deleted, it will remain in the queue for speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.

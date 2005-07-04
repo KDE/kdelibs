@@ -156,7 +156,7 @@ public:
 private:
 #endif
   /**
-   * @deprecated Use @see fileName() instead
+   * @deprecated Use fileName() instead
    */
   KDE_DEPRECATED QString filename() const { return mfileName; }
 

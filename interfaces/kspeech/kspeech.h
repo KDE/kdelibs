@@ -105,7 +105,7 @@
         speech engine
    @endverbatim
  *
- * The %KTTSD Plugin API is documented in @see PluginConf in the kdeaccessibility module.
+ * The %KTTSD Plugin API is documented in PluginConf in the kdeaccessibility module.
  *
  * There is a separate GUI application, called kttsmgr, for providing %KTTSD
  * configuration and job management.
@@ -116,24 +116,24 @@
  *   - Messages
  *   - Text Jobs
  *
- * Method @see sayScreenReaderOutput speaks Screen Reader output.
+ * Method sayScreenReaderOutput speaks Screen Reader output.
  * It pre-empts any other speech in progress,
  * including other Screen Reader outputs, i.e., it is not a queue.
  * This method is reserved for use by Screen Readers.
  *
- * Methods @see sayWarning and @see sayMessage place messages into the Warnings and
+ * Methods sayWarning and sayMessage place messages into the Warnings and
  * Messages queues respectively.  Warnings take priority over messages, which take priority
  * over text jobs.  Warnings and messages are spoken when the currently-speaking
  * sentence of a text job is finished.
  *
- * @see setText places text into the text job queue. @see startText begins speaking jobs.
- * When one job finishes, the next job begins.  Method @see appendText adds
+ * setText places text into the text job queue. startText begins speaking jobs.
+ * When one job finishes, the next job begins.  Method appendText adds
  * additional parts to a text job.  Within a text job, the application (and user
  * via the kttsmgr GUI), may back up or advance by sentence or part, or rewind
  * to the beginning.
- * See @see jumpToTextPart and @see moveRelTextSentence.
+ * See jumpToTextPart and moveRelTextSentence.
  * Text jobs may be paused, stopped, and resumed or deleted from the queue.
- * See @see pauseText, @see stopText, @see resumeText, and @see removeText.
+ * See pauseText, stopText, resumeText, and removeText.
  *
  * @section cmdline DCOP Command-line Interface
  *
@@ -180,7 +180,7 @@
      dcop kttsd KSpeech removeText 0
    @endverbatim
  *
- * Note: For more information about talker codes, see @see talkers below.
+ * Note: For more information about talker codes, see talkers below.
  *
  * @section programming Calling KTTSD from a Program
  *
@@ -432,8 +432,8 @@
  *
  *   lang="en"
  *
- * When a program requests a talker code in calls to @see setText, @see appendText,
- * @see sayMessage, @see sayWarning, and @see sayScreenReaderOutput,
+ * When a program requests a talker code in calls to setText, appendText,
+ * sayMessage, sayWarning, and sayScreenReaderOutput,
  * %KTTSD tries to match the requested talker code to the closest matching
  * configured talker.
  *
@@ -506,11 +506,11 @@
  * it sounds terrible, user will change his configuration.)
  * If an attribute is absolutely mandatory -- in other words the application
  * must speak with the attribute or not at all -- the application can determine if
- * there are any talkers configured with the attribute by calling @see getTalkers,
+ * there are any talkers configured with the attribute by calling getTalkers,
  * and if there are none, display an error message to the user.
  *
  * Applications can implement their own talker-matching algorithm by
- * calling @see getTalkers, then finding the desired talker from the returned
+ * calling getTalkers, then finding the desired talker from the returned
  * list.  When the full talker code is passed in, %KKTSD will find an exact
  * match and use the specified talker.
  *
@@ -532,7 +532,7 @@
  *   - If there is an attribute your application @e requires for proper functioning,
  *     specify that with an asterisk in front of it.  For example, your app might
  *     speak in two different voices, Male and Female.  (Since your
- *     app requires both genders, call @see getTalkers to determine if both genders
+ *     app requires both genders, call getTalkers to determine if both genders
  *     are available, and if not, advise user to configure them.  Better yet,
  *     give the user a choice of available distinquishing attributes
  *     (loud/soft, fast/slow, etc.)
@@ -550,9 +550,8 @@
  *
  * Note: %Speech Markup is not yet fully implemented in %KTTSD.
  *
- * Each of the five methods for queueing text to be spoken -- @see sayScreenReaderOutput,
- * @see setText, @see appendText, @see sayMessage, and
- * @see sayWarning -- may contain speech markup,
+ * Each of the five methods for queueing text to be spoken -- sayScreenReaderOutput,
+ * setText, appendText, sayMessage, and sayWarning -- may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
  * languages and plugins currently supported are:
  *
@@ -562,7 +561,7 @@
  *
  * Before including markup in the text sent to kttsd, the application should
  * query whether the currently-configured plugin
- * supports the markup language by calling @see supportsMarkup.
+ * supports the markup language by calling supportsMarkup.
  *
  * It it does not support the markup, it will be stripped out of the text.
  *
@@ -572,17 +571,17 @@
  *
  * When using a speech markup language, such as Sable, JSML, or SSML, the application may embed
  * named markers into the text.  If the user's chosen speech plugin supports markers, %KTTSD
- * will emit DCOP signal @see markerSeen when the speech engine encounters the marker.
+ * will emit DCOP signal markerSeen when the speech engine encounters the marker.
  * Depending upon the speech engine and plugin, this may occur either when the speech engine
  * encounters the marker during synthesis from text to speech, or when the speech is actually
- * spoken on the audio device.  The calling application can call the @see supportsMarkers
+ * spoken on the audio device.  The calling application can call the supportsMarkers
  * method to determine if the currently configured plugin supports markers or not.
  *
  * @section sentenceparsing Sentence Parsing
  *
  * Not all speech engines provide robust capabilities for stopping synthesis that is in progress.
- * To compensate for this, %KTTSD parses text jobs given to it by the @see setText and
- * @see appendText methods into sentences and sends the sentences to the speech
+ * To compensate for this, %KTTSD parses text jobs given to it by the setText and
+ * appendText methods into sentences and sends the sentences to the speech
  * plugin one at a time.  In this way, should the user wish to stop the speech
  * output, they can do so, and the worst that will happen is that the last sentence
  * will be completed.  This is called Sentence Boundary Detection (SBD).
@@ -599,16 +598,16 @@
  * When given text containing speech markup, %KTTSD automatically determines the markup type
  * and parses based on the sentence semantics of the markup language.
  *
- * An application may change the sentence delimiter by calling @see setSentenceDelimiter
- * prior to calling @see setText.  Changing the delimiter does not affect other
+ * An application may change the sentence delimiter by calling setSentenceDelimiter
+ * prior to calling setText.  Changing the delimiter does not affect other
  * applications.
  *
- * Text given to %KTTSD via the @see sayWarning, @see sayMessage, and @see sayScreenReaderOutput
+ * Text given to %KTTSD via the sayWarning, sayMessage, and sayScreenReaderOutput
  * methods is @e not parsed into sentences.  For this reason, applications
  * should @e not send long messages with these methods.
  *
  * Sentence Boundary Detection is implemented as a plugin SBD filter.  See
- * @see filters for more information.
+ * filters for more information.
  *
  * @section filters Filters
  *
@@ -627,7 +626,7 @@
  * Additional plugins may be available in the future.
  *
  * In additional to these regular filters, KTTS also implements Sentence Boundary Detection (SBD)
- * as a plugin filter.  See @see sentenceparsing for more information.
+ * as a plugin filter.  See sentenceparsing for more information.
  *
  * Regular filters are applied to Warnings, Messages, and Text jobs.  SBD filters are
  * only applied to regular Text jobs; they are not applied to Warnings and Messages.  Screen
@@ -649,7 +648,7 @@ class KSpeech : virtual public DCOPObject {
     public:
         /**
         * @enum kttsdJobState
-        * Job states returned by method @see getTextJobState.
+        * Job states returned by method getTextJobState.
         */
         enum kttsdJobState
         {
@@ -776,15 +775,15 @@ class KSpeech : virtual public DCOPObject {
         * @return               Job number.
         *
         * Plain text is parsed into individual sentences using the current sentence delimiter.
-        * Call @see setSentenceDelimiter to change the sentence delimiter prior to
+        * Call setSentenceDelimiter to change the sentence delimiter prior to
         * calling setText.
-        * Call @see getTextCount to retrieve the sentence count after calling setText.
+        * Call getTextCount to retrieve the sentence count after calling setText.
         *
         * The text may contain speech mark language, such as Sable, JSML, or SSML,
         * provided that the speech plugin/engine support it.  In this case,
         * sentence parsing follows the semantics of the markup language.
         *
-        * Call @see startText to mark the job as speakable and if the
+        * Call startText to mark the job as speakable and if the
         * job is the first speakable job in the queue, speaking will begin.
         *
         * @see getTextCount
@@ -794,7 +793,7 @@ class KSpeech : virtual public DCOPObject {
 
         /**
         * Say a plain text job.  This is a convenience method that
-        * combines @see setText and @see startText into a single call.
+        * combines setText and startText into a single call.
         * @param text           The message to be spoken.
         * @param talker         Code for the talker to do the speaking.  Example "en".
         *                       If NULL, defaults to the user's default plugin.
@@ -803,9 +802,9 @@ class KSpeech : virtual public DCOPObject {
         * @return               Job number.
         *
         * Plain text is parsed into individual sentences using the current sentence delimiter.
-        * Call @see setSentenceDelimiter to change the sentence delimiter prior to
+        * Call setSentenceDelimiter to change the sentence delimiter prior to
         * calling setText.
-        * Call @see getTextCount to retrieve the sentence count after calling setText.
+        * Call getTextCount to retrieve the sentence count after calling setText.
         *
         * The text may contain speech mark language, such as Sable, JSML, or SSML,
         * provided that the speech plugin/engine support it.  In this case,
@@ -851,14 +850,14 @@ class KSpeech : virtual public DCOPObject {
         * @return               Job number.  0 if an error occurs.
         *
         * Plain text is parsed into individual sentences using the current sentence delimiter.
-        * Call @see setSentenceDelimiter to change the sentence delimiter prior to calling setText.
-        * Call @see getTextCount to retrieve the sentence count after calling setText.
+        * Call setSentenceDelimiter to change the sentence delimiter prior to calling setText.
+        * Call getTextCount to retrieve the sentence count after calling setText.
         *
         * The text may contain speech mark language, such as Sable, JSML, or SSML,
         * provided that the speech plugin/engine support it.  In this case,
         * sentence parsing follows the semantics of the markup language.
         *
-        * Call @see startText to mark the job as speakable and if the
+        * Call startText to mark the job as speakable and if the
         * job is the first speakable job in the queue, speaking will begin.
         *
         * @see getTextCount
@@ -875,8 +874,8 @@ class KSpeech : virtual public DCOPObject {
         * @return               The number of sentences in the job.  -1 if no such job.
         *
         * The sentences of a job are given sequence numbers from 1 to the number returned by this
-        * method.  The sequence numbers are emitted in the @see sentenceStarted and
-        * @see sentenceFinished signals.
+        * method.  The sequence numbers are emitted in the sentenceStarted and
+        * sentenceFinished signals.
         */
         virtual int getTextCount(uint jobNum=0) = 0;
 
@@ -884,7 +883,7 @@ class KSpeech : virtual public DCOPObject {
         * Get the job number of the current text job.
         * @return               Job number of the current text job. 0 if no jobs.
         *
-        * Note that the current job may not be speaking. See @see isSpeakingText.
+        * Note that the current job may not be speaking. See isSpeakingText.
         *
         * @see getTextJobState.
         * @see isSpeakingText
@@ -987,7 +986,7 @@ class KSpeech : virtual public DCOPObject {
         *                       If zero, applies to the last job queued by the application,
         *                       but if no such job, applies to the current job (if any).
         *
-        * The job is deleted from the queue and the @see textRemoved signal is emitted.
+        * The job is deleted from the queue and the textRemoved signal is emitted.
         *
         * If there is another job in the text queue, and it is marked speakable,
         * that job begins speaking.
@@ -1007,9 +1006,9 @@ class KSpeech : virtual public DCOPObject {
         * those jobs continue speaking and when finished, this job will begin speaking.
         * If there are no other speakable jobs preceeding this one, it begins speaking.
         *
-        * The @see textStarted signal is emitted when the text job begins speaking.
+        * The textStarted signal is emitted when the text job begins speaking.
         * When all the sentences of the job have been spoken, the job is marked for deletion from
-        * the text queue and the @see textFinished signal is emitted.
+        * the text queue and the textFinished signal is emitted.
         */
         virtual ASYNC startText(uint jobNum=0) = 0;
 
@@ -1019,12 +1018,12 @@ class KSpeech : virtual public DCOPObject {
         *                       If zero, applies to the last job queued by the application,
         *                       but if no such job, applies to the current job (if any).
         *
-        * The job is marked not speakable and will not be speakable until @see startText
-        * or @see resumeText is called.
+        * The job is marked not speakable and will not be speakable until startText
+        * or resumeText is called.
         *
         * If there are speaking jobs preceeding this one in the queue, they continue speaking.
         *
-        * If the job is currently speaking, the @see textStopped signal is emitted,
+        * If the job is currently speaking, the textStopped signal is emitted,
         * the job stops speaking, and if the next job in the queue is speakable, it
         * begins speaking.
         *
@@ -1039,12 +1038,12 @@ class KSpeech : virtual public DCOPObject {
         *                       If zero, applies to the last job queued by the application,
         *                       but if no such job, applies to the current job (if any).
         *
-        * The job is marked as paused and will not be speakable until @see resumeText or
-        * @see startText is called.
+        * The job is marked as paused and will not be speakable until resumeText or
+        * startText is called.
         *
         * If there are speaking jobs preceeding this one in the queue, they continue speaking.
         *
-        * If the job is currently speaking, the @see textPaused signal is emitted and the job
+        * If the job is currently speaking, the textPaused signal is emitted and the job
         * stops speaking.  Note that if the next job in the queue is speakable, it does
         * not start speaking as long as this job is paused.
         *
@@ -1073,7 +1072,7 @@ class KSpeech : virtual public DCOPObject {
         * those jobs continue speaking and when finished this job will begin
         * speaking where it left off.
         *
-        * The @see textResumed signal is emitted when the job resumes.
+        * The textResumed signal is emitted when the job resumes.
         *
         * @see pauseText
         */
@@ -1240,7 +1239,7 @@ class KSpeech : virtual public DCOPObject {
         * This signal is emitted whenever a text job is finished.  The job has
         * been marked for deletion from the queue and will be deleted when another
         * job reaches the Finished state. (Only one job in the text queue may be
-        * in state Finished at one time.)  If @see startText or @see resumeText is
+        * in state Finished at one time.)  If startText or resumeText is
         * called before the job is deleted, it will remain in the queue for speaking.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.

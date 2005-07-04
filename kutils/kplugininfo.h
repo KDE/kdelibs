@@ -72,7 +72,7 @@ class KUTILS_EXPORT KPluginInfo
          *
          * @param filename  The filename of the .desktop file.
          * @param resource  If filename is relative, you need to specify a resource type
-         * (e.g. "service", "apps"... @see KStandardDirs). Otherwise,
+         * (e.g. "service", "apps"... KStandardDirs). Otherwise,
          * resource isn't used.
          */
         KPluginInfo( const QString & filename, const char* resource = 0 );

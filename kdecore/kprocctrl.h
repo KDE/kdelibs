@@ -43,13 +43,13 @@ class KDECORE_EXPORT KProcessController : public QObject
 public:
   /**
    * Create an instance if none exists yet.
-   * Called by @see KApplication::KApplication()
+   * Called by KApplication::KApplication()
    */
   static void ref();
 
   /**
    * Destroy the instance if one exists and it is not referenced any more.
-   * Called by @see KApplication::~KApplication()
+   * Called by KApplication::~KApplication()
    */
   static void deref();
 

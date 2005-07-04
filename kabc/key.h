@@ -56,7 +56,7 @@ public:
    * Constructor.
    *
    * @param text  The text data.
-   * @param type  The key type, @see Types.
+   * @param type  The key type, see Types.
    */
   Key( const QString &text = QString::null, int type = PGP );
 
@@ -104,7 +104,7 @@ public:
   bool isBinary() const;
 
   /**
-   * Sets the type, @see Type.
+   * Sets the type, see Type.
    */
   void setType( int type );
 
@@ -114,7 +114,7 @@ public:
   void setCustomTypeString( const QString &custom );
 
   /**
-   * Returns the type, @see Type.
+   * Returns the type, see Type.
    */
   int type() const;
 

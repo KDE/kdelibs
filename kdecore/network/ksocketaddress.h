@@ -781,7 +781,7 @@ public:
 
   /**
    * Sets the flowinfo information for an IPv6 socket address. If this is not
-   * an IPv6 socket address, this function converts it to one. @see makeIPv6.
+   * an IPv6 socket address, this function converts it to one. See makeIPv6.
    *
    * @param flowinfo		the flowinfo to set
    * @return a reference to itself
@@ -797,7 +797,7 @@ public:
 
   /**
    * Sets the scope id for this IPv6 object. If this is not an IPv6 socket
-   * address, this function converts it to one. @see makeIPv6
+   * address, this function converts it to one. See makeIPv6
    *
    * @param scopeid		the scopeid to set
    * @return a reference to itself

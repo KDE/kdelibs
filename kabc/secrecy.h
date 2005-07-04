@@ -52,7 +52,7 @@ public:
   /**
    * Constructor.
    *
-   * @param type  The secrecy type, @see Types.
+   * @param type  The secrecy type, see Types.
    */
   Secrecy( int type = Invalid );
 
@@ -65,12 +65,12 @@ public:
   bool isValid() const;
 
   /**
-   * Sets the type, @see Types.
+   * Sets the type, see Types.
    */
   void setType( int type );
 
   /**
-   * Returns the type, @see Types.
+   * Returns the type, see Types.
    */
   int type() const;
 

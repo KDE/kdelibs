@@ -35,21 +35,21 @@ class KProcess;
 
 /**
  *
- * @brief Encapsulates a @see KCModule for embedding.
+ * @brief Encapsulates a KCModule for embedding.
  *
- * @see KCModuleProxy is a wrapper for KCModule intended for cases where
+ * KCModuleProxy is a wrapper for KCModule intended for cases where
  * modules are to be displayed. It ensures layout is consistent, handles
  * root/administrator modules and in general takes care of the details
  * needed for making a module available in an interface. A KCModuleProxy
  * can be treated as a QWidget, without worrying about the details specific
  * for modules such as library loading. KCModuleProxy is not a sub class of KCModule
  * but its API closely resembles KCModule's.\n
- * Usually, an instance is created by passing one of the constructors a @see KService::Ptr,
- * @see KCModuleInfo or simply the name of the module and then added to the layout as any
+ * Usually, an instance is created by passing one of the constructors a KService::Ptr,
+ * KCModuleInfo or simply the name of the module and then added to the layout as any
  * other widget. \n
- * When the user have changed the module, @see changed( bool ) as well as @see changed ( KCModuleProxy * )
+ * When the user have changed the module, changed( bool ) as well as changed ( KCModuleProxy * )
  * is emitted. KCModuleProxy does not take care of prompting for saving - if the object is deleted while
- * changes is not saved the changes will be lost. @see changed() returns true if changes are unsaved. \n
+ * changes is not saved the changes will be lost. changed() returns true if changes are unsaved. \n
  * \n
  * KCModuleProxy does not take care of authorization of KCModules. \n
  * KCModuleProxy do lazy loading, meaning the library will not be loaded or
@@ -195,7 +195,7 @@ public:
 
 	/**
 	 * Returns whether the module is running in root mode. A module is in root mode
-	 * when @see runAsRoot() has been called. A session under root user will never reach
+	 * when runAsRoot() has been called. A session under root user will never reach
 	 * root mode.
 	 *
 	 * @note realModule() will return null when the module is running in root mode.
@@ -207,7 +207,7 @@ public:
 
 	/**
 	 * Access to the actual module. However, if the module is
-	 * running in root mode, see @see rootMode(), this function returns
+	 * running in root mode, see rootMode(), this function returns
 	 * a NULL pointer, since the module is in another process. It may also
 	 * return NULL if anything goes wrong.
 	 *
@@ -222,8 +222,8 @@ public:
 	const KCModuleInfo& moduleInfo() const;
 
 	/**
-	 * Returns the DCOP the module's @see DCOPClient
-	 * and @see DCOPObject has(they are identical).
+	 * Returns the DCOP the module's DCOPClient
+	 * and DCOPObject has(they are identical).
 	 *
 	 * @since 3.4
 	 */

@@ -195,7 +195,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
     QStringList ignoreList() const;
     QStringList replaceAllList() const;
 
-    int client() const; ///< Spell checker client, @see KSpellClients
+    int client() const; ///< Spell checker client, see KSpellClients
 
     /**
      * Call this method before this class is deleted  if you want

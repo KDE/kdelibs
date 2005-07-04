@@ -63,7 +63,7 @@ public:
 	QWidget *videoWidget();
 
 public slots:
-	/** Set which buttons to display. @see Button. */
+	/** Set which buttons to display. See Button. */
 	void setButtons(int);
 
 	/** Returns if a particular button is being displayed. */

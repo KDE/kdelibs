@@ -67,7 +67,7 @@ public:
         Cumulative =  8,  /**< If an application wants to display information
                                for more than one file, it may add up the values
                                for this item (e.g. play time of an mp3 file) */
-        Cummulative = Cumulative, ///< @deprecated Use @see Cumulative instead
+        Cummulative = Cumulative, ///< @deprecated Use Cumulative instead
         Averaged    = 16, /**< Similar to Cumulative, but the average should
                                be calculated instead of the sum */
         MultiLine   = 32, /**< This attribute says that a string item is likely

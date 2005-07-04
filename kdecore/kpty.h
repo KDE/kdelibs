@@ -74,7 +74,7 @@ public:
 
   /**
    * Creates an utmp entry for the tty.
-   * This function must be called after calling @see setCTty and
+   * This function must be called after calling setCTty and
    * making this pty the stdin.
    * @param user the user to be logged on
    * @param remotehost the host from which the login is coming. This is

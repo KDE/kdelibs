@@ -105,7 +105,7 @@ public:
    * "Font Settings" or "Color Settings" and not just "Settings" in
    * applications where there is more than one dialog.
    *
-   * @param dialogType - Type used in creating the dialog.  @see KDialogBase
+   * @param dialogType - Type used in creating the dialog.  See KDialogBase
    *
    * @param config - Config object containing settings.
    *

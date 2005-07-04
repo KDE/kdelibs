@@ -34,17 +34,17 @@ class QVBoxLayout;
 class KCModuleProxy;
 
 /**
- * @brief KCModuleContainer is a convenience class encapsulating several @see KCModules.
+ * @brief KCModuleContainer is a convenience class encapsulating several KCModules.
  *
- * The @see KCModuleContainer class is a convenience class for organizing a multiple set
- * of @see KCModule. KCModuleContainer is a sub class of KCModule and builds an interface mainly
+ * The KCModuleContainer class is a convenience class for organizing a multiple set
+ * of KCModule. KCModuleContainer is a sub class of KCModule and builds an interface mainly
  * consisting of a tab widget where each tab contains one of the modules specified via one of the
  * constructors. KCModuleContainer can handle modules which requires root permissions. What you
- * most likely want is the @see KCMODULECONTAINER macro. \n
+ * most likely want is the KCMODULECONTAINER macro. \n
  * Sometimes it is of interest to detect in runtime whether a module should be loaded or not. This
  * can be achieved by sub classing KCModuleContainer, doing the probing/testing checks and then manually
- * call @see addModule for each module which should be displayed. When all calls to @see addModule is done, call
- * @see finalize() which performs some necessary final steps.
+ * call addModule for each module which should be displayed. When all calls to addModule is done, call
+ * finalize() which performs some necessary final steps.
  *
  * @author Frans Englich <frans.englich@telia.com>
  * @since 3.4
@@ -122,7 +122,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		/**
 		 * Sets this KCM's buttons and adds a AdminMode button
 		 * if necessary. If KCModuleContainer is subclassed finalize()
-		 * should be called in the constructor after all calls to @see addModule
+		 * should be called in the constructor after all calls to addModule
 		 * have been done. Call it once.
 		 */
 		void finalize();

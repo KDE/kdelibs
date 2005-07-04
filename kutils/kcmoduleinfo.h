@@ -31,7 +31,7 @@ class QString;
 class QStringList;
 
 /**
- * A class that provides information about a @see KCModule
+ * A class that provides information about a KCModule
  *
  * KCModuleInfo provides various technical information, such as icon, library
  * etc. about a KCModule.n
@@ -60,7 +60,7 @@ public:
   KCModuleInfo(const QString& desktopFile);
 
   /**
-   * Same as above but takes a @see KService::Ptr as argument.
+   * Same as above but takes a KService::Ptr as argument.
    *
    * @note @p moduleInfo must be a valid pointer.
    *
@@ -70,7 +70,7 @@ public:
 
 
   /**
-   * Same as above but takes a @see KCModuleInfo as argument.
+   * Same as above but takes a KCModuleInfo as argument.
    *
    * @param rhs specifies the module
    */
@@ -261,8 +261,8 @@ protected:
   void setDocPath(const QString &p) { _doc = p; };
 
   /**
-   * Reads the service entries specific for @see KCModule from the desktop file.
-   * The usual desktop entries are read in @see init.
+   * Reads the service entries specific for KCModule from the desktop file.
+   * The usual desktop entries are read in init.
    */
   void loadAll();
 

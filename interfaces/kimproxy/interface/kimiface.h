@@ -164,7 +164,7 @@ k_dcop:
 	/**
 	 * Send a file to the contact
 	 * @param uid the KABC uid you are sending to.
-	 * @param sourceURL a @see KURL to send.
+	 * @param sourceURL a KURL to send.
 	 * @param altFileName an alternate filename describing the file
 	 * @param fileSize file size in bytes
 	 */
