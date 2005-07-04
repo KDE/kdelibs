@@ -35,19 +35,19 @@ class ServiceBrowserPrivate;
 /**
 Most important class for applications that want to discover specific services on network.
 Suppose that you need list of web servers running. Example:
- 
+
 \code
 DNSSD::ServiceBrowser* browser = new DNSSD::ServiceBrowser("_http._tcp");
 connect(browser,SIGNAL(serviceAdded(RemoteService::Ptr)),this,SLOT(addService(RemoteService::Ptr)));
 connect(browser,SIGNAL(serviceRemoved(RemoteService::Ptr)),this,SLOT(delService(RemoteService::Ptr)));
 browser->startBrowse();
 \endcode
- 
-In above example addService will be called for every web server already running or just appearing 
-on network and delService will be called when server is stopped. Because no DomainBrowser was passed 
+
+In above example addService will be called for every web server already running or just appearing
+on network and delService will be called when server is stopped. Because no DomainBrowser was passed
 to constructor, domains configured by user will be searched.
- 
- 
+
+
 @author Jakub Stachowski
 @short Browsing for specific type of services or all available service types
  */
@@ -57,34 +57,34 @@ class KDNSSD_EXPORT ServiceBrowser : public QObject
 public:
 	/**
 	@li AutoDelete -  DomainBrowser object passes in constructor should be deleted when ServiceBrowser is deleted
-	@li AutoResolve - after disovering new service it will be resolved and then 
-	reported with serviceAdded() signal. It raises network usage by resolving all services, 
+	@li AutoResolve - after disovering new service it will be resolved and then
+	reported with serviceAdded() signal. It raises network usage by resolving all services,
 	so use it only when necessary.
 	 */
 	enum Flags {
 	AutoDelete =1,
 	AutoResolve = 2
 	};
-	
+
 	/**
 	Availability of DNS-SD services.
 	@li Working - available
 	@li Stopped - not available because mdnsd daemon is not running. This flag is currently unused
-	@li Unsupported - not available because KDE was compiled without DNS-SD support	
+	@li Unsupported - not available because KDE was compiled without DNS-SD support
 	*/
 	enum State { Working, Stopped, Unsupported };
 
 	/**
 	ServiceBrowser constructor.
-	 
-	@param types List of service types to browse for (example: "_http._tcp"). 
-	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types 
+
+	@param types List of service types to browse for (example: "_http._tcp").
+	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types
 	present on network
-	@param domains DomainBrowser object used to specify domains to browse. You do not have to connect 
-	its domainAdded() signal - it will be done automatically. You can left this parameter as NULL 
+	@param domains DomainBrowser object used to specify domains to browse. You do not have to connect
+	its domainAdded() signal - it will be done automatically. You can left this parameter as NULL
 	for default domains.
 	@param flags One or more values from #Flags
-	
+
 	@since 3.5
 	@todo KDE4: set default values for domains and flags
 	 */
@@ -93,29 +93,32 @@ public:
 	/**
 	The same as above, but allows only one service type
 	@param type Type of services to browse for
+	@param domains  DomainBrowser object used to specify domains to browse. You do not have to connect its domainAdded() signal - it will be done automatically. You can left this parameter as NULL for default domains.
+	@param autoResolve auto resolve, if set
 	@deprecated use previous constructor instead
 	 */
 	ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
-	
+
 	/**
 	Overloaded constructor used to create browser for one domain
-	
+
+	@param type Type of services to browse for
 	@param domain Domain name. You can add more domains later using addDomain and remove them
 	with removeDomain
-	@param flags One or more values from #Flags. AutoDelete flag has no effect 
+	@param flags One or more values from #Flags. AutoDelete flag has no effect
 	@since 3.5
 	 */
 	ServiceBrowser(const QString& type,const QString& domain, int flags);
-	
+
 	/**
 	@deprecated user previous constructor instead
 	 */
 	ServiceBrowser(const QString& type,const QString& domain, bool autoResolve=false);
-	
+
 	~ServiceBrowser();
 
 	/**
-	Returns list of services 
+	Returns list of services
 	 */
 	const QValueList<RemoteService::Ptr>& services() const;
 
@@ -126,26 +129,26 @@ public:
 	virtual void startBrowse();
 
 	/**
-	Return DomainBrowser containing domains being browsed. Valid object will returned 
-	even if 'domains' parameters in constructor was set to NULL or single domain 
+	Return DomainBrowser containing domains being browsed. Valid object will returned
+	even if 'domains' parameters in constructor was set to NULL or single domain
 	constructor was used.
 	 */
 	const DomainBrowser* browsedDomains() const;
-	
+
 	/**
 	Special service type to search for all available service types. Pass it as "type"
 	parameter to ServiceBrowser constructor.
 	 */
 	static const QString AllServices;
-	
+
 	/**
 	Checks availability of DNS-SD services (this also covers publishing).
 
 	If you use this function to report an error to the user, below is a suggestion
 	on how to word the errors:
-	
+
 	\code
-	switch(DNSSD::ServiceBrowser::isAvailable()) {	    
+	switch(DNSSD::ServiceBrowser::isAvailable()) {
 	  case DNSSD::ServiceBrowser::Working:
 	    return "";
           case DNSSD::ServiceBrowser::Stopped:
@@ -185,10 +188,10 @@ signals:
 	Emitted when all services has been reported. This signal can be used
 	by application that just want to get list of currently available services
 	(similar to directory listing) and do not care about dynamic adding/removing
-	services later. This signal can be emitted many time: for example if new host 
+	services later. This signal can be emitted many time: for example if new host
 	has been connected to network and is announcing some services interesting to
 	this ServiceBrowser, they will be reported by several serviceAdded() signals and
-	whole batch will be concluded by finished(). 
+	whole batch will be concluded by finished().
 	 */
 	void finished();
 
@@ -197,7 +200,7 @@ public slots:
 	Remove one domain from list of domains to browse
 	 */
 	void removeDomain(const QString& domain);
-	
+
 	/**
 	Add new domain to browse
 	 */
