@@ -49,6 +49,7 @@ public:
 	 * @param server The server where it should play to.
 	 * @param title The title that is shown in the AudioManager.
 	 * @param parent You will propably want to pass the server as parent to so this stream gets deleted before the server disappears.
+	 * @param name The name of the stream.
 	*/
 	KAudioPlayStream( KArtsServer* server, const QString title, QObject* parent=0, const char* name=0 );
 	/**
