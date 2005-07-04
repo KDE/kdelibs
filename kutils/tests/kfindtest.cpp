@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #include "../kfind.h"
@@ -138,8 +138,8 @@ int main(int argc, char **argv)
 	               "\n"
 	               "    You should have received a copy of the GNU Library General Public License\n"
 	               "    along with this library; see the file COPYING.LIB.  If not, write to\n"
-	               "    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
-	               "    Boston, MA 02111-1307, USA.\n";
+	               "    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,\n"
+	               "    Boston, MA 02110-1301, USA.\n";
 
 	QString output1 = "line: \"This file is part of the KDE project.\", index: 0, length: 4\n"
 	                  "line: \"This library is free software; you can redistribute it and/or\", index: 0, length: 4\n"
