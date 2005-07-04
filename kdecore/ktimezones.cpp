@@ -246,6 +246,9 @@ const KTimezone *KTimezones::local()
             return local;
     }
 
+    // FIXME. Is there a way to use /etc/localtime? What if it is a copy of the
+    // zoneinfo file instead of a link?
+
     // Try to find a matching timezone abbreviation...that way, we'll
     // try to return a value in the user's own country.
     allZones();
