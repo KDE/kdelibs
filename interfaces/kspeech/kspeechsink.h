@@ -45,7 +45,7 @@ class KSpeechSink : virtual public DCOPObject {
     public:
         /**
         * @enum kttsdJobState
-        * Job states returned by method @ref getTextJobState.
+        * Job states returned by method @see getTextJobState.
         */
         enum kttsdJobState
         {
@@ -55,7 +55,7 @@ class KSpeechSink : virtual public DCOPObject {
             jsPaused = 3,                /**< Job has been paused. */
             jsFinished = 4               /**< Job is finished and is deleteable. */
         };
-        
+
         /**
         * @enum kttsdMarkupType
         * %Speech markup language types.
@@ -67,7 +67,7 @@ class KSpeechSink : virtual public DCOPObject {
             mtSmml = 2,                  /**< %Speech Markup Meta-language */
             mtSable = 3                  /**< Sable 2.0 */
         };
-    
+
     k_dcop:
         /**
         * This signal is emitted when KTTSD starts or restarts after a call to reinit.
@@ -77,7 +77,7 @@ class KSpeechSink : virtual public DCOPObject {
         * This signal is emitted just before KTTSD exits.
         */
         virtual ASYNC kttsdExiting() { };
-        
+
         /**
          * This signal is emitted when the speech engine/plugin encounters a marker in the text.
          * @param appId          DCOP application ID of the application that queued the text.
@@ -99,16 +99,16 @@ class KSpeechSink : virtual public DCOPObject {
          * @param jobNum         Job number of the text job.
          * @param seq            Sequence number of the text.
          * @see getTextCount
-         */        
+         */
         virtual ASYNC sentenceFinished(const QCString& appId, uint jobNum, uint seq) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(seq); };
-        
+
         /**
          * This signal is emitted whenever a new text job is added to the queue.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
          */
         virtual ASYNC textSet(const QCString& appId, uint jobNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); };
-    
+
         /**
         * This signal is emitted whenever a new part is appended to a text job.
         * @param appId          The DCOP senderId of the application that created the job.
@@ -117,7 +117,7 @@ class KSpeechSink : virtual public DCOPObject {
         *                       at 1.
         */
         virtual ASYNC textAppended(const QCString& appId, uint jobNum, int partNum) { Q_UNUSED(appId); Q_UNUSED(jobNum); Q_UNUSED(partNum); };
-        
+
         /**
          * This signal is emitted whenever speaking of a text job begins.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
@@ -128,7 +128,7 @@ class KSpeechSink : virtual public DCOPObject {
          * This signal is emitted whenever a text job is finished.  The job has
          * been marked for deletion from the queue and will be deleted when another
          * job reaches the Finished state. (Only one job in the text queue may be
-         * in state Finished at one time.)  If @ref startText or @ref resumeText is
+         * in state Finished at one time.)  If @see startText or @see resumeText is
          * called before the job is deleted, it will remain in the queue for speaking.
          * @param appId          The DCOP senderId of the application that created the job.  NULL if kttsd.
          * @param jobNum         Job number of the text job.
