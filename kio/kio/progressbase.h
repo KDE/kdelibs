@@ -144,10 +144,10 @@ public slots:
   /**
    * Called to set the total size.
    * @param job the KIO::Job
-   * @param bytes the total size in bytes
+   * @param size the total size in bytes
    */
-  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t bytes ) { 
-    Q_UNUSED(job);Q_UNUSED(bytes);}
+  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size ) {
+    Q_UNUSED(job);Q_UNUSED(size);}
   /**
    * Called to set the total number of files.
    * @param job the KIO::Job
@@ -186,7 +186,7 @@ public slots:
     Q_UNUSED(job);Q_UNUSED(dirs);}
 
   /**
-   * Called to set the speed. 
+   * Called to set the speed.
    * @param job the KIO::Job
    * @param speed the speed in bytes/second
    */

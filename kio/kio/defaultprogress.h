@@ -62,7 +62,7 @@ public:
                                     unsigned long totalFiles );
 
 public slots:
-  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t bytes );
+  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t size );
   virtual void slotTotalFiles( KIO::Job*, unsigned long files );
   virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
@@ -70,7 +70,7 @@ public slots:
   virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
   virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  virtual void slotSpeed( KIO::Job*, unsigned long speed );
   virtual void slotPercent( KIO::Job*, unsigned long percent );
   /**
    * Called to set an information message.

@@ -184,11 +184,12 @@ DefaultProgress::~DefaultProgress()
   delete d;
 }
 
-void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t bytes )
+void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t size )
 {
-  if ( m_iTotalSize == bytes )
+  // size is measured in bytes
+  if ( m_iTotalSize == size )
       return;
-  m_iTotalSize = bytes;
+  m_iTotalSize = size;
   if (d->startTime.isNull())
     d->startTime.start();
 }
@@ -316,13 +317,13 @@ void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 }
 
 
-void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
+void DefaultProgress::slotSpeed( KIO::Job*, unsigned long speed )
 {
-  if ( bytes_per_second == 0 ) {
+  if ( speed == 0 ) {
     speedLabel->setText( i18n( "Stalled") );
   } else {
-    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( bytes_per_second ))
-        .arg( KIO::convertSeconds( KIO::calculateRemainingSeconds( m_iTotalSize, m_iProcessedSize, bytes_per_second ))) );
+    speedLabel->setText( i18n( "%1/s ( %2 remaining )").arg( KIO::convertSize( speed ))
+        .arg( KIO::convertSeconds( KIO::calculateRemainingSeconds( m_iTotalSize, m_iProcessedSize, speed ))) );
   }
 }
 

@@ -119,7 +119,7 @@ void StatusbarProgress::slotClean() {
 
 
 void StatusbarProgress::slotTotalSize( KIO::Job*, KIO::filesize_t size ) {
-  m_iTotalSize = size;
+  m_iTotalSize = size;  // size is measured in bytes
 }
 
 void StatusbarProgress::slotPercent( KIO::Job*, unsigned long percent ) {
@@ -127,11 +127,11 @@ void StatusbarProgress::slotPercent( KIO::Job*, unsigned long percent ) {
 }
 
 
-void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second ) {
-  if ( bytes_per_second == 0 ) {
+void StatusbarProgress::slotSpeed( KIO::Job*, unsigned long speed ) {
+  if ( speed == 0 ) { // spped is measured in bytes-per-second
     m_pLabel->setText( i18n( " Stalled ") );
   } else {
-    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( bytes_per_second )) );
+    m_pLabel->setText( i18n( " %1/s ").arg( KIO::convertSize( speed )) );
   }
 }
 

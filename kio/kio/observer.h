@@ -186,7 +186,7 @@ public slots:
   void slotProcessedFiles( KIO::Job*, unsigned long files );
   void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  void slotSpeed( KIO::Job*, unsigned long speed );
   void slotPercent( KIO::Job*, unsigned long percent );
   void slotInfoMessage( KIO::Job*, const QString & msg );
 

@@ -33,9 +33,9 @@ class KRemoteEncodingPrivate;
  * use this class in order to convert those forms into QStrings before
  * creating the respective KIO::UDSEntry. The same is true for decoding
  * URLs to its components.
- * 
+ *
  * Each KIO::SlaveBase has one object of this kind, even if it is not necessary.
- * It can be accessed through @ref KIO::SlaveBase::remoteEncoding.
+ * It can be accessed through @see KIO::SlaveBase::remoteEncoding.
  *
  * @short A class for handling remote filenames
  * @author Thiago Macieira <thiago.macieira@kdemail.net>

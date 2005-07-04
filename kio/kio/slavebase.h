@@ -143,6 +143,7 @@ public:
     /**
      * Call this in listDir, each time you have a bunch of entries
      * to report.
+     * @param _entry The UDSEntry containing all of the object attributes.
      */
     void listEntries( const UDSEntryList& _entry );
 
@@ -579,7 +580,8 @@ public:
      * frame exceeded (to make sure the app gets some
      * items in time but not too many items one by one
      * as this will cause a drastic performance penalty)
-     * @param ready set to true after emitting all items. _entry is not
+     * @param _entry The UDSEntry containing all of the object attributes.
+     * @param ready set to true after emitting all items. @p _entry is not
      *        used in this case
      */
     void listEntry( const UDSEntry& _entry, bool ready);

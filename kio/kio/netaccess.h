@@ -356,6 +356,7 @@ public:
      *               as needed. If NULL, authentication information will be
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
+     * @param permissions directory permissions.
      * @return true on success, false on failure.
      */
     static bool mkdir( const KURL & url, QWidget* window, int permissions = -1 );

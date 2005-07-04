@@ -156,10 +156,10 @@ void Observer::slotProcessedDirs( KIO::Job* job, unsigned long dirs )
   m_uiserver->processedDirs( job->progressId(), dirs );
 }
 
-void Observer::slotSpeed( KIO::Job* job, unsigned long bytes_per_second )
+void Observer::slotSpeed( KIO::Job* job, unsigned long speed )
 {
-  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
-  m_uiserver->speed( job->progressId(), bytes_per_second );
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotSpeed " << job << " " << speed << endl;
+  m_uiserver->speed( job->progressId(), speed );
 }
 
 void Observer::slotPercent( KIO::Job* job, unsigned long percent )

@@ -254,10 +254,10 @@ void Job::slotResult( Job *job )
     removeSubjob(job);
 }
 
-void Job::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
+void Job::slotSpeed( KIO::Job*, unsigned long speed )
 {
-  //kdDebug(7007) << "Job::slotSpeed " << bytes_per_second << endl;
-  emitSpeed( bytes_per_second );
+  //kdDebug(7007) << "Job::slotSpeed " << speed << endl;
+  emitSpeed( speed );
 }
 
 void Job::slotInfoMessage( KIO::Job*, const QString & msg )
@@ -615,10 +615,10 @@ void SimpleJob::slotProcessedSize( KIO::filesize_t size )
     emitPercent( size, m_totalSize );
 }
 
-void SimpleJob::slotSpeed( unsigned long bytes_per_second )
+void SimpleJob::slotSpeed( unsigned long speed )
 {
-    //kdDebug(7007) << "SimpleJob::slotSpeed( " << bytes_per_second << " )" << endl;
-    emitSpeed( bytes_per_second );
+    //kdDebug(7007) << "SimpleJob::slotSpeed( " << speed << " )" << endl;
+    emitSpeed( speed );
 }
 
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData)

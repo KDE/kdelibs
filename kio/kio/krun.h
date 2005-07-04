@@ -203,11 +203,12 @@ public:
   /**
    * Open a list of URLs with.
    *
-   * @param _exec The name of the executable, for example
+   * @param _exec the name of the executable, for example
    *        "/usr/bin/netscape".
-   * @param _name The logical name of the application, for example
+   * @param _urls  the list of URLs to open, can be empty (app launched without argument)
+   * @param _name the logical name of the application, for example
    *        "Netscape 4.06".
-   * @param _icon The icon which should be used by the application.
+   * @param _icon the icon which should be used by the application.
    * @param _obsolete1 Do not use!
    * @param _obsolete2 Do not use!
    * @return the process id, or 0 on error
@@ -228,7 +229,7 @@ public:
    * @param _mimetype the mime type of the resource
    * @param tempFile if true and _url is a local file, it will be deleted
    *        when the launched application exits.
-   * @param runExecutables if false then local .desktop files, 
+   * @param runExecutables if false then local .desktop files,
    *        executables and shell scripts will not be run.
    *        See also isExecutable().
    * @return the process id, or 0 on error
@@ -260,7 +261,7 @@ public:
    * Same as the other runCommand(), but it also takes the name of the
    * binary, to display an error message in case it couldn't find it.
    *
-   * @p _cmd must be a shell command. You must not append "&"
+   * @param cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
    * @param execName the name of the executable
    * @param icon icon for app starting notification
@@ -330,7 +331,7 @@ public:
    * To allow a script to run when the above rules are satisfied add the entry
    * @code
    * X-KDE-IsAlso=application/x-executable-script
-   * @endcode 
+   * @endcode
    * to the mimetype's desktop file.
    * @since 3.3
    */
