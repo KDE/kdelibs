@@ -108,6 +108,7 @@ public:
     void init();
 
     /** Read settings from @p config.
+     * @param config is a pointer to KConfig object.
      * @param reset if true, settings are always set; if false,
      *  settings are only set if the config file has a corresponding key.
      */
@@ -189,6 +190,8 @@ public:
 
     /** reads from @p config's current group, forcing initialization
       * if @p reset is true.
+      * @param config is a pointer to KConfig object.
+      * @param reset true if initialization is to be forced.
       * @param global true if the global domain is to be read.
       * @param pd_settings will be initialised with the computed (inherited)
       *		settings.
@@ -207,7 +210,7 @@ public:
 
     // Meta refresh/redirect (http-equiv)
     bool isAutoDelayedActionsEnabled () const;
-    
+
     QValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
     // Whether to show passive popup when windows are blocked
