@@ -53,7 +53,6 @@
 #include <kurldrag.h>
 #include <kstringhandler.h>
 #include <kapplication.h>
-#include <klineedit.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <krun.h>
@@ -61,6 +60,7 @@
 #include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <kmultipledrag.h>
+#include <kinputdialog.h>
 
 #include "khtml_factory.h"
 
@@ -667,19 +667,14 @@ void KHTMLPopupGUIClient::slotBlockHost()
 
 void KHTMLPopupGUIClient::slotBlockImage()
 {
-  KDialogBase dlg( 0, 0, true,
-                   i18n("Add URL to filter"),
-                   KDialogBase::Ok | KDialogBase::Cancel);
-  
-  KLineEdit *edit = new KLineEdit( &dlg );
-  edit->setText( d->m_imageURL.url() );
-  edit->setFocus();
-  edit->setMinimumSize( 300, 0 );
-  dlg.setMainWidget( edit );
-  dlg.adjustSize();
-  
-  if ( dlg.exec() == QDialog::Accepted )
-    KHTMLFactory::defaultHTMLSettings()->addAdFilter( edit->text() );
+    bool ok=false;
+
+    QString url = KInputDialog::getText( i18n("Add URL to filter"),
+                                         "URL",
+                                         d->m_imageURL.url(),
+                                         &ok);
+    if (ok)
+        KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
