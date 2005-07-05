@@ -117,10 +117,19 @@ namespace KUnitTest
          * @param query A regular expression. Only modules which match the query will be run.
          */
         static void loadModules(const QString &folder, const QString &query);
+
+        /*! The runner can spit out special debug messages needed by the Perl script: kunittest_debughelper.
+         * This script can attach the debug output of each suite to the results in the KUnitTest GUI.
+         * Not very useful for console minded developers, so this static method can be used to disable
+         * those debug messages.
+         * @param enabled If true the debug messages are enabled (default), otherwise they are disabled.
+         */
+        static void setDebugCapturingEnabled(bool enabled);
             
     private:
         RegistryType         m_registry;
         static Runner       *s_self;
+        static bool          s_debugCapturingEnabled;
     
     protected:
         Runner();

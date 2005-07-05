@@ -1,7 +1,7 @@
 /**
- * kunittest.cpp
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2005  Jeroen Wijnhout <Jeroen.Wijnhout@kdemail.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,6 +43,8 @@ using namespace std;
 
 namespace KUnitTest
 {
+    Runner *Runner::s_self = 0L;
+    bool    Runner::s_debugCapturingEnabled = false;
 
     void Runner::registerTester(const char *name, Tester *test)
     {
@@ -84,6 +86,11 @@ namespace KUnitTest
         }
     }
 
+    void Runner::setDebugCapturingEnabled(bool enabled)
+    {
+      s_debugCapturingEnabled = enabled;
+    }
+
     RegistryType &Runner::registry()
     {
         return m_registry;
@@ -100,8 +107,6 @@ namespace KUnitTest
 
         return s_self;
     }
-
-    Runner       *Runner::s_self = 0L;
 
     Runner::Runner()
     {
@@ -201,12 +206,18 @@ namespace KUnitTest
         Tester *test = m_registry.find(name);
         if ( test == 0L ) return;
 
-        cout << "KUnitTest_Debug_Start[" << name << "]" << endl;
+        if ( s_debugCapturingEnabled )
+        {
+          cout << "KUnitTest_Debug_Start[" << name << "]" << endl;
+        }
 
         test->results()->clear();
         test->allTests();
 
-        cout << "KUnitTest_Debug_End[" << name << "]" << endl << endl << flush;
+        if ( s_debugCapturingEnabled )
+        {
+          cout << "KUnitTest_Debug_End[" << name << "]" << endl << endl << flush;
+        }
 
         int numPass = 0;
         int numFail = 0;

@@ -41,7 +41,7 @@ static KCmdLineOptions options[] =
 {
     {"query [regexp]", I18N_NOOP("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$"},
     {"folder [folder]", I18N_NOOP("Only run tests modules which are found in the folder. Use the query option to select modules."), "."},
-//    { "+[URL]", I18N_NOOP( "Document to open" ), 0 },
+    { "enable-dbgcap", I18N_NOOP("Disables debug capturing. You typically use this option when you use the GUI."), 0},
     KCmdLineLastOption
 };
 
@@ -59,6 +59,7 @@ int main( int argc, char **argv )
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     KUnitTest::Runner::loadModules(args->getOption("folder"), args->getOption("query"));
+    KUnitTest::Runner::setDebugCapturingEnabled(args->isSet("enable-dbgcap"));
 
     KUnitTest::Runner::self()->runTests();
 
