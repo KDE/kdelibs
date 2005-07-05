@@ -1096,7 +1096,14 @@ void KRecentFilesAction::addURL( const KURL& url )
     QStringList lst = items();
 
     // remove file if already in list
-    lst.remove( file );
+    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
+    {
+      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      {
+        lst.remove( it );
+        break;
+      }
+    }
 
     // remove last item if already maxitems in list
     if( lst.count() == d->m_maxItems )
@@ -1106,7 +1113,36 @@ void KRecentFilesAction::addURL( const KURL& url )
     }
 
     // add file to list
-    lst.prepend( file );
+    lst.prepend( url.fileName() + " [" + file + "]");
+    setItems( lst );
+}
+
+void KRecentFilesAction::addURL( const KURL& url, const QString& name )
+{
+    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
+       return;
+    QString     file = url.pathOrURL();
+    QStringList lst = items();
+
+    // remove file if already in list
+    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
+    {
+      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      {
+        lst.remove( it );
+        break;
+      }
+    } 
+
+    // remove last item if already maxitems in list
+    if( lst.count() == d->m_maxItems )
+    {
+        // remove last item
+        lst.remove( lst.last() );
+    }
+
+    // add file to list
+    lst.prepend( name + " [" + file + "]" );
     setItems( lst );
 }
 
@@ -1116,10 +1152,14 @@ void KRecentFilesAction::removeURL( const KURL& url )
     QString     file = url.pathOrURL();
 
     // remove url
-    if( lst.count() > 0 )
+    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
     {
-        lst.remove( file );
+      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      {
+        lst.remove( it );
         setItems( lst );
+        break;
+      }
     }
 }
 
@@ -1184,12 +1224,24 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 
 void KRecentFilesAction::itemSelected( const QString& text )
 {
-    emit urlSelected( KURL( text ) );
+    QString s = text;
+    if ( s.endsWith("]") )
+    {
+      int pos = s.find("[");
+      s = s.mid( pos + 1, s.length() - pos - 2);
+    }  
+    emit urlSelected( KURL( s ) );
 }
 
 void KRecentFilesAction::menuItemActivated( int id )
 {
-    emit urlSelected( KURL(d->m_popup->text(id)) );
+    QString s = d->m_popup->text(id);
+    if ( s.endsWith("]") )
+    {
+      int pos = s.find("[");
+      s = s.mid( pos + 1, s.length() - pos - 2);
+    }  
+    emit urlSelected( KURL(s) );
 }
 
 void KRecentFilesAction::menuAboutToShow()
@@ -1198,7 +1250,9 @@ void KRecentFilesAction::menuAboutToShow()
     menu->clear();
     QStringList list = items();
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
-        menu->insertItem(*it);
+    {
+       menu->insertItem(*it);
+    }
 }
 
 int KRecentFilesAction::plug( QWidget *widget, int index )
