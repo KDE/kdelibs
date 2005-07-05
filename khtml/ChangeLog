@@ -1,3 +1,9 @@
+2005-07-05  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/htmlparser.cpp(insertElement): Do not create DLs for stray DT and DD
+                             (popBlock): Reopen residual tags
+        * html/dtd.cpp: Allow more elements under DL
+
 2005-06-29  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/htmltokenizer.cpp: Reset discard when encountering tags or entities

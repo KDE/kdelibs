@@ -179,6 +179,7 @@ private:
     int discard_until;
 
     bool headLoaded;
+    int inStrayTableContent;
 
 #if SPEED_DEBUG > 0
     QTime qt;
