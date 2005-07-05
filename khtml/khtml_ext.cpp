@@ -669,7 +669,7 @@ void KHTMLPopupGUIClient::slotBlockImage()
 {
     bool ok=false;
 
-    QString url = KInputDialog::getText( i18n("Add URL to filter"),
+    QString url = KInputDialog::getText( i18n("Add URL to Filter"),
                                          "URL",
                                          d->m_imageURL.url(),
                                          &ok);
