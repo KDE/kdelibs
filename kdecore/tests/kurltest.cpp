@@ -271,10 +271,23 @@ int main(int argc, char *argv[])
   // ignoring trailing slash
   check("KURL::directory(false,true)", u2.directory(false,true), "/home/");
   check("KURL::directory(true,true)", u2.directory(true,true), "/home");
+
+  // cleanPath() tests (before cd() since cd uses that)
+  u2.cleanPath();
+  check("cleanPath(false)", u2.url(), "file:///home/dfaure/");
+  u2.addPath( "/..//foo" );
+  check("addPath", u2.url(), "file:///home/dfaure/..//foo");
+  u2.cleanPath(false);
+  check("cleanPath()", u2.url(), "file:///home//foo");
+  u2.cleanPath(true);
+  check("cleanPath()", u2.url(), "file:///home/foo");
+
   u2.cd("..");
   check("KURL::cd(\"..\")", u2.url(), "file:///home");
   u2.cd("thomas");
   check("KURL::cd(\"thomas\")", u2.url(), "file:///home/thomas");
+  u2.cd("../");
+  check("KURL::cd(\"../\")", u2.url(), "file:///home/");
   u2.cd("/opt/kde/bin/");
   check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:///opt/kde/bin/");
   u2 = "ftp://ftp.kde.org/";
