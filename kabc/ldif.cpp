@@ -72,7 +72,7 @@ Q3CString LDIF::assembleLine( const QString &fieldname, const QByteArray &value,
     }
 
     if ( linelen > 0 ) {
-      i = (fieldname.length()+2) > linelen ? fieldname.length()+2 : linelen;
+      i = (uint)(fieldname.length()+2) > linelen ? fieldname.length()+2 : linelen;
       while ( i < result.length() ) {
         result.insert( i, "\n " );
         i += linelen+2;
@@ -311,7 +311,7 @@ LDIF::ParseVal LDIF::nextItem()
   char c=0;
 
   while( retval == None ) {
-    if ( mPos < mLdif.size() ) {
+    if ( mPos < (uint)mLdif.size() ) {
       c = mLdif[mPos];
       mPos++;
       if ( mIsNewLine && c == '\r' ) continue; //handle \n\r line end
