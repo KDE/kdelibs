@@ -43,6 +43,21 @@
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
 
+//We don't use the default fonts, though, but traditional testregression ones
+#undef HTML_DEFAULT_VIEW_FONT
+#undef HTML_DEFAULT_VIEW_FIXED_FONT
+#undef HTML_DEFAULT_VIEW_SERIF_FONT
+#undef HTML_DEFAULT_VIEW_SANSSERIF_FONT
+#undef HTML_DEFAULT_VIEW_CURSIVE_FONT
+#undef HTML_DEFAULT_VIEW_FANTASY_FONT
+#define HTML_DEFAULT_VIEW_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_FIXED_FONT "courier"
+#define HTML_DEFAULT_VIEW_SERIF_FONT "times"
+#define HTML_DEFAULT_VIEW_SANSSERIF_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
+
+
 #include <kaction.h>
 #include <kcmdlineargs.h>
 #include "khtml_factory.h"
