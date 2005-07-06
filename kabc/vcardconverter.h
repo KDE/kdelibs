@@ -109,27 +109,9 @@ class KABC_EXPORT VCardConverter
     // FIXME: Add error handling
     Addressee::List parseVCards( const QString& vcard );
 
-    // FIXME: Add "bool parseVCards( AddressBook *, const QString &vcard )"
-
-    /**
-      @deprecated
-     */
-    bool vCardToAddressee( const QString&, Addressee &, Version version = v3_0 ) KDE_DEPRECATED;
-
-    /**
-      @deprecated
-     */
-    bool addresseeToVCard( const Addressee&, QString&, Version version = v3_0 ) KDE_DEPRECATED;
-
   private:
-    /**
-      Split a string and replaces escaped separators on the fly with
-      unescaped ones.
-     */
-    QStringList splitString( const QChar &sep, const QString &value );
-
-    struct VCardConverterData;
-    VCardConverterData *d;
+    class VCardConverterPrivate;
+    VCardConverterPrivate *d;
 };
 
 

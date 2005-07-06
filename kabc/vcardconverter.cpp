@@ -18,29 +18,18 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "vcard21parser.h"
-#include "vcardformatimpl.h"
 #include "vcardtool.h"
 
 #include "vcardconverter.h"
 
 using namespace KABC;
 
-struct VCardConverter::VCardConverterData
-{
-  VCard21Parser vcard21parser;
-  VCardFormatImpl vcard30parser;
-};
-
 VCardConverter::VCardConverter()
-  : d( new VCardConverterData )
 {
 }
 
 VCardConverter::~VCardConverter()
 {
-  delete d;
-  d = 0;
 }
 
 QString VCardConverter::createVCard( const Addressee &addr, Version version )
@@ -72,43 +61,16 @@ Addressee::List VCardConverter::parseVCards( const QString& vcard )
   return tool.parseVCards( vcard );
 }
 
-// ---------------------------- deprecated stuff ---------------------------- //
-
-bool VCardConverter::vCardToAddressee( const QString &str, Addressee &addr, Version version )
-{
-  if ( version == v2_1 ) {
-    addr = d->vcard21parser.readFromString( str );
-    return true;
-  }
-
-  if ( version == v3_0 )
-    return d->vcard30parser.readFromString( str, addr );
-
-  return false;
-}
-
-bool VCardConverter::addresseeToVCard( const Addressee &addr, QString &str, Version version )
-{
-  if ( version == v2_1 )
-    return false;
-
-  if ( version == v3_0 )
-    return d->vcard30parser.writeToString( addr, str );
-
-  return false;
-}
-
-
 /* Helper functions */
 
 QString KABC::dateToVCardString( const QDateTime &dateTime )
 {
-  return dateTime.toString("yyyyMMddThhmmssZ");
+  return dateTime.toString( "yyyyMMddThhmmssZ" );
 }
 
 QString KABC::dateToVCardString( const QDate &date )
 {
-  return date.toString("yyyyMMdd");
+  return date.toString( "yyyyMMdd" );
 }
 
 QDateTime KABC::VCardStringToDate( const QString &dateString )
@@ -117,13 +79,13 @@ QDateTime KABC::VCardStringToDate( const QString &dateString )
   QTime time;
   QString d( dateString );
 
-  d = d.remove('-').remove(':');
+  d = d.remove( '-' ).remove( ':' );
 
-  if (d.length()>=8)
-    date = QDate( d.mid(0,4).toUInt(), d.mid(4,2).toUInt(), d.mid(6,2).toUInt() );
-  if (d.length()>9 && d[8].upper()=='T')
-    time = QTime( d.mid(9,2).toUInt(), d.mid(11,2).toUInt(), d.mid(13,2).toUInt() );
+  if ( d.length() >= 8 )
+    date = QDate( d.mid( 0, 4 ).toUInt(), d.mid( 4, 2 ).toUInt(), d.mid( 6, 2 ).toUInt() );
+
+  if ( d.length() > 9 && d[ 8 ].upper() == 'T' )
+    time = QTime( d.mid( 9, 2 ).toUInt(), d.mid( 11, 2 ).toUInt(), d.mid( 13, 2 ).toUInt() );
 
   return QDateTime( date, time );
 }
-
