@@ -2,5 +2,5 @@ SUBDIRS = ktexteditor kscript kregexpeditor kmediaplayer kio terminal khexedit k
 
 DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts dcop
 DOXYGEN_EXCLUDE = kscript/sample
-
+DOXYGEN_SET_RECURSIVE = YES
 include ../admin/Doxyfile.am
