@@ -886,7 +886,7 @@ const QString &KHTMLSettings::availableFamilies()
 QString KHTMLSettings::lookupFont(int i) const
 {
     QString font;
-    if (d->fonts.count() > (uint) i)
+    if (d->fonts.count() > i)
        font = d->fonts[i];
     if (font.isEmpty())
         font = d->defaultFonts[i];
