@@ -135,6 +135,19 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::upURL()", url1.upURL().url(), "file:///opt/kde2/qt2/doc/html/");
 
+  url1 = KURL( QCString( "http://www.kde.org/foo.cgi?foo=bar" ) );
+  check("query", url1.query(), "?foo=bar" );
+  url1.setQuery( "toto=titi&kde=rocks" );
+  check("query", url1.query(), "?toto=titi&kde=rocks" );
+  url1.setQuery( "?kde=rocks&a=b" );
+  check("query", url1.query(), "?kde=rocks&a=b" );
+  url1.setQuery( "?" );
+  check("setQuery(\"?\") -> query", url1.query(), "?" );
+  url1.setQuery( "" );
+  check("setQuery(\"\") -> query", url1.query(), "?" );
+  url1.setQuery( QString::null );
+  check("setQuery(QString::null) -> query", url1.query(), QString::null );
+
   u1 = "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect");

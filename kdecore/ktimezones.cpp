@@ -351,7 +351,6 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
     Q_UINT32 leapSeconds;
     Q_UINT8 isStandard;
     Q_UINT8 isUTC;
-    char *abbr;
 
     bool foundStd = false;
     bool foundDst = dstZone.isEmpty();
@@ -378,7 +377,7 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
     }
     char abbrs[tzh.charcnt];
     str.readRawBytes(abbrs, tzh.charcnt);
-    abbr = abbrs;
+    char* abbr = abbrs;
     while (abbr < abbrs + tzh.charcnt)
     {
         // kdError() << "abbr: " << abbr << endl;
