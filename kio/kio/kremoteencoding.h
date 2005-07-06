@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef KREMOTEENCODING_H
@@ -33,9 +33,9 @@ class KRemoteEncodingPrivate;
  * use this class in order to convert those forms into QStrings before
  * creating the respective KIO::UDSEntry. The same is true for decoding
  * URLs to its components.
- * 
+ *
  * Each KIO::SlaveBase has one object of this kind, even if it is not necessary.
- * It can be accessed through @ref KIO::SlaveBase::remoteEncoding.
+ * It can be accessed through KIO::SlaveBase::remoteEncoding.
  *
  * @short A class for handling remote filenames
  * @author Thiago Macieira <thiago.macieira@kdemail.net>

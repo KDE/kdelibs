@@ -15,8 +15,8 @@
 
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+  Boston, MA 02110-1301, USA.
 */
 #ifndef MODLOADER_H
 #define MODLOADER_H
@@ -97,7 +97,7 @@ class KUTILS_EXPORT KCModuleLoader
     /**
      * Loads a @ref KCModule. If loading fails a zero pointer is returned.
      * @param module what module to load
-     * @param report @see ErrorReporting
+     * @param report see ErrorReporting
      * @param withFallback if true and loading failed a separate window
      * with the module may appear and a zero pointer is a returned
      *
@@ -111,7 +111,7 @@ class KUTILS_EXPORT KCModuleLoader
     /**
      * Loads a @ref KCModule. If loading fails a zero pointer is returned.
      * @param module what module to load
-     * @param report @see ErrorReporting
+     * @param report see ErrorReporting
      * with the module may appear and a zero pointer is a returned
      *
      * @return a pointer to the loaded @ref KCModule
@@ -177,9 +177,9 @@ class KUTILS_EXPORT KCModuleLoader
     static bool testModule( const KCModuleInfo& module );
 
     /**
-     * Returns a @see KCModule containing the messages @p report and @p text.
+     * Returns a KCModule containing the messages @p report and @p text.
      *
-     * @param report the type of error reporting, @see ErrorReporting
+     * @param report the type of error reporting, see ErrorReporting
      * @param text the main message
      * @param details any additional details
      *

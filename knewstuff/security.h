@@ -91,11 +91,11 @@ public slots:
   void readKeys();
   /** Reads the available secret keys */
   void readSecretKeys();
-  /** Verifies the integrity and the signature of a tarball file (@see m_fileName).
+  /** Verifies the integrity and the signature of a tarball file (see m_fileName).
    */
   void slotCheckValidity();
 
-  /** Creates a signature and an md5sum file for the @see m_fileName and packs
+  /** Creates a signature and an md5sum file for the m_fileName and packs
    * everything into a gzipped tarball.
    */
   void slotSignFile();

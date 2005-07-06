@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef KABC_KEY_H
@@ -56,7 +56,7 @@ public:
    * Constructor.
    *
    * @param text  The text data.
-   * @param type  The key type, @see Types.
+   * @param type  The key type, see Types.
    */
   Key( const QString &text = QString::null, int type = PGP );
 
@@ -104,7 +104,7 @@ public:
   bool isBinary() const;
 
   /**
-   * Sets the type, @see Type.
+   * Sets the type, see Type.
    */
   void setType( int type );
 
@@ -114,7 +114,7 @@ public:
   void setCustomTypeString( const QString &custom );
 
   /**
-   * Returns the type, @see Type.
+   * Returns the type, see Type.
    */
   int type() const;
 

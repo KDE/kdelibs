@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 #ifndef __kar_h
 #define __kar_h
@@ -68,19 +68,19 @@ public:
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool prepareWriting( const QString&, const QString&, const QString&, uint ) { return false; }
+    virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) { return false; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool doneWriting( uint ) { return false; }
+    virtual bool doneWriting( uint size ) { return false; }
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool writeDir( const QString&, const QString&, const QString& )  { return false; }
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group )  { return false; }
 
 protected:
     /**

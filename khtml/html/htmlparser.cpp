@@ -19,13 +19,13 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-//#define PARSER_DEBUG
+// #define PARSER_DEBUG
 
 #include "dom/dom_exception.h"
 
@@ -77,6 +77,7 @@ public:
         :
         id(_id),
         level(_level),
+        strayTableContent(false),
 	m_inline(_inline),
         node(_node),
         next(_next)
@@ -87,6 +88,7 @@ public:
 
     int       id;
     int       level;
+    bool      strayTableContent;
     bool m_inline;
     NodeImpl *node;
     HTMLStackElem *next;
@@ -184,8 +186,8 @@ void KHTMLParser::reset()
     haveContent = false;
     haveBody = false;
     haveTitle = false;
-    haveMalformedTable = false;
     inSelect = false;
+    inStrayTableContent = 0;
     m_inline = false;
 
     form = 0;
@@ -300,6 +302,12 @@ void KHTMLParser::parseToken(Token *t)
     }
 }
 
+static bool isTableRelatedTag(int id)
+{
+    return (id == ID_TR || id == ID_TD || id == ID_TABLE || id == ID_TBODY || id == ID_TFOOT || id == ID_THEAD ||
+            id == ID_TH);
+}
+
 bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 {
     int id = n->id();
@@ -354,6 +362,16 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         // switch according to the element to insert
         switch(id)
         {
+        case ID_TR:
+        case ID_TH:
+        case ID_TD:
+            if (inStrayTableContent && !isTableRelatedTag(current->id())) {
+                // pop out to the nearest enclosing table-related tag.
+                while (blockStack && !isTableRelatedTag(current->id()))
+                    popOneBlock();
+                return insertNode(n);
+            }
+            break;
         case ID_COMMENT:
             break;
         case ID_HEAD:
@@ -481,20 +499,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             };
             break;
         }
-         case ID_DL:
-             popBlock( ID_DT );
-             if ( current->id() == ID_DL ) {
-                 e = new HTMLGenericElementImpl( document, ID_DD );
-                 insertNode( e );
-                 handled = true;
-             }
-             break;
-        case ID_DD:
-            popBlock( ID_DD );
-            /* nobreak */
-        case ID_DT:
-            if ( checkChild( current->id(), ID_DL ) ) {
-                e = new HTMLDListElementImpl( document );
+        case ID_DL:
+            popBlock( ID_DT );
+            if ( current->id() == ID_DL ) {
+                e = new HTMLGenericElementImpl( document, ID_DD );
                 insertNode( e );
                 handled = true;
             }
@@ -532,8 +540,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     table->insertBefore(n, tsection, exceptioncode);
                     pushBlock(id, tagPriority[id]);
                     setCurrent(n);
-                    //inStrayTableContent++;
-                    //blockStack->strayTableContent = true;
+                    inStrayTableContent++;
+                    blockStack->strayTableContent = true;
                     return true;
                 }
                 default:
@@ -545,16 +553,13 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         case ID_THEAD:
         case ID_TBODY:
         case ID_TFOOT:
-        case ID_TR:
-        case ID_TD:
-        case ID_TH:
-            // lets try to close the stray table content
-            if ( haveMalformedTable ) {
-                while (haveMalformedTable)
+        case ID_COLGROUP: {
+            if (isTableRelatedTag(current->id())) {
+                while (blockStack && current->id() != ID_TABLE && isTableRelatedTag(current->id()))
                     popOneBlock();
-                handled = true;
-                break;
+                return insertNode(n);
             }
+        }
         default:
             break;
         }
@@ -612,6 +617,19 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_BODY:
             break;
+        case ID_CAPTION:
+            // Illegal content in a caption. Close the caption and try again.
+            popBlock(ID_CAPTION);
+            switch( id ) {
+            case ID_THEAD:
+            case ID_TFOOT:
+            case ID_TBODY:
+            case ID_TR:
+            case ID_TD:
+            case ID_TH:
+                return insertNode(n, flat);
+            }
+            break;
         case ID_TABLE:
         case ID_THEAD:
         case ID_TFOOT:
@@ -657,7 +675,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 
                         pushBlock(id, tagPriority[id]);
                         setCurrent ( n );
-                        haveMalformedTable = true;
+                        inStrayTableContent++;
+                        blockStack->strayTableContent = true;
                     }
                     return true;
                 }
@@ -688,8 +707,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             handled = true;
             break;
         case ID_DL:
-            e = new HTMLGenericElementImpl( document, ID_DT );
-            insertNode( e );
+            popBlock(ID_DL);
+            handled = true;
+            break;
+        case ID_DT:
+            popBlock(ID_DT);
             handled = true;
             break;
         case ID_SELECT:
@@ -710,9 +732,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             }
             break;
         case ID_OPTION:
+        case ID_OPTGROUP:
             if (id == ID_OPTGROUP)
             {
-                popBlock(ID_OPTION);
+                popBlock(current->id());
                 handled = true;
             }
             else if(id == ID_SELECT)
@@ -727,7 +750,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         case ID_ADDRESS:
         case ID_COLGROUP:
         case ID_FONT:
-        case ID_CAPTION:
             popBlock(current->id());
             handled = true;
             break;
@@ -960,8 +982,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // anchor
     case ID_A:
-        if (blockStack && blockStack->id == ID_A)
-            popBlock(ID_A);
+        popBlock(ID_A);
 
         n = new HTMLAnchorElementImpl(document);
         break;
@@ -1181,7 +1202,6 @@ bool KHTMLParser::isResidualStyleTag(int _id)
     switch (_id) {
         case ID_A:
         case ID_FONT:
-        case ID_SPAN:
         case ID_TT:
         case ID_U:
         case ID_B:
@@ -1422,11 +1442,9 @@ void KHTMLParser::reopenResidualStyleTags(HTMLStackElem* elem, DOM::NodeImpl* ma
 
         // Set our strayTableContent boolean if needed, so that the reopened tag also knows
         // that it is inside a malformed table.
-#ifdef APPLE_CHANGES
         blockStack->strayTableContent = malformedTableParent != 0;
         if (blockStack->strayTableContent)
             inStrayTableContent++;
-#endif
 
         // Clear our malformed table parent variable.
         malformedTableParent = 0;
@@ -1484,6 +1502,7 @@ void KHTMLParser::popBlock( int _id )
 
     bool isAffectedByStyle = isAffectedByResidualStyle(Elem->id);
     HTMLStackElem* residualStyleStack = 0;
+    NodeImpl* malformedTableParent = 0;
 
     Elem = blockStack;
 
@@ -1491,8 +1510,20 @@ void KHTMLParser::popBlock( int _id )
     {
         if (Elem->id == _id)
         {
+            int strayTable = inStrayTableContent;
             popOneBlock();
             Elem = 0;
+
+            // This element was the root of some malformed content just inside an implicit or
+            // explicit <tbody> or <tr>.
+            // If we end up needing to reopen residual style tags, the root of the reopened chain
+            // must also know that it is the root of malformed content inside a <tbody>/<tr>.
+            if (strayTable && (inStrayTableContent < strayTable) && residualStyleStack) {
+                NodeImpl* curr = current;
+                while (curr && curr->id() != ID_TABLE)
+                    curr = curr->parentNode();
+                malformedTableParent = curr ? curr->parentNode() : 0;
+            }
         }
         else
         {
@@ -1518,6 +1549,8 @@ void KHTMLParser::popBlock( int _id )
             Elem = blockStack;
         }
     }
+
+    reopenResidualStyleTags(residualStyleStack, malformedTableParent);
 }
 
 void KHTMLParser::popOneBlock(bool delBlock)
@@ -1550,18 +1583,13 @@ void KHTMLParser::popOneBlock(bool delBlock)
 
     m_inline = Elem->m_inline;
 
-    if (current->id() == ID_FORM && form && haveMalformedTable)
+    if (current->id() == ID_FORM && form && inStrayTableContent)
         form->setMalformed(true);
 
     setCurrent( Elem->node );
 
-    if (haveMalformedTable && (!current ||
-                               current->id() == ID_TR ||
-                               current->id() == ID_THEAD ||
-                               current->id() == ID_TBODY ||
-                               current->id() == ID_TFOOT ||
-                               current->id() == ID_TABLE ) )
-        haveMalformedTable = false;
+    if (Elem->strayTableContent)
+        inStrayTableContent--;
 
     if (delBlock)
         delete Elem;

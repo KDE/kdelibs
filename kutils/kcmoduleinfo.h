@@ -5,7 +5,7 @@
   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
 
   This file is part of the KDE project
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
   License version 2, as published by the Free Software Foundation.
@@ -17,8 +17,8 @@
 
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+  Boston, MA 02110-1301, USA.
 */
 
 #ifndef KCMODULEINFO_H
@@ -31,15 +31,15 @@ class QString;
 class QStringList;
 
 /**
- * A class that provides information about a @ref KCModule
+ * A class that provides information about a KCModule
  *
- * KCModuleInfo provides various technical information, such as icon, library 
+ * KCModuleInfo provides various technical information, such as icon, library
  * etc. about a KCModule.n
- * @note Any values set with the set* functions is not 
+ * @note Any values set with the set* functions is not
  * written back with KCModuleInfo it only reads value from the desktop file.
- * 
+ *
  * @internal
- * @author Matthias Hoelzer-Kluepfel <mhk@kde.org> 
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @author Matthias Elter <elter@kde.org>
  * @author Daniel Molkentin <molkentin@kde.org>
  * @since 3.2
@@ -51,16 +51,16 @@ class KUTILS_EXPORT KCModuleInfo
 public:
 
   /**
-   * Constructs a KCModuleInfo. 
-   * @note a KCModuleInfo object will have to be manually deleted, it is not 
+   * Constructs a KCModuleInfo.
+   * @note a KCModuleInfo object will have to be manually deleted, it is not
    * done automatically for you.
-   * @param desktopFile the desktop file representing the module, or 
+   * @param desktopFile the desktop file representing the module, or
    * the name of the module.
    */
   KCModuleInfo(const QString& desktopFile);
 
   /**
-   * Same as above but takes a @ref KService::Ptr as argument.
+   * Same as above but takes a KService::Ptr as argument.
    *
    * @note @p moduleInfo must be a valid pointer.
    *
@@ -70,8 +70,8 @@ public:
 
 
   /**
-   * Same as above but takes a @ref KCModuleInfo as argument.
-   * 
+   * Same as above but takes a KCModuleInfo as argument.
+   *
    * @param rhs specifies the module
    */
   KCModuleInfo( const KCModuleInfo &rhs );
@@ -179,7 +179,7 @@ public:
 
 
   /**
-   * @returns true if the module should be conditionally 
+   * @returns true if the module should be conditionally
    * loaded.
    * @since 3.4
    */
@@ -225,7 +225,7 @@ protected:
   void setHandle(const QString &handle) { _handle = handle; };
 
   /**
-   * Sets the object's weight property which determines in what 
+   * Sets the object's weight property which determines in what
    * order modules will be displayed. Default is 100.
    *
    * @param weight the new weight
@@ -241,7 +241,7 @@ protected:
   void setNeedsTest( bool val );
 
   /**
-   * Toggles whether the represented module needs root privileges. 
+   * Toggles whether the represented module needs root privileges.
    * Use with caution.
    * @param needsRootPrivileges if module needs root privilges
    */
@@ -261,8 +261,8 @@ protected:
   void setDocPath(const QString &p) { _doc = p; };
 
   /**
-   * Reads the service entries specific for @ref KCModule from the desktop file. 
-   * The usual desktop entries are read in @see init.
+   * Reads the service entries specific for KCModule from the desktop file.
+   * The usual desktop entries are read in init.
    */
   void loadAll();
 
@@ -278,7 +278,7 @@ private:
   // KDE4 These needs to be moved to KCModuleInfoPrivate
   QStringList _keywords;
   QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
-  bool        _needsRootPrivileges : 1; 
+  bool        _needsRootPrivileges : 1;
   bool        _isHiddenByDefault : 1;
   bool        _allLoaded : 1;
   int         _weight;
@@ -287,7 +287,7 @@ private:
 
   class KCModuleInfoPrivate;
   KCModuleInfoPrivate *d;
-  
+
 };
 
 #endif // KCMODULEINFO_H

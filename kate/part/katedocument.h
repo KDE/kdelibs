@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _KATE_DOCUMENT_H_
@@ -203,7 +203,7 @@ class KateDocument : public KTextEditor::Document,
      * @param withUndo if true, add undo history
      */
     void editStart (bool withUndo = true, KTextEditor::View *view = 0);
-    /** @see Same as editStart() with undo */
+    /** Same as editStart() with undo */
     void editBegin (KTextEditor::View *view = 0) { editStart(true, view); }
     /**
      * End a editor operation.
@@ -451,7 +451,7 @@ class KateDocument : public KTextEditor::Document,
     /**
      * @return the name of the mimetype for the document.
      *
-     * This method is using @see KMimeType::findByURL, and if the pointer
+     * This method is using KMimeType::findByURL, and if the pointer
      * is then still the default MimeType for a nonlocal or unsaved file,
      * uses mimeTypeForContent().
      *

@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef __KPROCCTRL_H__
@@ -43,13 +43,13 @@ class KDECORE_EXPORT KProcessController : public QObject
 public:
   /**
    * Create an instance if none exists yet.
-   * Called by @see KApplication::KApplication()
+   * Called by KApplication::KApplication()
    */
   static void ref();
 
   /**
    * Destroy the instance if one exists and it is not referenced any more.
-   * Called by @see KApplication::~KApplication()
+   * Called by KApplication::~KApplication()
    */
   static void deref();
 

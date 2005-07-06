@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 
 */
 
@@ -88,7 +88,7 @@ public:
      * @param user3 User button3 text item.
      * @param buttonMask Specifies which buttons will be visible. If zero
      *        (0) no extra buttons will be added. You can only use the User2 and
-     *        User3 buttons. The User1 button is already used internally. @see
+     *        User3 buttons. The User1 button is already used internally.  See
      *        KDialogBase for more information on this.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.

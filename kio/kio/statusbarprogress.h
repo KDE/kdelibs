@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef __statusbarprogress_h__
@@ -80,7 +80,7 @@ public:
 
 public slots:
   virtual void slotClean();
-  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t bytes );
+  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t size );
   virtual void slotPercent( KIO::Job* job, unsigned long percent );
   virtual void slotSpeed( KIO::Job* job, unsigned long speed );
 

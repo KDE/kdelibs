@@ -12,8 +12,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 
 */
 
@@ -49,6 +49,7 @@ public:
 	 * @param server The server where it should play to.
 	 * @param title The title that is shown in the AudioManager.
 	 * @param parent You will propably want to pass the server as parent to so this stream gets deleted before the server disappears.
+	 * @param name The name of the stream.
 	*/
 	KAudioPlayStream( KArtsServer* server, const QString title, QObject* parent=0, const char* name=0 );
 	/**
@@ -57,8 +58,8 @@ public:
 	~KAudioPlayStream();
 
 	/**
-	 * Controls wether this Stream should poll the data from you via the signal @see requestData()
-	 * or you use @see write() to fill the inputbuffer.
+	 * Controls wether this Stream should poll the data from you via the signal requestData()
+	 * or you use write() to fill the inputbuffer.
 	 *
 	 * Default is true
 	*/
@@ -93,7 +94,7 @@ public slots:
 
 	/**
 	 * Write data into the inputbuffer.
-	 * If you ignore the signal @see noData() it will play 0 ( silence ).
+	 * If you ignore the signal noData() it will play 0 ( silence ).
 	*/
 	void write( QByteArray& data );
 signals:

@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 #ifndef __karchive_h
 #define __karchive_h
@@ -134,9 +134,10 @@ public:
      * @param name the name of the directory
      * @param user the user that owns the directory
      * @param group the group that owns the directory
+     *
      * @todo TODO(BIC): make this a thin wrapper around
      * writeDir(name,user,group,perm,atime,mtime,ctime)
-     * or elimitate it
+     * or eliminate it
      */
     virtual bool writeDir( const QString& name, const QString& user, const QString& group ) = 0;
 
@@ -229,8 +230,10 @@ public:
      * @param user the user that owns the file
      * @param group the group that owns the file
      * @param size the size of the file
+     *
      * @todo TODO(BIC): make this a thin non-virtual wrapper around
-     *   prepareWriting(name,user,group,size,perm,atime,mtime,ctime) or eliminate it.
+     * prepareWriting(name,user,group,size,perm,atime,mtime,ctime)
+     * or eliminate it.
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
 
@@ -522,7 +525,7 @@ public:
     void setSize( int s ) { m_size = s; }
 
     /**
-     * Returns the data of the file. 
+     * Returns the data of the file.
      * Call data() with care (only once per file), this data isn't cached.
      * @return the content of this file.
      */

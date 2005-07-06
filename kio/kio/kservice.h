@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef __kservices_h__
@@ -58,7 +58,7 @@ public:
   /**
    * Construct a temporary service with a given name, exec-line and icon.
    * @param _name the name of the service
-   * @param _exec the executable 
+   * @param _exec the executable
    * @param _icon the name of the icon
    */
   KService( const QString & _name, const QString &_exec, const QString &_icon);
@@ -152,7 +152,7 @@ public:
    */
   bool substituteUid() const;
   /**
-   * Returns the user name, if the service runs with a 
+   * Returns the user name, if the service runs with a
    * different user id.
    * @return the username under which the service has to be run,
    *         or QString::null if not set
@@ -235,16 +235,16 @@ public:
   /**
    * Returns the generic name for the service, if there is one
    * (e.g. "Mail Client").
-   * @return the generic name, 
+   * @return the generic name,
    *         or QString::null if not set
    */
   QString genericName() const { return m_strGenName; }
 
   /**
-   * Returns the untranslated (US English) generic name 
+   * Returns the untranslated (US English) generic name
    * for the service, if there is one
    * (e.g. "Mail Client").
-   * @return the generic name, 
+   * @return the generic name,
    *         or QString::null if not set
    * @since 3.2
    */
@@ -280,8 +280,8 @@ public:
   bool hasServiceType( const QString& _service ) const;
   /**
    * Checks whether a service is used as a default setting, for
-   *         example as plugin in a file manager. Usually that is the 
-   *         case, but some services may only be started when the user 
+   *         example as plugin in a file manager. Usually that is the
+   *         case, but some services may only be started when the user
    *         selected them. This kind of services returns false here.
    * @return true if the service may be used as a default setting
    */
@@ -304,7 +304,7 @@ public:
   int initialPreference() const { return m_initialPreference; }
 
   /**
-   * What preference to associate with this service initially 
+   * What preference to associate with this service initially
    * for handling the specified mimetype. (before the user has
    * had any chance to define a profile for it).
    * The bigger the value, the most preferred the service is.
@@ -339,7 +339,7 @@ public:
    *
    * It depends upon the serviceTypes() of this service which
    * properties a service can have.
-   * 
+   *
    * @param _name the name of the property
    * @return the property, or invalid if not found
    * @see KServiceType
@@ -348,7 +348,7 @@ public:
 
   /**
    * Returns the requested property.
-   * 
+   *
    * @param _name the name of the property
    * @param t the assumed type of the property
    * @return the property, or invalid if not found
@@ -416,8 +416,8 @@ public:
   static Ptr serviceByName( const QString& _name );
 
   /**
-   * Find a service based on its path as returned by @ref desktopEntryPath().
-   * It's usually better to use @ref serviceByStorageId() instead.
+   * Find a service based on its path as returned by desktopEntryPath().
+   * It's usually better to use serviceByStorageId() instead.
    *
    * @param _path the path of the configuration file
    * @return a pointer to the requested service or 0 if the service is
@@ -454,7 +454,7 @@ public:
   static Ptr serviceByMenuId( const QString& _menuId );
 
   /**
-   * Find a service by its storage-id or desktop-file path. This 
+   * Find a service by its storage-id or desktop-file path. This
    * function will try very hard to find a matching service.
    *
    * @param _storageId the storage id or desktop-file path of the service
@@ -484,12 +484,12 @@ public:
    */
   static List allInitServices();
 
-  /** 
+  /**
    * Returns a path that can be used to create a new KService based
    * on @p suggestedName.
    * @param showInMenu true, if the service should be shown in the KDE menu
    *        false, if the service should be hidden from the menu
-   * @param suggestedName name to base the file on, if a service with such 
+   * @param suggestedName name to base the file on, if a service with such
    *        name already exists, a prefix will be added to make it unique.
    * @param menuId If provided, menuId will be set to the menu id to use for
    *        the KService
@@ -502,8 +502,8 @@ public:
   static QString newServicePath(bool showInMenu, const QString &suggestedName,
                                 QString *menuId = 0,
                                 const QStringList *reservedMenuIds = 0);
-                                
-                                
+
+
   /**
    * Rebuild KSycoca and show a progress dialog while doing so.
    * @param parent Parent widget for the progress dialog

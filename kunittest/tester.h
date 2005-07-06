@@ -680,7 +680,6 @@ namespace KUnitTest
 
         void allTests();
 
-        // using Tester::results; // won't compile with gcc-2.95
         virtual TestResults *results() const { return Tester::results(); }
 
         /// Create or return TestResults for a given slot - used internally

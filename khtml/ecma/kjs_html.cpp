@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU Library General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "misc/loader.h"
@@ -203,19 +203,15 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
   //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
-  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  DOM::DocumentImpl* docImpl = static_cast<DOM::DocumentImpl*>(doc.handle());
+  KHTMLView *view = docImpl->view();
   Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
   if ( !win || !win->isSafeScript(exec) )
     return false;
 
-  // Keep in sync with tryGet
-  NamedTagLengthDeterminer::TagLength tags[4] = {
-      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-  };
-  NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
-  for (int i = 0; i < 4; i++)
-    if (tags[i].length > 0)
-        return true;
+  
+  if ( docImpl->underDocNamedCache().contains( p.qstring() ) )
+    return true;
 
   if ( view && view->part() )
   {
@@ -234,7 +230,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
 #endif
 
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
-  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  DOM::DocumentImpl* docImpl = static_cast<DOM::DocumentImpl*>(doc.handle());
+  KHTMLView *view = docImpl->view();
 
   Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
   if ( !win || !win->isSafeScript(exec) )
@@ -245,18 +242,32 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   // Check for forms with name==propertyName, return item or list if found
   // Note that document.myform should only look at forms
   // Check for applets with name==propertyName, return item or list if found
+  
+  //But first, go through the cache
+  ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
+  if (info) {
+    if (info->nd)
+      return getDOMNode(exec, info->nd);
+    else {
+      //No cached mapping, do it by hand
+      NamedTagLengthDeterminer::TagLength tags[4] = {
+          {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
+      };
+      NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
+      for (int i = 0; i < 4; i++) {
+        if (tags[i].length > 0)  {
+          if (tags[i].length == 1) {
+            //Have a single answer -> cache
+            info->nd = tags[i].last;
+            return getDOMNode(exec, tags[i].last);
+          }
 
-  NamedTagLengthDeterminer::TagLength tags[4] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-  };
-  NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
-  for (int i = 0; i < 4; i++)
-    if (tags[i].length > 0) {
-      if (tags[i].length == 1)
-        return getDOMNode(exec, tags[i].last);
-      // Get all the items with the same name
-      return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.string())));
+          // Get all the items with the same name
+          return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, propertyName.string())));
+        }
+      }
     }
+  }
 
   // Check for frames/iframes with name==propertyName
   if ( view && view->part() )

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 #ifndef __kio_observer_h__
 #define __kio_observer_h__
@@ -186,7 +186,7 @@ public slots:
   void slotProcessedFiles( KIO::Job*, unsigned long files );
   void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  void slotSpeed( KIO::Job*, unsigned long speed );
   void slotPercent( KIO::Job*, unsigned long percent );
   void slotInfoMessage( KIO::Job*, const QString & msg );
 

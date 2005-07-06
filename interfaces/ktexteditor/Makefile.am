@@ -24,3 +24,6 @@ kcm_ktexteditor_DATA = kcm_ktexteditor.desktop
 kcm_ktexteditordir = $(kde_datadir)/kcm_componentchooser
 
 templateinterface.lo: $(top_builddir)/kabc/addressee.h
+
+include ../../admin/Doxyfile.am
+

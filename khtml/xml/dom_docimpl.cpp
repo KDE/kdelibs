@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #include "dom/dom_exception.h"
@@ -219,6 +219,66 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 }
 
 // ------------------------------------------------------------------------
+
+ElementMappingCache::ElementMappingCache():m_dict(71)
+{}
+
+void ElementMappingCache::add(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    if (info)
+    {
+        info->ref++;
+        info->nd = 0; //Now ambigous
+    }
+    else
+    {
+        ItemInfo* info = new ItemInfo();
+        info->ref = 1;
+        info->nd  = nd;
+        m_dict.insert(id, info);
+    }
+}
+
+void ElementMappingCache::set(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    info->nd = nd;
+}
+
+void ElementMappingCache::remove(const QString& id, NodeImpl* nd)
+{
+    if (id.isEmpty()) return;
+
+    ItemInfo* info = m_dict.find(id);
+    info->ref--;
+    if (info->ref == 0)
+    {
+        m_dict.take(id);
+        delete info;
+    }
+    else
+    {
+        if (info->nd == nd)
+            info->nd = 0;
+    }
+}
+
+bool ElementMappingCache::contains(const QString& id)
+{
+    if (id.isEmpty()) return false;
+    return m_dict.find(id);
+}
+
+ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
+{
+    if (id.isEmpty()) return 0;
+    return m_dict.find(id);
+}
 
 static KStaticDeleter< Q3PtrList<DocumentImpl> > s_changedDocumentsDeleter;
 Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;

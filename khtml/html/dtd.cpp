@@ -15,8 +15,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 
@@ -594,7 +594,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_NOBR:
     case ID_WBR:
         // _1 *
-        return check_array(childID, tag_list_1);
+        return check_array(childID, tag_list_1) || check_array(childID, tag_list_6);
     case ID_P:
     case ID_H1:
     case ID_H2:
@@ -665,7 +665,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         return check_array(childID, tag_list_1);
     case ID_DL:
         // DL: _6 +
-        return check_array(childID, tag_list_6);
+        return check_array(childID, tag_list_6) || check_array(childID, tag_list_1);
     case ID_OL:
     case ID_UL:
         // OL: LI +
@@ -679,8 +679,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // FORM: _1 * - FORM
         return check_array(childID, tag_list_1);
     case ID_LABEL:
-        // LABEL: _0 * - LABEL
-        return check_array(childID, tag_list_0);
+        // LABEL: _1 * - LABEL
+        return check_array(childID, tag_list_1);
         // KEYGEN does not really allow any children
         // from outside, just need this to be able
         // to add the keylengths ourself

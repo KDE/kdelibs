@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef __konq_htmlsettings_h__
@@ -110,6 +110,7 @@ public:
     void init();
 
     /** Read settings from @p config.
+     * @param config is a pointer to KConfig object.
      * @param reset if true, settings are always set; if false,
      *  settings are only set if the config file has a corresponding key.
      */
@@ -191,6 +192,8 @@ public:
 
     /** reads from @p config's current group, forcing initialization
       * if @p reset is true.
+      * @param config is a pointer to KConfig object.
+      * @param reset true if initialization is to be forced.
       * @param global true if the global domain is to be read.
       * @param pd_settings will be initialised with the computed (inherited)
       *		settings.
@@ -209,7 +212,7 @@ public:
 
     // Meta refresh/redirect (http-equiv)
     bool isAutoDelayedActionsEnabled () const;
-    
+
     Q3ValueList< QPair< QString, QChar > > fallbackAccessKeysAssignments() const;
 
     // Whether to show passive popup when windows are blocked

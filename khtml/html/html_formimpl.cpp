@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 
@@ -708,11 +708,30 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onreset", this));
         break;
     case ATTR_ID:
+	break;
     case ATTR_NAME:
+        //### why doesn't this call down?
+        if (inDocument() && m_name != attr->value()) {
+            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
+            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+        }
+        m_name = attr->value();
 	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
+}
+
+void HTMLFormElementImpl::removedFromDocument()
+{
+    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    HTMLElementImpl::removedFromDocument();
+}
+
+void HTMLFormElementImpl::insertedIntoDocument()
+{
+    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    HTMLElementImpl::insertedIntoDocument();
 }
 
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )

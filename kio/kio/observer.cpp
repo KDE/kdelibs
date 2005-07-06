@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #include <assert.h>
@@ -156,10 +156,10 @@ void Observer::slotProcessedDirs( KIO::Job* job, unsigned long dirs )
   m_uiserver->processedDirs( job->progressId(), dirs );
 }
 
-void Observer::slotSpeed( KIO::Job* job, unsigned long bytes_per_second )
+void Observer::slotSpeed( KIO::Job* job, unsigned long speed )
 {
-  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
-  m_uiserver->speed( job->progressId(), bytes_per_second );
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotSpeed " << job << " " << speed << endl;
+  m_uiserver->speed( job->progressId(), speed );
 }
 
 void Observer::slotPercent( KIO::Job* job, unsigned long percent )

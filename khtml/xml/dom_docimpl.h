@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 
@@ -124,6 +124,55 @@ protected:
     static DOMImplementationImpl *m_instance;
 };
 
+/**
+ * @internal A cache of element name (or id) to pointer
+ * ### KDE4, QHash: better to store values here
+ */
+class ElementMappingCache
+{
+public:
+    /**
+     For each name, we hold a reference count, and a 
+     pointer. If the item is in the table, which implies 
+     reference count is > 1, the name is a valid key. 
+     If the pointer is non-null, it points to the appropriate 
+     mapping
+    */
+    struct ItemInfo
+    {
+        int       ref;
+        NodeImpl* nd;
+    };
+
+    ElementMappingCache();
+
+    /**
+     Add a pointer as just one of candidates, not neccesserily the proper one
+    */
+    void add(const QString& id, NodeImpl* nd);
+    
+    /**
+     Set the pointer as the definite mapping; it must have already been added
+    */
+    void set(const QString& id, NodeImpl* nd);
+
+    /**
+     Remove the item; it must have already been added.
+    */
+    void remove(const QString& id, NodeImpl* nd);
+
+    /**
+     Returns true if the item exists
+    */
+    bool contains(const QString& id);
+
+    /**
+     Returns the information for the given ID
+    */
+    ItemInfo* get(const QString& id);
+private:
+    QDict<ItemInfo> m_dict;
+};
 
 /**
  * @internal
@@ -467,6 +516,12 @@ public:
     void setCounters(const khtml::RenderObject* o, Q3Dict<khtml::CounterNode> *dict) { m_counterDict.insert((void*)o, dict);}
     void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
 
+
+    ElementMappingCache& underDocNamedCache()
+    {
+        return m_underDocNamedCache;
+    }
+
 signals:
     void finishedParsing();
 
@@ -556,6 +611,9 @@ protected:
     khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
 
     int m_decoderMibEnum;
+
+    //Forms, images, etc., must be quickly accessible via document.name.
+    ElementMappingCache m_underDocNamedCache;
 
     Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
     Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #include <qfontdatabase.h>
@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <qregexp.h>
 #include <q3valuevector.h>
+#include <kmessagebox.h>
 
 /**
  * @internal
@@ -326,6 +327,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       {
           QString name = it.key();
           QString value = it.data();
+
+          if (value.startsWith("!"))
+              continue;
 
           if (name.startsWith("Filter"))
           {
@@ -723,20 +727,41 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     }
     return false;
 }
+
 void KHTMLSettings::addAdFilter( const QString &url )
 {   
     KConfig config( "khtmlrc", false, false );
     config.setGroup( "Filter Settings" );
 
-    int last=config.readNumEntry("Count",0);
-    QString key = "Filter-" + QString::number(last);
-    config.writeEntry(key, url);
-    config.writeEntry("Count",last+1);
-    config.sync();
+    QRegExp rx;
+    if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
+    {
+        QString inside = url.mid(1, url.length()-2);
+        rx.setWildcard(false);
+        rx.setPattern(inside);
+    }
+    else
+    {
+        rx.setWildcard(true);
+        rx.setPattern(url);
+    }
 
-    QRegExp rx(url);
-    rx.setWildcard(true);
-    d->adFilters.append(rx);
+    if (rx.isValid())
+    {
+        int last=config.readNumEntry("Count",0);
+        QString key = "Filter-" + QString::number(last);
+        config.writeEntry(key, url);
+        config.writeEntry("Count",last+1);
+        config.sync();
+
+        d->adFilters.append(rx);
+    }
+    else
+    {
+        KMessageBox::error(0,
+                           rx.errorString(),
+                           i18n("Filter error"));
+    }
 }   
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )

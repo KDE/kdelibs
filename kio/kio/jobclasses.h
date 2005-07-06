@@ -15,8 +15,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef __kio_jobclasses_h__
@@ -185,7 +185,7 @@ namespace KIO {
          * @since 3.4.1
          */
         void setInteractive(bool enable);
-	
+
         /**
          * Returns whether message display is enabled or disabled.
          * See also setInteractive .
@@ -355,9 +355,9 @@ namespace KIO {
         /**
          * Emitted to display information about the speed of this job.
 	 * @param job the job that emitted this signal
-	 * @param bytes_per_second the speed in bytes/s
+	 * @param speed the speed in bytes/s
          */
-        void speed( KIO::Job *job, unsigned long bytes_per_second );
+        void speed( KIO::Job *job, unsigned long speed );
 
     protected slots:
         /**
@@ -373,10 +373,10 @@ namespace KIO {
         /**
          * Forward signal from subjob.
 	 * @param job the subjob
-	 * @param bytes_per_second the speed in bytes/s
+	 * @param speed the speed in bytes/s
 	 * @see speed()
          */
-        void slotSpeed( KIO::Job *job, unsigned long bytes_per_second );
+        void slotSpeed( KIO::Job *job, unsigned long speed );
         /**
          * Forward signal from subjob.
 	 * @param job the subjob
@@ -435,9 +435,9 @@ namespace KIO {
          * Utility function for inherited jobs.
          * Emits the speed signal and starts the timer for removing that info
 	 *
-	 * @param bytes_per_second the speed in bytes_per_second
+	 * @param speed the speed in bytes/s
          */
-        void emitSpeed( unsigned long bytes_per_second );
+        void emitSpeed( unsigned long speed );
 
         /**
          * Utility function to emit the result signal, and suicide this job.
@@ -593,10 +593,10 @@ namespace KIO {
         void slotProcessedSize( KIO::filesize_t data_size );
         /**
          * Forward signal from the slave.
-	 * @param bytes_per_second the speed in bytes/s
+	 * @param speed the speed in bytes/s
 	 * @see speed()
          */
-        void slotSpeed( unsigned long bytes_per_second );
+        void slotSpeed( unsigned long speed );
 
         /**
          * MetaData from the slave is received.

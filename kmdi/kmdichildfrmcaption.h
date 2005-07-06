@@ -49,22 +49,22 @@ public:
 	 * Constructor
 	 */
 	KMdiChildFrmCaption( KMdiChildFrm *parent );
-	
+
 	/**
 	 * Destructor
 	 */
 	~KMdiChildFrmCaption();
-	
+
 	/**
 	 * Repaint the caption bar in active background colors
 	 */
 	void setActive( bool bActive );
-	
+
 	/**
 	 * Repaint with a new caption bar title
 	 */
 	void setCaption( const QString& text );
-	
+
 	/**
 	 * Returns the caption bar height depending on the used font
 	 */
@@ -81,30 +81,30 @@ protected:
 	 * Draws the caption bar and its title using the settings
 	 */
 	virtual void paintEvent( QPaintEvent *e );
-	
+
 	/**
 	 * The same as KMdiChildFrmCaption::slot_moveViaSystemMenu
 	 */
 	virtual void mousePressEvent( QMouseEvent * );
-	
+
 	/**
 	 * Calls maximizePressed of the parent widget ( KMdiChildFrm )
 	 */
 	virtual void mouseDoubleClickEvent( QMouseEvent * );
-	
+
 	/**
 	 * Restore the normal mouse cursor, set the state variable back to 'not moving'
 	 */
 	virtual void mouseReleaseEvent( QMouseEvent * );
-	
+
 	/**
 	 * Checks if out of move range of the KMdiChildArea and calls KMdiChildFrm::move
 	 */
 	virtual void mouseMoveEvent( QMouseEvent *e );
-	
+
 	/**
 	 * Computes a new abbreviated string from a given string depending on a given maximum width
-	 * @TODO Replace with a call to a KStringHandler function instead of rolling our own
+	 * @todo Replace with a call to a KStringHandler function instead of rolling our own
 	 */
 	QString abbreviateText( QString origStr, int maxWidth );
 
@@ -120,17 +120,17 @@ protected:  // Protected attributes
 	 * parent widget
 	 */
 	KMdiChildFrm *m_pParent;
-	
+
 	/**
 	 * state variable indicating whether activated or not activated
 	 */
 	bool m_bActive;
-	
+
 	/**
 	 * the position offset related to its parent widget (internally used for translating mouse move positions
 	 */
 	QPoint m_offset;
-	
+
 	/**
 	 * True if the child knows that it is currently being dragged.
 	 */

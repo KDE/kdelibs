@@ -1252,7 +1252,7 @@ KeyValueMap::insert(const Q3CString& key, const QStringList& values, bool force)
   // ----- create QCString list:
   for(count=0; count<values.count(); ++count)
     {
-      utf8strings.append(values.at(count));
+      utf8strings.append(values.at(count).toUtf8());
     }
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::insert[QStringList]: done." << endl;
   return insert(key, utf8strings, force);

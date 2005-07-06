@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- *  Boston, MA 02111-1307, USA.
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
  */
 #ifndef KILEMETAINFO_H
 #define KILEMETAINFO_H
@@ -68,7 +68,7 @@ public:
         Cumulative =  8,  /**< If an application wants to display information
                                for more than one file, it may add up the values
                                for this item (e.g. play time of an mp3 file) */
-        Cummulative = Cumulative, ///< @deprecated Use @ref Cumulative instead
+        Cummulative = Cumulative, ///< @deprecated Use Cumulative instead
         Averaged    = 16, /**< Similar to Cumulative, but the average should
                                be calculated instead of the sum */
         MultiLine   = 32, /**< This attribute says that a string item is likely

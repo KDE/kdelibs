@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 //#define DEBUG_LAYOUT
@@ -223,9 +223,10 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (khtml::printpainter && !canvas()->printImages())
         return;
 
-    //CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
-    //		       oimage->pixmap_size() == image->pixmap_size()
-    //                 ? oimage : image;
+    //    CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&
+    //                     oimage->pixmap_size().width()  == intrinsicWidth() &&
+    //                     oimage->pixmap_size().height() == intrinsicHeight()
+    //                     ? oimage : image;
 #warning "FIXME: when isComplete added, use this"
     CachedImage* i = image;
 

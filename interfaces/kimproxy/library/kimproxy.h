@@ -17,8 +17,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef KIMPROXY_H
@@ -51,18 +51,18 @@ typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
 
 /**
  * This class provides an easy-to-use interface to any instant messengers or chat programs
- * that you have installed that implement @see KIMIface
+ * that you have installed that implement KIMIface
  *
- * It works simultaneously with any running programs that implement the @see ServiceType DCOP/InstantMessenger
+ * It works simultaneously with any running programs that implement the ServiceType DCOP/InstantMessenger
  * If a UID is reachable with more than one program, KIMProxy aggregates the available information and presents
  * the 'best' presence.  For example, for a contact who can be seen to be Away in IRC on program A but Online using
  * ICQ on program B, the information from program B will be used.  KIMProxy is designed for simple information in
  * a wide number of cases, not for detailed messaging.
  *
- * Most operations work in terms of uids belonging to @see KABC::Addressee, but use of the
- * address book is optional.  You can get a list of known contacts with @see imAddresseeUids
- * and then check their presence using the various accessor methods @see presenceString, @see presenceNumeric
- * and display the IM programs' display names for them using @see displayName.
+ * Most operations work in terms of uids belonging to KABC::Addressee, but use of the
+ * address book is optional.  You can get a list of known contacts with imAddresseeUids
+ * and then check their presence using the various accessor methods presenceString, presenceNumeric
+ * and display the IM programs' display names for them using displayName.
  *
  * To use, just get an instance using @ref instance.
  *
@@ -80,7 +80,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 	public:
 		/**
 		 * Obtain an instance of KIMProxy.
-		 * Note, if you share this @see DCOPClient with your own app,
+		 * Note, if you share this DCOPClient with your own app,
 		 * that kimproxy uses DCOPClient::setNotifications() to make sure
 		 * it updates its information when the IM application it is interfacing to
 		 * exits.
@@ -208,7 +208,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Send the file to the contact
 		 * @param uid the KABC uid you are sending to.
-		 * @param sourceURL a @see KURL to send.
+		 * @param sourceURL a KURL to send.
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */

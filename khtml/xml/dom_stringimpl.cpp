@@ -18,8 +18,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 
@@ -275,16 +275,12 @@ static Length parseLength(const QChar *s, unsigned int l)
 
 khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
 {
-    QChar spacified[l];
-    QChar space(' ');
+    QString str(s, l);
     for(unsigned int i=0; i < l; i++) {
         QChar cc = s[i];
         if (cc > '9' || (cc < '0' && cc != '-' && cc != '*' && cc != '.'))
-            spacified[i] = space;
-        else
-            spacified[i] = cc;
+            str[i] = ' ';
     }
-    QString str(spacified, l);
     str = str.simplifyWhiteSpace();
 
     len = str.count(' ') + 1;

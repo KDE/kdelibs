@@ -16,8 +16,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef __kio_netaccess_h
@@ -356,6 +356,7 @@ public:
      *               as needed. If NULL, authentication information will be
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
+     * @param permissions directory permissions.
      * @return true on success, false on failure.
      */
     static bool mkdir( const KURL & url, QWidget* window, int permissions = -1 );

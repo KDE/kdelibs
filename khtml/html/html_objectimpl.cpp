@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 #include "html/html_objectimpl.h"
 
@@ -220,7 +220,6 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_OBJECT:
     case ATTR_ALT:
     case ATTR_ID:
-    case ATTR_NAME:
         break;
     case ATTR_ALIGN:
 	addHTMLAlignment( attr->value() );
@@ -235,6 +234,13 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_VALIGN:
         addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower() );
+        break;
+    case ATTR_NAME:
+        if (inDocument() && m_name != attr->value()) {
+            getDocument()->underDocNamedCache().remove(m_name.string(),        this);
+            getDocument()->underDocNamedCache().add   (attr->value().string(), this);
+        }
+        m_name = attr->value();
         break;
     default:
         HTMLObjectBaseElementImpl::parseAttribute(attr);
@@ -258,8 +264,20 @@ void HTMLAppletElementImpl::attach()
         m_renderAlternative = true;
 
     HTMLObjectBaseElementImpl::attach();
-
 }
+
+void HTMLAppletElementImpl::removedFromDocument()
+{
+    getDocument()->underDocNamedCache().remove(m_name.string(), this);
+    HTMLObjectBaseElementImpl::removedFromDocument();
+}
+
+void HTMLAppletElementImpl::insertedIntoDocument()
+{
+    getDocument()->underDocNamedCache().add(m_name.string(), this);
+    HTMLObjectBaseElementImpl::insertedIntoDocument();
+}
+
 
 // -------------------------------------------------------------------------
 

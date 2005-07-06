@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 // browser window color defaults -- Bernd
@@ -24,14 +24,10 @@
 #define HTML_DEFAULT_VLNK_COLOR Qt::magenta
 #define HTML_DEFAULT_BASE_COLOR Qt::white
 
-// KEEP IN SYNC WITH konqdefaults.h in kdebase/libkonq!
-// lets be modern .. -- Bernd
-#define HTML_DEFAULT_VIEW_FONT "helvetica"
-#define HTML_DEFAULT_VIEW_FIXED_FONT "courier"
-// generic CSS fonts. Since usual X distributions don't have a good set of fonts, this
-// is quite conservative...
-#define HTML_DEFAULT_VIEW_SERIF_FONT "times"
-#define HTML_DEFAULT_VIEW_SANSSERIF_FONT "helvetica"
-#define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
-#define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_FONT "Sans Serif"
+#define HTML_DEFAULT_VIEW_FIXED_FONT "Monospace"
+#define HTML_DEFAULT_VIEW_SERIF_FONT "Sans"
+#define HTML_DEFAULT_VIEW_SANSSERIF_FONT "Sans Serif"
+#define HTML_DEFAULT_VIEW_CURSIVE_FONT "Sans Serif"
+#define HTML_DEFAULT_VIEW_FANTASY_FONT "Sans Serif"
 #define HTML_DEFAULT_MIN_FONT_SIZE 7 // everything smaller is usually unreadable.

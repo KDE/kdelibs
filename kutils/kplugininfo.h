@@ -12,8 +12,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 
 */
 
@@ -72,7 +72,7 @@ class KUTILS_EXPORT KPluginInfo
          *
          * @param filename  The filename of the .desktop file.
          * @param resource  If filename is relative, you need to specify a resource type
-         * (e.g. "service", "apps"... @see KStandardDirs). Otherwise,
+         * (e.g. "service", "apps"... KStandardDirs). Otherwise,
          * resource isn't used.
          */
         KPluginInfo( const QString & filename, const char* resource = 0 );

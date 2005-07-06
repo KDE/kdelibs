@@ -21,8 +21,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #include <assert.h>
@@ -59,6 +59,7 @@
 #include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <kmultipledrag.h>
+#include <kinputdialog.h>
 
 #include "khtml_factory.h"
 
@@ -420,10 +421,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     isImage=true;
   }
 
-  if ( url.isEmpty() && !isImage )
+  if (hasSelection)
   {
-    if (hasSelection)
-    {
       KAction* copyAction = KStdAction::copy( d->m_khtml->browserExtension(), SLOT( copy() ), actionCollection(), "copy" );
       copyAction->setText(i18n("&Copy Text"));
       copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
@@ -473,7 +472,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       // favorite search providers
       QStringList favoriteEngines;
-      favoriteEngines << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia" ;
+      favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
       favoriteEngines = config.readListEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
@@ -508,14 +507,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       if ( selectedText.contains("://") && KURL(selectedText).isValid() )
          new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0,
          d->m_khtml->browserExtension(), SLOT( openSelection() ), actionCollection(), "openSelection" );
-    }
-    else
-    {
+  }
+  else if ( url.isEmpty() && !isImage )
+  {
       actionCollection()->insert( khtml->actionCollection()->action( "security" ) );
       actionCollection()->insert( khtml->actionCollection()->action( "setEncoding" ) );
       new KAction( i18n( "Stop Animations" ), 0, this, SLOT( slotStopAnimations() ),
                    actionCollection(), "stopanimations" );
-    }
   }
 
   if ( !url.isEmpty() )
@@ -606,7 +604,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
     if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
     {
-      new KAction( i18n( "Block Image" ), 0, this, SLOT( slotBlockImage() ),
+      new KAction( i18n( "Block Image..." ), 0, this, SLOT( slotBlockImage() ),
                    actionCollection(), "blockimage" );
 
       if (!d->m_imageURL.host().isEmpty() &&
@@ -667,7 +665,14 @@ void KHTMLPopupGUIClient::slotBlockHost()
 
 void KHTMLPopupGUIClient::slotBlockImage()
 {
-    KHTMLFactory::defaultHTMLSettings()->addAdFilter( d->m_imageURL.url() );
+    bool ok=false;
+
+    QString url = KInputDialog::getText( i18n("Add URL to Filter"),
+                                         "URL",
+                                         d->m_imageURL.url(),
+                                         &ok);
+    if (ok)
+        KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()

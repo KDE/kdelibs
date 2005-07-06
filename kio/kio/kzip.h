@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 #ifndef __kzip_h
 #define __kzip_h
@@ -194,7 +194,7 @@ protected:
     /**
      * @internal Not needed for zip
      */
-    virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
+    virtual bool writeDir( const QString& name, const QString& user, const QString& group ) { return true; }
     // TODO(BIC) uncomment and make virtual for KDE 4.
 //    bool writeDir( const QString& name, const QString& user, const QString& group,
 //                        mode_t perm, time_t atime, time_t mtime, time_t ctime );

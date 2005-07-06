@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  *
  */
 #ifndef HTML_FORMIMPL_H
@@ -69,6 +69,9 @@ public:
 
     virtual Id id() const;
 
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+
     long length() const;
 
     QByteArray formData(bool& ok);
@@ -118,6 +121,7 @@ private:
     bool m_malformed : 1;
     bool m_haveTextarea : 1; // for wallet storage
     bool m_havePassword : 1; // for wallet storage
+    DOMString m_name;        // our name
     QMap<QString, QString> m_walletMap; // for wallet storage
 };
 
