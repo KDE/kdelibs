@@ -28,7 +28,7 @@ libkabc_la_SOURCES = \
   distributionlist.cpp distributionlistdialog.cpp distributionlisteditor.cpp \
   errorhandler.cpp field.cpp formatfactory.cpp geo.cpp key.cpp \
   phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
-  resourceselectdialog.cpp secrecy.cpp sound.cpp stdaddressbook.cpp \
+  secrecy.cpp sound.cpp stdaddressbook.cpp \
   vcardconverter.cpp timezone.cpp \
   vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
   ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
@@ -41,7 +41,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   agent.h distributionlist.h distributionlistdialog.h distributionlisteditor.h \
   errorhandler.h field.h format.h formatfactory.h formatplugin.h geo.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
-  resourceselectdialog.h secrecy.h sound.h stdaddressbook.h timezone.h \
+  secrecy.h sound.h stdaddressbook.h timezone.h \
   vcardformatplugin.h ldifconverter.h \
   addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h \
   ldapurl.h ldapconfigwidget.h sortmode.h
