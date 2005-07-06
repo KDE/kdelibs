@@ -1648,7 +1648,7 @@ KURL KURL::join( const KURL::List & lst )
   if (lst.isEmpty()) return KURL();
   KURL tmp;
 
-  
+
   bool first = true;
   QListIterator<KURL> it(lst);
   it.toBack();
@@ -1860,9 +1860,9 @@ KURL KURL::upURL( ) const
   if (!hasSubURL())
   {
      KURL u(*this);
-     
+
      u.cd("../");
-     
+
      return u;
   }
 
@@ -2005,7 +2005,7 @@ void KURL::setDirectory( const QString &dir)
 void KURL::setQuery( const QString &_txt, int encoding_hint)
 {
    if (!_txt.isEmpty() && _txt[0] == '?')
-      _setQuery( _txt.mid(1), encoding_hint );
+      _setQuery( _txt.length() > 1 ? _txt.mid(1) : "" /*empty, not null*/, encoding_hint );
    else
       _setQuery( _txt, encoding_hint );
 }
