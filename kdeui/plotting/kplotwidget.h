@@ -125,12 +125,12 @@ public:
 	virtual void setBGColor( const QColor &bg ) { cBackground = bg; setBackgroundColor( bg ); }
 
 	/**@short set the foreground color
-		*@param bg the new foreground color
+		*@param fg the new foreground color
 		*/
 	virtual void setFGColor( const QColor &fg ) { cForeground = fg; }
 
 	/**@short set the grid color
-		*@param bg the new grid color
+		*@param gc the new grid color
 		*/
 	virtual void setGridColor( const QColor &gc ) { cGrid = gc; }
 
