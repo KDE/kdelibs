@@ -131,7 +131,7 @@ public:
 	QString color() const { return Color; }
 
 /**@short set the KPlotObject's Color
-	*@param n the new color
+	*@param c the new color
 	*/
 	void setColor( const QString &c ) { Color = c; }
 
