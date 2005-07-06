@@ -375,7 +375,7 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
         str >> tt.gmtoff >> tt.isdst >> tt.abbrind;
         // kdError() << "local type: " << tt.gmtoff << ", " << tt.isdst << ", " << tt.abbrind << endl;
     }
-    char abbrs[tzh.charcnt];
+    char* abbrs = (char* ) alloca( tzh.charcnt );
     str.readRawBytes(abbrs, tzh.charcnt);
     char* abbr = abbrs;
     while (abbr < abbrs + tzh.charcnt)
