@@ -18,10 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KABC_VCARDFORMATPLUGIN_H
-#define KABC_VCARDFORMATPLUGIN_H
+#ifndef KABC_VCARDFORMAT_H
+#define KABC_VCARDFORMAT_H
 
-#include "formatplugin.h"
+#include "format.h"
 
 namespace KABC {
 
@@ -34,11 +34,11 @@ class Addressee;
   This class implements the file format interface of address book entries for
   the vCard format.
 */
-class KABC_EXPORT VCardFormatPlugin : public FormatPlugin
+class KABC_EXPORT VCardFormat : public Format
 {
   public:
-    VCardFormatPlugin();
-    virtual ~VCardFormatPlugin();
+    VCardFormat();
+    virtual ~VCardFormat();
 
     bool load( Addressee &, QFile *file );
     bool loadAll( AddressBook *, Resource *, QFile *file );

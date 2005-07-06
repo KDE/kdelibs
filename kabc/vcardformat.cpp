@@ -25,19 +25,19 @@
 #include "addressee.h"
 #include "vcardconverter.h"
 
-#include "vcardformatplugin.h"
+#include "vcardformat.h"
 
 using namespace KABC;
 
-VCardFormatPlugin::VCardFormatPlugin()
+VCardFormat::VCardFormat()
 {
 }
 
-VCardFormatPlugin::~VCardFormatPlugin()
+VCardFormat::~VCardFormat()
 {
 }
 
-bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
+bool VCardFormat::load( Addressee &addressee, QFile *file )
 {
   QString data;
 
@@ -56,7 +56,7 @@ bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
   return false;
 }
 
-bool VCardFormatPlugin::loadAll( AddressBook*, Resource *resource, QFile *file )
+bool VCardFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
   QString data;
 
@@ -79,7 +79,7 @@ bool VCardFormatPlugin::loadAll( AddressBook*, Resource *resource, QFile *file )
   return true;
 }
 
-void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
+void VCardFormat::save( const Addressee &addressee, QFile *file )
 {
   VCardConverter converter ;
   Addressee::List vcardlist;
@@ -92,7 +92,7 @@ void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
   t << converter.createVCards( vcardlist );
 }
 
-void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
+void VCardFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
 {
   VCardConverter converter;
   Addressee::List vcardlist;
@@ -108,7 +108,7 @@ void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
   t << converter.createVCards( vcardlist );
 }
 
-bool VCardFormatPlugin::checkFormat( QFile *file ) const
+bool VCardFormat::checkFormat( QFile *file ) const
 {
   QByteArray line;
 

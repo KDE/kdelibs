@@ -38,7 +38,7 @@ class Job;
 
 namespace KABC {
 
-class FormatPlugin;
+class Format;
 class ResourceConfigWidget;
 class Lock;
 
@@ -151,7 +151,7 @@ class KABC_EXPORT ResourceFile : public Resource
     QString mFileName;
     QString mFormatName;
 
-    FormatPlugin *mFormat;
+    Format *mFormat;
 
     Lock *mLock;
     

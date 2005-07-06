@@ -30,7 +30,7 @@ libkabc_la_SOURCES = \
   phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
   secrecy.cpp sound.cpp stdaddressbook.cpp \
   vcardconverter.cpp timezone.cpp \
-  vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
+  vcardformat.cpp ldifconverter.cpp addresslineedit.cpp \
   ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
   addresseehelper.skel lock.cpp locknull.cpp ldif.cpp ldapurl.cpp ldapconfigwidget.cpp \
   sortmode.cpp
@@ -39,10 +39,10 @@ libkabc_la_SOURCES = \
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   agent.h distributionlist.h distributionlistdialog.h distributionlisteditor.h \
-  errorhandler.h field.h format.h formatfactory.h formatplugin.h geo.h key.h \
+  errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \
-  vcardformatplugin.h ldifconverter.h \
+  vcardformat.h ldifconverter.h \
   addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h \
   ldapurl.h ldapconfigwidget.h sortmode.h
 

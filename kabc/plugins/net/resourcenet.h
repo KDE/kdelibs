@@ -36,7 +36,7 @@ class Job;
 
 namespace KABC {
 
-class FormatPlugin;
+class Format;
 
 /**
   @internal
@@ -91,7 +91,7 @@ class KABC_EXPORT ResourceNet : public Resource
     void uploadFinished( KIO::Job* );
 
   private:
-    FormatPlugin *mFormat;
+    Format *mFormat;
     QString mFormatName;
 
     KURL mUrl;
