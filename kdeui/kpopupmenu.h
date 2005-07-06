@@ -190,7 +190,7 @@ public:
      * Helper for porting things. Returns ID of action, or -1 if passed null.
      * ### KDE4: remove once we've cleaned up stuff
      */
-    static int actionId(QAction* action) KDE_DEPRECATED
+    static int KDE_DEPRECATED actionId(QAction* action)
     {
         if (!action)
             return -1;
