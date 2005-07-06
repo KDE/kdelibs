@@ -171,7 +171,7 @@ public:
     */
     ItemInfo* get(const QString& id);
 private:
-    QDict<ItemInfo> m_dict;
+    Q3Dict<ItemInfo> m_dict;
 };
 
 /**
