@@ -110,7 +110,6 @@ namespace KUnitTest
         return s_self;
     }
 
-    Runner *Runner::s_self = 0;
 
     Runner::Runner()
     {
