@@ -1081,9 +1081,10 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
 {
   // WARNING: Do NOT use the event loop as it may not exist at this time.
   bool allWritable = true;
-  QString errorMsg( i18n("Will not save configuration.\n") );
+  QString errorMsg;
   if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
   {
+    errorMsg = i18n("Will not save configuration.\n");
     allWritable = false;
     errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mLocalFileName);
   }
@@ -1091,6 +1092,8 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   // the local config file immutable is senseless.
   if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
   {
+    if ( errorMsg.isEmpty() )
+      errorMsg = i18n("Will not save configuration.\n");
     errorMsg += i18n("Configuration file \"%1\" not writable.\n").arg(mGlobalFileName);
     allWritable = false;
   }
