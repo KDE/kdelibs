@@ -180,17 +180,6 @@ color: white;
 margin-top: 0;
 }
 
-#contentheader {
-font-size: 1em;
-padding-left: 1em;
-vertical-align: middle;
-background-color: #418ade;
-border-top: 0.1em solid #418ade;
-border-bottom: 0.1em solid #418ade;
-color: white;
-margin-top: 0;
-}
-
 #leftmenu ul, #rightmenu ul {
 margin: 0;
 padding-left: 0.5em;
@@ -403,3 +392,9 @@ margin-bottom: 0.5em
   background-color: #418ade;
   color: white;
 }
+
+td.indexkey {
+vertical-align: top;
+background: #dfe7f3;
+}
+
