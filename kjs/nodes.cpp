@@ -1565,8 +1565,8 @@ Value AssignNode::evaluate(ExecState *exec) const
     Value v1 = l.getValue(exec);
     Value v2 = expr->evaluate(exec);
     KJS_CHECKEXCEPTIONVALUE
-    int i1 = v1.toInt32(exec);
-    int i2 = v2.toInt32(exec);
+    int i1;
+    int i2;
     unsigned int ui;
     switch (oper) {
     case OpMultEq:
@@ -1582,23 +1582,34 @@ Value AssignNode::evaluate(ExecState *exec) const
       v = add(exec, v1, v2, '-');
       break;
     case OpLShift:
-      v = Number(i1 <<= i2);
+      i1 = v1.toInt32(exec);
+      i2 = v2.toInt32(exec);
+      v = Number(i1 << i2);
       break;
     case OpRShift:
-      v = Number(i1 >>= i2);
+      i1 = v1.toInt32(exec);
+      i2 = v2.toInt32(exec);
+      v = Number(i1 >> i2);
       break;
     case OpURShift:
       ui = v1.toUInt32(exec);
-      v = Number(ui >>= i2);
+      i2 = v2.toInt32(exec);
+      v = Number(ui >> i2);
       break;
     case OpAndEq:
-      v = Number(i1 &= i2);
+      i1 = v1.toInt32(exec);
+      i2 = v2.toInt32(exec);
+      v = Number(i1 & i2);
       break;
     case OpXOrEq:
-      v = Number(i1 ^= i2);
+      i1 = v1.toInt32(exec);
+      i2 = v2.toInt32(exec);
+      v = Number(i1 ^ i2);
       break;
     case OpOrEq:
-      v = Number(i1 |= i2);
+      i1 = v1.toInt32(exec);
+      i2 = v2.toInt32(exec);
+      v = Number(i1 | i2);
       break;
     case OpModEq: {
       double d1 = v1.toNumber(exec);
