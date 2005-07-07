@@ -1,3 +1,11 @@
+2005-07-07  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        There is nothing KHTML specific about keypress events. They might not be DOM2 or 3,
+        but MSIE, Mozilla and Safari all handles them as a valid event class.
+
+        * xml/dom2_eventsimpl.{h,cpp}: Allow KEYPRESS as a valid event type
+        * ./.: Rename KHTML_KEYPRESS_EVENT to KEYPRESS_EVENT
+
 2005-07-05  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/htmlparser.cpp(insertElement): Do not create DLs for stray DT and DD

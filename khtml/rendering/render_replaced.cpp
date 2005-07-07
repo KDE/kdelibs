@@ -754,7 +754,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         ret = ke->isAccepted();
         break;
     }
-    case EventImpl::KHTML_KEYPRESS_EVENT: {
+    case EventImpl::KEYPRESS_EVENT: {
 
         // See KHTMLView::dispatchKeyEvent: autorepeat is just keypress in the DOM
         // but it's keyrelease+keypress in Qt. So here we do the inverse mapping as

@@ -954,7 +954,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::MOUSEOVER_EVENT:
         case EventImpl::KEYDOWN_EVENT:
         case EventImpl::KEYUP_EVENT:
-        case EventImpl::KHTML_KEYPRESS_EVENT:
+        case EventImpl::KEYPRESS_EVENT:
             if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
 		evt->setDefaultHandled();
         default:
@@ -990,7 +990,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (!evt->defaultHandled() && m_render && m_render->isWidget()) {
 	    // handle tabbing out, either from a single or repeated key event.
-	    if ( evt->id() == EventImpl::KEYDOWN_EVENT || evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
+	    if ( evt->id() == EventImpl::KEYDOWN_EVENT || evt->id() == EventImpl::KEYPRESS_EVENT ) {
 	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) &&
 	             (evt->id() == EventImpl::KEYDOWN_EVENT || k->isAutoRepeat()) ) {
@@ -1690,7 +1690,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         if (m_type == RADIO || m_type == CHECKBOX || m_type == SUBMIT || m_type == RESET || m_type == BUTTON ) {
 	    bool check = false;
 	    if (active() && ( evt->id() == EventImpl::KEYUP_EVENT ||
-	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) ) {
+	                      evt->id() == EventImpl::KEYPRESS_EVENT ) ) {
 		TextEventImpl* const te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
@@ -1798,7 +1798,7 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	    act = true;
 	}
 	else if ( evt->id() == EventImpl::KEYUP_EVENT ||
-	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
+	                      evt->id() == EventImpl::KEYPRESS_EVENT ) {
 	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
