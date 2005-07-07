@@ -166,7 +166,7 @@ protected:
 class XMLAttributeReader : public QXmlDefaultHandler
 {
 public:
-    XMLAttributeReader(QString _attrString);
+    XMLAttributeReader(const QString& _attrString);
     virtual ~XMLAttributeReader();
     QXmlAttributes readAttrs(bool &ok);
     bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts);

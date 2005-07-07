@@ -465,8 +465,7 @@ DOMString ProcessingInstructionImpl::toString() const
 
 // -------------------------------------------------------------------------
 
-/* KDE 4: Make it const QString & */
-XMLAttributeReader::XMLAttributeReader(QString _attrString)
+XMLAttributeReader::XMLAttributeReader(const QString& _attrString)
 {
     m_attrString = _attrString;
 }
