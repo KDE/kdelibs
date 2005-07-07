@@ -35,9 +35,59 @@
 #include <cstring>
 #include <ctime>
 
+/**
+ * Find out if the given standard (e.g. "GMT") and daylight savings time
+ * (e.g. "BST", but which may be empty) abbreviated timezone names match
+ * this timezone.
+ *
+ * Thus, this class can be used as a heuristic when trying to lookup the
+ * real timezone from the abbreviated zone names.
+ */
+class AbbreviationsMatch :
+    public KTimezoneDetails
+{
+public:
+    AbbreviationsMatch(KTimezone *zone) :
+        KTimezoneDetails(zone)
+    {
+    }
+
+    bool test(const QString &stdZone, const QString &dstZone = "")
+    {
+        m_foundStd = false;
+        m_foundDst = dstZone.isEmpty();
+        m_stdZone = stdZone;
+        m_dstZone = dstZone;
+        parseStart();
+        return (m_foundStd && m_foundDst);
+    }
+
+private:
+    bool m_foundStd;
+    bool m_foundDst;
+    QString m_stdZone;
+    QString m_dstZone;
+
+    virtual void gotAbbreviation(const QString &value)
+    {
+        if (m_stdZone == value)
+        {
+            m_foundStd = true;
+        }
+        if (m_dstZone == value)
+        {
+            m_foundDst = true;
+        }
+    }
+};
+
 const float KTimezone::UNKNOWN = 1000.0;
 
-KTimezone::KTimezone(const QString& name, const QString& countryCode, float latitude, float longitude, const QString& comment) :
+KTimezone::KTimezone(
+    KTimezones *db, const QString& name,
+    const QString &countryCode, float latitude, float longitude,
+    const QString &comment) :
+    m_db(db),
     m_name(name),
     m_countryCode(countryCode),
     m_latitude(latitude),
@@ -106,6 +156,8 @@ KTimezones::KTimezones() :
     m_zones(0),
     d(0)
 {
+    // Create the database (and resolve m_zoneinfoDir!).
+    allZones();
 }
 
 KTimezones::~KTimezones()
@@ -202,7 +254,7 @@ const KTimezones::ZoneMap KTimezones::allZones()
         float longitude = convertOrdinate(ordinates[2]);
 
         // Add entry to list.
-        KTimezone *timezone = new KTimezone(tokens[2], tokens[0], latitude, longitude, tokens[3]);
+        KTimezone *timezone = new KTimezone(this, tokens[2], tokens[0], latitude, longitude, tokens[3]);
         m_zones->insert(tokens[2], timezone);
     }
     return *m_zones;
@@ -234,6 +286,11 @@ float KTimezones::convertOrdinate(const QString& ordinate)
     }
     value = degrees * 3600 + minutes * 60 + seconds;
     return value / 3600.0;
+}
+
+QString KTimezones::db()
+{
+    return m_zoneinfoDir;
 }
 
 const KTimezone *KTimezones::local()
@@ -297,16 +354,16 @@ const KTimezone *KTimezones::local()
     // None of the deterministic stuff above has worked: try a heuristic. We
     // try to find a pair of matching timezone abbreviations...that way, we'll
     // likely return a value in the user's own country.
-    allZones();
     if (!m_zoneinfoDir.isEmpty())
     {
         tzset();
         QString stdZone = tzname[0];
         QString dstZone = tzname[1];
-        for( ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it )
+        for (ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it)
         {
-            const KTimezone *zone = it.data();
-            if (matchAbbreviations(m_zoneinfoDir + '/' + zone->name(), stdZone, dstZone))
+            KTimezone *zone = it.data();
+            AbbreviationsMatch match(zone);
+            if (match.test(stdZone, dstZone))
             {
                 // kdError() << "local=" << zone->name() << endl;
                 local = zone;
@@ -317,14 +374,56 @@ const KTimezone *KTimezones::local()
     return local;
 }
 
-// Parse a zoneinfo binary, and see if the abbreviations it contains match
-// the pair of Standard and DaylightSavings abbreviations passed in.
-bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZone, const QString& dstZone)
+const KTimezone *KTimezones::zone(const QString &name)
 {
-    QFile f(zoneFile);
+    ZoneMap::ConstIterator it = m_zones->find(name);
+    if (it != m_zones->end())
+        return it.data();
+
+    // Error.
+    return 0;
+}
+
+KTimezoneDetails::KTimezoneDetails(KTimezone *zone) :
+    m_zone(zone)
+{
+}
+
+void KTimezoneDetails::gotAbbreviation(const QString &)
+{}
+
+void KTimezoneDetails::gotHeader(
+        unsigned, unsigned, unsigned,
+        unsigned, unsigned, unsigned)
+{}
+
+void KTimezoneDetails::gotLeapAdjustment(unsigned, unsigned)
+{}
+
+void KTimezoneDetails::gotLocalTime(int, int, unsigned)
+{}
+
+void KTimezoneDetails::gotLocalTimeIndex(unsigned)
+{}
+
+void KTimezoneDetails::gotIsStandard(unsigned)
+{}
+
+void KTimezoneDetails::gotTransitionTime(unsigned)
+{}
+
+void KTimezoneDetails::gotIsUTC(unsigned)
+{}
+
+void KTimezoneDetails::parseEnded()
+{}
+
+bool KTimezoneDetails::parseStart()
+{
+    QFile f(m_zone->m_db->db() + '/' + m_zone->m_name);
     if (!f.open(IO_ReadOnly))
     {
-        kdError() << "Cannot open " << zoneFile << endl;
+        kdError() << "Cannot open " << f.name() << endl;
         return false;
     }
 
@@ -352,8 +451,6 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
     Q_UINT8 isStandard;
     Q_UINT8 isUTC;
 
-    bool foundStd = false;
-    bool foundDst = dstZone.isEmpty();
     QDataStream str(&f);
     str >> T >> z >> i_ >> f_;
     // kdError() << "signature: " << QChar(T) << QChar(z) << QChar(i_) << QChar(f_) << endl;
@@ -363,17 +460,23 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
     str >> tzh.ttisgmtcnt >> tzh.ttisstdcnt >> tzh.leapcnt >> tzh.timecnt >> tzh.typecnt >> tzh.charcnt;
     // kdError() << "header: " << tzh.ttisgmtcnt << ", " << tzh.ttisstdcnt << ", " << tzh.leapcnt << ", " <<
     //    tzh.timecnt << ", " << tzh.typecnt << ", " << tzh.charcnt << endl;
+    gotHeader(tzh.ttisgmtcnt, tzh.ttisstdcnt, tzh.leapcnt, tzh.timecnt, tzh.typecnt, tzh.charcnt);
     for (i = 0; i < tzh.timecnt; i++)
+    {
         str >> transitionTime;
+        gotTransitionTime(transitionTime);
+    }
     for (i = 0; i < tzh.timecnt; i++)
     {
         // NB: these appear to be 1-based, not zero-based!
         str >> localTimeIndex;
+        gotLocalTimeIndex(localTimeIndex);
     }
     for (i = 0; i < tzh.typecnt; i++)
     {
         str >> tt.gmtoff >> tt.isdst >> tt.abbrind;
         // kdError() << "local type: " << tt.gmtoff << ", " << tt.isdst << ", " << tt.abbrind << endl;
+        gotLocalTime(tt.gmtoff, tt.isdst, tt.abbrind);
     }
     char* abbrs = (char* ) alloca( tzh.charcnt );
     str.readRawBytes(abbrs, tzh.charcnt);
@@ -381,45 +484,26 @@ bool KTimezones::matchAbbreviations(const QString& zoneFile, const QString& stdZ
     while (abbr < abbrs + tzh.charcnt)
     {
         // kdError() << "abbr: " << abbr << endl;
-        if (stdZone == abbr)
-        {
-            foundStd = true;
-        }
-        if (dstZone == abbr)
-        {
-            foundDst = true;
-        }
+        gotAbbreviation(abbr);
         abbr += strlen(abbr) + 1;
-    }
-    if (foundStd && foundDst)
-    {
-        return true;
     }
     for (i = 0; i < tzh.leapcnt; i++)
     {
         str >> leapTime >> leapSeconds;
         // kdError() << "leap entry: " << leapTime << ", " << leapSeconds << endl;
+        gotLeapAdjustment(leapTime, leapSeconds);
     }
     for (i = 0; i < tzh.ttisstdcnt; i++)
     {
         str >> isStandard;
         // kdError() << "standard: " << isStandard << endl;
+        gotIsStandard(isStandard);
     }
     for (i = 0; i < tzh.ttisgmtcnt; i++)
     {
         str >> isUTC;
         // kdError() << "UTC: " << isUTC << endl;
+        gotIsUTC(isUTC);
     }
     return false;
-}
-
-const KTimezone *KTimezones::zone(const QString &name)
-{
-    allZones();
-    ZoneMap::ConstIterator it = m_zones->find( name );
-    if ( it != m_zones->end() )
-        return it.data();
-
-    // Error.
-    return 0;
 }
