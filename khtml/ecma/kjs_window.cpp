@@ -1327,7 +1327,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
                                           "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(url.htmlURL(),  100)),
-                                    caption ) == KMessageBox::Yes )
+                                    caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
@@ -1560,7 +1560,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
         // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
         emit part->browserExtension()->requestFocus(part);
-        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") )
+        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required"), i18n("Close"), i18n("Do Not Close") )
              == KMessageBox::Yes )
           doClose = true;
       }

@@ -46,7 +46,7 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
         User3 | User2 | User1 | Close,
         User3,
         false,
-        i18n("&All"), i18n("&Skip"), KStdGuiItem::yes())
+        i18n("&All"), i18n("&Skip"), i18n("Replace"))
 {
     m_mainLabel = new QLabel( this );
     setMainWidget( m_mainLabel );
@@ -316,7 +316,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 
-    int ret = KMessageBox::questionYesNo( parentWidget(), message );
+    int ret = KMessageBox::questionYesNo( parentWidget(), message, QString::null, i18n("Restart"), i18n("Stop") );
     return( ret == KMessageBox::Yes );
 }
 

@@ -972,7 +972,7 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
         }
 	s = s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
 
-	return KMessageBox::warningYesNo( parent, s, sTitle ) == KMessageBox::Yes;
+	return KMessageBox::warningContinueCancel( parent, s, sTitle, i18n("Reassign") ) == KMessageBox::Continue;
 }
 
 //---------------------------------------------------

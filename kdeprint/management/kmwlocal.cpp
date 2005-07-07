@@ -80,7 +80,7 @@ bool KMWLocal::isValid(QString& msg)
 	}
 	else if (m_uris.findIndex(m_localuri->text()) == -1)
 	{
-		if (KMessageBox::warningYesNo(this, i18n("The local URI doesn't correspond to a detected port. Continue?")) == KMessageBox::No)
+		if (KMessageBox::warningContinueCancel(this, i18n("The local URI doesn't correspond to a detected port. Continue?")) == KMessageBox::Cancel)
 		{
 			msg = i18n("Select a valid port.");
 			return false;

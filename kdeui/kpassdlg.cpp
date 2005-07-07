@@ -516,7 +516,7 @@ void KPasswordDialog::slotOk()
 	    return;
 	}
 	if (d->m_strengthBar && d->m_strengthBar->progress() < d->passwordStrengthWarningLevel) {
-	    int retVal = KMessageBox::warningYesNo(this,
+	    int retVal = KMessageBox::warningContinueCancel(this,
 		i18n(   "The password you have entered has a low strength. "
 			"To improve the strength of "
 			"the password, try:\n"
@@ -526,7 +526,7 @@ void KPasswordDialog::slotOk()
 			"\n"
 			"Would you like to use this password anyway?"),
 		i18n("Low Password Strength"));
-	    if (retVal == KMessageBox::No) return;
+	    if (retVal == KMessageBox::Cancel) return;
 	}
     }
     if (!checkPassword(m_pEdit->password())) {
@@ -690,7 +690,7 @@ int KPasswordDialog::maximumPasswordLength() const {
     return d->maximumPasswordLength;
 }
 
-// reasonable password length code contributed by Steffen Müthing
+// reasonable password length code contributed by Steffen Mthing
 
 void KPasswordDialog::setReasonablePasswordLength(int reasonableLength) {
 

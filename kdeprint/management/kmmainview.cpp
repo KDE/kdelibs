@@ -68,7 +68,7 @@ int kdeprint_management_add_printer_wizard( QWidget* parent )
 			flag = 1;
 			// check if the printer already exists, and ask confirmation if needed.
 			if (KMFactory::self()->manager()->findPrinter(dlg.printer()->name()) != 0)
-				if (KMessageBox::warningYesNo(parent,i18n("The printer %1 already exists. Continuing will overwrite existing printer. Do you want to continue?").arg(dlg.printer()->name())) == KMessageBox::No)
+				if (KMessageBox::warningContinueCancel(parent,i18n("The printer %1 already exists. Continuing will overwrite existing printer. Do you want to continue?").arg(dlg.printer()->name())) == KMessageBox::Cancel)
 					flag = 0;
 			// try to add printer only if flag is true.
 			if (flag && !KMFactory::self()->manager()->createPrinter(dlg.printer()))

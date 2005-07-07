@@ -135,7 +135,7 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 	else
 	{
 		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
-		return (KMessageBox::warningYesNo(parent, msg, QString::null, KGuiItem(i18n("Print"),"fileprint"), KStdGuiItem::cancel()) == KMessageBox::Yes);
+		return (KMessageBox::warningContinueCancel(parent, msg, QString::null, KGuiItem(i18n("Print"),"fileprint")) == KMessageBox::Continue);
 	}
 }
 
