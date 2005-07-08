@@ -20,6 +20,11 @@ that we would like to make for the next binary incompatible release.
   way to make that possible
   (Danimo)
 
+  The refcounting can simply be moved to KGlobal (or something similar), as it
+  only depends on the refcounter variable and KMainWindow, KIO::Job, etc. calling
+  these instead of quit() directly.
+  (Simon)
+
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
   (Ben Meyer)
 
