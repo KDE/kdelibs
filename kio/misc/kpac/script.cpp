@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -32,10 +32,9 @@
 #include <qregexp.h>
 #include <qstring.h>
 
-#include <kextsock.h>
-#include <ksockaddr.h>
 #include <kurl.h>
 #include <kjs/object.h>
+#include <kresolver.h>
 
 #include "script.h"
 
@@ -64,23 +63,32 @@ namespace
         static Address parse( const UString& ip )
             { return Address( ip.qstring(), true ); }
 
-        operator in_addr_t() const { return m_address.s_addr; }
-        operator String() const { return String( inet_ntoa( m_address ) ); }
+        operator const in_addr_t() const {
+          const sockaddr_in* sin = m_address;
+          return sin->sin_addr.s_addr;
+        }
+
+        operator String() const { return String( m_address.ipAddress().toString() ); }
 
     private:
         Address( const QString& host, bool numeric )
         {
-            int flags = KExtendedSocket::ipv4Socket;
-            if ( numeric ) flags |= KExtendedSocket::noResolve;
-            QPtrList< KAddressInfo > addresses =
-                KExtendedSocket::lookup( host, QString::null, flags );
-            if ( addresses.isEmpty() ) throw Error();
-            addresses.setAutoDelete( true );
-            m_address = static_cast< const KInetSocketAddress* >(
-                addresses.first()->address() )->hostV4();
+            int flags = 0;
+
+            if ( numeric )
+              flags = KNetwork::KResolver::NoResolve;
+
+            KNetwork::KResolverResults addresses =
+               KNetwork::KResolver::resolve( host, QString::null, flags,
+                                             KNetwork::KResolver::IPv4Family );
+
+            if ( addresses.isEmpty() )
+              throw Error();
+
+            m_address = addresses.first().address().asInet();
         }
 
-        in_addr m_address;
+        KNetwork::KInetSocketAddress m_address;
     };
 
     struct Function : public ObjectImp
@@ -442,7 +450,7 @@ namespace KPAC
 	args.append(String(url.url()));
 	args.append(String(url.host()));
 	Value retval = findObj.call( exec, thisObj, args );
-	
+
 	if ( exec->hadException() ) {
 	  Value ex = exec->exception();
 	  exec->clearException();
