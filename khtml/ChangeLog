@@ -1,3 +1,15 @@
+2005-07-08  Germain Garand  <germain@ebooksfrance.org>
+
+        vertical-align fixes
+        
+        * rendering/render_object.cpp (getVerticalPosition): block level
+        elements must ignore vertical alignment (#92118). For Length values, check the parent
+        too. Don't use the parent's position if it's top/bottom - it's waiting for
+        our subtree's to complete! (cf. css/vertical-align.html)
+
+        * rendering/render_list.cpp (calcMinMaxWidth): if the marker is the error image,
+        avoid calculating bogus values.
+
 2005-07-07  Allan Sandfeld Jensen <kde@carewolf.com>
 
         There is nothing KHTML specific about keypress events. They might not be DOM2 or 3,

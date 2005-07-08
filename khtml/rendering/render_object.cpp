@@ -1705,21 +1705,22 @@ short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) con
 {
     // vertical align for table cells has a different meaning
     int vpos = 0;
-    if ( !isTableCell() ) {
+    if ( !isTableCell() && isInline() ) {
         EVerticalAlign va = style()->verticalAlign();
         if ( va == TOP ) {
             vpos = PositionTop;
         } else if ( va == BOTTOM ) {
             vpos = PositionBottom;
-        } else if ( va == LENGTH ) {
-            vpos = -style()->verticalAlignLength().width( lineHeight( firstLine ) );
         } else {
             if (!ref) ref = parent();
-            bool checkParent = ref->isInline() && !ref->isReplacedBlock();
+            bool checkParent = ref->isInline() && !ref->isReplacedBlock() && 
+                               !( ref->style()->verticalAlign() == TOP || ref->style()->verticalAlign() == BOTTOM );
             vpos = checkParent ? ref->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.
             if ( va == BASELINE )
                 return vpos;
+            else if ( va == LENGTH )
+                return vpos - style()->verticalAlignLength().width( lineHeight( firstLine ) );
 
             const QFont &f = ref->font( firstLine );
             int fontheight = ref->lineHeight( firstLine );

@@ -413,7 +413,7 @@ void RenderListMarker::calcMinMaxWidth()
 
     m_markerWidth = m_width = 0;
 
-    if(m_listImage) {
+    if(m_listImage && !m_listImage->isErrorImage()) {
         m_markerWidth = m_listImage->pixmap().width() + cMarkerPadding;
         if (listPositionInside())
             m_width = m_markerWidth;
