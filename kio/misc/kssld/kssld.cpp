@@ -47,7 +47,7 @@
 #include <kdebug.h>
 #include <qdatetime.h>
 
-#include <kcodec.h>
+#include <kcodecs.h>
 #include <kopenssl.h>
 
 // See design notes at end

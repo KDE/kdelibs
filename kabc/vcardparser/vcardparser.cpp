@@ -20,7 +20,7 @@
 
 #include <qregexp.h>
 
-#include <kcodec.h>
+#include <kcodecs.h>
 #include <kdebug.h>
 
 #include "vcardparser.h"

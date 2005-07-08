@@ -31,7 +31,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 
-#include <kcodec.h>
+#include <kcodecs.h>
 
 using namespace std;
 

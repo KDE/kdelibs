@@ -42,7 +42,7 @@
 #include <stdlib.h>
 
 #include <kdebug.h>
-#include "kcodec.h"
+#include "kcodecs.h"
 
 #define KMD5_S11 7
 #define KMD5_S12 12

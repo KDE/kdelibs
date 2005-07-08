@@ -27,7 +27,7 @@
 #include <Q3PointArray>
 #include <q3ptrlist.h>
 
-#include <kcodec.h>
+#include <kcodecs.h>
 
 #include <zlib.h>
 

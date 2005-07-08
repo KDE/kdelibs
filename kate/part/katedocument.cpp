@@ -64,7 +64,7 @@
 #include <kdirwatch.h>
 #include <kencodingfiledialog.h>
 #include <ktempfile.h>
-#include <kcodec.h>
+#include <kcodecs.h>
 
 #include <qtimer.h>
 #include <qfile.h>

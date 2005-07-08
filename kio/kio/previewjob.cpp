@@ -45,7 +45,7 @@
 #include <kapplication.h>
 #include <ktempfile.h>
 #include <ktrader.h>
-#include <kcodec.h>
+#include <kcodecs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
