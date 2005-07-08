@@ -39,10 +39,9 @@ that we would like to make for the next binary incompatible release.
   Also free the client from the requirement to inherit from KShared.
   (Frerich)
 
-- Remove all KSocket, KServerSocket, KSocks and KExtendedSocket references
-  throughout KDE in favor of KNetwork's socket implementations.
-  Also, revise the namespace usage.
-	thiago.macieira@kdemail.net
+- Remvoe all KSocks references throughout KDE in favor of KNetwork's
+  socket implementations. 
+  (Thiago)
 
 - Remove all methods marked 'deprecated' in KDE 3.x.
   (Martijn)
