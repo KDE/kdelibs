@@ -791,6 +791,8 @@ static inline bool matchNth(int count, const QString& nth)
             int p = nth.find('+');
             if (p != -1)
                 b = nth.mid(p+1).toInt();
+            p = nth.find('-');
+                b = -nth.mid(p+1).toInt();
         }
         else {
             b = nth.toInt();
