@@ -2,27 +2,33 @@ This file is meant to be a place to track of medium to large-scale API changes
 that we would like to make for the next binary incompatible release.
 
 - Check for forked classes in kde pim and other modules
+  (Danimo)
 
 - There is no reason why KConfigBase should inherit from QObject, get rid of that.
+  (Danimo)
 
 - Change all FooPrivate *d; -> Private * const d; and place initialization
   in the constructor (for classes that would benefit from this).  To help catch silly
   mistakes since d should never change. Also consider changing to use KStaticDeleter to
   help prevent mistakes where developers forget to delete the pointer. Maybe make use of
   Qt4 helper macros? 
+  (Frerich)
 
 - Move all utility functions away from KApplication. TBD: Make KApplication 
   a very thin wrapper around QApplication. Ideally, KApplication should go 
   away completely. The kapp pointer references everywhere must die. Find a 
   way to make that possible
+  (Danimo)
 
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
+  (Ben Meyer)
 
 - Remove the smart-to-dumb-pointer conversion operator from KSharedPtr
   and replace it with a T* Get() member function. An implict conversion is
   far too dangerous.
   See: http://groups.google.com/groups?selm=4ognb0%243cd%40linda.teleport.com&oe=UTF-8&output=gplain
   Also free the client from the requirement to inherit from KShared.
+  (Frerich)
 
 - Remove all KSocket, KServerSocket, KSocks and KExtendedSocket references
   throughout KDE in favor of KNetwork's socket implementations.
@@ -30,25 +36,31 @@ that we would like to make for the next binary incompatible release.
 	thiago.macieira@kdemail.net
 
 - Remove all methods marked 'deprecated' in KDE 3.x.
+  (Martijn)
 
 - Clean up the uses of virtual_hook, use normal virtuals instead (e.g. KZip/KArchive)
+  (David)
 
 - Make it possible to create a KSystemTray without a KMainWindow and instead lazily
   create the main window on demand.
+  (Martijn)
 
 - Make KSystemTray's Quit option in the context menu call kapp->quit() instead of
   closing all windows, so apps that save their window state on exit don't need
   workarounds to detect a window close caused by the tray rather than the user.
+  (Martijn)
 
 - Make KSystemTray add its own reference to KApp, so tray apps that adhere to the
   style guide can safely close their main window without having to worry about
   the app quitting instead.
+  (Martijn)
 
 - Make some long-lasting operations threaded. There are some operations in KDE that
   take too long on at least ~500MHz hardware to be done using event loops. Examples
   are the use of KLibLoader to dlopen plugins and KRun to fire up other processes.
   Konqueror and KMail tend to stall occasionally too, but that's harder to refactor
   because the bulk of the work there is X11-related.
+  (Martijn)
 
 - Make it possible to use SSL-ed sockets outside KIO. KSSL isn't very suitable for
   reuse, and the certificate dialogs are not even available in public API at all,
@@ -56,43 +68,53 @@ that we would like to make for the next binary incompatible release.
   based on libpsi (PSI, Light Hawk and Kopete) using homebrewn solutions.  [How
   does this have to do with changing KIO?  It's just a request to have that
   code in a different form....]
+  (Martijn)
 
 - Manually, properly clean up the includes in all of the headers.  Remove
   unnecessary ones and change pointers to use class foo; decorations and move the 
   headers into the cpp files.  When finished fixkdeincludes shouldn't find
   anything (but don't rely on fixkdeinclude, it should be done manually first!)
+  (Ben Meyer)
 
 - Use of the C++ keyword "explicit". Make all ctors explicit which can be used
   with one parameter to minimize wrong use of the class (i.e. have a look at 
   Dirk's work on KURL). Another candidate: KService( KDesktopFile *config ).
   KGuiItem has one of these dangerous ctors, too. KUser has a whole bunch
   of them.
+  (André Wöbbeking)
 
-- Solve need for casting when using bitfield enums (e.g. KProcess::Communication),
-  if Simon's solution works.
+- Solve need for casting when using bitfield enums (e.g. KProcess::Communication)
+  by the use of Q_DECLARE_FLAGS/Q_DECLARE_OPERATORS_FOR_FLAGS
+  (Simon)
 
 - Merge kdelibs/kdecore/kuser.h and kdeadmin/kuser/kuser.h.
+  (Frans)
 
 - Simplify memory management with KParts. The part and the widget delete each other,
   which in fact makes it more complex to handle. The part owns the widget so it
   should delete it, but not the other way round.
+  (David)
 
 - KParts: remove plugin loading from setInstance, add an explicit loadPlugins() call
   in all parts that should load plugins (at the end of the derived-part ctor).
+  (David)
 
 - KParts: come up with better names for ReadOnlyPart and ReadWritePart, ReadOnly
   is a minimum requirement, but this does not become clear until you dig deeper
   into the class. With QTextEdit and QTextBrowser for instance, the inheritance is
   the other way around. E.g.: ReaderPart? ViewerPart?
+  (David)
 
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
+  (Waldo)
 
 - KConfigBase: For all the read*Entry methods that take a QFont *, QPoint *, QSize *, etc.
   for the default value, add overloads that use a const reference, so that one can write 
   resize( config->readSizeEntry( "Bleh", size() ); for example. Constructing a null 
   QFont/QPoint/QSize is cheap enough to justify a consistent and usable API (IMHO) .
   Keep source compatibility.
+  (Simon)
 
 - Sort out reference counting of applications and KMainWindows: Add a setRefCountEnabled()
   function to KApplication; deref()ing the last reference should only quit the application
@@ -105,6 +127,7 @@ that we would like to make for the next binary incompatible release.
   Make KSysTray also hold a reference to the app. Then apps that use more than one main
   window and the tray (like KSIrc and Kopete) will quit at the right time without nasty
   hacks.
+  (Richard Smith)
 
 - Change classes that store bool data using strings ("true"/"false") to use bool 
   calls (readBoolEntry()).  Although not technicaly a binary incompatiblity... 
@@ -115,10 +138,13 @@ that we would like to make for the next binary incompatible release.
 - Is it really necessary to bother people using the KCM APIs with withFallback? I have
   never heard of it failing and when would you not like to have that fallback? I think
   a default of 'true' would be fine(and remove the argument in the APIs).
+  (Frans)
 
 - Do we need to have factory arguments in the KCM API? (who would use it anyway?)
+  (Frans)
 
 - KCModuleInfo should use d-pointer. Perhaps there is more classes.
+  (Frans)
 
 - The config options in kdeglobals needs to be cleaned up a little. Perhaps I'm being picky..
 	* They should be named properly, for example "enableIcons" instead of "EnableIcons". Or atleast
@@ -129,9 +155,11 @@ that we would like to make for the next binary incompatible release.
 	* Should we allow spaces in option names?
 	* Some option names are too short for being understandable. fixed->fixedFont; font->systemWideFont
 	* Perhaps an own font section?
+  (Frans)
 
 - kpassdlg.h needs to be renamed to kpassworddialog.h - consistent with other classes(it won't 
   break many apps). The class needs a facelift - see the comments in kpassdlg.{h,cpp}
+  (Frans)
 
 - KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
   worry about legacy will certainly allow an overall cleaner solution.
@@ -151,82 +179,114 @@ that we would like to make for the next binary incompatible release.
     writeStdin() in Block mode.
   - merge KProcIO into KProcess; add setBuffered() for separate channels.
   - use QByteArray for writeStdin(). better than the buf+len arg, as it is ref-counted.
+  (Oswald)
 
 - To discuss: Migrate the about dialog to use qhtml or khtml rather then the current
   setup of all of the widgets and sub widgets.  Might be a lot simpler, require a lot
   less code and be much more flexible for additions/enhancments.  Sidenote: currently
   the about information seems to be duplicated.
+  (Scott)
 
 - Make API use US English, (eg. KCatalogue -> KCatalog)
+  (Stephan Binner)
 
 - It would be nice if some insan^H^H^H brave soul had a look at the KAccel/KShortcut/KKeyWhatever
   classes and cleaned it up.
+  (Lubos)
+  Do we still need them? I recall that the original reason for their existance was multi-key
+  emacs alike shortcuts, which Qt now supports since quite a while.
+  (Simon)
 
 - KKeyDialog needs to be improved. It should simplify using KKeyChooser by not having to instantiate
   KDialogBase without restricting the possibilities of KKeyChooser (for instance, being able to
   configure global and application accels in one dialog). If there is only little time, simply
   expose the KKeyChooser object instead of making it private and inaccessible.
+  (Michael Brade)
 
 - Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
   amount of bool-usage in the CTORs (see KDialogBase, for instance)
+  (Michael Brade)
 
 - Get rid of KXMLClient::conserveMemory() and the conserveMemory argument in createGUI. It created
   too many problems in the past. Not worth the trouble.
+  (Simon)
 
 - Split KProtocolInfo into KProtocolInfoBase in kdecore (with almost everything) 
   and KProtocolInfo in kio (with the methods taking a KURL, which need KProtocolManager)
+  (David)
 
 - Rename KDirNotify_stub and update API (no need for '*' arguments anymore)
+  (David)
 
 - KWallet::Wallet::* functions - remove the default = 0 argument for mainwindow for the dialog
+  (Lubos)
 
 - Make libkwalletclient part of libkio and get rid of libkwalletclient.
+  (Waldo)
 
 - Get rid of libkdesu dependency in libkio, get rid of SessionData::AuthData*,
   get rid of SlaveInterface::authorizationKey and SlaveInterface::delAuthorization
+  (Waldo)
 
 - Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
-an alternative help->contents action)
+  an alternative help->contents action)
+  (George Staikos)
 
 - Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
+  (Waldo)
 
 - Merge KPIM::ClickLineEdit with KLineEdit
+  (Danimo)
 
 - Merge all K*Label classes into one that offers all the features such as ellipsis (this time for 
   center, middle and right in order to allow for sqeezing the text), links and selectable text 
   with a consistant API.
+  (Matt Rogers)
 
 - Make sure all GUI classes adopt well to palette changes.
+  (Danimo)
 
 - Rework KPanelExtension and KPanelApplet to have a sane set of global position
   enums, make the geometry handling less spaghetti like and extend the API so
   requests for things like re-reading the config of a KPanelExtension can be
   done by its parent.
+  (Aaron)
 
 - Fix KURLRequester API to use KURL for urls instead of QString to make clear that
   we work with URLs and not with paths.
+  (Waldo)
 
 - Dump KPixmapIO class. QPixmap with qt-copy patches #0005 and #0007 can perform just as well,
   KPixmapIO can't dither, and it generally doesn't make much sense to have this class.
+  (Lubos)
 
 - KListView: merge setDropHighlighter and setDropVisualizer, add a setDnDMode to choose between
   "dnd to move items" (e.g. keditbookmarks) and "dnd onto items" (e.g. kmail). Unless Qt4 does it all :)
+  (David)
 
 - Move KIO::findDeviceMountPoint, findPathMoundPoint, probably_slow_mounted, and testFileSystemFlag to KMountPoint,
   to merge that code.
+  (David)
 
 - Refactor the kio/bookmarks code so we don't need to use the static d-pointer trick anymore.
+  (Matt Rogers)
 
 - Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
   just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
   to have here for later doing.
+  (Matt Rogers)
 
 - Move KRichTextLabel into kdeui if still required with Qt 4.
+  (Waldo)
 
 - Add the concept of a session to KIO, in particular for KHTML so that it can
   have all of its jobs associated in some way (a unique key of sorts).  Will
   make SSL much easier to implement and allow removal of many hacks, mostly
   involving metadata.
+  (George Staikos)
 
 - KDE 4: Check if QTemporaryFile is good enough to dump KTempFile
+  (Albert Astals Cid)
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
+  (Coolo)
+
