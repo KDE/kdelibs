@@ -23,7 +23,11 @@ that we would like to make for the next binary incompatible release.
   The refcounting can simply be moved to KGlobal (or something similar), as it
   only depends on the refcounter variable and KMainWindow, KIO::Job, etc. calling
   these instead of quit() directly.
-  (Simon)
+
+  To make mixing QMainWindow with KIO::Job possible some 'registry' in KGlobal could
+  keep track of the jobs and set QApplication::setQuitOnLastWindowClosed accordingly.
+
+  (Simon, David, Danimo, Zack)
 
 - Remove all KDE_NO_COMPAT from the KDE2 -> KDE3 port before adding new ones for KDE4.
   (Ben Meyer)
