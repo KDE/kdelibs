@@ -19,7 +19,7 @@
 */
 
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 
 #include "ldif.h"
 

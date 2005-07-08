@@ -29,7 +29,7 @@
 #include <kmessagebox.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
 

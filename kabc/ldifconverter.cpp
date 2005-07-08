@@ -40,7 +40,7 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 
 #include "addressee.h"
 #include "address.h"

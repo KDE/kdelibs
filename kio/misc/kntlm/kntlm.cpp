@@ -26,7 +26,7 @@
 #include <qdatetime.h>
 #include <kapplication.h>
 #include <kswap.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kdebug.h>
 
 #include "des.h"

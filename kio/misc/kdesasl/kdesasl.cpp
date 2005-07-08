@@ -19,7 +19,7 @@
 
 #include "kdesasl.h"
 
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kurl.h>
 
 #include <q3strlist.h>

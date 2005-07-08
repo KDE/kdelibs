@@ -24,7 +24,7 @@
 #include <kdebug.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <kprocio.h>

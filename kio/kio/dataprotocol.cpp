@@ -19,7 +19,7 @@
 #include "dataprotocol.h"
 
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kurl.h>
 #include <kio/global.h>
 

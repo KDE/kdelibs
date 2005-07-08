@@ -1,4 +1,4 @@
 #ifdef __GNUC__
-#warning #include <kio/kmdcodec.h> is deprecated, use #include <kmdcodec.h> instead. 
+#warning #include <kio/kcodec.h> is deprecated, use #include <kcodec.h> instead. 
 #endif
-#include "../kmdcodec.h"
+#include "../kcodec.h"

@@ -52,14 +52,14 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
 	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kprocio.h kasyncio.h \
-	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
+	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h \
-	kdemacros.h kde_file.h ktimezones.h
+	kdemacros.h kde_file.h ktimezones.h kmdcodec.h
 
 libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -97,7 +97,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	netsupp.cpp kprocio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
-	kmdcodec.cpp ksocks.cpp fakes.c \
+	kcodec.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \

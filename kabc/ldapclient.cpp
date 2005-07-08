@@ -32,7 +32,7 @@
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 #include <kprotocolinfo.h>
 
 #include "ldapclient.h"

@@ -73,7 +73,7 @@
 #include <kshell.h>
 #include <kprotocolinfo.h>
 #include <kkeynative.h>
-#include <kmdcodec.h>
+#include <kcodec.h>
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
