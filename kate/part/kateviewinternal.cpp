@@ -1956,6 +1956,7 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
 
 void KateViewInternal::keyPressEvent( QKeyEvent* e )
 {
+  
   KKey key(e);
 
   bool codeComp = m_view->m_codeCompletion->codeCompletionVisible ();
@@ -2015,7 +2016,7 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
 
   if (key == Qt::Key_Backspace || key == Qt::SHIFT + Qt::Key_Backspace)
   {
-    m_view->backspace();
+    //m_view->backspace();
     e->accept();
 
     if (codeComp)

@@ -198,8 +198,18 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
     return false;
    }
 
-  if ((e->type()==QEvent::KeyPress) && (o!=m_view->m_viewInternal)) QApplication::sendEvent(m_view->m_viewInternal,e);
-    QApplication::sendEvent( m_view->window(), (QEvent*)e );
+  if ((e->type()==QEvent::KeyPress) || (e->type()==QEvent::KeyRelease)) 
+  {
+    QApplication::sendEvent(m_view->m_viewInternal,e);
+    if (!e->isAccepted()) QApplication::sendEvent(m_view->window(),e);
+  }
+  if ((e->type()==QEvent::Shortcut) || (e->type()==QEvent::ShortcutOverride) ||
+	(e->type()==QEvent::Accel) )  
+  {
+    QApplication::sendEvent(m_view->window(),e);
+  }
+
+  kdDebug()<<"e->type()=="<<e->type()<<endl;
   return false;
 }
 

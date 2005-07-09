@@ -1822,7 +1822,7 @@ void KateView::slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cu
   foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
   {
 //cursor should be newpos here though
-    const KTextEditor::CompletionData &nd=provider->completionData(view,KTextEditor::CompletionAsYouType,c,lineText);
+    const KTextEditor::CompletionData &nd=provider->completionData(view,KTextEditor::CompletionAsYouType,position,text,c,lineText);
     if ((!m_completionProviderData.contains(provider)) || (!(nd==m_completionProviderData[provider])) )
     {
       m_completionProviderData.insert(provider,nd);
