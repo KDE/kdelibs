@@ -280,12 +280,13 @@ kdDebug(6200) << "a " << a << " trav " << trav << " origtrav " << origtrav << " 
  * @param r current render object
  * @param trav current traversal state
  */
-static inline bool isUnsuitable(RenderObject *r, ObjectTraversalState /*trav*/)
+static inline bool isUnsuitable(RenderObject *r, ObjectTraversalState trav)
 {
   if (!r) return false;
   return r->isTableCol() || r->isTableSection() || r->isTableRow()
   	|| (r->isText() && static_cast<RenderText *>(r)->inlineTextBoxCount() == 0);
       ;
+  Q_UNUSED(trav);
 }
 
 /** Advances to the next render object, taking into account the current

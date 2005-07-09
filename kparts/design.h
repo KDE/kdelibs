@@ -1,7 +1,7 @@
 /**
  * @mainpage Framework for KDE graphical components
  *
- * .
+ *
  *
  * This library implements the framework for KDE parts, which are
  * elaborate widgets with a user-interface defined in terms of actions
