@@ -17,11 +17,12 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "ktimezones.h"
-#include "kdebug.h"
-#include "kprocess.h"
-#include "kstringhandler.h"
-#include "ktempfile.h"
+#include <ktimezones.h>
+#include <kdebug.h>
+#include <kmdcodec.h>
+#include <kprocess.h>
+#include <kstringhandler.h>
+#include <ktempfile.h>
 
 #include <qdatetime.h>
 #include <qfile.h>
@@ -210,12 +211,12 @@ const KTimezones::ZoneMap KTimezones::allZones()
                 // values are dummies.
                 m_zoneinfoDir = "/usr/share/lib/zoneinfo";
                 KTempFile temp;
-                KShellProcess *reader = new KShellProcess();
-                *reader << "/bin/grep" << "-h" << "^Zone" << m_zoneinfoDir << "/src/*" << temp.name() << "|" <<
+                KShellProcess reader;
+                reader << "/bin/grep" << "-h" << "^Zone" << m_zoneinfoDir << "/src/*" << temp.name() << "|" <<
                     "/bin/awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
                 // Note the use of blocking here...it is a trivial amount of data!
                 temp.close();
-                reader->start(KProcess::Block);
+                reader.start(KProcess::Block);
                 f.setName(temp.name());
                 if (!temp.status() || !f.open(IO_ReadOnly))
                 {
@@ -257,6 +258,7 @@ const KTimezones::ZoneMap KTimezones::allZones()
         KTimezone *timezone = new KTimezone(this, tokens[2], tokens[0], latitude, longitude, tokens[3]);
         m_zones->insert(tokens[2], timezone);
     }
+    f.close();
     return *m_zones;
 }
 
@@ -306,12 +308,56 @@ const KTimezone *KTimezones::local()
             envZone++;
         }
         local = zone(envZone);
-        if (local)
-            return local;
     }
+    if (local)
+        return local;
+
+    // Try to match /etc/localtime against the list of zoneinfo files.
+    QFile f;
+    f.setName("/etc/localtime");
+    if (f.open(IO_ReadOnly))
+    {
+        // Compute the MD5 sum of /etc/localtime.
+        KMD5 context("");
+        context.reset();
+        context.update(f);
+        QIODevice::Offset referenceSize = f.size();
+        QString referenceMd5Sum = context.hexDigest();
+        f.close();
+        if (!m_zoneinfoDir.isEmpty())
+        {
+            // Compare it with each zoneinfo file.
+            for (ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it)
+            {
+                KTimezone *zone = it.data();
+                f.setName(m_zoneinfoDir + '/' + zone->name());
+                if (f.open(IO_ReadOnly))
+                {
+                    QIODevice::Offset candidateSize = f.size();
+                    QString candidateMd5Sum;
+                    if (candidateSize == referenceSize)
+                    {
+                        // Only do the heavy lifting for file sizes which match.
+                kdDebug() << "testing open " << f.name() << endl;
+                        context.reset();
+                        context.update(f);
+                        candidateMd5Sum = context.hexDigest();
+                    }
+                    f.close();
+                    if (candidateMd5Sum == referenceMd5Sum)
+                    {
+                        // kdError() << "local=" << zone->name() << endl;
+                        local = zone;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (local)
+        return local;
 
     // BSD support.
-    QFile f;
     f.setName("/etc/timezone");
     if (!f.open(IO_ReadOnly))
     {
@@ -323,13 +369,13 @@ const KTimezone *KTimezones::local()
             // /bin/fgrep 'TZ=' /etc/default/init | /bin/head -n 1 | /bin/cut -b 4-
             //
             KTempFile temp;
-            KShellProcess *reader = new KShellProcess();
-            *reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
+            KShellProcess reader;
+            reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
                 "/bin/head" << "-n" << "1" << "|" <<
                 "/bin/cut" << "-b" << "4-";
             // Note the use of blocking here...it is a trivial amount of data!
             temp.close();
-            reader->start(KProcess::Block);
+            reader.start(KProcess::Block);
             f.setName(temp.name());
             if (!temp.status() || !f.open(IO_ReadOnly))
             {
@@ -343,13 +389,10 @@ const KTimezone *KTimezones::local()
         QTextStream ts(&f);
         ts >> fileZone;
         local = zone(fileZone);
-        if (local)
-            return local;
     }
-
-    // FIXME. Is there a way to use /etc/localtime? What if it is a copy of the
-    // zoneinfo file instead of a link? Perhaps the only safe thing to do is to
-    // "diff" for a matching file? Gulp...let's not do this for now.
+    f.close();
+    if (local)
+        return local;
 
     // None of the deterministic stuff above has worked: try a heuristic. We
     // try to find a pair of matching timezone abbreviations...that way, we'll
@@ -359,15 +402,17 @@ const KTimezone *KTimezones::local()
         tzset();
         QString stdZone = tzname[0];
         QString dstZone = tzname[1];
+        int bestOffset = INT_MAX;
         for (ZoneMap::Iterator it = m_zones->begin(); it != m_zones->end(); ++it)
         {
             KTimezone *zone = it.data();
+            int candidateOffset = QABS(zone->offset(Qt::LocalTime));
             AbbreviationsMatch match(zone);
-            if (match.test(stdZone, dstZone))
+            if (match.test(stdZone, dstZone) && (candidateOffset < bestOffset))
             {
                 // kdError() << "local=" << zone->name() << endl;
+                bestOffset = candidateOffset;
                 local = zone;
-                break;
             }
         }
     }
