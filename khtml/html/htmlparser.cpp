@@ -86,6 +86,13 @@ public:
     ~HTMLStackElem()
         { node->deref(); }
 
+    void setNode(NodeImpl* newNode)
+    {
+        newNode->ref();
+        node->deref();
+        node = newNode;
+    }
+
     int       id;
     int       level;
     bool      strayTableContent;
@@ -1301,7 +1308,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
             HTMLStackElem* nextElem = currElem->next;
             if (!isResidualStyleTag(currElem->id)) {
                 prevElem->next = nextElem;
-                prevElem->node = currElem->node;
+                prevElem->setNode(currElem->node);
                 delete currElem;
             }
             else
@@ -1326,7 +1333,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
                 currNode = currElem->node->cloneNode(false);
 
                 // Change the stack element's node to point to the clone.
-                currElem->node = currNode;
+                currElem->setNode(currNode);
 
                 // Attach the previous node as a child of this new node.
                 if (prevNode)
@@ -1386,7 +1393,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
         currElem = currElem->next;
     }
     prevElem->next = elem->next;
-    prevElem->node = elem->node;
+    prevElem->setNode(elem->node);
     delete elem;
 
     // Step 7: Reopen intermediate inlines, e.g., <b><p><i>Foo</b>Goo</p>.
@@ -1407,7 +1414,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
             // curr->id rather than the node that you should pop to when the element gets pulled off
             // the stack.
             popOneBlock(false);
-            curr->node = currNode;
+            curr->setNode(currNode);
             curr->next = residualStyleStack;
             residualStyleStack = curr;
         }
@@ -1541,7 +1548,7 @@ void KHTMLParser::popBlock( int _id )
                 // the stack.
                 popOneBlock(false);
                 Elem->next = residualStyleStack;
-                Elem->node = currNode;
+                Elem->setNode(currNode);
                 residualStyleStack = Elem;
             }
             else
