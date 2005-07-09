@@ -22,7 +22,7 @@
 #ifndef _KWALLETBACKEND_H
 #define _KWALLETBACKEND_H
 
-#include <kcodec.h>
+#include <kcodecs.h>
 
 #include <qstring.h>
 #include <qstringlist.h>

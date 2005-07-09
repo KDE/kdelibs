@@ -31,7 +31,7 @@
 #endif
 
 #include <qobject.h>
-#include <kcodec.h>
+#include <kcodecs.h>
 
 class HTTPFilterBase : public QObject
 {
