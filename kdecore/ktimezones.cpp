@@ -338,7 +338,6 @@ const KTimezone *KTimezones::local()
                     if (candidateSize == referenceSize)
                     {
                         // Only do the heavy lifting for file sizes which match.
-                kdDebug() << "testing open " << f.name() << endl;
                         context.reset();
                         context.update(f);
                         candidateMd5Sum = context.hexDigest();
