@@ -398,3 +398,7 @@ vertical-align: top;
 background: #dfe7f3;
 }
 
+#content td.memItemLeft {
+text-align: right;
+}
+
