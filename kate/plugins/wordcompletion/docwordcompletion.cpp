@@ -275,7 +275,8 @@ void DocWordCompletionPluginView::toggleAutoPopup()
   }
 }
 
-const KTextEditor::CompletionData DocWordCompletionPluginView::completionData(KTextEditor::View*,enum KTextEditor::CompletionType comptype, const KTextEditor::Cursor& pos , const QString& line)
+const KTextEditor::CompletionData DocWordCompletionPluginView::completionData(KTextEditor::View*,enum KTextEditor::CompletionType comptype, const 
+	KTextEditor::Cursor&, const QString&,const KTextEditor::Cursor& pos , const QString& line)
 {
   kdDebug()<<"Should we provide a completion list?"<<endl;
   if ((!d->autopopup->isChecked()) && (comptype==KTextEditor::CompletionAsYouType)) return KTextEditor::CompletionData::Null();

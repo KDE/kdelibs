@@ -95,7 +95,7 @@ class DocWordCompletionPluginView
     void settreshold( uint treshold );
 
 
-    const KTextEditor::CompletionData completionData(KTextEditor::View*, enum KTextEditor::CompletionType, const KTextEditor::Cursor&, const QString&);
+    const KTextEditor::CompletionData completionData(KTextEditor::View*, enum KTextEditor::CompletionType, const KTextEditor::Cursor&, const QString&,const KTextEditor::Cursor&, const QString&);
     const KTextEditor::ArgHintData argHintData(KTextEditor::View *,const KTextEditor::Cursor&, const QString&)
         {return KTextEditor::ArgHintData::Null();};
     void filterInsertString(KTextEditor::View*,const KTextEditor::CompletionItem&,QString*){};
