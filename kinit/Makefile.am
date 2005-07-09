@@ -76,3 +76,7 @@ shell.o: wrapper.c
 
 dummy.cpp:
 	echo > dummy.cpp
+
+
+include $(top_srcdir)/admin/Doxyfile.am
+

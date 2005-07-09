@@ -21,3 +21,5 @@ libkspell2base_la_LIBADD  = $(LIB_KPARTS) ../kutils/libkutils.la
 
 servicetype_DATA = kspellclient.desktop
 servicetypedir = $(kde_servicetypesdir)
+
+include $(top_srcdir)/admin/Doxyfile.am

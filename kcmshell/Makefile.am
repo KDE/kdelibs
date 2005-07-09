@@ -34,3 +34,6 @@ noinst_HEADERS = main.h
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kcmshell.pot
 
+
+include $(top_srcdir)/admin/Doxyfile.am
+
