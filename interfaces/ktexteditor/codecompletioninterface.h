@@ -21,8 +21,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <Q3ValueList>
-#include <q3cstring.h>
 #include <kdelibs_export.h>
 #include <QVariant>
 #include <QIcon>
@@ -188,7 +186,8 @@ class KTEXTEDITOR_EXPORT CompletionProvider
   public:
 
     
-    virtual const CompletionData completionData(View*,enum CompletionType, const Cursor&, const QString&)=0;
+    /* insertion position can only be assumed valid, if the completion type is CompleteAsYouType and the inserted text is not empty*/
+    virtual const CompletionData completionData(View*,enum CompletionType, const Cursor& /*insertion pos*/, const QString& /*insertedText*/,const Cursor& /*current pos*/, const QString& /*current line*/)=0;
     virtual const ArgHintData argHintData(View *,const Cursor&, const QString&)=0;
     /*this function is called if a valid userdata is set for the chosen completion item*/
     virtual void filterInsertString(View*,const CompletionItem&,QString*)=0;
