@@ -89,10 +89,10 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     if ( e->provides( "application/x-kde-urilist" ) ) {
         QByteArray payload = e->encodedData( "application/x-kde-urilist" );
         if ( payload.size() ) {
-            uint c=0;
+            int c=0;
             const char* d = payload.data();
             while (c < payload.size() && d[c]) {
-                uint f = c;
+                int f = c;
                 // Find line end
                 while (c < payload.size() && d[c] && d[c]!='\r'
                         && d[c] != '\n')
