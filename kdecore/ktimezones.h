@@ -127,6 +127,7 @@ class KDECORE_EXPORT KTimezoneDetails
 {
 public:
     KTimezoneDetails(KTimezone *zone);
+    virtual ~KTimezoneDetails();
 
     /**
      * Retrieve the details of the timezone using the callbacks for:
@@ -211,7 +212,8 @@ public:
      * this routine is to actually return "Europe/London" (or rather, the
      * corresponding KTimezone).
      *
-     * @return local timezone. If necessary, we will return a guess.
+     * @return local timezone. If necessary, we will return a guess, NULL means
+     *         "UTC".
      */
     const KTimezone *local();
 
@@ -236,7 +238,7 @@ public:
     QString db();
 
 private:
-    float convertOrdinate(const QString& ordinate);
+    float convertCoordinate(const QString &coordinate);
 
     QString m_zoneinfoDir;
     ZoneMap *m_zones;

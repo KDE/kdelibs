@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
   {
      KTimezones timezones;
      const KTimezone* timezone = timezones.local();
-     printf( "Local timezone: %s\n", timezone->name().latin1() );
+     printf( "Local timezone: %s\n", timezone ? timezone->name().latin1() : "UTC" );
      return 0;
   }
 

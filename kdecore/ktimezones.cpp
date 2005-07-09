@@ -251,8 +251,8 @@ const KTimezones::ZoneMap KTimezones::allZones()
             continue;
         }
 
-        float latitude = convertOrdinate(ordinates[1]);
-        float longitude = convertOrdinate(ordinates[2]);
+        float latitude = convertCoordinate(ordinates[1]);
+        float longitude = convertCoordinate(ordinates[2]);
 
         // Add entry to list.
         KTimezone *timezone = new KTimezone(this, tokens[2], tokens[0], latitude, longitude, tokens[3]);
@@ -265,14 +265,14 @@ const KTimezones::ZoneMap KTimezones::allZones()
 /**
  * Convert sHHMM or sHHMMSS to a floating point number of degrees.
  */
-float KTimezones::convertOrdinate(const QString& ordinate)
+float KTimezones::convertCoordinate(const QString &coordinate)
 {
-    int value = ordinate.toInt();
+    int value = coordinate.toInt();
     int degrees = 0;
     int minutes = 0;
     int seconds = 0;
 
-    if (ordinate.length() > 11)
+    if (coordinate.length() > 11)
     {
         degrees = value / 10000;
         value -= degrees * 10000;
@@ -388,8 +388,8 @@ const KTimezone *KTimezones::local()
         QTextStream ts(&f);
         ts >> fileZone;
         local = zone(fileZone);
+        f.close();
     }
-    f.close();
     if (local)
         return local;
 
@@ -430,6 +430,10 @@ const KTimezone *KTimezones::zone(const QString &name)
 
 KTimezoneDetails::KTimezoneDetails(KTimezone *zone) :
     m_zone(zone)
+{
+}
+
+KTimezoneDetails::~KTimezoneDetails()
 {
 }
 
