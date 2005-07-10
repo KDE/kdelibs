@@ -36,6 +36,14 @@ class KTimezonesPrivate;
  * related to a timezone. Create subclasses to implement custom sources of
  * timezone information.
  *
+ * For example, to be able to create {@link KTimezone } objects from libical's
+ * VTIMEZONE objects:
+ *<ul>
+ *      <li>Subclass this class with a custom {@link parse } routine.
+ *      <li>Create one or more instances of this class.
+ *      <li>Use the instance(s) to create {@link KTimezone } objects.
+ *      <li>If required, add the objects to a {@link KTimezones } database.
+ *</ul>
  * @since 3.5
  * @author S.R.Haque <srhaque@iee.org>.
  */
