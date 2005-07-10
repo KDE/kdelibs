@@ -172,6 +172,7 @@ public:
 	/**
 	 *  Set the status of the connection with respect to proxies.
 	 *
+	 *  @param active is not used
 	 *  @param realIP is the IP address of the host you're connecting to
 	 *  @param realPort is the port of the host you're connecting to
 	 *  @param proxy is the IP or hostname of the proxy server

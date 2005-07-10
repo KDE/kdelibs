@@ -46,6 +46,8 @@ public:
      * @param url    The url of the directory to start in. Use QString::null
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
+     * @param parent The parent object of this widget.
+     * @param name The name of this widget.
      * @param modal  Specifies whether the dialog should be opened as modal
      *               or not.
      */
@@ -54,11 +56,13 @@ public:
 
     /**
      * Constructs a KURLRequesterDlg.
-     * 
+     *
      * @param url    The url of the directory to start in. Use QString::null
      *               to start in the current working directory, or the last
      *               directory where a file has been selected.
      * @param text   Text of the label
+     * @param parent The parent object of this widget.
+     * @param name The name of this widget.
      * @param modal  Specifies whether the dialog should be opened as modal
      *                  or not.
      */
@@ -79,6 +83,7 @@ public:
      *
      * @param url This specifies the initial path of the input line.
      * @param parent The widget the dialog will be centered on initially.
+     * @param caption The caption to use for the dialog.
      */
     static KURL getURL(const QString& url = QString::null,
             QWidget *parent= 0, const QString& caption = QString::null);

@@ -70,6 +70,8 @@ public:
      *                  directory will show the "open folder" icon, other
      *                  directories the "folder" icon.
      * @li Both  Don't mess with anything, just show the url as given.
+     * @param parent The parent object of this widget.
+     * @param name The name of this widget.
      */
     KURLComboBox( Mode mode, QWidget *parent=0, const char *name=0 );
     KURLComboBox( Mode mode, bool rw, QWidget *parent=0, const char *name=0 );
