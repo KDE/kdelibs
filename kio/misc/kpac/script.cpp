@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@
 #include <ksocketaddress.h>
 #include <kurl.h>
 #include <kjs/object.h>
+#include <kresolver.h>
 
 #include "script.h"
 
@@ -67,19 +68,32 @@ namespace
 
         operator KInetSocketAddress() const { return m_address; }
         operator String() const { return String( m_address.ipAddress().toString() ); }
+        operator const in_addr_t() const {
+          const sockaddr_in* sin = m_address;
+          return sin->sin_addr.s_addr;
+        }
+
+        operator String() const { return String( m_address.ipAddress().toString() ); }
 
     private:
         Address( const QString& host, bool numeric )
         {
             int flags = 0;
-            if ( numeric ) flags |= KResolver::NoResolve;
-            KResolverResults addresses = KResolver::resolve( host, QString::null, flags, KResolver::IPv4Family );
-            if ( addresses.error() || addresses.isEmpty() ) throw Error();
+
+            if ( numeric )
+              flags = KNetwork::KResolver::NoResolve;
+
+            KNetwork::KResolverResults addresses =
+               KNetwork::KResolver::resolve( host, QString::null, flags,
+                                             KNetwork::KResolver::IPv4Family );
+
+            if ( addresses.error() || addresses.isEmpty() ) 
+	      throw Error();
+
             m_address = addresses.first().address().asInet();
         }
-
          
-         KInetSocketAddress m_address;
+        KInetSocketAddress m_address;
     };
 
     struct Function : public ObjectImp
@@ -449,6 +463,18 @@ namespace KPAC
             exec->clearException();
             throw Error( ex.toString( exec ).qstring() );
         }
+
+	Object thisObj;
+	List args;
+	args.append(String(url.url()));
+	args.append(String(url.host()));
+	Value retval = findObj.call( exec, thisObj, args );
+
+	if ( exec->hadException() ) {
+	  Value ex = exec->exception();
+	  exec->clearException();
+	  throw Error( ex.toString( exec ).qstring() );
+	}
 
         return retval.toString( exec ).qstring();
     }

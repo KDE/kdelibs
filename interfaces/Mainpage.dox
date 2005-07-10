@@ -1,0 +1,13 @@
+/** @mainpage Interfaces
+*
+* This section collects interfaces that can be implemented
+* by applications. The interfaces provide well-defined functionality
+* and make it possible to substitute one application (that implements
+* a given interface) for another.
+*
+* Documented interfaces are:
+*
+* - KSpeech
+* - Terminal
+*
+*/

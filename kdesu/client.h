@@ -129,7 +129,7 @@ public:
      * Returns true if the specified group exists is
      * cached.
      *
-     * @param grpkey the group key
+     * @param group the group key
      * @return true if the group is found
      */
     bool findGroup(const QByteArray &group);
@@ -150,7 +150,7 @@ public:
      * value given to the @p group argument when the setVar function
      * was called, must be a subset of the argument given here and the key
      *
-     * <u>NOTE:</u> Simply supplying the group key here WILL not necessarily
+     * @note Simply supplying the group key here WILL not necessarily
      * work. If you only have a group key, then use delGroup instead.
      *
      * @param special_key the name of the variable.

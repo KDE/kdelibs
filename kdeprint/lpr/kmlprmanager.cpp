@@ -469,12 +469,12 @@ void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt
 void KMLprManager::slotEditPrintcap()
 {
 	if (!m_currentprinter ||
-	    KMessageBox::warningYesNo(NULL,
+	    KMessageBox::warningContinueCancel(NULL,
 	    i18n("Editing a printcap entry manually should only be "
 		 "done by confirmed system administrator. This may "
 		 "prevent your printer from working. Do you want to "
-		 "continue?"), QString ( "" ), QString( "" ), QString( "" ),
-	    QString( "editPrintcap" ) ) == KMessageBox::No)
+		 "continue?"), QString::null, KStdGuiItem::cont(),
+	    "editPrintcap") == KMessageBox::Cancel)
 		return;
 
 	PrintcapEntry	*entry = findEntry(m_currentprinter);

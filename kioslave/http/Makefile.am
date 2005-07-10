@@ -28,3 +28,4 @@ kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol \
               webdav.protocol webdavs.protocol
 
+include $(top_srcdir)/admin/Doxyfile.am

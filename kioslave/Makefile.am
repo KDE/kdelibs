@@ -24,3 +24,4 @@ SUBDIRS = file http ftp gzip $(BZIP2DIR) metainfo
 
 messages: # they get into kio.pot
 
+include $(top_srcdir)/admin/Doxyfile.am

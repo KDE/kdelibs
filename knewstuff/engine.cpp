@@ -313,14 +313,14 @@ void Engine::upload( Entry *entry )
     } else {
       int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
                                                i18n("Upload Info"),
-                                               i18n("&Close") );
+                                               KStdGuiItem::close() );
       if ( result == KMessageBox::Yes ) {
         kapp->invokeBrowser( noUploadUrl.url() );
       }
     }
   } else {
     int result = KMessageBox::questionYesNo( mParentWidget, text, caption,
-                                             i18n("&Upload"), i18n("&Cancel") );
+                                             i18n("&Upload"), KStdGuiItem::cancel() );
     if ( result == KMessageBox::Yes ) {
       KURL destination = mUploadProvider->uploadUrl();
       destination.setFileName( fi.fileName() );

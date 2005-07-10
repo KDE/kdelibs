@@ -17,3 +17,4 @@ METASOURCES = AUTO
 messages:
 	$(XGETTEXT) *.cpp *.h -o $(podir)/libkscreensaver.pot 
 
+include $(top_srcdir)/admin/Doxyfile.am

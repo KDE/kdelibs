@@ -579,7 +579,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	      i18n("File Error"),
 	      KStdGuiItem::close(), KStdGuiItem::save()))
 	    {
-	    case 1: // save
+	    case KMessageBox::No: // save
 	      if(!data->save(i18n("(Safety copy on file error)").ascii(), true))
 		{
 		  KMessageBox::information(this,
@@ -622,7 +622,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 	      i18n("The file \"%1\" cannot be found. "
 	           "Create a new one?").arg(fname), 
 	      i18n("No Such File"),
-	      KStdGuiItem::ok(), KStdGuiItem::cancel())==0)
+	      i18n("Create"), KStdGuiItem::cancel())==KMessageBox::Yes)
 	    {
 	      if(createNew(fname)==NoError)
 		{

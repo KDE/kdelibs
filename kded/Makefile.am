@@ -65,3 +65,5 @@ xdg_menu_DATA = applications.menu
 update_DATA = kded.upd
 updatedir = $(kde_datadir)/kconf_update
 
+include $(top_srcdir)/admin/Doxyfile.am
+

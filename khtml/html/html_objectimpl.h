@@ -44,7 +44,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
-    virtual void detach();
 
     virtual void recalcStyle( StyleChange ch );
 

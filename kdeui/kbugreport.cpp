@@ -231,8 +231,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     tmpLabel->setBuddy(m_subject);
     hlay->addWidget( m_subject );
 
-    QString text = i18n(""
-                        "Enter the text (in English if possible) that you wish to submit for the "
+    QString text = i18n("Enter the text (in English if possible) that you wish to submit for the "
                         "bug report.\n"
                         "If you press \"Send\", a mail message will be sent to the maintainer of "
                         "this program.\n");
@@ -392,7 +391,7 @@ void KBugReport::slotOk( void )
                 "<li>cause serious data loss</li>"
                 "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ) ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString::null,KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
         case 1: // grave
@@ -403,14 +402,13 @@ void KBugReport::slotOk( void )
                 "<li>cause data loss</li>"
                 "<li>introduce a security hole allowing access to the accounts of users who use the affected package</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "
-                "If it does not, please select a lower severity. Thank you!</p>" ) ) == KMessageBox::No )
+                "If it does not, please select a lower severity. Thank you!</p>" ),QString::null,KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
     }
     if( !sendBugReport() )
     {
-        QString msg = i18n(""
-                           "Unable to send the bug report.\n"
+        QString msg = i18n("Unable to send the bug report.\n"
                            "Please submit a bug report manually...\n"
                            "See http://bugs.kde.org/ for instructions.");
         KMessageBox::error(this, msg + "\n\n" + d->lastError);

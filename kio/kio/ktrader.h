@@ -32,7 +32,7 @@
  * and/or path of the application.  It is mostly used when you want to
  * do complex queries that KServiceTypeProfile can't handle.
  *
- * \paragraph examples Examples
+ * \par Examples
  *
  * A few examples will make this a lot more clear.
  *

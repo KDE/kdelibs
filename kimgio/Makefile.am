@@ -92,3 +92,7 @@ service_DATA = png.kimgio xpm.kimgio bmp.kimgio pbm.kimgio pgm.kimgio \
            $(KIMGIO_TIFF_DATAFILES) ico.kimgio $(KIMGIO_JP2_DATAFILES) \
            gif.kimgio pcx.kimgio tga.kimgio rgb.kimgio xcf.kimgio dds.kimgio \
            $(KIMGIO_EXR_DATAFILES) mng.kimgio psd.kimgio hdr.kimgio
+	   include $(top_srcdir)/admin/Makefile.am
+
+include $(top_srcdir)/admin/Doxyfile.am
+

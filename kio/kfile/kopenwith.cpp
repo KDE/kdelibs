@@ -63,8 +63,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-template class Q3PtrList<QString>;
-
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
 

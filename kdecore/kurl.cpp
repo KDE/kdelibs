@@ -550,7 +550,6 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   {
     *this = _u;
     m_strRef_encoded = rUrl.mid(1);
-    QString ref = decode(rUrl.mid(1), encoding_hint);
     if ( m_strRef_encoded.isNull() )
         m_strRef_encoded = ""; // we know there was an (empty) html ref, we saw the '#'
   }

@@ -971,7 +971,7 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
         }
 	s = s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
 
-	return KMessageBox::warningYesNo( parent, s, sTitle ) == KMessageBox::Yes;
+	return KMessageBox::warningContinueCancel( parent, s, sTitle, i18n("Reassign") ) == KMessageBox::Continue;
 }
 
 //---------------------------------------------------
@@ -1085,12 +1085,11 @@ QString KKeyChooserWhatsThis::text( const QPoint& p ) {
 /*                                                                      */
 /************************************************************************/
 KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts, QWidget *parent, const char* name )
-: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
+: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Default|Ok|Cancel, Ok )
 {
 	m_pKeyChooser = new KKeyChooser( this, type, bAllowLetterShortcuts );
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
-	enableButton( Help, false );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
 	QSize sz = size();
@@ -1098,12 +1097,11 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionType type, bool bAllowLetterShortcuts
 }
 
 KKeyDialog::KKeyDialog( bool bAllowLetterShortcuts, QWidget *parent, const char* name )
-: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Help|Default|Ok|Cancel, Ok )
+: KDialogBase( parent, name, true, i18n("Configure Shortcuts"), Default|Ok|Cancel, Ok )
 {
 	m_pKeyChooser = new KKeyChooser( this, KKeyChooser::Application, bAllowLetterShortcuts );
 	setMainWidget( m_pKeyChooser );
 	connect( this, SIGNAL(defaultClicked()), m_pKeyChooser, SLOT(allDefault()) );
-	enableButton( Help, false );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
 	QSize sz = size();

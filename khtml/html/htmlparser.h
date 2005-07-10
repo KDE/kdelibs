@@ -169,7 +169,6 @@ private:
     bool haveTitle;
     bool m_inline;
     bool end;
-    bool haveMalformedTable;
     bool inSelect;
 
 

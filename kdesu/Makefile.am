@@ -23,3 +23,6 @@ uninstall-local:
 
 bin_PROGRAMS = kdesu_stub
 kdesu_stub_SOURCES = kdesu_stub.c
+
+include $(top_srcdir)/admin/Doxyfile.am
+

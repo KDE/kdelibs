@@ -508,17 +508,17 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     if (!widget->children().isEmpty()) {
         // build region
-		QList<QObject*> list = widget->children();
-		foreach ( QObject* it, list ) {
-			QWidget* w = qobject_cast<QWidget* >(it);
-			if ( w && !w->isTopLevel() && !w->isHidden()) {
-				QRect r2 = w->geometry();
-				blit.subtract( r2 );
-				r2 = r2.intersect( r );
-				r2.moveBy(-w->x(), -w->y());
-				cr.append(r2);
-				cw.append(w);
-			}
+        QList<QObject*> list = widget->children();
+	foreach ( QObject* it, list ) {
+	    QWidget* w = qobject_cast<QWidget* >(it);
+	    if ( w && !w->isTopLevel() && !w->isHidden()) {
+	        QRect r2 = w->geometry();
+		blit.subtract( r2 );
+		r2 = r2.intersect( r );
+		r2.moveBy(-w->x(), -w->y());
+		cr.append(r2);
+		cw.append(w);
+	    }
         }
     }
     QVector<QRect> br = blit.rects();
@@ -747,7 +747,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         ret = ke->isAccepted();
         break;
     }
-    case EventImpl::KHTML_KEYPRESS_EVENT: {
+    case EventImpl::KEYPRESS_EVENT: {
 
         // See KHTMLView::dispatchKeyEvent: autorepeat is just keypress in the DOM
         // but it's keyrelease+keypress in Qt. So here we do the inverse mapping as

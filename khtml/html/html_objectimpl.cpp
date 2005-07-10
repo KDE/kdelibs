@@ -183,14 +183,6 @@ void HTMLObjectBaseElementImpl::attach() {
     if (m_render) dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
 }
 
-void HTMLObjectBaseElementImpl::detach() {
-
-    if (attached())
-        // ### do this when we are actualy removed from document instead
-        dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
-
-    HTMLElementImpl::detach();
-}
 
 // -------------------------------------------------------------------------
 

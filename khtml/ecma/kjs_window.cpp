@@ -739,7 +739,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case Onkeydown:
       return getListener(exec,DOM::EventImpl::KEYDOWN_EVENT);
     case Onkeypress:
-      return getListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT);
+      return getListener(exec,DOM::EventImpl::KEYPRESS_EVENT);
     case Onkeyup:
       return getListener(exec,DOM::EventImpl::KEYUP_EVENT);
     case Onload:
@@ -916,7 +916,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Onkeypress:
       if (isSafeScript(exec))
-        setListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT,value);
+        setListener(exec,DOM::EventImpl::KEYPRESS_EVENT,value);
       return;
     case Onkeyup:
       if (isSafeScript(exec))
@@ -1327,7 +1327,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
                                           "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(url.htmlURL(),  100)),
-                                    caption ) == KMessageBox::Yes )
+                                    caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
@@ -1560,7 +1560,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
         // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
         emit part->browserExtension()->requestFocus(part);
-        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") )
+        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required"), i18n("Close"), i18n("Do Not Close") )
              == KMessageBox::Yes )
           doClose = true;
       }

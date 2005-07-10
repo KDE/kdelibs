@@ -1,0 +1,9 @@
+/** @mainpage KIO Slaves
+*
+* KIO Slaves are out-of-process worker applications that
+* perform protocol-specific communications.
+*
+* - <a href="../http/html/">http</a> ioslave
+* - ftp ioslave
+*
+*/

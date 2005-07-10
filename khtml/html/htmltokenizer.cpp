@@ -445,7 +445,8 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
-    bool strict = !parser->doc()->inCompatMode();
+    // SGML strict
+    bool strict = !parser->doc()->inCompatMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml;
     int delimiterCount = 0;
     bool canClose = false;
 
@@ -1095,6 +1096,14 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
             kdDebug( 6036 ) << "appending Tag: " << tagID << endl;
 #endif
+            // If the tag requires an end tag it cannot be flat,
+            // unless we are using the HTML parser to parse XHTML
+            // The only exception is SCRIPT and priority 0 tokens.
+            if (tagID < ID_CLOSE_TAG && tagID != ID_SCRIPT &&
+                DOM::endTag[tagID] == DOM::REQUIRED &&
+                parser->doc()->htmlMode() != DocumentImpl::XHtml)
+                currToken.flat = false;
+
             bool beginTag = !currToken.flat && (tagID < ID_CLOSE_TAG);
 
             if(tagID >= ID_CLOSE_TAG)

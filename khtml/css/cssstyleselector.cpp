@@ -792,6 +792,10 @@ static inline bool matchNth(int count, const QString& nth)
             int p = nth.find('+');
             if (p != -1)
                 b = nth.mid(p+1).toInt();
+            else {
+                p = nth.find('-');
+                b = -nth.mid(p+1).toInt();
+            }
         }
         else {
             b = nth.toInt();
@@ -1138,7 +1142,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                     if (n->isElementNode()) count++;
                     n = n->previousSibling();
                 }
-//                kdDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
+                kdDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }

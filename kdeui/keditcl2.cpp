@@ -104,7 +104,7 @@ again:
 			srchdialog,
                         i18n("End of document reached.\n"\
                              "Continue from the beginning?"),
-                        i18n("Find"));
+                        i18n("Find"),KStdGuiItem::cont(),i18n("Stop"));
       if (query == KMessageBox::Yes){
 	line = 0;
 	col = 0;
@@ -117,7 +117,7 @@ again:
 			srchdialog,
                         i18n("Beginning of document reached.\n"\
                              "Continue from the end?"),
-                        i18n("Find"));
+                        i18n("Find"),KStdGuiItem::cont(),i18n("Stop"));
       if (query == KMessageBox::Yes){
 	QString string = textLine( numLines() - 1 );
 	line = numLines() - 1;
@@ -374,7 +374,7 @@ again:
 			srchdialog,
                         i18n("End of document reached.\n"\
                              "Continue from the beginning?"),
-                        i18n("Find"));
+                        i18n("Find"),KStdGuiItem::cont(),i18n("Stop"));
     if (query == KMessageBox::Yes){
       replace_all_line = 0;
       replace_all_col = 0;
@@ -387,7 +387,7 @@ again:
 			srchdialog,
                         i18n("Beginning of document reached.\n"\
                              "Continue from the end?"),
-                        i18n("Find"));
+                        i18n("Find"),KStdGuiItem::cont(),i18n("Stop"));
     if (query == KMessageBox::Yes){
       QString string = textLine( numLines() - 1 );
       replace_all_line = numLines() - 1;
@@ -453,7 +453,7 @@ again:
 			replace_dialog,
                         i18n("End of document reached.\n"\
                              "Continue from the beginning?"),
-                        i18n("Replace"));
+                        i18n("Replace"),KStdGuiItem::cont(),i18n("Stop"));
      if (query == KMessageBox::Yes){
 	line = 0;
 	col = 0;
@@ -466,7 +466,7 @@ again:
 			replace_dialog,
                         i18n("Beginning of document reached.\n"\
                              "Continue from the end?"),
-                        i18n("Replace"));
+                        i18n("Replace"),KStdGuiItem::cont(),i18n("Stop"));
       if (query == KMessageBox::Yes){
 	QString string = textLine( numLines() - 1 );
 	line = numLines() - 1;

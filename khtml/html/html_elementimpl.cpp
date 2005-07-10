@@ -232,7 +232,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeydown", this));
 	break;
     case ATTR_ONKEYPRESS:
-        setHTMLEventListener(EventImpl::KHTML_KEYPRESS_EVENT,
+        setHTMLEventListener(EventImpl::KEYPRESS_EVENT,
 	    getDocument()->createHTMLEventListener(attr->value().string(), "onkeypress", this));
 	break;
     case ATTR_ONKEYUP:

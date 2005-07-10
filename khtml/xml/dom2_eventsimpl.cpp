@@ -174,6 +174,8 @@ EventImpl::EventId EventImpl::typeToId(DOMString type)
         return KEYDOWN_EVENT;
     else if ( type == "keyup" )
         return KEYUP_EVENT;
+    else if ( type == "keypress" )
+        return KEYPRESS_EVENT;
     else if ( type == "readystatechange" )
         return KHTML_READYSTATECHANGE_EVENT;
     else if ( type == "dblclick" )
@@ -246,6 +248,8 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "keydown";
     case KEYUP_EVENT:
         return "keyup";
+    case KEYPRESS_EVENT:
+        return "keypress";
 
     //khtml extensions
     case KHTML_ECMA_DBLCLICK_EVENT:
@@ -256,8 +260,6 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "khtml_dragdrop";
     case KHTML_ERROR_EVENT:
         return "khtml_error";
-    case KHTML_KEYPRESS_EVENT:
-        return "keypress";
     case KHTML_MOVE_EVENT:
         return "khtml_move";
     case KHTML_READYSTATECHANGE_EVENT:
@@ -489,7 +491,7 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *vi
   //m_keyEvent->ignore();
 
   if( keypress )
-    m_id = KHTML_KEYPRESS_EVENT;
+    m_id = KEYPRESS_EVENT;
   else if( key->type() == QEvent::KeyPress )
     m_id = KEYDOWN_EVENT;
   else if( key->type() == QEvent::KeyRelease )

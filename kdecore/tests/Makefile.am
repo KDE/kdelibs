@@ -28,7 +28,7 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	cplusplustest kiconloadertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
-	kxerrorhandlertest startserviceby kstdacceltest kglobaltest
+	kxerrorhandlertest startserviceby kstdacceltest kglobaltest ktimezonestest
 
 TESTS = kurltest kstdacceltest
 
@@ -76,6 +76,7 @@ kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
 startserviceby_SOURCES = startserviceby.cpp
 kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
+ktimezonestest_SOURCES = ktimezonestest.cpp
 
 check_LTLIBRARIES = kunittest_kconfig.la
 

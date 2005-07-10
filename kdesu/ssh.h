@@ -40,10 +40,12 @@ public:
      */
     void setStub(const QByteArray &stub);
 
-    /**
-     * Checks if the current user@host needs a password.
+    /** 
+     * Checks if the current user\@host needs a password. 
      * @return The prompt for the password if a password is required. A null
      * string otherwise.
+     *
+     * @todo The return doc is so obviously wrong that the C code needs to be checked.
      */
     int checkNeedPassword();
 
