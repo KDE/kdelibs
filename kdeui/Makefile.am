@@ -56,15 +56,15 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdualcolorbtn.h kdualcolorbutton.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h \
 		kaction.h kactioncollection.h kactionclasses.h khelpmenu.h \
-		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
+		kcmodule.h kcmenumngr.h \
 		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
 		kpixmapio.h kwordwrap.h \
 		kedittoolbar.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
-		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
-		kpanelextension.h kcompletionbox.h ksqueezedtextlabel.h \
+		kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
+		kcompletionbox.h ksqueezedtextlabel.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
@@ -104,14 +104,14 @@ libkdeui_la_SOURCES = \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp khelpmenu.cpp \
-		kcmenumngr.cpp kpanelmenu.cpp \
+		kcmenumngr.cpp \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
-		kpanelappmenu.cpp kdockwidget.cpp kdockwidget_private.cpp \
+		kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
-		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
-		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
+		kaboutapplication.cpp kdcopactionproxy.cpp \
+		kcolorcombo.cpp kpushbutton.cpp \
 		kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp \
