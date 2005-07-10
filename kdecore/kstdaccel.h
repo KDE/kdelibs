@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 #ifndef KSTDACCEL_H
 #define KSTDACCEL_H
@@ -51,8 +51,6 @@ namespace KStdAccel
     // The Print item
     Print,
     Quit,
-    // Tabs
-    TabNew, TabDetach, TabDuplicate, ///< @since 3.5
     // Edit menu
     Undo, Redo, Cut, Copy, Paste, SelectAll, Deselect, DeleteWordBack,
     DeleteWordForward, Find, FindNext, FindPrev, Replace,
@@ -157,7 +155,7 @@ namespace KStdAccel
   KDECORE_EXPORT const KShortcut& openNew();
 
   /**
-   * Close current document/Tab. Default: Ctrl-w
+   * Close current document. Default: Ctrl-w
    * @return the shortcut of the standard accelerator
    */
   KDECORE_EXPORT const KShortcut& close();
@@ -179,24 +177,6 @@ namespace KStdAccel
    * @return the shortcut of the standard accelerator
    */
   KDECORE_EXPORT const KShortcut& quit();
-
-  /**
-   * Create a new Tab. Default: Ctrl-t
-   * @return the shortcut of the standard accelerator
-   */
-  KDECORE_EXPORT const KShortcut& tabNew();
-
-  /**
-   * Detach a Tab. Default: Ctrl-Shift+b
-   * @return the shortcut of the standard accelerator
-   */
-  KDECORE_EXPORT const KShortcut& tabDetach();
-
-  /**
-   * Duplicate a Tab. Default: Ctrl-Shift+d
-   * @return the shortcut of the standard accelerator
-   */
-  KDECORE_EXPORT const KShortcut& tabDuplicate();
 
   /**
    * Undo last operation. Default: Ctrl-z

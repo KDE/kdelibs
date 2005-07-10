@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 #define __KSTDACCEL_CPP_ 1
 
@@ -52,9 +52,6 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Save,                I18N_NOOP("Save"), 0,     Qt::CTRL+Qt::Key_S, 0, 0, 0, KShortcut(), false },
 	{ Print,               I18N_NOOP("Print"), 0,    Qt::CTRL+Qt::Key_P, 0, 0, 0, KShortcut(), false },
 	{ Quit,                I18N_NOOP("Quit"), 0,     Qt::CTRL+Qt::Key_Q, 0, 0, 0, KShortcut(), false },
-	{ TabNew,              I18N_NOOP("New Tab"), 0, Qt::CTRL+Qt::Key_T, 0, 0, 0, KShortcut(), false },
-	{ TabDetach,           I18N_NOOP("Detach Tab"), 0, Qt::CTRL+Qt::SHIFT+QT::Key_B , 0, Qt::CTRL+Qt::Key_BracketLeft, 0, KShortcut(), false },
-	{ TabDuplicate,        I18N_NOOP("Duplicate Tab"), 0, Qt::CTRL+Qt::SHIFT+Qt::Key_D, 0, 0, 0, KShortcut(), false },
 	{AccelNone,            "Group:Edit", I18N_NOOP("Edit"), 0, 0, 0, 0, KShortcut(), false },
 	{ Undo,                I18N_NOOP("Undo"), 0,     Qt::CTRL+Qt::Key_Z, 0, 0, 0, KShortcut(), false },
 	{ Redo,                I18N_NOOP("Redo"), 0,     Qt::CTRL+Qt::SHIFT+Qt::Key_Z, 0, 0, 0, KShortcut(), false },
@@ -268,9 +265,6 @@ const KShortcut& close()                 { return shortcut( Close ); }
 const KShortcut& save()                  { return shortcut( Save ); }
 const KShortcut& print()                 { return shortcut( Print ); }
 const KShortcut& quit()                  { return shortcut( Quit ); }
-const KShortcut& tabNew()                { return shortcut( TabNew ); }
-const KShortcut& tabDetach()             { return shortcut( TabDetach ); }
-const KShortcut& tabDuplicate()          { return shortcut( TabDuplicate ); }
 const KShortcut& cut()                   { return shortcut( Cut ); }
 const KShortcut& copy()                  { return shortcut( Copy ); }
 const KShortcut& paste()                 { return shortcut( Paste ); }
