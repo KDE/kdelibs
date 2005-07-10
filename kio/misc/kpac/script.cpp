@@ -73,8 +73,6 @@ namespace
           return sin->sin_addr.s_addr;
         }
 
-        operator String() const { return String( m_address.ipAddress().toString() ); }
-
     private:
         Address( const QString& host, bool numeric )
         {
@@ -463,18 +461,6 @@ namespace KPAC
             exec->clearException();
             throw Error( ex.toString( exec ).qstring() );
         }
-
-	Object thisObj;
-	List args;
-	args.append(String(url.url()));
-	args.append(String(url.host()));
-	Value retval = findObj.call( exec, thisObj, args );
-
-	if ( exec->hadException() ) {
-	  Value ex = exec->exception();
-	  exec->clearException();
-	  throw Error( ex.toString( exec ).qstring() );
-	}
 
         return retval.toString( exec ).qstring();
     }
