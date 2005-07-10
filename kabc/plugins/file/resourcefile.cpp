@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
+#include <qfileinfo.h>
 #include <qregexp.h>
 #include <qtimer.h>
 
@@ -177,7 +178,8 @@ bool ResourceFile::doOpen()
 
     return ok;
   } else {
-    if ( readOnly() ) {
+    QFileInfo fileInfo( mFileName );
+    if ( readOnly() || !fileInfo.isWritable() ) {
       if ( !file.open( IO_ReadOnly ) )
         return false;
     } else {
