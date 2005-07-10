@@ -39,7 +39,7 @@ class KTimezonesPrivate;
  * For example, to be able to create {@link KTimezone } objects from libical's
  * VTIMEZONE objects:
  *<ul>
- *      <li>Subclass this class with a custom {@link parse } routine.
+ *      <li>Subclass this class with a custom {@link parse() } routine.
  *      <li>Create one or more instances of this class.
  *      <li>Use the instance(s) to create {@link KTimezone } objects.
  *      <li>If required, add the objects to a {@link KTimezones } database.
@@ -225,7 +225,7 @@ public:
     /**
      * Called when a timezone abbreviation is seen. Note that the index here
      * is NOT a simple incrementing integer, rather it matches the sequence
-     * of abbrIndex values from {@link gotLocalTime }.
+     * of abbrIndex values from {@link gotLocalTime() }.
      */
     virtual void gotAbbreviation(int index, const QString &abbr);
 
