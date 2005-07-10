@@ -36,7 +36,7 @@
 #include "ksslutils.h"
 
 #include <kstandarddirs.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <klocale.h>
 #include <qdatetime.h>
 #include <ktempfile.h>

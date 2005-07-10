@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <ksavefile.h>
 #include <kstandarddirs.h>
 

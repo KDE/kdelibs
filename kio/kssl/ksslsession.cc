@@ -25,7 +25,7 @@
 #endif
 
 #include <kopenssl.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 KSSLSession::KSSLSession() : _session(0L) {
 }

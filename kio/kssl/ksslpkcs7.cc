@@ -30,7 +30,7 @@
 #include <ksslall.h>
 #include <kdebug.h>
 #include <ktempfile.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 #include <assert.h>
 
