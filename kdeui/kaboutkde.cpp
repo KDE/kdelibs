@@ -34,7 +34,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
   const QString text1 = i18n(""
     "The <b>K Desktop Environment</b> is written and maintained by the "
     "KDE Team, a world-wide network of software engineers committed to "
-    "free software development.<br><br>"
+    "<a href=\"http://www.gnu.org/philosophy/free-sw.html\">Free Software</a> development.<br><br>"
     "No single group, company or organization controls the KDE source "
     "code. Everyone is welcome to contribute to KDE.<br><br>"
     "Visit <A HREF=\"http://www.kde.org/\">http://www.kde.org</A> for "
