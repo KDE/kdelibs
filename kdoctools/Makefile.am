@@ -65,5 +65,5 @@ kbzip2filter.cpp:
 CLEANFILES = kbzip2filter.cpp xslt_pure.o xslt_pure.cpp checkXML
 
 
-include $(top_srcdir)/include/Doxyfile.am
+include $(top_srcdir)/admin/Doxyfile.am
 
