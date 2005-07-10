@@ -75,3 +75,4 @@ servicetypedir = $(kde_servicetypesdir)
 #libkfileshare_la_LDFLAGS = -module $(KDE_PLUGIN)
 #kde_services_DATA = kfilesharepropsplugin.desktop
 
+include $(top_srcdir)/admin/Doxyfile.am
