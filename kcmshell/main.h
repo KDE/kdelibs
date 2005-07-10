@@ -38,7 +38,7 @@ class KCMShell : public KApplication
 public:
 
     /**
-     * Sets m_dcopName basically to @p dcopName, 
+     * Sets m_dcopName basically to @p dcopName,
      * and then registers with DCOP.
      *
      * @param rootMode true if the kcmshell is embedding
@@ -46,7 +46,7 @@ public:
     void setDCOPName(const QCString &dcopName, bool rootMode );
 
     /**
-     * Waits until the last instance of kcmshell with the same 
+     * Waits until the last instance of kcmshell with the same
      * module as this one exits, and then exits.
      */
     void waitForExit();
@@ -64,7 +64,7 @@ private slots:
 private:
 
     /**
-     * The DCOP name which actually is registered. 
+     * The DCOP name which actually is registered.
      * For example "kcmshell_mouse".
      */
     QCString m_dcopName;
@@ -73,10 +73,9 @@ private:
 
 
 /**
- * @description Essentially a plain KCMultiDialog, but has the 
- * additional functionality of allowing it to be told to request
- * windows focus.
- * 
+ * Essentially a plain KCMultiDialog, but has the additional functionality
+ * of allowing it to be told to request windows focus.
+ *
  * @author Waldo Bastian <bastian@kde.org>
  */
 class KCMShellMultiDialog : public KCMultiDialog, public DCOPObject
@@ -85,10 +84,10 @@ class KCMShellMultiDialog : public KCMultiDialog, public DCOPObject
     K_DCOP
 
 public:
-    
+
     /**
      */
-    KCMShellMultiDialog( int dialogFace, const QString& caption, 
+    KCMShellMultiDialog( int dialogFace, const QString& caption,
             QWidget *parent=0, const char *name=0, bool modal=false);
 
 k_dcop:
