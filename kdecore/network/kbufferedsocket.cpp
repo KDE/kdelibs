@@ -305,6 +305,16 @@ QCString KBufferedSocket::readLine()
   return d->input->readLine();
 }
 
+void KBufferedSocket::waitForConnect()
+{
+  if (state() != Connecting)
+    return;			// nothing to be waited on
+
+  KStreamSocket::setSocketOptions(socketOptions() | Blocking);
+  connectionEvent();
+  KStreamSocket::setSocketOptions(socketOptions() & ~Blocking);
+}
+
 void KBufferedSocket::slotReadActivity()
 {
   if (d->input && state() == Connected)

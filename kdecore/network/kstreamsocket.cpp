@@ -291,6 +291,7 @@ void KStreamSocket::connectionEvent()
     }
 
   // that was the last item
+  socketDevice()->setSocketOptions(socketOptions());
   setState(Idle);
   emit stateChanged(Idle);
   emit gotError(error());

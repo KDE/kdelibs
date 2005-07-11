@@ -35,6 +35,7 @@ namespace KNetwork {
 class KResolverEntry;
 class KResolverResults;
 class KServerSocket;
+class KBufferedSocket;
 
 class KStreamSocketPrivate;
 /** @class KStreamSocket kstreamsocket.h kstreamsocket.h
@@ -240,6 +241,7 @@ private:
   KStreamSocketPrivate *d;
 
   friend class KServerSocket;
+  friend class KBufferedSocket;
 };
 
 } 				// namespace KNetwork

@@ -197,6 +197,14 @@ public:
    */
   QCString readLine();
 
+  // KDE4: make virtual, add timeout to match the Qt4 signature
+  //       and move to another class up the hierarchy
+  /**
+   * Blocks until the connection is either established, or completely
+   * failed.
+   */
+  void waitForConnect();
+
 protected:
   /**
    * Catch connection to clear the buffers
