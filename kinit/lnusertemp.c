@@ -231,9 +231,7 @@ int main(int argc, char **argv)
      return 1;
   }
 
-  tmp = getenv("TMPDIR");
-  if (!tmp || !tmp[0])
-    tmp = getenv("KDETMP");
+  tmp = getenv("KDETMP");
   if (!tmp || !tmp[0])
     tmp = getenv("TMPDIR");
   if (!tmp || !tmp[0]) 
