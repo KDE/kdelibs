@@ -369,7 +369,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         d->m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
     if ( reset || config->hasKey( "MediumFontSize" ) )
-        d->m_fontSize = config->readNumEntry( "MediumFontSize", 10 );
+        d->m_fontSize = config->readNumEntry( "MediumFontSize", 12 );
 
     d->fonts = config->readListEntry( "Fonts" );
 
