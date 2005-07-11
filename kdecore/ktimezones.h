@@ -121,7 +121,7 @@ public:
     float longitude() const;
 
     /**
-     * Returns the current offset of the given timezone to UTC or the local
+     * Returns the current offset of this timezone to UTC or the local
      * timezone in seconds.
      *
      * Take care if you cache the results of this routine; that would
@@ -132,12 +132,20 @@ public:
     int offset(Qt::TimeSpec basisSpec = Qt::UTC) const;
 
     /**
-     * Returns the offset of the given timezone to UTC at the date/time
-     * given.
+     * Returns the offset of the given timezone to UTC at the given
+     * date/time (which is interpreted as being UTC).
      *
      * @return offset in seconds.
      */
     int offset(const QDateTime &dateTime) const;
+
+    /**
+     * Convert a date/time (which is interpreted as being localtime in this
+     * timezone) into localtime in the given timezone.
+     *
+     * @return converted date/time.
+     */
+    QDateTime convert(const KTimezone *newZone, const QDateTime &dateTime) const;
 
     /**
      * Returns any comment for the timezone.

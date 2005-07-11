@@ -220,6 +220,34 @@ QString KTimezone::comment() const
     return m_comment;
 }
 
+QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &dateTime) const
+{
+    char *originalZone = ::getenv("TZ");
+
+    // Convert the given localtime to UTC.
+    ::putenv(strdup(QString("TZ=:").append(m_name).utf8()));
+    tzset();
+    unsigned utc = dateTime.toTime_t();
+
+    // Set the timezone and convert UTC to localtime.
+    ::putenv(strdup(QString("TZ=:").append(newZone->name()).utf8()));
+    tzset();
+    QDateTime remoteTime;
+    remoteTime.setTime_t(utc, Qt::LocalTime);
+
+    // Now restore things
+    if (!originalZone)
+    {
+        ::unsetenv("TZ");
+    }
+    else
+    {
+        ::putenv(strdup(QString("TZ=").append(originalZone).utf8()));
+    }
+    tzset();
+    return remoteTime;
+}
+
 QString KTimezone::countryCode() const
 {
     return m_countryCode;
@@ -243,6 +271,8 @@ QString KTimezone::name() const
 int KTimezone::offset(Qt::TimeSpec basisSpec) const
 {
     char *originalZone = ::getenv("TZ");
+
+    // Get the time in the current timezone.
     QDateTime basisTime = QDateTime::currentDateTime(basisSpec);
 
     // Set the timezone and find out what time it is there compared to the basis.
