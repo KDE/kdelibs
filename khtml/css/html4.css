@@ -220,7 +220,6 @@ TD, TH {
 
 TH {
 	font-weight: bolder;
-	text-align: center;
 }
 
 CAPTION {
@@ -454,7 +453,6 @@ PLAINTEXT {
 	display: block;
 	font-family: monospace;
 	white-space: pre;
-	text-align: -khtml-auto;
 	margin: 1__qem 0;
 }
 
