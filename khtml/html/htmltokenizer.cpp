@@ -445,7 +445,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
-    // SGML strict
+    // SGML strict or transitional
     bool strict = !parser->doc()->inCompatMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml;
     int delimiterCount = 0;
     bool canClose = false;
@@ -1184,7 +1184,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             switch( tagID ) {
             case ID_PRE:
                 pre = beginTag;
-                discard = LFDiscard;
+                if (beginTag)
+                    discard = LFDiscard;
                 prePos = 0;
                 break;
             case ID_BR:
@@ -1419,8 +1420,11 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             // According to SGML any LF immediately after a starttag, or
             // immediately before an endtag should be ignored.
             // ### Gecko and MSIE though only ignores LF immediately after
-            // starttags and only for PRE elements
+            // starttags and only for PRE elements -- asj (28/06-2005)
             if ( pending )
+                if ((pre) && endTag && pending == LFPending)
+                    pending = NonePending;
+                else
                 if (!select)
                     addPending();
                 else
