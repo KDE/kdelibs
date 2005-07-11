@@ -353,15 +353,48 @@ void KListViewSearchLine::checkItemParentsNotVisible()
     }
 }
 
-bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item)
+#include <kdebug.h>
+
+/** Check whether \p item, its siblings and their descendents should be shown. Show or hide the items as necessary.
+ *
+ *  \p item  The list view item to start showing / hiding items at. Typically, this is the first child of another item, or the
+ *              the first child of the list view.
+ *  \p highestHiddenParent  The highest (closest to root) ancestor of \p item which is hidden. If 0, all parents of
+ *                           \p item must be visible.
+ *  \return \c true if an item which should be visible is found, \c false if all items found should be hidden. If this function
+ *             returns true and \p highestHiddenParent was not 0, highestHiddenParent will have been shown.
+ */
+bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item, QListViewItem *highestHiddenParent)
 {
     bool visible = false;
-    for(; item; item = item->nextSibling()) {
-        if((item->firstChild() && checkItemParentsVisible(item->firstChild())) ||
-           itemMatches(item, d->search))
+    QListViewItem * first = item;
+    for(; item; item = item->nextSibling())
+    {
+        //What we pass to our children as highestHiddenParent:
+        QListViewItem * hhp = highestHiddenParent ? highestHiddenParent : item->isVisible() ? 0L : item;
+        bool childMatch = false;
+        if(item->firstChild() && checkItemParentsVisible(item->firstChild(), hhp))
+            childMatch = true;
+        // Should this item be shown? It should if any children should be, or if it matches.
+        if(childMatch || itemMatches(item, d->search))
         {
-            item->setVisible( true );
             visible = true;
+            if (highestHiddenParent)
+            {
+                highestHiddenParent->setVisible(true);
+                // Calling setVisible on our ancestor will unhide all its descendents. Hide the ones
+                // before us that should not be shown.
+                for(QListViewItem *hide = first; hide != item; hide = hide->nextSibling())
+                    hide->setVisible(false);
+                highestHiddenParent = 0;
+                // If we matched, than none of our children matched, yet the setVisible() call on our
+                // ancestor unhid them, undo the damage:
+                if(!childMatch)
+                    for(QListViewItem *hide = item->firstChild(); hide; hide = hide->nextSibling())
+                        hide->setVisible(false);
+            }
+            else
+                item->setVisible(true);
         }
         else
             item->setVisible(false);

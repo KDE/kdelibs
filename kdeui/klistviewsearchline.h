@@ -190,7 +190,7 @@ private:
      * It makes a recursive call to all children.  It returns true if at least
      * one item in the subtree with the given root item is visible.
      */
-    bool checkItemParentsVisible(QListViewItem *item);
+    bool checkItemParentsVisible(QListViewItem *item, QListViewItem *highestHiddenParent = 0);
 
 private slots:
     void itemAdded(QListViewItem *item) const;
