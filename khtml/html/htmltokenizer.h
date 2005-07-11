@@ -203,14 +203,12 @@ protected:
         TabPending
     } pending;
 
-    // Discard line breaks immediately after start-tags
-    // Discard spaces after '=' within tags
     enum
     {
         NoneDiscard = 0,
-        SpaceDiscard,
-        LFDiscard,
-        AllDiscard  // discard all spaces, LF's etc until next non white char
+        SpaceDiscard,	// Discard spaces after '=' within tags
+        LFDiscard,	// Discard line breaks immediately after start-tags
+        AllDiscard	// discard all spaces, LF's etc until next non white char
     } discard;
 
     // Discard the LF part of CRLF sequence

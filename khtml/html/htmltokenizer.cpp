@@ -1178,10 +1178,13 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             processToken();
 
+            if ( parser->selectMode() && beginTag)
+                discard = AllDiscard;
+
             switch( tagID ) {
             case ID_PRE:
                 pre = beginTag;
-                discard = AllDiscard;
+                discard = LFDiscard;
                 prePos = 0;
                 break;
             case ID_BR:
@@ -1423,7 +1426,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 else
                     pending = NonePending;
 
-            // if (!endTag) discard = AllDiscard;
+            // Cancel unused discards
+            if (endTag)
+                discard = NoneDiscard;
+            // if (!endTag) discard = LFDiscard;
 
             processToken();
 
@@ -1448,32 +1454,22 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
         {
-            if (select && !script)
-            {
-                if (discard == LFDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else if(discard == AllDiscard)
-                {
-                }
-                else
-                {
-                     // Process this LF
-                    if (pending == NonePending)
-                        pending = LFPending;
-                }
+            if (discard == SpaceDiscard)
+                discard = NoneDiscard;
+
+            if (discard == LFDiscard) {
+                // Ignore one LF
+                discard = NoneDiscard;
             }
-            else {
-                if (discard == LFDiscard || discard == AllDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else
-                {
-                    // Process this LF
+            else if (discard == AllDiscard)
+            {
+                // Ignore
+            }
+            else
+            {
+                if (select && !script) {
+                    pending = LFPending;
+                } else {
                     if (pending)
                         addPending();
                     pending = LFPending;
@@ -1489,25 +1485,29 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == ' ' ) || ( cc == '\t' ))
         {
-            if (select && !script) {
-                if(discard == SpaceDiscard)
-                    discard = NoneDiscard;
-                else if(discard == AllDiscard)
-                { }
-                else
-                    pending = SpacePending;
+            if(discard == LFDiscard)
+                discard = NoneDiscard;
 
+            if(discard == SpaceDiscard) {
+                // Ignore one space
+                discard = NoneDiscard;
+            }
+            else if(discard == AllDiscard)
+            {
+                // Ignore
             }
             else {
-                if (discard == AllDiscard)
-                    discard = NoneDiscard;
-
-                if (pending)
-                    addPending();
-                if (cc == ' ')
-                    pending = SpacePending;
-                else
-                    pending = TabPending;
+                if (select && !script) {
+                    if (!pending)
+                        pending = SpacePending;
+                } else {
+                    if (pending)
+                        addPending();
+                    if (cc == ' ')
+                        pending = SpacePending;
+                    else
+                        pending = TabPending;
+                }
             }
 
             ++src;
@@ -1682,8 +1682,6 @@ void HTMLTokenizer::processToken()
 
     if ( currToken.flat && currToken.tid != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
-    else if ( parser->selectMode() )
-        discard = AllDiscard;
 
     currToken.reset();
     if (jsProxy)
