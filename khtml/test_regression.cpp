@@ -496,8 +496,8 @@ int main(int argc, char *argv[])
     a.config()->writeEntry("ReportJSErrors", false);
     KConfig cfg( "khtmlrc" );
     cfg.setGroup("HTML Settings");
-    cfg.writeEntry( "StandardFont", KGlobalSettings::generalFont().family() );
-    cfg.writeEntry( "FixedFont", KGlobalSettings::fixedFont().family() );
+    cfg.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
+    cfg.writeEntry( "FixedFont", HTML_DEFAULT_VIEW_FIXED_FONT );
     cfg.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
     cfg.writeEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
     cfg.writeEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT );
