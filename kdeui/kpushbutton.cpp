@@ -21,6 +21,7 @@
 
 #include <qdragobject.h>
 #include <qwhatsthis.h>
+#include <qtooltip.h>
 
 #include "config.h"
 
@@ -98,6 +99,8 @@ void KPushButton::init( const KGuiItem &item )
     setIconSet( d->item.iconSet() );
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
+
+    QToolTip::add( this, item.toolTip() );
 
     QWhatsThis::add( this, item.whatsThis() );
 
