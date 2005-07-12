@@ -1150,7 +1150,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/jscript") != 0 &&
                         type.compare("text/ecmascript") != 0 &&
                         type.compare("text/livescript") != 0 &&
-			type.compare("application/x-javascript") != 0 )
+			type.compare("application/x-javascript") != 0 &&
+			type.compare("application/ecmascript") != 0 )
                         javascript = false;
                 } else if( a ) {
                     /*
