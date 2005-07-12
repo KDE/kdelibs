@@ -46,6 +46,8 @@
 #include <q3sqlpropertymap.h>
 #endif
 
+#include <QList>
+
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
 #define QT_NO_TRANSLATION
@@ -399,7 +401,7 @@ public:
      bool destHostEqual    : 1;
      bool permission;
   };
-  Q3PtrList<URLActionRule> urlActionRestrictions;
+    QList<URLActionRule> urlActionRestrictions;
 
     QString sessionKey;
     QString pSessionConfigFile;
@@ -2917,39 +2919,38 @@ QStringList KApplication::authorizeControlModules(const QStringList &menuIds)
 
 void KApplication::initUrlActionRestrictions()
 {
-  d->urlActionRestrictions.setAutoDelete(true);
   d->urlActionRestrictions.clear();
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("open", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
 // TEST:
 //  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
 //  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, false));
 //  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
 //  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath(), true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("link", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
 
   // We allow redirections to file: but not from internet protocols, redirecting to file:
   // is very popular among io-slaves and we don't want to break them
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", ":internet", QString::null, QString::null, "file", QString::null, QString::null, false));
 
   // local protocols may redirect everywhere
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", ":local", QString::null, QString::null, QString::null, QString::null, QString::null, true));
 
   // Anyone may redirect to about:
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
 
   // Anyone may redirect to itself, cq. within it's own group
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
 
   KConfig *config = KGlobal::config();
@@ -2987,7 +2988,7 @@ void KApplication::initUrlActionRestrictions()
     if (urlPath.startsWith("$TMP"))
        urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
 
-    d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
+    d->urlActionRestrictions.append(KApplicationPrivate::URLActionRule
     	( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
   }
 }
@@ -2997,7 +2998,7 @@ void KApplication::allowURLAction(const QString &action, const KURL &_baseURL, c
   if (authorizeURLAction(action, _baseURL, _destURL))
      return;
 
-  d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
+  d->urlActionRestrictions.append(KApplicationPrivate::URLActionRule
         ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
                   _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
 }
@@ -3018,15 +3019,13 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
   destURL.setPath(QDir::cleanPath(destURL.path()));
   QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 
-  for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
-      rule; rule = d->urlActionRestrictions.next())
-  {
-     if ((result != rule->permission) && // No need to check if it doesn't make a difference
-         (action == rule->action) &&
+  foreach(KApplicationPrivate::URLActionRule rule, d->urlActionRestrictions) {
+     if ((result != rule.permission) && // No need to check if it doesn't make a difference
+         (action == rule.action) &&
          rule->baseMatch(baseURL, baseClass) &&
          rule->destMatch(destURL, destClass, baseURL, baseClass))
      {
-        result = rule->permission;
+        result = rule.permission;
      }
   }
   return result;
