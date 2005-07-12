@@ -49,6 +49,7 @@
 #include <q3pointarray.h>
 #include "khtmlview.h"
 #include <khtml_part.h>
+#include <QBitmap>
 
 #include <assert.h>
 using namespace DOM;
@@ -726,55 +727,52 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 
         return;
     case DOTTED:
-        if ( width == 1 ) {
-            // workaround Qt brokenness
-            p->setPen(QPen(c, width, Qt::SolidLine));
-            switch(s) {
-            case BSBottom:
-            case BSTop:
-                for ( ; x1 < x2; x1 += 2 )
-                    p->drawPoint( x1, y1 );
-                break;
-            case BSRight:
-            case BSLeft:
-                for ( ; y1 < y2; y1 += 2 )
-                    p->drawPoint( x1, y1 );
-            }
-            break;
-        }
+    case DASHED: 
+    {
+        //Figure out on/off spacing
+        int onLen  = width;
+        int offLen = width;
 
-        p->setPen(QPen(c, width, Qt::DotLine));
-        /* nobreak; */
-    case DASHED:
-        /** 
-            We are actually going to draw this as a line, so adjust to Arthur's semantics. 
-            We have a bounding box around the line. We want midpoints of endpoints
-        */
-        x1 += width/2;
-        x2 -= width/2;
-        y1 += width/2;
-        y2 -= width/2;
-        if (width & 1) //odd width - fix rounding...
+        if (style == DASHED)
         {
-            --y2;
-            --x2;
-        }
-    
-        if(style == DASHED)
-            p->setPen(QPen(c, width == 1 ? 0 : width, width == 1 ? Qt::DotLine : Qt::DashLine));
-
-        if (width > 0)
-            switch(s) {
-            case BSBottom:
-            case BSTop:
-                p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
-                break;
-            case BSRight:
-            case BSLeft:
-                p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
-                break;
+            if (width == 1)
+            {
+                onLen  = 3;
+                offLen = 3;
             }
+            else
+            {
+                onLen  = width  * 3;
+                offLen = width;
+            }
+        }
+        
+        //Make the mask pixmap.
+        QBitmap mask;
+        if (s == BSBottom || s == BSTop) //Horizontal
+        {
+            mask = QBitmap(onLen + offLen, width);
+            QPainter pmask(&mask);
+            pmask.fillRect(0,     0, onLen  + 1, width + 1, Qt::color1);
+            pmask.fillRect(onLen, 0, offLen + 1, width + 1, Qt::color0);
+        }
+        else //Vertical
+        {
+            mask = QBitmap(width, onLen + offLen);
+            QPainter pmask(&mask);
+            pmask.fillRect(0, 0,     width + 1, onLen  + 1, Qt::color1);
+            pmask.fillRect(0, onLen, width + 1, offLen + 1, Qt::color0);
+        }
+
+        //Make a drawing pixmap.
+        QPixmap drawTile(mask.size());
+        drawTile.fill(c);
+        drawTile.setMask(mask);
+
+        //Finally paint the line
+        p->drawTiledPixmap(x1, y1, x2 - x1, y2 - y1, drawTile);
         break;
+    }
     case DOUBLE:
     {
         int third = (width+1)/3;
