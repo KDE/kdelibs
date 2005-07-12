@@ -2500,6 +2500,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
         // this property is an extension used to get HTML4 <font> right.
+	case CSS_PROP_SCROLLBAR_BASE_COLOR:
     case CSS_PROP_SCROLLBAR_FACE_COLOR:
     case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
     case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:
@@ -2507,6 +2508,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:
     case CSS_PROP_SCROLLBAR_TRACK_COLOR:
     case CSS_PROP_SCROLLBAR_ARROW_COLOR:
+    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
     {
         QColor col;
         if (isInherit) {
