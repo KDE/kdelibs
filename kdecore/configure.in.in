@@ -42,12 +42,21 @@ dnl -------
 dnl Test for libidn (IDNA support)
 dnl -------
 
+AC_ARG_WITH(libidn,
+  [AS_HELP_STRING(--with-libidn,
+    [enable support for libidn @<:@default=check@:>@])],
+  [], with_libidn=check)
 LIB_IDN=
-KDE_CHECK_LIB(idn, idna_to_ascii_4i, [
-  AC_DEFINE_UNQUOTED(HAVE_LIBIDN, 1, [Defined if you have libidn in your system])
-  LIB_IDN=-lidn
-])
-AC_CHECK_HEADERS([idna.h punycode.h stringprep.h])
+if test "x$with_libidn" != xno; then
+  AC_CHECK_HEADERS([idna.h punycode.h stringprep.h])
+  KDE_CHECK_LIB(idn, idna_to_ascii_4i, [
+    AC_DEFINE_UNQUOTED(HAVE_LIBIDN, 1, [Defined if you have libidn in your system])
+    LIB_IDN=-lidn
+  ])
+  if test "x$with_libidn" != xcheck && test -z "$LIB_IDN"; then
+    AC_MSG_FAILURE([--with-libidn was given, but test for libidn failed])
+  fi
+fi
 AC_SUBST(LIB_IDN)
 
 dnl --------
@@ -164,30 +173,40 @@ AM_CONFIG_HEADER(kdecore/kdemacros.h)
 
 SVGICONS=
 	
-KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
-  AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
-])
+AC_ARG_WITH(libart,
+  [AS_HELP_STRING(--with-libart,
+    [enable support for libart @<:@default=check@:>@])],
+  [], with_libart=check)
 
-if test -n "$LIBART_CONFIG"; then
-  vers=`$LIBART_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-  if test -n "$vers" && test "$vers" -ge 2003008
-  then
-     LIBART_LIBS="`$LIBART_CONFIG --libs`"
-     LIBART_RPATH=
-     for args in $LIBART_LIBS; do
+if test "x$with_libart" != xno; then
+  KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
+    AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
+  ])
+
+  if test -n "$LIBART_CONFIG"; then
+    vers=`$LIBART_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+    if test -n "$vers" && test "$vers" -ge 2003008
+    then
+      LIBART_LIBS="`$LIBART_CONFIG --libs`"
+      LIBART_RPATH=
+      for args in $LIBART_LIBS; do
 	  case $args in
 	    -L*)
   	       LIBART_RPATH="$LIBART_RPATH $args"
  	       ;;
           esac
-     done
-     LIBART_RPATH=`echo $LIBART_RPATH | sed -e "s/-L/-R/g"`
-     LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
-     SVGICONS=svgicons
+      done
+      LIBART_RPATH=`echo $LIBART_RPATH | sed -e "s/-L/-R/g"`
+      LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
+      SVGICONS=svgicons
 
-     AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
-  else
-     AC_MSG_WARN([You need at least libart 2.3.8])
+      AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
+    else
+      AC_MSG_WARN([You need at least libart 2.3.8])
+    fi
+  fi
+  if test "x$with_libart" != xcheck && test -z "$LIBART_LIBS"; then
+    AC_MSG_FAILURE([--with-libart was given, but test for libart failed])
   fi
 fi
 
