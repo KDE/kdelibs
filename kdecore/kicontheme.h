@@ -15,8 +15,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3ptrlist.h>
-#include <q3valuelist.h>
+#include <QList>
 #include "kdelibs_export.h"
 
 class KConfig;
@@ -346,7 +345,7 @@ private:
     int mDepth;
     QString mDir, mName, mDesc;
     QStringList mInherits;
-    Q3PtrList<KIconThemeDir> mDirs;
+    QList<KIconThemeDir *> mDirs;
     KIconThemePrivate *d;
 
     static QString *_theme;

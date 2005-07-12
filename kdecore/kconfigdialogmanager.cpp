@@ -33,6 +33,7 @@
 #include <kconfigskeleton.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <QHash>
 
 #include <assert.h>
 
@@ -42,8 +43,8 @@ public:
   Private() : insideGroupBox(false) { }
 
 public:
-  Q3Dict<QWidget> knownWidget;
-  Q3Dict<QWidget> buddyWidget;
+  QHash<QString, QWidget *> knownWidget;
+  QHash<QString, QWidget *> buddyWidget;
   bool insideGroupBox;
 };
 
@@ -262,13 +263,15 @@ void KConfigDialogManager::updateWidgets()
   blockSignals(true);
 
   QWidget *widget;
-  for( Q3DictIterator<QWidget> it( d->knownWidget );
-       (widget = it.current()); ++it )
-  {
-     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
+  QHashIterator<QString, QWidget *> it( d->knownWidget );
+  while(it.hasNext()) {
+     it.next();
+     widget = it.value();
+
+     KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
+        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -282,7 +285,9 @@ void KConfigDialogManager::updateWidgets()
      if (item->isImmutable())
      {
         widget->setEnabled(false);
-        QWidget *buddy = d->buddyWidget.find(it.currentKey());
+        QWidget *buddy = 0;
+        if(d->buddyWidget.contains(it.key()))
+           buddy = d->buddyWidget.value(it.key());
         if (buddy)
            buddy->setEnabled(false);
      }
@@ -305,13 +310,15 @@ void KConfigDialogManager::updateSettings()
   bool changed = false;
 
   QWidget *widget;
-  for( Q3DictIterator<QWidget> it( d->knownWidget );
-       (widget = it.current()); ++it )
-  {
-     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
+  QHashIterator<QString, QWidget *> it( d->knownWidget );
+  while(it.hasNext()) {
+     it.next();
+     widget = it.value();
+
+     KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
+        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -365,13 +372,15 @@ bool KConfigDialogManager::hasChanged()
 {
 
   QWidget *widget;
-  for( Q3DictIterator<QWidget> it( d->knownWidget );
-       (widget = it.current()); ++it )
-  {
-     KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
+  QHashIterator<QString, QWidget *> it( d->knownWidget) ;
+  while(it.hasNext()) {
+     it.next();
+     widget = it.value();
+
+     KConfigSkeletonItem *item = m_conf->findItem(it.key());
      if (!item)
      {
-        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
+        kdWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
         continue;
      }
 

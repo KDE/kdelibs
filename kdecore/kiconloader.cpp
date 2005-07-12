@@ -15,8 +15,6 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <q3ptrlist.h>
-#include <q3intdict.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
 #include <qimage.h>
@@ -24,6 +22,7 @@
 #include <qdir.h>
 #include <qicon.h>
 #include <qbitmap.h>
+#include <QHash>
 #include <QPainter>
 #include <QMovie>
 
@@ -127,12 +126,12 @@ struct KIconLoaderPrivate
     KIconThemeNode *mpThemeRoot;
     KStandardDirs *mpDirs;
     KIconEffect mpEffect;
-    Q3Dict<QImage> imgDict;
+    QHash<QString, QImage*> imgDict;
     QImage lastImage; // last loaded image without effect applied
     QString lastImageKey; // key for icon without effect
     int lastIconType; // see KIcon::type
     int lastIconThreshold; // see KIcon::threshold
-    Q3PtrList<KIconThemeNode> links;
+    QList<KIconThemeNode *> links;
     bool extraDesktopIconsLoaded :1;
     bool delayedLoading :1;
 };
@@ -188,8 +187,6 @@ void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
     d = new KIconLoaderPrivate;
-    d->imgDict.setAutoDelete( true );
-    d->links.setAutoDelete(true);
     d->extraDesktopIconsLoaded=false;
     d->delayedLoading=false;
 
@@ -293,6 +290,8 @@ KIconLoader::~KIconLoader()
        deleted when the elements of d->links are deleted */
     d->mpThemeRoot=0;
     delete[] d->mpGroups;
+    qDeleteAll(d->imgDict);
+    qDeleteAll(d->links);
     delete d;
 }
 
@@ -482,8 +481,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
        order.
 
        */
-    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-	themeNode = d->links.next() )
+    foreach(KIconThemeNode *themeNode, d->links)
     {
 	for (int i = 0 ; i < count ; i++)
 	{
@@ -494,8 +492,7 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 
     }
 
-    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-	themeNode = d->links.next() )
+    foreach(KIconThemeNode *themeNode, d->links)
     {
 	for (int i = 0 ; i < count ; i++)
 	{
@@ -895,7 +892,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 {
     QString key = name + '_' + QString::number(size);
-    QImage *image = d->imgDict.find(key);
+    QImage *image = 0L;
+    if(d->imgDict.contains(key)) image = d->imgDict.value(key);
     if (image != 0L)
 	return image;
 
@@ -961,8 +959,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 
         KIcon icon;
 	
-	for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-		themeNode = d->links.next() )
+    foreach(KIconThemeNode *themeNode, d->links)
 	{
 	    icon = themeNode->theme->iconPath(file, size, KIcon::MatchExact);
 	    if (icon.isValid())
@@ -971,8 +968,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 	
 	if ( !icon.isValid() )
 	{
-	    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-		    themeNode = d->links.next() )
+    	foreach(KIconThemeNode *themeNode, d->links)
 	    {
 		icon = themeNode->theme->iconPath(file, size, KIcon::MatchBest);
 		if (icon.isValid())
@@ -1081,8 +1077,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     else
 	size = -group_or_size;
 
-    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-            themeNode = d->links.next() )
+    foreach(KIconThemeNode *themeNode, d->links)
        themeNode->queryIconsByContext(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
@@ -1121,8 +1116,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
     else
 	size = -group_or_size;
 
-    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-            themeNode = d->links.next() )
+    foreach(KIconThemeNode *themeNode, d->links)
        themeNode->queryIcons(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
