@@ -563,9 +563,11 @@ void KApplication::checkAppStartedSlot()
 }
 
 // the help class for session management communication
-static QList<KSessionManaged *> sessionClients()
+static QList<KSessionManaged *>* sessionClients()
 {
-    static QList<KSessionManaged*> session_clients;
+    static QList<KSessionManaged*>* session_clients = 0L;
+    if ( !session_clients )
+         session_clients = new QList<KSessionManaged *>;
     return session_clients;
 }
 
@@ -1032,13 +1034,13 @@ void KApplication::deref()
 
 KSessionManaged::KSessionManaged()
 {
-    sessionClients().removeAll( this );
-    sessionClients().append( this );
+    sessionClients()->removeAll( this );
+    sessionClients()->append( this );
 }
 
 KSessionManaged::~KSessionManaged()
 {
-    sessionClients().removeAll( this );
+    sessionClients()->removeAll( this );
 }
 
 bool KSessionManaged::saveState(QSessionManager&)
@@ -1184,7 +1186,7 @@ void KApplication::commitData( QSessionManager& sm )
     d->session_save = true;
     bool canceled = false;
 
-    foreach (KSessionManaged *it, sessionClients()) {
+    foreach (KSessionManaged *it, *sessionClients()) {
       if(canceled) break;
       canceled = !it->commitData( sm );
     }
@@ -1285,7 +1287,7 @@ void KApplication::saveState( QSessionManager& sm )
     // finally: do session management
     emit saveYourself(); // for compatibility
     bool canceled = false;
-    foreach(KSessionManaged* it, sessionClients()) {
+    foreach(KSessionManaged* it, *sessionClients()) {
       if(canceled) break;
       canceled = !it->saveState( sm );
     }
