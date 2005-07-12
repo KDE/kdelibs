@@ -27,6 +27,7 @@
 
 #include <assert.h>
 
+#include <QList>
 #include <qtooltip.h>
 #include <q3signal.h>
 
@@ -83,7 +84,7 @@ public:
   }
 
   KAccel *m_kaccel;
-  Q3ValueList<KAccel*> m_kaccelList;
+  QList<KAccel*> m_kaccelList;
 
   QString m_groupText;
   QString m_group;
@@ -103,7 +104,7 @@ public:
     QWidget* m_representative;
   };
 
-  Q3ValueList<Container> m_containers;
+  QList<Container> m_containers;
 };
 
 //---------------------------------------------------------------------
@@ -221,13 +222,9 @@ KAction::~KAction()
     if ( m_parentCollection ) {
         m_parentCollection->take( this );
 
-        const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-        Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-        const Q3ValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
-
         const char * const namePtr = name();
-        for (; itr != itrEnd; ++itr )
-            (*itr)->remove(namePtr);
+        foreach(KAccel *a, d->m_kaccelList)
+            a->remove(namePtr);
 
     }
 
@@ -388,14 +385,7 @@ void KAction::plugShortcut()
   //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
   if( kaccel && !objectName().isEmpty() ) {
     // Check if already plugged into current KAccel object
-    const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-    Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-    const Q3ValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
-
-    for( ; itr != itrEnd; ++itr) {
-      if( (*itr) == kaccel )
-        return;
-    }
+    if(d->m_kaccelList.contains(kaccel)) return;
 
     insertKAccel( kaccel );
   }
@@ -410,17 +400,13 @@ bool KAction::setShortcut( const KShortcut& cut )
   bool bInsertRequired = true;
   // Apply new shortcut to all existing KAccel objects
 
-  const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-  Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-  const Q3ValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
-
-  for( ; itr != itrEnd; ++itr) {
+  foreach(KAccel *a, d->m_kaccelList) {
     // Check whether shortcut has already been plugged into
     //  the current kaccel object.
-    if( (*itr) == kaccel )
+    if( a == kaccel )
       bInsertRequired = false;
     if( bChanged )
-      updateKAccelShortcut( *itr );
+      updateKAccelShortcut( a );
   }
 
   // Only insert action into KAccel if it has a valid name,
@@ -478,14 +464,10 @@ void KAction::insertKAccel( KAccel* kaccel )
 void KAction::removeKAccel( KAccel* kaccel )
 {
   //kdDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
-  Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-  Q3ValueList<KAccel*>::iterator itr = accelList.begin();
-  const Q3ValueList<KAccel*>::iterator itrEnd = accelList.end();
-
-  for( ; itr != itrEnd; ++itr) {
-    if( (*itr) == kaccel ) {
+  foreach(KAccel *a, d->m_kaccelList) {
+    if( a == kaccel ) {
       kaccel->remove( name() );
-      accelList.remove( itr );
+      d->m_kaccelList.remove( a );
       disconnect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
       break;
     }
@@ -825,14 +807,10 @@ void KAction::setEnabled(bool enable)
     d->m_kaccel->setEnabled(name(), enable);
 #endif  // KDE 4: remove end
 
-  const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-  Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-  const Q3ValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
-
   const char * const namePtr = name();
 
-  for ( ; itr != itrEnd; ++itr )
-    (*itr)->setEnabled( namePtr, enable );
+  foreach(KAccel *a, d->m_kaccelList)
+    a->setEnabled( namePtr, enable );
 
   d->setEnabled( enable );
 
@@ -870,14 +848,11 @@ void KAction::setText( const QString& text )
       pAction->setLabel( text );
   }
 #endif  // KDE 4: remove end
-  const Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-  Q3ValueList<KAccel*>::const_iterator itr = accelList.constBegin();
-  const Q3ValueList<KAccel*>::const_iterator itrEnd = accelList.constEnd();
 
   const char * const namePtr = name();
 
-  for( ; itr != itrEnd; ++itr ) {
-    KAccelAction* const pAction = (*itr)->actions().actionPtr(namePtr);
+  foreach(KAccel *a, d->m_kaccelList) {
+    KAccelAction* const pAction = a->actions().actionPtr(namePtr);
     if (pAction)
       pAction->setLabel( text );
   }
@@ -1036,27 +1011,27 @@ QString KAction::whatsThisWithIcon() const
 QWidget* KAction::container( int index ) const
 {
   assert( index < containerCount() );
-  return d->m_containers[ index ].m_container;
+  return d->m_containers.at(index).m_container;
 }
 
 KToolBar* KAction::toolBar( int index ) const
 {
-    return dynamic_cast<KToolBar *>( d->m_containers[ index ].m_container );
+    return dynamic_cast<KToolBar *>( d->m_containers.at(index).m_container );
 }
 
 Q3PopupMenu* KAction::popupMenu( int index ) const
 {
-    return dynamic_cast<Q3PopupMenu *>( d->m_containers[ index ].m_container );
+    return dynamic_cast<Q3PopupMenu *>( d->m_containers.at(index).m_container );
 }
 
 QWidget* KAction::representative( int index ) const
 {
-  return d->m_containers[ index ].m_representative;
+  return d->m_containers.at(index).m_representative;
 }
 
 int KAction::itemId( int index ) const
 {
-  return d->m_containers[ index ].m_id;
+  return d->m_containers.at(index).m_id;
 }
 
 int KAction::containerCount() const
@@ -1160,16 +1135,13 @@ void KAction::slotDestroyed()
     return;
   }
 #endif  // KDE 4: remove end
-  Q3ValueList<KAccel*> & accelList = d->m_kaccelList;
-  Q3ValueList<KAccel*>::iterator itr = accelList.begin();
-  const Q3ValueList<KAccel*>::iterator itrEnd = accelList.end();
 
-  for( ; itr != itrEnd; ++itr)
+  foreach(KAccel *a, d->m_kaccelList)
   {
-    if ( o == *itr )
+    if ( o == a )
     {
-      disconnect( *itr, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
-      accelList.remove(itr);
+      disconnect( a, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
+      d->m_kaccelList.remove(a);
       return;
     }
   }
@@ -1185,19 +1157,11 @@ void KAction::slotDestroyed()
 
 int KAction::findContainer( const QWidget* widget ) const
 {
-  int pos = 0;
-
-  const Q3ValueList<KActionPrivate::Container> & containers = d->m_containers;
-
-  Q3ValueList<KActionPrivate::Container>::ConstIterator it = containers.constBegin();
-  const Q3ValueList<KActionPrivate::Container>::ConstIterator itEnd = containers.constEnd();
-
-  while( it != itEnd )
+  for(int pos = 0; pos < d->m_containers.size(); ++pos)
   {
-    if ( (*it).m_representative == widget || (*it).m_container == widget )
+    if ( d->m_containers.at(pos).m_representative == widget || 
+         d->m_containers.at(pos).m_container == widget )
       return pos;
-    ++it;
-    ++pos;
   }
 
   return -1;
@@ -1205,19 +1169,10 @@ int KAction::findContainer( const QWidget* widget ) const
 
 int KAction::findContainer( const int id ) const
 {
-  int pos = 0;
-
-  const Q3ValueList<KActionPrivate::Container> & containers = d->m_containers;
-
-  Q3ValueList<KActionPrivate::Container>::ConstIterator it = containers.constBegin();
-  const Q3ValueList<KActionPrivate::Container>::ConstIterator itEnd = containers.constEnd();
-
-  while( it != itEnd )
+  for(int pos = 0; pos < d->m_containers.size(); ++pos)
   {
-    if ( (*it).m_id == id )
+    if ( d->m_containers.at(pos).m_id == id )
       return pos;
-    ++it;
-    ++pos;
   }
 
   return -1;
@@ -1225,23 +1180,8 @@ int KAction::findContainer( const int id ) const
 
 void KAction::removeContainer( int index )
 {
-  int i = 0;
-
-  Q3ValueList<KActionPrivate::Container> & containers = d->m_containers;
-
-  Q3ValueList<KActionPrivate::Container>::Iterator it = containers.begin();
-  const Q3ValueList<KActionPrivate::Container>::Iterator itEnd = containers.end();
-
-  while( it != itEnd )
-  {
-    if ( i == index )
-    {
-      containers.remove( it );
-      return;
-    }
-    ++it;
-    ++i;
-  }
+  if(index < d->m_containers.size())
+    d->m_containers.removeAt(index);
 }
 
 // FIXME: Remove this (ellis)
