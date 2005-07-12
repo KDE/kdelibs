@@ -175,7 +175,7 @@ static Atom kde_xdnd_drop;
 // replaced by unpatched one
 KDECORE_EXPORT bool qt_qclipboard_bailout_hack = false;
 
-template class Q3PtrList<KSessionManaged>;
+template class QList<KSessionManaged*>;
 
 #ifdef Q_WS_X11
 extern "C" {
@@ -563,11 +563,9 @@ void KApplication::checkAppStartedSlot()
 }
 
 // the help class for session management communication
-static Q3PtrList<KSessionManaged>* sessionClients()
+static QList<KSessionManaged *> sessionClients()
 {
-    static Q3PtrList<KSessionManaged>* session_clients = 0L;
-    if ( !session_clients )
-        session_clients = new Q3PtrList<KSessionManaged>;
+    static QList<KSessionManaged*> session_clients;
     return session_clients;
 }
 
@@ -1034,13 +1032,13 @@ void KApplication::deref()
 
 KSessionManaged::KSessionManaged()
 {
-    sessionClients()->remove( this );
-    sessionClients()->append( this );
+    sessionClients().removeAll( this );
+    sessionClients().append( this );
 }
 
 KSessionManaged::~KSessionManaged()
 {
-    sessionClients()->remove( this );
+    sessionClients().removeAll( this );
 }
 
 bool KSessionManaged::saveState(QSessionManager&)
@@ -1185,11 +1183,12 @@ void KApplication::commitData( QSessionManager& sm )
 {
     d->session_save = true;
     bool canceled = false;
-    for (KSessionManaged* it = sessionClients()->first();
-         it && !canceled;
-         it = sessionClients()->next() ) {
-        canceled = !it->commitData( sm );
+
+    foreach (KSessionManaged *it, sessionClients()) {
+      if(canceled) break;
+      canceled = !it->commitData( sm );
     }
+
     if ( canceled )
         sm.cancel();
 
@@ -1286,10 +1285,9 @@ void KApplication::saveState( QSessionManager& sm )
     // finally: do session management
     emit saveYourself(); // for compatibility
     bool canceled = false;
-    for (KSessionManaged* it = sessionClients()->first();
-         it && !canceled;
-         it = sessionClients()->next() ) {
-        canceled = !it->saveState( sm );
+    foreach(KSessionManaged* it, sessionClients()) {
+      if(canceled) break;
+      canceled = !it->saveState( sm );
     }
 
     // if we created a new session config object, register a proper discard command
