@@ -499,14 +499,11 @@ void KMdiChildView::slot_childDestroyed()
 	QObject* pLostChild = const_cast<QObject*>( QObject::sender() );
 	if ( pLostChild && ( pLostChild->isWidgetType() ) )
 	{
-		QObjectList list = pLostChild->queryList( "QWidget" );
-		list.insert( 0, pLostChild );        // add the lost child to the list too, just to save code
-		QObjectList::iterator it = list.begin();          // iterate over all lost child widgets
-		QObject* obj;
-		while ( ( obj = (*it) ) != 0 )
+		QList<QWidget *> list = findChildren<QWidget *>();
+		list.insert( 0, qobject_cast<QWidget *>(pLostChild) );        // add the lost child to the list too, just to save code
+
+		foreach(QWidget *widg, list)
 		{ // for each found object...
-			QWidget * widg = ( QWidget* ) obj;
-			++it;
 			widg->removeEventFilter( this );
 			if ( m_firstFocusableChildWidget == widg )
 				m_firstFocusableChildWidget = 0L;   // reset first widget

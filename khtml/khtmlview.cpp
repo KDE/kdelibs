@@ -797,8 +797,8 @@ void KHTMLView::layout()
 
 void KHTMLView::closeChildDialogs()
 {
-    QObjectList dlgs = queryList("QDialog");
-    foreach (QObject *dlg, dlgs)
+    QList<QDialog *> dlgs = findChildren<QDialog *>();
+    foreach (QDialog *dlg, dlgs)
     {
         KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
         if ( dlgbase ) {

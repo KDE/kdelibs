@@ -34,9 +34,9 @@ void KMdiFocusList::addWidgetTree( QWidget* w )
 	w->setFocusPolicy( Qt::ClickFocus );
 	kdDebug( 760 ) << "KMdiFocusList::addWidgetTree: adding toplevel" << endl;
 	connect( w, SIGNAL( destroyed( QObject * ) ), this, SLOT( objectHasBeenDestroyed( QObject* ) ) );
-	QList<QObject*> l = w->queryList( "QWidget" );
-	foreach ( QObject *obj, l ) {
-		QWidget * wid = ( QWidget* ) obj;
+	
+	QList<QWidget*> l = w->findChildren<QWidget *>();
+	foreach ( QWidget *wid, l ) {
 		m_list.insert( wid, wid->focusPolicy() );
 		wid->setFocusPolicy( Qt::ClickFocus );
 		kdDebug( 760 ) << "KMdiFocusList::addWidgetTree: adding widget" << endl;

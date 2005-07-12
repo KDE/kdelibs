@@ -394,9 +394,8 @@ void KMainWindow::hide()
 
         d->hiddenDockWindows.clear();
 
-        QList<QObject*> list = queryList( "QDockWindow" );
-		foreach ( QObject* o, list ) {
-            Q3DockWindow *dw = (Q3DockWindow*)o;
+        QList<Q3DockWindow *> list = findChildren<Q3DockWindow *>();
+        foreach ( Q3DockWindow *dw, list ) {
             if ( dw->isTopLevel() && dw->isVisible() ) {
                 d->hiddenDockWindows.append( dw );
                 dw->hide();

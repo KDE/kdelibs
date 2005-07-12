@@ -101,8 +101,12 @@ public:
         NewLineDefault = false;
         OffsetDefault = 0;
         PositionDefault = "Top";
-	HiddenDefault = false;
-        idleButtons.setAutoDelete(true);
+        HiddenDefault = false;
+    }
+
+    ~KToolBarPrivate() {
+        while (!idleButtons.isEmpty())
+            delete idleButtons.takeFirst();
     }
 
     int m_iconSize;
@@ -131,7 +135,7 @@ public:
     };
 
     ToolBarInfo toolBarInfo;
-    Q3ValueList<int> iconSizes;
+    QList<int> iconSizes;
     QTimer repaintTimer;
 
   // Default Values.
@@ -142,7 +146,7 @@ public:
   int OffsetDefault;
   QString PositionDefault;
 
-   Q3PtrList<QWidget> idleButtons;
+  QList<QWidget *> idleButtons;
 };
 
 KToolBarSeparator::KToolBarSeparator(Qt::Orientation o , bool l, Q3ToolBar *parent,
@@ -440,12 +444,11 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     KAnimWidget *aw = dynamic_cast<KAnimWidget *>(*it);
     if ( aw )
         return aw;
-    QList<QObject*> l = queryList( "KAnimWidget" );
-    if ( !l.first() )
+    QList<KAnimWidget*> l = findChildren<KAnimWidget*>();
+    if ( l.isEmpty() )
         return 0;
 
-	foreach ( QObject *o, l ) {
-        KAnimWidget *aw = dynamic_cast<KAnimWidget *>(o);
+	foreach ( KAnimWidget *aw, l ) {
         if ( aw )
         {
             return aw;
@@ -667,10 +670,11 @@ void KToolBar::setItemAutoSized (int id, bool yes )
 void KToolBar::clear ()
 {
     /* Delete any idle buttons, so QToolBar doesn't delete them itself, making a mess */
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
-       w->blockSignals(false);    
+    foreach(QWidget *w, d->idleButtons) 
+       w->blockSignals(false);
+
     d->idleButtons.clear();
-     
+
     Q3ToolBar::clear();
     widget2id.clear();
     id2widget.clear();
@@ -1212,7 +1216,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
 void KToolBar::doModeChange()
 {
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+    foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
     d->idleButtons.clear();
 
@@ -1221,7 +1225,7 @@ void KToolBar::doModeChange()
 
 void KToolBar::rebuildLayout()
 {
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+    foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
     d->idleButtons.clear();
 
@@ -2177,10 +2181,9 @@ void KToolBar::slotContextAboutToShow()
             break;
   }
 
-  Q3ValueList<int>::ConstIterator iIt = d->iconSizes.begin();
-  Q3ValueList<int>::ConstIterator iEnd = d->iconSizes.end();
-  for (; iIt != iEnd; ++iIt )
-      context->setItemChecked( CONTEXT_ICONSIZES + *iIt, false );
+  int size;
+  foreach(size, d->iconSizes)
+      context->setItemChecked( CONTEXT_ICONSIZES + size, false );
 
   context->setItemChecked( CONTEXT_ICONSIZES, false );
 

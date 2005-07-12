@@ -85,7 +85,7 @@ void KWindowInfo::permanent( const QString &text )
 void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
 {
     if ( !oldText.isNull() ) {
-	QList<QObject*> l = queryList( "QTimer" );
+	QList<QTimer *> l = findChildren<QTimer *>();
 		foreach ( QObject*o , l ) {
 			delete o;
 		}

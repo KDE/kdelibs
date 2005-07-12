@@ -32,7 +32,7 @@
 #include <q3mainwindow.h>
 #include <qobject.h>
 #include <q3popupmenu.h>
-#include <q3ptrlist.h>
+#include <QList>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qspinbox.h>
@@ -104,7 +104,7 @@ public:
 private:
   class Item;
 public:
-  typedef Q3PtrList<Item> ItemList;
+  typedef QList<Item *> ItemList;
 
 private:
   static void traverseChildren(QWidget *widget, Item *item);
@@ -150,6 +150,9 @@ bool KAcceleratorManagerPrivate::standardName(const QString &str)
 
 KAcceleratorManagerPrivate::Item::~Item()
 {
+    while (!m_children->isEmpty())
+      delete m_children->takeFirst();
+
     delete m_children;
 }
 
@@ -158,7 +161,6 @@ void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 {
     if (!m_children) {
         m_children = new ItemList;
-	m_children->setAutoDelete(true);
     }
 
     m_children->append(item);
@@ -196,8 +198,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // collect the contents
     KAccelStringList contents;
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         contents << it->m_content;
     }
@@ -207,8 +208,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // write them back into the widgets
     int cnt = -1;
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         cnt++;
 
@@ -251,8 +251,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     }
 
     // calculate the accelerators for the children
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         kdDebug(125) << "children " << it->m_widget->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
@@ -263,9 +262,10 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
-  QList<QObject*> childList = widget->queryList("QWidget", 0, false, false);
-  foreach ( QObject*o , childList ) {
-    QWidget *w = static_cast<QWidget*>(o);
+  QList<QWidget*> childList = widget->findChildren<QWidget*>();
+  foreach ( QWidget *w , childList ) {
+    // Ignore unless we have the direct parent
+    if(qobject_cast<QWidget *>(w->parent()) != widget) continue;
 	
     if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
         continue;

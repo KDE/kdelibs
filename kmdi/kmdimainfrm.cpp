@@ -1288,18 +1288,19 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 	const int frameBorderWidth = 7;  // @todo: Can we / do we need to ask the window manager?
 	const int windowTitleHeight = 10; // @todo:    -"-
 
-	QObjectList pObjList = queryList( "KDockWidget" );
-	if ( pObjList.isEmpty() )
-		pObjList = queryList( "KDockWidget_Compat::KDockWidget" );
+	QList<KDockWidget *> pObjList = findChildren<KDockWidget *>();
+	
+	// FIXME: Is this still valid in kde4?
+	//if ( pObjList.isEmpty() )
+	//	pObjList = findChildren<KDockWidget_Compat::KDockWidget *>();
 
-	QObjectList::iterator it = pObjList.begin();
 	// for all dockwidgets (which are children of this mainwindow)
-	while ( ( *it ) )
+	foreach(KDockWidget *it, pObjList)
 	{
 		KDockWidget* dockWindow = 0L; /* pDockW */
 		KDockWidget* rootDockWindow = 0L; /* pRootDockWindow */
 		KDockWidget* undockCandidate = 0L; /* pUndockCandidate */
-		QWidget* pW = static_cast<QWidget*>( ( *it ) );
+		QWidget* pW = static_cast<QWidget*>( ( it ) );
 		
 		// find the oldest ancestor of the current dockwidget that can be undocked
 		while ( !pW->isTopLevel() )
@@ -1340,7 +1341,6 @@ void KMdiMainFrm::findRootDockWidgets( Q3PtrList<KDockWidget>* rootDockWidgetLis
 					positionList->append( r );
 			}
 		}
-		++it;
 	}
 }
 

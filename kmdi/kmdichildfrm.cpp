@@ -753,14 +753,10 @@ void KMdiChildFrm::setClient( KMdiChildView *w, bool bAutomaticResize )
 	// memorize the focuses in a dictionary because they will get lost during reparenting
 	Q3Dict<Qt::FocusPolicy>* pFocPolDict = new Q3Dict<Qt::FocusPolicy>;
 	pFocPolDict->setAutoDelete( true );
-	QObjectList list = m_pClient->queryList( "QWidget" );
-	QObjectList::iterator it = list.begin(); //iterate over the buttons
-	QObject * obj;
-	int i = 1;
-	while ( ( obj = (*it) ) != 0 )
-	{ // for each found object...
-		++it;
-		QWidget* widg = ( QWidget* ) obj;
+	int i = 1;	
+	
+	QList<QWidget *> list = findChildren<QWidget *>();
+	foreach(QWidget *widg, list) {
 		if ( widg->name( 0 ) == 0 )
 		{
 			QString tmpStr;

@@ -1583,10 +1583,10 @@ void KDockWidget::dockBack()
   if( formerBrotherDockWidget) {
     // search all children if it tries to dock back to a child
     bool found = false;
-    QList<QObject*> cl = queryList("KDockWidget");
-	foreach ( QObject*obj, cl ) {
+    QList<KDockWidget *> cl = findChildren<KDockWidget *>();
+	foreach ( KDockWidget *obj, cl ) {
 		while ( !found && obj!= 0 ) {
-			QWidget* widg = (QWidget*)obj;
+  		QWidget* widg = qobject_cast<QWidget*>(obj);
 			if( widg == formerBrotherDockWidget)
 				found = true;
 		}
@@ -3098,13 +3098,11 @@ void KDockArea::resizeEvent(QResizeEvent *rsize)
 #ifndef NO_KDE2
 //    kdDebug(282)<<"KDockArea::resize"<<endl;
 #endif
-    QObjectList list=queryList("QWidget",0,false);
+    QList<QWidget *> list = findChildren<QWidget*>();
 
-    QObjectList::iterator it = list.begin(); // iterate over the buttons
-    QObject *obj;
-    foreach( QObject* o, list )
+    foreach( QWidget *w, list )
     {
-      ((QWidget*)o)->setGeometry(QRect(QPoint(0,0),size()));
+      w->setGeometry(QRect(QPoint(0,0),size()));
     }
 #if 0
     KDockSplitter *split;
