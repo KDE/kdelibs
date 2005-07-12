@@ -408,7 +408,7 @@ public:
 };
 
 
-static Q3PtrList<QWidget>*x11Filter = 0;
+static QList<const QWidget*> *x11Filter = 0;
 static bool autoDcopRegistration = true;
 
 void KApplication::installX11EventFilter( QWidget* filter )
@@ -416,21 +416,21 @@ void KApplication::installX11EventFilter( QWidget* filter )
     if ( !filter )
         return;
     if (!x11Filter)
-        x11Filter = new Q3PtrList<QWidget>;
+        x11Filter = new QList<const QWidget *>;
     connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
 
 void KApplication::x11FilterDestroyed()
 {
-    removeX11EventFilter( static_cast< const QWidget* >( sender()));
+    removeX11EventFilter( qobject_cast< const QWidget* >( sender()));
 }
 
 void KApplication::removeX11EventFilter( const QWidget* filter )
 {
     if ( !x11Filter || !filter )
         return;
-    x11Filter->removeRef( filter );
+    x11Filter->removeAll( filter );
     if ( x11Filter->isEmpty() ) {
         delete x11Filter;
         x11Filter = 0;
@@ -1702,7 +1702,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
     }
 
     if (x11Filter) {
-        for (QWidget *w=x11Filter->first(); w; w=x11Filter->next()) {
+        foreach (const QWidget *w, *x11Filter) {
             if (((KAppX11HackWidget*) w)->publicx11Event(_event))
                 return true;
         }
@@ -3022,8 +3022,8 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
   foreach(KApplicationPrivate::URLActionRule rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
          (action == rule.action) &&
-         rule->baseMatch(baseURL, baseClass) &&
-         rule->destMatch(destURL, destClass, baseURL, baseClass))
+         rule.baseMatch(baseURL, baseClass) &&
+         rule.destMatch(destURL, destClass, baseURL, baseClass))
      {
         result = rule.permission;
      }
