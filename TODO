@@ -298,3 +298,9 @@ that we would like to make for the next binary incompatible release.
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
   (Coolo)
 
+- kMin, kMax, KMIN, KMAX can be replaced by their Qt equivalents (Caleb Tennis)
+
+- Replacing QPtrList with QList<*> is tricky for places where the old list used autoDelete().  It
+  may be worthwhile to create a convenience class which mimics QList but allows for autoDeleting.
+  (Caleb Tennis)
+
