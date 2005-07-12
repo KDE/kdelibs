@@ -1219,8 +1219,10 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
 
 KCompletionBox * KLineEdit::completionBox( bool create )
 {
-    if ( create && !d->completionBox )
+    if ( create && !d->completionBox ) {
         setCompletionBox( new KCompletionBox( this, "completion box" ) );
+        d->completionBox->setFont(font());
+    }
 
     return d->completionBox;
 }
