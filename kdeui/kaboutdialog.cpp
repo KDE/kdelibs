@@ -42,7 +42,7 @@
 #include <kdebug.h>
 
 //MOC_SKIP_BEGIN
-template class Q3PtrList<KAboutContributor>;
+template class QList<KAboutContributor *>;
 //MOC_SKIP_END
 
 #define WORKTEXT_IDENTATION 16
@@ -1361,11 +1361,8 @@ KAboutWidget::adjust()
     {
       cx=QMAX(cx, cont->sizeHint().width());
       cy+=cont->sizeHint().height()+Grid;
-      Q3PtrListIterator<KAboutContributor> _pos(contributors);
-      KAboutContributor* currEntry;
-      while ( (currEntry = _pos.current()) )
+      foreach(KAboutContributor* currEntry, contributors)
 	{
-	  ++_pos;
 	  cy+=currEntry->sizeHint().height();
 	}
     }
@@ -1474,11 +1471,8 @@ KAboutWidget::resizeEvent(QResizeEvent*)
     } else {
       cont->hide();
     }
-  Q3PtrListIterator<KAboutContributor> _pos(contributors);
-  KAboutContributor* currEntry;
-  while( (currEntry = _pos.current()) )
+  foreach(KAboutContributor *currEntry, contributors)
     {
-      ++_pos;
       tempy=currEntry->sizeHint().height();
       // y+=Grid;
       currEntry->setGeometry(_x, _y, width(), tempy);

@@ -21,7 +21,7 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <q3ptrlist.h>
+#include <QList>
 #include <qstring.h>
 #include <qobject.h>
 #include <kdelibs_export.h>
@@ -137,7 +137,7 @@ public:
     virtual void unexecute();
 
 protected:
-    Q3PtrList<KCommand> m_commands;
+    QList<KCommand *> m_commands;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
@@ -274,7 +274,7 @@ signals:
 private:
     void clipCommands();  // ensures that the limits are kept
 
-    Q3PtrList<KCommand> m_commands;
+    QList<KCommand *> m_commands;
     KAction *m_undo, *m_redo;
     Q3PopupMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;

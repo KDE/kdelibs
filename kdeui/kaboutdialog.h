@@ -30,6 +30,7 @@
 #ifndef _KABOUTDIALOG_H_
 #define _KABOUTDIALOG_H_
 
+#include <QList>
 #include <kdialogbase.h>
 #include <qstring.h>
 
@@ -241,7 +242,7 @@ protected:
   /**
    * A set of people who contributed to the application.
    */
-  Q3PtrList<KAboutContributor> contributors;
+  QList<KAboutContributor *> contributors;
   // #########################################################################
   //
 private:
