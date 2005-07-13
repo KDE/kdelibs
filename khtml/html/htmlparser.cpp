@@ -996,7 +996,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // images
     case ID_IMG:
-        if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
+        if (t->attrs&&
+            KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
             KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled())
         {
             QString url = doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() );
