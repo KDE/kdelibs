@@ -150,8 +150,9 @@ bool KAcceleratorManagerPrivate::standardName(const QString &str)
 
 KAcceleratorManagerPrivate::Item::~Item()
 {
-    while (!m_children->isEmpty())
-      delete m_children->takeFirst();
+    if (m_children)
+        while (!m_children->isEmpty())
+            delete m_children->takeFirst();
 
     delete m_children;
 }
