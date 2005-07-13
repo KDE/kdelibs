@@ -608,7 +608,7 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
     if (isXMLElementNode() || newChild->isXMLElementNode())
 	return true;
     else
-	return checkChild(id(), newChild->id());
+	return checkChild(id(), newChild->id(), !getDocument()->inCompatMode());
 }
 
 bool ElementImpl::childTypeAllowed( unsigned short type )
