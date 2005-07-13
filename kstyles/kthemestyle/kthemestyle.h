@@ -72,6 +72,7 @@ public:
     /**
      * Constructs a new KThemeStyle object.
      *
+     * @param configDir The directory which has the KConfig file.
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
      */
@@ -150,12 +151,15 @@ public:
      * You specify the widget type and it will draw it according to the
      * config file settings.
      *
+     * @param x The x coordinate of the button's upper left hand corner.
+     * @param y The y coordinate of the buttons' upper left hand corner.
+     * @param w The button width.
+     * @param h The button height.
      * @param p The QPainter to draw on.
      * @param g The color group to use.
+     * @param sunken The button is drawn with a sunken style if @p true
      * @param rounded @p true if the widget is rounded, @p false if rectangular.
      * @param type The widget type to paint.
-     * @param fill An optional fill brush. Currently ignored (the config file
-     * is used instead).
      */
     virtual void drawBaseButton( QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken = false,
@@ -167,6 +171,10 @@ public:
      * by pushbuttons and comboboxes.
      *
      * @param p The QPainter to draw on.
+     * @param x The x coordinate of the widget's upper left hand corner.
+     * @param y The y coordinate of the widget's upper left hand corner.
+     * @param w The widget width.
+     * @param h The widget height.
      * @param rounded @p true if the widget is rounded, @p false if rectangular.
      */
     virtual void drawBaseMask( QPainter *p, int x, int y, int w, int h,
@@ -175,16 +183,21 @@ public:
 
 
     /**
-        * Draw a shaded rectangle using the given style.
-        *
-        * @param p The painter to draw on.
-        * @param g The color group to use.
-        * @param rounded Draws a rounded shape if true. Requires bWidth to be
-        * at least 1.
-        * @param hWidth The highlight width.
-        * @param bWidth The border width.
-        * @param style The shading style to use.
-        */
+     * Draw a shaded rectangle using the given style.
+     *
+     * @param p The painter to draw on.
+     * @param g The color group to use.
+     * @param x The x coordinate of the rectangle's upper left hand corner.
+     * @param y The y coordinate of the rectangle's upper left hand corner.
+     * @param w The rectangle width.
+     * @param h The rectangle height.
+     * @param sunken Draws a sunken style if @p true.
+     * @param rounded Draws a rounded shape if @p true. Requires bWidth to be
+     * at least 1.
+     * @param hWidth The highlight width.
+     * @param bWidth The border width.
+     * @param style The shading style to use.
+     */
     virtual void drawShade( QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool sunken, bool rounded,
                             int hWidth, int bWidth, ShadeStyle style ) const;

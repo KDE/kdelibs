@@ -528,15 +528,9 @@ void CSSPrimitiveValueImpl::cleanup()
 int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics )
 {
     double result = computeLengthFloat( style, devMetrics );
-    int intResult = (int)result;
-#ifdef APPLE_CHANGES
-    // This conversion is imprecise, often resulting in values of e.g., 44.99998.  We
+    // This conversion is imprecise, often resulting in values of, e.g., 44.99998.  We
     // need to go ahead and round if we're really close to the next integer value.
-    double newResult = (intResult < 0) ? result-0.01 : result+0.01;
-    int secondIntResult = (int)newResult;
-    if (secondIntResult != intResult)
-        return secondIntResult;
-#endif
+    int intResult = (int)(result + (result < 0 ? -0.01 : +0.01));
     return intResult;
 }
 
@@ -576,14 +570,14 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, Q3P
 	factor = dpiY/25.4;
         break;
     case CSSPrimitiveValue::CSS_IN:
-            factor = dpiY;
+        factor = dpiY;
         break;
     case CSSPrimitiveValue::CSS_PT:
-            factor = dpiY/72.;
+        factor = dpiY/72.;
         break;
     case CSSPrimitiveValue::CSS_PC:
         // 1 pc == 12 pt
-            factor = dpiY*12./72.;
+        factor = dpiY*12./72.;
         break;
     default:
         return -1;

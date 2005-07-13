@@ -1,4 +1,5 @@
 SUBDIRS = keramik
 #plastik highcolor highcontrast themes light kthemestyle riscos utils keramik
 
-include $(top_srcdir)/admin/Doxyfile.am
+#kstyles should not be included in the apidocs
+#include $(top_srcdir)/admin/Doxyfile.am

@@ -133,6 +133,8 @@ public:
      * The constructor.
      *
      * @param maxSize The maximum size of the cache in kilobytes.
+     * @param parent The parent object.
+     * @param name The name of the object.
      */
     KThemeCache( int maxSize, QObject *parent = 0, const char *name = 0 );
     /**
@@ -142,6 +144,8 @@ public:
      * @param scale The scaling type of the pixmap.
      * @param widgetID The widget ID of the pixmap, usually from KThemeBase's
      * WidgetType enum.
+     * @param border True if the pixmap has a border.
+     * @param mask True if the pixmap has a mask.
      *
      * @return True if the insert was successful, false otherwise.
      */
@@ -153,6 +157,8 @@ public:
      * @param w The pixmap width to search for.
      * @param h The pixmap height to search for.
      * @param widgetID The widget ID to search for.
+     * @param border True if the pixmap has a border.
+     * @param mask True if the pixmap has a mask.
      *
      * @return True if a pixmap matching the width, height, and widget ID of
      * the pixmap exists, NULL otherwise.
@@ -294,7 +300,7 @@ public:
      * If a color group is set in the theme configuration
      * that is used, otherwise defaultColor is returned.
      *
-     * @param defaultColor The colorGroup to set if one is available.
+     * @param defaultGroup The colorGroup to set if one is available.
      *
      * @param widget The widget whose color group to retrieve.
      *
@@ -430,13 +436,14 @@ public:
     virtual KThemePixmap *scalePixmap( int w, int h, WidgetType widget ) const;
 protected:
     /**
-     * This method reads a configuration file and sets things up so overrideColorGroup
-    * works. Modiying user's config files within a style is evil, IMHO
-    * (SadEagle). On the other hand, this will make it simply ignore settings
+     * This method reads a configuration file and sets things up so
+     * overrideColorGroup works. Modiying user's config files within
+     * a style is evil, IMHO (SadEagle). On the other hand, this will
+     * make it simply ignore settings.
      *
-     * @param file The configuration file to apply.
+     * @param config The configuration file to apply.
      */
-    void applyConfigFile( QSettings & settings );
+    void applyConfigFile( QSettings & config );
 
     /*
     * Generates a new palette based on the values for which have been specified explicitly

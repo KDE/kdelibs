@@ -445,7 +445,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
 
 void HTMLTokenizer::parseComment(TokenizerString &src)
 {
-    // SGML strict
+    // SGML strict or transitional
     bool strict = !parser->doc()->inCompatMode() && parser->doc()->htmlMode() != DocumentImpl::XHtml;
     int delimiterCount = 0;
     bool canClose = false;
@@ -1150,7 +1150,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/jscript") != 0 &&
                         type.compare("text/ecmascript") != 0 &&
                         type.compare("text/livescript") != 0 &&
-			type.compare("application/x-javascript") != 0 )
+			type.compare("application/x-javascript") != 0 &&
+			type.compare("application/ecmascript") != 0 )
                         javascript = false;
                 } else if( a ) {
                     /*
@@ -1178,10 +1179,14 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             processToken();
 
+            if ( parser->selectMode() && beginTag)
+                discard = AllDiscard;
+
             switch( tagID ) {
             case ID_PRE:
                 pre = beginTag;
-                discard = AllDiscard;
+                if (beginTag)
+                    discard = LFDiscard;
                 prePos = 0;
                 break;
             case ID_BR:
@@ -1416,14 +1421,20 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             // According to SGML any LF immediately after a starttag, or
             // immediately before an endtag should be ignored.
             // ### Gecko and MSIE though only ignores LF immediately after
-            // starttags and only for PRE elements
+            // starttags and only for PRE elements -- asj (28/06-2005)
             if ( pending )
+                if ((pre) && endTag && pending == LFPending)
+                    pending = NonePending;
+                else
                 if (!select)
                     addPending();
                 else
                     pending = NonePending;
 
-            // if (!endTag) discard = AllDiscard;
+            // Cancel unused discards
+            if (endTag)
+                discard = NoneDiscard;
+            // if (!endTag) discard = LFDiscard;
 
             processToken();
 
@@ -1448,32 +1459,22 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
         {
-            if (select && !script)
-            {
-                if (discard == LFDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else if(discard == AllDiscard)
-                {
-                }
-                else
-                {
-                     // Process this LF
-                    if (pending == NonePending)
-                        pending = LFPending;
-                }
+            if (discard == SpaceDiscard)
+                discard = NoneDiscard;
+
+            if (discard == LFDiscard) {
+                // Ignore one LF
+                discard = NoneDiscard;
             }
-            else {
-                if (discard == LFDiscard || discard == AllDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else
-                {
-                    // Process this LF
+            else if (discard == AllDiscard)
+            {
+                // Ignore
+            }
+            else
+            {
+                if (select && !script) {
+                    pending = LFPending;
+                } else {
                     if (pending)
                         addPending();
                     pending = LFPending;
@@ -1489,25 +1490,29 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == ' ' ) || ( cc == '\t' ))
         {
-            if (select && !script) {
-                if(discard == SpaceDiscard)
-                    discard = NoneDiscard;
-                else if(discard == AllDiscard)
-                { }
-                else
-                    pending = SpacePending;
+            if(discard == LFDiscard)
+                discard = NoneDiscard;
 
+            if(discard == SpaceDiscard) {
+                // Ignore one space
+                discard = NoneDiscard;
+            }
+            else if(discard == AllDiscard)
+            {
+                // Ignore
             }
             else {
-                if (discard == AllDiscard)
-                    discard = NoneDiscard;
-
-                if (pending)
-                    addPending();
-                if (cc == ' ')
-                    pending = SpacePending;
-                else
-                    pending = TabPending;
+                if (select && !script) {
+                    if (!pending)
+                        pending = SpacePending;
+                } else {
+                    if (pending)
+                        addPending();
+                    if (cc == ' ')
+                        pending = SpacePending;
+                    else
+                        pending = TabPending;
+                }
             }
 
             ++src;
@@ -1682,8 +1687,6 @@ void HTMLTokenizer::processToken()
 
     if ( currToken.flat && currToken.tid != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
-    else if ( parser->selectMode() )
-        discard = AllDiscard;
 
     currToken.reset();
     if (jsProxy)

@@ -244,9 +244,11 @@ int main(int argc, char **argv)
   }
 
   tmp = getenv("KDETMP");
+  if (!tmp || !tmp[0])
+    tmp = getenv("TMPDIR");
   if (!tmp || !tmp[0]) 
-      tmp = "/tmp";
-   
+    tmp = "/tmp";
+
   if (strcmp(argv[1], "tmp") == 0)
   {
     tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/kde-")+1);

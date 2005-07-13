@@ -36,3 +36,5 @@ libkbookmarks_la_SOURCES = \
 	kbookmarkimporter_crash.cc kbookmarkimporter_opera.cc kbookmarkimporter_ie.cc \
 	kbookmarkimporter_ns.cc kbookmarkimporter_kde1.cc kbookmarkdombuilder.cc \
 	kbookmarkmanager.skel kbookmarknotifier.skel
+
+include $(top_srcdir)/admin/Doxyfile.am

@@ -47,7 +47,7 @@ public:
 		KURL::List  URLs;
 		QString encoding;
     };
-      
+
     /**
       * Constructs a file dialog for text files with encoding selection possibility.
       *
@@ -66,11 +66,16 @@ public:
       * @param encoding The encoding shown in the encoding combo. If it's
       *		    QString::null, the global default encoding will be shown.
       *
+      * @param filter This is a space separated list of shell globs.
+      *             You can set the text to be displayed for the glob, and
+      *             provide multiple globs.  See setFilter() for details on
+      *             how to do this...
+      *
       * @param caption The caption of the dialog
       *
       * @param type This can either be
       *		@li Opening (open dialog, the default setting)
-      *		@li Saving 
+      *		@li Saving
       * @param parent The parent widget of this dialog
       * @param name The name of this object
       * @param modal Whether to create a modal dialog or not
@@ -80,14 +85,14 @@ public:
     KEncodingFileDialog (const QString& startDir = QString::null,
                     const QString& encoding = QString::null,
 		    const QString& filter = QString::null,
-		    const QString& caption = QString::null, KFileDialog::OperationMode type = KFileDialog::Opening, 
+		    const QString& caption = QString::null, KFileDialog::OperationMode type = KFileDialog::Opening,
                     QWidget *parent= 0, const char *name="", bool modal = true);
     /**
      * Destructs the file dialog.
      */
     ~KEncodingFileDialog();
 
-    
+
     /**
     * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString::null.
     */

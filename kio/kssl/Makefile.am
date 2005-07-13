@@ -69,3 +69,4 @@ libkssl_la_SOURCES	= \
 
 SUBDIRS = kssl
 
+include $(top_srcdir)/admin/Doxyfile.am

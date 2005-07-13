@@ -190,6 +190,7 @@ private:
      * one item in the subtree with the given root item is visible.
      */
     bool checkItemParentsVisible(Q3ListViewItem *item);
+    bool checkItemParentsVisible(Q3ListViewItem *item, Q3ListViewItem *highestHiddenParent = 0);
 
 private slots:
     void itemAdded(Q3ListViewItem *item) const;

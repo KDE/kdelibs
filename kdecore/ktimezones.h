@@ -21,17 +21,63 @@
 #define _KTIMEZONES_H
 
 #include "kdelibs_export.h"
+#include <qdatetime.h>
 #include <qnamespace.h>
 #include <qmap.h>
 #include <qstring.h>
-class KTimezonePrivate;
+#include <ksharedptr.h>
+class KTimezoneDetails;
 class KTimezoneDetailsPrivate;
+class KTimezonePrivate;
 class KTimezonesPrivate;
 
 /**
- * The KTimezone class contains core functions related to a system timezone.
+ * The KTimezoneSource class contains information source-dependent functions
+ * related to a timezone. Create subclasses to implement custom sources of
+ * timezone information.
  *
- * @since KTimezoneDetails
+ * For example, to be able to create {@link KTimezone } objects from libical's
+ * VTIMEZONE objects:
+ *<ul>
+ *      <li>Subclass this class with a custom {@link parse() } routine.
+ *      <li>Create one or more instances of this class.
+ *      <li>Use the instance(s) to create {@link KTimezone } objects.
+ *      <li>If required, add the objects to a {@link KTimezones } database.
+ *</ul>
+ * @since 3.5
+ * @author S.R.Haque <srhaque@iee.org>.
+ */
+class KDECORE_EXPORT KTimezoneSource :
+    public KShared
+{
+public:
+    KTimezoneSource(const QString &db);
+    virtual ~KTimezoneSource();
+
+    /**
+     * Location of system timezone information.
+     * @return value which can be combined with zone name to retrieve timezone info.
+     */
+    virtual QString db();
+
+    /**
+     * Extract timezone detail information. The default implementation consists
+     * of a parser for zoneinfo files in tzfile(5).
+     * @return true if the parse encountered no errors.
+     */
+    virtual bool parse(const QString &zone, KTimezoneDetails &dataReceiver) const;
+
+private:
+    QString m_db;
+};
+
+/**
+ * The KTimezone class contains core functions related to a timezone. Instances
+ * are created in the context of a {@link KTimezoneSource } which provides
+ * extended functionality via {@link KTimezoneDetails }.
+ *
+ * @see KTimezoneSource
+ * @see KTimezoneDetails
  * @since 3.5
  * @author S.R.Haque <srhaque@iee.org>.
  */
@@ -41,9 +87,10 @@ public:
     static const float UNKNOWN;
 
     KTimezone(
-        class KTimezones *db, const QString &name,
+        KSharedPtr<KTimezoneSource> db, const QString &name,
         const QString &countryCode = "??", float latitude = UNKNOWN, float longitude = UNKNOWN,
         const QString &comment = "");
+    ~KTimezone();
 
     /**
      * Returns the name of the timezone.
@@ -74,15 +121,31 @@ public:
     float longitude() const;
 
     /**
-     * Returns the current offset of the given timezone to UTC or the local
+     * Returns the current offset of this timezone to UTC or the local
      * timezone in seconds.
      *
      * Take care if you cache the results of this routine; that would
      * break if the result were stored across a daylight savings change.
      *
-     * @return offset in seconds, INT_MAX on error.
+     * @return offset in seconds.
      */
     int offset(Qt::TimeSpec basisSpec = Qt::UTC) const;
+
+    /**
+     * Returns the offset of the given timezone to UTC at the given
+     * date/time (which is interpreted as being UTC).
+     *
+     * @return offset in seconds.
+     */
+    int offset(const QDateTime &dateTime) const;
+
+    /**
+     * Convert a date/time (which is interpreted as being localtime in this
+     * timezone) into localtime in the given timezone.
+     *
+     * @return converted date/time.
+     */
+    QDateTime convert(const KTimezone *newZone, const QDateTime &dateTime) const;
 
     /**
      * Returns any comment for the timezone.
@@ -91,9 +154,14 @@ public:
      */
     QString comment() const;
 
+    /**
+     * Extract timezone detail information.
+     * @return true if the parse encountered no errors.
+     */
+    bool parse(KTimezoneDetails &dataReceiver) const;
+
 private:
-    friend class KTimezoneDetails;
-    class KTimezones *m_db;
+    KSharedPtr<KTimezoneSource> m_db;
     QString m_name;
     QString m_countryCode;
     float m_latitude;
@@ -103,12 +171,13 @@ private:
 };
 
 /**
- * The KTimezoneDetails class contains extended functions related to a system
- * timezone. It consists basically of a parser for zoneinfo files in tzfile(5).
+ * The KTimezoneDetails class contains extended functions related to a
+ * timezone.
  *
  * The parser must be customised by overriding the given virtual callbacks:
  *<ul>
  *    <li>{@link parseEnded() }
+ *    <li>{@link parseStarted() }
  *    <li>{@link gotHeader() }
  *    <li>{@link gotTransitionTime() }
  *    <li>{@link gotLocalTimeIndex() }
@@ -119,28 +188,25 @@ private:
  *    <li>{@link gotIsUTC() }
  *</ul>
  *
- * @since KTimezone
+ * @see KTimezone
  * @since 3.5
  * @author S.R.Haque <srhaque@iee.org>.
  */
 class KDECORE_EXPORT KTimezoneDetails
 {
 public:
-    KTimezoneDetails(KTimezone *zone);
+    KTimezoneDetails();
     virtual ~KTimezoneDetails();
 
     /**
-     * Retrieve the details of the timezone using the callbacks for:
-     * @return true if file was a valid timezoneinfo file.
-     */
-    bool parseStart();
-
-protected:
-
-    /**
-     * Always called before {@link parseStart() } returns.
+     * Always called after all other callbacks.
      */
     virtual void parseEnded();
+
+    /**
+     * Always called before any other callback.
+     */
+    virtual void parseStarted();
 
     /**
      * Called when the header is seen.
@@ -152,45 +218,47 @@ protected:
     /**
      * Called when a transition time is seen.
      */
-    virtual void gotTransitionTime(unsigned transitionTime);
+    virtual void gotTransitionTime(int index, unsigned transitionTime);
 
     /**
      * Called when a local time index is seen.
      */
-    virtual void gotLocalTimeIndex(unsigned localTimeIndex);
+    virtual void gotLocalTimeIndex(int index, unsigned localTimeIndex);
 
     /**
      * Called when a local time is seen.
      */
-    virtual void gotLocalTime(int gmtOff, int isDst, unsigned abbrInd);
+    virtual void gotLocalTime(int index, int gmtOff, bool isDst, unsigned abbrIndex);
 
     /**
-     * Called when a timezone abbreviation is seen.
+     * Called when a timezone abbreviation is seen. Note that the index here
+     * is NOT a simple incrementing integer, rather it matches the sequence
+     * of abbrIndex values from {@link gotLocalTime() }.
      */
-    virtual void gotAbbreviation(const QString &abbr);
+    virtual void gotAbbreviation(int index, const QString &abbr);
 
     /**
      * Called when a leap second adjustment is seen.
      */
-    virtual void gotLeapAdjustment(unsigned leapTime, unsigned leapSeconds);
+    virtual void gotLeapAdjustment(int index, unsigned leapTime, unsigned leapSeconds);
 
     /**
      * Called when a standard/wall time indicator is seen.
      */
-    virtual void gotIsStandard(unsigned isStandard);
+    virtual void gotIsStandard(int index, bool isStandard);
 
     /**
      * Called when a UTC/local time indicator is seen.
      */
-    virtual void gotIsUTC(unsigned isUTC);
+    virtual void gotIsUTC(int index, bool isUTC);
 
 private:
-    KTimezone *m_zone;
     KTimezoneDetailsPrivate *d;
 };
 
 /**
- * The KTimezones class contains functions related to the use of system timezones.
+ * The KTimezones class models a timezone database. It supports system
+ * timezones, and also has support for private timezone entries.
  *
  * @since 3.5
  * @author S.R.Haque <srhaque@iee.org>.
@@ -212,8 +280,8 @@ public:
      * this routine is to actually return "Europe/London" (or rather, the
      * corresponding KTimezone).
      *
-     * @return local timezone. If necessary, we will return a guess, NULL means
-     *         "UTC".
+     * @return local timezone. If necessary, we will return a guess. We will
+     *         never return NULL.
      */
     const KTimezone *local();
 
@@ -226,22 +294,23 @@ public:
     typedef QMap<QString, KTimezone *> ZoneMap;
 
     /**
-     * Parse system timezone database.
+     * Return timezone database.
      * @return known timezones.
      */
     const ZoneMap allZones();
 
     /**
-     * Location of system timezone information.
-     * @return value which can be combined with zone name to retrieve timezone info.
+     * Add user-define timezone database.
+     * @return known timezones.
      */
-    QString db();
+    void add(KTimezone *zone);
 
 private:
     float convertCoordinate(const QString &coordinate);
 
     QString m_zoneinfoDir;
     ZoneMap *m_zones;
+    KTimezone *m_Utc;
     KTimezonesPrivate *d;
 };
 

@@ -114,11 +114,11 @@ public:
 				PathLengthExceeded, InvalidCA, Expired,
 				SelfSigned, ErrorReadingRoot, NoSSL,
 				Revoked, Untrusted, SignatureFailed,
-				Rejected, PrivateKeyFailed, InvalidHost, 
-				Irrelevant, SelfSignedChain 
+				Rejected, PrivateKeyFailed, InvalidHost,
+				Irrelevant, SelfSignedChain
 				};
-				
-	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2, 
+
+	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2,
 				SMIMESign=3, SMIMEEncrypt=4, Any=5 };
 
         typedef Q3ValueList<KSSLValidation> KSSLValidationList;
@@ -269,6 +269,7 @@ public:
 	 *  Check if the certificate ca is a proper CA for this
 	 *  certificate.
 	 *  @param p the purpose to validate for
+	 *  @param ca the certificate to check
 	 *  @return all problems encountered during validation
 	 */
 	KSSLValidationList validateVerbose(KSSLPurpose p, KSSLCertificate *ca);
@@ -349,11 +350,11 @@ public:
 	static QString getMD5DigestFromKDEKey(const QString& k);
 
 private:
-	KIO_EXPORT friend int operator!=(KSSLCertificate& x, KSSLCertificate& y); 
-	KIO_EXPORT friend int operator==(KSSLCertificate& x, KSSLCertificate& y); 
+	KIO_EXPORT friend int operator!=(KSSLCertificate& x, KSSLCertificate& y);
+	KIO_EXPORT friend int operator==(KSSLCertificate& x, KSSLCertificate& y);
 
 	KSSLCertificatePrivate *d;
-	int purposeToOpenSSL(KSSLPurpose p) const; 
+	int purposeToOpenSSL(KSSLPurpose p) const;
 
 protected:
 	KSSLCertificate();
@@ -368,7 +369,7 @@ KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r);
 KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertificate& r);
 
 KIO_EXPORT int operator==(KSSLCertificate& x, KSSLCertificate& y);
-KIO_EXPORT inline int operator!=(KSSLCertificate& x, KSSLCertificate& y) 
+KIO_EXPORT inline int operator!=(KSSLCertificate& x, KSSLCertificate& y)
 { return !(x == y); }
 
 #endif

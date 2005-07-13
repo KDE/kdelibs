@@ -4014,7 +4014,7 @@ void DeleteJob::deleteNextDir()
                 if ( KProtocolInfo::canDeleteRecursive( *it ) ) {
                     // If the ioslave supports recursive deletion of a directory, then
                     // we only need to send a single CMD_DEL command, so we use file_delete :)
-                    job = KIO::file_delete( *it );
+                    job = KIO::file_delete( *it, false /*no gui*/ );
                 } else {
                     job = KIO::rmdir( *it );
                 }
@@ -4384,7 +4384,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
 
 MultiGetJob *KIO::multi_get(long id, const KURL &url, const MetaData &metaData)
 {
-	MultiGetJob * job = new MultiGetJob( url, false );
+    MultiGetJob * job = new MultiGetJob( url, false );
     job->get(id, url, metaData);
     return job;
 }

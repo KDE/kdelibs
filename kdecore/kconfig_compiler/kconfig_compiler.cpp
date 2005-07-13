@@ -1571,7 +1571,10 @@ int main( int argc, char **argv )
         cpp << "  }" << endl;
       }
     }
-    cpp << itemDeclaration(e);
+
+    if (!dpointer)
+      cpp << itemDeclaration(e);
+
     if (e->param().isEmpty())
     {
       // Normal case

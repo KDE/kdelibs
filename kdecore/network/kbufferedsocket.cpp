@@ -293,6 +293,16 @@ qint64 KBufferedSocket::readLineData(char* data, qint64 maxSize)
   return d->input->readLine(data, maxSize);
 }
 
+void KBufferedSocket::waitForConnect()
+{
+  if (state() != Connecting)
+    return;			// nothing to be waited on
+
+  KStreamSocket::setSocketOptions(socketOptions() | Blocking);
+  connectionEvent();
+  KStreamSocket::setSocketOptions(socketOptions() & ~Blocking);
+}
+
 void KBufferedSocket::slotReadActivity()
 {
   if (d->input && state() == Connected)
