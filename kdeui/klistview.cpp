@@ -369,10 +369,10 @@ void KListViewLineEdit::terminate(bool commit)
         QListViewItem *i=item;
         col=0;
         item=0;
-        hide(); // will call focusOutEvent, that's why we set item=0 before
+        p->setFocus();// will call focusOutEvent, that's why we set item=0 before
+        hide();
         if (commit)
             emit done(i,c);
-        i->listView()->setFocus();
     }
 }
 
