@@ -22,6 +22,8 @@
 #include <klineedit.h>
 #include <q3hbox.h>
 #include <QContextMenuEvent>
+//Added by qt3to4:
+#include <Q3ValueList>
 
 class KListView;
 class Q3ListViewItem;
@@ -189,7 +191,6 @@ private:
      * It makes a recursive call to all children.  It returns true if at least
      * one item in the subtree with the given root item is visible.
      */
-    bool checkItemParentsVisible(Q3ListViewItem *item);
     bool checkItemParentsVisible(Q3ListViewItem *item, Q3ListViewItem *highestHiddenParent = 0);
 
 private slots:

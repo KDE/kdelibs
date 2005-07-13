@@ -30,6 +30,9 @@
 #include <q3popupmenu.h>
 #include <qlabel.h>
 #include <q3header.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <Q3ValueList>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -368,11 +371,11 @@ void KListViewSearchLine::checkItemParentsNotVisible()
 bool KListViewSearchLine::checkItemParentsVisible(Q3ListViewItem *item, Q3ListViewItem *highestHiddenParent)
 {
     bool visible = false;
-    QListViewItem * first = item;
+    Q3ListViewItem * first = item;
     for(; item; item = item->nextSibling())
     {
         //What we pass to our children as highestHiddenParent:
-        QListViewItem * hhp = highestHiddenParent ? highestHiddenParent : item->isVisible() ? 0L : item;
+        Q3ListViewItem * hhp = highestHiddenParent ? highestHiddenParent : item->isVisible() ? 0L : item;
         bool childMatch = false;
         if(item->firstChild() && checkItemParentsVisible(item->firstChild(), hhp))
             childMatch = true;
@@ -385,13 +388,13 @@ bool KListViewSearchLine::checkItemParentsVisible(Q3ListViewItem *item, Q3ListVi
                 highestHiddenParent->setVisible(true);
                 // Calling setVisible on our ancestor will unhide all its descendents. Hide the ones
                 // before us that should not be shown.
-                for(QListViewItem *hide = first; hide != item; hide = hide->nextSibling())
+                for(Q3ListViewItem *hide = first; hide != item; hide = hide->nextSibling())
                     hide->setVisible(false);
                 highestHiddenParent = 0;
                 // If we matched, than none of our children matched, yet the setVisible() call on our
                 // ancestor unhid them, undo the damage:
                 if(!childMatch)
-                    for(QListViewItem *hide = item->firstChild(); hide; hide = hide->nextSibling())
+                    for(Q3ListViewItem *hide = item->firstChild(); hide; hide = hide->nextSibling())
                         hide->setVisible(false);
             }
             else
