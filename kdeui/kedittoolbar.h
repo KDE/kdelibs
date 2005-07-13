@@ -72,7 +72,7 @@ namespace
  *   dlg.exec();
  * }
  *
- * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
+ * void MyClass::slotNewToolbarConfig() // This is called when OK, Apply or Defaults is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
  *    createGUI();
@@ -96,7 +96,7 @@ namespace
  * connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
  * dlg.exec();
  *
- * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
+ * void MyClass::slotNewToolbarConfig() // This is called when OK, Apply or Defaults is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
  *    // Do NOT call createGUI()!
@@ -223,9 +223,14 @@ protected slots:
   **/
   void acceptOK(bool b);
 
+  /**
+   * Set toolbars to default value
+  **/
+  void slotDefault();
+
 signals:
   /**
-   * Signal emitted when 'apply' or 'ok' is clicked.
+   * Signal emitted when 'apply' or 'ok' is clicked or toolbars were resetted.
    * Connect to it, to plug action lists and to call applyMainWindowSettings
    * (see sample code in this class's documentation)
    */
@@ -372,6 +377,12 @@ public:
    * @return The status of whether or not the save succeeded.
    */
   bool save();
+
+  /**
+   * Remove and readd all KMXLGUIClients to update the GUI
+   * @since 3.5
+   */
+  void rebuildKXMLGUIClients();
 
 signals:
   /**
