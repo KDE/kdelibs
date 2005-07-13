@@ -326,19 +326,19 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     switch(style()->listStyleType()) {
     case LDISC:
         p->setBrush( color );
-        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LCIRCLE:
         p->setBrush( Qt::NoBrush );
-        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LSQUARE:
         p->setBrush( color );
-        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LBOX:
         p->setBrush( Qt::NoBrush );
-        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LDIAMOND: {
         static QPolygon diamond(4);
@@ -371,8 +371,10 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
             } else {
                 if (style()->direction() == LTR) {
                     const QString& punct(QString::fromLatin1(". "));
-                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::TextDontClip, punct);
-                    p->drawText(_tx-offset/2-fm.width(punct), _ty, 0, 0, Qt::AlignRight|Qt::TextDontClip, m_item);
+                    int itemWidth = fm.width(m_item);
+                    int punctWidth = fm.width(punct);
+                    p->drawText(_tx-offset/2-punctWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+                    p->drawText(_tx-offset/2-punctWidth-itemWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
