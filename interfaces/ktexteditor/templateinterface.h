@@ -29,6 +29,8 @@ namespace KTextEditor
 {
 
 class Document;
+class Cursor;
+class View;
 
 /**
  * This is an interface for inserting template strings with user editable
@@ -55,7 +57,6 @@ class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInt
 
     /**
      * Inserts an interactive ediable template text at line "line", column "col".
-     * @p parentWindow is used if dialogs have to be shown
      * @return true if inserting the string succeeded
      *
      * Use insertTemplateText(numLines(), ...) to append text at end of document
@@ -95,7 +96,7 @@ class KTEXTEDITOR_EXPORT TemplateInterface //should be named AbstractTemplateInt
      * If the editor supports some kind of smart indentation, the inserted code
      * should be layouted by the indenter.
      */
-    bool insertTemplateText ( uint line, uint column, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *parentWindow=0);
+    bool insertTemplateText ( const Cursor &insertPosition, const QString &templateString, const QMap<QString,QString> &initialValues);
 
 protected:
     /**
@@ -105,10 +106,10 @@ protected:
      * insertTemplateText above.
      * @return true if any text was inserted.
      */
-    virtual bool insertTemplateTextImplementation ( uint line, uint column, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *parentWindow=0 )=0;
+    virtual bool insertTemplateTextImplementation ( const Cursor &insertPosition, const QString &templateString, const QMap<QString,QString> &initialValues)=0;
 };
 
-KTEXTEDITOR_EXPORT TemplateInterface *templateInterface (Document *doc);
+KTEXTEDITOR_EXPORT TemplateInterface *templateInterface (View *view);
 
 }
 

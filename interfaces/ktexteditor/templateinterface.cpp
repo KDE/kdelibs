@@ -18,8 +18,7 @@
 
 #include "templateinterface.h"
 #include "document.h"
-#include <stdaddressbook.h>
-#include <addressee.h>
+#include "view.h"
 #include <qstring.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -28,6 +27,7 @@
 #include <kmessagebox.h>
 #include <kcalendarsystem.h>
 #include <unistd.h>
+#include <klibloader.h>
 
 #include <kdebug.h>
 
@@ -45,13 +45,17 @@ using namespace KTextEditor;
   } \
 } while(false)
 
-bool TemplateInterface::expandMacros( QMap<QString, QString> &map, QWidget *parentWindow )
+
+bool TemplateInterface::expandMacros( QMap<QString, QString> &map, QWidget *parentWindow)
 {
-  KABC::StdAddressBook *addrBook = 0;
-  KABC::Addressee userAddress;
   QDateTime datetime = QDateTime::currentDateTime();
   QDate date = datetime.date();
   QTime time = datetime.time();
+  typedef QString (*kabcbridgecalltype)(const QString&,QWidget *,bool *ok);
+  kabcbridgecalltype kabcbridgecall=0;
+
+  QStringList kabcitems;
+  kabcitems<<"firstname"<<"lastname"<<"fullname"<<"email";
 
   QMap<QString,QString>::Iterator it;
   for ( it = map.begin(); it != map.end(); ++it )
@@ -62,25 +66,24 @@ bool TemplateInterface::expandMacros( QMap<QString, QString> &map, QWidget *pare
       if ( placeholder == "index" ) map[ placeholder ] = "i";
       else if ( placeholder == "loginname" )
       {}
-      else if ( placeholder == "firstname" )
+      else if (kabcitems.contains(placeholder))
       {
-        INITKABC;
-        map[ placeholder ] = userAddress.givenName();
-      }
-      else if ( placeholder == "lastname" )
-      {
-        INITKABC;
-        map[ placeholder ] = userAddress.familyName();
-      }
-      else if ( placeholder == "fullname" )
-      {
-        INITKABC;
-        map[ placeholder ] = userAddress.assembledName();
-      }
-      else if ( placeholder == "email" )
-      {
-        INITKABC;
-        map[ placeholder ] = userAddress.preferredEmail();
+        if (kabcbridgecall==0) 
+        {
+          KLibrary *lib=KLibLoader::self()->library("ktexteditorkabcbridge");
+          if ((lib==0) || (!lib->hasSymbol("ktexteditorkabcbridge")))
+          {
+            KMessageBox::sorry(parentWindow,i18n("The templates needs information about you, which are stored in your addressbook.\nThe needed plugin could not be loaded."));
+            return false;
+          }
+          kabcbridgecall=(kabcbridgecalltype)(lib->symbol("ktexteditorkabcbridge"));
+        }
+        bool ok;
+        map[ placeholder ] = kabcbridgecall(placeholder,parentWindow,&ok);
+        if (!ok)
+        {
+          return false;
+        }
       }
       else if ( placeholder == "date" )
       {
@@ -120,7 +123,7 @@ bool TemplateInterface::expandMacros( QMap<QString, QString> &map, QWidget *pare
   return true;
 }
 
-bool TemplateInterface::insertTemplateText ( uint line, uint column, const QString &templateString, const QMap<QString, QString> &initialValues, QWidget *parentWindow )
+bool TemplateInterface::insertTemplateText ( const Cursor& insertPosition, const QString &templateString, const QMap<QString, QString> &initialValues)
 {
   QMap<QString, QString> enhancedInitValues( initialValues );
 
@@ -152,15 +155,16 @@ bool TemplateInterface::insertTemplateText ( uint line, uint column, const QStri
     }
   }
 
-  return expandMacros( enhancedInitValues, parentWindow )
-         && insertTemplateTextImplementation( line, column, templateString, enhancedInitValues, parentWindow );
+  return expandMacros( enhancedInitValues, dynamic_cast<QWidget*>(this) )
+         && insertTemplateTextImplementation( insertPosition, templateString, enhancedInitValues);
 }
 
-TemplateInterface *KTextEditor::templateInterface ( KTextEditor::Document *doc )
+TemplateInterface *KTextEditor::templateInterface ( KTextEditor::View *view )
 {
-  if ( !doc )
+  if ( !view )
     return 0;
 
-  return dynamic_cast<KTextEditor::TemplateInterface*>( doc );
+  return dynamic_cast<KTextEditor::TemplateInterface*>( view );
 }
 
+// kate: space-indent on; indent-width 2; replace-tabs on;

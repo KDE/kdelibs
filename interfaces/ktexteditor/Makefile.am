@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libktexteditor.la
 
 libktexteditor_la_SOURCES = ktexteditor.cpp range.cpp templateinterface.cpp editorchooser.cpp editorchooser_ui.ui
 libktexteditor_la_LDFLAGS = -no-undefined $(all_libraries) $(KDE_RPATH)
-libktexteditor_la_LIBADD = $(LIB_KPARTS) $(top_builddir)/kabc/libkabc.la
+libktexteditor_la_LIBADD = $(LIB_KPARTS)
 
 ktexteditorinclude_HEADERS = factory.h editor.h document.h view.h plugin.h cursor.h range.h configpage.h \
                              searchinterface.h highlightinginterface.h \
@@ -14,6 +14,12 @@ ktexteditorinclude_HEADERS = factory.h editor.h document.h view.h plugin.h curso
 			     modificationinterface.h commandinterface.h
 
 ktexteditorincludedir = $(includedir)/ktexteditor
+
+kde_module_LTLIBRARIES = ktexteditorkabcbridge.la
+ktexteditorkabcbridge_la_SOURCES=ktexteditorkabcbridge.cpp
+ktexteditorkabcbridge_la_LIBADD = $(LIB_KDECORE) $(top_builddir)/kabc/libkabc.la
+
+ktexteditorkabcbridge_la_LDFLAGS = -module $(all_libraries) $(KDE_PLUGIN)
 
 METASOURCES = AUTO
 
