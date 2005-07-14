@@ -32,6 +32,7 @@
 #include <ktexteditor/markinterface.h>
 #include <ktexteditor/codecompletioninterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
+#include <ktexteditor/templateinterface.h>
 
 #include <qpointer.h>
 #include <QMenu>
@@ -64,7 +65,8 @@ class QVBoxLayout;
 class KateView : public KTextEditor::View,
                  public KTextEditor::TextHintInterface,
                  public KTextEditor::CodeCompletionInterface,
-                 public KTextEditor::SessionConfigInterface
+                 public KTextEditor::SessionConfigInterface,
+                 public KTextEditor::TemplateInterface
 {
     Q_OBJECT
 
@@ -542,6 +544,10 @@ class KateView : public KTextEditor::View,
     bool isIMSelection( const KTextEditor::Cursor& pos );
     bool isIMEdit( const KTextEditor::Cursor& pos );
     bool imComposeEvent () const { return m_imComposeEvent; }
+
+  ///Template stuff
+  virtual bool insertTemplateTextImplementation ( const KTextEditor::Cursor&, const QString &templateString, const QMap<QString,QString> &initialValues);
+
 
   private:
     KTextEditor::Range m_imRange, m_imSelection;

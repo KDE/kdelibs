@@ -4621,16 +4621,19 @@ bool KateDocument::checkOverwrite( KURL u )
     i18n( "&Overwrite" ) );
 }
 
+
 //BEGIN KTextEditor::TemplateInterface
-bool KateDocument::insertTemplateTextImplementation ( uint line, uint column, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *) {
-      return (new KateTemplateHandler(this,line,column,templateString,initialValues))->initOk();
+bool KateDocument::insertTemplateTextImplementation ( const KTextEditor::Cursor &c, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *) {
+      return (new KateTemplateHandler(this,c.line(),c.column(),templateString,initialValues))->initOk();
 }
 
+#if 0
 void KateDocument::testTemplateCode() {
   int col=activeView()->cursorPosition().column();
   int line=activeView()->cursorPosition().line();
   insertTemplateText(line,col,"for ${index} \\${NOPLACEHOLDER} ${index} ${blah} ${fullname} \\$${Placeholder} \\${${PLACEHOLDER2}}\n next line:${ANOTHERPLACEHOLDER} $${DOLLARBEFOREPLACEHOLDER} {NOTHING} {\n${cursor}\n}",QMap<QString,QString>());
 }
+#endif
 
 bool KateDocument::invokeTabInterceptor(KKey key) {
   if (m_tabInterceptor) return (*m_tabInterceptor)(key);

@@ -46,7 +46,6 @@
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
-#include <q3vbox.h>
 #include <q3widgetstack.h>
 
 #define KATE_FT_HOWMANY 1024
@@ -264,19 +263,22 @@ KateFileTypeConfigTab::KateFileTypeConfigTab( QWidget *parent )
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
 
   // hl chooser
-  Q3HBox *hbHl = new Q3HBox( this );
-  layout->add (hbHl);
+  QHBoxLayout *hbHl = new QHBoxLayout();
+  layout->addLayout (hbHl);
   hbHl->setSpacing( KDialog::spacingHint() );
-  QLabel *lHl = new QLabel( i18n("&Filetype:"), hbHl );
-  typeCombo = new QComboBox( false, hbHl );
+  QLabel *lHl = new QLabel( i18n("&Filetype:"), this );
+  hbHl->addWidget(lHl);
+  hbHl->addWidget(typeCombo = new QComboBox( false, this ));
   lHl->setBuddy( typeCombo );
   connect( typeCombo, SIGNAL(activated(int)),
            this, SLOT(typeChanged(int)) );
 
-  QPushButton *btnnew = new QPushButton( i18n("&New"), hbHl );
+  QPushButton *btnnew = new QPushButton( i18n("&New"), this );
+  hbHl->addWidget(btnnew);
   connect( btnnew, SIGNAL(clicked()), this, SLOT(newType()) );
 
-  btndel = new QPushButton( i18n("&Delete"), hbHl );
+  btndel = new QPushButton( i18n("&Delete"), this );
+  hbHl->addWidget(btndel);
   connect( btndel, SIGNAL(clicked()), this, SLOT(deleteType()) );
 
   gbProps = new Q3GroupBox( 2, Qt::Horizontal, i18n("Properties"), this );

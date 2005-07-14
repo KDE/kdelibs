@@ -30,7 +30,6 @@
 
 #include <ktexteditor/document.h>
 #include <ktexteditor/sessionconfiginterface.h>
-#include <ktexteditor/templateinterface.h>
 #include <ktexteditor/searchinterface.h>
 #include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/markinterface.h>
@@ -80,7 +79,6 @@ class KateKeyInterceptorFunctor;
 //
 class KateDocument : public KTextEditor::Document,
                      public KTextEditor::SessionConfigInterface,
-                     public KTextEditor::TemplateInterface,
                      public KTextEditor::SearchInterface,
                      public KTextEditor::HighlightingInterface,
                      public KTextEditor::MarkInterface,
@@ -917,13 +915,13 @@ class KateDocument : public KTextEditor::Document,
       bool setTabInterceptor(KateKeyInterceptorFunctor *interceptor); /* perhaps make it moregeneral like an eventfilter*/
       bool removeTabInterceptor(KateKeyInterceptorFunctor *interceptor);
       bool invokeTabInterceptor(KKey);
+      bool KateDocument::insertTemplateTextImplementation ( const KTextEditor::Cursor &c, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *); //PORT ME
 
   protected:
-      virtual bool insertTemplateTextImplementation ( uint line, uint column, const QString &templateString, const QMap<QString,QString> &initialValues, QWidget *parentWindow=0 );
       KateKeyInterceptorFunctor *m_tabInterceptor;
 
   protected slots:
-      void testTemplateCode();
+      //void testTemplateCode();
       void dumpRegionTree();
 
 public:

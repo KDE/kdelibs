@@ -63,7 +63,7 @@ class KPushButton;
 class KRegExpDialog;
 class KIntNumInput;
 
-class Q3ButtonGroup;
+class QGroupBox;
 class QCheckBox;
 class QHBoxLayout;
 class QLabel;
@@ -127,7 +127,7 @@ class KateIndentConfigTab : public KateConfigPage
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
     KIntNumInput *indentationWidth;
-    Q3ButtonGroup *m_tabs;
+    QGroupBox *m_tabs;
     KComboBox *m_indentMode;
     QPushButton *m_configPage;
 
@@ -152,7 +152,7 @@ class KateSelectConfigTab : public KateConfigPage
     static const int flags[numFlags];
     QCheckBox *opt[numFlags];
 
-    Q3ButtonGroup *m_tabs;
+    QGroupBox *m_tabs;
     KIntNumInput *e4;
     QCheckBox *e6;
 
@@ -207,7 +207,7 @@ class KateViewDefaultsConfig : public KateConfigPage
     KIntNumInput *m_dynwrapAlignLevel;
     QLabel *m_dynwrapIndicatorsLabel;
     KComboBox *m_dynwrapIndicatorsCombo;
-    Q3ButtonGroup *m_bmSort;
+    QGroupBox *m_bmSort;
 
   public slots:
   void apply ();

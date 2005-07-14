@@ -72,7 +72,6 @@
 #include <kstandarddirs.h>
 #include <ktempfile.h>
 
-#include <q3buttongroup.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qdialog.h>
@@ -189,11 +188,12 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   vb->addWidget (opt[4]);
 
   QRadioButton *rb1, *rb2, *rb3;
-  m_tabs = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Tab Key Mode if Nothing Selected"), this );
-  m_tabs->setRadioButtonExclusive( true );
-  m_tabs->insert( rb1=new QRadioButton( i18n("Insert indent &characters"), m_tabs ), 0 );
-  m_tabs->insert( rb2=new QRadioButton( i18n("I&nsert tab character"), m_tabs ), 1 );
-  m_tabs->insert( rb3=new QRadioButton( i18n("Indent current &line"), m_tabs ), 2 );
+  m_tabs = new QGroupBox(i18n("Tab Key Mode if Nothing Selected"), this );
+  QVBoxLayout *tablayout=new QVBoxLayout(m_tabs);
+  
+  tablayout->addWidget( rb1=new QRadioButton( i18n("Insert indent &characters"), m_tabs ));
+  tablayout->addWidget( rb2=new QRadioButton( i18n("I&nsert tab character"), m_tabs ));
+  tablayout->addWidget( rb3=new QRadioButton( i18n("Indent current &line"), m_tabs ));
 
   opt[0]->setChecked(configFlags & flags[0]);
   opt[1]->setChecked(configFlags & flags[1]);
@@ -325,21 +325,22 @@ void KateIndentConfigTab::apply ()
   KateDocumentConfig::global()->setIndentationWidth(indentationWidth->value());
 
   KateDocumentConfig::global()->setIndentationMode(m_indentMode->currentItem());
-
-  KateDocumentConfig::global()->setConfigFlags (KateDocumentConfig::cfTabIndentsMode, 2 == m_tabs->id (m_tabs->selected()));
+#warning PORTME
+#if 0
+KateDocumentConfig::global()->setConfigFlags (KateDocumentConfig::cfTabIndentsMode, 2 == m_tabs->id (m_tabs->selected()));
   KateDocumentConfig::global()->setConfigFlags (KateDocumentConfig::cfTabInsertsTab, 1 == m_tabs->id (m_tabs->selected()));
-
+#endif
   KateDocumentConfig::global()->configEnd ();
 }
 
 void KateIndentConfigTab::reload ()
 {
   if (KateDocumentConfig::global()->configFlags() & KateDocumentConfig::cfTabIndentsMode)
-    m_tabs->setButton (2);
+    ((QRadioButton*)(m_tabs->layout()->itemAt(2)->widget()))->setChecked(true);
   else if (KateDocumentConfig::global()->configFlags() & KateDocumentConfig::cfTabInsertsTab)
-    m_tabs->setButton (1);
+    ((QRadioButton*)(m_tabs->layout()->itemAt(1)->widget()))->setChecked(true);
   else
-    m_tabs->setButton (0);
+    ((QRadioButton*)(m_tabs->layout()->itemAt(0)->widget()))->setChecked(true);
 
   m_indentMode->setCurrentItem (KateDocumentConfig::global()->indentationMode());
 
@@ -381,12 +382,12 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 
   QRadioButton *rb1, *rb2;
 
-  m_tabs = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Selection Mode"), this );
+  m_tabs = new QGroupBox(i18n("Selection Mode"), this );
   layout->add (m_tabs);
-
-  m_tabs->setRadioButtonExclusive( true );
-  m_tabs->insert( rb1=new QRadioButton( i18n("&Normal"), m_tabs ), 0 );
-  m_tabs->insert( rb2=new QRadioButton( i18n("&Persistent"), m_tabs ), 1 );
+  QVBoxLayout *tablayout=new QVBoxLayout(m_tabs);
+  
+  tablayout->addWidget( rb1=new QRadioButton( i18n("&Normal"), m_tabs ));
+  tablayout->addWidget( rb2=new QRadioButton( i18n("&Persistent"), m_tabs ));
 
   layout->addStretch();
 
@@ -443,9 +444,10 @@ void KateSelectConfigTab::apply ()
 
   KateViewConfig::global()->setAutoCenterLines(QMAX(0, e4->value()));
   KateDocumentConfig::global()->setPageUpDownMovesCursor(e6->isChecked());
-
+#warning portme
+#if 0
   KateViewConfig::global()->setPersistentSelection (m_tabs->id (m_tabs->selected()) == 1);
-
+#endif
   KateDocumentConfig::global()->configEnd ();
   KateViewConfig::global()->configEnd ();
 }
@@ -453,9 +455,9 @@ void KateSelectConfigTab::apply ()
 void KateSelectConfigTab::reload ()
 {
   if (KateViewConfig::global()->persistentSelection())
-    m_tabs->setButton (1);
+    ((QRadioButton*)(m_tabs->layout()->itemAt(0)->widget()))->setChecked(true);
   else
-    m_tabs->setButton (0);
+    ((QRadioButton*)(m_tabs->layout()->itemAt(1)->widget()))->setChecked(true);
 }
 //END KateSelectConfigTab
 
@@ -669,27 +671,28 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
 
   blay->addWidget(gbWordWrap);
 
-  QGroupBox *gbFold = new Q3GroupBox(1, Qt::Horizontal, i18n("Code Folding"), this);
-
-  m_folding=new QCheckBox(i18n("Show &folding markers (if available)"), gbFold );
-  m_collapseTopLevel = new QCheckBox( i18n("Collapse toplevel folding nodes"), gbFold );
+  QGroupBox *gbFold = new QGroupBox(i18n("Code Folding"), this);
+  QVBoxLayout *gbFoldLayout=new QVBoxLayout(gbFold);
+  gbFoldLayout->addWidget(m_folding=new QCheckBox(i18n("Show &folding markers (if available)"), gbFold ));
+  gbFoldLayout->addWidget(m_collapseTopLevel = new QCheckBox( i18n("Collapse toplevel folding nodes"), gbFold ));
   m_collapseTopLevel->hide ();
 
   blay->addWidget(gbFold);
 
-  QGroupBox *gbBar = new Q3GroupBox(1, Qt::Horizontal, i18n("Borders"), this);
-
-  m_icons=new QCheckBox(i18n("Show &icon border"),gbBar);
-  m_line=new QCheckBox(i18n("Show &line numbers"),gbBar);
-  m_scrollBarMarks=new QCheckBox(i18n("Show &scrollbar marks"),gbBar);
+  QGroupBox *gbBar = new QGroupBox( i18n("Borders"), this);
+  QVBoxLayout *gbBarLayout=new QVBoxLayout(gbBar);
+  gbBarLayout->addWidget(m_icons=new QCheckBox(i18n("Show &icon border"),gbBar));
+  gbBarLayout->addWidget(m_line=new QCheckBox(i18n("Show &line numbers"),gbBar));
+  gbBarLayout->addWidget(m_scrollBarMarks=new QCheckBox(i18n("Show &scrollbar marks"),gbBar));
 
   blay->addWidget(gbBar);
 
-  m_bmSort = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Sort Bookmarks Menu"), this );
-  m_bmSort->setRadioButtonExclusive( true );
-  m_bmSort->insert( rb1=new QRadioButton( i18n("By &position"), m_bmSort ), 0 );
-  m_bmSort->insert( rb2=new QRadioButton( i18n("By c&reation"), m_bmSort ), 1 );
-
+  m_bmSort = new QGroupBox(i18n("Sort Bookmarks Menu"), this );
+  QVBoxLayout *bmSortLayout=new QVBoxLayout(m_bmSort);
+  
+  bmSortLayout->addWidget( rb1=new QRadioButton( i18n("By &position"), m_bmSort ));
+  bmSortLayout->addWidget( rb2=new QRadioButton( i18n("By c&reation"), m_bmSort ));
+  
   blay->addWidget(m_bmSort, 0 );
 
   m_showIndentLines = new QCheckBox(i18n("Show indentation lines"), this);
@@ -779,8 +782,9 @@ void KateViewDefaultsConfig::apply ()
   KateViewConfig::global()->setIconBar (m_icons->isChecked());
   KateViewConfig::global()->setScrollBarMarks (m_scrollBarMarks->isChecked());
   KateViewConfig::global()->setFoldingBar (m_folding->isChecked());
-  KateViewConfig::global()->setBookmarkSort (m_bmSort->id (m_bmSort->selected()));
 
+  KateViewConfig::global()->setBookmarkSort (
+((QRadioButton*)(m_bmSort->layout()->itemAt(0)->widget()))->isChecked()?0:1);
   KateRendererConfig::global()->setShowIndentationLines(m_showIndentLines->isChecked());
 
   KateRendererConfig::global()->configEnd ();
@@ -796,7 +800,8 @@ void KateViewDefaultsConfig::reload ()
   m_icons->setChecked(KateViewConfig::global()->iconBar());
   m_scrollBarMarks->setChecked(KateViewConfig::global()->scrollBarMarks());
   m_folding->setChecked(KateViewConfig::global()->foldingBar());
-  m_bmSort->setButton( KateViewConfig::global()->bookmarkSort() );
+  //m_bmSort->setButton( KateViewConfig::global()->bookmarkSort() );
+  ((QRadioButton*)(m_bmSort->layout()->itemAt(KateViewConfig::global()->bookmarkSort())->widget()))->setChecked(true);
   m_showIndentLines->setChecked(KateRendererConfig::global()->showIndentationLines());
 }
 
@@ -858,64 +863,86 @@ KateSaveConfigTab::KateSaveConfigTab( QWidget *parent )
   int configFlags = KateDocumentConfig::global()->configFlags();
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
 
-  QGroupBox *gbEnc = new Q3GroupBox(1, Qt::Horizontal, i18n("File Format"), this);
+  QGroupBox *gbEnc = new QGroupBox(i18n("File Format"), this);
   layout->addWidget( gbEnc );
+  
+  QVBoxLayout *gbEncLayout=new QVBoxLayout(gbEnc);
 
-  Q3HBox *e5Layout = new Q3HBox(gbEnc);
-  QLabel *e5Label = new QLabel(i18n("&Encoding:"), e5Layout);
-  m_encoding = new KComboBox (e5Layout);
+  QHBoxLayout *e5Layout = new QHBoxLayout();
+  QLabel *e5Label = new QLabel(i18n("&Encoding:"), gbEnc);
+  m_encoding = new KComboBox (gbEnc);
   e5Label->setBuddy(m_encoding);
+  e5Layout->addWidget(e5Label);
+  e5Layout->addWidget(m_encoding);
+  gbEncLayout->addLayout(e5Layout);
 
-  e5Layout = new Q3HBox(gbEnc);
-  e5Label = new QLabel(i18n("End &of line:"), e5Layout);
-  m_eol = new KComboBox (e5Layout);
+  e5Layout = new QHBoxLayout();
+  e5Label = new QLabel(i18n("End &of line:"), gbEnc);
+  m_eol = new KComboBox (gbEnc);
   e5Label->setBuddy(m_eol);
+  e5Layout->addWidget(e5Label);
+  e5Layout->addWidget(m_eol);
+  gbEncLayout->addLayout(e5Layout);
 
   allowEolDetection = new QCheckBox(i18n("&Automatic end of line detection"), gbEnc);
+  gbEncLayout->addWidget(allowEolDetection);
 
   m_eol->insertItem (i18n("UNIX"));
   m_eol->insertItem (i18n("DOS/Windows"));
   m_eol->insertItem (i18n("Macintosh"));
 
-  QGroupBox *gbMem = new Q3GroupBox(1, Qt::Horizontal, i18n("Memory Usage"), this);
+  QGroupBox *gbMem = new QGroupBox(i18n("Memory Usage"), this);
   layout->addWidget( gbMem );
 
-  e5Layout = new Q3HBox(gbMem);
+  e5Layout = new QHBoxLayout(gbMem);
   e5Layout->setSpacing (32);
-  blockCountLabel = new QLabel(i18n("Maximum loaded &blocks per file:"), e5Layout);
-  blockCount = new QSpinBox (4, 512, 4, e5Layout);
-
+  blockCountLabel = new QLabel(i18n("Maximum loaded &blocks per file:"), gbMem);
+  blockCount = new QSpinBox (4, 512, 4, gbMem);
   blockCount->setValue (KateBuffer::maxLoadedBlocks());
   blockCountLabel->setBuddy(blockCount);
 
-  QGroupBox *gbWhiteSpace = new Q3GroupBox(1, Qt::Horizontal, i18n("Automatic Cleanups on Load/Save"), this);
+  e5Layout->addWidget(blockCountLabel);
+  e5Layout->addWidget(blockCount);
+
+  QGroupBox *gbWhiteSpace = new QGroupBox( i18n("Automatic Cleanups on Load/Save"), this);
   layout->addWidget( gbWhiteSpace );
 
   removeSpaces = new QCheckBox(i18n("Re&move trailing spaces"), gbWhiteSpace);
+  (new QVBoxLayout(gbWhiteSpace))->addWidget(removeSpaces);
   removeSpaces->setChecked(configFlags & KateDocumentConfig::cfRemoveSpaces);
 
-  QGroupBox *dirConfigBox = new Q3GroupBox(1, Qt::Horizontal, i18n("Folder Config File"), this);
+  QGroupBox *dirConfigBox = new QGroupBox(i18n("Folder Config File"), this);
   layout->addWidget( dirConfigBox );
-
+  QVBoxLayout *dirConfigBoxLayout=new QVBoxLayout(dirConfigBox);
   dirSearchDepth = new KIntNumInput(KateDocumentConfig::global()->searchDirConfigDepth(),dirConfigBox);
   dirSearchDepth->setRange(-1, 64, 1, false);
   dirSearchDepth->setSpecialValueText( i18n("Do not use config file") );
   dirSearchDepth->setLabel(i18n("Se&arch depth for config file:"), Qt::AlignVCenter);
+  dirConfigBoxLayout->addWidget(dirSearchDepth);
 
-  QGroupBox *gb = new Q3GroupBox( 1, Qt::Horizontal, i18n("Backup on Save"), this );
+  QGroupBox *gb = new QGroupBox(i18n("Backup on Save"), this );
   layout->addWidget( gb );
+  QVBoxLayout *gbLayout=new QVBoxLayout(gb);
   cbLocalFiles = new QCheckBox( i18n("&Local files"), gb );
   cbRemoteFiles = new QCheckBox( i18n("&Remote files"), gb );
+  gbLayout->addWidget(cbLocalFiles);
+  gbLayout->addWidget(cbRemoteFiles);
 
-  Q3HBox *hbBuPrefix = new Q3HBox( gb );
-  QLabel *lBuPrefix = new QLabel( i18n("&Prefix:"), hbBuPrefix );
-  leBuPrefix = new QLineEdit( hbBuPrefix );
+  QHBoxLayout *hbBuPrefix = new QHBoxLayout();
+  QLabel *lBuPrefix = new QLabel( i18n("&Prefix:"), gb );
+  leBuPrefix = new QLineEdit( gb);
   lBuPrefix->setBuddy( leBuPrefix );
+  hbBuPrefix->addWidget(lBuPrefix);
+  hbBuPrefix->addWidget(leBuPrefix);
+  gbLayout->addLayout(hbBuPrefix);
 
-  Q3HBox *hbBuSuffix = new Q3HBox( gb );
-  QLabel *lBuSuffix = new QLabel( i18n("&Suffix:"), hbBuSuffix );
-  leBuSuffix = new QLineEdit( hbBuSuffix );
+  QHBoxLayout *hbBuSuffix = new QHBoxLayout();
+  QLabel *lBuSuffix = new QLabel( i18n("&Suffix:"), gb );
+  leBuSuffix = new QLineEdit( gb );
   lBuSuffix->setBuddy( leBuSuffix );
+  hbBuSuffix->addWidget(lBuSuffix);
+  hbBuSuffix->addWidget(leBuSuffix);
+  gbLayout->addLayout(hbBuSuffix);
 
   layout->addStretch();
 

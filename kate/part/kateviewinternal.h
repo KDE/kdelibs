@@ -34,6 +34,7 @@
 #include <qtimer.h>
 #include <q3intdict.h>
 #include <Q3TextDrag>
+#include <QWidget>
 
 class KateView;
 class KateIconBorder;

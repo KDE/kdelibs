@@ -1830,8 +1830,12 @@ void KateView::slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cu
     }
     newdata.append(nd);
   }
-  if (needupdate)
+  if ( (needupdate) || (!m_codeCompletion->codeCompletionVisible()) )
     m_codeCompletion->showCompletion(position,newdata);
+}
+
+bool KateView::insertTemplateTextImplementation ( const KTextEditor::Cursor& c, const QString &templateString, const QMap<QString,QString> &initialValues) {
+  return m_doc->insertTemplateTextImplementation(c,templateString,initialValues,this);
 }
 
 
