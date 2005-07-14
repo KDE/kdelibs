@@ -38,7 +38,9 @@
 #include <cstring>
 #include <ctime>
 
+#ifdef _HAVE_ALLOCA_H
 #include <alloca.h>
+#endif
 /**
  * Find out if the given standard (e.g. "GMT") and daylight savings time
  * (e.g. "BST", but which may be empty) abbreviated timezone names match
