@@ -542,7 +542,7 @@ Bool		 swap;
 IceReplyWaitInfo *replyWait;
 
 {
-    int		invokeHandler;
+    int		invokeHandler = 0;
     Bool	errorReturned = False;
     iceErrorMsg *message;
     char 	*pData, *pStart;
@@ -822,7 +822,7 @@ Bool		swap;
     int	 myAuthCount, hisAuthCount;
     int	 found, i, j;
     const char *myAuthName;
-    char **hisAuthNames;
+    char **hisAuthNames = NULL;
     char *pData, *pStart, *pEnd;
     char *vendor = NULL;
     char *release = NULL;
@@ -1081,7 +1081,7 @@ IceReplyWaitInfo	*replyWait;
     IcePoAuthProc	authProc;
     IcePoAuthStatus	status;
     IcePointer 		authState;
-    int			realAuthIndex;
+    int			realAuthIndex = 0;
 
     CHECK_AT_LEAST_SIZE (iceConn, ICE_AuthRequired,
 	length, SIZEOF (iceAuthRequiredMsg),
@@ -1637,7 +1637,8 @@ IceReplyWaitInfo	*replyWait;
     }
     else if (status == IcePoAuthRejected || status == IcePoAuthFailed)
     {
-	char *prefix, *returnErrorString;
+	char *prefix = NULL;
+	char *returnErrorString;
 
 	if (status == IcePoAuthRejected)
 	{
@@ -1804,7 +1805,8 @@ Bool		swap;
     int	 	      	myAuthCount, hisAuthCount;
     int  	      	myOpcode, hisOpcode;
     int	 	      	found, i, j;
-    char	      	*myAuthName, **hisAuthNames;
+    char	      	*myAuthName;
+    char		**hisAuthNames = NULL;
     char 	      	*protocolName;
     char 		*pData, *pStart, *pEnd;
     char 	      	*vendor = NULL;

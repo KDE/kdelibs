@@ -56,7 +56,7 @@ char 	   *errorStringRet;
     unsigned long	setup_sequence;
     IceReplyWaitInfo 	replyWait;
     _IceReply		reply;
-    IcePoVersionRec	*versionRec;
+    IcePoVersionRec	*versionRec = NULL;
     int			authCount;
     int			*authIndices;
 
