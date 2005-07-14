@@ -178,6 +178,30 @@ namespace KIO {
         bool isAutoErrorHandlingEnabled() const;
 
         /**
+         * Enable or disable the automatic warning handling. When automatic
+         * warning handling is enabled and an error occurs, then a message box
+         * is displayed with the warning message
+         *
+         * The default is true.
+         *
+         * See also isAutoWarningHandlingEnabled , showErrorDialog
+         *
+         * @param enable enable or disable automatic warning handling
+         * @see isAutoWarningHandlingEnabled()
+         * @since 3.5
+         */
+        void setAutoWarningHandlingEnabled( bool enable );
+
+        /**
+         * Returns whether automatic warning handling is enabled or disabled.
+         * See also setAutoWarningHandlingEnabled .
+         * @return true if automatic warning handling is enabled
+         * @see setAutoWarningHandlingEnabled()
+         * @since 3.5
+         */
+        bool isAutoWarningHandlingEnabled() const;
+
+        /**
          * Enable or disable the message display from the job.
          *
          * The default is true.
@@ -316,6 +340,15 @@ namespace KIO {
 	 * @param msg the info message
          */
         void infoMessage( KIO::Job *job, const QString & msg );
+        // KDE4: Separate rich-text string from plain-text string, for different widgets.
+
+        /**
+         * Emitted to display a warning about this job, as sent by the slave.
+         * @param job the job that emitted this signal
+         * @param msg the info message
+         * @since 3.5
+         */
+        void warning( KIO::Job *job, const QString & msg );
         // KDE4: Separate rich-text string from plain-text string, for different widgets.
 
         /**

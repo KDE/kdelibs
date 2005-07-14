@@ -81,11 +81,13 @@ template class QPtrList<KIO::Job>;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ), m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0),
+    JobPrivate() : m_autoErrorHandling( false ), m_autoWarningHandling( true ),
+                   m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0),
                    m_processedSize(0)
                    {}
 
     bool m_autoErrorHandling;
+    bool m_autoWarningHandling;
     bool m_interactive;
     QGuardedPtr<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
@@ -312,6 +314,16 @@ void Job::setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget )
 bool Job::isAutoErrorHandlingEnabled() const
 {
   return d->m_autoErrorHandling;
+}
+
+void Job::setAutoWarningHandlingEnabled( bool enable )
+{
+  d->m_autoWarningHandling = enable;
+}
+
+bool Job::isAutoWarningHandlingEnabled() const
+{
+  return d->m_autoWarningHandling;
 }
 
 void Job::setInteractive(bool enable)
@@ -566,16 +578,19 @@ void SimpleJob::slotError( int error, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
-    if (!isInteractive()) return;
-
-    static uint msgBoxDisplayed = 0;
-    if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
+    if (isAutoWarningHandlingEnabled())
     {
-        msgBoxDisplayed++;
-        KMessageBox::information( 0L, errorText );
-        msgBoxDisplayed--;
+        static uint msgBoxDisplayed = 0;
+        if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
+        {
+            msgBoxDisplayed++;
+            KMessageBox::information( 0L, errorText );
+            msgBoxDisplayed--;
+        }
+        // otherwise just discard it.
     }
-    // otherwise just discard it.
+
+    emit warning( this, errorText );
 }
 
 void SimpleJob::slotInfoMessage( const QString & msg )

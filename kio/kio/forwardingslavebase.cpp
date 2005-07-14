@@ -342,8 +342,14 @@ void ForwardingSlaveBase::del(const KURL &url, bool isfile)
 
 void ForwardingSlaveBase::connectJob(KIO::Job *job)
 {
+    // We will forward the warning message, no need to let the job
+    // display it itself
+    job->setAutoWarningHandlingEnabled(false);
+
     connect( job, SIGNAL( result(KIO::Job *) ),
              this, SLOT( slotResult(KIO::Job *) ) );
+    connect( job, SIGNAL( warning(KIO::Job *, const QString &) ),
+             this, SLOT( slotWarning(KIO::Job *, const QString &) ) );
     connect( job, SIGNAL( infoMessage(KIO::Job *, const QString &) ),
              this, SLOT( slotInfoMessage(KIO::Job *, const QString &) ) );
     connect( job, SIGNAL( totalSize(KIO::Job *, KIO::filesize_t) ),
@@ -402,6 +408,11 @@ void ForwardingSlaveBase::slotResult(KIO::Job *job)
     }
 
     qApp->eventLoop()->exitLoop();
+}
+
+void ForwardingSlaveBase::slotWarning(KIO::Job* /*job*/, const QString &msg)
+{
+    warning(msg);
 }
 
 void ForwardingSlaveBase::slotInfoMessage(KIO::Job* /*job*/, const QString &msg)

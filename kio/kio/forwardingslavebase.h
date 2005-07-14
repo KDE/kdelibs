@@ -174,6 +174,7 @@ private:
 private slots:
     // KIO::Job
     void slotResult(KIO::Job *job);
+    void slotWarning(KIO::Job *job, const QString &msg);
     void slotInfoMessage(KIO::Job *job, const QString &msg);
     void slotTotalSize(KIO::Job *job, KIO::filesize_t size);
     void slotProcessedSize(KIO::Job *job, KIO::filesize_t size);
