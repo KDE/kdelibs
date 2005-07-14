@@ -642,7 +642,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
 void KAccelString::dump()
 {
   QString s;
-  for (uint i=0; i<m_weight.count(); ++i)
+  for (int i=0; i<m_weight.count(); ++i)
     s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
   kdDebug() << "s " << s << endl;
 }
