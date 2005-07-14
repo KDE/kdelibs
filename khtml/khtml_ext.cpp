@@ -435,6 +435,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       KConfig config("kuriikwsfilterrc");
       config.setGroup("General");
       const QString defaultEngine = config.readEntry("DefaultSearchEngine", "google");
+      const char keywordDelimiter = config.readNumEntry("KeywordDelimiter", ':');
 
       // search text
       QString selectedText = khtml->selectedText();
@@ -487,7 +488,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
           service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
           if (!service)
             continue;
-          const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + ':';
+          const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
           data.setData( searchProviderPrefix + "some keyword" );
 
           if ( KURIFilter::self()->filterURI(data, list) )
