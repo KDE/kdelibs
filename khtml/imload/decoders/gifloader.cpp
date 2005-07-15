@@ -234,9 +234,9 @@ public:
             return Error;
         }
 
-        //number of frame file->ImageCount
-        
-        notifyImageInfo(file->SWidth, file->SHeight);
+        //We use canvas size only for animations
+        if (file->ImageCount > 1)
+            notifyImageInfo(file->SWidth, file->SHeight);
         
         bool allBG = true;
         
@@ -255,6 +255,13 @@ public:
         //Extract out all the frames
         for (int frame = 0; frame < file->ImageCount; ++frame)
         {
+            int w = file->SavedImages[frame].ImageDesc.Width;
+            int h = file->SavedImages[frame].ImageDesc.Height;
+
+            //For non-animated images, use the frame size for dimension
+            if (frame == 0 && file->ImageCount == 1)
+                notifyImageInfo(w, h);
+        
             //Extract colormap, geometry, so that we can create the frame        
             ColorMapObject* colorMap = file->SavedImages[frame].ImageDesc.ColorMap;
             if (!colorMap)  colorMap = file->Image.ColorMap;
@@ -325,9 +332,6 @@ public:
             
                         
             prevWasBG = (frameInf.mode == GCE_DisposalBG);
-
-            int w = file->SavedImages[frame].ImageDesc.Width;
-            int h = file->SavedImages[frame].ImageDesc.Height;
                         
             //Now we can declare frame format
             notifyAppendFrame(w, h, format);
