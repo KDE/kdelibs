@@ -319,12 +319,12 @@ void DCOPServer::slotOutputReady(int socket)
 qWarning("DCOPServer: slotOutputReady fd = %d", socket);
 #endif
    // Find out connection.
-   DCOPConnection *conn = fd_clients.find(socket);
+   DCOPConnection *conn = fd_clients.value(socket,0);
    //assert(conn);
    //assert(conn->outputBlocked);
    //assert(conn->socket() == socket);
    // Forward
-   conn->slotOutputReady();
+   if(conn) conn->slotOutputReady();
 }
 
 

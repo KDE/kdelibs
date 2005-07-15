@@ -24,7 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qobject.h>
 
-
+#include <QHash>
 #include <q3asciidict.h>
 #include <QByteArray>
 #include <QList>
@@ -168,7 +168,7 @@ private:
     Q3PtrList<DCOPListener> listener;
     Q3AsciiDict<DCOPConnection> appIds; // index on app id
     Q3PtrDict<DCOPConnection> clients; // index on iceConn
-    Q3IntDict<DCOPConnection> fd_clients; // index on fd
+    QHash<int, DCOPConnection*> fd_clients; // index on fd
     Q3PtrList<_IceConn> deadConnections;
 
 #ifdef Q_OS_WIN
