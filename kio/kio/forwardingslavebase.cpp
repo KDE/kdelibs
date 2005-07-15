@@ -344,7 +344,7 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
 {
     // We will forward the warning message, no need to let the job
     // display it itself
-    job->setAutoWarningHandlingEnabled(false);
+    job->setInteractive(false);
 
     connect( job, SIGNAL( result(KIO::Job *) ),
              this, SLOT( slotResult(KIO::Job *) ) );

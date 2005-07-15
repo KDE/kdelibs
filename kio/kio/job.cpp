@@ -217,7 +217,7 @@ void Job::emitResult()
   // If we are displaying a progress dialog, remove it first.
   if ( m_progressId ) // Did we get an ID from the observer ?
     Observer::self()->jobFinished( m_progressId );
-  if ( m_error && d->m_autoErrorHandling )
+  if ( m_error && d->m_interactive && d->m_autoErrorHandling )
     showErrorDialog( d->m_errorParentWidget );
   emit result(this);
   delete this;
@@ -578,7 +578,7 @@ void SimpleJob::slotError( int error, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
-    if (isAutoWarningHandlingEnabled())
+    if (isInteractive() && isAutoWarningHandlingEnabled())
     {
         static uint msgBoxDisplayed = 0;
         if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
