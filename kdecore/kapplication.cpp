@@ -423,7 +423,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
 
 void KApplication::x11FilterDestroyed()
 {
-    removeX11EventFilter( qobject_cast< const QWidget* >( sender()));
+    removeX11EventFilter( static_cast< const QWidget* >( sender()));
 }
 
 void KApplication::removeX11EventFilter( const QWidget* filter )
