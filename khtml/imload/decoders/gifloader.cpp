@@ -45,6 +45,7 @@ namespace khtmlImLoad {
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
 static int INTERLACED_JUMP  [] = { 8, 8, 4, 2 };
 
+
 struct GIFFrameInfo
 {
     bool         trans;
@@ -54,7 +55,7 @@ struct GIFFrameInfo
     char         mode;
     //###
 };
-
+#if 0
 /**
  An anim provider for the animated GIFs that only use the clear-to-background mode; 
  these do not need any backing store, and hence can be implemented pretty efficiently
@@ -139,6 +140,7 @@ public:
                            int screenWidth, int screenHeight): SimpleGIFAnimProvider(image, _frames)
     {}
 };
+#endif 
 
 class GIFLoader: public ImageLoader
 {
@@ -231,8 +233,10 @@ public:
             DGifCloseFile(file);
             return Error;
         }
+
+        //number of frame file->ImageCount
         
-        notifyImageInfo(file->SWidth, file->SHeight, file->ImageCount);
+        notifyImageInfo(file->SWidth, file->SHeight);
         
         bool allBG = true;
         
@@ -326,7 +330,7 @@ public:
             int h = file->SavedImages[frame].ImageDesc.Height;
                         
             //Now we can declare frame format
-            notifyFrameInfo(frame, w, h, format);
+            notifyAppendFrame(w, h, format);
             
             frameInf.bg   = bg;
             frameInf.geom = QRect(file->SavedImages[frame].ImageDesc.Left,
@@ -358,22 +362,22 @@ public:
                     {
                         if (line == nextNewLine)
                         {
-			  uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*index;
+                            uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*index;
                             if (format.hasAlpha())
                             {
                                 palettedToRGB(buf, toFeed, format, w);
                                 toFeed = buf;
                             }
                             
-                            notifyScanline(frame, pass + 1, toFeed);
+                            notifyScanline(pass + 1, toFeed);
                             ++index;
                             nextNewLine += INTERLACED_JUMP[pass];
                         }
                         else
                         {
                             //Get scanline, feed it back in.
-                            requestScanline(frame, line, buf);
-                            notifyScanline (frame, pass + 1, buf);
+                            requestScanline(line, buf);
+                            notifyScanline (pass + 1, buf);
                         }
                     }
                 }
@@ -382,14 +386,14 @@ public:
             {
                 for (int line = 0; line < h; ++line)
                 {
-		  uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*line;
+                    uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*line;
                     if (format.hasAlpha())
                     {
                         palettedToRGB(buf, toFeed, format, w);
                         toFeed = buf;
                     }
                     
-                    notifyScanline(frame, 1, toFeed);
+                    notifyScanline(1, toFeed);
                 }
             }
                             
@@ -398,7 +402,7 @@ public:
         
         if (file->ImageCount > 1)
         { //need animation provider
-            if (allBG)
+/*            if (allBG)
             {
                 //In this case we do not need a fully-featured animator,
                 //so use one specialized for always just clearing BG
@@ -407,7 +411,7 @@ public:
             else
             {
                 (void)new CompeteGIFAnimProvider(image, frameProps, file->SWidth, file->SHeight);
-            }
+            }*/
         }
          
         return Done;

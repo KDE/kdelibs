@@ -57,7 +57,7 @@ void ImageManager::initLoaders()
 {
     loaderDB->registerLoaderProvider(new JPEGLoaderProvider);
     loaderDB->registerLoaderProvider(new PNGLoaderProvider);
-//    loaderDB->registerLoaderProvider(new GIFLoaderProvider);    
+    loaderDB->registerLoaderProvider(new GIFLoaderProvider);
 }
 
 }
