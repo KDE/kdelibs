@@ -34,7 +34,6 @@ TileCache*      ImageManager::imgCache   = 0;
 TileCache*      ImageManager::pixCache   = 0;
 Updater*        ImageManager::theUpdater = 0;
 LoaderDatabase* ImageManager::loaderDB   = 0;
-VMManager*      ImageManager::vmManager  = 0;
 QPixmap*        ImageManager::emptyPix   = 0;
 AnimTimer*      ImageManager::anmTimer   = 0;
 
@@ -58,7 +57,7 @@ void ImageManager::initLoaders()
 {
     loaderDB->registerLoaderProvider(new JPEGLoaderProvider);
     loaderDB->registerLoaderProvider(new PNGLoaderProvider);
-    loaderDB->registerLoaderProvider(new GIFLoaderProvider);    
+//    loaderDB->registerLoaderProvider(new GIFLoaderProvider);    
 }
 
 }

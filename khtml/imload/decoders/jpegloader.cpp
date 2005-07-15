@@ -421,7 +421,7 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
                 }
             }
             
-            owner->notifyScanline(DefaultFrame, passNum + 1, scanline);
+            owner->notifyScanline(passNum + 1, scanline);
         } //per-line scan    
         
         if(cinfo.output_scanline >= cinfo.output_height)
@@ -455,8 +455,6 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
                 jsrc.decoder_timestamp.restart();
                 state = decompressStarted;
             }
-            else
-                owner->notifyFinished(ImageLoader::DefaultFrame);
         }
     }
     

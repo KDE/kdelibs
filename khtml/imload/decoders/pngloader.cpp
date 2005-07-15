@@ -180,20 +180,18 @@ private:
     
     void haveRow(unsigned int rowNum, int pass, unsigned char* data)
     {
-        //### TODO: handle merging when interlaced
         if (interlaced)
         {
-            requestScanline(DefaultFrame, rowNum, scanlineBuf);
+            requestScanline(rowNum, scanlineBuf);
             png_progressive_combine_row(pngReadStruct, scanlineBuf, data);
-            notifyScanline(DefaultFrame, pass + 1, scanlineBuf);
+            notifyScanline(pass + 1, scanlineBuf);
         }
         else
-            notifyScanline(DefaultFrame, pass + 1, data);
+            notifyScanline(pass + 1, data);
     }
     
     void haveEnd()
     {
-        notifyFinished(DefaultFrame);
         done = true;
     }
     

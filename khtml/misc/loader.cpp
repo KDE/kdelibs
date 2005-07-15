@@ -45,6 +45,7 @@
 #include "misc/loader.h"
 #include "misc/seed.h"
 #include "imload/image.h"
+#include "imload/imagepainter.h"
 
 // default cache size
 #define DEFCACHESIZE 2096*1024
@@ -83,6 +84,7 @@
 
 using namespace khtml;
 using namespace DOM;
+using namespace khtmlImLoad;
 
 #define MAX_LRU_LISTS 20
 struct LRUList {
@@ -344,92 +346,6 @@ void CachedScript::error( int /*err*/, const char* /*text*/ )
 
 // ------------------------------------------------------------------------------------------
 
-namespace khtml
-{
-
-#warning QDataSource does not exist
-#if 0
-class ImageSource : public QDataSource
-{
-public:
-    ImageSource(QByteArray buf)
-        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( true )
-        {}
-
-    int readyToSend()
-    {
-       if(eof && pos == buffer.size())
-           return -1;
-
-        return  buffer.size() - pos;
-    }
-
-    void sendTo(QDataSink* sink, int n)
-    {
-        sink->receive((const uchar*)&buffer.at(pos), n);
-
-        pos += n;
-
-        // buffer is no longer needed
-        if(eof && pos == buffer.size() && !rewable)
-        {
-            buffer.resize(0);
-            pos = 0;
-        }
-    }
-
-    /**
-     * Sets the EOF state.
-     */
-    void setEOF( bool state ) { eof = state; }
-
-    bool rewindable() const { return rewable; }
-    void enableRewind(bool on) { rew = on; }
-
-    /*
-      Calls reset() on the QIODevice.
-    */
-    void rewind()
-    {
-        pos = 0;
-        if (!rew) {
-            QDataSource::rewind();
-        } else
-            ready();
-    }
-
-    /*
-      Indicates that the buffered data is no longer
-      needed.
-    */
-    void cleanBuffer()
-    {
-        // if we need to be able to rewind, buffer is needed
-        if(rew)
-            return;
-
-        rewable = false;
-
-        // buffer is no longer needed
-        if(eof && pos == buffer.size())
-        {
-            buffer.resize(0);
-            pos = 0;
-        }
-    }
-
-    QByteArray buffer;
-    unsigned int pos;
-private:
-    bool eof     : 1;
-    bool rew     : 1;
-    bool rewable : 1;
-};
-
-#endif
-
-} // end namespace
-
 static QString buildAcceptHeader()
 {
     return "image/png, image/jpeg, video/x-mng, image/jp2, image/gif;q=0.5,*/*;q=0.1";
@@ -506,7 +422,7 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
-#warning "Re-implement!"
+#warning "Needs a major rework"
 
     static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
     if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
@@ -516,22 +432,24 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (bg)
         return *bg;
 
-    i->dontScale();
-    QPixmap r (i->originalSize().width(), i->originalSize().height());
+    ImagePainter ip(i);
+    QPixmap r (i->size());
+
+    if (r.isNull())
+        return *Cache::nullPixmap;
+
+    int w = i->size().width();
+    int h = i->size().height();
+
     QPainter paint(&r);
-    i->paint(0, 0, &paint, 0, 0, i->originalSize().width(), i->originalSize().height());
+    ip.paint(0, 0, &paint);
     paint.end();
-
-
+    
     // no error indication for background images
     if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
 
     bool isvalid = newc.isValid();
     QSize s(pixmap_size());
-    int w = r.width();
-    int h = r.height();
-    if (w == 0 || h == 0)  return *Cache::nullPixmap; //Not there yet ### will this be needed
-    // when I fix it to have isComplete?
 
     if ( w*h < 8192 )
     {
@@ -657,18 +575,8 @@ QSize CachedImage::pixmap_size() const
 {
     if (m_wasBlocked) return Cache::blockedPixmap->size();
     if (m_hadError)   return Cache::brokenPixmap->size();
-    if (i)            return i->originalSize();
+    if (i)            return i->size();
     return QSize();
-}
-
-void CachedImage::paint(QPainter* p, int x, int y)
-{
-    i->paint(x, y, p, 0, 0, i->originalSize().width(), i->originalSize().height());
-}
-
-void CachedImage::scale(int width, int height)
-{
-    i->scale(width, height);
 }
 
 

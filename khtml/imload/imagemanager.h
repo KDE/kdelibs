@@ -27,11 +27,10 @@
 
 #include "animtimer.h"
 #include "loaderdatabase.h"
-#include "imagetile.h"
-#include "pixmaptile.h"
 #include "tilecache.h"
 #include "updater.h"
-#include "vmmanager.h"
+
+class QPixmap;
 
 namespace khtmlImLoad {
 
@@ -43,7 +42,6 @@ private:
     static TileCache* pixCache;
     static LoaderDatabase* loaderDB;
     static Updater*        theUpdater;
-    static VMManager*      vmManager;
     static QPixmap*        emptyPix;
     
     static unsigned int pixmapCacheSize();
@@ -51,12 +49,12 @@ private:
     
     static void initLoaders();
 public:
-    static AnimTimer* animTimer()
-    {
-        if (!anmTimer)
-            anmTimer = new AnimTimer();
-        return anmTimer;
-    }
+//     static AnimTimer* animTimer()
+//     {
+//         if (!anmTimer)
+//             anmTimer = new AnimTimer();
+//         return anmTimer;
+//     }
 
     static TileCache* imageCache() 
     {
@@ -88,20 +86,13 @@ public:
         }
         return loaderDB;            
     }
-
+/*
     static QPixmap& emptyPixmap()
     {
         if (!emptyPix)
             emptyPix = new QPixmap();
         return *emptyPix;
-    }
-    
-    static VMManager* vmMan()
-    {
-        if (!vmManager)
-            vmManager = new VMManager();
-        return vmManager;
-    }
+    }*/
 };
 
 }

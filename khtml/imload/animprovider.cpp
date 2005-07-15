@@ -23,13 +23,15 @@
 */
 
 #include "animprovider.h"
-#include "imagemanager.h"
+#include "pixmapplane.h"
 
 namespace khtmlImLoad {
 
-AnimProvider::~AnimProvider()
+void AnimProvider::nextFrame()
 {
-    ImageManager::animTimer()->destroyed(this);
+    curFrame = curFrame->nextFrame;
+    if (!curFrame)
+        curFrame = frame0;
 }
 
 }

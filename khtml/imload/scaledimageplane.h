@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -21,65 +21,71 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-#ifndef SCALED_PLANE_H
-#define SCALED_PLANE_H
+#ifndef SCALED_IMAGE_PLANE_H
+#define SCALED_IMAGE_PLANE_H
 
-#include "plane.h"
+#include "array2d.h"
+#include "imageplane.h"
+#include "rawimageplane.h"
+#include "imagetile.h"
 
 namespace khtmlImLoad {
 
-struct ScaledPlane: public Plane
+/**
+ A scaled image plane pulls data from a RawImagePlane and resizes it
+*/
+class ScaledImagePlane: public ImagePlane
 {
-    struct TileAndOffset
-    {
-        unsigned int tile;
-        unsigned int offset; 
-    };
+private:
+    RawImagePlane*     parent;
+    Array2D<ImageTile> tiles;
+
     
-    TileAndOffset* calcScaleTable(unsigned int orig, unsigned int scaled)
+    unsigned int* calcScaleTable(unsigned int orig, unsigned int scaled)
     {
         //### I bet this has all sorts of imprecision problems w/high ratios
-        TileAndOffset* origin = new TileAndOffset[scaled];
+        unsigned int* origin = new unsigned int[scaled];
         
         double ratio = double(orig)/double(scaled);
         
         /**
-        When scaling, we consider each pixel to be at the midpoint of its range. That is, if we have width 5, 
-        the pixels are 0.5, 1.5, 2.5, 3.5, and 4.5 
+        When scaling, we consider each pixel to be at the midpoint of its range.
+        That is, if we have width 5,the pixels are 0.5, 1.5, 2.5, 3.5, and 4.5
         
         We walk the scaled list, and calculate where the pixel must have originated
         */
         for (unsigned int pix = 0; pix < scaled; pix++)
         {
-            double id = pix + 0.5;
-            
-            unsigned int orig = (unsigned int)(id * ratio);
-            
-            origin[pix].tile   = orig / Tile::TileSize;
-            origin[pix].offset = orig % Tile::TileSize; 
+            double id    = pix + 0.5;
+            origin[pix]  = (unsigned int)(id * ratio);
         }
         
         return origin;
     }
     
-    TileAndOffset* xScaleTable;
-    TileAndOffset* yScaleTable;
+    unsigned int* xScaleTable;
+    unsigned int* yScaleTable;
+public:
+    virtual ~ScaledImagePlane();
     
-    ScaledPlane(unsigned int width    , unsigned int height, 
-                unsigned int origWidth, unsigned int origHeight): Plane(width, height)
+
+    ScaledImagePlane(unsigned int _width, unsigned int _height, RawImagePlane* _parent):
+            ImagePlane(_width, _height), parent(_parent), tiles(tilesWidth, tilesHeight)
     {
         //Create the mapping tables
-        yScaleTable = calcScaleTable(origHeight, height);
-        xScaleTable = calcScaleTable(origWidth , width );
+        yScaleTable = calcScaleTable(parent->height, height);
+        xScaleTable = calcScaleTable(parent->width , width );
     }
-    
-    ~ScaledPlane()
-    {
-        delete[] xScaleTable;
-        delete[] yScaleTable;
-    }   
+
+
+    virtual bool isUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile);
+
+    virtual void ensureUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile);
 };
 
 }
 
 #endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

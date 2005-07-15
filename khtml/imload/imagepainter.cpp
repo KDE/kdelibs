@@ -1,7 +1,7 @@
 /*
-    Large image displaying library.
+    Progressive image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -22,56 +22,63 @@
 
 */
 
-#include <assert.h>
-
-#include <qtimer.h>
+#include "imagepainter.h"
 #include "image.h"
-#include "updater.h"
+#include "pixmapplane.h"
 
 namespace khtmlImLoad {
 
-/**
- We keep 10 separate tables for each of ten 100ms portions of a second.
- Each entry is scheduled to be delivered 5 slots ahead
-*/
-
-Updater::Updater()
-{
-    timePortion = 0;
-
-    QTimer* updatePusher = new QTimer(this);
-    connect(updatePusher, SIGNAL(timeout()),
-            this,         SLOT  (pushUpdates()));
-
-    updatePusher->start(100);                        
+ImagePainter::ImagePainter(Image* _image):image(_image)
+{ //No need to ref, default size.
+    size = image->size();
 }
 
-void Updater::haveUpdates(Image* frame)
+ImagePainter::ImagePainter(Image* _image, QSize _size):image(_image), size(_size)
 {
-    assert(frame);
-    int schedulePortion = (timePortion + 1) % 10;
-    frames[schedulePortion].append(frame);
+    image->refSize(_size);
 }
 
-void Updater::pushUpdates()
+ImagePainter::~ImagePainter()
 {
-    timePortion++;
-    if (timePortion >= 10)
-        timePortion = 0;
-        
-    //Notify all images for the given slice.
-    QVector<Image*>::const_iterator iter;
-    for (iter = frames[timePortion].constBegin();
-        iter != frames[timePortion].constEnd()  ; ++iter)
-    {        
-        (*iter)->notifyPerformUpdate();
-    }
+    image->derefSize(size);
+}
+
+ImagePainter::ImagePainter(const ImagePainter& src)
+{
+    image = src.image;
+    size  = src.size;
+    image->refSize(size);
+}
+
+ImagePainter& ImagePainter::operator=(const ImagePainter& src)
+{
+    src.image->refSize(src.size);
+    image->derefSize(size);
+    image = src.image;
+    size  = src.size;
+    return *this;
+}
+
+void ImagePainter::setSize(QSize _size)
+{
+    image->refSize(_size);
+    image->derefSize(size);
+    size = _size;
+}
+
+void ImagePainter::setDefaultSize()
+{
+    image->derefSize(size);
+    size = image->size();
+}
     
-    //Dump the contents of the table, everything delivered
-    frames[timePortion].clear();
+void ImagePainter::paint(int dx, int dy, QPainter* p, int sx, int sy,
+                         int width, int height)
+{
+    PixmapPlane* plane = image->getSize(size);
+    plane->paint(dx, dy, p, sx, sy, width, height);
 }
 
 }
 
-#include "updater.moc"
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

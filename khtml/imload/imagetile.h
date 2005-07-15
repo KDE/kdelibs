@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,49 +25,33 @@
 #ifndef IMAGE_TILE_H
 #define IMAGE_TILE_H
 
-#include "imageformat.h"
-#include "pool.h"
-#include "tile.h"
-#include "tilestack.h"
+#include <QImage>
+#include <cstring>
 
-#include <qimage.h>
+#include "tile.h"
+#include "imagemanager.h"
 
 namespace khtmlImLoad {
 
 class ImageTile: public Tile
 {
-private:
-    QImage image;
+public:
+    //### consider making this a pointer, seems quite heavy
+    QImage        image;
     
-    virtual void discard();
-    
+    virtual void discard()
+    {
+        //Set the image to be null
+        image = QImage();
+    }
+
     ImageTile()
     {}
-    
-    ~ImageTile()
-    {}
-    
-    
-    bool reconstructable;
-    bool dirty;
-    
-    friend class Pool<ImageTile>;
-public:
 
-    //Creates a new stripe with a given owner, and dimension
-    static ImageTile* create(bool reconst, TileStack* owner, int width, int height, const ImageFormat& format);
-    
-    //Restores a stripe, from discarded info, reads it to the pool, etc.
-    static ImageTile* restore(TileStack* owner, int width, int height, const ImageFormat& format);
-    
-    QImage& cachedImage()
+    ~ImageTile()
     {
-        return image;
-    }
-    
-    void setDirty()
-    {
-        dirty = true;
+        if (cacheNode)
+            ImageManager::imageCache()->removeEntry(this);
     }
 };
 

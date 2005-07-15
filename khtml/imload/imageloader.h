@@ -1,7 +1,7 @@
 /*
-    Large image displaying library.
+    Progressive image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -40,63 +40,53 @@ class ImageLoader
 protected:
     Image* image;
 
-
     ImageLoader()
     {
         image = 0;
     }   
-    
+
     /**
-     Call to declare image geometry and format. May only be called once
+     Call to declare canvas geometry and format. May only be called once
      */
-    void notifyImageInfo(int width, int height, int frames)
+    void notifyImageInfo(int width, int height)
     {
-        image->notifyImageInfo(width, height, frames);
+        image->notifyImageInfo(width, height);
     }
-    
+
     /**
-     Call to declare frame geometry and format. Should be called for each frame
+     Call to declare frame geometry, should be called for each frame.
     */
-    void notifyFrameInfo(int frame, int fwidth, int fheight, const ImageFormat& format)
+    void notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format)
     {
-        image->notifyFrameInfo(frame, fwidth, fheight, format);
+        image->notifyAppendFrame(fwidth, fheight, format);
     }
-    
+
     /**
-     wrapper for the above methods for single-frame images
+     wrapper for the above method for single-frame images
     */
     void notifySingleFrameImage(int width, int height, const ImageFormat& format)
     {
-        notifyImageInfo(width, height, 1);
-        notifyFrameInfo(0, width, height, format);
+        notifyImageInfo  (width, height);
+        notifyAppendFrame(width, height, format);
     }
-    
+
     /**
-     Call to provide a scanline, for given frame, and given "version".
+     Call to provide a scanline, for active frame, and given "version".
      The decoder must feed multiple versions of the image inside here, top-to-bottom,
-     and incrementing versions. When it's done, it should either feed the last version with FinalVersionID,
-     or call notifyFinished() separately.     
-     */
-    void notifyScanline(int frame, uchar version, uchar* line)
-    {
-        image->notifyScanline(frame, version, line);
-    }
-    
-    /**
-     The decoder can call this when it's done with progressive-decoding of the image, but did not know that
-     when it was feeding scanlines, to mark it as done.
+     and incrementing versions. When it's done, it should either feed the last
+     version with FinalVersionID, or call notifyFinished() separately.
     */
-    void notifyFinished(int frame)
+    void notifyScanline(unsigned char version, unsigned char* line)
     {
-        image->notifyFinished(frame);
+        image->notifyScanline(version, line);
     }
-    
+
     /**
      Call this to exract the current state of a scanline to the provided bufer
     */
-    void requestScanline(int frame, unsigned int lineNum, uchar* lineBuf)
+    void requestScanline(unsigned int lineNum, unsigned char* lineBuf)
     {
-        image->requestScanline(frame, lineNum, lineBuf);
+        image->requestScanline(lineNum, lineBuf);
     }
     
 public:

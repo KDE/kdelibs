@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,23 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "tilestack.h"
-#include "imagetile.h"
-#include "pixmaptile.h"
-#include "imagemanager.h"
-#include "vmmanager.h"
-
-#include <cstdlib>
+#include "tile.h"
 
 namespace khtmlImLoad {
 
-struct Plane
+/**
+ All picture data, whether image or pixmap-related, logically
+ denotes a plane: logically, some collection of tiles, which has
+ some geometry. This class incorporates this abstraction, and
+ provides helper methods for dealing with the tiles
+*/
+class Plane
 {
+public:
     unsigned int width;  //width  in pixels
     unsigned int height; //height in pixels
     unsigned int tilesWidth;  //width  in tiles
     unsigned int tilesHeight; //height in tiles
-    
-    TileStack*     tiles;
     
     Plane(unsigned int _width, unsigned int _height)
     {
@@ -49,8 +48,6 @@ struct Plane
         height  = _height;
         tilesWidth  = (width  + Tile::TileSize - 1)/Tile::TileSize;
         tilesHeight = (height + Tile::TileSize - 1)/Tile::TileSize;
-        
-        tiles = new TileStack[tilesWidth * tilesHeight];        
     }
     
     unsigned int tileWidth(unsigned int tileX)
@@ -67,30 +64,6 @@ struct Plane
         return Tile::TileSize;
     }
     
-    ~Plane()
-    {
-        //Release all tiles...
-        for (unsigned int t = 0; t < tilesWidth * tilesHeight; t++)
-        {
-            TileStack& ts = tiles[t];
-            
-            if (ts.swappedInfo.exists())
-                ImageManager::vmMan()->free(ts.swappedInfo);
-                    
-            if (ts.pixmap)        
-                ImageManager::pixmapCache()->removeEntry(ts.pixmap);
-                
-            if (ts.image)
-                ImageManager::imageCache()->removeEntry(ts.image);
-        }
-        
-        delete[] tiles;
-    }
-    
-    TileStack& tile(unsigned int col, unsigned int row)
-    {
-        return tiles[row * tilesWidth + col];
-    }
 };
 
 }

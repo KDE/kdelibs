@@ -48,11 +48,13 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include <math.h>
+#include "imload/imagepainter.h"
 
 #include "loading_icon.cpp"
 
 using namespace DOM;
 using namespace khtml;
+using namespace khtmlImLoad;
 
 // -------------------------------------------------------------------------
 
@@ -280,12 +282,16 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
             }
         }
     }
-    else if (i && !i->isTransparent())
+    else if (i && !i->isTransparent() &&
+             i->image()->size().width() && i->image()->size().height())
     {
         paintInfo.p->setPen( Qt::black ); // used for bitmaps
         //const QPixmap& pix = i->pixmap();
-        i->scale(contentWidth(), contentHeight());
-        i->paint(paintInfo.p, _tx + leftBorder + leftPad, _ty + topBorder + topPad);
+        //### FIXME!!!  FIXME!!! Ultra-slow -- need to store the painter
+        #warning "FIXME: bad performance"
+        ImagePainter ip(i->image(), QSize(contentWidth(), contentHeight()));
+        ip.paint(_tx + leftBorder + leftPad, _ty + topBorder + topPad, paintInfo.p);
+        //### should intercept with paintInfo's rectangle!
     }
     if (m_selectionState != SelectionNone) {
 //    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;

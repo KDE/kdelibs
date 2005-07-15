@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -32,77 +32,141 @@
 namespace khtmlImLoad {
 
 
+struct TileCacheNode
+{
+    //Interface to the cache LRU chains
+    TileCacheNode* cacheNext;
+    TileCacheNode* cachePrev;
+    
+    void unlink()
+    {
+        cacheNext->cachePrev = cachePrev;
+        cachePrev->cacheNext = cacheNext;
+        cacheNext = 0;
+        cachePrev = 0;
+    }
+    
+    void linkBefore(TileCacheNode* node)
+    {
+        this->cacheNext = node;
+        this->cachePrev = node->cachePrev;
+        
+        node->cachePrev = this;
+        this->cachePrev->cacheNext = this;
+    }
+
+    //If 0, we're unlocked, otherwise locked by N callees
+    int cacheLocked;
+
+    Tile* tile;
+    
+    TileCacheNode(): cacheNext(0), cachePrev(0), cacheLocked(0), tile(0)
+    {}
+};
+
+
 /** 
  An LRU-replacement cache for tiles.
- ### TODO: Consider using a size policy that favors smaller images
 */
 class TileCache
 {
+public:
+    typedef TileCacheNode Node;
+    
+
+    Node* poolHead;
+
+    //### TODO: consider smarter allocation for these?.
+    Node* create()
+    {
+        if (poolHead)
+        {
+            Node* toRet = poolHead;
+            poolHead    = poolHead->cacheNext;
+            return toRet;
+        }
+        else
+            return new Node();
+    }
+    
+    void release(Node* entry)
+    {
+        //### TODO: Limit ??
+        entry->cacheNext = poolHead;
+        poolHead         = entry;
+    }
+
+    
 private:
     int sizeLimit;
     int size;
     
     /**
      We keep tiles in a double-linked list, with the most recent one being at the rear
-     */
-    Tile* front;
-    Tile* rear;
+    */
+    Node* front;
+    Node* rear;
     
-    /** 
+    /**
      There is also a second list, of "locked" entries, which are not manually discarded
-     */
-     Tile* lockedFront;
-     Tile* lockedRear;
+    */
+    Node* lockedFront;
+    Node* lockedRear;
+
+    /**
+     Discard the node, and removes it from the list. Does not free the node.
+    */
+    void doDiscard(Node* node)
+    {
+        node->tile->discard();
+        node->tile->cacheNode = 0;
+        node->unlink();
+        --size;
+    }
 public:
 
     TileCache(int _sizeLimit):sizeLimit(_sizeLimit), size(0)
     {
-        front = new Tile;
-        rear  = new Tile;
+        front = new Node;
+        rear  = new Node;
         
         front->cacheNext = rear;
         rear ->cachePrev = front;
         
-        lockedFront = new Tile;
-        lockedRear  = new Tile;
+        lockedFront = new Node;
+        lockedRear  = new Node;
         
         lockedFront->cacheNext = lockedRear;
         lockedRear ->cachePrev = lockedFront;
+
+        poolHead = 0;
     }
     
     /**
-     Prepares space for an entry to be inserted, discarding the last one. This does not attempt to pool 
-     directly, as there may be multiple item types in the cache.
-     
-     We split this from addEntry for MM purposes, since the tile class will likely recycle the node.
-     Thus, the proper use is:
-     
-     acquireSpot()
-     allocate a new node
-     addEntry()
-     */
-    void acquireSpot()
-    {
-        //If not full yet, nothing to do.
-        if (size < sizeLimit)
-            return;
-            
-        //Discard the front entry.
-        Tile* frontOne = front->cacheNext;
-        removeEntry(frontOne);
-    }
-    
-    /**
-     Add an entry to the cache. There must be a spot reserved with acquireSpot
+     Add an entry to the cache. 
      */
     void addEntry(Tile* tile)
     {
-        //Must have room
-        assert (size < sizeLimit);
+        assert (tile->cacheNode == 0);
+
+        Node* node;
         
+        //Must have room
+        if (size >= sizeLimit)
+        {
+            //Remove the front entry, reuse it
+            //for the new node
+            node = front->cacheNext;
+            doDiscard(node);
+        }
+        else
+            node = create();
+
         //Link in before the end sentinel, i.e. at the very last spot, increment usage count
-        tile->cacheLocked = 0;
-        tile->linkBefore(rear);
+        node->tile            = tile;
+        tile->cacheNode       = node;
+        node->cacheLocked     = 0;
+        node->linkBefore(rear);
         size++;
     }
     
@@ -114,8 +178,11 @@ public:
     */
     void addLockedEntry(Tile* tile)
     {
-        tile->cacheLocked = 1;
-        tile->linkBefore(lockedRear);
+        Node* node = create();
+        node->tile        = tile;
+        tile->cacheNode   = node;
+        node->cacheLocked = 1;
+        node->linkBefore(lockedRear);
     }
     
     /**
@@ -123,13 +190,14 @@ public:
     */
     void unlockEntry(Tile* tile)
     {
-        assert(tile->cacheLocked);
+        Node* node = tile->cacheNode;
+        assert(node->cacheLocked);
         
-        --tile->cacheLocked;
-        if (tile->cacheLocked == 0)
+        --node->cacheLocked;
+        if (node->cacheLocked == 0)
         {        
-            tile->unlink();        
-            acquireSpot();
+            node->unlink();
+            release(node);
             addEntry(tile);
         }
     }
@@ -139,12 +207,13 @@ public:
      */
     void lockEntry(Tile* tile)
     {
-        ++tile->cacheLocked;
-        if (tile->cacheLocked == 1) //first lock 
+        Node* node = tile->cacheNode;
+        ++node->cacheLocked;
+        if (node->cacheLocked == 1) //first lock
         {            
             size--;
-            tile->unlink();        
-            tile->linkBefore(lockedRear);
+            node->unlink();
+            node->linkBefore(lockedRear);
         }
     }
     
@@ -154,11 +223,12 @@ public:
      */
     void touchEntry(Tile* tile)
     {
-        if (tile->cacheLocked)
+        Node* node = tile->cacheNode;
+        if (node->cacheLocked)
             return;
             
-        tile->unlink();
-        tile->linkBefore(rear);
+        node->unlink();
+        node->linkBefore(rear);
     }
     
     /**
@@ -166,11 +236,12 @@ public:
      */
     void removeEntry(Tile* tile)
     {
-        tile->unlink();
-        tile->discard();
-        
-        if (!tile->cacheLocked)
+        Node* node = tile->cacheNode;
+        doDiscard(node);
+        if (!node->cacheLocked)
             size--;
+
+        release(node);
     }
 };
 

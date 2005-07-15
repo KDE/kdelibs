@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -19,43 +19,26 @@
     AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
     AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
-#include "vmmanager.h"
+#include "rawimageplane.h"
 
 namespace khtmlImLoad {
 
-const int AllocatorLimit = 0x3FFFFFFF; /* limit files to about a gig */
-
-VMManager::VMBlock VMManager::doAlloc(KVMAllocator* alloc, unsigned int size)
+bool RawImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile)
 {
-    VMBlock toRet;
-    
-    allocStats[alloc] += size;
-    toRet.allocator = alloc;
-    toRet.length    = size;
-    toRet.block     = alloc->allocate(size);
-    return toRet;  
+    return checkUpToDate(versions + tileY * Tile::TileSize, tile);
 }
 
-VMManager::VMBlock VMManager::alloc(unsigned int size)
+void RawImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile)
 {
-    //Scan through the list of allocators, and see which one can fit this w/o going over limit
-    for (QMap<KVMAllocator*, unsigned int>::iterator i =  allocStats.begin();
-                                                     i != allocStats.end()  ; ++i)
-        if (i.data() + size < AllocatorLimit)
-            return doAlloc(i.key(), size);
-    
-    //Need a new one.
-    return doAlloc(new KVMAllocator(), size);
-}
-
-void VMManager::free(VMBlock& block)
-{
-    allocStats[block.allocator] -= block.length;
-    block.allocator->free(block.block);
-    block.block     = 0;
-    block.allocator = 0;
-    block.length    = 0;
+    //Just image -> pixmap update
+    updatePixmap(tile, image,
+              tileX, tileY, 
+              tileX * Tile::TileSize, tileY * Tile::TileSize,
+              versions + tileY * Tile::TileSize);
 }
 
 }

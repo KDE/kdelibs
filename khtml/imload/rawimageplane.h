@@ -21,38 +21,50 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+#ifndef RAW_IMAGE_PLANE_H
+#define RAW_IMAGE_PLANE_H
 
-#ifndef PIXMAP_TILE_H
-#define PIXMAP_TILE_H
-
-#include <QPixmap>
+#include "imageplane.h"
 #include <cstring>
-
-#include "tile.h"
-#include "imagemanager.h"
 
 namespace khtmlImLoad {
 
-class PixmapTile: public Tile
+/**
+ A raw image plane merely contains a QImage.
+*/
+class RawImagePlane: public ImagePlane
 {
 public:
-    //### consider making this a pointer, seems quite heavy
-    QPixmap       pixmap;
-    
-    virtual void discard()
+    QImage image;
+    unsigned char* versions; //Versions of scanlines --- node that this is is padded to be of width / by 64
+
+    RawImagePlane(unsigned int _width, unsigned int _height):
+        ImagePlane(_width, _height)
     {
-        //Set the pixmap to be null
-        pixmap.resize(0,0);
+        versions = new unsigned char[tilesHeight * Tile::TileSize];
+        std::memset(versions, 0, tilesHeight * Tile::TileSize);
     }
 
-    PixmapTile()
-    {}
-
-    ~PixmapTile()
+    ~RawImagePlane()
     {
-        if (cacheNode)
-            ImageManager::pixmapCache()->removeEntry(this);
+        delete[] versions;
     }
+
+    /**
+     Returns true if the given pixmap tile is up-to-date.
+     Note that this should compare the information in the pixmap with ideal the
+     up-to-date image using the decoding information thus far, and not
+     with the state of the image proper. (Which might not even be in memory)
+    */
+    virtual bool isUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile);
+
+    /**
+     Ensures that the given pixmap tile is up-to-date.
+    */
+    virtual void ensureUpToDate(unsigned int tileX, unsigned int tileY,
+                            PixmapTile* tile);
+
 };
 
 }

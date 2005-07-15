@@ -27,22 +27,23 @@
 
 #include <QByteArray> 
 #include <QSize>
-#include <QTimer> 
+#include <QTimer>
+#include <QPair>
+#include <QMap>
+ 
 #include "imageformat.h"
 
 class QPainter;
 
 namespace khtmlImLoad {
 
-class AnimProvider;
-class Frame;
-class Image;
 class ImageOwner;
 class ImageLoader;
+class PixmapPlane;
 
 /**
- An image represents a static picture or an animation. Think of it as a replacement for QMovie that will try
- hard to be efficient
+ An image represents a static picture or an animation, that
+ may be incrementally loaded.
 */
 class Image
 {
@@ -72,16 +73,6 @@ public:
     ~Image();
     
     /**
-     Tells the image to display with the given width and height
-     */
-    void scale(int width, int height);
-    
-    /**
-     Tells the image to display with the width and height of the source
-     */
-    void dontScale();
-    
-    /**
      Paints a portion of the current frame on the painter 'p' at dx and dy. 
      The source rectangle starts at sx, sy and has dimension width * height
      
@@ -91,96 +82,87 @@ public:
     void paint(int dx, int dy, QPainter* p, int sx, int sy, int width, int height, int timeLimit = 0); 
     
     /**
-     Returns the original size
+     Returns the image's size
     */
-    QSize originalSize() const;
+    QSize size() const;
     
     /**
-     Returns the current size
+     Returns true if the image has been fully loaded
     */
-    QSize size() const;   
+    bool complete() const;
 private:
     //Interface to the loader.
     friend class ImageLoader;
     
     /**
-     Called from the loader to notify of new geometry, the number of frames, frame rate, etc.
-     Note that frame delays < 100 ms will be rounded up to 100. The loader must also call notifyFrameInfo 
-     for each frame to specify the frame size and format (since they don't have to match)
-     
-     ### frameDelay?
+     Called from the loader to notify of canvas geometry.
+     The loader must also call notifyAppendFrame to
+     create 1 or more frames
     */
-    void notifyImageInfo(int width, int height, int frames); //const ImageFormat& format, int frames, int frameDelay);
+    void notifyImageInfo(int width, int height); 
     
     /**
      Called to notify of format of a frame
     */
-    void notifyFrameInfo(int frame, int fwidth, int fheight, const ImageFormat& format);
+    void notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format);
     
     /**
-     Called from the loader to feed a new scanline to the given frame (in consecutive order in each frame), through 
+     Called from the loader to feed a new scanline (in consecutive order in each frame), through
      various progressive versions
      */
-    void notifyScanline(int frame, uchar version, uchar* data);
-    
-    /**
-     Called from loader to state that the last version feed was in fact last
-     */
-    void notifyFinished(int frame);
+    void notifyScanline(unsigned char version, unsigned char* data);
     
     /**
      Called from loader to request the current contents of the line in the basic plane
      */
-    void requestScanline(int frame, unsigned int lineNum, uchar* lineBuf);
+    void requestScanline(unsigned int lineNum, unsigned char* lineBuf);
 
-private:
-    //Interface to the frames
-    friend class Frame;
-    
-    /**
-     Called from the frame to tell about a changed region notification
-     */
-    void notifyChanged(Frame* frame, int startLine, int endLine); 
-private:
-    //Interface to the animation provider
-    friend class AnimProvider;
-    
-    void installAnimProvider(AnimProvider* provider);
-    
-    /**
-     Asks the given frame to be painted
-    */
-    void paintFrame(int frame, int dx, int dy, QPainter* p, int sx, int sy, int width, int height);
-    
-    /**
-     Called to notify that a new frame is to be displayed.
-    */
-    void switchFrame();
-    
+    //### FIXME: restore the animprovider interface
+
+private: //Interface to the painter
+    friend class ImagePainter;
+    void derefSize(QSize size);
+    void refSize  (QSize size);
+    PixmapPlane* getSize(QSize size);
+
 private:
     ImageOwner * owner;
-    ImageLoader* loader;
-    AnimProvider* animProvider;
-    
-    QByteArray bufferPreDetect;
 
-    Frame* frames;    
-    int numFrames;
+    //Update reporting to owner
+    friend class Updater;
+    bool updatesPending;
+    int updatesStartLine;
+    int updatesEndLine;
+
+    //Incorporate the scanline into update range
+    void requestUpdate(int line);
+    
+    //Sets the state as not having updates
+    void noUpdates();
+    
+    /**
+     Called by the updater when the image should tell its owners about new changes
+    */
+    void notifyPerformUpdate();
+
+
+    //Loader stuff.
+    QByteArray bufferPreDetect;
+    ImageLoader* loader;
+    PixmapPlane* loaderPlane;
+    unsigned int loaderScanline;
+
     bool fullyDecoded;
     bool inError;
 
-    //Original size of the image
-    int origWidth, origHeight;
-    
-    //Scaled size of the image, or 0 if to use original
-    int curWidth, curHeight;
-    
     //A little helper to set the error condition.
     void loadError();
-    
-    //Helper for resizing the frames, since they may not be the size of the 
-    //image itself
-    void scaleFrame(int frame, int width, int height);
+
+    //Image state
+    int width, height;
+    PixmapPlane* original;
+    QMap<QPair<int, int>, PixmapPlane*> scaled;
+
 };
 
 }

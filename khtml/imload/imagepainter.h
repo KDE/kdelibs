@@ -1,7 +1,7 @@
 /*
-    Large image displaying library.
+    Progressive image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -22,45 +22,62 @@
 
 */
 
-#ifndef TILE_STACK_H
-#define TILE_STACK_H
+#ifndef IMAGE_PAINTER_H
+#define IMAGE_PAINTER_H
 
-#include "vmmanager.h"
-#include "tile.h"
+class QPainter;
+
+#include <QSize>
 
 namespace khtmlImLoad {
 
-class ImageTile;
-class PixmapTile;
+class Image;
 
 /**
- A TileStack packs together all components related to a portion of an image --- 
- the pixmap tile, the image tile, and info on discarding
+ An image painter let's one paint an image at the given size.
 */
-struct TileStack
+class ImagePainter
 {
-    VMManager::VMBlock swappedInfo;
-    ImageTile*     image;
-    PixmapTile*    pixmap;   
+public:
+    /**
+     Creates an image painter for the given image...
+    */
+    ImagePainter(Image* image);
+
+    /**
+     Creates an image painter for the given image,
+     of given size
+    */
+    ImagePainter(Image* image, QSize size);
+
+    ImagePainter(const ImagePainter& src);
+    ImagePainter& operator=(const ImagePainter& src);
     
-    unsigned char imageProgress [Tile::TileSize];
-    unsigned char pixmapProgress[Tile::TileSize];
+
+    /**
+     Sets the size of the image.
+    */
+    void setSize(QSize size);
+
+    /**
+     Sets the image to the default size
+    */
+    void setDefaultSize();
     
-    bool isDiscarded()
-    {
-        return (swappedInfo.exists() && !image);
-    }
+    /**
+     Cleans up
+    */
+    ~ImagePainter();
     
-    TileStack()
-    {
-        image  = 0;
-        pixmap = 0;
-        for (unsigned int c = 0; c < Tile::TileSize; ++c)
-        {
-            imageProgress [c] = 0;
-            pixmapProgress[c] = 0;
-        }
-    }    
+    /**
+     Paints a portion of the image frame on the painter 'p' at dx and dy.
+     The source rectangle starts at sx, sy and has dimension width * height
+    */
+    void paint(int dx, int dy, QPainter* p, int sx = 0, int sy = 0,
+               int width = -1, int height = -1);
+private:
+    Image* image;
+    QSize  size;
 };
 
 }

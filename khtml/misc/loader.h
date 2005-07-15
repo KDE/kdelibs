@@ -264,8 +264,6 @@ namespace khtml
         void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
-        void scale(int width, int height);
-        void paint(QPainter* p, int width, int height);
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
@@ -287,6 +285,9 @@ namespace khtml
         virtual bool schedule() const { return true; }
 
 	virtual void finish();
+
+
+        khtmlImLoad::Image* image() { return i; }
 
     protected:
 	void clear();

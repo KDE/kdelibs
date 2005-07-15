@@ -30,7 +30,7 @@
 
 namespace khtmlImLoad {
 
-class Frame;
+class Image;
 
 /**
  The updater class helps manage timers, to permit update messages to be coalesced (so we don't 
@@ -47,11 +47,11 @@ public:
      The updater will call back their notifyPerformUpdate() function when a sufficient
      amount of time has passed.
      */
-    void haveUpdates(Frame* frame);
+    void haveUpdates(Image* frame);
 private slots:
     void pushUpdates();
 private:
-    QVector<Frame*> frames[10];
+    QVector<Image*> frames[10];
     int             timePortion;
 };
 

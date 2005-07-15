@@ -25,63 +25,34 @@
 #ifndef ANIM_PROVIDER_H
 #define ANIM_PROVIDER_H
 
-#include "image.h"
+class QPainter;
 
 namespace khtmlImLoad {
 
+class PixmapPlane;
+
 /**
- A base class for animation support. Decoders should inherit off this, and implement the pure virtual. The AnimTimer should be used to 
- schedule new frames.
- 
- Note: it's suggested that you schedule the next frame only after 
- the previous one has been -drawn- to avoid animating things 
- that are not on the screen
+ A base class for animation support. This should be implemented by decoders
+ wishing to implement animation. When this is installed, paint events
+ for the image are redirected here.
 */
 class AnimProvider
 {
 protected:
-    Image* image;
+    PixmapPlane* frame0;
+    PixmapPlane* curFrame;
 
-    AnimProvider(Image* _image)
-    {
-        image = _image;
-        image->installAnimProvider(this);
-    }   
-    
-        
-    /**
-     Implementations of this should switch 
-     the frame, prepare next one for painting
-    */
-    virtual void doSwitchFrame() = 0;
-    
-    /**
-     Asks the image to render the corresponding frame 
-    */
-    void paintFrame(int frame, int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
-    {
-        image->paintFrame(frame, dx, dy, p, sx, sy, width, height);
-    }
+    void nextFrame(); //Helper that goes to next frame or wraps around
 public:
-    virtual ~AnimProvider();
+    virtual ~AnimProvider() {}
 
-    /**
-     Requests painting.
-     ### timeLimit?
-    */
+    //Must be implemented to create animation provider for the given
+    //plane describing the same animation
+    virtual AnimProvider* clone(PixmapPlane* plane) = 0;
+
+    //Must be implemented to paint the given region. Note that clipping to the
+    //overall canvas will be performed already
     virtual void paint(int dx, int dy, QPainter* p, int sx, int sy, int width, int height) = 0;
-
-
-    //Normally called by AnimTimer
-    virtual void switchFrame()
-    {
-        //Prepare the implementation
-        doSwitchFrame();
-        
-        //Schedule
-        image->switchFrame();
-    }
-
 };
 
 }

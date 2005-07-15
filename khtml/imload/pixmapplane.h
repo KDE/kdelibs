@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -21,37 +21,54 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+#ifndef PIXMAP_PLANE_H
+#define PIXMAP_PLANE_H
 
-#ifndef POOL_H
-#define POOL_H
+#include "array2d.h"
+#include "animprovider.h"
+#include "imageplane.h"
+#include "pixmaptile.h"
 
 namespace khtmlImLoad {
 
-template<typename T>
-class Pool
+class AnimProvider;
+
+/**
+ A pixmap plane is responsible for drawing data of an image plane
+ @internal
+*/
+class PixmapPlane: public Plane
 {
-private:
-    static T* poolHead;
-    
 public:
-    static T* create()    
+    ImagePlane*         parent;
+    int                 refCount;//For image's use
+private:
+    Array2D<PixmapTile> tiles;
+public:
+    PixmapPlane(unsigned int _width, unsigned int _height, ImagePlane* _parent):
+            Plane(_width, _height), parent(_parent), tiles(tilesWidth, tilesHeight)
     {
-        if (poolHead)
-        {
-            T* toRet = poolHead;
-            poolHead = static_cast<T*>(poolHead->cacheNext); //we abuse cacheNext fields here to safe memory
-            return toRet;
-        }
-        else
-            return new T;
+        nextFrame    = 0;
+        animProvider = 0;
+        refCount     = 0;
     }
-    
-    static void release(T* entry)
+
+    PixmapPlane*  nextFrame;
+    AnimProvider* animProvider;
+
+    ~PixmapPlane()
     {
-        //### TODO: Limit!
-        entry->cacheNext = poolHead;
-        poolHead        = entry;
+        delete animProvider;
+        delete parent;
+        delete nextFrame;
     }
+
+    /**
+     Paints a portion of the frame on the painter 'p' at dx and dy. 
+     The source rectangle starts at sx, sy and has dimension width * height.
+    */
+    void paint(int dx, int dy, QPainter* p,
+               int sx, int sy, int width = -1, int height = -1);
 };
 
 }

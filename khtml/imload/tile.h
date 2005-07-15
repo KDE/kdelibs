@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,21 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include <cstring>
+
+#include <QDebug>
+
 namespace khtmlImLoad {
 
-class TileStack;
+class TileCache;
+class TileCacheNode;
 
-/** 
- The base class for all cacheable tiles.
- This provides the interface to the cache functions
+/**
+ We hold pointers tiles in the cache. The interface is simple: when they get
+ kicked out of the cache, the discard method is invoked to have the associated
+ resources freed. Note that the cache does not own the entries, but merely
+ mages the more expensive part of their resources. The cacheEntry
+ field is used to link the tile node to the appropriate cache entry for it.
 */
 class Tile
 {
@@ -39,47 +47,19 @@ public:
     enum {TileSize = 64}; 
     //Note:this can be safely reduced, but not increased --- ScaledPlane
     //relies for byte offsets in a single row in a tile fitting into bytes
+
+    unsigned char versions[Tile::TileSize];
 protected:
     friend class TileCache;
-    
-    //Interface to the cache LRU chains
-    Tile* cacheNext;
-    Tile* cachePrev;
-    
-    void unlink()
+
+    Tile(): cacheNode(0)
     {
-        cacheNext->cachePrev = cachePrev;
-        cachePrev->cacheNext = cacheNext;
-        cacheNext = 0;
-        cachePrev = 0;
+        std::memset(versions, 0, Tile::TileSize);
     }
-    
-    void linkBefore(Tile* node)
-    {
-        this->cacheNext = node;
-        this->cachePrev = node->cachePrev;
-        
-        node->cachePrev = this;
-        this->cachePrev->cacheNext = this;
-    }
-    
-    /**
-     Called when the stripe is dropped from the cache, to release the managed resources.
-     Note that the cache never calls delete on entries, as they are supposed to recycle the nodes as needed from discard
-     */
-    virtual void discard() {} 
-    
-    //If 0, we're unlocked, otherwise locked by N callees
-    int cacheLocked;    
-        
-protected:
-    Tile(): cacheNext(0), cachePrev(0), cacheLocked(0)
-    {}
-    
-    /** 
-     We must link each tile to its owner so that it can be notified of the discards 
-    */
-    TileStack* owner;
+
+    virtual void discard() = 0;
+
+    TileCacheNode* cacheNode;
 };
 
 }

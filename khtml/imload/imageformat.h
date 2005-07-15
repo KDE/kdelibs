@@ -1,7 +1,7 @@
 /*
     Large image displaying library.
 
-    Copyright (C) 2004 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 
 #include <QColor>
 #include <QVector>
+#include <QImage>
 
 namespace khtmlImLoad {
 
@@ -36,6 +37,9 @@ struct ImageFormat
     {
         Image_RGB_32,     //32-bit RGB + padding
         Image_RGBA_32,    //32-bit RGB + alpha
+                          //note that this is interpreted as normal by
+                          //the loader interface, as premultiplied
+                          //by the drawing code
         Image_Palette_8   //8-bit paletted image        
     } type;
     
@@ -49,6 +53,25 @@ struct ImageFormat
         default:
             return 1;    
         }
+    }
+
+    QImage makeImage(int width, int height) const
+    {
+        QImage toRet;
+        switch (type)
+        {
+        case Image_RGB_32:
+            toRet = QImage(width, height, QImage::Format_RGB32);
+            break;
+        case Image_RGBA_32:
+            toRet = QImage(width, height, QImage::Format_ARGB32_Premultiplied);
+            break;
+        case Image_Palette_8:
+            toRet = QImage(width, height, QImage::Format_Indexed8);
+            toRet.setColorTable(palette);
+        }
+
+        return toRet;
     }
     
     bool hasAlpha() const

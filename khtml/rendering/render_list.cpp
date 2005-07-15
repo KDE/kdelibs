@@ -29,6 +29,7 @@
 #include "rendering/enumerate.h"
 #include "rendering/counter_tree.h"
 #include "html/html_listimpl.h"
+#include "imload/imagepainter.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
 #include "misc/loader.h"
@@ -42,6 +43,7 @@
 
 using namespace khtml;
 using namespace Enumerate;
+using namespace khtmlImLoad;
 
 const int cMarkerPadding = 7;
 
@@ -311,7 +313,8 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         xoff += haveImage ? cMarkerPadding : (m_width - bulletWidth);
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
-	m_listImage->paint( p, _tx + xoff, _ty );
+        ImagePainter painter(m_listImage->image());
+        painter.paint( _tx + xoff, _ty, p );
         return;
     }
 
