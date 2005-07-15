@@ -222,6 +222,16 @@ action/openintab
 action/kdesktop_rmb // RMB menu, see note below
 action/iconview_preview 
 action/sharefile // File sharing, see note below
+action/sendURL // Send Link Address
+action/sendPage // Send File
+action/devnew // Create New -> Device
+action/incIconSize // Increase icon size
+action/decIconSize // Decrease icon size
+action/go // Entire go menu
+action/configdesktop // Configure desktop in RMB menu, see also Control Module Restrictions
+action/executeshellcommand // In Konqueror Tools menu, see also shell_access
+action/show_dot // Show Hidden Files, see note below
+
 
 Kicker related: 
 action/kicker_rmb // RMB menu
@@ -308,6 +318,11 @@ Notes:
   konqiconviewrc:
 	[Settings]
 	PreviewsEnabled[$i]=false
+* action/show_dot disables the option to toggle showing hidden files, the actual
+  setting remains unaffected.
+  To disable showing hidden files, add the following lines to konqiconviewrc:
+	[Settings]
+	ShowDotFiles[$i]=false
 * action/sharefile disables file sharing from the UI, but you may also want
   to disable filesharing altogether.
 
@@ -583,7 +598,7 @@ And to prevent a user from adding additional konsole profiles, one would add:
 data_konsole=false
 
 
-Control module restrictions
+Control Module Restrictions
 ===========================
 
 It is possible to restrict access to particular control modules.
