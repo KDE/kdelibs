@@ -194,7 +194,7 @@ protected:
     /**
      * @internal Not needed for zip
      */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group ) { return true; }
+    virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
     // TODO(BIC) uncomment and make virtual for KDE 4.
 //    bool writeDir( const QString& name, const QString& user, const QString& group,
 //                        mode_t perm, time_t atime, time_t mtime, time_t ctime );
