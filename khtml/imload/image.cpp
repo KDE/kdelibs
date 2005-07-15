@@ -291,6 +291,8 @@ void Image::notifyScanline(uchar version, uchar* data)
         requestUpdate(loaderScanline);
 
     loaderScanline++;
+    if (loaderScanline == plane->height) //Next pass of progressive image
+        loaderScanline = 0;
 }
 
 void Image::requestScanline(unsigned int lineNum, uchar* lineBuf)
