@@ -382,7 +382,7 @@ public:
      * permissions change to it.
      * @param resume
      */
-    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume );
+    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume ); // KDE4 TODO: add long mtime (for #79937)
 
     /**
      * Finds all details for one file or directory.

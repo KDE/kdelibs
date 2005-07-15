@@ -200,7 +200,9 @@ namespace KIO {
      * @see multi_get()
      */
     KIO_EXPORT TransferJob *put( const KURL& url, int permissions,
-                      bool overwrite, bool resume, bool showProgressInfo = true );
+                      bool overwrite, bool resume,
+                      // KDE4 TODO: add 'long mtime = 0' for #79937
+                      bool showProgressInfo = true );
 
     /**
      * HTTP POST (for form data).
