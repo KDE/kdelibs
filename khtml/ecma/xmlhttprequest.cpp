@@ -553,6 +553,18 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 
   if ( decoder == NULL ) {
+     int pos = responseHeaders.find("Content-Type:");
+     if ( pos > -1 )
+     {
+        int index = responseHeaders.find('\n', pos+13);
+        QString type = responseHeaders.mid(pos+13, index);
+        // qDebug("XMLHttpRequest::slotData: 'content-type = %s'", type.latin1());
+        index = type.find (';');
+        if (index > -1)
+          encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
+        // qDebug("XMLHttpRequest::slotData: 'encoding = %s'", encoding.latin1());
+     }
+
     decoder = new Decoder;
     if (!encoding.isNull())
       decoder->setEncoding(encoding.latin1(), Decoder::EncodingFromHTTPHeader);
