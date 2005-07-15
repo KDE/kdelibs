@@ -89,20 +89,13 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
         QRect imagePortion(offX, offY + first,
                            tile->pixmap.width(), last - first + 1);
     
-        //If format doesn't have alpha, simply drawImage directly.
-        if (!image.hasAlphaChannel())
-        {
-            QPainter p(&tile->pixmap);
-            p.drawImage(QPoint(0, first), image, imagePortion);
-            p.end();
-        }
-        else
-        {
-            //### FIXME: Use XRender directly here, to get incremental update
-            QImage portion = image.copy(offX, offY, tile->pixmap.width(),
-                                        tile->pixmap.height());
-            tile->pixmap = QPixmap::fromImage(portion);
-        }
+        //Push the image portion update
+        QPainter p(&tile->pixmap);
+        if (image.hasAlphaChannel()) //### When supported, use the src op.
+            p.fillRect  (0, first, tile->pixmap.width(), last - first, Qt::transparent);
+            
+        p.drawImage(QPoint(0, first), image, imagePortion);
+        p.end();
     }
 }
 

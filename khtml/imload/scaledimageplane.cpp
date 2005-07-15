@@ -42,9 +42,9 @@ bool ScaledImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
 
 template<typename T>
 static void scaleLoop(QImage* dst, unsigned int* xScaleTable,
-                      int line, const QImage& src, int tileX, int tileY)
+                      int line, const QImage& src, int srcLine, int tileX, int tileY)
 {
-    const T* srcPix = reinterpret_cast<const T*>(src.scanLine (tileY*Tile::TileSize + line));
+    const T* srcPix = reinterpret_cast<const T*>(src.scanLine (srcLine));
     T*       dstPix = reinterpret_cast<T*>(dst->scanLine(line));
     
     xScaleTable += tileX * Tile::TileSize;
@@ -64,23 +64,24 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
     //Create the image if need be.
     if (imageTile.image.isNull())
     {
-        imageTile.image = parent->format.makeImage(width, height);
+        imageTile.image = parent->format.makeImage(tileWidth (tileX),
+                                                   tileHeight(tileY));
         std::memset(imageTile.versions, 0, Tile::TileSize);
     }
     else ImageManager::imageCache()->touchEntry(&imageTile);
 
     //Pull in updates to the image.
-    for (int line = 0; line > tileHeight(tileY); ++line)
+    for (int line = 0; line < tileHeight(tileY); ++line)
     {
-        int origLine = parent->versions[yScaleTable[line + tileY*Tile::TileSize]];
+        int origLine = yScaleTable[line + tileY*Tile::TileSize];
         if (imageTile.versions[line] < parent->versions[origLine])
         {
             if (parent->format.depth() == 1)
-                scaleLoop<Q_UINT8>(&imageTile.image, xScaleTable, line,
-                                parent->image, tileX, tileY);
+                scaleLoop<Q_UINT8>(&imageTile.image, xScaleTable, line, 
+                                parent->image, origLine, tileX, tileY);
             else
                 scaleLoop<Q_UINT32>(&imageTile.image, xScaleTable, line,
-                                parent->image, tileX, tileY);
+                                parent->image, origLine, tileX, tileY);
         }
     }
 
