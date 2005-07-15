@@ -422,7 +422,16 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
-#warning "Needs a major rework"
+    QColor color = newc;
+
+    // no error indication for background images
+    if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
+
+    // If we don't have size yet, nothing to draw yet
+    if (i->size().width() == 0 || i->size().height() == 0)
+        return *Cache::nullPixmap;
+
+#warning "Needs some additional performance work"
 
     static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
     if ( (bgColor != bgTransparant) && (bgColor != newc.rgb()) ) {
@@ -432,22 +441,45 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (bg)
         return *bg;
 
-    ImagePainter ip(i);
-    QPixmap r (i->size());
+    bool haveBgColor = newc.isValid();
 
-    if (r.isNull())
-        return *Cache::nullPixmap;
+    if (!haveBgColor)
+        color = Qt::transparent;
 
+    //See whether/how much we should tile.
+    //### FIXME: restore support for mask-only case.
     int w = i->size().width();
     int h = i->size().height();
+    QSize s(i->size());
+    if ( w*h < 8192 )
+    {
+        if ( s.width() < BGMINWIDTH )
+            w = ((BGMINWIDTH  / s.width())+1) * s.width();
+        if ( s.height() < BGMINHEIGHT )
+            h = ((BGMINHEIGHT / s.height())+1) * s.height();
+    }
+
+    
+    QPixmap r (w, h);
+    r.fill(color); //Fill with the appropriate bg color/transparency
 
     QPainter paint(&r);
-    ip.paint(0, 0, &paint);
+    ImagePainter pi(i);
+    //Tile as far as needed...
+    for (int x = 0; x < w; x += i->size().width())
+        for (int y = 0; y < h; y += i->size().height())
+            pi.paint(x, y, &paint);
     paint.end();
-    
-    // no error indication for background images
-    if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
 
+    if (haveBgColor)
+        bgColor = color.rgb();
+    else
+        bgColor = bgTransparant;
+
+    bg = new QPixmap(r);
+    return *bg;
+
+#if 0
     bool isvalid = newc.isValid();
     QSize s(pixmap_size());
 
@@ -527,11 +559,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         }
         return *bg;
     }
-
-    if (!bg)
-        bg = new QPixmap(r);
-
-    return *bg;
+#endif
 }
 /*
 QPixmap CachedImage::pixmap( ) const
