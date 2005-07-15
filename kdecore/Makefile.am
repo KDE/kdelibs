@@ -168,7 +168,8 @@ kde_config_LDADD = ./libkdecore.la
 kde_config_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 
 kgrantpty_SOURCES = kgrantpty.c
-kgrantpty_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+kgrantpty_CFLAGS= $(KDE_USE_FPIE)
+kgrantpty_LDFLAGS = $(KDE_USE_PIE) $(KDE_RPATH) $(all_libraries)
 kgrantpty_LDADD = ./libkdefakes.la
 
 # kgrantpty needs to be installed setuid root
@@ -185,5 +186,3 @@ DOXYGEN_REFERENCES = dcop kdeui kparts kio
 DOXYGEN_EXCLUDE = malloc
 
 include ../admin/Doxyfile.am
-
-

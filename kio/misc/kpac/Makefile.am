@@ -13,6 +13,8 @@ kded_proxyscout_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_proxyscout_la_LIBADD = $(LIB_KIO) $(top_builddir)/kjs/libkjs.la $(LIB_KDED)
 
 kpac_dhcp_helper_SOURCES = kpac_dhcp_helper.c
+kpac_dhcp_helper_CFLAGS = $(KDE_USE_FPIE)
+kpac_dhcp_helper_LDFLAGS = $(KDE_USE_PIE)
 kpac_dhcp_helper_LDADD = $(LIBSOCKET)
 
 noinst_HEADERS = proxyscout.h script.h downloader.h discovery.h
