@@ -74,7 +74,6 @@ DCOPServer* the_server;
 
 template class Q3Dict<DCOPConnection>;
 template class Q3PtrDict<DCOPConnection>;
-template class Q3PtrList<DCOPListener>;
 
 #define _DCOPIceSendBegin(x)	\
    int fd = IceConnectionNumber( x );		\
@@ -1058,7 +1057,6 @@ DCOPServer::DCOPServer(bool _suicide)
     IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
     _IceWriteHandler = DCOPIceWriteChar;
 
-    listener.setAutoDelete( true );
     DCOPListener* con;
     for ( int i = 0; i < numTransports; i++) {
 	con = new DCOPListener( listenObjs[i] );
@@ -1107,6 +1105,8 @@ DCOPServer::~DCOPServer()
     delete m_stream;
     m_logger->close();
     delete m_logger;
+    while(!listener.empty())
+        delete listener.takeFirst());
 #endif
 #ifdef Q_OS_WIN
 	SetEvent(m_evTerminate);

@@ -23,9 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DCOPSIGNALS_H "$Id$"
 
 #include <QByteArray>
-#include <q3dict.h>
-#include <q3asciidict.h>
-#include <q3ptrlist.h>
+#include <QList>
+#include <QHash>
 #include <qstring.h>
 #include <kdatastream.h>
 #include "kdelibs_export.h"
@@ -50,7 +49,7 @@ public:
 };
 
 /** \internal */
-class DCOP_EXPORT DCOPSignalConnectionList : public Q3PtrList<DCOPSignalConnection>
+class DCOP_EXPORT DCOPSignalConnectionList : public QList<DCOPSignalConnection *>
 {
 public:
    DCOPSignalConnectionList() { };
@@ -126,7 +125,7 @@ public:
     * a given signal. The connections in this list may specify different
     * senders and receiving clients/objects.
     */
-   Q3AsciiDict<DCOPSignalConnectionList> connections;
+   QHash<DCOPCString, DCOPSignalConnectionList *> connections;
 };
 
 //

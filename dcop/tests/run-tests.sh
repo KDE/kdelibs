@@ -16,7 +16,7 @@ while ! dcop | grep -q TestApp; do echo -n '.'; sleep 2; done
 echo ' started'
 
 echo '* Running driver mode'
-./driver `dcop 'TestApp-*'` >driver.stdout
+./driver `/usr/local/kde/bin/dcop 'TestApp-*'` >driver.stdout
 
 echo '* Running shell mode'
 source shell.generated >shell.returns

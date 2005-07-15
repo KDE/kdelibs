@@ -165,7 +165,7 @@ private:
     DCOPSignals *dcopSignals;
     QTimer *m_timer;
     QTimer *m_deadConnectionTimer;
-    Q3PtrList<DCOPListener> listener;
+    QList<DCOPListener*> listener;
     Q3AsciiDict<DCOPConnection> appIds; // index on app id
     Q3PtrDict<DCOPConnection> clients; // index on iceConn
     QHash<int, DCOPConnection*> fd_clients; // index on fd
