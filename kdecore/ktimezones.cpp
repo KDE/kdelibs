@@ -38,7 +38,7 @@
 #include <cstring>
 #include <ctime>
 
-#ifdef _HAVE_ALLOCA_H
+#ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
 /**
