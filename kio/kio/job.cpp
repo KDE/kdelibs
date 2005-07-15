@@ -511,7 +511,12 @@ void SimpleJob::start(Slave *slave)
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
     if ( !sslSession.isNull() )
     {
-	    addMetaData("ssl_session_id", sslSession);
+        addMetaData("ssl_session_id", sslSession);
+    }
+
+    if (!isInteractive())
+    {
+        addMetaData("no-auth-prompt", "true");
     }
 
     if (!m_outgoingMetaData.isEmpty())
