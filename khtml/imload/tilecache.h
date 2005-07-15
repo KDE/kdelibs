@@ -55,12 +55,9 @@ struct TileCacheNode
         this->cachePrev->cacheNext = this;
     }
 
-    //If 0, we're unlocked, otherwise locked by N callees
-    int cacheLocked;
-
     Tile* tile;
     
-    TileCacheNode(): cacheNext(0), cachePrev(0), cacheLocked(0), tile(0)
+    TileCacheNode(): cacheNext(0), cachePrev(0), tile(0)
     {}
 };
 
@@ -106,12 +103,6 @@ private:
     */
     Node* front;
     Node* rear;
-    
-    /**
-     There is also a second list, of "locked" entries, which are not manually discarded
-    */
-    Node* lockedFront;
-    Node* lockedRear;
 
     /**
      Discard the node, and removes it from the list. Does not free the node.
@@ -133,12 +124,6 @@ public:
         front->cacheNext = rear;
         rear ->cachePrev = front;
         
-        lockedFront = new Node;
-        lockedRear  = new Node;
-        
-        lockedFront->cacheNext = lockedRear;
-        lockedRear ->cachePrev = lockedFront;
-
         poolHead = 0;
     }
     
@@ -165,57 +150,10 @@ public:
         //Link in before the end sentinel, i.e. at the very last spot, increment usage count
         node->tile            = tile;
         tile->cacheNode       = node;
-        node->cacheLocked     = 0;
         node->linkBefore(rear);
         size++;
     }
     
-    
-    /** 
-     Add a "locked" entry to the cache. It will be owned by the cache, but not 
-     discarded, nor would it count as resource usage. touchEntry, removeEntry, etc., will 
-     work fine on it; it can be converted to a regular allocation using unlockEntry
-    */
-    void addLockedEntry(Tile* tile)
-    {
-        Node* node = create();
-        node->tile        = tile;
-        tile->cacheNode   = node;
-        node->cacheLocked = 1;
-        node->linkBefore(lockedRear);
-    }
-    
-    /**
-     Unlock an entry, making it discardable. (unless someone else locked it, too)
-    */
-    void unlockEntry(Tile* tile)
-    {
-        Node* node = tile->cacheNode;
-        assert(node->cacheLocked);
-        
-        --node->cacheLocked;
-        if (node->cacheLocked == 0)
-        {        
-            node->unlink();
-            release(node);
-            addEntry(tile);
-        }
-    }
-    
-    /**
-     Locks an entry, making it impossible to discard
-     */
-    void lockEntry(Tile* tile)
-    {
-        Node* node = tile->cacheNode;
-        ++node->cacheLocked;
-        if (node->cacheLocked == 1) //first lock
-        {            
-            size--;
-            node->unlink();
-            node->linkBefore(lockedRear);
-        }
-    }
     
     /**
      "Touches" the entry, making it the most recent 
@@ -224,9 +162,6 @@ public:
     void touchEntry(Tile* tile)
     {
         Node* node = tile->cacheNode;
-        if (node->cacheLocked)
-            return;
-            
         node->unlink();
         node->linkBefore(rear);
     }
@@ -238,8 +173,7 @@ public:
     {
         Node* node = tile->cacheNode;
         doDiscard(node);
-        if (!node->cacheLocked)
-            size--;
+        size--;
 
         release(node);
     }
