@@ -88,23 +88,27 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
     }
     else
     {
-        QRect imagePortion(offX, offY + first,
-                           tile->pixmap.width(), last - first + 1);
         if (image.hasAlphaChannel())
         {
             //### When supported, use the src op.
+            QRect imagePortion(offX, offY,
+                               tile->pixmap.width(),
+                               tile->pixmap.height());
+
+            QImage portion = image.copy(imagePortion);
             tile->pixmap.fill(Qt::transparent);
             QPainter p(&tile->pixmap);
-            p.drawImage(0, 0, image, offX, offY,
-                        tile->pixmap.width(),
-                        tile->pixmap.height());
+            p.drawImage(0, 0, portion);
         }
         else
         {
+            QRect imagePortion(offX, offY + first,
+                               tile->pixmap.width(), last - first + 1);
+
+            QImage portion = image.copy(imagePortion);
             //Push the image portion update
             QPainter p(&tile->pixmap);
-            p.drawImage(QPoint(0, first), image, imagePortion);
-            p.end();
+            p.drawImage(QPoint(0, first), portion);
         }
     }
 }

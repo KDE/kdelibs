@@ -288,10 +288,21 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintInfo.p->setPen( Qt::black ); // used for bitmaps
         //const QPixmap& pix = i->pixmap();
         //### FIXME!!!  FIXME!!! Ultra-slow -- need to store the painter
-        #warning "FIXME: bad performance"
+        #warning "FIXME: bad performance when scaling"
         ImagePainter ip(i->image(), QSize(contentWidth(), contentHeight()));
-        ip.paint(_tx + leftBorder + leftPad, _ty + topBorder + topPad, paintInfo.p);
-        //### should intercept with paintInfo's rectangle!
+
+        //Intersect with the painting clip rectangle.
+        int x = _tx + leftBorder + leftPad;
+        int y = _ty + topBorder + topPad;
+        QRect imageGeom   = QRect(0, 0, i->image()->size().width(), i->image()->size().height());
+        
+        QRect clipPortion = paintInfo.r.translated(-x, -y);
+        imageGeom &= clipPortion;
+
+        ip.paint(x + imageGeom.x(), y + imageGeom.y(), paintInfo.p,
+                                    imageGeom.x(),     imageGeom.y(),
+                                    imageGeom.width(), imageGeom.height());
+        
     }
     if (m_selectionState != SelectionNone) {
 //    kdDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
