@@ -250,7 +250,7 @@ public:
                   globalColorMap->Colors[file->SBackGroundColor].Green,
                   globalColorMap->Colors[file->SBackGroundColor].Blue);
                   
-        bool prevWasBG = true;//false;//true;
+        bool prevWasBG = false;//true;
         
         //Extract out all the frames
         for (int frame = 0; frame < file->ImageCount; ++frame)
