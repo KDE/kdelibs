@@ -42,6 +42,7 @@
 #include "rendering/render_style.h"
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
+#include <QWindowsStyle>
 
 //We don't use the default fonts, though, but traditional testregression ones
 #undef HTML_DEFAULT_VIEW_FONT
@@ -84,6 +85,36 @@ PalInfo palInfo[] =
     {QPalette::Link, 0xff0000ff},
     {QPalette::LinkVisited, 0xffff00ff},
     {QPalette::LinkVisited, 0}
+};
+
+class TestStyle: public QWindowsStyle
+{
+public:
+    TestStyle()
+    {}
+
+    virtual QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget) const
+    {
+        QSize size = QWindowsStyle::sizeFromContents(type, option, contentsSize, widget);
+        if (type == CT_LineEdit)
+            return QSize(size.width() + 2, size.height() + 2);
+        return size;
+    }
+
+    virtual int pixelMetric(PixelMetric metric, const QStyleOption* option, const QWidget* widget) const 
+    {
+        if (metric == PM_ButtonMargin)
+            return 7;
+        return QWindowsStyle::pixelMetric(metric, option, widget);
+    }
+
+    virtual QRect subElementRect(SubElement element, const QStyleOption* option, const QWidget* widget) const
+    {
+        QRect rect = QWindowsStyle::subElementRect(element, option, widget);
+        if (element == SE_PushButtonContents)
+            return rect.translated(0, -1);
+        return rect;
+    }
 };
 
 #include <kaction.h>
@@ -515,7 +546,7 @@ int main(int argc, char *argv[])
 
     KApplication a;
     a.disableAutoDcopRegistration();
-    a.setStyle( "windows" );
+    a.setStyle( new TestStyle );
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
@@ -930,7 +961,7 @@ void RegressionTest::dumpRenderTree( QTextStream &outputStream, KHTMLPart* part 
     for ( QStringList::iterator it = names.begin(); it != names.end(); ++it ) {
         outputStream << "FRAME: " << (*it) << "\n";
 	KHTMLPart* frame = part->findFrame( (*it) );
-	Q_ASSERT( frame );
+//	Q_ASSERT( frame );
 	if ( frame )
             dumpRenderTree( outputStream, frame );
     }
@@ -1273,7 +1304,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
-    //qDebug("open:%s", url.prettyURL().latin1());
+    qDebug("open:%s", url.prettyURL().latin1());
     pm.waitForCompletion();
     m_part->closeURL();
 
