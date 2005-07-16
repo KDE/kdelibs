@@ -2241,7 +2241,7 @@ void KHTMLPart::checkCompleted()
     // deferred until the parent emits a completed signal.
     if ( parentPart() == 0 ) {
       //kdDebug(6050) << this << " starting redirection timer" << endl;
-      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+      d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
     } else {
       //kdDebug(6050) << this << " not toplevel -> not starting redirection timer. Waiting for slotParentCompleted." << endl;
     }
@@ -4977,7 +4977,7 @@ void KHTMLPart::slotParentCompleted()
   if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
   {
     //kdDebug(6050) << this << ": starting timer for child redirection -> " << d->m_redirectURL << endl;
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
   }
 }
 
