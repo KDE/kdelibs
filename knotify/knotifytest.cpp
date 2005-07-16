@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv)
 {
-  KApplication app(argc, argv, "knotifytest");
+  QApplication app(argc, argv, "knotifytest");
 
 //
   while (1) {

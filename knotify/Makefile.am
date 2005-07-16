@@ -1,12 +1,14 @@
 
-INCLUDES= -I$(top_srcdir)/arts/kde -I$(includedir)/arts $(all_includes)
+INCLUDES= $(akode_includes) $(all_includes)
 
 ####### Files
 
-kde_module_LTLIBRARIES = knotify.la
+#kde_module_LTLIBRARIES = knotify.la
+lib_LTLIBRARIES =
+kdeinit_LTLIBRARIES = knotify.la
 
 knotify_la_SOURCES	= knotify.cpp knotify.skel
-knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI) $(top_builddir)/arts/kde/libartskde.la
+knotify_la_LIBADD	= $(LIB_KDEUI) $(akode_libs)
 knotify_la_LDFLAGS = $(all_libraries) -module -avoid-version
 knotify_la_METASOURCES = AUTO
 
@@ -14,6 +16,7 @@ check_PROGRAMS		= knotifytest
 knotifytest_SOURCES	= knotifytest.cpp
 knotifytest_LDADD	= $(LIB_KDECORE)
 knotifytest_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
+knotifytest_CFLAGS 	= -I../kdecore
 
 noinst_HEADERS	=  knotify.h
 

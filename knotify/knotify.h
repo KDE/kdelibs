@@ -13,7 +13,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include <knotifyclient.h>
 #include <dcopobject.h>
-#include <soundserver.h>
+#include <qwindowdefs.h>
 
 class KNotifyPrivate;
 class KProcess;
@@ -50,6 +50,7 @@ public:
 
 protected:
 k_dcop:
+/*
 	// deprecated
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
@@ -59,10 +60,10 @@ k_dcop:
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
                          int present, int level, int winId);
-
+*/
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
-                         int present, int level, int winId, int eventId);
+                         int present, int level, int winId = 0, int eventId = 1);
 
 
 	void reconfigure();
@@ -76,30 +77,21 @@ private:
 	bool notifyByStderr(const QString &text);
 	bool notifyByPassivePopup(const QString &text, const QString &appName,
                                   WId winId );
-	bool notifyByExecute(const QString &command, 
-                             const QString& event, 
-                             const QString& fromApp, 
+	bool notifyByExecute(const QString &command,
+                             const QString& event,
+                             const QString& fromApp,
                              const QString& text,
                              int winId,
                              int eventId );
-    bool notifyByTaskbar( WId winId );
-	
-	bool isPlaying( const QString& soundFile ) const;
+	bool notifyByTaskbar( WId winId );
 
-    void soundFinished( int eventId, PlayingFinishedStatus reason );
-    void abortFirstPlayObject();
-	
+
         WId checkWinId( const QString& appName, WId senderWinId );
 
 	/**
 	 * checks if eventname is a global event (exists in config/eventsrc)
 	 **/
 	bool isGlobal(const QString &eventname);
-
-private slots:
-    void playTimeout();
-    void slotPlayerProcessExited( KProcess *proc );
-    void restartedArtsd();
 
 private:
     KNotifyPrivate* d;
