@@ -454,8 +454,8 @@ void KEditToolbar::slotDefault()
     if ( d->m_factory )
     {
         const QString localPrefix = locateLocal("data", "");
-        QPtrList<KXMLGUIClient> clients(d->m_factory->clients());
-        QPtrListIterator<KXMLGUIClient> it( clients );
+        Q3PtrList<KXMLGUIClient> clients(d->m_factory->clients());
+        Q3PtrListIterator<KXMLGUIClient> it( clients );
 
         for( ; it.current(); ++it)
         {
