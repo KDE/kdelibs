@@ -40,7 +40,8 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kactiontest kdatetimewidgettest ktimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
 	kdocktest qxembedtest ksqueezedtextlabeltest \
-	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest
+	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
+	khboxtest
 
 METASOURCES = AUTO
 
@@ -103,3 +104,4 @@ ksqueezedtextlabeltest_SOURCES = ksqueezedtextlabeltest.cpp
 kjanuswidgettest_SOURCES = kjanuswidgettest.cpp
 kpixmapregionselectordialogtest_SOURCES = kpixmapregionselectordialogtest.cpp
 ktoolbarlabelactiontest_SOURCES = ktoolbarlabelactiontest.cpp
+khboxtest_SOURCES = khboxtest.cpp
