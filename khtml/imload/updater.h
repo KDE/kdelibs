@@ -32,6 +32,7 @@ namespace khtmlImLoad {
 
 class Image;
 
+#warning "FIXME: this can dangle pointers!"
 /**
  The updater class helps manage timers, to permit update messages to be coalesced (so we don't 
  bug KHTML, or whatever use every 5 pico-seconds.

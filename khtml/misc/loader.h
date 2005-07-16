@@ -299,7 +299,10 @@ namespace khtml
         virtual void imageHasGeometry(khtmlImLoad::Image* img, int width, int height);
         virtual void imageChange     (khtmlImLoad::Image* img, QRect region);
         virtual void imageError      (khtmlImLoad::Image* img);
+        virtual void imageDone       (khtmlImLoad::Image* img);
     private:
+        void doNotifyFinished();
+        
         void do_notify(const QRect& r);
         khtmlImLoad::Image* i;
 

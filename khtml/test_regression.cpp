@@ -26,9 +26,9 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <kapplication.h>
 #include <qimage.h>
@@ -57,6 +57,34 @@
 #define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
 #define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
 
+#warning "Kill this at some point"
+
+struct PalInfo
+{
+    QPalette::ColorRole role;
+    Q_UINT32            color;
+};
+
+PalInfo palInfo[] = 
+{
+    {QPalette::Foreground, 0xff000000},
+    {QPalette::Button, 0xffc0c0c0},
+    {QPalette::Light, 0xffffffff},
+    {QPalette::Midlight, 0xffdfdfdf},
+    {QPalette::Dark, 0xff808080},
+    {QPalette::Mid, 0xffa0a0a4},
+    {QPalette::Text, 0xff000000},
+    {QPalette::BrightText, 0xffffffff},
+    {QPalette::ButtonText, 0xff000000},
+    {QPalette::Base, 0xffffffff},
+    {QPalette::Background, 0xffc0c0c0},
+    {QPalette::Shadow, 0xff000000},
+    {QPalette::Highlight, 0xff000080},
+    {QPalette::HighlightedText, 0xffffffff},
+    {QPalette::Link, 0xff0000ff},
+    {QPalette::LinkVisited, 0xffff00ff},
+    {QPalette::LinkVisited, 0}
+};
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -508,6 +536,13 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "Fonts", QStringList() );
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.sync();
+
+    QPalette pal = a.palette();
+    for (int c = 0; palInfo[c].color; ++c)
+    {
+        pal.setColor(palInfo[c].role, QColor(palInfo[c].color));
+    }
+    a.setPalette(pal);
 
     int rv = 1;
 
@@ -1103,8 +1138,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     QString relOutputDir = makeRelativePath(m_baseDir, m_outputDir);
 
     // are blocking reads possible with KProcess?
-    char pwd[PATH_MAX];
-    getcwd( pwd, PATH_MAX );
+    QString pwd = QDir::currentPath();
     chdir( QFile::encodeName( m_baseDir ) );
 
     if ( failures & RenderFailure ) {
@@ -1139,7 +1173,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         domDiff += "</pre>";
     }
 
-    chdir( pwd );
+    chdir( QFile::encodeName( pwd ) );
 
     // create a relative path so that it works via web as well. ugly
     QString relpath = makeRelativePath(m_outputDir + "/"
@@ -1239,7 +1273,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
-    qDebug("open:%s", url.prettyURL().latin1());
+    //qDebug("open:%s", url.prettyURL().latin1());
     pm.waitForCompletion();
     m_part->closeURL();
 

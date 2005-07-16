@@ -41,9 +41,17 @@ class AnimProvider
 protected:
     PixmapPlane* frame0;
     PixmapPlane* curFrame;
+    bool         shouldSwitchFrame; //Set by AnimTimer
 
     void nextFrame(); //Helper that goes to next frame or wraps around
 public:
+    AnimProvider(PixmapPlane* plane):frame0(plane), curFrame(plane),
+                                     shouldSwitchFrame(true)
+    {}
+
+    void switchFrame()
+    { shouldSwitchFrame = true; }
+    
     virtual ~AnimProvider() {}
 
     //Must be implemented to create animation provider for the given

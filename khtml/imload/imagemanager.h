@@ -49,12 +49,12 @@ private:
     
     static void initLoaders();
 public:
-//     static AnimTimer* animTimer()
-//     {
-//         if (!anmTimer)
-//             anmTimer = new AnimTimer();
-//         return anmTimer;
-//     }
+    static AnimTimer* animTimer()
+    {
+        if (!anmTimer)
+            anmTimer = new AnimTimer();
+        return anmTimer;
+    }
 
     static TileCache* imageCache() 
     {

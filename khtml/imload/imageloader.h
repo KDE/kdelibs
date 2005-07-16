@@ -31,6 +31,7 @@
 namespace khtmlImLoad {
 
 class Image;
+
 /**
  A base class for decoders. The decoders should inherit off this, and use the protected functions to  
  feed their images data
@@ -87,6 +88,14 @@ protected:
     void requestScanline(unsigned int lineNum, unsigned char* lineBuf)
     {
         image->requestScanline(lineNum, lineBuf);
+    }
+
+    /**
+     Call this to get the first frame
+    */
+    PixmapPlane* requestFrame0()
+    {
+        return image->getSize(image->size());
     }
     
 public:

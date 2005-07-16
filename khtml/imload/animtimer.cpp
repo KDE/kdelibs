@@ -74,7 +74,7 @@ void AnimTimer::tick()
     {
         pending.remove(*iter);
         (*iter)->switchFrame();
-    }    
+    }
 }
 
 void AnimTimer::destroyed(AnimProvider* provider)

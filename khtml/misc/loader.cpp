@@ -395,18 +395,21 @@ void CachedImage::ref( CachedObjectClient *c )
 {
     CachedObject::ref(c);
 
-//     if( m ) {
-//         m->unpause();
-//         if( m->state() == QMovie::NotRunning || m_clients.count() == 1 )
-//             m->restart();
-//     }
+#ifdef LOADER_DEBUG
+    kdDebug(6060) << " image "<<this<<" ref'd by client " << c << "\n";
+#endif
 
     // for mouseovers, dynamic changes
-//???
-/*    if ( m_status >= Persistent && !valid_rect().isNull() ) {
-        c->setPixmap( pixmap(), valid_rect(), this);
+    //### having both makes no sense
+    if ( m_status >= Persistent && !i->size().isNull() ) {
+#ifdef LOADER_DEBUG
+        kdDebug(6060) << "Notifying finished size:" <<
+            i->size().width() << ", " << i->size().height() << endl;
+#endif
+        c->updatePixmap( QRect(0, 0, i->size().width(), i->size().height()),
+                         this );
         c->notifyFinished( this );
-    }*/
+    }
 }
 
 void CachedImage::deref( CachedObjectClient *c )
@@ -610,11 +613,18 @@ QSize CachedImage::pixmap_size() const
 
 void CachedImage::imageHasGeometry(khtmlImLoad::Image* img, int width, int height)
 {
+#ifdef LOADER_DEBUG
+    kdDebug(6060) << this << " got geometry "<< width << "x" << height << endl;
+#endif
     do_notify(QRect(0, 0, width, height));
 }
 
 void CachedImage::imageChange     (khtmlImLoad::Image* img, QRect region)
 {
+#ifdef LOADER_DEBUG
+    kdDebug(6060) << "Image " << this << " change " <<
+        region.x() << "," << region.y() << ":" << region.width() << "x" << region.height() << endl;
+#endif
     //### this is overly conservative -- I guess we need to also specify reason,
     //e.g. repaint vs. changed !!!
     delete bg;
@@ -623,11 +633,28 @@ void CachedImage::imageChange     (khtmlImLoad::Image* img, QRect region)
     do_notify(region);
 }
 
-void CachedImage::imageError      (khtmlImLoad::Image* img)
+void CachedImage::doNotifyFinished()
 {
-    m_hadError = true;
+    for (Q3PtrDictIterator<CachedObjectClient> it( m_clients); it.current();)
+    {
+        it()->notifyFinished(this);
+    }
 }
 
+void CachedImage::imageError(khtmlImLoad::Image* img)
+{
+    error(0, 0);
+}
+
+
+void CachedImage::imageDone(khtmlImLoad::Image* img)
+{
+#ifdef LOADER_DEBUG
+    kdDebug(6060)<<"Image is done:" << this << endl;
+#endif
+    m_status = Persistent;
+    doNotifyFinished();
+}
 
 // QRect CachedImage::valid_rect() const
 // {
@@ -639,7 +666,12 @@ void CachedImage::imageError      (khtmlImLoad::Image* img)
 void CachedImage::do_notify(const QRect& r)
 {
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
+    {
+#ifdef LOADER_DEBUG
+        kdDebug(6060) << " image "<<this<<" notify of geom client " << it.current() << "\n";
+#endif
         it()->updatePixmap( r, this);
+    }
 }
 
 

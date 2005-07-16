@@ -29,6 +29,7 @@
 #include "gifloader.h"
 #include "imageloader.h"
 #include "imagemanager.h"
+#include "pixmapplane.h"
 
 #include <QByteArray>
 #include <QPainter>
@@ -46,6 +47,24 @@ static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
 static int INTERLACED_JUMP  [] = { 8, 8, 4, 2 };
 
 
+enum GIFConstants
+{
+    //Graphics control extension has most of animation info
+    GCE_Code                = 0xF9,
+    GCE_Size                = 4,
+    //Fields of the above
+    GCE_Flags               = 0,
+    GCE_Delay               = 1,
+    GCE_TransColor          = 3,
+    //Contents of mask
+    GCE_DisposalMask        = 0x1C,
+    GCE_DisposalUnspecified = 0x00,
+    GCE_DisposalLeave       = 0x04,
+    GCE_DisposalBG          = 0x08,
+    GCE_DisposalRestore     = 0x0C,
+    GCE_TransColorMask      = 0x01
+};
+
 struct GIFFrameInfo
 {
     bool         trans;
@@ -55,92 +74,95 @@ struct GIFFrameInfo
     char         mode;
     //###
 };
-#if 0
+
 /**
- An anim provider for the animated GIFs that only use the clear-to-background mode; 
- these do not need any backing store, and hence can be implemented pretty efficiently
+ An anim provider for the animated GIFs. We keep a backing store for
+ the screen.
 */
-class SimpleGIFAnimProvider: public AnimProvider
+class GIFAnimProvider: public AnimProvider
 {
 protected:
     QVector<GIFFrameInfo> frameInfo;
     int                   frame;
-    
-    QRect scaleRect(QRect geom)
-    {
-        if (image->size() == image->originalSize())
-            return geom;
-        
-        double xScale = double(image->size().width())/image->originalSize().width();
-        double yScale = double(image->size().height())/image->originalSize().height();
-        
-        QRect toRet;
-        toRet.setTopLeft    (QPoint(qRound(xScale*geom.x()), qRound(xScale*geom.y())));
-        toRet.setBottomRight(QPoint(qRound(xScale*geom.x() + xScale*(geom.width() - 1)),
-                                    qRound(xScale*geom.y() + yScale*(geom.height() - 1)))); 
-        
-        return toRet;
-    }
+    QPixmap               backing;
+    bool                  firstTime;
+    QColor                bgColor;
 public:
-    SimpleGIFAnimProvider(Image* image, QVector<GIFFrameInfo> _frames): AnimProvider(image)
+    GIFAnimProvider(PixmapPlane* plane, QVector<GIFFrameInfo> _frames, QColor bg):
+        AnimProvider(plane), bgColor(bg)
     {
         frameInfo = _frames;
         frame     = 0;
-    }
-    
-    virtual void doSwitchFrame()
-    {
-        ++frame;
-        if (frame == frameInfo.size())
-            frame = 0;
+        backing   = QPixmap(plane->width, plane->height);
+        firstTime = true;
     }
     
     virtual void paint(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
     {
-        QRect frameGeom = scaleRect(frameInfo[frame].geom);
-    
-        //Which portion of the screen should be drawn using the frame...
-        QRect framePortion = frameGeom.intersect(QRect(sx, sy, width, height));
-        
-        if (frameInfo[frame].trans) //For transparent frame, must erase everything 
-        //(can happen here only if someone inherits, I think)
-            p->fillRect(dx, dy, width, height, frameInfo[frame].bg); 
+        if (!width || !height)
+            return; //Nothing to draw.
+            
+        if (!shouldSwitchFrame)
+        {
+            p->drawPixmap(dx, dy, backing, sx, sy, width, height);
+        }
         else
         {
-            //Translate into paint coordinates..
-            QRect pcFramePortion = framePortion;
-            pcFramePortion.moveLeft(pcFramePortion.x() + (dx - sx));
-            pcFramePortion.moveTop (pcFramePortion.y() + (dy - sy));
-            
-            //### TODO: Do this by hand?
-            QRegion paint(QRect(dx, dy, width, height));
-            paint = paint.subtract(pcFramePortion);
-            
-            p->setClipRegion(paint);
-            p->fillRect(dx, dy, width, height, frameInfo[frame].bg);
-            p->setClipping(false);
+            shouldSwitchFrame = false;
+
+            //Prepare backing store.
+            if (firstTime)
+            {
+                //First time: merely fill with background
+                backing.fill(bgColor);
+                firstTime = false;
+            }
+            else
+            {
+                //Perform action required by the previous frame.
+                //### FIXME: test how Unspecified behaves in
+                //Mozilla, IE
+                if (frameInfo[frame].mode == GCE_DisposalBG)
+                    backing.fill(bgColor);
+
+                //Leave requires no work, of course, and for restore,
+                //We merely do not damage the backing store.
+
+                ++frame;
+                if (frame >= frameInfo.size())
+                    frame = 0;
+
+                nextFrame();
+            }
+
+
+            //Paint the frame on the backing store -- unless we're
+            //supposed to leave it untouched
+            if (0 && frameInfo[frame].mode != GCE_DisposalRestore)
+            {
+            }
+            else
+            {
+                //Special case. We draw directly to the painter.
+                //Figure out how much of the frame we're supposed to paint.
+                QRect portion(sx, sy, width, height);
+                portion &= frameInfo[frame].geom;
+                dx += portion.x() - frameInfo[frame].geom.x();
+                dy += portion.y() - frameInfo[frame].geom.y();
+                curFrame->paint(dx, dy, p, portion.x(), portion.y(),
+                                portion.width(), portion.height());
+            }
+
+            ImageManager::animTimer()->nextFrameIn(this, frameInfo[frame].delay);
         }
-        
-        if (!framePortion.isEmpty())
-        {
-            int xOff = frameGeom.x(), yOff = frameGeom.y();
-            paintFrame(frame, framePortion.x() + (dx - sx), framePortion.y() + (dy - sy), p, 
-                              framePortion.x() - xOff, framePortion.y() - yOff, 
-                              framePortion.width(),    framePortion.height());
-        }
-        
-        ImageManager::animTimer()->nextFrameIn(this, frameInfo[frame].delay);
+    }
+
+    virtual AnimProvider* clone(PixmapPlane*)
+    {
+        return 0; //### FIXME
     }
 };
 
-class CompeteGIFAnimProvider: public SimpleGIFAnimProvider
-{
-public:
-    CompeteGIFAnimProvider(Image* image, QVector<GIFFrameInfo> _frames, 
-                           int screenWidth, int screenHeight): SimpleGIFAnimProvider(image, _frames)
-    {}
-};
-#endif 
 
 class GIFLoader: public ImageLoader
 {
@@ -178,23 +200,6 @@ public:
         return toRet;
     }
     
-    enum GIFConstants
-    {
-        //Graphics control extension has most of animation info
-        GCE_Code                = 0xF9,
-        GCE_Size                = 4,
-        //Fields of the above
-        GCE_Flags               = 0,
-        GCE_Delay               = 1,
-        GCE_TransColor          = 3, 
-        //Contents of mask
-        GCE_DisposalMask        = 0x1C,
-        GCE_DisposalUnspecified = 0x00,
-        GCE_DisposalLeave       = 0x04,
-        GCE_DisposalBG          = 0x08,
-        GCE_DisposalRestore     = 0x0C,
-        GCE_TransColorMask      = 0x01  
-    };
     
     static unsigned int decode16Bit(char* signedLoc)
     {
@@ -237,8 +242,6 @@ public:
         //We use canvas size only for animations
         if (file->ImageCount > 1)
             notifyImageInfo(file->SWidth, file->SHeight);
-        
-        bool allBG = true;
         
         QVector<GIFFrameInfo> frameProps;
         
@@ -290,10 +293,6 @@ public:
                         frameInf.delay = 100;
                 }
             }
-            
-            
-            if (frameInf.mode != GCE_DisposalBG)
-                allBG = false;
             
             //Note: trans color for the first frame uses the background color,
             //otherwise it uses proper transparency, except if the previous frame 
@@ -406,16 +405,8 @@ public:
         
         if (file->ImageCount > 1)
         { //need animation provider
-/*            if (allBG)
-            {
-                //In this case we do not need a fully-featured animator,
-                //so use one specialized for always just clearing BG
-                (void)new SimpleGIFAnimProvider(image, frameProps);
-            }
-            else
-            {
-                (void)new CompeteGIFAnimProvider(image, frameProps, file->SWidth, file->SHeight);
-            }*/
+            PixmapPlane* frame0  = requestFrame0();
+            frame0->animProvider = new GIFAnimProvider(frame0, frameProps, bg);
         }
          
         return Done;

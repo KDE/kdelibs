@@ -169,8 +169,10 @@ bool Image::processData(uchar* data, int length)
     
     //If we just finished decoding...
     if (stat == ImageLoader::Done)
+    {
         fullyDecoded = true;
-        //### notifyFinished from here?
+        owner->imageDone(this);
+    }
     
     if (stat == ImageLoader::Error)
     {
@@ -207,7 +209,7 @@ void Image::processEOF()
     else
     {
         fullyDecoded = true;
-        //### notifyFinished from here?
+        owner->imageDone(this);
     }
 }
 

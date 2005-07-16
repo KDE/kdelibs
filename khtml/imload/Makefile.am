@@ -4,7 +4,7 @@ noinst_LTLIBRARIES = libkhtmlimload.la
 
 libkhtmlimload_la_SOURCES = imageplane.cpp rawimageplane.cpp scaledimageplane.cpp \
                             pixmapplane.cpp animprovider.cpp imagepainter.cpp \
-                            updater.cpp image.cpp imagemanager.cpp
+                            updater.cpp image.cpp imagemanager.cpp animtimer.cpp
 
 
 #noinst_HEADERS = frame.h imageformat.h imageloaderprovider.h imageowner.h loaderdatabase.h pool.h\
