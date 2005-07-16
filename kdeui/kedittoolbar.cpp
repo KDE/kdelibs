@@ -37,6 +37,7 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kinstance.h>
+#include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <kseparator.h>
 #include <kconfig.h>
@@ -365,46 +366,61 @@ public:
 class KEditToolbarPrivate {
 public:
     bool m_accept;
+
+    // Save parameters for recreating widget after resetting toolbar
+    bool m_global;
+    KActionCollection* m_collection;
+    QString m_file;
+    KXMLGUIFactory* m_factory;
 };
 
 const char *KEditToolbar::s_defaultToolbar = 0L;
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent, const char* name)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
     m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), collection, file, global, this))
 {
     init();
+    d->m_global = global;
+    d->m_collection = collection;
+    d->m_file = file;
 }
 
 KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
                            const QString& file, bool global,
                            QWidget* parent, const char* name)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
     m_widget(new KEditToolbarWidget(defaultToolbar, collection, file, global, this))
 {
     init();
+    d->m_global = global;
+    d->m_collection = collection;
+    d->m_file = file;
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
       m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), factory, this))
 {
     init();
+    d->m_factory = factory;
 }
 
 KEditToolbar::KEditToolbar(const QString& defaultToolbar,KXMLGUIFactory* factory,
                            QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
       m_widget(new KEditToolbarWidget(defaultToolbar, factory, this))
 {
     init();
+    d->m_factory = factory;
 }
 
 void KEditToolbar::init()
 {
     d = new KEditToolbarPrivate();
     d->m_accept = false;
+    d->m_factory = 0;
 
     setMainWidget(m_widget);
 
@@ -425,6 +441,71 @@ void KEditToolbar::acceptOK(bool b)
 {
     enableButtonOK(b);
     d->m_accept = b;
+}
+
+void KEditToolbar::slotDefault()
+{
+    if ( KMessageBox::warningContinueCancel(this, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),i18n("Reset"))!=KMessageBox::Continue )
+        return;
+
+    delete m_widget;
+    d->m_accept = false;
+
+    if ( d->m_factory )
+    {
+        const QString localPrefix = locateLocal("data", "");
+        QPtrList<KXMLGUIClient> clients(d->m_factory->clients());
+        QPtrListIterator<KXMLGUIClient> it( clients );
+
+        for( ; it.current(); ++it)
+        {
+            KXMLGUIClient *client = it.current();
+            QString file = client->xmlFile();
+
+            if (file.isNull())
+                continue;
+
+            if (QDir::isRelativePath(file))
+            {
+                const KInstance *instance = client->instance() ? client->instance() : KGlobal::instance();
+                file = locateLocal("data", QString::fromLatin1( instance->instanceName() + '/' ) + file);
+            }
+            else
+            {
+                if (!file.startsWith(localPrefix))
+                    continue;
+            }
+
+            if ( QFile::exists( file ) )
+                if ( !QFile::remove( file ) )
+                    kdWarning() << "Could not delete " << file << endl;
+        }
+
+        m_widget = new KEditToolbarWidget(QString::null, d->m_factory, this);
+        m_widget->rebuildKXMLGUIClients();
+    }
+    else
+    {
+        int slash = d->m_file.findRev('/')+1;
+        if (slash)
+            d->m_file = d->m_file.mid(slash);
+        QString xml_file = locateLocal("data", QString::fromLatin1( KGlobal::instance()->instanceName() + '/' ) + d->m_file);
+
+        if ( QFile::exists( xml_file ) )
+            if ( !QFile::remove( xml_file ) )
+                kdWarning() << "Could not delete " << xml_file << endl;
+
+        m_widget = new KEditToolbarWidget(QString::null, d->m_collection, d->m_file, d->m_global, this);
+    }
+
+    setMainWidget(m_widget);
+    m_widget->show();
+
+    connect(m_widget, SIGNAL(enableOk(bool)), SLOT(acceptOK(bool)));
+    connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
+
+    enableButtonApply(false);
+    emit newToolbarConfig();
 }
 
 void KEditToolbar::slotOk()
@@ -621,6 +702,16 @@ bool KEditToolbarWidget::save()
   if ( !factory() )
     return true;
 
+  rebuildKXMLGUIClients();
+
+  return true;
+}
+
+void KEditToolbarWidget::rebuildKXMLGUIClients()
+{
+  if ( !factory() )
+    return;
+
   Q3PtrList<KXMLGUIClient> clients(factory()->clients());
   //kdDebug(240) << "factory: " << clients.count() << " clients" << endl;
 
@@ -663,8 +754,6 @@ bool KEditToolbarWidget::save()
   cit.toFirst();
   for( ; cit.current(); ++cit)
     factory()->addClient( cit.current() );
-
-  return true;
 }
 
 void KEditToolbarWidget::setupLayout()

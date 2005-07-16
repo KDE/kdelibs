@@ -17,6 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
+
 #include <ktimezones.h>
 #include <kdebug.h>
 #include <kcodecs.h>
@@ -36,6 +38,9 @@
 #include <cstring>
 #include <ctime>
 
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 /**
  * Find out if the given standard (e.g. "GMT") and daylight savings time
  * (e.g. "BST", but which may be empty) abbreviated timezone names match

@@ -2237,11 +2237,23 @@ void HTMLSelectElementImpl::reset()
     QVector<HTMLGenericFormElementImpl*> items = listItems();
     uint i;
     const uint itemsSize = items.size();
+    bool anySelected = false;
     for (i = 0; i < itemsSize; ++i) {
         if (items[i]->id() == ID_OPTION) {
             HTMLOptionElementImpl* const option = static_cast<HTMLOptionElementImpl*>(items[i]);
             const bool selected = (!option->getAttribute(ATTR_SELECTED).isNull());
             option->setSelected(selected);
+            if (selected)
+                anySelected = true;
+        }
+    }
+    // If there is no default selection, jump to first option.
+    if ( !anySelected ) {
+        for (i = 0; i < itemsSize; ++i) {
+            if (items[i]->id() == ID_OPTION) {
+                static_cast<HTMLOptionElementImpl*>(items[i])->setSelected(true);
+                break;
+            }
         }
     }
     if ( m_render )

@@ -646,7 +646,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             {
             case ID_TABLE:
                 popBlock(ID_TABLE); // end the table
-                handled = checkChild( current->id(), id);
+                handled = checkChild( current->id(), id, !doc()->inCompatMode());
                 break;
             default:
             {
@@ -996,7 +996,8 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // images
     case ID_IMG:
-        if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
+        if (t->attrs&&
+            KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()&&
             KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled())
         {
             QString url = doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() );

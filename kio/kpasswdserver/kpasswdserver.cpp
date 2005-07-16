@@ -86,6 +86,12 @@ KPasswdServer::~KPasswdServer()
     delete m_wallet;
 }
 
+// Helper - returns the wallet key to use for read/store/checking for existence.
+static QString makeWalletKey( const QString& key, const QString& realm )
+{
+    return realm.isEmpty() ? key : key + '-' + realm;
+}
+
 // Helper for storeInWallet/readFromWallet
 static QString makeMapKey( const char* key, int entryNumber )
 {
@@ -106,21 +112,15 @@ static bool storeInWallet( KWallet::Wallet* wallet, const QString& key, const KI
     typedef QMap<QString,QString> Map;
     int entryNumber = 1;
     Map map;
-    kdDebug(130) << "storeInWallet: key=" << key << "  reading existing map" << endl;
-    if ( wallet->readMap( key, map ) == 0 ) {
+    QString walletKey = makeWalletKey( key, info.realmValue );
+    kdDebug(130) << "storeInWallet: walletKey=" << walletKey << "  reading existing map" << endl;
+    if ( wallet->readMap( walletKey, map ) == 0 ) {
         Map::ConstIterator end = map.end();
         Map::ConstIterator it = map.find( "login" );
         while ( it != end ) {
-            Map::ConstIterator realmIter = map.find( makeMapKey( "realm", entryNumber ) );
-            if ( realmIter == end || realmIter.data() == info.realmValue ) {
-                if ( it.data() == info.username ) {
-                    break; // OK, overwrite this entry
-                }
-            } else {
-                // this entry is for another realm, don't overwrite it
-                kdDebug(130) << " ignoring entry for realm " << realmIter.data() << endl;
+            if ( it.data() == info.username ) {
+                break; // OK, overwrite this entry
             }
-
             it = map.find( QString( "login-" ) + QString::number( ++entryNumber ) );
         }
         // If no entry was found, create a new entry - entryNumber is set already.
@@ -131,11 +131,7 @@ static bool storeInWallet( KWallet::Wallet* wallet, const QString& key, const KI
     // note the overwrite=true by default
     map.insert( loginKey, info.username );
     map.insert( passwordKey, info.password );
-    if ( !info.realmValue.isEmpty() ) {
-        const QString realmKey = makeMapKey( "realm", entryNumber );
-        map.insert( realmKey, info.realmValue );
-    }
-    wallet->writeMap( key, map );
+    wallet->writeMap( walletKey, map );
     return true;
 }
 
@@ -146,8 +142,9 @@ static bool readFromWallet( KWallet::Wallet* wallet, const QString& key, const Q
     if ( wallet->hasFolder( KWallet::Wallet::PasswordFolder() ) )
     {
         wallet->setFolder( KWallet::Wallet::PasswordFolder() );
+
         QMap<QString,QString> map;
-        if ( wallet->readMap( key, map ) == 0 )
+        if ( wallet->readMap( makeWalletKey( key, realm ), map ) == 0 )
         {
             typedef QMap<QString,QString> Map;
             int entryNumber = 1;
@@ -155,16 +152,11 @@ static bool readFromWallet( KWallet::Wallet* wallet, const QString& key, const Q
             Map::ConstIterator it = map.find( "login" );
             while ( it != end ) {
                 //kdDebug(130) << "readFromWallet: found " << it.key() << "=" << it.data() << endl;
-                Map::ConstIterator realmIter = map.find( makeMapKey( "realm", entryNumber ) );
-                if ( realmIter == end || realmIter.data() == realm ) {
-                    Map::ConstIterator pwdIter = map.find( makeMapKey( "password", entryNumber ) );
-                    if ( pwdIter != end ) {
-                        if ( it.data() == username )
-                            password = pwdIter.data();
-                        knownLogins.insert( it.data(), pwdIter.data() );
-                    }
-                } else {
-                    //kdDebug(130) << " ignoring entry for realm " << realmIter.data() << endl;
+                Map::ConstIterator pwdIter = map.find( makeMapKey( "password", entryNumber ) );
+                if ( pwdIter != end ) {
+                    if ( it.data() == username )
+                        password = pwdIter.data();
+                    knownLogins.insert( it.data(), pwdIter.data() );
                 }
 
                 it = map.find( QString( "login-" ) + QString::number( ++entryNumber ) );
@@ -221,7 +213,7 @@ KPasswdServer::checkAuthInfo(KIO::AuthInfo info, long windowId)
        if (!result &&
            (info.username.isEmpty() || info.password.isEmpty()) &&
            !KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(),
-                                             KWallet::Wallet::PasswordFolder(), key))
+                                             KWallet::Wallet::PasswordFolder(), makeWalletKey(key, info.realmValue)))
        {
           QMap<QString, QString> knownLogins;
           if (openWallet(windowId)) {
@@ -352,7 +344,7 @@ KPasswdServer::processRequest()
             QMap<QString, QString> knownLogins;
 
             if ( ( username.isEmpty() || password.isEmpty() )
-                && !KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::PasswordFolder(), request->key) )
+                && !KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), KWallet::Wallet::PasswordFolder(), makeWalletKey( request->key, info.realmValue )) )
             {
                 // no login+pass provided, check if kwallet has one
                 if ( openWallet( request->windowId ) )

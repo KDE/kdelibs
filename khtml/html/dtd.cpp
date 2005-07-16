@@ -555,7 +555,7 @@ static bool check_array(ushort child, const ushort *tagList)
 }
 
 
-bool DOM::checkChild(ushort tagID, ushort childID)
+bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 {
     //kdDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
 
@@ -596,6 +596,8 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // _1 *
         return check_array(childID, tag_list_1) || check_array(childID, tag_list_6);
     case ID_P:
+        // P: ( _0 | TABLE ) *
+        return check_array(childID, tag_list_0) || (!strict && childID == ID_TABLE);
     case ID_H1:
     case ID_H2:
     case ID_H3:
