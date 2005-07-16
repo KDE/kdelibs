@@ -89,14 +89,14 @@ public:
 
 #if HAVE_AKODE
 class KNotifyManager : public aKode::Player::Manager {
-    KNotifyPrivate *d;
+    KNotify *d;
 public:
-    KNotifyManager(KNotifyPrivate* p) : d(p) {};
+    KNotifyManager(KNotify* p) : d(p) {};
     void eofEvent() {
-//         d->player.unload();
+        QApplication::postEvent( d, new QCustomEvent( 3001 ) );
     }
     void errorEvent() {
-//         d->player.unload();
+        QApplication::postEvent( d, new QCustomEvent( 3002 ) );
     }
 };
 #endif
@@ -132,7 +132,7 @@ KDE_EXPORT int kdemain(int argc, char **argv)
 
     app.dcopClient()->setDefaultObject( "Notify" );
     app.dcopClient()->setDaemonMode( true );
-    kdDebug() << "knotify starting" << endl;
+//     kdDebug() << "knotify starting" << endl;
 
     return app.exec();
 }
@@ -190,7 +190,7 @@ void KNotify::loadConfig() {
     }
 #if HAVE_AKODE
     else {
-        d->manager = new KNotifyManager(d);
+        d->manager = new KNotifyManager(this);
         d->player.setManager(d->manager);
         // try to open suitable sink
         d->sink = kc->readPathEntry("aKode sink", "auto");
@@ -235,8 +235,8 @@ void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
                      int present, int level, int winId, int eventId )
 {
-    kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
-       " file=" << file << " present=" << present << " level=" << level <<  " winId=" << winId << " eventId=" << eventId << endl;
+//     kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
+//        " file=" << file << " present=" << present << " level=" << level <<  " winId=" << winId << " eventId=" << eventId << endl;
     if( d->inStartup ) {
         d->startupEvents += "(" + event + ":" + fromApp + ")";
     }
@@ -359,7 +359,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
     }
 
 
-    kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
+//     kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
 
     if (!external) {
         //If we disabled audio, just return,
@@ -449,7 +449,7 @@ bool KNotify::notifyByExecute(const QString &command, const QString& event,
                               const QString& fromApp, const QString& text,
                               int winId, int eventId) {
     if (!command.isEmpty()) {
-	kdDebug() << "executing command '" << command << "'" << endl;
+// 	kdDebug() << "executing command '" << command << "'" << endl;
         QMap<QChar,QString> subst;
         subst.insert( 'e', event );
         subst.insert( 'a', fromApp );
@@ -534,7 +534,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
         DCOPCString senderId = kapp->dcopClient()->senderId();
         DCOPCString compare = (appName + "-mainwindow").latin1();
         int len = compare.length();
-        kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
+//         kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
 
         DCOPCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
         for (DCOPCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
@@ -548,14 +548,30 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
                     QDataStream answer(&replyData, IO_ReadOnly);
                     if (replyType == "int") {
                         answer >> senderWinId;
-                        kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
-                                  << "' senderWinId=" << senderWinId << endl;
+//                         kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
+//                                   << "' senderWinId=" << senderWinId << endl;
                     }
 		}
             }
         }
     }
     return senderWinId;
+}
+
+bool KNotify::event( QEvent *e )
+{
+    switch( e->type() )
+    {
+        case 3001: // eof
+        case 3002: // error
+            d->player.stop();
+            d->player.unload();
+            return true;
+        default:
+            break;
+    }
+
+    return QObject::event(e);
 }
 
 void KNotify::sessionReady()

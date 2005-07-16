@@ -48,6 +48,8 @@ public:
         Unknown = 5000
     };
 
+    bool event(QEvent* );
+
 protected:
 k_dcop:
 /*
