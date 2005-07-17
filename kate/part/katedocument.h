@@ -88,6 +88,12 @@ class KateDocument : public KTextEditor::Document,
 {
   K_DCOP
   Q_OBJECT
+  Q_INTERFACES(KTextEditor::SessionConfigInterface)
+  Q_INTERFACES(KTextEditor::SearchInterface)
+  Q_INTERFACES(KTextEditor::HighlightingInterface)
+  Q_INTERFACES(KTextEditor::MarkInterface)
+  Q_INTERFACES(KTextEditor::VariableInterface)
+  Q_INTERFACES(KTextEditor::ModificationInterface)
 
   friend class KateViewInternal;
   friend class KateRenderer;

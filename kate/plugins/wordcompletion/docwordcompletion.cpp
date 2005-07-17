@@ -191,7 +191,7 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
 {
   d->treshold = treshold;
   view->insertChildClient( this );
-  KTextEditor::CodeCompletionInterface *cci=KTextEditor::codeCompletionInterface(view);
+  KTextEditor::CodeCompletionInterface *cci = qobject_cast<KTextEditor::CodeCompletionInterface *>(view);
   if (cci) cci->registerCompletionProvider(this);
   setInstance( KGenericFactory<DocWordCompletionPlugin>::instance() );
 
@@ -211,7 +211,7 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
 
   setXMLFile("docwordcompletionui.rc");
 
-  KTextEditor::VariableInterface *vi = KTextEditor::variableInterface( view->document() );
+  KTextEditor::VariableInterface *vi = qobject_cast<KTextEditor::VariableInterface *>( view->document() );
   if ( vi )
   {
     QString e = vi->variable("wordcompletion-autopopup");
@@ -225,7 +225,7 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
 
 DocWordCompletionPluginView::~DocWordCompletionPluginView()
 {
-  KTextEditor::CodeCompletionInterface *cci=KTextEditor::codeCompletionInterface(m_view);
+  KTextEditor::CodeCompletionInterface *cci = qobject_cast<KTextEditor::CodeCompletionInterface *>(m_view);
   if (cci) cci->unregisterCompletionProvider(this);
 
   delete d;
@@ -255,7 +255,7 @@ void DocWordCompletionPluginView::popupCompletionList( QString w )
   if ( w.isEmpty() )
     return;
 
-  KTextEditor::CodeCompletionInterface *cci = codeCompletionInterface( m_view );
+  KTextEditor::CodeCompletionInterface *cci = qobject_cast<KTextEditor::CodeCompletionInterface *>( m_view );
   #warning cci->showCompletionBox( allMatches( w ), w.length() );
 }
 

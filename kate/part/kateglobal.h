@@ -66,6 +66,7 @@ namespace Kate {
 class KateGlobal : public KTextEditor::Editor, public KTextEditor::CommandInterface
 {
   Q_OBJECT
+  Q_INTERFACES(KTextEditor::CommandInterface)
 
   private:
     /**
