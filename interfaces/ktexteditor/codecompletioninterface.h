@@ -229,8 +229,8 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 
 };
 
-KTEXTEDITOR_EXPORT CodeCompletionInterface *codeCompletionInterface (class View *view);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionInterface, "org.kde.KTextEditor.CodeCompletionInterface")
 
 #endif

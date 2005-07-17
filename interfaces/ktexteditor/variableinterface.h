@@ -60,7 +60,8 @@ class KTEXTEDITOR_EXPORT VariableInterface
 };
 
 
-KTEXTEDITOR_EXPORT VariableInterface *variableInterface( class Document * );
 } // namespace KTextEditor
+
+Q_DECLARE_INTERFACE(KTextEditor::VariableInterface, "org.kde.KTextEditor.VariableInterface")
 
 #endif //_KTEXTEDITOR_VARIABLE_INTERFACE_H_

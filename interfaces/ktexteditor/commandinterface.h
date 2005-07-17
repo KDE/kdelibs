@@ -21,6 +21,7 @@
 #define __ktexteditor_commandinterface_h__
 
 #include <kdelibs_export.h>
+#include <qobject.h>
 
 class QStringList;
 class KCompletion;
@@ -159,13 +160,8 @@ class KTEXTEDITOR_EXPORT CommandInterface
 
 };
 
-/**
- * query methode to test if given document really supports this interface
- * @param doc document to test for interface
- * @return pointer to interface, or 0 if this document doesn't support it
- */
-KTEXTEDITOR_EXPORT CommandInterface *commandInterface (Editor *editor);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::CommandInterface, "org.kde.KTextEditor.CommandInterface")
 
 #endif

@@ -48,10 +48,8 @@ class KTEXTEDITOR_EXPORT SessionConfigInterface
     virtual void writeSessionConfig (KConfig *) = 0;
 };
 
-KTEXTEDITOR_EXPORT SessionConfigInterface *sessionConfigInterface (class Document *doc);
-KTEXTEDITOR_EXPORT SessionConfigInterface *sessionConfigInterface (class View *view);
-KTEXTEDITOR_EXPORT SessionConfigInterface *sessionConfigInterface (class Plugin *plugin);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::SessionConfigInterface, "org.kde.KTextEditor.SessionConfigInterface")
 
 #endif

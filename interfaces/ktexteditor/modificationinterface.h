@@ -85,13 +85,8 @@ class KTEXTEDITOR_EXPORT ModificationInterface
     virtual void modifiedOnDisk (Document *doc, bool isModified, ModifiedOnDiskReason reason) = 0;
 };
 
-/**
- * query methode to test if given document really supports this interface
- * @param doc document to test for interface
- * @return pointer to interface, or 0 if this document doesn't support it
- */
-KTEXTEDITOR_EXPORT ModificationInterface *modificationInterface (Document *doc);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::ModificationInterface, "org.kde.KTextEditor.ModificationInterface")
 
 #endif

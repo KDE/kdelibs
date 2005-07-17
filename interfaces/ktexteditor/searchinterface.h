@@ -72,8 +72,8 @@ class KTEXTEDITOR_EXPORT SearchInterface
     virtual bool searchText (int startLine, int startCol, const QRegExp &regexp, int *foundAtLine, int *foundAtCol, int *matchLen, bool backwards = false) = 0;
 };
 
-KTEXTEDITOR_EXPORT SearchInterface *searchInterface (Document *doc);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::SearchInterface, "org.kde.KTextEditor.SearchInterface")
 
 #endif

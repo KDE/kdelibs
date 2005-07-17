@@ -58,8 +58,8 @@ class KTEXTEDITOR_EXPORT TextHintInterface
 	virtual void needTextHint(int line, int col, QString &text)=0;
 };
 
-KTEXTEDITOR_EXPORT TextHintInterface *textHintInterface (class View *view);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::TextHintInterface, "org.kde.KTextEditor.TextHintInterface")
 
 #endif

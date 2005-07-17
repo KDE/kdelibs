@@ -21,7 +21,7 @@
 #define __ktexteditor_markinterface_h__
 
 #include <q3ptrlist.h>
-
+#include <qobject.h>
 #include <kdelibs_export.h>
 
 class QPixmap;
@@ -169,8 +169,8 @@ class KTEXTEDITOR_EXPORT MarkInterface
                               KTextEditor::MarkInterface::MarkChangeAction action) = 0;
 };
 
-KTEXTEDITOR_EXPORT MarkInterface *markInterface (class Document *doc);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::MarkInterface, "org.kde.KTextEditor.MarkInterface")
 
 #endif

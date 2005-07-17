@@ -71,8 +71,8 @@ class KTEXTEDITOR_EXPORT HighlightingInterface
 	  virtual void hlChanged () = 0;
 };
 
-KTEXTEDITOR_EXPORT HighlightingInterface *highlightingInterface (class Document *doc);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::HighlightingInterface, "org.kde.KTextEditor.HighlightingInterface")
 
 #endif
