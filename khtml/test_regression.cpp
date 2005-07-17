@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include <kapplication.h>
+#include <kaccelmanager.h>
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
@@ -43,6 +44,7 @@
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
 #include <QWindowsStyle>
+#include <QStyleOptionSlider>
 
 //We don't use the default fonts, though, but traditional testregression ones
 #undef HTML_DEFAULT_VIEW_FONT
@@ -92,6 +94,36 @@ class TestStyle: public QWindowsStyle
 public:
     TestStyle()
     {}
+
+    virtual void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
+    {
+        switch (element)
+        {
+        case CE_ScrollBarSubLine:
+        case CE_ScrollBarAddLine:
+        case CE_ScrollBarSubPage:
+        case CE_ScrollBarAddPage:
+        case CE_ScrollBarFirst:
+        case CE_ScrollBarLast:
+        case CE_ScrollBarSlider:
+            const QStyleOptionSlider* sbOpt = qstyleoption_cast<const QStyleOptionSlider*>(option);
+
+            if (sbOpt->minimum == sbOpt->maximum)
+            {
+                const_cast<QStyleOptionSlider*>(sbOpt)->state ^= QStyle::State_Enabled;
+                if (element == CE_ScrollBarSlider)
+                    element = CE_ScrollBarAddPage;
+            }
+
+            if (element == CE_ScrollBarAddPage || element == CE_ScrollBarSubPage)
+            {
+                //Fun. in Qt4, the brush offset seems to be sensitive to window position??
+                painter->setBrushOrigin(0,1);
+            }
+        }
+
+        QWindowsStyle::drawControl(element, option, painter, widget);
+    }
 
     virtual QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option,
                                  SubControl subControl, const QWidget* widget) const
@@ -492,7 +524,7 @@ static KCmdLineOptions options[] =
     { "g", 0, 0 } ,
     { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
     { "s", 0, 0 } ,
-    { "show", "Show the window while running tests", 0 } ,
+    { "noshow", "Do not show the window while running tests", 0 } ,
     { "t", 0, 0 } ,
     { "test <filename>", "Only run a single test. Multiple options allowed.", 0 } ,
     { "js",  "Only run .js tests", 0 },
@@ -624,6 +656,7 @@ int main(int argc, char *argv[])
     KHTMLPart *part = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     toplevel->setCentralWidget( part->widget() );
+    KAcceleratorManager::setNoAccel ( part->widget() );
     part->setJScriptEnabled(true);
 
     part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
