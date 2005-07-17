@@ -564,8 +564,10 @@ bool KNotify::event( QEvent *e )
     {
         case 3001: // eof
         case 3002: // error
+#if HAVE_AKODE
             d->player.stop();
             d->player.unload();
+#endif
             return true;
         default:
             break;
