@@ -31,7 +31,7 @@ makekdewidgets_LDADD = $(LIB_QT) ../kdecore/libkdecore.la
 kde_widget_LTLIBRARIES = kdewidgets.la
 kdewidgets_la_LDFLAGS = $(KDE_PLUGIN) -module $(all_libraries)
 kdewidgets_la_LIBADD = $(LIB_KIO) $(LIB_KABC)
-kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp qrc_kdewidgets.cpp
+kdewidgets_la_SOURCES = classpreviews.cpp kdewidgets.cpp kdewidgets.qrc
 
 kdewidgets.cpp: $(srcdir)/kde.widgets makekdewidgets
 	./makekdewidgets -o kdewidgets.cpp $(srcdir)/kde.widgets
@@ -40,8 +40,5 @@ kdewidgets.lo: kdewidgets.moc
 kdewidgets.moc: kdewidgets.cpp
 	$(MOC) -o kdewidgets.moc kdewidgets.cpp
 
-qrc_kdewidgets.cpp: $(srcdir)/kdewidgets.qrc
-	$(QTDIR)/bin/rcc -o qrc_kdewidgets.cpp $(srcdir)/kdewidgets.qrc
-
-CLEANFILES = kdewidgets.cpp kdewidgets.moc qrc_kdewidgets.cpp
+CLEANFILES = kdewidgets.cpp kdewidgets.moc
 
