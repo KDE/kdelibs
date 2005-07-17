@@ -401,12 +401,12 @@ void CachedImage::ref( CachedObjectClient *c )
 
     // for mouseovers, dynamic changes
     //### having both makes no sense
-    if ( m_status >= Persistent && !i->size().isNull() ) {
+    if ( m_status >= Persistent && !pixmap_size().isNull() ) {
 #ifdef LOADER_DEBUG
         kdDebug(6060) << "Notifying finished size:" <<
             i->size().width() << ", " << i->size().height() << endl;
 #endif
-        c->updatePixmap( QRect(0, 0, i->size().width(), i->size().height()),
+        c->updatePixmap( QRect(QPoint(0, 0), pixmap_size()),
                          this );
         c->notifyFinished( this );
     }
