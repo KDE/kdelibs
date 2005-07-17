@@ -536,25 +536,23 @@ const KTimezone *KTimezones::local()
     if (!f.open(IO_ReadOnly))
     {
         kdDebug() << "Can't open " << f.name() << endl;
-        if (!f.open(IO_ReadOnly))
+
+        // Solaris support.
+        //
+        // /bin/fgrep 'TZ=' /etc/default/init | /bin/head -n 1 | /bin/cut -b 4-
+        //
+        KTempFile temp;
+        KShellProcess reader;
+        reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
+            "/bin/head" << "-n" << "1" << "|" <<
+            "/bin/cut" << "-b" << "4-";
+        // Note the use of blocking here...it is a trivial amount of data!
+        temp.close();
+        reader.start(KProcess::Block);
+        f.setName(temp.name());
+        if (!temp.status() || !f.open(IO_ReadOnly))
         {
-            // Solaris support.
-            //
-            // /bin/fgrep 'TZ=' /etc/default/init | /bin/head -n 1 | /bin/cut -b 4-
-            //
-            KTempFile temp;
-            KShellProcess reader;
-            reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
-                "/bin/head" << "-n" << "1" << "|" <<
-                "/bin/cut" << "-b" << "4-";
-            // Note the use of blocking here...it is a trivial amount of data!
-            temp.close();
-            reader.start(KProcess::Block);
-            f.setName(temp.name());
-            if (!temp.status() || !f.open(IO_ReadOnly))
-            {
-                kdDebug() << "Can't open " << f.name() << endl;
-            }
+            kdDebug() << "Can't open " << f.name() << endl;
         }
     }
     if (f.isOpen())
