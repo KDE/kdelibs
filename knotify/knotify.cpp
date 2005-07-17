@@ -53,7 +53,7 @@
 #include <config.h>
 
 // #include <kdemm/factory.h>
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
 #include <string>
 #include <akode/player.h>
 #endif
@@ -74,7 +74,7 @@ public:
 
     int externalPlayerEventId;
 
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
     aKode::Player player;
     QString sink;
     KNotifyManager *manager;
@@ -87,7 +87,7 @@ public:
     QString startupEvents;
 };
 
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
 class KNotifyManager : public aKode::Player::Manager {
     KNotify *d;
 public:
@@ -160,7 +160,7 @@ KNotify::~KNotify()
 {
     reconfigure();
 
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
     d->player.close();
     delete d->manager;
 #endif
@@ -188,7 +188,7 @@ void KNotify::loadConfig() {
             ++it;
         }
     }
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
     else {
         d->manager = new KNotifyManager(this);
         d->player.setManager(d->manager);
@@ -370,7 +370,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
 
         KURL soundURL;
         soundURL.setPath(soundFile);
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
         if (d->player.load(std::string(soundFile.toUtf8()))) {
             d->player.play();
             return true;
@@ -564,7 +564,7 @@ bool KNotify::event( QEvent *e )
     {
         case 3001: // eof
         case 3002: // error
-#if HAVE_AKODE
+#if defined(HAVE_AKODE)
             d->player.stop();
             d->player.unload();
 #endif
