@@ -173,9 +173,7 @@ static Q3CString encodeCString(const Q3CString& e)
             encoded[enclen++] = l;
         }
     }
-    encoded[enclen++] = '\0';
     encoded.truncate(enclen);
-
     return encoded;
 }
 

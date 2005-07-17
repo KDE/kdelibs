@@ -93,12 +93,37 @@ public:
     TestStyle()
     {}
 
+    virtual QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option,
+                                 SubControl subControl, const QWidget* widget) const
+    {
+        QRect rect = QWindowsStyle::subControlRect(control, option, subControl, widget);
+
+        switch (control)
+        {
+        case CC_ComboBox:
+            if (subControl == SC_ComboBoxEditField)
+                return rect.translated(2,-1);
+            else
+                return rect;
+        default:
+            return rect;
+        }
+    }
+
     virtual QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget) const
     {
         QSize size = QWindowsStyle::sizeFromContents(type, option, contentsSize, widget);
-        if (type == CT_LineEdit)
+
+        switch (type)
+        {
+        case CT_LineEdit:
             return QSize(size.width() + 2, size.height() + 2);
-        return size;
+        case CT_ComboBox:
+            return QSize(size.width() + 6, size.height());
+        default:
+            return size;
+        }
+        
     }
 
     virtual int pixelMetric(PixelMetric metric, const QStyleOption* option, const QWidget* widget) const 
