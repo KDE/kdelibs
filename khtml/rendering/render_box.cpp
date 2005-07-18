@@ -1397,8 +1397,12 @@ void RenderBox::calcAbsoluteVertical()
     RenderObject* cb = container();
 
     Length hl = cb->style()->height();
-    if (hl.isFixed())
-        ch = calcContentHeight(hl.value()) + cb->paddingTop() + cb->paddingBottom();
+    if (hl.isFixed()) {
+        if (cb->style()->boxSizing() == BORDER_BOX)
+            ch = kMax(0, hl.value() - cb->borderTop() - cb->borderBottom());
+        else
+            ch = hl.value() + cb->paddingTop() + cb->paddingBottom();
+    }
     else if (cb->isCanvas() || cb->isRoot())
         ch = cb->availableHeight();
     else
