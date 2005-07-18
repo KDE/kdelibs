@@ -54,7 +54,7 @@
 <!ENTITY relecteurCharlesDemartigny      '<othercredit role="reviewer"><firstname>Charles</firstname><surname>Demartigny</surname><affiliation><address><email>charles@demartigny.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurSimonDepiets     '<othercredit role="translator"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurSimonDepiets      '<othercredit role="reviewer"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+<!ENTITY relecteurSimonDepiets     '<othercredit role="reviewer"><firstname>Simon</firstname><surname>Depiets</surname><affiliation><address><email>2df@tuxfamily.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurYvesDessertine     '<othercredit role="translator"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>kde@yvesd.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYvesDessertine      '<othercredit role="reviewer"><firstname>Yves</firstname><surname>Dessertine</surname><affiliation><address><email>kde@yvesd.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -104,6 +104,9 @@
 <!ENTITY traducteurYohannHamon    '<othercredit role="translator"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYohannHamon     '<othercredit role="reviewer"><firstname>Yohann</firstname><surname>Hamon</surname><affiliation><address><email>yohann_hamon@yahoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurGregoireHubert    '<othercredit role="translator"><firstname>Grégoire</firstname><surname>Hubert</surname><affiliation><address><email>greg@coolkeums.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurYohannHamon     '<othercredit role="reviewer"><firstname>Grégoire</firstname><surname>Hubert</surname><affiliation><address><email>greg@coolkeums.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurRobertJacolin      '<othercredit role="translator"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurRobertJacolin      '<othercredit role="reviewer"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -142,11 +145,11 @@
 <!ENTITY traducteurLaurentRathle     '<othercredit role="translator"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLaurentRathle      '<othercredit role="relecteur"><firstname>Laurent</firstname><surname>Rathle</surname><affiliation><address><email>lrathle@kde-france.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurDamienRaudeMorvan     '<othercredit role="translator"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
-<!ENTITY relecteurtraducteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
-
 <!ENTITY traducteurSebastienRenard     '<othercredit role="translator"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY traducteurSebastienRenard      '<othercredit role="relecteur"><firstname>Sébastien</firstname><surname>Renard</surname><affiliation><address><email>Sebastien.Renard@digitalfox.homeip.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurDamienRaudeMorvan     '<othercredit role="translator"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurtraducteurDamienRaudeMorvan      '<othercredit role="relecteur"><firstname>Damien</firstname><surname>Raude-Morvan</surname><affiliation><address><email>drazzib@drazzib.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurChristopheRolland  '<othercredit role="translator"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurChristopheRolland   '<othercredit role="relecteur"><firstname>Christophe</firstname><surname>Rolland</surname><affiliation><address><email>crolland@freesurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -196,6 +199,7 @@
 <!ENTITY JoelGuelluy   'Joël Guelluy <email>jguelluy@chez.com</email>'>
 <!ENTITY YvesGuillou   'Yves Guillou <email>yv_guil@club-internet.fr</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
+<!ENTITY gregoireHubert  'Grégoire Hubert <email>greg@coolkeums.org</email>'>
 <!ENTITY YohannHamon  'Yohann Hamon <email>yohann_hamon@yahoo.fr</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
 <!ENTITY EquipeKDE         'l&apos;équipe française &kde;<email>doc@kde-france.org</email>'>
@@ -210,8 +214,8 @@
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
-<!ENTITY SebastienRenard     'Sébastien Renard <email>Sebastien.Renard@digitalfox.homeip.net</email>'>
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
+<!ENTITY SebastienRenard     'Sébastien Renard <email>Sebastien.Renard@digitalfox.homeip.net</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
