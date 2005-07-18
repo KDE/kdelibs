@@ -1,3 +1,8 @@
+2005-07-19  Andreas Kling  <kling@impul.se>
+
+        * xml/dom_docimpl.cpp (isURLAllowed): Match ad filters against fully
+		expanded URL.
+
 2005-07-18  Andreas Kling  <kling@impul.se>
 
         "Block IFrame..." context menu option
