@@ -83,7 +83,6 @@ padding: 0em 0em 0em 1em;
 
 .navLeft a:link, .navCenter a:link, .navRight a:link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
   color: #41597A;
-  background: white none;
   font-weight: bold;
 }
 
@@ -92,12 +91,10 @@ padding: 0em 0em 0em 1em;
 
 :link { 
   color: #41597A;
-  background: white none; /* should be inherit */
 }
 
 :visited { 
   color: #597ba8;
-  background: white none; /* should be inherit */ 
 }
 
 .navLeft {
