@@ -36,4 +36,3 @@ LIBS=$save_dnssdtest_LIBS
 fi
 AC_SUBST(LIB_DNSSD)
 AM_CONDITIONAL(HAVE_DNSSD, test "$have_libdns_sd" = "yes")
-

@@ -16,4 +16,3 @@ if test -n "$cups_modeldir"; then
 else
 	AC_MSG_RESULT(no)
 fi
-

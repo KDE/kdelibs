@@ -54,5 +54,3 @@ AC_MSG_RESULT($ac_libthai)
 
 
 KDE_CHECK_LIBTHAI
-
-

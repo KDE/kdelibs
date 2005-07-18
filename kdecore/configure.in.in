@@ -43,7 +43,7 @@ dnl Test for libidn (IDNA support)
 dnl -------
 
 AC_ARG_WITH(libidn,
-  [AS_HELP_STRING(--with-libidn,
+  [AC_HELP_STRING(--with-libidn,
     [enable support for libidn @<:@default=check@:>@])],
   [], with_libidn=check)
 LIB_IDN=
@@ -54,7 +54,7 @@ if test "x$with_libidn" != xno; then
     LIB_IDN=-lidn
   ])
   if test "x$with_libidn" != xcheck && test -z "$LIB_IDN"; then
-    AC_MSG_FAILURE([--with-libidn was given, but test for libidn failed])
+    AC_MSG_ERROR([--with-libidn was given, but test for libidn failed])
   fi
 fi
 AC_SUBST(LIB_IDN)
@@ -174,7 +174,7 @@ AM_CONFIG_HEADER(kdecore/kdemacros.h)
 SVGICONS=
 	
 AC_ARG_WITH(libart,
-  [AS_HELP_STRING(--with-libart,
+  [AC_HELP_STRING(--with-libart,
     [enable support for libart @<:@default=check@:>@])],
   [], with_libart=check)
 
@@ -206,7 +206,7 @@ if test "x$with_libart" != xno; then
     fi
   fi
   if test "x$with_libart" != xcheck && test -z "$LIBART_LIBS"; then
-    AC_MSG_FAILURE([--with-libart was given, but test for libart failed])
+    AC_MSG_ERROR([--with-libart was given, but test for libart failed])
   fi
 fi
 
