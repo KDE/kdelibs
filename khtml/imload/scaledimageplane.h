@@ -46,18 +46,15 @@ private:
         //### I bet this has all sorts of imprecision problems w/high ratios
         unsigned int* origin = new unsigned int[scaled];
         
-        double ratio = double(orig)/double(scaled);
+        //### FIXME: replace with something that clamps on right edge later?
+        double ratio    = double(orig)/double(scaled);
+        int    intRatio = int(ratio*65536.0 + 1);
+        int    pos      = 0;
         
-        /**
-        When scaling, we consider each pixel to be at the midpoint of its range.
-        That is, if we have width 5,the pixels are 0.5, 1.5, 2.5, 3.5, and 4.5
-        
-        We walk the scaled list, and calculate where the pixel must have originated
-        */
         for (unsigned int pix = 0; pix < scaled; pix++)
         {
-            double id    = pix + 0.5;
-            origin[pix]  = (unsigned int)(id * ratio);
+            origin[pix]  =  pos >> 16;
+            pos          += intRatio;
         }
         
         return origin;
