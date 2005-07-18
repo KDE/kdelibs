@@ -47,11 +47,32 @@ using namespace khtml;
 #include <klocale.h>
 
 
+enum MIB
+{
+    MibLatin1  = 4,
+    MibUtf8    = 106,
+    MibUtf16   = 1015,
+    MibUtf16BE = 1013,
+    MibUtf16LE = 1014,
+};
+
+static bool is16Bit(QTextCodec* codec)
+{
+    switch (codec->mibEnum)
+    {
+    case MibUtf16:
+    case MibUtf16BE:
+    case MibUtf16LE:
+        return true;
+    default:
+        return false;
+    }
+}
 
 Decoder::Decoder()
 {
     // latin1
-    m_codec = QTextCodec::codecForMib(4);
+    m_codec = QTextCodec::codecForMib(MibLatin1);
     m_decoder = m_codec->makeDecoder();
     enc = 0;
     m_type = DefaultEncoding;
@@ -104,11 +125,11 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
     if (type == EncodingFromMetaTag || type  == EncodingFromXMLHeader) {
         //Sometimes the codec specified is absurd, i.e. UTF-16 despite
         //us decoding a meta tag as ASCII. In that case, ignore it.
-        if (codec &&
-            (codec->mibEnum() == 1000)) //UTF16 or similar.
-                codec = 0;
+        if (codec && is16Bit(codec))
+            codec = 0;
     }
 
+#warning "Don't know how to port this, Qt changed its hebrew codecs!"
     if (codec && codec->mibEnum() == 11)  {
         // visually ordered unless one of the following
         if( !(enc == "iso-8859-8-i" || enc == "iso_8859-8-i"
@@ -218,7 +239,7 @@ QString Decoder::decode(const char *data, int len)
     const int maximumBOMLength = 10;
     if (beginning && bufferLength + len >= maximumBOMLength) {
         // If the user has chosen utf16 we still need to auto-detect the endianness
-        if ((m_type != UserChosenEncoding) || (m_codec->mibEnum() == 1000)) {
+        if ((m_type != UserChosenEncoding) || (m_codec->mibEnum() == MibUtf16)) {
             // Extract the first three bytes.
             // Handle the case where some of bytes are already in the buffer.
             const uchar *udata = (const uchar *)data;
@@ -259,7 +280,7 @@ QString Decoder::decode(const char *data, int len)
                 enc = m_codec->name();
                 delete m_decoder;
                 m_decoder = m_codec->makeDecoder();
-                if (m_codec->mibEnum() == 1000 && c2 == 0x00)
+                if (m_codec->mibEnum() == MibUtf16 && c2 == 0x00)
                 {
                   // utf16LE, we need to put the decoder in LE mode
                   char reverseUtf16[3] = {0xFF, 0xFE, 0x00};
@@ -283,7 +304,7 @@ QString Decoder::decode(const char *data, int len)
 #ifdef APPLE_CHANGES
             buffer.append(data, len);
 #else
-            if(m_codec->mibEnum() != 1000) {  // utf16
+            if(!is16Bit(m_codec)) {  // utf16
                 // replace '\0' by spaces, for buggy pages
                 char *d = const_cast<char *>(data);
                 int i = len - 1;
@@ -505,7 +526,7 @@ QString Decoder::decode(const char *data, int len)
         m_codec = QTextCodec::codecForName(enc);
         // be sure not to crash
         if(!m_codec) {
-            m_codec = QTextCodec::codecForMib(4);
+            m_codec = QTextCodec::codecForMib(MibLatin1);
             enc = "iso8859-1";
         }
         delete m_decoder;
@@ -517,7 +538,8 @@ QString Decoder::decode(const char *data, int len)
         out = m_decoder->toUnicode(buffer, buffer.length());
         buffer = "";
     } else {
-        if(m_codec->mibEnum() != 1000) // utf16
+#warning "is this still needed?"
+        if(!is16Bit(m_codec)) // utf16
         {
             // ### hack for a bug in QTextCodec. It cut's the input stream
             // in case there are \0 in it. ZDNET has them inside... :-(
