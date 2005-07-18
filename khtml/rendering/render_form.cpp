@@ -545,7 +545,9 @@ void RenderLineEdit::calcMinMaxWidth()
 
     QStyleOption opt;
     opt.init(widget());
-    s = QSize(w + 2 + 2, kMax(h, 14) + 2 + 2);
+
+    int margin = static_cast<LineEditWidget*>(widget())->hasFrame() ? 4 : 0;
+    s = QSize(w + margin, kMax(h, 14) + margin);
     s = widget()->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s);
     s = s.expandedTo(QApplication::globalStrut());
 

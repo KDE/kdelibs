@@ -308,12 +308,12 @@ void RenderWidget::updateFromElement()
         else
             m_widget->unsetPalette();
         // Border:
-        Q3Frame* frame = qobject_cast<Q3Frame*>(m_widget);
-        if (frame) {
-            if (shouldPaintBackgroundOrBorder())
-            {
-                frame->setFrameShape(Q3Frame::NoFrame);
-            }
+        if (shouldPaintBackgroundOrBorder())
+        {
+            if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
+                frame->setFrameShape(QFrame::NoFrame);
+            else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
+                lineEdit->setFrame(false);
         }
 
     }
