@@ -277,6 +277,22 @@ int RenderBox::calcBoxWidth(int w) const
     return w;
 }
 
+int RenderBox::calcContentHeight(int h) const
+{
+    if (style()->boxSizing() == BORDER_BOX)
+        h -= borderTop() + borderBottom() + paddingTop() + paddingBottom();
+
+    return kMax(0, h);
+}
+
+int RenderBox::calcContentWidth(int w) const
+{
+    if (style()->boxSizing() == BORDER_BOX)
+        w -= borderLeft() + borderRight() + paddingLeft() + paddingRight();
+
+    return kMax(0, w);
+}
+
 // --------------------- painting stuff -------------------------------
 
 void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
@@ -1012,7 +1028,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
     // Otherwise we only use our percentage height if our containing block had a specified
     // height.
     else if (cb->style()->height().isFixed())
-        result = cb->style()->height().value();
+        result = cb->calcContentHeight(cb->style()->height().value());
     else if (cb->style()->height().isPercent())
         // We need to recur and compute the percentage height for our containing block.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
@@ -1052,7 +1068,7 @@ short RenderBox::calcReplacedWidth() const
     if (width < minW)
         width = minW;
 
-    return width;
+    return calcContentWidth(width);
 }
 
 int RenderBox::calcReplacedWidthUsing(WidthType widthType) const
@@ -1094,7 +1110,7 @@ int RenderBox::calcReplacedHeight() const
     if (height < minH)
         height = minH;
 
-    return height;
+    return calcContentHeight(height);
 }
 
 int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
@@ -1123,7 +1139,7 @@ int RenderBox::calcReplacedHeightUsing(HeightType heightType) const
 
 int RenderBox::availableHeight() const
 {
-    return availableHeightUsing(style()->height());
+    return calcContentHeight(availableHeightUsing(style()->height()));
 }
 
 int RenderBox::availableHeightUsing(const Length& h) const
@@ -1382,7 +1398,7 @@ void RenderBox::calcAbsoluteVertical()
 
     Length hl = cb->style()->height();
     if (hl.isFixed())
-        ch = hl.value() + cb->paddingTop() + cb->paddingBottom();
+        ch = calcContentHeight(hl.value()) + cb->paddingTop() + cb->paddingBottom();
     else if (cb->isCanvas() || cb->isRoot())
         ch = cb->availableHeight();
     else

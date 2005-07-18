@@ -1,3 +1,7 @@
+2005-07-19  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_box.{h,cpp}: Make sure we get content-sizes when reading fixed length values.
+
 2005-07-19  Andreas Kling  <kling@impul.se>
 
         * xml/dom_docimpl.cpp (isURLAllowed): Match ad filters against fully
@@ -14,7 +18,7 @@
 2005-07-08  Germain Garand  <germain@ebooksfrance.org>
 
         vertical-align fixes
-        
+
         * rendering/render_object.cpp (getVerticalPosition): block level
         elements must ignore vertical alignment (#92118). For Length values, check the parent
         too. Don't use the parent's position if it's top/bottom - it's waiting for

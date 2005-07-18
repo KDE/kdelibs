@@ -116,6 +116,8 @@ public:
 protected:
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
+    int calcContentWidth(int w) const;
+    int calcContentHeight(int h) const;
 
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
     int calcHeightUsing(const Length& height);
