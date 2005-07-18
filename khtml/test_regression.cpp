@@ -89,6 +89,29 @@ PalInfo palInfo[] =
     {QPalette::LinkVisited, 0}
 };
 
+PalInfo disPalInfo[] = 
+{
+    {QColorGroup::Foreground, 0xff808080},
+    {QColorGroup::Button, 0xffc0c0c0},
+    {QColorGroup::Light, 0xffffffff},
+    {QColorGroup::Midlight, 0xffdfdfdf},
+    {QColorGroup::Dark, 0xff808080},
+    {QColorGroup::Mid, 0xffa0a0a4},
+    {QColorGroup::Text, 0xff808080},
+    {QColorGroup::BrightText, 0xffffffff},
+    {QColorGroup::ButtonText, 0xff808080},
+    {QColorGroup::Base, 0xffc0c0c0},
+    {QColorGroup::Background, 0xffc0c0c0},
+    {QColorGroup::Shadow, 0xff000000},
+    {QColorGroup::Highlight, 0xff000080},
+    {QColorGroup::HighlightedText, 0xffffffff},
+    {QColorGroup::Link, 0xff0000ff},
+    {QColorGroup::LinkVisited, 0xffff00ff},
+    {QPalette::LinkVisited, 0}
+};
+
+
+
 class TestStyle: public QWindowsStyle
 {
 public:
@@ -120,6 +143,9 @@ public:
                 //Fun. in Qt4, the brush offset seems to be sensitive to window position??
                 painter->setBrushOrigin(0,1);
             }
+            break;
+        default: //shaddup
+            break;
         }
 
         QWindowsStyle::drawControl(element, option, painter, widget);
@@ -151,7 +177,13 @@ public:
         case CT_LineEdit:
             return QSize(size.width() + 2, size.height() + 2);
         case CT_ComboBox:
-            return QSize(size.width() + 6, size.height());
+        {
+            const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+            if (cbOpt->currentText.isEmpty())
+                return QSize(size.width() + 18, size.height());
+            else
+                return QSize(size.width() + 6, size.height());
+        }
         default:
             return size;
         }
@@ -169,7 +201,11 @@ public:
     {
         QRect rect = QWindowsStyle::subElementRect(element, option, widget);
         if (element == SE_PushButtonContents)
-            return rect.translated(0, -1);
+        {
+            const QStyleOptionButton* butOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
+            if (butOpt->icon.isNull())
+                return rect.translated(0, -1);
+        }
         return rect;
     }
 };
@@ -551,7 +587,6 @@ int main(int argc, char *argv[])
     setenv( "KDEHOME", kh.latin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
-    qDebug("home:%s", kh.latin1());
 
     signal( SIGALRM, signal_handler );
 
@@ -628,7 +663,9 @@ int main(int argc, char *argv[])
     QPalette pal = a.palette();
     for (int c = 0; palInfo[c].color; ++c)
     {
-        pal.setColor(palInfo[c].role, QColor(palInfo[c].color));
+        pal.setColor(QPalette::Active,   palInfo[c].role, QColor(palInfo[c].color));
+        pal.setColor(QPalette::Inactive, palInfo[c].role, QColor(palInfo[c].color));
+        pal.setColor(QPalette::Disabled, palInfo[c].role, QColor(disPalInfo[c].color));
     }
     a.setPalette(pal);
 
@@ -1087,10 +1124,13 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
     int h = lhsi.height();
     int bytes = lhsi.bytesPerLine();
 
+    const unsigned char* origLs = lhsi.bits();
+    const unsigned char* origRs = rhsi.bits();
+
     for ( int y = 0; y < h; ++y )
     {
-        QRgb* ls = ( QRgb* ) lhsi.scanLine( y );
-        QRgb* rs = ( QRgb* ) rhsi.scanLine( y );
+        const QRgb* ls = (const QRgb*)(origLs + y * bytes);
+        const QRgb* rs = (const QRgb*)(origRs + y * bytes);
         if ( memcmp( ls, rs, bytes ) ) {
             for ( int x = 0; x < w; ++x ) {
                 QRgb l = ls[x];
@@ -1362,7 +1402,6 @@ void RegressionTest::testStaticFile(const QString & filename)
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
-    qDebug("open:%s", url.prettyURL().latin1());
     pm.waitForCompletion();
     m_part->closeURL();
 

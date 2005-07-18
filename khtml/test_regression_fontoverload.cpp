@@ -190,6 +190,9 @@ public:
 
     QFakeFontEngine( XFontStruct *fs, const char *name, int size );
     ~QFakeFontEngine();
+
+    bool  haveMetrics;
+    qreal m_ascent, m_descent, m_leading;
 #if 0
     virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
                                          const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
@@ -205,38 +208,49 @@ public:
     int minRightBearing() const { return 0; }
     int cmap() const;
 #endif
+
     qreal ascent() const 
     {
-      if (grabMetrics(name))
-        return grabMetrics(name)->ascent;
+      if (haveMetrics)
+        return m_ascent;
       else
         return QFontEngineXLFD::ascent();
     }
 
     qreal descent() const 
     {
-      if (grabMetrics(name))
-        return grabMetrics(name)->descent;
+      if (haveMetrics)
+        return m_descent;
       else
         return QFontEngineXLFD::descent();
     }
 
     qreal leading() const
     {
-      if (grabMetrics(name))
-        return grabMetrics(name)->leading;
+      if (haveMetrics)
+        return m_leading;
       else
         return QFontEngineXLFD::leading();
     }
 
-
     bool canRender( const QChar *string,  int len );
 };
+
 
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
     this->name = QLatin1String(name);
+    MetricsInfo* metrics = grabMetrics(name);
+    if (metrics)
+    {
+        haveMetrics = true;
+        m_ascent  = metrics->ascent;
+        m_descent = metrics->descent;
+        m_leading = metrics->leading;
+    }
+    else
+        haveMetrics = false;
 }
 
 QFakeFontEngine::~QFakeFontEngine()
@@ -305,6 +319,7 @@ int QFakeFontEngine::cmap() const
 }
 
 #endif
+
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
     return true;
@@ -373,7 +388,7 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
 
     fe = new QFakeFontEngine( xfs, xlfd.latin1(),request.pixelSize );
 
-    // qDebug("fe %s ascent %d descent %d minLeftBearing %d leading %d maxCharWidth %d minRightBearing %d", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
+    //qDebug("fe %s ascent %f descent %f minLeftBearing %f leading %f maxCharWidth %f minRightBearing %f", xlfd.latin1(), fe->ascent(), fe->descent(), fe->minLeftBearing(), fe->leading(), fe->maxCharWidth(), fe->minRightBearing());
 
     // fe->setScale( scale );
 
@@ -403,6 +418,7 @@ const QString &KHTMLSettings::availableFamilies()
 
   return *avFamilies;
 }
+
 
 bool KHTMLSettings::unfinishedImageFrame() const
 {
