@@ -766,7 +766,9 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 
         //Make a drawing pixmap.
         QPixmap drawTile(mask.size());
-        drawTile.fill(c);
+        QPainter fillDrawTile(&drawTile);
+        fillDrawTile.fillRect(0, 0, drawTile.width(), drawTile.height(), c);
+        fillDrawTile.end();
         drawTile.setMask(mask);
 
         //Finally paint the line
