@@ -18,6 +18,8 @@
   <Action name="saveFrame"/>
   <Action name="viewFrameSource" />
   <Action name="viewFrameInfo" />
+  <Separator weakSeparator="1" />
+  <Action name="blockiframe" />
  </Menu>
  <Separator weakSeparator="1" />
  <Action name="saveimageas" />
