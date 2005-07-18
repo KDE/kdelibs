@@ -455,7 +455,7 @@ kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
     *this<< "[ ";
 
     QVector<QRect>rs=reg.rects();
-    for (uint i=0;i<rs.size();++i)
+    for (int i=0;i<rs.size();++i)
         *this << QString("[%1,%2 - %3x%4] ").arg(rs[i].x()).arg(rs[i].y()).arg(rs[i].width()).arg(rs[i].height() ) ;
 
     *this <<"]";
