@@ -58,7 +58,7 @@ enum MIB
 
 static bool is16Bit(QTextCodec* codec)
 {
-    switch (codec->mibEnum)
+    switch (codec->mibEnum())
     {
     case MibUtf16:
     case MibUtf16BE:
