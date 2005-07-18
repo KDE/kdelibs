@@ -219,7 +219,7 @@ public:
     }
 
     bool isTransparent() const {
-        return color.isValid() && qAlpha(color.rgb()) == 0;
+        return color.isValid() && qAlpha(color.rgba()) == 0;
     }
 
     bool operator==(const BorderValue& o) const

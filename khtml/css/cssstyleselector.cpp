@@ -1843,7 +1843,7 @@ static QColor colorForCSSValue( int css_value )
     while ( col->css_value && col->css_value != css_value )
 	++col;
     if ( col->css_value )
-	return col->color;
+	return QColor::fromRgba(col->color);
 
     const uiColors *uicol = uimap;
     while ( uicol->css_value && uicol->css_value != css_value )
