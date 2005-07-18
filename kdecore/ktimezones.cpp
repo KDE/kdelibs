@@ -38,9 +38,6 @@
 #include <cstring>
 #include <ctime>
 
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
 /**
  * Find out if the given standard (e.g. "GMT") and daylight savings time
  * (e.g. "BST", but which may be empty) abbreviated timezone names match
@@ -101,10 +98,8 @@ public:
     {
     }
 
-    virtual bool parse(const QString &/*zone*/, KTimezoneDetails &dataReceiver) const
+    virtual bool parse(const QString &/*zone*/, KTimezoneDetails &/*dataReceiver*/) const
     {
-        dataReceiver.parseStarted();
-        dataReceiver.parseEnded();
         return true;
     }
 };
@@ -312,7 +307,10 @@ int KTimezone::offset(const QDateTime &dateTime) const
 
 bool KTimezone::parse(KTimezoneDetails &dataReceiver) const
 {
-    return m_db->parse(m_name, dataReceiver);
+    dataReceiver.parseStarted();
+    bool result = m_db->parse(m_name, dataReceiver);
+    dataReceiver.parseEnded();
+    return result;
 }
 
 KTimezones::KTimezones() :
@@ -430,6 +428,8 @@ const KTimezones::ZoneMap KTimezones::allZones()
         float longitude = convertCoordinate(ordinates[2]);
 
         // Add entry to list.
+        if (tokens[0] == "??")
+            tokens[0] = "";
         KTimezone *timezone = new KTimezone(db, tokens[2], tokens[0], latitude, longitude, tokens[3]);
         add(timezone);
     }
@@ -593,7 +593,7 @@ const KTimezone *KTimezones::local()
 
 const KTimezone *KTimezones::zone(const QString &name)
 {
-    if (name == "UTC")
+    if (name.isEmpty() || (name == "UTC"))
         return m_Utc;
     ZoneMap::ConstIterator it = m_zones->find(name);
     if (it != m_zones->end())
@@ -659,7 +659,6 @@ QString KTimezoneSource::db()
 
 bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver) const
 {
-    dataReceiver.parseStarted();
     QFile f(m_db + '/' + zone);
     if (!f.open(IO_ReadOnly))
     {
@@ -718,15 +717,30 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         // kdError() << "local type: " << tt.gmtoff << ", " << tt.isdst << ", " << tt.abbrind << endl;
         dataReceiver.gotLocalTime(i, tt.gmtoff, (tt.isdst != 0), tt.abbrind);
     }
-    char* abbrs = (char* ) alloca( tzh.charcnt );
+
+    // Make sure we don't run foul of maliciously coded timezone abbreviations.
+    if (tzh.charcnt > 64)
+    {
+        kdError() << "excessive length for timezone abbreviations: " << tzh.charcnt << endl;
+        return false;
+    }
+    char *abbrs = new char[tzh.charcnt];
     str.readRawBytes(abbrs, tzh.charcnt);
-    char* abbr = abbrs;
+    if (abbrs[tzh.charcnt - 1] != 0)
+    {
+        // These abbrevations are corrupt!
+        kdError() << "timezone abbreviations not terminated: " << abbrs[tzh.charcnt - 1] << endl;
+        delete [] abbrs;
+        return false;
+    }
+    char *abbr = abbrs;
     while (abbr < abbrs + tzh.charcnt)
     {
         // kdError() << "abbr: " << abbr << endl;
         dataReceiver.gotAbbreviation((abbr - abbrs), abbr);
         abbr += strlen(abbr) + 1;
     }
+    delete [] abbrs;
     for (i = 0; i < tzh.leapcnt; i++)
     {
         str >> leapTime >> leapSeconds;
@@ -745,6 +759,5 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         // kdError() << "UTC: " << isUTC << endl;
         dataReceiver.gotIsUTC(i, (isUTC != 0));
     }
-    dataReceiver.parseEnded();
     return true;
 }
