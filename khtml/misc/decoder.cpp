@@ -50,6 +50,7 @@ using namespace khtml;
 enum MIB
 {
     MibLatin1  = 4,
+    Mib8859_8  = 85,
     MibUtf8    = 106,
     MibUtf16   = 1015,
     MibUtf16BE = 1013,
@@ -129,8 +130,7 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
             codec = 0;
     }
 
-#warning "Don't know how to port this, Qt changed its hebrew codecs!"
-    if (codec && codec->mibEnum() == 11)  {
+    if (codec && codec->mibEnum() == Mib8859_8)  {
         // visually ordered unless one of the following
         if( !(enc == "iso-8859-8-i" || enc == "iso_8859-8-i"
                 || enc == "csiso88598i" || enc == "logical") )
