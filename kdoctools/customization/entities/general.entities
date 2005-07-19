@@ -333,7 +333,7 @@
 <!ENTITY kword	"<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY k4wins	"<application>KWin4</application>">
-<!ENTITY kwordquiz "<applicatin>KWordQuiz</application>">
+<!ENTITY kwordquiz "<application>KWordQuiz</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY kxkb	"<application>Kxkb</application>">
