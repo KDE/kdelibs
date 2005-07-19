@@ -253,7 +253,7 @@ void KSpellingHighlighter::flushCurrentWord()
     }
 
     QChar ch;
-    while ( ( ch = d->currentWord[(int) d->currentWord.length() - 1] ).isPunct() &&
+    while ( !d->currentWord.isEmpty() && ( ch = d->currentWord[(int) d->currentWord.length() - 1] ).isPunct() &&
 	     ch != '(' && ch != '@' )
 	d->currentWord.truncate( d->currentWord.length() - 1 );
 
