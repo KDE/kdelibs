@@ -939,6 +939,8 @@ public:
   }
   uint m_maxItems;
   KPopupMenu *m_popup;
+  QMap<QString, QString> m_shortNames;
+  QMap<QString, KURL> m_urls;
 };
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -1080,7 +1082,10 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
     while( lst.count() > maxItems )
     {
         // remove last item
-        lst.remove( lst.last() );
+        QString lastItem = lst.last();
+        d->m_shortNames.erase( lastItem );
+        d->m_urls.erase( lastItem );
+        lst.remove( lastItem );
     }
 
     // set new list if changed
@@ -1096,11 +1101,15 @@ void KRecentFilesAction::addURL( const KURL& url )
     QStringList lst = items();
 
     // remove file if already in list
-    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
+    QStringList::Iterator end = lst.end();
+    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
     {
-      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      QString title = (*it);
+      if ( title.endsWith( file + "]" ) )
       {
         lst.remove( it );
+        d->m_urls.erase( title );
+        d->m_shortNames.erase( title );
         break;
       }
     }
@@ -1109,11 +1118,17 @@ void KRecentFilesAction::addURL( const KURL& url )
     if( lst.count() == d->m_maxItems )
     {
         // remove last item
-        lst.remove( lst.last() );
+        QString lastItem = lst.last();
+        d->m_shortNames.erase( lastItem );
+        d->m_urls.erase( lastItem );
+        lst.remove( lastItem );
     }
 
     // add file to list
-    lst.prepend( url.fileName() + " [" + file + "]");
+    QString title = url.fileName() + " [" + file + "]";
+    d->m_shortNames.insert( title, url.fileName() );
+    d->m_urls.insert( title, url );
+    lst.prepend( title );
     setItems( lst );
 }
 
@@ -1125,24 +1140,33 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     QStringList lst = items();
 
     // remove file if already in list
-    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
+    QStringList::Iterator end = lst.end();
+    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
     {
-      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      QString title = (*it);
+      if ( title.endsWith( file + "]" ) )
       {
         lst.remove( it );
+        d->m_urls.erase( title );
+        d->m_shortNames.erase( title );
         break;
       }
-    } 
-
+    }
     // remove last item if already maxitems in list
     if( lst.count() == d->m_maxItems )
     {
         // remove last item
-        lst.remove( lst.last() );
+        QString lastItem = lst.last();
+        d->m_shortNames.erase( lastItem );
+        d->m_urls.erase( lastItem );
+        lst.remove( lastItem );
     }
 
     // add file to list
-    lst.prepend( name + " [" + file + "]" );
+    QString title = name + " [" + file + "]";
+    d->m_shortNames.insert( title, name );
+    d->m_urls.insert( title, url );
+    lst.prepend( title );
     setItems( lst );
 }
 
@@ -1152,10 +1176,13 @@ void KRecentFilesAction::removeURL( const KURL& url )
     QString     file = url.pathOrURL();
 
     // remove url
-    for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it )
+    QStringList::Iterator end = lst.end();
+    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
     {
-      if ( (*it).endsWith( file + "]") || (*it).endsWith( file ) )
+      if ( (*it).endsWith( file + "]" ))
       {
+        d->m_shortNames.erase( (*it) );
+        d->m_urls.erase( (*it) );
         lst.remove( it );
         setItems( lst );
         break;
@@ -1166,14 +1193,20 @@ void KRecentFilesAction::removeURL( const KURL& url )
 void KRecentFilesAction::clearURLList()
 {
     clear();
+    d->m_shortNames.clear();
+    d->m_urls.clear();
 }
 
 void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
 {
     QString     key;
     QString     value;
-    QString     oldGroup;
+    QString     nameKey;
+    QString     nameValue;
+    QString      title;
+    QString     oldGroup;    
     QStringList lst;
+    KURL        url;
 
     oldGroup = config->group();
 
@@ -1186,9 +1219,16 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     {
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
-
+        url = KURL::fromPathOrURL( value );
+        nameKey = QString( "Name%1" ).arg( i );
+        nameValue = config->readPathEntry( nameKey, url.fileName() );
+        title = nameValue + " [" + value + "]";
         if (!value.isNull())
-            lst.append( value );
+        {
+          lst.append( title );
+          d->m_shortNames.insert( title, nameValue );
+          d->m_urls.insert( title, url );
+        }
     }
 
     // set file
@@ -1215,7 +1255,10 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     for( unsigned int i = 1 ; i <= lst.count() ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        value = lst[ i - 1 ];
+        value = d->m_urls[ lst[ i - 1 ] ].pathOrURL();
+        config->writePathEntry( key, value );
+        key = QString( "Name%1" ).arg( i );
+        value = d->m_shortNames[ lst[ i - 1 ] ];
         config->writePathEntry( key, value );
     }
 
@@ -1224,24 +1267,13 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 
 void KRecentFilesAction::itemSelected( const QString& text )
 {
-    QString s = text;
-    if ( s.endsWith("]") )
-    {
-      int pos = s.find("[");
-      s = s.mid( pos + 1, s.length() - pos - 2);
-    }  
-    emit urlSelected( KURL( s ) );
+    emit urlSelected( d->m_urls[ text ] );
 }
 
 void KRecentFilesAction::menuItemActivated( int id )
 {
-    QString s = d->m_popup->text(id);
-    if ( s.endsWith("]") )
-    {
-      int pos = s.find("[");
-      s = s.mid( pos + 1, s.length() - pos - 2);
-    }  
-    emit urlSelected( KURL(s) );
+    QString text = d->m_popup->text(id);
+    emit urlSelected( d->m_urls[ text ] );
 }
 
 void KRecentFilesAction::menuAboutToShow()
