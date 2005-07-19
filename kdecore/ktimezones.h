@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
+   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _KTIMEZONES_H
@@ -86,9 +86,17 @@ class KDECORE_EXPORT KTimezone
 public:
     static const float UNKNOWN;
 
+    /**
+     * Create a timezone.
+     *
+     * @param name in system-dependent format.
+     * @param countryCode ISO 3166 2-character country code, empty if unknown.
+     * @param latitude in degrees, UNKNOWN if not known.
+     * @param latitude in degrees, UNKNOWN if not known.
+     */
     KTimezone(
         KSharedPtr<KTimezoneSource> db, const QString &name,
-        const QString &countryCode = "??", float latitude = UNKNOWN, float longitude = UNKNOWN,
+        const QString &countryCode = "", float latitude = UNKNOWN, float longitude = UNKNOWN,
         const QString &comment = "");
     ~KTimezone();
 
@@ -102,7 +110,7 @@ public:
     /**
      * Returns the two-letter country code of the timezone.
      *
-     * @return name in ISO 3166 2-character country code, "??" if unknown.
+     * @return ISO 3166 2-character country code, empty if unknown.
      */
     QString countryCode() const;
 
@@ -286,7 +294,7 @@ public:
     const KTimezone *local();
 
     /**
-     * Returns the given timezone.
+     * Returns the given timezone, empty is equivalent to UTC.
      * @return named timezone, NULL on error.
      */
     const KTimezone *zone(const QString &name);

@@ -66,6 +66,8 @@
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"
 
+#include "khtmlpart_p.h"
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {
@@ -546,6 +548,12 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                                        actionCollection(), "frameintab" );
       new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
                                         actionCollection(), "reloadframe" );
+
+      if ( KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() ) {
+          if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame )
+              new KAction( i18n( "Block IFrame..." ), 0, this, SLOT( slotBlockIFrame() ), actionCollection(), "blockiframe" );
+      }
+
       new KAction( i18n( "View Frame Source" ), 0, d->m_khtml, SLOT( slotViewDocumentSource() ),
                                           actionCollection(), "viewFrameSource" );
       new KAction( i18n( "View Frame Information" ), 0, d->m_khtml, SLOT( slotViewPageInfo() ), actionCollection(), "viewFrameInfo" );
@@ -673,6 +681,17 @@ void KHTMLPopupGUIClient::slotBlockImage()
                                          d->m_imageURL.url(),
                                          &ok);
     if (ok)
+        KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
+}
+
+void KHTMLPopupGUIClient::slotBlockIFrame()
+{
+    bool ok = false;
+    QString url = KInputDialog::getText( i18n( "Add URL to Filter"),
+                                               "URL",
+                                               d->m_khtml->url().url(),
+                                               &ok );
+    if ( ok )
         KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
 }
 

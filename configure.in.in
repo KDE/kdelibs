@@ -336,7 +336,7 @@ AC_DEFINE_UNQUOTED(KDE_DISTRIBUTION_TEXT, "$kde_distribution_text", [Distributio
 AC_MSG_RESULT($kde_distribution_text)
 
 AC_ARG_WITH(utempter,
-[AS_HELP_STRING([--with-utempter], [use utempter for utmp management @<:@default=check@:>@])],
+[AC_HELP_STRING([--with-utempter], [use utempter for utmp management @<:@default=check@:>@])],
 [], with_utempter=check)
 if test "x$with_utempter" != xno; then
   kde_have_utempter=yes
@@ -346,7 +346,7 @@ if test "x$with_utempter" != xno; then
     AC_DEFINE_UNQUOTED(HAVE_UTEMPTER, 1, [Define if you have the utempter helper for utmp managment])
   fi
   if test "x$with_utempter" != xcheck && test "x$kde_have_utempter" != xyes; then
-    AC_MSG_FAILURE([--with-utempter was given, but test for utempter failed])
+    AC_MSG_ERROR([--with-utempter was given, but test for utempter failed])
   fi
 fi
 

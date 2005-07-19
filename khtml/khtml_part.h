@@ -215,6 +215,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::CSSStyleSelector;
   friend class KHTMLPartIface;
   friend class KHTMLPartFunction;
+  friend class KHTMLPopupGUIClient;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )

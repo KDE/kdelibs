@@ -28,8 +28,7 @@
 #include <kcmultidialog.h>
 
 /**
- * @class The KApplication instance for kcmshell.
- *
+ * The KApplication instance for kcmshell.
  */
 class KCMShell : public KApplication
 {
@@ -52,6 +51,7 @@ public:
     void waitForExit();
 
     /**
+     * @return true if the shell is running
      */
     bool isRunning();
 

@@ -1,7 +1,24 @@
+2005-07-19  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_box.{h,cpp}: Make sure we get content-sizes when reading fixed length values.
+
+2005-07-19  Andreas Kling  <kling@impul.se>
+
+        * xml/dom_docimpl.cpp (isURLAllowed): Match ad filters against fully
+		expanded URL.
+
+2005-07-18  Andreas Kling  <kling@impul.se>
+
+        "Block IFrame..." context menu option
+
+        * khtml_ext.{cpp,h}: Added "blockiframe" to context popup menu
+        * khtml_popupmenu.rc: Same
+        * khtml_part.h: added KHTMLPopupGUIClient to friend classes
+
 2005-07-08  Germain Garand  <germain@ebooksfrance.org>
 
         vertical-align fixes
-        
+
         * rendering/render_object.cpp (getVerticalPosition): block level
         elements must ignore vertical alignment (#92118). For Length values, check the parent
         too. Don't use the parent's position if it's top/bottom - it's waiting for
@@ -50,7 +67,7 @@
 
         * khtml_run.cpp (foundMimeType): Mark child object (e.g. <embed>) as completed
         after saving, running in external viewer, or cancelling, so that e.g. scheduled redirects
-        can happen. Patch by Andreas Kling <keso@impul.se>.
+        can happen. Patch by Andreas Kling <kling@impul.se>.
 
 2005-06-20  Allan Sandfeld Jensen <kde@carewolf.com>
 

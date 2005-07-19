@@ -72,6 +72,7 @@ public:
    * @param parent The toplevel widget (window / dialog) the
    *               partmanager should monitor for activation/selection
    *               events
+   * @param name   The object's name, if any.
    */
   PartManager( QWidget * parent, const char * name = 0L );
   /**
@@ -80,7 +81,8 @@ public:
    * @param topLevel The toplevel widget (window / dialog ) the
    *                 partmanager should monitor for activation/selection
    *                 events
-   * @param parent The parent QObject.
+   * @param parent   The parent QObject.
+   * @param name     The object's name, if any.
    */
   PartManager( QWidget * topLevel, QObject *parent, const char *name = 0 );
   virtual ~PartManager();

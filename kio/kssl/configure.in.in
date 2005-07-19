@@ -5,4 +5,3 @@ if test "$have_ssl" = yes; then
 fi
 
 AM_CONFIG_HEADER([kio/kssl/ksslconfig.h])
-
