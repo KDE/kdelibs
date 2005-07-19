@@ -110,6 +110,9 @@ void Decoder::setEncoding(const char *_encoding, EncodingType type)
     }
 
     if (codec && codec->mibEnum() == 11)  {
+        //We do NOT want to use Qt's QHebrewCodec, since it tries to reorder itself.
+        codec = QTextCodec::codecForName("iso8859-8-i");
+	
         // visually ordered unless one of the following
         if( !(enc == "iso-8859-8-i" || enc == "iso_8859-8-i"
                 || enc == "csiso88598i" || enc == "logical") )
