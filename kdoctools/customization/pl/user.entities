@@ -20,7 +20,7 @@
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon> icon"><!-- if image is localised, then entityref should be used instead of fileref -->
+</guiicon>"><!-- if image is localised, then entityref should be used instead of fileref -->
 
 <!ENTITY ark    '&ark-mianownik;'>
 <!ENTITY ark-mianownik    '<application>Ark</application>'>
