@@ -29,6 +29,8 @@
 <!ENTITY ark-narzednik    '<application>Arkiem</application>'>
 <!ENTITY ark-biernik    '<application>Arka</application>'>
 
+<!ENTITY gif        		'<literal role="extension">.gif</literal>'>
+
 <!ENTITY GUI-mianownik    'graficzny interfejs użytkownika'>
 <!ENTITY GUI-dopelniacz    'graficznego interfejsu użytkownika'>
 <!ENTITY GUI-celownik    'graficznemu interfejsowi użytkownika'>
@@ -124,6 +126,22 @@
 <!ENTITY konsole-narzednik    '<application>Konsolą</application>'>
 <!ENTITY konsole-miejscownik    '<application>Konsoli</application>'>
 
+<!ENTITY kontact    '&kontact-mianownik;'>
+<!ENTITY kontact-mianownik    '<application>Kontact</application>'>
+<!ENTITY kontact-dopelniacz    '<application>Kontact</application>'>
+<!ENTITY kontact-celownik    '<application>Kontact</application>'>
+<!ENTITY kontact-biernik    '<application>Kontact</application>'>
+<!ENTITY kontact-narzednik    '<application>Kontact</application>'>
+<!ENTITY kontact-miejscownik    '<application>Kontact</application>'>
+
+<!ENTITY kopete    '&kopete-mianownik;'>
+<!ENTITY kopete-mianownik    '<application>Kopete</application>'>
+<!ENTITY kopete-dopelniacz    '<application>Kopete</application>'>
+<!ENTITY kopete-celownik    '<application>Kopete</application>'>
+<!ENTITY kopete-biernik    '<application>Kopete</application>'>
+<!ENTITY kopete-narzednik    '<application>Kopete</application>'>
+<!ENTITY kopete-miejscownik    '<application>Kopete</application>'>
+
 <!ENTITY kwallet    '&kwallet-mianownik;'>
 <!ENTITY kwallet-mianownik    '<application>Portfel &kde;</application>'>
 <!ENTITY kwallet-dopelniacz    '<application>Portfela &kde;</application>'>
@@ -140,3 +158,11 @@
 <!ENTITY Linux-biernik    'Linuksa'>
 <!ENTITY Linux-narzednik    'Linuksem'>
 <!ENTITY Linux-miejscownik    'Linuksie'>
+
+<!ENTITY Sendmail    '&Sendmail-mianownik;'>
+<!ENTITY Sendmail-mianownik    '<application>Sendmail</application>'>
+<!ENTITY Sendmail-dopelniacz    '<application>Sendmail-a</application>'>
+<!ENTITY Sendmail-celownik    '<application>Sendmail-owi</application>'>
+<!ENTITY Sendmail-biernik    '<application>Sendmail-a</application>'>
+<!ENTITY Sendmail-narzednik    '<application>Sendmail-em</application>'>
+<!ENTITY Sendmail-miejscownik    '<application>Sendmail-u/application>'>
