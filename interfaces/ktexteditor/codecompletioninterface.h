@@ -24,12 +24,12 @@
 #include <kdelibs_export.h>
 #include <QVariant>
 #include <QIcon>
-
+#include <ktexteditor/cursor.h>
+#include <kdebug.h>
 namespace KTextEditor
 {
 
 class View;
-class Cursor;
 
 /**
  * An item for the completion popup. <code>text</code> is the completed string,
@@ -44,30 +44,6 @@ class Cursor;
  *
  */
 
-class KTEXTEDITOR_EXPORT CompletionEntry
-{
-  public:
-    QIcon   icon;
-    QString type;
-    QString text;
-    QString prefix;
-    QString postfix;
-    QString comment;
-
-    QVariant userdata;
-
-    bool operator==( const CompletionEntry &c ) const {
-      return ( c.type == type &&
-	       c.text == text &&
-	       c.postfix == postfix &&
-	       c.prefix == prefix &&
-	       c.comment == comment &&
-               c.userdata == userdata &&
-               c.icon.serialNumber()==icon.serialNumber());
-    }
-};
-
-
 class CompletionProvider;
 
 class KTEXTEDITOR_EXPORT CompletionItem
@@ -81,7 +57,7 @@ class KTEXTEDITOR_EXPORT CompletionItem
     QString comment;
 
     QVariant userdata;
-    CompletionProvider *provider; //only needs to be set if userdata should be handled
+    CompletionProvider *provider; //must not be set to a provider, instead of 0, if the provider doesn't support the doComplete method or doesn't want to handle the item itself
 
     bool operator==( const CompletionItem &c ) const {
       return ( c.type == type &&
@@ -102,16 +78,18 @@ class KTEXTEDITOR_EXPORT CompletionItem
 class KTEXTEDITOR_EXPORT CompletionData {
   public:
      CompletionData():m_id(0) {} //You should never use that yourself
-     CompletionData(QList<CompletionItem> items,int offset,bool casesensitive):
-       m_items(items),m_offset(offset),m_casesensitive(casesensitive),m_id(((++s_id)==0)?(++s_id):s_id){ }
+     CompletionData(QList<CompletionItem> items,const KTextEditor::Cursor& matchStart,bool casesensitive):
+       m_items(items),m_matchStart(matchStart),m_casesensitive(casesensitive),m_id(((++s_id)==0)?(++s_id):s_id){ }
      inline const QList<CompletionItem>& items()const {return m_items;}
-     inline int offset() const {return m_offset;}
+     inline const KTextEditor::Cursor& matchStart() const {return m_matchStart;}
      inline bool casesensitive() const {return m_casesensitive;}
-     inline bool operator==( const CompletionData &d ) const { return m_id==d.m_id;}
+     inline bool operator==( const CompletionData &d ) const { kdDebug()<<"Checking equality"<<endl;return m_id==d.m_id;}
      inline static const CompletionData Null() {return CompletionData();}
+     inline bool isValid()const {return m_id!=0;}
+     inline int id() const {return m_id;};
   private:
      QList<CompletionItem> m_items;
-     int m_offset;
+     Cursor m_matchStart;
      bool m_casesensitive;
      long m_id;
      static long s_id;
@@ -174,11 +152,18 @@ class KTEXTEDITOR_EXPORT ArgHintData {
 
       CompletionNone=CompletionType0,
       CompletionAsYouType=CompletionType1,
-      CompletionReinvokeAsYouType=CompletionType2,
-      CompletionContextIndependent=CompletionType3,
-      CompletionContextDependent=CompletionType4
+      CompletionAsYouTypeBackspace=CompletionType2,
+      CompletionReinvokeAsYouType=CompletionType3, //there does not have to be a CompleteAsYouType before an invokation of that kind
+      CompletionContextIndependent=CompletionType4,
+      CompletionContextDependent=CompletionType5
     };
 
+
+
+/**The provider should be asked by the editor after each typed character(block) if it wants
+to show a completion of type CompletionAsYouType.
+The provider should cache the completiondata as long as the begin of the word to be completed doesn't change and the previous word part which has been used to determine the completion list is a substring of the current word part. Similiar behaviour if a word part is removed would be desirable, but is at least for kate not needed, since it doesn't support the CompleteAsYouTypeBackspace. If a completion type >CompleteReinvokeAsYouType is active, no further requests are sent out from the editor, till the completion has been aborted or executed
+**/
 class KTEXTEDITOR_EXPORT CompletionProvider
 {
   public:
@@ -189,36 +174,15 @@ class KTEXTEDITOR_EXPORT CompletionProvider
     /* insertion position can only be assumed valid, if the completion type is CompleteAsYouType and the inserted text is not empty*/
     virtual const CompletionData completionData(View*,enum CompletionType, const Cursor& /*insertion pos*/, const QString& /*insertedText*/,const Cursor& /*current pos*/, const QString& /*current line*/)=0;
     virtual const ArgHintData argHintData(View *,const Cursor&, const QString&)=0;
-    /*this function is called if a valid userdata is set for the chosen completion item*/
-    virtual void filterInsertString(View*,const CompletionItem&,QString*)=0;
+    /* this function is called if a completion process has been aborted, the providers should not assume, that they only get this signal, if they provided data for the completion popup*/
+    virtual void completionAborted(View*)=0;
+    /* this function is called if a completion process has been aborted, the providers should not assume, that they only get this signal, if they provided data for the completion popup*/
+    virtual void completionDone(View*)=0;
+    /* this method is called if for a specific item the provider has been set, no default handling will be done by the editor component */
+    virtual void doComplete(View*,const CompletionData&,const CompletionItem&)=0;
 
 };
 
-
-
-/**
- * This is an interface for the KTextEditor::View class. It can be used
- * to show completion lists, i.e. lists that pop up while a user is typing.
- * The user can then choose from the list or he can just keep typing. The
- * completion list will disappear if an item is chosen, if no completion
- * is available or if the user presses Esc etc. The contents of the list
- * is automatically adapted to the string the user types.
- *
- * There are other signals, which may be implmemented, but aren't documented here, because
- * it would have been a BIC change...:
- *
- * void completionExtendedComment(CompletionEntry)
- *
- * This is emitted when the user has completed the argument entry (ie. enters the wrapping symbol(s)
- * void argHintCompleted()
- *
- * This is emitted when there is a reason other than completion for the hint being hidden.
- * void argHintAborted()
- *
- * This is emitted when a code completion box is about to be displayed
- * void aboutToShowCompletionBox()
- *
- */
 class KTEXTEDITOR_EXPORT CodeCompletionInterface
 {
   public:
@@ -226,7 +190,8 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 
         virtual bool registerCompletionProvider(CompletionProvider*)=0;
         virtual bool unregisterCompletionProvider(CompletionProvider*)=0;
-
+	//AsYouType and AsYouTypeBackspace should be ignored
+	virtual void invokeCompletion(enum CompletionType)=0;
 };
 
 }

@@ -109,8 +109,9 @@ protected:
     virtual bool insertTemplateTextImplementation ( const Cursor &insertPosition, const QString &templateString, const QMap<QString,QString> &initialValues)=0;
 };
 
-KTEXTEDITOR_EXPORT TemplateInterface *templateInterface (View *view);
-
 }
+
+Q_DECLARE_INTERFACE(KTextEditor::TemplateInterface,
+"org.kde.KTextEditor.TemplateInterface")
 
 #endif

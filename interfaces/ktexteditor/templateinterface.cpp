@@ -159,12 +159,4 @@ bool TemplateInterface::insertTemplateText ( const Cursor& insertPosition, const
          && insertTemplateTextImplementation( insertPosition, templateString, enhancedInitValues);
 }
 
-TemplateInterface *KTextEditor::templateInterface ( KTextEditor::View *view )
-{
-  if ( !view )
-    return 0;
-
-  return dynamic_cast<KTextEditor::TemplateInterface*>( view );
-}
-
 // kate: space-indent on; indent-width 2; replace-tabs on;
