@@ -101,6 +101,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
     , blockSelect (false)
     , m_imComposeEvent( false )
     , m_destructing(false)
+    , m_customComplete(false)
 {
   KateGlobal::self()->registerView( this );
   m_config = new KateViewConfig (this);
@@ -1809,29 +1810,56 @@ void KateView::getIMSelectionValue( KTextEditor::Range* imRange, KTextEditor::Ra
 }
 //END IM INPUT STUFF
 
+// merge the following two functions
 void KateView::slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cursor &position, const QString &text)
 {
   emit textInserted ( view, position, text);
+  if (m_customComplete) return;
   kdDebug()<<"Checking if cc provider list is empty"<<endl;
   if (m_completionProviders.isEmpty()) return;
   QLinkedList<KTextEditor::CompletionData> newdata;
-  bool needupdate=false;
+
   KTextEditor::Cursor c=cursorPosition();
   QString lineText=m_doc->line(c.line());
   kdDebug()<<"Checking state for all providers"<<endl;
+  const KTextEditor::CompletionData nulldata=KTextEditor::CompletionData::Null();
   foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
   {
-//cursor should be newpos here though
     const KTextEditor::CompletionData &nd=provider->completionData(view,KTextEditor::CompletionAsYouType,position,text,c,lineText);
-    if ((!m_completionProviderData.contains(provider)) || (!(nd==m_completionProviderData[provider])) )
-    {
-      m_completionProviderData.insert(provider,nd);
-      needupdate=true;
-    }
-    newdata.append(nd);
+    if (nd.isValid()) newdata.append(nd);
   }
-  if ( (needupdate) || (!m_codeCompletion->codeCompletionVisible()) )
-    m_codeCompletion->showCompletion(position,newdata);
+  m_codeCompletion->showCompletion(position,newdata);
+}
+
+void KateView::invokeCompletion(enum KTextEditor::CompletionType type) {
+  if ((type==KTextEditor::CompletionAsYouType) || (type==KTextEditor::CompletionAsYouTypeBackspace))
+  {
+    kdDebug(13020)<<"KateView::invokeCompletion: ignoring invalid call"<<endl;
+    return;
+  }
+  if (m_customComplete) return;
+  if (m_completionProviders.isEmpty()) return;
+  QLinkedList<KTextEditor::CompletionData> newdata;
+  KTextEditor::Cursor c=cursorPosition();
+  QString lineText=m_doc->line(c.line());
+  foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
+  {
+    const KTextEditor::CompletionData& nd=provider->completionData(this,type,KTextEditor::Cursor(),"",c,lineText);
+    if (nd.isValid()) newdata.append(nd);
+  }
+  m_codeCompletion->showCompletion(c,newdata);
+  if (type>KTextEditor::CompletionReinvokeAsYouType) m_customComplete=true;
+}
+
+void KateView::completionDone(){
+  m_customComplete=false;
+  foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
+    provider->completionDone(this);
+}
+void KateView::completionAborted(){
+  m_customComplete=false;
+  foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
+    provider->completionAborted(this);
 }
 
 bool KateView::insertTemplateTextImplementation ( const KTextEditor::Cursor& c, const QString &templateString, const QMap<QString,QString> &initialValues) {

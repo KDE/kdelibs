@@ -69,7 +69,10 @@ class KateView : public KTextEditor::View,
                  public KTextEditor::TemplateInterface
 {
     Q_OBJECT
-
+    Q_INTERFACES(KTextEditor::TextHintInterface)
+    Q_INTERFACES(KTextEditor::CodeCompletionInterface)
+    Q_INTERFACES(KTextEditor::SessionConfigInterface)
+    Q_INTERFACES(KTextEditor::TemplateInterface)
     friend class KateViewInternal;
     friend class KateIconBorder;
     friend class KateCodeCompletion;
@@ -172,9 +175,13 @@ class KateView : public KTextEditor::View,
   public:
     bool registerCompletionProvider(KTextEditor::CompletionProvider*);
     bool unregisterCompletionProvider(KTextEditor::CompletionProvider*);
+    void invokeCompletion(enum KTextEditor::CompletionType type);
+    void completionAborted();
+    void completionDone();
   private:
     QLinkedList<KTextEditor::CompletionProvider*> m_completionProviders;
     QHash<KTextEditor::CompletionProvider*,KTextEditor::CompletionData> m_completionProviderData;
+    bool m_customComplete;
 #if 0
   public slots:
     void showArgHint( QStringList arg1, const QString& arg2, const QString& arg3 );
@@ -555,3 +562,5 @@ class KateView : public KTextEditor::View,
 };
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;

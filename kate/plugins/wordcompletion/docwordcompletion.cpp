@@ -118,7 +118,7 @@ void DocWordCompletionPlugin::readConfig()
 {
   KConfig *config = kapp->config();
   config->setGroup( "DocWordCompletion Plugin" );
-  m_treshold = config->readNumEntry( "treshold", 3 );
+    m_treshold = config->readNumEntry( "treshold", 3 );
   m_autopopup = config->readBoolEntry( "autopopup", true );
 }
 
@@ -192,7 +192,8 @@ DocWordCompletionPluginView::DocWordCompletionPluginView( uint treshold, bool au
   d->treshold = treshold;
   view->insertChildClient( this );
   KTextEditor::CodeCompletionInterface *cci = qobject_cast<KTextEditor::CodeCompletionInterface *>(view);
-  if (cci) cci->registerCompletionProvider(this);
+  if (cci) {cci->registerCompletionProvider(this); kdDebug()<<"*******Completion provider registered"<<endl; }
+  else kdDebug()<<"****** No code completion interface available for view"<<endl;
   setInstance( KGenericFactory<DocWordCompletionPlugin>::instance() );
 
   (void) new KAction( i18n("Reuse Word Above"), Qt::CTRL+Qt::Key_8, this,
@@ -285,9 +286,22 @@ const KTextEditor::CompletionData DocWordCompletionPluginView::completionData(KT
   if (w.length() >=d->treshold) {
     {  //showCompletionBox( allMatches( w ), w.length() );
       kdDebug()<<"About to return a completion list"<<endl;
-      return KTextEditor::CompletionData(allMatches(w),w.length(),true);
+      KTextEditor::Cursor newCursor=KTextEditor::Cursor(pos.line(),pos.column()-w.length());
+      kdDebug()<<"newCursor"<<newCursor.line()<<"/"<<newCursor.column()<<" m_oldCursor"<<m_oldCursor.line()<<"/"<<m_oldCursor.column()<<endl;
+      kdDebug()<<"m_oldWord:"<<m_oldWord<<" w:"<<w<<endl;
+      kdDebug()<<"m_completionData.isValid()"<<m_completionData.isValid()<<endl;
+      if ( ((!m_oldWord.isEmpty()) && (w.find(m_oldWord)==0)) && m_completionData.isValid() //perhaps there should be some kind of invalid cursor
+        && (m_oldCursor==newCursor))
+      return m_completionData;
+      m_oldWord=w;
+      m_oldCursor=newCursor;
+      m_completionData=KTextEditor::CompletionData(allMatches(w),newCursor,true);
+      return m_completionData;
     }
-  } else return KTextEditor::CompletionData::Null();
+  } else {
+    m_completionData=KTextEditor::CompletionData::Null();
+    return m_completionData;
+  }
 }
 
 // for autopopup FIXME - don't pop up if reuse word is inserting
@@ -451,10 +465,10 @@ void DocWordCompletionPluginView::complete( bool fw )
 }
 
 // Contributed by <brain@hdsnet.hu>
-QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KTextEditor::CompletionEntry > &matches)
+QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KTextEditor::CompletionItem > &matches)
 {
   QString partial = matches.front().text;
-  Q3ValueList < KTextEditor::CompletionEntry >::const_iterator i = matches.begin();
+  Q3ValueList < KTextEditor::CompletionItem >::const_iterator i = matches.begin();
   for (++i; i != matches.end(); ++i)
   {
     if (!(*i).text.startsWith(partial))
@@ -536,6 +550,7 @@ QList<KTextEditor::CompletionItem> DocWordCompletionPluginView::allMatches( cons
           seen.insert( m, &sawit );
           KTextEditor::CompletionItem e;
           e.text = m;
+          e.provider=0;
           l.append( e );
         }
         pos += d->re.matchedLength();

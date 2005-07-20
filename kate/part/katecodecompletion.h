@@ -31,11 +31,13 @@
 #include <ktexteditor/codecompletioninterface.h>
 
 #include <QList>
+#include <QLinkedList>
 #include <qstringlist.h>
 #include <qlabel.h>
 #include <q3frame.h>
 #include <qmap.h>
 #include <q3intdict.h>
+#include <kdebug.h>
 
 class KateView;
 class KateArgHint;
@@ -43,6 +45,8 @@ class KateCCListBox;
 
 class QLayout;
 class Q3VBox;
+
+
 
 class KateCodeCompletionCommentLabel : public QLabel
 {
@@ -79,8 +83,8 @@ class KateCodeCompletion : public QObject
 
     void showArgHint(
         QStringList functionList, const QString& strWrapping, const QString& strDelimiter );
-    void showCompletionBox(
-        QList<KTextEditor::CompletionItem> entries, int offset = 0, bool casesensitive = true );
+/*    void showCompletionBox(
+        QList<KTextEditor::CompletionItem> entries, int offset = 0, bool casesensitive = true );*/
     bool eventFilter( QObject* o, QEvent* e );
 
     void handleKey (QKeyEvent *e);
@@ -91,11 +95,7 @@ class KateCodeCompletion : public QObject
     void updateBox () { updateBox(false); }
 
   signals:
-    void completionAborted();
-    void completionDone();
     void argHintHidden();
-    void completionDone(KTextEditor::CompletionItem);
-    void filterInsertString(KTextEditor::CompletionItem*,QString *);
 
   private:
     void doComplete();
@@ -107,12 +107,37 @@ class KateCodeCompletion : public QObject
     KateView*       m_view;
     Q3VBox*          m_completionPopup;
     KateCCListBox*       m_completionListBox;
-    QList<KTextEditor::CompletionItem> m_complList;
+    //QList<KTextEditor::CompletionItem> m_complList;
     int            m_lineCursor;
     int            m_colCursor;
     int             m_offset;
     bool            m_caseSensitive;
     KateCodeCompletionCommentLabel* m_commentLabel;
+
+    friend class KateCompletionItem;
+    class CompletionItem {
+    public:
+      CompletionItem(const KTextEditor::CompletionData* _data,int _index):data(_data),index(_index) {}
+      const KTextEditor::CompletionData* data;
+      int index;
+      int col;
+      inline bool operator <(const CompletionItem& other) const {
+        const KTextEditor::CompletionItem& oi(other.data->items().at(other.index));
+        const KTextEditor::CompletionItem& ti(data->items().at(index));
+        //longest match first, implement more accurately
+        bool longer=(data->matchStart().column()<other.data->matchStart().column());
+        bool equal=(data->matchStart().column()==other.data->matchStart().column());
+        bool result= longer || (equal &&(oi.text>ti.text));
+        return result;
+
+      };
+      inline CompletionItem& operator=(const CompletionItem& c) {data=c.data;index=c.index; return *this;} //FIXME
+      inline const QString& text() const {return data->items().at(index).text;}
+      inline KTextEditor::CompletionItem item() const {return data->items().at(index);}
+    };
+    QList<CompletionItem> m_items;
+    QLinkedList<KTextEditor::CompletionData> m_data;
+    void buildItemList();
 };
 
 class KateArgHint: public Q3Frame

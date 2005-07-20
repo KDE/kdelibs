@@ -46,6 +46,7 @@
 #include <QDesktopWidget>
 #include <QKeyEvent>
 
+
 /**
  * This class is used as the codecompletion listbox. It can be resized according to its contents,
  *  therfor the needed size is provided by sizeHint();
@@ -95,18 +96,18 @@ class KateCCListBox : public Q3ListBox
 class KateCompletionItem : public Q3ListBoxText
 {
   public:
-    KateCompletionItem( Q3ListBox* lb, KTextEditor::CompletionItem entry )
-      : Q3ListBoxText( lb )
-      , m_entry( entry )
+    KateCompletionItem( Q3ListBox* lb, KateCodeCompletion::CompletionItem item, Q3ListBoxItem *after )
+      : Q3ListBoxText( lb,"",after )
+      , m_item( item )
     {
-      if( entry.postfix == "()" ) { // should be configurable
-        setText( entry.prefix + " " + entry.text + entry.postfix );
+      if( item.item().postfix == "()" ) { // should be configurable
+        setText( item.item().prefix + " " + item.text() + item.item().postfix );
       } else {
-        setText( entry.prefix + " " + entry.text + " " + entry.postfix);
+        setText( item.item().prefix + " " + item.text() + " " + item.item().postfix);
       }
     }
 
-    KTextEditor::CompletionItem m_entry;
+    KateCodeCompletion::CompletionItem m_item;
 };
 
 
@@ -142,32 +143,75 @@ bool KateCodeCompletion::codeCompletionVisible () {
 }
 
 
-void KateCodeCompletion::showCompletion(const KTextEditor::Cursor &position,const QLinkedList<KTextEditor::CompletionData> &data) {
-  kdDebug(13034)<<"KateCodeCompletion::showCompletion"<<endl;
-  if (data.isEmpty()) return;
-  kdDebug(13034)<<"KateCodeCompletion::showCompletion (currently handling first provider only)"<<endl;
-  KTextEditor::CompletionData cd(data.first());
-  if (cd.items().isEmpty()) return;
-  kdDebug(13034)<<"KateCodeCompletion::showCompletion: There is data"<<endl;
-  showCompletionBox(cd.items(),cd.offset(),cd.casesensitive());
+void KateCodeCompletion::buildItemList() {
+  kdDebug(13034)<<"buildItemList"<<endl;
+  m_items.clear();
+  foreach (const KTextEditor::CompletionData& data,m_data) {
+//     //kdDebug(13034)<<"buildItemList:1"<<endl;
+    const QList<KTextEditor::CompletionItem>&  list=data.items();
+    for(int i=0;i<list.count();i++) {
+      //kdDebug(13034)<<"buildItemList:2"<<endl;
+      m_items.append(CompletionItem(&data,i));
+    }
+  }
+  qSort(m_items);
 }
 
 
+void KateCodeCompletion::showCompletion(const KTextEditor::Cursor &position,const QLinkedList<KTextEditor::CompletionData> &data) {
+  kdDebug(13034)<<"KateCodeCompletion::showCompletion"<<endl;
+  kdDebug(13034)<<"data.size()=="<<data.size()<<endl;
+  if (data.isEmpty() && m_data.isEmpty()) return;
+  else if (m_data.isEmpty()) { // new completion
+    m_data=data;
+    kdDebug()<<"m_data was empty"<<endl;
+    buildItemList();
+    updateBox();
+  } else if (data.isEmpty()) {  // abort completion, no providers anymore
+    m_data.clear();
+    kdDebug()<<"data is empty"<<endl;
+    buildItemList();
+    updateBox();
+    return;
+    //do abort here
+  } else { //update completion
+    if (data.size()!=m_data.size()) { // different provider count
+      m_data=data;
+      kdDebug()<<"different size"<<endl;
+      buildItemList();
+      updateBox();
+    } else {
+      bool equal=true;
+      for (QLinkedList<KTextEditor::CompletionData>::const_iterator it1=data.constBegin(),
+          it2=m_data.constBegin();it1!=data.constEnd();++it1,++it2) {
+          if (!((*it1)==(*it2))) {equal=false; kdDebug()<<(*it1).id()<<" "<<(*it2).id()<<endl; break;}
+      }
+      if (equal) return;
+      kdDebug()<<"not equal"<<endl;
+      m_data=data;
+      buildItemList();
+      updateBox();
+    }
+  }
+}
+
+#if 0
 void KateCodeCompletion::showCompletionBox(
     QList<KTextEditor::CompletionItem> complList, int offset, bool casesensitive )
 {
   kdDebug(13035) << "showCompletionBox " << endl;
 
-  if ( codeCompletionVisible() ) return;
+  //if ( codeCompletionVisible() ) return;
 
   m_caseSensitive = casesensitive;
-  m_complList = complList;
+  //m_complList = complList;
   m_offset = offset;
   m_view->cursorPosition().position( m_lineCursor, m_colCursor );
   m_colCursor -= offset;
 
   updateBox( true );
 }
+#endif 
 
 bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
 {
@@ -246,18 +290,20 @@ void KateCodeCompletion::doComplete()
   if( item == 0 )
     return;
 
-  QString text = item->m_entry.text;
-  QString currentLine = m_view->currentTextLine();
-  int len = m_view->cursorPosition().column() - m_colCursor;
-  QString currentComplText = currentLine.mid(m_colCursor,len);
-  QString add = text.mid(currentComplText.length());
-  if( item->m_entry.postfix == "()" )
-    add += "(";
+  if (item->m_item.item().provider)
+      item->m_item.item().provider->doComplete(m_view,*(item->m_item.data),item->m_item.item());
+  else {
+    QString text = item->m_item.text();
+    QString currentLine = m_view->currentTextLine();
+    int alreadyThere = m_view->cursorPosition().column() - item->m_item.data->matchStart().column();
+    //QString currentComplText = currentLine.mid(m_colCursor,len);
+    QString add = text.mid(alreadyThere);
+    if( item->m_item.item().postfix == "()" )
+      add += "(";
 
-  emit filterInsertString(&(item->m_entry),&add);
-  m_view->insertText(add);
-
-  complete( item->m_entry );
+    m_view->insertText(add);
+  }
+  complete( item->m_item.item() );
   m_view->setFocus();
 }
 
@@ -266,7 +312,10 @@ void KateCodeCompletion::abortCompletion()
   m_completionPopup->hide();
   delete m_commentLabel;
   m_commentLabel = 0;
-  emit completionAborted();
+  m_items.clear();
+  m_data.clear();
+  m_view->completionAborted();
+/*  emit completionAborted();*/
 }
 
 void KateCodeCompletion::complete( KTextEditor::CompletionItem entry )
@@ -274,12 +323,18 @@ void KateCodeCompletion::complete( KTextEditor::CompletionItem entry )
   m_completionPopup->hide();
   delete m_commentLabel;
   m_commentLabel = 0;
+  m_items.clear();
+  m_data.clear();
+  m_view->completionDone();;
+
+/*
   emit completionDone( entry );
-  emit completionDone();
+  emit completionDone();*/
 }
 
 void KateCodeCompletion::updateBox( bool )
 {
+#if 0
   if( m_colCursor > m_view->cursorPosition().column() ) {
     // the cursor is too far left
     kdDebug(13035) << "Aborting Codecompletion after sendEvent" << endl;
@@ -288,44 +343,64 @@ void KateCodeCompletion::updateBox( bool )
     m_view->setFocus();
     return;
   }
-
+#endif 
   m_completionListBox->clear();
+  kdDebug()<<"m_items.size():"<<m_items.size()<<endl;;
+  if (m_items.size()==0)
+  {
+    if (codeCompletionVisible())
+    {
+      abortCompletion();
+      m_view->setFocus();
+    }
+    return;
+  }
 
   QString currentLine = m_view->currentTextLine();
-  int len = m_view->cursorPosition().column() - m_colCursor;
-  QString currentComplText = currentLine.mid(m_colCursor,len);
-/* No-one really badly wants those, or?
-  kdDebug(13035) << "Column: " << m_colCursor << endl;
-  kdDebug(13035) << "Line: " << currentLine << endl;
-  kdDebug(13035) << "CurrentColumn: " << m_view->cursorColumnReal() << endl;
-  kdDebug(13035) << "Len: " << len << endl;
-  kdDebug(13035) << "Text: '" << currentComplText << "'" << endl;
-  kdDebug(13035) << "Count: " << m_complList.count() << endl;
-*/
-  QList<KTextEditor::CompletionItem>::Iterator it;
+/*  int len = m_view->cursorPosition().column() - m_colCursor;
+  QString currentComplText = currentLine.mid(m_colCursor,len); */
+  QList<CompletionItem>::Iterator it;
+
+  int currentCol=m_view->cursorPosition().column();
+  int len=-1;
+  QString currComp;
+  Q3ListBoxItem *afteritem=0;
   if( m_caseSensitive ) {
-    for( it = m_complList.begin(); it != m_complList.end(); ++it ) {
-      if( (*it).text.startsWith(currentComplText) ) {
-        new KateCompletionItem(m_completionListBox,*it);
+    for( it = m_items.begin(); it != m_items.end(); ++it ) {
+      if ((len<=0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
+        int tmp=(currentCol-(it->data->matchStart().column()));
+        if (tmp<=0) continue;
+        len=tmp;
+        currComp=currentLine.mid(it->data->matchStart().column(),len);
+      }
+      if( (*it).text().startsWith(currComp) ) {
+        afteritem=new KateCompletionItem(m_completionListBox,*it,afteritem);
       }
     }
   } else {
-    currentComplText = currentComplText.upper();
-    for( it = m_complList.begin(); it != m_complList.end(); ++it ) {
-      if( (*it).text.upper().startsWith(currentComplText) ) {
-        new KateCompletionItem(m_completionListBox,*it);
+    for( it = m_items.begin(); it != m_items.end(); ++it ) {
+      if ((len<=0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
+        int tmp=(currentCol-(it->data->matchStart().column()));
+        if (tmp<=0) continue;
+        len=tmp;
+        currComp=currentLine.mid(it->data->matchStart().column(),len).upper();
+      }
+      if( (*it).text().upper().startsWith(currComp) ) {
+        afteritem=new KateCompletionItem(m_completionListBox,*it,afteritem);
       }
     }
   }
 
-  if( m_completionListBox->count() == 0 ||
+  if( m_completionListBox->count() == 0 ) 
+#warning fixme
+/*||
+
       ( m_completionListBox->count() == 1 && // abort if we equaled the last item
-        currentComplText == m_completionListBox->text(0).stripWhiteSpace() ) ) {
+        currentComplText == m_completionListBox->text(0).stripWhiteSpace() ) ) */{
     abortCompletion();
     m_view->setFocus();
     return;
   }
-
     kdDebug(13035)<<"KateCodeCompletion::updateBox: Resizing widget"<<endl;
         m_completionPopup->resize(m_completionListBox->sizeHint() + QSize(2,2));
     QPoint p = m_view->mapToGlobal( m_view->cursorPositionCoordinates() );
@@ -385,11 +460,11 @@ void KateCodeCompletion::showComment()
   if( !item )
     return;
 
-  if( item->m_entry.comment.isEmpty() )
+  if( item->m_item.item().comment.isEmpty() )
     return;
 
   delete m_commentLabel;
-  m_commentLabel = new KateCodeCompletionCommentLabel( 0, item->m_entry.comment );
+  m_commentLabel = new KateCodeCompletionCommentLabel( 0, item->m_item.item().comment );
  // m_commentLabel->setFont(QToolTip::font());
   m_commentLabel->setPalette(QToolTip::palette());
 
