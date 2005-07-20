@@ -500,8 +500,21 @@ class NodeImpl;
 
 class NodeListImpl : public khtml::Shared<NodeListImpl>
 {
+    //### This is pretty much the same as HTMLCollectionImpl::CollectionInfo --- 
+    //perhaps consider merging (field names are the same, usage slightly different)
+    struct Cache
+    {
+        unsigned int version;
+        NodeImpl*    current;
+        unsigned int position;
+        unsigned int length;
+        bool         hasLength;
+        void clear(DocumentImpl* doc);
+        void updateNodeListInfo(DocumentImpl* doc);
+    };
 public:
-    virtual ~NodeListImpl() {}
+    NodeListImpl(NodeImpl* node);
+    virtual ~NodeListImpl();
 
     // DOM methods & attributes for NodeList
     virtual unsigned long length() const;
@@ -512,25 +525,25 @@ public:
 protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
-    NodeImpl *recursiveItem ( NodeImpl *start, unsigned long &offset ) const;
+    NodeImpl *recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
     virtual bool elementMatches( NodeImpl *testNode ) const = 0;
+
+    NodeImpl*     m_refNode;
+    mutable Cache m_cache;
 };
 
 class ChildNodeListImpl : public NodeListImpl
 {
 public:
+ 
     ChildNodeListImpl( NodeImpl *n);
-    virtual ~ChildNodeListImpl();
-
+    
     // DOM methods overridden from  parent classes
-
     virtual unsigned long length() const;
     virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
     virtual bool elementMatches( NodeImpl *testNode ) const;
-
-    NodeImpl *refNode;
 };
 
 
@@ -542,19 +555,11 @@ class TagNodeListImpl : public NodeListImpl
 public:
     TagNodeListImpl( NodeImpl *n, NodeImpl::Id id );
     TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName );
-    virtual ~TagNodeListImpl();
-
-    // DOM methods overridden from  parent classes
-
-    virtual unsigned long length() const;
-    virtual NodeImpl *item ( unsigned long index ) const;
 
     // Other methods (not part of DOM)
 
 protected:
     virtual bool elementMatches( NodeImpl *testNode ) const;
-
-    NodeImpl *m_refNode;
     NodeImpl::Id m_id;
     DOMString m_namespaceURI;
     DOMString m_localName;
@@ -572,19 +577,12 @@ class NameNodeListImpl : public NodeListImpl
 {
 public:
     NameNodeListImpl( NodeImpl *doc, const DOMString &t );
-    virtual ~NameNodeListImpl();
-
-    // DOM methods overridden from  parent classes
-
-    virtual unsigned long length() const;
-    virtual NodeImpl *item ( unsigned long index ) const;
 
     // Other methods (not part of DOM)
 
 protected:
     virtual bool elementMatches( NodeImpl *testNode ) const;
 
-    NodeImpl *refNode;
     DOMString nodeName;
 };
 

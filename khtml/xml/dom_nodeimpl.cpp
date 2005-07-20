@@ -1607,14 +1607,37 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
 
 // ---------------------------------------------------------------------------
 
-NodeImpl *NodeListImpl::item( unsigned long /*index*/ ) const
+
+NodeImpl *NodeListImpl::item( unsigned long index ) const
 {
-    return 0;
+    unsigned long requestIndex = index;
+
+    m_cache.updateNodeListInfo(m_refNode->getDocument());
+
+    NodeImpl* n;
+    if (m_cache.current && index >= m_cache.position) {
+        unsigned long relIndex = index - m_cache.position;
+        n = recursiveItem(m_refNode, m_cache.current, relIndex);
+    }
+    else
+        n = recursiveItem(m_refNode, m_refNode->firstChild(), index);
+
+    if (n) {
+        m_cache.current  = n;
+        m_cache.position = requestIndex;
+    }
+
+    return n;
 }
 
 unsigned long NodeListImpl::length() const
 {
-    return 0;
+    m_cache.updateNodeListInfo(m_refNode->getDocument());
+    if (!m_cache.hasLength) {
+        m_cache.length    = recursiveLength( m_refNode );
+        m_cache.hasLength = true;
+    }
+    return m_cache.length;
 }
 
 unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
@@ -1631,15 +1654,45 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
     return len;
 }
 
-NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset ) const
+NodeListImpl::NodeListImpl( NodeImpl *n )
 {
-    for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
+    m_refNode = n;
+    m_refNode->ref();
+    
+    m_cache.clear(m_refNode->getDocument());
+}
+
+NodeListImpl::~NodeListImpl()
+{
+    m_refNode->deref();
+}
+
+
+/**
+ Next item in the pre-order walk of tree from node, but not going outside 
+ absStart
+*/
+static NodeImpl* helperNext(NodeImpl* node, NodeImpl* absStart)
+{
+    //Walk up until we wind a sibling to go to.
+    while (!node->nextSibling() && node != absStart)
+        node = node->parentNode();
+
+    if (node != absStart)
+        return node->nextSibling();
+    else
+        return 0;
+}
+
+NodeImpl *NodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
+{
+    for(NodeImpl *n = start; n != 0; n = helperNext(n, absStart)) {
         if ( n->nodeType() == Node::ELEMENT_NODE ) {
             if (elementMatches(n))
                 if (!offset--)
                     return n;
 
-            NodeImpl *depthSearch= recursiveItem(n, offset);
+            NodeImpl *depthSearch= recursiveItem(n, n->firstChild(), offset);
             if (depthSearch)
                 return depthSearch;
         }
@@ -1648,22 +1701,29 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset )
     return 0; // no matching node in this subtree
 }
 
-ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n )
+void NodeListImpl::Cache::clear(DocumentImpl* doc)
 {
-    refNode = n;
-    refNode->ref();
+   hasLength = false;
+   current   = 0;
+   version   = doc->domTreeVersion();
 }
 
-ChildNodeListImpl::~ChildNodeListImpl()
+void NodeListImpl::Cache::updateNodeListInfo(DocumentImpl* doc)
 {
-    refNode->deref();
+    //If version doesn't match, clear
+    if (doc->domTreeVersion() != version)
+        clear(doc);
 }
+
+ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n ): NodeListImpl(n)
+{}
+
 
 unsigned long ChildNodeListImpl::length() const
 {
     unsigned long len = 0;
     NodeImpl *n;
-    for(n = refNode->firstChild(); n != 0; n = n->nextSibling())
+    for(n = m_refNode->firstChild(); n != 0; n = n->nextSibling())
         len++;
 
     return len;
@@ -1672,7 +1732,7 @@ unsigned long ChildNodeListImpl::length() const
 NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
 {
     unsigned int pos = 0;
-    NodeImpl *n = refNode->firstChild();
+    NodeImpl *n = m_refNode->firstChild();
 
     while( n != 0 && pos < index )
     {
@@ -1683,48 +1743,33 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
     return n;
 }
 
+
 bool ChildNodeListImpl::elementMatches( NodeImpl* /*testNode*/ ) const
 {
     return true;
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, NodeImpl::Id id )
-  : m_refNode(n),
+  : NodeListImpl(n),
     m_id(id),
     m_namespaceAware(false)
 {
-    m_refNode->ref();
     // An id of 0 here means "*" (match all nodes)
     m_matchAllNames = (id == 0);
     m_matchAllNamespaces = false;
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName )
-  : m_refNode(n),
+  : NodeListImpl(n),
     m_id(0),
     m_namespaceURI(namespaceURI),
     m_localName(localName),
     m_namespaceAware(true)
 {
-    m_refNode->ref();
     m_matchAllNames = (localName == "*");
     m_matchAllNamespaces = (namespaceURI == "*");
 }
 
-TagNodeListImpl::~TagNodeListImpl()
-{
-    m_refNode->deref();
-}
-
-unsigned long TagNodeListImpl::length() const
-{
-    return recursiveLength( m_refNode );
-}
-
-NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
-{
-    return recursiveItem( m_refNode, index );
-}
 
 bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
 {
@@ -1741,26 +1786,9 @@ bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
 }
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
-  : nodeName(t)
-{
-    refNode= n;
-    refNode->ref();
-}
-
-NameNodeListImpl::~NameNodeListImpl()
-{
-    refNode->deref();
-}
-
-unsigned long NameNodeListImpl::length() const
-{
-    return recursiveLength( refNode );
-}
-
-NodeImpl *NameNodeListImpl::item ( unsigned long index ) const
-{
-    return recursiveItem( refNode, index );
-}
+  : NodeListImpl(n),
+    nodeName(t)
+{}
 
 bool NameNodeListImpl::elementMatches( NodeImpl *testNode ) const
 {
