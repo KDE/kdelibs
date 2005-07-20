@@ -740,13 +740,13 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         kdError() << "excessive length for timezone abbreviations: " << tzh.charcnt << endl;
         return false;
     }
-    char *abbrs = new char[tzh.charcnt];
-    str.readRawBytes(abbrs, tzh.charcnt);
+    QByteArray array(tzh.charcnt);
+    str.readRawBytes(array.data(), array.size());
+    char *abbrs = array.data();
     if (abbrs[tzh.charcnt - 1] != 0)
     {
         // These abbrevations are corrupt!
         kdError() << "timezone abbreviations not terminated: " << abbrs[tzh.charcnt - 1] << endl;
-        delete [] abbrs;
         return false;
     }
     char *abbr = abbrs;
@@ -756,7 +756,6 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         dataReceiver.gotAbbreviation((abbr - abbrs), abbr);
         abbr += strlen(abbr) + 1;
     }
-    delete [] abbrs;
     for (i = 0; i < tzh.leapcnt; i++)
     {
         str >> leapTime >> leapSeconds;
