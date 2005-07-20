@@ -168,7 +168,8 @@ void RenderCheckBox::calcMinMaxWidth()
 
 void RenderCheckBox::updateFromElement()
 {
-    widget()->setChecked(element()->checked());
+    if (widget()->isChecked() != element()->checked())
+        widget()->setChecked(element()->checked());
 
     RenderButton::updateFromElement();
 }
@@ -189,6 +190,7 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
 {
     QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
+    b->setAutoExclusive(false);
     setQWidget(b);
 
     // prevent firing toggled() signals on initialization
@@ -428,6 +430,22 @@ void LineEditWidget::clearHistoryActivated()
     m_view->clearCompletionHistory(m_input->name().string());
     if (compObj())
       compObj()->clear();
+}
+
+void LineEditWidget::paintEvent( QPaintEvent *pe )
+{
+    //Always paint our background color
+    QRect r = rect();
+    if (hasFrame()) {
+        int margin = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+        r = QRect(QPoint(margin, margin), QSize(width() - 2*margin, height() - 2*margin));
+    }
+
+    QPainter p(this);
+    p.fillRect(r, palette().brush(QPalette::Base));
+    p.end();
+
+    KLineEdit::paintEvent( pe );
 }
 
 bool LineEditWidget::event( QEvent *e )

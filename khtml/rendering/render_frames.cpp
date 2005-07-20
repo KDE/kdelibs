@@ -559,7 +559,8 @@ RenderFrame::RenderFrame( DOM::HTMLFrameElementImpl *frame )
 
 void RenderFrame::slotViewCleared()
 {
-    if(m_widget->inherits("QScrollView")) {
+#warning "Adjust this once we're a QAbstractScrollWidget (and in RenderPartObject)!"
+    if(m_widget->inherits("Q3ScrollView")) {
 #ifdef DEBUG_LAYOUT
         kdDebug(6031) << "frame is a scrollview!" << endl;
 #endif
@@ -854,7 +855,7 @@ void RenderPartObject::layout( )
 
 void RenderPartObject::slotViewCleared()
 {
-  if(m_widget->inherits("QScrollView") ) {
+  if(m_widget->inherits("Q3ScrollView") ) {
 #ifdef DEBUG_LAYOUT
       kdDebug(6031) << "iframe is a scrollview!" << endl;
 #endif
