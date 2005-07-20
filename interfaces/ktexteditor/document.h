@@ -218,14 +218,14 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      *             cursor handling in this view, important: this only will work
      *             if you pass here a view which parent document is this document,
      *             otherwise, the view is just ignored
-	   * @return success, parts not supporting it should return false
+     * @return success, parts not supporting it should return false
      */
     virtual bool startEditing (View *view = 0) = 0;
 
-	  /**
-	   * End an editing sequence.
-	   * @return success, parts not supporting it should return false
-	   */
+    /**
+     * End an editing sequence.
+     * @return success, parts not supporting it should return false
+     */
     virtual bool endEditing () = 0;
 
   /**
@@ -330,12 +330,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
    * following signals should be emitted by the document
    * if the text content is changed
    */
-	signals:
-	  /**
-	   * Text changed!
-	   * @param document document which emited this signal
-	   */
-	  void textChanged(Document *document);
+  signals:
+    /**
+     * Text changed!
+     * @param document document which emited this signal
+     */
+    void textChanged(Document *document);
 
     /**
      * Text was inserted at range.start() up to range.end().
@@ -375,3 +375,6 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
 }
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
+

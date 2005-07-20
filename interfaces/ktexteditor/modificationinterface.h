@@ -90,3 +90,6 @@ class KTEXTEDITOR_EXPORT ModificationInterface
 Q_DECLARE_INTERFACE(KTextEditor::ModificationInterface, "org.kde.KTextEditor.ModificationInterface")
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
+
