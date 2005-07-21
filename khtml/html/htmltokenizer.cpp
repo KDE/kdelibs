@@ -1423,17 +1423,13 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             // ### Gecko and MSIE though only ignores LF immediately after
             // starttags and only for PRE elements -- asj (28/06-2005)
             if ( pending )
-                if ((pre) && endTag && pending == LFPending)
-                    pending = NonePending;
-                else
                 if (!select)
                     addPending();
                 else
                     pending = NonePending;
 
             // Cancel unused discards
-            if (endTag)
-                discard = NoneDiscard;
+            discard = NoneDiscard;
             // if (!endTag) discard = LFDiscard;
 
             processToken();

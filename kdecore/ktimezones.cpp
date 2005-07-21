@@ -532,35 +532,51 @@ const KTimezone *KTimezones::local()
         return local;
 
     // BSD support.
+    QString fileZone;
     f.setName("/etc/timezone");
     if (!f.open(IO_ReadOnly))
     {
         kdDebug() << "Can't open " << f.name() << endl;
 
-        // Solaris support.
-        //
-        // /bin/fgrep 'TZ=' /etc/default/init | /bin/head -n 1 | /bin/cut -b 4-
-        //
-        KTempFile temp;
-        KShellProcess reader;
-        reader << "/bin/grep" << "^TZ=" << "/etc/default/init" << temp.name() << "|" <<
-            "/bin/head" << "-n" << "1" << "|" <<
-            "/bin/cut" << "-b" << "4-";
-        // Note the use of blocking here...it is a trivial amount of data!
-        temp.close();
-        reader.start(KProcess::Block);
-        f.setName(temp.name());
-        if (!temp.status() || !f.open(IO_ReadOnly))
+        // Solaris support using /etc/default/init.
+        f.setName("/etc/default/init");
+        if (!f.open(IO_ReadOnly))
         {
             kdDebug() << "Can't open " << f.name() << endl;
         }
+        else
+        {
+            QTextStream ts(&f);
+            ts.setEncoding(QTextStream::Latin1);
+
+            // Read the last line starting "TZ=".
+            while (!ts.atEnd())
+            {
+                fileZone = ts.readLine();
+                if (fileZone.startsWith("TZ="))
+                {
+                    fileZone = fileZone.mid(3);
+
+                    // kdError() << "local=" << fileZone << endl;
+                    local = zone(fileZone);
+                }
+            }
+            f.close();
+        }
     }
-    if (f.isOpen())
+    else
     {
-        QString fileZone;
         QTextStream ts(&f);
-        ts >> fileZone;
-        local = zone(fileZone);
+        ts.setEncoding(QTextStream::Latin1);
+
+        // Read the first line.
+        if (!ts.atEnd())
+        {
+            fileZone = ts.readLine();
+
+            // kdError() << "local=" << fileZone << endl;
+            local = zone(fileZone);
+        }
         f.close();
     }
     if (local)
@@ -724,13 +740,13 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         kdError() << "excessive length for timezone abbreviations: " << tzh.charcnt << endl;
         return false;
     }
-    char *abbrs = new char[tzh.charcnt];
-    str.readRawBytes(abbrs, tzh.charcnt);
+    QByteArray array(tzh.charcnt);
+    str.readRawBytes(array.data(), array.size());
+    char *abbrs = array.data();
     if (abbrs[tzh.charcnt - 1] != 0)
     {
         // These abbrevations are corrupt!
         kdError() << "timezone abbreviations not terminated: " << abbrs[tzh.charcnt - 1] << endl;
-        delete [] abbrs;
         return false;
     }
     char *abbr = abbrs;
@@ -740,7 +756,6 @@ bool KTimezoneSource::parse(const QString &zone, KTimezoneDetails &dataReceiver)
         dataReceiver.gotAbbreviation((abbr - abbrs), abbr);
         abbr += strlen(abbr) + 1;
     }
-    delete [] abbrs;
     for (i = 0; i < tzh.leapcnt; i++)
     {
         str >> leapTime >> leapSeconds;

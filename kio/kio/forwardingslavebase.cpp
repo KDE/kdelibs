@@ -74,7 +74,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     bool url_found = false;
     QString name, mimetype;
     KURL url;
-    
+
     KIO::UDSEntry::iterator it = entry.begin();
     KIO::UDSEntry::iterator end = entry.end();
 
@@ -130,27 +130,6 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
         entry.append(atom);
 
         kdDebug() << "New Mimetype = " << mime->name() << endl;
-    }
-
-    if ( mimetype=="application/x-desktop" && name_found
-      && m_processedURL.isLocalFile() )
-    {
-        QString prot_class = KProtocolInfo::protocolClass( mProtocol );
-
-        if ( prot_class==":local" )
-        {
-            KURL new_url = m_processedURL;
-            if (listing)
-            {
-                new_url.addPath( name );
-            }
-            
-            KIO::UDSAtom atom;
-            atom.m_uds = KIO::UDS_URL;
-            atom.m_long = 0;
-            atom.m_str = new_url.url();
-            entry.append(atom);
-        }
     }
 
     if ( m_processedURL.isLocalFile() )
@@ -452,7 +431,7 @@ void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
     {
         prepareUDSEntry(*it, true);
     }
-    
+
     listEntries( final_entries );
 }
 

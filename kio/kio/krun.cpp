@@ -73,6 +73,7 @@ public:
 
     QString m_preferredService;
     QString m_externalBrowser;
+    QString m_localPath;
     QPointer <QWidget> m_window;
 };
 
@@ -114,7 +115,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   }
   else if ( _mimetype == "application/x-desktop" )
   {
-    if ( u.isLocalFile() && runExecutables)
+    if ( u.isLocalFile() && runExecutables )
       return KDEDesktopMimeType::run( u, true );
   }
   else if ( isExecutableFile(u, _mimetype) )
@@ -1033,22 +1034,33 @@ void KRun::slotStatResult( KIO::Job * job )
     if(!dynamic_cast<KIO::StatJob*>(job))
         kdFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
+    QString knownMimeType;
     KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it = entry.begin();
     for( ; it != entry.end(); it++ ) {
-        if ( (*it).m_uds == KIO::UDS_FILE_TYPE )
-        {
+        switch( (*it).m_uds ) {
+        case KIO::UDS_FILE_TYPE:
             if ( S_ISDIR( (mode_t)((*it).m_long) ) )
                 m_bIsDirectory = true; // it's a dir
             else
                 m_bScanFile = true; // it's a file
-        }
-        else if ( (*it).m_uds == KIO::UDS_MIME_TYPE ) // mimetype already known? (e.g. print:/manager)
-        {
-            foundMimeType( (*it).m_str );
-            m_bFinished = true;
+            break;
+        case KIO::UDS_MIME_TYPE: // mimetype already known? (e.g. print:/manager)
+            knownMimeType = (*it).m_str;
+            break;
+        case KIO::UDS_LOCAL_PATH:
+            d->m_localPath = (*it).m_str;
+            break;
+        default:
+            break;
         }
     }
+    if ( !knownMimeType.isEmpty() )
+    {
+        foundMimeType( knownMimeType );
+        m_bFinished = true;
+    }
+
     // We should have found something
     assert ( m_bScanFile || m_bIsDirectory );
 
@@ -1166,6 +1178,13 @@ void KRun::foundMimeType( const QString& type )
           /// box was displayed. That's good if runURL tries another service,
           /// but it's not good if it tries the same one :}
       }
+  }
+
+  // Resolve .desktop files from media:/, remote:/, applications:/ etc.
+  if ( type == "application/x-desktop" /* or inheriting? */ && !d->m_localPath.isEmpty() )
+  {
+    m_strURL = KURL();
+    m_strURL.setPath( d->m_localPath );
   }
 
   if (!m_bFinished && KRun::runURL( m_strURL, type, false, d->m_runExecutables )){

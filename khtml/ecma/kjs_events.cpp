@@ -67,7 +67,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (part)
     proxy = part->jScript();
 
-  if (proxy && listener.implementsCall()) {
+  if (proxy && listener.isValid() && listener.implementsCall()) {
     ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
@@ -145,7 +145,7 @@ JSLazyEventListener::JSLazyEventListener(const QString &_code, const QString &_n
 
 JSLazyEventListener::~JSLazyEventListener()
 {
-  if (listener.isValid() && listener.imp()) {
+  if (listener.isValid()) {
     static_cast<Window*>(win.imp())->jsEventListeners.remove(listener.imp());
   }
 }
@@ -218,7 +218,7 @@ void JSLazyEventListener::parseCode() const
     // no more need to keep the unparsed code around
     code = QString();
 
-    if (listener.isValid() && listener.imp()) {
+    if (listener.isValid()) {
       static_cast<Window*>(win.imp())->jsEventListeners.insert(listener.imp(),
                                                                (KJS::JSEventListener *)(this));
     }
