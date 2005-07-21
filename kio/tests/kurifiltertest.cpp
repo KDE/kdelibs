@@ -165,6 +165,9 @@ int main(int argc, char **argv)
     KApplication app;
     app.disableAutoDcopRegistration();
 
+    // Allow testing of the search engine using both delimiters...
+    char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
+
     // Many tests check the "default search engine" feature.
     // There is no default search engine by default (since it was annoying when making typos),
     // so the user has to set it up, which we do here.
@@ -172,6 +175,8 @@ int main(int argc, char **argv)
       KSimpleConfig cfg( "kuriikwsfilterrc" );
       cfg.setGroup( "General" );
       cfg.writeEntry( "DefaultSearchEngine", "google" );
+      cfg.writeEntry( "Verbose", true );
+      cfg.writeEntry( "KeywordDelimiter", delimiter );
       cfg.sync();
     }
 
@@ -245,7 +250,6 @@ int main(int argc, char **argv)
     filter( "\\\\mainserver\\share\\file", "smb://mainserver/share/file" , KURIFilterData::NET_PROTOCOL );
 
     // Should not be filtered at all. All valid protocols of this form will be ignored.
-    filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
     filter( "ftp:" , "ftp:", KURIFilterData::UNKNOWN );
     filter( "http:" , "http:", KURIFilterData::UNKNOWN );
 
@@ -332,8 +336,6 @@ int main(int argc, char **argv)
     filter( "$QTDIR", 0, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
     filter( "$HOME", home, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
 
-    // Search Engine tests
-    char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
 
     QCString sc;
     filter( sc.sprintf("gg%cfoo bar",delimiter), "http://www.google.com/search?q=foo+bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
