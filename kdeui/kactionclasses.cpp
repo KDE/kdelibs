@@ -1129,43 +1129,6 @@ void KRecentFilesAction::addURL( const KURL& url )
     setItems( lst );
 }
 
-void KRecentFilesAction::addURL( const KURL& url, const QString& name )
-{
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
-       return;
-    QString     file = url.pathOrURL();
-    QStringList lst = items();
-
-    // remove file if already in list
-    QStringList::Iterator end = lst.end();
-    for ( QStringList::Iterator it = lst.begin(); it != end; ++it )
-    {
-      QString title = (*it);
-      if ( title.endsWith( file + "]" ) )
-      {
-        lst.remove( it );
-        d->m_urls.erase( title );
-        d->m_shortNames.erase( title );
-        break;
-      }
-    }
-    // remove last item if already maxitems in list
-    if( lst.count() == d->m_maxItems )
-    {
-        // remove last item
-        QString lastItem = lst.last();
-        d->m_shortNames.erase( lastItem );
-        d->m_urls.erase( lastItem );
-        lst.remove( lastItem );
-    }
-
-    // add file to list
-    QString title = name + " [" + file + "]";
-    d->m_shortNames.insert( title, name );
-    d->m_urls.insert( title, url );
-    lst.prepend( title );
-    setItems( lst );
-}
 
 void KRecentFilesAction::removeURL( const KURL& url )
 {
@@ -1182,6 +1145,7 @@ void KRecentFilesAction::removeURL( const KURL& url )
         d->m_urls.erase( (*it) );
         lst.remove( it );
         setItems( lst );
+      }
     }
 }
 
@@ -1199,7 +1163,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     QString     nameKey;
     QString     nameValue;
     QString      title;
-    QString     oldGroup;    
+    QString     oldGroup;
     QStringList lst;
     KURL        url;
 
