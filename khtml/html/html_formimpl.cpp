@@ -958,9 +958,11 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) ) {
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
+		    QFocusEvent::setReason( k->key() == Qt::Key_Tab ? QFocusEvent::Tab : QFocusEvent::Backtab );
 		    if (widget)
                         static_cast<FocusHandleWidget *>(widget)
 			    ->focusNextPrev(k->key() == Qt::Key_Tab);
+		    QFocusEvent::resetReason();
                     evt->setDefaultHandled();
 	        }
             }
