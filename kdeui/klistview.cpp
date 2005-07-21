@@ -873,7 +873,7 @@ void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
   // We don't want to call the parent method because it does setOpen,
   // whereas we don't do it in single click mode... (David)
   //QListView::contentsMouseDoubleClickEvent( e );
-  if ( !e || e->button() != LeftButton )
+  if ( !e || e->button() != Qt::LeftButton )
     return;
 
   QPoint vp = contentsToViewport(e->pos());
