@@ -513,7 +513,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
             QWidget* const w = ::qt_cast<QWidget *>(it.current());
 	    if ( w && !w->isTopLevel() && !w->isHidden()) {
 	        QRect r2 = w->geometry();
-	        blit.subtract( r2 );
+	        blit -= r2;
 	        r2 = r2.intersect( r );
 	        r2.moveBy(-w->x(), -w->y());
 	        cr.append(r2);
