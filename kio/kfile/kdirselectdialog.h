@@ -45,6 +45,7 @@ public:
      * The constructor. Creates a dialog to select a directory (url).
      * @internal use the static selectDirectory function
      * @param startDir the directory, initially shown
+     * @param localOnly unused. You can only select paths below the startDir
      * @param parent the parent for the dialog, usually 0L
      * @param name the QObject::name
      * @param modal if the dialog is modal or not

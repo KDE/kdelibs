@@ -60,8 +60,8 @@ class KABC_EXPORT ResourceNet : public Resource
 
     virtual bool load();
     virtual bool asyncLoad();
-    virtual bool save( Ticket* );
-    virtual bool asyncSave( Ticket* );
+    virtual bool save( Ticket* ticket );
+    virtual bool asyncSave( Ticket* ticket );
 
     /**
       Set url of directory to be used for saving.

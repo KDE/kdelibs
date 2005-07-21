@@ -78,7 +78,7 @@ public:
     virtual ~KTimezoneWidget();
 
     /**
-     * Returns the currently selected timezones. See {@link selectionChanged() }.
+     * Returns the currently selected timezones. See QListView::selectionChanged().
      *
      * @return a list of timezone names, in the format used by the database
      *         supplied to the {@link KTimezoneWidget() } constructor.

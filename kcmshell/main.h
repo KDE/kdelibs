@@ -40,6 +40,7 @@ public:
      * Sets m_dcopName basically to @p dcopName,
      * and then registers with DCOP.
      *
+     * @param dcopName name to set the DCOP name to
      * @param rootMode true if the kcmshell is embedding
      */
     void setDCOPName(const QCString &dcopName, bool rootMode );
