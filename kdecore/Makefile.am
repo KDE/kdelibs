@@ -183,6 +183,7 @@ install-exec-hook:
 DISTCLEANFILES = kde-config.cpp
 
 DOXYGEN_REFERENCES = dcop kdeui kparts kio
-DOXYGEN_EXCLUDE = malloc
+DOXYGEN_EXCLUDE = malloc kde_file.h
+DOXYGEN_SET_WARN_IF_UNDOCUMENTED = YES
 
 include ../admin/Doxyfile.am
