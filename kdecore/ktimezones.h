@@ -84,10 +84,23 @@ private:
 class KDECORE_EXPORT KTimezone
 {
 public:
-    /** A representation for unknown locations; this is a float
-    * that does not represent a real latitude or longitude.
-    */
+    /**
+     * A representation for unknown locations; this is a float
+     * that does not represent a real latitude or longitude.
+     */
     static const float UNKNOWN;
+
+    /**
+     * A test for a valid latitude. The valid range is +90.0 (North Pole)
+     * to -90.0 (South Pole).
+     */
+    static bool isValidLatitude(float latitude);
+
+    /**
+     * A test for a valid longitude. The valid range is +180.0 (east of
+     * Greenwich) to -180.0 (west of Greenwich).
+     */
+    static bool isValidLongitude(float longitude);
 
     /**
      * Create a timezone.
@@ -101,8 +114,8 @@ public:
      */
     KTimezone(
         KSharedPtr<KTimezoneSource> db, const QString &name,
-        const QString &countryCode = "", float latitude = UNKNOWN, float longitude = UNKNOWN,
-        const QString &comment = "");
+        const QString &countryCode = QString(), float latitude = UNKNOWN, float longitude = UNKNOWN,
+        const QString &comment = QString());
     ~KTimezone();
 
     /**

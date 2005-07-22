@@ -42,6 +42,10 @@ int main(int argc, char *argv[])
      printf( "GMT before PST, %s should be 2005-10-29T17:00:00: %s\n", gmtBeforePst, result.latin1() );
      result = timezone->convert(losAngeles, QDateTime::fromString(gmtAfterPst, Qt::ISODate)).toString(Qt::ISODate);
      printf( "GMT and PST,    %s should be 2005-11-30T16:00:00: %s\n", gmtAfterPst, result.latin1() );
+     printf( "Latitude 89 should be valid: %svalid\n", KTimezone::isValidLatitude(89.0) ? "" : "in");
+     printf( "Latitude 91 should be invalid: %svalid\n", KTimezone::isValidLatitude(91.0) ? "" : "in");
+     printf( "Longitude 179 should be valid: %svalid\n", KTimezone::isValidLongitude(179.0) ? "" : "in");
+     printf( "Longitude 181 should be valid: %svalid\n", KTimezone::isValidLongitude(181.0) ? "" : "in");
      return 0;
   }
 
