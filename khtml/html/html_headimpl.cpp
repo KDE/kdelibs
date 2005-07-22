@@ -364,7 +364,8 @@ void HTMLScriptElementImpl::insertedIntoDocument()
     if (!url.isEmpty()) {
         QString charset = getAttribute(ATTR_CHARSET).string();
         m_cachedScript = getDocument()->docLoader()->requestScript(DOMString(url), charset);
-        m_cachedScript->ref(this);
+        if (m_cachedScript)
+            m_cachedScript->ref(this);
         return;
     }
 
