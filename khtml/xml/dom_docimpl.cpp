@@ -2412,13 +2412,21 @@ void DocumentImpl::removeHTMLWindowEventListener(int id)
 
 void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
 {
+    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
+
+    // if this id/listener/useCapture combination is already registered, do nothing.
+    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
+    // the listener order intact.
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current(); ++it) {
+        if (*(it.current()) == *rl) {
+            delete rl;
+            return;
+        }
+    }
+
     listener->ref();
 
-    // remove existing identical listener set with identical arguments - the DOM2
-    // spec says that "duplicate instances are discarded" in this case.
-    removeWindowEventListener(id,listener,useCapture);
-
-    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
     m_windowEventListeners.append(rl);
 
     listener->deref();

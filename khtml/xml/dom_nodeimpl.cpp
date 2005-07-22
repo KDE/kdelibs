@@ -325,11 +325,17 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 	m_regdListeners->setAutoDelete(true);
     }
 
-    listener->ref();
+    // if this id/listener/useCapture combination is already registered, do nothing.
+    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
+    // the listener order intact.
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    for (; it.current(); ++it)
+        if (*(it.current()) == *rl) {
+            delete rl;
+            return;
+        }
 
-    // remove existing identical listener set with identical arguments - the DOM2
-    // spec says that "duplicate instances are discarded" in this case.
-    removeEventListener(id,listener,useCapture);
+    listener->ref();
 
     m_regdListeners->append(rl);
     listener->deref();
