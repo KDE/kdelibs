@@ -440,7 +440,6 @@ public:
     virtual void defaultEventHandler(EventImpl *evt);
     virtual void setHTMLWindowEventListener(int id, EventListener *listener);
     EventListener *getHTMLWindowEventListener(int id);
-    virtual void removeHTMLWindowEventListener(int id);
     EventListener *createHTMLEventListener(const QString& code, const QString& name, NodeImpl* node);
 
     void addWindowEventListener(int id, EventListener *listener, const bool useCapture);

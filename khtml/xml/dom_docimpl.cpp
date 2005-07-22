@@ -2375,14 +2375,30 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
-    // If we already have it we don't want removeWindowEventListener to delete it
-    if (listener)
-	listener->ref();
-    removeHTMLWindowEventListener(id);
-    if (listener) {
-	addWindowEventListener(id, listener, false);
-	listener->deref();
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+
+    if (!listener) {
+        for (; it.current(); ++it)
+            if (it.current()->id == id &&
+                it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
+                m_windowEventListeners.removeRef(it.current());
+                break;
+            }
+        return;
     }
+
+    // if this event already has a registered handler, insert the new one in
+    // place of the old one, to preserve the order.
+    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
+    for (int i = 0; it.current(); ++it, ++i)
+        if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
+            // Qt4: don't forget to delete the old one first
+            m_windowEventListeners.replace(i, rl);
+            return;
+        }
+
+    m_windowEventListeners.append(rl);
 }
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
@@ -2396,18 +2412,6 @@ EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
     }
 
     return 0;
-}
-
-void DocumentImpl::removeHTMLWindowEventListener(int id)
-{
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    for (; it.current(); ++it) {
-	if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-	    m_windowEventListeners.removeRef(it.current());
-	    return;
-	}
-    }
 }
 
 void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
@@ -2425,11 +2429,7 @@ void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const
         }
     }
 
-    listener->ref();
-
     m_windowEventListeners.append(rl);
-
-    listener->deref();
 }
 
 void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bool useCapture)

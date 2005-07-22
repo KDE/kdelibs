@@ -238,7 +238,6 @@ public:
 
     void addEventListener(int id, EventListener *listener, const bool useCapture);
     void removeEventListener(int id, EventListener *listener, bool useCapture);
-    void removeHTMLEventListener(int id);
     void setHTMLEventListener(int id, EventListener *listener);
     EventListener *getHTMLEventListener(int id);
 
