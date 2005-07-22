@@ -50,6 +50,7 @@ namespace KJS {
     // if it was added to a DOM node in another frame (#61467). But calling removeEventListener on
     // all nodes we're listening to is quite difficult.
     void clear() { listener = Object(); }
+    bool isHTMLEventListener() const { return html; }
 
   protected:
     mutable Object listener;
