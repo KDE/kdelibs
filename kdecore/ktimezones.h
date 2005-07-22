@@ -84,15 +84,20 @@ private:
 class KDECORE_EXPORT KTimezone
 {
 public:
+    /** A representation for unknown locations; this is a float
+    * that does not represent a real latitude or longitude.
+    */
     static const float UNKNOWN;
 
     /**
      * Create a timezone.
      *
+     * @param db database of timezones.
      * @param name in system-dependent format.
      * @param countryCode ISO 3166 2-character country code, empty if unknown.
      * @param latitude in degrees, UNKNOWN if not known.
-     * @param latitude in degrees, UNKNOWN if not known.
+     * @param longitude in degrees, UNKNOWN if not known.
+     * @param comment description of the timezone, if any.
      */
     KTimezone(
         KSharedPtr<KTimezoneSource> db, const QString &name,
