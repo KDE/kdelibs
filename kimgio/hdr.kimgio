@@ -8,6 +8,7 @@ Name[et]=High Dynamic Range pildifail
 Name[gl]=Imaxe de Alto Rango Dinámico (HDR)
 Name[ru]=Рисунок HDR
 Name[sv]=Bild med stort dynamiskt område
+Name[zh_CN]=高动态范围图像
 Read=true
 Write=false
 Suffices=.hdr,.HDR,.pic,.PIC
