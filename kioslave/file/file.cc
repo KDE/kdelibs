@@ -604,9 +604,11 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
                 error( KIO::ERR_DISK_FULL, dest.path());
                 remove( _dest.data() );
             }
-            else
-                // ### TODO: perhaps a better error message is needed
-                error( KIO::ERR_COULD_NOT_READ, src.path());
+            else {
+                error( KIO::ERR_SLAVE_DEFINED, 
+                        i18n("Cannot copy file from %1 to %2. (Errno: %3)")
+                        .arg( src.path() ).arg( dest.path() ).arg( errno ) );
+            }
           } else
 #endif
           error( KIO::ERR_COULD_NOT_READ, src.path());
