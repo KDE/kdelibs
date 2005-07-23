@@ -74,3 +74,7 @@ Patterns=*.xml;*.XML;
 [Property::X-KDE-text]
 Type=bool
 Value=true
+
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.xml
