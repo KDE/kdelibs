@@ -135,6 +135,7 @@ protected slots:
     void syncLoadSaveResult( KIO::Job* );
     void saveResult( KIO::Job* );
     void saveData( KIO::Job*, QByteArray& );
+    void loadCacheResult( KIO::Job* );
   
   private:
     QString mUser;
