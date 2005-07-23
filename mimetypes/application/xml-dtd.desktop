@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=XML DTD Document
+Icon=html
+Type=MimeType
+# RFC 3023
+MimeType=application/xml-dtd
+### TODO: *.mod (and *.MOD) should be allowed too, but that are sound files too. :-(
+Patterns=*.dtd;*.DTD;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
+
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.dtd
