@@ -604,6 +604,9 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
                 error( KIO::ERR_DISK_FULL, dest.path());
                 remove( _dest.data() );
             }
+            else
+                // ### TODO: perhaps a better error message is needed
+                error( KIO::ERR_COULD_NOT_READ, src.path());
           } else
 #endif
           error( KIO::ERR_COULD_NOT_READ, src.path());
