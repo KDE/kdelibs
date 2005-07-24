@@ -57,8 +57,8 @@ class KABC_EXPORT ResourceDir : public Resource
 
     virtual bool load();
     virtual bool asyncLoad();
-    virtual bool save( Ticket * );
-    virtual bool asyncSave( Ticket * );
+    virtual bool save( Ticket* ticket );
+    virtual bool asyncSave( Ticket* ticket );
 
     /**
       Set path to be used for saving.

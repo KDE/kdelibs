@@ -1148,8 +1148,12 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   }
 
   JSEventListener *existingListener = jsEventListeners[listenerObjectImp];
-  if (existingListener)
+  if (existingListener) {
+     if ( existingListener->isHTMLEventListener() != html )
+        // The existingListener will have the wrong type, so onclick= will behave like addEventListener or vice versa.
+        kdWarning() << "getJSEventListener: event listener already found but with html=" << !html << " - please report this, we thought it would never happen" << endl;
     return existingListener;
+  }
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
   return new JSEventListener(listenerObject, listenerObjectImp, Object(this), html);

@@ -169,4 +169,5 @@ dummy.cpp:
 	echo "#endif" >> dummy.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx dcop kio kutils
+DOXYGEN_SET_INTERNAL_DOCS = YES
 include ../admin/Doxyfile.am

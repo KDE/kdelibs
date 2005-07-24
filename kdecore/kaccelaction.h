@@ -254,7 +254,7 @@ class KDECORE_EXPORT KAccelAction
 
 	/**
 	 * Enables or disabled the action.
-	 * @param configurable true to enable the action, false to disable
+	 * @param enable true to enable the action, false to disable
 	 */
 	void setEnabled( bool enable );
 
@@ -442,7 +442,7 @@ class KDECORE_EXPORT KAccelActions
 
 	/**
 	 * Returns the action with the given name.
-	 * @param aAction the name of the action to search
+	 * @param sAction the name of the action to search
 	 * @return the KAccelAction with the given name, or 0
 	 *          if not found
 	 */

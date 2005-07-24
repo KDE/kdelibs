@@ -325,14 +325,17 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 	m_regdListeners->setAutoDelete(true);
     }
 
-    listener->ref();
-
-    // remove existing identical listener set with identical arguments - the DOM2
-    // spec says that "duplicate instances are discarded" in this case.
-    removeEventListener(id,listener,useCapture);
+    // if this id/listener/useCapture combination is already registered, do nothing.
+    // the DOM2 spec says that "duplicate instances are discarded", and this keeps
+    // the listener order intact.
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    for (; it.current(); ++it)
+        if (*(it.current()) == *rl) {
+            delete rl;
+            return;
+        }
 
     m_regdListeners->append(rl);
-    listener->deref();
 }
 
 void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
@@ -350,31 +353,38 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
         }
 }
 
-void NodeImpl::removeHTMLEventListener(int id)
-{
-    if (!m_regdListeners) // nothing to remove
-        return;
-
-    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
-    for (; it.current(); ++it)
-        if (it.current()->id == id &&
-            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
-            m_regdListeners->removeRef(it.current());
-            return;
-        }
-}
-
 void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
-    // in case we already have it, we don't want removeHTMLEventListener to destroy it
-    if (listener)
-        listener->ref();
-    removeHTMLEventListener(id);
-    if (listener)
-    {
-        addEventListener(id,listener,false);
-        listener->deref();
+    if (!m_regdListeners) {
+        m_regdListeners = new QPtrList<RegisteredEventListener>;
+        m_regdListeners->setAutoDelete(true);
     }
+
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+
+    if (!listener) {
+        for (; it.current(); ++it)
+            if (it.current()->id == id &&
+                it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
+                m_regdListeners->removeRef(it.current());
+                break;
+            }
+            return;
+    }
+
+    // if this event already has a registered handler, insert the new one in
+    // place of the old one, to preserve the order.
+    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
+
+    for (int i = 0; it.current(); ++it, ++i)
+        if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
+            // Qt4: don't forget to delete the old one first
+            m_regdListeners->replace(i, rl);
+            return;
+        }
+
+    m_regdListeners->append(rl);
 }
 
 EventListener *NodeImpl::getHTMLEventListener(int id)

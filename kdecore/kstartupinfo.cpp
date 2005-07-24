@@ -561,11 +561,14 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_i
                 }
             }
         if( activate )
+            {
+            KWin::setOnDesktop( window->winId(), KWin::currentDesktop());
         // This is not very nice, but there's no way how to get any
         // usable timestamp without ASN, so force activating the window.
         // And even with ASN, it's not possible to get the timestamp here,
         // so if the WM doesn't have support for ASN, it can't be used either.
             KWin::forceActiveWindow( window->winId());
+            }
         }
     KStartupInfo::handleAutoAppStartedSending();
     }

@@ -566,6 +566,8 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
    * @param data The arguments for the function.
+   * @param replyType write the reply type in this string
+   * @param replyData write the reply data in this array
    * @return true if successful, false otherwise
    */
   bool receive(const DCOPCString &app, const DCOPCString &obj,
@@ -582,6 +584,8 @@ class DCOP_EXPORT DCOPClient : public QObject
    * @param obj The name of the object to pass the data on to.
    * @param fun The name of the function in the object to call.
    * @param data The arguments for the function.
+   * @param replyType write the reply type in this string
+   * @param replyData write the reply data in this array
    */
   bool find(const DCOPCString &app, const DCOPCString &obj,
 	    const DCOPCString &fun, const QByteArray& data,

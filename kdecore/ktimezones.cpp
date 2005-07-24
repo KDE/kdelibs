@@ -190,6 +190,16 @@ private:
 
 const float KTimezone::UNKNOWN = 1000.0;
 
+bool KTimezone::isValidLatitude(float latitude)
+{
+    return (latitude >= -90.0) && (latitude <= 90.0);
+}
+
+bool KTimezone::isValidLongitude(float longitude)
+{
+    return (longitude >= -180.0) && (longitude <= 180.0);
+}
+
 KTimezone::KTimezone(
     KSharedPtr<KTimezoneSource> db, const QString& name,
     const QString &countryCode, float latitude, float longitude,

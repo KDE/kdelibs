@@ -471,6 +471,7 @@
 30004        koffice (lib kofficeui)
 30005        koffice (lib kopainter)
 30006        koffice (lib kospell)
+30007        koffice (lib koproperty)
 30500        koffice (filter manager)
 30501        csvfilter
 30502        asciifilter
@@ -583,8 +584,6 @@
 100101       geheimnis (backends)
 
 100200       kfs
-
-100300       kproperty
 
 # rosegarden
 
