@@ -38,6 +38,8 @@
 #include <cstring>
 #include <ctime>
 
+#define UTC_ZONE "UTC"
+
 /**
  * Find out if the given standard (e.g. "GMT") and daylight savings time
  * (e.g. "BST", but which may be empty) abbreviated timezone names match
@@ -123,7 +125,7 @@ public:
         m_abbrIndex = -1;
         m_offset = 0;
         m_isDst = false;
-        m_abbr = "UTC";
+        m_abbr = UTC_ZONE;
     }
 
     int offset()
@@ -330,7 +332,8 @@ KTimezones::KTimezones() :
 {
     // Create the database (and resolve m_zoneinfoDir!).
     allZones();
-    m_Utc = new KTimezone(new DummySource(), QString("UTC"));
+    m_UTC = new KTimezone(new DummySource(), UTC_ZONE);
+    add(m_UTC);
 }
 
 KTimezones::~KTimezones()
@@ -339,7 +342,6 @@ KTimezones::~KTimezones()
     // delete d;
 
     // Autodelete behavior.
-    delete m_Utc;
     if (m_zones)
     {
         for (ZoneMap::ConstIterator it = m_zones->begin(); it != m_zones->end(); ++it)
@@ -485,7 +487,7 @@ const KTimezone *KTimezones::local()
     {
         if (envZone[0] == '\0')
         {
-            return m_Utc;
+            return m_UTC;
         }
         else
         if (envZone[0] == ':')
@@ -614,13 +616,13 @@ const KTimezone *KTimezones::local()
     }
     if (local)
         return local;
-    return m_Utc;
+    return m_UTC;
 }
 
 const KTimezone *KTimezones::zone(const QString &name)
 {
-    if (name.isEmpty() || (name == "UTC"))
-        return m_Utc;
+    if (name.isEmpty())
+        return m_UTC;
     ZoneMap::ConstIterator it = m_zones->find(name);
     if (it != m_zones->end())
         return it.data();

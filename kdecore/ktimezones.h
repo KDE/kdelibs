@@ -306,13 +306,15 @@ public:
      * this routine is to actually return "Europe/London" (or rather, the
      * corresponding KTimezone).
      *
-     * @return local timezone. If necessary, we will return a guess. We will
-     *         never return NULL.
+     * @return local timezone. If necessary, we will use a series of heuristics
+     *         which end by returning UTC. We will never return NULL.
      */
     const KTimezone *local();
 
     /**
-     * Returns the given timezone, empty is equivalent to UTC.
+     * Returns the given timezone.
+     *
+     * @param name Name of timezone. Empty is equivalent to UTC.
      * @return named timezone, NULL on error.
      */
     const KTimezone *zone(const QString &name);
@@ -326,8 +328,7 @@ public:
     const ZoneMap allZones();
 
     /**
-     * Add user-define timezone database.
-     * @return known timezones.
+     * Add user-defined timezone to database.
      */
     void add(KTimezone *zone);
 
@@ -336,7 +337,7 @@ private:
 
     QString m_zoneinfoDir;
     ZoneMap *m_zones;
-    KTimezone *m_Utc;
+    KTimezone *m_UTC;
     KTimezonesPrivate *d;
 };
 
