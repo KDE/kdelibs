@@ -74,7 +74,7 @@ Comment[zu]=Umqulu we-Tar lwe-Bzipped
 MimeType=application/x-tbz
 Icon=tgz
 Type=MimeType
-Patterns=*.tar.bz;*.tar.bz2;
+Patterns=*.tar.bz;*.tbz
 
 [Property::X-KDE-LocalProtocol]
 Type=QString

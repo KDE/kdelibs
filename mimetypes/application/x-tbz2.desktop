@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Bzip2-ed Tar Archive
+MimeType=application/x-tbz2
+Icon=tgz
+Type=MimeType
+Patterns=*.tar.bz2;*.tbz2;
+
+[Property::X-KDE-LocalProtocol]
+Type=QString
+Value=tar
+
