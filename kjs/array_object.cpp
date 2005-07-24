@@ -496,8 +496,10 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
       } else {
         conversionFunction = Object::dynamicCast(o.get(exec, toStringPropertyName));
       }
-      str += conversionFunction.call(exec, o, List()).toString(exec);
-      
+      // TODO: check. Mozilla throws exception on errors...
+      if (conversionFunction.isValid() && conversionFunction.implementsCall())
+	str += conversionFunction.call(exec, o, List()).toString(exec);
+
       if ( exec->hadException() )
         break;
     }
