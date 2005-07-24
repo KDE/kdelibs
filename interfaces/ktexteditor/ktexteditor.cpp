@@ -70,7 +70,38 @@ namespace KTextEditor
     {
     }
   };
+
+
+
 }
+
+
+CompletionItem::CompletionItem() {
+  d=new CompletionItem::Private();
+}
+
+CompletionItem::CompletionItem(const QString& _text, const QIcon &_icon, CompletionProvider* _provider, const QString &_prefix, const QString& _postfix, const QString& _comment, const QVariant &_userdata, const QString &_type)
+{
+  d=new CompletionItem::Private(_text,_icon,_provider,_prefix,_postfix,_comment,_userdata,_type);
+}
+
+
+
+bool CompletionItem::operator==( const CompletionItem &c ) const {
+      return d->cmp(c.d);
+}
+
+
+const QIcon&    CompletionItem::icon() const {return d->icon;}
+const QString&  CompletionItem::text() const {return d->text;}
+const QString&  CompletionItem::markupText() const {return d->text;}
+const QString&  CompletionItem::prefix() const {return d->prefix;}
+const QString&  CompletionItem::postfix() const{return d->postfix;}
+const QString&  CompletionItem::comment() const {return d->comment;}
+const QVariant& CompletionItem::userdata() const {return d->userdata;}
+CompletionProvider *CompletionItem::provider() const {return d->provider;}
+
+
 
 static int globalDocumentNumber = 0;
 
@@ -157,5 +188,8 @@ Editor *KTextEditor::editor(const char *libname)
 
 long ArgHintData::s_id=0;
 long CompletionData::s_id=0;
+
+
+
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

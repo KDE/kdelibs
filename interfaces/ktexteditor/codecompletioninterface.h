@@ -24,6 +24,7 @@
 #include <kdelibs_export.h>
 #include <QVariant>
 #include <QIcon>
+#include <QSharedDataPointer>
 #include <ktexteditor/cursor.h>
 #include <kdebug.h>
 namespace KTextEditor
@@ -46,30 +47,51 @@ class View;
 
 class CompletionProvider;
 
+//possible better d pointer + functions
 class KTEXTEDITOR_EXPORT CompletionItem
 {
   public:
-    QIcon icon;
-    QString type;
-    QString text;
-    QString prefix;
-    QString postfix;
-    QString comment;
+    CompletionItem();
+    CompletionItem(const QString& _text, const QIcon &_icon=QIcon(), CompletionProvider* _provider=0, const QString &_prefix=QString(), const QString& _postfix=QString(), const QString& _comment=QString(), const QVariant &_userdata=QVariant(), const QString &_type=QString());
+    const QIcon&    icon() const;
+    const QString&  text() const;
+    const QString&  markupText() const;
+    const QString&  prefix() const;
+    const QString&  postfix() const;
+    const QString&  comment() const;
+    const QVariant& userdata() const;
+    CompletionProvider *provider() const;//must not be set to a provider, instead of 0, if the provider doesn't support the doComplete method or doesn't want to handle the item itself
 
-    QVariant userdata;
-    CompletionProvider *provider; //must not be set to a provider, instead of 0, if the provider doesn't support the doComplete method or doesn't want to handle the item itself
+    bool operator==( const CompletionItem &c ) const;
 
-    bool operator==( const CompletionItem &c ) const {
-      return ( c.type == type &&
-	       c.text == text &&
-	       c.postfix == postfix &&
-	       c.prefix == prefix &&
-	       c.comment == comment &&
-               c.userdata == userdata &&
-               c.provider==provider &&
-               c.icon.serialNumber()==icon.serialNumber());
+  private:
+    class Private: public QSharedData { //implicitly shared data, I can't move it into a private header file or the implementation, since the QSharedDataPointer causes compile problems, perhaps I should make it a QSharedDataPointer* ....
+      public:
+        Private():icon(QIcon()),type(QString()),text(QString()),prefix(QString()),postfix(QString()),comment(QString()),userdata(QVariant()),provider(0){}
+        Private(const QString& _text, const QIcon &_icon=QIcon(), CompletionProvider* _provider=0, const QString &_prefix=QString(), const QString& _postfix=QString(), const QString& _comment=QString(), const QVariant &_userdata=QVariant(), const QString &_type=QString()):icon(_icon),type(_type),text(_text),prefix(_prefix),postfix(_postfix),comment(_comment),userdata(_userdata),provider(_provider) {}
 
-    }
+      QIcon icon;
+      QString type;
+      QString text;
+      QString prefix;
+      QString postfix;
+      QString comment;
+      QVariant userdata;
+      CompletionProvider *provider; 
+
+      bool cmp(const Private* c) const {
+        return ( c->type == type &&
+                 c->text == text &&
+                 c->postfix == postfix &&
+                 c->prefix == prefix &&
+                 c->comment == comment &&
+                 c->userdata == userdata &&
+                 c->provider==provider &&
+                 c->icon.serialNumber()==icon.serialNumber());
+      }
+    };
+
+    QSharedDataPointer<Private> d;
 };
 
 
@@ -190,7 +212,9 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 
         virtual bool registerCompletionProvider(CompletionProvider*)=0;
         virtual bool unregisterCompletionProvider(CompletionProvider*)=0;
-	//AsYouType and AsYouTypeBackspace should be ignored
+	/*AsYouType and AsYouTypeBackspace have to be ignored
+	If this call is made from a providers Aborted/Done function, the execution has to be
+	delayed, till all providers have been finished and the last type used in this call will be used. If called from within a doComplete call it should be delayed till after all completionDone calls*/
 	virtual void invokeCompletion(enum CompletionType)=0;
 };
 
@@ -199,3 +223,6 @@ class KTEXTEDITOR_EXPORT CodeCompletionInterface
 Q_DECLARE_INTERFACE(KTextEditor::CodeCompletionInterface, "org.kde.KTextEditor.CodeCompletionInterface")
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
+
