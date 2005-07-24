@@ -1,5 +1,8 @@
 2005-07-24  Harri Porten  <porten@kde.org>
 
+	* date_object.cpp: applied prototype inheritance fixed from JSC.
+	Makes Mozilla's ecma/Date/15.9.5.js test pass.
+
 	* nodes.cpp: the return-outside-of-function check got duplicated
 	in JSC. Harmonize them.
 
