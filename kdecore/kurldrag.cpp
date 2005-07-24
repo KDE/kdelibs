@@ -153,7 +153,8 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QStr
 #ifdef Q_WS_QWS
 bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
 {
-    for(QStringList::ConstIterator it=e.begin(); it!=e.end(); it++)
+	QStringList::ConstIterator end(e.end());
+    for(QStringList::ConstIterator it=e.begin(); it!=end; ++it)
     {
       KURL url = KURL( *it, 106 ); // 106 is mib enum for utf8 codec
       if ( !url.isValid() )

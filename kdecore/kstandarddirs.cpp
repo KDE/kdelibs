@@ -365,7 +365,7 @@ Q_UINT32 KStandardDirs::calcResourceHash( const char *type,
     QString fullPath;
 
     for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); it++)
+	 it != candidates.end(); ++it)
     {
         hash = updateHash(*it + filename, hash);
         if (!deep && hash)
@@ -400,7 +400,7 @@ QStringList KStandardDirs::findDirs( const char *type,
     QStringList candidates = resourceDirs(type);
 
     for (QStringList::ConstIterator it = candidates.begin();
-         it != candidates.end(); it++) {
+         it != candidates.end(); ++it) {
         testdir.setPath(*it + reldir);
         if (testdir.exists())
             list.append(testdir.absPath() + '/');
@@ -425,7 +425,7 @@ QString KStandardDirs::findResourceDir( const char *type,
     QString fullPath;
 
     for (QStringList::ConstIterator it = candidates.begin();
-      it != candidates.end(); it++) {
+      it != candidates.end(); ++it) {
       if (exists(*it + filename)) {
 #ifdef Q_WS_WIN //this ensures we're using installed .la files
           if ((*it).isEmpty() && filename.right(3)==".la") {
@@ -662,7 +662,7 @@ KStandardDirs::findAllResources( const char *type,
     QRegExp regExp(filterFile, true, true);
 
     for (QStringList::ConstIterator it = candidates.begin();
-         it != candidates.end(); it++)
+         it != candidates.end(); ++it)
     {
         lookupPrefix(*it, filterPath, "", regExp, list,
                      relList, recursive, unique);
@@ -822,7 +822,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
-                 pit++)
+                 ++pit)
             {
                 for (QStringList::ConstIterator it = dirs->begin();
                      it != dirs->end(); ++it) {
@@ -941,7 +941,7 @@ QString KStandardDirs::findExe( const QString& appname,
     }
 
     QStringList exePaths = systemPaths( pstr );
-    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
+    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
 	p = (*it) + "/";
 	p += real_appname;
@@ -974,7 +974,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     list.clear();
 
     QStringList exePaths = systemPaths( pstr );
-    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); it++)
+    for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
 	p = (*it) + "/";
 	p += real_appname;
@@ -1138,7 +1138,7 @@ QString KStandardDirs::relativeLocation(const char *type, const QString &absPath
     QStringList candidates = resourceDirs(type);
 
     for (QStringList::ConstIterator it = candidates.begin();
-	 it != candidates.end(); it++)
+	 it != candidates.end(); ++it)
       if (fullPath.startsWith(*it))
       {
 	return fullPath.mid((*it).length());
@@ -1318,8 +1318,9 @@ void KStandardDirs::addKDEDefaults()
         addPrefix(localKdeDir);
     }
 
+	QStringList::ConstIterator end(kdedirList.end());
     for (QStringList::ConstIterator it = kdedirList.begin();
-	 it != kdedirList.end(); it++)
+	 it != end; ++it)
     {
         QString dir = KShell::tildeExpand(*it);
 	addPrefix(dir);
@@ -1359,7 +1360,7 @@ void KStandardDirs::addKDEDefaults()
     addXdgConfigPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
-	 it != xdgdirList.end(); it++)
+	 it != xdgdirList.end(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
 	addXdgConfigPrefix(dir);
@@ -1376,7 +1377,7 @@ void KStandardDirs::addKDEDefaults()
     {
 	xdgdirList.clear();
         for (QStringList::ConstIterator it = kdedirList.begin();
-           it != kdedirList.end(); it++)
+           it != kdedirList.end(); ++it)
         {
            QString dir = *it;
            if (dir[dir.length()-1] != '/')
@@ -1403,7 +1404,7 @@ void KStandardDirs::addKDEDefaults()
     addXdgDataPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
-	 it != xdgdirList.end(); it++)
+	 it != xdgdirList.end(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
 	addXdgDataPrefix(dir);
@@ -1556,7 +1557,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         {
             config->setGroup(group);
             QStringList list = config->readListEntry("prefixes");
-            for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
+            for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it)
             {
                 addPrefix(*it, priority);
                 addXdgConfigPrefix(*it+"/etc/xdg", priority);

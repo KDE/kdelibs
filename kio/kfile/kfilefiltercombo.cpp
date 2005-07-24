@@ -80,7 +80,8 @@ void KFileFilterCombo::setFilter(const QString& filter)
 	filters.append( d->defaultFilter );
 
     QStringList::ConstIterator it;
-    for (it = filters.begin(); it != filters.end(); it++) {
+	QStringList::ConstIterator end(filters.end());
+    for (it = filters.begin(); it != end; ++it) {
 	int tab = (*it).find('|');
 	insertItem((tab < 0) ? *it :
 		   (*it).mid(tab + 1));

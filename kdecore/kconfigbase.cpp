@@ -539,7 +539,8 @@ QValueList<int> KConfigBase::readIntListEntry( const char *pKey ) const
 {
   QStringList strlist = readListEntry(pKey);
   QValueList<int> list;
-  for (QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); it++)
+  QStringList::ConstIterator end(strlist.end());
+  for (QStringList::ConstIterator it = strlist.begin(); it != end; ++it)
     // I do not check if the toInt failed because I consider the number of items
     // more important than their value
     list << (*it).toInt();

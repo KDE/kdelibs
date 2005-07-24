@@ -2073,7 +2073,8 @@ KPopupMenu *KToolBar::contextMenu()
   QValueList<int>::Iterator it;
   if (avSizes.count() < 10) {
       // Fixed or threshold type icons
-      for (it=avSizes.begin(); it!=avSizes.end(); it++) {
+	  QValueList<int>::Iterator end(avSizes.end());
+      for (it=avSizes.begin(); it!=end; ++it) {
           QString text;
           if ( *it < 19 )
               text = i18n("Small (%1x%2)").arg(*it).arg(*it);
