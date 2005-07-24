@@ -58,7 +58,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
         // Convert:
         //
         //  "Europe/London", "GB" -> "London", "Europe/GB".
-        //  "UTC", "" -> "UTC", "".
+        //  "UTC",           ""   -> "UTC",    "".
         QStringList continentCity = QStringList::split("/", displayName(zone));
         QListViewItem *listItem = new QListViewItem(this, continentCity[continentCity.count() - 1]);
         continentCity[continentCity.count() - 1] = zone->countryCode();

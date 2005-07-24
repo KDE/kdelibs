@@ -94,7 +94,12 @@ public:
     void setSelected(const QString &zone, bool selected);
 
     /**
-     * Format a timezone name in a standardised manner.
+     * Format a timezone name in a standardised manner. The returned value is
+     * transformed via an i18n lookup, so the caller should previously have
+     * set the timezone catalogue:
+     * \code
+     * KGlobal::locale()->insertCatalogue("timezones");
+     * \endcode
      *
      * @return formatted timezone name.
      */
