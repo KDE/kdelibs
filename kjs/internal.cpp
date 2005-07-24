@@ -830,8 +830,6 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   UString errMsg;
   SourceCode *source;
   FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,&errLine,&errMsg);
-  if (progNode)
-    progNode->setProgram(true);
 
   // notify debugger that source has been parsed
   if (dbg) {

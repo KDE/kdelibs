@@ -1023,11 +1023,6 @@ namespace KJS {
   public:
     FunctionBodyNode(SourceElementsNode *s);
     virtual void processFuncDecl(ExecState *exec);
-    virtual Completion execute(ExecState *exec);
-    void setProgram(bool _program) { program = _program; }
-    bool isProgram() const { return program; }
-  private:
-    bool program;
   };
 
   class FuncDeclNode : public StatementNode {

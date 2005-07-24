@@ -778,8 +778,6 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 #endif
       SourceCode *source;
       FunctionBodyNode *progNode = Parser::parse(s.data(),s.size(),&source,&errLine,&errMsg);
-      if (progNode)
-	progNode->setProgram(true);
 
       // notify debugger that source has been parsed
       Debugger *dbg = exec->interpreter()->imp()->debugger();
