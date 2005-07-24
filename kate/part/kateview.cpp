@@ -102,6 +102,8 @@ KateView::KateView( KateDocument *doc, QWidget *parent )
     , m_imComposeEvent( false )
     , m_destructing(false)
     , m_customComplete(false)
+    , m_cc_cleanup(false)
+    , m_delayed_cc_type(KTextEditor::CompletionNone)
 {
   KateGlobal::self()->registerView( this );
   m_config = new KateViewConfig (this);
@@ -1832,13 +1834,18 @@ void KateView::slotTextInserted ( KTextEditor::View *view, const KTextEditor::Cu
 }
 
 void KateView::invokeCompletion(enum KTextEditor::CompletionType type) {
+  kdDebug(13020)<<"KateView::invokeCompletion"<<endl;
   if ((type==KTextEditor::CompletionAsYouType) || (type==KTextEditor::CompletionAsYouTypeBackspace))
   {
     kdDebug(13020)<<"KateView::invokeCompletion: ignoring invalid call"<<endl;
     return;
   }
+  kdDebug(13020)<<"Before delay check"<<endl;
+  if (m_cc_cleanup) {m_delayed_cc_type=type; return;}
+  kdDebug(13020)<<"Before custom complete check"<<endl;
   if (m_customComplete) return;
   if (m_completionProviders.isEmpty()) return;
+  kdDebug(13020)<<"About to iterate over provider list"<<endl;
   QLinkedList<KTextEditor::CompletionData> newdata;
   KTextEditor::Cursor c=cursorPosition();
   QString lineText=m_doc->line(c.line());
@@ -1852,14 +1859,31 @@ void KateView::invokeCompletion(enum KTextEditor::CompletionType type) {
 }
 
 void KateView::completionDone(){
+  kdDebug()<<"KateView::completionDone"<<endl;
   m_customComplete=false;
+  m_cc_cleanup=true;
   foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
     provider->completionDone(this);
+  m_cc_cleanup=false;
+  if (m_delayed_cc_type!=KTextEditor::CompletionNone) {
+    kdDebug()<<"delayed completion call"<<endl;
+    enum KTextEditor::CompletionType t=m_delayed_cc_type;
+    m_delayed_cc_type=KTextEditor::CompletionNone;
+    invokeCompletion(t);
+  }
 }
 void KateView::completionAborted(){
+  kdDebug()<<"KateView::completionAborted"<<endl;
   m_customComplete=false;
+  m_cc_cleanup=true;
   foreach (KTextEditor::CompletionProvider *provider, m_completionProviders)
     provider->completionAborted(this);
+  m_cc_cleanup=false;
+  if (m_delayed_cc_type!=KTextEditor::CompletionNone) {
+    enum KTextEditor::CompletionType t=m_delayed_cc_type;
+    m_delayed_cc_type=KTextEditor::CompletionNone;
+    invokeCompletion(t);
+  }
 }
 
 bool KateView::insertTemplateTextImplementation ( const KTextEditor::Cursor& c, const QString &templateString, const QMap<QString,QString> &initialValues) {

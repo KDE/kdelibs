@@ -178,10 +178,13 @@ class KateView : public KTextEditor::View,
     void invokeCompletion(enum KTextEditor::CompletionType type);
     void completionAborted();
     void completionDone();
+    void completingInProgress(bool val) {m_cc_cleanup=val;}
   private:
     QLinkedList<KTextEditor::CompletionProvider*> m_completionProviders;
     QHash<KTextEditor::CompletionProvider*,KTextEditor::CompletionData> m_completionProviderData;
     bool m_customComplete;
+    bool m_cc_cleanup;
+    enum KTextEditor::CompletionType m_delayed_cc_type;
 #if 0
   public slots:
     void showArgHint( QStringList arg1, const QString& arg2, const QString& arg3 );

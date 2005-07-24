@@ -100,10 +100,10 @@ class KateCompletionItem : public Q3ListBoxText
       : Q3ListBoxText( lb,"",after )
       , m_item( item )
     {
-      if( item.item().postfix == "()" ) { // should be configurable
-        setText( item.item().prefix + " " + item.text() + item.item().postfix );
+      if( item.item().postfix() == "()" ) { // should be configurable
+        setText( item.item().prefix() + " " + item.text() + item.item().postfix() );
       } else {
-        setText( item.item().prefix + " " + item.text() + " " + item.item().postfix);
+        setText( item.item().prefix() + " " + item.text() + " " + item.item().postfix());
       }
     }
 
@@ -115,6 +115,7 @@ KateCodeCompletion::KateCodeCompletion( KateView* view )
   : QObject( view, "Kate Code Completion" )
   , m_view( view )
   , m_commentLabel( 0 )
+  , m_blockEvents(false)
 {
   m_completionPopup = new Q3VBox( 0, 0, Qt::WType_Popup );
   m_completionPopup->setFrameStyle( Q3Frame::Box | Q3Frame::Plain );
@@ -155,6 +156,12 @@ void KateCodeCompletion::buildItemList() {
     }
   }
   qSort(m_items);
+#if 0
+  kdDebug()<<"------------"<<endl;
+  foreach (const CompletionItem& item,m_items)
+    kdDebug()<<item.text()<<endl;
+  kdDebug()<<"------------"<<endl;
+#endif
 }
 
 
@@ -228,7 +235,8 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
 
    if( e->type() == QEvent::Hide )
    {
-     abortCompletion();
+     if (!m_blockEvents)
+      abortCompletion();
      return false;
    }
 
@@ -284,21 +292,33 @@ void KateCodeCompletion::handleKey (QKeyEvent *e)
 
 void KateCodeCompletion::doComplete()
 {
+#if 0
+  foreach (const KTextEditor::CompletionData& data,m_data) {
+    kdDebug()<<"datalist="<<&data<<endl;
+  }
+  kdDebug()<<"doComplete------------"<<endl;
+  foreach (const CompletionItem& item,m_items)
+    kdDebug()<<item.text()<<endl;
+  kdDebug()<<"doComplete------------"<<endl;
+#endif
+
   KateCompletionItem* item = static_cast<KateCompletionItem*>(
      m_completionListBox->item(m_completionListBox->currentItem()));
 
   if( item == 0 )
     return;
 
-  if (item->m_item.item().provider)
-      item->m_item.item().provider->doComplete(m_view,*(item->m_item.data),item->m_item.item());
-  else {
+  if (item->m_item.item().provider()) {
+      m_view->completingInProgress(true);
+      item->m_item.item().provider()->doComplete(m_view,*(item->m_item.data),item->m_item.item());
+      m_view->completingInProgress(false);
+  } else {
     QString text = item->m_item.text();
     QString currentLine = m_view->currentTextLine();
     int alreadyThere = m_view->cursorPosition().column() - item->m_item.data->matchStart().column();
     //QString currentComplText = currentLine.mid(m_colCursor,len);
     QString add = text.mid(alreadyThere);
-    if( item->m_item.item().postfix == "()" )
+    if( item->m_item.item().postfix() == "()" )
       add += "(";
 
     m_view->insertText(add);
@@ -320,6 +340,8 @@ void KateCodeCompletion::abortCompletion()
 
 void KateCodeCompletion::complete( KTextEditor::CompletionItem entry )
 {
+  kdDebug()<<"KateCodeCompletion::completion=============about to close completion box"<<endl;
+  m_blockEvents=true;
   m_completionPopup->hide();
   delete m_commentLabel;
   m_commentLabel = 0;
@@ -334,6 +356,7 @@ void KateCodeCompletion::complete( KTextEditor::CompletionItem entry )
 
 void KateCodeCompletion::updateBox( bool )
 {
+  m_blockEvents=false;
 #if 0
   if( m_colCursor > m_view->cursorPosition().column() ) {
     // the cursor is too far left
@@ -367,9 +390,9 @@ void KateCodeCompletion::updateBox( bool )
   Q3ListBoxItem *afteritem=0;
   if( m_caseSensitive ) {
     for( it = m_items.begin(); it != m_items.end(); ++it ) {
-      if ((len<=0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
+      if ((len<0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
         int tmp=(currentCol-(it->data->matchStart().column()));
-        if (tmp<=0) continue;
+        if (tmp<0) continue;
         len=tmp;
         currComp=currentLine.mid(it->data->matchStart().column(),len);
       }
@@ -379,9 +402,9 @@ void KateCodeCompletion::updateBox( bool )
     }
   } else {
     for( it = m_items.begin(); it != m_items.end(); ++it ) {
-      if ((len<=0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
+      if ((len<0) || ((currentCol-(it->data->matchStart().column()))!=len)) {
         int tmp=(currentCol-(it->data->matchStart().column()));
-        if (tmp<=0) continue;
+        if (tmp<0) continue;
         len=tmp;
         currComp=currentLine.mid(it->data->matchStart().column(),len).upper();
       }
@@ -460,11 +483,11 @@ void KateCodeCompletion::showComment()
   if( !item )
     return;
 
-  if( item->m_item.item().comment.isEmpty() )
+  if( item->m_item.item().comment().isEmpty() )
     return;
 
   delete m_commentLabel;
-  m_commentLabel = new KateCodeCompletionCommentLabel( 0, item->m_item.item().comment );
+  m_commentLabel = new KateCodeCompletionCommentLabel( 0, item->m_item.item().comment() );
  // m_commentLabel->setFont(QToolTip::font());
   m_commentLabel->setPalette(QToolTip::palette());
 

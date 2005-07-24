@@ -127,17 +127,30 @@ class KateCodeCompletion : public QObject
         //longest match first, implement more accurately
         bool longer=(data->matchStart().column()<other.data->matchStart().column());
         bool equal=(data->matchStart().column()==other.data->matchStart().column());
-        bool result= longer || (equal &&(oi.text>ti.text));
+        bool result= longer || (equal &&(oi.text()>ti.text()));
         return result;
 
       };
       inline CompletionItem& operator=(const CompletionItem& c) {data=c.data;index=c.index; return *this;} //FIXME
-      inline const QString& text() const {return data->items().at(index).text;}
-      inline KTextEditor::CompletionItem item() const {return data->items().at(index);}
+      inline const QString& text() const {
+#if 0        
+        kdDebug()<<"data="<<data<<endl;
+        kdDebug()<<"data->items().size()="<<data->items().size()<<endl;
+#endif
+        return data->items().at(index).text();
+      }
+      inline KTextEditor::CompletionItem item() const {
+#if 0
+        kdDebug()<<"data="<<data<<endl;
+        kdDebug()<<"data->items().size()="<<data->items().size()<<endl;
+#endif
+        return data->items().at(index);
+      }
     };
     QList<CompletionItem> m_items;
     QLinkedList<KTextEditor::CompletionData> m_data;
     void buildItemList();
+    bool m_blockEvents;
 };
 
 class KateArgHint: public Q3Frame

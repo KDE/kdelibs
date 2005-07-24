@@ -467,16 +467,16 @@ void DocWordCompletionPluginView::complete( bool fw )
 // Contributed by <brain@hdsnet.hu>
 QString DocWordCompletionPluginView::findLongestUnique(const Q3ValueList < KTextEditor::CompletionItem > &matches)
 {
-  QString partial = matches.front().text;
+  QString partial = matches.front().text();
   Q3ValueList < KTextEditor::CompletionItem >::const_iterator i = matches.begin();
   for (++i; i != matches.end(); ++i)
   {
-    if (!(*i).text.startsWith(partial))
+    if (!(*i).text().startsWith(partial))
     {
       while(partial.length() > 0)
       {
         partial.remove(partial.length() - 1, 1);
-        if ((*i).text.startsWith(partial))
+        if ((*i).text().startsWith(partial))
         {
           break;
         }
@@ -548,10 +548,7 @@ QList<KTextEditor::CompletionItem> DocWordCompletionPluginView::allMatches( cons
         m = d->re.cap( 1 );
         if ( ! seen[ m ] ) {
           seen.insert( m, &sawit );
-          KTextEditor::CompletionItem e;
-          e.text = m;
-          e.provider=0;
-          l.append( e );
+          l.append( KTextEditor::CompletionItem(m));
         }
         pos += d->re.matchedLength();
       }
