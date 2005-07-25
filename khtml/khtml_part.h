@@ -1656,6 +1656,8 @@ private:
 
   void setDebugScript( bool enable );
 
+  void runAdFilter();
+
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

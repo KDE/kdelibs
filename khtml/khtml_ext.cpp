@@ -672,18 +672,21 @@ void KHTMLPopupGUIClient::slotBlockHost()
 {
     QString name=d->m_imageURL.protocol()+"://"+d->m_imageURL.host()+"/*";
     KHTMLFactory::defaultHTMLSettings()->addAdFilter( name );
+    d->m_khtml->reparseConfiguration();
 }
 
 void KHTMLPopupGUIClient::slotBlockImage()
 {
-    bool ok=false;
+    bool ok = false;
 
     QString url = KInputDialog::getText( i18n("Add URL to Filter"),
                                          "URL",
                                          d->m_imageURL.url(),
                                          &ok);
-    if (ok)
+    if ( ok ) {
         KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
+        d->m_khtml->reparseConfiguration();
+    }
 }
 
 void KHTMLPopupGUIClient::slotBlockIFrame()
@@ -693,8 +696,10 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
                                                "URL",
                                                d->m_khtml->url().url(),
                                                &ok );
-    if ( ok )
+    if ( ok ) {
         KHTMLFactory::defaultHTMLSettings()->addAdFilter( url );
+        d->m_khtml->reparseConfiguration();
+    }
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()

@@ -5832,6 +5832,9 @@ void KHTMLPart::reparseConfiguration()
   khtml::CSSStyleSelector::reparseConfiguration();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
+
+  if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
+     runAdFilter();
 }
 
 QStringList KHTMLPart::frameNames() const
@@ -6645,6 +6648,28 @@ void KHTMLPart::slotAutoScroll()
       d->m_view->doAutoScroll();
     else
       stopAutoScroll(); // Safety
+}
+
+void KHTMLPart::runAdFilter()
+{
+    if ( parentPart() )
+        parentPart()->runAdFilter();
+
+    if ( !d->m_doc )
+        return;
+
+    QPtrDictIterator<khtml::CachedObject> it( d->m_doc->docLoader()->m_docObjects );
+    for ( ; it.current(); ++it )
+        if ( (*it).type() == khtml::CachedObject::Image )
+            (*it).m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( (*it).url().string() ) );
+
+    if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
+        for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() )
+            if ( node && ( node->id() == ID_IMG || node->id() == ID_IFRAME ) ) {
+                if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
+                    node->detach();
+            }
+    }
 }
 
 void KHTMLPart::selectAll()
