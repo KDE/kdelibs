@@ -322,6 +322,7 @@ namespace khtml
         KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
 
         friend class Cache;
+        friend class ::KHTMLPart;
     };
 
     /**

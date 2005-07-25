@@ -6660,8 +6660,13 @@ void KHTMLPart::runAdFilter()
 
     QPtrDictIterator<khtml::CachedObject> it( d->m_doc->docLoader()->m_docObjects );
     for ( ; it.current(); ++it )
-        if ( (*it).type() == khtml::CachedObject::Image )
-            (*it).m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( (*it).url().string() ) );
+        if ( it.current()->type() == khtml::CachedObject::Image ) {
+            khtml::CachedImage *image = static_cast<khtml::CachedImage *>(it.current());
+            bool wasBlocked = image->m_wasBlocked;
+            image->m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( (*it).url().string() ) );
+            if ( image->m_wasBlocked != wasBlocked )
+                image->do_notify(image->pixmap(), image->valid_rect());
+        }
 
     if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
         for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() )
