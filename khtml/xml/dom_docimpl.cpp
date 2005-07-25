@@ -2376,7 +2376,7 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
 
     if (!listener) {
         for (; it.current(); ++it)

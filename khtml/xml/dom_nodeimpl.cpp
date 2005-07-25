@@ -42,6 +42,11 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "dom_nodeimpl.h"
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QEvent>
+#include <Q3PtrList>
 
 // from khtml_caret_p.h
 namespace khtml {
@@ -328,7 +333,7 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
     // if this id/listener/useCapture combination is already registered, do nothing.
     // the DOM2 spec says that "duplicate instances are discarded", and this keeps
     // the listener order intact.
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == *rl) {
             delete rl;
@@ -356,7 +361,7 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
 void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
     if (!m_regdListeners) {
-        m_regdListeners = new QPtrList<RegisteredEventListener>;
+        m_regdListeners = new Q3PtrList<RegisteredEventListener>;
         m_regdListeners->setAutoDelete(true);
     }
 
