@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES= $(all_includes) -I../kded
+INCLUDES= -I../kded $(all_includes)
 
 bin_PROGRAMS = 
 lib_LTLIBRARIES =
