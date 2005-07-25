@@ -164,7 +164,8 @@ void DownloadDialog::load(QString providerList)
 void DownloadDialog::clear()
 {
   QMap<QWidget*, QValueList<KListView*>* >::Iterator it;
-  for(it = m_map.begin(); it != m_map.end(); it++)
+  QMap<QWidget*, QValueList<KListView*>* >::Iterator end(m_map.end());
+  for(it = m_map.begin(); it != end; ++it)
   {
     QValueList<KListView*> *v = it.data();
     kdDebug() << "clear listviews in " << v << endl;
