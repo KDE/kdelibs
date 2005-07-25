@@ -635,6 +635,9 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     return Boolean(static_cast<DOM::MouseEvent>(event).metaKey());
   case Button:
   {
+    if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat ) {
+        return Number(static_cast<DOM::MouseEvent>(event).button());
+    }
     // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
     // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
     int domButton = static_cast<DOM::MouseEvent>(event).button();
