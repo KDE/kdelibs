@@ -2390,6 +2390,11 @@ Completion ReturnNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
+  CodeType codeType = exec->context().imp()->codeType();
+  if (codeType != FunctionCode) {
+    return Completion(Throw, throwError(exec, SyntaxError, "Invalid return statement."));    
+  }
+
   if (!value)
     return Completion(ReturnValue, Undefined());
 
@@ -2930,7 +2935,7 @@ Value ParameterNode::evaluate(ExecState * /*exec*/) const
 
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
-  : BlockNode(s), program(false)
+  : BlockNode(s)
 {
   //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
 }
@@ -2939,16 +2944,6 @@ void FunctionBodyNode::processFuncDecl(ExecState *exec)
 {
   if (source)
     source->processFuncDecl(exec);
-}
-
-Completion FunctionBodyNode::execute(ExecState *exec)
-{
-  Completion c = BlockNode::execute(exec);
-  if (program && c.complType() == ReturnValue)
-    return Completion(Throw,
-		      throwError(exec, SyntaxError, "return outside of function body"));
-  else
-    return c;
 }
 
 // ----------------------------- FuncDeclNode ---------------------------------

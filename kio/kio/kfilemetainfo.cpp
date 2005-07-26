@@ -403,7 +403,7 @@ QStringList KFileMetaInfo::preferredGroups() const
     QStringList::Iterator pref;
 
     // move all keys from the preferred groups that are in our list to a new list
-    for ( pref = preferred.begin(); pref != preferred.end(); pref++ )
+    for ( pref = preferred.begin(); pref != preferred.end(); ++pref )
     {
         QStringList::Iterator group = list.find(*pref);
         if ( group != list.end() )
@@ -1215,7 +1215,7 @@ QStringList KFileMetaInfoGroup::preferredKeys() const
     QStringList::Iterator end   = preferredKeys.end();
 
     // move all keys from the preferred keys that are in our list to a new list
-    for ( pref = begin; pref!=end; pref++ )
+    for ( pref = begin; pref!=end; ++pref )
     {
         QStringList::Iterator item = list.find(*pref);
         if ( item != list.end() )

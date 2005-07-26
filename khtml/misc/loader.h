@@ -181,6 +181,7 @@ namespace khtml
         CachedObject* m_next;
         CachedObject* m_prev;
         friend class Cache;
+        friend class ::KHTMLPart;
     };
 
 
@@ -331,6 +332,7 @@ namespace khtml
         KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
 
         friend class Cache;
+        friend class ::KHTMLPart;
     };
 
     /**
@@ -369,6 +371,7 @@ namespace khtml
 
         friend class Cache;
         friend class DOM::DocumentImpl;
+        friend class ::KHTMLPart;
 
         QStringList m_reloadedURLs;
         mutable Q3PtrDict<CachedObject> m_docObjects;

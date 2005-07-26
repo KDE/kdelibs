@@ -201,7 +201,7 @@ void PlastikStyle::updateProgressPos()
     //Update the registered progressbars.
     QMap<QWidget*, int>::iterator iter;
     bool visible = false;
-    for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
+    for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); ++iter)
     {   
         if ( !qobject_cast<Q3ProgressBar>(iter.key()) )
             continue;
@@ -1781,6 +1781,28 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             }
             p->drawPixmap(x, y, bmp);
 
+
+            QColor checkmarkColor = enabled?getColor(cg,CheckMark):cg.background();
+            if(flags & Style_Down) {
+                checkmarkColor = alphaBlendColors(contentColor, checkmarkColor, 150);
+            }
+
+            // draw the radio mark
+            if (flags & Style_On || flags & Style_Down) {
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_dark_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
+                p->drawPixmap(x+2, y+2, bmp);
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_light_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
+                p->drawPixmap(x+2, y+2, bmp);
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_aa_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
+                p->drawPixmap(x+2, y+2, bmp);
+            }
+
             break;
         }
 
@@ -2270,37 +2292,6 @@ void PlastikStyle::drawControl(ControlElement element,
             break;
         }
 
-    // RADIOBUTTONS
-    // ------------
-        case CE_RadioButton: {
-            drawPrimitive(PE_ExclusiveIndicator, p, r, cg, flags);
-
-            const QColor contentColor = enabled?cg.base():cg.background();
-            QColor checkmarkColor = enabled?getColor(cg,CheckMark):cg.background();
-            if(flags & Style_Down) {
-                checkmarkColor = alphaBlendColors(contentColor, checkmarkColor, 150);
-            }
-
-            if (flags & Style_On || flags & Style_Down) {
-                int x = r.center().x() - 4, y = r.center().y() - 4;
-                QBitmap bmp;
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_dark_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
-                p->drawPixmap(x, y, bmp);
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_light_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
-                p->drawPixmap(x, y, bmp);
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_aa_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
-                p->drawPixmap(x, y, bmp);
-            }
-
-            break;
-        }
-
     // TABS
     // ----
         case CE_TabBarTab: {
@@ -2605,7 +2596,7 @@ void PlastikStyle::drawControl(ControlElement element,
 
                 // Draw etched text if we're inactive and the menu item is disabled
                 if ( etchtext && !enabled && !active ) {
-                    p->setPen( cg.foreground() );
+                    p->setPen( cg.light() );
                     mi->custom()->paint( p, cg, active, enabled, xp+offset, r.y()+m+1, tw, r.height()-2*m );
                     p->setPen( discol );
                 }

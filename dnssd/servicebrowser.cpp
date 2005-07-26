@@ -174,7 +174,7 @@ void ServiceBrowser::addDomain(const QString& domain)
 	if (!d->m_running) return;
 	if (!(d->resolvers[domain])) {
 		QStringList::ConstIterator itEnd = d->m_types.end();
-		for (QStringList::ConstIterator it=d->m_types.begin(); it!=itEnd; it++) {
+		for (QStringList::ConstIterator it=d->m_types.begin(); it!=itEnd; ++it) {
 			Query* b = new Query((*it),domain);
 			connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
 				SLOT(gotNewService(DNSSD::RemoteService::Ptr)));

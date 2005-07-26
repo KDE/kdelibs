@@ -281,7 +281,7 @@ KeyValueMap::save(QTextStream& file, int count)
   memset(prefix, ' ', count);
   prefix[count]=0;
   // -----
-  for(pos=data->begin(); pos!=data->end(); pos++)
+  for(pos=data->begin(); pos!=data->end(); ++pos)
     {
       file << prefix << (*pos).first << '=' << (*pos).second << endl;
     }
@@ -804,7 +804,7 @@ KeyValueMap::insert(const Q3CString& key, const list<long>& values, bool force)
   Q3CString value;
   list<long>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); pos++)
+  for(pos=values.begin(); pos!=values.end(); ++pos)
     {
       temp.setNum(*pos);
       value=value+temp+", ";
@@ -879,7 +879,7 @@ KeyValueMap::insert(const Q3CString& key, const list<int>& values, bool force)
   Q3CString value;
   list<int>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); pos++)
+  for(pos=values.begin(); pos!=values.end(); ++pos)
     {
       temp.setNum(*pos);
       value=value+temp+", ";
@@ -1274,7 +1274,7 @@ KeyValueMap::insert(const Q3CString& key, const list<double>& values, bool force
   Q3CString value; // WORK_TO_DO: how to reserve enough space to avoid growing?
   list<double>::const_iterator pos;
   // -----
-  for(pos=values.begin(); pos!=values.end(); pos++)
+  for(pos=values.begin(); pos!=values.end(); ++pos)
     {
       buffer.setNum(*pos);
       value=value+buffer+", ";
@@ -1558,7 +1558,7 @@ Section::save(QTextStream& stream, int level)
       insertIndentSpace(stream, level);
       stream << "# subsections:" << endl;
     }
-  for(pos=sections.begin(); pos!=sections.end(); pos++)
+  for(pos=sections.begin(); pos!=sections.end(); ++pos)
     {
       insertIndentSpace(stream, level);
       stream << '[' << (*pos).first << ']' << endl;
@@ -1763,7 +1763,7 @@ Section::clear()
   // ###########################################################################
   StringSectionMap::iterator pos;
   // -----
-  for(pos=sections.begin(); pos!=sections.end(); pos++)
+  for(pos=sections.begin(); pos!=sections.end(); ++pos)
     {
       if(!(*pos).second->clear()) return false;
       delete(*pos).second;
@@ -1862,7 +1862,7 @@ QConfigDB::get(const list<Q3CString>& key, KeyValueMap*& map)
       map=top.getKeys();
       return true;
     }
-  for(pos=key.begin(); pos!=key.end(); pos++)
+  for(pos=key.begin(); pos!=key.end(); ++pos)
     {
       if(!section->find(*pos, section))
 	{
@@ -2018,7 +2018,7 @@ QConfigDB::get(const list<Q3CString>& key, Section*& section)
   Section* temp=&top;
   list<Q3CString>::const_iterator pos;
   // -----
-  for(pos=key.begin(); pos!=key.end(); pos++)
+  for(pos=key.begin(); pos!=key.end(); ++pos)
     {
       if(!temp->find(*pos, temp))
 	{
@@ -2196,7 +2196,7 @@ QConfigDB::CleanLockFiles(int)
   // -----
   kdDebug(GUARD, KAB_KDEBUG_AREA).form("QConfigDB::CleanLockFiles: removing %i "
 	     "remaining lockfiles.", LockFiles.size()) << endl;
-  for(pos=LockFiles.begin(); pos!=LockFiles.end(); pos++)
+  for(pos=LockFiles.begin(); pos!=LockFiles.end(); ++pos)
     {
       if(::remove(QFile::encodeName(*pos))==0)
 	{

@@ -55,7 +55,8 @@ public:
 	Add,          ///< @since 3.4
 	Remove,       ///< @since 3.4
 	Test,         ///< @since 3.4
-	Properties    ///< @since 3.4
+	Properties,   ///< @since 3.4
+	Overwrite     ///< @since 3.5
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -79,6 +80,10 @@ public:
      */
     static KGuiItem properties();
     static KGuiItem reset();
+    /**
+     * @since 3.5
+     */
+    static KGuiItem overwrite();
     /**
      * Returns a KGuiItem suiting for cases where code or functionality
      * runs under root privileges. Used in conjunction with KConfig Modules.

@@ -5830,6 +5830,9 @@ void KHTMLPart::reparseConfiguration()
   khtml::CSSStyleSelector::reparseConfiguration();
   if(d->m_doc) d->m_doc->updateStyleSelector();
   QApplication::restoreOverrideCursor();
+
+  if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
+     runAdFilter();
 }
 
 QStringList KHTMLPart::frameNames() const
@@ -6642,6 +6645,37 @@ void KHTMLPart::slotAutoScroll()
       d->m_view->doAutoScroll();
     else
       stopAutoScroll(); // Safety
+}
+
+void KHTMLPart::runAdFilter()
+{
+    if ( parentPart() )
+        parentPart()->runAdFilter();
+
+    if ( !d->m_doc )
+        return;
+
+    QPtrDictIterator<khtml::CachedObject> it( d->m_doc->docLoader()->m_docObjects );
+    for ( ; it.current(); ++it )
+        if ( it.current()->type() == khtml::CachedObject::Image ) {
+            khtml::CachedImage *image = static_cast<khtml::CachedImage *>(it.current());
+            bool wasBlocked = image->m_wasBlocked;
+            image->m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( (*it).url().string() ) );
+            if ( image->m_wasBlocked != wasBlocked )
+                image->do_notify(image->pixmap(), image->valid_rect());
+        }
+
+    if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
+        for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() ) {
+            if ( node->id() == ID_IMG ||
+                 node->id() == ID_IFRAME ||
+                 (node->id() == ID_INPUT && !strcasecmp( static_cast<ElementImpl *>(node)->getAttribute(ATTR_TYPE), "image")) )
+            {
+                if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
+                    node->detach();
+            }
+        }
+    }
 }
 
 void KHTMLPart::selectAll()

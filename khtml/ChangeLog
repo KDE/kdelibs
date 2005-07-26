@@ -1,3 +1,17 @@
+2005-07-26  Andreas Kling <kling@impul.se>
+
+        * html/htmlparser.cpp: Block <input type="image"> elements if SRC attribute is ad-filtered.
+        * khtml_part.cpp: Include <input type="image"> elements in AdBlocK filter runs.
+
+2005-07-25  Andreas Kling <kling@impul.se>
+
+        Make new ad filters have instant effect (either hide affected elements
+        replace them with the "blocked" pixmap.)
+
+        * khtml_part.{cpp,h}: Added runAdFilters() function which is called from reparseConfiguration()
+        * khtml_ext.cpp: Call KHTMLPart::reparseConfiguration() after adding new filters.
+        * misc/loader.cpp: Create blockedPixmap in Cache::init() instead of the CachedImage constructor.
+
 2005-07-19  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/render_box.{h,cpp}: Make sure we get content-sizes when reading fixed length values.

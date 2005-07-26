@@ -1078,7 +1078,7 @@ int KWalletD::removeEntry(int handle, const QString& folder, const QString& key)
 void KWalletD::slotAppUnregistered(const QByteArray& app) {
 	if (_handles.contains(app)) {
 		Q3ValueList<int> l = _handles[app];
-		for (Q3ValueList<int>::Iterator i = l.begin(); i != l.end(); i++) {
+		for (Q3ValueList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
 			_handles[app].remove(*i);
 			KWallet::Backend *w = _wallets.find(*i);
 			if (w && !_leaveOpen && 0 == w->deref()) {

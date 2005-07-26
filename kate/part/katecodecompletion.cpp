@@ -233,12 +233,15 @@ bool KateCodeCompletion::eventFilter( QObject *o, QEvent *e )
     )
     return false;
 
+/* Is this really needed? abortCompletion will hide this thing, 
+   aborting here again will send abort signal even on successfull completion
    if( e->type() == QEvent::Hide )
    {
      if (!m_blockEvents)
       abortCompletion();
      return false;
    }
+*/
 
    if ( e->type() == QEvent::MouseButtonDblClick  ) {
     doComplete();
@@ -455,7 +458,8 @@ void KateCodeCompletion::showArgHint ( QStringList functionList, const QString& 
   m_pArgHint->setArgMarkInfos( strWrapping, strDelimiter );
 
   int nNum = 0;
-  for( QStringList::Iterator it = functionList.begin(); it != functionList.end(); it++ )
+  QStringList::Iterator end(functionList.end());
+  for( QStringList::Iterator it = functionList.begin(); it != end; ++it )
   {
     kdDebug(13035) << "Insert function text: " << *it << endl;
 

@@ -544,7 +544,8 @@ QList<int> KConfigBase::readIntListEntry( const char *pKey ) const
 {
   QStringList strlist = readListEntry(pKey);
   QList<int> list;
-  for (QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); it++)
+  QStringList::ConstIterator end(strlist.end());
+  for (QStringList::ConstIterator it = strlist.begin(); it != end; ++it)
     // I do not check if the toInt failed because I consider the number of items
     // more important than their value
     list << (*it).toInt();
@@ -1340,7 +1341,8 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
       // A QStrList may contain values in 8bit locale cpecified
       // encoding or in UTF8 encoding.
       value = KStringHandler::from8Bit(it.current());
-      for( i = 0; i < value.length(); i++ )
+	  int strLengh(value.length());
+      for( i = 0; i < strLengh; i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';
@@ -1375,7 +1377,9 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   for( ; it != list.end(); ++it )
     {
       QString value = *it;
-      for( int i = 0; i < value.length(); i++ )
+      uint i;
+      int strLength(value.length());
+      for( i = 0; i < strLength; i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
             str_list += '\\';

@@ -458,17 +458,6 @@ bool ArrayProtoFuncImp::implementsCall() const
   return true;
 }
 
-UString valueToLocaleString(ExecState *exec, Value v)
-{
-  Object o = v.toObject(exec);
-  Object toLocaleString = Object::dynamicCast(o.get(exec,toLocaleStringPropertyName));
-  List args;
-  if (toLocaleString.isValid() && toLocaleString.implementsCall())
-    return toLocaleString.call(exec,o,args).toString(exec);
-  else
-    return o.toString(exec);
-}
-
 // ECMA 15.4.4
 Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
@@ -477,8 +466,6 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
   Value result;
   switch (id) {
   case ToLocaleString:
-    // TODO  - see 15.4.4.3
-    // fall through
   case ToString:
 
     if (!thisObj.inherits(&ArrayInstanceImp::info)) {
@@ -488,7 +475,6 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     }
 
     // fall through
-
   case Join: {
     UString separator = ",";
     UString str = "";
@@ -498,10 +484,23 @@ Value ArrayProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
         str += separator;
-      Value element = thisObj.get(exec,k);
-      if (element.type() != UndefinedType && element.type() != NullType)
-        str += (id == ToLocaleString ? valueToLocaleString(exec,element) : element.toString(exec));
-      if (exec->hadException())
+
+      Value element = thisObj.get(exec, k);
+      if (element.type() == UndefinedType || element.type() == NullType)
+        continue;
+
+      Object o = element.toObject(exec);
+      Object conversionFunction;
+      if (id == ToLocaleString) {
+        conversionFunction = Object::dynamicCast(o.get(exec, toLocaleStringPropertyName));
+      } else {
+        conversionFunction = Object::dynamicCast(o.get(exec, toStringPropertyName));
+      }
+      // TODO: check. Mozilla throws exception on errors...
+      if (conversionFunction.isValid() && conversionFunction.implementsCall())
+	str += conversionFunction.call(exec, o, List()).toString(exec);
+
+      if ( exec->hadException() )
         break;
     }
     result = String(str);

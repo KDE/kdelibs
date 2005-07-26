@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
     QMap <QString, QString> themes; //Name->file mapping..
 
-    for (QStringList::iterator i = themercs.begin(); i!=themercs.end(); i++)
+    for (QStringList::iterator i = themercs.begin(); i!=themercs.end(); ++i)
     {
         QString file=*i;
         KSimpleConfig config(file, true);
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
     QStringList themeNames; //A list of names, each occurring once - the keys of the themes map..
 
-    for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); i++)
+    for (QMap<QString, QString>::Iterator  i = themes.begin(); i!=themes.end(); ++i)
     {
         cache.setGroup(i.key().lower());
         cache.writePathEntry("file",QFileInfo(i.data()).fileName());

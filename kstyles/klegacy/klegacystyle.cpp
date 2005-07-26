@@ -1264,7 +1264,7 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 	    parameter = parameter.mid(1, parameter.length() - 2);
 
 	    QStringList::Iterator it;
-	    for (it = pixmapPath.begin(); it != pixmapPath.end(); it++) {
+	    for (it = pixmapPath.begin(); it != pixmapPath.end(); ++it) {
 		QFileInfo fileinfo((*it) + parameter);
 
 		if (fileinfo.exists()) {
@@ -1363,7 +1363,7 @@ bool KLegacyStylePrivate::parseImage(KLegacyStyleData *styledata) {
 	    parameter = parameter.mid(1, parameter.length() - 2);
 
 	    QStringList::Iterator it;
-	    for (it = pixmapPath.begin(); it != pixmapPath.end(); it++) {
+	    for (it = pixmapPath.begin(); it != pixmapPath.end(); ++it) {
 		QFileInfo fileinfo((*it) + parameter);
 
 		if (fileinfo.exists()) {

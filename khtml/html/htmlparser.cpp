@@ -877,6 +877,14 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLFieldSetElementImpl(document, form);
         break;
     case ID_INPUT:
+        if ( t->attrs &&
+             KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() &&
+             KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() &&
+             !strcasecmp( t->attrs->getValue( ATTR_TYPE ), "image" ) )
+        {
+            if (KHTMLFactory::defaultHTMLSettings()->isAdFiltered( doc()->completeURL( khtml::parseURL(t->attrs->getValue(ATTR_SRC)).string() ) ))
+                return 0;
+        }
         n = new HTMLInputElementImpl(document, form);
         break;
     case ID_ISINDEX:

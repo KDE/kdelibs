@@ -49,6 +49,14 @@ int main(int argc, char *argv[])
      return 0;
   }
 
-  printf( "Usage: ktimezonestest local!\n" );
+  if ((argc==2) && (strcmp(argv[1], "all")==0))
+  {
+     KTimezones timezones;
+     KTimezones::ZoneMap allZones = timezones.allZones();
+     for ( KTimezones::ZoneMap::const_iterator it = allZones.begin(), end = allZones.end(); it != end; ++it )
+         printf( "%s\n", it.key().latin1() );
+  }
+
+  printf( "Usage: ktimezonestest [local|all]!\n" );
   return 1;
 }

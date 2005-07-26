@@ -2083,7 +2083,7 @@ KPopupMenu *KToolBar::contextMenu()
 
   if (avSizes.count() < 10) {
       // Fixed or threshold type icons
-	  foreach ( int it, avSizes ) {
+      foreach ( int it, avSizes ) {
           QString text;
           if ( it < 19 )
               text = i18n("Small (%1x%2)").arg(it).arg(it);

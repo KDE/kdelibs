@@ -372,15 +372,8 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     setAccept( acceptHeader );
     m_showAnimations = dl->showAnimations();
 
-
-    if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered(url.string()))
-    {
-        m_wasBlocked=true;
-        if ( !Cache::blockedPixmap )
-        {
-            Cache::blockedPixmap = new QPixmap();
-            Cache::blockedPixmap->loadFromData(blocked_icon_data, blocked_icon_len);
-        }
+    if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( url.string() ) ) {
+        m_wasBlocked = true;
         CachedObject::finish();
     }
 }
@@ -1323,6 +1316,11 @@ void Cache::init()
 
     if ( !brokenPixmap )
         brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::Desktop, 16, KIcon::DisabledState));
+        
+    if ( !blockedPixmap ) {
+        blockedPixmap = new QPixmap();
+        blockedPixmap->loadFromData(blocked_icon_data, blocked_icon_len);
+    }
 
     if ( !m_loader )
         m_loader = new Loader();

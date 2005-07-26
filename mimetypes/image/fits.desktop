@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+# RFC 4047
+MimeType=image/fits
+Icon=image
+Comment=FITS Image
+Comment[et]=FITS pildifail
+Comment[ga]=Íomhá FITS
+### TODO: what file patterns, especially that application/fits has the same
+# RFC 4047 tells that image/fits are also application/fits
+X-KDE-IsAlso=application/fits

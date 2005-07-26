@@ -299,7 +299,7 @@ uint RLEMap::insert(const uchar *d, uint l)
 QVector<const RLEData*> RLEMap::vector()
 {
     QVector<const RLEData*> v(size());
-    for (Iterator it = begin(); it != end(); it++)
+    for (Iterator it = begin(); it != end(); ++it)
         v.insert(it.data(), &it.key());
 
     return v;

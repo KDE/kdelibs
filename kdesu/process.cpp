@@ -312,10 +312,11 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         path = QFile::encodeName(file);
     }
 
-    const char **argp = static_cast<const char **>(malloc((args.count()+2)*sizeof(char *)));
-    argp[1] = path;
-    for (i = 0; i < args.count(); ++i)
-        argp[i + 2] = args.at(i).constData();
+    const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
+    int i = 0;
+    argp[i++] = path;
+    for (QCStringList::ConstIterator it=args.begin(); it!=args.end(); ++it)
+        argp[i++] = *it;
 
     argp[i + 2] = 0;
 

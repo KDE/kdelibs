@@ -9,7 +9,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-gzpostscript.desktop postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
 	x-executable.desktop x-executable-script.desktop x-archive.desktop x-lha.desktop \
-	x-tbz.desktop x-tgz.desktop x-awk.desktop \
+	x-tbz.desktop x-tbz2.desktop x-tgz.desktop x-awk.desktop \
 	x-perl.desktop x-perl-module.desktop x-compress.desktop x-cpio.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
 	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
@@ -64,7 +64,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.oasis.opendocument.text.desktop \
 	vnd.oasis.opendocument.image.desktop \
 	vnd.oasis.opendocument.chart.desktop \
-	x-java-jnlp-file.desktop xml-dtd.desktop \
+	x-java-jnlp-file.desktop xml-dtd.desktop fits.desktop \
 	x-rar-compressed.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application

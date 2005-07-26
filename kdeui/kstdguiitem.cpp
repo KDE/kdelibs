@@ -54,6 +54,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Remove   : return remove();
   case Test     : return test();
   case Properties : return properties();
+  case Overwrite : return overwrite();
   default       : return KGuiItem();
   };
 }
@@ -88,6 +89,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case Remove   : return QString::fromLatin1("remove");
   case Test     : return QString::fromLatin1("test");
   case Properties : return QString::fromLatin1("properties");
+  case Overwrite : return QString::fromLatin1("overwrite");
   default       : return QString::null;
   };
 }
@@ -274,7 +276,12 @@ KGuiItem KStdGuiItem::test()
 
 KGuiItem KStdGuiItem::properties()
 {
-  return KGuiItem(i18n("Properties"), "" );
+  return KGuiItem(i18n("Properties"));
+}
+
+KGuiItem KStdGuiItem::overwrite()
+{
+  return KGuiItem(i18n("&Overwrite"));
 }
 
 // vim: set ts=2 sts=2 sw=2 et:

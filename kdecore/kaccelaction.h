@@ -434,7 +434,7 @@ class KDECORE_EXPORT KAccelActions
 
 	/**
 	 * Returns the action with the given name.
-	 * @param aAction the name of the action to search
+	 * @param sAction the name of the action to search
 	 * @return the KAccelAction with the given name, or 0
 	 *          if not found
 	 */
@@ -478,17 +478,17 @@ class KDECORE_EXPORT KAccelActions
 
 	/**
 	 * Inserts an action into the collection.
-	 * @param sName the name of the accelerator
-	 * @param sLabel the label of the accelerator (i18n!)
-	 * @param sWhatsThis the What's This text (18n!)
-	 * @param cutDef3 the default shortcut for 3 modifier systems
-	 * @param cutDef4 the default shortcut for 4 modifier systems
-	 * @param pObjSlot the receiver of a signal when the key has been 
-	 *                 pressed
-	 * @param psMethodSlot the slot to connect for key presses. Receives
-	 *                     an int, as set by setID(), as only argument
-	 * @param bConfigurable if true the user can configure the shortcut
-	 * @param bEnabled true if the accelerator should be enabled
+	 * @param sAction        the name of the accelerator
+	 * @param sLabel         the label of the accelerator (i18n!)
+	 * @param sWhatsThis     the What's This text (18n!)
+	 * @param rgCutDefaults3 the default shortcut for 3 modifier systems
+	 * @param rgCutDefaults4 the default shortcut for 4 modifier systems
+	 * @param pObjSlot       the receiver of a signal when the key has been 
+	 *                       pressed
+	 * @param psMethodSlot   the slot to connect for key presses. Receives
+	 *                       an int, as set by setID(), as only argument
+	 * @param bConfigurable  if true the user can configure the shortcut
+	 * @param bEnabled       if true the accelerator should be enabled
 	 * @return the new action
 	 */
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,

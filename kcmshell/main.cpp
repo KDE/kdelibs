@@ -227,14 +227,14 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
         int maxLen=0;
 
-        for( KService::List::ConstIterator it = m_modules.begin(); it != m_modules.end(); it++)
+        for( KService::List::ConstIterator it = m_modules.begin(); it != m_modules.end(); ++it)
         {
             int len = (*it)->desktopEntryName().length();
             if (len > maxLen)
                 maxLen = len;
         }
 
-        for( KService::List::ConstIterator it = m_modules.begin(); it != m_modules.end(); it++)
+        for( KService::List::ConstIterator it = m_modules.begin(); it != m_modules.end(); ++it)
         {
             QString entry("%1 - %2");
 

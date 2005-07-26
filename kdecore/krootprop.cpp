@@ -295,7 +295,8 @@ QStringList KRootProp::listEntries() const
     QMap<QString,QString>::ConstIterator it;
     QStringList list;
 
-    for (it=propDict.begin(); it!=propDict.end(); it++)
+	QMap<QString,QString>::ConstIterator end(propDict.end());
+    for (it=propDict.begin(); it!=end; ++it)
 	list += it.key();
 
     return list;

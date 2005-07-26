@@ -7,6 +7,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qdir.h>
+#include <assert.h>
 #include <kmessagebox.h>
 #include "main.h"
 #include "main.moc"
@@ -26,7 +27,7 @@ Win::Win()
 
     connect( p, SIGNAL( processExited( int ) ),
              this, SLOT( pythonExited( int ) ) );
-};
+}
 
 
 int main( int argc, char** argv )
