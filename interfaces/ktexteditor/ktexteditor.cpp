@@ -73,6 +73,33 @@ namespace KTextEditor
 
 
 
+    class CompletionItem::Private: public QSharedData { //implicitly shared data, I can't move it into a private header file or the implementation, since the QSharedDataPointer causes compile problems, perhaps I should make it a QSharedDataPointer* ....
+      public:
+        Private():icon(QIcon()),type(QString()),text(QString()),prefix(QString()),postfix(QString()),comment(QString()),userdata(QVariant()),provider(0){}
+        Private(const QString& _text, const QIcon &_icon=QIcon(), CompletionProvider* _provider=0, const QString &_prefix=QString(), const QString& _postfix=QString(), const QString& _comment=QString(), const QVariant &_userdata=QVariant(), const QString &_type=QString()):icon(_icon),type(_type),text(_text),prefix(_prefix),postfix(_postfix),comment(_comment),userdata(_userdata),provider(_provider) {}
+
+      QIcon icon;
+      QString type;
+      QString text;
+      QString prefix;
+      QString postfix;
+      QString comment;
+      QVariant userdata;
+      CompletionProvider *provider; 
+
+      bool cmp(const Private* c) const {
+        return ( c->type == type &&
+                 c->text == text &&
+                 c->postfix == postfix &&
+                 c->prefix == prefix &&
+                 c->comment == comment &&
+                 c->userdata == userdata &&
+                 c->provider==provider &&
+                 c->icon.serialNumber()==icon.serialNumber());
+      }
+    };
+
+
 }
 
 
@@ -85,6 +112,11 @@ CompletionItem::CompletionItem(const QString& _text, const QIcon &_icon, Complet
   d=new CompletionItem::Private(_text,_icon,_provider,_prefix,_postfix,_comment,_userdata,_type);
 }
 
+CompletionItem::~CompletionItem() {}
+
+CompletionItem CompletionItem::operator=(const CompletionItem &c) {d=c.d; return *this; }
+
+CompletionItem::CompletionItem (const CompletionItem &c) {d=c.d;}
 
 
 bool CompletionItem::operator==( const CompletionItem &c ) const {

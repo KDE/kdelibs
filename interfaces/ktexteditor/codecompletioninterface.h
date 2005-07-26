@@ -53,6 +53,7 @@ class KTEXTEDITOR_EXPORT CompletionItem
   public:
     CompletionItem();
     CompletionItem(const QString& _text, const QIcon &_icon=QIcon(), CompletionProvider* _provider=0, const QString &_prefix=QString(), const QString& _postfix=QString(), const QString& _comment=QString(), const QVariant &_userdata=QVariant(), const QString &_type=QString());
+    ~CompletionItem();
     const QIcon&    icon() const;
     const QString&  text() const;
     const QString&  markupText() const;
@@ -62,35 +63,12 @@ class KTEXTEDITOR_EXPORT CompletionItem
     const QVariant& userdata() const;
     CompletionProvider *provider() const;//must not be set to a provider, instead of 0, if the provider doesn't support the doComplete method or doesn't want to handle the item itself
 
+
+    CompletionItem operator=(const CompletionItem &c);
+    CompletionItem (const CompletionItem &c);
     bool operator==( const CompletionItem &c ) const;
-
   private:
-    class Private: public QSharedData { //implicitly shared data, I can't move it into a private header file or the implementation, since the QSharedDataPointer causes compile problems, perhaps I should make it a QSharedDataPointer* ....
-      public:
-        Private():icon(QIcon()),type(QString()),text(QString()),prefix(QString()),postfix(QString()),comment(QString()),userdata(QVariant()),provider(0){}
-        Private(const QString& _text, const QIcon &_icon=QIcon(), CompletionProvider* _provider=0, const QString &_prefix=QString(), const QString& _postfix=QString(), const QString& _comment=QString(), const QVariant &_userdata=QVariant(), const QString &_type=QString()):icon(_icon),type(_type),text(_text),prefix(_prefix),postfix(_postfix),comment(_comment),userdata(_userdata),provider(_provider) {}
-
-      QIcon icon;
-      QString type;
-      QString text;
-      QString prefix;
-      QString postfix;
-      QString comment;
-      QVariant userdata;
-      CompletionProvider *provider; 
-
-      bool cmp(const Private* c) const {
-        return ( c->type == type &&
-                 c->text == text &&
-                 c->postfix == postfix &&
-                 c->prefix == prefix &&
-                 c->comment == comment &&
-                 c->userdata == userdata &&
-                 c->provider==provider &&
-                 c->icon.serialNumber()==icon.serialNumber());
-      }
-    };
-
+    class Private;
     QSharedDataPointer<Private> d;
 };
 
