@@ -1,3 +1,9 @@
+2005-07-26  Harri Porten  <porten@kde.org>
+
+	* array_object.cpp: the to*String() logic was more involved
+	that I originally thought. Fixes bugs of our and the JSC
+	implementation.
+
 2005-07-24  Harri Porten  <porten@kde.org>
 
 	* array_object.cpp: harmonized toLocaleString implementation
