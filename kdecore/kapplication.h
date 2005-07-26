@@ -738,8 +738,6 @@ public:
 
   /**
    * Starts a program via kdeinit.
-   * There will be no application startup notification, so you should
-   * use it only for starting internal processes.
    *
    * program name and arguments are converted to according to the
    * local encoding and passed as is to kdeinit.
