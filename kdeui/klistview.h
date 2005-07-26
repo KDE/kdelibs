@@ -46,7 +46,7 @@ class KLineEdit;
  * To see where you are dropping, setDropVisualizer(true).
  * And also you'll need acceptDrag(QDropEvent*)
  *
- * KListView is drag-enabled, too: to benefit from that you've got derive from it.
+ * KListView is drag-enabled, too: to benefit from that you have to derive from it.
  * Reimplement dragObject() and (possibly) startDrag(),
  * and setDragEnabled(true).
  */
