@@ -3,6 +3,8 @@ Type=MimeType
 Encoding=UTF-8
 MimeType=application/fits
 Comment=FITS Data
+Comment[et]=FITS-andmed
+Comment[ga]=Sonraí FITS
 Icon=binary
 # Note: application/fits is for any kind of FITS, so also for non-images
 ### TODO: what file pattern, especially that image/fits has the same
