@@ -215,7 +215,7 @@ class KDECORE_EXPORT KAccelShortcutList : public KShortcutList
 	 * @internal
 	 * Creates a new KShortcutList that accesses the given
 	 * KAccelActions collection.
-	 * @param accel the actions to access
+	 * @param actions the actions to access
 	 * @param bGlobal true to save the actions in the global
 	 *        configuration file
 	 */
