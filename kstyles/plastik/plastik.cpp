@@ -2596,7 +2596,7 @@ void PlastikStyle::drawControl(ControlElement element,
 
                 // Draw etched text if we're inactive and the menu item is disabled
                 if ( etchtext && !enabled && !active ) {
-                    p->setPen( cg.foreground() );
+                    p->setPen( cg.light() );
                     mi->custom()->paint( p, cg, active, enabled, xp+offset, r.y()+m+1, tw, r.height()-2*m );
                     p->setPen( discol );
                 }
