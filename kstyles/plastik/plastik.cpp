@@ -201,7 +201,7 @@ void PlastikStyle::updateProgressPos()
     //Update the registered progressbars.
     QMap<QWidget*, int>::iterator iter;
     bool visible = false;
-    for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
+    for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); ++iter)
     {   
         if ( !::qt_cast<QProgressBar*>(iter.key()) )
             continue;

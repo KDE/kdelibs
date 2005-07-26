@@ -131,7 +131,8 @@ void KIconCanvas::slotLoadFiles()
     int i;
     QStringList::ConstIterator it;
     uint emitProgress = 10; // so we will emit it once in the beginning
-    for (it=mFiles.begin(), i=0; it!=mFiles.end(); it++, i++)
+    QStringList::ConstIterator end(mFiles.end());
+    for (it=mFiles.begin(), i=0; it!=end; ++it, i++)
     {
 	// Calling kapp->processEvents() makes the iconview flicker like hell
 	// (it's being repainted once for every new item), so we don't do this.

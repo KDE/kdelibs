@@ -302,7 +302,7 @@ void KeramikStyle::updateProgressPos()
 	//Update the registered progressbars.
 	QMap<QProgressBar*, int>::iterator iter;
 	bool visible = false;
-	for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
+	for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); ++iter)
 	{
 		QProgressBar* pbar = iter.key(); 
 		if (pbar->isVisible() && pbar->isEnabled() &&

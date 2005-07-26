@@ -316,7 +316,7 @@ int PtyProcess::exec(const QCString &command, const QCStringList &args)
     const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
     int i = 0;
     argp[i++] = path;
-    for (QCStringList::ConstIterator it=args.begin(); it!=args.end(); it++)
+    for (QCStringList::ConstIterator it=args.begin(); it!=args.end(); ++it)
         argp[i++] = *it;
 
     argp[i] = 0L;

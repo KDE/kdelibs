@@ -135,7 +135,7 @@ void LDAPUrl::updateQuery()
 
   // set the extensions
   q += "?";
-  for ( it = m_extensions.begin(); it != m_extensions.end(); it++ ) {
+  for ( it = m_extensions.begin(); it != m_extensions.end(); ++it ) {
     if ( it.data().critical ) q += "!";
     q += it.key();
     if ( !it.data().value.isEmpty() ) 
@@ -167,7 +167,7 @@ void LDAPUrl::parseQuery()
   m_extensions.clear();
 
   int i = 0;
-  for ( QStringList::Iterator it = url_items.begin(); it != url_items.end(); it++, i++ ) {
+  for ( QStringList::Iterator it = url_items.begin(); it != url_items.end(); ++it, i++ ) {
     switch (i) {
       case 0:
         m_attributes = QStringList::split(",", (*it), false);
@@ -186,7 +186,7 @@ void LDAPUrl::parseQuery()
   }
 
   QString name,value;
-  for ( QStringList::Iterator it = extensions.begin(); it != extensions.end(); it++ ) {
+  for ( QStringList::Iterator it = extensions.begin(); it != extensions.end(); ++it ) {
     ext.critical = false;
     name = decode_string( (*it).section('=',0,0) ).lower();
     value = decode_string( (*it).section('=',1) );

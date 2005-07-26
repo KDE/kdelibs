@@ -370,7 +370,7 @@ int main(int argc, char** argv)
 	ts<<"#define KERAMIK_RC_H\n";
 
 	ts<<"enum KeramikWidget {\n";
-	for (QMap<QString, int>::iterator i = assignID.begin(); i != assignID.end(); i++)
+	for (QMap<QString, int>::iterator i = assignID.begin(); i != assignID.end(); ++i)
 	{
 		QString name = "keramik_"+i.key();
 		name.replace("-","_");
