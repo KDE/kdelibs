@@ -6669,11 +6669,15 @@ void KHTMLPart::runAdFilter()
         }
 
     if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
-        for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() )
-            if ( node && ( node->id() == ID_IMG || node->id() == ID_IFRAME ) ) {
+        for ( NodeImpl *node = d->m_doc; node; node = node->traverseNextNode() ) {
+            if ( node->id() == ID_IMG ||
+                 node->id() == ID_IFRAME ||
+                 (node->id() == ID_INPUT && !strcasecmp( static_cast<ElementImpl *>(node)->getAttribute(ATTR_TYPE), "image")) )
+            {
                 if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
                     node->detach();
             }
+        }
     }
 }
 

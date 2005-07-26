@@ -1,3 +1,8 @@
+2005-07-26  Andreas Kling <kling@impul.se>
+
+        * html/htmlparser.cpp: Block <input type="image"> elements if SRC attribute is ad-filtered.
+        * khtml_part.cpp: Include <input type="image"> elements in AdBlocK filter runs.
+
 2005-07-25  Andreas Kling <kling@impul.se>
 
         Make new ad filters have instant effect (either hide affected elements
