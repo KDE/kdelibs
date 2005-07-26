@@ -1781,6 +1781,28 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             }
             p->drawPixmap(x, y, bmp);
 
+
+            QColor checkmarkColor = enabled?getColor(cg,CheckMark):cg.background();
+            if(flags & Style_Down) {
+                checkmarkColor = alphaBlendColors(contentColor, checkmarkColor, 150);
+            }
+
+            // draw the radio mark
+            if (flags & Style_On || flags & Style_Down) {
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_dark_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
+                p->drawPixmap(x+2, y+2, bmp);
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_light_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
+                p->drawPixmap(x+2, y+2, bmp);
+                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_aa_bits, true);
+                bmp.setMask(bmp);
+                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
+                p->drawPixmap(x+2, y+2, bmp);
+            }
+
             break;
         }
 
@@ -2265,37 +2287,6 @@ void PlastikStyle::drawControl(ControlElement element,
                 }
 
                 p->setClipping(false);
-            }
-
-            break;
-        }
-
-    // RADIOBUTTONS
-    // ------------
-        case CE_RadioButton: {
-            drawPrimitive(PE_ExclusiveIndicator, p, r, cg, flags);
-
-            const QColor contentColor = enabled?cg.base():cg.background();
-            QColor checkmarkColor = enabled?getColor(cg,CheckMark):cg.background();
-            if(flags & Style_Down) {
-                checkmarkColor = alphaBlendColors(contentColor, checkmarkColor, 150);
-            }
-
-            if (flags & Style_On || flags & Style_Down) {
-                int x = r.center().x() - 4, y = r.center().y() - 4;
-                QBitmap bmp;
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_dark_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 50) );
-                p->drawPixmap(x, y, bmp);
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_light_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(125), 50) );
-                p->drawPixmap(x, y, bmp);
-                bmp = QBitmap(CHECKMARKSIZE, CHECKMARKSIZE, radiomark_aa_bits, true);
-                bmp.setMask(bmp);
-                p->setPen(alphaBlendColors(contentColor, checkmarkColor.dark(150), 150) );
-                p->drawPixmap(x, y, bmp);
             }
 
             break;
