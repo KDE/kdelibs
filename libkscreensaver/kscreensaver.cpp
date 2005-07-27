@@ -65,6 +65,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
     if ( w == 0 ) w = 600;
     if ( h == 0 ) h = 420;
     resize( w, h );
+    KApplication::sendPostedEvents();
     show();
 }
 
@@ -76,10 +77,12 @@ KScreenSaver::~KScreenSaver()
 
 void KScreenSaver::embed( QWidget *w )
 {
+    KApplication::sendPostedEvents();
 #ifdef Q_WS_X11 //FIXME
     XReparentWindow(qt_xdisplay(), w->winId(), winId(), 0, 0);
 #endif
-    w->resize( width(), height() );
+    w->setGeometry( 0, 0, width(), height() );
+    KApplication::sendPostedEvents();
 }
 
 bool KScreenSaver::eventFilter( QObject *o, QEvent *e )
