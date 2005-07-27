@@ -1155,7 +1155,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    KService::Ptr service = KService::serviceByDesktopName( app.mid( app.findRev( '/' ) + 1 ));
    if (service != NULL)
        send_service_startup_info( request,  service,
-           startup_id, QValueList< QCString >());
+           startup_id, Q3ValueList< DCOPCString >());
    else // no .desktop file, no startup info
        cancel_service_startup_info( request, startup_id, envs );
    request->transaction = dcopClient()->beginTransaction();

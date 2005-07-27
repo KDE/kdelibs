@@ -164,7 +164,7 @@ void DownloadDialog::load(QString providerList)
 void DownloadDialog::clear()
 {
   QMap<QWidget*, Q3ValueList<KListView*>* >::Iterator it;
-  QMap<QWidget*, QValueList<KListView*>* >::Iterator end(m_map.end());
+  QMap<QWidget*, Q3ValueList<KListView*>* >::Iterator end(m_map.end());
   for(it = m_map.begin(); it != end; ++it)
   {
     Q3ValueList<KListView*> *v = it.data();

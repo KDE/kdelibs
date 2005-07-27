@@ -313,9 +313,10 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     }
 
     const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
-    int i = 0;
+
+    i = 0;
     argp[i++] = path;
-    for (QCStringList::ConstIterator it=args.begin(); it!=args.end(); ++it)
+    for (QList<QByteArray>::ConstIterator it=args.begin(); it!=args.end(); ++it)
         argp[i++] = *it;
 
     argp[i + 2] = 0;
