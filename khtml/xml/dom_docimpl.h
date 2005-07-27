@@ -33,17 +33,19 @@
 #include "misc/loader.h"
 
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
-#include <qintdict.h>
-#include <qdict.h>
+#include <q3intdict.h>
+#include <q3dict.h>
 #include <qmap.h>
+//Added by qt3to4:
+#include <QTimerEvent>
 
 #include <kurl.h>
 
 class QPaintDevice;
 class QTextCodec;
-class QPaintDeviceMetrics;
+class Q3PaintDeviceMetrics;
 class KHTMLView;
 
 namespace khtml {
@@ -169,7 +171,7 @@ public:
     */
     ItemInfo* get(const QString& id);
 private:
-    QDict<ItemInfo> m_dict;
+    Q3Dict<ItemInfo> m_dict;
 };
 
 /**
@@ -284,7 +286,7 @@ public:
                             bool entityReferenceExpansion, int &exceptioncode);
 
     virtual void recalcStyle( StyleChange = NoChange );
-    static QPtrList<DocumentImpl> * changedDocuments;
+    static Q3PtrList<DocumentImpl> * changedDocuments;
     virtual void updateRendering();
     void updateLayout();
     static void updateDocumentsRendering();
@@ -331,7 +333,7 @@ public:
     virtual khtml::Tokenizer *createTokenizer();
     khtml::Tokenizer *tokenizer() { return m_tokenizer; }
 
-    QPaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
+    Q3PaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
     QPaintDevice *paintDevice() const { return m_paintDevice; }
     void setPaintDevice( QPaintDevice *dev );
 
@@ -509,8 +511,8 @@ public:
     void incDOMTreeVersion() { ++m_domtree_version; }
     unsigned int domTreeVersion() const { return m_domtree_version; }
 
-    QDict<khtml::CounterNode>* counters(const khtml::RenderObject* o) { return m_counterDict[(void*)o]; }
-    void setCounters(const khtml::RenderObject* o, QDict<khtml::CounterNode> *dict) { m_counterDict.insert((void*)o, dict);}
+    Q3Dict<khtml::CounterNode>* counters(const khtml::RenderObject* o) { return m_counterDict[(void*)o]; }
+    void setCounters(const khtml::RenderObject* o, Q3Dict<khtml::CounterNode> *dict) { m_counterDict.insert((void*)o, dict);}
     void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
 
 
@@ -550,7 +552,7 @@ protected:
     CSSStyleSheetImpl *m_elemSheet;
 
     QPaintDevice *m_paintDevice;
-    QPaintDeviceMetrics *m_paintDeviceMetrics;
+    Q3PaintDeviceMetrics *m_paintDeviceMetrics;
     ParseMode pMode;
     HTMLMode hMode;
 
@@ -565,32 +567,32 @@ protected:
         IdNameMapping(unsigned short _start)
             : idStart(_start), count(0) {}
         ~IdNameMapping() {
-            QIntDictIterator<DOM::DOMStringImpl> it(names);
+            Q3IntDictIterator<DOM::DOMStringImpl> it(names);
             for (; it.current() ; ++it)
                 it.current()->deref();
         }
         unsigned short idStart;
         unsigned short count;
-        QIntDict<DOM::DOMStringImpl> names;
-        QDict<void> ids;
+        Q3IntDict<DOM::DOMStringImpl> names;
+        Q3Dict<void> ids;
     };
 
     IdNameMapping *m_attrMap;
     IdNameMapping *m_elementMap;
     IdNameMapping *m_namespaceMap;
 
-    QPtrList<NodeIteratorImpl> m_nodeIterators;
+    Q3PtrList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
 
     unsigned short m_listenerTypes;
     StyleSheetListImpl* m_styleSheets;
     StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
-    QPtrList<RegisteredEventListener> m_windowEventListeners;
-    QPtrList<NodeImpl> m_maintainsState;
+    Q3PtrList<RegisteredEventListener> m_windowEventListeners;
+    Q3PtrList<NodeImpl> m_maintainsState;
 
     // ### evaluate for placement in RenderStyle
-    QPtrDict<QDict<khtml::CounterNode> > m_counterDict;
+    Q3PtrDict<Q3Dict<khtml::CounterNode> > m_counterDict;
 
     bool visuallyOrdered;
     bool m_bParsing;
@@ -612,8 +614,8 @@ protected:
     //Forms, images, etc., must be quickly accessible via document.name.
     ElementMappingCache m_underDocNamedCache;
 
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
+    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
+    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
 
     khtml::RenderArena* m_renderArena;

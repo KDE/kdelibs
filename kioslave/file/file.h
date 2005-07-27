@@ -30,9 +30,9 @@
 #include <unistd.h>
 
 #include <qobject.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kio/global.h>
 #include <kio/slavebase.h>
@@ -44,7 +44,7 @@ class FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT
 public:
-  FileProtocol( const QCString &pool, const QCString &app);
+  FileProtocol( const Q3CString &pool, const Q3CString &app);
   virtual ~FileProtocol() { }
 
   virtual void get( const KURL& url );
@@ -67,7 +67,6 @@ public:
    * Special commands supported by this slave:
    * 1 - mount
    * 2 - unmount
-   * 3 - shred
    */
   virtual void special( const QByteArray &data);
   void unmount( const QString& point );
@@ -81,10 +80,10 @@ protected slots:
 
 protected:
 
-  bool createUDSEntry( const QString & filename, const QCString & path, KIO::UDSEntry & entry, short int details );
+  bool createUDSEntry( const QString & filename, const Q3CString & path, KIO::UDSEntry & entry, short int details );
 
-  QIntDict<QString> usercache;      // maps long ==> QString *
-  QIntDict<QString> groupcache;
+  Q3IntDict<QString> usercache;      // maps long ==> QString *
+  Q3IntDict<QString> groupcache;
 
   class FileProtocolPrivate;
   FileProtocolPrivate *d;

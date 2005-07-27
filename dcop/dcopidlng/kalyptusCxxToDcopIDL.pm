@@ -29,7 +29,19 @@ use Iter;
 use strict;
 no strict "subs";
 
-use vars qw/$libname $rootnode $outputdir $opt $debug/;
+use vars qw/$libname $rootnode $outputdir $opt $debug %canonicalType/;
+
+# Converted from the old dcopidl's yacc file, under int_type:
+%canonicalType = (
+  'signed' => 'signed int',
+  'unsigned' => 'unsigned int',
+  'signed short' => 'signed short int',
+  'signed long' => 'signed long int',
+  'unsigned short' => 'unsigned short int',
+  'unsigned long' => 'unsigned long int',
+  'long' => 'long int',
+  'short' => 'short int'
+);
 
 BEGIN
 {
@@ -41,14 +53,14 @@ sub writeDoc
 
 	$debug = $main::debuggen;
 
-	print STDERR "Preparsing...\n";
+	print STDERR "Preparsing...\n" if ($debug);
 
 	# Preparse everything, to prepare some additional data in the classes and methods
 	Iter::LocalCompounds( $rootnode, sub { preParseClass( shift ); } );
 
 	kdocAstUtil::dumpAst($rootnode) if ($debug);
 
-	print STDERR "Writing dcopidl...\n";
+	print STDERR "Writing dcopidl...\n" if ($debug);
 
 	print STDOUT "<!DOCTYPE DCOP-IDL><DCOP-IDL>\n";
 
@@ -84,7 +96,7 @@ sub writeDoc
 
 	print STDOUT "</DCOP-IDL>\n";
 	
-	print STDERR "Done.\n";
+	print STDERR "Done.\n" if ($debug);
 }
 
 =head2 preParseClass
@@ -158,10 +170,11 @@ sub generateMethod($$)
 	$typeAttrs .= "  qleft=\"const\"" if $x_isConst;
 	$typeAttrs .= " qright=\"&amp;\"" if $x_isRef;
 
-	$argType =~ s/^\s*(.*?)\s*$/$1/;
+	$argType =~ s/^\s*(.*?)\s*$/$1/; # stripWhiteSpace
+	$argType =~ s/\s/ /g;            # simplifyWhiteSpace
 	$argType =~ s/</&lt;/g;
 	$argType =~ s/>/&gt;/g;
-	$argType =~ s/\s//g;
+	$argType = $canonicalType{$argType} if ( exists $canonicalType{$argType} );
 
 	$args .= "        <ARG><TYPE$typeAttrs>$argType</TYPE><NAME>$arg->{ArgName}</NAME></ARG>\n";
     }
@@ -172,6 +185,7 @@ sub generateMethod($$)
     $returnType = "void" unless $returnType;
     $returnType =~ s/</&lt;/g;
     $returnType =~ s/>/&gt;/g;
+    $returnType = $canonicalType{$returnType} if ( exists $canonicalType{$returnType} );
 
     my $methodCode = "";
 

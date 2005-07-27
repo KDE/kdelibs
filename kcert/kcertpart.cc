@@ -23,12 +23,12 @@
 #include <kparts/genericfactory.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qbutton.h>
+#include <q3button.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <kmessagebox.h>
@@ -42,7 +42,7 @@
 #include <kseparator.h>
 #include <klistview.h>
 #include <kio/kmimemagic.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qregexp.h>
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
@@ -149,7 +149,7 @@ _silentImport = false;
 d = new KCertPartPrivate;
 d->browserExtension = new KParts::BrowserExtension(this);
 
-_frame = new QFrame(parentWidget, widgetName);
+_frame = new Q3Frame(parentWidget, widgetName);
 setWidget(_frame);
 
 _baseGrid = new QGridLayout(_frame, 15, 9, KDialog::marginHint(),
@@ -176,7 +176,7 @@ connect(_importAll, SIGNAL(clicked()), SLOT(slotImportAll()));
 //------------------------------------------------------------------------
 //   The PKCS widget
 //------------------------------------------------------------------------
-_pkcsFrame = new QFrame(_frame);
+_pkcsFrame = new Q3Frame(_frame);
 
 grid = new QGridLayout(_pkcsFrame, 13, 6, KDialog::marginHint(),
 		KDialog::spacingHint() );
@@ -206,7 +206,7 @@ grid->addWidget(new QLabel("PKCS#12", _pkcsFrame), 7, 4);
 _tabs = new QTabWidget(_pkcsFrame);
 grid->addMultiCellWidget(_tabs, 8, 12, 0, 5);
 
-QFrame *tab = new QFrame(_pkcsFrame);
+Q3Frame *tab = new Q3Frame(_pkcsFrame);
 QGridLayout *tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
@@ -230,14 +230,14 @@ _tabs->addTab(tab, i18n("State"));
 //
 // Make the second tab
 //
-tab = new QFrame(_pkcsFrame);
+tab = new Q3Frame(_pkcsFrame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _p12_digest = new QLabel(tab);
 tabGrid->addMultiCellWidget(_p12_digest, 0, 0, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-_p12_sig = new QMultiLineEdit(tab);
+_p12_sig = new Q3MultiLineEdit(tab);
 tabGrid->addMultiCellWidget(_p12_sig, 1, 3, 1, 4);
 _p12_sig->setReadOnly(true);
 
@@ -247,11 +247,11 @@ _tabs->addTab(tab, i18n("Signature"));
 //
 // Make the third tab
 //
-tab = new QFrame(_pkcsFrame);
+tab = new Q3Frame(_pkcsFrame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-_p12_pubkey = new QMultiLineEdit(tab);
+_p12_pubkey = new Q3MultiLineEdit(tab);
 tabGrid->addMultiCellWidget(_p12_pubkey, 0, 3, 1, 4);
 _p12_pubkey->setReadOnly(true);
 
@@ -267,7 +267,7 @@ _pkcsFrame->hide();
 //   the simple reason that the above has potential to display much
 //   more information, and this one has potential to display different
 //   information.
-_x509Frame = new QFrame(_frame);
+_x509Frame = new Q3Frame(_frame);
 
 grid = new QGridLayout(_x509Frame, 12, 6, KDialog::marginHint(),
 		KDialog::spacingHint() );
@@ -293,7 +293,7 @@ grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
 _tabs = new QTabWidget(_x509Frame);
 grid->addMultiCellWidget(_tabs, 7, 11, 0, 5);
 
-tab = new QFrame(_x509Frame);
+tab = new Q3Frame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
@@ -317,14 +317,14 @@ _tabs->addTab(tab, i18n("State"));
 //
 // Make the second tab
 //
-tab = new QFrame(_x509Frame);
+tab = new Q3Frame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 _ca_digest = new QLabel(tab);
 tabGrid->addMultiCellWidget(_ca_digest, 0, 0, 1, 4);
 tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
-_ca_sig = new QMultiLineEdit(tab);
+_ca_sig = new Q3MultiLineEdit(tab);
 tabGrid->addMultiCellWidget(_ca_sig, 1, 3, 1, 4);
 _ca_sig->setReadOnly(true);
 
@@ -334,11 +334,11 @@ _tabs->addTab(tab, i18n("Signature"));
 //
 // Make the third tab
 //
-tab = new QFrame(_x509Frame);
+tab = new Q3Frame(_x509Frame);
 tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
 		KDialog::spacingHint() );
 tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
-_ca_pubkey = new QMultiLineEdit(tab);
+_ca_pubkey = new Q3MultiLineEdit(tab);
 tabGrid->addMultiCellWidget(_ca_pubkey, 0, 3, 1, 4);
 _ca_pubkey->setReadOnly(true);
 
@@ -353,7 +353,7 @@ _x509Frame->hide();
 //------------------------------------------------------------------------
 //   The blank widget
 //------------------------------------------------------------------------
-_blankFrame = new QFrame(_frame);
+_blankFrame = new Q3Frame(_frame);
 grid = new QGridLayout(_blankFrame, 1, 1, KDialog::marginHint(),
 		KDialog::spacingHint() );
 grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _blankFrame), 0, 0, 0, 0);
@@ -386,8 +386,8 @@ _baseGrid->addMultiCellWidget(_pkcsFrame, 0, 12, 2, 8);
 _baseGrid->addMultiCellWidget(_x509Frame, 0, 12, 2, 8);
 _baseGrid->addMultiCellWidget(_blankFrame, 0, 12, 2, 8);
 
-connect(_sideList, SIGNAL(selectionChanged(QListViewItem*)),
-		this, SLOT(slotSelectionChanged(QListViewItem*)));
+connect(_sideList, SIGNAL(selectionChanged(Q3ListViewItem*)),
+		this, SLOT(slotSelectionChanged(Q3ListViewItem*)));
 setReadWrite(true);
 }
 
@@ -436,7 +436,7 @@ if (_p12) {
 
 	QFile of(certFile);
 
-	if (!of.open(IO_WriteOnly) || (unsigned)of.writeBlock(enc) != enc.size()) {
+	if (!of.open(QIODevice::WriteOnly) || of.writeBlock(enc) != enc.size()) {
 		KMessageBox::sorry(_frame, i18n("Save failed."), i18n("Certificate Import"));
 		return false;
 	}
@@ -482,12 +482,12 @@ emit completed();
 //       x-pkcs12 loading
 /////////////////////////////////////////////////////////////////////////////
 if (whatType == "application/x-pkcs12") {
-	QCString pass;
+	Q3CString pass;
 	_p12 = KSSLPKCS12::loadCertFile(m_file);
 
 	while (!_p12) {
 		// try prompting for a password.
-		int rc = KPasswordDialog::getPassword(pass, i18n("Certificate Password"));
+		int rc = KPasswordDialog::getPassword(_frame,pass, i18n("Certificate Password"));
 		if (rc != KPasswordDialog::Accepted) break;
 
 		_p12 = KSSLPKCS12::loadCertFile(m_file, QString(pass));
@@ -518,13 +518,12 @@ if (whatType == "application/x-pkcs12") {
 	if (whatType == "application/x-x509-ca-cert") {
 		// Check if it is PEM or not
 		QFile qf(m_file);
-		qf.open(IO_ReadOnly);
+		qf.open(QIODevice::ReadOnly);
 		QByteArray theFile = qf.readAll();
 		qf.close();
 
 		const char *signature = "-----BEGIN CERTIFICATE-----";
-		theFile[(uint)(qf.size()-1)] = 0;
-		isPEM = (QCString(theFile.data()).find(signature) >= 0);
+		isPEM = theFile.contains(signature);
 	}
 
 	fp = fopen(m_file.local8Bit(), "r");
@@ -612,7 +611,7 @@ void KCertPart::displayPKCS12() {
 
 	// Set the chain if it's there
 	if (xc->chain().depth() > 1) {
-		QPtrList<KSSLCertificate> cl = xc->chain().getChain();
+		Q3PtrList<KSSLCertificate> cl = xc->chain().getChain();
 		int cnt = 0;
 		_p12_chain->setEnabled(true);
 		_p12_chain->clear();
@@ -779,7 +778,7 @@ p.start(KProcess::DontCare);
 }
 
 
-void KCertPart::slotSelectionChanged(QListViewItem *x) {
+void KCertPart::slotSelectionChanged(Q3ListViewItem *x) {
 	KX509Item *x5i = dynamic_cast<KX509Item*>(x);
 	KPKCS12Item *p12i = dynamic_cast<KPKCS12Item*>(x);
 	_p12 = NULL;

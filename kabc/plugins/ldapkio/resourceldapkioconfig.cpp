@@ -24,9 +24,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <qvbox.h>
-#include <qvgroupbox.h>
-#include <qhbuttongroup.h>
+#include <q3vbox.h>
 #include <qradiobutton.h>
 
 #include <kaccelmanager.h>
@@ -53,7 +51,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name
   cfg = new LdapConfigWidget( LdapConfigWidget::W_ALL, this );
 
   mSubTree = new QCheckBox( i18n( "Sub-tree query" ), this );
-  QHBox *box = new QHBox( this );
+  Q3HBox *box = new Q3HBox( this );
   box->setSpacing( KDialog::spacingHint() );
   mEditButton = new QPushButton( i18n( "Edit Attributes..." ), box );
   mCacheButton = new QPushButton( i18n( "Offline Use..." ), box );
@@ -279,7 +277,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   }
   
   for ( i = 1; i < mMapCombo->count(); i++ ) {
-    QDictIterator<KLineEdit> it2( mLineEditDict );
+    Q3DictIterator<KLineEdit> it2( mLineEditDict );
     for ( ; it2.current(); ++it2 ) {
       if ( mMapList[ i ].contains( it2.currentKey() ) ) {
         if ( mMapList[ i ][ it2.currentKey() ] != it2.current()->text() ) break;
@@ -304,7 +302,7 @@ QMap<QString, QString> AttributesDialog::attributes() const
 {
   QMap<QString, QString> map;
 
-  QDictIterator<KLineEdit> it( mLineEditDict );
+  Q3DictIterator<KLineEdit> it( mLineEditDict );
   for ( ; it.current(); ++it )
     map.insert( it.currentKey(), it.current()->text() );
 
@@ -342,7 +340,7 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
   layout->setAutoAdd( true );
 
   mSrc = src; mDst = dst;
-  mCacheGroup = new QButtonGroup( 1, Qt::Horizontal, 
+  mCacheGroup = new Q3ButtonGroup( 1, Qt::Horizontal, 
     i18n("Offline Cache Policy"), page );
     
   QRadioButton *bt;

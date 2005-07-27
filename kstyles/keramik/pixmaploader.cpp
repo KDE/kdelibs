@@ -19,7 +19,6 @@
 */
 
 // $Id$
-
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qglobal.h>
@@ -37,11 +36,11 @@ using namespace Keramik;
 
 PixmapLoader* PixmapLoader::s_instance = 0;
 
-PixmapLoader::PixmapLoader():  m_pixmapCache(327680, 2017)
+PixmapLoader::PixmapLoader()
 
 {
-	m_pixmapCache.setAutoDelete(true);
-
+	m_pixmapCache.setMaxCost(327680);
+	//size of 100? m_pixmapCache.
 	for (int c=0; c<256; c++)
 		clamp[c]=static_cast<unsigned char>(c);
 
@@ -57,7 +56,7 @@ void PixmapLoader::clear()
 
 QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& back, bool blend)
 {
-	KeramikEmbedImage* edata = KeramikGetDbImage(name);
+	const KeramikEmbedImage* edata = KeramikGetDbImage(name);
 	if (!edata)
 		return 0;
 
@@ -69,13 +68,13 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 
 
 	//OK, now, fill it in, using the color..
-	Q_UINT32 r, g,b;
-	Q_UINT32 i = qGray(color.rgb());
+	quint32 r, g,b;
+	quint32 i = qGray(color.rgb());
 	r = (3*color.red()+i)>>2;
 	g = (3*color.green()+i)>>2;
 	b = (3*color.blue()+i)>>2;
 
-	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
+	quint32 br = back.red(), bg = back.green(), bb = back.blue();
 
 
 	if (edata->haveAlpha)
@@ -83,19 +82,19 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 		if (blend)
 		{
 			img->setAlphaBuffer(false);
-			Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
 			for (int pos = 0; pos < size; pos+=3)
 			{
-				Q_UINT32 scale  = edata->data[pos];
-				Q_UINT32 add    = (edata->data[pos+1]*i+127)>>8;
-				Q_UINT32 alpha = edata->data[pos+2];
-				Q_UINT32 destAlpha = 256 - alpha;
+				quint32 scale  = edata->data[pos];
+				quint32 add    = (edata->data[pos+1]*i+127)>>8;
+				quint32 alpha = edata->data[pos+2];
+				quint32 destAlpha = 256 - alpha;
 
-				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-				Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-				Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+				quint32 rr = clamp[((r*scale+127)>>8) + add];
+				quint32 rg = clamp[((g*scale+127)>>8) + add];
+				quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 				*write =qRgb(((rr*alpha+127)>>8) + ((br*destAlpha+127)>>8),
 									((rg*alpha+127)>>8) + ((bg*destAlpha+127)>>8),
@@ -107,18 +106,18 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 		else
 		{
 			img->setAlphaBuffer(true);
-			Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
 			for (int pos = 0; pos < size; pos+=3)
 			{
-				Q_UINT32 scale  = edata->data[pos];
-				Q_UINT32 add    = (edata->data[pos+1]*i+127)>>8;
-				Q_UINT32 alpha = edata->data[pos+2];
+				quint32 scale  = edata->data[pos];
+				quint32 add    = (edata->data[pos+1]*i+127)>>8;
+				quint32 alpha = edata->data[pos+2];
 
-				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-				Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-				Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+				quint32 rr = clamp[((r*scale+127)>>8) + add];
+				quint32 rg = clamp[((g*scale+127)>>8) + add];
+				quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 				*write =qRgba(rr, rg, rb, alpha);
 
@@ -130,16 +129,16 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	else
 	{
 		img->setAlphaBuffer(false);
-		Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+		quint32* write = reinterpret_cast< quint32* >(img->bits() );
 		int size = img->width()*img->height() * 2;
 
 		for (int pos = 0; pos < size; pos+=2)
 		{
-			Q_UINT32 scale  = edata->data[pos];
-			Q_UINT32 add    = (edata->data[pos+1]*i+127)>>8;
-			Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-			Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-			Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+			quint32 scale  = edata->data[pos];
+			quint32 add    = (edata->data[pos+1]*i+127)>>8;
+			quint32 rr = clamp[((r*scale+127)>>8) + add];
+			quint32 rg = clamp[((g*scale+127)>>8) + add];
+			quint32 rb = clamp[((b*scale+127)>>8) + add];
 			*write =qRgb(rr, rg, rb);
 			write++;
 		}
@@ -150,7 +149,7 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 
 QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& back, bool blend)
 {
-	KeramikEmbedImage* edata = KeramikGetDbImage(name);
+	const KeramikEmbedImage* edata = KeramikGetDbImage(name);
 	if (!edata)
 		return 0;
 
@@ -158,14 +157,14 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	QImage* img = new QImage(edata->width, edata->height, 32);
 
 	//OK, now, fill it in, using the color..
-	Q_UINT32 r, g,b;
+	quint32 r, g,b;
 	r = color.red() + 2;
 	g = color.green() + 2;
 	b = color.blue() + 2;
 
 //	int i = qGray(color.rgb());
 
-	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
+	quint32 br = back.red(), bg = back.green(), bb = back.blue();
 
 	if (edata->haveAlpha)
 	{
@@ -173,21 +172,21 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		{
 			img->setAlphaBuffer(false);
 
-			Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 			for (int pos = 0; pos < size; pos+=3)
 			{
-				Q_UINT32 scale  = edata->data[pos];
-				Q_UINT32 add    = edata->data[pos+1];
-				Q_UINT32 alpha = edata->data[pos+2];
-				Q_UINT32 destAlpha = 256 - alpha;
+				quint32 scale  = edata->data[pos];
+				quint32 add    = edata->data[pos+1];
+				quint32 alpha = edata->data[pos+2];
+				quint32 destAlpha = 256 - alpha;
 
 				if (scale != 0)
 					add = add*5/4;
 
-				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-				Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-				Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+				quint32 rr = clamp[((r*scale+127)>>8) + add];
+				quint32 rg = clamp[((g*scale+127)>>8) + add];
+				quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 				*write =qRgb(((rr*alpha+127)>>8) + ((br*destAlpha+127)>>8),
 									((rg*alpha+127)>>8) + ((bg*destAlpha+127)>>8),
@@ -200,20 +199,20 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 		{
 			img->setAlphaBuffer(true);
 
-			Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+			quint32* write = reinterpret_cast< quint32* >(img->bits() );
 			int size = img->width()*img->height() * 3;
 
 			for (int pos = 0; pos < size; pos+=3)
 			{
-				Q_UINT32 scale  = edata->data[pos];
-				Q_UINT32 add    = edata->data[pos+1];
-				Q_UINT32 alpha = edata->data[pos+2];
+				quint32 scale  = edata->data[pos];
+				quint32 add    = edata->data[pos+1];
+				quint32 alpha = edata->data[pos+2];
 				if (scale != 0)
 					add = add*5/4;
 
-				Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-				Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-				Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+				quint32 rr = clamp[((r*scale+127)>>8) + add];
+				quint32 rg = clamp[((g*scale+127)>>8) + add];
+				quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 				*write =qRgba(rr, rg, rb, alpha);
 				write++;
@@ -224,22 +223,22 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	{
 		img->setAlphaBuffer(false);
 
-		Q_UINT32* write = reinterpret_cast< Q_UINT32* >(img->bits() );
+		quint32* write = reinterpret_cast< quint32* >(img->bits() );
 		int size = img->width()*img->height() * 2;
 
 		for (int pos = 0; pos < size; pos+=2)
 		{
-			Q_UINT32 scale  = edata->data[pos];
-			Q_UINT32 add    = edata->data[pos+1];
+			quint32 scale  = edata->data[pos];
+			quint32 add    = edata->data[pos+1];
 			if (scale != 0)
 				add = add*5/4;
 
-			Q_UINT32 rr = clamp[((r*scale+127)>>8) + add];
-			Q_UINT32 rg = clamp[((g*scale+127)>>8) + add];
-			Q_UINT32 rb = clamp[((b*scale+127)>>8) + add];
+			quint32 rr = clamp[((r*scale+127)>>8) + add];
+			quint32 rg = clamp[((g*scale+127)>>8) + add];
+			quint32 rb = clamp[((b*scale+127)>>8) + add];
 
 
-			*write =qRgb(rr, rg, rb);
+			*write = qRgb(rr, rg, rb);
 			write++;
 		}
 	}
@@ -260,12 +259,10 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 
 	int key = entry.key();
 
-	if ((cacheEntry = m_pixmapCache.find(key, true)))
+	if ((cacheEntry = m_pixmapCache.take(key)))
 	{
 		if (entry == *cacheEntry) //True match!
 			return *cacheEntry->m_pixmap;
-		else //Remove old entry in case of a conflict!
-			m_pixmapCache.remove(key);
 	}
 
 
@@ -288,8 +285,10 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 	if (width == 0 && height == 0)
 		result = new QPixmap(*img);
 	else
-		result = new QPixmap(img->smoothScale( width ? width : img->width(),
-											   height ? height: img->height()));
+		result = new QPixmap(img->scaled(width  ? width  : img->width(),
+										 height ? height : img->height()));//,
+										//Qt::IgnoreAspectRatio,
+										//Qt::SmoothTransformation));
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
@@ -302,7 +301,7 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 
 QSize PixmapLoader::size( int id )
 {
-	KeramikEmbedImage* edata = KeramikGetDbImage(id);
+	const KeramikEmbedImage* edata = KeramikGetDbImage(id);
 	if (!edata)
 		return QSize(0,0);
 	return QSize(edata->width, edata->height);
@@ -416,18 +415,18 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 					{
 						p->drawTiledPixmap( xpos, ypos, realW, realH, scale( col, row, w, h, color, bg, disabled, swBlend ) );
 					}
-					else
+/*					else
 					{
 						const QBitmap* mask  = scale( col, row, w, h, color,  bg, disabled, false ).mask();
 						if (mask)
 						{
-							p->setBackgroundColor(Qt::color0);
+							//### ?p->setBackgroundColor(Qt::color0);
 							p->setPen(Qt::color1);
 							p->drawTiledPixmap( xpos, ypos, realW, realH, *mask);
 						}
 						else
 							p->fillRect ( xpos, ypos, realW, realH, Qt::color1);
-					}
+					}*/
 				}
 				else
 				{
@@ -436,19 +435,19 @@ void TilePainter::draw( QPainter *p, int x, int y, int width, int height, const 
 					{
 						p->drawTiledPixmap( xpos, ypos, realW, realH, tile( col, row, color, bg, disabled, swBlend ) );
 					}
-					else
+/*					else
 					{
 						const QBitmap* mask = tile( col, row, color, bg, disabled, false ).mask();
 						if (mask)
 						{
-							p->setBackgroundColor(Qt::color0);
+							// ### ? p->setBackgroundColor(Qt::color0);
 							p->setPen(Qt::color1);
 							p->drawTiledPixmap( xpos, ypos, realW, realH, *mask);
 						}
 						else
 							p->fillRect ( xpos, ypos, realW, realH, Qt::color1);
 
-					}
+					}*/
 				}
 			}
 
@@ -520,7 +519,8 @@ int ActiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 	return RectTilePainter::tileName( column, row );
 }
 
-InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
+
+InactiveTabPainter::InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool bottom )
 	: RectTilePainter( bottom? keramik_tab_bottom_inactive: keramik_tab_top_inactive, false),
 	  m_mode( mode ), m_bottom( bottom )
 {
@@ -566,19 +566,24 @@ InactiveTabPainter::InactiveTabPainter( Mode mode, bool bottom )
 	tile.
     */
 
-	Mode rightMost = QApplication::reverseLayout() ? First : Last;
-	m_columns = (m_mode == rightMost ? 3 : 2);
+	//Mode rightMost = QApplication::reverseLayout() ? First : Last;
+	//### RTL?
+	m_columns = (m_mode == QStyleOptionTab::End ? 3 : 2);
 }
+
+
 
 int InactiveTabPainter::tileName( unsigned int column, unsigned int row ) const
 {
-	Mode leftMost = QApplication::reverseLayout() ? Last : First;
-	if ( column == 0 && m_mode != leftMost )
+	//### RTL?
+	//Mode leftMost = QApplication::reverseLayout() ? Last : First;
+	if ( column == 0 && m_mode != QStyleOptionTab::Beginning)
 		return KeramikTileSeparator;
 	if ( m_bottom )
 		return RectTilePainter::tileName( column, row + 1 );
 	return RectTilePainter::tileName( column, row );
 }
+
 
 ScrollBarPainter::ScrollBarPainter( int type, int count, bool horizontal )
 	: TilePainter( name( horizontal ) ),
@@ -599,6 +604,8 @@ ScrollBarPainter::ScrollBarPainter( int type, int count, bool horizontal )
 	m_rows       = m_horizontal ? 1 : m_count;
 
 }
+
+
 
 int ScrollBarPainter::name( bool horizontal )
 {

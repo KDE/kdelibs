@@ -20,9 +20,9 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
-#include <qstring.h>
-#include <qfile.h>
-#include <qcstring.h>
+#include <Qt/qstring.h>
+#include <Qt/qfile.h>
+#include <Qt3Support/q3cstring.h>
 #include <stdlib.h>
 
 void dcopidlParse( const char *_code );
@@ -41,7 +41,7 @@ int main( int argc, char** argv )
         return -1;
     }
     QFile file( argv[1] );
-    if ( !file.open( IO_ReadOnly ) )
+    if ( !file.open( QIODevice::ReadOnly ) )
     {
         fprintf(stderr, "Can't open input file\n");
         return -1;

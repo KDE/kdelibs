@@ -24,8 +24,8 @@
 #include <qmap.h>
 
 class QString;
+class QByteArray;
 
-inline const char* dcopTypeName(const QByteArray&) { return "QByteArray"; }
 inline const char* dcopTypeName(const QMap<QString,QString>&) { return "QMap<QString,QString>"; }
 inline const char* dcopTypeName(const QMap<QString,QByteArray>&) { return "QMap<QString,QByteArray>"; }
 

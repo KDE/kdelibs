@@ -152,7 +152,7 @@ bool ResourceDir::doOpen()
       return true;
 
     QFile file( mPath + "/" + testName );
-    if ( file.open( IO_ReadOnly ) )
+    if ( file.open( QIODevice::ReadOnly ) )
       return true;
 
     if ( file.size() == 0 )
@@ -182,7 +182,7 @@ bool ResourceDir::load()
   for ( it = files.begin(); it != files.end(); ++it ) {
     QFile file( mPath + "/" + (*it) );
 
-    if ( !file.open( IO_ReadOnly ) ) {
+    if ( !file.open( QIODevice::ReadOnly ) ) {
       addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.name() ) );
       ok = false;
       continue;
@@ -225,7 +225,7 @@ bool ResourceDir::save( Ticket * )
       continue;
 
     QFile file( mPath + "/" + (*it).uid() );
-    if ( !file.open( IO_WriteOnly ) ) {
+    if ( !file.open( QIODevice::WriteOnly ) ) {
       addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.name() ) );
       continue;
     }

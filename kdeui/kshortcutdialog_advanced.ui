@@ -31,12 +31,6 @@
             <property name="name">
                 <cstring>m_frameMore</cstring>
             </property>
-            <property name="frameShape">
-                <enum>NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Plain</enum>
-            </property>
             <property name="title">
                 <string></string>
             </property>

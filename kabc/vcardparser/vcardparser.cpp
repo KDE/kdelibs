@@ -20,7 +20,8 @@
 
 #include <qregexp.h>
 
-#include <kmdcodec.h>
+#include <kcodecs.h>
+#include <kdebug.h>
 
 #include "vcardparser.h"
 
@@ -105,10 +106,10 @@ VCard::List VCardParser::parseVCards( const QString& text )
               // correct the fucking 2.1 'standard'
               if ( pair[0].lower() == "quoted-printable" ) {
                 pair[0] = "encoding";
-                pair[1] = "quoted-printable";
+                pair.append( "quoted-printable" );
               } else if ( pair[0].lower() == "base64" ) {
                 pair[0] = "encoding";
-                pair[1] = "base64";
+                pair.append( "base64" );
               } else {
                 pair.prepend( "type" );
               }
@@ -209,7 +210,8 @@ QString VCardParser::createVCards( const VCard::List& list )
 
       // iterate over the lines
       for ( lineIt = lines.constBegin(); lineIt != lines.constEnd(); ++lineIt ) {
-        if ( !(*lineIt).value().asString().isEmpty() ) {
+        QVariant val = (*lineIt).value();
+        if ( val.isValid() && !val.asString().isEmpty() ) {
           if ( (*lineIt).hasGroup() )
             textLine = (*lineIt).group() + "." + (*lineIt).identifier();
           else
@@ -254,7 +256,7 @@ QString VCardParser::createVCards( const VCard::List& list )
           }
 
           if ( textLine.length() > FOLD_WIDTH ) { // we have to fold the line
-            for ( uint i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )
+            for ( int i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )
               text.append( ( i == 0 ? "" : " " ) + textLine.mid( i * FOLD_WIDTH, FOLD_WIDTH ) + "\r\n" );
           } else
             text.append( textLine + "\r\n" );

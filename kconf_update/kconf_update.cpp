@@ -190,14 +190,14 @@ KonfUpdate::log()
    {
       QString file = locateLocal("data", "kconf_update/log/update.log");
       m_file = new QFile(file);
-      if (m_file->open(IO_WriteOnly | IO_Append))
+      if (m_file->open(QIODevice::WriteOnly | QIODevice::Append))
       {
         m_textStream = new QTextStream(m_file);
       }
       else
       {
         // Error
-        m_textStream = new QTextStream(stderr, IO_WriteOnly);
+        m_textStream = new QTextStream(stderr, QIODevice::WriteOnly);
       }
    }
    
@@ -242,7 +242,7 @@ bool KonfUpdate::checkFile(const QString &filename)
       currentFilename = currentFilename.mid(i+1);
    skip = true;
    QFile file(filename);
-   if (!file.open(IO_ReadOnly))
+   if (!file.open(QIODevice::ReadOnly))
       return false;
 
    QTextStream ts(&file);
@@ -316,7 +316,7 @@ bool KonfUpdate::updateFile(const QString &filename)
        currentFilename = currentFilename.mid(i+1);
    skip = true;
    QFile file(filename);
-   if (!file.open(IO_ReadOnly))
+   if (!file.open(QIODevice::ReadOnly))
       return false;
 
    log() << "Checking update-file '" << filename << "' for new updates" << endl; 
@@ -820,7 +820,7 @@ void KonfUpdate::gotScript(const QString &_script)
    // Copy script stderr to log file
    {
      QFile output(tmp3.name());
-     if (output.open(IO_ReadOnly))
+     if (output.open(QIODevice::ReadOnly))
      { 
        QTextStream ts( &output );
        ts.setEncoding(QTextStream::UnicodeUTF8);
@@ -851,7 +851,7 @@ void KonfUpdate::gotScript(const QString &_script)
    {
      QString group = oldGroup;
      QFile output(tmp2.name());
-     if (output.open(IO_ReadOnly))
+     if (output.open(QIODevice::ReadOnly))
      { 
        QTextStream ts( &output );
        ts.setEncoding(QTextStream::UnicodeUTF8);

@@ -26,6 +26,7 @@
 #include <kconfigbase.h>
 #include <klockfile.h>
 #include "kdelibs_export.h"
+#include <q3cstring.h>
 
 class QFile;
 class KConfigBackEndPrivate;
@@ -129,7 +130,7 @@ public:
    * @param _localeString the identifier of the language
    * @see KLocale
    */
-  void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
+  void setLocaleString(const QByteArray &_localeString) { localeString = _localeString; }
 
   /**
    * Set the file mode for newly created files.
@@ -164,10 +165,10 @@ protected:
   KConfigBase *pConfig;
 
   QString mfileName;
-  QCString resType;
+  QByteArray resType;
   bool useKDEGlobals : 1;
   bool bFileImmutable : 1;
-  QCString localeString;
+  QByteArray localeString;
   QString mLocalFileName;
   QString mGlobalFileName;
   KConfigBase::ConfigState mConfigState;
@@ -264,7 +265,7 @@ protected:
    * @return Whether some entries are left to be written to other
    *         files.
    */
-  bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
+  bool writeConfigFile(const QString &filename, bool bGlobal = false, bool bMerge = true);
 
   /** Get the entry map.
    *

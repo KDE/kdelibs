@@ -12,15 +12,15 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef __k_ctime_factory_h__
 #define __k_ctime_factory_h__
 
 #include <ksycocafactory.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 /**
  * Service group factory for building ksycoca
@@ -54,10 +54,10 @@ public:
 
   Q_UINT32 ctime(const QString &path);
 
-  void fillCTimeDict(QDict<Q_UINT32> &dict);
+  void fillCTimeDict(Q3Dict<Q_UINT32> &dict);
 
 protected:
-  QDict<Q_UINT32> ctimeDict;
+  Q3Dict<Q_UINT32> ctimeDict;
   int m_dictOffset;
 };
 

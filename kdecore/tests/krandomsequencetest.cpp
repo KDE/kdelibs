@@ -16,9 +16,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krandomsequence.h"
+#include "kcmdlineargs.h"
+#include "kaboutdata.h"
 #include "kapplication.h"
 
 #include <stdio.h>
@@ -26,7 +28,10 @@
 int
 main(int argc, char *argv[])
 {
-   KApplication a(argc, argv, "krandomsequencetest");
+   KAboutData about("krandomsequencetest", "krandomsequencetest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
    long seed;
    KRandomSequence seq;
@@ -56,7 +61,7 @@ main(int argc, char *argv[])
 
    seq.setSeed(kapp->random());
 
-   QPtrList<QString> list;
+   Q3PtrList<QString> list;
    list.append(new QString("A"));
    list.append(new QString("B"));
    list.append(new QString("C"));

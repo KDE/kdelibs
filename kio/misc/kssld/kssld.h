@@ -27,10 +27,10 @@
 #include <ksslcertificatecache.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qmap.h>
-#include <qptrvector.h>
-
+#include <q3ptrvector.h>
+#include <q3ptrlist.h>
 
 class KSimpleConfig;
 class KSSLCNode;
@@ -43,7 +43,7 @@ class KSSLD : public KDEDModule
 
 public:
   
-  KSSLD(const QCString &name);
+  KSSLD(const Q3CString &name);
   
   virtual ~KSSLD();
 
@@ -137,7 +137,7 @@ private:
 
   // for the cache portion:
   KSimpleConfig *cfg;
-  QPtrList<KSSLCNode> certList;
+  Q3PtrList<KSSLCNode> certList;
 
   // Our pointer to OpenSSL
   KOpenSSLProxy *kossl;
@@ -146,7 +146,7 @@ private:
   void searchAddCert(KSSLCertificate *cert);
   void searchRemoveCert(KSSLCertificate *cert);
 
-  QMap<QString, QPtrVector<KSSLCertificate> > skEmail;
+  QMap<QString, Q3PtrVector<KSSLCertificate> > skEmail;
   QMap<QString, KSSLCertificate *> skMD5Digest;
 };
 

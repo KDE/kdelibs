@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include <qfile.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -27,6 +27,7 @@
 #include <kfilemetainfo.h>
 #include <klocale.h>
 #include <kpropertiesdialog.h>
+#include <kdebug.h>
 
 #include "fileprops.h"
 
@@ -266,17 +267,17 @@ static void printSupportedMimeTypes()
     QStringList allMimeTypes = KFileMetaInfoProvider::self()->supportedMimeTypes();
     if ( allMimeTypes.isEmpty() )
     {
-        cout <<
+        kdDebug() <<
             i18n("No support for metadata extraction found.").local8Bit()
              << endl;
         return;
     }
 
-    cout << i18n("Supported MimeTypes:").local8Bit() << endl;
+    kdDebug() << i18n("Supported MimeTypes:").local8Bit() << endl;
 
     QStringList::ConstIterator it = allMimeTypes.begin();
     for ( ; it != allMimeTypes.end(); it++ )
-        cout << (*it).local8Bit() << endl;
+        kdDebug() << (*it).local8Bit() << endl;
 }
 
 // caller needs to delete the returned list!
@@ -304,7 +305,7 @@ static void printMimeTypes( const KCmdLineArgs *args )
     {
         KURL url = args->url( i );
         KMimeType::Ptr mt = KMimeType::findByURL( url );
-        cout << args->arg(i) << ": " << mt->comment().local8Bit() << " ("
+        kdDebug() << args->arg(i) << ": " << mt->comment().local8Bit() << " ("
              << mt->name().local8Bit() << ")" << endl;
     }
 }
@@ -313,11 +314,11 @@ static void printList( const QStringList& list )
 {
     QStringList::ConstIterator it = list.begin();
     for ( ; it != list.end(); ++it )
-        cout << (*it).local8Bit() << endl;
-    cout << endl;
+        kdDebug() << (*it).local8Bit() << endl;
+    kdDebug() << endl;
 }
 
-static void processMetaDataOptions( const QPtrList<FileProps> propList,
+static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
                                     KCmdLineArgs *args )
 {
 // kfile --mimetype --supportedMimetypes --listsupported --listavailable --listpreferred --listwritable --getValue "key" --setValue "key=value" --allValues --preferredValues --dialog --quiet file [file...]
@@ -325,45 +326,45 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
 
     QString line("-- -------------------------------------------------------");
     FileProps *props;
-    QPtrListIterator<FileProps> it( propList );
+    Q3PtrListIterator<FileProps> it( propList );
     for ( ; (props = it.current()); ++it )
     {
         QString file = props->fileName() + " ";
         QString fileString = line.replace( 3, file.length(), file );
-        cout << QFile::encodeName( fileString ) << endl;
+        kdDebug() << QFile::encodeName( fileString ) << endl;
             
         if ( args->isSet( "listsupported" ) )
         {
-            cout << "=Supported Keys=" << endl;
+            kdDebug() << "=Supported Keys=" << endl;
             printList( props->supportedKeys() );
         }
         if ( args->isSet( "listpreferred" ) )
         {
-            cout << "=Preferred Keys=" << endl;
+            kdDebug() << "=Preferred Keys=" << endl;
             printList( props->preferredKeys() );
         }
         if ( args->isSet( "listavailable" ) )
         {
-            cout << "=Available Keys=" << endl;
+            kdDebug() << "=Available Keys=" << endl;
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator git = groups.begin();
             for ( ; git != groups.end(); ++git )
             {
-                cout << "Group: " << (*git).local8Bit() << endl;
+                kdDebug() << "Group: " << (*git).local8Bit() << endl;
                 printList( props->availableKeys( *git ) );
             }
         }
 //         if ( args->isSet( "listwritable" ) )
 //         {
-//             cout << "TODO :)" << endl;
+//             kdDebug() << "TODO :)" << endl;
 //         }
         if ( args->isSet( "getValue" ) )
         {
-            cout << "=Value=" << endl;
+            kdDebug() << "=Value=" << endl;
             QString key = QString::fromLocal8Bit( args->getOption("getValue"));
             QStringList::ConstIterator git = props->groupsToUse().begin();
             for ( ; git != props->groupsToUse().end(); ++git )
-                cout << props->getValue( *git, key ).local8Bit() << endl;
+                kdDebug() << props->getValue( *git, key ).local8Bit() << endl;
         }
 
         if ( args->isSet( "setValue" ) )
@@ -386,7 +387,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
 
         if ( args->isSet( "allValues" ) )
         {
-            cout << "=All Values=" << endl;
+            kdDebug() << "=All Values=" << endl;
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
@@ -394,7 +395,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
         }
         if ( args->isSet( "preferredValues" ) && !args->isSet("allValues") )
         {
-            cout << "=Preferred Values=" << endl;
+            kdDebug() << "=Preferred Values=" << endl;
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
@@ -425,7 +426,7 @@ int main( int argc, char **argv )
 
     KApplication app( useGUI, useGUI );
 
-    QPtrList<FileProps> m_props;
+    Q3PtrList<FileProps> m_props;
     m_props.setAutoDelete( true );
 
     bool quiet = args->isSet( "quiet" );
@@ -444,10 +445,9 @@ int main( int argc, char **argv )
     }
 
     QStringList groupsToUse;
-    QCStringList suppliedGroups = args->getOptionList( "groups" );
-    QCStringList::ConstIterator it = suppliedGroups.begin();
-    for ( ; it != suppliedGroups.end(); ++it )
-        groupsToUse.append( QString::fromLocal8Bit( (*it) ) );
+    QByteArrayList suppliedGroups = args->getOptionList( "groups" );
+    foreach (QByteArray array, suppliedGroups)
+        groupsToUse.append( QString::fromLocal8Bit( array ) );
 
     QString mimeType;
 
@@ -463,7 +463,7 @@ int main( int argc, char **argv )
         {
             if ( !quiet )
             {
-                cerr << args->arg(i) << ": " <<
+                kdWarning() << args->arg(i) << ": " <<
                 i18n("Cannot determine metadata").local8Bit() << endl;
             }
             delete props;
@@ -474,7 +474,7 @@ int main( int argc, char **argv )
     processMetaDataOptions( m_props, args );
 
     m_props.clear(); // force destruction/sync of props
-    cout.flush();
+    kdDebug().flush();
 
     return 0;
 }

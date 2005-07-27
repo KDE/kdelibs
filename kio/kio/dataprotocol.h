@@ -27,7 +27,7 @@
 // DataProtocol for internal usage within libkiocore.
 
 class QString;
-class QCString;
+class Q3CString;
 
 class KURL;
 
@@ -53,7 +53,7 @@ class DataProtocol : public DataSlave {
 
 public:
 #if defined(DATAKIOSLAVE)
-  DataProtocol(const QCString &pool_socket, const QCString &app_socket);
+  DataProtocol(const Q3CString &pool_socket, const Q3CString &app_socket);
 #else
   DataProtocol();
 #endif

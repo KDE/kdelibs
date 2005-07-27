@@ -5,7 +5,7 @@
    based on the KDE3 HighColor Style
 
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
-             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org>
+             (C) 2001-2002 Fredrik Hï¿½lund  <fredrik@kde.org>
 
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
@@ -43,7 +43,7 @@ struct KeramikEmbedImage
 	const unsigned char* data;
 };
 
-extern KeramikEmbedImage* KeramikGetDbImage(int id);
+extern const KeramikEmbedImage* KeramikGetDbImage(int id);
 extern void KeramikDbCleanup();
 
 enum KeramikTileType

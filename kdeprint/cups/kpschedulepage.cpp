@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kpschedulepage.h"
@@ -23,10 +23,9 @@
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <qregexp.h>
-#include <qdatetimeedit.h>
+#include <q3datetimeedit.h>
 #include <qdatetime.h>
 #include <qlineedit.h>
-#include <qwhatsthis.h>
 #include <klocale.h>
 #include <kseparator.h>
 #include <knuminput.h>
@@ -143,31 +142,31 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time->insertItem(i18n("Second Shift (4 pm - 12 am)"));
 	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
 	m_time->insertItem(i18n("Specified Time"));
-        QWhatsThis::add(m_time, whatsThisScheduledPrinting);
-	m_tedit = new QTimeEdit(this);
+        m_time->setWhatsThis(whatsThisScheduledPrinting);
+	m_tedit = new Q3TimeEdit(this);
 	m_tedit->setAutoAdvance(true);
 	m_tedit->setTime(QTime::currentTime());
 	m_tedit->setEnabled(false);
-        QWhatsThis::add(m_tedit, whatsThisScheduledPrinting);
+        m_tedit->setWhatsThis(whatsThisScheduledPrinting);
 	m_billing = new QLineEdit(this);
-        QWhatsThis::add(m_billing, whatsThisBillingInfo);
+        m_billing->setWhatsThis(whatsThisBillingInfo);
 	m_pagelabel = new QLineEdit(this);
-        QWhatsThis::add(m_pagelabel, whatsThisPageLabel);
-	m_priority = new KIntNumInput(50, this);
-        QWhatsThis::add(m_priority, whatsThisJobPriority);
+        m_pagelabel->setWhatsThis(whatsThisPageLabel);
+	m_priority = new KIntNumInput(50,this);
+        m_priority->setWhatsThis(whatsThisJobPriority);
 	m_priority->setRange(1, 100, 10, true);
 
 	QLabel	*lab = new QLabel(i18n("&Scheduled printing:"), this);
 	lab->setBuddy(m_time);
-        QWhatsThis::add(lab, whatsThisScheduledPrinting);
+        lab->setWhatsThis(whatsThisScheduledPrinting);
 	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
-        QWhatsThis::add(lab1, whatsThisBillingInfo);
+        lab1->setWhatsThis(whatsThisBillingInfo);
 	lab1->setBuddy(m_billing);
 	QLabel	*lab2 = new QLabel(i18n("T&op/Bottom page label:"), this);
-        QWhatsThis::add(lab2, whatsThisPageLabel);
+        lab2->setWhatsThis(whatsThisPageLabel);
 	lab2->setBuddy(m_pagelabel);
 	m_priority->setLabel(i18n("&Job priority:"), Qt::AlignVCenter|Qt::AlignLeft);
-        QWhatsThis::add(m_priority, whatsThisJobPriority);
+        m_priority->setWhatsThis(whatsThisJobPriority);
 
 	KSeparator	*sep0 = new KSeparator(this);
 	sep0->setFixedHeight(10);

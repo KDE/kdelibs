@@ -3,7 +3,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qtimer.h>
 
 namespace KIO { class Job; }
@@ -28,7 +28,7 @@ protected:
        KURL url;
        int time;
     };
-    QValueList<fileInfo> fileList;
+    Q3ValueList<fileInfo> fileList;
 };
 
 #endif

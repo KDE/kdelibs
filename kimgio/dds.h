@@ -10,12 +10,21 @@
 #ifndef KIMG_DDS_H
 #define KIMG_DDS_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-void kimgio_dds_read( QImageIO * );
-void kimgio_dds_write( QImageIO * );
-}
+class DDSHandler : public QImageIOHandler
+{
+public:
+    DDSHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif
- 
+

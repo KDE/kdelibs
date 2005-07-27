@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __KPassDlg_h_included__
 #define __KPassDlg_h_included__
@@ -63,12 +63,6 @@ public:
      * @since 3.2
      */
     KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name);
-
-    /**
-     * @deprecated, will be removed in KDE 4.0
-     * Creates a password input widget using echoMode as "echo mode".
-     */
-    KPasswordEdit(QWidget *parent, const char *name, int echoMode) KDE_DEPRECATED;
 
     /**
      * Destructs the widget.
@@ -136,7 +130,7 @@ private:
  *
  * \code
  * QCString password;
- * int result = KPasswordDialog::getPassword(password, i18n("Prompt message"));
+ * int result = KPasswordDialog::getPassword(parent, password, i18n("Prompt message"));
  * if (result == KPasswordDialog::Accepted)
  *     use(password);
  * \endcode
@@ -203,14 +197,6 @@ public:
     KPasswordDialog(Types type, bool enableKeep, int extraBttn,
                     QWidget *parent=0, const char *name=0);
 
-    /**
-     * @deprecated Variant of the previous constructor without the
-     * possibility to specify a parent. Will be removed in KDE 4.0
-     */
-    KPasswordDialog(int type, QString prompt, bool enableKeep=false,
-                    int extraBttn=0) KDE_DEPRECATED;
-    // note that this implicitly deprecates the 'prompt' variants of
-    // getPassword() below. i guess the above constructor needs to be extended.
 
     /**
      * Construct a password dialog. Essentially the same as above but allows the
@@ -348,6 +334,7 @@ public:
     /**
      * Pops up the dialog, asks the user for a password, and returns it.
      *
+     * @param parent The widget the dialog belongs too
      * @param password The password is returned in this reference parameter.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
@@ -357,19 +344,20 @@ public:
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
-    static int getPassword(QCString &password, QString prompt, int *keep=0L);
+    static int getPassword(QWidget *parent,Q3CString &password, QString prompt, int *keep=0L);
 
     /**
      * Pops up the dialog, asks the user for a password and returns it. The
      * user has to enter the password twice to make sure it was entered
      * correctly.
      *
+     * @param parent The widget the dialog belongs too
      * @param password The password is returned in this reference parameter.
      * @param prompt A prompt for the password. This can be a few lines of
      * information. The text is word broken to fit nicely in the dialog.
      * @return Result code: Accepted or Rejected.
      */
-    static int getNewPassword(QCString &password, QString prompt);
+    static int getNewPassword(QWidget *parent,Q3CString &password, QString prompt);
 
     /**
      * Static helper function that disables core dumps.

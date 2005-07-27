@@ -4,8 +4,8 @@
 #include "qapplication.h"
 #include "qpushbutton.h"
 #include "qlineedit.h"
-#include "qhbox.h"
-#include "qvbox.h"
+#include "q3hbox.h"
+#include "q3vbox.h"
 #include "qxembed.h"
 
 WId windowWithName(const char *);
@@ -25,8 +25,8 @@ main(int argc, char**argv)
 
   QApplication a(argc,argv);
 
-  QWidget *main = new QVBox(NULL,"main",Qt::WDestructiveClose);
-  QWidget *top = new QHBox(main);
+  QWidget *main = new Q3VBox(NULL,"main",Qt::WDestructiveClose);
+  QWidget *top = new Q3HBox(main);
   QPushButton *quit = new QPushButton("Quit", top);
   QObject::connect( quit, SIGNAL(clicked()), main, SLOT(close()) );
   QLineEdit *edit = new QLineEdit(top);
@@ -84,5 +84,5 @@ Window Window_With_Name(Display *dpy, Window top, const char *name)
 
 WId windowWithName(const char *name)
 {
-  return Window_With_Name(qt_xdisplay(), qt_xrootwin(), name);
+  return Window_With_Name(QX11Info::display(), qt_xrootwin(), name);
 }

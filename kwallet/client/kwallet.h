@@ -28,7 +28,9 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qobject.h>
+#include <qwindowdefs.h>
 #include <dcopobject.h>
+
 
 class DCOPRef;
 
@@ -115,7 +117,7 @@ class KIO_EXPORT Wallet : public QObject, public DCOPObject {
 		 *  @param app The name of the application to disconnect.
 		 *  @return Returns true on success, false on error.
 		 */
-		static bool disconnectApplication(const QString& wallet, const QCString& app);
+		static bool disconnectApplication(const QString& wallet, const DCOPCString& app);
 
 		enum OpenType { Synchronous=0, Asynchronous, Path, OpenTypeUnused=0xff };
 
@@ -481,7 +483,7 @@ class KIO_EXPORT Wallet : public QObject, public DCOPObject {
 		 *  @internal
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
-		ASYNC slotApplicationDisconnected(const QString& wallet, const QCString& application);
+		ASYNC slotApplicationDisconnected(const QString& wallet, const DCOPCString& application);
 
 		/**
 		 *  @internal
@@ -494,7 +496,7 @@ class KIO_EXPORT Wallet : public QObject, public DCOPObject {
 		 *  @internal
 		 *  Used to detect when the wallet service dies.
 		 */
-		void slotAppUnregistered(const QCString&);
+		void slotAppUnregistered(const QByteArray&);
 
 	private:
 		class WalletPrivate;

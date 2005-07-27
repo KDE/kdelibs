@@ -8,6 +8,8 @@
 #include <stdio.h>
 
 #include <kstatusbar.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 
 #include <kglobal.h>
@@ -63,7 +65,10 @@ void showResult(int test, int i)
 int main( int argc, char *argv[] )
 {
     int i, test;
-    new KApplication( argc, argv, "MyApplication" );
+    KAboutData about("KMessageBoxTest", "KMessageBoxTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    new KApplication();
 
     ExampleWidget *w = new ExampleWidget();
     w->show();    
@@ -90,7 +95,7 @@ case 1:
 
 case 2:
   i = KMessageBox::questionYesNo(0, "Do you have a printer?",
-				 QString("Printer setup"), QString::null);
+				 QString("Printer setup"));
   break;
 
 case 3:

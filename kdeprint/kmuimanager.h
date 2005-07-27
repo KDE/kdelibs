@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMUIMANAGER_H
 #define KMUIMANAGER_H
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "kprinter.h"
 
@@ -31,7 +31,7 @@ class KPrintDialogPage;
 class KPrintDialog;
 class KPrinterPropertyDialog;
 class KMConfigDialog;
-class QListView;
+class Q3ListView;
 
 class KDEPRINT_EXPORT KMUiManager : public QObject
 {
@@ -72,7 +72,7 @@ public:
 	int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
 	int dialogFlags();
 	void setupPrintDialog(KPrintDialog*);
-	virtual void setupPrintDialogPages(QPtrList<KPrintDialogPage>*);
+	virtual void setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*);
 
 	// printer property dialog
 	void setupPropertyDialog(KPrinterPropertyDialog*);
@@ -84,11 +84,11 @@ public:
 	int pageCap();
 
 	// job management
-	virtual void setupJobViewer(QListView*);
+	virtual void setupJobViewer(Q3ListView*);
 
 protected:
 	int			m_printdialogflags;
-	QPtrList<KPrintDialogPage>	m_printdialogpages;
+	Q3PtrList<KPrintDialogPage>	m_printdialogpages;
 };
 
 #endif

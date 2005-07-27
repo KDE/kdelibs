@@ -1,3 +1,5 @@
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <dcopclient.h>
 
@@ -5,7 +7,11 @@
 
 int main( int argc, char** argv )
 {
-    KApplication app( argc, argv, "KIDLTestClient", false /* No GUI */ );
+    KAboutData about("KIDLTestClient", "KIDLTestClient", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app(false,false);
+
 
     kapp->dcopClient()->attach();
     // kapp->dcopClient()->registerAs( "kidlclienttest" );

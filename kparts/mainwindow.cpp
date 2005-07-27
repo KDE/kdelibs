@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <kparts/mainwindow.h>
@@ -51,27 +51,27 @@ public:
   {
   }
 
-  QGuardedPtr<Part> m_activePart;
+  QPointer<Part> m_activePart;
   bool m_bShellGUIActivated;
   KHelpMenu *m_helpMenu;
 };
 }
 
-MainWindow::MainWindow( QWidget* parent,  const char *name, WFlags f )
+MainWindow::MainWindow( QWidget* parent,  const char *name, Qt::WFlags f )
     : KMainWindow( parent, name, f )
 {
   d = new MainWindowPrivate();
   PartBase::setPartObject( this );
 }
 
-MainWindow::MainWindow( const char *name, WFlags f )
+MainWindow::MainWindow( const char *name, Qt::WFlags f )
   : KMainWindow( 0L, name, f )
 {
   d = new MainWindowPrivate();
   PartBase::setPartObject( this );
 }
 
-MainWindow::MainWindow( int cflags, QWidget* parent,  const char *name, WFlags f )
+MainWindow::MainWindow( int cflags, QWidget* parent,  const char *name, Qt::WFlags f )
     : KMainWindow( cflags, parent, name, f )
 {
   d = new MainWindowPrivate();
@@ -95,7 +95,7 @@ void MainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
-  QPtrList<Plugin> plugins;
+  Q3PtrList<Plugin> plugins;
 
   if ( d->m_activePart )
   {

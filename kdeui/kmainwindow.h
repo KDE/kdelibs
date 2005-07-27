@@ -12,8 +12,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 
 
 */
@@ -24,7 +24,7 @@
 #include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include <qmetaobject.h>
 #include <ktoolbar.h>
 
@@ -41,7 +41,7 @@ class KAccel;
 class KToolBarMenuAction;
 class DCOPObject;
 
-#define KDE_DEFAULT_WINDOWFLAGS WType_TopLevel | WDestructiveClose
+#define KDE_DEFAULT_WINDOWFLAGS Qt::WType_TopLevel | Qt::WDestructiveClose
 
 
 /**
@@ -95,7 +95,7 @@ class DCOPObject;
 
  */
 
-class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
+class KDEUI_EXPORT KMainWindow : public Q3MainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
 {
     friend class KMWSessionManaged;
     Q_OBJECT
@@ -133,7 +133,7 @@ public:
      * KMainWindow *kmw = new KMainWindow (...);
      * \endcode
      **/
-    KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+    KMainWindow( QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
     /**
      * Flags that can be passed in an argument to the constructor to
@@ -155,7 +155,7 @@ public:
      *
      * @since 3.2
      */
-    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
+    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
     /**
      * \brief Destructor.
@@ -382,14 +382,14 @@ public:
     /**
      * List of members of KMainWindow class.
      */
-    static QPtrList<KMainWindow>* memberList;
+    static Q3PtrList<KMainWindow>* memberList;
 
     //KDE4: replace with memberList() and make memberList member private
     /**
      * List of members of KMainWindow class.
      * @since 3.4
      */
-    static QPtrList<KMainWindow>* getMemberList();
+    static Q3PtrList<KMainWindow>* getMemberList();
 
     /**
      * Returns a pointer to the toolbar with the specified name.
@@ -404,9 +404,9 @@ public:
     KToolBar *toolBar( const char *name=0 );
 
     /**
-     * @return An iterator over the list of all toolbars for this window.
+     * @return A list of all toolbars for this window
      */
-    QPtrListIterator<KToolBar> toolBarIterator();
+    QList<KToolBar*> toolBarList() /*TODO const*/;
 
     /**
      * @return A KAccel instance bound to this mainwindow. Used automatically
@@ -559,25 +559,25 @@ public:
 
         /**
          * adds action to show/hide the statusbar if the
-         * statusbar exists.  See createStandardStatusBarAction
+         * statusbar exists.  @see createStandardStatusBarAction
          */
         StatusBar = 4,
 
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
-         * window size using the default name.  See setAutoSaveSettings
+         * window size using the default name.  @see setAutoSaveSettings
          *
          * Typically you want to let the default window size be determined by
          * the widgets size hints. Make sure that setupGUI() is called after
          * all the widgets are created ( including setCentralWidget ) so the
-         * default size's will be correct. See setAutoSaveSettings for
+         * default size's will be correct. @see setAutoSaveSettings for
          * more information on this topic.
          */
         Save = 8,
 
         /**
          * calls createGUI() once ToolBar, Keys and Statusbar have been
-         * taken care of.  See createGUI
+         * taken care of.  @see createGUI
          */
         Create = 16
     };
@@ -773,7 +773,6 @@ public slots:
 
 protected:
     void paintEvent( QPaintEvent* e );
-    void childEvent( QChildEvent* e);
     void resizeEvent( QResizeEvent* e);
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
@@ -999,7 +998,7 @@ private:
     KStatusBar *internalStatusBar();
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    QPtrList<KToolBar> toolbarList;
+    QList<KToolBar*> toolbarList;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
@@ -1028,7 +1027,7 @@ template <typename T>
 inline void kRestoreMainWindows() {
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == QString::fromLatin1( T::staticMetaObject()->className() ) )
+    if ( className == QString::fromLatin1( T::staticMetaObject.className() ) )
       (new T)->restore( n );
   }
 }
@@ -1036,8 +1035,8 @@ inline void kRestoreMainWindows() {
 template <typename T0, typename T1>
 inline void kRestoreMainWindows() {
   const char * classNames[2];
-  classNames[0] = T0::staticMetaObject()->className();
-  classNames[1] = T1::staticMetaObject()->className();
+  classNames[0] = T0::staticMetaObject.className();
+  classNames[1] = T1::staticMetaObject.className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
     if ( className == QString::fromLatin1( classNames[0] ) )
@@ -1050,9 +1049,9 @@ inline void kRestoreMainWindows() {
 template <typename T0, typename T1, typename T2>
 inline void kRestoreMainWindows() {
   const char * classNames[3];
-  classNames[0] = T0::staticMetaObject()->className();
-  classNames[1] = T1::staticMetaObject()->className();
-  classNames[2] = T2::staticMetaObject()->className();
+  classNames[0] = T0::staticMetaObject.className();
+  classNames[1] = T1::staticMetaObject.className();
+  classNames[2] = T2::staticMetaObject.className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
     if ( className == QString::fromLatin1( classNames[0] ) )

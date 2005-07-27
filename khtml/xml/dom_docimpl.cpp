@@ -41,8 +41,11 @@
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_binding.h"
 
-#include <qptrstack.h>
-#include <qpaintdevicemetrics.h>
+#include <q3ptrstack.h>
+#include <q3paintdevicemetrics.h>
+//Added by qt3to4:
+#include <QTimerEvent>
+#include <Q3PtrList>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>
@@ -217,7 +220,6 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-
 ElementMappingCache::ElementMappingCache():m_dict(71)
 {}
 
@@ -278,8 +280,8 @@ ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
     return m_dict.find(id);
 }
 
-static KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
-QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
+static KStaticDeleter< Q3PtrList<DocumentImpl> > s_changedDocumentsDeleter;
+Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
@@ -604,7 +606,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI,
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
-    QPtrStack<NodeImpl> nodeStack;
+    Q3PtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
     while(1)
@@ -648,11 +650,10 @@ void DocumentImpl::setTitle(const DOMString& _title)
     m_title = _title;
 
     QString titleStr = m_title.string();
-    for (unsigned int i = 0; i < titleStr.length(); ++i)
+    for (int i = 0; i < titleStr.length(); ++i)
         if (titleStr[i] < ' ')
             titleStr[i] = ' ';
     titleStr = titleStr.simplifyWhiteSpace();
-    titleStr.compose();
     if ( view() && !view()->part()->parentPart() ) {
 	if (titleStr.isNull() || titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
@@ -952,7 +953,7 @@ QString DocumentImpl::nextState()
 QStringList DocumentImpl::docState()
 {
     QStringList s;
-    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
         s.append(it.current()->state());
 
     return s;
@@ -960,7 +961,7 @@ QStringList DocumentImpl::docState()
 
 bool DocumentImpl::unsubmittedFormChanges()
 {
-    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
         if (it.current()->state().right(1)=="M")
             return true;
 
@@ -998,7 +999,7 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long wha
 void DocumentImpl::setDocumentChanged(bool b)
 {
     if (!changedDocuments)
-        changedDocuments = s_changedDocumentsDeleter.setObject( changedDocuments, new QPtrList<DocumentImpl>() );
+        changedDocuments = s_changedDocumentsDeleter.setObject( changedDocuments, new Q3PtrList<DocumentImpl>() );
 
     if (b && !m_docChanged)
         changedDocuments->append(this);
@@ -1209,7 +1210,7 @@ void DocumentImpl::setPaintDevice( QPaintDevice *dev )
     if (m_paintDevice != dev) {
         m_paintDevice = dev;
         delete m_paintDeviceMetrics;
-        m_paintDeviceMetrics = new QPaintDeviceMetrics( dev );
+        m_paintDeviceMetrics = new Q3PaintDeviceMetrics( dev );
     }
 }
 
@@ -1236,7 +1237,7 @@ void DocumentImpl::open( bool clearEventListeners )
         attach();
 
     if (clearEventListeners) {
-        QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+        Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
         for (; it.current();)
             m_windowEventListeners.removeRef(it.current());
     }
@@ -1957,7 +1958,7 @@ void DocumentImpl::recalcStyleSelector()
 
     assert(m_pendingStylesheets==0);
 
-    QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
+    Q3PtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
     bool autoselect = sheetUsed.isEmpty();
@@ -2079,7 +2080,7 @@ void DocumentImpl::recalcStyleSelector()
 
     // Include programmatically added style sheets
     if (m_addedStyleSheets) {
-        QPtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
+        Q3PtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
         for (; *it; ++it) {
             if ((*it)->isCSSStyleSheet() && !(*it)->disabled())
                 m_styleSheets->add(*it);
@@ -2087,7 +2088,7 @@ void DocumentImpl::recalcStyleSelector()
     }
 
     // De-reference all the stylesheets in the old list
-    QPtrListIterator<StyleSheetImpl> it(oldStyleSheets);
+    Q3PtrListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)
 	it.current()->deref();
 
@@ -2186,7 +2187,7 @@ void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
 
 void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 {
-    QPtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
+    Q3PtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
         it.current()->notifyBeforeNodeRemoval(n);
 }
@@ -2360,7 +2361,7 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     Event ev(evt);
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
@@ -2375,7 +2376,7 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
 
 void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
 
     if (!listener) {
         for (; it.current(); ++it)
@@ -2403,7 +2404,7 @@ void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 
 EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -2416,12 +2417,12 @@ EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 
 void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
 {
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
 
     // if this id/listener/useCapture combination is already registered, do nothing.
     // the DOM2 spec says that "duplicate instances are discarded", and this keeps
     // the listener order intact.
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
         if (*(it.current()) == *rl) {
             delete rl;
@@ -2436,7 +2437,7 @@ void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bo
 {
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_windowEventListeners.removeRef(it.current());
@@ -2446,7 +2447,7 @@ void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bo
 
 bool DocumentImpl::hasWindowEventListener(int id)
 {
-    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id) {
 	    return true;
@@ -2497,7 +2498,7 @@ void DocumentImpl::dispatchImageLoadEventsNow()
     
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (QPtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
+    for (Q3PtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
         khtml::RenderImage* image = it.current();
         // Must advance iterator *before* dispatching call.
         // Otherwise, it might be advanced automatically if dispatching the call had a side effect

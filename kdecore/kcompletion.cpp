@@ -24,7 +24,7 @@
 #include <knotifyclient.h>
 #include <kglobal.h>
 
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 
 #include "kcompletion.h"
 #include "kcompletion_private.h"
@@ -417,7 +417,7 @@ QString KCompletion::findCompletion( const QString& string )
     const KCompTreeNode *node = myTreeRoot;
 
     // start at the tree-root and try to find the search-string
-    for( uint i = 0; i < string.length(); i++ ) {
+    for( int i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
         node = node->find( ch );
 
@@ -506,7 +506,7 @@ void KCompletion::findAllCompletions(const QString& string,
     const KCompTreeNode *node = myTreeRoot;
 
     // start at the tree-root and try to find the search-string
-    for( uint i = 0; i < string.length(); i++ ) {
+    for( int i = 0; i < string.length(); i++ ) {
         ch = string.at( i );
         node = node->find( ch );
 
@@ -715,13 +715,13 @@ void KCompTreeNode::remove( const QString& str )
     QString string = str;
     string += QChar(0x0);
 
-    QPtrVector<KCompTreeNode> deletables( string.length() + 1 );
+    Q3PtrVector<KCompTreeNode> deletables( string.length() + 1 );
 
     KCompTreeNode *child = 0L;
     KCompTreeNode *parent = this;
     deletables.insert( 0, parent );
     
-    uint i = 0;
+    int i = 0;
     for ( ; i < string.length(); i++ )
     {
         child = parent->find( string.at( i ) );
@@ -751,7 +751,7 @@ QStringList KCompletionMatchesWrapper::list() const
         stringList.clear();
 
         // high weight == sorted last -> reverse the sorting here
-        QValueListConstIterator<KSortableItem<QString> > it;
+        QList<KSortableItem<QString> >::const_iterator it;
         for ( it = sortedList->begin(); it != sortedList->end(); ++it )
             stringList.prepend( (*it).value() );
     }

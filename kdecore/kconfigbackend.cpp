@@ -52,7 +52,7 @@
 
 extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */
-static QCString printableToString(const char *str, int l)
+static QByteArray printableToString(const char *str, int l)
 {
   // Strip leading white-space.
   while((l>0) &&
@@ -68,7 +68,7 @@ static QCString printableToString(const char *str, int l)
      l--;
   }
 
-  QCString result(l + 1);
+  QByteArray result(l + 1);
   char *r = result.data();
 
   for(int i = 0; i < l;i++, str++)
@@ -112,12 +112,12 @@ static QCString printableToString(const char *str, int l)
   return result;
 }
 
-static QCString stringToPrintable(const QCString& str){
-  QCString result(str.length()*2); // Maximum 2x as long as source string
+static QByteArray stringToPrintable(const QByteArray& str){
+  QByteArray result(str.length()*2); // Maximum 2x as long as source string
   register char *r = result.data();
-  register char *s = str.data();
+  register const char *s = str.data();
 
-  if (!s) return QCString("");
+  if (!s) return QByteArray("");
 
   // Escape leading space
   if (*s == ' ')
@@ -163,9 +163,9 @@ static QCString stringToPrintable(const QCString& str){
   return result;
 }
 
-static QCString decodeGroup(const char*s, int l)
+static QByteArray decodeGroup(const char*s, int l)
 {
-  QCString result(l);
+  QByteArray result(l);
   register char *r = result.data();
 
   l--; // Correct for trailing \0
@@ -194,12 +194,12 @@ static QCString decodeGroup(const char*s, int l)
   return result;
 }
 
-static QCString encodeGroup(const QCString &str)
+static QByteArray encodeGroup(const QByteArray &str)
 {
   int l = str.length();
-  QCString result(l*2+1);
+  QByteArray result(l*2+1);
   register char *r = result.data();
-  register char *s = str.data();
+  register const char *s = str.data();
   while(l)
   {
     if ((*s == '[') || (*s == ']'))
@@ -330,7 +330,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
       findAllResources("config", QString::fromLatin1("kdeglobals"));
 
 #ifdef Q_WS_WIN
-    QString etc_kderc = QFile::decodeName( QCString(getenv("WINDIR")) + "\\kderc" );
+    QString etc_kderc = QFile::decodeName( QByteArray(getenv("WINDIR")) + "\\kderc" );
 #else
     QString etc_kderc = QString::fromLatin1("/etc/kderc");
 #endif
@@ -341,14 +341,14 @@ bool KConfigINIBackEnd::parseConfigFiles()
     kdercs += KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("system.kdeglobals"));
 
-    QStringList::ConstIterator it;
-
-    for (it = kdercs.fromLast(); it != kdercs.end(); --it) {
-
-      QFile aConfigFile( *it );
-      if (!aConfigFile.open( IO_ReadOnly ))
+    QListIterator<QString> it( kdercs );
+    it.toBack();
+    while (it.hasPrevious()) {
+      QFile aConfigFile( it.previous() );
+      if (!aConfigFile.open( QIODevice::ReadOnly ))
 	   continue;
-      parseSingleConfigFile( aConfigFile, 0L, true, (*it != mGlobalFileName) );
+      parseSingleConfigFile( aConfigFile, 0L, true, 
+                             (aConfigFile.fileName() != mGlobalFileName) );
       aConfigFile.close();
       if (bFileImmutable)
          break;
@@ -372,14 +372,13 @@ bool KConfigINIBackEnd::parseConfigFiles()
     else
        list = KGlobal::dirs()->findAllResources(resType, mfileName);
 
-    QStringList::ConstIterator it;
-
-    for (it = list.fromLast(); it != list.end(); --it) {
-
-      QFile aConfigFile( *it );
+    QListIterator<QString> it( list );
+    it.toBack();
+    while (it.hasPrevious()) {
+      QFile aConfigFile( it.previous() );
       // we can already be sure that this file exists
-      bool bIsLocal = (*it == mLocalFileName);
-      if (aConfigFile.open( IO_ReadOnly )) {
+      bool bIsLocal = (aConfigFile.fileName() == mLocalFileName);
+      if (aConfigFile.open( QIODevice::ReadOnly )) {
          parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
          aConfigFile.close();
          if (bFileImmutable)
@@ -439,7 +438,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    //qWarning("Parsing %s, global = %s default = %s",
    //           rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
 
-   QCString aCurrentGroup("<default>");
+   QByteArray aCurrentGroup("<default>");
 
    unsigned int ll = localeString.length();
 
@@ -466,7 +465,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (sigsetjmp (mmap_jmpbuf, 1))
       {
-qWarning("SIGBUS while reading %s", rFile.name().latin1());
+qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
          munmap(( char* )map, rFile.size());
          sigaction (SIGBUS, &mmap_old_sigact, 0);
          return;
@@ -476,7 +475,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
    else
 #endif
    {
-      rFile.at(0);
+      rFile.seek(0);
       data = rFile.readAll();
       s = data.data();
       eof = s + data.size();
@@ -523,7 +522,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
          if ((e >= eof) || (*e != ']'))
          {
-            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
+            fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().latin1(), line);
             continue;
          }
          // group found; get the group name by taking everything in
@@ -597,7 +596,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
 	    for (;; s++)
 	    {
 		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.name().latin1(), line);
+		    fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().latin1(), line);
 		    goto sktoeol;
 		}
 		if (*s == ']')
@@ -608,7 +607,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
             {
               // Locale
               if (locale) {
-		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
+		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().latin1(), line);
 		goto sktoeol;
               }
               locale = option;
@@ -635,7 +634,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
             }
          }
       }
-      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.name().latin1(), line);
+      fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().latin1(), line);
       continue;
 
    haveeq:
@@ -643,7 +642,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       {
 	 if (endOfKey < startLine)
 	 {
-	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.name().latin1(), line);
+	   fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().latin1(), line);
 	   goto sktoeol;
 	 }
 	 if (!isspace(*endOfKey))
@@ -659,7 +658,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
           {
               // backward compatibility. C == en_US
               if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.data(), "en_US", 5)) {
-                  //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
+                  //cout<<"mismatched locale '"<<QByteArray(locale, elocale-locale +1)<<"'"<<endl;
                   // We can ignore this one
                   if (!pWriteBackMap)
                       continue; // We just ignore it
@@ -671,8 +670,8 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       }
 
       // insert the key/value line
-      QCString key(startLine, endOfKey - startLine + 2);
-      QCString val = printableToString(st, s - st);
+      QByteArray key(startLine, endOfKey - startLine + 1);
+      QByteArray val = printableToString(st, s - st);
       //qDebug("found key '%s' with value '%s'", key.data(), val.data());
 
       KEntryKey aEntryKey(aCurrentGroup, key);
@@ -814,10 +813,10 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QCString &localeString)
+static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
 {
   // now write out all other groups.
-  QCString currentGroup;
+  QByteArray currentGroup;
   for (KEntryMapConstIterator aIt = entryMap.begin();
        aIt != entryMap.end(); ++aIt)
   {
@@ -910,7 +909,7 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
   bFileImmutable = false;
 
   // Read entries from disk
-  if (mergeFile && mergeFile->open(IO_ReadOnly))
+  if (mergeFile && mergeFile->open(QIODevice::ReadOnly))
   {
      // fill the temporary structure with entries from the file
      parseSingleConfigFile(*mergeFile, &aTempMap, bGlobal, false );
@@ -956,8 +955,7 @@ bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
   return bEntriesLeft;
 }
 
-/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
-bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
+bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
 					bool bMerge)
 {
   // is the config object read-only?

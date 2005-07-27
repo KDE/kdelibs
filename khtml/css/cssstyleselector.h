@@ -23,8 +23,9 @@
 #ifndef _CSS_cssstyleselector_h_
 #define _CSS_cssstyleselector_h_
 
-#include <qptrlist.h>
-#include <qvaluevector.h>
+#include <q3ptrlist.h>
+#include <q3valuevector.h>
+#include <Q3MemArray>
 
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
@@ -130,8 +131,8 @@ namespace khtml
 
 	RenderStyle *styleForElement(DOM::ElementImpl *e);
 
-        QValueVector<int> fontSizes() const { return m_fontSizes; }
-	QValueVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
+        Q3ValueVector<int> fontSizes() const { return m_fontSizes; }
+	Q3ValueVector<int> fixedFontSizes() const { return m_fixedFontSizes; }
 
 	bool strictParsing;
 	struct Encodedurl {
@@ -140,8 +141,8 @@ namespace khtml
 	    QString file;
 	} encodedurl;
 
-        void computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
-	void computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueVector<int>& fontSizes, bool isFixed);
+        void computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
+	void computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, Q3ValueVector<int>& fontSizes, bool isFixed);
 
     protected:
 
@@ -218,7 +219,7 @@ public:
 	SelectorCache *selectorCache;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
-	QMemArray<CSSOrderedProperty> inlineProps;
+	Q3MemArray<CSSOrderedProperty> inlineProps;
         QString m_medium;
 	CSSOrderedProperty **propsToApply;
 	CSSOrderedProperty **pseudoProps;
@@ -235,9 +236,9 @@ public:
 	KHTMLView *view;
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
-	QPaintDeviceMetrics *paintDeviceMetrics;
-        QValueVector<int>     m_fontSizes;
-	QValueVector<int>     m_fixedFontSizes;
+	Q3PaintDeviceMetrics *paintDeviceMetrics;
+        Q3ValueVector<int>     m_fontSizes;
+	Q3ValueVector<int>     m_fixedFontSizes;
 
 	bool fontDirty;
 
@@ -283,10 +284,10 @@ public:
      * This is the list we will collect all properties we need to apply in.
      * It will get sorted once before applying.
      */
-    class CSSOrderedPropertyList : public QPtrList<CSSOrderedProperty>
+    class CSSOrderedPropertyList : public Q3PtrList<CSSOrderedProperty>
     {
     public:
-	virtual int compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2);
+	virtual int compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2);
 	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 		    Source regular, Source important );
     };
@@ -302,7 +303,7 @@ public:
 	int index;
     };
 
-    class CSSStyleSelectorList : public QPtrList<CSSOrderedRule>
+    class CSSStyleSelectorList : public Q3PtrList<CSSOrderedRule>
     {
     public:
 	CSSStyleSelectorList();
@@ -311,7 +312,7 @@ public:
 	void append( DOM::CSSStyleSheetImpl *sheet,
 		     const DOM::DOMString &medium = "screen" );
 
-	void collect( QPtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+	void collect( Q3PtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );
     };
 

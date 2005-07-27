@@ -17,9 +17,9 @@
 
 #include <qlayout.h>
 #include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qmultilineedit.h>
-#include <qlistview.h>
+#include <q3toolbar.h>
+#include <q3multilineedit.h>
+#include <q3listview.h>
 #include <qfile.h>
 #include <kmdimainfrm.h>
 #include <kmditoolviewaccessor.h>
@@ -39,43 +39,43 @@ MainWidget::MainWidget(QDomElement& dockConfig,KMdi::MdiMode mode)
         readDockConfig(m_dockConfig);
    }
 
-   QMultiLineEdit* mle = new QMultiLineEdit(0L,"theMultiLineEditWidget");
+   Q3MultiLineEdit* mle = new Q3MultiLineEdit(0L,"theMultiLineEditWidget");
    mle->setText("This is a QMultiLineEdit widget.");
    addToolWindow( mle, KDockWidget::DockBottom, m_pMdi, 70);
 
-   QMultiLineEdit* mle2 = new QMultiLineEdit(0L,"theMultiLineEditWidget2");
+   Q3MultiLineEdit* mle2 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget2");
    addToolWindow( mle2, KDockWidget::DockCenter, mle, 70);
 
-   QMultiLineEdit* mle3 = new QMultiLineEdit(0L,"theMultiLineEditWidget3");
+   Q3MultiLineEdit* mle3 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget3");
    addToolWindow( mle3, KDockWidget::DockCenter, mle, 70);
 
-   QMultiLineEdit* mle4 = new QMultiLineEdit(0L,"theMultiLineEditWidget4");
+   Q3MultiLineEdit* mle4 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget4");
    addToolWindow( mle4, KDockWidget::DockCenter, mle, 70);
 
    KMdiToolViewAccessor *tva=createToolWindow();
-   tva->setWidgetToWrap(new QMultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
+   tva->setWidgetToWrap(new Q3MultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
    tva->placeAndShow(KDockWidget::DockCenter,mle,70);   
 
-   QListView* lv = new QListView(0L,"theListViewWidget");
+   Q3ListView* lv = new Q3ListView(0L,"theListViewWidget");
 #include "../res/filenew.xpm"
    lv->setIcon(filenew);
    lv->addColumn("Test", 50);
    lv->addColumn("KMDI", 70);
-   new QListViewItem(lv,QString("test"),QString("test"));
+   new Q3ListViewItem(lv,QString("test"),QString("test"));
    addToolWindow( lv, KDockWidget::DockLeft, m_pMdi, 35, "1");
 
-   QListView* lv2 = new QListView(0L,"theListViewWidget2");
+   Q3ListView* lv2 = new Q3ListView(0L,"theListViewWidget2");
    lv2->setIcon(filenew);
    lv2->addColumn("Test2", 50);
    lv2->addColumn("KMDI2", 70);
-   new QListViewItem(lv,QString("test2"),QString("test2"));
+   new Q3ListViewItem(lv,QString("test2"),QString("test2"));
    addToolWindow( lv2, KDockWidget::DockCenter, lv, 35, "2");
    
-   QListView* lv3 = new QListView(0L,"theListViewWidget3");
+   Q3ListView* lv3 = new Q3ListView(0L,"theListViewWidget3");
    lv3->setIcon(filenew);
    lv3->addColumn("Test3", 50);
    lv3->addColumn("KMDI3", 70);
-   new QListViewItem(lv,QString("test3"),QString("test3"));
+   new Q3ListViewItem(lv,QString("test3"),QString("test3"));
    addToolWindow( lv3, KDockWidget::DockCenter, lv, 35, "3");
 
    dockManager->finishReadDockConfig();
@@ -89,7 +89,7 @@ MainWidget::~MainWidget()
     QDomDocument doc = m_dockConfig.ownerDocument();
     QString s = doc.toString();
     QFile f("/tmp/dc.txt");
-    f.open(IO_ReadWrite);
+    f.open(QIODevice::ReadWrite);
     f.writeBlock(s.latin1(), s.length());
     f.close();
 }

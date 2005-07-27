@@ -22,7 +22,7 @@
 #include <qclipboard.h>
 #include <qmime.h>
 #include <qobject.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include "kdelibs_export.h"
 
 /**

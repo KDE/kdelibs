@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "editlist.h"
@@ -81,7 +81,7 @@ void EditList::setText(int index, const QString& s)
 {
 	if (list_->text(index) != s)
 	{
-		QListBoxItem	*it = list_->findItem(s, Qt::ExactMatch);
+		Q3ListBoxItem	*it = list_->findItem(s, Q3ListBox::ExactMatch);
 		if (!it)
 			list_->changeItem(s, index);
 		else
@@ -97,13 +97,13 @@ void EditList::clear()
 
 void EditList::insertItem(const QString& s)
 {
-	if (!list_->findItem(s, Qt::ExactMatch))
+	if (!list_->findItem(s, Q3ListBox::ExactMatch))
 		list_->insertItem(s);
 }
 
 void EditList::insertItem(const QPixmap& icon, const QString& s)
 {
-	if (!list_->findItem(s, Qt::ExactMatch))
+	if (!list_->findItem(s, Q3ListBox::ExactMatch))
 		list_->insertItem(icon, s);
 }
 

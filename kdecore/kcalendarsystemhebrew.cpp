@@ -669,7 +669,7 @@ static int heb2num(const QString& str, int & iLength) {
   int decadeValues[14] = {10, 20, 20, 30, 40, 40, 50,
                           50, 60, 70, 80, 80, 90, 90};
 
-  uint pos;
+  int pos;
   for (pos = 0 ; pos < s.length() ; pos++)
   {
     c = s[pos];

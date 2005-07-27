@@ -40,7 +40,7 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 #include "addressee.h"
 #include "address.h"
@@ -69,7 +69,7 @@ static void ldif_out( QTextStream &t, QString formatStr, QString value )
   if ( value.isEmpty() )
     return;
 
-  QCString txt = LDIF::assembleLine( formatStr, value, 72 );
+  Q3CString txt = LDIF::assembleLine( formatStr, value, 72 );
 
   // write the string
   t << QString::fromUtf8(txt) << "\n";
@@ -80,7 +80,7 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   if ( addr.isEmpty() )
       return false;
 
-  QTextStream t( str, IO_WriteOnly|IO_Append );
+  QTextStream t( &str, QIODevice::WriteOnly|QIODevice::Append );
   t.setEncoding( QTextStream::UnicodeUTF8 );
 
   const Address homeAddr = addr.address( Address::Home );
@@ -173,7 +173,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   QByteArray data;
   Addressee a;
   Address homeAddr, workAddr;
-  
+
   data.setRawData( latinstr, latinstrlen );
   ldif.setLDIF( data );
   if (!dt.isValid())
@@ -181,7 +181,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   a.setRevision(dt);
   homeAddr = Address( Address::Home );
   workAddr = Address( Address::Work );
-  
+
   do {
     ret = ldif.nextItem();
     switch ( ret ) {
@@ -193,7 +193,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
       }
       case LDIF::EndEntry:
       // if the new address is not empty, append it
-        if ( !a.formattedName().isEmpty() || !a.name().isEmpty() || 
+        if ( !a.formattedName().isEmpty() || !a.name().isEmpty() ||
           !a.familyName().isEmpty() ) {
           if ( !homeAddr.isEmpty() )
             a.insertAddress( homeAddr );
@@ -207,10 +207,10 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
         workAddr = Address( Address::Work );
         break;
       case LDIF::MoreData: {
-        if ( endldif ) 
+        if ( endldif )
           end = true;
         else {
-          ldif.endLDIF();  
+          ldif.endLDIF();
           endldif = true;
           break;
         }
@@ -221,7 +221,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   } while ( !end );
 
   data.resetRawData( latinstr, latinstrlen );
-  
+
   return true;
 }
 
@@ -248,7 +248,7 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "xmozillanickname") || 
+  if ( fieldname == QString::fromLatin1( "xmozillanickname") ||
        fieldname == QString::fromLatin1( "nickname") ) {
     a.setNickName( value );
     return true;
@@ -285,7 +285,7 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "o" ) || 
+  if ( fieldname == QString::fromLatin1( "o" ) ||
        fieldname == QString::fromLatin1( "organization" ) ||      // Exchange
        fieldname == QString::fromLatin1( "organizationname" ) ) { // Exchange
     a.setOrganization( value );
@@ -319,7 +319,7 @@ addComment:
     // TODO: change this with KDE 4
   }
 
-  if ( fieldname == QString::fromLatin1( "homephone" ) ) { 
+  if ( fieldname == QString::fromLatin1( "homephone" ) ) {
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Home ) );
     return true;
   }
@@ -480,7 +480,7 @@ addComment:
     }
   }
 
-  if ( fieldname == QString::fromLatin1( "objectclass" ) ) // ignore 
+  if ( fieldname == QString::fromLatin1( "objectclass" ) ) // ignore
     return true;
 
   kdWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")
@@ -525,7 +525,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   if (formatStr.find(':') == -1)
     formatStr.append(": %1\n");
 
-  // check if base64-encoding is needed 
+  // check if base64-encoding is needed
   bool printable = true;
   unsigned int i, len;
   len = value.length();
@@ -539,7 +539,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   if (printable) // always encode if we find special chars...
     printable = (value.find('\n') == -1);
 
-  if (!printable && allowEncode) { 
+  if (!printable && allowEncode) {
     // encode to base64
     value = KCodecs::base64Encode( value.utf8() );
     int p = formatStr.find(':');
@@ -548,7 +548,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   }
 
   // generate the new string and split it to 72 chars/line
-  QCString txt = (formatStr.arg(value)).utf8();
+  Q3CString txt = (formatStr.arg(value)).utf8();
 
   if (allowEncode) {
     len = txt.length();

@@ -42,6 +42,7 @@
 #include <qmap.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <q3cstring.h>
 
 /***************************************************************************/
 
@@ -221,9 +222,6 @@ ISpellChecker::~ISpellChecker()
 	FREEP(m_hashstrings);
 	FREEP(m_sflaglist);
 	FREEP(m_chartypes);
-
-	delete m_translate_in;
-	m_translate_in = 0;
 }
 
 bool
@@ -233,11 +231,11 @@ ISpellChecker::checkWord( const QString& utf8Word )
 	if (!m_bSuccessfulInit)
 		return false;
 
-	if (!utf8Word || utf8Word.length() >= (INPUTWORDLEN + MAXAFFIXLEN) || utf8Word.isEmpty())
+	if (utf8Word.isNull() || utf8Word.length() >= (INPUTWORDLEN + MAXAFFIXLEN) || utf8Word.isEmpty())
 		return false;
 
 	bool retVal = false;
-	QCString out;
+	Q3CString out;
 	if (!m_translate_in)
 		return false;
 	else {
@@ -272,7 +270,7 @@ ISpellChecker::suggestWord(const QString& utf8Word)
 			utf8Word.length() == 0)
 		return QStringList();
 
-	QCString out;
+	Q3CString out;
 	if (!m_translate_in)
 		return QStringList();
 	else
@@ -319,7 +317,7 @@ s_buildHashNames (std::vector<std::string> & names, const char * dict)
 	names.clear ();
 
 	while ( (tmp = ispell_dirs[i++]) ) {
-		QCString maybeFile = QCString( tmp ) + '/';
+		Q3CString maybeFile = Q3CString( tmp ) + '/';
 		maybeFile += dict;
 		names.push_back( maybeFile.data() );
 	}
@@ -348,7 +346,7 @@ s_allDics()
 	}
 }
 
-QValueList<QString>
+QStringList
 ISpellChecker::allDics()
 {
 	if ( ispell_dict_map.empty() )

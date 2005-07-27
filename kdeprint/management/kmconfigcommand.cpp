@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmconfigcommand.h"
 #include "kxmlcommandselector.h"
 
 #include <qlabel.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 
 #include <klocale.h>
@@ -34,7 +34,7 @@ KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
 	setPageHeader(i18n("Command Settings"));
 	setPagePixmap("exec");
 
-	QGroupBox	*gb = new QGroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
+	Q3GroupBox	*gb = new Q3GroupBox(0, Qt::Horizontal, i18n("Edit/Create Commands"), this);
 	QLabel	*lab = new QLabel(i18n(
 				"<p>Command objects perform a conversion from input to output.<br>"
                 "They are used as the basis to build both print filters "

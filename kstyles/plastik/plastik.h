@@ -41,7 +41,7 @@
 
 #include <kstyle.h>
 #include <qbitmap.h>
-#include <qintcache.h>
+#include <q3intcache.h>
 
 #define u_arrow -4,1, 2,1, -3,0, 1,0, -2,-1, 0,-1, -1,-2
 #define d_arrow -4,-2, 2,-2, -3,-1, 1,-1, -2,0, 0,0, -1,1
@@ -250,7 +250,7 @@ protected:
                    const bool cornerWidget = false) const;
 
     virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-                                        const QPopupMenu* popup ) const;
+                                        const Q3PopupMenu* popup ) const;
     
     bool eventFilter(QObject *, QEvent *);
 
@@ -349,7 +349,7 @@ private:
             return match;
         }
     };
-    QIntCache<CacheEntry> *pixmapCache;
+    Q3IntCache<CacheEntry> *pixmapCache;
     
     // For renderFocusRect
     mutable QBitmap *verticalDots;

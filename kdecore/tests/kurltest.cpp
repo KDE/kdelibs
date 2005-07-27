@@ -9,6 +9,7 @@
 #include <kcharsets.h>
 #include <qtextcodec.h>
 #include <qdatastream.h>
+#include <qmap.h>
 #include <assert.h>
 #include <kcmdlineargs.h>
 
@@ -135,7 +136,7 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::upURL()", url1.upURL().url(), "file:///opt/kde2/qt2/doc/html/");
 
-  url1 = KURL( QCString( "http://www.kde.org/foo.cgi?foo=bar" ) );
+  url1 = KURL( QByteArray( "http://www.kde.org/foo.cgi?foo=bar" ) );
   check("query", url1.query(), "?foo=bar" );
   url1.setQuery( "toto=titi&kde=rocks" );
   check("query", url1.query(), "?toto=titi&kde=rocks" );
@@ -262,7 +263,7 @@ int main(int argc, char *argv[])
   check("KURL::directory(false,false)", udir.directory(false,false), "/home/dfaure/");
   check("KURL::directory(true,false)", udir.directory(true,false), "/home/dfaure");
 
-  KURL u2( QCString("/home/dfaure/") );
+  KURL u2( Q3CString("/home/dfaure/") );
   printf("\n* URL is %s\n",u2.url().ascii());
   // not ignoring trailing slash
   check("KURL::directory(false,false)", u2.directory(false,false), "/home/dfaure/");
@@ -270,10 +271,23 @@ int main(int argc, char *argv[])
   // ignoring trailing slash
   check("KURL::directory(false,true)", u2.directory(false,true), "/home/");
   check("KURL::directory(true,true)", u2.directory(true,true), "/home");
+
+  // cleanPath() tests (before cd() since cd uses that)
+  u2.cleanPath();
+  check("cleanPath(false)", u2.url(), "file:///home/dfaure/");
+  u2.addPath( "/..//foo" );
+  check("addPath", u2.url(), "file:///home/dfaure/..//foo");
+  u2.cleanPath(false);
+  check("cleanPath()", u2.url(), "file:///home//foo");
+  u2.cleanPath(true);
+  check("cleanPath()", u2.url(), "file:///home/foo");
+
   u2.cd("..");
   check("KURL::cd(\"..\")", u2.url(), "file:///home");
   u2.cd("thomas");
   check("KURL::cd(\"thomas\")", u2.url(), "file:///home/thomas");
+  u2.cd("../");
+  check("KURL::cd(\"../\")", u2.url(), "file:///home/");
   u2.cd("/opt/kde/bin/");
   check("KURL::cd(\"/opt/kde/bin/\")", u2.url(), "file:///opt/kde/bin/");
   u2 = "ftp://ftp.kde.org/";
@@ -596,13 +610,13 @@ int main(int argc, char *argv[])
   waba1 = "http://[::ffff:129.144.52.38]:81?query";
   QByteArray buffer;
   {
-      QDataStream stream( buffer, IO_WriteOnly );
+      QDataStream stream( &buffer, QIODevice::WriteOnly );
       stream << origURL
              << KURL( "file:" ) // an invalid one
              << waba1; // the IPv6 one
   }
   {
-      QDataStream stream( buffer, IO_ReadOnly );
+      QDataStream stream( buffer );
       KURL restoredURL;
       stream >> restoredURL;
       check( "Streaming valid URL", origURL.url(), restoredURL.url() );

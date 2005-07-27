@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 
 */
 #ifndef __KDEDMODULE_H__
@@ -25,6 +25,7 @@
 #include <qobject.h>
 #include <dcopobject.h>
 #include <ksharedptr.h>
+#include <Q3CString>
 
 class KDEDModulePrivate;
 class Kded;
@@ -64,7 +65,7 @@ public:
   /**
    * Create a DCOPObject named @p name
    */
-  KDEDModule(const QCString &name);
+  KDEDModule(const DCOPCString &name);
   
   virtual ~KDEDModule();
   
@@ -91,24 +92,24 @@ public:
    * Any previous object inserted with the same values for @p app 
    * and @p key will be removed.
    */
-  void insert(const QCString &app, const QCString &key, KShared *obj);
+  void insert(const DCOPCString &app, const DCOPCString &key, KShared *obj);
 
   /**
    * Lookup object indexed with @p app and @p key
    */
-  KShared *find(const QCString &app, const QCString &key);
+  KShared *find(const DCOPCString &app, const DCOPCString &key);
   
   /**
    * remove object indexed with @p app and @p key.
    * The object will be deleted when it is no more referenced.
    */
-  void remove(const QCString &app, const QCString &key);
+  void remove(const DCOPCString &app, const DCOPCString &key);
 
   /**
    * remove all objects indexed with @p app. 
    * The objects will be deleted when they are no more referenced.
    */
-  void removeAll(const QCString &app);
+  void removeAll(const DCOPCString &app);
 
   /**
    * Returns whether a certain mainwindow has registered itself with KDED

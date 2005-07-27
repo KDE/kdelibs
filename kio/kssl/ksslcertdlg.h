@@ -27,7 +27,7 @@
 class QWidget;
 class QCheckBox;
 class QRadioButton;
-class QListView;
+class Q3ListView;
 class QPushButton;
 
 /**
@@ -113,7 +113,7 @@ private:
 	KSSLCertDlgPrivate *d;
 	QCheckBox *_save;
 	QRadioButton *_send, *_dont;
-	QListView *_certs;
+	Q3ListView *_certs;
 	QPushButton *_ok;
 	QString _host;
 };

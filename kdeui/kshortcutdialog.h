@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef _KSHORTCUTDIALOG_H_
@@ -23,7 +23,7 @@
 #include "kdialogbase.h"
 #include "kshortcut.h"
 
-class QVBox;
+class Q3VBox;
 class KPushButton;
 class KShortcutDialogSimple;
 class KShortcutDialogAdvanced;
@@ -61,7 +61,7 @@ private:
 	uint m_mod;
 	KShortcutDialogSimple *m_simple;
 	KShortcutDialogAdvanced *m_adv;
-	QVBox *m_stack;
+	Q3VBox *m_stack;
 	
 	void updateShortcutDisplay();
 	//void displayMods();

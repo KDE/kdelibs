@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <qpainter.h>
@@ -25,27 +25,27 @@ static const char * const text_mime_string = "text/plain";
 
 KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource,
 			const char *name)
-     : QStoredDrag( color_mime_string, dragsource, name)
+     : Q3StoredDrag( color_mime_string, dragsource, name)
 {
      setColor( color);
 }
 
 KColorDrag::KColorDrag( QWidget *dragsource, const char *name)
-     : QStoredDrag( color_mime_string, dragsource, name)
+     : Q3StoredDrag( color_mime_string, dragsource, name)
 {
-     setColor( white );
+     setColor( Qt::white );
 }
 
 void
 KColorDrag::setColor( const QColor &color)
 {
-     QColorDrag tmp(color, 0, 0);
+     Q3ColorDrag tmp(color, 0, 0);
      setEncodedData(tmp.encodedData(color_mime_string));
 
      QPixmap colorpix( 25, 20);
      colorpix.fill( color);
      QPainter p( &colorpix );
-     p.setPen( black );
+     p.setPen( Qt::black );
      p.drawRect(0,0,25,20);
      p.end();
      setPixmap(colorpix, QPoint(-5,-7));
@@ -56,7 +56,7 @@ const char *KColorDrag::format(int i) const
      if (i==1)
         return text_mime_string;
      else
-        return QStoredDrag::format(i);
+        return Q3StoredDrag::format(i);
 }
 
 QByteArray KColorDrag::encodedData ( const char * m ) const
@@ -64,12 +64,12 @@ QByteArray KColorDrag::encodedData ( const char * m ) const
      if (!qstrcmp(m, text_mime_string) )
      {
         QColor color;
-        QColorDrag::decode(const_cast<KColorDrag *>(this), color);
-        QCString result = color.name().latin1();
-        ((QByteArray&)result).resize(result.length());
+        Q3ColorDrag::decode(const_cast<KColorDrag *>(this), color);
+        QByteArray result = color.name().latin1();
+        result.resize(result.length());
         return result;
      }
-     return QStoredDrag::encodedData(m);
+     return Q3StoredDrag::encodedData(m);
 }
 
 bool
@@ -88,7 +88,7 @@ KColorDrag::canDecode( QMimeSource *e)
 bool
 KColorDrag::decode( QMimeSource *e, QColor &color)
 {
-     if (QColorDrag::decode(e, color))
+     if (Q3ColorDrag::decode(e, color))
         return true;
 
      QByteArray data = e->encodedData( text_mime_string);

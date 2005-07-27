@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kprinterimpl.h"
@@ -180,10 +180,10 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 {
 	// force printer listing if not done yet (or reload needed)
-	QPtrList<KMPrinter>	*printers = KMFactory::self()->manager()->printerListComplete(false);
+	Q3PtrList<KMPrinter>	*printers = KMFactory::self()->manager()->printerListComplete(false);
 	if (printers)
 	{
-		QPtrListIterator<KMPrinter>	it(*printers);
+		Q3PtrListIterator<KMPrinter>	it(*printers);
 		for (;it.current();++it)
 		{
 			initEditPrinter(it.current());
@@ -204,8 +204,8 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	}
 
 	QByteArray data, replyData;
-	QCString replyType;
-	QDataStream arg( data, IO_WriteOnly );
+	DCOPCString replyType;
+	QDataStream arg( &data, QIODevice::WriteOnly );
 	arg << cmd;
 	arg << files;
 	arg << removeflag;
@@ -213,7 +213,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	{
 		if (replyType == "int")
 		{
-			QDataStream _reply_stream( replyData, IO_ReadOnly );
+			QDataStream _reply_stream( replyData );
 			_reply_stream >> result;
 		}
 	}
@@ -239,7 +239,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	}
 
 	QByteArray data;
-	QDataStream arg( data, IO_WriteOnly );
+	QDataStream arg( &data, QIODevice::WriteOnly );
 	arg << message;
 	arg << (int)getpid();
 	arg << kapp->caption();
@@ -347,7 +347,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 
 	QString	filtercmd;
 	QStringList	inputMimeTypes;
-	for (uint i=0;i<flist.count();i++)
+	for (int i=0;i<flist.count();i++)
 	{
 		KXmlCommand	*filter = KXmlCommandManager::self()->loadCommand(flist[i]);
 		if (!filter)
@@ -586,7 +586,7 @@ void KPrinterImpl::loadAppOptions()
 	KConfig	*conf = KGlobal::config();
 	conf->setGroup("KPrinter Settings");
 	QStringList	opts = conf->readListEntry("ApplicationOptions");
-	for (uint i=0; i<opts.count(); i+=2)
+	for (int i=0; i<opts.count(); i+=2)
 		if (opts[i].startsWith("app-"))
 			m_options[opts[i]] = opts[i+1];
 }

@@ -27,7 +27,7 @@
 #include "kjavaprocess.h"
 #include <qobject.h>
 #include <qmap.h>
-
+#include <QSize>
 
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
@@ -154,6 +154,7 @@ protected slots:
     void slotJavaRequest( const QByteArray& qb );
     void checkShutdown();
     void timerEvent(QTimerEvent *);
+    void killTimers();
 
 private:
     KJavaAppletServerPrivate* d;
@@ -168,13 +169,13 @@ public:
     PermissionDialog( QWidget* );
     ~PermissionDialog();
 
-    QCString exec( const QString & cert, const QString & perm );
+    Q3CString exec( const QString & cert, const QString & perm );
 
 private slots:
      void clicked();
 
 private:
-    QCString m_button;
+    Q3CString m_button;
 };
 
 #endif // KJAVAAPPLETSERVER_H

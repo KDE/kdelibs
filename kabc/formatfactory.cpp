@@ -26,7 +26,7 @@
 
 #include <qfile.h>
 
-#include "vcardformatplugin.h"
+#include "vcardformat.h"
 
 #include "formatfactory.h"
 
@@ -90,7 +90,7 @@ QStringList FormatFactory::formats()
   // make sure 'vcard' is the first entry
   retval << "vcard";
 
-  QDictIterator<FormatInfo> it( mFormatList );
+  Q3DictIterator<FormatInfo> it( mFormatList );
   for ( ; it.current(); ++it )
     if ( it.currentKey() != "vcard" )
       retval << it.currentKey();
@@ -106,15 +106,15 @@ FormatInfo *FormatFactory::info( const QString &type )
     return mFormatList[ type ];
 }
 
-FormatPlugin *FormatFactory::format( const QString& type )
+Format *FormatFactory::format( const QString& type )
 {
-  FormatPlugin *format = 0;
+  Format *format = 0;
 
   if ( type.isEmpty() )
     return 0;
 
   if ( type == "vcard" ) {
-    format = new VCardFormatPlugin;
+    format = new VCardFormat;
     format->setType( type );
     format->setNameLabel( i18n( "vCard" ) );
     format->setDescriptionLabel( i18n( "vCard Format" ) );
@@ -133,7 +133,7 @@ FormatPlugin *FormatFactory::format( const QString& type )
   void *format_func = library->symbol( "format" );
 
   if ( format_func ) {
-    format = ((FormatPlugin* (*)())format_func)();
+    format = ((Format* (*)())format_func)();
     format->setType( type );
     format->setNameLabel( fi->nameLabel );
     format->setDescriptionLabel( fi->descriptionLabel );

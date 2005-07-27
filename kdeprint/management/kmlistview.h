@@ -13,27 +13,27 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMLISTVIEW_H
 #define KMLISTVIEW_H
 
-#include <qlistview.h>
-#include <qptrlist.h>
+#include <q3listview.h>
+#include <q3ptrlist.h>
 
 class KMListViewItem;
 class KMPrinter;
 
-class KMListView : public QListView
+class KMListView : public Q3ListView
 {
 	Q_OBJECT
 public:
 	KMListView(QWidget *parent = 0, const char *name = 0);
 	~KMListView();
 
-	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinterList(Q3PtrList<KMPrinter> *list);
 	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 
@@ -42,9 +42,9 @@ signals:
 	void printerSelected(const QString&);
 
 protected slots:
-	void slotRightButtonClicked(QListViewItem*, const QPoint&, int);
+	void slotRightButtonClicked(Q3ListViewItem*, const QPoint&, int);
 	void slotSelectionChanged();
-	void slotOnItem(QListViewItem*);
+	void slotOnItem(Q3ListViewItem*);
 	void slotOnViewport();
 
 protected:
@@ -52,7 +52,7 @@ protected:
 	KMListViewItem* findItem(const QString&);
 
 private:
-	QPtrList<KMListViewItem>	m_items;
+	Q3PtrList<KMListViewItem>	m_items;
 	KMListViewItem		*m_root, *m_classes, *m_printers, *m_specials;
 };
 

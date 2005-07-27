@@ -26,7 +26,7 @@
 #include "rendering/render_image.h"
 #include "misc/loader.h"
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qtimer.h>
 
 #include <kio/job.h>
@@ -62,10 +62,10 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
     : KParts::ReadOnlyPart( parent, name ), m_image( 0 )
 {
-    KHTMLPart* parentPart = ::qt_cast<KHTMLPart *>( parent );
+    KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    QVBox *box = new QVBox( parentWidget, widgetName );
+    Q3VBox *box = new Q3VBox( parentWidget, widgetName );
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
     m_khtml->setAutoloadImages( true );
@@ -103,7 +103,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     // forward important signals from the khtml part
 
     // forward opening requests to parent frame (if existing)
-    KHTMLPart *p = ::qt_cast<KHTMLPart *>(parent);
+    KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
     connect(m_khtml->browserExtension(), SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)),
     		be, SIGNAL(openURLRequestDelayed(const KURL &, const KParts::URLArgs &)));
@@ -186,7 +186,7 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
     if ( !m_image || o != m_image )
         return;
 
-    const QPixmap &pix = m_image->pixmap();
+    //const QPixmap &pix = m_image->pixmap();
     QString caption;
 
     KMimeType::Ptr mimeType;
@@ -195,16 +195,16 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
 
     if ( mimeType ) {
         if (m_image && !m_image->suggestedTitle().isEmpty()) {
-            caption = i18n( "%1 (%2 - %3x%4 Pixels)" ).arg( m_image->suggestedTitle(), mimeType->comment() ).arg( pix.width() ).arg( pix.height() );
+            caption = i18n( "%1 (%2 - %3x%4 Pixels)" ).arg( m_image->suggestedTitle(), mimeType->comment() ).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
         } else {
             caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
-                .arg( pix.width() ).arg( pix.height() );
+                .arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
         }
     } else {
         if (m_image && !m_image->suggestedTitle().isEmpty()) {
-            caption = i18n( "%1 (%2x%3 Pixels)" ).arg(m_image->suggestedTitle()).arg( pix.width() ).arg( pix.height() );
+            caption = i18n( "%1 (%2x%3 Pixels)" ).arg(m_image->suggestedTitle()).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
         } else {
-            caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
+            caption = i18n( "Image - %1x%2 Pixels" ).arg( m_image->pixmap_size().width() ).arg( m_image->pixmap_size().height() );
         }
     }
 
@@ -303,7 +303,7 @@ bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
       case QEvent::Drop: {
         // find out if this part is embedded in a frame, and send the
 	// event to its outside widget
-	KHTMLPart *p = ::qt_cast<KHTMLPart *>(parent());
+	KHTMLPart *p = qobject_cast<KHTMLPart*>(parent());
 	if (p)
 	    return QApplication::sendEvent(p->widget(), e);
         // otherwise simply forward all dnd events to the part widget,

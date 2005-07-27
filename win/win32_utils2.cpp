@@ -56,16 +56,16 @@ bool showWin32FilePropertyDialog(const QString& fileName)
 }
 
 KDEWIN32_EXPORT
-QCString getWin32LocaleName()
+Q3CString getWin32LocaleName()
 {
 	bool ok;
 	QString localeNumber = getWin32RegistryValue(HKEY_CURRENT_USER, "Control Panel\\International", 
 		"Locale", &ok);
 	if (!ok)
-		return QCString();
+		return Q3CString();
 	QString localeName = getWin32RegistryValue(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layout\\DosKeybCodes", 
 		localeNumber, &ok);
 	if (!ok)
-		return QCString();
+		return Q3CString();
 	return localeName.latin1();
 }

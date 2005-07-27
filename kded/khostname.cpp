@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <sys/types.h>
@@ -53,14 +53,14 @@ public:
 
    void changeX();
    void changeDcop();
-   void changeStdDirs(const QCString &type);
+   void changeStdDirs(const QByteArray &type);
    void changeSessionManager();
 
 protected:
-   QCString oldName;
-   QCString newName;
-   QCString display;
-   QCString home;
+   QByteArray oldName;
+   QByteArray newName;
+   QString display;
+   QByteArray home;
 };
 
 KHostName::KHostName()
@@ -90,19 +90,19 @@ KHostName::KHostName()
    }
 }
 
-static QCStringList split(const QCString &str)
+static QList<QByteArray> split(const QByteArray &str)
 {
    const char *s = str.data();
-   QCStringList result;
+   QList<QByteArray> result;
    while (*s)
    {
       const char *i = strchr(s, ' ');
       if (!i)
       {
-         result.append(QCString(s));
+         result.append(QByteArray(s));
          return result;
       }
-      result.append(QCString(s, i-s+1));
+      result.append(QByteArray(s, i-s+1));
       s = i;
       while (*s == ' ') s++;
    }
@@ -118,12 +118,12 @@ void KHostName::changeX()
       fprintf(stderr, "Warning: Can't run xauth.\n");
       return;   
    }
-   QCStringList lines;
+   QList<QByteArray> lines;
    {
       char buf[1024+1];
       while (!feof(xFile))
       {
-         QCString line = fgets(buf, 1024, xFile);
+         QByteArray line = fgets(buf, 1024, xFile);
          if (line.length())
             line.truncate(line.length()-1); // Strip LF.
          if (!line.isEmpty())
@@ -132,21 +132,20 @@ void KHostName::changeX()
    }
    pclose(xFile);
 
-   for(QCStringList::ConstIterator it = lines.begin();
-      it != lines.end(); ++it)
+   foreach ( QByteArray it, lines )
    {
-      QCStringList entries = split(*it);
+      QList<QByteArray> entries = split(it);
       if (entries.count() != 3)
          continue;
 
-      QCString netId = entries[0];
-      QCString authName = entries[1];
-      QCString authKey = entries[2];
+      QByteArray netId = entries[0];
+      QByteArray authName = entries[1];
+      QByteArray authKey = entries[2];
 
       int i = netId.findRev(':');
       if (i == -1)
          continue;
-      QCString netDisplay = netId.mid(i);
+      QByteArray netDisplay = netId.mid(i);
       if (netDisplay != display)
          continue;
 
@@ -154,7 +153,7 @@ void KHostName::changeX()
       if (i == -1)
          continue;
 
-      QCString newNetId = newName+netId.mid(i);
+      QByteArray newNetId = newName+netId.mid(i);
 
       cmd = "xauth remove "+KProcess::quote(netId);
       system(QFile::encodeName(cmd));
@@ -170,9 +169,9 @@ void KHostName::changeX()
 
 void KHostName::changeDcop()
 {
-   QCString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
-   QCString fname = DCOPClient::dcopServerFile(oldName);
-   QCString origFName = fname;
+   DCOPCString origFNameOld = DCOPClient::dcopServerFileOld(oldName);
+   DCOPCString fname = DCOPClient::dcopServerFile(oldName);
+   DCOPCString origFName = fname;
    FILE *dcopFile = fopen(fname.data(), "r");
    if (!dcopFile)
    {
@@ -180,7 +179,7 @@ void KHostName::changeDcop()
       return;
    }
 
-   QCString line1, line2;
+   QByteArray line1, line2;
    {
      char buf[1024+1];
      line1 = fgets(buf, 1024, dcopFile);
@@ -193,7 +192,7 @@ void KHostName::changeDcop()
    }
    fclose(dcopFile);
 
-   QCString oldNetId = line1;
+   QByteArray oldNetId = line1;
 
    if (!newName.isEmpty())
    {
@@ -204,7 +203,7 @@ void KHostName::changeDcop()
          return;
       }
       line1 = "local/"+newName+line1.mid(i);
-      QCString newNetId = line1;
+      QByteArray newNetId = line1;
       fname = DCOPClient::dcopServerFile(newName);
       unlink(fname.data());
       dcopFile = fopen(fname.data(), "w");
@@ -221,7 +220,7 @@ void KHostName::changeDcop()
 
       fclose(dcopFile);
 
-      QCString compatLink = DCOPClient::dcopServerFileOld(newName);
+      DCOPCString compatLink = DCOPClient::dcopServerFileOld(newName);
       ::symlink(fname.data(), compatLink.data()); // Compatibility link
 
       // Update .ICEauthority
@@ -232,12 +231,12 @@ void KHostName::changeDcop()
          fprintf(stderr, "Warning: Can't run iceauth.\n");
          return;   
       }
-      QCStringList lines;
+      QList<QByteArray> lines;
       {
          char buf[1024+1];
          while (!feof(iceFile))
          {
-            QCString line = fgets(buf, 1024, iceFile);
+            QByteArray line = fgets(buf, 1024, iceFile);
             if (line.length())
                line.truncate(line.length()-1); // Strip LF.
             if (!line.isEmpty())
@@ -246,17 +245,16 @@ void KHostName::changeDcop()
       }
       pclose(iceFile);
 
-      for(QCStringList::ConstIterator it = lines.begin();
-         it != lines.end(); ++it)
+	  foreach ( QByteArray it, lines )
       {
-         QCStringList entries = split(*it);
+         QList<QByteArray> entries = split(it);
          if (entries.count() != 5)
             continue;
 
-         QCString protName = entries[0];
-         QCString netId = entries[2];
-         QCString authName = entries[3];
-         QCString authKey = entries[4];
+         QByteArray protName = entries[0];
+         QByteArray netId = entries[2];
+         QByteArray authName = entries[3];
+         QByteArray authKey = entries[4];
          if (netId != oldNetId)
             continue;
 
@@ -282,11 +280,11 @@ void KHostName::changeDcop()
    }
 }
 
-void KHostName::changeStdDirs(const QCString &type)
+void KHostName::changeStdDirs(const QByteArray &type)
 {
    // We make links to the old dirs cause we can't delete the old dirs.
-   QCString oldDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(oldName));
-   QCString newDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(type).arg(newName));
+   QByteArray oldDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(QString( type )).arg(QString( oldName )));
+   QByteArray newDir = QFile::encodeName(QString("%1%2-%3").arg(KGlobal::dirs()->localkdedir()).arg(QString( type )).arg(QString( newName )));
 
    KDE_struct_stat st_buf;
 
@@ -320,7 +318,7 @@ void KHostName::changeStdDirs(const QCString &type)
 
 void KHostName::changeSessionManager()
 {
-   QCString sm = ::getenv("SESSION_MANAGER");
+   DCOPCString sm = ::getenv("SESSION_MANAGER");
    if (sm.isEmpty())
    {
       fprintf(stderr, "Warning: No session management specified.\n");
@@ -333,9 +331,9 @@ void KHostName::changeSessionManager()
       return;
    }
    sm = "local/"+newName+sm.mid(i);
-   QCString name = "SESSION_MANAGER";
+   DCOPCString name = "SESSION_MANAGER";
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(&params, QIODevice::WriteOnly);
    stream << name << sm;
    DCOPClient *client = new DCOPClient();
    if (!client->attach())
@@ -344,7 +342,7 @@ void KHostName::changeSessionManager()
       delete client;
       return;
    }
-   QCString launcher = KApplication::launcher();
+   DCOPCString launcher = KApplication::launcher();
    client->send(launcher, launcher, "setLaunchEnv(QCString,QCString)", params);
    delete client;
 }

@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include "kpixmapregionselectordialog.h"
@@ -27,7 +27,7 @@
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
      const char *name, bool modal ) : KDialogBase(parent, name, modal, i18n("Select Region of Image"), Help|Ok|Cancel, Ok, true )
 {
-  QVBox *vbox=new QVBox(this);
+  Q3VBox *vbox=new Q3VBox(this);
   new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);
   m_pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);
 

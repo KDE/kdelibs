@@ -114,7 +114,7 @@ QStringList KConfig::groupList() const
   {
     while(aIt.key().mKey.isEmpty())
     {
-      QCString group = aIt.key().mGroup;
+      QByteArray group = aIt.key().mGroup;
       ++aIt;
       while (true)
       {
@@ -140,7 +140,7 @@ QStringList KConfig::groupList() const
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
-  QCString pGroup_utf = pGroup.utf8();
+  QByteArray pGroup_utf = pGroup.utf8();
   KEntryKey groupKey( pGroup_utf, 0 );
   QMap<QString, QString> tmpMap;
 
@@ -148,7 +148,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   if (aIt == aEntryMap.end())
      return tmpMap;
   ++aIt; // advance past special group entry marker
-  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
   {
     // Leave the default values out && leave deleted entries out
     if (!aIt.key().bDefault && !(*aIt).bDeleted)
@@ -177,21 +177,15 @@ void KConfig::reparseConfiguration()
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
-  QCString pGroup_utf = pGroup.utf8();
+  QByteArray pGroup_utf = pGroup.utf8();
   KEntry aEntry;
   KEntryMapConstIterator aIt;
   KEntryKey aKey(pGroup_utf, 0);
   KEntryMap tmpEntryMap;
 
   aIt = aEntryMap.find(aKey);
-  if (aIt == aEntryMap.end()) {
-    // the special group key is not in the map,
-    // so it must be an invalid group.  Return
-    // an empty map.
-    return tmpEntryMap;
-  }
-  // we now have a pointer to the nodes we want to copy.
-  for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+  //Copy any matching nodes.
+  for (; aIt != aEntryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
   {
     tmpEntryMap.insert(aIt.key(), *aIt);
   }
@@ -251,7 +245,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   }
 }
 
-bool KConfig::internalHasGroup(const QCString &group) const
+bool KConfig::internalHasGroup(const QByteArray &group) const
 {
   KEntryKey groupKey( group, 0);
 
@@ -318,7 +312,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
      for (QMap<QString,QString>::Iterator it2  = map.begin();
           it2 != map.end(); ++it2)
      {
-        config->writeEntry(it2.key(), it2.data());
+        config->writeEntry(it2.key(), it2.value());
      }
 
   }
@@ -328,14 +322,14 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
-static KStaticDeleter< QValueList<KSharedConfig*> > sd;
-QValueList<KSharedConfig*> *KSharedConfig::s_list = 0;
+static KStaticDeleter< QList<KSharedConfig*> > sd;
+QList<KSharedConfig*> *KSharedConfig::s_list = 0;
 
 KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
 {
   if (s_list)
   {
-     for(QValueList<KSharedConfig*>::ConstIterator it = s_list->begin();
+     for(QList<KSharedConfig*>::ConstIterator it = s_list->begin();
          it != s_list->end(); ++it)
      {
         if ((*it)->backEnd->fileName() == fileName &&
@@ -352,7 +346,7 @@ KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekd
 {
   if (!s_list)
   {
-    sd.setObject(s_list, new QValueList<KSharedConfig*>);
+    sd.setObject(s_list, new QList<KSharedConfig*>);
   }
 
   s_list->append(this);

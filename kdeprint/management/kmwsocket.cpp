@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwsocket.h"
@@ -23,7 +23,7 @@
 #include "kmprinter.h"
 
 #include <klistview.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <kmessagebox.h>
@@ -42,7 +42,7 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 	m_list = new KListView(this);
 	m_list->addColumn("");
 	m_list->header()->hide();
-	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	m_list->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_list->setLineWidth(1);
 
 	QLabel	*l1 = new QLabel(i18n("&Printer address:"),this);
@@ -59,7 +59,7 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(40);
 
-	connect(m_list,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
+	connect(m_list,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));
 	connect( m_scanner, SIGNAL( scanStarted() ), SLOT( slotScanStarted() ) );
 	connect( m_scanner, SIGNAL( scanFinished() ), SLOT( slotScanFinished() ) );
 	connect( m_scanner, SIGNAL( scanStarted() ), parent, SLOT( disableWizard() ) );
@@ -126,8 +126,8 @@ void KMWSocket::slotScanStarted()
 
 void KMWSocket::slotScanFinished()
 {
-	const QPtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
-	QPtrListIterator<NetworkScanner::SocketInfo>	it(*list);
+	const Q3PtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
+	Q3PtrListIterator<NetworkScanner::SocketInfo>	it(*list);
 	for (;it.current();++it)
 	{
 		QString	name;
@@ -135,12 +135,12 @@ void KMWSocket::slotScanFinished()
 			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
 		else
 			name = it.current()->Name;
-		QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
+		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
 		item->setPixmap(0,SmallIcon("kdeprint_printer"));
 	}
 }
 
-void KMWSocket::slotPrinterSelected(QListViewItem *item)
+void KMWSocket::slotPrinterSelected(Q3ListViewItem *item)
 {
 	if (!item) return;
 	m_printer->setText(item->text(1));

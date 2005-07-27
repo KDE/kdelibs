@@ -14,12 +14,13 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
+#include <qcheckbox.h>
 #include <qlayout.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpainter.h>
 #include <qdialog.h>
 #include <qstyle.h>
@@ -28,7 +29,9 @@
 #include <qtooltip.h>
 #include <qfont.h>
 #include <qvalidator.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
+#include <QMenuItem>
+#include <QStyleOptionToolButton>
 
 #include "kdatepicker.h"
 #include <kglobal.h>
@@ -41,6 +44,7 @@
 #include <kdebug.h>
 #include <knotifyclient.h>
 #include <kcalendarsystem.h>
+#include <QKeyEvent>
 
 #include "kdatetbl.h"
 #include "kdatepicker.moc"
@@ -96,19 +100,19 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
 }
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  : QFrame(parent,name)
+  : Q3Frame(parent,name)
 {
   init( dt );
 }
 
-KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, WFlags f)
-  : QFrame(parent,name, f)
+KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, Qt::WFlags f)
+  : Q3Frame(parent,name, f)
 {
   init( dt );
 }
 
 KDatePicker::KDatePicker( QWidget *parent, const char *name )
-  : QFrame(parent,name)
+  : Q3Frame(parent,name)
 {
   init( QDate::currentDate() );
 }
@@ -222,8 +226,8 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
    if ( e->type() == QEvent::KeyPress ) {
       QKeyEvent *k = (QKeyEvent *)e;
 
-      if ( (k->key() == Qt::Key_Prior) ||
-           (k->key() == Qt::Key_Next)  ||
+      if ( (k->key() == Qt::Key_PageUp) ||
+           (k->key() == Qt::Key_PageDown)  ||
            (k->key() == Qt::Key_Up)    ||
            (k->key() == Qt::Key_Down) )
        {
@@ -232,7 +236,7 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
           return true; // eat event
        }
    }
-   return QFrame::eventFilter( o, e );
+   return Q3Frame::eventFilter( o, e );
 }
 
 void
@@ -358,12 +362,14 @@ KDatePicker::selectMonthClicked()
   QDate date = table->getDate();
   int i, month, months = calendar->monthsInYear(date);
 
-  QPopupMenu popup(selectMonth);
+  Q3PopupMenu popup(selectMonth);
 
   for (i = 1; i <= months; i++)
     popup.insertItem(calendar->monthName(i, calendar->year(date)), i);
 
-  popup.setActiveItem(calendar->month(date) - 1);
+  QMenuItem *item = popup.findItem (calendar->month(date) - 1);
+  if (item)
+    popup.setActiveAction(item);
 
   if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // canceled
 
@@ -382,7 +388,7 @@ KDatePicker::selectYearClicked()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  if (selectYear->state() == QButton::Off)
+  if (!selectYear->isChecked ())
   {
     return;
   }
@@ -498,9 +504,20 @@ KDatePicker::setFontSize(int s)
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }
 
-  QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton,
-                                               selectMonth,
-                                               maxMonthRect);
+  QStyleOptionToolButton opt;
+  
+  // stolen from KToolBarButton
+  opt.init(this);
+  opt.font      = selectMonth->font();
+  opt.icon      = selectMonth->icon();
+  opt.text      = selectMonth->textLabel();
+  opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
+  opt.subControls       = QStyle::SC_All;
+  opt.activeSubControls = 0; //### FIXME: !!
+  
+  QSize metricBound = style()->sizeFromContents(QStyle::CT_ToolButton,
+                                               &opt, 
+                                               maxMonthRect, selectMonth);
   selectMonth->setMinimumSize(metricBound);
 
   table->setFontSize(s);

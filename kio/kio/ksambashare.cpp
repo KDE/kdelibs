@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
@@ -36,7 +36,7 @@ public:
   bool findSmbConf();
   bool load();
   
-  QDict<bool> sharedPaths;
+  Q3Dict<bool> sharedPaths;
   QString smbConf;
 };
 
@@ -103,7 +103,7 @@ bool KSambaSharePrivate::readSmbConf() {
 
   kdDebug(7000) << "KSambaShare::readSmbConf " << smbConf << endl;
   
-  if (!f.open(IO_ReadOnly)) {
+  if (!f.open(QIODevice::ReadOnly)) {
     kdError() << "KSambaShare: Could not open " << smbConf << endl;
     return false;
   }
@@ -115,7 +115,7 @@ bool KSambaSharePrivate::readSmbConf() {
   bool continuedLine = false; // is true if the line before ended with a backslash
   QString completeLine;
 
-  while (!s.eof())
+  while (!s.atEnd())
   {
     QString currentLine = s.readLine().stripWhiteSpace();
 
@@ -127,7 +127,7 @@ bool KSambaSharePrivate::readSmbConf() {
       completeLine = currentLine;
 
     // is the line continued in the next line ?
-    if ( completeLine[completeLine.length()-1] == '\\' )
+    if ( !completeLine.isEmpty() && completeLine[completeLine.length()-1] == '\\' )
     {
       continuedLine = true;
       // remove the ending backslash
@@ -208,7 +208,7 @@ bool KSambaShare::isDirectoryShared( const QString & path ) const {
 
 QStringList KSambaShare::sharedDirectories() const {
   QStringList result;
-  QDictIterator<bool> it(d->sharedPaths);
+  Q3DictIterator<bool> it(d->sharedPaths);
   for( ; it.current(); ++it )
       result << it.currentKey();
       

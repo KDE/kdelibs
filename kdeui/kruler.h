@@ -14,15 +14,16 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KRULER_H
 #define KRULER_H
 
-#include <qframe.h>
-#include <qrangecontrol.h>
+#include <QAbstractSlider>
+#include <QStylePainter>
+#include <q3rangecontrol.h>
 #include <kdelibs_export.h>
 
 /**
@@ -68,12 +69,9 @@
  * @short A ruler widget.
  * @author Jörg Habenicht
  */
-class KDEUI_EXPORT KRuler : public QFrame
+class KDEUI_EXPORT KRuler : public QAbstractSlider
 {
   Q_OBJECT
-  Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
-  Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
-  Q_PROPERTY( int value READ value WRITE setValue )
   Q_PROPERTY( bool showTinyMarks READ showTinyMarks WRITE setShowTinyMarks )
   Q_PROPERTY( bool showLittleMarks READ showLittleMarks WRITE setShowLittleMarks )
   Q_PROPERTY( bool showMediumMarks READ showMediumMarks WRITE setShowMediumMarks )
@@ -125,8 +123,8 @@ public:
    * @param f          Will be handed over to QFrame.
    *
    **/
-  KRuler(Orientation orient, QWidget *parent=0, const char *name=0,
-	 WFlags f=0);
+  KRuler(Qt::Orientation orient, QWidget *parent=0, const char *name=0,
+	 Qt::WFlags f=0);
 
   /**
    * Constructs a ruler with orientation @p orient and initial width @p widgetWidth.
@@ -143,8 +141,8 @@ public:
    * @param f           Will be handed over to QFrame.
    *
    */
-  KRuler(Orientation orient, int widgetWidth, QWidget *parent=0,
-	 const char *name=0, WFlags f=0);
+  KRuler(Qt::Orientation orient, int widgetWidth, QWidget *parent=0,
+	 const char *name=0, Qt::WFlags f=0);
 
   /**
    * Destructor.
@@ -158,12 +156,12 @@ public:
    * to the main event loop.
    *
    **/
-  void setMinValue(int);
+  void setMinValue(int) KDE_DEPRECATED;
 
   /**
    * Returns the minimal value of the ruler pointer.
    **/
-  inline int minValue() const;
+  inline int minValue() const KDE_DEPRECATED;
 
   /**
    * Sets the maximum value of the ruler pointer (default is 100).
@@ -171,31 +169,13 @@ public:
    * This method calls update() so that the widget is painted after leaving
    * to the main event loop.
    */
-  void setMaxValue(int);
+  void setMaxValue(int) KDE_DEPRECATED;
 
   /**
    * Returns the maximal value of the ruler pointer.
    */
-  inline int maxValue() const;
+  inline int maxValue() const KDE_DEPRECATED;
 
-  /**
-   * Sets minimum and maximum values of the ruler pointer.
-   *
-   * This method calls update() so that the widget is painted after leaving
-   * to the main event loop.
-   */
-  void setRange(int min, int max);
-
-  /**
-   * Sets the value of the ruler pointer.
-   *
-   * The value is indicated by painting the ruler pointer at the
-   * corresponding position.
-   * This method calls update() so that the widget is painted after leaving
-   * to the main event loop.
-   */
-  void setValue(int);
-  inline int value() const;
 
   /**
    * Sets the distance between tiny marks.
@@ -271,24 +251,11 @@ public:
   void setShowPointer(bool);
   bool showPointer() const;
 
-  //#### KDE4: The next 3 need to go.
-  /**
-   * @deprecated
-   * This method has no effect other than an update. Do not use.
-   **/
-  void setValuePerLittleMark(int) KDE_DEPRECATED;
 
-  /**
-   * @deprecated
-   * This method has no effect other than an update. Do not use.
-   **/
-  void setValuePerMediumMark(int) KDE_DEPRECATED;
+  void setFrameStyle(int) {
+	#warning implement me (jowenn)
+  }
 
-  /**
-   * @deprecated
-   * This method has no effect other than an update. Do not use.
-   */
-  void setValuePerBigMark(int) KDE_DEPRECATED;
 
   /**
    * Show/hide number values of the little marks.
@@ -443,13 +410,13 @@ public slots:
   void slotEndOffset(int);
 
 protected:
-  virtual void drawContents(QPainter *);
+  virtual void paintEvent(QPaintEvent *);
 
 private:
-  void init();
+  void init(const char *name);
 
-  QRangeControl range;
-  Orientation dir;
+  Q3RangeControl range;
+  Qt::Orientation dir;
   int tmDist;
   int lmDist;
   int mmDist;
@@ -484,15 +451,12 @@ private:
 
 int
 KRuler::minValue() const
-{ return range.minValue(); }
+{ return minimum(); }
 
 int
 KRuler::maxValue() const
-{ return range.maxValue(); }
+{ return maximum(); }
 
-int
-KRuler::value() const
-{ return range.value(); }
 
 int
 KRuler::tinyMarkDistance() const

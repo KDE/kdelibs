@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwizard.h"
@@ -25,7 +25,7 @@
 
 #include <kpushbutton.h>
 #include <qlabel.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <klocale.h>
@@ -60,7 +60,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 
 	m_pagepool.setAutoDelete(false);
 
-	m_stack = new QWidgetStack(this);
+	m_stack = new Q3WidgetStack(this);
 	m_next = new KPushButton(i18n("&Next >"), this);
 	m_next->setDefault(true);
 	m_prev = new KPushButton(i18n("< &Back"), this);

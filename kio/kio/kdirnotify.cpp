@@ -23,7 +23,7 @@
 int KDirNotify::s_serial = 0;
 
 KDirNotify::KDirNotify()
-  :  DCOPObject( QCString().sprintf("KDirNotify-%d", ++s_serial) )
+  :  DCOPObject( Q3CString().sprintf("KDirNotify-%d", ++s_serial) )
 {
    connectDCOPSignal(0, "KDirNotify", "FilesAdded(KURL)", "FilesAdded(KURL)", false);
    connectDCOPSignal(0, "KDirNotify", "FilesRemoved(KURL::List)", "FilesRemoved(KURL::List)", false);

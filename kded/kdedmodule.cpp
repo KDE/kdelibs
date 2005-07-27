@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 
 */
 
@@ -36,7 +36,7 @@ public:
   QTimer timer;
 };
 
-KDEDModule::KDEDModule(const QCString &name) : QObject(), DCOPObject(name)
+KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name)
 {
    d = new KDEDModulePrivate;
    d->objMap = 0;
@@ -62,7 +62,7 @@ void KDEDModule::resetIdle()
       d->timer.start(d->timeout, true);
 }
 
-void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
+void KDEDModule::insert(const DCOPCString &app, const DCOPCString &key, KShared *obj)
 {
    if (!d->objMap)
       d->objMap = new KDEDObjectMap;
@@ -80,7 +80,7 @@ void KDEDModule::insert(const QCString &app, const QCString &key, KShared *obj)
    resetIdle();
 }
 
-KShared * KDEDModule::find(const QCString &app, const QCString &key)
+KShared * KDEDModule::find(const DCOPCString &app, const DCOPCString &key)
 {
    if (!d->objMap)
       return 0;
@@ -93,7 +93,7 @@ KShared * KDEDModule::find(const QCString &app, const QCString &key)
    return it.data().data();
 }
   
-void KDEDModule::remove(const QCString &app, const QCString &key)
+void KDEDModule::remove(const DCOPCString &app, const DCOPCString &key)
 {
    if (!d->objMap)
       return;
@@ -103,7 +103,7 @@ void KDEDModule::remove(const QCString &app, const QCString &key)
    resetIdle();
 }
 
-void KDEDModule::removeAll(const QCString &app)
+void KDEDModule::removeAll(const DCOPCString &app)
 {
    if (!d->objMap)
       return;

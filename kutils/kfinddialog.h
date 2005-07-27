@@ -22,13 +22,14 @@
 #define KFINDDIALOG_H
 
 #include <kdialogbase.h>
+
 class KHistoryCombo;
 class QPushButton;
-class QPopupMenu;
+class Q3PopupMenu;
 class QGridLayout;
 class QLabel;
-class QGroupBox;
 class QCheckBox;
+class QGroupBox;
 
 /**
  * @brief A generic "find" dialog.
@@ -268,7 +269,7 @@ private:
     QCheckBox *m_caseSensitive;
     QCheckBox *m_findBackwards;
 
-    QPopupMenu *m_patterns;
+    Q3PopupMenu *m_patterns;
 
     // Our dirty little secret is that we also implement the "replace" dialog. But we
     // keep that fact hidden from all but our friends.
@@ -294,7 +295,7 @@ private:
 
     QCheckBox* m_promptOnReplace;
 
-    QPopupMenu *m_placeholders;
+    Q3PopupMenu *m_placeholders;
 
     // Binary compatible extensibility.
     class KFindDialogPrivate;

@@ -20,6 +20,8 @@
 
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kurl.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kmimetype.h>
 #include <kdebug.h>
@@ -42,7 +44,12 @@ extern "C"
 
 int kdemain(int argc, char **argv)
 {
-    KApplication app(argc, argv, "kio_metainfo", false, true);
+    KAboutData about("kio_metainfo", "kio_metainfo", "");
+    KCmdLineArgs::init(&about);
+
+    KApplication app(false,true);
+
+    //KApplication app(argc, argv, "kio_metainfo", false, true);
 
     if (argc != 4)
     {
@@ -56,7 +63,7 @@ int kdemain(int argc, char **argv)
     return 0;
 }
 
-MetaInfoProtocol::MetaInfoProtocol(const QCString &pool, const QCString &app)
+MetaInfoProtocol::MetaInfoProtocol(const Q3CString &pool, const Q3CString &app)
     : SlaveBase("metainfo", pool, app)
 {
 }
@@ -71,7 +78,7 @@ void MetaInfoProtocol::get(const KURL &url)
     KFileMetaInfo info(url.path(), mimeType);
     
     QByteArray arr;
-    QDataStream stream(arr, IO_WriteOnly);
+    QDataStream stream(&arr, QIODevice::WriteOnly);
 
     stream << info;
 
@@ -86,7 +93,7 @@ void MetaInfoProtocol::put(const KURL& url, int, bool, bool)
     
     QByteArray arr;
     readData(arr);
-    QDataStream stream(arr, IO_ReadOnly);
+    QDataStream stream(arr);
     
     stream >> info;
 

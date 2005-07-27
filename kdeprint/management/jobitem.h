@@ -13,25 +13,25 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef JOBITEM_H
 #define JOBITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include "kmobject.h"
 
 class KMJob;
 
-class JobItem : public QListViewItem, public KMObject
+class JobItem : public Q3ListViewItem, public KMObject
 {
 public:
-	JobItem(QListView *parent, KMJob *job = 0);
+	JobItem(Q3ListView *parent, KMJob *job = 0);
 	~JobItem();
 	void init(KMJob *job);
-	int compare(QListViewItem*, int, bool) const;
+	int compare(Q3ListViewItem*, int, bool) const;
 
 	int jobID() const;
 	QString jobUri() const;

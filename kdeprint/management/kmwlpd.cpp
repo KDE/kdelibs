@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <config.h>
@@ -28,7 +28,7 @@
 #include <kdebug.h>
 #include <qlineedit.h>
 #include <kmessagebox.h>
-#include <kextsock.h>
+#include <kstreamsocket.h>
 
 static bool checkLpdQueue(const char *host, const char *queue);
 
@@ -74,13 +74,13 @@ void KMWLpd::updatePrinter(KMPrinter *p)
 
 bool checkLpdQueue(const char *host, const char *queue)
 {
-	KExtendedSocket	sock(host, "printer", KExtendedSocket::streamSocket);
-	sock.setBlockingMode(true);
+	KNetwork::KStreamSocket	sock(host, "printer");
+	sock.setBlocking(true);
 	if (sock.connect() != 0)
 		return false;
 
 	char	res[64] = {0};
-	snprintf(res,64,"%c%s\n",(char)4,queue);
+	qsnprintf(res,64,"%c%s\n",(char)4,queue);
 	if (sock.writeBlock(res, strlen(res)) != (Q_LONG)(strlen(res)))
 		return false;
 

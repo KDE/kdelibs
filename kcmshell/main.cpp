@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qfile.h> 
 
 #include <dcopclient.h>
@@ -88,7 +88,7 @@ static void listModules(const QString &baseGroup)
   }
 }
 
-static KService::Ptr locateModule(const QCString& module)
+static KService::Ptr locateModule(const Q3CString& module)
 {
     QString path = QFile::decodeName(module);
 
@@ -123,9 +123,9 @@ bool KCMShell::isRunning()
     dcopClient()->setNotifications(true);
 
     QByteArray data;
-    QDataStream str( data, IO_WriteOnly );
+    QDataStream str( &data, QIODevice::WriteOnly );
     str << kapp->startupId();
-    QCString replyType;
+    DCOPCString replyType;
     QByteArray replyData;
     if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)", 
                 data, replyType, replyData))
@@ -144,14 +144,14 @@ KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption
 {
 }
 
-void KCMShellMultiDialog::activate( QCString asn_id )
+void KCMShellMultiDialog::activate( Q3CString asn_id )
 {
     kdDebug(780) << k_funcinfo << endl;
 
     KStartupInfo::setNewStartupId( this, asn_id );
 }
 
-void KCMShell::setDCOPName(const QCString &dcopName, bool rootMode )
+void KCMShell::setDCOPName(const Q3CString &dcopName, bool rootMode )
 {
     m_dcopName = "kcmshell_";
     if( rootMode )
@@ -166,12 +166,12 @@ void KCMShell::waitForExit()
 {
     kdDebug(780) << k_funcinfo << endl;
 
-    connect(dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
-            SLOT( appExit(const QCString&) ));
+    connect(dcopClient(), SIGNAL(applicationRemoved(const Q3CString&)),
+            SLOT( appExit(const Q3CString&) ));
     exec();
 }
 
-void KCMShell::appExit(const QCString &appId)
+void KCMShell::appExit(const DCOPCString &appId)
 {
     kdDebug(780) << k_funcinfo << endl;
 
@@ -215,13 +215,13 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    const QCString lang = args->getOption("lang");
+    const Q3CString lang = args->getOption("lang");
     if( !lang.isNull() )
         KGlobal::locale()->setLanguage(lang);
 
     if (args->isSet("list"))
     {
-        cout << i18n("The following modules are available:").local8Bit() << endl;
+        cout << i18n("The following modules are available:").local8Bit().data() << endl;
 
         listModules( "Settings/" );
 
@@ -242,7 +242,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
                          .arg(!(*it)->comment().isEmpty() ? (*it)->comment() 
                                  : i18n("No description available"));
 
-            cout << entry.local8Bit() << endl;
+            cout << entry.local8Bit().data() << endl;
         }
         return 0;
     }
@@ -253,7 +253,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         return -1;
     }
 
-    QCString dcopName;
+    Q3CString dcopName;
     KService::List modules;
     for (int i = 0; i < args->count(); i++)
     {

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -27,8 +27,8 @@
 
 //////////////////
 // Needed includes
-#include <qobject.h>
-#include <qstring.h>
+#include <QObject>
+#include <QString>
 
 #include "ksocketaddress.h"
 
@@ -45,9 +45,9 @@ class KReverseResolverPrivate;
  * Most users will use the static functions @ref resolve, which work
  * both synchronously (blocking) and asynchronously (non-blocking).
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
-class KReverseResolver: public QObject
+class KDECORE_EXPORT KReverseResolver: public QObject
 {
   Q_OBJECT
 
@@ -88,7 +88,7 @@ public:
    * @param flags	the flags to use, see @ref Flags
    */
   KReverseResolver(const KSocketAddress& addr, int flags = 0,
-		   QObject * = 0L, const char * = 0L);
+		   QObject * = 0L);
 
   /**
    * Destructor.
@@ -114,13 +114,13 @@ public:
 
   /**
    * Returns the resolved node name, if the resolution has finished 
-   * successfully, or QString::null otherwise.
+   * successfully, or QString() otherwise.
    */
   QString node() const;
 
   /**
    * Returns the resolved service name, if the resolution has finished
-   * successfully, or QString::null otherwise.
+   * successfully, or QString() otherwise.
    */
   QString service() const;
 
@@ -146,7 +146,7 @@ signals:
    *
    * @param obj		this class, which contains the results
    */
-  void finished(const KReverseResolver& obj);
+  void finished(const KNetwork::KReverseResolver& obj);
 
 public:
   /**
@@ -183,7 +183,7 @@ public:
    * @return true if the resolution succeeded, false if not
    * @see ReverseFlags for the possible values for @p flags
    */
-  static bool resolve(const struct sockaddr* sa, Q_UINT16 salen, 
+  static bool resolve(const struct sockaddr* sa, quint16 salen, 
 		      QString& node, QString& serv, int flags = 0);
 
 private:

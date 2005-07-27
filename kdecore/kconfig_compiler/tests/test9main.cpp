@@ -32,8 +32,8 @@ int main( int, char )
   kdWarning() << myPathsList2 << endl;
 
   // add another path
-  QStringList newlist = QDir::homeDirPath() + QString::fromLatin1("/.kde");
-  myPathsList2 = myPathsList2 + newlist;
+  QStringList newlist; 
+  myPathsList2 << QDir::homeDirPath() + QString::fromLatin1("/.kde");
   kdWarning() << myPathsList2 << endl;
 
   t->setMyPathsList2(myPathsList2);

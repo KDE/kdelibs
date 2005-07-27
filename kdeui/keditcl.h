@@ -15,13 +15,13 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __KEDITCL_H__
 #define __KEDITCL_H__
 
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qstring.h>
 #include <kdialogbase.h>
 
@@ -32,7 +32,7 @@ class QRadioButton;
 class QTextStream;
 class KHistoryCombo;
 class KIntNumInput;
-class QVButtonGroup;
+class Q3VButtonGroup;
 
 class KDEUI_EXPORT KEdGotoLine : public KDialogBase
 {
@@ -86,7 +86,7 @@ protected slots:
     void textSearchChanged ( const QString & );
 
 protected:
-  QVButtonGroup* group;
+  Q3VButtonGroup* group;
 
 private:
     QCheckBox *sensitive;
@@ -168,7 +168,7 @@ private:
  * @author Bernd Johannes Wuebben <wuebben@math.cornell.edu>, Waldo Bastian <bastian@kde.org>
  **/
 
-class KDEUI_EXPORT_DEPRECATED KEdit : public QMultiLineEdit
+class KDEUI_EXPORT_DEPRECATED KEdit : public Q3MultiLineEdit
 {
     Q_OBJECT
 
@@ -242,7 +242,7 @@ public:
      *
      *  The Popup Menu will be activated on a right mouse button press event.
      */
-    void 	installRBPopup( QPopupMenu* );
+    void 	installRBPopup( Q3PopupMenu* );
 
     /**
      * Retrieve the current line number.
@@ -284,7 +284,7 @@ public:
     QString selectWordUnderCursor();
 
     /// @since 3.3
-    QPopupMenu *createPopupMenu( const QPoint& pos );
+    Q3PopupMenu *createPopupMenu( const QPoint& pos );
 
     void setAutoUpdate(bool b);
 

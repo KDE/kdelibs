@@ -1,4 +1,4 @@
-#include <qdatetimeedit.h>
+#include <q3datetimeedit.h>
 #include <qlayout.h>
 
 #include "kdebug.h"
@@ -9,7 +9,7 @@
 class KTimeWidget::KTimeWidgetPrivate
 {
 public:
-  QTimeEdit * timeWidget;
+  Q3TimeEdit * timeWidget;
 };
 
 KTimeWidget::KTimeWidget(QWidget * parent, const char * name)
@@ -39,7 +39,7 @@ void KTimeWidget::init()
   QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
   layout->setAutoAdd(true);
 
-  d->timeWidget = new QTimeEdit(this);
+  d->timeWidget = new Q3TimeEdit(this);
 
   connect(d->timeWidget, SIGNAL(valueChanged(const QTime &)),
           SIGNAL(valueChanged(const QTime &)));

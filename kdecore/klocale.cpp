@@ -59,7 +59,7 @@ public:
   bool dateMonthNamePossessive;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)
-  QValueList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
+  QList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfig * config;
@@ -161,23 +161,19 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
       langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LANG") );
 
-      for ( QStringList::Iterator it = langs.begin();
-	    it != langs.end();
-	    ++it )
+      foreach (QString lang, langs)
 	{
-	  QString ln, ct, chrset;
-	  splitLocale(*it, ln, ct, chrset);
+	  QString ln, country, chrset;
+	  splitLocale(lang, ln, country, chrset);
 
-	  if (!ct.isEmpty()) {
-	    langs.insert(it, ln + '_' + ct);
+	  if (!country.isEmpty()) {
+	    languageList += ln + '_' + country;
 	    if (!chrset.isEmpty())
-	      langs.insert(it, ln + '_' + ct + '.' + chrset);
+	      languageList += ln + '_' + country + '.' + chrset;
 	  }
-
-          langs.insert(it, ln);
+	  languageList += ln;
+	  languageList += lang;
 	}
-
-      languageList += langs;
     }
 
   // now we have a language list -- let's use the first OK language
@@ -186,7 +182,7 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
 
 void KLocale::initPluralTypes()
 {
-  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
     it != d->catalogues.end();
     ++it )
   {
@@ -199,7 +195,7 @@ void KLocale::initPluralTypes()
 
 int KLocale::pluralType( const QString & language )
 {
-  for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
     it != d->catalogues.end();
     ++it )
   {
@@ -438,7 +434,7 @@ bool KLocale::setLanguage(const QStringList & languages)
   {
     // kdDebug() << "checking " << (*it) << endl;
     bool bIsTranslated = isApplicationTranslatedInto( *it );
-    if ( languageList.contains(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
+    if ( languageList.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
       // kdDebug() << "removing " << (*it) << endl;
       it = languageList.remove( it );
     }
@@ -649,7 +645,7 @@ void KLocale::updateCatalogues( )
   // 3.2) else create a new catalog.
   // but we will do this later.
 
-  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end(); )
   {
      it = d->catalogues.remove(it);
@@ -720,7 +716,7 @@ QString KLocale::translate_priv(const char *msgid,
     return QString::fromUtf8( fallback );
   }
 
-  for ( QValueList<KCatalogue>::ConstIterator it = d->catalogues.begin();
+  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
 	it != d->catalogues.end();
 	++it )
     {
@@ -1091,13 +1087,13 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return m_negativeMonetarySignPosition;
 }
 
-static inline void put_it_in( QChar *buffer, uint& index, const QString &s )
+static inline void put_it_in( QChar *buffer, int& index, const QString &s )
 {
-  for ( uint l = 0; l < s.length(); l++ )
+  for ( int l = 0; l < s.length(); l++ )
     buffer[index++] = s.at( l );
 }
 
-static inline void put_it_in( QChar *buffer, uint& index, int number )
+static inline void put_it_in( QChar *buffer, int& index, int number )
 {
   buffer[index++] = number / 10 + '0';
   buffer[index++] = number % 10 + '0';
@@ -1149,8 +1145,8 @@ QString KLocale::formatMoney(double num,
   switch (signpos)
     {
     case ParensAround:
-      res.prepend('(');
-      res.append (')');
+      res.prepend(QLatin1Char('('));
+      res.append (QLatin1Char(')'));
       break;
     case BeforeQuantityMoney:
       res.prepend(sign);
@@ -1169,10 +1165,10 @@ QString KLocale::formatMoney(double num,
   if (neg?negativePrefixCurrencySymbol():
       positivePrefixCurrencySymbol())
     {
-      res.prepend(' ');
+      res.prepend(QLatin1Char(' '));
       res.prepend(currency);
     } else {
-      res.append (' ');
+      res.append (QLatin1Char(' '));
       res.append (currency);
     }
 
@@ -1339,7 +1335,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   int year = calendar()->year(pDate);
   int month = calendar()->month(pDate);
 
-  for ( uint format_index = 0; format_index < rst.length(); ++format_index )
+  for ( int format_index = 0; format_index < rst.length(); ++format_index )
     {
       if ( !escape )
 	{
@@ -1353,7 +1349,7 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	  switch ( rst.at( format_index ).unicode() )
 	    {
 	    case '%':
-	      buffer.append('%');
+	      buffer.append(QLatin1Char('%'));
 	      break;
 	    case 'Y':
 	      buffer.append(calendar()->yearString(pDate, false));
@@ -1571,7 +1567,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
  * @param pos the position to start at. It will be updated when we parse it.
  * @return the integer read in the string, or -1 if no string
  */
-static int readInt(const QString &str, uint &pos)
+static int readInt(const QString &str, int &pos)
 {
   if (!str.at(pos).isDigit()) return -1;
   int result = 0;
@@ -1605,8 +1601,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
   int year = calendar()->year(QDate::currentDate());
-  uint strpos = 0;
-  uint fmtpos = 0;
+  int strpos = 0;
+  int fmtpos = 0;
 
   int iLength; // Temporary variable used when reading input
 
@@ -1631,125 +1627,125 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
         strpos++;
 
       c = fmt.at(fmtpos++);
-      switch (c)
-      {
-	case 'a':
-	case 'A':
+      switch (c.unicode())
+          {
+    case 'a':
+    case 'A':
 
-          error = true;
-	  j = 1;
-	  while (error && (j < 8)) {
-	    QString s = calendar()->weekDayName(j, c == 'a').lower();
-	    int len = s.length();
-	    if (str.mid(strpos, len) == s)
-            {
-	      strpos += len;
-              error = false;
-            }
-	    j++;
-	  }
-	  break;
-	case 'b':
-	case 'B':
-
-          error = true;
-	  if (d->nounDeclension && d->dateMonthNamePossessive) {
-	    j = 1;
-	    while (error && (j < 13)) {
-	      QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
-	      int len = s.length();
-	      if (str.mid(strpos, len) == s) {
-	        month = j;
-	        strpos += len;
+            error = true;
+      j = 1;
+      while (error && (j < 8)) {
+        QString s = calendar()->weekDayName(j, c == 'a').lower();
+        int len = s.length();
+        if (str.mid(strpos, len) == s)
+              {
+          strpos += len;
                 error = false;
-	      }
-	      j++;
-	    }
-	  }
-	  j = 1;
-	  while (error && (j < 13)) {
-	    QString s = calendar()->monthName(j, year, c == 'b').lower();
-	    int len = s.length();
-	    if (str.mid(strpos, len) == s) {
-	      month = j;
-	      strpos += len;
-              error = false;
-	    }
-	    j++;
-	  }
-	  break;
-	case 'd':
-	case 'e':
-	  day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
-
-	case 'n':
-	case 'm':
-	  month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
-
-	case 'Y':
-	case 'y':
-	  year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
-	  strpos += iLength;
-
-	  error = iLength <= 0;
-	  break;
+              }
+        j++;
       }
+      break;
+    case 'b':
+    case 'B':
+
+            error = true;
+      if (d->nounDeclension && d->dateMonthNamePossessive) {
+        j = 1;
+        while (error && (j < 13)) {
+          QString s = calendar()->monthNamePossessive(j, year, c == 'b').lower();
+          int len = s.length();
+          if (str.mid(strpos, len) == s) {
+            month = j;
+            strpos += len;
+                  error = false;
+          }
+          j++;
+        }
+      }
+      j = 1;
+      while (error && (j < 13)) {
+        QString s = calendar()->monthName(j, year, c == 'b').lower();
+        int len = s.length();
+        if (str.mid(strpos, len) == s) {
+          month = j;
+          strpos += len;
+                error = false;
+        }
+        j++;
+      }
+      break;
+    case 'd':
+    case 'e':
+      day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+
+    case 'n':
+    case 'm':
+      month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+
+    case 'Y':
+    case 'y':
+      year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
+      strpos += iLength;
+
+      error = iLength <= 0;
+      break;
+        }
+      }
+    }
+
+    /* for a match, we should reach the end of both strings, not just one of
+       them */
+    if ( fmt.length() > fmtpos || str.length() > strpos )
+    {
+      error = true;
+    }
+
+    //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
+    if ( year != -1 && month != -1 && day != -1 && !error)
+    {
+      if (ok) *ok = true;
+
+      QDate result;
+      calendar()->setYMD(result, year, month, day);
+
+      return result;
+    }
+    else
+    {
+      if (ok) *ok = false;
+      return QDate(); // invalid date
     }
   }
 
-  /* for a match, we should reach the end of both strings, not just one of
-     them */
-  if ( fmt.length() > fmtpos || str.length() > strpos )
+  QTime KLocale::readTime(const QString &intstr, bool *ok) const
   {
-    error = true;
+    QTime _time;
+    _time = readTime(intstr, WithSeconds, ok);
+    if (_time.isValid()) return _time;
+    return readTime(intstr, WithoutSeconds, ok);
   }
 
-  //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
-  if ( year != -1 && month != -1 && day != -1 && !error)
+  QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
   {
-    if (ok) *ok = true;
+    QString str = intstr.simplifyWhiteSpace().lower();
+    QString Format = timeFormat().simplifyWhiteSpace();
+    if (flags & WithoutSeconds)
+      Format.remove(QRegExp(".%S"));
 
-    QDate result;
-    calendar()->setYMD(result, year, month, day);
-
-    return result;
-  }
-  else
-  {
-    if (ok) *ok = false;
-    return QDate(); // invalid date
-  }
-}
-
-QTime KLocale::readTime(const QString &intstr, bool *ok) const
-{
-  QTime _time;
-  _time = readTime(intstr, WithSeconds, ok);
-  if (_time.isValid()) return _time;
-  return readTime(intstr, WithoutSeconds, ok);
-}
-
-QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
-{
-  QString str = intstr.simplifyWhiteSpace().lower();
-  QString Format = timeFormat().simplifyWhiteSpace();
-  if (flags & WithoutSeconds)
-    Format.remove(QRegExp(".%S"));
-
-  int hour = -1, minute = -1;
-  int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
-  bool g_12h = false;
-  bool pm = false;
-  uint strpos = 0;
-  uint Formatpos = 0;
+    int hour = -1, minute = -1;
+    int second = ( (flags & WithoutSeconds) == 0 ) ? -1 : 0; // don't require seconds
+    bool g_12h = false;
+    bool pm = false;
+    int strpos = 0;
+    int Formatpos = 0;
 
   while (Format.length() > Formatpos || str.length() > strpos)
     {
@@ -1771,7 +1767,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 	strpos++;
 
       c = Format.at(Formatpos++);
-      switch (c)
+      switch (c.unicode())
 	{
 	case 'p':
 	  {
@@ -1858,11 +1854,11 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
   // I'm rather safe than sorry
   QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
 
-  uint index = 0;
+  int index = 0;
   bool escape = false;
   int number = 0;
 
-  for ( uint format_index = 0; format_index < rst.length(); format_index++ )
+  for ( int format_index = 0; format_index < rst.length(); format_index++ )
     {
       if ( !escape )
 	{
@@ -2074,12 +2070,12 @@ void KLocale::initFileNameEncoding(KConfig *)
   // which, on Unix platforms, use the locale's codec.
 }
 
-QCString KLocale::encodeFileNameUTF8( const QString & fileName )
+QByteArray KLocale::encodeFileNameUTF8( const QString & fileName )
 {
   return fileName.utf8();
 }
 
-QString KLocale::decodeFileNameUTF8( const QCString & localFileName )
+QString KLocale::decodeFileNameUTF8( const QByteArray & localFileName )
 {
   return QString::fromUtf8(localFileName);
 }

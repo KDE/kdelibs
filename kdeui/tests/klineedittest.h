@@ -2,7 +2,7 @@
 #define _KLINEEDITTEST_H
 
 #include <qwidget.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 class QString;
 class QPushButton;
@@ -31,7 +31,7 @@ private slots:
    void slotReturnPressed( const QString& );
    
 protected:
-   QGuardedPtr<KLineEdit> m_lineedit;
+   QPointer<KLineEdit> m_lineedit;
    QPushButton* m_btnExit;
    QPushButton* m_btnReadOnly;
    QPushButton* m_btnEnable;

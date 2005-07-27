@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmiconview.h"
@@ -24,8 +24,8 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-KMIconViewItem::KMIconViewItem(QIconView *parent, KMPrinter *p)
-: QIconViewItem(parent)
+KMIconViewItem::KMIconViewItem(Q3IconView *parent, KMPrinter *p)
+: Q3IconViewItem(parent)
 {
 	m_state = 0;
 	m_mode = parent->itemTextPos();
@@ -43,7 +43,7 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 		if (m_state & 0x2) f.setItalic(true);
 		p->setFont(f);
 	}
-	QIconViewItem::paintItem(p,cg);
+	Q3IconViewItem::paintItem(p,cg);
 }
 
 void KMIconViewItem::calcRect(const QString&)
@@ -59,13 +59,13 @@ void KMIconViewItem::calcRect(const QString&)
 	if (m_state & 0x1) f.setBold(true);
 	if (m_state & 0x2) f.setItalic(true);
 	QFontMetrics	fm(f);
-	if (m_mode == QIconView::Bottom)
-		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, AlignHCenter|AlignTop|WordBreak|BreakAnywhere, text()+"X");
+	if (m_mode == Qt::DockBottom)
+		tr = fm.boundingRect(0, 0, iconView()->maxItemWidth(), 0xFFFFFF, Qt::AlignHCenter|Qt::AlignTop|Qt::TextWordWrap|Qt::TextWrapAnywhere, text()+"X");
 	else
-		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, AlignLeft|AlignTop, text()+"X");
+		tr = fm.boundingRect(0, 0, 0xFFFFFF, 0xFFFFFF, Qt::AlignLeft|Qt::AlignTop, text()+"X");
 
 	// item rect
-	if (m_mode == QIconView::Bottom)
+	if (m_mode == Qt::DockBottom)
 	{
 		ir.setHeight(pr.height() + tr.height() + 15);
 		ir.setWidth(QMAX(pr.width(), tr.width()) + 10);
@@ -108,7 +108,7 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 		if (p)
 			m_pixmap = p->pixmap();
 		m_mode = mode;
-		if (m_mode == QIconView::Bottom)
+		if (m_mode == Qt::DockBottom)
 			setPixmap(DesktopIcon(m_pixmap, 0, iconstate));
 		else
 			setPixmap(SmallIcon(m_pixmap, 0, iconstate));
@@ -122,14 +122,14 @@ KMIconView::KMIconView(QWidget *parent, const char *name)
 : KIconView(parent,name)
 {
 	setMode(KIconView::Select);
-	setSelectionMode(QIconView::Single);
+	setSelectionMode(Q3IconView::Single);
 	setItemsMovable(false);
-	setResizeMode(QIconView::Adjust);
+	setResizeMode(Q3IconView::Adjust);
 
 	m_items.setAutoDelete(false);
 	setViewMode(KMIconView::Big);
 
-	connect(this,SIGNAL(contextMenuRequested(QIconViewItem*,const QPoint&)),SLOT(slotRightButtonClicked(QIconViewItem*,const QPoint&)));
+	connect(this,SIGNAL(contextMenuRequested(Q3IconViewItem*,const QPoint&)),SLOT(slotRightButtonClicked(Q3IconViewItem*,const QPoint&)));
 	connect(this,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
 }
 
@@ -141,7 +141,7 @@ KMIconViewItem* KMIconView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		QPtrListIterator<KMIconViewItem>	it(m_items);
+		Q3PtrListIterator<KMIconViewItem>	it(m_items);
 		for (;it.current();++it)
 			if (it.current()->text() == p->name()
 			    && it.current()->isClass() == p->isClass())
@@ -150,17 +150,17 @@ KMIconViewItem* KMIconView::findItem(KMPrinter *p)
 	return 0;
 }
 
-void KMIconView::setPrinterList(QPtrList<KMPrinter> *list)
+void KMIconView::setPrinterList(Q3PtrList<KMPrinter> *list)
 {
 	bool	changed(false);
 
-	QPtrListIterator<KMIconViewItem>	it(m_items);
+	Q3PtrListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 
 	if (list)
 	{
-		QPtrListIterator<KMPrinter>	it(*list);
+		Q3PtrListIterator<KMPrinter>	it(*list);
 		KMIconViewItem			*item(0);
 		for (;it.current();++it)
 		{
@@ -195,19 +195,19 @@ void KMIconView::setViewMode(ViewMode m)
 {
 	m_mode = m;
 	bool	big = (m == KMIconView::Big);
-	int	mode = (big ? QIconView::Bottom : QIconView::Right);
+	int	mode = (big ? Qt::DockBottom : Qt::DockRight);
 
-	QPtrListIterator<KMIconViewItem>	it(m_items);
+	Q3PtrListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->updatePrinter(0, mode);
 
-	setArrangement((big ? QIconView::LeftToRight : QIconView::TopToBottom));
-	setItemTextPos((QIconView::ItemTextPos)mode);
+	setArrangement((big ? Q3IconView::LeftToRight : Q3IconView::TopToBottom));
+	setItemTextPos((Q3IconView::ItemTextPos)mode);
 	//setGridX((big ? 60 : -1));
 	setWordWrapIconText(true);
 }
 
-void KMIconView::slotRightButtonClicked(QIconViewItem *item, const QPoint& p)
+void KMIconView::slotRightButtonClicked(Q3IconViewItem *item, const QPoint& p)
 {
 	emit rightButtonClicked(item ? item->text() : QString::null, p);
 }
@@ -220,7 +220,7 @@ void KMIconView::slotSelectionChanged()
 
 void KMIconView::setPrinter(const QString& prname)
 {
-	QPtrListIterator<KMIconViewItem>	it(m_items);
+	Q3PtrListIterator<KMIconViewItem>	it(m_items);
 	for (; it.current(); ++it)
 		if (it.current()->text() == prname)
 		{

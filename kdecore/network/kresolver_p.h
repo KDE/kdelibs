@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -28,16 +28,14 @@
 #include <config.h>
 #include <sys/types.h>
 
-#include <qstring.h>
-#include <qcstring.h>
-#include <qvaluelist.h>
-#include <qptrlist.h>
-#include <qptrqueue.h>
-#include <qthread.h>
-#include <qmutex.h>
-#include <qwaitcondition.h>
-#include <qsemaphore.h>
-#include <qevent.h>
+#include <QString>
+#include <QByteArray>
+#include <QList>
+#include <QThread>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QSemaphore>
+#include <QEvent>
 
 #include "kresolver.h"
 
@@ -91,7 +89,7 @@ namespace KNetwork
     struct InputData
     {
       QString node, service;
-      QCString protocolName;
+      QByteArray protocolName;
       int flags;
       int familyMask;
       int socktype;
@@ -121,8 +119,8 @@ namespace KNetwork
     KResolverResults results;
 
     KResolverPrivate(KResolver* _parent,
-		     const QString& _node = QString::null, 
-		     const QString& _service = QString::null)
+		     const QString& _node = QString(), 
+		     const QString& _service = QString())
       : parent(_parent), deleteWhenDone(false), waiting(false),
 	status(0), errorcode(0), syserror(0)
     {
@@ -191,16 +189,16 @@ namespace KNetwork
       QMutex mutex;
 
       // hold a list of all the current threads we have
-      QPtrList<KResolverThread> workers;
+      QList<KResolverThread*> workers;
 
       // hold a list of all the new requests we have
-      QPtrList<RequestData> newRequests;
+      QList<RequestData*> newRequests;
 
       // hold a list of all the requests in progress we have
-      QPtrList<RequestData> currentRequests;
+      QList<RequestData*> currentRequests;
 
       // hold a list of all the workers we have
-      QPtrList<KNetwork::KResolverWorkerFactoryBase> workerFactories;
+      QList<KNetwork::KResolverWorkerFactoryBase*> workerFactories;
 
       // private constructor
       KResolverManager();

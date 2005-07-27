@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsddirpage.h"
@@ -24,7 +24,6 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 
@@ -99,11 +98,11 @@ bool CupsdDirPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdDirPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(datadir_, conf->comments_.toolTip("datadir"));
-	QWhatsThis::add(documentdir_, conf->comments_.toolTip("documentroot"));
-	QWhatsThis::add(fontpath_, conf->comments_.toolTip("fontpath"));
-	QWhatsThis::add(requestdir_, conf->comments_.toolTip("requestroot"));
-	QWhatsThis::add(serverbin_, conf->comments_.toolTip("serverbin"));
-	QWhatsThis::add(serverfiles_, conf->comments_.toolTip("serverroot"));
-	QWhatsThis::add(tmpfiles_, conf->comments_.toolTip("tempdir"));
+	datadir_->setWhatsThis(conf->comments_.toolTip("datadir"));
+	documentdir_->setWhatsThis(conf->comments_.toolTip("documentroot"));
+	fontpath_->setWhatsThis(conf->comments_.toolTip("fontpath"));
+	requestdir_->setWhatsThis(conf->comments_.toolTip("requestroot"));
+	serverbin_->setWhatsThis(conf->comments_.toolTip("serverbin"));
+	serverfiles_->setWhatsThis(conf->comments_.toolTip("serverroot"));
+	tmpfiles_->setWhatsThis(conf->comments_.toolTip("tempdir"));
 }

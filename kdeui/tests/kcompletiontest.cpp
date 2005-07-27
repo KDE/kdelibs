@@ -9,15 +9,16 @@
 ****************************************************************************/
 #include "kcompletiontest.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qvariant.h>
 #include <qtooltip.h>
-#include <qwhatsthis.h>
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klineedit.h>
 #include <kcombobox.h>
@@ -26,7 +27,7 @@
  *  name 'name' and widget flags set to 'f'
  */
 Form1::Form1( QWidget* parent,  const char* name )
-    : QWidget( parent, name, WDestructiveClose )
+    : QWidget( parent, name, Qt::WDestructiveClose )
 {
     if ( !name )
 	setName( "Form1" );
@@ -36,7 +37,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Form1Layout->setSpacing( 6 );
     Form1Layout->setMargin( 11 );
 
-    GroupBox1 = new QGroupBox( this, "GroupBox1" );
+    GroupBox1 = new Q3GroupBox( this, "GroupBox1" );
     GroupBox1->setTitle( "Completion Test" );
     GroupBox1->setColumnLayout(0, Qt::Vertical );
     GroupBox1->layout()->setSpacing( 0 );
@@ -104,7 +105,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout8->setSpacing( 6 );
     Layout8->setMargin( 0 );
 
-    ListBox1 = new QListBox( GroupBox1, "ListBox1" );
+    ListBox1 = new Q3ListBox( GroupBox1, "ListBox1" );
     Layout8->addWidget( ListBox1 );
     connect( ListBox1, SIGNAL( highlighted( const QString& )),
 	     SLOT( slotHighlighted( const QString& )));
@@ -186,7 +187,10 @@ QStringList Form1::defaultItems() const
 
 int main(int argc, char **argv )
 {
-    KApplication app( argc, argv, "kcompletiontest" );
+    KAboutData about("kcompletiontest", "kcompletiontest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app;
 
     Form1 *form = new Form1();
     form->show();

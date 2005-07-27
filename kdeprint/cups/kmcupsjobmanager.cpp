@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmcupsjobmanager.h"
@@ -50,13 +50,13 @@ int KMCupsJobManager::actions()
 	return KMJob::All;
 }
 
-bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& argstr)
+bool KMCupsJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& argstr)
 {
 	IppRequest	req;
 	QString		uri;
 	bool		value(true);
 
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	for (;it.current() && value;++it)
 	{
 		// hypothesis: job operation are always done on local jobs. The only operation
@@ -238,7 +238,7 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 	delete job;
 }
 
-bool KMCupsJobManager::doPluginAction(int ID, const QPtrList<KMJob>& jobs)
+bool KMCupsJobManager::doPluginAction(int ID, const Q3PtrList<KMJob>& jobs)
 {
 	switch (ID)
 	{
@@ -278,9 +278,9 @@ bool KMCupsJobManager::jobIppReport(KMJob *j)
 	return result;
 }
 
-QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
+Q3ValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *coll)
 {
-	QValueList<KAction*>	list;
+	Q3ValueList<KAction*>	list;
 	KAction	*act(0);
 
 	list <<  (act = new PluginAction(0, i18n("&Job IPP Report"), "kdeprint_report", 0, coll, "plugin_ipp"));
@@ -295,9 +295,9 @@ QValueList<KAction*> KMCupsJobManager::createPluginActions(KActionCollection *co
 	return list;
 }
 
-void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtrList<KMJob>& joblist)
+void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const Q3PtrList<KMJob>& joblist)
 {
-	QPtrListIterator<KMJob>	it(joblist);
+	Q3PtrListIterator<KMJob>	it(joblist);
 	bool	flag(true);
 	for (; it.current(); ++it)
 	{
@@ -317,9 +317,9 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtr
 		a->setEnabled( flag && ( joblist.count() == 1 ) );
 }
 
-bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
+bool KMCupsJobManager::changePriority(const Q3PtrList<KMJob>& jobs, bool up)
 {
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	bool	result(true);
 	for (; it.current() && result; ++it)
 	{

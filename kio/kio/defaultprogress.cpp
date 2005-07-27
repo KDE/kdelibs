@@ -132,7 +132,7 @@ void DefaultProgress::init()
   progressLabel = new QLabel( this );
 /*  progressLabel->setSizePolicy( QSizePolicy( QSizePolicy::MinimumExpanding,
                                              QSizePolicy::Preferred ) );*/
-  progressLabel->setAlignment( QLabel::AlignRight );
+  progressLabel->setAlignment( Qt::AlignRight );
   hBox->addWidget( progressLabel );
 
   hBox = new QHBoxLayout();
@@ -141,9 +141,9 @@ void DefaultProgress::init()
   speedLabel = new QLabel(this);
   hBox->addWidget(speedLabel, 1);
 
-  QFrame *line = new QFrame( this );
-  line->setFrameShape( QFrame::HLine );
-  line->setFrameShadow( QFrame::Sunken );
+  Q3Frame *line = new Q3Frame( this );
+  line->setFrameShape( Q3Frame::HLine );
+  line->setFrameShadow( Q3Frame::Sunken );
   topLayout->addWidget( line );
 
   d->keepOpen = new QCheckBox( i18n("&Keep this window open after transfer is complete"), this);
@@ -271,7 +271,7 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
 {
   speedLabel->setText( msg );
-  speedLabel->setAlignment( speedLabel->alignment() & ~Qt::WordBreak );
+  speedLabel->setAlignment( speedLabel->alignment() & ~Qt::TextWordWrap );
 }
 
 

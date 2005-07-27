@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "locationdialog.h"
@@ -27,7 +27,6 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -113,17 +112,17 @@ void LocationDialog::setInfos(CupsdConf *conf)
 {
 	conf_ = conf;
 
-	QPtrListIterator<CupsResource>	it(conf->resources_);
+	Q3PtrListIterator<CupsResource>	it(conf->resources_);
 	for (; it.current(); ++it)
 		resource_->insertItem(SmallIcon(it.current()->typeToIconName(it.current()->type_)), it.current()->text_);
 
-	QWhatsThis::add(encryption_, conf_->comments_.toolTip("encryption"));
-	QWhatsThis::add(order_, conf_->comments_.toolTip("order"));
-	QWhatsThis::add(authclass_, conf_->comments_.toolTip("authclass"));
-	QWhatsThis::add(authtype_, conf_->comments_.toolTip("authtype"));
-	QWhatsThis::add(authname_, conf_->comments_.toolTip("authname"));
-	QWhatsThis::add(satisfy_, conf_->comments_.toolTip("satisfy"));
-	QWhatsThis::add(addresses_, conf_->comments_.toolTip("allowdeny"));
+	encryption_->setWhatsThis(conf_->comments_.toolTip("encryption"));
+	order_->setWhatsThis(conf_->comments_.toolTip("order"));
+	authclass_->setWhatsThis(conf_->comments_.toolTip("authclass"));
+	authtype_->setWhatsThis(conf_->comments_.toolTip("authtype"));
+	authname_->setWhatsThis(conf_->comments_.toolTip("authname"));
+	satisfy_->setWhatsThis(conf_->comments_.toolTip("satisfy"));
+	addresses_->setWhatsThis(conf_->comments_.toolTip("allowdeny"));
 }
 
 void LocationDialog::fillLocation(CupsLocation *loc)

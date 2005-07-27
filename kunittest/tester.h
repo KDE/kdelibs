@@ -322,7 +322,8 @@ using namespace std;
 
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qasciidict.h>
+#include <qhash.h>
+#include <qtextstream.h>
 
 #include <kdelibs_export.h>
 
@@ -492,10 +493,10 @@ namespace KUnitTest
         int         m_tests;
     };
 
-    typedef QAsciiDict<TestResults> TestResultsListType;
+    typedef QHash<QByteArray, TestResults *> TestResultsList;
 
     /*! A type that can be used to iterate through the registry. */
-    typedef QAsciiDictIterator<TestResults> TestResultsListIteratorType;
+    //typedef TestResultsList::Iterator TestResultsListIteratorType;
 
     /*! The abstract Tester class forms the base class for all test cases. Users must
      * implement the void Tester::allTests() method. This method contains the actual test.
@@ -517,12 +518,12 @@ namespace KUnitTest
     public:
         /*! Implement this method with the tests and checks you want to perform.
          */
-        virtual void allTests() = 0L;
+        virtual void allTests() = 0;
 
     public:
         /*! @return The TestResults instance.
          */
-        virtual TestResults *results() { return m_results; }
+        virtual TestResults *results() const { return m_results; }
 
     protected:
         /*! This is called when the SKIP(x) macro is used.
@@ -533,7 +534,7 @@ namespace KUnitTest
         void skip( const char *file, int line, QString msg )
         {
             QString skipEntry;
-            QTextStream ts( &skipEntry, IO_WriteOnly );
+            QTextStream ts( &skipEntry, QIODevice::WriteOnly );
             ts << file << "["<< line <<"]: " << msg;
             skipTest( skipEntry );
         }
@@ -556,7 +557,7 @@ namespace KUnitTest
             if ( result != expectedResult )
             {
                 QString error;
-                QTextStream ts( &error, IO_WriteOnly );
+                QTextStream ts( &error, QIODevice::WriteOnly );
                 ts << file << "["<< line <<"]: failed on \"" <<  str
                    <<"\" result = '" << result << "' expected = '" << expectedResult << "'";
 
@@ -573,7 +574,7 @@ namespace KUnitTest
                 if (expectedFail)
                 {
                     QString err;
-                    QTextStream ts( &err, IO_WriteOnly );
+                    QTextStream ts( &err, QIODevice::WriteOnly );
                     ts << file << "["<< line <<"]: "
                        <<" unexpectedly passed on \""
                        <<  str <<"\"";
@@ -582,7 +583,7 @@ namespace KUnitTest
                 else
                 {
                     QString succ;
-                    QTextStream ts( &succ, IO_WriteOnly );
+                    QTextStream ts( &succ, QIODevice::WriteOnly );
                     ts << file << "["<< line <<"]: "
                        <<" passed \""
                        <<  str <<"\"";
@@ -674,13 +675,18 @@ namespace KUnitTest
         Q_OBJECT
 
     public:
-        SlotTester(const char *name = 0L);
+        SlotTester();
+        virtual ~SlotTester();
 
         void allTests();
 
-        TestResults *results(const char *sl);
+        virtual TestResults *results() const { return Tester::results(); }
 
-        TestResultsListType &resultsList() { return m_resultsList; }
+        /// Create or return TestResults for a given slot - used internally
+        TestResults *results(const char *slotName);
+
+        /// Return the list of results - used internally by Runner
+        const TestResultsList &resultsList() const { return m_resultsList; }
 
     signals:
         void invoke();
@@ -688,15 +694,18 @@ namespace KUnitTest
     private:
         void invokeMember(const QString &str);
 
-        TestResultsListType  m_resultsList;
+        TestResultsList      m_resultsList;
         TestResults         *m_total;
     };
 }
 
+class QRect;
 KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QRect& r );
 
+class QPoint;
 KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QPoint& r );
 
+class QSize;
 KUNITTEST_EXPORT QTextStream& operator<<( QTextStream& str, const QSize& r );
 
 #endif

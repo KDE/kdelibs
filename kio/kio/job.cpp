@@ -71,12 +71,12 @@ extern "C" {
 #include <dcopclient.h>
 
 using namespace KIO;
-template class QPtrList<KIO::Job>;
+template class Q3PtrList<KIO::Job>;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
-#define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
+#define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
 class Job::JobPrivate
 {
@@ -89,7 +89,7 @@ public:
     bool m_autoErrorHandling;
     bool m_autoWarningHandling;
     bool m_interactive;
-    QGuardedPtr<QWidget> m_errorParentWidget;
+    QPointer<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
@@ -227,7 +227,7 @@ void Job::kill( bool quietly )
 {
   kdDebug(7007) << "Job::kill this=" << this << " " << className() << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
-  QPtrListIterator<Job> it( subjobs );
+  Q3PtrListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
      (*it)->kill( true );
   subjobs.clear();
@@ -383,14 +383,14 @@ void Job::addMetaData( const QString &key, const QString &value)
 
 void Job::addMetaData( const QMap<QString,QString> &values)
 {
-    QMapConstIterator<QString,QString> it = values.begin();
+    QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
       m_outgoingMetaData.insert(it.key(), it.data());
 }
 
 void Job::mergeMetaData( const QMap<QString,QString> &values)
 {
-    QMapConstIterator<QString,QString> it = values.begin();
+    QMap<QString,QString>::const_iterator it = values.begin();
     for(;it != values.end(); ++it)
       m_outgoingMetaData.insert(it.key(), it.data(), false);
 }
@@ -418,8 +418,7 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
     if (m_url.hasSubURL())
     {
        KURL::List list = KURL::split(m_url);
-       KURL::List::Iterator it = list.fromLast();
-       list.remove(it);
+       list.removeLast();
        m_subUrl = KURL::join(list);
        //kdDebug(7007) << "New URL = "  << m_url.url() << endl;
        //kdDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
@@ -561,7 +560,7 @@ void SimpleJob::slotFinished( )
             else /*if ( m_command == CMD_RENAME )*/
             {
                 KURL src, dst;
-                QDataStream str( m_packedArgs, IO_ReadOnly );
+                QDataStream str( m_packedArgs );
                 str >> src >> dst;
                 if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
                     allDirNotify.FileRenamed( src, dst );
@@ -700,13 +699,13 @@ void MkdirJob::slotFinished()
             emit permanentRedirection(this, m_url, m_redirectionURL);
         KURL dummyUrl;
         int permissions;
-        QDataStream istream( m_packedArgs, IO_ReadOnly );
+        QDataStream istream( m_packedArgs );
         istream >> dummyUrl >> permissions;
 
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url << permissions;
 
         // Return slave to the scheduler
@@ -836,7 +835,7 @@ void StatJob::slotFinished()
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -913,7 +912,7 @@ void TransferJob::slotRedirection( const KURL &url)
     // Some websites keep redirecting to themselves where each redirection
     // acts as the stage in a state-machine. We define "endless redirections"
     // as 5 redirections to the same URL.
-    if (m_redirectionList.contains(url) > 5)
+    if (m_redirectionList.count(url) > 5)
     {
        kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
@@ -954,11 +953,11 @@ void TransferJob::slotFinished()
         // The very tricky part is the packed arguments business
         QString dummyStr;
         KURL dummyUrl;
-        QDataStream istream( m_packedArgs, IO_ReadOnly );
+        QDataStream istream( m_packedArgs );
         switch( m_command ) {
             case CMD_GET: {
                 m_packedArgs.truncate(0);
-                QDataStream stream( m_packedArgs, IO_WriteOnly );
+                QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                 stream << m_url;
                 break;
             }
@@ -967,7 +966,7 @@ void TransferJob::slotFinished()
                 Q_INT8 iOverwrite, iResume;
                 istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                 m_packedArgs.truncate(0);
-                QDataStream stream( m_packedArgs, IO_WriteOnly );
+                QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                 stream << m_url << iOverwrite << iResume << permissions;
                 break;
             }
@@ -978,7 +977,7 @@ void TransferJob::slotFinished()
                 {
                    addMetaData("cache","reload");
                    m_packedArgs.truncate(0);
-                   QDataStream stream( m_packedArgs, IO_WriteOnly );
+                   QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
                    stream << m_url;
                    m_command = CMD_GET;
                 }
@@ -1054,7 +1053,7 @@ void TransferJob::slotDataReq()
           return;
     }
 
-    static const size_t max_size = 14 * 1024 * 1024;
+    static const int max_size = 14 * 1024 * 1024;
     if (dataForSlave.size() > max_size)
     {
        kdDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
@@ -1284,15 +1283,15 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     if( _error )
     {
 	static bool override_loaded = false;
-	static QValueList< int >* overriden_ports = NULL;
+	static Q3ValueList< int >* overriden_ports = NULL;
 	if( !override_loaded )
 	{
 	    KConfig cfg( "kio_httprc", true );
-	    overriden_ports = new QValueList< int >;
+	    overriden_ports = new Q3ValueList< int >;
 	    *overriden_ports = cfg.readIntListEntry( "OverriddenPorts" );
 	    override_loaded = true;
 	}
-	for( QValueList< int >::ConstIterator it = overriden_ports->begin();
+	for( Q3ValueList< int >::ConstIterator it = overriden_ports->begin();
 	     it != overriden_ports->end();
 	     ++it )
 	    if( overriden_ports->contains( url.port()))
@@ -1380,7 +1379,7 @@ void StoredTransferJob::slotStoredData( KIO::Job *, const QByteArray &data )
   if ( data.size() == 0 )
     return;
   unsigned int oldSize = m_data.size();
-  m_data.resize( oldSize + data.size(), QGArray::SpeedOptim );
+  m_data.resize( oldSize + data.size() );
   memcpy( m_data.data() + oldSize, data.data(), data.size() );
 }
 
@@ -1464,7 +1463,7 @@ void MimetypeJob::slotFinished( )
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -1936,7 +1935,7 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
-    QDataStream stream( m_packedArgs, IO_WriteOnly );
+    QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
     stream << u;
 }
 
@@ -2084,7 +2083,7 @@ void ListJob::slotFinished()
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
-        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
 
         // Return slave to the scheduler
@@ -2510,7 +2509,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                      KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
                     //destFileName = url.fileName(); // Doesn't work for recursive listing
                     // Count the number of prefixes used by the recursive listjob
-                    int numberOfSlashes = displayName.contains( '/' ); // don't make this a find()!
+                    int numberOfSlashes = displayName.count( '/' ); // don't make this a find()!
                     QString path = url.path();
                     int pos = 0;
                     for ( int n = 0; n < numberOfSlashes + 1; ++n ) {
@@ -2642,7 +2641,7 @@ void CopyJob::statCurrentSrc()
 
         // if the file system doesn't support deleting, we do not even stat
         if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
-            QGuardedPtr<CopyJob> that = this;
+            QPointer<CopyJob> that = this;
             if (isInteractive())
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
             if (that)
@@ -2694,7 +2693,7 @@ void CopyJob::startRenameJob( const KURL& slave_url )
     info.size = (KIO::filesize_t)-1;
     info.uSource = m_currentSrcURL;
     info.uDest = dest;
-    QValueList<CopyInfo> files;
+    Q3ValueList<CopyInfo> files;
     files.append(info);
     emit aboutToCreate( this, files );
 
@@ -2756,7 +2755,7 @@ bool CopyJob::shouldSkip( const QString& path ) const
 void CopyJob::slotResultCreatingDirs( Job * job )
 {
     // The dir we are trying to create:
-    QValueList<CopyInfo>::Iterator it = dirs.begin();
+    Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
     // Was there an error creating a dir ?
     if ( job->error() )
     {
@@ -2824,7 +2823,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     // We come here after a conflict has been detected and we've stated the existing dir
 
     // The dir we were trying to create:
-    QValueList<CopyInfo>::Iterator it = dirs.begin();
+    Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
     // Its modification time:
     time_t destmtime = (time_t)-1;
     time_t destctime = (time_t)-1;
@@ -2893,7 +2892,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             // Change the current one and strip the trailing '/'
             (*it).uDest.setPath( newUrl.path( -1 ) );
             newPath = newUrl.path( 1 ); // With trailing slash
-            QValueList<CopyInfo>::Iterator renamedirit = it;
+            Q3ValueList<CopyInfo>::Iterator renamedirit = it;
             ++renamedirit;
             // Change the name of subdirectories inside the directory
             for( ; renamedirit != dirs.end() ; ++renamedirit )
@@ -2909,7 +2908,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
                 }
             }
             // Change filenames inside the directory
-            QValueList<CopyInfo>::Iterator renamefileit = files.begin();
+            Q3ValueList<CopyInfo>::Iterator renamefileit = files.begin();
             for( ; renamefileit != files.end() ; ++renamefileit )
             {
                 QString path = (*renamefileit).uDest.path();
@@ -2966,7 +2965,7 @@ void CopyJob::createNextDir()
     if ( !dirs.isEmpty() )
     {
         // Take first dir to create out of list
-        QValueList<CopyInfo>::Iterator it = dirs.begin();
+        Q3ValueList<CopyInfo>::Iterator it = dirs.begin();
         // Is this URL on the skip list or the overwrite list ?
         while( it != dirs.end() && udir.isEmpty() )
         {
@@ -3005,7 +3004,7 @@ void CopyJob::createNextDir()
 void CopyJob::slotResultCopyingFiles( Job * job )
 {
     // The file we were trying to copy:
-    QValueList<CopyInfo>::Iterator it = files.begin();
+    Q3ValueList<CopyInfo>::Iterator it = files.begin();
     if ( job->error() )
     {
         // Should we skip automatically ?
@@ -3098,7 +3097,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 {
     // We come here after a conflict has been detected and we've stated the existing file
     // The file we were trying to create:
-    QValueList<CopyInfo>::Iterator it = files.begin();
+    Q3ValueList<CopyInfo>::Iterator it = files.begin();
 
     RenameDlg_Result res;
     QString newPath;
@@ -3201,7 +3200,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
 
-            QValueList<CopyInfo> files;
+            Q3ValueList<CopyInfo> files;
             files.append(*it);
             emit aboutToCreate( this, files );
         }
@@ -3236,7 +3235,7 @@ void CopyJob::copyNextFile()
     bool bCopyFile = false;
     //kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
     // Take the first file in the list
-    QValueList<CopyInfo>::Iterator it = files.begin();
+    Q3ValueList<CopyInfo>::Iterator it = files.begin();
     // Is this URL on the skip list ?
     while (it != files.end() && !bCopyFile)
     {
@@ -3286,74 +3285,46 @@ void CopyJob::copyNextFile()
                 //kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource << " link=" << (*it).uDest << endl;
                 if ( (*it).uDest.isLocalFile() )
                 {
-                    bool devicesOk=false;
-
                     // if the source is a devices url, handle it a littlebit special
-                    if ((*it).uSource.protocol()==QString::fromLatin1("devices"))
-                    {
-                       QByteArray data;
-                       QByteArray param;
-                       QCString retType;
-                       QDataStream streamout(param,IO_WriteOnly);
-                       streamout<<(*it).uSource;
-                       streamout<<(*it).uDest;
-                       if ( kapp && kapp->dcopClient()->call( "kded",
-                            "mountwatcher", "createLink(KURL, KURL)", param,retType,data,false ) )
-                       {
-                          QDataStream streamin(data,IO_ReadOnly);
-                          streamin>>devicesOk;
-                       }
-                       if (devicesOk)
-                       {
-                           files.remove( it );
-                           m_processedFiles++;
-                           //emit processedFiles( this, m_processedFiles );
-                           copyNextFile();
-                           return;
-                       }
-                    }
 
-                    if (!devicesOk)
+                    QString path = (*it).uDest.path();
+                    //kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
+                    QFile f( path );
+                    if ( f.open( QIODevice::ReadWrite ) )
                     {
-                       QString path = (*it).uDest.path();
-                       //kdDebug(7007) << "CopyJob::copyNextFile path=" << path << endl;
-                       QFile f( path );
-                       if ( f.open( IO_ReadWrite ) )
-                       {
-                           f.close();
-                           KSimpleConfig config( path );
-                           config.setDesktopGroup();
-                           KURL url = (*it).uSource;
-                           url.setPass( "" );
-                           config.writePathEntry( QString::fromLatin1("URL"), url.url() );
-                           config.writeEntry( QString::fromLatin1("Name"), url.url() );
-                           config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
-                           QString protocol = (*it).uSource.protocol();
-                           if ( protocol == QString::fromLatin1("ftp") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
-                           else if ( protocol == QString::fromLatin1("http") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
-                           else if ( protocol == QString::fromLatin1("info") )
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
-                           else if ( protocol == QString::fromLatin1("mailto") )   // sven:
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
-                           else
-                               config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
-                           config.sync();
-                           files.remove( it );
-                           m_processedFiles++;
-                           //emit processedFiles( this, m_processedFiles );
-                           copyNextFile();
-                           return;
-                       }
-                       else
-                       {
-                           kdDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
-                           m_error = ERR_CANNOT_OPEN_FOR_WRITING;
-                           m_errorText = (*it).uDest.path();
-                           emitResult();
-                           return;
-                       }
+                        f.close();
+                        KSimpleConfig config( path );
+                        config.setDesktopGroup();
+                        KURL url = (*it).uSource;
+                        url.setPass( "" );
+                        config.writePathEntry( QString::fromLatin1("URL"), url.url() );
+                        config.writeEntry( QString::fromLatin1("Name"), url.url() );
+                        config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
+                        QString protocol = (*it).uSource.protocol();
+                        if ( protocol == QString::fromLatin1("ftp") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("ftp") );
+                        else if ( protocol == QString::fromLatin1("http") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("www") );
+                        else if ( protocol == QString::fromLatin1("info") )
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("info") );
+                        else if ( protocol == QString::fromLatin1("mailto") )   // sven:
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("kmail") ); // added mailto: support
+                        else
+                            config.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("unknown") );
+                        config.sync();
+                        files.remove( it );
+                        m_processedFiles++;
+                        //emit processedFiles( this, m_processedFiles );
+                        copyNextFile();
+                        return;
+                    }
+                    else
+                    {
+                        kdDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
+                        m_error = ERR_CANNOT_OPEN_FOR_WRITING;
+                        m_errorText = (*it).uDest.path();
+                        emitResult();
+                        return;
                     }
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
@@ -3433,7 +3404,7 @@ void CopyJob::deleteNextDir()
         state = STATE_DELETING_DIRS;
         d->m_bURLDirty = true;
         // Take first dir to delete out of list - last ones first !
-        KURL::List::Iterator it = dirsToRemove.fromLast();
+        KURL::List::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
         Scheduler::scheduleJob(job);
         dirsToRemove.remove(it);
@@ -3529,10 +3500,10 @@ void CopyJob::slotResultRenaming( Job* job )
              ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
         {
             kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
-            QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
-            QCString _dest( QFile::encodeName(dest.path()) );
+            Q3CString _src( QFile::encodeName(m_currentSrcURL.path()) );
+            Q3CString _dest( QFile::encodeName(dest.path()) );
             KTempFile tmpFile( m_currentSrcURL.directory(false) );
-            QCString _tmp( QFile::encodeName(tmpFile.name()) );
+            Q3CString _tmp( QFile::encodeName(tmpFile.name()) );
             kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
             tmpFile.unlink();
             if ( ::rename( _src, _tmp ) == 0 )
@@ -3967,7 +3938,7 @@ void DeleteJob::statNextSrc()
 
         // if the file system doesn't support deleting, we do not even stat
         if (!KProtocolInfo::supportsDeleting(m_currentURL)) {
-            QGuardedPtr<DeleteJob> that = this;
+            QPointer<DeleteJob> that = this;
             ++m_currentStat;
             if (isInteractive())
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
@@ -4049,7 +4020,7 @@ void DeleteJob::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KURL::List::Iterator it = dirs.fromLast();
+            KURL::List::Iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).path()) ) == 0 ) {
 
@@ -4279,7 +4250,7 @@ void MultiGetJob::get(long id, const KURL &url, const MetaData &metaData)
    m_waitQueue.append(entry);
 }
 
-void MultiGetJob::flushQueue(QPtrList<GetRequest> &queue)
+void MultiGetJob::flushQueue(Q3PtrList<GetRequest> &queue)
 {
    GetRequest *entry;
    // Use multi-get
@@ -4418,7 +4389,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
 {
   if (b_multiGetActive)
   {
-     QPtrList<GetRequest> newQueue;
+     Q3PtrList<GetRequest> newQueue;
      flushQueue(newQueue);
      if (!newQueue.isEmpty())
      {
@@ -4479,7 +4450,7 @@ QString CacheInfo::cachedFileName()
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QCString u = m_url.url().latin1();
+   Q3CString u = m_url.url().latin1();
    for(int i = u.length(); i--;)
    {
       hash = (hash * 12211 + u[i]) % 2147483563;

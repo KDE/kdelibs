@@ -21,15 +21,15 @@
  */
 #include "config.h"
 
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 #include <qtimer.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
 
@@ -41,7 +41,7 @@
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <kstringhandler.h>
 
 #include "kjs_proxy.h"
@@ -82,7 +82,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Back, Forward, Go, Length };
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
   class External : public ObjectImp {
@@ -95,7 +95,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { AddFavorite };
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
   class FrameArray : public ObjectImp {
@@ -104,7 +104,7 @@ namespace KJS {
       : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
   private:
-    QGuardedPtr<KHTMLPart> part;
+    QPointer<KHTMLPart> part;
   };
 
 #ifdef Q_WS_QWS
@@ -116,7 +116,7 @@ namespace KJS {
 
   private:
     const Konqueror* konqueror;
-    QCString m_name;
+    Q3CString m_name;
   };
 #endif
 } // namespace KJS
@@ -169,7 +169,7 @@ Value Screen::getValueProperty(ExecState *exec, int token) const
     return Number(sg.width());
   case ColorDepth:
   case PixelDepth: {
-    QPaintDeviceMetrics m(QApplication::desktop());
+    Q3PaintDeviceMetrics m(thisWidget);
     return Number(m.depth());
   }
   case AvailLeft: {
@@ -341,7 +341,7 @@ Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
   Object obj = Object::dynamicCast( retrieve( p ) );
 #ifndef NDEBUG
   // obj should never be null, except when javascript has been disabled in that part.
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(p);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(p);
   if ( part && part->jScriptEnabled() )
   {
     assert( obj.isValid() );
@@ -368,10 +368,10 @@ Window *Window::retrieveActive(ExecState *exec)
 Value Window::retrieve(KParts::ReadOnlyPart *p)
 {
   assert(p);
-  KHTMLPart * part = ::qt_cast<KHTMLPart *>(p);
+  KHTMLPart * part = qobject_cast<KHTMLPart*>(p);
   KJSProxy *proxy = 0L;
   if (!part) {
-    part = ::qt_cast<KHTMLPart *>(p->parent());
+    part = qobject_cast<KHTMLPart*>(p->parent());
     if (part)
       proxy = part->framejScript(p);
   } else
@@ -398,7 +398,7 @@ Location *Window::location() const
 
 ObjectImp* Window::frames( ExecState* exec ) const
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (part)
     return m_frames ? m_frames :
       (const_cast<Window*>(this)->m_frames = new FrameArray(exec, part));
@@ -436,7 +436,7 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
   if (Lookup::findEntry(&WindowTable, p))
     return true;
 
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part)
       return false;
 
@@ -447,7 +447,7 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
   bool ok;
   unsigned int i = p.toArrayIndex(&ok);
   if (ok) {
-    QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+    Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
     unsigned int len = frames.count();
     if (i < len)
       return true;
@@ -496,7 +496,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, p);
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
 
   // properties that work on all windows
   if (entry) {
@@ -789,7 +789,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   bool ok;
   unsigned int i = p.toArrayIndex(&ok);
   if (ok) {
-    QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+    Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
     unsigned int len = frames.count();
     if (i < len) {
       KParts::ReadOnlyPart* frame = frames.at(i);
@@ -859,7 +859,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
     default:
       break;
     }
-    KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
     if (part) {
     switch( entry->value ) {
     case Status: {
@@ -1006,7 +1006,7 @@ void Window::closeNow()
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
     kdDebug(6070) << k_funcinfo << "part is deleted already" << endl;
   } else {
-    KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
     if (!part) {
       kdDebug(6070) << "closeNow on non KHTML part" << endl;
     } else {
@@ -1022,9 +1022,9 @@ void Window::closeNow()
 void Window::afterScriptExecution()
 {
   DOM::DocumentImpl::updateDocumentsRendering();
-  QValueList<DelayedAction> delayedActions = m_delayed;
+  Q3ValueList<DelayedAction> delayedActions = m_delayed;
   m_delayed.clear();
-  QValueList<DelayedAction>::Iterator it = delayedActions.begin();
+  Q3ValueList<DelayedAction>::Iterator it = delayedActions.begin();
   for ( ; it != delayedActions.end() ; ++it )
   {
     switch ((*it).actionId) {
@@ -1054,7 +1054,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
    if ( activePart == m_frame->m_part ) // Not calling from another frame, no problem.
      return true;
 
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part)
     return true; // not a KHTMLPart
 
@@ -1067,7 +1067,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
     return false;
   }
 
-  KHTMLPart *activeKHTMLPart = ::qt_cast<KHTMLPart *>(activePart);
+  KHTMLPart *activeKHTMLPart = qobject_cast<KHTMLPart*>(activePart);
   if (!activeKHTMLPart)
     return true; // not a KHTMLPart
 
@@ -1093,7 +1093,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
 
 void Window::setListener(ExecState *exec, int eventId, Value func)
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
     return;
   DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl*>(part->htmlDocument().handle());
@@ -1105,7 +1105,7 @@ void Window::setListener(ExecState *exec, int eventId, Value func)
 
 Value Window::getListener(ExecState *exec, int eventId) const
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || !isSafeScript(exec))
     return Undefined();
   DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl*>(part->htmlDocument().handle());
@@ -1123,7 +1123,7 @@ Value Window::getListener(ExecState *exec, int eventId) const
 JSEventListener *Window::getJSEventListener(const Value& val, bool html)
 {
   // This function is so hot that it's worth coding it directly with imps.
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part || val.type() != ObjectType)
     return 0;
 
@@ -1172,7 +1172,7 @@ void Window::clear( ExecState *exec )
   deleteAllProperties( exec );
 
   // Break the dependency between the listeners and their object
-  QPtrDictIterator<JSEventListener> it(jsEventListeners);
+  Q3PtrDictIterator<JSEventListener> it(jsEventListeners);
   for (; it.current(); ++it)
     it.current()->clear();
   // Forget about the listeners (the DOM::NodeImpls will delete them)
@@ -1199,8 +1199,8 @@ void Window::setCurrentEvent( DOM::Event *evt )
 void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
 {
   Window* active = Window::retrieveActive(exec);
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
-  KHTMLPart *active_part = ::qt_cast<KHTMLPart *>(active->part());
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
+  KHTMLPart *active_part = qobject_cast<KHTMLPart*>(active->part());
   // Complete the URL using the "active part" (running interpreter)
   if (active_part && part) {
     if (url[0] == QChar('#')) {
@@ -1236,7 +1236,7 @@ void Window::delayedGoHistory( int steps )
 
 void Window::goHistory( int steps )
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if(!part)
       // TODO history readonlypart
     return;
@@ -1254,7 +1254,7 @@ void Window::goHistory( int steps )
 
 void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if(!part)
       // TODO resizeTo readonlypart
     return;
@@ -1297,7 +1297,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 
 Value Window::openWindow(ExecState *exec, const List& args)
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
   if (!part)
     return Undefined();
   KHTMLView *widget = part->view();
@@ -1308,7 +1308,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
   KURL url;
   if (!str.isEmpty())
   {
-    KHTMLPart* p = ::qt_cast<KHTMLPart *>(Window::retrieveActive(exec)->m_frame->m_part);
+    KHTMLPart* p = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->m_frame->m_part);
     if ( p )
       url = p->htmlDocument().completeURL(str).string();
     if ( !p ||
@@ -1379,13 +1379,13 @@ Value Window::openWindow(ExecState *exec, const List& args)
             if (winargs.y < screen.y() || winargs.y > screen.bottom())
               winargs.y = screen.y(); // only safe choice until size is determined
           } else if (key == "height") {
-            winargs.height = (int)val.toFloat() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            winargs.height = (int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
             if (winargs.height > screen.height())  // should actually check workspace
               winargs.height = screen.height();
             if (winargs.height < 100)
               winargs.height = 100;
           } else if (key == "width") {
-            winargs.width = (int)val.toFloat() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            winargs.width = (int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
             if (winargs.width > screen.width())    // should actually check workspace
               winargs.width = screen.width();
             if (winargs.width < 100)
@@ -1451,7 +1451,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0L;
     emit p->browserExtension()->createNewWindow(KURL(), uargs,winargs,newPart);
-    if (newPart && ::qt_cast<KHTMLPart*>(newPart)) {
+    if (newPart && qobject_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
       khtmlpart->setOpener(p);
@@ -1483,7 +1483,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   Window *window = static_cast<Window *>(thisObj.imp());
   QString str, str2;
 
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(window->m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(window->m_frame->m_part);
   if (!part)
     return Undefined();
 
@@ -1505,7 +1505,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), caption);
+    KMessageBox::error(widget, Q3StyleSheet::convertFromPlainText(str), caption);
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
@@ -1514,7 +1514,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       part->xmlDocImpl()->updateRendering();
     if ( part )
       emit part->browserExtension()->requestFocus(part);
-    return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), caption,
+    return Boolean((KMessageBox::warningYesNo(widget, Q3StyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())
@@ -1526,11 +1526,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     bool ok;
     if (args.size() >= 2)
       str2 = KInputDialog::getText(caption,
-                                   QStyleSheet::convertFromPlainText(str),
+                                   Q3StyleSheet::convertFromPlainText(str),
                                    args[1].toString(exec).qstring(), &ok, widget);
     else
       str2 = KInputDialog::getText(caption,
-                                   QStyleSheet::convertFromPlainText(str),
+                                   Q3StyleSheet::convertFromPlainText(str),
                                    QString::null, &ok, widget);
     if ( ok )
         return String(str2);
@@ -1624,7 +1624,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            KCodecs::base64Encode( in, out );
        in.resetRawData( binData, s.size() );
        UChar *d = new UChar[out.size()];
-       for (uint i = 0; i < out.size(); i++)
+       for (int i = 0; i < out.size(); i++)
            d[i].uc = (uchar) out[i];
        UString ret(d, out.size(), false /*no copy*/);
        return String(ret);
@@ -1818,7 +1818,7 @@ ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, 
 
 bool ScheduledAction::execute(Window *window)
 {
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(window->m_frame->m_part);
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(window->m_frame->m_part);
   if (!part || !part->jScriptEnabled())
     return false;
   ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(part->jScript()->interpreter());
@@ -1890,7 +1890,7 @@ void WindowQObject::parentDestroyed()
 {
   killTimers();
 
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     delete it.current();
   scheduledActions.clear();
@@ -1923,7 +1923,7 @@ int WindowQObject::installTimeout(const Value &func, List args, int t, bool sing
 
 void WindowQObject::clearTimeout(int timerId)
 {
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
     if (action->timerId == timerId) {
@@ -1942,7 +1942,7 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     it.current()->mark();
 }
@@ -1959,14 +1959,14 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
-  QPtrList<ScheduledAction> toExecute;
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrList<ScheduledAction> toExecute;
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   for (; it.current(); ++it)
     if (currentAdjusted >= it.current()->nextTime)
       toExecute.append(it.current());
 
   // ### verify that the window can't be closed (and action deleted) during execution
-  it = QPtrListIterator<ScheduledAction>(toExecute);
+  it = Q3PtrListIterator<ScheduledAction>(toExecute);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
     if (!scheduledActions.containsRef(action)) // removed by clearTimeout()
@@ -2001,7 +2001,7 @@ void WindowQObject::setNextTimer()
   if (scheduledActions.isEmpty())
     return;
 
-  QPtrListIterator<ScheduledAction> it(scheduledActions);
+  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
   QTime nextTime = it.current()->nextTime;
   for (++it; it.current(); ++it)
     if (nextTime > it.current()->nextTime)
@@ -2011,7 +2011,16 @@ void WindowQObject::setNextTimer()
   int nextInterval = QTime::currentTime().msecsTo(nextTimeActual);
   if (nextInterval < 0)
     nextInterval = 0;
-  startTimer(nextInterval);
+  timerIds.append(startTimer(nextInterval));
+}
+
+void WindowQObject::killTimers()
+{
+ for (int i = 0; i < timerIds.size(); ++i) 
+ {
+    killTimer(timerIds.at(i));
+ } 
+ timerIds.clear();
 }
 
 void WindowQObject::timeoutClose()
@@ -2027,7 +2036,7 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   if (part.isNull())
     return Undefined();
 
-  QPtrList<KParts::ReadOnlyPart> frames = part->frames();
+  Q3PtrList<KParts::ReadOnlyPart> frames = part->frames();
   unsigned int len = frames.count();
   if (p == lengthPropertyName)
     return Number(len);
@@ -2182,7 +2191,7 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
     QString str = v.toString(exec).qstring();
     switch (entry->value) {
     case Href: {
-      KHTMLPart* p =::qt_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
+      KHTMLPart* p =qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if ( p )
         url = p->htmlDocument().completeURL( str ).string();
       else
@@ -2270,7 +2279,7 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
             id == Location::Replace);
     break;
   case Location::Reload: {
-    KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(part);
+    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
     if (part)
       khtmlpart->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
     break;
@@ -2496,7 +2505,7 @@ Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
   if ( !iface )
     return Undefined();
 
-  QCString n = m_name.data();
+  Q3CString n = m_name.data();
   n += "()";
   iface->callMethod( n.data(), QVariant() );
 

@@ -1,6 +1,6 @@
 /*
     This file is part of libkabc.
-    Copyright (c) 2001 Cornelius Schumacher <schumacher@kde.org>
+    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,33 +17,57 @@
     the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
 #ifndef KABC_FORMAT_H
 #define KABC_FORMAT_H
 
-#include <qstring.h>
+#include <qfile.h>
 
-#include <kdelibs_export.h>
+#include "plugin.h"
+#include "resource.h"
 
 namespace KABC {
 
 class AddressBook;
+class Addressee;
 
 /**
-  @deprecated use FormatPlugin instead
-*/
-class KABC_EXPORT_DEPRECATED Format
+ * @short Base class for address book formats.
+ *
+ * This class provides an abstract interface for ResourceFile and
+ * ResourceDir formats.
+ *
+ * @internal
+ */
+class KABC_EXPORT Format : public Plugin
 {
-  public:
-    /**
-      Load addressbook from file.
-    */
-    virtual bool load( AddressBook *, const QString &fileName ) = 0;
-    /**
-      Save addressbook to file.
-    */
-    virtual bool save( AddressBook *, const QString &fileName ) = 0;
+public:
+
+  /**
+   * Load single addressee from file.
+   */
+  virtual bool load( Addressee &, QFile *file ) = 0;
+
+  /**
+   * Load whole addressbook from file.
+   */
+  virtual bool loadAll( AddressBook *, Resource *, QFile *file ) = 0;
+
+  /**
+   * Save a single Addressee to file.
+   */
+  virtual void save( const Addressee &, QFile *file ) = 0;
+    
+  /**
+   * Save whole addressbook to file.
+   */
+  virtual void saveAll( AddressBook *, Resource *, QFile *file ) = 0;
+    
+  /**
+   * Checks if given file contains the right format
+   */
+  virtual bool checkFormat( QFile *file ) const = 0;
 };
 
 }
-
 #endif

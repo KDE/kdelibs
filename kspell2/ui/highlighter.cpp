@@ -27,10 +27,10 @@
 #include <kconfig.h>
 #include <kdebug.h>
 
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qtimer.h>
 #include <qcolor.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 namespace KSpell2 {
 
@@ -40,13 +40,13 @@ public:
     Filter     *filter;
     Broker::Ptr broker;
     Dictionary *dict;
-    QDict<Dictionary>  dictCache;
+    Q3Dict<Dictionary>  dictCache;
 };
 
-Highlighter::Highlighter( QTextEdit *textEdit,
+Highlighter::Highlighter( Q3TextEdit *textEdit,
                           const QString& configFile,
                           Filter *filter)
-    : QSyntaxHighlighter( textEdit )
+    : Q3SyntaxHighlighter( textEdit )
 {
     d = new Private;
     d->filter = filter;

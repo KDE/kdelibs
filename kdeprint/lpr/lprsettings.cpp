@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "lprsettings.h"
@@ -87,7 +87,7 @@ QString LprSettings::printcapFile()
 		{
 			// look into /etc/lpd/conf file
 			QFile cf(LPDCONF);
-			if (cf.open(IO_ReadOnly))
+			if (cf.open(QIODevice::ReadOnly))
 			{
 				QTextStream	t(&cf);
 				QString	line;
@@ -118,7 +118,7 @@ QString LprSettings::defaultRemoteHost()
 	{
 		m_defaultremotehost = "localhost";
 		QFile cf(LPDCONF);
-		if (cf.open(IO_ReadOnly))
+		if (cf.open(QIODevice::ReadOnly))
 		{
 			QTextStream	t(&cf);
 			QString	line;

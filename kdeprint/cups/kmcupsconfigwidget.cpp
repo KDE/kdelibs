@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmcupsconfigwidget.h"
 #include "cupsinfos.h"
 
 #include <qlabel.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
@@ -62,8 +62,8 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
 	// widget creation
-	QGroupBox	*m_hostbox = new QGroupBox(0, Qt::Vertical, i18n("Server Information"), this);
-	QGroupBox	*m_loginbox = new QGroupBox(0, Qt::Vertical, i18n("Account Information"), this);
+	Q3GroupBox	*m_hostbox = new Q3GroupBox(0, Qt::Vertical, i18n("Server Information"), this);
+	Q3GroupBox	*m_loginbox = new Q3GroupBox(0, Qt::Vertical, i18n("Account Information"), this);
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), m_hostbox);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), m_hostbox);
 	m_host = new QLineEdit(m_hostbox);

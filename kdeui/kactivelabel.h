@@ -13,13 +13,13 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 #ifndef _KACTIVELABEL_H_
 #define _KACTIVELABEL_H_
 
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 
 #include <kdelibs_export.h>
 
@@ -34,7 +34,7 @@ class KActiveLabelPrivate;
   * @author Waldo Bastian (bastian@kde.org)
   * @version $Id$
   */
-class KDEUI_EXPORT KActiveLabel : public QTextBrowser
+class KDEUI_EXPORT KActiveLabel : public Q3TextBrowser
 {
     Q_OBJECT
 public:

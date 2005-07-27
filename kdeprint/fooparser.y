@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #define YYSTYPE QVariant
@@ -48,7 +48,7 @@ foodata:   VAR '=' '{' fieldlist '}' ';'  { static_cast<Foomatic2Loader*>(fooloa
 ;
 
 fieldlist:   assignment                 { $$ = $1; }
-		   | fieldlist ',' assignment   { QMap<QString,QVariant>::ConstIterator it = $3.mapBegin(); $1.asMap().insert(it.key(), it.data()); $$ = $1; }
+		   | fieldlist ',' assignment   { QMap<QString,QVariant>::ConstIterator it = $3.toMap().begin(); $1.asMap().insert(it.key(), it.data()); $$ = $1; }
 ;
 
 assignment:   STRING '=' '>' value              { $$.asMap().insert($1.toString(), $4); }

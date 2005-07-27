@@ -14,15 +14,15 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef kcharselect_h
 #define kcharselect_h
 
-#include <qgridview.h>
-#include <qvbox.h>
+#include <q3gridview.h>
+#include <q3vbox.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
 #include <qstring.h>
@@ -48,7 +48,7 @@ class KCharSelectPrivate;
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KDEUI_EXPORT KCharSelectTable : public QGridView
+class KDEUI_EXPORT KCharSelectTable : public Q3GridView
 {
     Q_OBJECT
 
@@ -75,6 +75,8 @@ protected:
 
     virtual void keyPressEvent( QKeyEvent *e );
 
+    virtual bool event ( QEvent *e );
+
     void gotoLeft();
     void gotoRight();
     void gotoUp();
@@ -100,8 +102,7 @@ signals:
     void doubleClicked();
 
 private:
-    virtual void setFont(const QFont &f) { QGridView::setFont(f); }
-    void setToolTips();
+    virtual void setFont(const QFont &f) { Q3GridView::setFont(f); }
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
@@ -137,7 +138,7 @@ private:
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KDEUI_EXPORT KCharSelect : public QVBox
+class KDEUI_EXPORT KCharSelect : public Q3VBox
 {
     Q_OBJECT
     Q_PROPERTY( QString fontFamily READ font WRITE setFont )
@@ -255,7 +256,7 @@ signals:
     void doubleClicked();
 
 private:
-    virtual void setFont(const QFont &f) { QVBox::setFont(f); }
+    virtual void setFont(const QFont &f) { Q3VBox::setFont(f); }
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

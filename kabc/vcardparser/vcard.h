@@ -24,14 +24,14 @@
 #include "vcardline.h"
 #include <qmap.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 namespace KABC {
 
 class VCard
 {
   public:
-    typedef QValueList<VCard> List;
+    typedef Q3ValueList<VCard> List;
     typedef QMap< QString, VCardLine::List > LineMap;
 
     enum Version { v2_1, v3_0 };

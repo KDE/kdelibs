@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef PLUGIN_H
 #define PLUGIN_H
@@ -93,7 +93,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos );
+    static void loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos );
 
     /**
      * Load the plugin libraries specified by the list @p pluginInfos, make the
@@ -102,7 +102,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance * instance );
+    static void loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos, const KInstance * instance );
 
     /**
      * Load the plugin libraries for the given @p instance, make the
@@ -146,7 +146,7 @@ public:
      * QObject to retrieve the list of child objects inheriting
      * KParts::Plugin .
      **/
-    static QPtrList<Plugin> pluginObjects( QObject *parent );
+    static Q3PtrList<Plugin> pluginObjects( QObject *parent );
 
 protected:
     /**
@@ -154,7 +154,7 @@ protected:
      *
      * @return A list of QDomDocument s, containing the parsed xml documents returned by plugins.
      */
-    static QValueList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
+    static Q3ValueList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
 
     /**
      * @internal

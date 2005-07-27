@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include "config.h"
@@ -138,7 +138,7 @@ void PublicService::publishAsync()
 	TXTRecordCreate(&txt,0,0);
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
-		QCString value = it.data().utf8();
+		Q3CString value = it.data().utf8();
 		if (TXTRecordSetValue(&txt,it.key().utf8(),value.length(),value)!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);

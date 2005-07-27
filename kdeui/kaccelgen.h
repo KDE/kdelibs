@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // -*- mode: c++; c-basic-offset: 2 -*-
 
@@ -111,9 +111,9 @@ public:
  * @param index offset to check
  */
 inline bool
-isLegalAccelerator(const QString& str, uint index)
+isLegalAccelerator(const QString& str, int index)
 {
-    return index < str.length()
+    return index >= 0 && index < str.length()
         && str[index].isLetterOrNumber();
 }
 
@@ -181,8 +181,8 @@ generate(Iter begin, Iter end, QStringList& target)
         int user_ampersand = item.find(QChar('&'));
         if( user_ampersand < 0 || item[user_ampersand+1] == '&') {
             bool found = false;
-            uint found_idx;
-            uint j;
+            int found_idx;
+            int j;
 
             // Check word-starting letters first.
             for( j=0; j < item.length(); ++j ) {
@@ -257,7 +257,7 @@ template <class Key>
 inline void
 generateFromValues(const QMap<Key,QString>& source, QStringList& target)
 {
-    generate<QMapConstIterator<Key,QString>, Deref_Key<QMapConstIterator<Key,QString> > >(source.begin(), source.end(), target);
+    generate<class QMap<Key,QString>::ConstIterator, Deref_Key<class QMap<Key,QString>::ConstIterator> >(source.begin(), source.end(), target);
 }
 
 /**

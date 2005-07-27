@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,8 +25,9 @@
 #ifndef KSERVERSOCKET_H
 #define KSERVERSOCKET_H
 
-#include <qobject.h>
+#include <QObject>
 #include "ksocketbase.h"
+#include "kstreamsocket.h"
 
 namespace KNetwork {
 
@@ -118,7 +119,7 @@ public:
    * @param parent		the parent QObject object
    * @param name		the name of this object
    */
-  KServerSocket(QObject* parent = 0L, const char *name = 0L);
+  KServerSocket(QObject* parent = 0L);
 
   /**
    * Construct this object specifying the service to listen on.
@@ -137,7 +138,7 @@ public:
    * @param parent		the parent QObject object
    * @param name		the name of this object
    */
-  KServerSocket(const QString& service, QObject* parent = 0L, const char *name = 0L);
+  KServerSocket(const QString& service, QObject* parent = 0L);
 
   /**
    * Construct this object specifying the node and service names to listen on.
@@ -158,7 +159,7 @@ public:
    * @param name		the name of this object
    */
   KServerSocket(const QString& node, const QString& service,
-		QObject* parent = 0L, const char *name = 0L);
+		QObject* parent = 0L);
 
   /**
    * Destructor. This will close the socket, if open.
@@ -355,15 +356,10 @@ public:
    * to the implementation: derived classes may return specialised objects
    * descended from KStreamSocket.
    *
-   * @note This function should return a KStreamSocket object, but compiler
-   *       deficiencies prevent such an adjustment. Therefore, we return
-   *       the base class for active sockets, but it is guaranteed
-   *       that the object will be a KStreamSocket or derived from it.
-   *
    * @sa KBufferedSocket
    * @sa setAcceptBuffered
    */
-  virtual KActiveSocketBase* accept();
+  virtual KStreamSocket* accept();
 
   /**
    * Returns this socket's local address.
@@ -397,7 +393,7 @@ signals:
    *
    * @param local	the local address we bound to
    */
-  void bound(const KResolverEntry& local);
+  void bound(const KNetwork::KResolverEntry& local);
 
   /**
    * This signal is emitted when the socket completes the

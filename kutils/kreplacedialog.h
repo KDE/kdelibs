@@ -25,9 +25,8 @@
 
 class KHistoryCombo;
 class QCheckBox;
-class QGroupBox;
 class QLabel;
-class QPopupMenu;
+class Q3PopupMenu;
 class QPushButton;
 class QRect;
 

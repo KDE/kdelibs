@@ -5,13 +5,13 @@ AM_CPPFLAGS = -DYYDEBUG
 
 ####### Files
 
-bin_PROGRAMS = dcopidl
+bin_PROGRAMS = dcopidlold
 
-dcopidl_SOURCES = main.cpp yacc.cc scanner.cc
+dcopidlold_SOURCES = main.cpp yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
 
-dcopidl_LDADD = $(LIB_QT)
-dcopidl_LDFLAGS = $(KDE_RPATH)
+dcopidlold_LDADD = $(LIB_QT)
+dcopidlold_LDFLAGS = $(KDE_RPATH)
 
 ####### Build rules
 

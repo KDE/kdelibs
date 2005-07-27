@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
+#include <qlist.h>
 
 #include "addresseehelper.h"
 #include "field.h"
@@ -39,7 +40,8 @@ using namespace KABC;
 static bool matchBinaryPattern( int value, int pattern );
 
 template <class L>
-static bool listEquals( const QValueList<L>&, const QValueList<L>& );
+static bool listEquals( const Q3ValueList<L>&, const Q3ValueList<L>& );
+static bool listEquals( const QStringList&, const QStringList& );
 static bool emailsEquals( const QStringList&, const QStringList& );
 
 KABC::SortMode *Addressee::mSortMode = 0;
@@ -826,11 +828,11 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
     return; // KPIM::AddressEmpty;
 
   // The code works on 8-bit strings, so convert the input to UTF-8.
-  QCString address = rawEmail.utf8();
+  Q3CString address = rawEmail.utf8();
 
-  QCString displayName;
-  QCString addrSpec;
-  QCString comment;
+  Q3CString displayName;
+  Q3CString addrSpec;
+  Q3CString comment;
 
   // The following is a primitive parser for a mailbox-list (cf. RFC 2822).
   // The purpose is to extract a displayable string from the mailboxes.
@@ -999,7 +1001,7 @@ void Addressee::setSortMode( KABC::SortMode *mode )
   mSortMode = mode;
 }
 
-bool Addressee::operator< ( const Addressee &addr )
+bool Addressee::operator< ( const Addressee &addr ) const
 {
   if ( !mSortMode )
     return false;
@@ -1057,12 +1059,24 @@ bool matchBinaryPattern( int value, int pattern )
 }
 
 template <class L>
-bool listEquals( const QValueList<L> &list, const QValueList<L> &pattern )
+bool listEquals( const Q3ValueList<L> &list, const Q3ValueList<L> &pattern )
 {
   if ( list.count() != pattern.count() )
     return false;
 
-  for ( uint i = 0; i < list.count(); ++i )
+  for ( int i = 0; i < list.count(); ++i )
+    if ( pattern.find( list[ i ] ) == pattern.end() )
+      return false;
+
+  return true;
+}
+
+bool listEquals( const QStringList &list, const QStringList &pattern )
+{
+  if ( list.count() != pattern.count() )
+    return false;
+
+  for ( int i = 0; i < list.count(); ++i )
     if ( pattern.find( list[ i ] ) == pattern.end() )
       return false;
 

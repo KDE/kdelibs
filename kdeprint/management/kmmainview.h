@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMMAINVIEW_H
@@ -33,7 +33,7 @@ class KMPrinterView;
 class KMPrinter;
 class KMPages;
 class KActionCollection;
-class QPopupMenu;
+class Q3PopupMenu;
 class QTimer;
 class QSplitter;
 class KToolBar;
@@ -113,7 +113,7 @@ protected:
 private:
 	KMPrinterView	*m_printerview;
 	KMPages		*m_printerpages;
-	QPopupMenu	*m_pop;
+	Q3PopupMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
 	KToolBar	*m_toolbar;

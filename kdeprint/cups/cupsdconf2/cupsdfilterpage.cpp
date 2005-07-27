@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdfilterpage.h"
@@ -24,7 +24,6 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 #include <qcombobox.h>
 
 #include <klocale.h>
@@ -87,8 +86,8 @@ bool CupsdFilterPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdFilterPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(user_, conf->comments_.toolTip("user"));
-	QWhatsThis::add(group_, conf->comments_.toolTip("group"));
-	QWhatsThis::add(ripcache_, conf->comments_.toolTip("ripcache"));
-	QWhatsThis::add(filterlimit_, conf->comments_.toolTip("filterlimit"));
+	user_->setWhatsThis(conf->comments_.toolTip("user"));
+	group_->setWhatsThis(conf->comments_.toolTip("group"));
+	ripcache_->setWhatsThis(conf->comments_.toolTip("ripcache"));
+	filterlimit_->setWhatsThis(conf->comments_.toolTip("filterlimit"));
 }

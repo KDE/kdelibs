@@ -14,17 +14,16 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  *
  */
 
 // I (espen) prefer that header files are included alphabetically
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
 #include <qwidget.h>
 
 #include <kaboutapplication.h>
@@ -41,6 +40,8 @@
 #include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
+
+#include <q3whatsthis.h>
 
 #include "config.h"
 #include <qxembed.h>
@@ -121,7 +122,7 @@ KPopupMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (kapp->authorizeKAction("help_contents"))
     {
-      mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
+      mMenu->insertItem( BarIconSet( "contents", KIcon::SizeSmall),
                      i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
       mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
       mMenu->setAccel( KStdAccel::shortcut(KStdAccel::Help), menuHelpContents );
@@ -130,11 +131,11 @@ KPopupMenu* KHelpMenu::menu()
 
     if( mShowWhatsThis && kapp->authorizeKAction("help_whats_this") )
     {
-      QToolButton* wtb = QWhatsThis::whatsThisButton(0);
+      QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
       mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
       mMenu->connectItem( menuWhatsThis, this, SLOT(contextHelpActivated()) );
       delete wtb;
-      mMenu->setAccel( SHIFT + Key_F1, menuWhatsThis );
+      mMenu->setAccel( Qt::SHIFT + Qt::Key_F1, menuWhatsThis );
       need_separator = true;
     }
 
@@ -152,14 +153,14 @@ KPopupMenu* KHelpMenu::menu()
 
     if (kapp->authorizeKAction("help_about_app"))
     {
-      mMenu->insertItem( kapp->miniIcon(),
+      mMenu->insertItem( QIcon(kapp->miniIcon()),
         i18n( "&About %1" ).arg(appName), menuAboutApp );
       mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
     }
     
     if (kapp->authorizeKAction("help_about_kde"))
     {
-      mMenu->insertItem( SmallIcon("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
+      mMenu->insertItem( SmallIconSet("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
       mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
     }
   }
@@ -200,7 +201,7 @@ void KHelpMenu::aboutApplication()
 				   false, true, KStdGuiItem::ok() );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
 
-      QHBox *hbox = new QHBox( mAboutApp );
+      Q3HBox *hbox = new Q3HBox( mAboutApp );
       mAboutApp->setMainWidget( hbox );
       hbox->setSpacing(KDialog::spacingHint()*3);
       hbox->setMargin(KDialog::marginHint()*1);

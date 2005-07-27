@@ -2,6 +2,7 @@
 
 if ( @ARGV != 1 ) {
   print STDERR "Missing arg: filename\n";
+  system "touch FAILED";
   exit 1;
 }
 
@@ -9,6 +10,7 @@ $file = $ARGV[0];
 
 if ( !open( IN, "$file" ) ) {
   print STDERR "Unable to open '$file'\n";
+  system "touch FAILED";
   exit 1;
 }
 
@@ -25,6 +27,7 @@ $ref = "$file.ref";
 
 if ( !open( REF, "$ref" ) ) {
   print STDERR "Unable to open $ref\n";
+  system "touch FAILED";
   exit 1;
 }
 
@@ -36,6 +39,7 @@ close REF;
 
 if ( !open( READ, "./testread $file $options 2> /dev/null |" ) ) {
   print STDERR "Unable to open testread\n";
+  system "touch FAILED";
   exit 1;
 }
 

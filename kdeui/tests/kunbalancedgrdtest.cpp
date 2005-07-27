@@ -132,10 +132,10 @@ myTopWidget::myTopWidget (QWidget *parent, const char *name)
   bLabel = new QLabel("Balance: X = 000; Y = 000", this);
   lay->addWidget(bLabel, 1, 0);
 
-  xSlider = new QSlider ( -200, 200, 1, 100, QSlider::Horizontal, this);
+  xSlider = new QSlider ( -200, 200, 1, 100, Qt::Horizontal, this);
   lay->addWidget(xSlider, 1, 1);
 
-  ySlider = new QSlider ( -200, 200, 1, 100, QSlider::Horizontal, this);
+  ySlider = new QSlider ( -200, 200, 1, 100, Qt::Horizontal, this);
   lay->addWidget(ySlider, 1, 2);
 
   connect(xSlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance()));

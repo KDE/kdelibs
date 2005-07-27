@@ -32,7 +32,7 @@ Copyright (C) 1998, 1999, 2000 KDE Team
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <kpixmap.h>
-#include <qintcache.h>
+#include <q3intcache.h>
 #include <qstring.h>
 #include <kstyle.h>
 #include <qsettings.h>
@@ -54,7 +54,7 @@ class KThemePixmap : public KPixmap
 {
 public:
     enum BorderType{Top = 0, Bottom, Left, Right, TopLeft, TopRight, BottomLeft,
-                    BottomRight};
+                    BottomRight}
 
     KThemePixmap( bool timer = true );
     KThemePixmap( const KThemePixmap &p );
@@ -188,7 +188,7 @@ public:
 protected slots:
     void flushTimeout();
 protected:
-    QIntCache<KThemePixmap> cache;
+    Q3IntCache<KThemePixmap> cache;
     QTimer flushTimer;
 
 private:

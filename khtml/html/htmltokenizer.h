@@ -30,7 +30,7 @@
 
 #include <qstring.h>
 #include <qobject.h>
-#include <qptrqueue.h>
+#include <q3ptrqueue.h>
 
 #include "misc/loader_client.h"
 #include "misc/htmltags.h"
@@ -321,7 +321,7 @@ protected:
     // true if we are executing a script while parsing a document. This causes the parsing of
     // the output of the script to be postponed until after the script has finished executing
     int m_executingScript;
-    QPtrQueue<khtml::CachedScript> cachedScript;
+    Q3PtrQueue<khtml::CachedScript> cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;
     // you can ask the tokenizer to abort the current write() call, e.g. to redirect somewhere else

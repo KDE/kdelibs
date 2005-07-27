@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "kspell.h"
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     //QTextCodec *codec = QTextCodec::codecForName("ISO 8859-3");
 
     // test UTF-8 (need dictionary "esperanto" and "UTF-8" in config)  
-   QCString ctext( "sed jen: e\304\245oŝanĝo ĉiuĵaŭde e\304\245uŝunĝo ĝiun fendredon kaj dimanĝon");
+   Q3CString ctext( "sed jen: e\304\245oŝanĝo ĉiuĵaŭde e\304\245uŝunĝo ĝiun fendredon kaj dimanĝon");
    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     
     QString text = codec->toUnicode(ctext.data());

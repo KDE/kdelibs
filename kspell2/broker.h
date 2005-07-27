@@ -30,7 +30,7 @@
 
 class KSharedConfig;
 template <typename T>
-class QPtrDict;
+class Q3PtrDict;
 
 namespace KSpell2
 {
@@ -128,7 +128,7 @@ namespace KSpell2
         class Private;
         Private *d;
     private:
-        static QPtrDict<Broker> *s_brokers;
+        static Q3PtrDict<Broker> *s_brokers;
     };
 }
 

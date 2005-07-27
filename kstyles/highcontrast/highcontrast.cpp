@@ -26,22 +26,22 @@
 
 #include <qdrawutil.h>
 #include <qpainter.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qstyleplugin.h>
 
 #include <qfont.h>
 #include <qcombobox.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qmenubar.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
 #include <qslider.h>
 #include <qtabbar.h>
 #include <qtoolbutton.h>
-#include <qtoolbar.h>
-#include <qpopupmenu.h>
-#include <qprogressbar.h>
-#include <qlistview.h>
+#include <q3toolbar.h>
+#include <q3popupmenu.h>
+#include <q3progressbar.h>
+#include <q3listview.h>
 #include <qsettings.h>
 
 #include <kdrawutil.h>
@@ -70,7 +70,7 @@ class HighContrastStylePlugin : public QStylePlugin
 		}
 };
 
-KDE_Q_EXPORT_PLUGIN (HighContrastStylePlugin)
+Q_EXPORT_PLUGIN (HighContrastStylePlugin)
 // ---------------------------------------------------
 
 
@@ -160,7 +160,7 @@ void HighContrastStyle::polish (QWidget* widget)
 	{
 		widget->installEventFilter (this);
 
-		QSpinWidget* spinwidget = dynamic_cast<QSpinWidget*>(widget);
+		Q3SpinWidget* spinwidget = dynamic_cast<Q3SpinWidget*>(widget);
 		if (spinwidget && spinwidget->editWidget())
 			spinwidget->editWidget()->installEventFilter (this);
 	}
@@ -284,7 +284,7 @@ void HighContrastStyle::drawArrow (QPainter* p, QRect r, PrimitiveElement arrow,
 	r.setHeight (r.width());
 	r.moveCenter (center);
 			
-	QPointArray points (3);
+	Q3PointArray points (3);
 	switch (arrow) {
 		case PE_ArrowUp:
 		case PE_SpinWidgetUp:
@@ -756,8 +756,8 @@ void HighContrastStyle::drawControl (ControlElement element,
 			
 			const QTabBar *tb = static_cast< const QTabBar * >(widget);
             QTabBar::Shape shape = tb->shape();
-			if (shape == QTabBar::TriangularBelow || 
-				shape == QTabBar::RoundedBelow) {
+			if (shape == QTabBar:: TriangularSouth || 
+				shape == QTabBar:: RoundedSouth) {
 				p->fillRect (r.left(), r.top(), 
 							 r.width(), 2*basicLineWidth, 
 							 p->pen().color());
@@ -815,14 +815,14 @@ void HighContrastStyle::drawControl (ControlElement element,
 			QString text;
 			bool popup = false;
 			
-			QIconSet::Mode  mode  = flags & Style_Enabled ? ((flags & Style_HasFocus) ? QIconSet::Active : QIconSet::Normal) : QIconSet::Disabled;
-			QIconSet::State state = flags & Style_On ? QIconSet::On : QIconSet::Off;
+			QIcon::Mode  mode  = flags & Style_Enabled ? ((flags & Style_HasFocus) ? QIcon::Active : QIcon::Normal) : QIcon::Disabled;
+			QIcon::State state = flags & Style_On ? QIcon::On : QIcon::Off;
 
 			int x, y, w, h;
 			r.rect( &x, &y, &w, &h );
 			
 			if (element == CE_ProgressBarLabel) {
-				QProgressBar* progressbar = (QProgressBar*) widget;
+				Q3ProgressBar* progressbar = (Q3ProgressBar*) widget;
 				text = progressbar->progressString();
 				setColorsNormal (p, cg, flags);
 			}
@@ -838,7 +838,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 				text = toolbutton->text();
 				pixmap = toolbutton->pixmap();
 				if (!toolbutton->iconSet().isNull())
-					icon = toolbutton->iconSet().pixmap (QIconSet::Small, mode, state);
+					icon = toolbutton->iconSet().pixmap (QIcon::Small, mode, state);
 				popup = toolbutton->popup();
 				setColorsButton (p, cg, flags);
 			}
@@ -847,12 +847,12 @@ void HighContrastStyle::drawControl (ControlElement element,
 				text = pushbutton->text();
 				pixmap = pushbutton->pixmap();
 				if (pushbutton->iconSet() && !pushbutton->iconSet()->isNull())
-					icon = pushbutton->iconSet()->pixmap (QIconSet::Small, mode, state);
+					icon = pushbutton->iconSet()->pixmap (QIcon::Small, mode, state);
 				popup = pushbutton->popup();
 				setColorsButton (p, cg, flags);
 			}
 			else {
-				const QButton* button = (const QButton*)widget;
+				const Q3Button* button = (const Q3Button*)widget;
 				pixmap = button->pixmap();
 				text = button->text();
 				setColorsNormal (p, cg);
@@ -887,7 +887,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			// Draw the label itself
 			QColor color = p->pen().color();
 			drawItem (p, QRect(x, y, w, h),
-					  (element == CE_RadioButtonLabel || element == CE_CheckBoxLabel || element == CE_ProgressBarLabel) ? AlignVCenter|AlignLeft|ShowPrefix : AlignCenter|ShowPrefix,
+					  (element == CE_RadioButtonLabel || element == CE_CheckBoxLabel || element == CE_ProgressBarLabel) ? Qt::AlignVCenter|Qt::AlignLeft|Qt::TextShowMnemonic : Qt::AlignCenter|Qt::TextShowMnemonic,
 					  cg, flags & Style_Enabled, pixmap, text, -1, &color);
 			break;
 		}
@@ -917,8 +917,8 @@ void HighContrastStyle::drawControl (ControlElement element,
 				QMenuItem *mi = opt.menuItem();
 
 				QColor color = p->pen().color();
-				drawItem (p, r, AlignCenter | AlignVCenter | ShowPrefix
-						| DontClip | SingleLine, cg, flags,
+				drawItem (p, r, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic
+						| Qt::TextDontClip | Qt::TextSingleLine, cg, flags,
 						mi->pixmap(), mi->text(), -1, &color);
 			}
 			break;
@@ -942,21 +942,21 @@ void HighContrastStyle::drawControl (ControlElement element,
 		// -------------------------------------------------------------------
 		case CE_ProgressBarGroove: {
 			setColorsText (p, cg, flags);
-			const QProgressBar *progressbar = dynamic_cast<const QProgressBar*>(widget);
+			const Q3ProgressBar *progressbar = dynamic_cast<const Q3ProgressBar*>(widget);
 			if (progressbar) {
 				QRect r2 (r);
-				r2.setLeft (p->boundingRect (r, AlignVCenter|AlignLeft|ShowPrefix, progressbar->progressString()).right()
+				r2.setLeft (p->boundingRect (r, Qt::AlignVCenter|Qt::AlignLeft|Qt::TextShowMnemonic, progressbar->progressString()).right()
 						+ 4*basicLineWidth);
 				drawRoundRect (p, r2);
 			}
 			break;
 		}
 		case CE_ProgressBarContents: {
-			const QProgressBar *progressbar = dynamic_cast<const QProgressBar*>(widget);
+			const Q3ProgressBar *progressbar = dynamic_cast<const Q3ProgressBar*>(widget);
 			if (progressbar)
 			{
 				QRect r2 (r);
-				r2.setLeft (p->boundingRect (r, AlignVCenter|AlignLeft|ShowPrefix, progressbar->progressString()).right()
+				r2.setLeft (p->boundingRect (r, Qt::AlignVCenter|Qt::AlignLeft|Qt::TextShowMnemonic, progressbar->progressString()).right()
 						+ 4*basicLineWidth);
 				long progress = r2.width() * progressbar->progress();
 				if (progressbar->totalSteps() > 0)
@@ -985,7 +985,7 @@ void HighContrastStyle::drawControl (ControlElement element,
 			setColorsNormal (p, cg, flags, Style_Active|Style_MouseOver);
 			p->fillRect (r, p->backgroundColor ());
 
-			const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+			const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
 			QMenuItem *mi = opt.menuItem();
 			if (!mi)
 				break;
@@ -1008,19 +1008,19 @@ void HighContrastStyle::drawControl (ControlElement element,
 
 			// Do we have an icon?
 			if ( mi->iconSet() && !mi->iconSet()->isNull() ) {
-				QIconSet::Mode mode;
+				QIcon::Mode mode;
 				QRect cr = visualRect( QRect(x, y, checkcol, h), r );
 
 				// Select the correct icon from the iconset
 				if (!(flags & Style_Enabled))
-					mode = QIconSet::Disabled;
+					mode = QIcon::Disabled;
 				else if (flags & Style_Active)
-					mode = QIconSet::Active;
+					mode = QIcon::Active;
 				else
-					mode = QIconSet::Normal;
+					mode = QIcon::Normal;
 
 				// Draw the icon
-				QPixmap pixmap = mi->iconSet()->pixmap( QIconSet::Small, mode );
+				QPixmap pixmap = mi->iconSet()->pixmap( QIcon::Small, mode );
 				QRect pmr( 0, 0, pixmap.width(), pixmap.height() );
 				pmr.moveCenter( cr.center() );
 				p->drawPixmap( pmr.topLeft(), pixmap );
@@ -1077,8 +1077,8 @@ void HighContrastStyle::drawControl (ControlElement element,
 				if ( !s.isNull() ) {
 					int t = s.find( '\t' );
 					int m = itemVMargin;
-					int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-					text_flags |= reverse ? AlignRight : AlignLeft;
+					int text_flags = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+					text_flags |= reverse ? Qt::AlignRight : Qt::AlignLeft;
 
 					// Does the menu item have a tabstop? (for the accelerator text)
 					if ( t >= 0 ) {
@@ -1104,14 +1104,14 @@ void HighContrastStyle::drawControl (ControlElement element,
 
 					// Draw the pixmap
 					if ( pixmap->depth() == 1 )
-						p->setBackgroundMode( OpaqueMode );
+						p->setBackgroundMode( Qt::OpaqueMode );
 
 					int diffw = ( ( w - pixmap->width() ) / 2 )
 									+ ( ( w - pixmap->width() ) % 2 );
 					p->drawPixmap( x+diffw, y+itemFrame, *pixmap );
 
 					if ( pixmap->depth() == 1 )
-						p->setBackgroundMode( TransparentMode );
+						p->setBackgroundMode( Qt::TransparentMode );
 				}
 			}
 
@@ -1152,7 +1152,7 @@ void HighContrastStyle::drawControlMask (ControlElement element,
 		case CE_MenuBarEmptyArea:
 		case CE_MenuBarItem: 
 		case CE_PopupMenuItem: {
-			p->fillRect (r, color0);
+			p->fillRect (r, Qt::color0);
 			break;
 		}
 
@@ -1164,9 +1164,9 @@ void HighContrastStyle::drawControlMask (ControlElement element,
 
 // Helper to find the next sibling that's not hidden
 // Lifted from kstyle.cpp
-static QListViewItem* nextVisibleSibling(QListViewItem* item)
+static Q3ListViewItem* nextVisibleSibling(Q3ListViewItem* item)
 {
-    QListViewItem* sibling = item;
+    Q3ListViewItem* sibling = item;
     do
     {
         sibling = sibling->nextSibling();
@@ -1321,13 +1321,13 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 				if (opt.isDefault())
 					break;
 
-				QListViewItem *item  = opt.listViewItem();
-				QListViewItem *child = item->firstChild();
+				Q3ListViewItem *item  = opt.listViewItem();
+				Q3ListViewItem *child = item->firstChild();
 
 				int y = r.y();
 				int c;	// dotline vertice count
 				int dotoffset = 0;
-				QPointArray dotlines;
+				Q3PointArray dotlines;
 
 				if ( active == SC_All && controls == SC_ListViewExpand ) {
 					// We only need to draw a vertical line
@@ -1354,7 +1354,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 					int bx = r.width() / 2;
 
 					// paint stuff in the magical area
-					QListView* v = item->listView();
+					Q3ListView* v = item->listView();
 					int lh = QMAX( p->fontMetrics().height() + 2 * v->itemMargin(),
 								   QApplication::globalStrut().height() );
 					if ( lh % 2 > 0 )
@@ -1377,7 +1377,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 			
 							// The primitive requires a rect.
 							boxrect = QRect( bx-h/2, linebot-h/2, h, h );
-							boxflags = child->isOpen() ? QStyle::Style_Off : QStyle::Style_On;
+							boxflags = child->isOpen() ? QStyle::State_Off : QStyle::State_On;
 
 							// KStyle extension: Draw the box and expand/collapse indicator
 							drawKStylePrimitive( KPE_ListViewExpander, p, NULL, boxrect, cg, boxflags, opt );
@@ -1431,7 +1431,7 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 						int other = dotlines[line].y();
 
 						branchrect  = QRect( point, other-(thickness/2), end-point, thickness );
-						branchflags = QStyle::Style_Horizontal;
+						branchflags = QStyle::State_Horizontal;
 
 						// KStyle extension: Draw the horizontal branch
 						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
@@ -1445,9 +1445,9 @@ void HighContrastStyle::drawComplexControl (ComplexControl control,
 
 						branchrect  = QRect( other-(thickness/2), point, thickness, end-point );
 						if (!pixmapoffset)	// ### Hackish - used to hint the offset
-							branchflags = QStyle::Style_NoChange;
+							branchflags = QStyle::State_NoChange;
 						else
-							branchflags = QStyle::Style_Default;
+							branchflags = QStyle::State_None;
 
 						// KStyle extension: Draw the vertical branch
 						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
@@ -1474,7 +1474,7 @@ void HighContrastStyle::drawComplexControlMask(ComplexControl c,
 		case CC_SpinWidget:
 		case CC_ToolButton:
 		case CC_ComboBox: {
-			p->fillRect (r, color0);
+			p->fillRect (r, Qt::color0);
 			break;
 		}
 		default: {
@@ -1719,7 +1719,7 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 			if ( ! widget || opt.isDefault() )
 				return contentSize;
 
-			const QPopupMenu *popup = (const QPopupMenu *) widget;
+			const Q3PopupMenu *popup = (const Q3PopupMenu *) widget;
 			bool checkable = popup->isCheckable();
 			QMenuItem *mi = opt.menuItem();
 			int maxpmw = opt.maxIconWidth();
@@ -1749,7 +1749,7 @@ QSize HighContrastStyle::sizeFromContents( ContentsType contents,
 
 				if ( mi->iconSet() && ! mi->iconSet()->isNull() )
 					h = QMAX( h, mi->iconSet()->pixmap(
-								QIconSet::Small, QIconSet::Normal).height() +
+								QIcon::Small, QIcon::Normal).height() +
 								2 * itemFrame );
 			}
 

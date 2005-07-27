@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMCUPSUIMANAGER_H
@@ -33,8 +33,8 @@ public:
 	void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 	void setupConfigDialog(KMConfigDialog*);
 	int pluginPageCap();
-	void setupPrintDialogPages(QPtrList<KPrintDialogPage>*);
-	void setupJobViewer(QListView*);
+	void setupPrintDialogPages(Q3PtrList<KPrintDialogPage>*);
+	void setupJobViewer(Q3ListView*);
 };
 
 #endif

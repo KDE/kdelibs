@@ -10,12 +10,21 @@
 #ifndef KIMG_PSD_H
 #define KIMG_PSD_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-void kimgio_psd_read( QImageIO * );
-void kimgio_psd_write( QImageIO * );
-}
+class PSDHandler : public QImageIOHandler
+{
+public:
+    PSDHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif
- 
+

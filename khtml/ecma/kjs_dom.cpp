@@ -408,7 +408,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToYOffset(value.toInt32(exec));
         else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
+            Q3ScrollView* sview = node.ownerDocument().view();
             if (sview)
                 sview->setContentsPos(sview->contentsX(), value.toInt32(exec));
         }
@@ -422,7 +422,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
         if (rend->style()->hidesOverflow())
             rend->layer()->scrollToXOffset(value.toInt32(exec));
         else if (rend->isRoot()) {
-            QScrollView* sview = node.ownerDocument().view();
+            Q3ScrollView* sview = node.ownerDocument().view();
             if (sview)
                 sview->setContentsPos(value.toInt32(exec), sview->contentsY());
         }
@@ -450,7 +450,7 @@ UString DOMNode::toString(ExecState *) const
 
   DOM::Element e = node;
   if ( !e.isNull() ) {
-    s = e.nodeName().string();
+    s = DOMString(e.nodeName().string());
   } else
     s = className(); // fallback
 
@@ -974,7 +974,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     Window* active = Window::retrieveActive(exec);
     // Complete the URL using the "active part" (running interpreter). We do this for the security
     // check and to make sure we load exactly the same url as we have verified to be safe
-    KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(active->part());
+    KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(active->part());
     if (khtmlpart) {
       // Security: only allow documents to be loaded from the same host
       QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
@@ -1156,7 +1156,7 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
   case DOMDOMImplementation::CreateDocument: { // DOM2
     // Initially set the URL to document of the creator... this is so that it resides in the same
     // host/domain for security checks. The URL will be updated if Document.load() is called.
-    KHTMLPart *part = ::qt_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
     if (part) {
       Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
       KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
@@ -1654,7 +1654,7 @@ const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection"
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QValueList<DOM::Node>& nodes )
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const Q3ValueList<DOM::Node>& nodes )
   : DOMObject(exec->interpreter()->builtinObjectPrototype()),
   m_nodes(nodes)
 {
@@ -1668,7 +1668,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const Identifier &propert
     return Number(m_nodes.count());
   // index?
   bool ok;
-  unsigned int u = propertyName.toULong(&ok);
+  int u = propertyName.toULong(&ok);
   if (ok && u < m_nodes.count()) {
     DOM::Node node = m_nodes[u];
     return getDOMNode(exec,node);

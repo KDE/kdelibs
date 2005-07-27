@@ -16,8 +16,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 #include "kconfigdialog.h"
 
@@ -28,10 +28,10 @@
 #include <kdebug.h>
 
 #include <qlayout.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qmap.h>
 
-QAsciiDict<KConfigDialog> KConfigDialog::openDialogs;
+Q3AsciiDict<KConfigDialog> KConfigDialog::openDialogs;
 
 // This class is here purly so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
@@ -59,7 +59,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
   if ( name ) {
     openDialogs.insert(name, this);
   } else {
-    QCString genericName;
+    Q3CString genericName;
     genericName.sprintf("SettingsDialog-%p", this);
     openDialogs.insert(genericName, this);
     setName(genericName);
@@ -120,7 +120,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
     case TreeList:
     case IconList:
     case Tabbed: {
-      QVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
+      Q3VBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());

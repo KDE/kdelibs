@@ -17,7 +17,7 @@
 #    Boston, MA 02110-1301, USA.
 
 bin_PROGRAMS = ksendbugmail
-INCLUDES= -I$(srcdir)/.. $(all_includes)
+INCLUDES= -I$(srcdir)/.. -I$(top_srcdir)/kdecore/network $(all_includes)
 
 ksendbugmail_SOURCES = main.cpp smtp.cpp
 ksendbugmail_LDFLAGS = $(all_libraries) $(KDE_RPATH)

@@ -27,7 +27,7 @@
 
 #include <dom/dom_node.h>
 #include <qvariant.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <kurl.h>
 #include <kjs/lookup.h>
 
@@ -134,7 +134,7 @@ namespace KJS {
 
   private:
     khtml::ChildFrame* m_frame;
-    QPtrDict<DOMObject> m_domObjects;
+    Q3PtrDict<DOMObject> m_domObjects;
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;

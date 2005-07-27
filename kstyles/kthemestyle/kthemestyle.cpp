@@ -49,26 +49,27 @@ Port version 0.9.7
 #include <qlabel.h>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qpalette.h>
 #include <qtabbar.h>
 #include <qtoolbutton.h>
 #include <kglobalsettings.h>
 #include <kdrawutil.h>
 #include <qdrawutil.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qdir.h>
 #include <qapplication.h>
 #include <qmenubar.h>
-#include <qrangecontrol.h>
+#include <q3rangecontrol.h>
 #include <qslider.h>
 #include <qtooltip.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qradiobutton.h>
 #include <qstatusbar.h>
 #include "kstyledirs.h"
 
 #include <qimage.h>
+#include <q3pointarray.h>
 
 #include <limits.h>
 
@@ -158,14 +159,14 @@ public:
     }
 };
 
-KDE_Q_EXPORT_PLUGIN( KThemeStylePlugin )
+Q_EXPORT_PLUGIN( KThemeStylePlugin )
 
 
 void kDrawWindowsArrow ( QPainter *p, const QStyle* style, QStyle::PrimitiveElement pe, bool down,
                          int x, int y, int w, int h,
                          const QColorGroup &cg, bool enabled )
 {
-    QPointArray a;
+    Q3PointArray a;
     switch ( pe )
     {
         case QStyle::PE_ArrowUp:
@@ -252,7 +253,7 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
                 if ( ! widget || opt.isDefault() )
                     return contentSize;
 
-                const QPopupMenu *popup = ( const QPopupMenu * ) widget;
+                const Q3PopupMenu *popup = ( const Q3PopupMenu * ) widget;
                 bool checkable = popup->isCheckable();
                 QMenuItem *mi = opt.menuItem();
                 int maxpmw = opt.maxIconWidth();
@@ -282,7 +283,7 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 
                     if ( mi->iconSet() )
                         h = QMAX( h, mi->iconSet() ->pixmap(
-                                      QIconSet::Small, QIconSet::Normal ).height() +
+                                      QIcon::Small, QIcon::Normal ).height() +
                                   2 * itemFrame );
                 }
 
@@ -501,10 +502,10 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 
 void KThemeStyle::polish( QWidget *w )
 {
-    if (::qt_cast<QStatusBar*>(w))
+    if (qobject_cast<QStatusBar>(w))
          w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
          
-    if (::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
+    if (qobject_cast<QLabel>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
          w->installEventFilter(this);
 
     if (w->backgroundPixmap() && !w->isTopLevel() && 
@@ -543,15 +544,15 @@ void KThemeStyle::polish( QWidget *w )
         return ;
     }
 
-    if ( ::qt_cast<QMenuBar*>(w) )
+    if ( qobject_cast<QMenuBar>(w) )
     {
-        w->setBackgroundMode( QWidget::NoBackground );
+        w->setBackgroundMode( Qt::NoBackground );
     }
     else if ( w->inherits( "KToolBarSeparator" ) || w->inherits( "QToolBarSeparator" ) )
     {
-        w->setBackgroundMode( QWidget::PaletteBackground );
+        w->setBackgroundMode( Qt::PaletteBackground );
     }
-    else if ( ::qt_cast<QPopupMenu*>(w) )
+    else if ( qobject_cast<Q3PopupMenu>(w) )
     {
         popupPalette = w->palette();
         if ( isColor( MenuItem ) || isColor( MenuItemDown ) )
@@ -569,9 +570,9 @@ void KThemeStyle::polish( QWidget *w )
             w->setPalette( newPal );
         }
 
-        w->setBackgroundMode( QWidget::NoBackground );
+        w->setBackgroundMode( Qt::NoBackground );
     }
-    else if ( ::qt_cast<QCheckBox*>(w) )
+    else if ( qobject_cast<QCheckBox>(w) )
     {
         if ( isColor( IndicatorOff ) || isColor( IndicatorOn ) )
         {
@@ -586,7 +587,7 @@ void KThemeStyle::polish( QWidget *w )
             w->setPalette( newPal );
         }
     }
-    else if ( ::qt_cast<QRadioButton*>(w) )
+    else if ( qobject_cast<QRadioButton>(w) )
     {
         if ( isColor( ExIndicatorOff ) || isColor( ExIndicatorOn ) )
         {
@@ -618,21 +619,21 @@ void KThemeStyle::unPolish( QWidget* w )
     }
 
     //Toolbar labels should nornally be PaletteButton
-    if ( ::qt_cast<QLabel*>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
-        w->setBackgroundMode( QWidget::PaletteButton );
+    if ( qobject_cast<QLabel>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
+        w->setBackgroundMode( Qt::PaletteButton );
         
     //The same for menu bars, popup menus
-    else if ( ::qt_cast<QMenuBar*>(w) || ::qt_cast<QPopupMenu*>(w) )
-        w->setBackgroundMode( QWidget::PaletteButton );
+    else if ( qobject_cast<QMenuBar>(w) || qobject_cast<Q3PopupMenu>(w) )
+        w->setBackgroundMode( Qt::PaletteButton );
         
     //For toolbar internal separators, return to button, too (can't use qt_cast here since don't have access to the class)
     else if ( w->inherits( "KToolBarSeparator" ) || w->inherits( "QToolBarSeparator" ) )
-        w->setBackgroundMode( QWidget::PaletteButton );
+        w->setBackgroundMode( Qt::PaletteButton );
 
     //For scrollbars, we don't do much, since the widget queries the style on the switch
 
     //Drop some custom palettes. ### this really should check the serial number to be 100% correct.
-    if ( ::qt_cast<QPopupMenu*>(w) || ::qt_cast<QCheckBox*>(w) || ::qt_cast<QRadioButton*>(w) || ::qt_cast<QStatusBar*>(w) )
+    if ( qobject_cast<Q3PopupMenu>(w) || qobject_cast<QCheckBox>(w) || qobject_cast<QRadioButton>(w) || qobject_cast<QStatusBar>(w) )
         w->unsetPalette();
 
     KStyle::unPolish( w );
@@ -768,7 +769,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 else if ( arrowType() == SmallArrow )
                 {
                     // #### FIXME: This should be like the Platinum style - uses HighColor look for now
-                    QPointArray a;
+                    Q3PointArray a;
 
                     switch ( pe )
                     {
@@ -810,7 +811,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 }
                 else
                 {
-                    QPointArray a;
+                    Q3PointArray a;
                     int x2 = x + w - 1, y2 = y + h - 1;
                     switch ( pe )
                     {
@@ -902,7 +903,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                         p->drawPixmap( x, y, *mask );
                     }
                     else
-                        p->fillRect( x, y, w, h, QBrush( color1, SolidPattern ) );
+                        p->fillRect( x, y, w, h, QBrush( Qt::color1, Qt::SolidPattern ) );
                     handled = true;
                 }
                 break;
@@ -920,7 +921,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                         p->drawPixmap( x, y, *mask );
                     }
                     else
-                        p->fillRect( x, y, w, h, QBrush( color1, SolidPattern ) );
+                        p->fillRect( x, y, w, h, QBrush( Qt::color1, Qt::SolidPattern ) );
                     handled = true;
                 }
                 break;
@@ -1151,15 +1152,15 @@ void KThemeStyle::drawControl( ControlElement element,
                 // Draw the icon if there is one
                 if ( button->iconSet() && !button->iconSet() ->isNull() )
                 {
-                    QIconSet::Mode mode = QIconSet::Disabled;
-                    QIconSet::State state = QIconSet::Off;
+                    QIcon::Mode mode = QIcon::Disabled;
+                    QIcon::State state = QIcon::Off;
 
                     if ( button->isEnabled() )
-                        mode = button->hasFocus() ? QIconSet::Active : QIconSet::Normal;
+                        mode = button->hasFocus() ? QIcon::Active : QIcon::Normal;
                     if ( button->isToggleButton() && button->isOn() )
-                        state = QIconSet::On;
+                        state = QIcon::On;
 
-                    QPixmap pixmap = button->iconSet() ->pixmap( QIconSet::Small, mode, state );
+                    QPixmap pixmap = button->iconSet() ->pixmap( QIcon::Small, mode, state );
 
                     // Center the iconset if there's no text or pixmap
                     if (button->text().isEmpty() && !button->pixmap())
@@ -1183,14 +1184,14 @@ void KThemeStyle::drawControl( ControlElement element,
 
                     // Text shadow
                     for ( i = 0; i < 2; i++ )
-                        drawItem( p, QRect( x + i + 1, y + 1, w, h ), AlignCenter | ShowPrefix,
+                        drawItem( p, QRect( x + i + 1, y + 1, w, h ), Qt::AlignCenter | Qt::TextShowMnemonic,
                                   button->colorGroup(), button->isEnabled(), NULL,
                                   button->text(), -1,
                                   active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
 
                     // Normal Text
                     for ( i = 0; i < 2; i++ )
-                        drawItem( p, QRect( x + i, y, w, h ), AlignCenter | ShowPrefix,
+                        drawItem( p, QRect( x + i, y, w, h ), Qt::AlignCenter | Qt::TextShowMnemonic,
                                   button->colorGroup(), true, i == 0 ? button->pixmap() : NULL,
                                   button->text(), -1,
                                   active ? &button->colorGroup().light() : &button->colorGroup().buttonText() );
@@ -1199,18 +1200,18 @@ void KThemeStyle::drawControl( ControlElement element,
                 {
                     if ( button->isEnabled() )
                     {
-                        drawItem( p, QRect( x, y, w, h ), AlignCenter | ShowPrefix, button->colorGroup(),
+                        drawItem( p, QRect( x, y, w, h ), Qt::AlignCenter | Qt::TextShowMnemonic, button->colorGroup(),
                                   true, button->pixmap(), button->text(), -1,
                                   active ? &button->colorGroup().light() : &button->colorGroup().buttonText() );
                     }
                     else
                     {
                         //TODO: Handle reversed
-                        drawItem( p, QRect( x + 1, y + 1, w, h ), AlignCenter | ShowPrefix, button->colorGroup(),
+                        drawItem( p, QRect( x + 1, y + 1, w, h ), Qt::AlignCenter | Qt::TextShowMnemonic, button->colorGroup(),
                                   true, button->pixmap(), button->text(), -1,
                                   &button->colorGroup().light() );
 
-                        drawItem( p, QRect( x, y, w, h ), AlignCenter | ShowPrefix, button->colorGroup(),
+                        drawItem( p, QRect( x, y, w, h ), Qt::AlignCenter | Qt::TextShowMnemonic, button->colorGroup(),
                                   true, button->pixmap(), button->text(), -1,
                                   &button->colorGroup().buttonText() );
                     }
@@ -1247,7 +1248,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 int bWidth = borderWidth( widget );
                 int hWidth = highlightWidth( widget );
                 handled = true;
-                if ( tbs == QTabBar::RoundedAbove || tbs == QTabBar::TriangularAbove )
+                if ( tbs == QTabBar::RoundedNorth || tbs == QTabBar:: TriangularNorth )
                 {
                     if ( !selected )
                     {
@@ -1314,8 +1315,8 @@ void KThemeStyle::drawControl( ControlElement element,
                     else
                         p->fillRect( x, y, x2 - x + 1, y2 - y + 1, cg->background() );
                 }
-                else if ( tb->shape() == QTabBar::RoundedBelow ||
-                        tb->shape() == QTabBar::TriangularBelow )
+                else if ( tb->shape() == QTabBar:: RoundedSouth ||
+                        tb->shape() == QTabBar:: TriangularSouth )
                 {
                     if ( widget == ActiveTab )
                         widget = RotActiveTab;
@@ -1415,7 +1416,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 p2.end();
                 p->drawPixmap( x, y, buf, 0, 0, w, h );
                                 
-                drawItem( p, QRect(x,y,w,h), AlignCenter | AlignVCenter | ShowPrefix | DontClip | SingleLine,
+                drawItem( p, QRect(x,y,w,h), Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine,
                           *g, mi->isEnabled(), mi->pixmap(), mi->text(),
                           -1, &btext );
                 handled = true;
@@ -1427,7 +1428,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 int x, y, w, h;
                 r.rect( &x, &y, &w, &h );
 
-                const QPopupMenu *popupmenu = ( const QPopupMenu * ) widget;
+                const Q3PopupMenu *popupmenu = ( const Q3PopupMenu * ) widget;
                 QMenuItem *mi = opt.menuItem();
                 if ( mi )
                 {
@@ -1491,14 +1492,14 @@ void KThemeStyle::drawControl( ControlElement element,
                 // Do we have an icon?
                 if ( mi->iconSet() )
                 {
-                    QIconSet::Mode mode;
+                    QIcon::Mode mode;
                     QRect cr = visualRect( QRect( x, y, checkcol, h ), r );
 
                     // Select the correct icon from the iconset
                     if ( active )
-                        mode = enabled ? QIconSet::Active : QIconSet::Disabled;
+                        mode = enabled ? QIcon::Active : QIcon::Disabled;
                     else
-                        mode = enabled ? QIconSet::Normal : QIconSet::Disabled;
+                        mode = enabled ? QIcon::Normal : QIcon::Disabled;
 
                     // Do we have an icon and are checked at the same time?
                     // Then draw a "pressed" background behind the icon
@@ -1506,7 +1507,7 @@ void KThemeStyle::drawControl( ControlElement element,
                         drawBaseButton( p, cr.x(), cr.y(), cr.width(), cr.height(), *colorGroup( cg_ours, BevelDown ), true, false, BevelDown );
 
                     // Draw the icon
-                    QPixmap pixmap = mi->iconSet() ->pixmap( QIconSet::Small, mode );
+                    QPixmap pixmap = mi->iconSet() ->pixmap( QIcon::Small, mode );
                     int pixw = pixmap.width();
                     int pixh = pixmap.height();
                     QRect pmr( 0, 0, pixw, pixh );
@@ -1582,8 +1583,8 @@ void KThemeStyle::drawControl( ControlElement element,
                     {
                         int t = s.find( '\t' );
                         int m = itemVMargin;
-                        int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-                        text_flags |= reverse ? AlignRight : AlignLeft;
+                        int text_flags = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+                        text_flags |= reverse ? Qt::AlignRight : Qt::AlignLeft;
 
                         // Does the menu item have a tabstop? (for the accelerator text)
                         if ( t >= 0 )
@@ -1627,14 +1628,14 @@ void KThemeStyle::drawControl( ControlElement element,
 
                         // Draw the pixmap
                         if ( pixmap->depth() == 1 )
-                            p->setBackgroundMode( OpaqueMode );
+                            p->setBackgroundMode( Qt::OpaqueMode );
 
                         int diffw = ( ( w - pixmap->width() ) / 2 )
                                     + ( ( w - pixmap->width() ) % 2 );
                         p->drawPixmap( x + diffw, y + itemFrame, *pixmap );
 
                         if ( pixmap->depth() == 1 )
-                            p->setBackgroundMode( TransparentMode );
+                            p->setBackgroundMode( Qt::TransparentMode );
                     }
                 }
 
@@ -1652,8 +1653,8 @@ void KThemeStyle::drawControl( ControlElement element,
                         if ( enabled )
                             discol = cg_ours.buttonText();
 
-                        QColorGroup g2( discol, cg_ours.highlight(), white, white,
-                                        enabled ? white : discol, discol, white );
+                        QColorGroup g2( discol, cg_ours.highlight(), Qt::white, Qt::white,
+                                        enabled ? Qt::white : discol, discol, Qt::white );
 
                         drawPrimitive( arrow, p, vr, g2, Style_Enabled | Style_Down );
                     }
@@ -1679,7 +1680,7 @@ void KThemeStyle::drawControl( ControlElement element,
             }
         case CE_ProgressBarContents:
             {
-                const QProgressBar* pb = (const QProgressBar*)widget;
+                const Q3ProgressBar* pb = (const Q3ProgressBar*)widget;
                 QRect cr = subRect(SR_ProgressBarContents, widget);
                 double progress = pb->progress();
                 bool reverse = QApplication::reverseLayout();
@@ -1788,7 +1789,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                 if ( !roundSlider() )
                 {
                     const QSlider * slider = ( const QSlider* ) widget;
-                    bool horizontal = slider->orientation() == Horizontal;
+                    bool horizontal = slider->orientation() == Qt::Horizontal;
                     if ( horizontal )
                     {
                         drawBaseButton( p, x, y, w, h, *colorGroup( cg, SliderGroove ), true,
@@ -1804,7 +1805,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                 {
                     //This code is from HighColorDefault..
                     const QSlider* slider = ( const QSlider* ) widget;
-                    bool horizontal = slider->orientation() == Horizontal;
+                    bool horizontal = slider->orientation() == Qt::Horizontal;
                     int gcenter = ( horizontal ? r.height() : r.width() ) / 2;
 
                     QRect gr;
@@ -1840,7 +1841,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                 if ( isPixmap( Slider ) )
                 {
                     const QSlider * slider = ( const QSlider* ) widget;
-                    bool horizontal = slider->orientation() == Horizontal;
+                    bool horizontal = slider->orientation() == Qt::Horizontal;
                     if ( horizontal )
                     {
                         bitBlt( p->device(), x, y + ( h - uncached( Slider ) ->height() ) / 2,
@@ -1850,7 +1851,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                     {
                         if ( !vsliderCache )
                         {
-                            QWMatrix r270;
+                            QMatrix r270;
                             r270.rotate( 270 );
                             vsliderCache = new QPixmap( uncached( Slider ) ->xForm( r270 ) );
                             if ( uncached( Slider ) ->mask() )
@@ -1865,7 +1866,7 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                     //This code again from HighColor..
                     //...except sans the gradient..
                     const QSlider* slider = ( const QSlider* ) widget;
-                    bool horizontal = slider->orientation() == Horizontal;
+                    bool horizontal = slider->orientation() == Qt::Horizontal;
                     int x, y, w, h;
                     r.rect( &x, &y, &w, &h );
                     int x2 = x + w - 1;
@@ -2152,13 +2153,13 @@ void KThemeStyle::drawBaseMask( QPainter *p, int x, int y, int w, int h,
             3, 1, 3, 2, 3, 3, 3, 4, 3, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4
         };
 
-    QBrush fillBrush( color1, SolidPattern );
-    p->setPen( color1 );
+    QBrush fillBrush( Qt::color1, Qt::SolidPattern );
+    p->setPen( Qt::color1 );
     if ( round && w > 19 && h > 19 )
     {
         int x2 = x + w - 1;
         int y2 = y + h - 1;
-        QPointArray a( QCOORDARRLEN( top_left_fill ), top_left_fill );
+        Q3PointArray a( QCOORDARRLEN( top_left_fill ), top_left_fill );
         a.translate( 1, 1 );
         p->drawPoints( a );
         a.setPoints( QCOORDARRLEN( btm_left_fill ), btm_left_fill );
@@ -2200,10 +2201,10 @@ int KThemeStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOption &
             return 1;
 
         case SH_GUIStyle:
-            return WindowsStyle;
+            return Qt::WindowsStyle;
 
 	case SH_ScrollBar_BackgroundMode:
-	    return NoBackground;
+	    return Qt::NoBackground;
 
         default:
             return KThemeBase::styleHint( sh, w, opt, shr );
@@ -2242,8 +2243,8 @@ void KThemeStyle::drawShade( QPainter *p, int x, int y, int w, int h,
     if ( rounded && w > 19 && h > 19 )
     {
         x2 = x + w - 1, y2 = y + h - 1;
-        QPointArray bPntArray, hPntArray, lPntArray;
-        QPointArray bLineArray, hLineArray, lLineArray;
+        Q3PointArray bPntArray, hPntArray, lPntArray;
+        Q3PointArray bLineArray, hLineArray, lLineArray;
         // borders
         for ( i = 0, bc = 0; i < bWidth; ++i )
         {
@@ -2312,8 +2313,8 @@ void KThemeStyle::drawShade( QPainter *p, int x, int y, int w, int h,
     // Rectangular buttons
     else
     {
-        QPointArray highShade( hWidth * 4 );
-        QPointArray lowShade( hWidth * 4 );
+        Q3PointArray highShade( hWidth * 4 );
+        Q3PointArray lowShade( hWidth * 4 );
 
         p->setPen( g.shadow() );
         for ( i = 0; i < bWidth && w > 2 && h > 2; ++i, ++x, ++y, w -= 2, h -= 2 )
@@ -2372,7 +2373,7 @@ int KThemeStyle::popupMenuItemHeight( bool /*checkable*/, QMenuItem *mi,
     if ( mi->iconSet() )
     {
         h2 = mi->iconSet() ->
-             pixmap( QIconSet::Small, QIconSet::Normal ).height() + offset;
+             pixmap( QIcon::Small, QIcon::Normal ).height() + offset;
         h = h2 > h ? h2 : h;
     }
     h2 = fm.height() + offset;

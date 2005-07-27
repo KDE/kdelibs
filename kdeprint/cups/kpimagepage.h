@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KPIMAGEPAGE_H
@@ -24,7 +24,7 @@
 
 class KIntNumInput;
 class QComboBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 class ImagePreview;
 class ImagePosition;
 
@@ -48,7 +48,7 @@ private:
 	KIntNumInput	*m_brightness, *m_hue, *m_saturation, *m_gamma;
 	QComboBox		*m_sizetype;
 	KIntNumInput	*m_size;
-	QButtonGroup	*m_vertgrp, *m_horizgrp;
+	Q3ButtonGroup	*m_vertgrp, *m_horizgrp;
 	ImagePreview	*m_preview;
 	ImagePosition	*m_position;
 };

@@ -21,7 +21,7 @@
 #ifndef __kbookmarkdombuilder_h
 #define __kbookmarkdombuilder_h
 
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <qobject.h>
 #include <kbookmark.h>
 
@@ -35,13 +35,13 @@ public:
    virtual ~KBookmarkDomBuilder();
    void connectImporter(const QObject *);
 protected slots:
-   void newBookmark(const QString &text, const QCString &url, const QString &additionalInfo);
+   void newBookmark(const QString &text, const Q3CString &url, const QString &additionalInfo);
    void newFolder(const QString &text, bool open, const QString &additionalInfo);
    void newSeparator();
    void endFolder();
 private:
-   QValueStack<KBookmarkGroup> m_stack;
-   QValueList<KBookmarkGroup> m_list;
+   Q3ValueStack<KBookmarkGroup> m_stack;
+   Q3ValueList<KBookmarkGroup> m_list;
    KBookmarkManager *m_manager;
    class KBookmarkDomBuilderPrivate *p;
 };

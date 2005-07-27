@@ -22,6 +22,7 @@
 #include <kio/job.h>
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
+#include <qtimer.h>
 
 #include "kioslavetest.h"
 
@@ -60,7 +61,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   le_dest->setText( dest );
 
   // Operation groupbox & buttons
-  opButtons = new QButtonGroup( "Operation", main_widget );
+  opButtons = new Q3ButtonGroup( "Operation", main_widget );
   topLayout->addWidget( opButtons, 10 );
   connect( opButtons, SIGNAL(clicked(int)), SLOT(changeOperation(int)) );
 
@@ -114,7 +115,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   changeOperation( op );
 
   // Progress groupbox & buttons
-  progressButtons = new QButtonGroup( "Progress dialog mode", main_widget );
+  progressButtons = new Q3ButtonGroup( "Progress dialog mode", main_widget );
   topLayout->addWidget( progressButtons, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
@@ -209,10 +210,9 @@ void KioslaveTest::changeProgressMode( int id ) {
 
 
 void KioslaveTest::startJob() {
-  QString sCurrent = QDir::currentDirPath()+"/";
-  KURL::encode_string(sCurrent);
+  KURL sCurrent = KURL::fromPathOrURL (QDir::currentDirPath() );
   QString sSrc( le_source->text() );
-  KURL src( sCurrent, sSrc );
+  KURL src = KURL( sCurrent, sSrc );
 
   if ( !src.isValid() ) {
     QMessageBox::critical(this, "Kioslave Error Message", "Source URL is malformed" );
@@ -418,7 +418,7 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
     }
     else
     {
-       kdDebug(0) << "Data: \"" << QCString(data, data.size()+1) << "\"" << endl;
+       kdDebug(0) << "Data: \"" << Q3CString(data, data.size()+1) << "\"" << endl;
     }
 }
 
@@ -520,6 +520,7 @@ int main(int argc, char **argv) {
   args->clear(); // Free up memory
 
   KioslaveTest test( src, dest, op, pr );
+  QTimer::singleShot(100, &test, SLOT(startJob()));
   test.show();
   // Bug in KTMW / Qt / layouts ?
   test.resize( test.sizeHint() );

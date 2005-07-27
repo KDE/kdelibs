@@ -84,7 +84,7 @@ bool showWin32FilePropertyDialog(const QString& fileName);
  Used e.g. by kbuildsycoca application.
 */
 KDEWIN32_EXPORT
-QCString getWin32LocaleName();
+Q3CString getWin32LocaleName();
 
 #endif //__cplusplus
 

@@ -32,6 +32,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 #include <qmetaobject.h>
+#include <qtextstream.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -408,7 +409,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     tempPathUrl.setPath( remoteTempFileName );
     bJobOK = true; // success unless further error occurs
     QByteArray packedArgs;
-    QDataStream stream( packedArgs, IO_WriteOnly );
+    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
     stream << int('X') << tempPathUrl << command;
 
@@ -423,7 +424,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     {
       QFile resultFile( target );
 
-      if (resultFile.open( IO_ReadOnly ))
+      if (resultFile.open( QIODevice::ReadOnly ))
       {
         QTextStream ts( &resultFile );
         ts.setEncoding( QTextStream::Locale ); // Locale??
@@ -462,16 +463,16 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
-  QMetaObject *meta = job->metaObject();
+  const QMetaObject* meta = job->metaObject();
 
   static const char dataSignal[] = "data(KIO::Job*,const QByteArray&)";
-  if ( meta->findSignal( dataSignal ) != -1 ) {
+  if ( meta->indexOfSignal( dataSignal ) != -1 ) {
       connect( job, SIGNAL(data(KIO::Job*,const QByteArray&)),
                this, SLOT(slotData(KIO::Job*,const QByteArray&)) );
   }
 
   static const char redirSignal[] = "redirection(KIO::Job*,const KURL&)";
-  if ( meta->findSignal( redirSignal ) != -1 ) {
+  if ( meta->indexOfSignal( redirSignal ) != -1 ) {
       connect( job, SIGNAL(redirection(KIO::Job*,const KURL&)),
                this, SLOT(slotRedirection(KIO::Job*, const KURL&)) );
   }
@@ -486,17 +487,12 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
   return bJobOK;
 }
 
-// If a troll sees this, he kills me
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
-
 void NetAccess::enter_loop()
 {
-  QWidget dummy(0,0,WType_Dialog | WShowModal);
-  dummy.setFocusPolicy( QWidget::NoFocus );
-  qt_enter_modal(&dummy);
-  qApp->enter_loop();
-  qt_leave_modal(&dummy);
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(leaveModality()),
+            &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void NetAccess::slotResult( KIO::Job * job )
@@ -515,7 +511,7 @@ void NetAccess::slotResult( KIO::Job * job )
   if ( m_metaData )
     *m_metaData = job->metaData();
 
-  qApp->exit_loop();
+  emit leaveModality();
 }
 
 void NetAccess::slotData( KIO::Job*, const QByteArray& data )

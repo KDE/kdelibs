@@ -25,10 +25,10 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstringlist.h>
-#include <qmemarray.h>
-#include <qguardedptr.h>
+#include <q3memarray.h>
+#include <qpointer.h>
 #include <qtimer.h>
 
 #include <kio/job.h>
@@ -36,7 +36,7 @@
 namespace KABC {
 
 class LdapClient;
-typedef QValueList<QByteArray> LdapAttrValue;
+typedef Q3ValueList<QByteArray> LdapAttrValue;
 typedef QMap<QString,LdapAttrValue > LdapAttrMap;
 
 /**
@@ -172,13 +172,13 @@ class KABC_EXPORT LdapClient : public QObject
     QString mScope;
     QStringList mAttrs;
 
-    QGuardedPtr<KIO::SimpleJob> mJob;
+    QPointer<KIO::SimpleJob> mJob;
     bool mActive;
 
     LdapObject mCurrentObject;
-    QCString mBuf;
-    QCString mLastAttrName;
-    QCString mLastAttrValue;
+    Q3CString mBuf;
+    Q3CString mLastAttrName;
+    Q3CString mLastAttrValue;
     bool mIsBase64;
 
   private:
@@ -194,7 +194,7 @@ struct LdapResult {
   QString email;    ///< email
   int clientNumber; ///< for sorting
 };
-typedef QValueList<LdapResult> LdapResultList;
+typedef Q3ValueList<LdapResult> LdapResultList;
 
 
 /**
@@ -233,12 +233,12 @@ class KABC_EXPORT LdapSearch : public QObject
   private:
     void finish();
     void makeSearchData( QStringList& ret, LdapResultList& resList );
-    QValueList< LdapClient* > mClients;
+    Q3ValueList< LdapClient* > mClients;
     QString mSearchText;
     QTimer mDataTimer;
     int mActiveClients;
     bool mNoLDAPLookup;
-    QValueList< LdapObject > mResults;
+    Q3ValueList< LdapObject > mResults;
 
   private:
     class LdapSearchPrivate* d;

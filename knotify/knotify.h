@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <knotifyclient.h>
 #include <dcopobject.h>
+#include <qwindowdefs.h>
 
 class KNotifyPrivate;
 class KProcess;
@@ -47,8 +48,11 @@ public:
         Unknown = 5000
     };
 
+    bool event(QEvent* );
+
 protected:
 k_dcop:
+/*
 	// deprecated
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
@@ -58,10 +62,10 @@ k_dcop:
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
                          int present, int level, int winId);
-
+*/
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
-                         int present, int level, int winId, int eventId);
+                         int present, int level, int winId = 0, int eventId = 1);
 
 
 	void reconfigure();

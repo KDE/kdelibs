@@ -36,7 +36,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
 	path.latin1(), (*it).latin1(), entry->isDirectory(),
-	!entry->symlink() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
+	entry->symlink().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symlink()).latin1() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
@@ -104,7 +104,7 @@ int main( int argc, char** argv )
   {
     KZip zip( argv[2] );
 
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -124,7 +124,7 @@ int main( int argc, char** argv )
   {
     KZip zip( argv[2] );
 
-    if ( !zip.open( IO_WriteOnly ) )
+    if ( !zip.open( QIODevice::WriteOnly ) )
     {
       printf("Could not open %s for writing\n", argv[2]);
       return 1;
@@ -165,7 +165,7 @@ int main( int argc, char** argv )
 
     printf("-----------------------\n");
 
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -203,7 +203,7 @@ int main( int argc, char** argv )
   {
     KZip zip( argv[2] );
 
-    if ( !zip.open( IO_WriteOnly ) )
+    if ( !zip.open( QIODevice::WriteOnly ) )
     {
       printf("Could not open %s for writing\n", argv[2]);
       return 1;
@@ -226,7 +226,7 @@ int main( int argc, char** argv )
   else if ( command == "iodevice" )
   {
     KZip zip( argv[2] );
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
       return 1;
     const KArchiveDirectory* dir = zip.directory();
     assert(dir);
@@ -236,7 +236,7 @@ int main( int argc, char** argv )
         QIODevice *dev = static_cast<const KZipFileEntry *>(entry)->device();
         if ( dev ) {
             QByteArray contents = dev->readAll();
-            printf("contents='%s'\n", QCString(contents, contents.size()+1).data());
+            printf("contents='%s'\n", Q3CString(contents, contents.size()+1).data());
         }
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
@@ -246,7 +246,7 @@ int main( int argc, char** argv )
   {
     KZip zip( argv[2] );
     kdDebug() << "Opening zip file" << endl;
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -281,7 +281,7 @@ int main( int argc, char** argv )
 	return 1;
     }
     KZip zip( argv[2] );
-    if ( !zip.open( IO_ReadOnly ) )
+    if ( !zip.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -309,7 +309,7 @@ int main( int argc, char** argv )
        return 1;
     }
     KZip zip( argv[2] );
-    if ( !zip.open( IO_ReadWrite ) )
+    if ( !zip.open( QIODevice::ReadWrite ) )
     {
       printf("Could not open %s for read/write\n", argv[2] );
       return 1;
@@ -321,7 +321,7 @@ int main( int argc, char** argv )
 //    QCString data( "This is some new data that goes into " );
   //  data += argv[3];
     QFile f ( argv[3] );
-    if (!f.open( IO_ReadOnly )) 
+    if (!f.open( QIODevice::ReadOnly )) 
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
@@ -346,12 +346,12 @@ int main( int argc, char** argv )
     }
     KZip zip1( argv[2] );
     KZip zip2( argv[3] );
-    if ( !zip1.open( IO_ReadOnly ) )
+    if ( !zip1.open( QIODevice::ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
     }
-    if ( !zip2.open( IO_WriteOnly ) )
+    if ( !zip2.open( QIODevice::WriteOnly ) )
     {
       printf("Could not open %s for writing\n", argv[3] );
       return 1;

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 /*
@@ -31,7 +31,7 @@
 #include <netwm_def.h>
 #endif
 
-class QFrame;
+class Q3Frame;
 class KDockContainer;
 
 
@@ -56,7 +56,7 @@ public:
    * @param orient orientation. Either @p Vertical or @p Horizontal
    * @param pos procentual position of the splitter. Must be int [0...100].
    */
-  KDockSplitter(QWidget *parent= 0, const char *name= 0, Orientation orient= Vertical, int pos= 50);
+  KDockSplitter(QWidget *parent= 0, const char *name= 0, Qt::Orientation orient= Qt::Vertical, int pos= 50);
   virtual ~KDockSplitter(){};
 
   /**
@@ -156,7 +156,7 @@ public:
   /**
    * The orientation is either @p Horizontal or @p Vertical.
    */
-  Orientation orientation(){return m_orientation;}
+  Qt::Orientation orientation(){return m_orientation;}
 
 protected:
   friend class  KDockContainer;
@@ -208,7 +208,7 @@ private:
    * child[01]->getWidget() may be KDockContainer.
    */
   QWidget *child0, *child1;
-  Orientation m_orientation;
+  Qt::Orientation m_orientation;
   /**
    * If initialised is true, the divider!=0L. If false, the divider==0L!
    */
@@ -217,7 +217,7 @@ private:
    * The splitter controller which is between child0 and child1.
    * Its size is 4 pixel.
    */
-  QFrame* divider;
+  Q3Frame* divider;
   /**
    * @p xpos and @p savedXPos represent the current divider position.
    * If the orientation is Horizontal @p xpos actually is "ypos". So
@@ -256,6 +256,7 @@ protected:
   virtual void drawButton( QPainter * );
   virtual void enterEvent( QEvent * );
   virtual void leaveEvent( QEvent * );
+  virtual void paintEvent( QPaintEvent * );
 
 private:
   bool moveMouse;
@@ -303,7 +304,7 @@ public:
   QWidget *_parent;
   bool transient;
 
-  QGuardedPtr<QWidget> container;
+  QPointer<QWidget> container;
 
   QPoint resizePos;
   bool resizing;
@@ -327,7 +328,7 @@ public:
 
   bool showToDesktopButton;
   bool topLevel;
-  QPtrList<KDockButton_Private> btns;
+  Q3PtrList<KDockButton_Private> btns;
   bool forceCloseButtonHidden;
   QWidget *dummy;
 };

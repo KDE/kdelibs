@@ -22,8 +22,8 @@
 #define KBOOKMARKBAR_H
 
 #include <qobject.h>
-#include <qguardedptr.h>
-#include <qptrlist.h>
+#include <qpointer.h>
+#include <q3ptrlist.h>
 #include <kbookmark.h>
 #include <kaction.h>
 
@@ -32,7 +32,7 @@ class KBookmarkMenu;
 class KBookmarkOwner;
 class KActionCollection;
 class KAction;
-class QPopupMenu;
+class Q3PopupMenu;
 
 /**
  * This class provides a bookmark toolbar.  Using this class is nearly
@@ -82,7 +82,7 @@ signals:
     /**
      * @since 3.2
      */
-    void aboutToShowContextMenu( const KBookmark &, QPopupMenu * );
+    void aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * );
     /**
      * @since 3.4
      */
@@ -118,10 +118,10 @@ private:
     KBookmarkGroup getToolbar();
 
     KBookmarkOwner *m_pOwner;
-    QGuardedPtr<KToolBar> m_toolBar;
+    QPointer<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
-    QPtrList<KBookmarkMenu> m_lstSubMenus;
+    Q3PtrList<KBookmarkMenu> m_lstSubMenus;
 
 private:
     class KBookmarkBarPrivate* dptr() const;

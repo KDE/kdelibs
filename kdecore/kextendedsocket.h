@@ -1,4 +1,1 @@
-#ifndef KEXTENDEDSOCKET_H
-#define KEXTENDEDSOCKET_H
-#include "kextsock.h"
-#endif
+#error These classes have been removed. Upgrade to the new classes (mail thiago@kde.org).

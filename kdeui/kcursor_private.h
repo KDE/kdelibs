@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef KCURSOR_PRIVATE_H
@@ -23,7 +23,7 @@
 
 #include <qcursor.h>
 #include <qobject.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 
 class QPoint;
 class QTimer;
@@ -91,7 +91,7 @@ private:
     bool enabled;
     static KCursorPrivate *s_self;
 
-    QPtrDict<KCursorPrivateAutoHideEventFilter> m_eventFilters;
+    Q3PtrDict<KCursorPrivateAutoHideEventFilter> m_eventFilters;
 };
 
 

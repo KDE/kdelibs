@@ -29,7 +29,7 @@
 #include <qfontmetrics.h>
 #include <qpainter.h>
 
-class QPaintDeviceMetrics;
+class Q3PaintDeviceMetrics;
 
 
 namespace khtml
@@ -81,7 +81,7 @@ public:
 
     const FontDef& getFontDef() const { return fontDef; }
 
-    void update( QPaintDeviceMetrics *devMetrics ) const;
+    void update( Q3PaintDeviceMetrics *devMetrics ) const;
 
     /**
      * Draws a piece from the given piece of text.
@@ -108,7 +108,7 @@ public:
      * @param deco combined text decoration (see Decoration)
      */
     void drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len, int width,
-                   QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor(),
+                   Qt::LayoutDirection d, int from=-1, int to=-1, QColor bg=QColor(),
 		   int uy=-1, int h=-1, int deco=0 ) const;
 
     /** returns the width of the given string chunk in pixels.

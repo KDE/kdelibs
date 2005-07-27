@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmthreadjob.h"
@@ -51,10 +51,10 @@ QString KMThreadJob::jobFile()
 bool KMThreadJob::saveJobs()
 {
 	QFile	f(jobFile());
-	if (f.open(IO_WriteOnly))
+	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		QIntDictIterator<KMJob>	it(m_jobs);
+		Q3IntDictIterator<KMJob>	it(m_jobs);
 		for (;it.current();++it)
 			t << it.current()->id() << CHARSEP << it.current()->name() << CHARSEP << it.current()->printer() << CHARSEP << it.current()->owner() << CHARSEP << it.current()->size() << endl;
 		return true;
@@ -65,13 +65,13 @@ bool KMThreadJob::saveJobs()
 bool KMThreadJob::loadJobs()
 {
 	QFile	f(jobFile());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line;
 
 		m_jobs.clear();
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())
@@ -161,7 +161,7 @@ void KMThreadJob::createJob(KMJob *job)
 void KMThreadJob::updateManager(KMJobManager *mgr)
 {
 	loadJobs();
-	QIntDictIterator<KMJob>	it(m_jobs);
+	Q3IntDictIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 	{
 		KMJob	*job = new KMJob(*(it.current()));

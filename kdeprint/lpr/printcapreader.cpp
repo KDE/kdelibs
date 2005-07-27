@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "printcapreader.h"
@@ -119,7 +119,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
         entry->comment = comment;
         // kdDebug() << "Printer: " << entry->name << endl;
         // kdDebug() << "Aliases:" << endl;
-        for (uint i=1; i<l.count(); i++)
+        for (int i=1; i<l.count(); i++)
         {
             entry->aliases << l[i];
             // kdDebug() << "  " << l[i] << endl;

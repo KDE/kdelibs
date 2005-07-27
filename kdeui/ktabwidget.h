@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KTABWIDGET_H
@@ -25,6 +25,8 @@
 #include <qstringlist.h>
 
 #include <kdelibs_export.h>
+
+class QTab;
 
 class KTabWidgetPrivate;
 
@@ -43,19 +45,19 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     Q_PROPERTY( bool automaticResizeTabs READ automaticResizeTabs WRITE setAutomaticResizeTabs )
 
 public:
-    KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+    KTabWidget( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
     /**
      * Destructor.
      */
     virtual ~KTabWidget();
     /*!
       Set the tab of the given widget to \a color.
-    */
+    *
     void setTabColor( QWidget *, const QColor& color );
-    /*!
+    *!
       Returns the tab color for the given widget.
-    */
-    QColor tabColor( QWidget * ) const;
+    *
+    QColor tabColor( QWidget * ) const;*/
 
     /*!
       Returns true if tab ordering with the middle mouse button
@@ -104,18 +106,18 @@ public:
 
     /*!
       Reimplemented for internal reasons.
-     */
+     *
     virtual void insertTab( QWidget *, const QString &, int index = -1 );
 
-    /*!
+    *!
       Reimplemented for internal reasons.
-     */
-    virtual void insertTab( QWidget *child, const QIconSet& iconset,
+     *
+    virtual void insertTab( QWidget *child, const QIcon& iconset,
                             const QString &label, int index = -1 );
-    /*!
+    *!
       Reimplemented for internal reasons.
-    */
-    virtual void insertTab( QWidget *, QTab *, int index = -1 );
+    *
+    virtual void insertTab( QWidget *, QTab *, int index = -1 );*/
 
     /*!
       Reimplemented for internal reasons.
@@ -125,7 +127,7 @@ public:
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *child, const QIconSet& iconset, const QString &label );
+    void changeTab( QWidget *child, const QIcon& iconset, const QString &label );
 
     /*!
       Reimplemented for internal reasons.
@@ -271,6 +273,9 @@ protected:
     virtual void wheelEvent( QWheelEvent *e );
 #endif
     virtual void resizeEvent( QResizeEvent * );
+    virtual void tabInserted( int );
+    virtual void tabRemoved ( int );
+
 
 protected slots:
     virtual void receivedDropEvent( int, QDropEvent * );

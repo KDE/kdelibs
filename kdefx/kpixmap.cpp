@@ -103,10 +103,10 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     for ( y=0; y < src->height(); y++ ) {
 	// p = (QRgb *)src->scanLine(y);
 	b = dst->scanLine(y);
-	int endian = (QImage::systemBitOrder() == QImage::BigEndian);
+	int endian = (QImage::systemByteOrder() == QImage::BigEndian);
 	int x;
-	uchar* q = src->scanLine(y);
-	uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
+	const uchar* q = src->scanLine(y);
+	const uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
 
 	for (int chan = 0; chan < 3; chan++) {
 	    b = dst->scanLine(y);
@@ -190,13 +190,13 @@ KPixmap::~KPixmap()
 bool KPixmap::load( const QString& fileName, const char *format,
 		    int conversion_flags )
 {
-    QImageIO io( fileName, format );
+    QImage image;
 
-    bool result = io.read();
+    bool result = image.load( fileName, format );
 	
     if ( result ) {
 	detach();
-	result = convertFromImage( io.image(), conversion_flags );
+	result = convertFromImage( image, conversion_flags );
     }
     return result;
 }
@@ -207,10 +207,10 @@ bool KPixmap::load( const QString& fileName, const char *format,
     int conversion_flags = 0;
     switch (mode) {
     case Color:
-	conversion_flags |= ColorOnly;
+	conversion_flags |= Qt::ColorOnly;
 	break;
     case Mono:
-	conversion_flags |= MonoOnly;
+	conversion_flags |= Qt::MonoOnly;
 	break;
     case LowColor:
 	conversion_flags |= LowOnly;
@@ -229,10 +229,10 @@ bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
     int conversion_flags = 0;
     switch (mode) {
     case Color:
-	conversion_flags |= ColorOnly;
+	conversion_flags |= Qt::ColorOnly;
 	break;
     case Mono:
-	conversion_flags |= MonoOnly;
+	conversion_flags |= Qt::MonoOnly;
 	break;
     case LowColor:
 	conversion_flags |= LowOnly;
@@ -244,6 +244,17 @@ bool KPixmap::convertFromImage( const QImage &img, ColorMode mode )
 	break;	// Nothing.
     }
     return convertFromImage( img, conversion_flags );
+}
+
+static Qt::ImageConversionFlags intToQtFlags(int conversion_flags)
+{
+    //### An evil hack to convert types. This needs redesign, or to be killed
+    conversion_flags = conversion_flags & ~ KColorMode_Mask;
+
+    Qt::ImageConversionFlags flags;
+    flags  = ~flags;            //Now flags has all bits set.
+    flags &= conversion_flags;  //..which means this now puts conversion_flags into flags
+    return flags;
 }
 
 bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
@@ -261,7 +272,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     // If color mode not one of KPixmaps extra modes nothing to do
     if ( ( conversion_flags & KColorMode_Mask ) != LowOnly &&
 	 ( conversion_flags & KColorMode_Mask ) != WebOnly ) {
-	    return QPixmap::convertFromImage ( img, conversion_flags );
+	    return QPixmap::convertFromImage ( img, intToQtFlags(conversion_flags) );
     }
 
     // If the default pixmap depth is not 8bpp, KPixmap color modes have no
@@ -270,7 +281,7 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
 	if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ||
 	     ( conversion_flags & KColorMode_Mask ) == WebOnly )
 	    conversion_flags = (conversion_flags & ~KColorMode_Mask) | Auto;
-	return QPixmap::convertFromImage ( img, conversion_flags );
+	return QPixmap::convertFromImage ( img, intToQtFlags(conversion_flags) );
     }
 	
     if ( ( conversion_flags & KColorMode_Mask ) == LowOnly ) {
@@ -307,8 +318,8 @@ bool KPixmap::convertFromImage( const QImage &img, int conversion_flags  )
     } else {
 	QImage  image = img.convertDepth( 32 );
 	image.setAlphaBuffer( img.hasAlphaBuffer() );
-	conversion_flags = (conversion_flags & ~ColorMode_Mask) | Auto;
-	return QPixmap::convertFromImage ( image, conversion_flags );
+	conversion_flags = (conversion_flags & ~Qt::ColorMode_Mask) | Auto;
+	return QPixmap::convertFromImage ( image, intToQtFlags(conversion_flags) );
     }
 }
 
@@ -322,23 +333,23 @@ bool KPixmap::checkColorTable( const QImage &image )
 	kpixmap_iconPalette = new QColor[40];
 	
 	// Standard palette
-	kpixmap_iconPalette[i++] = red;
-	kpixmap_iconPalette[i++] = green;
-	kpixmap_iconPalette[i++] = blue;
-	kpixmap_iconPalette[i++] = cyan;
-	kpixmap_iconPalette[i++] = magenta;
-	kpixmap_iconPalette[i++] = yellow;
-	kpixmap_iconPalette[i++] = darkRed;
-	kpixmap_iconPalette[i++] = darkGreen;
-	kpixmap_iconPalette[i++] = darkBlue;
-	kpixmap_iconPalette[i++] = darkCyan;
-	kpixmap_iconPalette[i++] = darkMagenta;
-	kpixmap_iconPalette[i++] = darkYellow;
-	kpixmap_iconPalette[i++] = white;
-	kpixmap_iconPalette[i++] = lightGray;
-	kpixmap_iconPalette[i++] = gray;
-	kpixmap_iconPalette[i++] = darkGray;
-	kpixmap_iconPalette[i++] = black;
+	kpixmap_iconPalette[i++] = Qt::red;
+	kpixmap_iconPalette[i++] = Qt::green;
+	kpixmap_iconPalette[i++] = Qt::blue;
+	kpixmap_iconPalette[i++] = Qt::cyan;
+	kpixmap_iconPalette[i++] = Qt::magenta;
+	kpixmap_iconPalette[i++] = Qt::yellow;
+	kpixmap_iconPalette[i++] = Qt::darkRed;
+	kpixmap_iconPalette[i++] = Qt::darkGreen;
+	kpixmap_iconPalette[i++] = Qt::darkBlue;
+	kpixmap_iconPalette[i++] = Qt::darkCyan;
+	kpixmap_iconPalette[i++] = Qt::darkMagenta;
+	kpixmap_iconPalette[i++] = Qt::darkYellow;
+	kpixmap_iconPalette[i++] = Qt::white;
+	kpixmap_iconPalette[i++] = Qt::lightGray;
+	kpixmap_iconPalette[i++] = Qt::gray;
+	kpixmap_iconPalette[i++] = Qt::darkGray;
+	kpixmap_iconPalette[i++] = Qt::black;
 	
 	// Pastels
 	kpixmap_iconPalette[i++] = QColor( 255, 192, 192 );
@@ -383,7 +394,7 @@ bool KPixmap::checkColorTable( const QImage &image )
 	
     }
 
-    QRgb* ctable = image.colorTable();
+    QRgb* ctable = image.colorTable().data();
 
     int ncols = image.numColors();
     int j;

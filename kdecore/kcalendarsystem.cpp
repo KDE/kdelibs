@@ -58,7 +58,7 @@ QString KCalendarSystem::dayString(const QDate & pDate, bool bShort) const
 
   sResult.setNum(day(pDate));
   if (!bShort && sResult.length() == 1 )
-    sResult.prepend('0');
+    sResult.prepend(QLatin1Char('0'));
 
   return sResult;
 }
@@ -69,7 +69,7 @@ QString KCalendarSystem::monthString(const QDate & pDate, bool bShort) const
 
   sResult.setNum(month(pDate));
   if (!bShort && sResult.length() == 1 )
-    sResult.prepend('0');
+    sResult.prepend(QLatin1Char('0'));
 
   return sResult;
 }
@@ -87,7 +87,7 @@ QString KCalendarSystem::yearString(const QDate & pDate, bool bShort) const
 
 static int stringToInteger(const QString & sNum, int & iLength)
 {
-  unsigned int iPos = 0;
+  int iPos = 0;
 
   int result = 0;
   for (; sNum.length() > iPos && sNum.at(iPos).isDigit(); iPos++)

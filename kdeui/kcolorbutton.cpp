@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <config.h>
@@ -27,6 +27,8 @@
 #include <qstyle.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
+#include <QMouseEvent>
+#include <QStyleOptionButton>
 #include "kcolordialog.h"
 #include "kcolorbutton.h"
 #include "kcolordrag.h"
@@ -101,38 +103,57 @@ void KColorButton::setDefaultColor( const QColor &c )
   d->m_defaultColor = c;
 }
 
-
-void KColorButton::drawButtonLabel( QPainter *painter )
+void KColorButton::initStyleOption(QStyleOptionButton* opt) const
 {
-  int x, y, w, h;
-  QRect r = style().subRect( QStyle::SR_PushButtonContents, this );
-  r.rect(&x, &y, &w, &h);
+    opt->init(this);
+    opt->text = QString();
+    opt->icon = QIcon();
+    opt->features = QStyleOptionButton::None;
+}
 
-  int margin = style().pixelMetric( QStyle::PM_ButtonMargin, this );
-  x += margin;
-  y += margin;
-  w -= 2*margin;
-  h -= 2*margin;
+void KColorButton::paintEvent( QPaintEvent* )
+{
+  QPainter painter(this);
+
+  //First, we need to draw the bevel.
+  QStyleOptionButton butOpt;
+  initStyleOption(&butOpt);
+  style()->drawControl( QStyle::CE_PushButtonBevel, &butOpt, &painter, this );
+
+  //OK, now we can muck around with drawing out pretty little color box
+  //First, sort out where it goes
+  QRect labelRect = style()->subElementRect( QStyle::SE_PushButtonContents,
+      &butOpt, this );
+  int shift = style()->pixelMetric( QStyle::PM_ButtonMargin );
+  labelRect.adjust(shift, shift, -shift, -shift);
+  int x, y, w, h;
+  labelRect.getRect(&x, &y, &w, &h);
 
   if (isOn() || isDown()) {
-    x += style().pixelMetric( QStyle::PM_ButtonShiftHorizontal, this );
-    y += style().pixelMetric( QStyle::PM_ButtonShiftVertical, this );
+    x += style()->pixelMetric( QStyle::PM_ButtonShiftHorizontal );
+    y += style()->pixelMetric( QStyle::PM_ButtonShiftVertical   );
   }
 
   QColor fillCol = isEnabled() ? col : backgroundColor();
-  qDrawShadePanel( painter, x, y, w, h, colorGroup(), true, 1, NULL);
+  qDrawShadePanel( &painter, x, y, w, h, colorGroup(), true, 1, NULL);
   if ( fillCol.isValid() )
-    painter->fillRect( x+1, y+1, w-2, h-2, fillCol );
+    painter.fillRect( x+1, y+1, w-2, h-2, fillCol );
 
   if ( hasFocus() ) {
-    QRect focusRect = style().subRect( QStyle::SR_PushButtonFocusRect, this );
-    style().drawPrimitive( QStyle::PE_FocusRect, painter, focusRect, colorGroup() );
+    QRect focusRect = style()->subElementRect( QStyle::SE_PushButtonFocusRect, &butOpt, this );
+    QStyleOptionFocusRect focusOpt;
+    focusOpt.init(this);
+    focusOpt.rect            = focusRect;
+    focusOpt.backgroundColor = palette().background().color();
+    style()->drawPrimitive( QStyle::PE_FrameFocusRect, &focusOpt, &painter, this );
   }
 }
 
 QSize KColorButton::sizeHint() const
 {
-  return style().sizeFromContents(QStyle::CT_PushButton, this, QSize(40, 15)).
+    QStyleOptionButton opt;
+    initStyleOption(&opt);
+    return style()->sizeFromContents(QStyle::CT_PushButton, &opt, QSize(40, 15), this).
 	  	expandedTo(QApplication::globalStrut());
 }
 
@@ -174,7 +195,7 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
-  if( (e->state() & LeftButton) &&
+  if( (e->state() & Qt::LeftButton) &&
     (e->pos()-mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
   {
     // Drag color object

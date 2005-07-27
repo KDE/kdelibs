@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KPIPEPROCESS_H
@@ -28,10 +28,10 @@
 class KDEPRINT_EXPORT KPipeProcess : public QFile
 {
 public:
-	KPipeProcess(const QString& cmd = QString::null, int mode = IO_ReadOnly);
+	KPipeProcess(const QString& cmd = QString::null, QIODevice::OpenModeFlag mode = QIODevice::ReadOnly);
 	~KPipeProcess();
 
-	bool open(const QString& cmd, int mode = IO_ReadOnly);
+	bool open(const QString& cmd, QIODevice::OpenModeFlag mode = QIODevice::ReadOnly);
 	void close();
 
 private:

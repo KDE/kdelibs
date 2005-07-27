@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdjobspage.h"
@@ -23,7 +23,6 @@
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -106,12 +105,12 @@ bool CupsdJobsPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdJobsPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(keepjobhistory_, conf->comments_.toolTip("preservejobhistory"));
-	QWhatsThis::add(keepjobfiles_, conf->comments_.toolTip("preservejobfiles"));
-	QWhatsThis::add(autopurgejobs_, conf->comments_.toolTip("autopurgejobs"));
-	QWhatsThis::add(maxjobs_, conf->comments_.toolTip("maxjobs"));
-	QWhatsThis::add(maxjobsperprinter_, conf->comments_.toolTip("maxjobsperprinter"));
-	QWhatsThis::add(maxjobsperuser_, conf->comments_.toolTip("maxjobsperuser"));
+	keepjobhistory_->setWhatsThis(conf->comments_.toolTip("preservejobhistory"));
+	keepjobfiles_->setWhatsThis(conf->comments_.toolTip("preservejobfiles"));
+	autopurgejobs_->setWhatsThis(conf->comments_.toolTip("autopurgejobs"));
+	maxjobs_->setWhatsThis(conf->comments_.toolTip("maxjobs"));
+	maxjobsperprinter_->setWhatsThis(conf->comments_.toolTip("maxjobsperprinter"));
+	maxjobsperuser_->setWhatsThis(conf->comments_.toolTip("maxjobsperuser"));
 }
 
 void CupsdJobsPage::historyChanged(bool on)

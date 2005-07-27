@@ -15,13 +15,13 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __DOCKMAINWINDOW_H
 #define __DOCKMAINWINDOW_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kaction.h>
 
 #include <kdockwidget.h>
@@ -51,7 +51,7 @@ class KPARTS_EXPORT DockMainWindow : public KDockMainWindow, virtual public Part
   /**
    * Constructor, same signature as KDockMainWindow.
    */
-  DockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WDestructiveClose );
+  DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::WDestructiveClose );
   /**
    * Destructor.
    */

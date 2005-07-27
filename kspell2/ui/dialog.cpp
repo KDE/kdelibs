@@ -31,13 +31,13 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qtimer.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 namespace KSpell2
 {
@@ -93,15 +93,15 @@ void Dialog::initConnections()
              SLOT(slotSuggest()) );
     connect( d->ui->m_language, SIGNAL(activated(const QString&)),
              SLOT(slotChangeLanguage(const QString&)) );
-    connect( d->ui->m_suggestions, SIGNAL(selectionChanged(QListViewItem*)),
-             SLOT(slotSelectionChanged(QListViewItem*)) );
+    connect( d->ui->m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
+             SLOT(slotSelectionChanged(Q3ListViewItem*)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SIGNAL(misspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
-    connect( d->ui->m_suggestions, SIGNAL(doubleClicked(QListViewItem*, const QPoint&, int)),
+    connect( d->ui->m_suggestions, SIGNAL(doubleClicked(Q3ListViewItem*, const QPoint&, int)),
              SLOT( slotReplaceWord() ) );
     connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
     connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
@@ -243,7 +243,7 @@ void Dialog::slotChangeLanguage( const QString& lang )
     slotSuggest();
 }
 
-void Dialog::slotSelectionChanged( QListViewItem *item )
+void Dialog::slotSelectionChanged( Q3ListViewItem *item )
 {
     d->ui->m_replacement->setText( item->text( 0 ) );
 }
@@ -252,7 +252,7 @@ void Dialog::fillSuggestions( const QStringList& suggs )
 {
     d->ui->m_suggestions->clear();
     for ( QStringList::ConstIterator it = suggs.begin(); it != suggs.end(); ++it ) {
-        new QListViewItem( d->ui->m_suggestions, d->ui->m_suggestions->firstChild(),
+        new Q3ListViewItem( d->ui->m_suggestions, d->ui->m_suggestions->firstChild(),
                            *it );
     }
 }

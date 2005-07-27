@@ -13,14 +13,14 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include "kpushbutton.h"
 
-#include <qdragobject.h>
-#include <qwhatsthis.h>
+#include <q3dragobject.h>
+#include <qevent.h>
 #include <qtooltip.h>
 
 #include "config.h"
@@ -55,7 +55,7 @@ KPushButton::KPushButton( const QString &text, QWidget *parent,
     init( KGuiItem( text ) );
 }
 
-KPushButton::KPushButton( const QIconSet &icon, const QString &text,
+KPushButton::KPushButton( const QIcon &icon, const QString &text,
                           QWidget *parent, const char *name )
     : QPushButton( text, parent, name ),
       m_dragEnabled( false )
@@ -102,7 +102,7 @@ void KPushButton::init( const KGuiItem &item )
 
     QToolTip::add( this, item.toolTip() );
 
-    QWhatsThis::add( this, item.whatsThis() );
+    setWhatsThis(item.whatsThis());
 
     if (kapp)
     {
@@ -150,14 +150,14 @@ void KPushButton::setText( const QString &text )
     d->item.setText(text);
 }
 
-void KPushButton::setIconSet( const QIconSet &iconSet )
+void KPushButton::setIconSet( const QIcon &iconSet )
 {
     d->item.setIconSet(iconSet);
 
     if ( s_useIcons || text().isEmpty() )
         QPushButton::setIconSet( iconSet );
     else
-        QPushButton::setIconSet( QIconSet() );
+        QPushButton::setIconSet( QIcon() );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
@@ -186,7 +186,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
         return;
     }
 
-    if ( (e->state() & LeftButton) &&
+    if ( (e->state() & Qt::LeftButton) &&
          (e->pos() - startPos).manhattanLength() >
          KGlobalSettings::dndEventDelay() )
     {
@@ -195,14 +195,14 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
     }
 }
 
-QDragObject * KPushButton::dragObject()
+Q3DragObject * KPushButton::dragObject()
 {
     return 0L;
 }
 
 void KPushButton::startDrag()
 {
-    QDragObject *d = dragObject();
+    Q3DragObject *d = dragObject();
     if ( d )
 	d->dragCopy();
 }

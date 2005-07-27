@@ -102,7 +102,7 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
 
    assert (!KSycoca::self()->isBuilding());
 
-   QMapConstIterator<QString,int> it = m_propertyTypeDict.find(_name);
+   QMap<QString,int>::const_iterator it = m_propertyTypeDict.find(_name);
    if (it != m_propertyTypeDict.end()) {
      return (QVariant::Type)it.data();
    }
@@ -186,7 +186,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
 
    QStringList::const_iterator it = m_patterns.begin();
    QStringList::const_iterator end = m_patterns.end();
-   QValueVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
+   Q3ValueVector<Q_INT32>::const_iterator it_offset = m_pattern_offsets.begin();
 
   for ( ; it != end; ++it, ++it_offset )
    {

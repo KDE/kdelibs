@@ -15,10 +15,10 @@
 class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout;
-class QGroupBox;
+class Q3GroupBox;
 class QLabel;
-class QListBox;
-class QListBoxItem;
+class Q3ListBox;
+class Q3ListBoxItem;
 class QPushButton;
 
 class KHistoryCombo;
@@ -33,12 +33,12 @@ public:
     Form1( QWidget* parent = 0, const char* name = 0 );
     ~Form1();
 
-    QGroupBox* GroupBox1;
+    Q3GroupBox* GroupBox1;
     QLabel* TextLabel1;
     KLineEdit* LineEdit1;
     QPushButton* PushButton1;
     QPushButton* PushButton1_4;
-    QListBox* ListBox1;
+    Q3ListBox* ListBox1;
     QPushButton* PushButton1_3;
     QPushButton* PushButton1_2;
 

@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU Library General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+ *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
 
@@ -41,7 +41,7 @@ class KDEUI_EXPORT KSeparator : public QFrame
    * @param name name of the new object.
    * @param f extra QWidget flags.
    **/
-  KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
+  KSeparator(QWidget* parent=0, const char* name=0, Qt::WFlags f=0);
 
   /**
    * Constructor.
@@ -52,7 +52,7 @@ class KDEUI_EXPORT KSeparator : public QFrame
    * @param f extra QWidget flags.
    **/
   KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
-	     WFlags f=0);
+	     Qt::WFlags f=0);
   
   /**
    * Returns the orientation of the separator.
@@ -73,11 +73,8 @@ class KDEUI_EXPORT KSeparator : public QFrame
   virtual QSize sizeHint() const;
 
 protected:
-  /**
-   * @param p pointer to painter
-   */
-  virtual void drawFrame( QPainter *p );
-protected:
+  void paintEvent(QPaintEvent* pe);
+
   virtual void virtual_hook( int id, void* data );
 private:
   class KSeparatorPrivate* d;

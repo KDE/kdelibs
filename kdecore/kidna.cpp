@@ -30,18 +30,18 @@
 using namespace KNetwork;
 #endif
 
-QCString KIDNA::toAsciiCString(const QString &idna)
+QByteArray KIDNA::toAsciiCString(const QString &idna)
 {
 #ifndef Q_WS_WIN //TODO kresolver not ported
 	return KResolver::domainToAscii(idna);
 #else
-	return QCString();
+	return QByteArray();
 #endif
 }
 
 QString KIDNA::toAscii(const QString &idna)
 {
-  if (idna.length() && (idna[0] == "."))
+  if (idna.length() && (idna[0] == QLatin1Char('.')))
   {
      QString host = QString::fromLatin1(toAsciiCString(idna.mid(1)));
      if (host.isEmpty())
@@ -54,7 +54,7 @@ QString KIDNA::toAscii(const QString &idna)
 QString KIDNA::toUnicode(const QString &idna)
 {
 #ifndef Q_WS_WIN //TODO kresolver not ported
-  if (idna.length() && (idna[0] == "."))
+  if (idna.length() && (idna[0] == QLatin1Char('.')))
      return idna[0] + KResolver::domainToUnicode(idna.mid(1));
   return KResolver::domainToUnicode(idna);
 #else

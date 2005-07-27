@@ -24,15 +24,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qobject.h>
 
+#include <QHash>
+#include <q3asciidict.h>
+#include <QByteArray>
+#include <QList>
+#include <QTextStream>
 #include <qstring.h>
 #include <qsocketnotifier.h>
-#include <qptrlist.h>
-#include <qvaluelist.h>
-#include <qcstring.h>
-#include <qdict.h>
-#include <qptrdict.h>
-#include <qintdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
+#include <q3ptrdict.h>
+#include <q3intdict.h>
 #include <qapplication.h>
+#include <kdatastream.h>
 
 #define INT32 QINT32
 #ifdef Q_WS_X11
@@ -61,8 +65,6 @@ class QTextStream;
 class QFile;
 #endif
 
-typedef QValueList<QCString> QCStringList;
-
 /**
  * @internal
  */
@@ -82,8 +84,8 @@ public:
     // Flush the output buffer.
     void slotOutputReady();
 
-    QCString appId;
-    QCString plainAppId;
+    DCOPCString appId;
+    DCOPCString plainAppId;
     IceConn iceConn;
     int notifyRegister;
     /**
@@ -97,13 +99,13 @@ public:
      * This allows us to do proper bookkeeping in case client A, client B
      * or both unregister during the call.
      */
-    QPtrList <_IceConn> waitingOnReply;
-    QPtrList <_IceConn> waitingForReply;
-    QPtrList <_IceConn> waitingForDelayedReply;
+    Q3PtrList <_IceConn> waitingOnReply;
+    Q3PtrList <_IceConn> waitingForReply;
+    Q3PtrList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
     bool daemon;
     bool outputBlocked;
-    QValueList <QByteArray> outputBuffer;
+    QList <QByteArray> outputBuffer;
     unsigned long outputBufferStart;
     QSocketNotifier *outputBufferNotifier;
 };
@@ -124,17 +126,17 @@ public:
     void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
     void ioError( IceConn iceConn );
 
-    bool receive(const QCString &app, const QCString &obj,
-                 const QCString &fun, const QByteArray& data,
-                 QCString& replyType, QByteArray &replyData, IceConn iceConn);
+    bool receive(const DCOPCString &app, const DCOPCString &obj,
+                 const DCOPCString &fun, const QByteArray& data,
+                 DCOPCString& replyType, QByteArray &replyData, IceConn iceConn);
 
-    DCOPConnection *findApp(const QCString &appId);
+    DCOPConnection *findApp(const DCOPCString &appId);
     DCOPConnection *findConn(IceConn iceConn)
        { return clients.find(iceConn); }
 
-    void sendMessage(DCOPConnection *conn, const QCString &sApp,
-                     const QCString &rApp, const QCString &rObj,
-                     const QCString &rFun, const QByteArray &data);
+    void sendMessage(DCOPConnection *conn, const DCOPCString &sApp,
+                     const DCOPCString &rApp, const DCOPCString &rObj,
+                     const DCOPCString &rFun, const QByteArray &data);
 
 private slots:
     void newClient( int socket );
@@ -153,8 +155,8 @@ private:
     static DWORD WINAPI TerminatorThread(void * pParam);
 #endif
 private:
-    void broadcastApplicationRegistration( DCOPConnection* conn, const QCString type,
-        const QCString& data );
+    void broadcastApplicationRegistration( DCOPConnection* conn, const DCOPCString type,
+        const DCOPCString& data );
     bool suicide;
     bool shutdown;
     int majorOpcode;
@@ -163,11 +165,11 @@ private:
     DCOPSignals *dcopSignals;
     QTimer *m_timer;
     QTimer *m_deadConnectionTimer;
-    QPtrList<DCOPListener> listener;
-    QAsciiDict<DCOPConnection> appIds; // index on app id
-    QPtrDict<DCOPConnection> clients; // index on iceConn
-    QIntDict<DCOPConnection> fd_clients; // index on fd
-    QPtrList<_IceConn> deadConnections;
+    QList<DCOPListener*> listener;
+    Q3AsciiDict<DCOPConnection> appIds; // index on app id
+    Q3PtrDict<DCOPConnection> clients; // index on iceConn
+    QHash<int, DCOPConnection*> fd_clients; // index on fd
+    Q3PtrList<_IceConn> deadConnections;
 
 #ifdef Q_OS_WIN
     HANDLE m_evTerminate;

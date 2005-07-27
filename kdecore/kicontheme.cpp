@@ -20,7 +20,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qmap.h>
 #include <qpixmap.h>
 #include <qpixmapcache.h>
@@ -156,7 +156,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
     QStringList dirs = cfg.readPathListEntry("Directories");
-    mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
 	cfg.setGroup(*it);
@@ -178,12 +177,13 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     // Expand available sizes for scalable icons to their full range
     int i;
-    QMap<int,QValueList<int> > scIcons;
-    for (KIconThemeDir *dir=mDirs.first(); dir!=0L; dir=mDirs.next())
+    QMap<int,QList<int> > scIcons;
+    foreach(KIconThemeDir *dir, mDirs)
     {
+        if(!dir) break;
         if ((dir->type() == KIcon::Scalable) && !scIcons.contains(dir->size()))
         {
-            QValueList<int> lst;
+            QList<int> lst;
             for (i=dir->minSize(); i<=dir->maxSize(); i++)
                 lst += i;
             scIcons[dir->size()] = lst;
@@ -201,8 +201,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
         mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
-        QValueList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
-        QValueList<int>::ConstIterator it2;
+        QList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
+        QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
             if (scIcons.contains(*it2))
@@ -217,6 +217,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
 KIconTheme::~KIconTheme()
 {
+    qDeleteAll(mDirs);
     delete d;
 }
 
@@ -247,9 +248,9 @@ int KIconTheme::defaultSize(KIcon::Group group) const
     return mDefSize[group];
 }
 
-QValueList<int> KIconTheme::querySizes(KIcon::Group group) const
+QList<int> KIconTheme::querySizes(KIcon::Group group) const
 {
-    QValueList<int> empty;
+    QList<int> empty;
     if ((group < 0) || (group >= KIcon::LastGroup))
     {
         kdDebug(264) << "Illegal icon group: " << group << "\n";
@@ -262,14 +263,13 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
 {
     int delta = 1000, dw;
 
-    QPtrListIterator<KIconThemeDir> dirs(mDirs);
     KIconThemeDir *dir;
 
     // Try to find exact match
     QStringList result;
-    for ( ; dirs.current(); ++dirs)
+    for(int i=0; i<mDirs.size(); ++i)
     {
-        dir = dirs.current();
+        dir = mDirs.at(i);
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
         if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
@@ -290,14 +290,12 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
 
     return result;
 
-    dirs.toFirst();
-
     // Find close match
     KIconThemeDir *best = 0L;
-    for ( ; dirs.current(); ++dirs)
+    for(int i=0; i<mDirs.size(); ++i)
     {
-        dir = dirs.current();
-        if ((context != KIcon::Any) && (context != dir->context()))
+        dir = mDirs.at(i);
+      if ((context != KIcon::Any) && (context != dir->context()))
             continue;
         dw = dir->size() - size;
         if ((dw > 6) || (abs(dw) >= abs(delta)))
@@ -313,7 +311,6 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
 
 QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) const
 {
-    QPtrListIterator<KIconThemeDir> dirs(mDirs);
     int dw;
     KIconThemeDir *dir;
 
@@ -325,9 +322,9 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
     // 26 (48-22) and 32 (48-16) will be used, but who knows if someone
     // will make icon themes with different icon sizes.
 
-    for ( ; dirs.current(); ++dirs)
+    for(int i=0;i<mDirs.size();++i)
     {
-        dir = dirs.current();
+        dir = mDirs.at(i);
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
         dw = abs(dir->size() - size);
@@ -348,10 +345,10 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
     KIconThemeDir *dir;
 
     dw = 1000; // shut up, gcc
-    QPtrListIterator<KIconThemeDir> dirs(mDirs);
-    for ( ; dirs.current(); ++dirs)
+    
+    for(int i=0;i<mDirs.size();++i)
     {
-        dir = dirs.current();
+        dir = mDirs.at(i);
 
         if (match == KIcon::MatchExact)
         {

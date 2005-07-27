@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMDBCREATOR_H
@@ -26,7 +26,7 @@
 #include <kprocess.h>
 
 class QWidget;
-class QProgressDialog;
+class Q3ProgressDialog;
 
 class KMDBCreator : public QObject
 {
@@ -50,7 +50,7 @@ signals:
 
 private:
 	KProcess	m_proc;
-	QProgressDialog	*m_dlg;
+	Q3ProgressDialog	*m_dlg;
 	bool		m_status;
 	bool		m_firstflag;
 };

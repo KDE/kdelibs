@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KCMENUMNGR_H
@@ -22,10 +22,10 @@
 
 
 class QWidget;
-class QPopupMenu;
+class Q3PopupMenu;
 class KContextMenuManagerPrivate;
 #include <qobject.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qkeysequence.h>
 
 #include <kdelibs_export.h>
@@ -84,7 +84,7 @@ public:
        Ownership of the popup menu is not transferred to the context
        menu manager.
     */
-    static void insert( QWidget* widget, QPopupMenu* popup );
+    static void insert( QWidget* widget, Q3PopupMenu* popup );
 
     /**
      * Use this method to get information about when a popup menu
@@ -102,7 +102,7 @@ private:
     KContextMenuManager( QObject* parent = 0, const char* name  = 0);
     ~KContextMenuManager();
     bool eventFilter( QObject *, QEvent * );
-    QPtrDict<QPopupMenu> menus;
+    Q3PtrDict<Q3PopupMenu> menus;
     bool showOnPress;
     QKeySequence menuKey;
     static KContextMenuManager* manager;

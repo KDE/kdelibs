@@ -7,9 +7,9 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qtextstream.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qlineedit.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <kiconloader.h>
 #include <kapplication.h>
@@ -23,7 +23,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 {
   m_instance = new KInstance( "kpartstestpart" );
   setInstance( m_instance );
-  m_edit = new QMultiLineEdit( parentWidget );
+  m_edit = new Q3MultiLineEdit( parentWidget );
   setWidget( m_edit );
   setXMLFile( "kpartstest_part1.rc" );
 
@@ -41,7 +41,7 @@ bool Part1::openFile()
   // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;
-  if ( f.open(IO_ReadOnly) ) {
+  if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
     while ( !t.eof() ) {
       s += t.readLine() + "\n";
@@ -71,7 +71,7 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
   // Since the main widget is a dummy one, we HAVE to set
   // strong focus for it, otherwise we get the
   // the famous activating-file-menu-switches-part bug.
-  w->setFocusPolicy( QWidget::ClickFocus );
+  w->setFocusPolicy( Qt::ClickFocus );
 
   // setXMLFile( ... ); // no actions currently
 }

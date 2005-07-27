@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "lprngtoolhandler.h"
@@ -105,7 +105,7 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 
 QMap<QString,QString> LPRngToolHandler::parseXferOptions(const QString& str)
 {
-	uint	p(0), q;
+	int	p(0), q;
 	QMap<QString,QString>	opts;
 	QString	key, val;
 
@@ -133,7 +133,7 @@ QMap<QString,QString> LPRngToolHandler::parseXferOptions(const QString& str)
 void LPRngToolHandler::loadAuthFile(const QString& filename, QString& user, QString& pass)
 {
 	QFile	f(filename);
-	if (f.open(IO_ReadOnly))
+	if (f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString	line;
@@ -189,11 +189,11 @@ DrMain* LPRngToolHandler::loadDbDriver(const QString& s)
 	return driver;
 }
 
-QValueList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QString& filename)
+QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QString& filename)
 {
 	QFile	f(filename);
-	QValueList< QPair<QString,QStringList> >	dict;
-	if (f.open(IO_ReadOnly))
+	QList< QPair<QString,QStringList> >	dict;
+	if (f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString	line, key;
@@ -237,7 +237,7 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
 	{
 		bool	found(false);
-		for (QValueList< QPair<QString,QStringList> >::ConstIterator p=m_dict.begin(); p!=m_dict.end() && !found; ++p)
+		for (QList< QPair<QString,QStringList> >::ConstIterator p=m_dict.begin(); p!=m_dict.end() && !found; ++p)
 		{
 			if ((*p).second.find(*it) != (*p).second.end())
 			{
@@ -247,7 +247,7 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 		}
 		if (!found)
 		{
-			unknown.append(*it).append(',');
+			unknown.append(*it).append(QLatin1Char( ',' ));
 		}
 	}
 	if (!unknown.isEmpty())
@@ -310,7 +310,7 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 		{
 			entry->addField("xfer_options", Field::String, QString::fromLatin1("authfile=\"auth\" crlf=\"0\" hostip=\"\" host=\"%1\" printer=\"%2\" remote_mode=\"SMB\" share=\"//%3/%4\" workgroup=\"%5\"").arg(server).arg(printer).arg(server).arg(printer).arg(work));
 			QFile	authfile(LprSettings::self()->baseSpoolDir() + "/" + prt->printerName() + "/auth");
-			if (authfile.open(IO_WriteOnly))
+			if (authfile.open(QIODevice::WriteOnly))
 			{
 				QTextStream	t(&authfile);
 				t << "username=" << user << endl;

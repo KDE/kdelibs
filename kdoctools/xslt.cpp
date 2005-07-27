@@ -25,7 +25,7 @@
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 #if !defined( SIMPLE_XSLT )
 extern HelpProtocol *slave;
@@ -48,7 +48,7 @@ int closeQString(void * context) {
 }
 
 QString transform( const QString &pat, const QString& tss,
-                   const QValueVector<const char *> &params )
+                   const Q3ValueVector<const char *> &params )
 {
     QString parsed;
 
@@ -76,7 +76,7 @@ QString transform( const QString &pat, const QString& tss,
         return parsed;
 
     INFO(i18n("Applying stylesheet"));
-    QValueVector<const char *> p = params;
+    Q3ValueVector<const char *> p = params;
     p.append( NULL );
     xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, const_cast<const char **>(&p[0]));
     xmlFreeDoc(doc);
@@ -215,7 +215,7 @@ bool saveToCache( const QString &contents, const QString &filename )
 {
     QIODevice *fd = ::getBZip2device(filename);
 
-    if (!fd->open(IO_WriteOnly))
+    if (!fd->open(QIODevice::WriteOnly))
     {
        delete fd;
        return false;
@@ -239,7 +239,7 @@ static bool readCache( const QString &filename,
     kdDebug( 7119 ) << "create filter" << endl;
     QIODevice *fd = ::getBZip2device(cache);
 
-    if (!fd->open(IO_ReadOnly))
+    if (!fd->open(QIODevice::ReadOnly))
     {
        delete fd;
        ::unlink( cache.local8Bit() );
@@ -250,7 +250,7 @@ static bool readCache( const QString &filename,
 
     char buffer[32000];
     int n;
-    QCString text;
+    Q3CString text;
     // Also end loop in case of error, when -1 is returned
     while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
     {
@@ -300,10 +300,10 @@ bool compareTimeStamps( const QString &older, const QString &newer )
     return ( _newer.lastModified() > _older.lastModified() );
 }
 
-QCString fromUnicode( const QString &data )
+Q3CString fromUnicode( const QString &data )
 {
     QTextCodec *locale = QTextCodec::codecForLocale();
-    QCString result;
+    Q3CString result;
     char buffer[30000];
     uint buffer_len = 0;
     uint len = 0;
@@ -315,7 +315,7 @@ QCString fromUnicode( const QString &data )
     while ( offset < data.length() )
     {
         part = data.mid( offset, part_len );
-        QCString test = locale->fromUnicode( part );
+        Q3CString test = locale->fromUnicode( part );
         if ( locale->toUnicode( test ) == part ) {
             result += test;
             offset += part_len;
@@ -324,7 +324,7 @@ QCString fromUnicode( const QString &data )
         len = part.length();
         buffer_len = 0;
         for ( uint i = 0; i < len; i++ ) {
-            QCString test = locale->fromUnicode( part.mid( i, 1 ) );
+            Q3CString test = locale->fromUnicode( part.mid( i, 1 ) );
             if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
                 if (buffer_len + test.length() + 1 > sizeof(buffer))
                    break;
@@ -340,7 +340,7 @@ QCString fromUnicode( const QString &data )
                 buffer_len += test.length();
             }
         }
-        result += QCString( buffer, buffer_len + 1);
+        result += Q3CString( buffer, buffer_len + 1);
         offset += part_len;
     }
     return result;

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMMANAGER_H
@@ -28,7 +28,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class DrMain;
 class KMDBEntry;
@@ -106,8 +106,8 @@ public:
 
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
-	QPtrList<KMPrinter>* printerList(bool reload = true);
-	QPtrList<KMPrinter>* printerListComplete(bool reload = true);
+	Q3PtrList<KMPrinter>* printerList(bool reload = true);
+	Q3PtrList<KMPrinter>* printerListComplete(bool reload = true);
 	KMPrinter* defaultPrinter();
 	void enableFilter(bool on);
 	bool isFilterEnabled() const;

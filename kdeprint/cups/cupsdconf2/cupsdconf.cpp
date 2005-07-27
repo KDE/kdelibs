@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <config.h>
@@ -140,7 +140,7 @@ CupsdConf::~CupsdConf()
 bool CupsdConf::loadFromFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.exists() || !f.open(IO_ReadOnly)) return false;
+	if (!f.exists() || !f.open(QIODevice::ReadOnly)) return false;
 	else
 	{
 		QTextStream	t(&f);
@@ -176,7 +176,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 bool CupsdConf::saveToFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (!f.open(IO_WriteOnly))
+	if (!f.open(QIODevice::WriteOnly))
 		return false;
 	else
 	{
@@ -448,7 +448,7 @@ bool CupsdConf::saveToFile(const QString& filename)
 		if (browsing_) t << "BrowseShortNames " << (useshortnames_ ? "Yes" : "No") << endl;
 		
 		t << endl << "# Unknown" << endl;
-		for (QValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
+		for (Q3ValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
 			t << (*it).first << " " << (*it).second << endl;
 
 		return true;

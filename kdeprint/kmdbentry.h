@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMDBENTRY_H
 #define KMDBENTRY_H
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 
@@ -46,7 +46,7 @@ struct KDEPRINT_EXPORT KMDBEntry
 	bool validate(bool checkIt = true);
 };
 
-typedef QPtrList<KMDBEntry>		KMDBEntryList;
-typedef QPtrListIterator<KMDBEntry>	KMDBEntryListIterator;
+typedef Q3PtrList<KMDBEntry>		KMDBEntryList;
+typedef Q3PtrListIterator<KMDBEntry>	KMDBEntryListIterator;
 
 #endif

@@ -12,13 +12,13 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef _KANIMWIDGET_H
 #define _KANIMWIDGET_H
 
-#include <qframe.h>
+#include <q3frame.h>
 
 #include <kdelibs_export.h>
 
@@ -52,7 +52,7 @@ class KAnimWidgetPrivate;
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KAnimWidget : public QFrame
+class KDEUI_EXPORT KAnimWidget : public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( int size READ size WRITE setSize )

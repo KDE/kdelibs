@@ -1,10 +1,9 @@
 #include "driver.h"
-#include <kapplication.h>
+#include <qapplication.h>
 #include <iostream>
 #include <dcopclient.h>
-#include <kcmdlineargs.h>
 #include <qtimer.h>
-#include <qtimer.h>
+#include <qtextstream.h>
 
 using namespace std;
 
@@ -20,7 +19,7 @@ Driver::Driver(const char* app)
 
 }
 
-QTextStream output(  fopen( "driver.returns", "w" ) , IO_WriteOnly );	
+QTextStream output(  fopen( "driver.returns", "w" ) , QIODevice::WriteOnly );	
 #include <iostream>
 void Driver::test()
 {
@@ -53,13 +52,11 @@ int main(int argc, char** argv)
 	if ( argc < 2 ) { qWarning("Usage: driver <appid>"); return 1; }
 	const char* appname = strdup( argv[ 1 ] );
 	argv[ 1 ] = 0; // sue me
-	KCmdLineArgs::init( argc, argv, "TestAppDriver", "Tests the dcop familly of tools + libraries", "1.0" ); // FIXME
-	KApplication app;
-	app.dcopClient()->attach(  );
-	app.dcopClient()->registerAs( "TestAppDriver" );
+	QApplication app( argc, argv );
+        DCOPClient* dcopClient = new DCOPClient;
+	dcopClient->attach(  );
+	dcopClient->registerAs( "TestAppDriver" );
 	Driver * object = new Driver( appname );
 	QTimer::singleShot( 10, object, SLOT( test() ) );
 	return app.exec();
 }
-	
-	

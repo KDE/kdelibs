@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef __kded_h__
@@ -23,8 +23,8 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qtimer.h>
-#include <qasciidict.h>
-#include <qintdict.h>
+#include <q3asciidict.h>
+#include <q3intdict.h>
 
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -49,25 +49,25 @@ public:
    /**
     * Catch calls to unknown objects.
     */
-   bool process(const QCString &obj, const QCString &fun, 
+   bool process(const DCOPCString &obj, const DCOPCString &fun, 
                 const QByteArray &data, 
-		QCString &replyType, QByteArray &replyData);
+		DCOPCString &replyType, QByteArray &replyData);
 
    /**
     * process DCOP message.  Only calls to "recreate" are supported at
     * this time.
     */
-   bool process(const QCString &fun, const QByteArray &data, 
-		QCString &replyType, QByteArray &replyData);
+   bool process(const DCOPCString &fun, const QByteArray &data, 
+		DCOPCString &replyType, QByteArray &replyData);
 
-   virtual QCStringList functions();
+   virtual DCOPCStringList functions();
 
    void noDemandLoad(const QString &obj); // Don't load obj on demand
 
-   KDEDModule *loadModule(const QCString &obj, bool onDemand);
+   KDEDModule *loadModule(const DCOPCString &obj, bool onDemand);
    KDEDModule *loadModule(const KService *service, bool onDemand);
-   QCStringList loadedModules();
-   bool unloadModule(const QCString &obj);
+   DCOPCStringList loadedModules();
+   bool unloadModule(const DCOPCString &obj);
    bool isWindowRegistered(long windowId);
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
@@ -102,7 +102,7 @@ public slots:
    /**
     * An application unregistered itself with DCOP
     */
-   void slotApplicationRemoved(const QCString &appId);
+   void slotApplicationRemoved(const QByteArray &appId);
 
    /**
     * A KDEDModule is about to get destroyed.
@@ -153,15 +153,15 @@ protected:
     */
    QTimer* m_pTimer;
    
-   QValueList<DCOPClientTransaction *> m_recreateRequests;
+   QList<DCOPClientTransaction *> m_recreateRequests;
    int m_recreateCount;
    bool m_recreateBusy;
    
-   QAsciiDict<KDEDModule> m_modules;
-   QAsciiDict<KLibrary> m_libs;
-   QAsciiDict<QObject> m_dontLoad;
-   QAsciiDict<QValueList<long> > m_windowIdList;
-   QIntDict<long> m_globalWindowIdList;
+   Q3AsciiDict<KDEDModule> m_modules;
+   Q3AsciiDict<KLibrary> m_libs;
+   Q3AsciiDict<QObject> m_dontLoad;
+   Q3AsciiDict<QList<long> > m_windowIdList;
+   Q3IntDict<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
      
@@ -210,7 +210,7 @@ private:
     * Timer for interval hostname checking.
     */
    QTimer m_Timer;
-   QCString m_hostname;
+   DCOPCString m_hostname;
 };
 
 #endif

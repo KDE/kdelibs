@@ -27,12 +27,12 @@
 #include <qlabel.h>
 #include <qpixmap.h>
 #include <qtextstream.h>
-#include <qurl.h>
+#include <q3url.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kprotocolinfo.h>
 
 #include "ldapclient.h"
@@ -175,7 +175,7 @@ void LdapClient::slotDone()
   endParseLDIF();
   mActive = false;
 #if 0
-  for ( QValueList<LdapObject>::Iterator it = mObjects.begin(); it != mObjects.end(); ++it ) {
+  for ( Q3ValueList<LdapObject>::Iterator it = mObjects.begin(); it != mObjects.end(); ++it ) {
     qDebug( (*it).toString().latin1() );
   }
 #endif
@@ -208,15 +208,13 @@ void LdapClient::parseLDIF( const QByteArray& data )
   }
 
   LDIF::ParseVal ret;
-  QString name;
   do {
     ret = d->ldif.nextItem();
     switch ( ret ) {
       case LDIF::Item:
       {
-        name = d->ldif.attr();
-        // Must make a copy! QByteArray is explicitely shared
-        QByteArray value = d->ldif.val().copy();
+        QString name = d->ldif.attr();
+        QByteArray value = d->ldif.val();
         mCurrentObject.attrs[ name ].append( value );
         break;
       }
@@ -321,7 +319,7 @@ void LdapSearch::startSearch( const QString& txt )
   QString filter = QString( "|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*)" )
       .arg( mSearchText ).arg( mSearchText ).arg( mSearchText ).arg( mSearchText );
 
-  QValueList< LdapClient* >::Iterator it;
+  Q3ValueList< LdapClient* >::Iterator it;
   for ( it = mClients.begin(); it != mClients.end(); ++it ) {
     (*it)->startQuery( filter );
     ++mActiveClients;
@@ -330,7 +328,7 @@ void LdapSearch::startSearch( const QString& txt )
 
 void LdapSearch::cancelSearch()
 {
-  QValueList< LdapClient* >::Iterator it;
+  Q3ValueList< LdapClient* >::Iterator it;
   for ( it = mClients.begin(); it != mClients.end(); ++it )
     (*it)->cancelQuery();
 
@@ -381,7 +379,7 @@ void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
 {
   QString search_text_upper = mSearchText.upper();
 
-  QValueList< KABC::LdapObject >::ConstIterator it1;
+  Q3ValueList< KABC::LdapObject >::ConstIterator it1;
   for ( it1 = mResults.begin(); it1 != mResults.end(); ++it1 ) {
     QString name, mail, givenname, sn;
 

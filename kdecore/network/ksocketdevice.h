@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KSOCKETDEVICE_H
 #define KSOCKETDEVICE_H
 
-#include <qsocketnotifier.h>
+#include <QSocketNotifier>
 #include "ksocketbase.h"
 
 namespace KNetwork {
@@ -45,7 +45,7 @@ class KSocketDevicePrivate;
  * Descended classes from this one provide some other kinds of socket functionality,
  * like proxying or specific socket types.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
 {
@@ -101,7 +101,7 @@ public:
    * The parameter is used to specify which socket this object is used as
    * a device for.
    */
-  explicit KSocketDevice(const KSocketBase* = 0L);
+  explicit KSocketDevice(const KSocketBase* = 0L, QObject* objparent = 0L);
 
   /**
    * Constructs a new object around an already-open socket.
@@ -109,7 +109,12 @@ public:
    * Note: you should write programs that create sockets through
    * the classes whenever possible.
    */
-  explicit KSocketDevice(int fd);
+  explicit KSocketDevice(int fd, OpenMode mode = ReadWrite);
+
+  /**
+   * QObject constructor
+   */
+  KSocketDevice(QObject* parent);
 
   /**
    * Destructor. This closes the socket if it's open.
@@ -140,11 +145,6 @@ public:
   virtual bool setSocketOptions(int opts);
 
   /**
-   * Reimplementation from QIODevice. You should not call this function in sockets.
-   */
-  virtual bool open(int mode);
-
-  /**
    * Closes the socket. Reimplemented from QIODevice.
    *
    * Use this function to close the socket this object is holding open.
@@ -154,8 +154,8 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual void flush()
-  { }
+  virtual bool flush()
+  { return false; }
 
   /**
    * Creates a socket but don't connect or bind anywhere.
@@ -182,7 +182,8 @@ public:
   /**
    * Connect to a remote host.
    */
-  virtual bool connect(const KResolverEntry& address);
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite);
 
   /**
    * Accepts a new incoming connection.
@@ -198,7 +199,7 @@ public:
   /**
    * Returns the number of bytes available for reading without blocking.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Waits up to @p msecs for more data to be available on this socket.
@@ -206,37 +207,7 @@ public:
    * This function is a wrapper against @ref poll. This function will wait
    * for any read events.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
-
-  /**
-   * Reads data from this socket.
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * Reads data and the source address from this socket.
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data in the socket.
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * Peeks the data in the socket and the source address.
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
-
-  /**
-   * Writes data to the socket.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
-
-  /**
-   * Writes the given data to the given destination address.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Returns this socket's local address.
@@ -289,6 +260,22 @@ public:
    * This function might return NULL.
    */
   QSocketNotifier* exceptionNotifier() const;
+
+  /**
+   * Reads data and the source address from this socket.
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress* from = 0L);
+
+  /**
+   * Peeks the data in the socket and the source address.
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress* from = 0L);
+
+  /**
+   * Writes the given data to the given destination address.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, 
+			   const KSocketAddress* to = 0L);
 
   /**
    * Executes a poll in the socket, via select(2) or poll(2).

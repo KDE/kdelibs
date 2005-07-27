@@ -30,7 +30,7 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KJavaProcessPrivate
 {
@@ -41,7 +41,7 @@ private:
     QString mainClass;
     QString extraArgs;
     QString classArgs;
-    QPtrList<QByteArray> BufferList;
+    Q3PtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
     bool processKilled;
 };
@@ -127,12 +127,12 @@ void KJavaProcess::setClassArgs( const QString& args )
 QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 {
     //the buffer to store stuff, etc.
-    QByteArray* const buff = new QByteArray();
-    QTextOStream output( *buff );
+    QByteArray* buff = new QByteArray();
+    QTextOStream output( buff );
     const char sep = 0;
 
     //make space for the command size: 8 characters...
-    const QCString space( "        " );
+    const Q3CString space( "        " );
     output << space;
 
     //write command code
@@ -168,7 +168,7 @@ void KJavaProcess::storeSize( QByteArray* buff )
 
     const char* size_ptr = size_str.latin1();
     for( int i = 0; i < 8; ++i )
-        buff->at(i) = size_ptr[i];
+        buff->data()[ i ] = size_ptr[i];
 }
 
 void KJavaProcess::sendBuffer( QByteArray* buff )
@@ -299,8 +299,10 @@ bool KJavaProcess::invokeJVM()
     kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QString argStr;
     QTextOStream stream( &argStr );
-    const QValueList<QCString> args = javaProcess->args();
-    qCopy( args.begin(), args.end(), QTextOStreamIterator<QCString>( stream, " " ) );
+    const QList<QByteArray> args = javaProcess->args();
+    QListIterator<QByteArray> bit(args);
+    while (bit.hasNext())
+	stream << bit.next();
     kdDebug(6100) << argStr << endl;
 
     KProcess::Communication flags =  (KProcess::Communication)

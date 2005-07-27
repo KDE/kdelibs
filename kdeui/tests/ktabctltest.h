@@ -8,7 +8,7 @@
 #include <qwidget.h>
 class KTabCtl;
 class QPushButton;
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 
 class TopLevel : public QWidget
 {
@@ -20,7 +20,7 @@ protected:
     void resizeEvent(QResizeEvent *);
     KTabCtl *test;
     QPushButton *ok, *cancel;
-    QMultiLineEdit *e;
+    Q3MultiLineEdit *e;
     QWidget *pages[3];
 public slots:
     void okPressed();

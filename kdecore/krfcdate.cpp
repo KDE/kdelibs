@@ -30,6 +30,7 @@
 #include <qstringlist.h>
 
 #include <krfcdate.h>
+#include <q3cstring.h>
 
 static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {
@@ -362,7 +363,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   // If there is no time, no month or no day specified, fill those missing
   // fields so that 'input' matches YYYY-MM-DDTHH:MM:SS
   if (-1 == tPos) {
-    const int dashes = input.contains('-');
+    const int dashes = input.count('-');
     if (0 == dashes) {
       input += "-01-01";
     } else if (1 == dashes) {
@@ -469,25 +470,25 @@ static const char * const month_names[] = {
 };
 
 
-QCString KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
+QByteArray KRFCDate::rfc2822DateString(time_t utcTime, int utcOffset)
 {
     utcTime += utcOffset * 60;
     tm *tM = gmtime(&utcTime);
     char sgn = (utcOffset < 0) ? '-' : '+';
     int z = (utcOffset < 0) ? -utcOffset : utcOffset;
-    QCString dateStr;
+    QByteArray dateStr;
 
-    dateStr.sprintf("%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
+    dateStr = QString().sprintf("%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
                     day_names[tM->tm_wday], tM->tm_mday,
                     month_names[tM->tm_mon], tM->tm_year+1900,
                     tM->tm_hour, tM->tm_min, tM->tm_sec,
-                    sgn, z/60%24, z%60);
+                    sgn, z/60%24, z%60).toAscii();
 
     return dateStr;
 }
 
 
-QCString KRFCDate::rfc2822DateString(time_t utcTime)
+QByteArray KRFCDate::rfc2822DateString(time_t utcTime)
 {
     return rfc2822DateString(utcTime, localUTCOffset());
 }

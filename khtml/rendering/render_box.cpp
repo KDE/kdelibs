@@ -412,7 +412,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
         p->fillRect(_tx, clipy, w, cliph, c);
 
     // no progressive loading of the background image
-    if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage()) {
+#warning "FIXME"
+    if(bg /*&& bg->pixmap_size() == bg->valid_rect().size()*/ && !bg->isTransparent() && !bg->isErrorImage()) {
         //kdDebug( 6040 ) << "painting bgimage at " << _tx << "/" << _ty << endl;
         // ### might need to add some correct offsets
         // ### use paddingX/Y

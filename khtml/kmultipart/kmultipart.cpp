@@ -19,7 +19,7 @@
 
 #include "kmultipart.h"
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kinstance.h>
 #include <kmimetype.h>
 #include <klocale.h>
@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <qtimer.h>
+#include <Q3GArray>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory )
@@ -51,7 +52,7 @@ public:
         Q_ASSERT( !m_lineComplete );
         if ( storeNewline || c != '\n' ) {
             int sz = m_currentLine.size();
-            m_currentLine.resize( sz+1, QGArray::SpeedOptim );
+            m_currentLine.resize( sz+1 );
             m_currentLine[sz] = c;
         }
         if ( c == '\n' )
@@ -68,7 +69,7 @@ public:
         reset();
     }
     void reset() {
-        m_currentLine.resize( 0, QGArray::SpeedOptim );
+        m_currentLine.resize( 0 );
         m_lineComplete = false;
     }
 private:
@@ -101,7 +102,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
 
     setInstance( KMultiPartFactory::instance() );
 
-    QVBox *box = new QVBox( parentWidget, widgetName );
+    Q3VBox *box = new Q3VBox( parentWidget, widgetName );
     setWidget( box );
 
     m_extension = new KParts::BrowserExtension( this );
@@ -191,15 +192,15 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
        QString tmp = job->queryMetaData("media-boundary");
        kdDebug() << "Got Boundary from kio-http '" << tmp << "'" << endl;
        if ( !tmp.isEmpty() ) {
-           if (tmp.startsWith("--"))
+           if (tmp.startsWith(QLatin1String("--")))
                m_boundary = tmp.latin1();
            else
-               m_boundary = QCString("--")+tmp.latin1();
+               m_boundary = Q3CString("--")+tmp.latin1();
            m_boundaryLength = m_boundary.length();
        }
     }
     // Append to m_currentLine until eol
-    for ( uint i = 0; i < data.size() ; ++i )
+    for ( int i = 0; i < data.size() ; ++i )
     {
         // Store char. Skip if '\n' and currently parsing a header.
         m_lineParser->addChar( data[i], !m_bParsingHeader );
@@ -209,7 +210,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 #ifdef DEBUG_PARSING
             kdDebug() << "lineData.size()=" << lineData.size() << endl;
 #endif
-            QCString line( lineData.data(), lineData.size()+1 ); // deep copy
+            Q3CString line( lineData.data(), lineData.size()+1 ); // deep copy
             // 0-terminate the data, but only for the line-based tests below
             // We want to keep the raw data in case it ends up in sendData()
             int sz = line.size();

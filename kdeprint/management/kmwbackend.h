@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMWBACKEND_H
@@ -24,7 +24,7 @@
 #include <kdelibs_export.h>
 #include <qmap.h>
 
-class QButtonGroup;
+class Q3ButtonGroup;
 class QVBoxLayout;
 
 class KDEPRINT_EXPORT KMWBackend : public KMWizardPage
@@ -41,7 +41,7 @@ public:
 	void enableBackend(int ID, bool on = true);
 
 private:
-	QButtonGroup	*m_buttons;
+	Q3ButtonGroup	*m_buttons;
 	QVBoxLayout	*m_layout;
 	// keep a map between button ID and the real next page to switch to. This enables
 	// to have different backends switching to the same page (like backends requiring

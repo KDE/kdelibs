@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include "kfontrequester.h"
@@ -23,7 +23,6 @@
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qtooltip.h>
-#include <qwhatsthis.h>
 
 #include <kfontdialog.h>
 #include <klocale.h>
@@ -37,7 +36,7 @@ KFontRequester::KFontRequester( QWidget *parent, const char *name,
   m_sampleLabel = new QLabel( this, "m_sampleLabel" );
   m_button = new QPushButton( i18n( "Choose..." ), this, "m_button" );
 
-  m_sampleLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+  m_sampleLabel->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Sunken );
   setFocusProxy( m_button );
 
   layout->addWidget( m_sampleLabel, 1 );
@@ -102,21 +101,19 @@ void KFontRequester::setToolTip()
   QToolTip::add( m_button, i18n( "Click to select a font" ) );
 
   QToolTip::remove( m_sampleLabel );
-  QWhatsThis::remove( m_sampleLabel );
+  m_sampleLabel->setWhatsThis(QString::null);
 
   if ( m_title.isNull() )
   {
     QToolTip::add( m_sampleLabel, i18n( "Preview of the selected font" ) );
-    QWhatsThis::add( m_sampleLabel, 
-        i18n( "This is a preview of the selected font. You can change it"
+    m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the selected font. You can change it"
         " by clicking the \"Choose...\" button." ) );
   }
   else
   {
     QToolTip::add( m_sampleLabel, 
         i18n( "Preview of the \"%1\" font" ).arg( m_title ) );
-    QWhatsThis::add( m_sampleLabel, 
-        i18n( "This is a preview of the \"%1\" font. You can change it"
+    m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the \"%1\" font. You can change it"
         " by clicking the \"Choose...\" button." ).arg( m_title ) );
   }
 }

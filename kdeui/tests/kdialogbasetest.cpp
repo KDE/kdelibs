@@ -1,12 +1,18 @@
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdialogbase.h>
 
 #include <qstring.h>
-#include <qtextview.h>
+#include <q3textview.h>
 
 int main(int argc, char** argv)
 {
-  KApplication app(argc, argv, "DialogBaseTest");
+  KAboutData about("DialogBaseTest", "DialogBaseTest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
+
   // -----
   QString text= // the explanation shown by the example dialog
     "<center><h1>DialogBase Example</h1></center><hr><br>"
@@ -55,7 +61,7 @@ int main(int argc, char** argv)
 
      It is important that your main widget is created with the dialog object
      as its parent! */
-  QTextView view(text, QString::null, &dialog);
+  Q3TextView view(text, QString::null, &dialog);
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
   dialog.setMainWidget(&view);

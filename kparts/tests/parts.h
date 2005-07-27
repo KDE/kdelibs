@@ -4,7 +4,7 @@
 
 #include <kparts/part.h>
 
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 namespace KParts {
 class GUIActivateEvent;
 };
@@ -20,7 +20,7 @@ protected:
   virtual bool openFile();
 
 protected:
-  QMultiLineEdit * m_edit;
+  Q3MultiLineEdit * m_edit;
   KInstance *m_instance;
 };
 

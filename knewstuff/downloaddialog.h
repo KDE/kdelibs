@@ -29,7 +29,7 @@ namespace KIO
 }
 
 class KListView;
-class QTextBrowser;
+class Q3TextBrowser;
 class QFrame;
 class KNewStuffGeneric;
 
@@ -88,8 +88,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
 
       @param type a Hotstuff data type such as "korganizer/calendar"
     */
-    void setType(QString type);
-	// ### KDE 4.0: use const QString&
+    void setType(const QString &type);
 
     /**
       Fetches descriptions of all available data, optionally considering
@@ -178,7 +177,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
       @param type a data type such as "korganizer/calendar"
       @deprecated use open( const QString& type, const QString& caption );
     */
-    static void open(QString type) KDE_DEPRECATED; // ### KDE 4.0: remove and make caption/parent argument optional
+    static void open( const QString& type) KDE_DEPRECATED; // ### KDE 4.0: remove and make caption/parent argument optional
 
   public slots:
     /**
@@ -213,17 +212,17 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     ProviderLoader *m_loader;
     QString m_entryname;
     KListView *lv_r, *lv_d, *lv_l;
-    QTextBrowser *m_rt;
+    Q3TextBrowser *m_rt;
     QFrame *m_frame;
-    QListViewItem *m_entryitem;
-    QPtrList<Entry> m_entries;
+    Q3ListViewItem *m_entryitem;
+    Q3PtrList<Entry> m_entries;
     Entry *m_entry;
     KNewStuffGeneric *m_s;
     int m_curtab;
-    QMap<QWidget*, QValueList<KListView*>* > m_map;
+    QMap<QWidget*, Q3ValueList<KListView*>* > m_map;
     QMap<QWidget*, Provider*> m_providers;
-    QMap<QWidget*, QTextBrowser*> m_rts;
-    QMap<QWidget*, QValueList<QPushButton*>* > m_buttons;
+    QMap<QWidget*, Q3TextBrowser*> m_rts;
+    QMap<QWidget*, Q3ValueList<QPushButton*>* > m_buttons;
     QMap<KIO::Job*, Provider*> m_jobs;
     QMap<KIO::Job*, QString> m_data;
     QString m_filter;

@@ -13,19 +13,19 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef SIDEPIXMAP_H
 #define SIDEPIXMAP_H
 
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpixmap.h>
 
 #include <kdelibs_export.h>
 
-class KDEPRINT_EXPORT SidePixmap : public QFrame
+class KDEPRINT_EXPORT SidePixmap : public Q3Frame
 {
 public:
 	SidePixmap(QWidget *parent = 0, const char *name = 0);

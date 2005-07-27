@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 
 #ifndef _KDIALOG_H_
@@ -61,7 +61,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Takes the same arguments as QDialog.
      */
     KDialog(QWidget *parent = 0, const char *name = 0,
-	    bool modal = false, WFlags f = 0);
+	    bool modal = false, Qt::WFlags f = 0);
 
     /**
      * Return the number of pixels you shall use between a
@@ -91,7 +91,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param margin The new layout margin
      * @param spacing The new layout spacing
      */
-    static void resizeLayout( QLayoutItem *lay, int margin, int spacing );
+    static void resizeLayout( QLayout *lay, int margin, int spacing );
 
     /**
      * Centers @p widget on the desktop, taking multi-head setups into

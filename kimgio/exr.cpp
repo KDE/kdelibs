@@ -28,34 +28,68 @@
 #include <ImfVecAttribute.h>
 #include <ImfArray.h>
 #include <ImfConvert.h>
+#include <ImfVersion.h>
+#include <IexThrowErrnoExc.h>
 
 #include <iostream>
 
-#include <stdlib.h>
-
-#include <kurl.h>
-#include <kprocess.h>
-#include <klocale.h>
-#include <kgenericfactory.h>
 #include <kdebug.h>
 
-#include <qimage.h>
-#include <qcstring.h>
-#include <qfile.h>
-#include <qdatetime.h>
-#include <qdict.h>
-#include <qvalidator.h>
-#include <qcolor.h>
+
+#include <QImage>
+#include <QDataStream>
+#include <QImageIOPlugin>
 
 #include "exr.h"
 
-using namespace Imf;
+class K_IStream: public Imf::IStream
+{
+public:
+	K_IStream( QIODevice *dev, QByteArray fileName ):
+		IStream( fileName.data() ), m_dev ( dev )
+	{}
+
+	virtual bool  read( char c[], int n );
+	virtual Imf::Int64 tellg( );
+	virtual void seekg( Imf::Int64 pos );
+	virtual void clear( );
+
+private:
+	QIODevice *m_dev;
+};
+
+bool K_IStream::read( char c[], int n )
+{
+	qint64 result = m_dev->read( c, n );
+	if ( result > 0 ) {
+		return true;
+	} else if ( result == 0 ) {
+		throw Iex::InputExc( "Unexpected end of file" );
+	} else // negative value {
+		Iex::throwErrnoExc( "Error in read", result );
+	return false;
+}
+
+Imf::Int64 K_IStream::tellg( )
+{
+	return m_dev->pos();
+}
+
+void K_IStream::seekg( Imf::Int64 pos )
+{
+	m_dev->seek( pos );
+}
+
+void K_IStream::clear( )
+{
+	// TODO
+}
 
 /* this does a conversion from the ILM Half (equal to Nvidia Half)
  * format into the normal 32 bit pixel format. Process is from the
  * ILM code.
  */
-QRgb RgbaToQrgba(struct Rgba imagePixel)
+QRgb RgbaToQrgba(struct Imf::Rgba imagePixel)
 {
 	float r,g,b,a;
 	
@@ -116,20 +150,35 @@ QRgb RgbaToQrgba(struct Rgba imagePixel)
 				  char (Imath::clamp ( a * 84.66f, 0.f, 255.f ) ) );
 }
 
-KDE_EXPORT void kimgio_exr_read( QImageIO *io )
+EXRHandler::EXRHandler()
+{
+}
+
+bool EXRHandler::canRead() const
+{
+	return canRead( device() );
+}
+
+QByteArray EXRHandler::name() const
+{
+	// TODO
+	return QByteArray("exr");
+}
+
+bool EXRHandler::read( QImage *outImage )
 {
     try
     {
 		int width, height;
 
-		// This won't work if io is not QFile !
-		RgbaInputFile file (QFile::encodeName(io->fileName()));
+		K_IStream istr( device(), QByteArray() );
+		Imf::RgbaInputFile file( istr );
 		Imath::Box2i dw = file.dataWindow();
 
         width  = dw.max.x - dw.min.x + 1;
         height = dw.max.y - dw.min.y + 1;
 
-		Array2D<Rgba> pixels;
+		Imf::Array2D<Imf::Rgba> pixels;
 		pixels.resizeErase (height, width);
 
         file.setFrameBuffer (&pixels[0][0] - dw.min.x - dw.min.y * width, 1, width);
@@ -137,7 +186,7 @@ KDE_EXPORT void kimgio_exr_read( QImageIO *io )
 
 		QImage image(width, height, 32, 0, QImage::BigEndian);
 		if( image.isNull())
-			return;
+			return false;
 
 		// somehow copy pixels into image
 		for ( int y=0; y < height; y++ ) {
@@ -147,21 +196,79 @@ KDE_EXPORT void kimgio_exr_read( QImageIO *io )
 			}
 		}
 
-		io->setImage( image );
-		io->setStatus( 0 );
+		*outImage = image;
+
+		return true;
     }
     catch (const std::exception &exc)
     {
-		kdDebug(399) << exc.what() << endl;
-        return;
+		kdDebug() << exc.what() << endl;
+        return false;
     }
 }
 
 
-KDE_EXPORT void kimgio_exr_write(QImageIO *)
+bool EXRHandler::write( const QImage &image )
 {
 	// TODO: stub
+	Q_UNUSED( image );
+	return false;
 }
 
+
+bool EXRHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("EXRHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+
+    QByteArray head = device->readLine(4);
+    int readBytes = head.size();
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    return Imf::isImfMagic( head.data() );
+}
+
+
+/* --- Plugin --- */
+
+QStringList EXRPlugin::keys() const
+{
+	return QStringList() << "exr" << "EXR";
+}
+
+
+QImageIOPlugin::Capabilities EXRPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if ( format == "exr" || format == "EXR" )
+		return Capabilities(CanRead);
+    if ( !format.isEmpty() )
+        return 0;
+    if ( !device->isOpen() )
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && EXRHandler::canRead(device))
+        cap |= CanRead;
+    return cap;
+}
+
+QImageIOHandler *EXRPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new EXRHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN( EXRPlugin )
 
 #endif

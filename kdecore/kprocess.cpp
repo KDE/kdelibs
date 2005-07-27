@@ -72,6 +72,7 @@
 #include <pwd.h>
 #include <grp.h>
 
+#include <qmap.h>
 #include <qfile.h>
 #include <qsocketnotifier.h>
 #include <qapplication.h>
@@ -109,8 +110,8 @@ public:
 
    QMap<QString,QString> env;
    QString wd;
-   QCString shell;
-   QCString executable;
+   QByteArray shell;
+   QByteArray executable;
 };
 
 /////////////////////////////
@@ -186,7 +187,7 @@ KProcess::setupEnvironment()
    for(it = d->env.begin(); it != d->env.end(); ++it)
    {
       setenv(QFile::encodeName(it.key()).data(),
-             QFile::encodeName(it.data()).data(), 1);
+             QFile::encodeName(it.value()).data(), 1);
    }
    if (!d->wd.isEmpty())
    {
@@ -273,7 +274,7 @@ KProcess &KProcess::operator<<(const QStringList& args)
   return *this;
 }
 
-KProcess &KProcess::operator<<(const QCString& arg)
+KProcess &KProcess::operator<<(const QByteArray& arg)
 {
   return operator<< (arg.data());
 }
@@ -309,7 +310,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
 #ifdef Q_OS_UNIX
   char **arglist;
-  QCString shellCmd;
+  QByteArray shellCmd;
   if (d->useShell)
   {
       if (d->shell.isEmpty()) {
@@ -355,7 +356,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (pipe(fd))
      fd[0] = fd[1] = -1; // Pipe failed.. continue
 
-  QApplication::flushX();
+  QApplication::flush();
 
   // we don't use vfork() because
   // - it has unclear semantics and is not standardized

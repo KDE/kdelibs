@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <config.h>
@@ -28,11 +28,11 @@
 #include "kmmanager.h"
 #include "driver.h"
 
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qfile.h>
-#include <qtl.h>
+#include <q3tl.h>
 #include <qdir.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -52,7 +52,7 @@ static void reportError(KPrinter*);
 // KPrinterWrapper class
 //**************************************************************************************
 
-class KPrinterWrapper : public QPrinter
+/*class KPrinterWrapper : public QPrinter
 {
 friend class KPrinter;
 public:
@@ -88,7 +88,7 @@ int KPrinterWrapper::metric(int m) const
 int KPrinterWrapper::qprinterMetric(int m) const
 {
 	return QPrinter::metric(m);
-}
+}*/
 
 //**************************************************************************************
 // KPrinterPrivate class
@@ -97,13 +97,13 @@ int KPrinterWrapper::qprinterMetric(int m) const
 class KPrinterPrivate
 {
 public:
-	QGuardedPtr<KPrinterImpl>	m_impl;
+	QPointer<KPrinterImpl>	m_impl;
 	bool		m_restore;
 	bool		m_previewonly;
 	WId		m_parentId;
 	QString		m_docfilename;
 	QString m_docdirectory;
-	KPrinterWrapper		*m_wrapper;
+	QPrinter		*m_printer;
 	QMap<QString,QString>	m_options;
 	QString			m_tmpbuffer;
 	QString			m_printername;
@@ -121,7 +121,7 @@ public:
 //**************************************************************************************
 
 KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
-: QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
+: QPaintDevice(/*QInternal::Printer|QInternal::ExternalDevice*/)
 {
 	init(restore, m);
 }
@@ -129,7 +129,7 @@ KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
 KPrinter::~KPrinter()
 {
 	// delete Wrapper object
-	delete d->m_wrapper;
+	delete d->m_printer;
 
 	// save current options
 	if (d->m_restore)
@@ -151,12 +151,12 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	d->m_pagesize = 0;
 
 	// initialize QPrinter wrapper
-	d->m_wrapper = new KPrinterWrapper(this, m);
+	d->m_printer = new QPrinter(m);
 
 	// other initialization
 	d->m_tmpbuffer = d->m_impl->tempFile();
 	d->m_ready = false;
-	d->m_defaultres = d->m_wrapper->resolution();
+	d->m_defaultres = d->m_printer->resolution();
 	d->m_useprinterres = false;
 
 	// reload options from implementation (static object)
@@ -272,7 +272,12 @@ KPrinter::ApplicationType KPrinter::applicationType()
 	return (ApplicationType)KMFactory::self()->settings()->application;
 }
 
-bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
+#warning Kprinter and its use of QPainter needs to be ported
+QPaintEngine * KPrinter::paintEngine () const { 
+	return 0;
+}
+
+/*bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
 	if (c == QPaintDevice::PdcBegin)
@@ -282,31 +287,31 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 		preparePrinting();
 		d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
 	}
-	value = d->m_wrapper->cmd(c,painter,p);
+	value = d->m_printer->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd)
 	{
 		// this call should take care of everything (preview, output-to-file, filtering, ...)
-		value = value && printFiles(QStringList(d->m_wrapper->outputFileName()),true);
+		value = value && printFiles(QStringList(d->m_printer->outputFileName()),true);
 		// reset "ready" state
 		finishPrinting();
 	}
 	return value;
-}
+}*/
 
 void KPrinter::translateQtOptions()
 {
-	d->m_wrapper->setCreator(creator());
-	d->m_wrapper->setDocName(docName());
-	d->m_wrapper->setFullPage(fullPage());
-	d->m_wrapper->setColorMode((QPrinter::ColorMode)colorMode());
-	d->m_wrapper->setOrientation((QPrinter::Orientation)orientation());
+	d->m_printer->setCreator(creator());
+	d->m_printer->setDocName(docName());
+	d->m_printer->setFullPage(fullPage());
+	d->m_printer->setColorMode((QPrinter::ColorMode)colorMode());
+	d->m_printer->setOrientation((QPrinter::Orientation)orientation());
 	if ( !option( "kde-printsize" ).isEmpty() )
-		d->m_wrapper->setPageSize( ( QPrinter::PageSize )option( "kde-printsize" ).toInt() );
+		d->m_printer->setPageSize( ( QPrinter::PageSize )option( "kde-printsize" ).toInt() );
 	else
-		d->m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
-	d->m_wrapper->setOutputToFile(true);
-	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
-	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
+		d->m_printer->setPageSize((QPrinter::PageSize)pageSize());
+	d->m_printer->setOutputToFile(true);
+	d->m_printer->setOutputFileName(d->m_tmpbuffer);
+	d->m_printer->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 	if (!option("kde-margin-top").isEmpty())
 	{
 		/**
@@ -315,16 +320,18 @@ void KPrinter::translateQtOptions()
 		 * when specified by the user ( who usually specifies margins
 		 * in metric units ).
 		 */
-		int res = resolution();
-		d->m_wrapper->setMargins(
+		#warning KDE4 porting: find out how to specify margins in QT4
+		/*int res = resolution();
+		d->m_printer->setMargins(
 				( int )( ( option("kde-margin-top").toFloat() * res + 71 ) / 72 ),
 				( int )( ( option("kde-margin-left").toFloat() * res + 71 ) / 72 ),
 				( int )( ( option("kde-margin-bottom").toFloat() * res + 71 ) / 72 ),
-				( int )( ( option("kde-margin-right").toFloat() * res + 71 ) / 72 ) );
+				( int )( ( option("kde-margin-right").toFloat() * res + 71 ) / 72 ) );*/
 	}
 	else if ( d->m_pagesize != NULL )
 	{
-		int res = resolution();
+		#warning KDE4 porting: find out how to specify margins in QT4
+		/*int res = resolution();
 		DrPageSize *ps = d->m_pagesize;
 		int top = ( int )( ps->topMargin() * res + 71 ) / 72;
 		int left = ( int )( ps->leftMargin() * res + 71 ) / 72;
@@ -336,23 +343,24 @@ void KPrinter::translateQtOptions()
 			// But that doesn't mean it looks good. Apps which use setFullPage(false) assume that
 			// KPrinter will give them reasonable margins, so let's QMAX with defaults from Qt in that case.
 			// Keep this in sync with KPMarginPage::initPageSize
+			
 			unsigned int it, il, ib, ir;
-			d->m_wrapper->margins( &it, &il, &ib, &ir );
+			d->m_printer->margins( &it, &il, &ib, &ir );
 			top = QMAX( top, (int)it );
 			left = QMAX( left, (int)il );
 			bottom = QMAX( bottom, (int)ib );
 			right = QMAX( right, (int)ir );
 		}
-		d->m_wrapper->setMargins( top, left, bottom, right );
+		d->m_printer->setMargins( top, left, bottom, right );*/
 	}
 	/*else
 	{
-		int res = d->m_wrapper->resolution();
-		d->m_wrapper->setMargins( res/3, res/2, res/3, res/2 );
+		int res = d->m_printer->resolution();
+		d->m_printer->setMargins( res/3, res/2, res/3, res/2 );
 	}*/
 	// for special printers, copies are handled by Qt
 	if (option("kde-isspecial") == "1")
-		d->m_wrapper->setNumCopies(numCopies());
+		d->m_printer->setNumCopies(numCopies());
 }
 
 bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
@@ -449,9 +457,9 @@ void KPrinter::preparePrinting()
 	// set the correct resolution, if needed (or reset it)
 	int res = option( "kde-resolution" ).toInt();
 	if ( d->m_useprinterres && res > 0 )
-		d->m_wrapper->setResolution( res );
+		d->m_printer->setResolution( res );
 	else
-		d->m_wrapper->setResolution( d->m_defaultres );
+		d->m_printer->setResolution( d->m_defaultres );
 
 	// standard Qt settings
 	translateQtOptions();
@@ -467,9 +475,9 @@ void KPrinter::finishPrinting()
 	d->m_impl->statusMessage(QString::null, this);
 }
 
-QValueList<int> KPrinter::pageList() const
+QList<int> KPrinter::pageList() const
 {
-	QValueList<int>	list;
+	QList<int>	list;
 	int	mp(minPage()), MP(maxPage());
 	if (mp > 0 && MP > 0 && MP >= mp)
 	{ // do something only if bounds specified
@@ -518,7 +526,7 @@ QValueList<int> KPrinter::pageList() const
 			// revert the list if needed
 			if (pageOrder() == LastPageFirst)
 			{
-				for (uint i=0;i<(list.count()/2);i++)
+				for (uint i=0;i<(uint)(list.count()/2);i++)
 					qSwap(list[i],list[list.count()-1-i]);
 			}
 
@@ -526,7 +534,7 @@ QValueList<int> KPrinter::pageList() const
 			if (pageSet() != AllPages)
 			{
 				bool	keepEven = (pageSet() == EvenPages);
-				for (QValueList<int>::Iterator it=list.begin();it!=list.end();)
+				for (QList<int>::Iterator it=list.begin();it!=list.end();)
 					if ((((*it) % 2) != 0 && keepEven) ||
 					    (((*it) % 2) == 0 && !keepEven)) it = list.remove(it);
 					else ++it;
@@ -549,53 +557,53 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	return d->m_wrapper->margins();
+	return d->m_printer->margins();
 }
 
 void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 {
-	d->m_wrapper->margins( top, left, bottom, right );
+	d->m_printer->margins( top, left, bottom, right );
 }
 
-int KPrinter::metric(int m) const
+/*int KPrinter::metric(int m) const
 {
 	if (d->m_pagesize == NULL || !option( "kde-printsize" ).isEmpty())
-		return d->m_wrapper->qprinterMetric(m);
+		return d->m_printer->qprinterMetric(m);
 
 	int	val(0);
 	bool	land = (orientation() == KPrinter::Landscape);
-	uint	res(d->m_wrapper->resolution()), top = res/2, left = res/2, bottom = res/3, right = res/2;
+	uint	res(d->m_printer->resolution()), top = res/2, left = res/2, bottom = res/3, right = res/2;
 	margins( &top, &left, &bottom, &right );
 	switch ( m )
 	{
-		case QPaintDeviceMetrics::PdmWidth:
+		case Q3PaintDeviceMetrics::PdmWidth:
 			val = (land ? ( int )d->m_pagesize->pageHeight() : ( int )d->m_pagesize->pageWidth());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( left + right );
 			break;
-		case QPaintDeviceMetrics::PdmHeight:
+		case Q3PaintDeviceMetrics::PdmHeight:
 			val = (land ? ( int )d->m_pagesize->pageWidth() : ( int )d->m_pagesize->pageHeight());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( top + bottom );
 			break;
-		case QPaintDeviceMetrics::PdmWidthMM:
-			val = metric( QPaintDeviceMetrics::PdmWidth );
+		case Q3PaintDeviceMetrics::PdmWidthMM:
+			val = metric( Q3PaintDeviceMetrics::PdmWidth );
 			val = (val * 254 + 5*res) / (10*res); // +360 to get the right rounding
 			break;
-		case QPaintDeviceMetrics::PdmHeightMM:
-			val = metric( QPaintDeviceMetrics::PdmHeight );
+		case Q3PaintDeviceMetrics::PdmHeightMM:
+			val = metric( Q3PaintDeviceMetrics::PdmHeight );
 			val = (val * 254 + 5*res) / (10*res);
 			break;
 		default:
-			val = d->m_wrapper->qprinterMetric(m);
+			val = d->m_printer->qprinterMetric(m);
 			break;
 	}
 	return val;
-}
+}*/
 
 void KPrinter::setOrientation(Orientation o)
 {
@@ -658,7 +666,7 @@ void KPrinter::reload()
 {
 	d->m_impl = KMFactory::self()->printerImplementation();
 	int	global = KMFactory::self()->settings()->orientation;
-	if (global != -1) setOrientation((KPrinter::Orientation)global);
+	if (global != -1) setOrientation((Orientation)global);
 	global = KMFactory::self()->settings()->pageSize;
 	if (global != -1) setPageSize((KPrinter::PageSize)global);
 	//initOptions(d->m_options);
@@ -782,7 +790,7 @@ static void dumpOptions(const QMap<QString,QString>& opts)
 KPrinterImpl* KPrinter::implementation() const
 { return d->m_impl; }
 
-const QString& KPrinter::option(const QString& key) const
+QString KPrinter::option(const QString& key) const
 { return ((const KPrinterPrivate*)(d))->m_options[key]; }
 
 void KPrinter::setOption(const QString& key, const QString& value)
@@ -816,7 +824,7 @@ void KPrinter::setNumCopies(int n)
 { setOption("kde-copies",QString::number(n)); }
 
 KPrinter::Orientation KPrinter::orientation() const
-{ return (option("kde-orientation") == "Landscape" ? Landscape : Portrait); }
+{ return (option("kde-orientation") == "Landscape" ? Landscape : Portrait ); }
 
 KPrinter::PageOrder KPrinter::pageOrder() const
 { return (option("kde-pageorder") == "Reverse" ? LastPageFirst : FirstPageFirst); }
@@ -907,7 +915,7 @@ bool KPrinter::newPage()
 {
 	d->m_pagenumber++;
 	d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
-	return d->m_wrapper->newPage();
+	return d->m_printer->newPage();
 }
 
 QString KPrinter::outputFileName() const
@@ -930,10 +938,10 @@ void KPrinter::setOutputToFile(bool on)
 }
 
 bool KPrinter::abort()
-{ return d->m_wrapper->abort(); }
+{ return d->m_printer->abort(); }
 
 bool KPrinter::aborted() const
-{ return d->m_wrapper->aborted(); }
+{ return d->m_printer->aborted(); }
 
 void KPrinter::setMargins(QSize m)
 {
@@ -942,11 +950,12 @@ void KPrinter::setMargins(QSize m)
 
 void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
 {
-	d->m_wrapper->setMargins( top, left, bottom, right );
+	#warning KDE4 porting: find out how to specify margins in QT4
+	/*d->m_printer->setMargins( top, left, bottom, right );
 	setOption( "kde-margin-top", QString::number( top ), true );
 	setOption( "kde-margin-left", QString::number( left ), true );
 	setOption( "kde-margin-bottom", QString::number( bottom ), true );
-	setOption( "kde-margin-right", QString::number( right ), true );
+	setOption( "kde-margin-right", QString::number( right ), true );*/
 }
 
 // FIXME: remove for 4.0
@@ -1034,12 +1043,12 @@ QString KPrinter::docDirectory() const
 
 void KPrinter::setResolution(int dpi)
 {
-	d->m_wrapper->setResolution(dpi);
+	d->m_printer->setResolution(dpi);
 	d->m_defaultres = dpi;
 }
 
 int KPrinter::resolution() const
-{ return d->m_wrapper->resolution(); }
+{ return d->m_printer->resolution(); }
 
 void KPrinter::setUsePrinterResolution( bool on )
 { d->m_useprinterres = on; }

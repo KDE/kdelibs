@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdserverpage.h"
@@ -25,7 +25,6 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 
@@ -162,14 +161,14 @@ bool CupsdServerPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdServerPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(servername_, conf->comments_.toolTip("servername"));
-	QWhatsThis::add(serveradmin_, conf->comments_.toolTip("serveradmin"));
-	QWhatsThis::add(classification_, conf->comments_.toolTip("classification"));
-	QWhatsThis::add(classoverride_, conf->comments_.toolTip("classifyoverride"));
-	QWhatsThis::add(charset_, conf->comments_.toolTip("defaultcharset"));
-	QWhatsThis::add(language_, conf->comments_.toolTip("defaultlanguage"));
-	QWhatsThis::add(printcap_, conf->comments_.toolTip("printcap"));
-	QWhatsThis::add(printcapformat_, conf->comments_.toolTip("printcapformat"));
+	servername_->setWhatsThis(conf->comments_.toolTip("servername"));
+	serveradmin_->setWhatsThis(conf->comments_.toolTip("serveradmin"));
+	classification_->setWhatsThis(conf->comments_.toolTip("classification"));
+	classoverride_->setWhatsThis(conf->comments_.toolTip("classifyoverride"));
+	charset_->setWhatsThis(conf->comments_.toolTip("defaultcharset"));
+	language_->setWhatsThis(conf->comments_.toolTip("defaultlanguage"));
+	printcap_->setWhatsThis(conf->comments_.toolTip("printcap"));
+	printcapformat_->setWhatsThis(conf->comments_.toolTip("printcapformat"));
 }
 
 void CupsdServerPage::classChanged(int index)

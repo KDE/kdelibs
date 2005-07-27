@@ -37,10 +37,9 @@
 #include "dom/html_image.h"
 #include <qclipboard.h>
 #include <qfileinfo.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qmetaobject.h>
-#include <private/qucomextra_p.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -203,7 +202,7 @@ void KHTMLPartBrowserExtension::cut()
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->cut();
     else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->cut();
+        static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->cut();
 }
 
 void KHTMLPartBrowserExtension::copy()
@@ -235,12 +234,12 @@ void KHTMLPartBrowserExtension::copy()
 	*/
 	//if(!cb->selectionModeEnabled())
 	    htmltext = m_part->selectedTextAsHTML();
-	QTextDrag *textdrag = new QTextDrag(text, 0L);
+	Q3TextDrag *textdrag = new Q3TextDrag(text, 0L);
 	KMultipleDrag *drag = new KMultipleDrag( m_editableFormWidget );
 	drag->addDragObject( textdrag );
 	if(!htmltext.isEmpty()) {
 	    htmltext.replace( QChar( 0xa0 ), ' ' );
-	    QTextDrag *htmltextdrag = new QTextDrag(htmltext, 0L);
+	    Q3TextDrag *htmltextdrag = new Q3TextDrag(htmltext, 0L);
 	    htmltextdrag->setSubtype("html");
 	    drag->addDragObject( htmltextdrag );
 	}
@@ -256,7 +255,7 @@ void KHTMLPartBrowserExtension::copy()
         if ( m_editableFormWidget->inherits( "QLineEdit" ) )
             static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
         else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-            static_cast<QTextEdit *>( &(*m_editableFormWidget) )->copy();
+            static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->copy();
     }
 }
 
@@ -304,7 +303,7 @@ void KHTMLPartBrowserExtension::paste()
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
     else if ( m_editableFormWidget->inherits( "QTextEdit" ) )
-        static_cast<QTextEdit *>( &(*m_editableFormWidget) )->paste();
+        static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->paste();
 }
 
 void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
@@ -312,12 +311,11 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !m_extensionProxy )
         return;
 
-    int slot = m_extensionProxy->metaObject()->findSlot( method );
+    int slot = m_extensionProxy->metaObject()->indexOfSlot( method );
     if ( slot == -1 )
         return;
 
-    QUObject o[ 1 ];
-    m_extensionProxy->qt_invoke( slot, o );
+    QMetaObject::invokeMethod(m_extensionProxy, method, Qt::DirectConnection);
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()
@@ -341,10 +339,10 @@ void KHTMLPartBrowserExtension::updateEditActions()
     bool hasSelection = false;
 
     if( m_editableFormWidget) {
-        if ( ::qt_cast<QLineEdit*>(m_editableFormWidget))
+        if ( qobject_cast<QLineEdit*>(m_editableFormWidget))
             hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
-        else if(::qt_cast<QTextEdit*>(m_editableFormWidget))
-            hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+        else if(qobject_cast<Q3TextEdit*>(m_editableFormWidget))
+            hasSelection = static_cast<Q3TextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     }
 
     enableAction( "copy", hasSelection );
@@ -381,10 +379,10 @@ void KHTMLPartBrowserExtension::print()
 
 void KHTMLPartBrowserExtension::disableScrolling()
 {
-  QScrollView *scrollView = m_part->view();
+  Q3ScrollView *scrollView = m_part->view();
   if (scrollView) {
-    scrollView->setVScrollBarMode(QScrollView::AlwaysOff);
-    scrollView->setHScrollBarMode(QScrollView::AlwaysOff);
+    scrollView->setVScrollBarMode(Q3ScrollView::AlwaysOff);
+    scrollView->setHScrollBarMode(Q3ScrollView::AlwaysOff);
   }
 }
 
@@ -732,7 +730,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
   lst.append( safeURL );
   KMultipleDrag *drag = new KMultipleDrag(d->m_khtml->view(), "Image");
 
-  drag->addDragObject( new QImageDrag(d->m_pixmap.convertToImage()) );
+  drag->addDragObject( new Q3ImageDrag(d->m_pixmap.convertToImage()) );
   drag->addDragObject( new KURLDrag(lst, d->m_khtml->view(), "Image URL") );
 
   // Set it in both the mouse selection and in the clipboard
@@ -927,7 +925,7 @@ QStringList KHTMLPartBrowserHostExtension::frameNames() const
   return m_part->frameNames();
 }
 
-const QPtrList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
+const Q3PtrList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
 {
   return m_part->frames();
 }
@@ -973,7 +971,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     m_direction = direction;
     m_part = part;
 
-    m_popup = new QPopupMenu;
+    m_popup = new Q3PopupMenu;
     // xgettext: no-c-format
     m_popup->insertItem( i18n( "Default Font Size (100%)" ) );
 
@@ -985,7 +983,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
     {
         int num = i * m;
         QString numStr = QString::number( num );
-        if ( num > 0 ) numStr.prepend( '+' );
+        if ( num > 0 ) numStr.prepend( QLatin1Char('+') );
 
         // xgettext: no-c-format
         m_popup->insertItem( i18n( "%1%" ).arg( fastZoomSizes[ofs + i] ) );

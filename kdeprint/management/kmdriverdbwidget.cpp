@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmdriverdbwidget.h"
@@ -31,7 +31,7 @@
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 
 #include <klocale.h>
 #include <kcursor.h>
@@ -95,7 +95,7 @@ KMDriverDbWidget::~KMDriverDbWidget()
 
 void KMDriverDbWidget::setDriver(const QString& manu, const QString& model)
 {
-	QListBoxItem	*item = m_manu->findItem(manu);
+	Q3ListBoxItem	*item = m_manu->findItem(manu);
 	QString		model_(model);
 	if (item)
 	{
@@ -167,7 +167,7 @@ void KMDriverDbWidget::slotDbLoaded(bool reloaded)
 	{ // do something only if DB reloaded
 		m_manu->clear();
 		m_model->clear();
-		QDictIterator< QDict<KMDBEntryList> >	it(KMDriverDB::self()->manufacturers());
+		Q3DictIterator< Q3Dict<KMDBEntryList> >	it(KMDriverDB::self()->manufacturers());
 		for (;it.current();++it)
 			m_manu->insertItem(it.currentKey());
 		m_manu->sort();
@@ -186,15 +186,15 @@ void KMDriverDbWidget::slotError(const QString& msg)
 void KMDriverDbWidget::slotManufacturerSelected(const QString& name)
 {
 	m_model->clear();
-	QDict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
+	Q3Dict<KMDBEntryList>	*models = KMDriverDB::self()->findModels(name);
 	if (models)
 	{
-		QStrIList	ilist(true);
-		QDictIterator<KMDBEntryList>	it(*models);
+		QStringList	ilist;
+		Q3DictIterator<KMDBEntryList>	it(*models);
 		for (;it.current();++it)
-			ilist.append(it.currentKey().latin1());
+			ilist.append(QString( it.currentKey().latin1() ).upper());
 		ilist.sort();
-		m_model->insertStrList(&ilist);
+		m_model->insertStringList(ilist);
 		m_model->setCurrentItem(0);
 	}
 }
@@ -203,7 +203,7 @@ void KMDriverDbWidget::slotPostscriptToggled(bool on)
 {
 	if (on)
 	{
-		QListBoxItem	*item = m_manu->findItem("GENERIC");
+		Q3ListBoxItem	*item = m_manu->findItem("GENERIC");
 		if (item)
 		{
 			m_manu->setCurrentItem(item);

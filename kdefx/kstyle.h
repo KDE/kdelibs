@@ -1,344 +1,738 @@
-/*
- * $Id$
- * 
- * KStyle
- * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
- * 
- * QWindowsStyle CC_ListView and style images were kindly donated by TrollTech,
- * Copyright (C) 1998-2000 TrollTech AS.
- * 
- * Many thanks to Bradley T. Hughes for the 3 button scrollbar code.
+/**
+ * KStyle for KDE4
+ * Copyright (C) 2004-2005 Maksim Orlovich <maksim@kde.org>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License version 2 as published by the Free Software Foundation.
+ * Based in part on the following software:
+ *  KStyle for KDE3
+ *      Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
+ *      Portions  (C) 1998-2000 TrollTech AS
+ *  Keramik for KDE3,
+ *      Copyright (C) 2002      Malte Starostik   <malte@kde.org>
+ *                (C) 2002-2003 Maksim Orlovich  <maksim@kde.org>
+ *      Portions  (C) 2001-2002 Karol Szwed     <gallium@kde.org>
+ *                (C) 2001-2002 Fredrik Höglund <fredrik@kde.org>
+ *                (C) 2000 Daniel M. Duley       <mosfet@kde.org>
+ *                (C) 2000 Dirk Mueller         <mueller@kde.org>
+ *                (C) 2001 Martijn Klingens    <klingens@kde.org>
+ *                (C) 2003 Sandro Giessl      <sandro@giessl.com>
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
-#ifndef __KSTYLE_H
-#define __KSTYLE_H
-
-// W A R N I N G
-// -------------
-// This API is still subject to change.
-// I will remove this warning when I feel the API is sufficiently flexible.
+ 
+#ifndef KDE_KSTYLE_H
+#define KDE_KSTYLE_H
 
 #include <qcommonstyle.h>
+#include <qpalette.h>
+#include <qstyleplugin.h>
+
+struct QStyleOptionProgressBar;
+struct QStyleOptionTab;
 
 #include <kdelibs_export.h>
 
-class KPixmap;
-
-struct KStylePrivate;
-/** 
- * Simplifies and extends the QStyle API to make style coding easier.
- *  
- * The KStyle class provides a simple internal menu transparency engine
- * which attempts to use XRender for accelerated blending where requested,
- * or falls back to fast internal software tinting/blending routines.
- * It also simplifies more complex portions of the QStyle API, such as
- * the PopupMenuItems, ScrollBars and Sliders by providing extra "primitive
- * elements" which are simple to implement by the style writer.
- *
- * @see QStyle::QStyle
- * @see QCommonStyle::QCommonStyle
- * @author Karol Szwed (gallium@kde.org)
- * @version $Id$
- */
+/**
+ ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
+ ...
+All the  basic PE_Primitive calls are also broken down to KStylePrimitive calls by default, as follows:
+ 
+ PE_FocusRect -> WT_Generic, Generic::FocusIndicator
+ ### TODO, actually
+ 
+ Note that those not mentionned here are not redirected
+*/
 class KDEFX_EXPORT KStyle: public QCommonStyle
 {
-	Q_OBJECT
+public:
+    KStyle();
+    
+protected:
+    ///BEGIN Helper methods
 
-	public:
+    /**
+     Draws inside the rectangle using a thinkness 0 pen. This is what drawRect in Qt3 used to do.
+    */
+    void drawInsideRect(QPainter* p, const QRect& r) const;
+    
+    /**
+     Returns a w x h QRect center inside the 'in' rectangle
+    */
+    QRect centerRect(QRect in, int w, int h) const
+    {
+        return QRect(in.x() + (in.width() - w)/2, in.y() + (in.height() - h)/2, w, h);
+    }
 
-		/**
-		 * KStyle Flags:
-		 * 
-		 * @li Default - Default style setting, where menu transparency
-		 * and the FilledFrameWorkaround are disabled.
-		 * 
-		 * @li AllowMenuTransparency - Enable this flag to use KStyle's 
-		 * internal menu transparency engine.
-		 * 
-		 * @li FilledFrameWorkaround - Enable this flag to facilitate 
-		 * proper repaints of QMenuBars and QToolBars when the style chooses 
-		 * to paint the interior of a QFrame. The style primitives in question 
-		 * are PE_PanelMenuBar and PE_PanelDockWindow. The HighColor style uses
-		 * this workaround to enable painting of gradients in menubars and 
-		 * toolbars.
-		 */
-		typedef uint KStyleFlags;
-		enum KStyleOption {
-			Default 	      =		0x00000000, //!< All options disabled
-			AllowMenuTransparency =		0x00000001, //!< Internal transparency enabled
-			FilledFrameWorkaround = 	0x00000002  //!< Filled frames enabled
-		};
+    /**
+     Retyrn a size-dimension QRect centered inside the 'in' rectangle
+    */
+    QRect centerRect(QRect in, QSize size) const
+    {
+        return centerRect(in, size.width(), size.height());
+    }
 
-		/**
-		 * KStyle ScrollBarType:
-		 *
-		 * Allows the style writer to easily select what type of scrollbar
-		 * should be used without having to duplicate large amounts of source
-		 * code by implementing the complex control CC_ScrollBar.
-		 *
-		 * @li WindowsStyleScrollBar - Two button scrollbar with the previous
-		 * button at the top/left, and the next button at the bottom/right.
-		 *
-		 * @li PlatinumStyleScrollBar - Two button scrollbar with both the 
-		 * previous and next buttons at the bottom/right.
-		 *
-		 * @li ThreeButtonScrollBar - %KDE style three button scrollbar with
-		 * two previous buttons, and one next button. The next button is always
-		 * at the bottom/right, whilst the two previous buttons are on either 
-		 * end of the scrollbar.
-		 *
-		 * @li NextStyleScrollBar - Similar to the PlatinumStyle scroll bar, but
-		 * with the buttons grouped on the opposite end of the scrollbar.
-		 *
-		 * @see KStyle::KStyle()
-		 */
-		enum KStyleScrollBarType {
-			WindowsStyleScrollBar  = 	0x00000000, //!< two button, windows style
-			PlatinumStyleScrollBar = 	0x00000001, //!< two button, platinum style
-			ThreeButtonScrollBar   = 	0x00000002, //!< three buttons, %KDE style
-			NextStyleScrollBar     = 	0x00000004  //!< two button, NeXT style
-		};
+    ///END Helper methods
 
-		/** 
-		 * Constructs a KStyle object.
-		 *
-		 * Select the appropriate KStyle flags and scrollbar type
-		 * for your style. The user's style preferences selected in KControl
-		 * are read by using QSettings and are automatically applied to the style.
-		 * As a fallback, KStyle paints progressbars and tabbars. It inherits from
-		 * QCommonStyle for speed, so don't expect much to be implemented. 
-		 *
-		 * It is advisable to use a currently implemented style such as the HighColor
-		 * style as a foundation for any new KStyle, so the limited number of
-		 * drawing fallbacks should not prove problematic.
-		 *
-		 * @param flags the style to be applied
-		 * @param sbtype the scroll bar type
-		 * @see KStyle::KStyleFlags
-		 * @see KStyle::KStyleScrollBarType
-		 * @author Karol Szwed (gallium@kde.org)
-		 */
-		KStyle( KStyleFlags flags = KStyle::Default, 
-			KStyleScrollBarType sbtype = KStyle::WindowsStyleScrollBar );
+    ///BEGIN Representation of options passed when drawing things
 
-		/** 
-		 * Destructs the KStyle object.
-		 */
-		~KStyle();
+    /**
+     A representation for colors. This marshals to and from integers
+     to be able to be stored as a widget layout property.
+    */
+    class KDEFX_EXPORT ColorMode
+    {
+    public:
+        /**
+         KStyle understands two kinds of colors:
+         1. Palette entries. This means the item must be painted with a specific
+            color role from the palette
+         2. Auto-selected black or white, dependent on the brightness of a certain
+            color role from the palette
+        */
+        enum Mode
+        {
+            PaletteEntryMode,
+            BWAutoContrastMode = 0x8000000
+        };
+    private:
+        Mode                mode;
+        QPalette::ColorRole role;
+    public:
 
-		/**
-		 * Returns the default widget style depending on color depth.
-		 */
-		static QString defaultStyle();
+        ColorMode(QPalette::ColorRole _role): mode(PaletteEntryMode), role(_role)
+        {}
 
-		/**
-		 * Modifies the scrollbar type used by the style.
-		 * 
-		 * This function is only provided for convenience. It allows
-		 * you to make a late decision about what scrollbar type to use for the
-		 * style after performing some processing in your style's constructor.
-		 * In most situations however, setting the scrollbar type via the KStyle
-		 * constructor should suffice.
-		 * @param sbtype the scroll bar type
-		 * @see KStyle::KStyleScrollBarType
-		 */
-		void setScrollBarType(KStyleScrollBarType sbtype);
+        ColorMode(Mode _mode, QPalette::ColorRole _role): mode(_mode), role(_role)
+        {}
 
-		/**
-		 * Returns the KStyle flags used to initialize the style.
-		 *
-		 * This is used solely for the kcmstyle module, and hence is internal.
-		 */
-		KStyleFlags styleFlags() const;
+        ///Represent as an int to store as a property
+        operator int() const
+        {
+            return int(role) | int(mode);
+        }
 
-		// ---------------------------------------------------------------------------
+        ///Decode from an int.
+        ColorMode(int encoded)
+        {
+            mode = (encoded & BWAutoContrastMode) ? BWAutoContrastMode : PaletteEntryMode;
+            role = QPalette::ColorRole(encoded & (~BWAutoContrastMode));
+        }
 
-		/**
-		 * This virtual function defines the pixmap used to blend between the popup
-		 * menu and the background to create different menu transparency effects.
-		 * For example, you can fill the pixmap "pix" with a gradient based on the
-		 * popup's colorGroup, a texture, or some other fancy painting routine.
-		 * KStyle will then internally blend this pixmap with a snapshot of the
-		 * background behind the popupMenu to create the illusion of transparency.
-		 * 
-		 * This virtual is never called if XRender/Software blending is disabled by
-		 * the user in KDE's style control module.
-		 */
-		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-						    const QPopupMenu* popup ) const;
+        QColor color(const QPalette& palette)
+        {
+            QColor palColor = palette.color(role);
 
-		/**
-		 * KStyle Primitive Elements:
-		 *
-		 * The KStyle class extends the Qt's Style API by providing certain 
-		 * simplifications for parts of QStyle. To do this, the KStylePrimitive
-		 * elements were defined, which are very similar to Qt's PrimitiveElement.
-		 * 
-		 * The first three Handle primitives simplify and extend PE_DockWindowHandle, 
-		 * so do not reimplement PE_DockWindowHandle if you want the KStyle handle 
-		 * simplifications to be operable. Similarly do not reimplement CC_Slider,
-		 * SC_SliderGroove and SC_SliderHandle when using the KStyle slider
-		 * primitives. KStyle automatically double-buffers slider painting
-		 * when they are drawn via these KStyle primitives to avoid flicker.
-		 *
-		 * @li KPE_DockWindowHandle - This primitive is already implemented in KStyle,
-		 * and paints a bevelled rect with the DockWindow caption text. Re-implement
-		 * this primitive to perform other more fancy effects when drawing the dock window
-		 * handle.
-		 *
-		 * @li KPE_ToolBarHandle - This primitive must be reimplemented. It currently
-		 * only paints a filled rectangle as default behavior. This primitive is used
-		 * to render QToolBar handles.
-		 *
-		 * @li KPE_GeneralHandle - This primitive must be reimplemented. It is used
-		 * to render general handles that are not part of a QToolBar or QDockWindow, such
-		 * as the applet handles used in Kicker. The default implementation paints a filled
-		 * rect of arbitrary color.
-		 *
-		 * @li KPE_SliderGroove - This primitive must be reimplemented. It is used to 
-		 * paint the slider groove. The default implementation paints a filled rect of
-		 * arbitrary color.
-		 *
-		 * @li KPE_SliderHandle - This primitive must be reimplemented. It is used to
-		 * paint the slider handle. The default implementation paints a filled rect of
-		 * arbitrary color.
-		 *
-		 * @li KPE_ListViewExpander - This primitive is already implemented in KStyle. It
-		 * is used to draw the Expand/Collapse element in QListViews. To indicate the 
-		 * expanded state, the style flags are set to Style_Off, while Style_On implies collapsed.
-		 *
-		 * @li KPE_ListViewBranch - This primitive is already implemented in KStyle. It is
-		 * used to draw the ListView branches where necessary.
-		 */
-		enum KStylePrimitive {
-			KPE_DockWindowHandle,
-			KPE_ToolBarHandle,
-			KPE_GeneralHandle,
+            if (mode == BWAutoContrastMode)
+                if (qGray(palColor.rgb()) > 128) //### CHECKME
+                    return Qt::black;
+                else
+                    return Qt::white;
+            else
+                return palColor;
+        }
+    };
+    
+    /**
+     Base for our own option classes. 
+     The idea here is that Option is the main base, and all the
+     public bases inherit off it indirectly using OptionBase,
+     which helps implement the default handling
+    
+     When implementing the actual types, just implement the default ctor,
+     filling in defaults, and you're set.
+    */
+    struct KDEFX_EXPORT Option
+    {
+        virtual ~Option() {}; //So dynamic_cast works, and g++ shuts up
+    };
 
-			KPE_SliderGroove,
-			KPE_SliderHandle,
+    /**
+     Intermediatary base that helps implement subtypes of Option
+     that properly handle defaults
 
-			KPE_ListViewExpander,
-			KPE_ListViewBranch
-		};
+     EventualSubtype --- the type of option which will be implemented
+     by inheritting of this class
 
-		/**
-		 * This function is identical to Qt's QStyle::drawPrimitive(), except that 
-		 * it adds one further parameter, 'widget', that can be used to determine 
-		 * the widget state of the KStylePrimitive in question.
-		 *
-		 * @see KStyle::KStylePrimitive
-		 * @see QStyle::drawPrimitive
-		 * @see QStyle::drawComplexControl
-		 */
-		virtual void drawKStylePrimitive( KStylePrimitive kpe,
-					QPainter* p,
-					const QWidget* widget,
-					const QRect &r,
-					const QColorGroup &cg,
-					SFlags flags = Style_Default,
-					const QStyleOption& = QStyleOption::Default ) const;
+     BaseType        --- the type of option from which this should inherit
+     */
+    template<typename EventualSubtype, typename BaseType>
+    struct KDEFX_EXPORT OptionBase: public BaseType
+    {
+        static EventualSubtype* defaultOption()
+        {
+            static EventualSubtype* theDefault = 0; //### function static, not very nice,
+            //but avoids need for explicit instantiation.
 
+            if (!theDefault)
+                theDefault = new EventualSubtype;
+                
+            return theDefault;
+        }
+    };
+    
+    /**
+     The extractOption method casts the passed in option object, and returns
+     it, if available, or the defaults for the given type. When implementing
+     drawing of things with associated options, just use this to extract
+     the parameter.
+    */
+    template<typename T>
+    static T extractOption(Option* option)
+    {
+        if (option && dynamic_cast<T>(option))
+            return static_cast<T>(option);
+        
+        //### warn if cast failed?
+        
+        //since T is a pointer type, need this to get to the static.
+        return static_cast<T>(0)->defaultOption();
+    }
 
-		enum KStylePixelMetric {
-			KPM_MenuItemSeparatorHeight		= 0x00000001,
-			KPM_MenuItemHMargin			= 0x00000002,
-			KPM_MenuItemVMargin			= 0x00000004,
-			KPM_MenuItemHFrame			= 0x00000008,
-			KPM_MenuItemVFrame			= 0x00000010,
-			KPM_MenuItemCheckMarkHMargin	        = 0x00000020,
-			KPM_MenuItemArrowHMargin		= 0x00000040,
-			KPM_MenuItemTabSpacing			= 0x00000080,
-			KPM_ListViewBranchThickness		= 0x00000100
-		};
+    /**
+     Option representing the color of the thing to draw. Used for arrows, and for text
+     (the latter actually uses TextOption)
+    */
+    struct KDEFX_EXPORT ColorOption: public OptionBase<ColorOption, Option>
+    {
+        ColorMode color;
 
-		int kPixelMetric( KStylePixelMetric kpm, const QWidget* widget = 0 ) const;
+        ColorOption(): color(QPalette::ButtonText)
+        {}
+    };
 
-		// ---------------------------------------------------------------------------
+    /**
+     Option for drawing icons: represents whether the icon should be active or not.
+     The implementation is responsible for all other flags
+    */
+    struct KDEFX_EXPORT IconOption: public OptionBase<IconOption, Option>
+    {
+        bool  active;
+        QIcon icon;
 
-		void polish( QWidget* widget );
-		void unPolish( QWidget* widget );
-		void polishPopupMenu( QPopupMenu* );
+        IconOption(): active(false)
+        {}
+    };
 
-		void drawPrimitive( PrimitiveElement pe,
-					QPainter* p,
-					const QRect &r,
-					const QColorGroup &cg,
-					SFlags flags = Style_Default,
-					const QStyleOption& = QStyleOption::Default ) const;
+    struct KDEFX_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
+    {
+        enum ActiveButton
+        {
+            None,
+            Top,
+            Left,
+            Right,
+            Bottom
+        };
 
-		void drawControl( ControlElement element,
-					QPainter* p,
-					const QWidget* widget,
-					const QRect &r,
-					const QColorGroup &cg,
-					SFlags flags = Style_Default,
-					const QStyleOption& = QStyleOption::Default ) const;
+        ActiveButton activeButton;
 
-		void drawComplexControl( ComplexControl control,
-					QPainter *p,
-					const QWidget* widget,
-					const QRect &r,
-					const QColorGroup &cg,
-					SFlags flags = Style_Default,
-					SCFlags controls = SC_All,
-					SCFlags active = SC_None,
-					const QStyleOption& = QStyleOption::Default ) const;
+        DoubleButtonOption(): activeButton(None)
+        {}
 
-		SubControl querySubControl( ComplexControl control,
-					const QWidget* widget,
-					const QPoint &pos,
-					const QStyleOption& = QStyleOption::Default ) const;
+        DoubleButtonOption(ActiveButton ab): activeButton(ab)
+        {}
+    };
+    
+    
+    ///Option representing text drawing info. For Generic::Text. 
+    struct KDEFX_EXPORT TextOption: public OptionBase<TextOption, ColorOption>
+    {
+        Qt::Alignment        hAlign; //The horizontal alignment
+        QString              text;   //The text to draw
+        
+        TextOption()
+        { init(); }
 
-		QRect querySubControlMetrics( ComplexControl control,
-					const QWidget* widget,
-					SubControl sc,
-					const QStyleOption& = QStyleOption::Default ) const;
+        TextOption(const QString& _text): text(_text)
+        { init(); }
 
-		int pixelMetric( PixelMetric m, 
-					const QWidget* widget = 0 ) const;
+        void init()
+        {
+            hAlign = Qt::AlignLeft; //NOTE: Check BIDI?
+        }
+    };
 
-		QRect subRect( SubRect r, 
-					const QWidget* widget ) const;
+    ///END options
 
-		QPixmap stylePixmap( StylePixmap stylepixmap,
-					const QWidget* widget = 0,
-					const QStyleOption& = QStyleOption::Default ) const;
+    /**
+     This enum is used to represent KStyle's concept of
+     a widget, and to associate drawing requests and metrics
+     with it. The generic value is used for primitives and metrics
+     that are common between many widgets
+    */
+    enum WidgetType
+    {
+        WT_Generic,       
+        WT_PushButton,    ///Push button and similar
+        WT_Splitter,      
+        WT_CheckBox,
+        WT_RadioButton,
+        WT_DockWidgetTitle,
+        WT_ProgressBar,
+        WT_MenuBar,
+        WT_MenuBarItem,
+        WT_Menu,
+        WT_MenuItem,
+        WT_ScrollBar,
+        WT_Tab,
+        WT_Limit = 0xFFFF ///For enum extensibility
+    };
 
-		int styleHint( StyleHint sh, 
-					const QWidget* w = 0,
-					const QStyleOption &opt = QStyleOption::Default,
-					QStyleHintReturn* shr = 0 ) const;
+                
+    /**
+     These constants describe how to access various fields of a margin property.
+     For example, to set an additional top margin of 2 pixels, use
+     setWidgetLayoutProp(WT_SomeWidget, SomeMargin + Top, 2);
+    */
+    enum MarginOffsets
+    {
+        MainMargin,
+        Top,
+        Bot,
+        Left,
+        Right,
+        MarginInc
+    };
+       
+    ///Basic primitives, which may be used with everything
+    struct Generic
+    {
+        enum Primitive
+        {
+            Bevel,
+            Text,        //Passes in TextOption
+            Icon,        //Passes in IconOption
+            FocusIndicator,
+            ArrowUp,    //Note: the arrows are centering primitives
+            ArrowDown,
+            ArrowRight,
+            ArrowLeft,
+            WidgetSpecificBase = 0xFFFF
+        };
+    };
+    
+    ///Metrics, primitives, etc., relevant for rendering buttons
+    struct PushButton
+    {
+        /*
+         Push button. These are structured as follows:
+         
+         1. Between the very outside and the bevel is the default indicator 
+         area, controlled by the DefaultIndicatorMargin. KStyle may reserve
+         this for auto-default buttons, too, for consistency's sake.
+         
+         2. From the bevel, the content and focus rect margins are measured.
+         Only the content margin is used to size the content area.
+         
+         Inside the content area, MenuIndicatorSize is allocated to the down
+         arrow if there is a popup menu.
+         
+         TextToIconSpace is allocated between icon and text if both exist
+         
+         Relevant generic primitives:
+            Bevel, Text, FocusIndicator, ArrowDown
+         
+         Note that some primitives here may be called without a QStyleOptionButton. 
+        */
+        enum LayoutProp
+        {
+            ContentsMargin,
+            FocusMargin            = ContentsMargin + MarginInc, 
+            DefaultIndicatorMargin = FocusMargin    + MarginInc,
+            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc,
+            PressedShiftVertical,
+            MenuIndicatorSize,
+            TextToIconSpace
+        };
+        
+        enum Primitive
+        {
+            DefaultButtonBevel = Generic::WidgetSpecificBase
+        };
+    };
 
-	protected:
-		bool eventFilter( QObject* object, QEvent* event );
+    /**
+      For splitters, Bevel is used; the Size metric specifies the size
+    */        
+    struct Splitter
+    {
+        
+        enum LayoutProp
+        {
+            Size //Size of the splitter
+        };
+    };
+    
+    /**
+     From default primitives, Text and FocusIndicator are used
+     */
+    struct CheckBox
+    {
+        enum LayoutProp
+        {
+            Size,               //Size of the checkbox
+            BoxTextSpace,       //Space to leave between checkbox and text
+            NoLabelFocusMargin, //Rectangle to apply to the checkbox rectangle to get where to
+                                //paint the focus rectangle in case of a labelless checkbox
+            FocusMargin = NoLabelFocusMargin + MarginInc
+        };
+        
+        enum Primitive
+        {
+            CheckOff = Generic::WidgetSpecificBase,
+            CheckOn,
+            CheckTriState
+        };
+    };
 
-	private:
-		// Disable copy constructor and = operator
-		KStyle( const KStyle & );
-		KStyle& operator=( const KStyle & );
+    /**
+    From default primitives, Text and FocusIndicator are used
+     */
+    struct RadioButton
+    {
+        //See CheckBox for description of the metrics
+        enum LayoutProp
+        {
+            Size,
+            BoxTextSpace,
+            FocusMargin
+        };
+        
+        enum Primitive
+        {
+            RadioOff = Generic::WidgetSpecificBase,
+            RadioOn
+        };
+    };
+    
+    /**
+     From default primitives, Text, Bevel are used
+    */
+    struct DockWidgetTitle
+    {
+        enum LayoutProp
+        {
+            Margin //Margin for the title: note that this is a symmetric margin always!
+        };
+    };
+    
+    /**
+     From default primitives, Text, Bevel are used
+    */
+    struct ProgressBar
+    {
+        enum LayoutProp
+        {
+            GrooveMargin,        //Margin to allocate for the groove. Content area will be inside of it.
+            SideText = GrooveMargin + MarginInc, //Set this to true to have the text positionned to the side
+            SideTextSpace,       //Extra space besides that needed for text to allocate to side indicator (on both sides)
+            Precision,           //The indicator size will always be a multiple of this (modulo busy indicator size clamping)
+            BusyIndicatorSize,   //The busy indicator size, in percent of area size
+            MaxBusyIndicatorSize //Size limit on the busy indicator size;
+            
+        };
+    
+        enum Primitive
+        {
+            Indicator = Generic::WidgetSpecificBase,
+            BusyIndicator
+        };
+    };
 
-	protected:
-		virtual void virtual_hook( int id, void* data );
-	private:
-		KStylePrivate *d;
+    /**
+     From default primitives, Bevel is used
+    */
+    struct MenuBar
+    {
+        enum LayoutProp
+        {
+            Margin,         //Margin rectangle for the contents.
+            ItemSpacing = Margin + MarginInc //Space between items
+        };
+    };
+
+    /**
+     From default primitives, Text & Bevel are used
+    */
+    struct MenuBarItem
+    {
+        enum LayoutProp
+        {
+            Margin,                    //Margin rectangle to allocate for any bevel, etc. (Text will be drawn with the inside rect)
+            Dummy = Margin + MarginInc //Paranoia about underlying type
+        };
+    };
+
+    /**
+     No default primitives are used
+    */
+    struct Menu
+    {
+        enum LayoutProp
+        {
+            FrameWidth, //The width of the frame, note that this does not affect the layout.
+            Margin,     //The margin of the menu
+            ScrollerHeight = Margin + MarginInc,
+            TearOffHeight
+        };
+
+        enum Primitive
+        {
+            Frame = Generic::WidgetSpecificBase,      //The menu frame
+            Background, //Menu and menu item background
+            TearOff,
+            Scroller
+        };
+    };
+
+    /**
+     Note: bg is erased with WT_Menu/Menu::Background.
+     The Generic::Text, Generic::ArrowLeft/Right primitives
+     are also used
+
+     Horizontal layout inside the items is as follow:
+     |icon/checkmark|CheckSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
+
+     The icon/checkmark column is at least CheckWidth wide in all cases.
+
+     Then the margin is applied outside that
+
+     Note that for the subprimitives the passed rect is their
+     own, 
+    */
+    struct MenuItem
+    {
+        enum LayoutProp
+        {
+            Margin,       //Margin for each entry
+            CheckWidth = Margin + MarginInc, //Minimum size of the checkmark column
+            CheckSpace,                      //Space between the column and text one
+            AccelSpace,                      //Space between text and accel
+            ArrowSpace,                      //Space to reserve for the menu arrow
+            ArrowWidth,
+            SeparatorHeight,                  //Heigh of separator
+            MinHeight,                        //Limit on the size of item content
+            ActiveTextColor,                  //Color for active text and arrow
+            TextColor,                        //Color for inactive text and arrow
+            DisabledTextColor,                //Color for inactive + disabled text and arrow
+            ActiveDisabledTextColor           //Color for active + disabled text and arrow
+        };
+
+        enum Primitive
+        {
+            //### radio one?
+            CheckColumn = Generic::WidgetSpecificBase, //Background of the checkmark/icon column
+            CheckOn,     //The checkmark - on
+            CheckOff,    //The checkmark - off
+            CheckIcon,   //Checked icon.
+            Separator,   //A separator item.
+            ItemIndicator //Shows the active item
+        };
+    };
+
+    /**
+        Generic primitives used: the arrows
+    */
+    struct ScrollBar
+    {
+        /**
+          Note: dimensions are generally specified with respect to the vertical scrollbar.
+          Of course, for horizontal ones they're flipped
+        */
+        enum LayoutProp
+        {
+            DoubleTopButton, //Set to non-zero to have two buttons on top
+            DoubleBotButton, //Set to non-zero to have two buttons on bottom
+            SingleButtonHeight,
+            DoubleButtonHeight,
+            BarWidth,
+            MinimumSliderHeight, //Note: if the scrollbar is too small to accomodate
+                                 //this, this will not be enforced
+            ArrowColor,
+            ActiveArrowColor
+        };
+
+        enum Primitive
+        {
+            //Note: when drawing the double-buttons, you need to check
+            //the active subcontrol inside the QStyleOption, to determine
+            //which half is active.
+            SingleButtonVert = Generic::WidgetSpecificBase, //Used to draw a 1-button bevel, vertical
+            SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
+            DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
+            DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
+                                                            //The above 2 are passed a DoubleButtonOption,
+                                                            // to say which button is pressed
+            GrooveAreaVert,                                 //### is this enough, or also provide split version?
+            GrooveAreaHor,
+            SliderVert,
+            SliderHor
+        };
+    };
+
+    struct Tab
+    {
+        /**
+         Each tab is basically built hiearchically out of the following areas:
+
+         Content area:
+            Icon <- TextToIconSpace -> Text
+            -or- Icon -or- Text
+         Bevel:
+            ContentsMargin outside of the content area
+         Focus indicator is placed FocusMargin inside the bevel
+
+         The side tabs just have those rotated, bottom tabs have
+         the margins reversed
+        */
+        enum LayoutProp
+        {
+            ContentsMargin,
+            FocusMargin     = ContentsMargin + MarginInc,
+            TextToIconSpace = FocusMargin    + MarginInc
+        };
+    
+        /**
+         From generic primitives, Text, FocusIndicator, Icon are also used
+        */
+        enum Primitive
+        {
+            EastText  = Generic::WidgetSpecificBase, //Special rotated text for east tabs.
+            WestText,                                //Special rotated text for west tabs.
+            NorthTab,
+            EastTab,
+            WestTab,
+            SouthTab
+        };
+    };
+   
+    ///Interface for the style to configure various metrics that KStyle has customizable.
+    void setWidgetLayoutProp(WidgetType widget, int metric, int value);
+    
+    /**
+     This is called to draw things, with the common Qt option parameters unpacked for convenience, and information
+     from KStyle passed as a KStyleOption.
+      Note that you should make sure to use the r parameter for the rectangle,
+     since the QStyleOption is generally unaltered from the original request, even if layout indicates
+     a different painting rectangle
+    */
+    virtual void drawKStylePrimitive(WidgetType widgetType, int primitive, 
+                                     const QStyleOption* opt,
+                                     QRect r, QPalette pal, State flags,
+                                     QPainter* p, 
+                                     const QWidget* widget = 0,
+                                     Option* kOpt    = 0) const;
+private:
+    ///Should we use a side text here?
+    bool useSideText(const QStyleOptionProgressBar* opt)     const;
+    int  sideTextWidth(const QStyleOptionProgressBar* pbOpt) const;
+
+    ///Returns true if the tab is vertical
+    bool isVerticalTab (const QStyleOptionTab* tbOpt) const;
+
+    ///Returns true if the tab has reflected layout
+    bool isReflectedTab(const QStyleOptionTab* tbOpt) const;
+
+    enum Side
+    {
+        North,
+        East,
+        West,
+        South
+    };
+
+    Side tabSide(const QStyleOptionTab* tbOpt) const;
+
+    ///Returns the tab rectangle adjusted for the tab direction
+    QRect marginAdjustedTab(const QStyleOptionTab* tbOpt, int property) const;
+
+    ///Wrapper around visualRect for easier use
+    QRect  handleRTL(const QStyleOption* opt, const QRect& subRect) const;
+    QPoint handleRTL(const QStyleOption* opt, const QPoint& pos)    const;
+
+    ///Storage for metrics/flags
+    QVector<QVector<int> > metrics;
+    
+    int widgetLayoutProp(WidgetType widget, int metric) const;
+    
+    ///Expands out the dimension to make sure it incorporates the margins
+    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric) const;
+    
+    ///Calculates the contents rectangle by subtracting out the appropriate margins
+    ///from the outside
+    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric) const;
+
+    ///Internal subrect calculations, for e.g. scrollbar arrows,
+    ///where we fake our output to get Qt to do what we want
+    QRect internalSubControlRect (ComplexControl control, const QStyleOptionComplex* opt,
+                                                    SubControl subControl, const QWidget* w) const;
+
+public:
+    /*
+     The methods below implement the QStyle interface
+    */
+    void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+    
+    void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+    
+    int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    
+    QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
+    
+    QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
+                                                const QSize& contentsSize, const QWidget* w) const;
+    
+    int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
+                                                               QStyleHintReturn* returnData) const;
+                                                               
+    QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
+                                                    SubControl subControl, const QWidget* w) const;
+
+    SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
+                                             const QPoint& pt, const QWidget* w) const;
+
+    void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
+                                             QPainter *p,      const QWidget* w) const;
 };
 
+template<typename T>
+const char* kstyleName()
+{ return "default"; }
 
-// vim: set noet ts=4 sw=4:
+template<typename T>
+class KStyleFactory: public QStylePlugin
+{
+    QStringList keys() const
+    {
+        QStringList l;
+        l << kstyleName<T>();
+        return l;
+    }
+    
+    QStyle* create(const QString& id)
+    {
+        QStringList names = keys();
+        //check whether included in the keys
+        if (names.contains(id, Qt::CaseInsensitive))
+            return new T();
+
+        return 0;
+    }
+};
+
+#define K_EXPORT_STYLE(name,type) template<> const char* kstyleName<type>() { return name; } \
+    Q_EXPORT_PLUGIN(KStyleFactory<type>)
+
 #endif
-
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

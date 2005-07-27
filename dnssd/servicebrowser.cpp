@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include <qstringlist.h>
@@ -37,21 +37,22 @@ class ServiceBrowserPrivate
 public:	
 	ServiceBrowserPrivate() : m_running(false) 
 	{}
-	QValueList<RemoteService::Ptr> m_services;
-	QValueList<RemoteService::Ptr> m_duringResolve;
+	QList<RemoteService::Ptr> m_services;
+	QList<RemoteService::Ptr> m_duringResolve;
 	QStringList m_types;
 	DomainBrowser* m_domains;
 	int m_flags;
 	bool m_running;
 	bool m_finished;
-	QDict<Query> resolvers;
+	Q3Dict<Query> resolvers;
 };
 
 ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
 {
-	if (domains) init(type,domains,autoResolve ? AutoResolve : 0);
-		else init(type,new DomainBrowser(this),autoResolve ?  AutoResolve|AutoDelete : AutoDelete);
+	if (domains) init(QStringList( type ),domains,autoResolve ? AutoResolve : 0);
+		else init(QStringList( type ),new DomainBrowser(this),autoResolve ?  AutoResolve|AutoDelete : AutoDelete);
 }
+
 ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags)
 {
 	if (domains) init(types,domains,flags);
@@ -69,13 +70,15 @@ void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int fla
 	connect(d->m_domains,SIGNAL(domainRemoved(const QString& )),this,
 		SLOT(removeDomain(const QString& )));
 }
+
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool autoResolve)
 {
-	init(type,new DomainBrowser(domain,false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
+	init(QStringList( type ) ,new DomainBrowser(QStringList(domain),false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
 }
+
 ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int flags)
 {
-	init(type,new DomainBrowser(domain,false,this),flags | AutoDelete);
+	init(QStringList(type),new DomainBrowser(QStringList(domain),false,this),flags | AutoDelete);
 }
 
 const ServiceBrowser::State ServiceBrowser::isAvailable()
@@ -106,8 +109,8 @@ void ServiceBrowser::serviceResolved(bool success)
 	QObject* sender_obj = const_cast<QObject*>(sender());
 	RemoteService* svr = static_cast<RemoteService*>(sender_obj);
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
-	QValueList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
-	QValueList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
+	QList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
+	QList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
 	while ( it!= itEnd && svr!= (*it)) ++it;
 	if (it != itEnd) {
 		if (success) {
@@ -146,7 +149,7 @@ void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
 
 void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 {
-	QValueList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
+	QList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
 	if (it!=(d->m_services.end())) {
 		emit serviceRemoved(*it);
 		d->m_services.remove(it);
@@ -157,7 +160,7 @@ void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
 void ServiceBrowser::removeDomain(const QString& domain)
 {
 	while (d->resolvers[domain]) d->resolvers.remove(domain);
-	QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
+	QList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
 	while (it!=d->m_services.end()) 
 		// use section to skip possible trailing dot
 		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
@@ -193,12 +196,12 @@ bool ServiceBrowser::allFinished()
 {
 	if  (d->m_duringResolve.count()) return false;
 	bool all = true;
-	QDictIterator<Query> it(d->resolvers);
+	Q3DictIterator<Query> it(d->resolvers);
 	for ( ; it.current(); ++it) all&=(*it)->isFinished();
 	return all;
 }
 
-const QValueList<RemoteService::Ptr>& ServiceBrowser::services() const
+const QList<RemoteService::Ptr>& ServiceBrowser::services() const
 {
 	return d->m_services;
 }
@@ -206,10 +209,10 @@ const QValueList<RemoteService::Ptr>& ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
-QValueList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
+QList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
 {
-	QValueList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
-	for (QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it) 
+	QList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
+	for (QList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it) 
 		if ((src->type()==(*it)->type()) && (src->serviceName()==(*it)->serviceName()) &&
 				   (src->domain() == (*it)->domain())) return it;
 	return itEnd;

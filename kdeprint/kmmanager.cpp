@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmmanager.h"
@@ -179,7 +179,7 @@ bool KMManager::testPrinter(KMPrinter *prt)
 	// temporarily added to the printer list, then taken out.
 	if (!prExist)
 		m_printers.append(prt);
-	result = pr.printFiles(testpage, false, false);
+	result = pr.printFiles(QStringList(testpage), false, false);
 	if (!prExist)
 		m_printers.take(m_printers.count()-1);
 	return result;
@@ -188,7 +188,7 @@ bool KMManager::testPrinter(KMPrinter *prt)
 
 KMPrinter* KMManager::findPrinter(const QString& name)
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->name() == name) return it.current();
 	//setErrorMsg(i18n("%1: printer not found.").arg(name));
@@ -197,7 +197,7 @@ KMPrinter* KMManager::findPrinter(const QString& name)
 
 KMPrinter* KMManager::softDefault() const
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->isSoftDefault()) return it.current();
 	return 0;
@@ -205,7 +205,7 @@ KMPrinter* KMManager::softDefault() const
 
 KMPrinter* KMManager::hardDefault() const
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (; it.current();++it)
 		if (it.current()->isHardDefault())
 			return it.current();
@@ -221,7 +221,7 @@ KMPrinter* KMManager::defaultPrinter()
 	return prt;
 }
 
-QPtrList<KMPrinter>* KMManager::printerList(bool reload)
+Q3PtrList<KMPrinter>* KMManager::printerList(bool reload)
 {
 	setErrorMsg(QString::null);
 	//kdDebug(500) << "Getting printer list: " << reload << endl;
@@ -277,7 +277,7 @@ QPtrList<KMPrinter>* KMManager::printerList(bool reload)
 	return &m_fprinters;
 }
 
-QPtrList<KMPrinter>* KMManager::printerListComplete(bool reload)
+Q3PtrList<KMPrinter>* KMManager::printerListComplete(bool reload)
 {
 	printerList(reload);
 	return &m_printers;
@@ -355,7 +355,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 	QFile	f(filename);
 	bool	result(true);
 	destname = QString::null;
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		char	buf[1024] = {0};
 		f.readBlock(buf,2);
@@ -365,7 +365,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 			destname = locateLocal("tmp","kdeprint_") + KApplication::randomString(8);
 			f.setName(destname);
 
-			if (f.open(IO_WriteOnly))
+			if (f.open(QIODevice::WriteOnly))
 			{
 				gzFile	in = gzopen(filename.latin1(),"r");
 				int	n(0);
@@ -383,7 +383,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 
 void KMManager::setHardDefault(KMPrinter *p)
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		it.current()->setHardDefault(false);
 	if (p) p->setHardDefault(true);
@@ -391,7 +391,7 @@ void KMManager::setHardDefault(KMPrinter *p)
 
 void KMManager::setSoftDefault(KMPrinter *p)
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
         {
 		it.current()->setSoftDefault(false);
@@ -428,7 +428,7 @@ QString KMManager::testPage()
 
 void KMManager::discardAllPrinters(bool on)
 {
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (!on || !it.current()->isSpecial())
 			it.current()->setDiscarded(on);

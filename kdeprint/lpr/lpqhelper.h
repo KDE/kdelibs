@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef LPQHELPER_H
 #define LPQHELPER_H
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 class KMJob;
 
@@ -31,7 +31,7 @@ public:
 	LpqHelper(QObject *parent = 0, const char *name = 0);
 	~LpqHelper();
 
-	void listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit = 0);
+	void listJobs(Q3PtrList<KMJob>& jobs, const QString& prname, int limit = 0);
 
 protected:
 	KMJob* parseLineLpr(const QString&);

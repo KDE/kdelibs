@@ -14,15 +14,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KPRINTERPROPERTYDIALOG_H
 #define KPRINTERPROPERTYDIALOG_H
 
 #include <kdialogbase.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
 
 class KMPrinter;
@@ -59,7 +59,7 @@ protected slots:
 protected:
 	KMPrinter		*m_printer;
 	DrMain			*m_driver;
-	QPtrList<KPrintDialogPage>	m_pages;
+	Q3PtrList<KPrintDialogPage>	m_pages;
 	KPrintDialogPage	*m_current;
 	QMap<QString,QString>	m_options;
 	QTabWidget		*m_tw;

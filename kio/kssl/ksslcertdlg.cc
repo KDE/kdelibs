@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
-#include <qlistview.h>
-#include <qframe.h>
+#include <q3listview.h>
+#include <q3frame.h>
 #include <qlabel.h>
 
 #include <kapplication.h>
@@ -57,7 +57,7 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
    grid->addMultiCellWidget(_dont, 1, 1, 0, 2);
    connect(_dont, SIGNAL(clicked()), SLOT(slotDont()));
 
-   _certs = new QListView(this);
+   _certs = new Q3ListView(this);
    grid->addMultiCellWidget(_certs, 0, 4, 3, 5);
    _certs->addColumn(i18n("Certificate"));
 
@@ -95,7 +95,7 @@ void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool s
     if ((*i).isEmpty())
       continue;
 
-    new QListViewItem(_certs, *i);
+    new Q3ListViewItem(_certs, *i);
   }
 
   _certs->setSelected(_certs->firstChild(), true);

@@ -26,7 +26,7 @@
 #ifndef KALLOCATOR_H
 #define KALLOCATOR_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include "kdelibs_export.h"
 
 class KZoneAllocatorPrivate;
@@ -110,7 +110,7 @@ public:
 
 protected:
     class MemBlock;
-    typedef QValueList<MemBlock *> MemList;
+    typedef QList<MemBlock *> MemList;
     void addBlock(MemBlock *b);
     void delBlock(MemBlock *b);
     void insertHash(MemBlock *b);

@@ -139,7 +139,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string().left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
     		m_start, m_len, m_toAdd,
-		m_reversed ? QPainter::RTL : QPainter::LTR,
+		m_reversed ? Qt::RightToLeft : Qt::LeftToRight,
 		startPos, endPos, hbg, m_y + ty, height(), deco);
 }
 
@@ -182,7 +182,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         pt->setPen(shadow->color);
         f->drawText(pt, x, y+m_baseline, text->str->s, text->str->l,
                     m_start, m_len, m_toAdd,
-                    m_reversed ? QPainter::RTL : QPainter::LTR);
+                    m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
         pt->setPen(c);
 
     }
@@ -203,7 +203,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         p.setFont(pt->font());
         f->drawText(&p, thickness, thickness+m_baseline, text->str->s, text->str->l,
                     m_start, m_len, m_toAdd,
-                    m_reversed ? QPainter::RTL : QPainter::LTR);
+                    m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 
         p.end();
         QImage img = pixmap.convertToImage().convertDepth(32);
@@ -483,7 +483,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
 	if ( (*this)[mid] == 0 )			// null item greater
 	    res = -1;
 	else
-	    res = ((QGVector*)this)->compareItems( d, (*this)[mid] );
+	    res = ((Q3GVector*)this)->compareItems( d, (*this)[mid] );
 	if ( res < 0 )
 	    n2 = mid - 1;
 	else if ( res > 0 )
@@ -496,7 +496,7 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
     /* if ( !found )
 	return -1; */
     // search to first one equal or bigger
-    while ( found && (mid > 0) && !((QGVector*)this)->compareItems(d, (*this)[mid-1]) )
+    while ( found && (mid > 0) && !((Q3GVector*)this)->compareItems(d, (*this)[mid-1]) )
 	mid--;
     return mid;
 }
@@ -947,7 +947,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 #endif
 // kdDebug(6040) << QConstString(str->s + s->m_start, s->m_len).string().left(40) << endl;
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
-				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+				   s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 	        }
 		else {
                     int offset = s->m_start;
@@ -964,16 +964,16 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
                         if (sPos >= ePos)
                             font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                            str->s, str->l, s->m_start, s->m_len,
-                                           s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
+                                           s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
                         else {
                             if (sPos-1 >= 0)
                                 font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                                str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
+                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, 0, sPos);
                             if (ePos < s->m_len)
                                 font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                                str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
+                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, ePos, s->m_len);
                         }
 #ifdef APPLE_CHANGES
                     }
@@ -984,7 +984,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
                         font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
                                        str->l, s->m_start, s->m_len,
-                                       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, sPos, ePos);
+                                       s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, sPos, ePos);
                     }
 #endif
                 }
@@ -1435,7 +1435,7 @@ static QString quoteAndEscapeNonPrintables(const QString &s)
 {
     QString result;
     result += '"';
-    for (uint i = 0; i != s.length(); ++i) {
+    for (int i = 0; i != s.length(); ++i) {
         QChar c = s.at(i);
         if (c == '\\') {
             result += "\\\\";

@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 /*
  * KAuthIcon - an icon which shows whether privileges are in effect
@@ -113,15 +113,15 @@ KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
     lockLabel->setText(lockText);
   else
     lockLabel->setText(openLockText);
-  lockLabel->setAlignment(AlignCenter);
+  lockLabel->setAlignment(Qt::AlignCenter);
   lockLabel->setMinimumSize(lockLabel->sizeHint());
   lockLabel->setText(lockText);
 
   layout = new QHBoxLayout(this);
 
-  layout->addWidget(lockBox, 0, AlignLeft|AlignVCenter);
+  layout->addWidget(lockBox, 0, Qt::AlignLeft|Qt::AlignVCenter);
   layout->addSpacing(5);
-  layout->addWidget(lockLabel, 0, AlignRight|AlignVCenter);
+  layout->addWidget(lockLabel, 0, Qt::AlignRight|Qt::AlignVCenter);
 
   layout->activate();
   resize(sizeHint());

@@ -223,8 +223,8 @@ void KConfigSkeleton::ItemInt::setMaxValue(int v)
 
 
 KConfigSkeleton::ItemInt64::ItemInt64( const QString &group, const QString &key,
-                              Q_INT64 &reference, Q_INT64 defaultValue )
-  : KConfigSkeletonGenericItem<Q_INT64>( group, key, reference, defaultValue )
+                              qint64 &reference, qint64 defaultValue )
+  : KConfigSkeletonGenericItem<qint64>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -266,13 +266,13 @@ QVariant KConfigSkeleton::ItemInt64::maxValue() const
   return QVariant();
 }
 
-void KConfigSkeleton::ItemInt64::setMinValue(Q_INT64 v)
+void KConfigSkeleton::ItemInt64::setMinValue(qint64 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemInt64::setMaxValue(Q_INT64 v)
+void KConfigSkeleton::ItemInt64::setMaxValue(qint64 v)
 {
   mHasMax = true;
   mMax = v;
@@ -280,7 +280,7 @@ void KConfigSkeleton::ItemInt64::setMaxValue(Q_INT64 v)
 
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &group, const QString &key,
                                      int &reference,
-                                     const QValueList<Choice> &choices,
+                                     const QList<Choice> &choices,
                                      int defaultValue )
   : ItemInt( group, key, reference, defaultValue ), mChoices( choices )
 {
@@ -298,7 +298,7 @@ void KConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = config->readEntry( mKey ).lower();
-    for(QValueList<Choice>::ConstIterator it = mChoices.begin();
+    for(QList<Choice>::ConstIterator it = mChoices.begin();
         it != mChoices.end(); ++it, ++i)
     {
       if ((*it).name.lower() == tmp)
@@ -329,7 +329,7 @@ void KConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   }
 }
 
-QValueList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
+QList<KConfigSkeleton::ItemEnum::Choice> KConfigSkeleton::ItemEnum::choices() const
 {
   return mChoices;
 }
@@ -394,8 +394,8 @@ void KConfigSkeleton::ItemUInt::setMaxValue(unsigned int v)
 
 
 KConfigSkeleton::ItemUInt64::ItemUInt64( const QString &group, const QString &key,
-                              Q_UINT64 &reference, Q_UINT64 defaultValue )
-  : KConfigSkeletonGenericItem<Q_UINT64>( group, key, reference, defaultValue )
+                              quint64 &reference, quint64 defaultValue )
+  : KConfigSkeletonGenericItem<quint64>( group, key, reference, defaultValue )
   ,mHasMin(false), mHasMax(false)
 {
 }
@@ -437,13 +437,13 @@ QVariant KConfigSkeleton::ItemUInt64::maxValue() const
   return QVariant();
 }
 
-void KConfigSkeleton::ItemUInt64::setMinValue(Q_UINT64 v)
+void KConfigSkeleton::ItemUInt64::setMinValue(quint64 v)
 {
   mHasMin = true;
   mMin = v;
 }
 
-void KConfigSkeleton::ItemUInt64::setMaxValue(Q_UINT64 v)
+void KConfigSkeleton::ItemUInt64::setMaxValue(quint64 v)
 {
   mHasMax = true;
   mMax = v;
@@ -476,20 +476,20 @@ void KConfigSkeleton::ItemLong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemLong::property() const
 {
-  return QVariant((Q_LLONG) mReference);
+  return QVariant((qint64) mReference);
 }
 
 QVariant KConfigSkeleton::ItemLong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_LLONG) mMin);
+    return QVariant((qint64) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemLong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_LLONG) mMax);
+    return QVariant((qint64) mMax);
   return QVariant();
 }
 
@@ -534,20 +534,20 @@ void KConfigSkeleton::ItemULong::setProperty(const QVariant & p)
 
 QVariant KConfigSkeleton::ItemULong::property() const
 {
-  return QVariant((Q_ULLONG) mReference);
+  return QVariant((quint64) mReference);
 }
 
 QVariant KConfigSkeleton::ItemULong::minValue() const
 {
   if (mHasMin)
-    return QVariant((Q_ULLONG) mMin);
+    return QVariant((quint64) mMin);
   return QVariant();
 }
 
 QVariant KConfigSkeleton::ItemULong::maxValue() const
 {
   if (mHasMax)
-    return QVariant((Q_ULLONG) mMax);
+    return QVariant((quint64) mMax);
   return QVariant();
 }
 
@@ -639,7 +639,7 @@ void KConfigSkeleton::ItemColor::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemColor::setProperty(const QVariant & p)
 {
-  mReference = p.toColor();
+  mReference = qvariant_cast<QColor>(p);
 }
 
 QVariant KConfigSkeleton::ItemColor::property() const
@@ -666,7 +666,7 @@ void KConfigSkeleton::ItemFont::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemFont::setProperty(const QVariant & p)
 {
-  mReference = p.toFont();
+  mReference = qvariant_cast<QFont>(p);
 }
 
 QVariant KConfigSkeleton::ItemFont::property() const
@@ -848,9 +848,9 @@ void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &group, const QString &key,
-                                      QValueList<int> &reference,
-                                      const QValueList<int> &defaultValue )
-  : KConfigSkeletonGenericItem<QValueList<int> >( group, key, reference, defaultValue )
+                                      QList<int> &reference,
+                                      const QList<int> &defaultValue )
+  : KConfigSkeletonGenericItem<QList<int> >( group, key, reference, defaultValue )
 {
 }
 
@@ -1064,8 +1064,8 @@ KConfigSkeleton::ItemUInt *KConfigSkeleton::addItemUInt( const QString &name, un
   return item;
 }
 
-KConfigSkeleton::ItemInt64 *KConfigSkeleton::addItemInt64( const QString &name, Q_INT64 &reference,
-                                    Q_INT64 defaultValue, const QString &key )
+KConfigSkeleton::ItemInt64 *KConfigSkeleton::addItemInt64( const QString &name, qint64 &reference,
+                                    qint64 defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemInt64 *item;
   item = new KConfigSkeleton::ItemInt64( mCurrentGroup, key.isNull() ? name : key,
@@ -1074,8 +1074,8 @@ KConfigSkeleton::ItemInt64 *KConfigSkeleton::addItemInt64( const QString &name, 
   return item;
 }
 
-KConfigSkeleton::ItemUInt64 *KConfigSkeleton::addItemUInt64( const QString &name, Q_UINT64 &reference,
-                                     Q_UINT64 defaultValue, const QString &key )
+KConfigSkeleton::ItemUInt64 *KConfigSkeleton::addItemUInt64( const QString &name, quint64 &reference,
+                                     quint64 defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemUInt64 *item;
   item = new KConfigSkeleton::ItemUInt64( mCurrentGroup, key.isNull() ? name : key,
@@ -1184,8 +1184,8 @@ KConfigSkeleton::ItemStringList *KConfigSkeleton::addItemStringList( const QStri
   return item;
 }
 
-KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, QValueList<int> &reference,
-                                      const QValueList<int> &defaultValue, const QString &key )
+KConfigSkeleton::ItemIntList *KConfigSkeleton::addItemIntList( const QString &name, QList<int> &reference,
+                                      const QList<int> &defaultValue, const QString &key )
 {
   KConfigSkeleton::ItemIntList *item;
   item = new KConfigSkeleton::ItemIntList( mCurrentGroup, key.isNull() ? name : key,

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmconfiglpr.h"
@@ -23,7 +23,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <klocale.h>
 #include <kconfig.h>
 
@@ -34,7 +34,7 @@ KMConfigLpr::KMConfigLpr(QWidget *parent, const char *name)
 	setPageHeader(i18n("Spooler Settings"));
 	setPagePixmap("gear");
 
-	QGroupBox	*m_modebox = new QGroupBox(1, Qt::Vertical, i18n("Spooler"), this);
+	Q3GroupBox	*m_modebox = new Q3GroupBox(1, Qt::Vertical, i18n("Spooler"), this);
 
 	m_mode = new QComboBox(m_modebox);
 	m_mode->insertItem("LPR (BSD compatible)");

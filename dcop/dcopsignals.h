@@ -22,10 +22,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef DCOPSIGNALS_H
 #define DCOPSIGNALS_H "$Id$"
 
-#include <qdict.h>
-#include <qasciidict.h>
-#include <qptrlist.h>
+#include <QByteArray>
+#include <q3dict.h>
+#include <q3asciidict.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
+#include <kdatastream.h>
 #include "kdelibs_export.h"
 
 class DCOPConnection;
@@ -37,18 +39,18 @@ class DCOPConnection;
 class DCOP_EXPORT DCOPSignalConnection
 {
 public:
-   QCString sender;      // Sender client, empty means any client
+   DCOPCString sender;      // Sender client, empty means any client
    DCOPConnection *senderConn; //Sender client.
-   QCString senderObj;   // Object that sends the signal.
-   QCString signal;      // Signal name. Connections are sorted on signal name.
+   DCOPCString senderObj;   // Object that sends the signal.
+   DCOPCString signal;      // Signal name. Connections are sorted on signal name.
 
    DCOPConnection *recvConn; // Client that wants to receive the signal
-   QCString recvObj;     // Object that wants to receive the signal
-   QCString slot;        // Function to send to in the object.
+   DCOPCString recvObj;     // Object that wants to receive the signal
+   DCOPCString slot;        // Function to send to in the object.
 };
 
 /** \internal */
-class DCOP_EXPORT DCOPSignalConnectionList : public QPtrList<DCOPSignalConnection>
+class DCOP_EXPORT DCOPSignalConnectionList : public Q3PtrList<DCOPSignalConnection>
 {
 public:
    DCOPSignalConnectionList() { };
@@ -70,7 +72,7 @@ public:
     *
     * If "excludeSelf" is true, signal is never send to "conn" itself.
     */
-   void emitSignal( DCOPConnection *conn, const QCString &fun, const QByteArray &data, bool excludeSelf);
+   void emitSignal( DCOPConnection *conn, const DCOPCString &fun, const QByteArray &data, bool excludeSelf);
 
    /**
     * Connects "signal" of the client named "sender" with the "slot" of
@@ -86,10 +88,10 @@ public:
     * An attempt to create a Volatile connection to a non-existing client
     * results in a failure.
     */
-   bool connectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal,
-                       DCOPConnection *conn, const QCString &receiverObj,
-                       const QCString &slot, bool Volatile);
+   bool connectSignal( const DCOPCString &sender, const DCOPCString &senderObj,
+                       const DCOPCString &signal,
+                       DCOPConnection *conn, const DCOPCString &receiverObj,
+                       const DCOPCString &slot, bool Volatile);
 
    /**
     * Disconnects "signal" of the client named "sender" from the "slot" of
@@ -100,10 +102,10 @@ public:
     *
     * Returns true if successful, false if no connection was found.
     */
-   bool disconnectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal,
-                       DCOPConnection *conn, const QCString &receiverObj,
-                       const QCString &slot);
+   bool disconnectSignal( const DCOPCString &sender, const DCOPCString &senderObj,
+                       const DCOPCString &signal,
+                       DCOPConnection *conn, const DCOPCString &receiverObj,
+                       const DCOPCString &slot);
 
    /**
     * Removes all connections related to the "conn" client.
@@ -111,7 +113,7 @@ public:
     *   All connections for which "conn" is the receiver.
     *   All volatile connections for which "conn" is the sender.
     */
-   void removeConnections(DCOPConnection *conn, const QCString &obj=0);
+   void removeConnections(DCOPConnection *conn, const DCOPCString &obj=0);
 
 
    /*
@@ -124,7 +126,7 @@ public:
     * a given signal. The connections in this list may specify different
     * senders and receiving clients/objects.
     */
-   QAsciiDict<DCOPSignalConnectionList> connections;
+   Q3AsciiDict<DCOPSignalConnectionList> connections;
 };
 
 //

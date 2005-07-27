@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,14 +24,13 @@
 
 #include <config.h>
 
-#include <qsocketnotifier.h>
-#include <qmutex.h>
+#include <QSocketNotifier>
+#include <QMutex>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
 #include "ksocketbase.h"
 #include "ksocketdevice.h"
-#include "kstreamsocket.h"
 #include "kbufferedsocket.h"
 #include "kserversocket.h"
 
@@ -58,26 +57,26 @@ public:
   }
 };
 
-KServerSocket::KServerSocket(QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+KServerSocket::KServerSocket(QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
 }
 
-KServerSocket::KServerSocket(const QString& service, QObject* parent, const char *name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+KServerSocket::KServerSocket(const QString& service, QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
   d->resolver.setServiceName(service);
 }
 
 KServerSocket::KServerSocket(const QString& node, const QString& service,
-			     QObject* parent, const char* name)
-  : QObject(parent, name), d(new KServerSocketPrivate)
+			     QObject* parent)
+  : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
 		   this, SLOT(lookupFinishedSlot()));
   setAddress(node, service);
 }
@@ -122,7 +121,7 @@ void KServerSocket::setFamily(int families)
 
 void KServerSocket::setAddress(const QString& service)
 {
-  d->resolver.setNodeName(QString::null);
+  d->resolver.setNodeName(QString());
   d->resolver.setServiceName(service);
   d->resolverResults.empty();
   if (d->state <= KServerSocketPrivate::LookupDone)
@@ -280,7 +279,7 @@ void KServerSocket::setAcceptBuffered(bool enable)
   d->useKBufferedSocket = enable;
 }
 
-KActiveSocketBase* KServerSocket::accept()
+KStreamSocket* KServerSocket::accept()
 {
   if (d->state < KServerSocketPrivate::Listening)
     {
@@ -320,16 +319,22 @@ KActiveSocketBase* KServerSocket::accept()
 
   KStreamSocket* streamsocket;
   if (d->useKBufferedSocket)
-    streamsocket = new KBufferedSocket();
+    {
+      streamsocket = new KBufferedSocket();
+      streamsocket->setOpenMode(KStreamSocket::ReadWrite);
+    }
   else
-    streamsocket = new KStreamSocket();
+    {
+      streamsocket = new KStreamSocket();
+      streamsocket->setOpenMode(KStreamSocket::ReadWrite |
+				KStreamSocket::Unbuffered);
+    }
   streamsocket->setSocketDevice(accepted);
 
   // FIXME!
   // when KStreamSocket can find out the state of the socket passed through
   // setSocketDevice, this will probably be unnecessary:
   streamsocket->setState(KStreamSocket::Connected);
-  streamsocket->setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 
   return streamsocket;
 }

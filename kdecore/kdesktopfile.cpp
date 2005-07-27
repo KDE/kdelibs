@@ -81,7 +81,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       {
         // Hm, that didn't work...
         // What now? Use filename only and hope for the best.
-        local = path.mid(path.findRev('/')+1);
+        local = path.mid(path.lastIndexOf('/')+1);
       }
       local = ::locateLocal("xdgdata-dirs", local);
     }
@@ -100,7 +100,7 @@ QString KDesktopFile::locateLocal(const QString &path)
       if (!QDir::isRelativePath(local))
       {
         // What now? Use filename only and hope for the best.
-        local = path.mid(path.findRev('/')+1);
+        local = path.mid(path.lastIndexOf('/')+1);
       }
       local = ::locateLocal("xdgdata-apps", local);
     }

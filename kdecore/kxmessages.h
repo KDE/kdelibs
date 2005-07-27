@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #define __KXMESSAGES_H
 
 #include <qwidget.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qmap.h>
 #include <kdelibs_export.h>
 #ifdef Q_WS_X11
@@ -157,9 +157,9 @@ class KDECORE_EXPORT KXMessages
             Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P );
         QWidget* handle;
         Atom accept_atom2;
-        QCString cached_atom_name_; // KDE4 unused
+        QByteArray cached_atom_name_; // KDE4 unused
         Atom accept_atom1;
-        QMap< WId, QCString > incoming_messages;
+        QMap< WId, QByteArray > incoming_messages;
         KXMessagesPrivate* d;
     };
 

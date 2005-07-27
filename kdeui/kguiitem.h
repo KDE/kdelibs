@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 
     Many thanks to Simon tronical Hausmann
 */
@@ -23,9 +23,9 @@
 #define __kguiitem_h__
 
 #include <qstring.h>
-#include <qiconset.h>
+#include <qicon.h>
 #include <qpixmap.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kicontheme.h>
 #include <kglobal.h>
 
@@ -48,7 +48,7 @@ public:
               const QString &toolTip   = QString::null, 
               const QString &whatsThis = QString::null );
 
-    KGuiItem( const QString &text, const QIconSet &iconSet, 
+    KGuiItem( const QString &text, const QIcon &iconSet, 
               const QString &toolTip   = QString::null, 
               const QString &whatsThis = QString::null );
 
@@ -60,10 +60,10 @@ public:
     QString text() const;
     QString plainText() const;
 #ifndef KDE_NO_COMPAT
-    QIconSet iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
-    QIconSet iconSet() const { return iconSet( KIcon::Small ); }
+    QIcon iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
+    QIcon iconSet() const { return iconSet( KIcon::Small ); }
 #else
-    QIconSet iconSet( KIcon::Group=KIcon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
+    QIcon iconSet( KIcon::Group=KIcon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
 #endif
 
     QString iconName() const;
@@ -76,7 +76,7 @@ public:
 #endif
 
     void setText( const QString &text );
-    void setIconSet( const QIconSet &iconset );
+    void setIconSet( const QIcon &iconset );
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
     void setWhatsThis( const QString &whatsThis );

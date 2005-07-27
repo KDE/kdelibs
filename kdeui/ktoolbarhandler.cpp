@@ -12,13 +12,13 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "ktoolbarhandler.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kapplication.h>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
@@ -44,14 +44,13 @@ namespace
     class BarActionBuilder
     {
     public:
-        BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow, QPtrList<KToolBar> &oldToolBarList )
+        BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow, Q3PtrList<KToolBar> &oldToolBarList )
             : m_actionCollection( actionCollection ), m_mainWindow( mainWindow ), m_needsRebuild( false )
         {
-            QPtrList<QDockWindow> dockWindows = m_mainWindow->dockWindows();
-            QPtrListIterator<QDockWindow> dockWindowIt( dockWindows );
-            for ( ; dockWindowIt.current(); ++dockWindowIt ) {
+            QList<Q3DockWindow*> dockWindows = m_mainWindow->dockWindows();
+            foreach ( Q3DockWindow* dockWindowIt, dockWindows ) {
 
-                KToolBar *toolBar = dynamic_cast<KToolBar *>( dockWindowIt.current() );
+                KToolBar *toolBar = dynamic_cast<KToolBar *>( dockWindowIt );
                 if ( !toolBar )
                     continue;
 
@@ -67,16 +66,16 @@ namespace
 
         bool needsRebuild() const { return m_needsRebuild; }
 
-        QPtrList<KAction> create()
+        Q3PtrList<KAction> create()
         {
             if ( !m_needsRebuild )
-                return QPtrList<KAction>();
+                return Q3PtrList<KAction>();
 
-            QPtrListIterator<KToolBar> toolBarIt( m_toolBars );
+            Q3PtrListIterator<KToolBar> toolBarIt( m_toolBars );
             for ( ; toolBarIt.current(); ++toolBarIt )
                 handleToolBar( toolBarIt.current() );
 
-            QPtrList<KAction> actions;
+            Q3PtrList<KAction> actions;
 
             if ( m_toolBarActions.count() == 0 )
                 return actions;
@@ -90,7 +89,7 @@ namespace
 
             KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
 
-            QPtrListIterator<KAction> actionIt( m_toolBarActions );
+            Q3PtrListIterator<KAction> actionIt( m_toolBarActions );
             for ( ; actionIt.current(); ++actionIt )
                 menuAction->insert( actionIt.current() );
 
@@ -98,7 +97,7 @@ namespace
             return actions;
         }
 
-        const QPtrList<KToolBar> &toolBars() const { return m_toolBars; }
+        const Q3PtrList<KToolBar> &toolBars() const { return m_toolBars; }
 
     private:
         void handleToolBar( KToolBar *toolBar )
@@ -115,8 +114,8 @@ namespace
         KActionCollection *m_actionCollection;
         KMainWindow *m_mainWindow;
 
-        QPtrList<KToolBar> m_toolBars;
-        QPtrList<KAction> m_toolBarActions;
+        Q3PtrList<KToolBar> m_toolBars;
+        Q3PtrList<KAction> m_toolBarActions;
 
         bool m_needsRebuild : 1;
     };
@@ -218,7 +217,7 @@ void ToolBarHandler::init( KMainWindow *mainWindow )
 
 void ToolBarHandler::connectToActionContainers()
 {
-    QPtrListIterator<KAction> actionIt( m_actions );
+    Q3PtrListIterator<KAction> actionIt( m_actions );
     for ( ; actionIt.current(); ++actionIt )
         connectToActionContainer( actionIt.current() );
 }
@@ -232,7 +231,7 @@ void ToolBarHandler::connectToActionContainer( KAction *action )
 
 void ToolBarHandler::connectToActionContainer( QWidget *container )
 {
-    QPopupMenu *popupMenu = dynamic_cast<QPopupMenu *>( container );
+    Q3PopupMenu *popupMenu = dynamic_cast<Q3PopupMenu *>( container );
     if ( !popupMenu )
         return;
 

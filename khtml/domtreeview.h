@@ -20,8 +20,8 @@
 
 #include <klistview.h>
 #include <kdebug.h>
-#include <qlistview.h>
-#include <qptrdict.h>
+#include <q3listview.h>
+#include <q3ptrdict.h>
 #include "dom/dom_core.h"
 
 class DOMTreeView : public KListView
@@ -40,11 +40,11 @@ class DOMTreeView : public KListView
 	void showTree(const DOM::Node &pNode);
 
     protected slots:
-	void slotItemClicked(QListViewItem *);
+	void slotItemClicked(Q3ListViewItem *);
 
     private:
-	QPtrDict<QListViewItem> m_itemdict;
-	QPtrDict<DOM::Node> m_nodedict;
+	Q3PtrDict<Q3ListViewItem> m_itemdict;
+	Q3PtrDict<DOM::Node> m_nodedict;
 	DOM::Node document;
 
 	KHTMLPart *part;

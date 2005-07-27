@@ -1,3 +1,5 @@
+### TODO KDE4: define a macro or template for the main() code to avoid undefined symbols
+
 lib_LTLIBRARIES = libkscreensaver.la
 libkscreensaver_la_SOURCES = main.cpp kscreensaver.cpp
 libkscreensaver_la_LIBADD  = $(LIB_KIO)

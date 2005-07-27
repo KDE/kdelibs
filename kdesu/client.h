@@ -24,20 +24,18 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <qbytearray.h>
 
-typedef QValueList<QCString> QCStringList;
 
 /**
- * A client class to access kdesud, the KDE su daemon. Kdesud can assist in 
+ * A client class to access kdesud, the KDE su daemon. Kdesud can assist in
  * password caching in two ways:
  *
  * @li For high security passwords, like for su and ssh, it executes the
  * password requesting command for you. It feeds the password to the
- * command, without ever returning it to you, the user. The daemon should 
- * be installed setgid nogroup, in order to be able to act as an inaccessible, 
- * trusted 3rd party. 
+ * command, without ever returning it to you, the user. The daemon should
+ * be installed setgid nogroup, in order to be able to act as an inaccessible,
+ * trusted 3rd party.
  * See exec, setPass, delCommand.
  *
  * @li For lower security passwords, like web and ftp passwords, it can act
@@ -62,7 +60,7 @@ public:
      * @param env Extra environment variables.
      * @return Zero on success, -1 on failure.
      */
-    int exec(const QCString &command, const QCString &user, const QCString &options=0, const QCStringList &env=QCStringList());
+    int exec(const QByteArray &command, const QByteArray &user, const QByteArray &options=0, const QList<QByteArray> &env=QList<QByteArray>());
 
     /**
      * Wait for the last command to exit and return the exit code.
@@ -82,7 +80,7 @@ public:
     /**
      * Set the target host (optional).
      */
-    int setHost(const QCString &host);
+    int setHost(const QByteArray &host);
 
     /**
      * Set the desired priority (optional), see StubProcess.
@@ -100,7 +98,7 @@ public:
      * @param user The user.
      * @return zero on success, -1 on an error
      */
-    int delCommand(const QCString &command, const QCString &user);
+    int delCommand(const QByteArray &command, const QByteArray &user);
 
     /**
      * Set a persistent variable.
@@ -111,21 +109,21 @@ public:
      * @param group Make the key part of a group. See delGroup.
      * @return zero on success, -1 on failure.
      */
-    int setVar(const QCString &key, const QCString &value, int timeout=0, const QCString &group=0);
+    int setVar(const QByteArray &key, const QByteArray &value, int timeout=0, const QByteArray &group=0);
 
     /**
      * Get a persistent variable.
      * @param key The name of the variable.
      * @return Its value.
      */
-    QCString getVar(const QCString &key);
+    QByteArray getVar(const QByteArray &key);
 
     /**
      * Gets all the keys that are membes of the given group.
      * @param group the group name of the variables.
      * @return a list of the keys in the group.
      */
-    QValueList<QCString> getKeys(const QCString &group);
+    QList<QByteArray> getKeys(const QByteArray &group);
 
     /**
      * Returns true if the specified group exists is
@@ -134,19 +132,19 @@ public:
      * @param group the group key
      * @return true if the group is found
      */
-    bool findGroup(const QCString &group);
+    bool findGroup(const QByteArray &group);
 
     /**
      * Delete a persistent variable.
      * @param key The name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVar(const QCString &key);
+    int delVar(const QByteArray &key);
 
     /**
      * Delete all persistent variables with the given key.
      *
-     * A specicalized variant of delVar(QCString) that removes all
+     * A specicalized variant of delVar(QByteArray) that removes all
      * subsets of the cached varaibles given by @p key. In order for all
      * cached variables related to this key to be deleted properly, the
      * value given to the @p group argument when the setVar function
@@ -158,7 +156,7 @@ public:
      * @param special_key the name of the variable.
      * @return zero on success, -1 on failure.
      */
-    int delVars(const QCString &special_key);
+    int delVars(const QByteArray &special_key);
 
     /**
      * Delete all persistent variables in a group.
@@ -166,7 +164,7 @@ public:
      * @param group the group name. See setVar.
      * @return
      */
-    int delGroup(const QCString &group);
+    int delGroup(const QByteArray &group);
 
     /**
      * Ping kdesud. This can be used for diagnostics.
@@ -193,10 +191,10 @@ private:
     int connect();
 
     int sockfd;
-    QCString sock;
+    QByteArray sock;
 
-    int command(const QCString &cmd, QCString *result=0L);
-    QCString escape(const QCString &str);
+    int command(const QByteArray &cmd, QByteArray *result=0L);
+    QByteArray escape(const QByteArray &str);
 
     class KDEsuClientPrivate;
     KDEsuClientPrivate *d;

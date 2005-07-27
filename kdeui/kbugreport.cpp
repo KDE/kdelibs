@@ -13,18 +13,17 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
-#include <qhbuttongroup.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qradiobutton.h>
-#include <qwhatsthis.h>
 #include <qregexp.h>
+#include <Q3HButtonGroup>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -110,10 +109,10 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
     tmpLabel = new QLabel( i18n("From:"), parent );
     glay->addWidget( tmpLabel, row,0 );
-    QWhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
     m_from = new QLabel( parent );
     glay->addWidget( m_from, row, 1 );
-    QWhatsThis::add( m_from, qwtstr );
+    m_from->setWhatsThis(qwtstr );
 
 
     // Configure email button
@@ -121,16 +120,16 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                                         parent );
     connect( m_configureEmail, SIGNAL( clicked() ), this,
              SLOT( slotConfigureEmail() ) );
-    glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
+    glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, Qt::AlignTop|Qt::AlignRight );
 
     // To
     qwtstr = i18n( "The email address this bug report is sent to." );
     tmpLabel = new QLabel( i18n("To:"), parent );
     glay->addWidget( tmpLabel, ++row,0 );
-    QWhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
     tmpLabel = new QLabel( m_aboutData->bugAddress(), parent );
     glay->addWidget( tmpLabel, row, 1 );
-    QWhatsThis::add( tmpLabel, qwtstr );
+    tmpLabel->setWhatsThis(qwtstr );
 
     setButtonOK( KGuiItem( i18n("&Send"), "mail_send", i18n( "Send bug report." ),
                     i18n( "Send this bug report to %1." ).arg( m_aboutData->bugAddress() ) ) );
@@ -147,10 +146,13 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   QString qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
   tmpLabel = new QLabel( i18n("Application: "), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
-  QWhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
-  QWhatsThis::add( d->appcombo, qwtstr );
-  d->appcombo->insertStrList((const char**)packages);
+  d->appcombo->setWhatsThis(qwtstr );
+  QStringList packageList;
+  for (int c = 0; packages[c]; ++c)
+    packageList << QString::fromLatin1(packages[c]);
+  d->appcombo->addItems(packageList);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = QString::fromLatin1( m_aboutData
                                     ? m_aboutData->productName()
@@ -167,13 +169,13 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   }
   d->appcombo->setCurrentItem(index);
 
-  QWhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
 
   // Version
   qwtstr = i18n( "The version of this application - please make sure that no newer version is available before sending a bug report" );
   tmpLabel = new QLabel( i18n("Version:"), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
-  QWhatsThis::add( tmpLabel, qwtstr );
+  tmpLabel->setWhatsThis(qwtstr );
   if (m_aboutData)
       m_strVersion = m_aboutData->version();
   else
@@ -185,7 +187,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
   glay->addMultiCellWidget( m_version, row, row, 1, 2 );
-  QWhatsThis::add( m_version, qwtstr );
+  m_version->setWhatsThis(qwtstr );
 
   tmpLabel = new QLabel(i18n("OS:"), parent);
   glay->addWidget( tmpLabel, ++row, 0 );
@@ -207,7 +209,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   if ( !d->submitBugButton )
   {
     // Severity
-    m_bgSeverity = new QHButtonGroup( i18n("Se&verity"), parent );
+    m_bgSeverity = new Q3HButtonGroup( i18n("Se&verity"), parent );
     static const char * const sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
     const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18n("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
 
@@ -239,9 +241,9 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
 
     // The multiline-edit
-    m_lineedit = new QMultiLineEdit( parent, "QMultiLineEdit" );
+    m_lineedit = new Q3MultiLineEdit( parent, "QMultiLineEdit" );
     m_lineedit->setMinimumHeight( 180 ); // make it big
-    m_lineedit->setWordWrap(QMultiLineEdit::WidgetWidth);
+    m_lineedit->setWordWrap(Q3MultiLineEdit::WidgetWidth);
     lay->addWidget( m_lineedit, 10 /*stretch*/ );
 
     slotSetFrom();
@@ -513,11 +515,11 @@ bool KBugReport::sendBugReport()
 
   if ((WIFEXITED(error)) && WEXITSTATUS(error) == 1) {
       QFile of(outputfile.name());
-      if (of.open(IO_ReadOnly )) {
+      if (of.open(QIODevice::ReadOnly )) {
           QTextStream is(&of);
           is.setEncoding(QTextStream::UnicodeUTF8);
           QString line;
-          while (!is.eof())
+          while (!is.atEnd())
               line = is.readLine();
           d->lastError = line;
       } else {

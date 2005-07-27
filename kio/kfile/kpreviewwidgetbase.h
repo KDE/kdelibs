@@ -21,7 +21,7 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qwidget.h>
 
 #include <kdelibs_export.h>
@@ -86,7 +86,7 @@ private:
     KPreviewWidgetBasePrivate * d() const {
         return s_private->find( const_cast<KPreviewWidgetBase*>( this ) );
     }
-    static QPtrDict<KPreviewWidgetBasePrivate> * s_private;
+    static Q3PtrDict<KPreviewWidgetBasePrivate> * s_private;
 };
 
 #endif

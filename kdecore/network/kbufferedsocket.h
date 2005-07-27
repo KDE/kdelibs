@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,9 +25,9 @@
 #ifndef KBUFFEREDSOCKET_H
 #define KBUFFEREDSOCKET_H
 
-#include <qobject.h>
-#include <qcstring.h>
-#include <qvaluelist.h>
+#include <QObject>
+#include <QByteArray>
+#include <QList>
 #include "kstreamsocket.h"
 #include <kdelibs_export.h>
 
@@ -67,8 +67,8 @@ public:
    * @param parent      the parent object for this object
    * @param name        the internal name for this object
    */
-  KBufferedSocket(const QString& node = QString::null, const QString& service = QString::null,
-		  QObject* parent = 0L, const char *name = 0L);
+  KBufferedSocket(const QString& node = QString(), const QString& service = QString(),
+		  QObject* parent = 0L);
 
   /**
    * Destructor.
@@ -89,7 +89,7 @@ protected:
 public:
   /**
    * Closes the socket for new data, but allow data that had been buffered
-   * for output with @ref writeBlock to be still be written.
+   * for output with @ref writeData to be still be written.
    *
    * @sa closeNow
    */
@@ -98,51 +98,12 @@ public:
   /**
    * Make use of the buffers.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Make use of buffers.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
-
-  /**
-   * Reads data from the socket. Make use of buffers.
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * @overload
-   * Reads data from a socket.
-   *
-   * The @p from parameter is always set to @ref peerAddress()
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data from the socket.
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * @overload
-   * Peeks data from the socket.
-   *
-   * The @p from parameter is always set to @ref peerAddress()
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress &from);
-
-  /**
-   * Writes data to the socket.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
-
-  /**
-   * @overload
-   * Writes data to the socket.
-   *
-   * The @p to parameter is discarded.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Catch changes.
@@ -177,11 +138,11 @@ public:
   /**
    * Returns the length of the output buffer.
    */
-  virtual Q_ULONG bytesToWrite() const;
+  virtual qint64 bytesToWrite() const;
 
   /**
    * Closes the socket and discards any output data that had been buffered
-   * with @ref writeBlock but that had not yet been written.
+   * with @ref writeData but that had not yet been written.
    *
    * @sa close
    */
@@ -190,12 +151,7 @@ public:
   /**
    * Returns true if a line can be read with @ref readLine
    */
-  bool canReadLine() const;
-
-  /**
-   * Reads a line of data from the socket buffers.
-   */
-  QCString readLine();
+  virtual bool canReadLine() const;
 
   // KDE4: make virtual, add timeout to match the Qt4 signature
   //       and move to another class up the hierarchy
@@ -206,6 +162,32 @@ public:
   void waitForConnect();
 
 protected:
+  /**
+   * Reads data from a socket.
+   *
+   * The @p from parameter is always set to @ref peerAddress()
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Peeks data from the socket.
+   *
+   * The @p from parameter is always set to @ref peerAddress()
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Writes data to the socket.
+   *
+   * The @p to parameter is discarded.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
+
+  /**
+   * Improve the readLine performance
+   */
+  virtual qint64 readLineData(char *data, qint64 maxSize);
+
   /**
    * Catch connection to clear the buffers
    */
@@ -222,30 +204,20 @@ protected slots:
    */
   virtual void slotWriteActivity();
 
+#if 0
+  // Already present in QIODevice
 signals:
   /**
    * This signal is emitted whenever data is written.
    */
   void bytesWritten(int bytes);
+#endif
 
 private:
   KBufferedSocket(const KBufferedSocket&);
   KBufferedSocket& operator=(const KBufferedSocket&);
 
   KBufferedSocketPrivate *d;
-
-public:
-  // KDE4: remove this function
-  /**
-   * @deprecated
-   * Closes the socket.
-   *
-   * This function is provided to ease porting from KExtendedSocket,
-   * which required a call to reset() in order to be able to connect again
-   * using the same device. This is not necessary in KBufferedSocket any more.
-   */
-  inline void reset()
-  { closeNow(); }
 };
 
 }				// namespace KNetwork

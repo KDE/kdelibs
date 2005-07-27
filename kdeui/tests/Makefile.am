@@ -14,8 +14,8 @@
 
 #    You should have received a copy of the GNU Library General Public License
 #    along with this library; see the file COPYING.LIB.  If not, write to
-#    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-#    Boston, MA 02110-1301, USA.
+#    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#    Boston, MA 02111-1307, USA.
 
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 	  $(all_includes)
@@ -28,7 +28,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kdockwidgetdemo kdockwidgettest \
 	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
-	kledtest klineedittest klineeditdlgtest \
+	kledtest klineedittest \
 	kmessageboxtest knuminputtest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
@@ -40,7 +40,8 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kactiontest kdatetimewidgettest ktimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
 	kdocktest qxembedtest ksqueezedtextlabeltest \
-	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest
+	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
+	khboxtest
 
 METASOURCES = AUTO
 
@@ -103,3 +104,4 @@ ksqueezedtextlabeltest_SOURCES = ksqueezedtextlabeltest.cpp
 kjanuswidgettest_SOURCES = kjanuswidgettest.cpp
 kpixmapregionselectordialogtest_SOURCES = kpixmapregionselectordialogtest.cpp
 ktoolbarlabelactiontest_SOURCES = ktoolbarlabelactiontest.cpp
+khboxtest_SOURCES = khboxtest.cpp

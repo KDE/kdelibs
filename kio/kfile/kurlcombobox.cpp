@@ -17,7 +17,7 @@
 */
 
 #include <qdir.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -150,9 +150,8 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     QStringList::Iterator it = urls.begin();
 
     // kill duplicates
-    QString text;
     while ( it != urls.end() ) {
-        while ( urls.contains( *it ) > 1 ) {
+        while ( urls.count( *it ) > 1 ) {
             it = urls.remove( it );
             continue;
         }
@@ -164,7 +163,8 @@ void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
        on that, so call it Overload (capital 'O').  (matz) */
     int Overload = urls.count() - myMaximum + defaultList.count();
     while ( Overload > 0 ) {
-        urls.remove((remove == RemoveBottom) ? urls.fromLast() : urls.begin());
+        if (remove == RemoveBottom) urls.removeLast();
+	else urls.removeFirst();
         Overload--;
     }
 
@@ -229,7 +229,7 @@ void KURLComboBox::setURL( const KURL& url )
 
     setDefaults();
 
-    QPtrListIterator<KURLComboItem> it( itemList );
+    Q3PtrListIterator<KURLComboItem> it( itemList );
     for( ; it.current(); ++it )
         insertURLItem( it.current() );
 
@@ -287,7 +287,7 @@ void KURLComboBox::setMaxItems( int max )
 
         setDefaults();
 
-        QPtrListIterator<KURLComboItem> it( itemList );
+        Q3PtrListIterator<KURLComboItem> it( itemList );
         int Overload = itemList.count() - myMaximum + defaultList.count();
         for ( int i = 0; i <= Overload; i++ )
             ++it;
@@ -317,7 +317,7 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 
     blockSignals( true );
     setDefaults();
-    QPtrListIterator<KURLComboItem> it( itemList );
+    Q3PtrListIterator<KURLComboItem> it( itemList );
     while ( it.current() ) {
         insertURLItem( *it );
         ++it;

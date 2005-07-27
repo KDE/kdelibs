@@ -22,7 +22,7 @@
 #include <qstring.h>
 #include <qfont.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include "kdelibs_export.h"
 
 class KGlobal;

@@ -18,7 +18,7 @@
    Suite 330, Boston, MA 02110-1301, USA.
 */
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextcodec.h>
 
 #include <kdebug.h>
@@ -46,34 +46,34 @@ struct SessionData::AuthData
 public:
   AuthData() {}
 
-  AuthData(const QCString& k, const QCString& g, bool p) {
+  AuthData(const Q3CString& k, const Q3CString& g, bool p) {
     key = k;
     group = g;
     persist = p;
   }
 
-  bool isKeyMatch( const QCString& val ) const {
+  bool isKeyMatch( const Q3CString& val ) const {
     return (val==key);
   }
 
-  bool isGroupMatch( const QCString& val ) const {
+  bool isGroupMatch( const Q3CString& val ) const {
     return (val==group);
   }
 
-  QCString key;
-  QCString group;
+  Q3CString key;
+  Q3CString group;
   bool persist;
 };
 
 /************************* SessionData::AuthDataList ****************************/
-class SessionData::AuthDataList : public QPtrList<SessionData::AuthData>
+class SessionData::AuthDataList : public Q3PtrList<SessionData::AuthData>
 {
 public:
   AuthDataList();
   ~AuthDataList();
 
   void addData( SessionData::AuthData* );
-  void removeData( const QCString& );
+  void removeData( const Q3CString& );
 
   bool pingCacheDaemon();
   void registerAuthData( SessionData::AuthData* );
@@ -105,7 +105,7 @@ SessionData::AuthDataList::~AuthDataList()
 
 void SessionData::AuthDataList::addData( SessionData::AuthData* d )
 {
-  QPtrListIterator<SessionData::AuthData> it ( *this );
+  Q3PtrListIterator<SessionData::AuthData> it ( *this );
   for ( ; it.current(); ++it )
   {
     if ( it.current()->isKeyMatch( d->key ) )
@@ -115,9 +115,9 @@ void SessionData::AuthDataList::addData( SessionData::AuthData* d )
   append( d );
 }
 
-void SessionData::AuthDataList::removeData( const QCString& gkey )
+void SessionData::AuthDataList::removeData( const Q3CString& gkey )
 {
-  QPtrListIterator<SessionData::AuthData> it( *this );
+  Q3PtrListIterator<SessionData::AuthData> it( *this );
   for( ; it.current(); ++it )
   {
     if ( it.current()->isGroupMatch(gkey) &&  pingCacheDaemon() )
@@ -153,11 +153,11 @@ void SessionData::AuthDataList::registerAuthData( SessionData::AuthData* d )
 
 #ifdef Q_OS_UNIX
   bool ok;
-  QCString ref_key = d->key + "-refcount";
+  Q3CString ref_key = d->key + "-refcount";
   int count = m_kdesuClient->getVar(ref_key).toInt( &ok );
   if( ok )
   {
-    QCString val;
+    Q3CString val;
     val.setNum( count+1 );
     m_kdesuClient->setVar( ref_key, val, 0, d->group );
   }
@@ -173,7 +173,7 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
 
   bool ok;
   int count;
-  QCString ref_key = d->key + "-refcount";
+  Q3CString ref_key = d->key + "-refcount";
 
 #ifdef Q_OS_UNIX
   count = m_kdesuClient->getVar( ref_key ).toInt( &ok );
@@ -181,7 +181,7 @@ void SessionData::AuthDataList::unregisterAuthData( SessionData::AuthData* d )
   {
     if ( count > 1 )
     {
-        QCString val;
+        Q3CString val;
         val.setNum(count-1);
         m_kdesuClient->setVar( ref_key, val, 0, d->group );
     }
@@ -197,7 +197,7 @@ void SessionData::AuthDataList::purgeCachedData()
 {
   if ( !isEmpty() && pingCacheDaemon() )
   {
-    QPtrListIterator<SessionData::AuthData> it( *this );
+    Q3PtrListIterator<SessionData::AuthData> it( *this );
     for ( ; it.current(); ++it )
         unregisterAuthData( it.current() );
   }
@@ -290,7 +290,7 @@ void SessionData::reset()
     KProtocolManager::reparseConfiguration();
 }
 
-void SessionData::slotAuthData( const QCString& key, const QCString& gkey,
+void SessionData::slotAuthData( const Q3CString& key, const Q3CString& gkey,
                                  bool keep )
 {
   if (!authData)
@@ -298,7 +298,7 @@ void SessionData::slotAuthData( const QCString& key, const QCString& gkey,
   authData->addData( new SessionData::AuthData(key, gkey, keep) );
 }
 
-void SessionData::slotDelAuthData( const QCString& gkey )
+void SessionData::slotDelAuthData( const Q3CString& gkey )
 {
   if (!authData)
      return;

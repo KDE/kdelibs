@@ -24,8 +24,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
-#include <qvaluelist.h>
-#include <qcstring.h>
 #include <qobject.h>
 #include "kdelibs_export.h"
 
@@ -224,11 +222,11 @@ public:
    */
   KProcess &operator<<(const char * arg);
   /**
-   * Similar to previous method, takes a QCString, supposed to be in locale 8 bit already.
+   * Similar to previous method, takes a QByteArray, supposed to be in locale 8 bit already.
    * @param arg the argument to add
    * @return a reference to this KProcess
    */
-  KProcess &operator<<(const QCString & arg);
+  KProcess &operator<<(const QByteArray & arg);
 
   /**
    * Sets the executable and the command line argument list for this process,
@@ -450,7 +448,7 @@ public:
    * Lets you see what your arguments are for debugging.
    * @return the list of arguments
    */
-  const QValueList<QCString> &args() /* const */ { return arguments; }
+  const QList<QByteArray> &args() /* const */ { return arguments; }
 
   /**
    * Controls whether the started process should drop any
@@ -675,7 +673,7 @@ protected:
    * The list of the process' command line arguments. The first entry
    * in this list is the executable itself.
    */
-  QValueList<QCString> arguments;
+  QList<QByteArray> arguments;
   /**
    * How to run the process (Block, NotifyOnExit, DontCare). You should
    *  not modify this data member directly from derived classes.
@@ -907,7 +905,7 @@ public:
   static QString quote(const QString &arg);
 
 private:
-  QCString shell;
+  QByteArray shell;
 
 protected:
   virtual void virtual_hook( int id, void* data );

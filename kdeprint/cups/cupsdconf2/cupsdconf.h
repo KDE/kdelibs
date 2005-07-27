@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef	CUPSDCONF_H
@@ -22,9 +22,10 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextstream.h>
 #include <qpair.h>
+#include <Q3ValueList>
 
 #include "cupsdcomment.h"
 
@@ -79,8 +80,8 @@ struct CupsdConf
 	QString systemgroup_;
 	QString encryptcert_;
 	QString encryptkey_;
-	QPtrList<CupsLocation> locations_;
-	QPtrList<CupsResource> resources_;
+	Q3PtrList<CupsLocation> locations_;
+	Q3PtrList<CupsResource> resources_;
 
 	// Network
 	int hostnamelookup_;
@@ -138,7 +139,7 @@ struct CupsdConf
 	CupsdComment	comments_;
 	
 	// unrecognized options
-	QValueList< QPair<QString,QString> >	unknown_;
+	Q3ValueList< QPair<QString,QString> >	unknown_;
 };
 
 struct CupsLocation

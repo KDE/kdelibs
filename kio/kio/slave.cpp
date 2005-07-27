@@ -40,7 +40,6 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktempfile.h>
-#include <ksock.h>
 #include <kprocess.h>
 #include <klibloader.h>
 
@@ -50,6 +49,10 @@
 #include <kio/global.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
+
+#include <network/kserversocket.h>
+
+using namespace KNetwork;
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -87,9 +90,10 @@ namespace KIO {
   };
 }
 
-void Slave::accept(KSocket *socket)
+void Slave::accept()
 {
 #ifndef Q_WS_WIN
+    KStreamSocket *socket = serv->accept();
     slaveconn.init(socket);
 #endif
     delete serv;
@@ -101,7 +105,7 @@ void Slave::accept(KSocket *socket)
 void Slave::unlinkSocket()
 {
     if (m_socket.isEmpty()) return;
-    QCString filename = QFile::encodeName(m_socket);
+    Q3CString filename = QFile::encodeName(m_socket);
     unlink(filename.data());
     m_socket = QString::null;
 }
@@ -152,8 +156,9 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     m_pid = 0;
     m_port = 0;
 #ifndef Q_WS_WIN
-    connect(serv, SIGNAL(accepted( KSocket* )),
-	    SLOT(accept(KSocket*) ) );
+    serv->setAcceptBuffered(false);
+    connect(serv, SIGNAL(readyAccept()),
+	    SLOT(accept() ) );
 #endif
 }
 
@@ -174,8 +179,9 @@ Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
     m_port = 0;
     if (serv != 0) {
 #ifndef Q_WS_WIN
-      connect(serv, SIGNAL(accepted( KSocket* )),
-        SLOT(accept(KSocket*) ) );
+      serv->setAcceptBuffered(false);
+      connect(serv, SIGNAL(readyAccept()),
+        SLOT(accept() ) );
 #endif
     }
 }
@@ -225,7 +231,7 @@ void Slave::hold(const KURL &url)
    ref();
    {
       QByteArray data;
-      QDataStream stream( data, IO_WriteOnly );
+      QDataStream stream( &data, QIODevice::WriteOnly );
       stream << url;
       slaveconn.send( CMD_SLAVE_HOLD, data );
       slaveconn.close();
@@ -240,12 +246,12 @@ void Slave::hold(const KURL &url)
          client->attach();
 
       QByteArray params, reply;
-      QCString replyType;
-      QDataStream stream(params, IO_WriteOnly);
+      DCOPCString replyType;
+      QDataStream stream(&params, QIODevice::WriteOnly);
       pid_t pid = m_pid;
       stream << pid;
 
-      QCString launcher = KApplication::launcher();
+      DCOPCString launcher = KApplication::launcher();
       client->call(launcher, launcher, "waitForSlave(pid_t)",
 	    params, replyType, reply);
    }
@@ -334,7 +340,7 @@ void Slave::setHost( const QString &host, int port,
     m_passwd = passwd;
 
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << m_host << m_port << m_user << m_passwd;
     slaveconn.send( CMD_HOST, data );
 }
@@ -347,7 +353,7 @@ void Slave::resetHost()
 void Slave::setConfig(const MetaData &config)
 {
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << config;
     slaveconn.send( CMD_CONFIG, data );
 }
@@ -371,15 +377,20 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
 	return 0;
     }
+    
+    QString sockname = socketfile.name();
 
 #ifdef __CYGWIN__
    socketfile.close();
 #endif
+   socketfile.unlink(); // can't bind if there is such a file
     
 #ifndef Q_WS_WIN
-    KServerSocket *kss = new KServerSocket(QFile::encodeName(socketfile.name()));
+    KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
+    kss->setFamily(KResolver::LocalFamily);
+    kss->listen();
 
-    Slave *slave = new Slave(kss, protocol, socketfile.name());
+    Slave *slave = new Slave(kss, protocol, sockname);
 #else
     Slave *slave = 0;
 #endif
@@ -391,7 +402,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     // In such case we start the slave via KProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
-    static bool bForkSlaves = !QCString(getenv("KDE_FORK_SLAVES")).isEmpty();
+    static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
     
     if (bForkSlaves || !client->isAttached() || client->isAttachedToForeignServer())
     {
@@ -413,8 +424,8 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
        KProcess proc;
 
-       proc << locate("exe", "kioslave") << lib_path << protocol << "" << socketfile.name();
-       kdDebug(7002) << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << socketfile.name() << endl;
+       proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
+       kdDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << sockname << endl;
 
        proc.start(KProcess::DontCare);
 
@@ -427,11 +438,11 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
 
     QByteArray params, reply;
-    QCString replyType;
-    QDataStream stream(params, IO_WriteOnly);
-    stream << protocol << url.host() << socketfile.name();
+    DCOPCString replyType;
+    QDataStream stream(&params, QIODevice::WriteOnly);
+    stream << protocol << url.host() << sockname;
 
-    QCString launcher = KApplication::launcher();
+    DCOPCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
 	error_text = i18n("Cannot talk to klauncher");
@@ -439,7 +450,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
         delete slave;
         return 0;
     }
-    QDataStream stream2(reply, IO_ReadOnly);
+    QDataStream stream2(reply);
     QString errorStr;
     pid_t pid;
     stream2 >> pid >> errorStr;
@@ -487,17 +498,17 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 #endif
 
     QByteArray params, reply;
-    QCString replyType;
-    QDataStream stream(params, IO_WriteOnly);
+    DCOPCString replyType;
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << url << socketfile.name();
 
-    QCString launcher = KApplication::launcher();
+    DCOPCString launcher = KApplication::launcher();
     if (!client->call(launcher, launcher, "requestHoldSlave(KURL,QString)",
         params, replyType, reply)) {
         delete slave;
         return 0;
     }
-    QDataStream stream2(reply, IO_ReadOnly);
+    QDataStream stream2(reply);
     pid_t pid;
     stream2 >> pid;
     if (!pid)

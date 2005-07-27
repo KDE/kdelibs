@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kinstance.h>
 #include <klocale.h>
@@ -66,13 +66,13 @@ struct FileInfo {
    int age;
 };
 
-template class QPtrList<FileInfo>;
+template class Q3PtrList<FileInfo>;
 
-class FileInfoList : public QPtrList<FileInfo>
+class FileInfoList : public Q3PtrList<FileInfo>
 {
 public:
-   FileInfoList() : QPtrList<FileInfo>() { }
-   int compareItems(QPtrCollection::Item item1, QPtrCollection::Item item2)
+   FileInfoList() : Q3PtrList<FileInfo>() { }
+   int compareItems(Q3PtrCollection::Item item1, Q3PtrCollection::Item item2)
       { return ((FileInfo *)item1)->age - ((FileInfo *)item2)->age; }
 };
 
@@ -82,7 +82,7 @@ public:
 
 FileInfo *readEntry( const QString &filename)
 {
-   QCString CEF = QFile::encodeName(filename);
+   Q3CString CEF = QFile::encodeName(filename);
    FILE *fs = fopen( CEF.data(), "r");
    if (!fs)
       return 0;
@@ -166,21 +166,18 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
    QDir dir(strDir);
    if (!dir.exists()) return;
 
-   QFileInfoList *newEntries = (QFileInfoList *) dir.entryInfoList();
+   QFileInfoList newEntries = dir.entryInfoList();
 
-   if (!newEntries) return; // Directory not accessible ??
+   if (newEntries.count()==0) return; // Directory not accessible ??
 
-   for(QFileInfo *qFileInfo = newEntries->first();
-       qFileInfo;
-       qFileInfo = newEntries->next())
-   {
-       if (qFileInfo->isFile())
+   foreach ( QFileInfo qFileInfo, newEntries ) {
+       if (qFileInfo.isFile())
        {
-          FileInfo *fileInfo = readEntry( strDir + "/" + qFileInfo->fileName());
+          FileInfo *fileInfo = readEntry( strDir + "/" + qFileInfo.fileName());
           if (fileInfo)
           {
-             fileInfo->name = name + "/" + qFileInfo->fileName();
-             fileInfo->size = (qFileInfo->size() + 1023) / 1024;
+             fileInfo->name = name + "/" + qFileInfo.fileName();
+             fileInfo->size = (qFileInfo.size() + 1023) / 1024;
              fileEntries.append(fileInfo);
           }
        }
@@ -205,7 +202,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    if (!deleteAll)
    {
       DCOPClient *dcop = new DCOPClient();
-      QCString name = dcop->registerAs(appName, false);
+      Q3CString name = dcop->registerAs(appName, false);
       if (!name.isEmpty() && (name != appName))
       {
          fprintf(stderr, "%s: Already running! (%s)\n", appName, name.data());
@@ -253,7 +250,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if (fileInfo->size > maxCachedSize)
       {
-         QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         Q3CString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
 //         kdDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
@@ -267,7 +264,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if ((totalSize + fileInfo->size) > m_maxCacheSize)
       {
-         QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         Q3CString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          unlink(filename.data());
 //         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
       }

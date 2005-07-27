@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kptextpage.h"
@@ -22,12 +22,11 @@
 #include "driver.h"
 #include "kprinter.h"
 
-#include <qbuttongroup.h>
-#include <qgroupbox.h>
+#include <q3buttongroup.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>
-#include <qwhatsthis.h>
 #include <knuminput.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -188,36 +187,36 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	setTitle(i18n("Text"));
 	m_block = false;
 
-	QGroupBox	*formatbox = new QGroupBox(0, Qt::Vertical, i18n("Text Format"), this);
-	  QWhatsThis::add(formatbox, whatsThisFormatTextPage);
-	QGroupBox	*prettybox = new QGroupBox(0, Qt::Vertical, i18n("Syntax Highlighting"), this);
-	  QWhatsThis::add(prettybox, whatsThisPrettyprintFrameTextPage);
-	QGroupBox	*marginbox = new QGroupBox(0, Qt::Vertical, i18n("Margins"), this);
-	  QWhatsThis::add(marginbox, whatsThisMarginsTextPage);
+	Q3GroupBox	*formatbox = new Q3GroupBox(0, Qt::Vertical, i18n("Text Format"), this);
+	  formatbox->setWhatsThis(whatsThisFormatTextPage);
+	Q3GroupBox	*prettybox = new Q3GroupBox(0, Qt::Vertical, i18n("Syntax Highlighting"), this);
+	  prettybox->setWhatsThis(whatsThisPrettyprintFrameTextPage);
+	Q3GroupBox	*marginbox = new Q3GroupBox(0, Qt::Vertical, i18n("Margins"), this);
+	  marginbox->setWhatsThis(whatsThisMarginsTextPage);
 
-	m_cpi = new KIntNumInput(10, formatbox);
-	  QWhatsThis::add(m_cpi, whatsThisCPITextPage);
+	m_cpi = new KIntNumInput(10,formatbox);
+	  m_cpi->setWhatsThis(whatsThisCPITextPage);
 	m_cpi->setLabel(i18n("&Chars per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_cpi->setRange(1, 999, 1, false);
-	m_lpi = new KIntNumInput(m_cpi, 6, formatbox);
-	  QWhatsThis::add(m_lpi, whatsThisLPITextPage);
+	m_lpi = new KIntNumInput(m_cpi, 6,formatbox);
+	  m_lpi->setWhatsThis(whatsThisLPITextPage);
 	m_lpi->setLabel(i18n("&Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_lpi->setRange(1, 999, 1, false);
-	m_columns = new KIntNumInput(m_lpi, 1, formatbox);
-	  QWhatsThis::add(m_columns, whatsThisColumnsTextPage);
+	m_columns = new KIntNumInput(m_lpi, 1,formatbox);
+	  m_columns->setWhatsThis(whatsThisColumnsTextPage);
 	m_columns->setLabel(i18n("C&olumns:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_columns->setRange(1, 10, 1, false);
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, formatbox);
 	connect(m_columns, SIGNAL(valueChanged(int)), SLOT(slotColumnsChanged(int)));
 
 	m_prettypix = new QLabel(prettybox);
-	  QWhatsThis::add(m_prettypix, whatsThisPrettyprintPreviewIconTextPage);
+	  m_prettypix->setWhatsThis(whatsThisPrettyprintPreviewIconTextPage);
 	m_prettypix->setAlignment(Qt::AlignCenter);
 	QRadioButton	*off = new QRadioButton(i18n("&Disabled"), prettybox);
-	  QWhatsThis::add(off, whatsThisPrettyprintButtonOffTextPage);
+	  off->setWhatsThis(whatsThisPrettyprintButtonOffTextPage);
 	QRadioButton	*on = new QRadioButton(i18n("&Enabled"), prettybox);
-	  QWhatsThis::add(on, whatsThisPrettyprintButtonOnTextPage);
-	m_prettyprint = new QButtonGroup(prettybox);
+	  on->setWhatsThis(whatsThisPrettyprintButtonOnTextPage);
+	m_prettyprint = new Q3ButtonGroup(prettybox);
 	m_prettyprint->hide();
 	m_prettyprint->insert(off, 0);
 	m_prettyprint->insert(on, 1);
@@ -226,7 +225,7 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	slotPrettyChanged(0);
 
 	m_margin = new MarginWidget(marginbox);
-	  QWhatsThis::add(m_margin, whatsThisMarginsTextPage);
+	  m_margin->setWhatsThis(whatsThisMarginsTextPage);
 	m_margin->setPageSize(595, 842);
 
 	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);

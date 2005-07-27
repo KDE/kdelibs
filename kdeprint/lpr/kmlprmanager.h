@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMLRMANAGER_H
@@ -22,8 +22,8 @@
 
 #include "kmmanager.h"
 
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 #include <qdatetime.h>
 #include <kurl.h>
 
@@ -71,9 +71,9 @@ protected:
 	bool savePrintcapFile();
 
 private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
+	Q3Dict<LprHandler>	m_handlers;
+	Q3PtrList<LprHandler>    m_handlerlist;
+	Q3Dict<PrintcapEntry>	m_entries;
 	QDateTime		m_updtime;
 	LpcHelper		*m_lpchelper;
 	KMPrinter		*m_currentprinter;

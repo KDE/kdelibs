@@ -27,14 +27,14 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <qmap.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qstringlist.h>
 #include <qregexp.h>
 
 // This file was using 6002, but kdebug.areas didn't know about that number
 #define DEBUGAREA 6100
 
-typedef QMap< int, QGuardedPtr<KJavaApplet> > AppletMap;
+typedef QMap< int, QPointer<KJavaApplet> > AppletMap;
 
 // For future expansion
 class KJavaAppletContextPrivate

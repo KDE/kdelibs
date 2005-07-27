@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmfactory.h"
@@ -96,15 +96,6 @@ KMFactory::KMFactory()
 	m_implementation = 0;
 	m_factory = 0;
 	m_printconfig = 0;
-#if QT_VERSION >= 230
-	// Qt's default behavior, to generate EPS in some cases and not in others, sucks.
-	// This is fixed in Qt 3.0, but for Qt 2.x we need to disable it explicitly.
-	// If this is a problem for anyone, we can add a public method to set this flag.
-	// (David Faure, doing as advised by Lars Knoll)
-#ifdef Q_WS_X11
-	qt_generate_epsf( false );
-#endif
-#endif
 
 	// By default, embed PS fonts
 	bool ok = false;
@@ -268,7 +259,7 @@ void KMFactory::unload()
 void KMFactory::reload(const QString& syst, bool saveSyst)
 {
 	// notify all registered objects about the coming reload
-	QPtrListIterator<KPReloadObject>	it(m_objects);
+	Q3PtrListIterator<KPReloadObject>	it(m_objects);
 	for (;it.current();++it)
 		it.current()->aboutToReload();
 
@@ -293,10 +284,10 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 		it.current()->reload();
 }
 
-QValueList<KMFactory::PluginInfo> KMFactory::pluginList()
+Q3ValueList<KMFactory::PluginInfo> KMFactory::pluginList()
 {
 	QDir	d(locate("data", "kdeprint/plugins/"), "*.print", QDir::Name, QDir::Files);
-	QValueList<PluginInfo>	list;
+	Q3ValueList<PluginInfo>	list;
 	for (uint i=0; i<d.count(); i++)
 	{
 		PluginInfo	info(pluginInfo(d.absFilePath(d[i])));
@@ -352,9 +343,9 @@ void KMFactory::unregisterObject(KPReloadObject *obj)
 
 QString KMFactory::autoDetect()
 {
-	QValueList<PluginInfo>	plugins = pluginList();
+	Q3ValueList<PluginInfo>	plugins = pluginList();
 	int	pluginIndex(-1), currentPrecedence(0);
-	for (uint i=0;i<plugins.count();i++)
+	for (int i=0;i<plugins.count();i++)
 	{
 		if (plugins[i].detectUris.count() > 0 && KdeprintChecker::check(plugins[i].detectUris)
 		    && (pluginIndex == -1 || plugins[i].detectPrecedence >= currentPrecedence))
@@ -392,7 +383,7 @@ void KMFactory::slot_configChanged()
 	printConfig();
 
 	// notify all registered objects about the coming reload
-	QPtrListIterator<KPReloadObject>	it(m_objects);
+	Q3PtrListIterator<KPReloadObject>	it(m_objects);
 	/*for (;it.current();++it)
 		it.current()->aboutToReload();*/
 

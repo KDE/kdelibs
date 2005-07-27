@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qregexp.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <kmessagebox.h>
 
 /**
@@ -105,8 +105,8 @@ public:
     QStringList fonts;
     QStringList defaultFonts;
 
-    QValueVector<QRegExp> adFilters;
-    QValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
+    Q3ValueVector<QRegExp> adFilters;
+    Q3ValueList< QPair< QString, QChar > > m_fallbackAccessKeysAssignments;
 };
 
 
@@ -134,7 +134,7 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
   KJavaScriptAdvice ret = KJavaScriptDunno;
 
-  if (!_str)
+  if (_str.isNull())
         ret = KJavaScriptDunno;
 
   if (_str.lower() == QString::fromLatin1("accept"))
@@ -440,17 +440,25 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasGroup( "General" ) )
   {
     config->setGroup( "General" ); // group will be restored by cgs anyway
-    if ( reset || config->hasKey( "foreground" ) )
-      d->m_textColor = config->readColorEntry( "foreground", &HTML_DEFAULT_TXT_COLOR );
+    if ( reset || config->hasKey( "foreground" ) ) {
+      QColor def(HTML_DEFAULT_TXT_COLOR);
+      d->m_textColor = config->readColorEntry( "foreground", &def );
+    }
 
-    if ( reset || config->hasKey( "linkColor" ) )
-      d->m_linkColor = config->readColorEntry( "linkColor", &HTML_DEFAULT_LNK_COLOR );
+    if ( reset || config->hasKey( "linkColor" ) ) {
+      QColor def(HTML_DEFAULT_LNK_COLOR);
+      d->m_linkColor = config->readColorEntry( "linkColor", &def );
+    }
 
-    if ( reset || config->hasKey( "visitedLinkColor" ) )
-      d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
+    if ( reset || config->hasKey( "visitedLinkColor" ) ) {
+      QColor def(HTML_DEFAULT_VLNK_COLOR);
+      d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &def);
+    }
 
-    if ( reset || config->hasKey( "background" ) )
-      d->m_baseColor = config->readColorEntry( "background", &HTML_DEFAULT_BASE_COLOR);
+    if ( reset || config->hasKey( "background" ) ) {
+      QColor def(HTML_DEFAULT_BASE_COLOR);
+      d->m_baseColor = config->readColorEntry( "background", &def);
+    }
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) )
@@ -596,8 +604,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it )
         {
-          QCString javaPolicy = adviceToStr( it.data() );
-          QCString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
+          Q3CString javaPolicy = adviceToStr( it.data() );
+          Q3CString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "JavaDomainSettings", domainConfig );
@@ -609,8 +617,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it )
         {
-          QCString javaPolicy = adviceToStr( KJavaScriptDunno );
-          QCString javaScriptPolicy = adviceToStr( it.data() );
+          Q3CString javaPolicy = adviceToStr( KJavaScriptDunno );
+          Q3CString javaScriptPolicy = adviceToStr( it.data() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "ECMADomainSettings", domainConfig );
@@ -706,8 +714,8 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     {
         if (!url.startsWith("data:"))
         {
-            QValueVector<QRegExp>::iterator it;
-            for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
+	  Q3ValueVector<QRegExp>::iterator it;
+	  for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
             {
                 if ((*it).search(url) != -1)
                 {
@@ -878,7 +886,7 @@ const QString &KHTMLSettings::availableFamilies()
 QString KHTMLSettings::lookupFont(int i) const
 {
     QString font;
-    if (d->fonts.count() > (uint) i)
+    if (d->fonts.count() > i)
        font = d->fonts[i];
     if (font.isEmpty())
         font = d->defaultFonts[i];
@@ -1019,7 +1027,7 @@ bool KHTMLSettings::autoSpellCheck() const
     return d->m_autoSpellCheck;
 }
 
-QValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
+Q3ValueList< QPair< QString, QChar > > KHTMLSettings::fallbackAccessKeysAssignments() const
 {
     return d->m_fallbackAccessKeysAssignments;
 }

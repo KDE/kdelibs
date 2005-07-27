@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwbackend.h"
@@ -23,9 +23,9 @@
 
 #include <qlayout.h>
 #include <qregexp.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
-#include <qwhatsthis.h>
+#include <q3button.h>
 
 #include <kcursor.h>
 #include <klocale.h>
@@ -53,7 +53,7 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_ID = KMWizard::Backend;
 	m_title = i18n("Backend Selection");
 
-	m_buttons = new QButtonGroup(this);
+	m_buttons = new Q3ButtonGroup(this);
 	m_buttons->hide();
 
 	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
@@ -161,7 +161,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 		KRadioButton	*btn = new KRadioButton(txt, this);
 		btn->setEnabled(on);
 		if ( !whatsThis.isEmpty() )
-			QWhatsThis::add( btn, whatsThis );
+			btn->setWhatsThis(whatsThis );
 		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
 		m_layout->insertWidget(m_count, btn);
@@ -171,7 +171,7 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& 
 
 void KMWBackend::enableBackend(int ID, bool on)
 {
-	QButton	*btn = m_buttons->find(ID);
+	QAbstractButton *btn = m_buttons->find(ID);
 	if (btn)
 		btn->setEnabled(on);
 }

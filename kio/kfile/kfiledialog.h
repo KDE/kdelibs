@@ -37,7 +37,7 @@ class QCheckBox;
 class QHBoxLayout;
 class QGridLayout;
 class QLabel;
-class QPopupMenu;
+class Q3PopupMenu;
 class QVBoxLayout;
 
 class KActionCollection;

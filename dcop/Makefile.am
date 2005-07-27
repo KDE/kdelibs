@@ -27,10 +27,11 @@ KDE_OPTIONS = qtonly
 INCLUDES = $(all_includes)
 
 bin_PROGRAMS = dcopserver_shutdown
-check_PROGRAMS = testdcop testdcopc dcop_deadlock_test
+check_PROGRAMS = testdcop testdcopc
+ # dcop_deadlock_test
 
 lib_LTLIBRARIES  = libDCOP.la 
-libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
+libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QTCORE) $(LIB_QT) $(LIB_QT3SUPPORT)
 libDCOP_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
 libDCOP_la_NMCHECK = $(srcdir)/libDCOP.nmcheck
 libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck
@@ -54,9 +55,9 @@ testdcop_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = libDCOP.la
 
-dcop_deadlock_test_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-dcop_deadlock_test_SOURCES = dcop_deadlock_test.cpp
-dcop_deadlock_test_LDADD = ../kdecore/libkdecore.la
+#dcop_deadlock_test_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+#dcop_deadlock_test_SOURCES = dcop_deadlock_test.cpp
+#dcop_deadlock_test_LDADD = ../kdecore/libkdecore.la
 
 testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcopc_SOURCES = testdcopc.c dcopc.c

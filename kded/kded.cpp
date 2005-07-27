@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <qdir.h>
@@ -32,6 +32,7 @@
 
 #include <qfile.h>
 #include <qtimer.h>
+#include <qx11info_x11.h>
 
 #include <dcopclient.h>
 
@@ -71,9 +72,9 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    if (callBackObj)
    {
       QByteArray data;
-      QDataStream dataStream( data, IO_WriteOnly );
+      QDataStream dataStream( &data, QIODevice::WriteOnly );
       dataStream << QString("kbuildsycoca") << args;
-      QCString _launcher = KApplication::launcher();
+      DCOPCString _launcher = KApplication::launcher();
 
       kapp->dcopClient()->callAsync(_launcher, _launcher, "kdeinit_exec_wait(QString,QStringList)", data, callBackObj, callBackSlot);
    }
@@ -88,7 +89,7 @@ static void runKonfUpdate()
    KApplication::kdeinitExecWait( "kconf_update", QStringList(), 0, 0, "0" /*no startup notification*/ );
 }
 
-static void runDontChangeHostname(const QCString &oldName, const QCString &newName)
+static void runDontChangeHostname(const DCOPCString &oldName, const DCOPCString &newName)
 {
    QStringList args;
    args.append(QFile::decodeName(oldName));
@@ -102,8 +103,8 @@ Kded::Kded(bool checkUpdates)
     m_needDelayedCheck(false)
 {
   _self = this;
-  QCString cPath;
-  QCString ksycoca_env = getenv("KDESYCOCA");
+  DCOPCString cPath;
+  DCOPCString ksycoca_env = getenv("KDESYCOCA");
   if (ksycoca_env.isEmpty())
      cPath = QFile::encodeName(KGlobal::dirs()->saveLocation("tmp")+"ksycoca");
   else
@@ -133,9 +134,9 @@ Kded::~Kded()
   m_modules.setAutoDelete(true);
 }
 
-bool Kded::process(const QCString &obj, const QCString &fun,
+bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
                    const QByteArray &data,
-                   QCString &replyType, QByteArray &replyData)
+                   DCOPCString &replyType, QByteArray &replyData)
 {
   if (obj == "ksycoca") return false; // Ignore this one.
 
@@ -185,7 +186,7 @@ void Kded::noDemandLoad(const QString &obj)
   m_dontLoad.insert(obj.latin1(), this);
 }
 
-KDEDModule *Kded::loadModule(const QCString &obj, bool onDemand)
+KDEDModule *Kded::loadModule(const DCOPCString &obj, bool onDemand)
 {
   KDEDModule *module = m_modules.find(obj);
   if (module)
@@ -199,7 +200,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
   KDEDModule *module = 0;
   if (s && !s->library().isEmpty())
   {
-    QCString obj = s->desktopEntryName().latin1();
+    DCOPCString obj = s->desktopEntryName().latin1();
     KDEDModule *oldModule = m_modules.find(obj);
     if (oldModule)
        return oldModule;
@@ -245,8 +246,8 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
       if (create)
       {
         // create the module
-        KDEDModule* (*func)(const QCString &);
-        func = (KDEDModule* (*)(const QCString &)) create;
+        KDEDModule* (*func)(const DCOPCString &);
+        func = (KDEDModule* (*)(const DCOPCString &)) create;
         module = func(obj);
         if (module)
         {
@@ -264,7 +265,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
   return 0;
 }
 
-bool Kded::unloadModule(const QCString &obj)
+bool Kded::unloadModule(const DCOPCString &obj)
 {
   KDEDModule *module = m_modules.take(obj);
   if (!module)
@@ -275,19 +276,19 @@ bool Kded::unloadModule(const QCString &obj)
 }
 
 // DCOP
-QCStringList Kded::loadedModules()
+DCOPCStringList Kded::loadedModules()
 {
-	QCStringList modules;
-	QAsciiDictIterator<KDEDModule> it( m_modules );
+	DCOPCStringList modules;
+	Q3AsciiDictIterator<KDEDModule> it( m_modules );
 	for ( ; it.current(); ++it)
 		modules.append( it.currentKey() );
 
 	return modules;
 }
 
-QCStringList Kded::functions()
+DCOPCStringList Kded::functions()
 {
-    QCStringList res = DCOPObject::functions();
+    DCOPCStringList res = DCOPObject::functions();
     res += "ASYNC recreate()";
     return res;
 }
@@ -300,22 +301,22 @@ void Kded::slotKDEDModuleRemoved(KDEDModule *module)
      lib->unload();
 }
 
-void Kded::slotApplicationRemoved(const QCString &appId)
+void Kded::slotApplicationRemoved(const QByteArray &appId)
 {
-  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
      it.current()->removeAll(appId);
   }
 
-  QValueList<long> *windowIds = m_windowIdList.find(appId);
+  QList<long> *windowIds = m_windowIdList.find(appId);
   if (windowIds)
   {
-     for( QValueList<long>::ConstIterator it = windowIds->begin();
+     for( QList<long>::ConstIterator it = windowIds->begin();
           it != windowIds->end(); ++it)
      {
         long windowId = *it;
         m_globalWindowIdList.remove(windowId);
-        for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+        for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
         {
             emit it.current()->windowUnregistered(windowId);
         }
@@ -433,7 +434,7 @@ void Kded::recreateDone()
 
    for(; m_recreateCount; m_recreateCount--)
    {
-      QCString replyType = "void";
+      DCOPCString replyType = "void";
       QByteArray replyData;
       DCOPClientTransaction *transaction = m_recreateRequests.first();
       if (transaction)
@@ -467,8 +468,8 @@ void Kded::update(const QString& )
   }
 }
 
-bool Kded::process(const QCString &fun, const QByteArray &data,
-                           QCString &replyType, QByteArray &replyData)
+bool Kded::process(const DCOPCString &fun, const QByteArray &data,
+                           DCOPCString &replyType, QByteArray &replyData)
 {
   if (fun == "recreate()") {
     if (!m_recreateBusy)
@@ -544,19 +545,19 @@ bool Kded::isWindowRegistered(long windowId)
 void Kded::registerWindowId(long windowId)
 {
   m_globalWindowIdList.replace(windowId, &windowId);
-  QCString sender = callingDcopClient()->senderId();
+  DCOPCString sender = callingDcopClient()->senderId();
   if( sender.isEmpty()) // local call
       sender = callingDcopClient()->appId();
-  QValueList<long> *windowIds = m_windowIdList.find(sender);
+  QList<long> *windowIds = m_windowIdList.find(sender);
   if (!windowIds)
   {
-    windowIds = new QValueList<long>;
+    windowIds = new QList<long>;
     m_windowIdList.insert(sender, windowIds);
   }
   windowIds->append(windowId);
 
 
-  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
      emit it.current()->windowRegistered(windowId);
   }
@@ -566,10 +567,10 @@ void Kded::registerWindowId(long windowId)
 void Kded::unregisterWindowId(long windowId)
 {
   m_globalWindowIdList.remove(windowId);
-  QCString sender = callingDcopClient()->senderId();
+  DCOPCString sender = callingDcopClient()->senderId();
   if( sender.isEmpty()) // local call
       sender = callingDcopClient()->appId();
-  QValueList<long> *windowIds = m_windowIdList.find(sender);
+  QList<long> *windowIds = m_windowIdList.find(sender);
   if (windowIds)
   {
      windowIds->remove(windowId);
@@ -577,7 +578,7 @@ void Kded::unregisterWindowId(long windowId)
         m_windowIdList.remove(sender);
   }
 
-  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
+  for(Q3AsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
     emit it.current()->windowUnregistered(windowId);
   }
@@ -656,7 +657,7 @@ void KHostnameD::checkHostname()
     if (m_hostname == buf)
        return;
 
-    QCString newHostname = buf;
+    DCOPCString newHostname = buf;
 
     runDontChangeHostname(m_hostname, newHostname);
     m_hostname = newHostname;
@@ -674,8 +675,8 @@ class KDEDQtDCOPObject : public DCOPObject
 public:
   KDEDQtDCOPObject() : DCOPObject("qt/kded") { }
   
-  virtual bool process(const QCString &fun, const QByteArray &data,
-                       QCString& replyType, QByteArray &replyData)
+  virtual bool process(const DCOPCString &fun, const QByteArray &data,
+                       DCOPCString& replyType, QByteArray &replyData)
     {
       if ( kapp && (fun == "quit()") )
       {
@@ -686,9 +687,9 @@ public:
       return DCOPObject::process(fun, data, replyType, replyData);
     }                       
 
-  QCStringList functions()
+  DCOPCStringList functions()
     {
-       QCStringList res = DCOPObject::functions();
+       DCOPCStringList res = DCOPObject::functions();
        res += "void quit()";
        return res;
     }
@@ -713,9 +714,9 @@ public:
        return 0;
     }
 
-  QCStringList functions()
+  DCOPCStringList functions()
     {
-       QCStringList res = KUniqueApplication::functions();
+       DCOPCStringList res = KUniqueApplication::functions();
        res += "bool loadModule(QCString)";
        res += "bool unloadModule(QCString)";
        res += "void registerWindowId(long int)";
@@ -726,32 +727,32 @@ public:
        return res;
     }
 
-  bool process(const QCString &fun, const QByteArray &data,
-               QCString &replyType, QByteArray &replyData)
+  bool process(const DCOPCString &fun, const QByteArray &data,
+               DCOPCString &replyType, QByteArray &replyData)
   {
     if (fun == "loadModule(QCString)") {
-      QCString module;
-      QDataStream arg( data, IO_ReadOnly );
+      DCOPCString module;
+      QDataStream arg( data );
       arg >> module;
       bool result = (Kded::self()->loadModule(module, false) != 0);
       replyType = "bool";
-      QDataStream _replyStream( replyData, IO_WriteOnly );
+      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
       _replyStream << result;
       return true;
     }
     else if (fun == "unloadModule(QCString)") {
-      QCString module;
-      QDataStream arg( data, IO_ReadOnly );
+      DCOPCString module;
+      QDataStream arg( data );
       arg >> module;
       bool result = Kded::self()->unloadModule(module);
       replyType = "bool";
-      QDataStream _replyStream( replyData, IO_WriteOnly );
+      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
       _replyStream << result;
       return true;
     }
     else if (fun == "registerWindowId(long int)") {
       long windowId;
-      QDataStream arg( data, IO_ReadOnly );
+      QDataStream arg( data );
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->registerWindowId(windowId);
@@ -760,7 +761,7 @@ public:
     }
      else if (fun == "unregisterWindowId(long int)") {
       long windowId;
-      QDataStream arg( data, IO_ReadOnly );
+      QDataStream arg( data );
       arg >> windowId;
       Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->unregisterWindowId(windowId);
@@ -769,7 +770,7 @@ public:
     }
     else if (fun == "loadedModules()") {
       replyType = "QCStringList";
-      QDataStream _replyStream(replyData, IO_WriteOnly);
+      QDataStream _replyStream(&replyData, QIODevice::WriteOnly);
       _replyStream << Kded::self()->loadedModules();
       return true;
     }
@@ -817,7 +818,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // Check DCOP communication.
      {
         DCOPClient testDCOP;
-        QCString dcopName = testDCOP.registerAs("kded", false);
+        DCOPCString dcopName = testDCOP.registerAs("kded", false);
         if (dcopName.isEmpty())
         {
            kdFatal() << "DCOP communication problem!" << endl;
@@ -870,8 +871,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
      DCOPClient *client = kapp->dcopClient();
-     QObject::connect(client, SIGNAL(applicationRemoved(const QCString&)),
-             kded, SLOT(slotApplicationRemoved(const QCString&)));
+     QObject::connect(client, SIGNAL(applicationRemoved(const QByteArray&)),
+             kded, SLOT(slotApplicationRemoved(const QByteArray&)));
      client->setNotifications(true);
      client->setDaemonMode( true );
 
@@ -887,12 +888,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 #ifdef Q_WS_X11
      XEvent e;
      e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( qt_xdisplay(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = qt_xdisplay();
-     e.xclient.window = qt_xrootwin();
+     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = QX11Info::display();
+     e.xclient.window = QX11Info::appRootWindow();
      e.xclient.format = 8;
      strcpy( e.xclient.data.b, "kded" );
-     XSendEvent( qt_xdisplay(), qt_xrootwin(), False, SubstructureNotifyMask, &e );
+     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
 #endif
      int result = k.exec(); // keep running
 

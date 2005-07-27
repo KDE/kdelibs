@@ -22,7 +22,7 @@
 #include <qvariant.h>
 #include <scriptclientinterface.h>
 #include <scriptinterface.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <qobject.h>
 
 #include <kdelibs_export.h>
@@ -130,8 +130,8 @@ class ScriptInfo;
 		*/
 		void scriptDone( KScriptClientInterface::Result result, const QVariant &returned);
 	protected:
-		QDict<ScriptInfo> m_scripts;
-		QDict<KScriptInterface> m_scriptCache;
+		Q3Dict<ScriptInfo> m_scripts;
+		Q3Dict<KScriptInterface> m_scriptCache;
 		//QStringList m_scriptNames;
 		QString m_currentScript;
 	};

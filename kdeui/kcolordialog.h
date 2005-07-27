@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 //----------------------------------------------------------------------
 // KDE color selection dialog.
@@ -31,9 +31,9 @@
 #define KColorDialog QColorDialog
 #else //UNIX, WIN32
 #include <kdialogbase.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpixmap.h>
-#include <qgridview.h>
+#include <q3gridview.h>
 
 #include "kselect.h"
 
@@ -111,7 +111,7 @@ public:
   /**
    * Constructs a widget for color selection with a given orientation
    */
-  KValueSelector( Orientation o, QWidget *parent = 0, const char *name = 0 );
+  KValueSelector( Qt::Orientation o, QWidget *parent = 0, const char *name = 0 );
 
   int hue() const
         { return _hue; }
@@ -228,7 +228,7 @@ protected:
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
-  QScrollView *sv;
+  Q3ScrollView *sv;
   KListBox *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;
@@ -250,7 +250,7 @@ private:
 *
 * @author Martin Jones <mjones@kde.org>
 */
-class KDEUI_EXPORT KColorCells : public QGridView
+class KDEUI_EXPORT KColorCells : public Q3GridView
 {
   Q_OBJECT
 public:
@@ -321,7 +321,7 @@ signals:
   void colorChanged( const QColor&);
 
 protected:
-  virtual void drawContents( QPainter *painter );
+  virtual void paintEvent    ( QPaintEvent * pe );
   virtual void mouseMoveEvent( QMouseEvent * );
   virtual void dragEnterEvent( QDragEnterEvent *);
   virtual void dropEvent( QDropEvent *);
@@ -329,7 +329,6 @@ protected:
 private:
   QColor color;
   uint pixel;
-  int colContext;
 
 protected:
   virtual void virtual_hook( int id, void* data );

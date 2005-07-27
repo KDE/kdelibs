@@ -25,7 +25,7 @@
 class QLineEdit;
 class QSpinBox;
 class KURLRequester;
-class QTextEdit;
+class Q3TextEdit;
 class QComboBox;
 
 namespace KNS {
@@ -89,11 +89,11 @@ class UploadDialog : public KDialogBase
     QLineEdit *mVersionEdit;
     QSpinBox *mReleaseSpin;
     KURLRequester *mPreviewUrl;
-    QTextEdit *mSummaryEdit;
+    Q3TextEdit *mSummaryEdit;
     QComboBox *mLanguageCombo;
     QComboBox *mLicenceCombo;
 
-    QPtrList<Entry> mEntryList;
+    Q3PtrList<Entry> mEntryList;
     KURL mPayloadUrl;
 };
 

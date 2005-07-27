@@ -22,11 +22,11 @@
 #define _KSSLCERTCHAIN_H
 
 #include <qglobal.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kdemacros.h>
 
 class QString;
-class QCString;
+class Q3CString;
 class KSSL;
 class KSSLCertChainPrivate;
 class QStringList;
@@ -86,7 +86,7 @@ public:
 	 *  @param chain the certificate chain
 	 *  @see KSSLCertificate
 	 */
-	void setChain(QPtrList<KSSLCertificate>& chain);
+	void setChain(Q3PtrList<KSSLCertificate>& chain);
 
 	/**
 	 *  Set the certificate chain as a list of base64 encoded X.509
@@ -111,7 +111,7 @@ public:
 	 *  @return a deep copy of the certificate chain.
 	 *  @see KSSLCertificate
 	 */
-	QPtrList<KSSLCertificate> getChain();
+	Q3PtrList<KSSLCertificate> getChain();
 
 	/**
 	 *  Determine the number of entries (depth) of the chain.

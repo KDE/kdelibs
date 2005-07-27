@@ -173,23 +173,23 @@ KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
 {
   QString str;
 
-  unsigned int i = 0;
+  int i = 0;
   for ( ; i < _str.length() ; ++i )
   {
     if ( _str[i]=='%' )
     {
       if ( _str[i+1]=='%' ) // %% -> %
       {
-        str.append('%');
+        str.append(QLatin1Char('%'));
         ++i;
       }
       else if ( _str[i+1]=='2' && (i+2<_str.length()) && _str[i+2].lower()=='f' ) // %2f -> /
       {
-        str.append('/');
+        str.append(QLatin1Char('/'));
         i += 2;
       }
       else
-        str.append('%');
+        str.append(QLatin1Char('%'));
     } else
       str.append(_str[i]);
   }
@@ -454,7 +454,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
   QStringList causes, solutions, ret;
 
   QByteArray raw = rawErrorDetail( m_error, m_errorText, reqUrl, method );
-  QDataStream stream(raw, IO_ReadOnly);
+  QDataStream stream(raw);
 
   stream >> errorName >> techName >> description >> causes >> solutions;
 
@@ -1234,7 +1234,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   }
 
   QByteArray ret;
-  QDataStream stream(ret, IO_WriteOnly);
+  QDataStream stream(&ret, QIODevice::WriteOnly);
   stream << errorName << techName << description << causes << solutions;
   return ret;
 }
@@ -1369,7 +1369,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	FILE *mnttab;
 	struct mnttab mnt;
 	int len;
-	QCString devname;
+	Q3CString devname;
 
 	if( (volpath = volmgt_root()) == NULL ) {
 		kdDebug( 7007 ) << "findDeviceMountPoint: "
@@ -1418,7 +1418,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 #else
 
     char    realpath_buffer[MAXPATHLEN];
-    QCString realname;
+    Q3CString realname;
 
     realname = QFile::encodeName(filename);
     /* If the path contains symlinks, get the real name */
@@ -1436,7 +1436,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 
     for (int i=0;i<num_fs;i++) {
 
-        QCString device_name = mounted[i].f_mntfromname;
+        Q3CString device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1497,7 +1497,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 	    mountedfrom[fsname_len] = '\0';
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
-            QCString device_name = mountedfrom;
+            Q3CString device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1547,7 +1547,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     {
       // There may be symbolic links into the /etc/mnttab
       // So we have to find the real device name here as well!
-      QCString device_name = FSNAME(me);
+      Q3CString device_name = FSNAME(me);
       if (device_name.isEmpty() || (device_name == "none"))
          continue;
 
@@ -1703,7 +1703,7 @@ static QString get_mount_info(const QString& filename,
 
     for (int i=0;i<num_fs;i++) {
 
-        QCString device_name = mounted[i].f_mntfromname;
+        Q3CString device_name = mounted[i].f_mntfromname;
 
         // If the path contains symlinks, get
         // the real name
@@ -1770,7 +1770,7 @@ static QString get_mount_info(const QString& filename,
             strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
 
             /* get the mount-from information: */
-            QCString device_name = mountedfrom;
+            Q3CString device_name = mountedfrom;
 
             if (realpath(device_name, realpath_buffer) != 0)
                 // success, use result from realpath
@@ -1835,8 +1835,8 @@ static QString get_mount_info(const QString& filename,
             {
                 // The next GETMNTENT call may destroy 'me'
                 // Copy out the info that we need
-                QCString fsname_me = FSNAME(me);
-                QCString mounttype_me = MOUNTTYPE(me);
+                Q3CString fsname_me = FSNAME(me);
+                Q3CString mounttype_me = MOUNTTYPE(me);
 
                 STRUCT_SETMNTENT fstab;
                 if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {

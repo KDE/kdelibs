@@ -13,14 +13,13 @@
 
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-  Boston, MA 02110-1301, USA.
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
 */
 
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qvalidator.h>
-#include <qwhatsthis.h>
 
 #include <klineedit.h>
 #include <knuminput.h>
@@ -98,7 +97,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addWidget( d->m_label );
 
   d->m_textEdit = new KTextEdit( frame );
-  d->m_textEdit->setTextFormat( PlainText );
+  d->m_textEdit->setTextFormat( Qt::PlainText );
   d->m_textEdit->setText( value );
   layout->addWidget( d->m_textEdit, 10 );
 
@@ -122,8 +121,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_intSpinBox = new KIntSpinBox( minValue, maxValue, step, value,
-      base, frame );
+  d->m_intSpinBox = new KIntSpinBox( minValue, maxValue, step, value, frame,
+      base);
   layout->addWidget( d->m_intSpinBox );
 
   layout->addStretch();
@@ -144,8 +143,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label = new QLabel( label, frame );
   layout->addWidget( d->m_label );
 
-  d->m_doubleSpinBox = new KDoubleSpinBox( minValue, maxValue, step, value,
-      decimals, frame );
+  d->m_doubleSpinBox = new KDoubleSpinBox( minValue, maxValue, step, value, frame,
+      decimals);
   layout->addWidget( d->m_doubleSpinBox );
 
   layout->addStretch();
@@ -188,9 +187,9 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d->m_listBox->setSelected( current, true );
     d->m_listBox->ensureCurrentVisible();
     layout->addWidget( d->m_listBox, 10 );
-    connect( d->m_listBox, SIGNAL( doubleClicked( QListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
       SLOT( slotOk() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
       SLOT( slotOk() ) );
 
     d->m_listBox->setFocus();
@@ -217,28 +216,28 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_listBox->insertStringList( list );
   layout->addWidget( d->m_listBox );
 
-  QListBoxItem *item;
+  Q3ListBoxItem *item;
 
   if ( multiple )
   {
-    d->m_listBox->setSelectionMode( QListBox::Extended );
+    d->m_listBox->setSelectionMode( Q3ListBox::Extended );
 
     for ( QStringList::ConstIterator it=select.begin(); it!=select.end(); ++it )
     {
-      item = d->m_listBox->findItem( *it, CaseSensitive|ExactMatch );
+      item = d->m_listBox->findItem( *it, Qt::CaseSensitive|Q3ListBox::ExactMatch );
       if ( item )
         d->m_listBox->setSelected( item, true );
     }
   }
   else
   {
-    connect( d->m_listBox, SIGNAL( doubleClicked( QListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( doubleClicked( Q3ListBoxItem * ) ),
       SLOT( slotOk() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
+    connect( d->m_listBox, SIGNAL( returnPressed( Q3ListBoxItem * ) ),
       SLOT( slotOk() ) );
 
     QString text = select.first();
-    item = d->m_listBox->findItem( text, CaseSensitive|ExactMatch );
+    item = d->m_listBox->findItem( text, Qt::CaseSensitive|Q3ListBox::ExactMatch );
     if ( item )
       d->m_listBox->setSelected( item, true );
   }
@@ -272,7 +271,7 @@ QString KInputDialog::text( const QString &caption,
   KInputDialog dlg( caption, label, value, parent, name, validator, mask );
 
   if( !whatsThis.isEmpty() )
-    QWhatsThis::add( dlg.lineEdit(), whatsThis );
+    dlg.lineEdit()->setWhatsThis(whatsThis );
 
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -370,7 +369,7 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     editable, parent, name );
   if ( !editable)
   {
-      connect( dlg.listBox(),  SIGNAL(doubleClicked ( QListBoxItem *)), &dlg, SLOT( slotOk()));
+      connect( dlg.listBox(),  SIGNAL(doubleClicked ( Q3ListBoxItem *)), &dlg, SLOT( slotOk()));
   }
   bool _ok = ( dlg.exec() == Accepted );
 
@@ -402,7 +401,7 @@ QStringList KInputDialog::getItemList( const QString &caption,
   QStringList result;
   if ( _ok )
   {
-    for (const QListBoxItem* i = dlg.listBox()->firstItem(); i != 0; i = i->next() )
+    for (const Q3ListBoxItem* i = dlg.listBox()->firstItem(); i != 0; i = i->next() )
       if ( i->isSelected() )
         result.append( i->text() );
   }

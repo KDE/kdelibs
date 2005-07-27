@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -45,6 +45,7 @@
 #include "kspelldlg.h"
 #include <kwin.h>
 #include <kprocio.h>
+#include <QTextStream>
 
 #define MAXLINELENGTH 10000
 #undef IGNORE //fix possible conflict
@@ -76,7 +77,7 @@ public:
   SpellerType type;
   KSpell* suggestSpell;
   bool checking;
-  QValueList<BufferedWord> unchecked;
+  Q3ValueList<BufferedWord> unchecked;
   QTimer *checkNextTimer;
   bool aspellV6;
 };
@@ -134,7 +135,7 @@ static bool determineASpellV6()
   {
     // Close textstream before we close fs
     {
-      QTextStream ts(fs, IO_ReadOnly);
+      QTextStream ts(fs, QIODevice::ReadOnly);
       result = ts.read().stripWhiteSpace();
     }
     pclose(fs);
@@ -404,7 +405,7 @@ bool KSpell::addPersonal( const QString & word )
 
 bool KSpell::writePersonalDictionary()
 {
-  return proc->writeStdin("#");
+  return proc->writeStdin(QString( "#" ));
 }
 
 bool KSpell::ignore( const QString & word )
@@ -426,7 +427,7 @@ KSpell::cleanFputsWord( const QString & s, bool appendCR )
   QString qs(s);
   bool empty = true;
 
-  for( unsigned int i = 0; i < qs.length(); i++ )
+  for( int i = 0; i < qs.length(); i++ )
   {
     //we need some punctuation for ornaments
     if ( qs[i] != '\'' && qs[i] != '\"' && qs[i] != '-'
@@ -505,7 +506,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->writeStdin( "%" ); // turn off terse mode
+  proc->writeStdin( QString( "%" ) ); // turn off terse mode
   proc->writeStdin( buffer ); // send the word to ispell
 
   return true;
@@ -549,7 +550,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->writeStdin( "%" ); // turn off terse mode
+  proc->writeStdin( QString( "%" ) ); // turn off terse mode
   proc->writeStdin( buffer ); // send the word to ispell
 
   return true;
@@ -750,7 +751,7 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
       sugg.clear();
       i = j = 0;
 
-      while( (unsigned int)i < qs.length() )
+      while( i < qs.length() )
       {
         QString temp = qs.mid( i, (j=qs.find (',',i)) - i );
         sugg.append( funnyWord(temp) );
@@ -794,7 +795,7 @@ bool KSpell::checkList (QStringList *_wordlist, bool _usedialog)
   //set the dialog signal handler
   dialog3slot = SLOT (checkList4 ());
 
-  proc->writeStdin ("%"); // turn off terse mode & check one word at a time
+  proc->writeStdin (QString( "%") ); // turn off terse mode & check one word at a time
 
   //lastpos now counts which *word number* we are at in checkListReplaceCurrent()
   lastpos = -1;
@@ -1008,7 +1009,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   // KProcIO calls check2 when read from ispell
   OUTPUT( check2 );
-  proc->writeStdin( "!" );
+  proc->writeStdin( QString( "!" ) );
 
   //lastpos is a position in newbuffer (it has offset in it)
   offset = lastlastline = lastpos = lastline = 0;
@@ -1122,7 +1123,7 @@ void KSpell::check2( KProcIO * )
   proc->ackRead();
 
   //If there is more to check, then send another line to ISpell.
-  if ( (unsigned int)lastline < origbuffer.length() )
+  if ( lastline < origbuffer.length() )
   {
     int i;
     QString qs;

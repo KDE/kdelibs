@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <config.h>
@@ -37,7 +37,6 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qtimer.h>
-#include <qsocket.h>
 #include <qdatetime.h>
 
 #include <kdebug.h>
@@ -46,15 +45,17 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
+#include <kbufferedsocket.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kdialogbase.h>
-#include <kextendedsocket.h>
 #include <kprocess.h>
 #include <kfilterdev.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 #include <math.h>
+
+using namespace KNetwork;
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
@@ -74,7 +75,6 @@ static int trials = 5;
 	CupsInfos::self();
 	m_cupsdconf = 0;
 	m_currentprinter = 0;
-	m_socket = 0;
 
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
@@ -88,7 +88,6 @@ static int trials = 5;
 
 KMCupsManager::~KMCupsManager()
 {
-	//delete m_socket;
 }
 
 QString KMCupsManager::driverDbCreationProgram()
@@ -264,44 +263,6 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
 	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
-
-	/*
-	// change host and port for remote stuffs
-	if (!p->uri().isEmpty())
-	{
-	// THIS IS AN UGLY HACK!! FIXME
-	// This attempts a "pre-connection" to see if the host is
-	// actually reachable.  It times out after 2 seconds at most,
-	// preventing application freezes.
-	m_hostSuccess = false;
-	m_lookupDone = false;
-	// Give 2 seconds to connect to the printer, or abort
-	KExtendedSocket *kes = new KExtendedSocket(p->uri().host(),
-	p->uri().port());
-	connect(kes, SIGNAL(connectionSuccess()), this, SLOT(hostPingSlot()));
-	connect(kes, SIGNAL(connectionFailed(int)), this, SLOT(hostPingFailedSlot()));
-	if (kes->startAsyncConnect() != 0) {
-	delete kes;
-	m_hostSuccess = false;
-	} else {
-	QDateTime tm = QDateTime::currentDateTime().addSecs(2);
-	while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
-	qApp->processEvents();
-
-	kes->cancelAsyncConnect();
-
-	delete kes;
-
-	if (!m_lookupDone)
-	m_hostSuccess = false;
-	}
-
-	if (m_hostSuccess == true) {
-	req.setHost(p->uri().host());
-	req.setPort(p->uri().port());
-	}
-	}
-	*/
 
 	// disable location as it has been transferred to listing (for filtering)
 	//keys.append("printer-location");
@@ -553,7 +514,8 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 {
 	QStringList	comps = QStringList::split('/', drname, false);
 	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
-	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	PATH = QLatin1String(getenv("PATH"));
+	PATH += QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{
@@ -569,7 +531,7 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 	cmd += KProcess::quote(comps[2]);
 	cmd += " -p ";
 	cmd += KProcess::quote(comps[1]);
-	if (in.open(cmd) && out.open(IO_WriteOnly))
+	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -619,14 +581,14 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 	kdDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
 	QIODevice *in = KFilterDev::deviceForFile( driver->get( "template" ) );
 	QFile	out(filename);
-	if (in && in->open(IO_ReadOnly) && out.open(IO_WriteOnly))
+	if (in && in->open(QIODevice::ReadOnly) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(in), tout(&out);
 		QString		line, keyword;
 		bool 		isnumeric(false);
 		DrBase		*opt(0);
 
-		while (!tin.eof())
+		while (!tin.atEnd())
 		{
 			line = tin.readLine();
 			if (line.startsWith("*% COMDATA #"))
@@ -896,22 +858,16 @@ QString KMCupsManager::stateInformation()
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kdDebug(500) << "Checking for update possible" << endl;
-	delete m_socket;
-	/*m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
-	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
-	m_socket->setTimeout( 1 );*/
-	m_socket = new QSocket( this );
-	connect( m_socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
-	trials = 5;
+	connect( &m_socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ),
+		 SLOT( slotConnectionSuccess() ) );
+	connect( &m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
 }
 
 void KMCupsManager::slotConnectionSuccess()
 {
 	kdDebug(500) << "Connection success, trying to send a request..." << endl;
-	m_socket->close();
+	m_socket.close();
 
 	IppRequest req;
 	req.setOperation( CUPS_GET_PRINTERS );
@@ -938,8 +894,8 @@ void KMCupsManager::slotConnectionSuccess()
 void KMCupsManager::slotAsyncConnect()
 {
 	kdDebug(500) << "Starting async connect" << endl;
-	//m_socket->startAsyncConnect();
-	m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
+	m_socket.connect( CupsInfos::self()->host(), 
+			  QString::number( CupsInfos::self()->port() ) );
 }
 
 void KMCupsManager::slotConnectionFailed( int errcode )
@@ -947,16 +903,14 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 	kdDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
 	{
-		//m_socket->setTimeout( ++to );
-		//m_socket->cancelAsyncConnect();
 		trials--;
-		m_socket->close();
+		m_socket.close();
 		QTimer::singleShot( 1000, this, SLOT( slotAsyncConnect() ) );
 		return;
 	}
 
 	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( errcode == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
+				"Error: %1." ).arg( m_socket.errorString() ) );
 	setUpdatePossible( false );
 }
 
@@ -975,15 +929,15 @@ void KMCupsManager::hostPingFailedSlot() {
 void extractMaticData(QString& buf, const QString& filename)
 {
 	QFile	f(filename);
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine();
 			if (line.startsWith("*% COMDATA #"))
-				buf.append(line.right(line.length()-12)).append('\n');
+				buf.append(line.right(line.length()-12)).append(QLatin1Char('\n'));
 		}
 	}
 }

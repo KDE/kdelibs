@@ -107,7 +107,7 @@ bool SortingTraits::GivenName::lt( const Addressee &a1, const Addressee &a2 )
 static Field *sActiveField=0;
 
 AddresseeList::AddresseeList()
-  : QValueList<Addressee>()
+  : QList<Addressee>()
 {
   mReverseSorting = false;
   mActiveSortingCriterion = FormattedName;
@@ -118,14 +118,14 @@ AddresseeList::~AddresseeList()
 }
 
 AddresseeList::AddresseeList( const AddresseeList &l )
-  : QValueList<Addressee>( l )
+  : QList<Addressee>( l )
 {
   mReverseSorting = l.reverseSorting();
   mActiveSortingCriterion = l.sortingCriterion();
 }
 
-AddresseeList::AddresseeList( const QValueList<Addressee> &l )
-  : QValueList<Addressee>( l )
+AddresseeList::AddresseeList( const QList<Addressee> &l )
+  : QList<Addressee>( l )
 {
   mReverseSorting = false;
 }
@@ -233,7 +233,7 @@ void AddresseeList::sortByField( Field *field )
   KABC::FieldSortMode *mode = new KABC::FieldSortMode( sActiveField, !mReverseSorting );
 
   KABC::Addressee::setSortMode( mode );
-  qHeapSort( *this );
+  qSort( *this );
   KABC::Addressee::setSortMode( 0 );
 
   delete mode;
@@ -245,7 +245,7 @@ void AddresseeList::sortByMode( SortMode *mode )
     return;
 
   KABC::Addressee::setSortMode( mode );
-  qHeapSort( *this );
+  qSort( *this );
   KABC::Addressee::setSortMode( 0 );
 }
 

@@ -20,7 +20,7 @@
 #define KURLBAR_H
 
 #include <qevent.h>
-#include <qframe.h>
+#include <QFrame>
 #include <qtooltip.h>
 
 #include <kdialogbase.h>
@@ -39,7 +39,7 @@ class KURLBar;
  * @see KURLBar
  * @see KURLBarListBox
  */
-class KIO_EXPORT KURLBarItem : public QListBoxPixmap
+class KIO_EXPORT KURLBarItem : public Q3ListBoxPixmap
 {
 public:
     /**
@@ -114,11 +114,11 @@ public:
     /**
      * returns the width of this item.
      */
-    virtual int width( const QListBox * ) const;
+    virtual int width( const Q3ListBox * ) const;
     /**
      * returns the height of this item.
      */
-    virtual int height( const QListBox * ) const;
+    virtual int height( const Q3ListBox * ) const;
 
     /**
      * returns the url of this item.
@@ -237,7 +237,7 @@ public:
      * allow global/local item separation.
      */
     KURLBar( bool useGlobalItems,
-             QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+             QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
     /**
      * Destroys the KURLBar.
      */
@@ -282,7 +282,7 @@ public:
      * @returns the current orientation mode.
      * @see setOrientation
      */
-    Orientation orientation() const;
+    Qt::Orientation orientation() const;
 
     /**
      * Allows to set a custom KURLBarListBox.
@@ -382,7 +382,7 @@ public:
     /**
      * @returns true if the bar is in vertical mode.
      */
-    bool isVertical() const { return orientation() == Vertical; }
+    bool isVertical() const { return orientation() == Qt::Vertical; }
 
 public slots:
     /**
@@ -446,12 +446,12 @@ protected slots:
      * Reimplemented to show a contextmenu, allowing the user to add, edit
      * or remove items, or change the iconsize.
      */
-    virtual void slotContextMenuRequested( QListBoxItem *, const QPoint& pos );
+    virtual void slotContextMenuRequested( Q3ListBoxItem *, const QPoint& pos );
     /**
      * Called when an item has been selected. Emits the activated()
      * signal.
      */
-    virtual void slotSelected( QListBoxItem * );
+    virtual void slotSelected( Q3ListBoxItem * );
 
     /**
      * Called when a url was dropped onto the bar to show a
@@ -460,7 +460,7 @@ protected slots:
     virtual void slotDropped( QDropEvent * );
 
 private slots:
-    void slotSelected( int button, QListBoxItem * );
+    void slotSelected( int button, Q3ListBoxItem * );
 
 private:
     KURLBarListBox *m_listBox;
@@ -479,8 +479,7 @@ private:
 ///////////////////////////////////////////////////////////////////
 
 
-class QDragObject;
-class KURLBarToolTip;
+class Q3DragObject;
 
 /**
  * This is the listbox used in KURLBar. It is a subclass of KListBox to support
@@ -529,16 +528,16 @@ protected:
     /**
      * @returns a suitable QDragObject when an item is dragged.
      */
-    virtual QDragObject * dragObject();
+    virtual Q3DragObject * dragObject();
 
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
     virtual void contentsDropEvent( QDropEvent * );
     virtual void contextMenuEvent( QContextMenuEvent * );
     virtual void paintEvent( QPaintEvent* );
+    virtual bool event( QEvent* );
 
 private:
     Qt::Orientation m_orientation;
-    KURLBarToolTip *m_toolTip;
 
 protected:
     virtual void virtual_hook( int id, void* data );

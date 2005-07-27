@@ -198,7 +198,7 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
 int NetRC::openf( const QString& f )
 {
   KDE_struct_stat sbuff;
-  QCString ef = QFile::encodeName(f);
+  Q3CString ef = QFile::encodeName(f);
   if ( KDE_stat(ef, &sbuff) != 0 )
     return -1;
 

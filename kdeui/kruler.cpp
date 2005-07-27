@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 
@@ -22,6 +22,7 @@
 
 #include <qpainter.h>
 #include <qfont.h>
+#include <QPolygon>
 
 #define INIT_VALUE 0
 #define INIT_MIN_VALUE 0
@@ -92,47 +93,49 @@ public:
 
 
 KRuler::KRuler(QWidget *parent, const char *name)
-  : QFrame(parent, name),
+  : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
-    dir(Horizontal)
+    dir(Qt::Horizontal)
 {
-  init();
+  init(name);
   setFixedHeight(FIX_WIDTH);
 }
 
 
-KRuler::KRuler(Orientation orient,
-               QWidget *parent, const char *name, WFlags f)
-  : QFrame(parent, name, f),
+KRuler::KRuler(Qt::Orientation orient,
+               QWidget *parent, const char *name, Qt::WFlags f)
+  : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
-  init();
-  if (orient == Horizontal)
+  setWindowFlags(f);
+  init(name);
+  if (orient == Qt::Horizontal)
     setFixedHeight(FIX_WIDTH);
   else
     setFixedWidth(FIX_WIDTH);
 }
 
 
-KRuler::KRuler(Orientation orient, int widgetWidth,
-               QWidget *parent, const char *name, WFlags f)
-  : QFrame(parent, name, f),
+KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
+               QWidget *parent, const char *name, Qt::WFlags f)
+  : QAbstractSlider(parent),
     range(INIT_MIN_VALUE, INIT_MAX_VALUE, 1, 10, INIT_VALUE),
     dir(orient)
 {
-  init();
-
-  if (orient == Horizontal)
+  setWindowFlags(f);
+  init(name);
+  if (orient == Qt::Horizontal)
     setFixedHeight(widgetWidth);
   else
     setFixedWidth(widgetWidth);
 }
 
 
-void KRuler::init()
+void KRuler::init(const char* name)
 {
-  setFrameStyle(WinPanel | Raised);
+  if (name) setObjectName(name);
+  #warning FIXME setFrameStyle(WinPanel | Raised);
 
   tmDist = INIT_TINY_MARK_DISTANCE;
   lmDist = INIT_LITTLE_MARK_DISTANCE;
@@ -162,36 +165,15 @@ KRuler::~KRuler()
 void
 KRuler::setMinValue(int value)
 {
-  if (range.minValue() != value) {
-    range.setRange( value, range.maxValue() );
-    update(contentsRect());
-  }
+  setMinimum(value);
 }
 
 void
 KRuler::setMaxValue(int value)
 {
-  if (range.maxValue() != value) {
-    range.setRange( range.minValue(), value );
-    update(contentsRect());
-  }
+  setMaximum(value);
 }
 
-void
-KRuler::setRange(int min, int max)
-{// debug("set range from %i to %i", min, max);
-  if ((range.minValue() != min) || (range.maxValue() != max)) {
-    range.setRange( min, max );
-    update(contentsRect());
-  }
-}
-
-void
-KRuler::setValue(int value)
-{
-  range.setValue(value);
-  update(contentsRect());
-}
 
 void
 KRuler::setTinyMarkDistance(int dist)
@@ -321,23 +303,6 @@ KRuler::showPointer() const
   return d->showpointer;
 }
 
-void
-KRuler::setValuePerLittleMark(int)
-{
-  update(contentsRect());
-}
-
-void
-KRuler::setValuePerMediumMark(int)
-{
-   update(contentsRect());
-}
-
-void
-KRuler::setValuePerBigMark(int)
-{
- update(contentsRect());
-}
 
 void
 KRuler::setShowEndLabel(bool show)
@@ -362,7 +327,7 @@ KRuler::setEndLabel(const QString& label)
   endlabel = label;
 
   // premeasure the fontwidth and save it
-  if (dir == Vertical) {
+  if (dir == Qt::Vertical) {
     QFont font = this->font();
     font.setPointSize(LABEL_SIZE);
     QFontMetrics fm(font);
@@ -540,18 +505,18 @@ KRuler::slideDown(int count)
 void
 KRuler::slotNewValue(int _value)
 {
-  int oldvalue = range.value();
+  int oldvalue = value();
   if (oldvalue == _value) {
     return;
   }
   //    setValue(_value);
-  range.setValue(_value);
-  if (range.value() == oldvalue) {
+  setValue(_value);
+  if (value() == oldvalue) {
     return;
   }
   // get the rectangular of the old and the new ruler pointer
   // and repaint only him
-  if (dir == Horizontal) {
+  if (dir == Qt::Horizontal) {
     QRect oldrec(-5+oldvalue,10, 11,6);
     QRect newrec(-5+_value,10, 11,6);
     repaint( oldrec.unite(newrec) );
@@ -591,27 +556,28 @@ KRuler::slotEndOffset(int offset)
 }
 
 void
-KRuler::drawContents(QPainter *p)
+KRuler::paintEvent(QPaintEvent *e)
 {
   //  debug ("KRuler::drawContents, %s",(horizontal==dir)?"horizontal":"vertical");
 
+  QStylePainter p(this);
 #ifdef PROFILING
   QTime time;
   time.start();
   for (int profile=0; profile<10; profile++) {
 #endif
 
-  int value  = range.value(),
-    minval = range.minValue(),
+  int value  = this->value(),
+    minval = minimum(),
     maxval;
-    if (dir == Horizontal) {
-    maxval = range.maxValue()
+    if (dir == Qt::Horizontal) {
+    maxval = maximum()
     + offset_
     - (d->lengthFix?(height()-d->endOffset_length):d->endOffset_length);
     }
     else
     {
-    maxval = range.maxValue()
+    maxval = maximum()
     + offset_
     - (d->lengthFix?(width()-d->endOffset_length):d->endOffset_length);
     }
@@ -625,9 +591,9 @@ KRuler::drawContents(QPainter *p)
     fontOffset = (((double)minval)>offsetmin)?(double)minval:offsetmin;
 
   // draw labels
-  QFont font = p->font();
+  QFont font = p.font();
   font.setPointSize(LABEL_SIZE);
-  p->setFont( font );
+  p.setFont( font );
   // draw littlemarklabel
 
   // draw mediummarklabel
@@ -636,34 +602,34 @@ KRuler::drawContents(QPainter *p)
 
   // draw endlabel
   if (d->showEndL) {
-    if (dir == Horizontal) {
-      p->translate( fontOffset, 0 );
-      p->drawText( END_LABEL_X, END_LABEL_Y, endlabel );
+    if (dir == Qt::Horizontal) {
+      p.translate( fontOffset, 0 );
+      p.drawText( END_LABEL_X, END_LABEL_Y, endlabel );
     }
     else { // rotate text +pi/2 and move down a bit
       //QFontMetrics fm(font);
 #ifdef KRULER_ROTATE_TEST
-      p->rotate( -90.0 + rotate );
-      p->translate( -8.0 - fontOffset - d->fontWidth + xtrans,
+      p.rotate( -90.0 + rotate );
+      p.translate( -8.0 - fontOffset - d->fontWidth + xtrans,
                     ytrans );
 #else
-      p->rotate( -90.0 );
-      p->translate( -8.0 - fontOffset - d->fontWidth, 0.0 );
+      p.rotate( -90.0 );
+      p.translate( -8.0 - fontOffset - d->fontWidth, 0.0 );
 #endif
-      p->drawText( END_LABEL_X, END_LABEL_Y, endlabel );
+      p.drawText( END_LABEL_X, END_LABEL_Y, endlabel );
     }
-    p->resetXForm();
+    p.resetXForm();
   }
 
   // draw the tiny marks
   if (showtm) {
     fend = ppm*tmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
-        p->drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
+      if (dir == Qt::Horizontal) {
+        p.drawLine((int)f, BASE_MARK_X1, (int)f, BASE_MARK_X2);
       }
       else {
-        p->drawLine(BASE_MARK_X1, (int)f, BASE_MARK_X2, (int)f);
+        p.drawLine(BASE_MARK_X1, (int)f, BASE_MARK_X2, (int)f);
       }
     }
   }
@@ -671,11 +637,11 @@ KRuler::drawContents(QPainter *p)
     // draw the little marks
     fend = ppm*lmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
-        p->drawLine((int)f, LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2);
+      if (dir == Qt::Horizontal) {
+        p.drawLine((int)f, LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2);
       }
       else {
-        p->drawLine(LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2, (int)f);
+        p.drawLine(LITTLE_MARK_X1, (int)f, LITTLE_MARK_X2, (int)f);
       }
     }
   }
@@ -683,11 +649,11 @@ KRuler::drawContents(QPainter *p)
     // draw medium marks
     fend = ppm*mmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
-        p->drawLine((int)f, MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2);
+      if (dir == Qt::Horizontal) {
+        p.drawLine((int)f, MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2);
       }
       else {
-        p->drawLine(MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2, (int)f);
+        p.drawLine(MIDDLE_MARK_X1, (int)f, MIDDLE_MARK_X2, (int)f);
       }
     }
   }
@@ -695,37 +661,37 @@ KRuler::drawContents(QPainter *p)
     // draw big marks
     fend = ppm*bmDist;
     for ( f=offsetmin; f<offsetmax; f+=fend ) {
-      if (dir == Horizontal) {
-        p->drawLine((int)f, BIG_MARK_X1, (int)f, BIG_MARK_X2);
+      if (dir == Qt::Horizontal) {
+        p.drawLine((int)f, BIG_MARK_X1, (int)f, BIG_MARK_X2);
       }
       else {
-        p->drawLine(BIG_MARK_X1, (int)f, BIG_MARK_X2, (int)f);
+        p.drawLine(BIG_MARK_X1, (int)f, BIG_MARK_X2, (int)f);
       }
     }
   }
   if (showem) {
     // draw end marks
-    if (dir == Horizontal) {
-      p->drawLine(minval-offset_, END_MARK_X1, minval-offset_, END_MARK_X2);
-      p->drawLine(maxval-offset_, END_MARK_X1, maxval-offset_, END_MARK_X2);
+    if (dir == Qt::Horizontal) {
+      p.drawLine(minval-offset_, END_MARK_X1, minval-offset_, END_MARK_X2);
+      p.drawLine(maxval-offset_, END_MARK_X1, maxval-offset_, END_MARK_X2);
     }
     else {
-      p->drawLine(END_MARK_X1, minval-offset_, END_MARK_X2, minval-offset_);
-      p->drawLine(END_MARK_X1, maxval-offset_, END_MARK_X2, maxval-offset_);
+      p.drawLine(END_MARK_X1, minval-offset_, END_MARK_X2, minval-offset_);
+      p.drawLine(END_MARK_X1, maxval-offset_, END_MARK_X2, maxval-offset_);
     }
   }
 
   // draw pointer
   if (d->showpointer) {
-    QPointArray pa(4);
-    if (dir == Horizontal) {
+    QPolygon pa(4);
+    if (dir == Qt::Horizontal) {
       pa.setPoints(3, value-5, 10, value+5, 10, value/*+0*/,15);
     }
     else {
       pa.setPoints(3, 10, value-5, 10, value+5, 15, value/*+0*/);
     }
-    p->setBrush( p->backgroundColor() );
-    p->drawPolygon( pa );
+    p.setBrush( p.backgroundColor() );
+    p.drawPolygon( pa );
   }
 
 #ifdef PROFILING

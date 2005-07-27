@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "imagepreview.h"
@@ -33,7 +33,7 @@ ImagePreview::ImagePreview(QWidget *parent, const char *name ) : QWidget(parent,
 	gamma_ = 1000;
 	bw_ = false;
 
-	setBackgroundMode(NoBackground);
+	setBackgroundMode(Qt::NoBackground);
 }
 
 ImagePreview::~ImagePreview(){
@@ -64,7 +64,7 @@ void ImagePreview::paintEvent(QPaintEvent*){
 	p.drawImage(x,y,tmpImage);
 	p.end();
 
-	bitBlt(this, QPoint(0, 0), &buffer, buffer.rect(), Qt::CopyROP);
+	bitBlt(this, QPoint(0, 0), &buffer, buffer.rect());
 }
 
 void ImagePreview::setBlackAndWhite(bool on){

@@ -16,8 +16,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef _KTOOLBARBUTTON_H
@@ -25,7 +25,7 @@
 
 #include <qpixmap.h>
 #include <qtoolbutton.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qstring.h>
 #include <kglobal.h>
 
@@ -33,8 +33,9 @@ class KToolBar;
 class KToolBarButtonPrivate;
 class KInstance;
 class QEvent;
-class QPopupMenu;
+class QMenu;
 class QPainter;
+class QStyleOptionToolButton;
 
 /**
  * A toolbar button. This is used internally by KToolBar, use the
@@ -147,7 +148,7 @@ public:
    * that set icons or pixmaps.
    * @param iconset  The iconset to use
    */
-  virtual void setIconSet( const QIconSet &iconset );
+  virtual void setIconSet( const QIcon &iconset );
 
 #ifndef KDE_NO_COMPAT
   /**
@@ -204,11 +205,6 @@ public:
   void setToggle(bool toggle = true);
 
   /**
-   * Return a pointer to this button's popup menu (if it exists)
-   */
-  QPopupMenu *popup();
-
-  /**
    * Returns the button's id.
    * @since 3.2
    */
@@ -222,7 +218,7 @@ public:
    * @param p The new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setPopup (QPopupMenu *p, bool unused = false);
+  void setPopup (QMenu *p, bool unused = false);
 
   /**
    * Gives this button a delayed popup menu.
@@ -234,7 +230,7 @@ public:
    * @param p the new popup menu
    * @param unused Has no effect - ignore it.
    */
-  void setDelayedPopup(QPopupMenu *p, bool unused = false);
+  void setDelayedPopup(QMenu *p, bool unused = false);
 
   /**
    * Turn this button into a radio button
@@ -280,17 +276,16 @@ public slots:
    virtual void setTextLabel(const QString&, bool tipToo);
 
 protected:
-  bool event(QEvent *e);
-  void paletteChange(const QPalette &);
+  void changeEvent(QEvent* e);
   void leaveEvent(QEvent *e);
   void enterEvent(QEvent *e);
-  void drawButton(QPainter *p);
+  void paintEvent(QPaintEvent* pe);
   bool eventFilter (QObject *o, QEvent *e);
   /// @since 3.4
   void mousePressEvent( QMouseEvent * );
   /// @since 3.4
   void mouseReleaseEvent( QMouseEvent * );
-  void showMenu();
+
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
@@ -302,12 +297,14 @@ protected:
   /// @since 3.1
   int iconTextMode() const;
 
+  ///Sets up option for this button
+  void initStyleOption(QStyleOptionToolButton* opt) const;
+
 protected slots:
   void slotClicked();
   void slotPressed();
   void slotReleased();
   void slotToggled();
-  void slotDelayTimeout();
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -320,7 +317,7 @@ private:
 * @internal
 * @version $Id$
 */
-class KDEUI_EXPORT KToolBarButtonList : public QIntDict<KToolBarButton>
+class KDEUI_EXPORT KToolBarButtonList : public Q3IntDict<KToolBarButton>
 {
 public:
    KToolBarButtonList();

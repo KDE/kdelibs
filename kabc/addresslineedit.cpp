@@ -27,10 +27,10 @@
 
 #include <qapplication.h>
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qregexp.h>
 #include <qevent.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 
 #include <kcompletionbox.h>
 #include <kconfig.h>
@@ -190,7 +190,7 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
 
 void AddressLineEdit::mouseReleaseEvent( QMouseEvent * e )
 {
-   if (m_useCompletion && (e->button() == MidButton))
+   if (m_useCompletion && (e->button() == Qt::MidButton))
    {
       m_smartPaste = true;
       KLineEdit::mouseReleaseEvent(e);
@@ -341,7 +341,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             QStringList items = s_completion->allMatches( s );
             items += s_completion->allMatches( "\"" + s );
             items += s_completion->substringCompletion( '<' + s );
-            uint beforeDollarCompletionCount = items.count();
+            int beforeDollarCompletionCount = items.count();
 
             if( s.find( ' ' ) == -1 ) // one word, possibly given name
                 items += s_completion->allMatches( "$$" + s );
@@ -489,7 +489,7 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
         // put name in quotes, if we have a comma in the name
         if (pos>0 && pos_comma>0 && pos_comma<pos) {
           name.insert(pos, '\"');
-          name.prepend('\"');
+          name.prepend(QLatin1Char('\"'));
         }
         addAddress( name );
     }
@@ -506,7 +506,7 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
 QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
 {
     QStringList src = adrs;
-    qHeapSort( src );
+    qSort( src );
     QString last;
     for( QStringList::Iterator it = src.begin(); it != src.end(); ) {
         if( *it == last )

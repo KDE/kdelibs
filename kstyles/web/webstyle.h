@@ -180,7 +180,7 @@ class WebStyle : public KStyle
        int h,
        const QColorGroup &,
        QCOORD, 
-       Orientation
+       Qt::Orientation
       );
 
     void drawArrow
@@ -205,7 +205,7 @@ class WebStyle : public KStyle
        int w, 
        int h,
        const QColorGroup &, 
-       Orientation,
+       Qt::Orientation,
        bool tickAbove, 
        bool tickBelow
       );
@@ -406,7 +406,7 @@ class WebStyle : public KStyle
 
     int popupMenuItemHeight(bool, QMenuItem *, const QFontMetrics &);
 
-    GUIStyle guiStyle() const { return Qt::MotifStyle; }
+    Qt::GUIStyle guiStyle() const { return Qt::MotifStyle; }
 
     bool eventFilter(QObject *, QEvent *);
 };

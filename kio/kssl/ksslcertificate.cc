@@ -36,7 +36,7 @@
 #include "ksslutils.h"
 
 #include <kstandarddirs.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <klocale.h>
 #include <qdatetime.h>
 #include <ktempfile.h>
@@ -60,7 +60,7 @@
 #endif
 
 #include <kopenssl.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <kdebug.h>
 #include "ksslx509v3.h"
 
@@ -141,7 +141,7 @@ return n;
 }
 
 
-KSSLCertificate *KSSLCertificate::fromString(QCString cert) {
+KSSLCertificate *KSSLCertificate::fromString(Q3CString cert) {
 KSSLCertificate *n = NULL;
 #ifdef KSSL_HAVE_SSL
 	if (cert.length() == 0)
@@ -209,8 +209,8 @@ int n, i;
 	for (i = 0; i < n; i++) {
 		if (i%20 != 0) rc += ":";
 		else rc += "\n";
-		rc.append(hv[(s[i]&0xf0)>>4]);
-		rc.append(hv[s[i]&0x0f]);
+		rc.append(QChar(hv[(s[i]&0xf0)>>4]));
+		rc.append(QChar(hv[s[i]&0x0f]));
 	}
 
 #endif
@@ -268,8 +268,8 @@ QString rc = "";
 	for (unsigned int j = 0; j < n; j++) {
 		if (j > 0)
 			rc += ":";
-		rc.append(hv[(md[j]&0xf0)>>4]);
-		rc.append(hv[md[j]&0x0f]);
+		rc.append(QChar(hv[(md[j]&0xf0)>>4]));
+		rc.append(QChar(hv[md[j]&0x0f]));
 	}
 
 #endif
@@ -291,8 +291,8 @@ QString rc = "";
 	}
 
 	for (unsigned int j = 0; j < n; j++) {
-		rc.append(hv[(md[j]&0xf0)>>4]);
-		rc.append(hv[md[j]&0x0f]);
+		rc.append(QLatin1Char(hv[(md[j]&0xf0)>>4]));
+		rc.append(QLatin1Char(hv[md[j]&0x0f]));
 	}
 
 #endif
@@ -354,7 +354,8 @@ char *x = NULL;
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.rsa->e);
-				rc += i18n("Exponent: 0x") + x + "\n";
+				rc += i18n("Exponent: 0x") + QLatin1String(x) +
+				  QLatin1String("\n");
 				d->kossl->OPENSSL_free(x);
 			}
 		#endif
@@ -1020,7 +1021,7 @@ KTempFile ktf;
 	ktf.close();
 
 	QFile qf(ktf.name());
-	qf.open(IO_ReadOnly);
+	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()];
 	qf.readBlock(buf, qf.size());
 	qba.duplicate(buf, qf.size());
@@ -1044,7 +1045,7 @@ KTempFile ktf;
 	ktf.close();
 
 	QFile qf(ktf.name());
-	qf.open(IO_ReadOnly);
+	qf.open(QIODevice::ReadOnly);
 	char *buf = new char[qf.size()+1];
 	qf.readBlock(buf, qf.size());
 	buf[qf.size()] = 0;
@@ -1057,9 +1058,9 @@ return text;
 }
 
 // KDE 4: Make it const QString &
-bool KSSLCertificate::setCert(QString& cert) {
+bool KSSLCertificate::setCert(const QString& cert) {
 #ifdef KSSL_HAVE_SSL
-QByteArray qba, qbb = cert.local8Bit().copy();
+        QByteArray qba, qbb = cert.local8Bit();
 	KCodecs::base64Decode(qbb, qba);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
 	X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
@@ -1113,7 +1114,7 @@ QStringList KSSLCertificate::subjAltNames() const {
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
 QStringList qsl;
-QPtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+Q3PtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
 
 	for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
 		qsl << c->toString();

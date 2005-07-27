@@ -6,7 +6,7 @@ endif
 
 SUBDIRS = . management lpdunix $(CUPSSUBDIR) lpr rlpr ext filters pics tools tests
 
-INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) -I$(top_srcdir)/kdecore/network $(all_includes)
 
 kde_module_LTLIBRARIES = kded_kdeprintd.la
 

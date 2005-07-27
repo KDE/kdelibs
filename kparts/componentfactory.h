@@ -60,7 +60,7 @@ namespace KParts
                                              const QStringList &args = QStringList() )
         {
             QObject *object = factory->create( parent, name,
-                                               T::staticMetaObject()->className(),
+                                               T::staticMetaObject.className(),
                                                args );
 
             T *result = dynamic_cast<T *>( object );
@@ -98,7 +98,7 @@ namespace KParts
         {
             KParts::Part *object = factory->createPart( parentWidget, widgetName,
                                                         parent, name,
-                                                        T::staticMetaObject()->className(),
+                                                        T::staticMetaObject.className(),
                                                         args );
 
             T *result = dynamic_cast<T *>( object );

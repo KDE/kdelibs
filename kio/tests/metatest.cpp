@@ -193,9 +193,8 @@ int main( int argc, char **argv )
 
     KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
 
-    QCString ov;
-    ov = args->getOption("mimetypeinfo");
-    if (ov)
+    QByteArray ov = args->getOption("mimetypeinfo");
+    if (!ov.isEmpty())
     {
         printMimeTypeInfo(ov);
         return 0;
@@ -218,19 +217,19 @@ int main( int argc, char **argv )
     QString group, item;
 
     ov = args->getOption("addgroup");
-    if (ov) addGroup(info, ov);
+    if (!ov.isEmpty()) addGroup(info, ov);
 
     ov = args->getOption("removegroup");
-    if (ov) removeGroup(info, ov);
+    if (!ov.isEmpty()) removeGroup(info, ov);
     
     ov = args->getOption("group");
-    if (ov) group = ov;
+    if (!ov.isEmpty()) group = ov;
 
     ov = args->getOption("item");
-    if (ov) item = ov;
+    if (!ov.isEmpty()) item = ov;
     
     ov = args->getOption("add");
-    if (ov && !group.isNull() && !item.isNull())
+    if (!ov.isEmpty() && !group.isNull() && !item.isNull())
     {
         KFileMetaInfoGroup g = info[group];
         if (!g.isValid() && args->isSet("autogroupadd"))
@@ -252,7 +251,7 @@ int main( int argc, char **argv )
     }
     
     ov = args->getOption("set");
-    if (ov && !group.isNull() && !item.isNull())
+    if (!ov.isEmpty() && !group.isNull() && !item.isNull())
     {
         if (info[group][item].setValue(QString(ov)))
             kdDebug() << "setValue success\n";
@@ -261,7 +260,7 @@ int main( int argc, char **argv )
     }
     
     ov = args->getOption("removeitem");
-    if (ov && !group.isNull())
+    if (!ov.isEmpty() && !group.isNull())
     {
         if (info[group].removeItem(ov))
             kdDebug() << "removeitem success\n";
@@ -311,7 +310,7 @@ int main( int argc, char **argv )
         QLabel* label = new QLabel(0);
         app.setMainWidget(label);
         QPixmap pix;
-        pix.convertFromImage(thumbitem.value().toImage());
+        pix.convertFromImage(thumbitem.value().value<QImage>());
         label->setPixmap(pix);
         label->show();
         app.exec();

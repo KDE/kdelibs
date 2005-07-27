@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this program; see the file COPYING.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef KWINDOW_INTERFACE_H
@@ -22,7 +22,7 @@
 
 #include <dcopobject.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <dcopref.h>
 
 class KDCOPActionProxy;
@@ -54,8 +54,8 @@ public:
 	**/
 	~KMainWindowInterface();
 
-	QCStringList functionsDynamic();
-	bool processDynamic(const QCString &fun, const QByteArray &data, QCString& replyType, QByteArray &replyData);
+	DCOPCStringList functionsDynamic();
+	bool processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData);
 
 
 k_dcop:
@@ -63,7 +63,7 @@ k_dcop:
 	Return a list of actions available to the application's window.
 	@return A QCStringList containing valid names actions.
 	*/
-	QCStringList actions();
+	DCOPCStringList actions();
 
 	/**
 	Activates the requested action.
@@ -71,7 +71,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool activateAction( QCString action);
+	bool activateAction( const DCOPCString& action);
 
 	/**
 	Disables the requested action.
@@ -79,7 +79,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool disableAction( QCString action);
+	bool disableAction( const DCOPCString& action);
 
 	/**
 	Enables the requested action.
@@ -87,7 +87,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool enableAction( QCString action);
+	bool enableAction( const DCOPCString& action);
 
 	/**
 	Returns the status of the requested action.
@@ -95,7 +95,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@returns The state of the action, true - enabled, false - disabled.
 	*/
-	bool actionIsEnabled( QCString action);
+	bool actionIsEnabled( const DCOPCString& action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -103,7 +103,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A QCString containing the text of the action's tool tip.
 	*/
-	QCString actionToolTip( QCString action);
+	DCOPCString actionToolTip( const DCOPCString& action);
 
 	/**
 	Returns a dcop reference to the selected KAction
@@ -111,12 +111,12 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A DCOPRef for the kaction.
 	**/
-	DCOPRef action( const QCString &name );
+	DCOPRef action( const DCOPCString& name );
 
 	/**
 	Returns and action map
 	**/
-    	QMap<QCString,DCOPRef> actionMap();
+  	QMap<DCOPCString,DCOPRef> actionMap();
 	/**
 	Returns the ID of the current main window.
 	This is useful for automated screen captures or other evil

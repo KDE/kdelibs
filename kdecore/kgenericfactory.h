@@ -62,7 +62,7 @@ protected:
     {
         if ( m_aboutData )
             return new KInstance( m_aboutData );
-        if ( !m_instanceName ) {
+        if ( m_instanceName.isNull() ) {
             kdWarning() << "KGenericFactory: instance requested but no instance name or about data passed to the constructor!" << endl;
             return 0;
         }
@@ -85,7 +85,7 @@ protected:
     }
 
 private:
-    QCString m_instanceName;
+    QByteArray m_instanceName;
     const KAboutData *m_aboutData;
     bool m_catalogueInitialized;
 

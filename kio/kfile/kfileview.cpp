@@ -55,7 +55,7 @@ public:
         }
     }
 
-    QGuardedPtr<KActionCollection> actions;
+    QPointer<KActionCollection> actions;
     int dropOptions;
 };
 
@@ -383,7 +383,7 @@ QString KFileView::sortingKey( const QString& value, bool isDir, int sortSpec )
     bool dirsFirst = sortSpec & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
     QString result = (sortSpec & QDir::IgnoreCase) ? value.lower() : value;
-    return result.prepend( start );
+    return result.prepend( QLatin1Char(start) );
 }
 
 QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
@@ -391,7 +391,7 @@ QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
     bool reverse = sortSpec & QDir::Reversed;
     bool dirsFirst = sortSpec & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
-    return KIO::number( value ).rightJustify( 24, '0' ).prepend( start );
+    return KIO::number( value ).rightJustify( 24, '0' ).prepend( QLatin1Char(start) );
 }
 
 void KFileView::setDropOptions(int options)

@@ -26,9 +26,9 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
-#include <qshared.h>
+#include <q3shared.h>
 #include <qdatastream.h>
 #include <qvariant.h>
 
@@ -48,7 +48,7 @@ class KIO_EXPORT KServiceType : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef QValueList<Ptr> List;
+  typedef Q3ValueList<Ptr> List;
 public:
 
   /**

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <stdlib.h>
 #include <kdebug.h>
@@ -21,7 +23,10 @@ bool check(QString txt, time_t a, time_t b)
 
 int main(int argc, char *argv[])
 {
-  KApplication app(argc,argv,"kurltest",false,false);
+  KAboutData about("krfcdatetest", "krfcdatetest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app(false,false);
 
   time_t a;
   time_t b;

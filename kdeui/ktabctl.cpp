@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 /**
@@ -28,13 +28,14 @@
 #include <qpushbutton.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <QResizeEvent>
 
 #include "ktabctl.h"
 
 KTabCtl::KTabCtl(QWidget *parent, const char *name)
     : QWidget(parent, name)
 {
-    tabs = new QTabBar(this, "_tabbar");
+    tabs = new QTabBar(this);
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));
     tabs->move(2, 1);
 
@@ -56,8 +57,8 @@ void KTabCtl::resizeEvent(QResizeEvent *)
         for (i=0; i<(int)pages.size(); i++) {
             pages[i]->setGeometry(r);
         }
-        if( ( tabs->shape() == QTabBar::RoundedBelow ) ||
-            ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+        if( ( tabs->shape() == QTabBar:: RoundedSouth ) ||
+            ( tabs->shape() == QTabBar:: TriangularSouth ) ) {
             tabs->move( 0, height()-tabs->height()-4 );
         }
     }
@@ -257,7 +258,7 @@ void KTabCtl::paintEvent(QPaintEvent *)
     p.drawLine(x0, y0, x1 - 1, y0);      /* 2nd top line */
     p.setPen(colorGroup().light());
     p.drawLine(x0, y0 + 1, x0, y1);      /* left line */
-    p.setPen(black);
+    p.setPen(Qt::black);
     p.drawLine(x1, y1, x0, y1);          /* bottom line */
     p.drawLine(x1, y1 - 1, x1, y0);
     p.setPen(colorGroup().dark());
@@ -273,8 +274,8 @@ void KTabCtl::paintEvent(QPaintEvent *)
 
 QRect KTabCtl::getChildRect() const
 {
-    if( ( tabs->shape() == QTabBar::RoundedBelow ) ||
-        ( tabs->shape() == QTabBar::TriangularBelow ) ) {
+    if( ( tabs->shape() == QTabBar:: RoundedSouth ) ||
+        ( tabs->shape() == QTabBar:: TriangularSouth ) ) {
     	return QRect(2, 1, width() - 4,
 		     height() - tabs->height() - 4);
     } else {
@@ -318,10 +319,11 @@ void KTabCtl::showTab(int i)
 
 void KTabCtl::addTab(QWidget *w, const QString& name)
 {
-    QTab *t = new QTab();
+/*    QTab *t = new QTab();
     t->setText( name );
-    t->setEnabled( true );
-    int id = tabs->addTab(t);   /* add the tab itself to the tabbar */
+    t->setEnabled( true );*/
+    int id = tabs->addTab(name);   /* add the tab itself to the tabbar */
+	tabs->setTabEnabled( id, true );
     if (id == (int)pages.size()) {
 	pages.resize(id + 1);
         pages[id] = w;          /* remember the widget to manage by this tab */

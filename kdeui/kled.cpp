@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 
@@ -53,7 +53,7 @@ KLed::KLed(QWidget *parent, const char *name)
     led_look(Raised),
     led_shape(Circular)
 {
-  QColor col(green);
+  QColor col(Qt::green);
   d = new KLed::KLedPrivate;
   d->dark_factor = 300;
   d->offcolor = col.dark(300);
@@ -225,7 +225,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
 
     // Set the brush to SolidPattern, this fills the entire area
     // of the ellipse which is drawn with a thin gray "border" (pen)
-    brush.setStyle( QBrush::SolidPattern );
+    brush.setStyle( Qt::SolidPattern );
     brush.setColor( color );
 
     pen.setWidth( scale );
@@ -280,7 +280,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
 
     // Set the brush to SolidPattern, this fills the entire area
     // of the ellipse which is drawn first
-    brush.setStyle( QBrush::SolidPattern );
+    brush.setStyle( Qt::SolidPattern );
     brush.setColor( color );
     paint.setBrush( brush );		// Assign the brush to the painter
 
@@ -328,7 +328,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     color = colorGroup().dark();
     pen.setColor( color );			// Set the pen accordingly
     paint.setPen( pen );			// Select pen for drawing
-    brush.setStyle( QBrush::NoBrush );		// Switch off the brush
+    brush.setStyle( Qt::NoBrush );		// Switch off the brush
     paint.setBrush( brush );			// This avoids filling of the ellipse
 
     paint.drawEllipse( 2, 2, width, width );
@@ -376,7 +376,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 
     // Set the brush to SolidPattern, this fills the entire area
     // of the ellipse which is drawn first
-    brush.setStyle( QBrush::SolidPattern );
+    brush.setStyle( Qt::SolidPattern );
     brush.setColor( color );
     paint.setBrush( brush );                // Assign the brush to the painter
 
@@ -421,7 +421,7 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     // from the upper left.
 
     pen.setWidth( 2 * scale + 1 ); // ### shouldn't this value be smaller for smaller LEDs?
-    brush.setStyle( QBrush::NoBrush );              // Switch off the brush
+    brush.setStyle( Qt::NoBrush );              // Switch off the brush
     paint.setBrush( brush );                        // This avoids filling of the ellipse
 
     // Set the initial color value to colorGroup().light() (bright) and start
@@ -494,24 +494,24 @@ KLed::paintRectFrame(bool raised)
   QBrush darkBrush(d->offcolor);
   int w=width();
   int h=height();
-  QColor black=Qt::black;
-  QColor white=Qt::white;
+  QColor Qt::black=Qt::black;
+  QColor Qt::white=Qt::white;
   // -----
   if(raised)
     {
-      painter.setPen(white);
+      painter.setPen(Qt::white);
       painter.drawLine(0, 0, 0, h-1);
       painter.drawLine(1, 0, w-1, 0);
-      painter.setPen(black);
+      painter.setPen(Qt::black);
       painter.drawLine(1, h-1, w-1, h-1);
       painter.drawLine(w-1, 1, w-1, h-1);
       painter.fillRect(1, 1, w-2, h-2,
        		       (led_state==On)? lightBrush : darkBrush);
     } else {
-      painter.setPen(black);
+      painter.setPen(Qt::black);
       painter.drawRect(0,0,w,h);
       painter.drawRect(0,0,w-1,h-1);
-      painter.setPen(white);
+      painter.setPen(Qt::white);
       painter.drawRect(1,1,w-1,h-1);
       painter.fillRect(2, 2, w-4, h-4,
 		       (led_state==On)? lightBrush : darkBrush);
@@ -552,11 +552,6 @@ KLed::setState( State state )
     }
 }
 
-void
-KLed::toggleState()
-{
-  toggle();
-}
 
 void
 KLed::setShape(KLed::Shape s)

@@ -1,12 +1,18 @@
 #include "kdatewidget.h"
 #include <qlineedit.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klocale.h>
 
 int main(int argc, char** argv)
 {
   KLocale::setMainCatalogue("kdelibs");
-  KApplication app(argc, argv, "KDateWidgettest");
+  KAboutData about("KDateWidgettest", "KDateWidgettest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
+
   KDateWidget dateWidget;
   app.setMainWidget(&dateWidget);
   dateWidget.show();

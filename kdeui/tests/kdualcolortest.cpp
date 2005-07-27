@@ -1,5 +1,7 @@
 #include "kdualcolortest.h"
 #include <kdualcolorbutton.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <qlayout.h>
@@ -36,7 +38,7 @@ void KDualColorWidget::slotFgChanged(const QColor &c)
 void KDualColorWidget::slotBgChanged(const QColor &c)
 {
     QPalette p = lbl->palette();
-    QBrush b(c, SolidPattern);
+    QBrush b(c, Qt::SolidPattern);
     p.setBrush(QColorGroup::Background, b);
     setPalette(p);
 }
@@ -51,7 +53,11 @@ void KDualColorWidget::slotCurrentChanged(KDualColorButton::DualColor current)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "KDualColorTest");
+    KAboutData about("KDualColorTest", "KDualColorTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication *app=new KApplication();
+
     KDualColorWidget w;
     app->setMainWidget(&w);
     w.show();

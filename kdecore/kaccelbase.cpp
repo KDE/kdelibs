@@ -22,9 +22,9 @@
 
 #include "kaccelbase.h"
 
-#include <qkeycode.h>
+#include <qnamespace.h>
 #include <qlabel.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include <kconfig.h>
 #include "kckey.h"
@@ -250,7 +250,7 @@ struct KAccelBase::X
 	X( uint _iAction, uint _iSeq, uint _iVari, const KKeyServer::Key& _key )
 		{ iAction = _iAction; iSeq = _iSeq; iVari = _iVari; key = _key; }
 
-	int compare( const X& x )
+	int compare( const X& x ) const
 	{
 		int n = key.compare( x.key );
 		if( n != 0 )           return n;
@@ -259,9 +259,9 @@ struct KAccelBase::X
 		return 0;
 	}
 
-	bool operator <( const X& x )  { return compare( x ) < 0; }
-	bool operator >( const X& x )  { return compare( x ) > 0; }
-	bool operator <=( const X& x ) { return compare( x ) <= 0; }
+	bool operator <( const X& x ) const  { return compare( x ) < 0; }
+	bool operator >( const X& x ) const  { return compare( x ) > 0; }
+	bool operator <=( const X& x ) const { return compare( x ) <= 0; }
 };
 #endif //Q_WS_X11
 
@@ -313,12 +313,12 @@ bool KAccelBase::updateConnections()
 	kdDebug(125) << "KAccelBase::updateConnections()  this = " << this << endl;
 	// Retrieve the list of keys to be connected, sorted by priority.
 	//  (key, variation, seq)
-	QValueVector<X> rgKeys;
+	Q3ValueVector<X> rgKeys;
 	createKeyList( rgKeys );
 	m_rgActionsNonUnique.clear();
 
 	KKeyToActionMap mapKeyToAction;
-	for( uint i = 0; i < rgKeys.size(); i++ ) {
+	for( int i = 0; i < rgKeys.size(); i++ ) {
 		X& x = rgKeys[i];
 		KKeyServer::Key& key = x.key;
 		ActionInfo info;
@@ -414,7 +414,7 @@ bool KAccelBase::updateConnections()
 
 #ifdef Q_WS_X11
 // Construct a list of keys to be connected, sorted highest priority first.
-void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
+void KAccelBase::createKeyList( Q3ValueVector<struct X>& rgKeys )
 {
 	//kdDebug(125) << "KAccelBase::createKeyList()" << endl;
 	if( !m_bEnabled )
@@ -444,7 +444,7 @@ void KAccelBase::createKeyList( QValueVector<struct X>& rgKeys )
 	}
 
 	// sort by priority: iVariation[of first key], iSequence, iAction
-	qHeapSort( rgKeys.begin(), rgKeys.end() );
+	qSort( rgKeys.begin(), rgKeys.end() );
 }
 #endif //Q_WS_X11
 
@@ -571,7 +571,7 @@ void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 	m_rgActions.writeActions( m_sConfigGroup, pConfig, m_bConfigIsGlobal, m_bConfigIsGlobal );
 }
 
-QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
+Q3PopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 {
 	KShortcutMenu* pMenu = new KShortcutMenu( pParent, &actions(), seq );
 

@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "config.h"
@@ -41,7 +41,7 @@ struct KScrollView::KScrollViewPrivate {
 };
 
 KScrollView::KScrollView( QWidget *parent, const char *name, Qt::WFlags f )
-    : QScrollView( parent, name, f )
+    : Q3ScrollView( parent, name, f )
 {
     d = new KScrollViewPrivate;
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(scrollTick()));
@@ -56,7 +56,7 @@ void KScrollView::scrollBy(int dx, int dy)
 {
     KConfigGroup cfg( KGlobal::config(), "KDE" );
     if( !cfg.readBoolEntry( "SmoothScrolling", true )) {
-        QScrollView::scrollBy( dx, dy );
+        Q3ScrollView::scrollBy( dx, dy );
         return;
     }
     // scrolling destination
@@ -156,7 +156,7 @@ void KScrollView::scrollTick() {
     d->dy -= ddy;
 
 //    QScrollView::setContentsPos( contentsX() + ddx, contentsY() + ddy);
-    QScrollView::scrollBy(ddx, ddy);
+    Q3ScrollView::scrollBy(ddx, ddy);
 }
 
 void KScrollView::startScrolling()
@@ -178,7 +178,7 @@ void KScrollView::wheelEvent( QWheelEvent *e )
     int pageStep = verticalScrollBar()->pageStep();
     int lineStep = verticalScrollBar()->lineStep();
     int step = QMIN( QApplication::wheelScrollLines()*lineStep, pageStep );
-    if ( ( e->state() & ControlButton ) || ( e->state() & ShiftButton ) )
+    if ( ( e->state() & Qt::ControlModifier ) || ( e->state() & Qt::ShiftModifier ) )
         step = pageStep;
 
     int dy = (e->delta()*step)/120;

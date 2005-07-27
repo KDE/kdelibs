@@ -24,7 +24,8 @@
 #include <qmap.h>
 #include <qradiobutton.h>
 #include <qcombobox.h>
-#include <qdict.h>
+#include <q3dict.h>
+#include <q3buttongroup.h>
 
 #include <kdialogbase.h>
 #include <kresources/configwidget.h>
@@ -85,10 +86,10 @@ class AttributesDialog : public KDialogBase
     enum { UserMap, KolabMap, NetscapeMap, EvolutionMap, OutlookMap };
 
     KComboBox *mMapCombo, *mRDNCombo;
-    QValueList< QMap<QString, QString> > mMapList;
+    Q3ValueList< QMap<QString, QString> > mMapList;
     QMap<QString, QString> mDefaultMap;
-    QDict<KLineEdit> mLineEditDict;
-    QDict<QString> mNameDict;
+    Q3Dict<KLineEdit> mLineEditDict;
+    Q3Dict<QString> mNameDict;
 };
 
 class OfflineDialog : public KDialogBase
@@ -109,7 +110,7 @@ class OfflineDialog : public KDialogBase
   private:
     KURL mSrc;
     QString mDst;
-    QButtonGroup *mCacheGroup;
+    Q3ButtonGroup *mCacheGroup;
     QCheckBox *mAutoCache;
 };
 

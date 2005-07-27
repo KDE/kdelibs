@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 #ifndef LPDTOOLS_H
 #define LPDTOOLS_H
 
 #include <qstring.h>
 #include <qmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtextstream.h>
 
 class KMLpdManager;
@@ -65,8 +65,8 @@ public:
 	DrMain* createDriver();
 private:
 	QString			m_name, m_gsdriver, m_description, m_about;
-	QPtrList<Resolution>	m_resolutions;
-	QPtrList<BitsPerPixel>	m_depths;
+	Q3PtrList<Resolution>	m_resolutions;
+	Q3PtrList<BitsPerPixel>	m_depths;
 };
 
 //*****************************************************************************************************

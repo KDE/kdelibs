@@ -26,7 +26,7 @@
 #include <qtextcodec.h>
 #include <qfileinfo.h>
 #include <kprocess.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 extern int xmlLoadExtDtdDefaultValue;
 
@@ -35,7 +35,7 @@ public:
     QString word;
     int base;};
 
-typedef QValueList<MyPair> PairList;
+typedef Q3ValueList<MyPair> PairList;
 
 void parseEntry(PairList &list, xmlNodePtr cur, int base)
 {
@@ -182,17 +182,17 @@ int main(int argc, char **argv) {
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
 
-    QValueVector<const char *> params;
+    Q3ValueVector<const char *> params;
     if (args->isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );
         params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).latin1() ) );
     }
     {
-        const QCStringList paramList = args->getOptionList( "param" );
-        QCStringList::ConstIterator it = paramList.begin();
-        QCStringList::ConstIterator end = paramList.end();
+        const QByteArrayList paramList = args->getOptionList( "param" );
+        QByteArrayList::ConstIterator it = paramList.begin();
+        QByteArrayList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
-            const QCString tuple = *it;
+            const Q3CString tuple = *it;
             const int ch = tuple.find( '=' );
             if ( ch == -1 ) {
                 kdError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
@@ -267,17 +267,17 @@ int main(int argc, char **argv) {
         {
             QFile file;
             if (args->isSet( "stdout" ) ) {
-                file.open( IO_WriteOnly, stdout );
+                file.open( QIODevice::WriteOnly, stdout );
             } else {
                 if (args->isSet( "output" ) )
                    file.setName( QFile::decodeName(args->getOption( "output" )));
                 else
                    file.setName( "index.html" );
-                file.open(IO_WriteOnly);
+                file.open(QIODevice::WriteOnly);
             }
             replaceCharsetHeader( output );
 
-            QCString data = output.local8Bit();
+            Q3CString data = output.local8Bit();
             file.writeBlock(data.data(), data.length());
             file.close();
         } else {
@@ -294,9 +294,9 @@ int main(int argc, char **argv) {
 
                 QString filedata = splitOut(output, index);
                 QFile file(filename);
-                file.open(IO_WriteOnly);
+                file.open(QIODevice::WriteOnly);
                 replaceCharsetHeader( filedata );
-                QCString data = fromUnicode( filedata );
+                Q3CString data = fromUnicode( filedata );
                 file.writeBlock(data.data(), data.length());
                 file.close();
 

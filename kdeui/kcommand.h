@@ -14,21 +14,21 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qobject.h>
 #include <kdelibs_export.h>
 
 class KAction;
 class KActionCollection;
-class QPopupMenu;
+class Q3PopupMenu;
 
 /**
  * The abstract base class for all Commands. Commands are used to
@@ -137,7 +137,7 @@ public:
     virtual void unexecute();
 
 protected:
-    QPtrList<KCommand> m_commands;
+    Q3PtrList<KCommand> m_commands;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
@@ -274,9 +274,9 @@ signals:
 private:
     void clipCommands();  // ensures that the limits are kept
 
-    QPtrList<KCommand> m_commands;
+    Q3PtrList<KCommand> m_commands;
     KAction *m_undo, *m_redo;
-    QPopupMenu *m_undoPopup, *m_redoPopup;
+    Q3PopupMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;
     bool m_first;  // attention: it's the first command in the list!
 protected:

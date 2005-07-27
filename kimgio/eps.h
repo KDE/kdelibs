@@ -2,10 +2,22 @@
 #ifndef _EPS_H
 #define _EPS_H
 
-extern "C" {
-void kimgio_eps_read (QImageIO *image);
-void kimgio_eps_write (QImageIO *image);
-}
+
+#include <QImageIOHandler>
+
+class EPSHandler : public QImageIOHandler
+{
+public:
+    EPSHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif
 

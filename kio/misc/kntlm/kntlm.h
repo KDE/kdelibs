@@ -21,7 +21,7 @@
 #define KNTLM_H
 
 #include <qglobal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>

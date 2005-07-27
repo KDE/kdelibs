@@ -25,7 +25,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <karchive.h>
 
@@ -81,7 +81,7 @@ public:
      * for instance. Should only be called if the underlying device is a KFilterDev!
      * @param fileName the original file name
      */
-    void setOrigFileName( const QCString & fileName );
+    void setOrigFileName( const QByteArray & fileName );
 
     // TODO(BIC) make virtual. For now it must be implemented by virtual_hook.
     bool writeSymLink(const QString &name, const QString &target,
@@ -105,7 +105,7 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      * @param mode the mode of the file
      */
-    virtual bool openArchive( int mode );
+    virtual bool openArchive( QIODevice::OpenMode mode );
     virtual bool closeArchive();
 
 private:
@@ -135,11 +135,11 @@ private:
      * @p uname user name
      * @p gname group name
      */
-    void writeLonglink(char *buffer, const QCString &name, char typeflag,
+    void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
 			const char *uname, const char *gname);
 
     Q_LONG readRawHeader(char *buffer);
-    bool readLonglink(char *buffer,QCString &longlink);
+    bool readLonglink(char *buffer,QByteArray &longlink);
     Q_LONG readHeader(char *buffer,QString &name,QString &symlink);
 
     QString m_filename;

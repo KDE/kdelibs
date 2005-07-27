@@ -13,24 +13,26 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "posterpreview.h"
 
 #include <kprocess.h>
 #include <qpainter.h>
-#include <qsimplerichtext.h>
+#include <q3simplerichtext.h>
 #include <qtimer.h>
 #include <qpixmap.h>
 #include <kprinter.h>
 #include <klocale.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
+#include <QMouseEvent>
+#include <stdio.h>
 
 PosterPreview::PosterPreview( QWidget *parent, const char *name )
-	: QFrame( parent, name )
+	: Q3Frame( parent, name )
 {
 	m_postersize = m_mediasize = "A4";
 	m_cutmargin = 5;
@@ -38,7 +40,7 @@ PosterPreview::PosterPreview( QWidget *parent, const char *name )
 }
 
 PosterPreview::PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent, const char *name )
-	: QFrame( parent, name )
+	: Q3Frame( parent, name )
 {
 	m_postersize = postersize;
 	m_mediasize = mediasize;
@@ -69,8 +71,7 @@ void PosterPreview::parseBuffer()
 	int rotate;
 	float pw, ph, mw, mh;
 	float x1, x2, y1, y2;
-	sscanf( m_buffer.ascii(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate,
-			&pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
+	sscanf( m_buffer.ascii(), "%d %d %d %g %g %g %g %g %g %g %g", &m_rows, &m_cols, &rotate, &pw, &ph, &mw, &mh, &x1, &y1, &x2, &y2 );
 	m_pw = ( int )( rotate ? ph : pw );
 	m_ph = ( int )( rotate ? pw : ph );
 	m_mw = ( int )( rotate ? mh : mw );
@@ -115,7 +116,7 @@ void PosterPreview::drawContents( QPainter *painter )
 			QString txt = i18n( "Poster preview not available. Either the <b>poster</b> "
 				          "executable is not properly installed, or you don't have "
 						  "the required version; available at http://printing.kde.org/downloads/." );
-			QSimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), p->font() );
+			Q3SimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), p->font() );
 			richtext.adjustSize();
 			int x = ( width()-richtext.widthUsed() )/2, y = ( height()-richtext.height() )/2;
 			x = QMAX( x, 0 );
@@ -140,11 +141,11 @@ void PosterPreview::drawContents( QPainter *painter )
 				for ( int j=0; j<m_cols; j++, x+=m_pw )
 				{
 					bool selected = ( m_selectedpages.find( i*m_cols+j+1 ) != m_selectedpages.end() );
-					p->fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : white ) );
+					p->fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : Qt::white ) );
 					p->drawRect( x, y, m_pw, m_ph );
 					if ( pw > 0 && ph > 0 )
 						p->fillRect( x+m_mw+px, y+m_mh+py, QMIN( pw, m_pw-2*m_mw-px ), QMIN( ph, m_ph-2*m_mh-py ),
-								( selected ? KGlobalSettings::highlightColor().dark( 160 ) : lightGray ) );
+								( selected ? KGlobalSettings::highlightColor().dark( 160 ) : Qt::lightGray ) );
 					p->setPen( Qt::DotLine );
 					p->drawRect( x+m_mw, y+m_mh, m_pw-2*m_mw, m_ph-2*m_mh );
 					p->setPen( Qt::SolidLine );
@@ -188,9 +189,9 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 			int pagenum = ( r-1 )*m_cols+c;
 
 			if ( m_selectedpages.find( pagenum ) == m_selectedpages.end() ||
-					!( e->state() & Qt::ShiftButton ) )
+					!( e->state() & Qt::ShiftModifier ) )
 			{
-				if ( !( e->state() & Qt::ShiftButton ) )
+				if ( !( e->state() & Qt::ShiftModifier ) )
 					m_selectedpages.clear();
 				m_selectedpages.append( pagenum );
 				update();
@@ -208,7 +209,7 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 
 void PosterPreview::slotProcessStderr( KProcess*, char *buf, int len )
 {
-	m_buffer.append( QCString( buf, len ) );
+	m_buffer.append( Q3CString( buf, len ) );
 }
 
 void PosterPreview::slotProcessExited( KProcess* )
@@ -284,7 +285,7 @@ void PosterPreview::emitSelectedPages()
 	QString s;
 	if ( m_selectedpages.count() > 0 )
 	{
-		for ( QValueList<int>::ConstIterator it=m_selectedpages.begin(); it!=m_selectedpages.end(); ++it )
+		for ( Q3ValueList<int>::ConstIterator it=m_selectedpages.begin(); it!=m_selectedpages.end(); ++it )
 			s.append( QString::number( *it ) + "," );
 		s.truncate( s.length()-1 );
 	}

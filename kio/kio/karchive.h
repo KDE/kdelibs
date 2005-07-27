@@ -27,7 +27,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kdelibs_export.h>
 
@@ -58,7 +58,7 @@ public:
      * @param mode may be IO_ReadOnly or IO_WriteOnly
      * @see close
      */
-    virtual bool open( int mode );
+    virtual bool open( QIODevice::OpenMode mode );
 
     /**
      * Closes the archive.
@@ -281,7 +281,7 @@ protected:
      * Called by open.
      * @param mode may be IO_ReadOnly or IO_WriteOnly
      */
-    virtual bool openArchive( int mode ) = 0;
+    virtual bool openArchive( QIODevice::OpenMode mode ) = 0;
 
     /**
      * Closes the archive.
@@ -629,7 +629,7 @@ public:
      void copyTo(const QString& dest, bool recursive = true) const;
 
 private:
-    QDict<KArchiveEntry> m_entries;
+    Q3Dict<KArchiveEntry> m_entries;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

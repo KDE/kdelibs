@@ -37,7 +37,7 @@ public:
 
 	static std::string getString(QDataStream &stream)
 	{
-		QCString s;
+		Q3CString s;
 		stream << s;
 
 		return std::string(s);

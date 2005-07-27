@@ -47,10 +47,10 @@ public:
 
     virtual void layout();
 
-    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
+    virtual void updatePixmap( const QRect&, CachedImage *);
 
     // don't even think about making these methods virtual!
-    QPixmap pixmap() const;
+    //QPixmap pixmap() const;
     DOM::HTMLElementImpl* element() const
     { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
 
@@ -83,7 +83,7 @@ private:
     /*
      * Cache for images that need resizing
      */
-    QPixmap resizeCache;
+    //QPixmap resizeCache;
 
     // text to display as long as the image isn't available
     DOM::DOMString alt;

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -38,7 +38,7 @@ class KHttpProxySocketDevicePrivate;
  * This class derives from @ref KSocketDevice and implements the necessary
  * calls to make a connection through an HTTP proxy.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KHttpProxySocketDevice: public KSocketDevice
 {

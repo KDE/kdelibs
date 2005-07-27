@@ -29,7 +29,7 @@ void test_block( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     if (!dev) { kdWarning() << "dev=0" << endl; return; }
-    if ( !dev->open( IO_ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
+    if ( !dev->open( QIODevice::ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
 
     // This is what KGzipDev::readAll could do, if QIODevice::readAll was virtual....
 
@@ -52,9 +52,9 @@ void test_block_write( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     if (!dev) { kdWarning() << "dev=0" << endl; return; }
-    if ( !dev->open( IO_WriteOnly ) ) { kdWarning() << "open failed " << endl; return; }
+    if ( !dev->open( QIODevice::WriteOnly ) ) { kdWarning() << "open failed " << endl; return; }
 
-    QCString s("hello\n");
+    Q3CString s("hello\n");
     int ret = dev->writeBlock( s, s.size()-1 );
     kdDebug() << "writeBlock ret=" << ret << endl;
     //ret = dev->writeBlock( s, s.size()-1 );
@@ -67,7 +67,7 @@ void test_getch( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     if (!dev) { kdWarning() << "dev=0" << endl; return; }
-    if ( !dev->open( IO_ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
+    if ( !dev->open( QIODevice::ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
     int ch;
     while ( ( ch = dev->getch() ) != -1 )
         printf("%c",ch);
@@ -79,7 +79,7 @@ void test_textstream(  const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
     if (!dev) { kdWarning() << "dev=0" << endl; return; }
-    if ( !dev->open( IO_ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
+    if ( !dev->open( QIODevice::ReadOnly ) ) { kdWarning() << "open failed " << endl; return; }
     QTextStream ts( dev );
     printf("%s\n", ts.read().latin1());
     dev->close();

@@ -22,8 +22,8 @@
 #ifndef kfile_tree_branch_h
 #define kfile_tree_branch_h
 
-#include <qdict.h>
-#include <qlistview.h>
+#include <q3dict.h>
+#include <q3listview.h>
 
 #include <kfileitem.h>
 #include <kio/global.h>
@@ -201,7 +201,7 @@ private slots:
 
 private:
    KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
-   static void           deleteChildrenOf( QListViewItem *parent );
+   static void           deleteChildrenOf( Q3ListViewItem *parent );
 
    KFileTreeViewItem 	*m_root;
    KURL 		m_startURL;
@@ -231,12 +231,12 @@ private:
 /**
  * List of KFileTreeBranches
  */
-typedef QPtrList<KFileTreeBranch> KFileTreeBranchList;
+typedef Q3PtrList<KFileTreeBranch> KFileTreeBranchList;
 
 /**
  * Iterator for KFileTreeBranchLists
  */
-typedef QPtrListIterator<KFileTreeBranch> KFileTreeBranchIterator;
+typedef Q3PtrListIterator<KFileTreeBranch> KFileTreeBranchIterator;
 
 #endif
 

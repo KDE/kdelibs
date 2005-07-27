@@ -20,7 +20,7 @@
 
 #include <qpair.h>
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdebug.h>
 #include <kstaticdeleter.h>
@@ -55,7 +55,7 @@
 #ifdef KSSL_HAVE_SSL
 
 typedef QPair<QString,QString> KSSLCSession;
-typedef QPtrList<KSSLCSession> KSSLCSessions;
+typedef Q3PtrList<KSSLCSession> KSSLCSessions;
 
 static KSSLCSessions *sessions = 0L;
 static KStaticDeleter<KSSLCSessions> med;

@@ -260,7 +260,7 @@ static inline int getValueID(const char *tagStr, int len)
 typedef union YYSTYPE {
     CSSRuleImpl *rule;
     CSSSelector *selector;
-    QPtrList<CSSSelector> *selectorList;
+    Q3PtrList<CSSSelector> *selectorList;
     bool ok;
     MediaListImpl *mediaList;
     CSSMediaRuleImpl *mediaRule;
@@ -1844,7 +1844,7 @@ yyreduce:
 
     {
 	if ( yyvsp[0].selector ) {
-	    yyval.selectorList = new QPtrList<CSSSelector>;
+	    yyval.selectorList = new Q3PtrList<CSSSelector>;
             yyval.selectorList->setAutoDelete( true );
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;

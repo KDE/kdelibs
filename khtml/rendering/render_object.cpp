@@ -46,8 +46,10 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <qpainter.h>
+#include <q3pointarray.h>
 #include "khtmlview.h"
 #include <khtml_part.h>
+#include <QBitmap>
 
 #include <assert.h>
 using namespace DOM;
@@ -488,11 +490,12 @@ bool RenderObject::hasStaticY() const
     return (style()->top().isVariable() && style()->bottom().isVariable()) || style()->top().isStatic();
 }
 
-void RenderObject::setPixmap(const QPixmap&, const QRect& /*r*/, CachedImage* image)
+void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
 {
+#warning "FIXME: Check if complete!"
     //repaint bg when it finished loading
     if(image && parent() && style() && style()->backgroundImage() == image
-       && image->valid_rect().size() == image->pixmap_size() ) {
+       /* && image->valid_rect().size() == image->pixmap_size()*/ ) {
         isBody() ? canvas()->repaint() : repaint();
     }
 }
@@ -701,7 +704,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     if(!c.isValid()) {
         if(invalidisInvert)
         {
-            p->setRasterOp(Qt::XorROP);
+            p->setCompositionMode(QPainter::CompositionMode_Xor);
             c = Qt::white;
         }
         else {
@@ -719,47 +722,59 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case BNONE:
     case BHIDDEN:
         // should not happen
-        if(invalidisInvert && p->rasterOp() == Qt::XorROP)
-            p->setRasterOp(Qt::CopyROP);
+        if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+            p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
         return;
     case DOTTED:
-        if ( width == 1 ) {
-            // workaround Qt brokenness
-            p->setPen(QPen(c, width, Qt::SolidLine));
-            switch(s) {
-            case BSBottom:
-            case BSTop:
-                for ( ; x1 < x2; x1 += 2 )
-                    p->drawPoint( x1, y1 );
-                break;
-            case BSRight:
-            case BSLeft:
-                for ( ; y1 < y2; y1 += 2 )
-                    p->drawPoint( x1, y1 );
+    case DASHED: 
+    {
+        //Figure out on/off spacing
+        int onLen  = width;
+        int offLen = width;
+
+        if (style == DASHED)
+        {
+            if (width == 1)
+            {
+                onLen  = 3;
+                offLen = 3;
             }
-            break;
+            else
+            {
+                onLen  = width  * 3;
+                offLen = width;
+            }
+        }
+        
+        //Make the mask pixmap.
+        QBitmap mask;
+        if (s == BSBottom || s == BSTop) //Horizontal
+        {
+            mask = QBitmap(onLen + offLen, width);
+            QPainter pmask(&mask);
+            pmask.fillRect(0,     0, onLen  + 1, width + 1, Qt::color1);
+            pmask.fillRect(onLen, 0, offLen + 1, width + 1, Qt::color0);
+        }
+        else //Vertical
+        {
+            mask = QBitmap(width, onLen + offLen);
+            QPainter pmask(&mask);
+            pmask.fillRect(0, 0,     width + 1, onLen  + 1, Qt::color1);
+            pmask.fillRect(0, onLen, width + 1, offLen + 1, Qt::color0);
         }
 
-        p->setPen(QPen(c, width, Qt::DotLine));
-        /* nobreak; */
-    case DASHED:
-        if(style == DASHED)
-            p->setPen(QPen(c, width == 1 ? 0 : width, width == 1 ? Qt::DotLine : Qt::DashLine));
+        //Make a drawing pixmap.
+        QPixmap drawTile(mask.size());
+        QPainter fillDrawTile(&drawTile);
+        fillDrawTile.fillRect(0, 0, drawTile.width(), drawTile.height(), c);
+        fillDrawTile.end();
+        drawTile.setMask(mask);
 
-        if (width > 0)
-            switch(s) {
-            case BSBottom:
-            case BSTop:
-                p->drawLine(x1, (y1+y2)/2, x2, (y1+y2)/2);
-                break;
-            case BSRight:
-            case BSLeft:
-                p->drawLine((x1+x2)/2, y1, (x1+x2)/2, y2);
-                break;
-            }
-
+        //Finally paint the line
+        p->drawTiledPixmap(x1, y1, x2 - x1, y2 - y1, drawTile);
         break;
+    }
     case DOUBLE:
     {
         int third = (width+1)/3;
@@ -882,7 +897,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
             p->drawRect(x1,y1,x2-x1,y2-y1);
             return;
         }
-        QPointArray quad(4);
+        Q3PointArray quad(4);
         switch(s) {
         case BSTop:
             quad.setPoints(4,
@@ -917,8 +932,8 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         break;
     }
 
-    if(invalidisInvert && p->rasterOp() == Qt::XorROP)
-        p->setRasterOp(Qt::CopyROP);
+    if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+        p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 }
 
 void RenderObject::paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin, bool end)
@@ -1067,7 +1082,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, 
 QString RenderObject::information() const
 {
     QString str;
-    QTextStream ts( &str, IO_WriteOnly );
+    QTextStream ts( &str, QIODevice::WriteOnly );
     ts << renderName()
         << "(" << (style() ? style()->refCount() : 0) << ")"
        << ": " << (void*)this << "  ";
@@ -1922,7 +1937,7 @@ int RenderObject::maximalOutlineSize(PaintAction p) const
     return static_cast<RenderCanvas*>(document()->renderer())->maximalOutlineSize();
 }
 
-void RenderObject::collectBorders(QValueList<CollapsedBorderValue>& borderStyles)
+void RenderObject::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
 {
     for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
         curr->collectBorders(borderStyles);
@@ -2102,7 +2117,7 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
 
 CounterNode* RenderObject::lookupCounter(const QString& counter) const
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
     if (counters)
         return counters->find(counter);
     else
@@ -2111,10 +2126,10 @@ CounterNode* RenderObject::lookupCounter(const QString& counter) const
 
 void RenderObject::detachCounters()
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
     if (!counters) return;
 
-    QDictIterator<khtml::CounterNode> i(*counters);
+    Q3DictIterator<khtml::CounterNode> i(*counters);
 
     while (i.current()) {
         (*i)->remove();
@@ -2126,10 +2141,10 @@ void RenderObject::detachCounters()
 
 void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 {
-    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
 
     if (!counters) {
-        counters = new QDict<khtml::CounterNode>(11);
+        counters = new Q3Dict<khtml::CounterNode>(11);
         document()->setCounters(this, counters);
     }
 

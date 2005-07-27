@@ -22,23 +22,24 @@
 #include <qapplication.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmenubar.h>
-#include <qmemarray.h>
+#include <qmenudata.h>
+#include <q3memarray.h>
 #include <qmetaobject.h>
-#include <qmainwindow.h>
-#include <qobjectlist.h>
-#include <qpopupmenu.h>
-#include <qptrlist.h>
+#include <q3mainwindow.h>
+#include <qobject.h>
+#include <q3popupmenu.h>
+#include <QList>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qspinbox.h>
 #include <qtabbar.h>
-#include <qtextview.h>
+#include <q3textview.h>
 #include <qwidget.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 
 #include <kstdaction.h>
 #include <kstaticdeleter.h>
@@ -84,12 +85,12 @@ public:
         if (t1 != t2)
         {
             if (as.accel() == -1)  {
-                removed_string  += "<tr><td>" + QStyleSheet::escape(t1) + "</td></tr>";
+                removed_string  += "<tr><td>" + Q3StyleSheet::escape(t1) + "</td></tr>";
             } else if (as.originalAccel() == -1) {
-                added_string += "<tr><td>" + QStyleSheet::escape(t2) + "</td></tr>";
+                added_string += "<tr><td>" + Q3StyleSheet::escape(t2) + "</td></tr>";
             } else {
-                changed_string += "<tr><td>" + QStyleSheet::escape(t1) + "</td>";
-                changed_string += "<td>" + QStyleSheet::escape(t2) + "</td></tr>";
+                changed_string += "<tr><td>" + Q3StyleSheet::escape(t1) + "</td>";
+                changed_string += "<td>" + Q3StyleSheet::escape(t2) + "</td></tr>";
             }
             return true;
         }
@@ -103,7 +104,7 @@ public:
 private:
   class Item;
 public:
-  typedef QPtrList<Item> ItemList;
+  typedef QList<Item *> ItemList;
 
 private:
   static void traverseChildren(QWidget *widget, Item *item);
@@ -149,6 +150,10 @@ bool KAcceleratorManagerPrivate::standardName(const QString &str)
 
 KAcceleratorManagerPrivate::Item::~Item()
 {
+    if (m_children)
+        while (!m_children->isEmpty())
+            delete m_children->takeFirst();
+
     delete m_children;
 }
 
@@ -157,7 +162,6 @@ void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 {
     if (!m_children) {
         m_children = new ItemList;
-	m_children->setAutoDelete(true);
     }
 
     m_children->append(item);
@@ -171,10 +175,10 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
         return;
     }
 
-    if (dynamic_cast<QPopupMenu*>(widget))
+    if (dynamic_cast<QMenu*>(widget))
     {
         // create a popup accel manager that can deal with dynamic menus
-        KPopupAccelManager::manage(static_cast<QPopupMenu*>(widget));
+        KPopupAccelManager::manage(static_cast<QMenu*>(widget));
         return;
     }
 
@@ -195,8 +199,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // collect the contents
     KAccelStringList contents;
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         contents << it->m_content;
     }
@@ -206,8 +209,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // write them back into the widgets
     int cnt = -1;
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         cnt++;
 
@@ -215,7 +217,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if (tabBar)
         {
             if (checkChange(contents[cnt]))
-                tabBar->tabAt(it->m_index)->setText(contents[cnt].accelerated());
+                tabBar->setTabText(it->m_index, contents[cnt].accelerated());
             continue;
         }
         QMenuBar *menuBar = dynamic_cast<QMenuBar*>(it->m_widget);
@@ -233,25 +235,24 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
             }
         }
         // we possibly reserved an accel, but we won't set it as it looks silly
-        if ( dynamic_cast<QGroupBox*>( it->m_widget ) )
+        if ( dynamic_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
         kdDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
 
-        int tprop = it->m_widget->metaObject()->findProperty("text", true);
+        int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
             if (checkChange(contents[cnt]))
                 it->m_widget->setProperty("text", contents[cnt].accelerated());
         } else {
-            tprop = it->m_widget->metaObject()->findProperty("title", true);
+            tprop = it->m_widget->metaObject()->indexOfProperty("title");
             if (tprop != -1 && checkChange(contents[cnt]))
                 it->m_widget->setProperty("title", contents[cnt].accelerated());
         }
     }
 
     // calculate the accelerators for the children
-    for (Item *it = item->m_children->first(); it != 0;
-         it = item->m_children->next())
+    foreach(Item *it, *item->m_children)
     {
         kdDebug(125) << "children " << it->m_widget->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
@@ -262,11 +263,11 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
-  QObjectList *childList = widget->queryList("QWidget", 0, false, false);
-  for ( QObject *it = childList->first(); it; it = childList->next() )
-  {
-    QWidget *w = static_cast<QWidget*>(it);
-
+  QList<QWidget*> childList = widget->findChildren<QWidget*>();
+  foreach ( QWidget *w , childList ) {
+    // Ignore unless we have the direct parent
+    if(qobject_cast<QWidget *>(w->parent()) != widget) continue;
+	
     if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
         continue;
 
@@ -275,7 +276,6 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 
     manageWidget(w, item);
   }
-  delete childList;
 }
 
 void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
@@ -289,14 +289,14 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  QWidgetStack *wds = dynamic_cast<QWidgetStack*>( w );
+  Q3WidgetStack *wds = dynamic_cast<Q3WidgetStack*>( w );
   if ( wds )
   {
       QWidgetStackAccelManager::manage( wds );
       // return;
   }
 
-  QPopupMenu *popupMenu = dynamic_cast<QPopupMenu*>(w);
+  QMenu *popupMenu = dynamic_cast<QMenu*>(w);
   if (popupMenu)
   {
       // create a popup accel manager that can deal with dynamic menus
@@ -304,7 +304,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       return;
   }
 
-  QWidgetStack *wdst = dynamic_cast<QWidgetStack*>( w );
+  Q3WidgetStack *wdst = dynamic_cast<Q3WidgetStack*>( w );
   if ( wdst )
   {
       QWidgetStackAccelManager::manage( wdst );
@@ -319,8 +319,8 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
   }
 
   if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
-      dynamic_cast<QTextEdit*>(w) || dynamic_cast<QTextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || w->qt_cast( "KMultiTabBar" ))
+      dynamic_cast<Q3TextEdit*>(w) || dynamic_cast<Q3TextView*>(w) ||
+      dynamic_cast<QSpinBox*>(w) || w->inherits( "KMultiTabBar" ) )
       return;
 
   // now treat 'ordinary' widgets
@@ -331,30 +331,30 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       else {
           if ( label->textFormat() == Qt::RichText ||
                ( label->textFormat() == Qt::AutoText &&
-                 QStyleSheet::mightBeRichText( label->text() ) ) )
+                 Q3StyleSheet::mightBeRichText( label->text() ) ) )
               label = 0;
       }
   }
 
-  if (w->isFocusEnabled() || label || dynamic_cast<QGroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
+  if (w->focusPolicy() != Qt::NoFocus || label || dynamic_cast<Q3GroupBox*>(w) || dynamic_cast<QRadioButton*>( w ))
   {
     QString content;
     QVariant variant;
-    int tprop = w->metaObject()->findProperty("text", true);
+    int tprop = w->metaObject()->indexOfProperty("text");
     if (tprop != -1)  {
-        const QMetaProperty* p = w->metaObject()->property( tprop, true );
-        if ( p && p->isValid() )
-            w->qt_property( tprop, 1, &variant );
+        QMetaProperty p = w->metaObject()->property( tprop );
+        if ( p.isValid() )
+            variant = p.read (w);
         else
             tprop = -1;
     }
 
     if (tprop == -1)  {
-        tprop = w->metaObject()->findProperty("title", true);
+        tprop = w->metaObject()->indexOfProperty("title");
         if (tprop != -1)  {
-            const QMetaProperty* p = w->metaObject()->property( tprop, true );
-            if ( p && p->isValid() )
-                w->qt_property( tprop, 1, &variant );
+            QMetaProperty p = w->metaObject()->property( tprop );
+            if ( p.isValid() )
+                variant = p.read (w);
         }
     }
 
@@ -372,7 +372,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
             weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
 
         // don't put weight on group boxes, as usually the contents are more important
-        if (dynamic_cast<QGroupBox*>(w))
+        if (dynamic_cast<Q3GroupBox*>(w))
             weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
 
         // put a lot of extra weight on the KDialogBaseButton's
@@ -390,7 +390,7 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
   for (int i=0; i<bar->count(); i++)
   {
-    QString content = bar->tabAt(i)->text();
+    QString content = bar->tabText(i);
     if (content.isEmpty())
       continue;
 
@@ -432,8 +432,8 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
         }
 
         // have a look at the popup as well, if present
-        if (mitem->popup())
-            KPopupAccelManager::manage(mitem->popup());
+        if (mitem->menu ())
+            KPopupAccelManager::manage(mitem->menu ());
     }
 }
 
@@ -524,7 +524,8 @@ QString KAccelString::accelerated() const
     }
   } else {
       if (m_accel >= 0 && m_orig_accel != m_accel) {
-          result.remove(m_orig_accel, 1);
+          if (m_orig_accel != -1)
+              result.remove(m_orig_accel, 1);
           result.insert(m_accel, "&");
       }
   }
@@ -545,7 +546,7 @@ void KAccelString::calculateWeights(int initialWeight)
 {
   m_weight.resize(m_pureText.length());
 
-  uint pos = 0;
+  int pos = 0;
   bool start_character = true;
 
   while (pos<m_pureText.length())
@@ -626,7 +627,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
   int max = 0;
   index = -1;
 
-  for (uint pos=0; pos<m_pureText.length(); ++pos)
+  for (int pos=0; pos<m_pureText.length(); ++pos)
     if (used.find(m_pureText[pos], 0, FALSE) == -1 && m_pureText[pos].latin1() != 0)
       if (m_weight[pos] > max)
       {
@@ -641,7 +642,7 @@ int KAccelString::maxWeight(int &index, const QString &used)
 void KAccelString::dump()
 {
   QString s;
-  for (uint i=0; i<m_weight.count(); ++i)
+  for (int i=0; i<m_weight.count(); ++i)
     s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
   kdDebug() << "s " << s << endl;
 }
@@ -692,13 +693,13 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
   }
 
   // pick the highest bids
-  for (uint cnt=0; cnt<accel_strings.count(); ++cnt)
+  for (int cnt=0; cnt<accel_strings.count(); ++cnt)
   {
       kdDebug(125) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
-    for (uint i=0; i<accel_strings.count(); ++i)
+    for (int i=0; i<accel_strings.count(); ++i)
     {
       int a;
       int m = accel_strings[i].maxWeight(a, used);
@@ -733,7 +734,7 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
 
  *********************************************************************/
 
-KPopupAccelManager::KPopupAccelManager(QPopupMenu *popup)
+KPopupAccelManager::KPopupAccelManager(QMenu *popup)
   : QObject(popup), m_popup(popup), m_count(-1)
 {
     aboutToShow(); // do one check and then connect to show
@@ -802,8 +803,8 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
     list.append(KAccelString(s, weight));
 
     // have a look at the popup as well, if present
-    if (mitem->popup())
-        KPopupAccelManager::manage(mitem->popup());
+    if (mitem->menu())
+        KPopupAccelManager::manage(mitem->menu());
   }
 }
 
@@ -826,20 +827,20 @@ void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 }
 
 
-void KPopupAccelManager::manage(QPopupMenu *popup)
+void KPopupAccelManager::manage(QMenu *popup)
 {
   // don't add more than one manager to a popup
   if (popup->child(0, "KPopupAccelManager", false) == 0 )
     new KPopupAccelManager(popup);
 }
 
-void QWidgetStackAccelManager::manage( QWidgetStack *stack )
+void QWidgetStackAccelManager::manage( Q3WidgetStack *stack )
 {
     if ( stack->child( 0, "QWidgetStackAccelManager", false ) == 0 )
         new QWidgetStackAccelManager( stack );
 }
 
-QWidgetStackAccelManager::QWidgetStackAccelManager(QWidgetStack *stack)
+QWidgetStackAccelManager::QWidgetStackAccelManager(Q3WidgetStack *stack)
   : QObject(stack), m_stack(stack)
 {
     aboutToShow(stack->visibleWidget()); // do one check and then connect to show

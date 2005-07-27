@@ -29,7 +29,7 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
     setSorting(-1);
     part = currentpart;
     connect(part, SIGNAL(nodeActivated(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
-    connect(this, SIGNAL(clicked(QListViewItem *)), this, SLOT(slotItemClicked(QListViewItem *)));
+    connect(this, SIGNAL(clicked(Q3ListViewItem *)), this, SLOT(slotItemClicked(Q3ListViewItem *)));
     m_nodedict.setAutoDelete(true);
 }
 
@@ -58,20 +58,20 @@ void DOMTreeView::showTree(const DOM::Node &pNode)
 
 void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
 {
-    QListViewItem *cur_item;
+    Q3ListViewItem *cur_item;
     if(pNode.ownerDocument() != document)
     {
 	QString val = node.nodeValue().string();
 	if ( val.length() > 20 )
 	    val.truncate( 20 );
-	cur_item = new QListViewItem(static_cast<QListView *>(this), node.nodeName().string(), val );
+	cur_item = new Q3ListViewItem(static_cast<Q3ListView *>(this), node.nodeName().string(), val );
 	document = pNode.ownerDocument();
     }
     else {
 	QString val = node.nodeValue().string();
 	if ( val.length() > 20 )
 	    val.truncate( 20 );
-	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), val);
+	cur_item = new Q3ListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), val);
     }
 
     if(node.handle())
@@ -88,7 +88,7 @@ void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
     }
 }
 
-void DOMTreeView::slotItemClicked(QListViewItem *cur_item)
+void DOMTreeView::slotItemClicked(Q3ListViewItem *cur_item)
 {
     DOM::Node *handle = m_nodedict[cur_item];
     if(handle) {

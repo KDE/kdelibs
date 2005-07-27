@@ -22,7 +22,7 @@
 #ifndef KABC_ADDRESSEELIST_H
 #define KABC_ADDRESSEELIST_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include "addressee.h"
 
@@ -109,13 +109,13 @@ typedef enum { Uid, Name, FormattedName, FamilyName, GivenName } SortingCriterio
  *
  * @author Jost Schenck jost@schenck.de
  */
-class KABC_EXPORT AddresseeList : public QValueList<Addressee>
+class KABC_EXPORT AddresseeList : public QList<Addressee>
 {
   public:
     AddresseeList();
     ~AddresseeList();
     AddresseeList( const AddresseeList & );
-    AddresseeList( const QValueList<Addressee> & );
+    AddresseeList( const QList<Addressee> & );
 
     /**
      * Debug output.

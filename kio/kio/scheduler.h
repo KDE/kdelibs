@@ -25,8 +25,9 @@
 #include "kio/job.h"
 #include "kio/jobclasses.h"
 #include <qtimer.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qmap.h>
+#include <qwindowdefs.h>
 
 #include <dcopobject.h>
 
@@ -112,7 +113,7 @@ namespace KIO {
         Q_OBJECT
 
     public:
-        typedef QPtrList<SimpleJob> JobList;
+        typedef Q3PtrList<SimpleJob> JobList;
 
         // InfoDict needs Info, so we can't declare it private
         class ProtocolInfo;
@@ -281,14 +282,14 @@ namespace KIO {
 
         void debug_info();
 
-        virtual bool process(const QCString &fun, const QByteArray &data,
-                             QCString& replyType, QByteArray &replyData);
+        virtual bool process(const DCOPCString &fun, const QByteArray &data,
+                             DCOPCString& replyType, QByteArray &replyData);
 
-        virtual QCStringList functions();
+        virtual DCOPCStringList functions();
 
     public slots:
         void slotSlaveDied(KIO::Slave *slave);
-        void slotSlaveStatus(pid_t pid, const QCString &protocol,
+        void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                              const QString &host, bool connected);
     signals:
         void slaveConnected(KIO::Slave *slave);
@@ -348,7 +349,7 @@ namespace KIO {
         KURL urlOnHold;
         JobList newJobs;
 
-        QPtrDict<JobList> coSlaves;
+        Q3PtrDict<JobList> coSlaves;
         ExtraJobData *extraJobData;
         SlaveConfig *slaveConfig;
         SessionData *sessionData;

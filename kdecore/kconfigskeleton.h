@@ -27,8 +27,8 @@
 #include <qdatetime.h>
 #include <qfont.h>
 #include <qpoint.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 #include <qrect.h>
 #include <qsize.h>
 #include <qstringlist.h>
@@ -50,9 +50,9 @@
   class KDECORE_EXPORT KConfigSkeletonItem
   {
   public:
-    typedef QValueList < KConfigSkeletonItem * >List;
-    typedef QDict < KConfigSkeletonItem > Dict;
-    typedef QDictIterator < KConfigSkeletonItem > DictIterator;
+    typedef QList < KConfigSkeletonItem * >List;
+    typedef Q3Dict < KConfigSkeletonItem > Dict;
+    typedef Q3DictIterator < KConfigSkeletonItem > DictIterator;
 
     /**
      * Constructor.
@@ -469,11 +469,11 @@ public:
   /**
    * Class for handling an 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < Q_INT64 >
+  class KDECORE_EXPORT ItemInt64:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
-    ItemInt64(const QString & group, const QString & key, Q_INT64 &reference,
-            Q_INT64 defaultValue = 0);
+    ItemInt64(const QString & group, const QString & key, qint64 &reference,
+            qint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -482,14 +482,14 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(Q_INT64);
-    void setMaxValue(Q_INT64);
+    void setMinValue(qint64);
+    void setMaxValue(qint64);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    Q_INT64 mMin;
-    Q_INT64 mMax;
+    qint64 mMin;
+    qint64 mMax;
   };
 
   /**
@@ -506,15 +506,15 @@ public:
     };
 
     ItemEnum(const QString & group, const QString & key, int &reference,
-             const QValueList<Choice> &choices, int defaultValue = 0);
+             const QList<Choice> &choices, int defaultValue = 0);
 
-    QValueList<Choice> choices() const;
+    QList<Choice> choices() const;
 
     void readConfig(KConfig * config);
     void writeConfig(KConfig * config);
 
   private:
-      QValueList<Choice> mChoices;
+      QList<Choice> mChoices;
   };
 
 
@@ -598,11 +598,11 @@ public:
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < Q_UINT64 >
+  class KDECORE_EXPORT ItemUInt64:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
-    ItemUInt64(const QString & group, const QString & key, Q_UINT64 &reference,
-            Q_UINT64 defaultValue = 0);
+    ItemUInt64(const QString & group, const QString & key, quint64 &reference,
+            quint64 defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -611,14 +611,14 @@ public:
     QVariant minValue() const;
     QVariant maxValue() const;
 
-    void setMinValue(Q_UINT64);
-    void setMaxValue(Q_UINT64);
+    void setMinValue(quint64);
+    void setMaxValue(quint64);
     
   private:  
     bool mHasMin : 1;
     bool mHasMax : 1;
-    Q_UINT64 mMin;
-    Q_UINT64 mMax;
+    quint64 mMin;
+    quint64 mMax;
   };
 
   /**
@@ -773,12 +773,12 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QValueList < int > >
+  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
   {
   public:
     ItemIntList(const QString & group, const QString & key,
-                QValueList < int >&reference,
-                const QValueList < int >&defaultValue = QValueList < int >());
+                QList < int >&reference,
+                const QList < int >&defaultValue = QList < int >());
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
@@ -834,7 +834,7 @@ public:
   /**
    * Returns the current group used for addItem() calls. 
    */
-  QString currentGroup() // ### KDE 4.0: make const
+  QString currentGroup() const 
   {
     return mCurrentGroup;
   }
@@ -987,7 +987,7 @@ public:
                           const QString & key = QString::null);
 
   /**
-   * Register an item of type Q_INT64.
+   * Register an item of type qint64.
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -997,12 +997,12 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemInt64 *addItemInt64(const QString & name, Q_INT64 &reference,
-                          Q_INT64 defaultValue = 0,
+  ItemInt64 *addItemInt64(const QString & name, qint64 &reference,
+                          qint64 defaultValue = 0,
                           const QString & key = QString::null);
 
   /**
-   * Register an item of type Q_UINT64
+   * Register an item of type quint64
    * 
    * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
@@ -1012,8 +1012,8 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemUInt64 *addItemUInt64(const QString & name, Q_UINT64 &reference,
-                            Q_UINT64 defaultValue = 0,
+  ItemUInt64 *addItemUInt64(const QString & name, quint64 &reference,
+                            quint64 defaultValue = 0,
                             const QString & key = QString::null);
 
   /**
@@ -1148,9 +1148,9 @@ public:
    * @param key Key used in config file. If key is null, name is used as key.
    * @return The created item
    */
-  ItemIntList *addItemIntList(const QString & name, QValueList < int >&reference,
-                              const QValueList < int >&defaultValue =
-                              QValueList < int >(),
+  ItemIntList *addItemIntList(const QString & name, QList < int >&reference,
+                              const QList < int >&defaultValue =
+                              QList < int >(),
                               const QString & key = QString::null);
 
   /**

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdbrowsingpage.h"
@@ -26,7 +26,6 @@
 #include <qlayout.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -164,18 +163,18 @@ bool CupsdBrowsingPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdBrowsingPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(browsing_, conf->comments_.toolTip("browsing"));
-	QWhatsThis::add(cups_, conf->comments_.toolTip("browseprotocols"));
-	QWhatsThis::add(slp_, conf->comments_.toolTip("browseprotocols"));
-	QWhatsThis::add(browseinterval_, conf->comments_.toolTip("browseinterval"));
-	QWhatsThis::add(browseport_, conf->comments_.toolTip("browseport"));
-	QWhatsThis::add(browsetimeout_, conf->comments_.toolTip("browsetimeout"));
-	QWhatsThis::add(browseaddresses_, conf->comments_.toolTip("browseaddresses"));
-	QWhatsThis::add(browseorder_, conf->comments_.toolTip("browseorder"));
-	QWhatsThis::add(useimplicitclasses_, conf->comments_.toolTip("implicitclasses"));
-	QWhatsThis::add(useanyclasses_, conf->comments_.toolTip("implicitanyclasses"));
-	QWhatsThis::add(hideimplicitmembers_, conf->comments_.toolTip("hideimplicitmembers"));
-	QWhatsThis::add(useshortnames_, conf->comments_.toolTip("browseshortnames"));
+	browsing_->setWhatsThis(conf->comments_.toolTip("browsing"));
+	cups_->setWhatsThis(conf->comments_.toolTip("browseprotocols"));
+	slp_->setWhatsThis(conf->comments_.toolTip("browseprotocols"));
+	browseinterval_->setWhatsThis(conf->comments_.toolTip("browseinterval"));
+	browseport_->setWhatsThis(conf->comments_.toolTip("browseport"));
+	browsetimeout_->setWhatsThis(conf->comments_.toolTip("browsetimeout"));
+	browseaddresses_->setWhatsThis(conf->comments_.toolTip("browseaddresses"));
+	browseorder_->setWhatsThis(conf->comments_.toolTip("browseorder"));
+	useimplicitclasses_->setWhatsThis(conf->comments_.toolTip("implicitclasses"));
+	useanyclasses_->setWhatsThis(conf->comments_.toolTip("implicitanyclasses"));
+	hideimplicitmembers_->setWhatsThis(conf->comments_.toolTip("hideimplicitmembers"));
+	useshortnames_->setWhatsThis(conf->comments_.toolTip("browseshortnames"));
 }
 
 void CupsdBrowsingPage::slotAdd()

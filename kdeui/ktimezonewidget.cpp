@@ -60,7 +60,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
         //  "Europe/London", "GB" -> "London", "Europe/GB".
         //  "UTC",           ""   -> "UTC",    "".
         QStringList continentCity = QStringList::split("/", displayName(zone));
-        QListViewItem *listItem = new QListViewItem(this, continentCity[continentCity.count() - 1]);
+        Q3ListViewItem *listItem = new Q3ListViewItem(this, continentCity[continentCity.count() - 1]);
         continentCity[continentCity.count() - 1] = zone->countryCode();
         listItem->setText(COLUMN_REGION, continentCity.join("/"));
         listItem->setText(COLUMN_COMMENT, comment);
@@ -93,7 +93,7 @@ QStringList KTimezoneWidget::selection() const
     QStringList selection;
 
     // Loop through all entries.
-    QListViewItem *listItem = firstChild();
+    Q3ListViewItem *listItem = firstChild();
     while (listItem)
     {
         if (listItem->isSelected())
@@ -110,7 +110,7 @@ void KTimezoneWidget::setSelected(const QString &zone, bool selected)
     bool found = false;
 
     // Loop through all entries.
-    QListViewItem *listItem = firstChild();
+    Q3ListViewItem *listItem = firstChild();
     while (listItem)
     {
         if (listItem->text(COLUMN_ZONE) == zone)

@@ -35,12 +35,6 @@ void ConsoleErrorHandler::error( const QString &msg )
 }
 
 
-void GUIErrorHandler::error( const QString &msg )
-{
-  KMessageBox::error( 0, msg, i18n( "Error in libkabc" ) );
-}
-
-
 GuiErrorHandler::GuiErrorHandler( QWidget *parent )
   : mParent( parent )
 {

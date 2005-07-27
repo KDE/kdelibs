@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -38,15 +38,17 @@ extern "C" {
 # include <time.h>
 #endif
 
-#include <qapplication.h>
-#include <qstring.h>
-#include <qcstring.h>
-#include <qptrlist.h>
-#include <qtimer.h>
-#include <qmutex.h>
-#include <qthread.h>
-#include <qwaitcondition.h>
-#include <qsemaphore.h>
+#include <QByteArray>
+#include <QCoreApplication>
+#include <QList>
+#include <QMutableListIterator>
+#include <QMutex>
+#include <QQueue>
+#include <QSemaphore>
+#include <QString>
+#include <QThread>
+#include <QTimer>
+#include <QWaitCondition>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -323,8 +325,6 @@ KResolverManager::KResolverManager()
   : runningThreads(0), availableThreads(0)
 {
   globalManager = this;
-  workers.setAutoDelete(true);
-  currentRequests.setAutoDelete(true);
   initStandardWorkers();
 
   pid = getpid();
@@ -335,8 +335,8 @@ KResolverManager::~KResolverManager()
   // this should never be called
 
   // kill off running threads
-  for (workers.first(); workers.current(); workers.next())
-    workers.current()->terminate();
+  foreach (KResolverThread* worker, workers)
+    worker->terminate();
 }
 
 void KResolverManager::registerThread(KResolverThread* )
@@ -381,19 +381,24 @@ RequestData* KResolverManager::findData(KResolverThread* th)
   /////
 
   // now find data to be processed
-  for (RequestData *curr = newRequests.first(); curr; curr = newRequests.next())
-    if (!curr->worker->m_finished)
-      {
-	// found one
-	if (curr->obj)
-	  curr->obj->status = KResolver::InProgress;
-	curr->worker->th = th;
-
-	// move it to the currentRequests list
-	currentRequests.append(newRequests.take());
-
-	return curr;
-      }
+  QMutableListIterator<RequestData*> it(newRequests);
+  while (it.hasNext())
+    {
+      RequestData *curr = it.next();
+      if (!curr->worker->m_finished)
+	{
+	  // found one
+	  if (curr->obj)
+	    curr->obj->status = KResolver::InProgress;
+	  curr->worker->th = th;
+	  
+	  // move it to the currentRequests list
+	  it.remove();
+	  currentRequests.append(curr);
+	  
+	  return curr;
+	}
+    }
 
   // found nothing!
   return 0L;
@@ -423,23 +428,32 @@ void KResolverManager::releaseData(KResolverThread *, RequestData* data)
 
 // this function is called by KResolverManager::releaseData above
 void KResolverManager::handleFinished()
-{  
+{
   bool redo = false;
-  QPtrQueue<RequestData> doneRequests;
+  QQueue<RequestData*> doneRequests;
 
   mutex.lock();
+  if (currentRequests.isEmpty())
+    {
+      mutex.unlock();
+      return;
+    }
 
   // loop over all items on the currently running list
-  // we loop from the last to the first so that we catch requests with "requestors" before
-  // we catch the requestor itself.
-  RequestData *curr = currentRequests.last();
-  while (curr)
+  // we loop from the last to the first so that we catch requests 
+  // with "requestors" before we catch the requestor itself.
+  QMutableListIterator<RequestData*> it(currentRequests);
+  it.toBack();
+  while (it.hasPrevious())
     {
+      RequestData *curr = it.previous();
       if (curr->worker->th == 0L)
 	{
 	  if (handleFinishedItem(curr))
 	    {
-	      doneRequests.enqueue(currentRequests.take());
+	      it.remove();
+	      doneRequests.enqueue(curr);
+
 	      if (curr->requestor &&
 		  curr->requestor->nRequests == 0 && 
 		  curr->requestor->worker->m_finished)
@@ -447,13 +461,11 @@ void KResolverManager::handleFinished()
 		redo = true;
 	    }
 	}
-      
-      curr = currentRequests.prev();
     }
       
   //qDebug("KResolverManager::handleFinished(%u): %d requests to notify", pid, doneRequests.count());
-  while (RequestData *d = doneRequests.dequeue())
-    doNotifying(d);
+  while (!doneRequests.isEmpty())
+    doNotifying(doneRequests.dequeue());
 
   mutex.unlock();
 
@@ -510,11 +522,9 @@ KResolverWorkerBase* KResolverManager::findWorker(KResolverPrivate* p)
   // class and call their preprocessing functions. The first one that
   // says they can process (i.e., preprocess() returns true) will get the job.
 
-  KResolverWorkerBase *worker;
-  for (KResolverWorkerFactoryBase *factory = workerFactories.first(); factory; 
-       factory = workerFactories.next())
+  foreach (KResolverWorkerFactoryBase *factory, workerFactories)
     {
-      worker = factory->create();
+      KResolverWorkerBase *worker = factory->create();
 
       // set up the data the worker needs to preprocess
       worker->input = &p->input;
@@ -610,7 +620,7 @@ void KResolverManager::doNotifying(RequestData *p)
 	// no, so we must post an event requesting that the signal be emitted
 	// sorry for the C-style cast, but neither static nor reintepret cast work
 	// here; I'd have to do two casts
-	QApplication::postEvent(parent, new QEvent((QEvent::Type)(ResolutionCompleted)));
+	QCoreApplication::postEvent(parent, new QEvent((QEvent::Type)(ResolutionCompleted)));
 
       // release the mutex
       p->obj->mutex.unlock();
@@ -720,31 +730,37 @@ void KResolverManager::dispatch(RequestData *data)
       // yes, a new thread should be started
 
       // find if there's a finished one
-      KResolverThread *th = workers.first();
-      while (th && th->running())
-	th = workers.next();
+      KResolverThread *th = 0L;
+      for (int i = 0; i < workers.size(); ++i)
+	if (!workers[i]->isRunning())
+	  {
+	    th = workers[i];
+	    break;
+	  }
 
       if (th == 0L)
-	// no, create one
-	th = new KResolverThread;
-      else
-	workers.take();
-
+	{
+	  // no, create one
+	  th = new KResolverThread;
+	  workers.append(th);
+	}
+	  
       th->start();
-      workers.append(th);
       runningThreads++;
     }
 
   feedWorkers.wakeAll();
 
   // clean up idle threads
-  workers.first();
-  while (workers.current())
+  QMutableListIterator<KResolverThread*> it(workers);
+  while (it.hasNext())
     {
-      if (!workers.current()->running())
-	workers.remove();
-      else
-	workers.next();
+      KResolverThread *worker = it.next();
+      if (!worker->isRunning())
+	{
+	  it.remove();
+	  delete worker;
+	}
     }
 }
 
@@ -758,48 +774,49 @@ bool KResolverManager::dequeueNew(KResolver* obj)
   KResolverPrivate *d = obj->d;
 
   // check if it's in the new request list
-  RequestData *curr = newRequests.first(); 
-  while (curr)
-    if (curr->obj == d)
-      {
-	// yes, this object is still in the list
-	// but it has never been processed
-	d->status = KResolver::Canceled;
-	d->errorcode = KResolver::Canceled;
-	d->syserror = 0;
-	newRequests.take();
+  for (QMutableListIterator<RequestData*> it(newRequests); 
+       it.hasNext(); )
+    {
+      RequestData *curr = it.next();
+      if (curr->obj == d)
+	{
+	  // yes, this object is still in the list
+	  // but it has never been processed
+	  d->status = KResolver::Canceled;
+	  d->errorcode = KResolver::Canceled;
+	  d->syserror = 0;
+	  it.remove();
 
-	delete curr->worker;
-	delete curr;
+	  delete curr->worker;
+	  delete curr;
 	
-	return true;
-      }
-    else
-      curr = newRequests.next();
+	  return true;
+	}
+    }
 
   // check if it's running
-  curr = currentRequests.first();
-  while (curr)
-    if (curr->obj == d)
-      {
-	// it's running. We cannot simply take it out of the list.
-	// it will be handled when the thread that is working on it finishes
-	d->mutex.lock();
+  for (int i = 0; i < currentRequests.size(); ++i)
+    {
+      RequestData* curr = currentRequests[i];
+      if (curr->obj == d)
+	{
+	  // it's running. We cannot simply take it out of the list.
+	  // it will be handled when the thread that is working on it finishes
+	  d->mutex.lock();
 
-	d->status = KResolver::Canceled;
-	d->errorcode = KResolver::Canceled;
-	d->syserror = 0;
+	  d->status = KResolver::Canceled;
+	  d->errorcode = KResolver::Canceled;
+	  d->syserror = 0;
 
-	// disengage from the running threads
-	curr->obj = 0L;
-	curr->input = 0L;
-	if (curr->worker)
-	  curr->worker->input = 0L;
+	  // disengage from the running threads
+	  curr->obj = 0L;
+	  curr->input = 0L;
+	  if (curr->worker)
+	    curr->worker->input = 0L;
 
-	d->mutex.unlock();
-      }
-    else
-      curr = currentRequests.next();
+	  d->mutex.unlock();
+	}
+    }
 
   return false;
 }

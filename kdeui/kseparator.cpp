@@ -13,7 +13,7 @@
  *
  *   You should have received a copy of the GNU Library General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+ *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
 
@@ -21,11 +21,13 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
+#include <QStyleOption>
+#include <QPainter>
 
 #include "kseparator.moc"
 
 
-KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
+KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
    : QFrame(parent, name, f)
 {
    setLineWidth(1);
@@ -35,7 +37,7 @@ KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
 
 
 
-KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, WFlags f)
+KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, Qt::WFlags f)
    : QFrame(parent, name, f)
 {
    setLineWidth(1);
@@ -49,18 +51,20 @@ void KSeparator::setOrientation(int orientation)
 {
    switch(orientation)
    {
-      case Vertical:
+      case Qt::Vertical:
       case VLine:
-         setFrameStyle( QFrame::VLine | QFrame::Sunken );
+         setFrameShape ( QFrame::VLine );
+         setFrameShadow( QFrame::Sunken );
          setMinimumSize(2, 0);
          break;
       
       default:
          kdWarning() << "KSeparator::setOrientation(): invalid orientation, using default orientation HLine" << endl;
          
-      case Horizontal:
+      case Qt::Horizontal:
       case HLine:
-         setFrameStyle( QFrame::HLine | QFrame::Sunken );
+         setFrameShape ( QFrame::HLine );
+         setFrameShadow( QFrame::Sunken );
          setMinimumSize(0, 2);
          break;
    }
@@ -79,12 +83,15 @@ int KSeparator::orientation() const
    return 0;
 }
 
-void KSeparator::drawFrame(QPainter *p)
+void KSeparator::paintEvent(QPaintEvent*)
 {
+   QPainter p(this);
+
+   QStyleOption opt;
+   opt.init(this);
+
    QPoint	p1, p2;
    QRect	r     = frameRect();
-   const QColorGroup & g = colorGroup();
-
    if ( frameStyle() & HLine ) {
       p1 = QPoint( r.x(), r.height()/2 );
       p2 = QPoint( r.x()+r.width(), p1.y() );
@@ -94,9 +101,9 @@ void KSeparator::drawFrame(QPainter *p)
       p2 = QPoint( p1.x(), r.height() );
    }
 
-   QStyleOption opt( lineWidth(), midLineWidth() );
-   style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
-		          QStyle::Style_Sunken, opt );
+   opt.rect = QRect(p1, p2);
+
+   style()->drawPrimitive( QStyle::PE_Q3Separator, &opt, &p);
 }
 
 

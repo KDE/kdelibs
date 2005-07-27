@@ -13,9 +13,11 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kbuttonbox.h"
 #include <qlayout.h>
@@ -24,7 +26,10 @@
 #include <qpushbutton.h>
 
 int main(int argc, char **argv) {
-  KApplication a(argc, argv, "dummy");
+   KAboutData about("kbuttonboxtest", "kbuttonboxtest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
   // example 1
   {
@@ -37,7 +42,7 @@ int main(int argc, char **argv) {
 			   "the window!\n"
 			   "Press OK or Cancel when done"
 			   , w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -65,7 +70,7 @@ int main(int argc, char **argv) {
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are right aligned\n"\
 			   "Try resizing the window!", w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -91,7 +96,7 @@ int main(int argc, char **argv) {
     QLabel *l = new QLabel("Another common dialog\n\n"\
 			   "OK and Cancel are middle aligned\n"\
 			   "Try resizing the window!", w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -120,7 +125,7 @@ int main(int argc, char **argv) {
 			   "the maximum width for all buttons\n"
 			   "since it will look ugly -- "
 			   "anyway, it works", w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -152,7 +157,7 @@ int main(int argc, char **argv) {
 			   "prevent this strange effect as seen\n"
 			   "the former example!"
 			   ,w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
@@ -182,10 +187,10 @@ int main(int argc, char **argv) {
 			   "to make vertically aligned buttons\n"
 			   "too?"
 			   ,w);
-    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::WordBreak);
+    l->setAlignment(Qt::AlignVCenter|Qt::AlignLeft|Qt::TextWordWrap);
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
-    KButtonBox *bbox = new KButtonBox(w, KButtonBox::Vertical);
+    KButtonBox *bbox = new KButtonBox(w, Qt::Vertical);
     QPushButton *b = bbox->addButton("OK");
     b->setDefault(true);
     w->connect(b, SIGNAL(clicked()),

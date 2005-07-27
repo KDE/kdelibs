@@ -41,7 +41,7 @@ namespace KPAC
         Q_OBJECT
         K_DCOP
     public:
-        ProxyScout( const QCString& );
+        ProxyScout( const Q3CString& );
         virtual ~ProxyScout();
 
     k_dcop:
@@ -68,7 +68,7 @@ namespace KPAC
             DCOPClientTransaction* transaction;
             KURL url;
         };
-        typedef QValueList< QueuedRequest > RequestQueue;
+        typedef Q3ValueList< QueuedRequest > RequestQueue;
         RequestQueue m_requestQueue;
 
         typedef QMap< QString, time_t > BlackList;

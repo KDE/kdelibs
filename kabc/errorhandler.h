@@ -58,18 +58,6 @@ class KABC_EXPORT ConsoleErrorHandler : public ErrorHandler
 /**
   This class shows messages boxes for every
   error message.
-
-  \deprecated Use GuiErrorHandler instead.
-*/
-class KABC_EXPORT GUIErrorHandler : public ErrorHandler
-{
-  public:
-    virtual void error( const QString &msg );
-};
-
-/**
-  This class shows messages boxes for every
-  error message.
 */
 class KABC_EXPORT GuiErrorHandler : public ErrorHandler
 {
@@ -79,7 +67,7 @@ class KABC_EXPORT GuiErrorHandler : public ErrorHandler
       
       \param parent Widget which is used as parent for the error dialogs.
     */      
-    GuiErrorHandler( QWidget *parent );
+    GuiErrorHandler( QWidget *parent = 0 );
   
     virtual void error( const QString &msg );
 

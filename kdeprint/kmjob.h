@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMJOB_H
@@ -26,7 +26,7 @@
 #endif
 
 #include <qstring.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 #include <kdeprint/kmobject.h>
 #include <kdelibs_export.h>
 
@@ -124,7 +124,7 @@ protected:
 
 	// internal members
 	QString	m_uri;
-	QValueVector<QString>	m_attributes;
+	Q3ValueVector<QString>	m_attributes;
 };
 
 #endif

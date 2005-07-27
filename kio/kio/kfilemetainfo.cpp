@@ -22,8 +22,8 @@
 
 #include <assert.h>
 
-#include <qshared.h>
-#include <qdict.h>
+#include <q3shared.h>
+#include <q3dict.h>
 
 #include <ktrader.h>
 #include <kstaticdeleter.h>
@@ -38,12 +38,12 @@
 #include "kfilemetainfo.h"
 
 // shared data of a KFileMetaInfoItem
-class KFileMetaInfoItem::Data : public QShared
+class KFileMetaInfoItem::Data : public Q3Shared
 {
 public:
     Data( const KFileMimeTypeInfo::ItemInfo* mti, const QString& _key,
           const QVariant& _value )
-        : QShared(),
+        : Q3Shared(),
           mimeTypeInfo( mti ),
           key( _key ),
           value( _value ),
@@ -270,11 +270,11 @@ void KFileMetaInfoItem::deref()
 ///////////////////////////////////////////////////////////////////
 
 // shared data of a KFileMetaInfo
-class KFileMetaInfo::Data : public QShared
+class KFileMetaInfo::Data : public Q3Shared
 {
 public:
     Data(const KURL& _url, uint _what)
-        : QShared(),
+        : Q3Shared(),
           url(_url),
           what(_what),
           mimeTypeInfo( 0L )
@@ -373,9 +373,8 @@ QStringList KFileMetaInfo::supportedKeys() const
 QStringList KFileMetaInfo::groups() const
 {
     QStringList list;
-    QMapConstIterator<QString, KFileMetaInfoGroup> it = d->groups.begin();
-    for ( ; it != d->groups.end(); ++it )
-        list += (*it).name();
+    foreach(const KFileMetaInfoGroup& group, d->groups)
+        list += group.name();
 
     return list;
 }
@@ -436,7 +435,7 @@ QStringList KFileMetaInfo::preferredKeys() const
 
 KFileMetaInfoGroup KFileMetaInfo::group(const QString& key) const
 {
-    QMapIterator<QString,KFileMetaInfoGroup> it = d->groups.find( key );
+    QMap<QString,KFileMetaInfoGroup>::iterator it = d->groups.find( key );
     if ( it != d->groups.end() )
         return it.data();
     else
@@ -482,7 +481,7 @@ bool KFileMetaInfo::addGroup( const QString& name )
 
 bool KFileMetaInfo::removeGroup( const QString& name )
 {
-    QMapIterator<QString, KFileMetaInfoGroup> it = d->groups.find(name);
+    QMap<QString, KFileMetaInfoGroup>::iterator it = d->groups.find(name);
     if ( (it==d->groups.end()) ||
         !((*it).attributes() & KFileMimeTypeInfo::Removable))
         return false;
@@ -518,9 +517,8 @@ bool KFileMetaInfo::isValid() const
 
 bool KFileMetaInfo::isEmpty() const
 {
-    for (QMapIterator<QString, KFileMetaInfoGroup> it = d->groups.begin();
-         it!=d->groups.end(); ++it)
-        if (!(*it).isEmpty())
+    foreach (const KFileMetaInfoGroup& group, d->groups)
+        if (!group.isEmpty())
             return false;
     return true;
 }
@@ -532,18 +530,18 @@ bool KFileMetaInfo::applyChanges()
 //    kdDebug(7033) << "KFileMetaInfo::applyChanges()\n";
 
     // look up if we need to write to the file
-    QMapConstIterator<QString, KFileMetaInfoGroup> it;
-    for (it = d->groups.begin(); it!=d->groups.end() && !doit; ++it)
+
+    foreach (const KFileMetaInfoGroup& group, d->groups)
     {
-        if ( (*it).isModified() )
+        if ( group.isModified() )
             doit = true;
 
         else
         {
-            QStringList keys = it.data().keys();
-            for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it2)
+            QStringList keys = group.keys();
+            foreach (QString key, keys)
             {
-                if ( (*it)[*it2].isModified() )
+                if ( group[key].isModified() )
                 {
                     doit = true;
                     break;
@@ -625,7 +623,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
     assert(isValid());
     // try the preferred groups first
     if ( !preferredGroup.isEmpty() ) {
-        QMapIterator<QString,KFileMetaInfoGroup> it =
+        QMap<QString,KFileMetaInfoGroup>::iterator it =
             d->groups.find( preferredGroup );
 
         // try to create the preferred group, if necessary
@@ -652,7 +650,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
     QStringList::ConstIterator groupIt = groups.begin();
     for ( ; groupIt != groups.end(); ++groupIt )
     {
-        QMapIterator<QString,KFileMetaInfoGroup> it = d->groups.find( *groupIt );
+        QMap<QString,KFileMetaInfoGroup>::iterator it = d->groups.find( *groupIt );
         if ( it != d->groups.end() )
         {
             KFileMetaInfoGroup group = it.data();
@@ -963,7 +961,7 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
     } else {
         // Mimetype-metainfo: the plugin can register itself for multiple mimetypes, remember them all
         bool first = true;
-        QDictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
+        Q3DictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
         for( ; it.current(); ++it ) {
             KFileMimeTypeInfo* info = it.current();
             m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info, first ) );
@@ -1008,7 +1006,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
 #if 0
     kdDebug(7033) << "currently loaded plugins:\n";
 
-    QDictIterator<CachedPluginInfo> it( m_plugins );
+    Q3DictIterator<CachedPluginInfo> it( m_plugins );
     for( ; it.current(); ++it ) {
         CachedPluginInfo* cache = it.current();
         kdDebug(7033)
@@ -1128,11 +1126,11 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
 
 
 // shared data of a KFileMetaInfoGroup
-class KFileMetaInfoGroup::Data : public QShared
+class KFileMetaInfoGroup::Data : public Q3Shared
 {
 public:
     Data(const QString& _name)
-        : QShared(),
+        : Q3Shared(),
           name(_name),
           mimeTypeInfo(0L),
           dirty( false ),
@@ -1243,10 +1241,9 @@ QStringList KFileMetaInfoGroup::keys() const
     QStringList list;
 
     // make a QStringList with all available keys
-    QMapConstIterator<QString, KFileMetaInfoItem> it;
-    for (it = d->items.begin(); it!=d->items.end(); ++it)
+    foreach(const KFileMetaInfoItem& item, d->items)
     {
-        list.append(it.data().key());
+        list.append(item.key());
 //        kdDebug(7033) << "Item " << it.data().key() << endl;
     }
     return list;
@@ -1277,7 +1274,7 @@ bool KFileMetaInfoGroup::contains( const QString& key ) const
 
 KFileMetaInfoItem KFileMetaInfoGroup::item( const QString& key) const
 {
-    QMapIterator<QString,KFileMetaInfoItem> it = d->items.find( key );
+    QMap<QString,KFileMetaInfoItem>::iterator it = d->items.find( key );
     if ( it != d->items.end() )
         return it.data();
 
@@ -1286,11 +1283,9 @@ KFileMetaInfoItem KFileMetaInfoGroup::item( const QString& key) const
 
 KFileMetaInfoItem KFileMetaInfoGroup::item(uint hint) const
 {
-    QMapIterator<QString, KFileMetaInfoItem> it;
-
-    for (it = d->items.begin(); it!=d->items.end(); ++it)
-        if (it.data().hint() == hint)
-            return it.data();
+    foreach(const KFileMetaInfoItem& item, d->items)
+        if (item.hint() == hint)
+            return item;
 
     return KFileMetaInfoItem();
 }
@@ -1340,7 +1335,7 @@ void KFileMetaInfoGroup::deref()
 KFileMetaInfoItem KFileMetaInfoGroup::addItem( const QString& key )
 {
     assert(isValid());
-    QMapIterator<QString,KFileMetaInfoItem> it = d->items.find( key );
+    QMap<QString,KFileMetaInfoItem>::iterator it = d->items.find( key );
     if ( it != d->items.end() )
         return it.data();
 
@@ -1379,7 +1374,7 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
           return false;
     }
 
-    QMapIterator<QString, KFileMetaInfoItem> it = d->items.find(key);
+    QMap<QString, KFileMetaInfoItem>::iterator it = d->items.find(key);
     if ( it==d->items.end() )
     {
           kdDebug(7033) << "trying to remove the non existant item " << key << "\n";
@@ -1480,7 +1475,7 @@ KFileMimeTypeInfo::GroupInfo * KFileMimeTypeInfo::addGroupInfo(
 QStringList KFileMimeTypeInfo::supportedGroups() const
 {
     QStringList list;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it )
         list.append( it.current()->name() );
 
@@ -1490,7 +1485,7 @@ QStringList KFileMimeTypeInfo::supportedGroups() const
 QStringList KFileMimeTypeInfo::translatedGroups() const
 {
     QStringList list;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it )
         list.append( it.current()->translatedName() );
 
@@ -1503,7 +1498,7 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
     // maybe cache the result?
     QStringList keys;
     QStringList::ConstIterator lit;
-    QDictIterator<GroupInfo> it( m_groups );
+    Q3DictIterator<GroupInfo> it( m_groups );
     for ( ; it.current(); ++it ) { // need to nuke dupes
         QStringList list = it.current()->supportedKeys();
         for ( lit = list.begin(); lit != list.end(); ++lit ) {
@@ -1778,7 +1773,7 @@ KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
     group.d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mimeType);
 
     // we need to set the item info for the items here
-    QMapIterator<QString, KFileMetaInfoItem> it = group.d->items.begin();
+    QMap<QString, KFileMetaInfoItem>::iterator it = group.d->items.begin();
     for ( ; it != group.d->items.end(); ++it)
     {
         (*it).d->mimeTypeInfo = group.d->mimeTypeInfo->groupInfo(group.d->name)

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KPRINTACTION_H
@@ -31,7 +31,7 @@ public:
 	enum PrinterType { All, Regular, Specials };
 
 	KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
-	KPrintAction(const QString& text, const QIconSet& icon, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
+	KPrintAction(const QString& text, const QIcon& icon, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
 	KPrintAction(const QString& text, const QString& icon, PrinterType type = All, QWidget *parentWidget = 0, QObject *parent = 0, const char *name = 0);
 	virtual ~KPrintAction();
 

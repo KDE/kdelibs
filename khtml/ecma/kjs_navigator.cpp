@@ -63,11 +63,11 @@ namespace KJS {
             QString name;
             QString file;
             QString desc;
-            QPtrList<MimeClassInfo> mimes;
+            Q3PtrList<MimeClassInfo> mimes;
         };
 
-        static QPtrList<PluginInfo> *plugins;
-        static QPtrList<MimeClassInfo> *mimes;
+        static Q3PtrList<PluginInfo> *plugins;
+        static Q3PtrList<MimeClassInfo> *mimes;
 
     private:
         static int m_refCount;
@@ -128,8 +128,8 @@ namespace KJS {
 }
 
 
-QPtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
-QPtrList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
+Q3PtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
+Q3PtrList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
 int KJS::PluginBase::m_refCount = 0;
 
 const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
@@ -213,7 +213,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
   case ProductSub:
     {
       int ix = userAgent.find("Gecko");
-      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.at(ix+5) == '/' &&
+      if (ix >= 0 && userAgent.length() >= ix+14 && userAgent.at(ix+5) == '/' &&
           userAgent.find(QRegExp("\\d{8}"), ix+6) == ix+6)
       {
           // We have Gecko/<productSub> in the UA string
@@ -276,8 +276,8 @@ PluginBase::PluginBase(ExecState *exec)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype() )
 {
     if ( !plugins ) {
-        plugins = new QPtrList<PluginInfo>;
-        mimes = new QPtrList<MimeClassInfo>;
+        plugins = new Q3PtrList<PluginInfo>;
+        mimes = new Q3PtrList<MimeClassInfo>;
         plugins->setAutoDelete( true );
         mimes->setAutoDelete( true );
 

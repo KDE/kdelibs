@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 /**
  * KProgress -- a progress indicator widget for KDE.
@@ -38,15 +38,15 @@
 #include <klocale.h>
 #include <kwin.h>
 
-KProgress::KProgress(QWidget *parent, const char *name, WFlags f)
-  : QProgressBar(parent, name, f),
+KProgress::KProgress(QWidget *parent, const char *name, Qt::WFlags f)
+  : Q3ProgressBar(parent, name, f),
     mFormat("%p%")
 {
     setProgress(0);
 }
 
-KProgress::KProgress(int totalSteps, QWidget *parent, const char *name, WFlags f)
-  : QProgressBar(totalSteps, parent, name, f),
+KProgress::KProgress(int totalSteps, QWidget *parent, const char *name, Qt::WFlags f)
+  : Q3ProgressBar(totalSteps, parent, name, f),
     mFormat("%p%")
 {
     setProgress(0);
@@ -63,7 +63,7 @@ void KProgress::advance(int offset)
 
 void KProgress::setTotalSteps(int totalSteps)
 {
-    QProgressBar::setTotalSteps(totalSteps);
+    Q3ProgressBar::setTotalSteps(totalSteps);
 
     if (totalSteps)
     {
@@ -73,7 +73,7 @@ void KProgress::setTotalSteps(int totalSteps)
 
 void KProgress::setProgress(int progress)
 {
-    QProgressBar::setProgress(progress);
+    Q3ProgressBar::setProgress(progress);
 
     if (totalSteps())
     {

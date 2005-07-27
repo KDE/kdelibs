@@ -20,6 +20,8 @@
 #include <kunittest/tester.h>
 #include <kunittest/module.h>
 
+#include <qrect.h>
+
 #include <kconfig.h>
 
 class KConfigTest : public KUnitTest::Tester
@@ -34,7 +36,6 @@ private:
 KUNITTEST_MODULE( kunittest_kconfig, "KConfigTest" );
 KUNITTEST_MODULE_REGISTER_TESTER( KConfigTest );
 
-// test data
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
 #define STRINGENTRY1 "hello"

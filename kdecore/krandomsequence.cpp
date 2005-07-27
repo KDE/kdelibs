@@ -18,7 +18,7 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krandomsequence.h"
 #include "kapplication.h"
@@ -217,16 +217,16 @@ KRandomSequence::getBool()
   return (((unsigned long) m_lngShufflePos) & 1);  
 }
 
-class KRandomSequenceList : public QGList
+class KRandomSequenceList : public Q3GList
 {
   friend class KRandomSequence;
 public:
-  KRandomSequenceList() : QGList() { }
-  virtual void deleteItem( QPtrCollection::Item ) {}
+  KRandomSequenceList() : Q3GList() { }
+  virtual void deleteItem( Q3PtrCollection::Item ) {}
 };
 
 void
-KRandomSequence::randomize(QGList *_list)
+KRandomSequence::randomize(Q3GList *_list)
 {
   KRandomSequenceList *list = (KRandomSequenceList *)_list;
   KRandomSequenceList l;

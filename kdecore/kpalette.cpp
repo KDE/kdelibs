@@ -28,7 +28,7 @@
 #include <ksavefile.h>
 #include <kstringhandler.h>
 
-template class QPtrList<KPalette::kolor>;
+template class Q3PtrList<KPalette::kolor>;
 
 QStringList
 KPalette::getPaletteList()
@@ -58,18 +58,19 @@ KPalette::KPalette(const QString &name)
 
   QFile paletteFile(filename);
   if (!paletteFile.exists()) return;
-  if (!paletteFile.open(IO_ReadOnly)) return;
+  if (!paletteFile.open(QIODevice::ReadOnly)) return;
 
   uint maxLength = 1024;
   QString line;
 
   // Read first line
   // Expected "GIMP Palette"
-  if (paletteFile.readLine(line, maxLength) == -1) return;
-  if (line.find(" Palette") == -1) return;
+  line = QString::fromLocal8Bit(paletteFile.readLine());
+  if (line.indexOf(" Palette") == -1) return;
 
-  while( paletteFile.readLine(line, maxLength) != -1)
+  while( !paletteFile.atEnd() )
   {
+     line = QString::fromLocal8Bit(paletteFile.readLine());
      if (line[0] == '#') 
      {
         // This is a comment line
@@ -89,12 +90,12 @@ KPalette::KPalette(const QString &name)
         int pos = 0;
         if (sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos) >= 3)
         {
-           if (red > 255) red = 255;
-           if (red < 0) red = 0;	
+           if (red > 255)   red = 255;
+           if (red < 0)     red = 0;
            if (green > 255) green = 255;
-           if (green < 0) green = 0;	
+           if (green < 0)   green = 0;
            if (blue > 255) blue = 255;
-           if (blue < 0) blue = 0;	
+           if (blue < 0)  blue = 0;
            kolor *node = new kolor();
            node->color.setRgb(red, green, blue);
            node->name = line.mid(pos).stripWhiteSpace();
@@ -112,7 +113,7 @@ KPalette::KPalette(const KPalette &p)
    // Make a deep copy of the color list
    // We can't iterate a const list :(
    // DF: yes you can - use the proper iterator, not first/next
-   QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) &p.mKolorList;
+   Q3PtrList<kolor> *nonConstList = (Q3PtrList<kolor> *) &p.mKolorList;
    for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
    {
        mKolorList.append(new kolor(*node));
@@ -140,11 +141,11 @@ KPalette::save()
    (*str) << description << "\n";
    // We can't iterate a const list :(
    // DF: yes you can - use the proper iterator, not first/next
-   QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) (&mKolorList);
+   Q3PtrList<kolor> *nonConstList = (Q3PtrList<kolor> *) (&mKolorList);
    for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
    {
        int r,g,b;
-       node->color.rgb(&r, &g, &b);
+       node->color.getRgb(&r, &g, &b);
        (*str) << r << " " << g << " " << b << " " << node->name << "\n";
    }
    return sf.close();
@@ -159,7 +160,7 @@ KPalette::operator=( const KPalette &p)
   // Make a deep copy of the color list
   // We can't iterate a const list :(
    // DF: yes you can - use the proper iterator, not first/next
-  QPtrList<kolor> *nonConstList = (QPtrList<kolor> *) &p.mKolorList;
+  Q3PtrList<kolor> *nonConstList = (Q3PtrList<kolor> *) &p.mKolorList;
   for(kolor *node = nonConstList->first(); node; node = nonConstList->next())
   {
      mKolorList.append(new kolor(*node));
@@ -187,7 +188,7 @@ int
 KPalette::findColor(const QColor &color) const
 {
   int index;
-  QPtrListIterator<kolor> it( mKolorList );
+  Q3PtrListIterator<kolor> it( mKolorList );
   for (index = 0; it.current(); ++it, ++index)
   {
      if (it.current()->color == color)

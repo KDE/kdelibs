@@ -18,6 +18,7 @@
 */
 
 #include <qwidget.h>
+#include <qx11info_x11.h>
 
 #include "config.h"
 #ifdef Q_WS_X11 // not needed anyway :-)
@@ -28,6 +29,7 @@
 #include "kcharsets.h"
 #include "kapplication.h"
 #include <qtextstream.h>
+#include <QX11Info>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -58,17 +60,17 @@ void KRootProp::sync()
 
     while ( it != propDict.end() )
     {
-      keyvalue = QString( "%1=%2\n").arg(it.key()).arg(it.data());
+      keyvalue = QString( "%1=%2\n").arg(it.key()).arg(it.value());
       propString += keyvalue;
       ++it;
     }
   }
 
-  XChangeProperty( qt_xdisplay(), qt_xrootwin(), atom,
+  XChangeProperty( QX11Info::display(), QX11Info::appRootWindow(), atom,
                   XA_STRING, 8, PropModeReplace,
                   (const unsigned char *)propString.utf8().data(),
                   propString.length());
-  XFlush( qt_xdisplay() );
+  XFlush( QX11Info::display() );
 }
 
 void KRootProp::setProp( const QString& rProp )
@@ -90,13 +92,13 @@ void KRootProp::setProp( const QString& rProp )
   if( rProp.isEmpty() )
     return;
 
-  atom = XInternAtom( qt_xdisplay(), rProp.utf8(), False);
+  atom = XInternAtom( QX11Info::display(), rProp.utf8(), False);
 
   QString s;
   offset = 0; bytes_after = 1;
   while (bytes_after != 0)
   {
-    XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom, offset, 256,
+    XGetWindowProperty( QX11Info::display(), QX11Info::appRootWindow(), atom, offset, 256,
                         False, XA_STRING, &type, &format, &nitems, &bytes_after,
                         (unsigned char **)&buf);
     s += QString::fromUtf8(buf);
@@ -117,7 +119,7 @@ void KRootProp::setProp( const QString& rProp )
   {
     // parse the string for first key-value pair separator '\n'
 
-    i = s.find("\n");
+    i = s.indexOf("\n");
     if(i == -1)
       i = s.length();
 
@@ -130,7 +132,7 @@ void KRootProp::setProp( const QString& rProp )
 
     keypair.simplifyWhiteSpace();
 
-    i = keypair.find( "=" );
+    i = keypair.indexOf( "=" );
     if( i != -1 )
     {
       key = keypair.left( i );
@@ -151,7 +153,7 @@ void KRootProp::destroy()
     dirty = false;
     propDict.clear();
     if( atom ) {
-	XDeleteProperty( qt_xdisplay(), qt_xrootwin(), atom );
+	XDeleteProperty( QX11Info::display(), QX11Info::appRootWindow(), atom );
 	atom = 0;
     }
 }
@@ -216,18 +218,18 @@ QColor KRootProp::readColorEntry( const QString& rKey,
 
   // Support #ffffff style color naming.
   // Help ease transistion from legacy KDE setups
-  if( aValue.find("#") == 0 ) {
+  if( aValue.indexOf("#") == 0 ) {
     aRetColor.setNamedColor( aValue );
     return aRetColor;
   }
 
   // Parse "red,green,blue"
   // find first comma
-  int nIndex1 = aValue.find( ',' );
+  int nIndex1 = aValue.indexOf( ',' );
   if( nIndex1 == -1 )
     return aRetColor;
   // find second comma
-  int nIndex2 = aValue.find( ',', nIndex1+1 );
+  int nIndex2 = aValue.indexOf( ',', nIndex1+1 );
   if( nIndex2 == -1 )
     return aRetColor;
 

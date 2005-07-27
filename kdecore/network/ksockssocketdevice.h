@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2004,2005 Thiago Macieira <thiago@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,7 +33,7 @@ namespace KNetwork {
  *
  * This works by using KSocks.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  *
  * @warning This code is untested!
  */
@@ -83,20 +83,20 @@ public:
   /**
    * Overrides reading.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
    * Overrides peeking.
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
+  virtual qint64 peekBlock(char *data, Q_ULONG maxlen);
+  virtual qint64 peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
    * Overrides writing.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 writeBlock(const char *data, Q_ULONG len);
+  virtual qint64 writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
 
   /**
    * Overrides getting socket address.

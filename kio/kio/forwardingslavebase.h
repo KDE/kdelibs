@@ -24,6 +24,7 @@
 #include <kio/jobclasses.h>
 
 #include <qobject.h>
+#include <qeventloop.h>
 
 namespace KIO
 {
@@ -89,9 +90,9 @@ class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
 {
 Q_OBJECT
 public:
-    ForwardingSlaveBase(const QCString &protocol,
-                        const QCString &poolSocket,
-                        const QCString &appSocket);
+    ForwardingSlaveBase(const Q3CString &protocol,
+                        const Q3CString &poolSocket,
+                        const Q3CString &appSocket);
     virtual ~ForwardingSlaveBase();
 
     virtual void get(const KURL &url);
@@ -170,6 +171,8 @@ private:
     void connectSimpleJob(SimpleJob *job);
     void connectListJob(ListJob *job);
     void connectTransferJob(TransferJob *job);
+
+    QEventLoop eventLoop;
 
 private slots:
     // KIO::Job

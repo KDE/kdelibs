@@ -27,17 +27,18 @@
 #include <kconfig.h>
 
 #include <qfontinfo.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qfontdatabase.h>
 #include <kdebug.h>
 
 #include <qtextcodec.h>
 #include <qmap.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdir.h>
 #include <qregexp.h>
 
 #include <assert.h>
+#include <QHash>
 
 #define CHARSETS_COUNT 33
 
@@ -313,6 +314,7 @@ static struct Builtin
     { "mac", "apple roman" },
     { 0, 0 }};
 
+#if 0
 // some different names for the encodings defined in the charmaps files.
 // even though the charmap file names are all uppercase, the names are all lowercase here.
 static struct Aliases
@@ -340,7 +342,7 @@ static struct ConversionHints
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
     { 0, 0 }};
-
+#endif
 
 // search an array of items index/data, index is const char*, data is T, find first matching index
 // and return data, or return 0
@@ -360,17 +362,17 @@ class KCharsetsPrivate
 {
 public:
     KCharsetsPrivate(KCharsets* _kc)
-        : codecForNameDict(43, false) // case insensitive
     {
         db = 0;
         kc = _kc;
+		codecForNameDict.reserve( 43 );
     }
     ~KCharsetsPrivate()
     {
         delete db;
     }
     QFontDatabase *db;
-    QAsciiDict<QTextCodec> codecForNameDict;
+    QHash<QByteArray,QTextCodec*> codecForNameDict;
     KCharsets* kc;
 };
 
@@ -388,7 +390,7 @@ KCharsets::~KCharsets()
 
 QChar KCharsets::fromEntity(const QString &str)
 {
-    QChar res = QChar::null;
+    QChar res = QChar::Null;
 
     int pos = 0;
     if(str[pos] == '&') pos++;
@@ -415,7 +417,7 @@ QChar KCharsets::fromEntity(const QString &str)
     if(!e)
     {
         //kdDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
-        return QChar::null;
+        return QChar::Null;
     }
     //kdDebug() << "got entity " << str << " = " << e->code << endl;
 
@@ -431,10 +433,10 @@ QChar KCharsets::fromEntity(const QString &str, int &len)
     {
         QString tmp = str.left(len);
         QChar res = fromEntity(tmp);
-        if( res != QChar::null ) return res;
+        if( res != QChar::Null ) return res;
         len--;
     }
-    return QChar::null;
+    return QChar::Null;
 }
 
 
@@ -568,18 +570,22 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     ok = true;
 
     QTextCodec* codec = 0;
+	QString l = "->locale<-";
     // dict lookup is case insensitive anyway
-    if((codec = d->codecForNameDict[n.isEmpty() ? "->locale<-" : n.latin1()]))
-        return codec; // cache hit, return
+	if ( !n.isEmpty() && d->codecForNameDict.contains( n.toLower().toLatin1() ) ) {
+		return d->codecForNameDict.value( n.toLower().toLatin1() );
+	} else if ( n.isEmpty() && d->codecForNameDict.contains( l.toLatin1() ) ) {
+		return d->codecForNameDict.value( l.toLatin1() );
+	}
 
     if (n.isEmpty()) {
         codec = KGlobal::locale()->codecForEncoding();
-        d->codecForNameDict.replace("->locale<-", codec);
+        d->codecForNameDict.insert("->locale<-", codec);
         return codec;
     }
 
-    QCString name = n.lower().latin1();
-    QCString key = name;
+    QByteArray name = n.lower().latin1();
+    QByteArray key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);
 
@@ -591,23 +597,29 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     codec = QTextCodec::codecForName(name);
 
     if(codec) {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.insert(key.toLower(), codec);
         return codec;
     }
 
     // these codecs are built into Qt, but the name given for the codec is different,
     // so QTextCodec did not recognize it.
-    QCString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
+    QByteArray cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
 
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
 
     if(codec)
     {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.insert(key.toLower(), codec);
         return codec;
     }
 
+#warning is it still usefull with Qt4 ?
+	//dont forget to remove the #if 0 on the 2 structs at the top also if you reenable that;)
+	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
+	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
+#if 0
+    // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
@@ -695,6 +707,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         d->codecForNameDict.replace(key, codec);
         return codec;
     }
+#endif
 
     // could not assign a codec, let's return Latin1
     ok = false;

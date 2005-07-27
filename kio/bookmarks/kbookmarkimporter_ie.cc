@@ -38,9 +38,9 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
 
     QFile f(filename);
 
-    if(f.open(IO_ReadOnly)) {
+    if(f.open(QIODevice::ReadOnly)) {
 
-        QCString s(g_lineLimit);
+        Q3CString s(g_lineLimit);
 
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
@@ -48,7 +48,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
                kdWarning() << "IE bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
-            QCString t = s.stripWhiteSpace();
+            Q3CString t = s.stripWhiteSpace();
             QRegExp rx( "URL=(.*)" );
             if (rx.exactMatch(t)) {
                emit newBookmark( name, rx.cap(1).latin1(), QString("") );
@@ -65,32 +65,27 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldern
 
    QDir dir(dirname);
    dir.setFilter( QDir::Files | QDir::Dirs );
-   dir.setSorting( QDir::Name | QDir::DirsFirst );
+   dir.setSorting( QFlags<QDir::SortFlag>(QDir::Name | QDir::DirsFirst) );
    dir.setNameFilter("*.url"); // AK - possibly add ";index.ini" ?
    dir.setMatchAllDirs(true);
 
-   const QFileInfoList *list = dir.entryInfoList();
-   if (!list) return;
+   QFileInfoList list = dir.entryInfoList();
+   if (list.isEmpty()) return;
 
    if (dirname != m_fileName) 
       emit newFolder( foldername, false, "" );
 
-   QFileInfoListIterator it( *list );
-   QFileInfo *fi;
+   foreach (QFileInfo fi, list) {
+      if (fi.fileName() == "." || fi.fileName() == "..") continue;
 
-   while ( (fi = it.current()) != 0 ) {
-      ++it;
+      if (fi.isDir()) {
+         parseIEBookmarks_dir(fi.absoluteFilePath(), fi.fileName());
 
-      if (fi->fileName() == "." || fi->fileName() == "..") continue;
-
-      if (fi->isDir()) {
-         parseIEBookmarks_dir(fi->absFilePath(), fi->fileName());
-
-      } else if (fi->isFile()) {
-         if (fi->fileName().endsWith(".url")) {
-            QString name = fi->fileName();
+      } else if (fi.isFile()) {
+         if (fi.fileName().endsWith(".url")) {
+            QString name = fi.fileName();
             name.truncate(name.length() - 4); // .url
-            parseIEBookmarks_url_file(fi->absFilePath(), name);
+            parseIEBookmarks_url_file(fi.absoluteFilePath(), name);
          }
          // AK - add index.ini
       }
@@ -159,7 +154,7 @@ void IEExporter::visit( const KBookmark &bk ) {
     QString fname = m_currentDir.path() + "/" + ieStyleQuote( bk.fullText() ) + ".url";
     // kdDebug() << "visit(" << bk.text() << "), fname == " << fname << endl;
     QFile file( fname );
-    file.open( IO_WriteOnly );
+    file.open( QIODevice::WriteOnly );
     QTextStream ts( &file );
     ts << "[InternetShortcut]\r\n";
     ts << "URL=" << bk.url().url().utf8() << "\r\n";

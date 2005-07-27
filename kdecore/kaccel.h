@@ -20,12 +20,12 @@
 #ifndef _KACCEL_H
 #define _KACCEL_H
 
-#include <qaccel.h>
+#include <q3accel.h>
 #include <kshortcut.h>
 #include <kstdaccel.h>
 #include "kdelibs_export.h"
 
-class QPopupMenu; // for obsolete insertItem() methods below
+class Q3PopupMenu; // for obsolete insertItem() methods below
 class QWidget;
 class KAccelAction;
 class KAccelActions;
@@ -90,7 +90,7 @@ class KAccelPrivate;
  * @see KKeyDialog
  */
 
-class KDECORE_EXPORT KAccel : public QAccel
+class KDECORE_EXPORT KAccel : public Q3Accel
 {
 	Q_OBJECT
  public:
@@ -319,13 +319,13 @@ class KDECORE_EXPORT KAccel : public QAccel
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 const char* psKey,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
+	                 int nIDMenu = 0, Q3PopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
 	/**
 	 * @deprecated use insert
 	 */
 	bool insertItem( const QString& sLabel, const QString& sAction,
 	                 int key,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
+	                 int nIDMenu = 0, Q3PopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
 	/**
 	 * @deprecated use insert
 	 */
@@ -351,11 +351,11 @@ class KDECORE_EXPORT KAccel : public QAccel
 	/**
 	 * @deprecated see KDE3PORTING.html
 	 */
-	void changeMenuAccel( QPopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
+	void changeMenuAccel( Q3PopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
 	/**
 	 * @deprecated see KDE3PORTING.html
 	 */
-	void changeMenuAccel( QPopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
+	void changeMenuAccel( Q3PopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
 	/**
 	 * @deprecated
 	 */

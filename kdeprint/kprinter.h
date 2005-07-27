@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KPRINTER_H
@@ -26,7 +26,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kdemacros.h>
 #include <kdelibs_export.h>
 
@@ -87,7 +87,7 @@ class DrPageSize;
  */
 class KDEPRINT_EXPORT KPrinter : public QPaintDevice, public KPReloadObject
 {
-friend class KPrinterWrapper;
+//friend class KPrinterWrapper;
 friend class KPrinterImpl;
 public:
 	// Print global settings (set via static functions)
@@ -488,7 +488,7 @@ public:
 	 * application does page selection itself.
 	 * @see setCurrentPage()
 	 */
-	QValueList<int> pageList() const;
+	QList<int> pageList() const;
 	/**
 	 * Sets the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
 	 * printed but only a preview dialog will be popped up with the single "Close" action. Using
@@ -644,7 +644,7 @@ public:
 	 * @returns the option value correponding to the key, or QString::null
 	 * @see KPrintDialogPage, setOption, options(), setOptions()
 	 */
-	const QString& option(const QString& key) const;
+	QString option(const QString& key) const;
 	/**
 	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
 	 * explicitly. This will be done implicitely for example when reimplementing
@@ -748,8 +748,8 @@ public:
 	QString docDirectory() const;
 
 protected:
-	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
-	virtual int metric(int) const;
+	virtual QPaintEngine * paintEngine () const;
+	//virtual int metric(int) const;
 	void translateQtOptions();
 	void loadSettings();
 	void saveSettings();

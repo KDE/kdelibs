@@ -35,7 +35,7 @@ int main(int argc, char **argv)
       kdError() << "file_copy failed: " << KIO::NetAccess::lastErrorString() << endl;
     else {
       QFile f( tmpURL.path() );
-      if (!f.open(IO_ReadOnly))
+      if (!f.open(QIODevice::ReadOnly))
         kdFatal() << "Cannot open: " << f.name() << ". The error was: " << f.errorString() << endl;
       else {
         f.close();

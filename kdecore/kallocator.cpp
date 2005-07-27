@@ -88,7 +88,7 @@ void KZoneAllocator::insertHash(MemBlock *b)
     unsigned long key = adr >> log2;
     key = key & (hashSize - 1);
     if (!hashList[key])
-      hashList[key] = new QValueList<MemBlock *>;
+      hashList[key] = new QList<MemBlock *>;
     hashList[key]->append(b);
     adr += blockSize;
   }
@@ -128,8 +128,8 @@ void KZoneAllocator::initHash()
     hashSize = 1024;
   if (hashSize > 64*1024)
     hashSize = 64*1024;
-  hashList = new QValueList<MemBlock *> *[hashSize];
-  memset (hashList, 0, sizeof(QValueList<MemBlock*> *) * hashSize);
+  hashList = new QList<MemBlock *> *[hashSize];
+  memset (hashList, 0, sizeof(QList<MemBlock*> *) * hashSize);
   hashDirty = false;
   for (MemBlock *b = currentBlock; b; b = b->older)
     insertHash(b);
@@ -146,12 +146,12 @@ void KZoneAllocator::delBlock(MemBlock *b)
       unsigned long key = adr >> log2;
       key = key & (hashSize - 1);
       if (hashList[key]) {
-	QValueList<MemBlock *> *list = hashList[key];
-	QValueList<MemBlock *>::Iterator it = list->begin();
-	QValueList<MemBlock *>::Iterator endit = list->end();
+	QList<MemBlock *> *list = hashList[key];
+	QList<MemBlock *>::Iterator it = list->begin();
+	QList<MemBlock *>::Iterator endit = list->end();
 	for (; it != endit; ++it)
 	  if (*it == b) {
-	    list->remove(it);
+	    list->erase(it);
 	    break;
 	  }
       }
@@ -200,15 +200,15 @@ KZoneAllocator::deallocate(void *ptr)
     initHash();
 
   unsigned long key = (((unsigned long)ptr) >> log2) & (hashSize - 1);
-  QValueList<MemBlock *> *list = hashList[key];
+  QList<MemBlock *> *list = hashList[key];
   if (!list) {
     /* Can happen with certain usage pattern of intermixed free_since()
        and deallocate().  */
     //qDebug("Uhoh");
     return;
   }
-  QValueList<MemBlock*>::ConstIterator it = list->begin();
-  QValueList<MemBlock*>::ConstIterator endit = list->end();
+  QList<MemBlock*>::ConstIterator it = list->begin();
+  QList<MemBlock*>::ConstIterator endit = list->end();
   for (; it != endit; ++it) {
     MemBlock *cur = *it;
     if (cur->is_in(ptr)) {

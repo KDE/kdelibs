@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMJOBMANAGER_H
@@ -25,9 +25,9 @@
 #endif
 
 #include <qobject.h>
-#include <qptrlist.h>
-#include <qdict.h>
-#include <qvaluelist.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
@@ -64,7 +64,7 @@ public:
 	void addPrinter(const QString& pr, JobType type = ActiveJobs, bool isSpecial = false);
 	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();
-	QDict<JobFilter>* filter();
+	Q3Dict<JobFilter>* filter();
 	int limit();
 	void setLimit(int val);
 
@@ -72,15 +72,15 @@ public:
 	KMJob* findJob(const QString& uri);
 	//bool sendCommand(int ID, int action, const QString& arg = QString::null);
 	bool sendCommand(const QString& uri, int action, const QString& arg = QString::null);
-	bool sendCommand(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	const QPtrList<KMJob>& jobList(bool reload = true);
+	bool sendCommand(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	const Q3PtrList<KMJob>& jobList(bool reload = true);
 	void addJob(KMJob*);
 	KMThreadJob* threadJob();
 
 	virtual int actions();
-	virtual QValueList<KAction*> createPluginActions(KActionCollection*);
-	virtual void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
-	virtual bool doPluginAction(int, const QPtrList<KMJob>&);
+	virtual Q3ValueList<KAction*> createPluginActions(KActionCollection*);
+	virtual void validatePluginActions(KActionCollection*, const Q3PtrList<KMJob>&);
+	virtual bool doPluginAction(int, const Q3PtrList<KMJob>&);
 
 protected:
 	void discardAllJobs();
@@ -88,16 +88,16 @@ protected:
 
 protected:
 	virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
-	virtual bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
-	bool sendCommandThreadJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	virtual bool sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
+	bool sendCommandThreadJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 
 protected:
-	QPtrList<KMJob>	m_jobs;
-	QDict<JobFilter>	m_filter;
+	Q3PtrList<KMJob>	m_jobs;
+	Q3Dict<JobFilter>	m_filter;
 	KMThreadJob	*m_threadjob;
 };
 
-inline QDict<KMJobManager::JobFilter>* KMJobManager::filter()
+inline Q3Dict<KMJobManager::JobFilter>* KMJobManager::filter()
 { return &m_filter; }
 
 inline void KMJobManager::clearFilter()

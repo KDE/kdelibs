@@ -26,10 +26,10 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qtimer.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -64,8 +64,8 @@
 #include "kfilemetapreview.h"
 
 
-template class QPtrStack<KURL>;
-template class QDict<KFileItem>;
+template class Q3PtrStack<KURL>;
+template class Q3Dict<KFileItem>;
 
 
 class KDirOperator::KDirOperatorPrivate
@@ -102,14 +102,14 @@ KDirOperator::KDirOperator(const KURL& _url,
       progress(0)
 {
     myPreview = 0L;
-    myMode = KFile::File;
+    myMode = KFile::ModeMax; //try to make KFileDialog::getOpenURL (without s) to work again
     m_viewKind = KFile::Simple;
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
     d = new KDirOperatorPrivate;
 
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentDirPath();
-        strPath.append('/');
+        strPath.append(QChar('/'));
         currUrl = KURL();
         currUrl.setProtocol(QString::fromLatin1("file"));
         currUrl.setPath(strPath);
@@ -144,7 +144,7 @@ KDirOperator::KDirOperator(const KURL& _url,
     setupActions();
     setupMenu();
 
-    setFocusPolicy(QWidget::WheelFocus);
+    setFocusPolicy(Qt::WheelFocus);
 }
 
 KDirOperator::~KDirOperator()
@@ -560,7 +560,7 @@ void KDirOperator::trashSelected(KAction::ActivationReason reason, Qt::ButtonSta
     if ( !m_fileView )
         return;
 
-    if ( reason == KAction::PopupMenuActivation && ( state & Qt::ShiftButton ) ) {
+    if ( reason == KAction::PopupMenuActivation && ( state & Qt::ShiftModifier ) ) {
         deleteSelected();
 	return;
     }
@@ -709,7 +709,7 @@ void KDirOperator::pathChanged()
     QApplication::restoreOverrideCursor();
 
     // when KIO::Job emits finished, the slot will restore the cursor
-    QApplication::setOverrideCursor( waitCursor );
+    QApplication::setOverrideCursor( Qt::WaitCursor );
 
     if ( !isReadable( currUrl )) {
         KMessageBox::error(viewWidget(),
@@ -1061,7 +1061,7 @@ void KDirOperator::connectView(KFileView *view)
     m_fileView->widget()->show();
 
     if ( listDir ) {
-        QApplication::setOverrideCursor( waitCursor );
+        QApplication::setOverrideCursor( Qt::WaitCursor );
         dir->openURL( currUrl );
     }
     else
@@ -1257,10 +1257,10 @@ void KDirOperator::setupActions()
                                                    "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Folder..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
-    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Key_Delete, myActionCollection, "trash" );
+    KAction* trash = new KAction( i18n( "Move to Trash" ), "edittrash", Qt::Key_Delete, myActionCollection, "trash" );
     connect( trash, SIGNAL( activated( KAction::ActivationReason, Qt::ButtonState ) ),
 	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::ButtonState ) ) );
-    new KAction( i18n( "Delete" ), "editdelete", SHIFT+Key_Delete, this,
+    new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
@@ -1337,7 +1337,7 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    new KAction( i18n("Properties"), KShortcut(ALT+Key_Return), this,
+    new KAction( i18n("Properties"), KShortcut(Qt::ALT+Qt::Key_Return), this,
                  SLOT(slotProperties()), myActionCollection, "properties" );
 }
 
@@ -1372,11 +1372,11 @@ void KDirOperator::setupMenu(int whichActions)
     if (whichActions & FileActions)
     {
         actionMenu->insert( mkdirAction );
-        if (currUrl.isLocalFile() && !(KApplication::keyboardMouseState() & Qt::ShiftButton))
+        if (currUrl.isLocalFile() && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
             actionMenu->insert( myActionCollection->action( "trash" ) );
         KConfig *globalconfig = KGlobal::config();
         KConfigGroupSaver cs( globalconfig, QString::fromLatin1("KDE") );
-        if (!currUrl.isLocalFile() || (KApplication::keyboardMouseState() & Qt::ShiftButton) ||
+        if (!currUrl.isLocalFile() || (KApplication::keyboardMouseState() & Qt::ShiftModifier) ||
             globalconfig->readBoolEntry("ShowDeleteCommand", false))
             actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );

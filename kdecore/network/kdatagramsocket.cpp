@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -41,8 +41,8 @@ using namespace KNetwork;
  *
  */
 
-KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
-  : KClientSocketBase(parent, name), d(0L)
+KDatagramSocket::KDatagramSocket(QObject* parent)
+  : KClientSocketBase(parent), d(0L)
 {
   peerResolver().setFamily(KResolver::KnownFamily);
   localResolver().setFamily(KResolver::KnownFamily);
@@ -52,9 +52,10 @@ KDatagramSocket::KDatagramSocket(QObject* parent, const char *name)
 
   localResolver().setFlags(KResolver::Passive);
 
-  //  QObject::connect(localResolver(), SIGNAL(finished(KResolverResults)),
+  //  QObject::connect(localResolver(), SIGNAL(finished(const KNetwork::KResolverResults&))
   //		   this, SLOT(lookupFinishedLocal()));
-  QObject::connect(&peerResolver(), SIGNAL(finished(KResolverResults)),
+  QObject::connect(&peerResolver(),
+		   SIGNAL(finished(const KNetwork::KResolverResults&)), 
   		   this, SLOT(lookupFinishedPeer()));
   QObject::connect(this, SIGNAL(hostFound()), this, SLOT(lookupFinishedLocal()));
 }
@@ -89,7 +90,8 @@ bool KDatagramSocket::bind(const QString& node, const QString& service)
   return true;
 }
 
-bool KDatagramSocket::connect(const QString& node, const QString& service)
+bool KDatagramSocket::connect(const QString& node, const QString& service,
+			      OpenMode mode)
 {
   if (state() >= Connected)
     return true;		// already connected
@@ -133,7 +135,7 @@ bool KDatagramSocket::connect(const QString& node, const QString& service)
 
 KDatagramPacket KDatagramSocket::receive()
 {
-  Q_LONG size = bytesAvailable();
+  qint64 size = bytesAvailable();
   if (size == 0)
     {
       // nothing available yet to read
@@ -143,7 +145,7 @@ KDatagramPacket KDatagramSocket::receive()
       else
 	{
 	  // mimic error
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return KDatagramPacket();
 	}
@@ -156,7 +158,7 @@ KDatagramPacket KDatagramSocket::receive()
   KSocketAddress address;
   
   // now do the reading
-  size = readBlock(data.data(), size, address);
+  size = read(data.data(), size, address);
   if (size < 0)
     // error has been set
     return KDatagramPacket();
@@ -165,9 +167,9 @@ KDatagramPacket KDatagramSocket::receive()
   return KDatagramPacket(data, address);
 }
 
-Q_LONG KDatagramSocket::send(const KDatagramPacket& packet)
+qint64 KDatagramSocket::send(const KDatagramPacket& packet)
 {
-  return writeBlock(packet.data(), packet.size(), packet.address());
+  return write(packet.data(), packet.size(), packet.address());
 }
 
 void KDatagramSocket::lookupFinishedLocal()
@@ -237,6 +239,7 @@ bool KDatagramSocket::doBind()
       {
 	// bound
 	setupSignals();
+	KActiveSocketBase::open(ReadWrite | Unbuffered);
 	return true;
       }
 

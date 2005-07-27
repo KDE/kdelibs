@@ -15,8 +15,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 #ifndef KCONFIGDIALOG_H
 #define KCONFIGDIALOG_H
@@ -25,7 +25,7 @@ class KConfig;
 class KConfigSkeleton;
 class KConfigDialogManager;
 #include <kdialogbase.h>
-#include <qasciidict.h>
+#include <q3asciidict.h>
 
 /**
  * \short Standard %KDE configuration dialog class
@@ -105,7 +105,7 @@ public:
    * "Font Settings" or "Color Settings" and not just "Settings" in
    * applications where there is more than one dialog.
    *
-   * @param dialogType - Type used in creating the dialog.  See KDialogBase
+   * @param dialogType - Type used in creating the dialog.  @see KDialogBase
    *
    * @param config - Config object containing settings.
    *
@@ -266,7 +266,7 @@ private:
   /**
    * The list of existing dialogs.
    */
-  static QAsciiDict<KConfigDialog> openDialogs;
+  static Q3AsciiDict<KConfigDialog> openDialogs;
 
   class KConfigDialogPrivate;
   /**

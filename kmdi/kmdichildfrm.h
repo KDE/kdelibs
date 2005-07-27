@@ -28,20 +28,21 @@
 #ifndef _KMDI_CHILD_FRM_H_
 #define _KMDI_CHILD_FRM_H_
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qdatetime.h>
 #include <qlayout.h>
-
-#include <qdict.h>
+#include <Q3Frame>
+#include <QCustomEvent>
+#include <q3dict.h>
 
 #include "kmdichildfrmcaption.h"
 
 class KMdiChildArea;
 class KMdiChildView;
-class QPopupMenu;
+class Q3PopupMenu;
 class QToolButton;
 
 //==============================================================================
@@ -127,7 +128,7 @@ class KMdiChildFrmPrivate;
   * It's an MDI child frame widget. It contains a view widget and a frame caption. Usually you derive from its view.
   */ 
 //------------------------------------------------------------------------------
-class KMDI_EXPORT KMdiChildFrm : public QFrame
+class KMDI_EXPORT KMdiChildFrm : public Q3Frame
 {
 	friend class KMdiChildArea;
 	friend class KMdiChildFrmCaption;
@@ -170,11 +171,11 @@ protected:
 	/**
 	* Imitates a system menu for child frame windows
 	*/
-	QPopupMenu* m_pSystemMenu;
+	Q3PopupMenu* m_pSystemMenu;
 	
 	QSize m_oldClientMinSize;
 	QSize m_oldClientMaxSize;
-	QLayout::ResizeMode m_oldLayoutResizeMode;
+	QLayout::SizeConstraint m_oldLayoutResizeMode;
 	QTime m_timeMeasure;
 
 	// methods
@@ -263,7 +264,7 @@ public:
 	/**
 	 * Returns the system menu.
 	 */
-	QPopupMenu* systemMenu() const;
+	Q3PopupMenu* systemMenu() const;
 	
 	/**
 	 * Returns the caption bar height 
@@ -422,13 +423,13 @@ protected:
 	 * Restore the focus policies for _all_ widgets in the view using the list given as parameter.
 	 * Install the event filter for all direct child widgets of this. (See KMdiChildFrm::eventFilter)
 	 */
-	void linkChildren( QDict<FocusPolicy>* pFocPolDict );
+	void linkChildren( Q3Dict<Qt::FocusPolicy>* pFocPolDict );
 
 	/**
 	 * Backups all focus policies of _all_ child widgets in the MDI childview since they get lost during a reparent.
 	 * Remove all event filters for all direct child widgets of this. (See KMdiChildFrm::eventFilter)
 	 */
-	QDict<QWidget::FocusPolicy>* unlinkChildren();
+	Q3Dict<Qt::FocusPolicy>* unlinkChildren();
 	
 	/**
 	 * Calculates the corner id for the resize cursor. The return value can be tested for:

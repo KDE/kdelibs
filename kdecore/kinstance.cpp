@@ -35,12 +35,12 @@
 #include "config.h"
 #ifndef NDEBUG
   #include <assert.h>
-  #include <qptrdict.h>
-  static QPtrList<KInstance> *allInstances = 0;
-  static QPtrDict<QCString> *allOldInstances = 0;
-  #define DEBUG_ADD do { if (!allInstances) { allInstances = new QPtrList<KInstance>(); allOldInstances = new QPtrDict<QCString>(); } allInstances->append(this); allOldInstances->insert( this, new QCString( _name)); } while (false);
+  #include <q3ptrdict.h>
+  static Q3PtrList<KInstance> *allInstances = 0;
+  static Q3PtrDict<QByteArray> *allOldInstances = 0;
+  #define DEBUG_ADD do { if (!allInstances) { allInstances = new Q3PtrList<KInstance>(); allOldInstances = new Q3PtrDict<QByteArray>(); } allInstances->append(this); allOldInstances->insert( this, new QByteArray( _name)); } while (false);
   #define DEBUG_REMOVE do { allInstances->removeRef(this); } while (false);
-  #define DEBUG_CHECK_ALIVE do { if (!allInstances->contains((KInstance*)this)) { QCString *old = allOldInstances->find((KInstance*)this); qWarning("ACCESSING DELETED KINSTANCE! (%s)", old ? old->data() : "<unknown>"); assert(false); } } while (false);
+  #define DEBUG_CHECK_ALIVE do { if (!allInstances->contains((KInstance*)this)) { QByteArray *old = allOldInstances->find((KInstance*)this); qWarning("ACCESSING DELETED KINSTANCE! (%s)", old ? old->data() : "<unknown>"); assert(false); } } while (false);
 #else
   #define DEBUG_ADD
   #define DEBUG_REMOVE
@@ -66,7 +66,7 @@ public:
     KSharedConfig::Ptr sharedConfig;
 };
 
-KInstance::KInstance( const QCString& name)
+KInstance::KInstance( const QByteArray& name)
   : _dirs (0L),
     _config (0L),
     _iconLoader (0L),
@@ -203,7 +203,7 @@ KConfig	*KInstance::config() const
 	}
 	
 	// Check if we are excempt from kiosk restrictions
-	if (kde_kiosk_admin && !kde_kiosk_exception && !QCString(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
+	if (kde_kiosk_admin && !kde_kiosk_exception && !QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
 	{
             kde_kiosk_exception = true;
             d->sharedConfig = 0;
@@ -258,7 +258,7 @@ const KAboutData * KInstance::aboutData() const
     return _aboutData;
 }
 
-QCString KInstance::instanceName() const
+QByteArray KInstance::instanceName() const
 {
     DEBUG_CHECK_ALIVE
     return _name;

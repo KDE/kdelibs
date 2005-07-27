@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,8 +24,8 @@
 
 #include <config.h>
 
-#include <qmutex.h>
-#include <qtimer.h>
+#include <QMutex>
+#include <QTimer>
 
 #include "ksocketdevice.h"
 #include "ksocketaddress.h"
@@ -48,8 +48,8 @@ public:
 };
 
 KBufferedSocket::KBufferedSocket(const QString& host, const QString& service,
-				 QObject *parent, const char *name)
-  : KStreamSocket(host, service, parent, name),
+				 QObject *parent)
+  : KStreamSocket(host, service, parent),
     d(new KBufferedSocketPrivate)
 {
   setInputBuffering(true);
@@ -68,6 +68,7 @@ void KBufferedSocket::setSocketDevice(KSocketDevice* device)
 {
   KStreamSocket::setSocketDevice(device);
   device->setBlocking(false);
+  KActiveSocketBase::open(openMode() & ~Unbuffered);
 }
 
 bool KBufferedSocket::setSocketOptions(int opts)
@@ -93,7 +94,7 @@ void KBufferedSocket::close()
     }
 }
 
-Q_LONG KBufferedSocket::bytesAvailable() const
+qint64 KBufferedSocket::bytesAvailable() const
 {
   if (!d->input)
     return KStreamSocket::bytesAvailable();
@@ -101,9 +102,9 @@ Q_LONG KBufferedSocket::bytesAvailable() const
   return d->input->length();
 }
 
-Q_LONG KBufferedSocket::waitForMore(int msecs, bool *timeout)
+qint64 KBufferedSocket::waitForMore(int msecs, bool *timeout)
 {
-  Q_LONG retval = KStreamSocket::waitForMore(msecs, timeout);
+  qint64 retval = KStreamSocket::waitForMore(msecs, timeout);
   if (d->input)
     {
       resetError();
@@ -113,56 +114,50 @@ Q_LONG KBufferedSocket::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-Q_LONG KBufferedSocket::readBlock(char *data, Q_ULONG maxlen)
+qint64 KBufferedSocket::readData(char *data, qint64 maxlen, KSocketAddress* from)
 {
+  if (from)
+    *from = peerAddress();
   if (d->input)
     {
       if (d->input->isEmpty())
 	{
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
       return d->input->consumeBuffer(data, maxlen);
     }
-  return KStreamSocket::readBlock(data, maxlen);
+  return KStreamSocket::readData(data, maxlen, 0L);
 }
 
-Q_LONG KBufferedSocket::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KBufferedSocket::peekData(char *data, qint64 maxlen, KSocketAddress* from)
 {
-  from = peerAddress();
-  return readBlock(data, maxlen);
-}
-
-Q_LONG KBufferedSocket::peekBlock(char *data, Q_ULONG maxlen)
-{
+  if (from)
+    *from = peerAddress();
   if (d->input)
     {
       if (d->input->isEmpty())
 	{
-	  setError(IO_ReadError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
       return d->input->consumeBuffer(data, maxlen, false);
     }
-  return KStreamSocket::peekBlock(data, maxlen);
+  return KStreamSocket::peekData(data, maxlen, 0L);
 }
 
-Q_LONG KBufferedSocket::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KBufferedSocket::writeData(const char *data, qint64 len,
+				   const KSocketAddress*)
 {
-  from = peerAddress();
-  return peekBlock(data, maxlen);
-}
-
-Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
-{
+  // ignore the third parameter
   if (state() != Connected)
     {
       // cannot write now!
-      setError(IO_WriteError, NotConnected);
+      setError(NotConnected);
       return -1;
     }
 
@@ -170,7 +165,7 @@ Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
     {
       if (d->output->isFull())
 	{
-	  setError(IO_WriteError, WouldBlock);
+	  setError(WouldBlock);
 	  emit gotError(WouldBlock);
 	  return -1;
 	}
@@ -184,14 +179,7 @@ Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
       return d->output->feedBuffer(data, len);
     }
 
-  return KStreamSocket::writeBlock(data, len);
-}
-
-Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG maxlen,
-				   const KSocketAddress&)
-{
-  // ignore the third parameter
-  return writeBlock(data, maxlen);
+  return KStreamSocket::writeData(data, len, 0L);
 }
 
 void KBufferedSocket::enableRead(bool enable)
@@ -279,7 +267,7 @@ KIOBufferBase* KBufferedSocket::outputBuffer()
   return d->output;
 }
 
-Q_ULONG KBufferedSocket::bytesToWrite() const
+qint64 KBufferedSocket::bytesToWrite() const
 {
   if (!d->output)
     return 0;
@@ -300,9 +288,9 @@ bool KBufferedSocket::canReadLine() const
   return d->input->canReadLine();
 }
 
-QCString KBufferedSocket::readLine()
+qint64 KBufferedSocket::readLineData(char* data, qint64 maxSize)
 {
-  return d->input->readLine();
+  return d->input->readLine(data, maxSize);
 }
 
 void KBufferedSocket::waitForConnect()
@@ -320,7 +308,7 @@ void KBufferedSocket::slotReadActivity()
   if (d->input && state() == Connected)
     {
       mutex()->lock();
-      Q_LONG len = d->input->receiveFrom(socketDevice());
+      qint64 len = d->input->receiveFrom(socketDevice());
 
       if (len == -1)
 	{
@@ -337,7 +325,7 @@ void KBufferedSocket::slotReadActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  setError(IO_ReadError, RemotelyDisconnected);
+	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
 	  emit gotError(error());
 	  closeNow();		// emits closed
@@ -368,7 +356,7 @@ void KBufferedSocket::slotWriteActivity()
       (state() == Connected || state() == Closing))
     {
       mutex()->lock();
-      Q_LONG len = d->output->sendTo(socketDevice());
+      qint64 len = d->output->sendTo(socketDevice());
 
       if (len == -1)
 	{
@@ -385,7 +373,7 @@ void KBufferedSocket::slotWriteActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  setError(IO_ReadError, RemotelyDisconnected);
+	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
 	  emit gotError(error());
 	  closeNow();

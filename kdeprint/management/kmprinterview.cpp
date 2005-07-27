@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmprinterview.h"
@@ -25,12 +25,12 @@
 #include "kmmanager.h"
 
 #include <qlayout.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kaction.h>
 #include <klocale.h>
 
 KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
-: QWidgetStack(parent,name), m_type(KMPrinterView::Icons)
+: Q3WidgetStack(parent,name), m_type(KMPrinterView::Icons)
 {
 	m_iconview = new KMIconView(this);
 	addWidget(m_iconview,0);
@@ -54,7 +54,7 @@ KMPrinterView::~KMPrinterView()
 {
 }
 
-void KMPrinterView::setPrinterList(QPtrList<KMPrinter> *list)
+void KMPrinterView::setPrinterList(Q3PtrList<KMPrinter> *list)
 {
 	if (m_type != KMPrinterView::Tree || list == 0)
 		m_iconview->setPrinterList(list);
@@ -107,7 +107,7 @@ void KMPrinterView::slotPrinterSelected(const QString& p)
 
 QSize KMPrinterView::minimumSizeHint() const
 {
-	return QWidgetStack::minimumSizeHint();
+	return Q3WidgetStack::minimumSizeHint();
 }
 
 #include "kmprinterview.moc"

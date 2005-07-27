@@ -39,7 +39,7 @@ namespace KPAC
     {
     }
 
-    ProxyScout::ProxyScout( const QCString& name )
+    ProxyScout::ProxyScout( const Q3CString& name )
         : KDEDModule( name ),
           m_instance( new KInstance( "proxyscout" ) ),
           m_downloader( 0 ),
@@ -130,9 +130,9 @@ namespace KPAC
         for ( RequestQueue::ConstIterator it = m_requestQueue.begin();
               it != m_requestQueue.end(); ++it )
         {
-            QCString type = "QString";
+            DCOPCString type = "QString";
             QByteArray data;
-            QDataStream ds( data, IO_WriteOnly );
+            QDataStream ds( &data, QIODevice::WriteOnly );
             if ( success ) ds << handleRequest( ( *it ).url );
             else ds << QString( "DIRECT" );
             kapp->dcopClient()->endTransaction( ( *it ).transaction, type, data );
@@ -187,7 +187,7 @@ namespace KPAC
         return "DIRECT";
     }
 
-    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QCString& name )
+    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const Q3CString& name )
     {
         return new ProxyScout( name );
     }

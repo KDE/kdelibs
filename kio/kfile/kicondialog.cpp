@@ -30,17 +30,16 @@
 #include <qlayout.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qsortedlist.h>
+#include <q3sortedlist.h>
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtimer.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
-#include <qwhatsthis.h>
 
 #ifdef HAVE_LIBART
 #include <svgicons/ksvgiconengine.h>
@@ -93,8 +92,8 @@ KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
     mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
-    connect(this, SIGNAL(currentChanged(QIconViewItem *)),
-	    SLOT(slotCurrentChanged(QIconViewItem *)));
+    connect(this, SIGNAL(currentChanged(Q3IconViewItem *)),
+	    SLOT(slotCurrentChanged(Q3IconViewItem *)));
     setGridX(80);
     setWordWrapIconText(false);
     setShowToolTips(true);
@@ -118,7 +117,7 @@ void KIconCanvas::loadFiles(const QStringList& files)
 void KIconCanvas::slotLoadFiles()
 {
     setResizeMode(Fixed);
-    QApplication::setOverrideCursor(waitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // disable updates to not trigger paint events when adding child items
     setUpdatesEnabled( false );
@@ -179,7 +178,7 @@ void KIconCanvas::slotLoadFiles()
 	QPixmap pm;
 	pm.convertFromImage(img);
 	QFileInfo fi(*it);
-	QIconViewItem *item = new QIconViewItem(this, fi.baseName(), pm);
+	Q3IconViewItem *item = new Q3IconViewItem(this, fi.baseName(), pm);
 	item->setKey(*it);
 	item->setDragEnabled(false);
 	item->setDropEnabled(false);
@@ -210,7 +209,7 @@ void KIconCanvas::stopLoading()
     d->m_bLoading = false;
 }
 
-void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
+void KIconCanvas::slotCurrentChanged(Q3IconViewItem *item)
 {
     emit nameChanged((item != 0L) ? item->text() : QString::null);
 }
@@ -266,7 +265,7 @@ void KIconDialog::init()
     QVBoxLayout *top = new QVBoxLayout(main);
     top->setSpacing( spacingHint() );
 
-    QButtonGroup *bgroup = new QButtonGroup(0, Qt::Vertical, i18n("Icon Source"), main);
+    Q3ButtonGroup *bgroup = new Q3ButtonGroup(0, Qt::Vertical, i18n("Icon Source"), main);
     bgroup->layout()->setSpacing(KDialog::spacingHint());
     bgroup->layout()->setMargin(KDialog::marginHint());
     top->addWidget(bgroup);
@@ -306,13 +305,13 @@ void KIconDialog::init()
     connect(clearSearch, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 
     QString wtstr = i18n("Search interactively for icon names (e.g. folder).");
-    QWhatsThis::add(searchLabel, wtstr);
-    QWhatsThis::add(d->searchLine, wtstr);
+    searchLabel->setWhatsThis(wtstr);
+    d->searchLine->setWhatsThis(wtstr);
 
 
     mpCanvas = new KIconCanvas(main);
-    connect(mpCanvas, SIGNAL(executed(QIconViewItem *)), SLOT(slotAcceptIcons()));
-    connect(mpCanvas, SIGNAL(returnPressed(QIconViewItem *)), SLOT(slotAcceptIcons()));
+    connect(mpCanvas, SIGNAL(executed(Q3IconViewItem *)), SLOT(slotAcceptIcons()));
+    connect(mpCanvas, SIGNAL(returnPressed(Q3IconViewItem *)), SLOT(slotAcceptIcons()));
     mpCanvas->setMinimumSize(400, 125);
     top->addWidget(mpCanvas);
     d->searchLine->setIconView(mpCanvas);
@@ -365,7 +364,7 @@ void KIconDialog::showIcons()
     else
 	filelist=mFileList;
 
-    QSortedList <IconPath>iconlist;
+    Q3SortedList <IconPath>iconlist;
     iconlist.setAutoDelete(true);
     QStringList::Iterator it;
     for( it = filelist.begin(); it != filelist.end(); ++it )
@@ -686,7 +685,7 @@ void KIconButton::setIcon(const QString& icon)
 void KIconButton::resetIcon()
 {
     mIcon = QString::null;
-    setIconSet(QIconSet());
+    setIconSet(QIcon());
 }
 
 void KIconButton::slotChangeIcon()
@@ -706,7 +705,7 @@ void KIconButton::newIconName(const QString& name)
     if (name.isEmpty())
         return;
 
-    QIconSet iconset = mpLoader->loadIconSet(name, mGroup, d->iconSize);
+    QIcon iconset = mpLoader->loadIconSet(name, mGroup, d->iconSize);
     setIconSet(iconset);
     mIcon = name;
 

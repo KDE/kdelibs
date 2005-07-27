@@ -255,14 +255,14 @@ namespace KJS {
   // when multiple nodes have the same name.
   class DOMNamedNodesCollection : public DOMObject {
   public:
-    DOMNamedNodesCollection(ExecState *exec, const QValueList<DOM::Node>& nodes );
+    DOMNamedNodesCollection(ExecState *exec, const Q3ValueList<DOM::Node>& nodes );
     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    const QValueList<DOM::Node>& nodes() const { return m_nodes; }
+    const Q3ValueList<DOM::Node>& nodes() const { return m_nodes; }
     enum { Length };
   private:
-    QValueList<DOM::Node> m_nodes;
+    Q3ValueList<DOM::Node> m_nodes;
   };
 
   class DOMCharacterData : public DOMNode {

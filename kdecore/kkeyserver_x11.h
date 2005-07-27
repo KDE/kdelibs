@@ -153,7 +153,7 @@ namespace KKeyServer
 		 * @param key the key to get the data from
 		 * @param bQt true to take the Qt keycode, false
 		 *            for the native key code
-		 * @see Qt::Key
+		 * @see Key
 		 * @see KKeyNative
 		 */
 		bool init( const KKey& key, bool bQt );
@@ -162,7 +162,7 @@ namespace KKeyServer
 		 * Checks whether the key code is a native code.
 		 * @return true if native code of the window system,
 		 *         false if it is a Qt keycode
-		 * @see Qt::Key
+		 * @see Key
 		 * @see KKeyNative
 		 */
 		bool isNative() const { return m_code != CODE_FOR_QT; }
@@ -325,8 +325,8 @@ namespace KKeyServer
 	KDECORE_EXPORT uint modXScrollLock();
 
 	/**
-	 * Returns the X11 Mode_switch modifier mask/flag. 
-	 * @return the X11 Mode_switch modifier mask/flag. 
+	 * Returns the X11 Mode_switch modifier mask/flag.
+	 * @return the X11 Mode_switch modifier mask/flag.
 	 * @see accelModMaskX()
 	 * @since 3.5
 	 */
@@ -351,7 +351,7 @@ namespace KKeyServer
 	 * @param keyQt the qt key code
 	 * @param sym if successful, the symbol will be written here
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 * @see Sym
 	 */
 	KDECORE_EXPORT bool keyQtToSym( int keyQt, uint& sym );
@@ -362,7 +362,7 @@ namespace KKeyServer
 	 * @param keyQt the qt key code
 	 * @param mod if successful, the modifiers will be written here
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 */
 	KDECORE_EXPORT bool keyQtToMod( int keyQt, uint& mod );
 
@@ -371,7 +371,7 @@ namespace KKeyServer
 	 * @param sym the symbol
 	 * @param keyQt if successful, the qt key code will be written here
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 * @see Sym
 	 */
 	KDECORE_EXPORT bool symToKeyQt( uint sym, int& keyQt );
@@ -383,7 +383,7 @@ namespace KKeyServer
 	 * @param modQt the mask of Qt key code modifiers will be written here,
 	 *        if successful
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 * @see KKey
 	 */
 	KDECORE_EXPORT bool modToModQt( uint mod, int& modQt );
@@ -406,13 +406,13 @@ namespace KKeyServer
 	 * @param modQt the mask of Qt key code modifiers will be written here
 	 *        if successful
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 */
 	//wrapped for win32
 	KDECORE_EXPORT bool modXToModQt( uint modX, int& modQt );
 
 	/**
-	 * Converts the Qt-compatible button state to x11 modifier. 
+	 * Converts the Qt-compatible button state to x11 modifier.
 	 */
 	KDECORE_EXPORT int qtButtonStateToMod( Qt::ButtonState s );
 
@@ -435,7 +435,7 @@ namespace KKeyServer
 	 * @param modX the mask of ORed X11 modifiers
 	 * @param symX if successful, the X11 symbol will be written here
 	 * @return true if successful, false otherwise
-	 * @see Qt::Key
+	 * @see Key
 	 * @see Sym
 	 */
 	KDECORE_EXPORT bool codeXToSym( uchar codeX, uint modX, uint& symX );

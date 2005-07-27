@@ -21,7 +21,7 @@
 
 #include <qfile.h>
 #include <qtextcodec.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 
 #include <kdebug.h>
 #include <klocale.h>

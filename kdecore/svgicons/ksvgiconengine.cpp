@@ -22,9 +22,12 @@
 #include <qfile.h>
 #include <qcolor.h>
 #include <qimage.h>
-#include <qwmatrix.h>
+#include <qmatrix.h>
+#include <QVector>
+#include <Q3PointArray>
+#include <q3ptrlist.h>
 
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 #include <zlib.h>
 
@@ -50,7 +53,7 @@ public:
 
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
-		QMemArray<ArtGradientStop> *stopArray = new QMemArray<ArtGradientStop>();
+		QVector<ArtGradientStop> *stopArray = new QVector<ArtGradientStop>();
 
 		float oldOffset = -1, newOffset = -1;
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
@@ -90,14 +93,14 @@ public:
 			{
 				QString style = element.attribute("style");
 
-				QStringList substyles = QStringList::split(';', style);
+				QStringList substyles = style.split(';', QString::SkipEmptyParts);
 				for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
 				{
-					QStringList substyle = QStringList::split(':', (*it));
+					QStringList substyle = (*it).split(':', QString::SkipEmptyParts);
 					QString command = substyle[0];
 					QString params = substyle[1];
-					command = command.stripWhiteSpace();
-					params = params.stripWhiteSpace();
+					command = command.trimmed();
+					params = params.trimmed();
 
 					if(command == "stop-color")
 					{
@@ -121,12 +124,12 @@ public:
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
 
 			// Convert in a libart suitable form
-			Q_UINT32 stopColor = m_engine->painter()->toArtColor(qStopColor);
+			quint32 stopColor = m_engine->painter()->toArtColor(qStopColor);
 
 			int opacity = m_engine->painter()->parseOpacity(parseOpacity);
 
-			Q_UINT32 rgba = (stopColor << 8) | opacity;
-			Q_UINT32 r, g, b, a;
+			quint32 rgba = (stopColor << 8) | opacity;
+			quint32 r, g, b, a;
 
 			// Convert from separated to premultiplied alpha
 			a = rgba & 0xff;
@@ -146,25 +149,25 @@ public:
 		return stopArray->data();
 	}
 
-	QPointArray parsePoints(QString points)
+	Q3PointArray parsePoints(QString points)
 	{
 		if(points.isEmpty())
-			return QPointArray();
+			return Q3PointArray();
 
-		points = points.simplifyWhiteSpace();
+		points = points.simplified();
 
 		if(points.contains(",,") || points.contains(", ,"))
-			return QPointArray();
+			return Q3PointArray();
 
 		points.replace(',', ' ');
 		points.replace('\r', QString::null);
 		points.replace('\n', QString::null);
 
-		points = points.simplifyWhiteSpace();
+		points = points.simplified();
 
-		QStringList pointList = QStringList::split(' ', points);
+		QStringList pointList = points.split(' ', QString::SkipEmptyParts);
 
-		QPointArray array(pointList.count() / 2);
+		Q3PointArray array(pointList.count() / 2);
 		int i = 0;
 
 		for(QStringList::Iterator it = pointList.begin(); it != pointList.end(); it++)
@@ -182,9 +185,9 @@ public:
 	void parseTransform(const QString &transform)
 	{
 		// Combine new and old matrix
-		QWMatrix matrix = m_engine->painter()->parseTransform(transform);
+		QMatrix matrix = m_engine->painter()->parseTransform(transform);
 
-		QWMatrix *current = m_engine->painter()->worldMatrix();
+		QMatrix *current = m_engine->painter()->worldMatrix();
 		*current = matrix * *current;
 	}
 
@@ -201,7 +204,7 @@ public:
 	//	m_engine->painter()->setStrokeOpacity(255, true);
 
 		// Collect parent node's attributes
-		QPtrList<QDomNamedNodeMap> applyList;
+		Q3PtrList<QDomNamedNodeMap> applyList;
 		applyList.setAutoDelete(true);
 
 		QDomNode shape = node.parentNode();
@@ -217,7 +220,7 @@ public:
 			{
 				QString name, value;
 
-				name = attr.item(i).nodeName().lower();
+				name = attr.item(i).nodeName().toLower();
 				value = attr.item(i).nodeValue();
 
 				if(name == "transform")
@@ -236,12 +239,12 @@ public:
 		{
 			QDomNode current = attr.item(i);
 
-			if(current.nodeName().lower() == "transform")
+			if(current.nodeName().toLower() == "transform")
 				parseTransform(current.nodeValue());
-			else if(current.nodeName().lower() == "style")
+			else if(current.nodeName().toLower() == "style")
 				parseStyle(current.nodeValue());
 			else
-				parsePA(current.nodeName().lower(), current.nodeValue());
+				parsePA(current.nodeName().toLower(), current.nodeValue());
 		}
 	}
 
@@ -311,7 +314,7 @@ public:
 			while(!iterate.isNull())
 			{
 				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+				m_engine->painter()->setWorldMatrix(new QMatrix(m_initialMatrix));
 
 				// Parse common attributes, style / transform
 				parseCommonAttributes(iterate);
@@ -329,7 +332,7 @@ public:
 			while(!iterate.isNull())
 			{
 				// Reset matrix
-				m_engine->painter()->setWorldMatrix(new QWMatrix(m_initialMatrix));
+				m_engine->painter()->setWorldMatrix(new QMatrix(m_initialMatrix));
 
 				// Parse common attributes, style / transform
 				parseCommonAttributes(iterate);
@@ -372,13 +375,13 @@ public:
 		}
 		else if(element.tagName() == "polyline")
 		{
-			QPointArray polyline = parsePoints(element.attribute("points"));
+			Q3PointArray polyline = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolyline(polyline);
 			return true;
 		}
 		else if(element.tagName() == "polygon")
 		{
-			QPointArray polygon = parsePoints(element.attribute("points"));
+			Q3PointArray polygon = parsePoints(element.attribute("points"));
 			m_engine->painter()->drawPolygon(polygon);
 			return true;
 		}
@@ -389,7 +392,7 @@ public:
 			if(element.hasAttribute("fill") && element.attribute("fill").contains("none"))
 				filled = false;
 
-			if(element.attribute("style").contains("fill") && element.attribute("style").stripWhiteSpace().contains("fill:none"))
+			if(element.attribute("style").contains("fill") && element.attribute("style").trimmed().contains("fill:none"))
 				filled = false;
 
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
@@ -407,19 +410,19 @@ public:
 			if(href.startsWith("data:"))
 			{
 				// Get input
-				QCString input = href.mid(13).utf8();
+				QByteArray input = href.mid(13).toUtf8();
 
 				// Decode into 'output'
 				QByteArray output;
 				KCodecs::base64Decode(input, output);
 
 				// Display
-				QImage image(output);
+				QImage image = QImage::fromData(output);
 
 				// Scale, if needed
 				if(image.width() != (int) w || image.height() != (int) h)
 				{
-					QImage show = image.smoothScale((int) w, (int) h, QImage::ScaleMin);
+					QImage show = image.scaled((int) w, (int) h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 					m_engine->painter()->drawImage(x, y, show);
 				}
 
@@ -432,14 +435,14 @@ public:
 
 	void parseStyle(const QString &style)
 	{
-		QStringList substyles = QStringList::split(';', style);
+		QStringList substyles = style.split(';', QString::SkipEmptyParts);
 		for(QStringList::Iterator it = substyles.begin(); it != substyles.end(); ++it)
 		{
-			QStringList substyle = QStringList::split(':', (*it));
+			QStringList substyle = (*it).split(':', QString::SkipEmptyParts);
 			QString command = substyle[0];
 			QString params = substyle[1];
-			command = command.stripWhiteSpace();
-			params = params.stripWhiteSpace();
+			command = command.trimmed();
+			params = params.trimmed();
 
 			parsePA(command, params);
 		}
@@ -484,7 +487,7 @@ private:
 	friend class KSVGIconEngine;
 
 	KSVGIconEngine *m_engine;
-	QWMatrix m_initialMatrix;
+	QMatrix m_initialMatrix;
 };
 
 struct KSVGIconEngine::Private
@@ -520,24 +523,24 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	QDomDocument svgDocument("svg");
 	QFile file(path);
 
-	if(path.right(3).upper() == "SVG")
+	if(path.right(3).toUpper() == "SVG")
 	{
 		// Open SVG Icon
-		if(!file.open(IO_ReadOnly))
+		if(!file.open(QIODevice::ReadOnly))
 			return false;
 
 		svgDocument.setContent(&file);
 	}
 	else // SVGZ
 	{
-		gzFile svgz = gzopen(path.latin1(), "ro");
+		gzFile svgz = gzopen(path.toLatin1().data(), "ro");
 		if(!svgz)
 			return false;
 
 		QString data;
 		bool done = false;
 
-		QCString buffer(1024);
+		QByteArray buffer(1024, '\0');
 		int length = 0;
 
 		while(!done)
@@ -590,7 +593,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 	// Apply viewbox
 	if(rootElement.hasAttribute("viewBox"))
 	{
-		QStringList points = QStringList::split(' ', rootElement.attribute("viewBox").simplifyWhiteSpace());
+		QStringList points = rootElement.attribute("viewBox").simplified().split(' ', QString::SkipEmptyParts);
 
 		float w = points[2].toFloat();
 		float h = points[3].toFloat();
@@ -613,7 +616,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		d->painter->worldMatrix()->scale(ratiow, ratioh);
 	}
 
-	QWMatrix initialMatrix = *d->painter->worldMatrix();
+	QMatrix initialMatrix = *d->painter->worldMatrix();
 	d->helper->m_initialMatrix = initialMatrix;
 
 	// Apply transform
@@ -634,7 +637,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		svgNode = svgNode.nextSibling();
 
 		// Reset matrix
-		d->painter->setWorldMatrix(new QWMatrix(initialMatrix));
+		d->painter->setWorldMatrix(new QMatrix(initialMatrix));
 	}
 
 	d->painter->finish();

@@ -2474,7 +2474,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case BodyVLink:           { body.setVLink(str); return; }
       case BodyScrollLeft:
       case BodyScrollTop: {
-        QScrollView* sview = body.ownerDocument().view();
+        Q3ScrollView* sview = body.ownerDocument().view();
         if (sview) {
           // Update the document's layout before we compute these attributes.
           DOM::DocumentImpl* docimpl = body.handle()->getDocument();
@@ -3254,7 +3254,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &prop
     }
     else // multiple items, return a collection
     {
-      QValueList<DOM::Node> nodes;
+      Q3ValueList<DOM::Node> nodes;
       nodes.append(node);
       do {
         nodes.append(next);

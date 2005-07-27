@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef __KBUTTONBOX__H__
@@ -51,7 +51,7 @@ public:
     * addButton() are laid out from top to bottom, otherwise they
     * are laid out from left to right.
     */
-  KButtonBox(QWidget *parent, Orientation _orientation = Horizontal,
+  KButtonBox(QWidget *parent, Qt::Orientation _orientation = Qt::Horizontal,
 	     int border = 0, int _autoborder = 6);
 
   /**

@@ -12,7 +12,7 @@
 
 #include "kwallettest.h"
 
-static QTextStream _out( stdout, IO_WriteOnly );
+static QTextStream _out( stdout, QIODevice::WriteOnly );
 
 void openWallet()
 {

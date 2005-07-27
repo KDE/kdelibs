@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmpropertypage.h"
@@ -26,7 +26,7 @@
 
 #include "kmpropgeneral.h"
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <kiconloader.h>
 
 KMPropertyPage::KMPropertyPage(QWidget *parent, const char *name)
@@ -43,7 +43,7 @@ KMPropertyPage::~KMPropertyPage()
 
 void KMPropertyPage::setPrinter(KMPrinter *p)
 {
-	QPtrListIterator<KMPropWidget>	it(m_widgets);
+	Q3PtrListIterator<KMPropWidget>	it(m_widgets);
 	for (;it.current();++it)
 		it.current()->setPrinterBase(p);
 }

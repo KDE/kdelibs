@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kbuildservicetypefactory.h"
@@ -29,7 +29,7 @@
 #include <assert.h>
 #include <kdesktopfile.h>
 
-template class QDict<KMimeType>;
+template class Q3Dict<KMimeType>;
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
@@ -131,8 +131,7 @@ KBuildServiceTypeFactory::saveHeader(QDataStream &str)
    str << (Q_INT32) m_otherPatternOffset;
    str << (Q_INT32) m_propertyTypeDict.count();
 
-   QMapIterator<QString, int> it;
-   for (it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
+   for (QMap<QString, int>::Iterator it = m_propertyTypeDict.begin(); it != m_propertyTypeDict.end(); ++it)
    {
      str << it.key() << (Q_INT32)it.data();
    }
@@ -161,10 +160,10 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    // Store each patterns in one of the 2 string lists (for sorting)
    QStringList fastPatterns;  // for *.a to *.abcd
    QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   QDict<KMimeType> dict;
+   Q3Dict<KMimeType> dict;
 
    // For each mimetype in servicetypeFactory
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict );
        it.current();
        ++it)
    {

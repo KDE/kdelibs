@@ -419,7 +419,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         if (!attr->value().isEmpty()) {
             QString url = khtml::parseURL( attr->value() ).string();
             url = getDocument()->completeURL( url );
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, DOMString("url('"+url+"')") );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -561,7 +561,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttributeImpl *attr)
         if (attr->val()) {
             QString url = khtml::parseURL( attr->value() ).string();
             url = getDocument()->completeURL( url );
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE,  "url('"+url+"')" );
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE,  DOMString("url('"+url+"')") );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);

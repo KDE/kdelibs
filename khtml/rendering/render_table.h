@@ -28,7 +28,8 @@
 #define RENDER_TABLE_H
 
 #include <qcolor.h>
-#include <qptrvector.h>
+#include <q3ptrvector.h>
+#include <QVector>
 
 #include "rendering/render_box.h"
 #include "rendering/render_block.h"
@@ -137,8 +138,8 @@ public:
 	ushort width; // the calculated position of the column
     };
 
-    QMemArray<int> columnPos;
-    QMemArray<ColumnStruct> columns;
+    QVector<int> columnPos;
+    QVector<ColumnStruct> columns;
 
     void splitColumn( int pos, int firstSpan );
     void appendColumn( int span );
@@ -247,7 +248,7 @@ public:
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()); }
 
-    typedef QMemArray<RenderTableCell *> Row;
+    typedef QVector<RenderTableCell *> Row;
     struct RowStruct {
 	Row *row;
 	int baseLine;
@@ -275,8 +276,8 @@ public:
 
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
-    QMemArray<RowStruct> grid;
-    QMemArray<int> rowPos;
+    QVector<RowStruct> grid;
+    QVector<int> rowPos;
 
     signed short cRow : 16;
     ushort cCol : 15;
@@ -372,7 +373,7 @@ public:
     CollapsedBorderValue collapsedRightBorder() const;
     CollapsedBorderValue collapsedTopBorder() const;
     CollapsedBorderValue collapsedBottomBorder() const;
-    virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
+    virtual void collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles);
 
     virtual void updateFromElement();
 

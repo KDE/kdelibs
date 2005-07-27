@@ -33,16 +33,17 @@
 #include <qlabel.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
-#include <qstylesheet.h>
-#include <qvgroupbox.h>
+#include <q3stylesheet.h>
+#include <q3groupbox.h>
+#include <QResizeEvent>
 
 #undef Bool
 
-class MetaPropsScrollView : public QScrollView
+class MetaPropsScrollView : public Q3ScrollView
 {
 public:
     MetaPropsScrollView(QWidget* parent = 0, const char* name = 0)
-        : QScrollView(parent, name)
+        : Q3ScrollView(parent, name)
     {
       setFrameStyle(QFrame::NoFrame);
       m_frame = new QFrame(viewport(), "MetaPropsScrollView::m_frame");
@@ -55,7 +56,7 @@ public:
 protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
     {
-      QScrollView::viewportResizeEvent(ev);
+      Q3ScrollView::viewportResizeEvent(ev);
       m_frame->resize( kMax(m_frame->sizeHint().width(), ev->size().width()),
                        kMax(m_frame->sizeHint().height(), ev->size().height()));
     };
@@ -74,7 +75,7 @@ public:
     QGridLayout*                  m_framelayout;
     KFileMetaInfo                 m_info;
 //    QPushButton*                m_add;
-    QPtrList<KFileMetaInfoWidget> m_editWidgets;
+    Q3PtrList<KFileMetaInfoWidget> m_editWidgets;
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
@@ -150,14 +151,14 @@ void KFileMetaPropsPlugin::createLayout()
         if (itemList.isEmpty())
             continue;
 
-        QGroupBox *groupBox = new QGroupBox(2, Qt::Horizontal, 
-            QStyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()), 
+        Q3GroupBox *groupBox = new Q3GroupBox(2, Qt::Horizontal, 
+            Q3StyleSheet::escape(mtinfo->groupInfo(*git)->translatedName()), 
             d->m_frame);
 
         toplayout->addWidget(groupBox);
 
-        QValueList<KFileMetaInfoItem> readItems;
-        QValueList<KFileMetaInfoItem> editItems;
+        Q3ValueList<KFileMetaInfoItem> readItems;
+        Q3ValueList<KFileMetaInfoItem> editItems;
 
         for (QStringList::Iterator iit = itemList.begin(); 
                 iit!=itemList.end(); ++iit)
@@ -175,7 +176,7 @@ void KFileMetaPropsPlugin::createLayout()
 
         KFileMetaInfoWidget* w = 0L;
         // then first add the editable items to the layout
-        for (QValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); 
+        for (Q3ValueList<KFileMetaInfoItem>::Iterator iit= editItems.begin(); 
                 iit!=editItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
@@ -187,7 +188,7 @@ void KFileMetaPropsPlugin::createLayout()
         }
 
         // and then the read only items
-        for (QValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); 
+        for (Q3ValueList<KFileMetaInfoItem>::Iterator iit= readItems.begin(); 
                 iit!=readItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
@@ -257,7 +258,7 @@ void KFileMetaPropsPlugin::applyChanges()
   kdDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
 
-  QPtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
+  Q3PtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
   KFileMetaInfoWidget* w;
   for (; (w = it.current()); ++it) w->apply();
   d->m_info.applyChanges();

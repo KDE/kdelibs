@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (c) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (c) 2001 David Faure <faure@kde.org>
    Copyright (c) 2001 Laurent Montel <lmontel@mandrakesoft.com>
 
    This library is free software; you can redistribute it and/or
@@ -18,11 +18,11 @@
 */
 
 #include "kfilesharedlg.h"
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
 #include <qdir.h>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qlayout.h>
 #include <kprocess.h>
 #include <kprocio.h>
@@ -43,7 +43,7 @@
 class KFileSharePropsPlugin::Private
 {
 public:
-    QVBox *m_vBox;
+    Q3VBox *m_vBox;
     KProcess *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;
@@ -134,7 +134,7 @@ void KFileSharePropsPlugin::init()
             vbox->setSpacing( KDialog::spacingHint() );
             vbox->setMargin( KDialog::marginHint() );
 
-            QButtonGroup *rbGroup = new QButtonGroup( m_widget );
+            Q3ButtonGroup *rbGroup = new Q3ButtonGroup( m_widget );
             rbGroup->hide();
             m_rbUnShare = new QRadioButton( i18n("Not shared"), m_widget );
             connect( m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
@@ -154,13 +154,13 @@ void KFileSharePropsPlugin::init()
 
             // Some help text
             QLabel *label = new QLabel( i18n("Sharing this folder makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
-            label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
+            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap );
             vbox->addWidget( label, 0 );
 
 	    KSeparator* sep=new KSeparator(m_widget);
 	    vbox->addWidget( sep, 0 );
 	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
-            label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
+            label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap );
 	    vbox->addWidget( label, 0 );
 	    m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
 	    connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );

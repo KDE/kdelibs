@@ -15,8 +15,8 @@
 
 #    You should have received a copy of the GNU General Public License
 #    along with this library; see the file COPYING.  If not, write to
-#    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-#    Boston, MA 02110-1301, USA.
+#    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#    Boston, MA 02111-1307, USA.
 
 SUBDIRS = . kdetrayproxy tests about
 
@@ -28,7 +28,7 @@ AM_LDFLAGS = $(LDFLAGS_AS_NEEDED) $(LDFLAGS_NEW_DTAGS)
 
 lib_LTLIBRARIES = libkdeui.la libkspell.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
-libkdeui_la_LIBADD = ../kdecore/libkdecore.la
+libkdeui_la_LIBADD = ../kdecore/libkdecore.la ../kdefx/libkdefx.la
 
 libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkspell_la_LIBADD = libkdeui.la
@@ -48,7 +48,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		keditcl.h kled.h keditlistbox.h \
 		kwizard.h kkeydialog.h kkeybutton.h \
 		kurllabel.h kruler.h kcursor.h \
-		klineeditdlg.h kinputdialog.h kactivelabel.h \
+		kinputdialog.h kactivelabel.h \
 		kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h \
@@ -56,15 +56,15 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdualcolorbtn.h kdualcolorbutton.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h \
 		kaction.h kactioncollection.h kactionclasses.h khelpmenu.h \
-		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
+		kcmodule.h kcmenumngr.h \
 		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
 		kpixmapio.h kwordwrap.h \
 		kedittoolbar.h kdockwidget.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
-		kpanelapplet.h kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
-		kpanelextension.h kcompletionbox.h ksqueezedtextlabel.h \
+		kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
+		kcompletionbox.h ksqueezedtextlabel.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
@@ -74,7 +74,8 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
 		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h \
-		kiconviewsearchline.h ktoolbarlabelaction.h kshortcutdialog.h
+		kiconviewsearchline.h ktoolbarlabelaction.h kshortcutdialog.h \
+		qxembed.h khbox.h kvbox.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -82,7 +83,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 # with --enable-final since they use X defines that get undefined
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
-		qxembed.cpp ksharedpixmap.cpp kpixmapio.cpp \
+		ksharedpixmap.cpp kpixmapio.cpp \
 		kpopupmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp \
 		kactioncollection.cpp kactionclasses.cpp \
 		kurllabel.cpp kmenubar.cpp kinputdialog.cpp \
@@ -94,23 +95,23 @@ libkdeui_la_SOURCES = \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
-		kshortcutdialog_simple.ui kshortcutdialog_advanced.ui \
+		kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3 \
 		kshortcutdialog.cpp kkeybutton.cpp kkeydialog.cpp \
-		kruler.cpp kcursor.cpp klineeditdlg.cpp  \
+		kruler.cpp kcursor.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp khelpmenu.cpp \
-		kcmenumngr.cpp kpanelmenu.cpp \
+		kcmenumngr.cpp \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
-		kpanelappmenu.cpp kdockwidget.cpp kdockwidget_private.cpp \
+		kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
-		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
-		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
+		kaboutapplication.cpp kdcopactionproxy.cpp \
+		kcolorcombo.cpp kpushbutton.cpp \
 		kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp \
@@ -120,11 +121,11 @@ libkdeui_la_SOURCES = \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp ktimezonewidget.cpp \
 		ksconfig.cpp kspelldlg.cpp \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
-		ksplashscreen.cpp kspellui.ui kconfigdialog.cpp \
+		ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp \
 		kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp \
 		kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
 		kwhatsthismanager.cpp kiconviewsearchline.cpp \
-		ktoolbarlabelaction.cpp
+		ktoolbarlabelaction.cpp qxembed.cpp khbox.cpp kvbox.cpp
 
 noinst_HEADERS = kdockwidget_private.h kdockwidget_p.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \

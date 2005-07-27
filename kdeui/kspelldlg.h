@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __KSPELLDLG_H__
 #define __KSPELLDLG_H__
@@ -24,7 +24,7 @@
 
 class QStringList;
 class QLabel;
-class QListViewItem;
+class Q3ListViewItem;
 class QPushButton;
 class KListBox;
 class KLineEdit;
@@ -108,7 +108,7 @@ protected slots:
 
   void textChanged( const QString & );
 
-  void slotSelectionChanged( QListViewItem* item );
+  void slotSelectionChanged( Q3ListViewItem* item );
 };
 
 #endif

@@ -24,7 +24,7 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <ksharedptr.h>
 #include <kurl.h>
@@ -77,7 +77,7 @@ class KABC_EXPORT Addressee
   friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Addressee & );
 
   public:
-    typedef QValueList<Addressee> List;
+    typedef Q3ValueList<Addressee> List;
     typedef QMap<QString, Addressee> Map;
 
     /**
@@ -372,7 +372,7 @@ class KABC_EXPORT Addressee
 
     static void setSortMode( KABC::SortMode *mode );
 
-    bool operator< ( const Addressee &addr );
+    bool operator< ( const Addressee &addr ) const;
 
   private:
     void detach();

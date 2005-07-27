@@ -22,7 +22,7 @@
 #define KDIROPERATOR_H_
 
 #include <qwidget.h>
-#include <qptrstack.h>
+#include <q3ptrstack.h>
 
 #include <kaction.h>
 #include <kcompletion.h>
@@ -31,7 +31,7 @@
 #include <kfileitem.h>
 #include <kfile.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 class QTimer;
 
 class KAction;
@@ -39,7 +39,7 @@ class KDirLister;
 class KToggleAction;
 class KActionSeparator;
 class KActionMenu;
-class QWidgetStack;
+class Q3WidgetStack;
 class KProgress;
 namespace KIO {
   class CopyJob;
@@ -252,7 +252,7 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * @returns true if we are displaying the root directory of the current url
      */
-    bool isRoot() const { return url().path() == QChar('/'); }
+    bool isRoot() const { return url().path() == QString(QChar('/')); }
 
     /**
      * @returns the object listing the directory
@@ -827,12 +827,12 @@ private:
     /**
      * Contains all URLs you can reach with the back button.
      */
-    QPtrStack<KURL> backStack;
+    Q3PtrStack<KURL> backStack;
 
     /**
      * Contains all URLs you can reach with the forward button.
      */
-    QPtrStack<KURL> forwardStack;
+    Q3PtrStack<KURL> forwardStack;
 
     KDirLister *dir;
     KURL currUrl;

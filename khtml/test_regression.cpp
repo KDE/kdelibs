@@ -26,11 +26,12 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <kapplication.h>
+#include <kaccelmanager.h>
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
@@ -42,6 +43,8 @@
 #include "rendering/render_style.h"
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
+#include <QWindowsStyle>
+#include <QStyleOptionSlider>
 
 //We don't use the default fonts, though, but traditional testregression ones
 #undef HTML_DEFAULT_VIEW_FONT
@@ -57,6 +60,155 @@
 #define HTML_DEFAULT_VIEW_CURSIVE_FONT "helvetica"
 #define HTML_DEFAULT_VIEW_FANTASY_FONT "helvetica"
 
+#warning "Kill this at some point"
+
+struct PalInfo
+{
+    QPalette::ColorRole role;
+    Q_UINT32            color;
+};
+
+PalInfo palInfo[] = 
+{
+    {QPalette::Foreground, 0xff000000},
+    {QPalette::Button, 0xffc0c0c0},
+    {QPalette::Light, 0xffffffff},
+    {QPalette::Midlight, 0xffdfdfdf},
+    {QPalette::Dark, 0xff808080},
+    {QPalette::Mid, 0xffa0a0a4},
+    {QPalette::Text, 0xff000000},
+    {QPalette::BrightText, 0xffffffff},
+    {QPalette::ButtonText, 0xff000000},
+    {QPalette::Base, 0xffffffff},
+    {QPalette::Background, 0xffc0c0c0},
+    {QPalette::Shadow, 0xff000000},
+    {QPalette::Highlight, 0xff000080},
+    {QPalette::HighlightedText, 0xffffffff},
+    {QPalette::Link, 0xff0000ff},
+    {QPalette::LinkVisited, 0xffff00ff},
+    {QPalette::LinkVisited, 0}
+};
+
+PalInfo disPalInfo[] = 
+{
+    {QColorGroup::Foreground, 0xff808080},
+    {QColorGroup::Button, 0xffc0c0c0},
+    {QColorGroup::Light, 0xffffffff},
+    {QColorGroup::Midlight, 0xffdfdfdf},
+    {QColorGroup::Dark, 0xff808080},
+    {QColorGroup::Mid, 0xffa0a0a4},
+    {QColorGroup::Text, 0xff808080},
+    {QColorGroup::BrightText, 0xffffffff},
+    {QColorGroup::ButtonText, 0xff808080},
+    {QColorGroup::Base, 0xffc0c0c0},
+    {QColorGroup::Background, 0xffc0c0c0},
+    {QColorGroup::Shadow, 0xff000000},
+    {QColorGroup::Highlight, 0xff000080},
+    {QColorGroup::HighlightedText, 0xffffffff},
+    {QColorGroup::Link, 0xff0000ff},
+    {QColorGroup::LinkVisited, 0xffff00ff},
+    {QPalette::LinkVisited, 0}
+};
+
+
+
+class TestStyle: public QWindowsStyle
+{
+public:
+    TestStyle()
+    {}
+
+    virtual void drawControl(ControlElement element, const QStyleOption* option, QPainter* painter, const QWidget* widget) const
+    {
+        switch (element)
+        {
+        case CE_ScrollBarSubLine:
+        case CE_ScrollBarAddLine:
+        case CE_ScrollBarSubPage:
+        case CE_ScrollBarAddPage:
+        case CE_ScrollBarFirst:
+        case CE_ScrollBarLast:
+        case CE_ScrollBarSlider:
+            const QStyleOptionSlider* sbOpt = qstyleoption_cast<const QStyleOptionSlider*>(option);
+
+            if (sbOpt->minimum == sbOpt->maximum)
+            {
+                const_cast<QStyleOptionSlider*>(sbOpt)->state ^= QStyle::State_Enabled;
+                if (element == CE_ScrollBarSlider)
+                    element = CE_ScrollBarAddPage;
+            }
+
+            if (element == CE_ScrollBarAddPage || element == CE_ScrollBarSubPage)
+            {
+                //Fun. in Qt4, the brush offset seems to be sensitive to window position??
+                painter->setBrushOrigin(0,1);
+            }
+            break;
+        default: //shaddup
+            break;
+        }
+
+        QWindowsStyle::drawControl(element, option, painter, widget);
+    }
+
+    virtual QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option,
+                                 SubControl subControl, const QWidget* widget) const
+    {
+        QRect rect = QWindowsStyle::subControlRect(control, option, subControl, widget);
+
+        switch (control)
+        {
+        case CC_ComboBox:
+            if (subControl == SC_ComboBoxEditField)
+                return rect.translated(2,-1);
+            else
+                return rect;
+        default:
+            return rect;
+        }
+    }
+
+    virtual QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget) const
+    {
+        QSize size = QWindowsStyle::sizeFromContents(type, option, contentsSize, widget);
+
+        switch (type)
+        {
+        case CT_LineEdit:
+            return QSize(size.width() + 2, size.height() + 2);
+        case CT_ComboBox:
+        {
+            const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+            if (cbOpt->currentText.isEmpty())
+                return QSize(size.width() + 18, size.height());
+            else
+                return QSize(size.width() + 6, size.height());
+        }
+        default:
+            return size;
+        }
+        
+    }
+
+    virtual int pixelMetric(PixelMetric metric, const QStyleOption* option, const QWidget* widget) const 
+    {
+        if (metric == PM_ButtonMargin)
+            return 7;
+        return QWindowsStyle::pixelMetric(metric, option, widget);
+    }
+
+    virtual QRect subElementRect(SubElement element, const QStyleOption* option, const QWidget* widget) const
+    {
+        QRect rect = QWindowsStyle::subElementRect(element, option, widget);
+        if (element == SE_PushButtonContents)
+        {
+            const QStyleOptionButton* butOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
+            if (butOpt->icon.isNull())
+                return rect.translated(0, -1);
+        }
+        return rect;
+    }
+};
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -71,10 +223,10 @@
 #include <qdir.h>
 #include <qobject.h>
 #include <qpushbutton.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qstring.h>
 #include <qtextstream.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qwidget.h>
 #include <qfileinfo.h>
 #include <qtimer.h>
@@ -323,7 +475,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             PartMonitor pm(m_part);
             m_part->openURL(url);
             pm.waitForCompletion();
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
             break;
         }
 	case OpenPageAsUrl: {
@@ -339,13 +491,13 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
             QString filename = args[0].toString(exec).qstring();
             QString url = args[1].toString(exec).qstring();
             QFile file(RegressionTest::curr->m_currentBase+"/"+filename);
-	    if (!file.open(IO_ReadOnly)) {
+	    if (!file.open(QIODevice::ReadOnly)) {
 		exec->setException(Error::create(exec, GeneralError,
 						 QString("Error reading " + filename).latin1()));
 	    }
 	    else {
 		QByteArray fileData;
-		QDataStream stream(fileData,IO_WriteOnly);
+		QDataStream stream(&fileData,QIODevice::WriteOnly);
 		char buf[1024];
 		int bytesread;
 		while (!file.atEnd()) {
@@ -360,7 +512,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 		m_part->end();
 		pm.waitForCompletion();
 	    }
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
 	case Begin: {
@@ -375,7 +527,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
         }
         case End: {
             m_part->end();
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
             break;
         }
 	case ExecuteScript: {
@@ -385,11 +537,11 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    proxy->evaluate("",0,code,0,&comp);
 	    if (comp.complType() == Throw)
 		exec->setException(comp.value());
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
 	case ProcessEvents: {
-	    kapp->processEvents(60000);
+	    kapp->processEvents(QEventLoop::AllEvents, 60000);
 	    break;
 	}
     }
@@ -408,7 +560,7 @@ static KCmdLineOptions options[] =
     { "g", 0, 0 } ,
     { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
     { "s", 0, 0 } ,
-    { "show", "Show the window while running tests", 0 } ,
+    { "noshow", "Do not show the window while running tests", 0 } ,
     { "t", 0, 0 } ,
     { "test <filename>", "Only run a single test. Multiple options allowed.", 0 } ,
     { "js",  "Only run .js tests", 0 },
@@ -444,7 +596,7 @@ int main(int argc, char *argv[])
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
 
-    QCString baseDir = args->getOption("base");
+    Q3CString baseDir = args->getOption("base");
 
     if ( args->count() < 1 && baseDir.isEmpty() ) {
 	KCmdLineArgs::usage();
@@ -455,7 +607,7 @@ int main(int argc, char *argv[])
     if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
 
     QFileInfo bdInfo(baseDir);
-    baseDir = QFile::encodeName(bdInfo.absFilePath());
+    baseDir = QFile::encodeName(bdInfo.absoluteFilePath());
 
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
@@ -486,7 +638,7 @@ int main(int argc, char *argv[])
 
     KApplication a;
     a.disableAutoDcopRegistration();
-    a.setStyle( "windows" );
+    a.setStyle( new TestStyle );
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
@@ -507,6 +659,15 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "Fonts", QStringList() );
     cfg.writeEntry( "DefaultEncoding", "" );
     cfg.sync();
+
+    QPalette pal = a.palette();
+    for (int c = 0; palInfo[c].color; ++c)
+    {
+        pal.setColor(QPalette::Active,   palInfo[c].role, QColor(palInfo[c].color));
+        pal.setColor(QPalette::Inactive, palInfo[c].role, QColor(palInfo[c].color));
+        pal.setColor(QPalette::Disabled, palInfo[c].role, QColor(disPalInfo[c].color));
+    }
+    a.setPalette(pal);
 
     int rv = 1;
 
@@ -532,6 +693,7 @@ int main(int argc, char *argv[])
     KHTMLPart *part = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     toplevel->setCentralWidget( part->widget() );
+    KAcceleratorManager::setNoAccel ( part->widget() );
     part->setJScriptEnabled(true);
 
     part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
@@ -569,13 +731,13 @@ int main(int argc, char *argv[])
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
     bool result = false;
-    QCStringList tests = args->getOptionList("test");
+    QByteArrayList tests = args->getOptionList("test");
     // merge testcases specified on command line
     for (; testcase_index < args->count(); testcase_index++)
         tests << args->arg(testcase_index);
     if (tests.count() > 0)
-        for (QValueListConstIterator<QCString> it = tests.begin(); it != tests.end(); ++it) {
-	    result = regressionTest->runTests(*it,true);
+        foreach (QByteArray test, tests) {
+	    result = regressionTest->runTests(test,true);
             if (!result) break;
         }
     else
@@ -607,7 +769,7 @@ int main(int argc, char *argv[])
                 printf("Errors:   %d\n",regressionTest->m_errors);
 
             QFile list( regressionTest->m_outputDir + "/links.html" );
-            list.open( IO_WriteOnly|IO_Append );
+            list.open( QIODevice::WriteOnly|QIODevice::Append );
             QString link, cl;
             link = QString( "<hr>%1 failures. (%2 expected failures)" )
                    .arg(regressionTest->m_failures_work )
@@ -665,12 +827,12 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     ::unlink( QFile::encodeName( m_outputDir + "/links.html" ) );
     QFile f( m_outputDir + "/empty.html" );
     QString s;
-    f.open( IO_WriteOnly | IO_Truncate );
+    f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><body>Follow the white rabbit";
     f.writeBlock( s.latin1(), s.length() );
     f.close();
     f.setName( m_outputDir + "/index.html" );
-    f.open( IO_WriteOnly | IO_Truncate );
+    f.open( QIODevice::WriteOnly | QIODevice::Truncate );
     s = "<html><frameset cols=150,*><frame src=links.html><frame name=content src=empty.html>";
     f.writeBlock( s.latin1(), s.length() );
     f.close();
@@ -680,7 +842,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     curr = this;
 }
 
-#include <qobjectlist.h>
+#include <qobject.h>
 
 static QStringList readListFile( const QString &filename )
 {
@@ -690,7 +852,7 @@ static QStringList readListFile( const QString &filename )
     QStringList ignoreFiles;
     if (ignoreInfo.exists()) {
         QFile ignoreFile(ignoreFilename);
-        if (!ignoreFile.open(IO_ReadOnly)) {
+        if (!ignoreFile.open(QIODevice::ReadOnly)) {
             fprintf(stderr,"Can't open %s\n",ignoreFilename.latin1());
             exit(1);
         }
@@ -894,7 +1056,7 @@ void RegressionTest::dumpRenderTree( QTextStream &outputStream, KHTMLPart* part 
     for ( QStringList::iterator it = names.begin(); it != names.end(); ++it ) {
         outputStream << "FRAME: " << (*it) << "\n";
 	KHTMLPart* frame = part->findFrame( (*it) );
-	Q_ASSERT( frame );
+//	Q_ASSERT( frame );
 	if ( frame )
             dumpRenderTree( outputStream, frame );
     }
@@ -904,7 +1066,7 @@ QString RegressionTest::getPartOutput( OutputType type)
 {
     // dump out the contents of the rendering & DOM trees
     QString dump;
-    QTextStream outputStream(dump,IO_WriteOnly);
+    QTextStream outputStream(&dump, QIODevice::WriteOnly);
 
     if ( type == RenderTree ) {
         dumpRenderTree( outputStream, m_part );
@@ -928,7 +1090,7 @@ QImage RegressionTest::renderToImage()
     QImage img( ew, eh, 32 );
     img.fill( 0xff0000 );
     if (!m_paintBuffer )
-        m_paintBuffer = new QPixmap( 512, 128, -1, QPixmap::MemoryOptim );
+        m_paintBuffer = new QPixmap( 512, 128 );
 
     for ( int py = 0; py < eh; py += 128 ) {
         for ( int px = 0; px < ew; px += 512 ) {
@@ -962,10 +1124,13 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
     int h = lhsi.height();
     int bytes = lhsi.bytesPerLine();
 
+    const unsigned char* origLs = lhsi.bits();
+    const unsigned char* origRs = rhsi.bits();
+
     for ( int y = 0; y < h; ++y )
     {
-        QRgb* ls = ( QRgb* ) lhsi.scanLine( y );
-        QRgb* rs = ( QRgb* ) rhsi.scanLine( y );
+        const QRgb* ls = (const QRgb*)(origLs + y * bytes);
+        const QRgb* rs = (const QRgb*)(origRs + y * bytes);
         if ( memcmp( ls, rs, bytes ) ) {
             for ( int x = 0; x < w; ++x ) {
                 QRgb l = ls[x];
@@ -988,7 +1153,7 @@ void RegressionTest::createLink( const QString& test, int failures )
     createMissingDirs( m_outputDir + "/" + test + "-compare.html" );
 
     QFile list( m_outputDir + "/links.html" );
-    list.open( IO_WriteOnly|IO_Append );
+    list.open( QIODevice::WriteOnly|QIODevice::Append );
     QString link;
     link = QString( "<a href=\"%1\" target=\"content\" title=\"%2\">" )
            .arg( test + "-compare.html" )
@@ -1009,7 +1174,7 @@ void RegressionTest::createLink( const QString& test, int failures )
 void RegressionTest::doJavascriptReport( const QString &test )
 {
     QFile compare( m_outputDir + "/" + test + "-compare.html" );
-    if ( !compare.open( IO_WriteOnly|IO_Truncate ) )
+    if ( !compare.open( QIODevice::WriteOnly|QIODevice::Truncate ) )
         kdDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html" << endl;
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
@@ -1068,7 +1233,7 @@ static QString makeRelativePath(const QString &base, const QString &path)
         QConstString relPath(absPath.unicode() + pathpos, absPath.length() - pathpos);
         // generate as many .. as there are path elements in relBase
         if (relBase.string().length() > 0) {
-            for (int i = relBase.string().contains('/'); i > 0; --i)
+            for (int i = relBase.string().count('/'); i > 0; --i)
                 rel += "../";
             rel += "..";
             if (relPath.string().length() > 0) rel += "/";
@@ -1102,8 +1267,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
     QString relOutputDir = makeRelativePath(m_baseDir, m_outputDir);
 
     // are blocking reads possible with KProcess?
-    char pwd[PATH_MAX];
-    getcwd( pwd, PATH_MAX );
+    QString pwd = QDir::currentPath();
     chdir( QFile::encodeName( m_baseDir ) );
 
     if ( failures & RenderFailure ) {
@@ -1111,7 +1275,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->eof(); ++line ) {
+        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
             line = line.replace( '<', "&lt;" );
             line = line.replace( '>', "&gt;" );
@@ -1127,7 +1291,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
-        for ( int line = 0; line < 100 && !is->eof(); ++line ) {
+        for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
             QString line = is->readLine();
             line = line.replace( '<', "&lt;" );
             line = line.replace( '>', "&gt;" );
@@ -1138,13 +1302,13 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
         domDiff += "</pre>";
     }
 
-    chdir( pwd );
+    chdir( QFile::encodeName( pwd ) );
 
     // create a relative path so that it works via web as well. ugly
     QString relpath = makeRelativePath(m_outputDir + "/"
         + QFileInfo(test).dirPath(), m_baseDir);
 
-    compare.open( IO_WriteOnly|IO_Truncate );
+    compare.open( QIODevice::WriteOnly|QIODevice::Truncate );
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += QString( "<script>\n"
@@ -1224,7 +1388,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
-    qApp->mainWidget()->resize( 800, 600); // restore size
+    qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // Set arguments
     KParts::URLArgs args;
@@ -1328,7 +1492,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
-    if (!sourceFile.open(IO_ReadOnly)) {
+    if (!sourceFile.open(QIODevice::ReadOnly)) {
         fprintf(stderr,"Error reading file %s\n",fullSourceName.latin1());
         exit(1);
     }
@@ -1369,7 +1533,7 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename )
 {
-    qApp->mainWidget()->resize( 800, 600); // restore size
+    qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // create interpreter
     // note: this is different from the interpreter used by the part,
@@ -1453,7 +1617,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
         outputFilename = absFilename;
 
     QFile file(absFilename);
-    if (file.open(IO_ReadOnly)) {
+    if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream ( &file );
         stream.setEncoding( QTextStream::UnicodeUTF8 );
 
@@ -1469,7 +1633,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     // generate result file
     createMissingDirs( outputFilename );
     QFile file2(outputFilename);
-    if (!file2.open(IO_WriteOnly)) {
+    if (!file2.open(QIODevice::WriteOnly)) {
         fprintf(stderr,"Error writing to file %s\n",outputFilename.latin1());
         exit(1);
     }
@@ -1581,7 +1745,7 @@ bool RegressionTest::svnIgnored( const QString &filename )
     QFileInfo fi( filename );
     QString ignoreFilename = fi.dirPath() + "/svnignore";
     QFile ignoreFile(ignoreFilename);
-    if (!ignoreFile.open(IO_ReadOnly))
+    if (!ignoreFile.open(QIODevice::ReadOnly))
         return false;
 
     QTextStream ignoreStream(&ignoreFile);

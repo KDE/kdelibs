@@ -182,13 +182,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	KMdiChildView( const QString& caption, QWidget* parentWidget = 0L, const char* name = 0L, WFlags f = 0 );
+	KMdiChildView( const QString& caption, QWidget* parentWidget = 0L, const char* name = 0L, Qt::WFlags f = 0 );
 	
 	/**
 	 * Constructor 
 	 * sets "Unnamed" as default caption
 	 */
-	KMdiChildView( QWidget* parentWidget = 0L, const char* name = 0L, WFlags f = 0 );
+	KMdiChildView( QWidget* parentWidget = 0L, const char* name = 0L, Qt::WFlags f = 0 );
 	
 	/**
 	 * Destructor

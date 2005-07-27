@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <kparts/part.h>
@@ -27,7 +27,7 @@
 #include <qapplication.h>
 #include <qfile.h>
 #include <qpoint.h>
-#include <qpointarray.h>
+#include <q3pointarray.h>
 #include <qpainter.h>
 #include <qtextstream.h>
 #include <qfileinfo.h>
@@ -46,7 +46,7 @@
 #include <assert.h>
 #include <kdebug.h>
 
-template class QPtrList<KXMLGUIClient>;
+template class Q3PtrList<KXMLGUIClient>;
 
 using namespace KParts;
 
@@ -218,7 +218,7 @@ bool Part::isSelectable() const
   return d->m_bSelectable;
 }
 
-void Part::customEvent( QCustomEvent *event )
+void Part::customEvent( QEvent *event )
 {
   if ( PartActivateEvent::test( event ) )
   {
@@ -666,13 +666,9 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   d->m_originalURL = KURL();
   if (d->m_waitForSave)
   {
-     qApp->exit_loop();
+    emit leaveModality();
   }
 }
-
-// Trolls: Nothing to see here, please step away.
-void qt_enter_modal( QWidget *widget );
-void qt_leave_modal( QWidget *widget );
 
 bool ReadWritePart::waitSaveComplete()
 {
@@ -681,11 +677,10 @@ bool ReadWritePart::waitSaveComplete()
 
   d->m_waitForSave = true;
 
-  QWidget dummy(0,0,WType_Dialog | WShowModal);
-  dummy.setFocusPolicy( QWidget::NoFocus );
-  qt_enter_modal(&dummy);
-  qApp->enter_loop();
-  qt_leave_modal(&dummy);
+  QEventLoop eventLoop;
+  connect(this, SIGNAL(leaveModality()),
+          &eventLoop, SLOT(quit()));
+  eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
   d->m_waitForSave = false;
 

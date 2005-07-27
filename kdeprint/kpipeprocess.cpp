@@ -13,13 +13,13 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kpipeprocess.h"
 
-KPipeProcess::KPipeProcess(const QString& cmd, int mode)
+KPipeProcess::KPipeProcess(const QString& cmd, QIODevice::OpenModeFlag mode)
 : QFile()
 {
 	m_pipe = NULL;
@@ -32,16 +32,16 @@ KPipeProcess::~KPipeProcess()
 	close();
 }
 
-bool KPipeProcess::open(const QString& cmd, int mode)
+bool KPipeProcess::open(const QString& cmd, QIODevice::OpenModeFlag mode)
 {
 	// close first if needed
 	close();
 	// check supported modes
-	if (mode != IO_ReadOnly && mode != IO_WriteOnly)
+	if (mode != QIODevice::ReadOnly && mode != QIODevice::WriteOnly)
 		return false;
 
 	// create the pipe
-	m_pipe = popen(cmd.latin1(),(mode == IO_WriteOnly ? "w" : "r"));
+	m_pipe = popen(cmd.latin1(),(mode == QIODevice::WriteOnly ? "w" : "r"));
 	if (m_pipe)
 		if (!QFile::open(mode,m_pipe))
 			close();

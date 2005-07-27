@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwlocal.h"
@@ -27,7 +27,7 @@
 #include <qlayout.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <klistview.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
@@ -42,22 +42,22 @@ KMWLocal::KMWLocal(QWidget *parent, const char *name)
 	m_block = false;
 
 	m_ports = new KListView(this);
-	m_ports->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	m_ports->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_ports->setLineWidth(1);
 	m_ports->header()->hide();
 	m_ports->addColumn("");
 	m_ports->setSorting(-1);
-	QListViewItem	*root = new QListViewItem(m_ports, i18n("Local System"));
+	Q3ListViewItem	*root = new Q3ListViewItem(m_ports, i18n("Local System"));
 	root->setPixmap(0, SmallIcon("kdeprint_computer"));
 	root->setOpen(true);
-	connect(m_ports, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotPortSelected(QListViewItem*)));
+	connect(m_ports, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotPortSelected(Q3ListViewItem*)));
 	QLabel	*l1 = new QLabel(i18n("URI:"), this);
 	m_localuri = new QLineEdit(this);
 	connect( m_localuri, SIGNAL( textChanged( const QString& ) ), SLOT( slotTextChanged( const QString& ) ) );
-	m_parents[0] = new QListViewItem(root, i18n("Parallel"));
-	m_parents[1] = new QListViewItem(root, m_parents[0], i18n("Serial"));
-	m_parents[2] = new QListViewItem(root, m_parents[1], i18n("USB"));
-	m_parents[3] = new QListViewItem(root, m_parents[2], i18n("Others"));
+	m_parents[0] = new Q3ListViewItem(root, i18n("Parallel"));
+	m_parents[1] = new Q3ListViewItem(root, m_parents[0], i18n("Serial"));
+	m_parents[2] = new Q3ListViewItem(root, m_parents[1], i18n("USB"));
+	m_parents[3] = new Q3ListViewItem(root, m_parents[2], i18n("Others"));
 	for (int i=0;i<4;i++)
 		m_parents[i]->setPixmap(0, SmallIcon("input_devices_settings"));
 	QLabel	*l2 = new QLabel(i18n("<p>Select a valid detected port, or enter directly the corresponding URI in the bottom edit field.</p>"), this);
@@ -89,7 +89,7 @@ bool KMWLocal::isValid(QString& msg)
 	return true;
 }
 
-void KMWLocal::slotPortSelected(QListViewItem *item)
+void KMWLocal::slotPortSelected(Q3ListViewItem *item)
 {
 	if ( m_block )
 		return;
@@ -108,7 +108,7 @@ void KMWLocal::slotPortSelected(QListViewItem *item)
 
 void KMWLocal::updatePrinter(KMPrinter *printer)
 {
-	QListViewItem *item = m_ports->selectedItem();
+	Q3ListViewItem *item = m_ports->selectedItem();
 	if ( item && item->depth() == 3 )
 		printer->setOption( "kde-autodetect", item->text( 0 ) );
 	printer->setDevice(m_localuri->text());
@@ -125,11 +125,11 @@ void KMWLocal::initPrinter(KMPrinter *printer)
 	}
 }
 
-QListViewItem* KMWLocal::lookForItem( const QString& uri )
+Q3ListViewItem* KMWLocal::lookForItem( const QString& uri )
 {
 	for ( int i=0; i<4; i++ )
 	{
-		QListViewItem *item = m_parents[ i ]->firstChild();
+		Q3ListViewItem *item = m_parents[ i ]->firstChild();
 		while ( item )
 			if ( item->text( 1 ) == uri )
 				if ( item->firstChild() )
@@ -147,7 +147,7 @@ void KMWLocal::slotTextChanged( const QString& txt )
 	if ( m_block )
 		return;
 
-	QListViewItem *item = lookForItem( txt );
+	Q3ListViewItem *item = lookForItem( txt );
 	if ( item )
 	{
 		m_block = true;
@@ -166,7 +166,7 @@ void KMWLocal::initialize()
 		KMessageBox::error(this, i18n("Unable to detect local ports."));
 		return;
 	}
-	QListViewItem	*last[4] = {0, 0, 0, 0};
+	Q3ListViewItem	*last[4] = {0, 0, 0, 0};
 	for (QStringList::Iterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString cl = *it;
@@ -189,13 +189,13 @@ void KMWLocal::initialize()
 			index = 3;
 		else
 			continue;
-		last[index] = new QListViewItem(m_parents[index], last[index], desc, uri);
+		last[index] = new Q3ListViewItem(m_parents[index], last[index], desc, uri);
 		last[index]->setPixmap(0, SmallIcon("blockdevice"));
 		m_parents[index]->setOpen(true);
 		m_uris << uri;
 		if (!printer.isEmpty())
 		{
-			QListViewItem	*pItem = new QListViewItem(last[index], printer);
+			Q3ListViewItem	*pItem = new Q3ListViewItem(last[index], printer);
 			last[index]->setOpen(true);
 			pItem->setPixmap(0, SmallIcon("kdeprint_printer"));
 		}

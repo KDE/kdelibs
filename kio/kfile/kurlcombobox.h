@@ -20,7 +20,7 @@
 #define KDIRCOMBOBOX_H
 
 #include <qevent.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
 #include <qpixmap.h>
 #include <qstringlist.h>
@@ -190,8 +190,8 @@ protected:
 	QPixmap pixmap;
     };
     typedef _KURLComboItem KURLComboItem;
-    QPtrList<KURLComboItem> itemList;
-    QPtrList<KURLComboItem> defaultList;
+    Q3PtrList<KURLComboItem> itemList;
+    Q3PtrList<KURLComboItem> defaultList;
     QMap<int,const KURLComboItem*> itemMapper;
 
     void init( Mode mode );

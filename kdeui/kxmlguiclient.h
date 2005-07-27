@@ -13,14 +13,14 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef _KXMLGUICLIENT_H
 #define _KXMLGUICLIENT_H
 
 #include <qdom.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qmap.h>
 #include <qstringlist.h>
 
@@ -167,7 +167,7 @@ public:
   /**
    * Retrieves a list of all child clients.
    */
-  const QPtrList<KXMLGUIClient> *childClients();
+  const Q3PtrList<KXMLGUIClient> *childClients();
 
   /**
    * A client can have an own KXMLGUIBuilder.
@@ -234,7 +234,7 @@ public:
    *       plugActionList() would leave the previous actions in the
    *       menu too..
    */
-  void plugActionList( const QString &name, const QPtrList<KAction> &actionList );
+  void plugActionList( const QString &name, const Q3PtrList<KAction> &actionList );
 
   /**
    * The complement of plugActionList() ...

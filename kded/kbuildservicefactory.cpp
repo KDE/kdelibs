@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kbuildservicefactory.h"
@@ -141,7 +141,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    m_offerListOffset = str.device()->at();
 
    bool isNumber;
-   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {
@@ -178,7 +178,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    }
 
    // For each entry in servicetypeFactory
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *(m_serviceTypeFactory->entryDict()) );
        it.current();
        ++it)
    {
@@ -205,7 +205,7 @@ KBuildServiceFactory::saveInitList(QDataStream &str)
 
    KService::List initList;
 
-   for(QDictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
+   for(Q3DictIterator<KSycocaEntry::Ptr> itserv ( *m_entryDict );
        itserv.current();
        ++itserv)
    {

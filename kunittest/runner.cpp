@@ -64,7 +64,7 @@ namespace KUnitTest
         // Get a list of all modules.
         QStringList modules = dir.entryList();
 
-        for ( uint i = 0; i < modules.count(); ++i )
+        for ( int i = 0; i < modules.count(); ++i )
         {
             QString module = modules[i];
             kdDebug() << "Module: " << dir.absPath() + "/" + module << endl;
@@ -91,7 +91,8 @@ namespace KUnitTest
       s_debugCapturingEnabled = enabled;
     }
 
-    RegistryType &Runner::registry()
+    //RegistryType &Runner::registry()
+    Registry &Runner::registry()
     {
         return m_registry;
     }
@@ -103,10 +104,12 @@ namespace KUnitTest
 
     Runner *Runner::self()
     {
-        if ( s_self == 0L ) s_self = new Runner();
+        if ( !s_self )
+            s_self = new Runner();
 
         return s_self;
     }
+
 
     Runner::Runner()
     {
@@ -158,10 +161,10 @@ namespace KUnitTest
         globalSkipped = 0;
 
         cout << "# Running normal tests... #" << endl << endl;
-        RegistryIteratorType it(m_registry);
 
-        for( ; it.current(); ++it )
-            runTest(it.currentKey());
+        Registry::const_iterator it = m_registry.constBegin();
+        for( ; it != m_registry.constEnd(); ++it )
+            runTest( it.key( ) );
 
 #if 0 // very thorough, but not very readable
         cout << "# Done with normal tests:" << endl;
@@ -187,7 +190,7 @@ namespace KUnitTest
                 str = QString( "%1 of %2 tests did not behave as expected (%1 unexpected passes)" ).arg( globalFails ).arg( numTests ).arg( globalXPasses );
         if ( globalSkipped )
             str += QString( " (%1 tests skipped)" ).arg( globalSkipped );
-        cout << str.local8Bit() << endl;
+        cout << str.toLocal8Bit().constData() << endl;
 #endif
 
         return m_registry.count();
@@ -195,16 +198,16 @@ namespace KUnitTest
 
     void Runner::runMatchingTests(const QString &prefix)
     {
-        RegistryIteratorType it(m_registry);
-        for( ; it.current(); ++it )
-            if ( QString(it.currentKey()).startsWith(prefix) )
-                runTest(it.currentKey());
+        Registry::const_iterator it = m_registry.constBegin();
+        for( ; it != m_registry.constEnd(); ++it )
+            if ( QString( it.key() ).startsWith(prefix) )
+                runTest( it.key() );
     }
 
     void Runner::runTest(const char *name)
     {
-        Tester *test = m_registry.find(name);
-        if ( test == 0L ) return;
+        Tester *test = m_registry.value( name );
+        if ( !test ) return;
 
         if ( s_debugCapturingEnabled )
         {
@@ -228,15 +231,14 @@ namespace KUnitTest
         if ( test->inherits("KUnitTest::SlotTester") )
         {
             SlotTester *sltest = static_cast<SlotTester*>(test);
-            TestResultsListIteratorType it(sltest->resultsList());
-            for ( ; it.current(); ++it)
+            foreach( TestResults* res, sltest->resultsList() )
             {
-                numPass += it.current()->passed() + it.current()->xpasses();
-                numFail += it.current()->errors() + it.current()->xfails();
-                numXFail += it.current()->xfails();
-                numXPass += it.current()->xpasses();
-                numSkip += it.current()->skipped();
-                globalSteps += it.current()->testsFinished();
+                numPass += res->passed() + res->xpasses();
+                numFail += res->errors() + res->xfails();
+                numXFail += res->xfails();
+                numXPass += res->xpasses();
+                numSkip += res->skipped();
+                globalSteps += res->testsFinished();
             }
         }
         else

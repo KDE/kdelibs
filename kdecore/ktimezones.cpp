@@ -21,7 +21,7 @@
 
 #include <ktimezones.h>
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kprocess.h>
 #include <kstringhandler.h>
 #include <ktempfile.h>

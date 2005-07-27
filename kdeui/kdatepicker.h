@@ -14,13 +14,13 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 #include <qdatetime.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <kdelibs_export.h>
 
 class QLineEdit;
@@ -48,7 +48,7 @@ class KDateTable;
  *     @author Tim Gilman, Mirko Boehm
  *
  **/
-class KDEUI_EXPORT KDatePicker: public QFrame
+class KDEUI_EXPORT KDatePicker: public Q3Frame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)
@@ -70,7 +70,7 @@ public:
   KDatePicker(QWidget *parent,
 	      QDate,
 	      const char *name,
-	      WFlags f); // ### KDE 4.0: Merge
+	      Qt::WFlags f); // ### KDE 4.0: Merge
 
   /**
    * Standard qt widget constructor. The initial date will be the
@@ -212,27 +212,25 @@ protected slots:
   void weekSelected(int);
 
 signals:
-  // ### KDE 4.0 Make all QDate parameters const references
-
   /** This signal is emitted each time the selected date is changed.
    *  Usually, this does not mean that the date has been entered,
    *  since the date also changes, for example, when another month is
    *  selected.
    *  @see dateSelected
    */
-  void dateChanged(QDate);
+  void dateChanged( const QDate&);
   /** This signal is emitted each time a day has been selected by
    *  clicking on the table (hitting a day in the current month). It
    *  has the same meaning as dateSelected() in older versions of
    *  KDatePicker.
    */
-  void dateSelected(QDate);
+  void dateSelected( const QDate&);
   /** This signal is emitted when enter is pressed and a VALID date
    *  has been entered before into the line edit. Connect to both
    *  dateEntered() and dateSelected() to receive all events where the
    *  user really enters a date.
    */
-  void dateEntered(QDate);
+  void dateEntered( const QDate &);
   /** This signal is emitted when the day has been selected by
    *  clicking on it in the table.
    */

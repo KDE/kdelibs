@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwippprinter.h"
@@ -25,12 +25,12 @@
 #include "networkscanner.h"
 
 #include <klistview.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <kpushbutton.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <kmessagebox.h>
-#include <qtextview.h>
+#include <q3textview.h>
 #include <qlayout.h>
 #include <qregexp.h>
 #include <kseparator.h>
@@ -49,7 +49,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_list = new KListView(this);
 	m_list->addColumn("");
 	m_list->header()->hide();
-	m_list->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	m_list->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_list->setLineWidth(1);
 
 	QLabel	*l1 = new QLabel(i18n("&Printer URI:"),this);
@@ -58,7 +58,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 
 	l1->setBuddy(m_uri);
 
-	m_info = new QTextView(this);
+	m_info = new Q3TextView(this);
 	m_info->setPaper(colorGroup().background());
 	m_info->setMinimumHeight(100);
 	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
@@ -70,7 +70,7 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(20);
 
-	connect(m_list,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
+	connect(m_list,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotPrinterSelected(Q3ListViewItem*)));
 	connect( m_scanner, SIGNAL( scanStarted() ), SLOT( slotScanStarted() ) );
 	connect( m_scanner, SIGNAL( scanFinished() ), SLOT( slotScanFinished() ) );
 	connect( m_scanner, SIGNAL( scanStarted() ), parent, SLOT( disableWizard() ) );
@@ -130,8 +130,8 @@ void KMWIppPrinter::slotScanStarted()
 void KMWIppPrinter::slotScanFinished()
 {
 	m_ippreport->setEnabled(false);
-	const QPtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
-	QPtrListIterator<NetworkScanner::SocketInfo>	it(*list);
+	const Q3PtrList<NetworkScanner::SocketInfo>	*list = m_scanner->printerList();
+	Q3PtrListIterator<NetworkScanner::SocketInfo>	it(*list);
 	for (;it.current();++it)
 	{
 		QString	name;
@@ -139,12 +139,12 @@ void KMWIppPrinter::slotScanFinished()
 			name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
 		else
 		name = it.current()->Name;
-		QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
+		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
 		item->setPixmap(0,SmallIcon("kdeprint_printer"));
 	}
 }
 
-void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
+void KMWIppPrinter::slotPrinterSelected(Q3ListViewItem *item)
 {
 	m_ippreport->setEnabled(item != 0);
 	if (!item) return;
@@ -204,7 +204,7 @@ void KMWIppPrinter::slotIppReport()
 {
 	IppRequest	req;
 	QString	uri("ipp://%1:%2/ipp");
-	QListViewItem	*item = m_list->currentItem();
+	Q3ListViewItem	*item = m_list->currentItem();
 
 	if (item)
 	{

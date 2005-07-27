@@ -13,19 +13,19 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef POSTERPREVIEW_H
 #define POSTERPREVIEW_H
 
-#include <qframe.h>
-#include <qvaluelist.h>
+#include <q3frame.h>
+#include <q3valuelist.h>
 
 class KProcess;
 
-class PosterPreview : public QFrame
+class PosterPreview : public Q3Frame
 {
 	Q_OBJECT
 public:
@@ -69,7 +69,7 @@ private:
 	int m_cutmargin;
 	bool m_dirty;
 	QRect m_boundingrect;
-	QValueList<int> m_selectedpages;
+	Q3ValueList<int> m_selectedpages;
 };
 
 #endif /* POSTERPREVIEW_H */

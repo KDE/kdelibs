@@ -25,9 +25,9 @@
 
 #include <qlayout.h>
 #include <kpushbutton.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qlabel.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qfile.h>
 
 #include <kapplication.h>
@@ -192,7 +192,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
         d->_chain->setEnabled(true);
         d->_chain->insertItem(i18n("0 - Site Certificate"));
         int cnt = 0;
-        QPtrList<KSSLCertificate> cl = cert->chain().getChain();
+        Q3PtrList<KSSLCertificate> cl = cert->chain().getChain();
         for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
             KSSLX509Map map(c->getSubject());
             QString id;
@@ -325,7 +325,7 @@ void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
     for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
             it != ksvl.end(); ++it) {
         if (!errorStr.isEmpty())
-            errorStr.append('\n');
+            errorStr.append(QChar('\n'));
         errorStr += KSSLCertificate::verifyText(*it);
     }
 
@@ -343,7 +343,7 @@ void KSSLInfoDlg::slotChain(int x) {
     if (x == 0) {
         displayCert(d->_cert);
     } else {
-        QPtrList<KSSLCertificate> cl = d->_cert->chain().getChain();
+        Q3PtrList<KSSLCertificate> cl = d->_cert->chain().getChain();
         cl.setAutoDelete(true);
         for (int i = 0; i < x-1; i++)
             cl.remove((unsigned int)0);
@@ -364,11 +364,11 @@ KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certNam
 }
 
 
-KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f)
-: QScrollView(parent, name, f)
+KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, Qt::WFlags f)
+: Q3ScrollView(parent, name, f)
 {
     _frame = 0L;
-    setBackgroundMode(QWidget::PaletteButton);
+    setBackgroundMode(Qt::PaletteButton);
     setValues(QString::null, 0L);
 }
 
@@ -380,7 +380,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
     }
 
     if (certName.isEmpty()) {
-        _frame = new QFrame(this);
+        _frame = new Q3Frame(this);
         addChild(_frame);
         viewport()->setBackgroundMode(_frame->backgroundMode());
         _frame->show();
@@ -391,8 +391,8 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
 
     KSSLX509Map cert(certName);
     QString tmp;
-    viewport()->setBackgroundMode(QWidget::PaletteButton);
-    _frame = new QFrame(this);
+    viewport()->setBackgroundMode(Qt::PaletteButton);
+    _frame = new Q3Frame(this);
     QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
     QLabel *label = 0L;
@@ -446,7 +446,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
 }
 
 
-QScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
+Q3ScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
     return KSSLInfoDlg::certInfoWidget(this, certName, this);
 }
 

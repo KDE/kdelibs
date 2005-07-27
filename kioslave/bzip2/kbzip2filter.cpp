@@ -83,12 +83,12 @@ void KBzip2Filter::init( int mode )
 {
     d->zStream.next_in = 0;
     d->zStream.avail_in = 0;
-    if ( mode == IO_ReadOnly )
+    if ( mode == QIODevice::ReadOnly )
     {
         (void)bzDecompressInit(&d->zStream, 0, 0);
         //kdDebug(7118) << "bzDecompressInit returned " << result << endl;
         // No idea what to do with result :)
-    } else if ( mode == IO_WriteOnly ) {
+    } else if ( mode == QIODevice::WriteOnly ) {
         (void)bzCompressInit(&d->zStream, 5, 0, 0);
         //kdDebug(7118) << "bzDecompressInit returned " << result << endl;
     } else
@@ -98,11 +98,11 @@ void KBzip2Filter::init( int mode )
 
 void KBzip2Filter::terminate()
 {
-    if ( m_mode == IO_ReadOnly )
+    if ( m_mode == QIODevice::ReadOnly )
     {
         int result = bzDecompressEnd(&d->zStream);
         kdDebug(7118) << "bzDecompressEnd returned " << result << endl;
-    } else if ( m_mode == IO_WriteOnly )
+    } else if ( m_mode == QIODevice::WriteOnly )
     {
         int result = bzCompressEnd(&d->zStream);
         kdDebug(7118) << "bzCompressEnd returned " << result << endl;

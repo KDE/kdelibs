@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef DRIVER_H
@@ -26,8 +26,8 @@
 #endif
 
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 #include <qmap.h>
 #include <qrect.h>
 #include <qsize.h>
@@ -35,7 +35,7 @@
 #include <kdelibs_export.h>
 
 class DriverItem;
-class QListView;
+class Q3ListView;
 
 /***********************
  * Forward definitions *
@@ -69,7 +69,7 @@ public:
 	Type type() const 					{ return m_type; }
 	bool isOption() const 					{ return (m_type >= DrBase::String); }
 
-	const QString& get(const QString& key) const 		{ return m_map[key]; }
+	QString get(const QString& key) const 		{ return m_map[key]; }
 	void set(const QString& key, const QString& val)	{ m_map[key] = val; }
 	bool has(const QString& key) const 			{ return m_map.contains(key); }
 	const QString& name() const				{ return m_name; }
@@ -124,8 +124,8 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	DrBase* clone();
 
-	const QPtrList<DrGroup>& groups()	{ return m_subgroups; }
-	const QPtrList<DrBase>& options()	{ return m_listoptions; }
+	const Q3PtrList<DrGroup>& groups()	{ return m_subgroups; }
+	const Q3PtrList<DrBase>& options()	{ return m_listoptions; }
 
 	static QString groupForOption( const QString& optname );
 
@@ -134,9 +134,9 @@ protected:
 	void flattenGroup(QMap<QString, DrBase*>&, int&);
 
 protected:
-	QPtrList<DrGroup>	m_subgroups;
-	QDict<DrBase>	m_options;
-	QPtrList<DrBase>	m_listoptions;	// keep track of order of appearance
+	Q3PtrList<DrGroup>	m_subgroups;
+	Q3Dict<DrBase>	m_options;
+	Q3PtrList<DrBase>	m_listoptions;	// keep track of order of appearance
 };
 
 /*********************
@@ -156,7 +156,7 @@ public:
 	DrMain();
 	~DrMain();
 
-	DriverItem* createTreeView(QListView *parent);
+	DriverItem* createTreeView(Q3ListView *parent);
 	void addConstraint(DrConstraint *c)		{ m_constraints.append(c); }
 	int checkConstraints();
 	DrPageSize* findPageSize(const QString& name)	{ return m_pagesizes.find(name); }
@@ -167,8 +167,8 @@ public:
 	DrMain* cloneDriver();
 
 protected:
-	QPtrList<DrConstraint>	m_constraints;
-	QDict<DrPageSize>	m_pagesizes;
+	Q3PtrList<DrConstraint>	m_constraints;
+	Q3Dict<DrPageSize>	m_pagesizes;
 };
 
 /**********************************************************
@@ -283,7 +283,7 @@ public:
 	~DrListOption();
 
 	void addChoice(DrBase *ch)	{ m_choices.append(ch); }
-	QPtrList<DrBase>* choices()	{ return &m_choices; }
+	Q3PtrList<DrBase>* choices()	{ return &m_choices; }
 	DrBase* currentChoice() const 	{ return m_current; }
 	DrBase* findChoice(const QString& txt);
 	void setChoice(int choicenum);
@@ -297,7 +297,7 @@ public:
 	DrBase* clone();
 
 protected:
-	QPtrList<DrBase>	m_choices;
+	Q3PtrList<DrBase>	m_choices;
 	DrBase		*m_current;
 };
 

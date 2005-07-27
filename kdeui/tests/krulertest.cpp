@@ -5,7 +5,8 @@
 #include "kruler.h"
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qgroupbox.h>
+#include <qevent.h>
+#include <q3groupbox.h>
 
 /*
 void
@@ -16,8 +17,8 @@ MyCheckBox::mouseReleaseEvent(QMouseEvent *e )
 }
 */
 
-MouseWidget::MouseWidget( QWidget *parent, const char *name, WFlags f )
-  : QFrame(parent, name, f)
+MouseWidget::MouseWidget( QWidget *parent, const char *name, Qt::WFlags f )
+  : Q3Frame(parent, name, f)
 {
 }
 
@@ -53,26 +54,26 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 KRulerTest::KRulerTest( const char *name )
   : KMainWindow(0, name)
 {
-  mainframe = new QFrame(this);
+  mainframe = new Q3Frame(this);
 
   layout = new QGridLayout(mainframe, 2, 2);
 
-  miniwidget = new QFrame(mainframe);
-  miniwidget->setFrameStyle(QFrame::WinPanel | QFrame::Raised);
+  miniwidget = new Q3Frame(mainframe);
+  miniwidget->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Raised);
   bigwidget = new MouseWidget(mainframe);
-  bigwidget->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  bigwidget->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
 
   //  QRect bwrect = bigwidget->frameRect();
   //  qDebug("big rect: top%i left%i bottom%i right%i",
   //	bwrect.top(), bwrect.left(), bwrect.bottom(), bwrect.right());
-  hruler = new KRuler(Horizontal, mainframe);
+  hruler = new KRuler(Qt::Horizontal, mainframe);
   //  hruler->setRange( bwrect.left(), bwrect.right() );
   hruler->setRange( 0, 1000 );
   //  hruler->setOffset( bwrect.left() - bigwidget->frameRect().left() );
   hruler->setOffset( 0 );
 
-  vruler = new KRuler(Vertical, mainframe);
-  vruler->setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+  vruler = new KRuler(Qt::Vertical, mainframe);
+  vruler->setFrameStyle(Q3Frame::WinPanel | Q3Frame::Sunken);
   vruler->setOffset( 0 );
   vruler->setRange( 0, 1000 );
 
@@ -94,7 +95,7 @@ KRulerTest::KRulerTest( const char *name )
   mouse_message->adjustSize();
   mouse_message->move(4,4);
 
-  showMarks = new QGroupBox("Show which marks ?", bigwidget);
+  showMarks = new Q3GroupBox("Show which marks ?", bigwidget);
   showMarks->setFixedSize(140, 160);
   showMarks->move(330,4);
   showTM = new QCheckBox("show tiny marks", showMarks);
@@ -134,7 +135,7 @@ KRulerTest::KRulerTest( const char *name )
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotFixRulerLength(bool)) );
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotCheckLength(bool)) );
 
-  lineEdit = new QGroupBox("Value of begin/end", bigwidget);
+  lineEdit = new Q3GroupBox("Value of begin/end", bigwidget);
   lineEdit->setFixedSize(140, 80);
   lineEdit->move(330,4+160);
   beginMark = new KIntNumInput(0, lineEdit);
@@ -163,7 +164,7 @@ KRulerTest::KRulerTest( const char *name )
 	  vruler, SLOT(slotEndOffset(int)) );
 
 
-  vertrot = new QGroupBox("Value of rotate translate for Vert.", bigwidget);
+  vertrot = new Q3GroupBox("Value of rotate translate for Vert.", bigwidget);
   vertrot->setFixedSize(140, 80);
   vertrot->move(330,4+160+80+4);
   transX = new KDoubleNumInput(0.0, vertrot);
@@ -189,7 +190,7 @@ KRulerTest::KRulerTest( const char *name )
 	  SLOT(slotSetRotate(double)) );
   
 
-  metricstyle = new QButtonGroup("metric styles", bigwidget);
+  metricstyle = new Q3ButtonGroup("metric styles", bigwidget);
   metricstyle->setFixedSize(100, 120);
   metricstyle->move(330-110,4);
   pixelmetric = new QRadioButton("pixel", metricstyle);

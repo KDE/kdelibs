@@ -17,28 +17,28 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
     */
 
 #ifndef KTOOLBAR_H
 #define KTOOLBAR_H
 
-#include <qtoolbar.h>
-#include <qmainwindow.h>
+#include <q3toolbar.h>
+#include <q3mainwindow.h>
 #include <qcombobox.h>
 #include <qmap.h>
-#include <qptrlist.h>
-#include <qguardedptr.h>
-#include <qframe.h>
-#include <qiconset.h>
+#include <q3ptrlist.h>
+#include <qpointer.h>
+#include <q3frame.h>
+#include <qicon.h>
 
 #include <kglobal.h>
 
 class QDomElement;
 class QSize;
 class QPixmap;
-class QPopupMenu;
+class Q3PopupMenu;
 class QStringList;
 class QDomDocument;
 class QTimer;
@@ -55,23 +55,23 @@ class KXMLGUIClient;
 
 class KToolBarPrivate;
 
-class KDEUI_EXPORT KToolBarSeparator : public QFrame
+class KDEUI_EXPORT KToolBarSeparator : public Q3Frame
 {
     Q_OBJECT
 public:
-    KToolBarSeparator( Orientation, bool l, QToolBar *parent, const char* name=0 );
+    KToolBarSeparator( Qt::Orientation, bool l, Q3ToolBar *parent, const char* name=0 );
 
     QSize sizeHint() const;
-    Orientation orientation() const { return orient; }
+    Qt::Orientation orientation() const { return orient; }
     QSizePolicy sizePolicy() const;
     bool showLine() const { return line; }
 public slots:
-   void setOrientation( Orientation );
+   void setOrientation( Qt::Orientation );
 protected:
     void styleChange( QStyle& );
     void drawContents( QPainter* );
 private:
-    Orientation orient;
+    Qt::Orientation orient;
     bool line;
 };
 
@@ -100,7 +100,7 @@ private:
   * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
   */
 
-class KDEUI_EXPORT KToolBar : public QToolBar
+class KDEUI_EXPORT KToolBar : public Q3ToolBar
 {
     Q_OBJECT
     Q_ENUMS( IconText BarPosition )
@@ -156,7 +156,7 @@ public:
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock /*= QMainWindow::Top*/, bool newLine = false,
+    KToolBar( Q3MainWindow *parentWindow, Qt::ToolBarDock dock /*= QMainWindow::Top*/, bool newLine = false,
               const char *name = 0, bool honorStyle = false, bool readConfig = true );
 
   /**
@@ -174,7 +174,7 @@ public:
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine = false,
+    KToolBar( Q3MainWindow *parentWindow, QWidget *dock, bool newLine = false,
               const char *name = 0, bool honorStyle = false, bool readConfig = true );
 
   /**
@@ -291,7 +291,7 @@ public:
    * You can add custom popups which inherit QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
-    int insertButton(const QString& icon, int id, QPopupMenu *popup,
+    int insertButton(const QString& icon, int id, Q3PopupMenu *popup,
 		     bool enabled, const QString&_text, int index=-1);
 
   /**
@@ -306,7 +306,7 @@ public:
    * You can add custom popups which inherit QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
-    int insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
+    int insertButton(const QPixmap& pixmap, int id, Q3PopupMenu *popup,
 		     bool enabled, const QString&_text, int index=-1);
 
   /**
@@ -347,7 +347,7 @@ public:
 		     const char *slot, bool enabled=true,
 		     const QString& tooltiptext=QString::null,
 		     int size=70, int index=-1,
-		     QComboBox::Policy policy = QComboBox::AtBottom);
+		     QComboBox::Policy policy = QComboBox::InsertAtBottom);
 
   /**
    * Insert a KComboBox with text.
@@ -363,7 +363,7 @@ public:
 		     const char *slot, bool enabled=true,
 		     const QString& tooltiptext=QString::null,
 		     int size=70, int index=-1,
-		     QComboBox::Policy policy = QComboBox::AtBottom);
+		     QComboBox::Policy policy = QComboBox::InsertAtBottom);
 
     /**
      * Inserts a separator into the toolbar with the given @p id.
@@ -450,7 +450,7 @@ public:
    *
    * Can be used while button is visible.
    */
-    void setButtonIconSet( int id, const QIconSet& iconset );
+    void setButtonIconSet( int id, const QIcon& iconset );
 
   /**
    * Sets a delayed popup for a button.
@@ -478,7 +478,7 @@ public:
    * add popups that are already in the menu bar or are submenus of
    * other popups.
    */
-    void setDelayedPopup (int id , QPopupMenu *_popup, bool toggle = false);
+    void setDelayedPopup (int id , Q3PopupMenu *_popup, bool toggle = false);
 
   /**
    * Turns a button into an autorepeat button.
@@ -1080,7 +1080,7 @@ public:
 
 public slots:
     virtual void setIconText( const QString &txt )
-    { QToolBar::setIconText( txt ); }
+    { Q3ToolBar::setIconText( txt ); }
 
 protected:
     void mousePressEvent( QMouseEvent * );
@@ -1097,7 +1097,7 @@ private slots:
     void slotAppearanceChanged();
     void slotIconChanged(int);
     void slotRepaint();
-    void toolBarPosChanged( QToolBar *tb );
+    void toolBarPosChanged( Q3ToolBar *tb );
     void slotContextAboutToShow();
     void slotContextAboutToHide();
     void widgetDestroyed();
@@ -1116,9 +1116,9 @@ private:
     typedef QMap<int, QWidget* > Id2WidgetMap;
     Id2WidgetMap id2widget;
     KPopupMenu *context;
-    QPtrList<QWidget> widgets;
+    Q3PtrList<QWidget> widgets;
     QTimer *layoutTimer;
-    QGuardedPtr<QWidget> stretchableWidget, rightAligned;
+    QPointer<QWidget> stretchableWidget, rightAligned;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2004 Thiago Macieira <thiago@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -81,12 +81,12 @@ bool KSocksSocketDevice::bind(const KResolverEntry& address)
   if (KSocks::self()->bind(m_sockfd, address.address(), address.length()) == -1)
     {
       if (errno == EADDRINUSE)
-	setError(IO_BindError, AddressInUse);
+	setError(AddressInUse);
       else if (errno == EINVAL)
-	setError(IO_BindError, AlreadyBound);
+	setError(AlreadyBound);
       else
 	// assume the address is the cause
-	setError(IO_BindError, NotSupported);
+	setError(NotSupported);
       return false;
     }
 
@@ -100,19 +100,18 @@ bool KSocksSocketDevice::listen(int backlog)
     {
       if (KSocks::self()->listen(m_sockfd, backlog) == -1)
 	{
-	  setError(IO_ListenError, NotSupported);
+	  setError(NotSupported);
 	  return false;
 	}
 
       resetError();
-      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
-      setState(IO_Open);
+      setOpenMode(ReadWrite | Unbuffered);
       return true;
     }
 
   // we don't have a socket
   // can't listen
-  setError(IO_ListenError, NotCreated);
+  setError(NotCreated);
   return false;
 }
 
@@ -145,24 +144,23 @@ bool KSocksSocketDevice::connect(const KResolverEntry& address)
 	return true;		// we're already connected
       else if (errno == EALREADY || errno == EINPROGRESS)
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
       else if (errno == ECONNREFUSED)
-	setError(IO_ConnectError, ConnectionRefused);
+	setError(ConnectionRefused);
       else if (errno == ENETDOWN || errno == ENETUNREACH ||
 	       errno == ENETRESET || errno == ECONNABORTED ||
 	       errno == ECONNRESET || errno == EHOSTDOWN ||
 	       errno == EHOSTUNREACH)
-	setError(IO_ConnectError, NetFailure);
+	setError(NetFailure);
       else
-	setError(IO_ConnectError, NotSupported);
+	setError(NotSupported);
 
       return false;
     }
 
-  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
-  setState(IO_Open);
+  setOpenMode(ReadWrite | Unbuffered);
   return true;			// all is well
 }
 
@@ -171,7 +169,7 @@ KSocksSocketDevice* KSocksSocketDevice::accept()
   if (m_sockfd == -1)
     {
       // can't accept without a socket
-      setError(IO_AcceptError, NotCreated);
+      setError(NotCreated);
       return 0L;
     }
 
@@ -181,9 +179,9 @@ KSocksSocketDevice* KSocksSocketDevice::accept()
   if (newfd == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
-	setError(IO_AcceptError, WouldBlock);
+	setError(WouldBlock);
       else
-	setError(IO_AcceptError, UnknownError);
+	setError(UnknownError);
       return NULL;
     }
 
@@ -214,7 +212,7 @@ static int socks_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddr
   return 0;
 }
 
-Q_LONG KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen)
+qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -228,14 +226,14 @@ Q_LONG KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
   return retval;
 }
 
-Q_LONG KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress &from)
+qint64 KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress &from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -249,14 +247,14 @@ Q_LONG KSocksSocketDevice::readBlock(char *data, Q_ULONG maxlen, KSocketAddress 
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
   return retval;
 }
 
-Q_LONG KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
+qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
 {
   resetError();
   if (m_sockfd == -1)
@@ -270,14 +268,14 @@ Q_LONG KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen)
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
   return retval;
 }
 
-Q_LONG KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
 {
   resetError();
   if (m_sockfd == -1)
@@ -291,19 +289,19 @@ Q_LONG KSocksSocketDevice::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress&
 
   if (err)
     {
-      setError(IO_ReadError, static_cast<SocketError>(err));
+      setError(static_cast<SocketError>(err));
       return -1;
     }
 
   return retval;
 }
 
-Q_LONG KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len)
+qint64 KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len)
 {
   return writeBlock(data, len, KSocketAddress());
 }
 
-Q_LONG KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
+qint64 KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
 {
   resetError();
   if (m_sockfd == -1)
@@ -316,9 +314,9 @@ Q_LONG KSocksSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSock
   if (retval == -1)
     {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
-	setError(IO_WriteError, WouldBlock);
+	setError(WouldBlock);
       else
-	setError(IO_WriteError, UnknownError);
+	setError(UnknownError);
       return -1;		// nothing written
     }
 
@@ -394,7 +392,7 @@ bool KSocksSocketDevice::poll(bool *input, bool *output, bool *exception,
 {
   if (m_sockfd == -1)
     {
-      setError(IO_UnspecifiedError, NotCreated);
+      setError(NotCreated);
       return false;
     }
 
@@ -439,7 +437,7 @@ bool KSocksSocketDevice::poll(bool *input, bool *output, bool *exception,
 
   if (retval == -1)
     {
-      setError(IO_UnspecifiedError, UnknownError);
+      setError(UnknownError);
       return false;
     }
   if (retval == 0)

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __kxmlguifactory_p_h__
 #define __kxmlguifactory_p_h__
@@ -22,7 +22,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qdom.h>
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 
 #include <kaction.h>
 
@@ -36,21 +36,21 @@ namespace KXMLGUI
 
 struct BuildState;
 
-class KDEUI_EXPORT ActionList : public QPtrList<KAction>
+class KDEUI_EXPORT ActionList : public Q3PtrList<KAction>
 {
 public:
     ActionList() {}
-    ActionList( const QPtrList<KAction> &rhs )
-        : QPtrList<KAction>( rhs )
+    ActionList( const Q3PtrList<KAction> &rhs )
+        : Q3PtrList<KAction>( rhs )
     {}
-    ActionList &operator=( const QPtrList<KAction> &rhs )
-    { QPtrList<KAction>::operator=( rhs ); return *this; }
+    ActionList &operator=( const Q3PtrList<KAction> &rhs )
+    { Q3PtrList<KAction>::operator=( rhs ); return *this; }
 
     void plug( QWidget *container, int index ) const;
     void unplug( QWidget *container ) const;
 };
 
-typedef QPtrListIterator<KAction> ActionListIt;
+typedef Q3PtrListIterator<KAction> ActionListIt;
 typedef QMap< QString, ActionList > ActionListMap;
 
 /*
@@ -69,13 +69,13 @@ struct ContainerClient
 {
     KXMLGUIClient *client;
     ActionList actions;
-    QValueList<int> customElements;
+    Q3ValueList<int> customElements;
     QString groupName; //is empty if no group client
     ActionListMap actionLists;
     QString mergingName;
 };
-typedef QPtrList<ContainerClient> ContainerClientList;
-typedef QPtrListIterator<ContainerClient> ContainerClientListIt;
+typedef Q3PtrList<ContainerClient> ContainerClientList;
+typedef Q3PtrListIterator<ContainerClient> ContainerClientListIt;
 
 struct ContainerNode;
 
@@ -86,7 +86,7 @@ struct MergingIndex
                          // Merge or DefineGroup tag)
     QString clientName; // the name of the client that defined this index
 };
-typedef QValueList<MergingIndex> MergingIndexList;
+typedef Q3ValueList<MergingIndex> MergingIndexList;
 
 /*
  * Here we store detailed information about a container, its clients (client=a guiclient having actions
@@ -131,7 +131,7 @@ struct KDEUI_EXPORT ContainerNode
     QString groupName; //is empty if the container is in no group
 
     ContainerClientList clients;
-    QPtrList<ContainerNode> children;
+    Q3PtrList<ContainerNode> children;
 
     int index;
     MergingIndexList mergingIndices;
@@ -145,7 +145,7 @@ struct KDEUI_EXPORT ContainerNode
     ContainerNode *findContainerNode( QWidget *container );
     ContainerNode *findContainer( const QString &_name, bool tag );
     ContainerNode *findContainer( const QString &name, const QString &tagName,
-                                  const QPtrList<QWidget> *excludeList,
+                                  const Q3PtrList<QWidget> *excludeList,
                                   KXMLGUIClient *currClient );
 
     ContainerClient *findChildContainerClient( KXMLGUIClient *currentGUIClient, 
@@ -175,8 +175,8 @@ struct KDEUI_EXPORT ContainerNode
                           bool ignoreDefaultMergingIndex );
 };
 
-typedef QPtrList<ContainerNode> ContainerNodeList;
-typedef QPtrListIterator<ContainerNode> ContainerNodeListIt;
+typedef Q3PtrList<ContainerNode> ContainerNodeList;
+typedef Q3PtrListIterator<ContainerNode> ContainerNodeListIt;
 
 class KDEUI_EXPORT BuildHelper
 {
@@ -209,7 +209,7 @@ private:
     QStringList customTags;
     QStringList containerTags;
 
-    QPtrList<QWidget> containerList;
+    Q3PtrList<QWidget> containerList;
 
     ContainerClient *containerClient;
 
@@ -245,7 +245,7 @@ struct KDEUI_EXPORT BuildState
     QStringList clientBuilderContainerTags;
 };
 
-typedef QValueStack<BuildState> BuildStateStack;
+typedef Q3ValueStack<BuildState> BuildStateStack;
 
 }
 

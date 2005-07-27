@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef	KMWIPPPRINTER_H
@@ -23,9 +23,9 @@
 #include "kmwizardpage.h"
 
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 class QLineEdit;
-class QTextView;
+class Q3TextView;
 class QPushButton;
 class NetworkScanner;
 
@@ -42,14 +42,14 @@ public:
 protected slots:
 	void slotScanStarted();
 	void slotScanFinished();
-	void slotPrinterSelected(QListViewItem*);
+	void slotPrinterSelected(Q3ListViewItem*);
 	void slotIppReport();
 
 private:
 	KListView	*m_list;
 	NetworkScanner *m_scanner;
 	QLineEdit	*m_uri;
-	QTextView	*m_info;
+	Q3TextView	*m_info;
 	QPushButton	*m_ippreport;
 };
 

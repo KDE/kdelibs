@@ -49,7 +49,7 @@ KDCOPServiceStarter::~KDCOPServiceStarter()
 int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
                                          const QString& _constraint,
                                          const QString& preferences,
-                                         QString *error, QCString* pDcopService,
+                                         QString *error, DCOPCString* pDcopService,
                                          int flags )
 {
     // Ask the trader which service is preferred for this servicetype
@@ -66,7 +66,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
         return -1;
     }
     KService::Ptr ptr = offers.first();
-    QCString dcopService = ptr->property("X-DCOP-ServiceName").toString().latin1();
+    DCOPCString dcopService = ptr->property("X-DCOP-ServiceName").toString().latin1();
 
     if ( !kapp->dcopClient()->isApplicationRegistered( dcopService ) )
     {
@@ -86,7 +86,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
 int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
                                           const QString& constraint,
                                           const QString& preferences,
-                                          QString *error, QCString* dcopService, int /*flags*/ )
+                                          QString *error, DCOPCString* dcopService, int /*flags*/ )
 {
     KTrader::OfferList offers = KTrader::self()->query(serviceType, "Application", constraint, preferences);
     if ( offers.isEmpty() )

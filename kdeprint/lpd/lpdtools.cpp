@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "lpdtools.h"
@@ -173,7 +173,7 @@ bool PrinttoolEntry::readEntry(QTextStream& t)
 	m_depths.setAutoDelete(true);
 	m_resolutions.clear();
 	m_depths.clear();
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		line = getPrintcapLine(t);
 		if (line.isEmpty())
@@ -253,7 +253,7 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("RESOLUTION");
 			lopt->set("text",i18n("Resolution"));
 			gr->addOption(lopt);
-			QPtrListIterator<Resolution>	it(m_resolutions);
+			Q3PtrListIterator<Resolution>	it(m_resolutions);
 			for (int i=0;it.current();++it,i++)
 			{
 				ch = new DrBase;
@@ -276,7 +276,7 @@ DrMain* PrinttoolEntry::createDriver()
 			lopt->setName("COLOR");
 			lopt->set("text",i18n("Color depth"));
 			gr->addOption(lopt);
-			QPtrListIterator<BitsPerPixel>	it(m_depths);
+			Q3PtrListIterator<BitsPerPixel>	it(m_depths);
 			for (int i=0;it.current();++it,i++)
 			{
 				ch = new DrBase;
@@ -395,7 +395,7 @@ DrMain* PrinttoolEntry::createDriver()
 QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 {
 	QString	line, buffer, comm;
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')

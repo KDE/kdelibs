@@ -346,7 +346,7 @@ void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
     }
 }
 
-void KFileTreeBranch::deleteChildrenOf( QListViewItem *parent )
+void KFileTreeBranch::deleteChildrenOf( Q3ListViewItem *parent )
 {
     // for some strange reason, slotDirlisterClearURL() sometimes calls us
     // with a 0L parent.
@@ -446,7 +446,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
             /* This is the starting point. The visible folder has finished,
                processing the children has not yet started */
             nextChild = static_cast<KFileTreeViewItem*>
-                        (static_cast<QListViewItem*>(currParent)->firstChild());
+                        (static_cast<Q3ListViewItem*>(currParent)->firstChild());
 
             if( ! nextChild )
             {
@@ -480,7 +480,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
                         openURL( recurseUrl, true );
                     }
                 }
-                nextChild = static_cast<KFileTreeViewItem*>(static_cast<QListViewItem*>(nextChild->nextSibling()));
+                nextChild = static_cast<KFileTreeViewItem*>(static_cast<Q3ListViewItem*>(nextChild->nextSibling()));
                 // kdDebug(250) << "Next child " << m_nextChild << endl;
             }
         }

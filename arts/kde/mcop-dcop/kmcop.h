@@ -41,7 +41,7 @@ k_dcop:
 	void addInterfacesHackHackHack();
 
 private:
-	QCString correctType(const QCString &str);
+	Q3CString correctType(const Q3CString &str);
     KMCOPPrivate *d;
 };
 

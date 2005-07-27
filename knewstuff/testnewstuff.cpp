@@ -41,7 +41,7 @@ bool TestNewStuff::install( const QString &fileName )
 {
   kdDebug(5850) << "TestNewStuff::install(): " << fileName << endl;
   QFile f( fileName );
-  if ( !f.open( IO_ReadOnly ) ) {
+  if ( !f.open( QIODevice::ReadOnly ) ) {
     kdDebug(5850) << "Error opening file." << endl;
     return false;
   }

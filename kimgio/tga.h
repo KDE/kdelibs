@@ -10,12 +10,21 @@
 #ifndef KIMG_TGA_H
 #define KIMG_TGA_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-void kimgio_tga_read( QImageIO * );
-void kimgio_tga_write( QImageIO * );
-}
+class TGAHandler : public QImageIOHandler
+{
+public:
+    TGAHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif
- 
+

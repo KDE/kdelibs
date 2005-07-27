@@ -24,11 +24,12 @@
 #ifndef KIMPROXY_H
 #define KIMPROXY_H
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qmap.h>
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 #include <qstringlist.h>
-
+#include <q3cstring.h>
+#include <qpixmap.h>
 
 #define IM_SERVICE_TYPE "DCOP/InstantMessenger"
 #define IM_CLIENT_PREFERENCES_FILE "default_components"
@@ -43,8 +44,8 @@ class KURL;
 class ContactPresenceListCurrent;
 
 /** FIXME: remove for KDE4, binary compability again. */
-typedef QMap<QCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
-typedef QDict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
+typedef QMap<Q3CString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
+typedef Q3Dict<AppPresence> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 /** FIXME: remove presenceMap and call this presenceMap in KDE4.  This hack is for binary compatibility */
 typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
 
@@ -236,11 +237,11 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Just exists to let the idl compiler make the DCOP signal for this
 		 */
-		void contactPresenceChanged( QString uid, QCString appId, int presence );
+		void contactPresenceChanged( QString uid, DCOPCString appId, int presence );
 
 	public slots:
-		void registeredToDCOP( const QCString& appId );
-        void unregisteredFromDCOP( const QCString& appId );
+		void registeredToDCOP( const QByteArray& appId );
+        void unregisteredFromDCOP( const QByteArray& appId );
 	signals:
 		/**
 		 * Indicates that the specified UID's presence changed
@@ -257,7 +258,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Bootstrap our presence data for a newly registered app
 		 */
-		void pollApp( const QCString & appId );
+		void pollApp( const DCOPCString & appId );
 		/**
 		 * Bootstrap our presence data by polling all known apps
 		 */
@@ -266,7 +267,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Update our records with the given data
 		 */
-		bool updatePresence( const QString &uid, const QCString &appId, int presence );
+		bool updatePresence( const QString &uid, const DCOPCString &appId, int presence );
 
 		/**
 		 * Get the name of the user's IM weapon of choice
@@ -287,14 +288,14 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 	private:
 		// client stubs used to get presence
 		// appId (from DCOP) -> KIMIface_stub
-		QDict<KIMIface_stub> m_im_client_stubs;
+		Q3Dict<KIMIface_stub> m_im_client_stubs;
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		// KABC Uid -> (appId, numeric presence )(AppPresence)
 		PresenceMap m_presence_map;
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
 		// FIXME: remove for KDE4 - UNUSED but maintained for binary compatibility in KDE 3.4
-		QPtrDict<int> m_client_presence_strings;
+		Q3PtrDict<int> m_client_presence_strings;
 		Private * d;
 		bool m_apps_available;
 		bool m_initialized;

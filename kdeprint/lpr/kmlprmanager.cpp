@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmlprmanager.h"
@@ -29,7 +29,7 @@
 #include "editentrydialog.h"
 
 #include <qfileinfo.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
@@ -78,7 +78,7 @@ void KMLprManager::listPrinters()
 		// cleanup previous entries
 		m_entries.clear();
 		// notify handlers
-		QPtrListIterator<LprHandler>	hit(m_handlerlist);
+		Q3PtrListIterator<LprHandler>	hit(m_handlerlist);
 		for (; hit.current(); ++hit)
 			hit.current()->reset();
 
@@ -86,12 +86,12 @@ void KMLprManager::listPrinters()
 		PrintcapReader	reader;
 		QFile	f(fi.absFilePath());
 		PrintcapEntry	*entry;
-		if (f.exists() && f.open(IO_ReadOnly))
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			reader.setPrintcapFile(&f);
 			while ((entry = reader.nextEntry()) != NULL)
 			{
-				QPtrListIterator<LprHandler>	it(m_handlerlist);
+				Q3PtrListIterator<LprHandler>	it(m_handlerlist);
 				for (; it.current(); ++it)
 					if (it.current()->validate(entry))
 					{
@@ -110,7 +110,7 @@ void KMLprManager::listPrinters()
 	}
 	else
 	{
-		QPtrListIterator<KMPrinter>	it(m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
 			if (!it.current()->isSpecial())
 			{
@@ -290,10 +290,10 @@ bool KMLprManager::savePrintcapFile()
 		return false;
 	}
 	QFile	f(LprSettings::self()->printcapFile());
-	if (f.open(IO_WriteOnly))
+	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		QDictIterator<PrintcapEntry>	it(m_entries);
+		Q3DictIterator<PrintcapEntry>	it(m_entries);
 		for (; it.current(); ++it)
 		{
 			it.current()->writeEntry(t);
@@ -427,7 +427,7 @@ QString KMLprManager::driverDbCreationProgram()
 
 QString KMLprManager::driverDirectory()
 {
-	QPtrListIterator<LprHandler>	it(m_handlerlist);
+	Q3PtrListIterator<LprHandler>	it(m_handlerlist);
 	QString	dbDirs;
 	for (; it.current(); ++it)
 	{

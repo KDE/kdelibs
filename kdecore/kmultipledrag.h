@@ -22,8 +22,8 @@
 
 #ifndef QT_NO_DRAGANDDROP
 
-#include <qdragobject.h>
-#include <qvaluelist.h>
+#include <q3dragobject.h>
+#include <q3valuelist.h>
 #include "kdelibs_export.h"
 
 class KMultipleDragPrivate;
@@ -51,7 +51,7 @@ class KMultipleDragPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDECORE_EXPORT KMultipleDrag : public QDragObject
+class KDECORE_EXPORT KMultipleDrag : public Q3DragObject
 {
     Q_OBJECT
 
@@ -71,7 +71,7 @@ public:
      *
      * @param dragObject the drag object to add. Should have no parent object.
      */
-    void addDragObject( QDragObject *dragObject );
+    void addDragObject( Q3DragObject *dragObject );
 
 protected:
     /**
@@ -90,8 +90,8 @@ protected:
     virtual const char* format( int i ) const;
 
 // KDE4: make private
-    QPtrList<QDragObject> m_dragObjects;
-    QValueList<int> m_numberFormats;
+    Q3PtrList<Q3DragObject> m_dragObjects;
+    QList<int> m_numberFormats;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

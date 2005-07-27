@@ -9,9 +9,9 @@
 */
 
 #include <qlayout.h>
-#include <qvbox.h>
-#include <qhbox.h>
-#include <qbuttongroup.h>
+#include <q3vbox.h>
+#include <q3hbox.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
@@ -66,7 +66,7 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
     hBox->addSpacing( 5 );
 
     //Selection mode selection
-    m_pbgMode = new QButtonGroup( 1, Qt::Horizontal, "Selection Mode", this);
+    m_pbgMode = new Q3ButtonGroup( 1, Qt::Horizontal, "Selection Mode", this);
     m_pbgMode->insert(new QRadioButton("NoSlection", m_pbgMode), TopLevel::NoSelection );
     m_pbgMode->insert(new QRadioButton("Single", m_pbgMode), TopLevel::Single );
     m_pbgMode->insert(new QRadioButton("Multi", m_pbgMode), TopLevel::Multi );
@@ -78,17 +78,17 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 	     this, SLOT( slotSwitchMode( int ) ) );
 
     //Signal labels
-    QGroupBox* gbWiget = new QGroupBox( 1, Qt::Horizontal, "Widget", this);
+    Q3GroupBox* gbWiget = new Q3GroupBox( 1, Qt::Horizontal, "Widget", this);
     m_plblWidget = new QLabel( gbWiget );
     vBox->addWidget( gbWiget );
-    QGroupBox* gbSignal = new QGroupBox( 1, Qt::Horizontal, "emitted Signal", this);
+    Q3GroupBox* gbSignal = new Q3GroupBox( 1, Qt::Horizontal, "emitted Signal", this);
     m_plblSignal = new QLabel( gbSignal );
     vBox->addWidget( gbSignal );
-    QGroupBox* gbItem = new QGroupBox( 1, Qt::Horizontal, "on Item", this);
+    Q3GroupBox* gbItem = new Q3GroupBox( 1, Qt::Horizontal, "on Item", this);
     m_plblItem = new QLabel( gbItem );
     vBox->addWidget( gbItem );
 
-    QButtonGroup* bgListView = new QButtonGroup( 1, Qt::Horizontal, "KListView", this);
+    Q3ButtonGroup* bgListView = new Q3ButtonGroup( 1, Qt::Horizontal, "KListView", this);
     QCheckBox* cbListView = new QCheckBox("Single Column", bgListView);
     vBox->addWidget( bgListView );
     connect( cbListView, SIGNAL( toggled( bool ) ),
@@ -97,29 +97,29 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
     KGlobal::config()->reparseConfiguration();
 
     //Create IconView
-    QGroupBox* gbIconView = new QGroupBox( 1, Qt::Horizontal, "KIconView", this);
+    Q3GroupBox* gbIconView = new Q3GroupBox( 1, Qt::Horizontal, "KIconView", this);
     m_pIconView = new KIconView( gbIconView );
     hBox->addWidget( gbIconView );
     hBox->addSpacing( 5 );
-    connect( m_pIconView, SIGNAL( executed( QIconViewItem* ) ),
-	     this, SLOT( slotIconViewExec( QIconViewItem* ) ) );
+    connect( m_pIconView, SIGNAL( executed( Q3IconViewItem* ) ),
+	     this, SLOT( slotIconViewExec( Q3IconViewItem* ) ) );
 
     //Create ListView
-    QGroupBox* gbListView = new QGroupBox( 1, Qt::Horizontal, "KListView", this);
+    Q3GroupBox* gbListView = new Q3GroupBox( 1, Qt::Horizontal, "KListView", this);
     m_pListView = new KListView( gbListView );
     m_pListView->addColumn("Item");
     m_pListView->addColumn("Text");
     hBox->addWidget( gbListView );
     hBox->addSpacing( 5 );
-    connect( m_pListView, SIGNAL( executed( QListViewItem* ) ),
-	     this, SLOT( slotListViewExec( QListViewItem* ) ) );
+    connect( m_pListView, SIGNAL( executed( Q3ListViewItem* ) ),
+	     this, SLOT( slotListViewExec( Q3ListViewItem* ) ) );
 
     //Create ListBox
-    QGroupBox* gbListBox = new QGroupBox( 1, Qt::Horizontal, "KListBox", this);
+    Q3GroupBox* gbListBox = new Q3GroupBox( 1, Qt::Horizontal, "KListBox", this);
     m_pListBox = new KListBox( gbListBox );
     hBox->addWidget( gbListBox );
-    connect( m_pListBox, SIGNAL( executed( QListBoxItem* ) ),
-	     this, SLOT( slotListBoxExec( QListBoxItem* ) ) );
+    connect( m_pListBox, SIGNAL( executed( Q3ListBoxItem* ) ),
+	     this, SLOT( slotListBoxExec( Q3ListBoxItem* ) ) );
 
     //Initialize buttons
     cbListView->setChecked( !m_pListView->allColumnsShowFocus() );
@@ -128,19 +128,19 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
     //Fill container widgets
     for( int i = 0; i < 10; i++ ) {
-      new QIconViewItem( m_pIconView, QString("Item%1").arg(i), QPixmap(item_xpm) );
+      new Q3IconViewItem( m_pIconView, QString("Item%1").arg(i), QPixmap(item_xpm) );
 
-      QListViewItem* lv = new QListViewItem( m_pListView, QString("Item%1").arg(i), QString("Text%1").arg(i) );
+      Q3ListViewItem* lv = new Q3ListViewItem( m_pListView, QString("Item%1").arg(i), QString("Text%1").arg(i) );
       lv->setPixmap( 0, QPixmap(item_xpm));
       lv->setPixmap( 1, QPixmap(item_xpm));
       
-      new QListBoxPixmap( m_pListBox, QPixmap(item_xpm), QString("Item%1").arg(i));
+      new Q3ListBoxPixmap( m_pListBox, QPixmap(item_xpm), QString("Item%1").arg(i));
     }
 
-    connect( m_pIconView, SIGNAL( clicked( QIconViewItem* ) ),
-	     this, SLOT( slotClicked( QIconViewItem* ) ) );
-    connect( m_pIconView, SIGNAL( doubleClicked( QIconViewItem* ) ),
-	     this, SLOT( slotDoubleClicked( QIconViewItem* ) ) );
+    connect( m_pIconView, SIGNAL( clicked( Q3IconViewItem* ) ),
+	     this, SLOT( slotClicked( Q3IconViewItem* ) ) );
+    connect( m_pIconView, SIGNAL( doubleClicked( Q3IconViewItem* ) ),
+	     this, SLOT( slotDoubleClicked( Q3IconViewItem* ) ) );
 }
 
 void TopLevel::slotSwitchMode( int id ) 
@@ -152,22 +152,22 @@ void TopLevel::slotSwitchMode( int id )
   switch( id ) {
   case TopLevel::NoSelection:
     m_pIconView->setSelectionMode( KIconView::NoSelection );
-    m_pListView->setSelectionMode( QListView::NoSelection );
+    m_pListView->setSelectionMode( Q3ListView::NoSelection );
     m_pListBox->setSelectionMode( KListBox::NoSelection );
     break;
   case TopLevel::Single:
     m_pIconView->setSelectionMode( KIconView::Single );
-    m_pListView->setSelectionMode( QListView::Single );
+    m_pListView->setSelectionMode( Q3ListView::Single );
     m_pListBox->setSelectionMode( KListBox::Single );
     break;
   case TopLevel::Multi:
     m_pIconView->setSelectionMode( KIconView::Multi );
-    m_pListView->setSelectionMode( QListView::Multi );
+    m_pListView->setSelectionMode( Q3ListView::Multi );
     m_pListBox->setSelectionMode( KListBox::Multi );
     break;
   case TopLevel::Extended:
     m_pIconView->setSelectionMode( KIconView::Extended );
-    m_pListView->setSelectionMode( QListView::Extended );
+    m_pListView->setSelectionMode( Q3ListView::Extended );
     m_pListBox->setSelectionMode( KListBox::Extended );
     break;
   default:
@@ -175,7 +175,7 @@ void TopLevel::slotSwitchMode( int id )
   }
 }
 
-void TopLevel::slotIconViewExec( QIconViewItem* item )
+void TopLevel::slotIconViewExec( Q3IconViewItem* item )
 {
   m_plblWidget->setText("KIconView");
   m_plblSignal->setText("executed");
@@ -185,7 +185,7 @@ void TopLevel::slotIconViewExec( QIconViewItem* item )
     m_plblItem->setText("Viewport");
 }
 
-void TopLevel::slotListViewExec( QListViewItem* item )
+void TopLevel::slotListViewExec( Q3ListViewItem* item )
 {
   m_plblWidget->setText("KListView");
   m_plblSignal->setText("executed");
@@ -195,7 +195,7 @@ void TopLevel::slotListViewExec( QListViewItem* item )
     m_plblItem->setText("Viewport");
 }
 
-void TopLevel::slotListBoxExec( QListBoxItem* item )
+void TopLevel::slotListBoxExec( Q3ListBoxItem* item )
 {
   m_plblWidget->setText("KListBox");
   m_plblSignal->setText("executed");

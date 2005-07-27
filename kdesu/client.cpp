@@ -26,7 +26,6 @@
 #include <sys/stat.h>
 
 #include <qglobal.h>
-#include <qcstring.h>
 #include <qfile.h>
 #include <qregexp.h>
 
@@ -51,7 +50,7 @@ KDEsuClient::KDEsuClient()
 {
     sockfd = -1;
 #ifdef Q_WS_X11
-    QCString display(getenv("DISPLAY"));
+    QByteArray display(getenv("DISPLAY"));
     if (display.isEmpty())
     {
         kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
@@ -59,12 +58,15 @@ KDEsuClient::KDEsuClient()
     }
 
     // strip the screen number from the display
-    display.replace(QRegExp("\\.[0-9]+$"), "");
+    while (QChar::fromLatin1(display.at(display.count() - 1)).isDigit())
+        display.chop(1);
+    if (display.endsWith('.'))
+        display.chop(1);
 #else
-    QCString display("QWS");
+    QByteArray display("QWS");
 #endif
 
-    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_%1").arg(display)));
+    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_").append(display)));
     d = new KDEsuClientPrivate;
     connect();
 }
@@ -165,27 +167,17 @@ int KDEsuClient::connect()
     return 0;
 }
 
-QCString KDEsuClient::escape(const QCString &str)
+QByteArray KDEsuClient::escape(const QByteArray &str)
 {
-    QCString copy = str;
-    int n = 0;
-    while ((n = copy.find("\\", n)) != -1)
-    {
-        copy.insert(n, '\\');
-        n += 2;
-    }
-    n = 0;
-    while ((n = copy.find("\"", n)) != -1)
-    {
-        copy.insert(n, '\\');
-        n += 2;
-    }
+    QByteArray copy = str;
+    copy.replace('\\', "\\\\");
+    copy.replace('\"', "\\\"");
     copy.prepend("\"");
     copy.append("\"");
     return copy;
 }
 
-int KDEsuClient::command(const QCString &cmd, QCString *result)
+int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
 {
     if (sockfd < 0)
 	return -1;
@@ -202,7 +194,7 @@ int KDEsuClient::command(const QCString &cmd, QCString *result)
     }
     buf[nbytes] = '\000';
 
-    QCString reply = buf;
+    QByteArray reply = buf;
     if (reply.left(2) != "OK")
 	return -1;
 
@@ -213,17 +205,17 @@ int KDEsuClient::command(const QCString &cmd, QCString *result)
 
 int KDEsuClient::setPass(const char *pass, int timeout)
 {
-    QCString cmd = "PASS ";
+    QByteArray cmd = "PASS ";
     cmd += escape(pass);
     cmd += " ";
-    cmd += QCString().setNum(timeout);
+    cmd += QByteArray().setNum(timeout);
     cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::exec(const QCString &prog, const QCString &user, const QCString &options, const QCStringList &env)
+int KDEsuClient::exec(const QByteArray &prog, const QByteArray &user, const QByteArray &options, const QList<QByteArray> &env)
 {
-    QCString cmd;
+    QByteArray cmd;
     cmd = "EXEC ";
     cmd += escape(prog);
     cmd += " ";
@@ -232,20 +224,19 @@ int KDEsuClient::exec(const QCString &prog, const QCString &user, const QCString
     {
        cmd += " ";
        cmd += escape(options);
-       for(QCStringList::ConstIterator it = env.begin(); 
-          it != env.end(); ++it)
+       for (int i = 0; i < env.count(); ++i)
        {
           cmd += " ";
-          cmd += escape(*it);
+          cmd += escape(env.at(i));
        }
     }
     cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::setHost(const QCString &host)
+int KDEsuClient::setHost(const QByteArray &host)
 {
-    QCString cmd = "HOST ";
+    QByteArray cmd = "HOST ";
     cmd += escape(host);
     cmd += "\n";
     return command(cmd);
@@ -253,61 +244,65 @@ int KDEsuClient::setHost(const QCString &host)
 
 int KDEsuClient::setPriority(int prio)
 {
-    QCString cmd;
-    cmd.sprintf("PRIO %d\n", prio);
+    QByteArray cmd;
+    cmd += "PRIO ";
+    cmd += QByteArray::number(prio);
+    cmd += "\n";
     return command(cmd);
 }
 
 int KDEsuClient::setScheduler(int sched)
 {
-    QCString cmd;
-    cmd.sprintf("SCHD %d\n", sched);
+    QByteArray cmd;
+    cmd += "SCHD ";
+    cmd += QByteArray::number(sched);
+    cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::delCommand(const QCString &key, const QCString &user)
+int KDEsuClient::delCommand(const QByteArray &key, const QByteArray &user)
 {
-    QCString cmd = "DEL ";
+    QByteArray cmd = "DEL ";
     cmd += escape(key);
     cmd += " ";
     cmd += escape(user);
     cmd += "\n";
     return command(cmd);
 }
-int KDEsuClient::setVar(const QCString &key, const QCString &value, int timeout,
-                        const QCString &group)
+int KDEsuClient::setVar(const QByteArray &key, const QByteArray &value, int timeout,
+                        const QByteArray &group)
 {
-    QCString cmd = "SET ";
+    QByteArray cmd = "SET ";
     cmd += escape(key);
     cmd += " ";
     cmd += escape(value);
     cmd += " ";
     cmd += escape(group);
     cmd += " ";
-    cmd += QCString().setNum(timeout);
+    cmd += QByteArray().setNum(timeout);
     cmd += "\n";
     return command(cmd);
 }
 
-QCString KDEsuClient::getVar(const QCString &key)
+QByteArray KDEsuClient::getVar(const QByteArray &key)
 {
-    QCString cmd = "GET ";
+    QByteArray cmd = "GET ";
     cmd += escape(key);
     cmd += "\n";
-    QCString reply;
+    QByteArray reply;
     command(cmd, &reply);
     return reply;
 }
 
-QValueList<QCString> KDEsuClient::getKeys(const QCString &group)
+QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
 {
-    QCString cmd = "GETK ";
+    QByteArray cmd = "GETK ";
     cmd += escape(group);
     cmd += "\n";
-    QCString reply;
+    QByteArray reply;
     command(cmd, &reply);
     int index=0, pos;
-    QValueList<QCString> list;
+    QList<QByteArray> list;
     if( !reply.isEmpty() )
     {
         // kdDebug(900) << "Found a matching entry: " << reply << endl;
@@ -332,9 +327,9 @@ QValueList<QCString> KDEsuClient::getKeys(const QCString &group)
     return list;
 }
 
-bool KDEsuClient::findGroup(const QCString &group)
+bool KDEsuClient::findGroup(const QByteArray &group)
 {
-    QCString cmd = "CHKG ";
+    QByteArray cmd = "CHKG ";
     cmd += escape(group);
     cmd += "\n";
     if( command(cmd) == -1 )
@@ -342,25 +337,25 @@ bool KDEsuClient::findGroup(const QCString &group)
     return true;
 }
 
-int KDEsuClient::delVar(const QCString &key)
+int KDEsuClient::delVar(const QByteArray &key)
 {
-    QCString cmd = "DELV ";
+    QByteArray cmd = "DELV ";
     cmd += escape(key);
     cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::delGroup(const QCString &group)
+int KDEsuClient::delGroup(const QByteArray &group)
 {
-    QCString cmd = "DELG ";
+    QByteArray cmd = "DELG ";
     cmd += escape(group);
     cmd += "\n";
     return command(cmd);
 }
 
-int KDEsuClient::delVars(const QCString &special_key)
+int KDEsuClient::delVars(const QByteArray &special_key)
 {
-    QCString cmd = "DELS ";
+    QByteArray cmd = "DELS ";
     cmd += escape(special_key);
     cmd += "\n";
     return command(cmd);
@@ -373,11 +368,11 @@ int KDEsuClient::ping()
 
 int KDEsuClient::exitCode()
 {
-    QCString result;
+    QByteArray result;
     if (command("EXIT\n", &result) != 0)
        return -1;
-       
-    return result.toLong();
+
+    return result.toInt();
 }
 
 int KDEsuClient::stopServer()
@@ -404,7 +399,7 @@ bool KDEsuClient::isServerSGID()
        d->daemon = findDaemon();
     if (d->daemon.isEmpty())
        return false;
-   
+
     KDE_struct_stat sbuf;
     if (KDE_stat(QFile::encodeName(d->daemon), &sbuf) < 0)
     {

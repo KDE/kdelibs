@@ -15,7 +15,7 @@
 #include <kstandarddirs.h>
 #include <qstring.h>
 #include <qregexp.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <ltdl.h>
 #include "kimageio.h"
@@ -96,6 +96,8 @@ KImageIOFormat::save( QDataStream& _str)
 void
 KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
 {
+#warning QImageIO does not exist anymore
+#if 0
    if (!bLibLoaded)
    {
       if (mLib.isEmpty())
@@ -151,6 +153,7 @@ KImageIOFormat::callLibFunc( bool read, QImageIO *iio)
          mWriteFunc(iio);
       else
          iio->setStatus(1); // Error
+#endif
 }
 
 
@@ -240,6 +243,8 @@ void
 KImageIOFactory::readImage( QImageIO *iio)
 {
    (void) self(); // Make sure we exist
+#warning QImageIO does not exist
+#if 0
    const char *fm = iio->format();
    if (!fm)
       fm = QImageIO::imageFormat( iio->ioDevice());
@@ -261,11 +266,14 @@ KImageIOFactory::readImage( QImageIO *iio)
    }
 
    format->callLibFunc( true, iio);
+#endif
 }
 
 void
 KImageIOFactory::writeImage( QImageIO *iio)
 {
+#warning QImageIO does not exist
+#if 0
    (void) self(); // Make sure we exist
    const char *fm = iio->format();
    if (!fm)
@@ -288,6 +296,7 @@ KImageIOFactory::writeImage( QImageIO *iio)
    }
 
    format->callLibFunc( false, iio);
+#endif
 }
 
 void
@@ -331,10 +340,13 @@ KImageIOFactory::load()
             writeFunc = writeImage;
          else
             writeFunc = 0;
+#warning QImageIO does not exist
+#if 0
          QImageIO::defineIOHandler( format->mType.ascii(),
                                     format->mHeader.ascii(),
                                     format->mFlags.ascii(),
                                     readFunc, writeFunc);
+#endif
       }
       formatList->append( format );
    }

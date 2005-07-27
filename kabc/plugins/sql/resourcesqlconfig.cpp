@@ -21,7 +21,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qspinbox.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <klineedit.h>
 #include <klocale.h>
@@ -58,7 +58,7 @@ ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( mHost, 2, 1 );
 
   label = new QLabel( i18n( "Port:" ), this );
-  QVBox *box = new QVBox(this);
+  Q3VBox *box = new Q3VBox(this);
   mPort = new QSpinBox(0, 65535, 1, box );
   mPort->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
   mPort->setValue(389);

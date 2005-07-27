@@ -34,12 +34,6 @@
 #include <netinet/tcp.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
-/*
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-*/
-
 #include <qdom.h>
 #include <qfile.h>
 #include <qregexp.h>
@@ -52,7 +46,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
-#include <kextsock.h>
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kmdcodec.h>
@@ -61,6 +54,7 @@
 #include <dcopclient.h>
 #include <kdatastream.h>
 #include <kapplication.h>
+#include <kstreamsocket.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kremoteencoding.h>
@@ -89,6 +83,7 @@
 #include <misc/kntlm/kntlm.h>
 
 using namespace KIO;
+using namespace KNetwork;
 
 extern "C" {
   KDE_EXPORT int kdemain(int argc, char **argv);
@@ -169,8 +164,8 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 
 /************************************** HTTPProtocol **********************************************/
 
-HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
-                            const QCString &app )
+HTTPProtocol::HTTPProtocol( const Q3CString &protocol, const Q3CString &pool,
+                            const Q3CString &app )
              :TCPSlaveBase( 0, protocol , pool, app,
                             (protocol == "https" || protocol == "webdavs") )
 {
@@ -622,7 +617,7 @@ void HTTPProtocol::listDir( const KURL& url )
   davStatList( url, false );
 }
 
-void HTTPProtocol::davSetRequest( const QCString& requestXML )
+void HTTPProtocol::davSetRequest( const Q3CString& requestXML )
 {
   // insert the document into the POST buffer, kill trailing zero byte
   m_bufPOST = requestXML;
@@ -644,7 +639,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   QString query = metaData("davSearchQuery");
   if ( !query.isEmpty() )
   {
-    QCString request = "<?xml version=\"1.0\"?>\r\n";
+    Q3CString request = "<?xml version=\"1.0\"?>\r\n";
     request.append( "<D:searchrequest xmlns:D=\"DAV:\">\r\n" );
     request.append( query.utf8() );
     request.append( "</D:searchrequest>\r\n" );
@@ -652,7 +647,7 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     davSetRequest( request );
   } else {
     // We are only after certain features...
-    QCString request;
+    Q3CString request;
     request = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
     "<D:propfind xmlns:D=\"DAV:\">";
 
@@ -810,7 +805,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   uint lockCount = 0;
   uint supportedLockCount = 0;
 
-  for ( uint i = 0; i < propstats.count(); i++)
+  for ( int i = 0; i < propstats.count(); i++)
   {
     QDomElement propstat = propstats.item(i).toElement();
 
@@ -1000,7 +995,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
                                         uint& lockCount )
 {
-  for ( uint i = 0; i < activeLocks.count(); i++ )
+  for ( int i = 0; i < activeLocks.count(); i++ )
   {
     QDomElement activeLock = activeLocks.item(i).toElement();
 
@@ -1143,7 +1138,7 @@ bool HTTPProtocol::davHostOk()
 
   if (m_davCapabilities.count())
   {
-    for (uint i = 0; i < m_davCapabilities.count(); i++)
+    for (int i = 0; i < m_davCapabilities.count(); i++)
     {
       bool ok;
       uint verNo = m_davCapabilities[i].toUInt(&ok);
@@ -1395,7 +1390,7 @@ void HTTPProtocol::davLock( const KURL& url, const QString& scope,
   }
 
   // insert the document into the POST buffer
-  m_bufPOST = lockReq.toCString();
+  m_bufPOST = lockReq.toByteArray();
 
   retrieveContent( true );
 
@@ -1535,7 +1530,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
       QDomNodeList responses = multistatus.elementsByTagName( "response" );
 
-      for (uint i = 0; i < responses.count(); i++)
+      for (int i = 0; i < responses.count(); i++)
       {
         int errCode;
         QString errUrl;
@@ -1708,18 +1703,18 @@ bool HTTPProtocol::isOffline(const KURL &url)
 {
   const int NetWorkStatusUnknown = 1;
   const int NetWorkStatusOnline = 8;
-  QCString replyType;
+  DCOPCString replyType;
   QByteArray params;
   QByteArray reply;
 
-  QDataStream stream(params, IO_WriteOnly);
+  QDataStream stream(&params, QIODevice::WriteOnly);
   stream << url.url();
 
   if ( dcopClient()->call( "kded", "networkstatus", "status(QString)",
                            params, replyType, reply ) && (replyType == "int") )
   {
      int result;
-     QDataStream stream2( reply, IO_ReadOnly );
+     QDataStream stream2( reply );
      stream2 >> result;
      kdDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
      return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
@@ -1730,7 +1725,7 @@ bool HTTPProtocol::isOffline(const KURL &url)
 
 void HTTPProtocol::multiGet(const QByteArray &data)
 {
-  QDataStream stream(data, IO_ReadOnly);
+  QDataStream stream(data);
   Q_UINT32 n;
   stream >> n;
 
@@ -1893,7 +1888,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   do
   {
-    ret = TCPSlaveBase::read( b, nbytes);
+    ret = TCPSlaveBase::read( ( char* )b, nbytes);
     if (ret == 0)
       m_bEOF = true;
 
@@ -1905,11 +1900,11 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 void HTTPProtocol::httpCheckConnection()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCheckConnection: " <<
-                                   " Socket status: " << m_iSock <<
+//                                   " Socket status: " << m_iSock <<
                                       " Keep Alive: " << m_bKeepAlive <<
                                            " First: " << m_bFirstRequest << endl;
 
-  if ( !m_bFirstRequest && (m_iSock != -1) )
+  if ( !m_bFirstRequest && isConnectionValid() )
   {
      bool closeDown = false;
      if ( !isConnectionValid())
@@ -1972,7 +1967,7 @@ bool HTTPProtocol::httpOpenConnection()
 
     setConnectTimeout( m_proxyConnTimeout );
 
-    if ( !connectToHost(proxy_host, proxy_port, false) )
+    if ( !connectToHost(proxy_host, QString::number( proxy_port ), false) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
@@ -1981,11 +1976,11 @@ bool HTTPProtocol::httpOpenConnection()
 
       switch ( connectResult() )
       {
-        case IO_LookupError:
+        case KSocketBase::LookupFailure:
           errMsg = proxy_host;
           errCode = ERR_UNKNOWN_PROXY_HOST;
           break;
-        case IO_TimeOutError:
+        case KSocketBase::Timeout:
           errMsg = i18n("Proxy %1 at port %2").arg(proxy_host).arg(proxy_port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
@@ -2002,7 +1997,7 @@ bool HTTPProtocol::httpOpenConnection()
     // Apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
 
-    if ( !connectToHost(m_state.hostname, m_state.port, false ) )
+    if ( !connectToHost(m_state.hostname, QString::number( m_state.port ), false ) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
@@ -2011,14 +2006,14 @@ bool HTTPProtocol::httpOpenConnection()
 
       switch ( connectResult() )
       {
-        case IO_LookupError:
+/*/        case IO_LookupError:
           errMsg = m_state.hostname;
           errCode = ERR_UNKNOWN_HOST;
           break;
         case IO_TimeOutError:
           errMsg = i18n("Connection was to %1 at port %2").arg(m_state.hostname).arg(m_state.port);
           errCode = ERR_SERVER_TIMEOUT;
-          break;
+          break;*/
         default:
           errCode = ERR_COULD_NOT_CONNECT;
           if (m_state.port != m_iDefaultPort)
@@ -2032,8 +2027,7 @@ bool HTTPProtocol::httpOpenConnection()
   }
 
   // Set our special socket option!!
-  int on = 1;
-  (void) setsockopt( m_iSock, IPPROTO_TCP, TCP_NODELAY, (char*)&on, sizeof(on) );
+  socket().setNoDelay(true);
 
   m_bFirstRequest = true;
 
@@ -2514,10 +2508,13 @@ bool HTTPProtocol::httpOpen()
   // Now that we have our formatted header, let's send it!
   // Create a new connection to the remote machine if we do
   // not already have one...
-  if ( m_iSock == -1)
+  if ( !isConnectionValid() )
   {
     if (!httpOpenConnection())
+    {
+       kdDebug(7113) << "Couldn't connect, oopsie!" << endl;
        return false;
+    }
   }
 
   // Send the data to the remote machine...
@@ -2543,6 +2540,8 @@ bool HTTPProtocol::httpOpen()
        return false;
     }
   }
+  else
+      kdDebug(7113) << "sent it!" << endl;
 
   bool res = true;
 
@@ -2619,8 +2618,8 @@ try_again:
      return true;
   }
 
-  QCString locationStr; // In case we get a redirect.
-  QCString cookieStr; // In case we get a cookie.
+  Q3CString locationStr; // In case we get a redirect.
+  Q3CString cookieStr; // In case we get a cookie.
 
   QString disposition; // Incase we get a Content-Disposition
   QString mediaValue;
@@ -2654,7 +2653,7 @@ try_again:
   bool hasCacheDirective = false;
   bool bCanResume = false;
 
-  if (m_iSock == -1)
+  if ( !isConnectionValid() )
   {
      kdDebug(7113) << "HTTPProtocol::readHeader: No connection." << endl;
      return false; // Restablish connection and try again
@@ -3068,7 +3067,7 @@ try_again:
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      QCString pragma = QCString(trimLead(buf+7)).stripWhiteSpace().lower();
+      Q3CString pragma = Q3CString(trimLead(buf+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
          m_request.bCachedWrite = false; // Don't put in cache
@@ -3087,7 +3086,7 @@ try_again:
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = QCString(trimLead(buf+9)).stripWhiteSpace();
+        locationStr = Q3CString(trimLead(buf+9)).stripWhiteSpace();
     }
 
     // Check for cookies
@@ -3552,7 +3551,7 @@ try_again:
   // Web-servers really shouldn't do this: They let Content-Size refer
   // to the size of the tgz file, not to the size of the tar file,
   // while the Content-Type refers to "tar" instead of "tgz".
-  if (m_qContentEncodings.last() == "gzip")
+  if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "gzip")
   {
      if (m_strMimeType == "application/x-tar")
      {
@@ -3591,7 +3590,7 @@ try_again:
   //   encoding and "application/x-bzip2" as mimetype. That is wrong.
   //   currently that doesn't bother us, because we remove the encoding
   //   and set the mimetype to x-bzip2 anyway.
-  if (m_qContentEncodings.last() == "bzip2")
+  if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "bzip2")
   {
      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
      m_strMimeType = QString::fromLatin1("application/x-bzip2");
@@ -3858,7 +3857,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
 
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")" << endl;
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     stream << int(99); // special: Close connection
     setTimeoutSpecialCommand(m_keepAliveTimeout, data);
     return;
@@ -3886,10 +3885,10 @@ void HTTPProtocol::slave_status()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::slave_status" << endl;
 
-  if ( m_iSock != -1 && !isConnectionValid() )
+  if ( !isConnectionValid() )
      httpCloseConnection();
 
-  slaveStatus( m_state.hostname, (m_iSock != -1) );
+  slaveStatus( m_state.hostname, isConnectionValid() );
 }
 
 void HTTPProtocol::mimetype( const KURL& url )
@@ -3917,7 +3916,7 @@ void HTTPProtocol::special( const QByteArray &data )
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::special" << endl;
 
   int tmp;
-  QDataStream stream(data, IO_ReadOnly);
+  QDataStream stream(data);
 
   stream >> tmp;
   switch (tmp) {
@@ -4436,11 +4435,11 @@ void HTTPProtocol::error( int _err, const QString &_text )
 }
 
 
-void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
+void HTTPProtocol::addCookies( const QString &url, const Q3CString &cookieHeader )
 {
    long windowId = m_request.window.toLong();
    QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
+   QDataStream stream(&params, QIODevice::WriteOnly);
    stream << url << cookieHeader << windowId;
 
    kdDebug(7113) << "(" << m_pid << ") " << cookieHeader << endl;
@@ -4455,14 +4454,14 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
-  QCString replyType;
+  DCOPCString replyType;
   QByteArray params;
   QByteArray reply;
   QString result;
 
   long windowId = m_request.window.toLong();
   result = QString::null;
-  QDataStream stream(params, IO_WriteOnly);
+  QDataStream stream(&params, QIODevice::WriteOnly);
   stream << url << windowId;
 
   if ( !dcopClient()->call( "kded", "kcookiejar", "findCookies(QString,long int)",
@@ -4473,7 +4472,7 @@ QString HTTPProtocol::findCookies( const QString &url)
   }
   if ( replyType == "QString" )
   {
-     QDataStream stream2( reply, IO_ReadOnly );
+     QDataStream stream2( reply );
      stream2 >> result;
   }
   else
@@ -4552,10 +4551,10 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       dir += "0";
 
    unsigned long hash = 0x00000000;
-   QCString u = m_request.url.url().latin1();
+   Q3CString u = m_request.url.url().latin1();
    for(int i = u.length(); i--;)
    {
-      hash = (hash * 12211 + u[i]) % 2147483563;
+      hash = (hash * 12211 + u.at(i)) % 2147483563;
    }
 
    QString hashString;
@@ -5292,14 +5291,14 @@ void HTTPProtocol::saveAuthorization()
 }
 
 #ifdef HAVE_LIBGSSAPI
-QCString HTTPProtocol::gssError( int major_status, int minor_status )
+Q3CString HTTPProtocol::gssError( int major_status, int minor_status )
 {
   OM_uint32 new_status;
   OM_uint32 msg_ctx = 0;
   gss_buffer_desc major_string;
   gss_buffer_desc minor_string;
   OM_uint32 ret;
-  QCString errorstr;
+  Q3CString errorstr;
 
   errorstr = "";
 
@@ -5318,7 +5317,7 @@ QCString HTTPProtocol::gssError( int major_status, int minor_status )
 QString HTTPProtocol::createNegotiateAuth()
 {
   QString auth;
-  QCString servicename;
+  Q3CString servicename;
   QByteArray input;
   OM_uint32 major_status, minor_status;
   OM_uint32 req_flags = 0;
@@ -5413,7 +5412,7 @@ QString HTTPProtocol::createNegotiateAuth()
 #else
 
 // Dummy
-QCString HTTPProtocol::gssError( int, int )
+Q3CString HTTPProtocol::gssError( int, int )
 {
   return "";
 }
@@ -5429,7 +5428,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 {
   uint len;
   QString auth, user, domain, passwd;
-  QCString strauth;
+  Q3CString strauth;
   QByteArray buf;
 
   if ( isForProxy )
@@ -5484,7 +5483,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
 QString HTTPProtocol::createBasicAuth( bool isForProxy )
 {
   QString auth;
-  QCString user, passwd;
+  Q3CString user, passwd;
   if ( isForProxy )
   {
     auth = "Proxy-Authorization: Basic ";
@@ -5511,14 +5510,14 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   return auth;
 }
 
-void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
+void HTTPProtocol::calculateResponse( DigestAuthInfo& info, Q3CString& Response )
 {
   KMD5 md;
-  QCString HA1;
-  QCString HA2;
+  Q3CString HA1;
+  Q3CString HA2;
 
   // Calculate H(A1)
-  QCString authStr = info.username;
+  Q3CString authStr = info.username;
   authStr += ':';
   authStr += info.realm;
   authStr += ':';
@@ -5583,8 +5582,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   const char *p;
 
   QString auth;
-  QCString opaque;
-  QCString Response;
+  Q3CString opaque;
+  Q3CString Response;
 
   DigestAuthInfo info;
 
@@ -5689,21 +5688,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.realm = QCString( p, i+1 );
+      info.realm = Q3CString( p, i+1 );
     }
     else if (strncasecmp(p, "algorith=", 9)==0)
     {
       p+=9;
       while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p, i+1);
+      info.algorithm = Q3CString(p, i+1);
     }
     else if (strncasecmp(p, "algorithm=", 10)==0)
     {
       p+=10;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( ( p[i] != '"' ) && ( p[i] != ',' ) && ( p[i] != '\0' ) ) i++;
-      info.algorithm = QCString(p,i+1);
+      info.algorithm = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "domain=", 7)==0)
     {
@@ -5712,7 +5711,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
       int pos;
       int idx = 0;
-      QCString uri = QCString(p,i+1);
+      Q3CString uri = Q3CString(p,i+1);
       do
       {
         pos = uri.find( ' ', idx );
@@ -5736,21 +5735,21 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=6;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.nonce = QCString(p,i+1);
+      info.nonce = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "opaque=", 7)==0)
     {
       p+=7;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      opaque = QCString(p,i+1);
+      opaque = Q3CString(p,i+1);
     }
     else if (strncasecmp(p, "qop=", 4)==0)
     {
       p+=4;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      info.qop = QCString(p,i+1);
+      info.qop = Q3CString(p,i+1);
     }
     p+=(i+1);
   }

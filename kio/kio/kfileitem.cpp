@@ -32,7 +32,7 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qmap.h>
-#include <qstylesheet.h>
+#include <q3stylesheet.h>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -143,7 +143,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       KDE_struct_stat buf;
-      QCString path = QFile::encodeName(m_url.path( -1 ));
+      Q3CString path = QFile::encodeName(m_url.path( -1 ));
       if ( KDE_lstat( path.data(), &buf ) == 0 )
       {
         mode = buf.st_mode;
@@ -695,7 +695,7 @@ QString KFileItem::getToolTipText(int maxcount)
   tip += start + i18n("Name:") + mid + text() + end;
   tip += start + i18n("Type:") + mid;
 
-  QString type = QStyleSheet::escape(mimeComment());
+  QString type = Q3StyleSheet::escape(mimeComment());
   if ( m_bLink ) {
    tip += i18n("Link to %1 (%2)").arg(linkDest(), type) + end;
   } else
@@ -738,9 +738,9 @@ QString KFileItem::getToolTipText(int maxcount)
         {
           count++;
           tip += start +
-                   QStyleSheet::escape( item.translatedKey() ) + ":" +
+                   Q3StyleSheet::escape( item.translatedKey() ) + ":" +
                  mid +
-                   QStyleSheet::escape( s ) +
+                   Q3StyleSheet::escape( s ) +
                  end;
         }
 
@@ -861,7 +861,7 @@ void KFileItem::setExtraData( const void *key, void *value )
 
 const void * KFileItem::extraData( const void *key ) const
 {
-    QMapConstIterator<const void*,void*> it = m_extra.find( key );
+    QMap<const void*,void*>::const_iterator it = m_extra.find( key );
     if ( it != m_extra.end() )
         return it.data();
     return 0L;
@@ -869,7 +869,7 @@ const void * KFileItem::extraData( const void *key ) const
 
 void * KFileItem::extraData( const void *key )
 {
-    QMapIterator<const void*,void*> it = m_extra.find( key );
+    QMap<const void*,void*>::iterator it = m_extra.find( key );
     if ( it != m_extra.end() )
         return it.data();
     return 0L;
@@ -897,25 +897,25 @@ QString KFileItem::parsePermissions(mode_t perm) const
     else if (isLink())
 	p[0]='l';
 
-    if (perm & QFileInfo::ReadUser)
+    if (perm & QFile::ReadUser)
 	p[1]='r';
-    if (perm & QFileInfo::WriteUser)
+    if (perm & QFile::WriteUser)
 	p[2]='w';
-    if (perm & QFileInfo::ExeUser)
+    if (perm & QFile::ExeUser)
 	p[3]='x';
 
-    if (perm & QFileInfo::ReadGroup)
+    if (perm & QFile::ReadGroup)
 	p[4]='r';
-    if (perm & QFileInfo::WriteGroup)
+    if (perm & QFile::WriteGroup)
 	p[5]='w';
-    if (perm & QFileInfo::ExeGroup)
+    if (perm & QFile::ExeGroup)
 	p[6]='x';
 
-    if (perm & QFileInfo::ReadOther)
+    if (perm & QFile::ReadOther)
 	p[7]='r';
-    if (perm & QFileInfo::WriteOther)
+    if (perm & QFile::WriteOther)
 	p[8]='w';
-    if (perm & QFileInfo::ExeOther)
+    if (perm & QFile::ExeOther)
 	p[9]='x';
 
     return QString::fromLatin1(p);

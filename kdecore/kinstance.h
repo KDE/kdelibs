@@ -29,6 +29,7 @@ class KMimeSourceFactory;
 class KSharedConfig;
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include "kdelibs_export.h"
 
 
@@ -49,7 +50,7 @@ class KDECORE_EXPORT KInstance
      *  Constructor.
      *  @param instanceName the name of the instance
      */
-    KInstance( const QCString& instanceName) ;
+    KInstance( const QByteArray& instanceName) ;
 
     /**
      *  Constructor.
@@ -118,7 +119,7 @@ class KDECORE_EXPORT KInstance
      * @return the instance name, can be null if the KInstance has been 
      *         created with a null name
      */
-    QCString          instanceName() const;
+    QByteArray          instanceName() const;
 
     /**
      * Returns the KMimeSourceFactory of the instance.
@@ -146,7 +147,7 @@ private:
     mutable KConfig             *_config;
     mutable KIconLoader         *_iconLoader;
 
-    QCString                     _name;
+    QByteArray                     _name;
     const KAboutData            *_aboutData;
 
 protected:

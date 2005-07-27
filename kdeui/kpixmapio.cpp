@@ -17,6 +17,8 @@
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qglobal.h>
+#include <qvector.h>
+#include <qx11info_x11.h>
 
 #include <kglobal.h>
 #include <kconfig.h>
@@ -41,6 +43,8 @@ extern "C" int XShmQueryExtension(Display *display);
 #else
 #undef HAVE_MITSHM
 #endif
+
+extern GC kde_xget_temp_gc( int scrn, bool monochrome );		// get temporary GC
 
 // d pointer
 
@@ -92,9 +96,9 @@ KPixmapIO::KPixmapIO()
 	return;
 
     int ignore;
-    if (XQueryExtension(qt_xdisplay(), "MIT-SHM", &ignore, &ignore, &ignore))
+    if (XQueryExtension(QX11Info::display(), "MIT-SHM", &ignore, &ignore, &ignore))
     {
-	if (XShmQueryExtension(qt_xdisplay()))
+	if (XShmQueryExtension(QX11Info::display()))
 	    m_bShm = true;
     }
     if (!m_bShm)
@@ -108,8 +112,8 @@ KPixmapIO::KPixmapIO()
 
     // Sort out bit format. Create a temporary XImage for this.
     d->shminfo = new XShmSegmentInfo;
-    d->ximage = XShmCreateImage(qt_xdisplay(), (Visual *) QPaintDevice::x11AppVisual(),
-	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, 10, 10);
+    d->ximage = XShmCreateImage(QX11Info::display(), (Visual *) QX11Info::appVisual(),
+	    QX11Info::appDepth(), ZPixmap, 0L, d->shminfo, 10, 10);
     d->bpp = d->ximage->bits_per_pixel;
     d->first_try = true;
     int bpp = d->bpp;
@@ -225,10 +229,10 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 	if( initXImage(src->width(), src->height()))
 	{
 	    convertToXImage(*src);
-	    XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
+	    XShmPutImage(QX11Info::display(), dst->handle(), kde_xget_temp_gc(dst->x11Info().screen(), false), d->ximage,
 		    dx, dy, 0, 0, src->width(), src->height(), false);
             // coolo: do we really need this here? I see no good for it
-	    XSync(qt_xdisplay(), false);
+	    XSync(QX11Info::display(), false);
 	    doneXImage();
 	    fallback  = false;
 	}
@@ -259,7 +263,7 @@ QImage KPixmapIO::getImage(const QPixmap *src, int sx, int sy, int sw, int sh)
 #ifdef HAVE_MITSHM
 	if( initXImage(sw, sh))
 	{
-	    XShmGetImage(qt_xdisplay(), src->handle(), d->ximage, sx, sy, AllPlanes);
+	    XShmGetImage(QX11Info::display(), src->handle(), d->ximage, sx, sy, AllPlanes);
 	    image = convertFromXImage();
 	    doneXImage();
 	    fallback = false;
@@ -347,8 +351,8 @@ void KPixmapIO::destroyXImage()
 bool KPixmapIO::createXImage(int w, int h)
 {
     destroyXImage();
-    d->ximage = XShmCreateImage(qt_xdisplay(), (Visual *) QPaintDevice::x11AppVisual(),
-	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, w, h);
+    d->ximage = XShmCreateImage(QX11Info::display(), (Visual *) QX11Info::appVisual(),
+	    QX11Info::appDepth(), ZPixmap, 0L, d->shminfo, w, h);
     return d->ximage != None;
 }
 
@@ -357,7 +361,7 @@ void KPixmapIO::destroyShmSegment()
 {
     if (d->shmsize)
     {
-	XShmDetach(qt_xdisplay(), d->shminfo);
+	XShmDetach(QX11Info::display(), d->shminfo);
 	shmdt(d->shminfo->shmaddr);
         shmctl(d->shminfo->shmid, IPC_RMID, 0);
 	d->shmsize = 0;
@@ -406,12 +410,12 @@ bool KPixmapIO::createShmSegment(int size)
 
     if (d->first_try) {
         // make sure that we don't get errors of old stuff
-        XSync(qt_xdisplay(), False);
+        XSync(QX11Info::display(), False);
         old_errhandler = XSetErrorHandler(kpixmapio_errorhandler);
-        kpixmapio_serial = NextRequest(qt_xdisplay());
+        kpixmapio_serial = NextRequest(QX11Info::display());
     }
 
-    if ( !XShmAttach(qt_xdisplay(), d->shminfo))
+    if ( !XShmAttach(QX11Info::display(), d->shminfo))
     {
 	kdWarning() << "X-Server could not attach shared memory segment.\n";
 	m_bShm = false;
@@ -420,7 +424,7 @@ bool KPixmapIO::createShmSegment(int size)
     }
 
     if (d->first_try) {
-        XSync(qt_xdisplay(), false);
+        XSync(QX11Info::display(), false);
 
         if (!use_xshm)
             m_bShm = false;
@@ -458,7 +462,7 @@ QImage KPixmapIO::convertFromXImage()
 	XColor *cmap = new XColor[ncells];
 	for (i=0; i<ncells; i++)
 	    cmap[i].pixel = i;
-	XQueryColors(qt_xdisplay(), QPaintDevice::x11AppColormap(),
+	XQueryColors(QX11Info::display(), QPaintDevice::x11AppColormap(),
 		cmap, ncells);
 	image.setNumColors(ncells);
 	for (i=0; i<ncells; i++)
@@ -479,11 +483,11 @@ QImage KPixmapIO::convertFromXImage()
     case bo16_RGB_565:
     case bo16_BGR_565:
     {
-	Q_INT32 pixel, *src;
+	qint32 pixel, *src;
 	QRgb *dst, val;
 	for (y=0; y<height; y++)
 	{
-	    src = (Q_INT32 *) (data + y*bpl);
+	    src = (qint32 *) (data + y*bpl);
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<width/2; x++)
 	    {
@@ -510,11 +514,11 @@ QImage KPixmapIO::convertFromXImage()
     case bo16_RGB_555:
     case bo16_BGR_555:
     {
-	Q_INT32 pixel, *src;
+	qint32 pixel, *src;
 	QRgb *dst, val;
 	for (y=0; y<height; y++)
 	{
-	    src = (Q_INT32 *) (data + y*bpl);
+	    src = (qint32 *) (data + y*bpl);
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<width/2; x++)
 	    {
@@ -543,16 +547,16 @@ QImage KPixmapIO::convertFromXImage()
 	char *src;
 	QRgb *dst;
 	int w1 = width/4;
-	Q_INT32 d1, d2, d3;
+	qint32 d1, d2, d3;
 	for (y=0; y<height; y++)
 	{
 	    src = data + y*bpl;
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<w1; x++)
 	    {
-		d1 = *((Q_INT32 *)src);
-		d2 = *((Q_INT32 *)src + 1);
-		d3 = *((Q_INT32 *)src + 2);
+		d1 = *((qint32 *)src);
+		d2 = *((qint32 *)src + 1);
+		d3 = *((qint32 *)src + 2);
 		src += 12;
 		*dst++ = d1;
 		*dst++ = (d1 >> 24) | (d2 << 8);
@@ -575,16 +579,16 @@ QImage KPixmapIO::convertFromXImage()
 	char *src;
 	QRgb *dst;
 	int w1 = width/4;
-	Q_INT32 d1, d2, d3;
+	qint32 d1, d2, d3;
 	for (y=0; y<height; y++)
 	{
 	    src = data + y*bpl;
 	    dst = (QRgb *) image.scanLine(y);
 	    for (x=0; x<w1; x++)
 	    {
-		d1 = *((Q_INT32 *)src);
-		d2 = *((Q_INT32 *)src + 1);
-		d3 = *((Q_INT32 *)src + 2);
+		d1 = *((qint32 *)src);
+		d2 = *((qint32 *)src + 1);
+		d3 = *((qint32 *)src + 2);
 		src += 12;
 		*dst++ = d1;
 		*dst++ = (d1 >> 24) | (d2 << 8);
@@ -632,11 +636,11 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	if (img.depth() == 32)
 	{
 	    QRgb *src, pixel;
-	    Q_INT32 *dst, val;
+	    qint32 *dst, val;
 	    for (y=0; y<height; y++)
 	    {
 		src = (QRgb *) img.scanLine(y);
-		dst = (Q_INT32 *) (data + y*bpl);
+		dst = (qint32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = *src++;
@@ -650,19 +654,19 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		if (width%2)
 		{
 		    pixel = *src++;
-		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) |
+		    *((qint16 *)dst) = ((pixel & 0xf80000) >> 9) |
 			    ((pixel & 0xf800) >> 6) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	} else
 	{
-	    uchar *src;
-	    Q_INT32 val, *dst;
-	    QRgb pixel, *clut = img.colorTable();
+	    qint32 val, *dst;
+	    QRgb pixel; 
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (Q_INT32 *) (data + y*bpl);
+		const uchar *src = img.scanLine(y);
+		dst = (qint32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = clut[*src++];
@@ -676,7 +680,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		if (width%2)
 		{
 		    pixel = clut[*src++];
-		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) |
+		    *((qint16 *)dst) = ((pixel & 0xf80000) >> 9) |
 			    ((pixel & 0xf800) >> 6) | ((pixel & 0xff) >> 3);
 		}
 	    }
@@ -689,11 +693,11 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	if (img.depth() == 32)
 	{
 	    QRgb *src, pixel;
-	    Q_INT32 *dst, val;
+	    qint32 *dst, val;
 	    for (y=0; y<height; y++)
 	    {
 		src = (QRgb *) img.scanLine(y);
-		dst = (Q_INT32 *) (data + y*bpl);
+		dst = (qint32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = *src++;
@@ -707,19 +711,19 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		if (width%2)
 		{
 		    pixel = *src++;
-		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 8) |
+		    *((qint16 *)dst) = ((pixel & 0xf80000) >> 8) |
 			    ((pixel & 0xfc00) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	} else
 	{
-	    uchar *src;
-	    Q_INT32 val, *dst;
-	    QRgb pixel, *clut = img.colorTable();
+	    qint32 val, *dst;
+	    QRgb pixel;
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (Q_INT32 *) (data + y*bpl);
+		const uchar *src = img.scanLine(y);
+		dst = (qint32 *) (data + y*bpl);
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = clut[*src++];
@@ -733,7 +737,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		if (width%2)
 		{
 		    pixel = clut[*src++];
-		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 8) |
+		    *((qint16 *)dst) = ((pixel & 0xf80000) >> 8) |
 			    ((pixel & 0xfc00) >> 5) | ((pixel & 0xff) >> 3);
 		}
 	    }
@@ -757,9 +761,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (*src++ & 0xffffff);
 		    d3 = (*src++ & 0xffffff);
 		    d4 = (*src++ & 0xffffff);
-		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
-		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((qint32 *)dst) = d1 | (d2 << 24);
+		    *((qint32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((qint32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++)
@@ -772,22 +776,22 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src, *dst;
 	    int w1 = width/4;
-	    QRgb *clut = img.colorTable(), d1, d2, d3, d4;
+	    QVector<QRgb> clut = img.colorTable();
+	    QRgb d1, d2, d3, d4;
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (uchar *) data + y*bpl;
+		const uchar* src = img.scanLine(y);
+		uchar* dst = (uchar *) data + y*bpl;
 		for (x=0; x<w1; x++)
 		{
 		    d1 = (clut[*src++] & 0xffffff);
 		    d2 = (clut[*src++] & 0xffffff);
 		    d3 = (clut[*src++] & 0xffffff);
 		    d4 = (clut[*src++] & 0xffffff);
-		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
-		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((qint32 *)dst) = d1 | (d2 << 24);
+		    *((qint32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((qint32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++)
@@ -818,9 +822,9 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		    d2 = (*src++ & 0xffffff);
 		    d3 = (*src++ & 0xffffff);
 		    d4 = (*src++ & 0xffffff);
-		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
-		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((qint32 *)dst) = d1 | (d2 << 24);
+		    *((qint32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((qint32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++)
@@ -833,22 +837,22 @@ void KPixmapIO::convertToXImage(const QImage &img)
 	    }
 	} else
 	{
-	    uchar *src, *dst;
 	    int w1 = width/4;
-	    QRgb *clut = img.colorTable(), d1, d2, d3, d4;
+	    QVector<QRgb> clut = img.colorTable();
+	    QRgb d1, d2, d3, d4;
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
-		dst = (uchar *) data + y*bpl;
+		const uchar *src = img.scanLine(y);
+		uchar* dst = (uchar *) data + y*bpl;
 		for (x=0; x<w1; x++)
 		{
 		    d1 = (clut[*src++] & 0xffffff);
 		    d2 = (clut[*src++] & 0xffffff);
 		    d3 = (clut[*src++] & 0xffffff);
 		    d4 = (clut[*src++] & 0xffffff);
-		    *((Q_INT32 *)dst) = d1 | (d2 << 24);
-		    *((Q_INT32 *)dst+1) = (d2 >> 8) | (d3 << 16);
-		    *((Q_INT32 *)dst+2) = (d4 << 8) | (d3 >> 16);
+		    *((qint32 *)dst) = d1 | (d2 << 24);
+		    *((qint32 *)dst+1) = (d2 >> 8) | (d3 << 16);
+		    *((qint32 *)dst+2) = (d4 << 8) | (d3 >> 16);
 		    dst += 12;
 		}
 		for (x=w1*4; x<width; x++)
@@ -871,11 +875,11 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		memcpy(data + y*bpl, img.scanLine(y), width*4);
 	} else
 	{
-	    uchar *src;
-	    QRgb *dst, *clut = img.colorTable();
+	    QRgb *dst;
+	    QVector<QRgb> clut = img.colorTable();
 	    for (y=0; y<height; y++)
 	    {
-		src = img.scanLine(y);
+		const uchar *src = img.scanLine(y);
 		dst = (QRgb *) (data + y*bpl);
 		for (x=0; x<width; x++)
 		    *dst++ = clut[*src++];

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMDRIVERDBWIDGET_H
@@ -23,7 +23,7 @@
 #include <qwidget.h>
 #include "kmdbentry.h"
 
-class QListBox;
+class Q3ListBox;
 class QCheckBox;
 class QPushButton;
 
@@ -55,8 +55,8 @@ protected slots:
 	void slotError(const QString&);
 
 private:
-	QListBox	*m_manu;
-	QListBox	*m_model;
+	Q3ListBox	*m_manu;
+	Q3ListBox	*m_model;
 	QCheckBox	*m_postscript;
 	QCheckBox	*m_raw;
 	QPushButton	*m_other;

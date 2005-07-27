@@ -213,7 +213,7 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
   switch ( mImpl->fieldId() ) {
     --CASESETVALUE--
     case FieldImpl::Birthday:
-      a.setBirthday( QDate::fromString( value, Qt::ISODate ) );
+      a.setBirthday( QDateTime::fromString( value, Qt::ISODate ) );
     case FieldImpl::CustomField:
       a.insertCustom( mImpl->app(), mImpl->key(), value );
     default:
@@ -304,7 +304,7 @@ void Field::saveFields( const QString &identifier,
 void Field::saveFields( KConfig *cfg, const QString &identifier,
                         const Field::List &fields )
 {
-  QValueList<int> fieldIds;
+  Q3ValueList<int> fieldIds;
   
   int custom = 0;
   Field::List::ConstIterator it;
@@ -333,12 +333,12 @@ Field::List Field::restoreFields( const QString &identifier )
 
 Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
 {
-  const QValueList<int> fieldIds = cfg->readIntListEntry( identifier );
+  const Q3ValueList<int> fieldIds = cfg->readIntListEntry( identifier );
 
   Field::List fields;
 
   int custom = 0;
-  QValueList<int>::ConstIterator it;
+  Q3ValueList<int>::ConstIterator it;
   for( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
     FieldImpl *f = 0;
     if ( (*it) == FieldImpl::CustomField ) {

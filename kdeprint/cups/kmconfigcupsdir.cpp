@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmconfigcupsdir.h"
@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <kdialog.h>
 #include <kconfig.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
 #include <kcursor.h>
 
@@ -35,7 +35,7 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 	setPageHeader(i18n("CUPS Folder Settings"));
 	setPagePixmap("folder");
 
-	QGroupBox *m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Folder"), this);
+	Q3GroupBox *m_dirbox = new Q3GroupBox(0, Qt::Vertical, i18n("Installation Folder"), this);
 	m_installdir = new KURLRequester(m_dirbox);
 	m_installdir->setMode((KFile::Mode)(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly));
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);

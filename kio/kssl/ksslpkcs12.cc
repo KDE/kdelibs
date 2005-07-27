@@ -30,7 +30,7 @@
 #include <ksslall.h>
 #include <kdebug.h>
 #include <ktempfile.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 #include <assert.h>
 
@@ -77,7 +77,7 @@ KSSLPKCS12* KSSLPKCS12::fromString(QString base64, QString password) {
 KTempFile ktf;
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba, qbb = QCString(base64.latin1()).copy();
+    QByteArray qba, qbb = Q3CString(base64.latin1()).copy();
     KCodecs::base64Decode(qbb, qba);
     ktf.file()->writeBlock(qba);
     ktf.close();
@@ -95,7 +95,7 @@ KSSLPKCS12* KSSLPKCS12::loadCertFile(QString filename, QString password) {
 QFile qf(filename);
 PKCS12 *newpkcs = NULL;
 
-  if (!qf.open(IO_ReadOnly))
+  if (!qf.open(QIODevice::ReadOnly))
     return NULL;
 
   FILE *fp = fdopen(qf.handle(), "r");
@@ -218,7 +218,7 @@ bool KSSLPKCS12::toFile(QString filename) {
 #ifdef KSSL_HAVE_SSL
 QFile out(filename);
 
-   if (!out.open(IO_WriteOnly)) return false;
+   if (!out.open(QIODevice::WriteOnly)) return false;
 
    int fd = out.handle();
    FILE *fp = fdopen(fd, "w");

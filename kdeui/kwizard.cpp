@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <qstring.h>
@@ -28,8 +28,8 @@
 
 #include "kwizard.h"
 
-KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
-            : QWizard( parent, name, modal, f )
+KWizard::KWizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
+            : Q3Wizard( parent, name, modal, f )
 {
   bool useIcons = KGlobalSettings::showIconsOnPushButtons();
 

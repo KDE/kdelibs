@@ -40,7 +40,7 @@ class QListboxItem;
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <klistbox.h>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
@@ -100,7 +100,7 @@ public:
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
-    AlignmentFlags textAlignment() const;
+	Qt::AlignmentFlag textAlignment() const;
 
     QPoint m_mousePos;
     int m_state;
@@ -266,10 +266,11 @@ public:
 
 protected:
     virtual bool event( QEvent *e );
+    virtual void paintEvent( QPaintEvent *pe );
     virtual void mouseMoveEvent(QMouseEvent *e);
-    virtual QPopupMenu *createPopupMenu();
+    virtual void contextMenuEvent(QContextMenuEvent *e);
 private slots:
-    void extendedMenuActivated( int id);
+    void clearHistoryActivated();
     void slotCheckSpelling();
     void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );
@@ -424,8 +425,8 @@ public:
 
 protected:
     virtual bool event (QEvent *e );
-    virtual QPopupMenu *createPopupMenu(const QPoint& pos);
-    virtual QPopupMenu* createPopupMenu() { return KTextEdit::createPopupMenu(); }
+    virtual Q3PopupMenu *createPopupMenu(const QPoint& pos);
+    virtual Q3PopupMenu* createPopupMenu() { return KTextEdit::createPopupMenu(); }
 private slots:
     void slotFind();
     void slotDoFind();

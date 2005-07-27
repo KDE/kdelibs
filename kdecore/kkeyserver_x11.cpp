@@ -26,6 +26,7 @@
 #include <qwindowdefs.h>
 
 #if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
+#include <QX11Info>
 
 #include "kkeyserver_x11.h"
 #include "kkeynative.h"
@@ -53,8 +54,8 @@
 # define XK_Caps_Lock Qt::Key_CapsLock
 # define XK_Num_Lock Qt::Key_NumLock
 # define XK_Scroll_Lock Qt::Key_ScrollLock
-# define XK_Prior Qt::Key_Prior
-# define XK_Next Qt::Key_Next
+# define XK_Prior Qt::Key_PageUp
+# define XK_Next Qt::Key_PageDown
 #endif
 
 namespace KKeyServer
@@ -176,8 +177,8 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_Up,         XK_Up },
 	{ Qt::Key_Right,      XK_Right },
 	{ Qt::Key_Down,       XK_Down },
-	{ Qt::Key_Prior,      XK_Prior },
-	{ Qt::Key_Next,       XK_Next },
+	{ Qt::Key_PageUp,      XK_Prior },
+	{ Qt::Key_PageDown,       XK_Next },
 	//{ Qt::Key_Shift,      0 },
 	//{ Qt::Key_Control,    0 },
 	//{ Qt::Key_Meta,       0 },
@@ -285,7 +286,7 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_VolumeUp,   XF86XK_AudioRaiseVolume },
 	{ Qt::Key_MediaPlay,  XF86XK_AudioPlay },
 	{ Qt::Key_MediaStop,  XF86XK_AudioStop },
-	{ Qt::Key_MediaPrev,  XF86XK_AudioPrev },
+	{ Qt::Key_MediaPrevious,  XF86XK_AudioPrev },
 	{ Qt::Key_MediaNext,  XF86XK_AudioNext },
 	{ Qt::Key_HomePage,   XF86XK_HomePage },
 	{ Qt::Key_LaunchMail, XF86XK_Mail },
@@ -328,14 +329,14 @@ static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch;
 
 bool initializeMods()
 {
-	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
+	XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
 	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
 
         int min_keycode, max_keycode;
         int keysyms_per_keycode = 0;
-        XDisplayKeycodes( qt_xdisplay(), &min_keycode, &max_keycode );
-        XFree( XGetKeyboardMapping( qt_xdisplay(), min_keycode, 1, &keysyms_per_keycode ));
+        XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
+        XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
 	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
 	for( int i = Mod2MapIndex; i < 8; i++ ) {
 		uint mask = (1 << i);
@@ -346,7 +347,7 @@ bool initializeMods()
                 // found fixes the problem.
                 for( int j = 0; j < xmk->max_keypermod && keySymX == NoSymbol; ++j )
                     for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )
-                        keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
+                        keySymX = XKeycodeToKeysym( QX11Info::display(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
 		switch( keySymX ) {
 			case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
 			case XK_Super_L:
@@ -372,7 +373,7 @@ bool initializeMods()
 static void initializeVariations()
 {
 	for( int i = 0; g_rgSymVariation[i].sym != 0; i++ )
-		g_rgSymVariation[i].bActive = (XKeysymToKeycode( qt_xdisplay(), g_rgSymVariation[i].symVariation ) != 0);
+		g_rgSymVariation[i].bActive = (XKeysymToKeycode( QX11Info::display(), g_rgSymVariation[i].symVariation ) != 0);
 	g_bInitializedVariations = true;
 }
 #endif //Q_WS_X11
@@ -403,10 +404,10 @@ static void intializeKKeyLabels()
 
 bool Sym::initQt( int keyQt )
 {
-	int symQt = keyQt & 0xffff;
+	int symQt = keyQt & ~Qt::KeyboardModifierMask; 
 
 	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
-		m_sym = QChar(symQt).lower().unicode();
+		m_sym = QChar(symQt).toLower().unicode();
 		return true;
 	}
 
@@ -436,7 +437,7 @@ bool Sym::init( const QString& s )
 {
 	// If it's a single character, get unicode value.
 	if( s.length() == 1 ) {
-		m_sym = s[0].lower().unicode();
+		m_sym = s[0].toLower().unicode();
 		return true;
 	}
 
@@ -461,7 +462,7 @@ bool Sym::init( const QString& s )
 	// search X list: 's' as is, all lower, first letter in caps
 	m_sym = XStringToKeysym( s.latin1() );
 	if( !m_sym ) {
-		m_sym = XStringToKeysym( s.lower().latin1() );
+		m_sym = XStringToKeysym( s.toLower().latin1() );
 		if( !m_sym ) {
 			QString s2 = s;
 			s2[0] = s2[0].upper();
@@ -476,7 +477,7 @@ int Sym::qt() const
 {
 	if( m_sym < 0x1000 ) {
 		if( m_sym >= 'a' && m_sym <= 'z' )
-			return QChar(m_sym).upper();
+			return QChar(m_sym).toUpper().unicode();
 		return m_sym;
 	}
 #ifdef Q_WS_WIN
@@ -504,12 +505,12 @@ QString Sym::toString( bool bUserSpace ) const
 #else
 	else if( m_sym < 0x3000 ) {
 #endif
-		QChar c = QChar(m_sym).upper();
+		QChar c = QChar(m_sym).toUpper();
 		// Print all non-space characters directly when output is user-visible.
 		// Otherwise only print alphanumeric latin1 characters directly (A,B,C,1,2,3).
 		if( (c.latin1() && c.isLetterOrNumber())
 		    || (bUserSpace && !c.isSpace()) )
-				return c;
+				return QString( c );
 	}
 
 	// Look up in special names list
@@ -542,22 +543,22 @@ uint Sym::getModsRequired() const
 
 	if( m_sym < 0x3000 ) {
 		QChar c(m_sym);
-		if( c.isLetter() && c.lower() != c.upper() && m_sym == c.upper().unicode() )
+		if( c.isLetter() && c.toLower() != c.toUpper() && m_sym == c.toUpper().unicode() )
 			return KKey::SHIFT;
 	}
 
-	uchar code = XKeysymToKeycode( qt_xdisplay(), m_sym );
+	uchar code = XKeysymToKeycode( QX11Info::display(), m_sym );
 	if( code ) {
 		// need to check index 0 before the others, so that a null-mod
 		//  can take precedence over the others, in case the modified
 		//  key produces the same symbol.
-		if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 0 ) )
+		if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 0 ) )
 			;
-		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 1 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 1 ) )
 			mod = KKey::SHIFT;
-		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 2 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 2 ) )
 			mod = KKeyServer::MODE_SWITCH;
-		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 3 ) )
+		else if( m_sym == XKeycodeToKeysym( QX11Info::display(), code, 3 ) )
 			mod = KKey::SHIFT | KKeyServer::MODE_SWITCH;
 	}
 #endif
@@ -674,9 +675,9 @@ bool modXToModQt( uint modX, int& modQt )
 KDECORE_EXPORT int qtButtonStateToMod( Qt::ButtonState s )
 {
 	int modQt = 0;
-	if (s & Qt::ShiftButton) modQt |= KKey::SHIFT;
-	if (s & Qt::ControlButton) modQt |= KKey::CTRL;
-	if (s & Qt::AltButton) modQt |= KKey::ALT;
+	if (s & Qt::ShiftModifier) modQt |= KKey::SHIFT;
+	if (s & Qt::ControlModifier) modQt |= KKey::CTRL;
+	if (s & Qt::AltModifier) modQt |= KKey::ALT;
 	return modQt;
 }
 
@@ -762,7 +763,7 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	XKeyPressedEvent event;
 
 	event.type = KeyPress;
-	event.display = qt_xdisplay();
+	event.display = QX11Info::display();
 	event.state = modX;
 	event.keycode = codeX;
 
@@ -800,7 +801,7 @@ uint stringUserToMod( const QString& mod )
 
 	QString s;
 	for( int i = KKey::MOD_FLAG_COUNT-1; i >= 0; i-- ) {
-		if( mod.lower() == g_rgModInfo[i].sLabel.lower())
+		if( mod.toLower() == g_rgModInfo[i].sLabel.toLower())
 			return g_rgModInfo[i].mod;
 	}
 	return 0;
@@ -857,7 +858,7 @@ uint stringUserToMod( const QString& mod )
 
 	if( keySymX != 0 ) {
 		// Get X keyboard code
-		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
+		keyCodeX = XKeysymToKeycode( QX11Info::display(), keySymX );
 		// Add ModeSwitch modifier bit, if necessary
 		keySymXMods( keySymX, 0, &keyModX );
 
@@ -886,8 +887,8 @@ uint stringUserToMod( const QString& mod )
 	//  keycode 111 & 92:  Print Sys_Req -> Sys_Req = Alt+Print
 	//  keycode 110 & 114: Pause Break   -> Break = Ctrl+Pause
 	if( (keyCodeX == 92 || keyCodeX == 111) &&
-	    XKeycodeToKeysym( qt_xdisplay(), 92, 0 ) == XK_Print &&
-	    XKeycodeToKeysym( qt_xdisplay(), 111, 0 ) == XK_Print )
+	    XKeycodeToKeysym( QX11Info::display(), 92, 0 ) == XK_Print &&
+	    XKeycodeToKeysym( QX11Info::display(), 111, 0 ) == XK_Print )
 	{
 		// If Alt is pressed, then we need keycode 92, keysym XK_Sys_Req
 		if( keyModX & keyModXAlt() ) {
@@ -901,8 +902,8 @@ uint stringUserToMod( const QString& mod )
 		}
 	}
 	else if( (keyCodeX == 110 || keyCodeX == 114) &&
-	    XKeycodeToKeysym( qt_xdisplay(), 110, 0 ) == XK_Pause &&
-	    XKeycodeToKeysym( qt_xdisplay(), 114, 0 ) == XK_Pause )
+	    XKeycodeToKeysym( QX11Info::display(), 110, 0 ) == XK_Pause &&
+	    XKeycodeToKeysym( QX11Info::display(), 114, 0 ) == XK_Pause )
 	{
 		if( keyModX & keyModXCtrl() ) {
 			keyCodeX = 114;
@@ -1029,10 +1030,10 @@ void KKey::simplify()
 #ifdef Q_WS_X11
 	if( m_sym == XK_Sys_Req ) {
 		m_sym = XK_Print;
-		m_mod |= ALT;
+		m_mod |= Qt::ALT;
 	} else if( m_sym == XK_ISO_Left_Tab ) {
 		m_sym = XK_Tab;
-		m_mod |= SHIFT;
+		m_mod |= Qt::SHIFT;
 	} else {
 		// Shift+Equal => Shift+Plus (en)
 		m_sym = KKeyNative(*this).sym();
@@ -1040,7 +1041,7 @@ void KKey::simplify()
 
 	// If this is a letter, don't remove any modifiers.
 	if( m_sym < 0x3000 && QChar(m_sym).isLetter() )
-		m_sym = QChar(m_sym).lower().unicode();
+		m_sym = QChar(m_sym).toLower().unicode();
 
 	// Remove modifers from modifier list which are implicit in the symbol.
 	// Ex. Shift+Plus => Plus (en)

@@ -92,7 +92,7 @@ namespace KJS {
 
     void changeState(XMLHttpRequestState newState);
 
-    QGuardedPtr<DOM::DocumentImpl> doc;
+    QPointer<DOM::DocumentImpl> doc;
 
     KURL url;
     QString method;

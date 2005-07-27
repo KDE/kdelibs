@@ -1,0 +1,26 @@
+#ifndef test_h
+#define test_h
+
+#include "kserversocket.h"
+#include "kresolver.h"
+using namespace KNetwork;
+
+class Test : public QObject
+{
+  Q_OBJECT
+
+public:
+  KServerSocket socket;
+
+  Test(QString host, QString service, bool blocking);
+
+public slots:
+  void gotErrorSlot(int errorcode);
+  void hostFoundSlot();
+  void boundSlot(const KResolverEntry& target);
+  void closedSlot();    
+  void readyAcceptSlot();
+};
+
+
+#endif

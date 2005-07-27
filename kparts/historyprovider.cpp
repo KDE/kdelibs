@@ -13,18 +13,18 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kapplication.h>
 
 #include "historyprovider.h"
 
 using namespace KParts;
-template class QDict<void>;
+template class Q3Dict<void>;
 
 HistoryProvider * HistoryProvider::s_self = 0L;
 
@@ -34,7 +34,7 @@ public:
     HistoryProviderPrivate()
 	: dict( 1009 ) {}
 
-    QDict<void> dict;
+    Q3Dict<void> dict;
 };
 
 HistoryProvider * HistoryProvider::self()

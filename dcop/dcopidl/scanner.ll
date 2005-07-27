@@ -36,8 +36,9 @@ extern int idl_line_no;
 int comment_mode;
 int function_mode = 0;
 
-#include <qstring.h>
-#include <qregexp.h>
+#include <Qt/qstring.h>
+#include <Qt/qregexp.h>
+#include <Qt/q3cstring.h>
 
 static long ascii_to_longlong( long base, const char *s )
 {
@@ -169,8 +170,8 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
                         }
 "#include"[ \t]*[<\"][^>"]*[>\"]\s*\n {
 			  QString s( yytext );
-                          int i = s.find(QRegExp("[\"<]"))+1;
-                          int j = s.find(QRegExp("[\">]"), i);
+                          int i = s.indexOf(QRegExp("[\"<]"))+1;
+                          int j = s.indexOf(QRegExp("[\">]"), i);
 			  yylval._str = new QString( s.mid( i, j - i ) );
                           idl_line_no++;
                           return T_INCLUDE;
@@ -266,7 +267,7 @@ Q_OBJECT		;
 			  return T_INTEGER_LITERAL;
 			}
 {Char_Literal}		{
-                          QCString s( yytext );
+                          Q3CString s( yytext );
 	                  s = s.mid( 1, s.length() - 2 );
 			  yylval._char = translate_char( s );
 			  return T_CHARACTER_LITERAL;

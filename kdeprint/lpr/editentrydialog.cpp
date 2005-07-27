@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "editentrydialog.h"
@@ -24,10 +24,10 @@
 #include <qspinbox.h>
 #include <qcombobox.h>
 #include <qlabel.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <klistview.h>
 #include <qlayout.h>
-#include <qwidgetstack.h>
+#include <q3widgetstack.h>
 #include <klocale.h>
 #include <kiconloader.h>
 
@@ -46,7 +46,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	m_type->insertItem(i18n("String"));
 	m_type->insertItem(i18n("Number"));
 	m_type->insertItem(i18n("Boolean"));
-	m_stack = new QWidgetStack(w);
+	m_stack = new Q3WidgetStack(w);
 	m_boolean = new QCheckBox(i18n("Enabled"), m_stack);
 	m_string = new QLineEdit(m_stack);
 	m_number = new QSpinBox(0, 9999, 1, m_stack);
@@ -72,12 +72,12 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 		setCaption(i18n("Printcap Entry: %1").arg(entry->name));
 		m_fields = entry->fields;
 		m_aliases->setText(entry->aliases.join("|"));
-		QListViewItem	*root = new QListViewItem(m_view, entry->name), *item = 0;
+		Q3ListViewItem	*root = new Q3ListViewItem(m_view, entry->name), *item = 0;
 		root->setSelectable(false);
 		root->setOpen(true);
 		root->setPixmap(0, SmallIcon("fileprint"));
 		for (QMap<QString,Field>::ConstIterator it=m_fields.begin(); it!=m_fields.end(); ++it)
-			item = new QListViewItem(root, item, (*it).toString(), it.key());
+			item = new Q3ListViewItem(root, item, (*it).toString(), it.key());
 	}
 
 	m_block = true;
@@ -86,7 +86,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 	slotTypeChanged(0);
 	m_block = false;
 
-	connect(m_view, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotItemSelected(QListViewItem*)));
+	connect(m_view, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotItemSelected(Q3ListViewItem*)));
 	connect(m_string, SIGNAL(textChanged(const QString&)), SLOT(slotChanged()));
 	connect(m_boolean, SIGNAL(toggled(bool)), SLOT(slotChanged()));
 	connect(m_number, SIGNAL(valueChanged(int)), SLOT(slotChanged()));
@@ -122,7 +122,7 @@ void EditEntryDialog::slotChanged()
 	}
 }
 
-void EditEntryDialog::slotItemSelected(QListViewItem *item)
+void EditEntryDialog::slotItemSelected(Q3ListViewItem *item)
 {
 	m_stack->setEnabled(item);
 	m_name->setEnabled(item);

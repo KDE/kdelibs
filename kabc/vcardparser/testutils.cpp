@@ -1,4 +1,5 @@
 #include <vcardparser.h>
+#include <qtextstream.h>
 #include <kabc/addressee.h>
 #include <qfile.h>
 
@@ -66,9 +67,9 @@ vcardAsText( const QString& location )
 {
     QString line;
     QFile file( location );
-    if ( file.open( IO_ReadOnly ) ) {
+    if ( file.open( QIODevice::ReadOnly ) ) {
         QTextStream stream( &file );
-        if ( !stream.eof() ) {
+        if ( !stream.atEnd() ) {
             line = stream.read();
         }
         file.close();

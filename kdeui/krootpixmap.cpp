@@ -13,11 +13,11 @@
 #include <qtimer.h>
 #include <qrect.h>
 #include <qimage.h>
+#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <kpixmapio.h>
-#include <kwinmodule.h>
 #include <kwin.h>
 #include <kdebug.h>
 #include <netwm.h>
@@ -90,7 +90,7 @@ KRootPixmap::~KRootPixmap()
 int KRootPixmap::currentDesktop() const
 {
 #ifdef Q_WS_X11
-    NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
+    NETRootInfo rinfo( QX11Info::display(), NET::CurrentDesktop );
     rinfo.activate();
     return rinfo.currentDesktop();
 #else
@@ -256,7 +256,7 @@ bool KRootPixmap::isAvailable() const
 QString KRootPixmap::pixmapName(int desk) {
     QString pattern = QString("DESKTOP%1");
 #ifdef Q_WS_X11
-    int screen_number = DefaultScreen(qt_xdisplay());
+    int screen_number = DefaultScreen(QX11Info::display());
     if (screen_number) {
         pattern = QString("SCREEN%1-DESKTOP").arg(screen_number) + "%1";
     }
@@ -273,11 +273,11 @@ void KRootPixmap::enableExports()
     if (!client->isAttached())
 	client->attach();
     QByteArray data;
-    QDataStream args( data, IO_WriteOnly );
+    QDataStream args( &data, QIODevice::WriteOnly );
     args << 1;
 
-    QCString appname( "kdesktop" );
-    int screen_number = DefaultScreen(qt_xdisplay());
+    Q3CString appname( "kdesktop" );
+    int screen_number = DefaultScreen(QX11Info::display());
     if ( screen_number )
         appname.sprintf("kdesktop-screen-%d", screen_number );
 

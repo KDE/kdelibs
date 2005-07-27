@@ -26,10 +26,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qsettings.h>
 #include <qcolor.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcolorbutton.h>
@@ -61,17 +61,17 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 	inputFocusHighlight = new QCheckBox(i18n("Highlight focused text input fields"), this);
 
     customFocusHighlightColor = new QCheckBox(i18n("Custom text input highlight color:"), this);
-    QHBox *hbox1 = new QHBox(this);
+    Q3HBox *hbox1 = new Q3HBox(this);
     hbox1->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     focusHighlightColor = new KColorButton(hbox1);
 
     customOverHighlightColor = new QCheckBox(i18n("Custom mouseover highlight color:"), this);
-    QHBox *hbox2 = new QHBox(this);
+    Q3HBox *hbox2 = new Q3HBox(this);
     hbox2->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     overHighlightColor = new KColorButton(hbox2);
 
     customCheckMarkColor = new QCheckBox(i18n("Custom checkmark color:"), this);
-    QHBox *hbox3 = new QHBox(this);
+    Q3HBox *hbox3 = new Q3HBox(this);
     hbox3->layout()->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum) );
     checkMarkColor = new KColorButton(hbox3);
 

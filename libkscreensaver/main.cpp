@@ -24,6 +24,8 @@
 #include <signal.h>
 
 #include <qdialog.h>
+#include <qevent.h>
+#include <qx11info_x11.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>
@@ -126,7 +128,8 @@ KDE_EXPORT int main(int argc, char *argv[])
 #ifdef Q_WS_X11 //FIXME
     if (args->isSet("root"))
     {
-        saveWin = RootWindow(qt_xdisplay(), qt_xscreen());
+		QX11Info inf;
+        saveWin = RootWindow(QX11Info::display(), inf.screen());
     }
 #endif
 
@@ -138,7 +141,7 @@ KDE_EXPORT int main(int argc, char *argv[])
     if (saveWin == 0)
     {
         demoWidget = new DemoWindow();
-        demoWidget->setBackgroundMode(QWidget::NoBackground);
+        demoWidget->setBackgroundMode(Qt::NoBackground);
         saveWin = demoWidget->winId();
         app.setMainWidget(demoWidget);
         app.processEvents();

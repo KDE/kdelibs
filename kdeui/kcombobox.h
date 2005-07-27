@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Lesser General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef _KCOMBOBOX_H
@@ -27,8 +27,7 @@
 
 #include <kcompletion.h>
 
-class QListBoxItem;
-class QPopupMenu;
+class Q3ListBoxItem;
 class QLineEdit;
 
 class KCompletionBox;
@@ -403,7 +402,7 @@ signals:
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu * p );
+    void aboutToShowContextMenu( QMenu * p );
 
 public slots:
 
@@ -457,7 +456,7 @@ protected slots:
     /**
     * @deprecated
     */
-    virtual void itemSelected( QListBoxItem* ) {};
+    virtual void itemSelected( Q3ListBoxItem* ) {};
 
     /**
     * Completes text according to the completion mode.
@@ -743,7 +742,12 @@ private slots:
     /**
      * Appends our own context menu entry.
      */
-    void addContextMenuItems( QPopupMenu* );
+    void addContextMenuItems( QMenu* );
+
+    /**
+     * Used to emit the activated(QString) signal when enter is pressed
+     */
+    void slotSimulateActivated( const QString& );
 
 private:
     void init( bool useCompletion );

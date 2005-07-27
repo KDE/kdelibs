@@ -23,16 +23,16 @@
 
 #include "filter.h"
 
-#include <qsyntaxhighlighter.h>
+#include <q3syntaxhighlighter.h>
 
-class QTextEdit;
+class Q3TextEdit;
 
 namespace KSpell2
 {
-    class Highlighter : public QSyntaxHighlighter
+    class Highlighter : public Q3SyntaxHighlighter
     {
     public:
-        Highlighter( QTextEdit *textEdit,
+        Highlighter( Q3TextEdit *textEdit,
                      const QString& configFile = QString::null,
                      Filter *filter = Filter::defaultFilter() );
         ~Highlighter();

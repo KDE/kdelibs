@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,7 +25,7 @@
 #ifndef KSTREAMSOCKET_H
 #define KSTREAMSOCKET_H
 
-#include <qstring.h>
+#include <QString>
 
 #include "kclientsocketbase.h"
 
@@ -93,6 +93,7 @@ class KStreamSocketPrivate;
  *
  * @see KNetwork::KBufferedSocket, KNetwork::KServerSocket
  * @author Thiago Macieira <thiago@kde.org>
+ * @version 0.9
  */
 class KDECORE_EXPORT KStreamSocket: public KClientSocketBase
 {
@@ -107,8 +108,8 @@ public:
    * @param parent	the parent QObject object
    * @param name	the name of this object
    */
-  KStreamSocket(const QString& node = QString::null, const QString& service = QString::null,
-		QObject* parent = 0L, const char *name = 0L);
+  KStreamSocket(const QString& node = QString(), const QString& service = QString(),
+		QObject* parent = 0L);
 
   /**
    * Destructor. This closes the socket.
@@ -142,7 +143,7 @@ public:
    * Binds this socket to the given nodename and service,
    * or use the default ones if none are given. In order to bind to a service
    * and allow the operating system to choose the interface, set @p node to
-   * QString::null.
+   * QString().
    * 
    * Reimplemented from KClientSocketBase.
    *
@@ -161,8 +162,8 @@ public:
    * @param node	the nodename
    * @param service	the service
    */
-  virtual bool bind(const QString& node = QString::null,
-		    const QString& service = QString::null);
+  virtual bool bind(const QString& node = QString(),
+		    const QString& service = QString());
 
   /**
    * Reimplemented from KClientSocketBase. Connect this socket to this
@@ -196,13 +197,15 @@ public:
    * @param node	the remote node to connect to
    * @param service	the service on the remote node to connect to
    */
-  virtual bool connect(const QString& node = QString::null,
-		       const QString& service = QString::null);
+  virtual bool connect(const QString& node = QString(),
+		       const QString& service = QString(),
+		       OpenMode mode = ReadWrite);
 
   /**
    * Unshadowing from KClientSocketBase.
    */
-  virtual bool connect(const KResolverEntry& entry);
+  virtual bool connect(const KResolverEntry& entry,
+		       OpenMode mode = ReadWrite);
 
 signals:
   /**

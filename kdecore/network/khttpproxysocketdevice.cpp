@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -27,8 +27,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <qsocketnotifier.h>
-#include <qcstring.h>
+#include <QSocketNotifier>
+#include <QByteArray>
 
 #include "kresolver.h"
 #include "ksocketaddress.h"
@@ -43,8 +43,8 @@ class KNetwork::KHttpProxySocketDevicePrivate
 {
 public:
   KResolverEntry proxy;
-  QCString request;
-  QCString reply;
+  QByteArray request;
+  QByteArray reply;
   KSocketAddress peer;
 
   KHttpProxySocketDevicePrivate()
@@ -89,7 +89,7 @@ void KHttpProxySocketDevice::setProxyServer(const KResolverEntry& proxy)
 
 void KHttpProxySocketDevice::close()
 {
-  d->reply = d->request = QCString();
+  d->reply = d->request = QByteArray();
   d->peer = KSocketAddress();
   KSocketDevice::close();
 }
@@ -135,7 +135,7 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
 			 node.isEmpty() || service.isEmpty()))
     {
       // no proxy server set !
-      setError(IO_ConnectError, NotSupported);
+      setError(NotSupported);
       return false;
     }
 
@@ -150,18 +150,18 @@ bool KHttpProxySocketDevice::connect(const QString& node, const QString& service
       // must create the socket
       if (!KSocketDevice::connect(d->proxy))
 	return false;		// also unable to contact proxy server
-      setState(0);		// unset open flag
+      KActiveSocketBase::close();
 
       // prepare the request
-      QString request = QString::fromLatin1("CONNECT %1:%2 HTTP/1.1\r\n"
-					    "Cache-Control: no-cache\r\n"
-					    "Host: \r\n"
-					    "\r\n");
+      QString request = QLatin1String("CONNECT %1:%2 HTTP/1.1\r\n"
+				      "Cache-Control: no-cache\r\n"
+				      "Host: \r\n"
+				      "\r\n");
       QString node2 = node;
       if (node.contains(':'))
 	node2 = '[' + node + ']';
 
-      d->request = request.arg(node2).arg(service).latin1();
+      d->request = request.arg(node2).arg(service).toLatin1();
     }
 
   return parseServerReply();
@@ -179,12 +179,12 @@ bool KHttpProxySocketDevice::parseServerReply()
   if (!d->request.isEmpty())
     {
       // send request
-      Q_LONG written = writeBlock(d->request, d->request.length());
+      qint64 written = writeData(d->request, d->request.length());
       if (written < 0)
 	{
 	  qDebug("KHttpProxySocketDevice: would block writing request!");
 	  if (error() == WouldBlock)
-	    setError(IO_ConnectError, InProgress);
+	    setError(InProgress);
 	  return error() == WouldBlock; // error
 	}
       qDebug("KHttpProxySocketDevice: request written");
@@ -193,7 +193,7 @@ bool KHttpProxySocketDevice::parseServerReply()
 
       if (!d->request.isEmpty())
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;		// still in progress
 	}
     }
@@ -205,31 +205,31 @@ bool KHttpProxySocketDevice::parseServerReply()
   int index;
   if (!blocking())
     {
-      Q_LONG avail = bytesAvailable();
-      qDebug("KHttpProxySocketDevice: %ld bytes available", avail);
-      setState(0);
+      qint64 avail = bytesAvailable();
+      qDebug("KHttpProxySocketDevice: %lld bytes available", avail);
+      KActiveSocketBase::close();
       if (avail == 0)
 	{
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
       else if (avail < 0)
 	return false;		// error!
 
       QByteArray buf(avail);
-      if (peekBlock(buf.data(), avail) < 0)
+      if (peekData(buf.data(), avail) < 0)
 	return false;		// error!
 
-      QCString fullHeaders = d->reply + buf.data();
+      QByteArray fullHeaders = d->reply + buf;
       // search for the end of the headers
       index = fullHeaders.find("\r\n\r\n");
       if (index == -1)
 	{
 	  // no, headers not yet finished...
 	  // consume data from socket
-	  readBlock(buf.data(), avail);
+	  readData(buf.data(), avail);
 	  d->reply += buf.data();
-	  setError(IO_ConnectError, InProgress);
+	  setError(InProgress);
 	  return true;
 	}
 
@@ -238,7 +238,7 @@ bool KHttpProxySocketDevice::parseServerReply()
       d->reply += fullHeaders.mid(d->reply.length(), index + 4);
 
       // consume from socket
-      readBlock(buf.data(), index + 4);
+      readData(buf.data(), index + 4);
     }
   else
     {
@@ -270,12 +270,12 @@ bool KHttpProxySocketDevice::parseServerReply()
       (index = d->reply.find(' ')) == -1 ||
       d->reply[index + 1] != '2')
     {
-      setError(IO_ConnectError, NetFailure);
+      setError(NetFailure);
       return false;
     }
 
   // we've got it
   resetError();
-  setState(IO_Open);
+  KActiveSocketBase::open(ReadOnly);
   return true;
 }

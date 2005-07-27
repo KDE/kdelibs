@@ -20,7 +20,7 @@
 #define KMDIGUICLIENT_H
 
 #include <qobject.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kxmlguiclient.h>
 #include <kaction.h>
 #include "kmdidefines.h"
@@ -103,9 +103,9 @@ private:
 	KMDIGUIClientPrivate *d;
 	KMdi::MdiMode m_mdiMode;
 
-	QGuardedPtr<KMdiMainFrm> m_mdiMainFrm;
-	QPtrList<KAction> m_toolViewActions;
-	QPtrList<KAction> m_documentViewActions;
+	QPointer<KMdiMainFrm> m_mdiMainFrm;
+	Q3PtrList<KAction> m_toolViewActions;
+	Q3PtrList<KAction> m_documentViewActions;
 
 	KActionMenu *m_docMenu;
 	KActionMenu *m_toolMenu;

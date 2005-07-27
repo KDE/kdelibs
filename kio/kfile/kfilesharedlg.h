@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (c) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (c) 2001 David Faure <faure@kde.org>
    Copyright (c) 2001 Laurent Montel <lmontel@mandrakesoft.com>
 
    This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ class QPushButton;
 
 /**
  * This plugin provides a page to KPropsDlg, showing the "file sharing" options
- * @author David Faure <david@mandrakesoft.com>
+ * @author David Faure <faure@kde.org>
  * @since 3.1
  */
 class KIO_EXPORT KFileSharePropsPlugin : public KPropsDlgPlugin

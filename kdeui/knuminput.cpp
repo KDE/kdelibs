@@ -24,8 +24,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 
 #include <config.h>
@@ -37,6 +37,7 @@
 #include <algorithm>
 
 #include <qapplication.h>
+#include <qevent.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qsize.h>
@@ -59,14 +60,14 @@ static inline int calcDiffByTen( int x, int y ) {
 
 // ----------------------------------------------------------------------------
 
-KNumInput::KNumInput(QWidget* parent, const char* name)
-    : QWidget(parent, name)
+KNumInput::KNumInput(QWidget* parent)
+    : QWidget(parent)
 {
     init();
 }
 
-KNumInput::KNumInput(KNumInput* below, QWidget* parent, const char* name)
-    : QWidget(parent, name)
+KNumInput::KNumInput(QWidget* parent, KNumInput* below)
+    : QWidget(parent)
 {
     init();
 
@@ -108,11 +109,11 @@ void KNumInput::setLabel(const QString & label, int a)
     else {
         if (m_label) m_label->setText(label);
         else m_label = new QLabel(label, this, "KNumInput::QLabel");
-        m_label->setAlignment((a & (~(AlignTop|AlignBottom|AlignVCenter)))
-                              | AlignVCenter);
+        m_label->setAlignment((a & (~(Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
+                              | Qt::AlignVCenter);
         // if no vertical alignment set, use Top alignment
-        if(!(a & (AlignTop|AlignBottom|AlignVCenter)))
-           a |= AlignTop;
+        if(!(a & (Qt::AlignTop|Qt::AlignBottom|Qt::AlignVCenter)))
+           a |= Qt::AlignTop;
         m_alignment = a;
     }
 
@@ -133,7 +134,7 @@ void KNumInput::layout(bool deep)
     // label sizeHint
     m_sizeLabel = (m_label ? m_label->sizeHint() : QSize(0,0));
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_colw1 = m_sizeLabel.width() + 4;
     else
         m_colw1 = 0;
@@ -201,10 +202,12 @@ void KNumInput::setSteps(int minor, int major)
 
 // ----------------------------------------------------------------------------
 
-KIntSpinBox::KIntSpinBox(QWidget *parent, const char *name)
-    : QSpinBox(0, 99, 1, parent, name)
+KIntSpinBox::KIntSpinBox(QWidget *parent)
+    : QSpinBox(parent)
 {
-    editor()->setAlignment(AlignRight);
+    setRange(0,99);
+    setSingleStep(1);
+    lineEdit()->setAlignment(Qt::AlignRight);
     val_base = 10;
     setValue(0);
 }
@@ -213,11 +216,12 @@ KIntSpinBox::~KIntSpinBox()
 {
 }
 
-KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, int base,
-                         QWidget* parent, const char* name)
-    : QSpinBox(lower, upper, step, parent, name)
+KIntSpinBox::KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base)
+    : QSpinBox(parent)
 {
-    editor()->setAlignment(AlignRight);
+    setRange(lower,upper);
+    setSingleStep(step);
+    lineEdit()->setAlignment(Qt::AlignRight);
     val_base = base;
     setValue(value);
 }
@@ -233,21 +237,22 @@ int KIntSpinBox::base() const
     return val_base;
 }
 
-QString KIntSpinBox::mapValueToText(int v)
+QString KIntSpinBox::textFromValue(int v) const
 {
     return QString::number(v, val_base);
 }
 
-int KIntSpinBox::mapTextToValue(bool* ok)
+int KIntSpinBox::valueFromText(const QString &text) const
 {
-    return cleanText().toInt(ok, val_base);
+    bool ok;
+    return text.toInt(&ok, val_base);
 }
 
 void KIntSpinBox::setEditFocus(bool mark)
 {
-    editor()->setFocus();
+    lineEdit()->setFocus();
     if(mark)
-        editor()->selectAll();
+        lineEdit()->selectAll();
 }
 
 
@@ -263,21 +268,20 @@ public:
 };
 
 
-KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget* parent,
-                           int _base, const char* name)
-    : KNumInput(below, parent, name)
+KIntNumInput::KIntNumInput(KNumInput* below, int val,QWidget *parent,int _base)
+    : KNumInput(parent,below)
 {
     init(val, _base);
 }
 
-KIntNumInput::KIntNumInput(QWidget *parent, const char *name)
-    : KNumInput(parent, name)
+KIntNumInput::KIntNumInput(QWidget *parent)
+    : KNumInput(parent)
 {
     init(0, 10);
 }
 
-KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name)
-    : KNumInput(parent, name)
+KIntNumInput::KIntNumInput(int val, QWidget *parent,int _base)
+    : KNumInput(parent)
 {
     init(val, _base);
 
@@ -286,12 +290,14 @@ KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base, const char *name
 void KIntNumInput::init(int val, int _base)
 {
     d = new KIntNumInputPrivate( val );
-    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, _base, this, "KIntNumInput::KIntSpinBox");
+    m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, this, _base);
+    m_spin->setObjectName("KIntNumInput::KIntSpinBox");
     // the KIntValidator is broken beyond believe for
     // spinboxes which have suffix or prefix texts, so
     // better don't use it unless absolutely necessary
-    if (_base != 10)
-        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
+#warning KDE4 we NEED to fix the validation of values here
+//	if (_base != 10)
+//        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
 
     connect(m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
     connect(this, SIGNAL(valueChanged(int)),
@@ -332,15 +338,15 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     m_spin->setMaxValue(upper);
     m_spin->setLineStep(step);
 
-    step = m_spin->lineStep(); // maybe QRangeControl didn't like out lineStep?
+    step = m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
 
     if(slider) {
 	if (m_slider)
 	    m_slider->setRange(lower, upper);
 	else {
 	    m_slider = new QSlider(lower, upper, step, m_spin->value(),
-				   QSlider::Horizontal, this);
-	    m_slider->setTickmarks(QSlider::Below);
+				   Qt::Horizontal, this);
+	    m_slider->setTickmarks(QSlider::TicksBelow);
 	    connect(m_slider, SIGNAL(valueChanged(int)),
 		    m_spin, SLOT(setValue(int)));
 	}
@@ -365,7 +371,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 
 void KIntNumInput::setMinValue(int min)
 {
-    setRange(min, m_spin->maxValue(), m_spin->lineStep(), m_slider);
+    setRange(min, m_spin->maxValue(), m_spin->singleStep(), m_slider);
 }
 
 int KIntNumInput::minValue() const
@@ -375,7 +381,7 @@ int KIntNumInput::minValue() const
 
 void KIntNumInput::setMaxValue(int max)
 {
-    setRange(m_spin->minValue(), max, m_spin->lineStep(), m_slider);
+    setRange(m_spin->minValue(), max, m_spin->singleStep(), m_slider);
 }
 
 int KIntNumInput::maxValue() const
@@ -422,7 +428,7 @@ QSize KIntNumInput::minimumSizeHint() const
     h = 2 + QMAX(m_sizeSpin.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
-    if(m_label && (m_alignment & (AlignBottom|AlignTop)))
+    if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
@@ -431,7 +437,7 @@ QSize KIntNumInput::minimumSizeHint() const
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
-    if(m_alignment & (AlignTop|AlignBottom))
+    if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
         w = QMAX(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
@@ -451,12 +457,12 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     int w = m_colw1;
     int h = 0;
 
-    if(m_label && (m_alignment & AlignTop)) {
+    if(m_label && (m_alignment & Qt::AlignTop)) {
         m_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
         h += m_sizeLabel.height() + KDialog::spacingHint();
     }
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeSpin.height());
 
     if (qApp->reverseLayout())
@@ -477,7 +483,7 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     h += m_sizeSpin.height() + 2;
 
-    if(m_label && (m_alignment & AlignBottom))
+    if(m_label && (m_alignment & Qt::AlignBottom))
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
@@ -541,40 +547,25 @@ public:
     short blockRelative;
 };
 
-KDoubleNumInput::KDoubleNumInput(QWidget *parent, const char *name)
-    : KNumInput(parent, name)
+KDoubleNumInput::KDoubleNumInput(QWidget *parent)
+    : KNumInput(parent)
 {
     init(0.0, 0.0, 9999.0, 0.01, 2);
 }
 
-KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value,
-				 double step, int precision, QWidget* parent,
-				 const char *name)
-    : KNumInput(parent, name)
+KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
+				 double step, int precision)
+    : KNumInput(parent)
 {
     init(value, lower, upper, step, precision);
 }
 
 KDoubleNumInput::KDoubleNumInput(KNumInput *below,
-				 double lower, double upper, double value,
-				 double step, int precision, QWidget* parent,
-				 const char *name)
-    : KNumInput(below, parent, name)
+				 double lower, double upper, double value, QWidget *parent,
+				 double step, int precision)
+    : KNumInput(parent,below)
 {
     init(value, lower, upper, step, precision);
-}
-
-KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
-    : KNumInput(parent, name)
-{
-    init(value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
-}
-
-KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent,
-                                 const char* name)
-    : KNumInput(below, parent, name)
-{
-    init( value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
 }
 
 KDoubleNumInput::~KDoubleNumInput()
@@ -608,8 +599,8 @@ void KDoubleNumInput::init(double value, double lower, double upper,
 
     d = new KDoubleNumInputPrivate( value );
 
-    d->spin = new KDoubleSpinBox( lower, upper, step, value, precision,
-				  this, "KDoubleNumInput::d->spin" );
+    d->spin = new KDoubleSpinBox(lower, upper, step, value, this,precision);
+    d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);
     connect( d->spin, SIGNAL(valueChanged(double)),
 	     this, SIGNAL(valueChanged(double)) );
@@ -626,7 +617,7 @@ void KDoubleNumInput::updateLegacyMembers() {
     // which an inlined getter exists:
     m_lower = minValue();
     m_upper = maxValue();
-    m_step = d->spin->lineStep();
+    m_step = d->spin->singleStep();
     m_specialvalue = specialValueText();
 }
 
@@ -663,7 +654,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
     h = 2 + QMAX(m_sizeEdit.height(), m_sizeSlider.height());
 
     // if in extra row, then count it here
-    if(m_label && (m_alignment & (AlignBottom|AlignTop)))
+    if(m_label && (m_alignment & (Qt::AlignBottom|Qt::AlignTop)))
         h += 4 + m_sizeLabel.height();
     else
         // label is in the same row as the other widgets
@@ -672,7 +663,7 @@ QSize KDoubleNumInput::minimumSizeHint() const
     w = m_slider ? m_slider->sizeHint().width() + 8 : 0;
     w += m_colw1 + m_colw2;
 
-    if(m_alignment & (AlignTop|AlignBottom))
+    if(m_alignment & (Qt::AlignTop|Qt::AlignBottom))
         w = QMAX(w, m_sizeLabel.width() + 4);
 
     return QSize(w, h);
@@ -683,12 +674,12 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     int w = m_colw1;
     int h = 0;
 
-    if(m_label && (m_alignment & AlignTop)) {
+    if(m_label && (m_alignment & Qt::AlignTop)) {
         m_label->setGeometry(0, 0, e->size().width(), m_sizeLabel.height());
         h += m_sizeLabel.height() + 4;
     }
 
-    if(m_label && (m_alignment & AlignVCenter))
+    if(m_label && (m_alignment & Qt::AlignVCenter))
         m_label->setGeometry(0, 0, w, m_sizeEdit.height());
 
     if (qApp->reverseLayout())
@@ -713,7 +704,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 
     h += m_sizeEdit.height() + 2;
 
-    if(m_label && (m_alignment & AlignBottom))
+    if(m_label && (m_alignment & Qt::AlignBottom))
         m_label->setGeometry(0, h, m_sizeLabel.width(), m_sizeLabel.height());
 }
 
@@ -760,15 +751,15 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
         int slmax = spin->maxValue();
 	int slmin = spin->minValue();
         int slvalue = spin->value();
-	int slstep = spin->lineStep();
+	int slstep = spin->singleStep();
         if (m_slider) {
             m_slider->setRange(slmin, slmax);
 	    m_slider->setLineStep(slstep);
             m_slider->setValue(slvalue);
         } else {
             m_slider = new QSlider(slmin, slmax, slstep, slvalue,
-                                   QSlider::Horizontal, this);
-            m_slider->setTickmarks(QSlider::Below);
+                                   Qt::Horizontal, this);
+            m_slider->setTickmarks(QSlider::TicksBelow);
 	    // feedback line: when one moves, the other moves, too:
             connect(m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );
@@ -792,7 +783,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 
 void KDoubleNumInput::setMinValue(double min)
 {
-    setRange(min, maxValue(), d->spin->lineStep(), m_slider);
+    setRange(min, maxValue(), d->spin->singleStep(), m_slider);
 }
 
 double KDoubleNumInput::minValue() const
@@ -802,7 +793,7 @@ double KDoubleNumInput::minValue() const
 
 void KDoubleNumInput::setMaxValue(double max)
 {
-    setRange(minValue(), max, d->spin->lineStep(), m_slider);
+    setRange(minValue(), max, d->spin->singleStep(), m_slider);
 }
 
 double KDoubleNumInput::maxValue() const
@@ -885,8 +876,8 @@ void KDoubleNumInput::setLabel(const QString & label, int a)
 class KDoubleSpinBoxValidator : public KDoubleValidator
 {
 public:
-    KDoubleSpinBoxValidator( double bottom, double top, int decimals, KDoubleSpinBox* sb, const char *name )
-        : KDoubleValidator( bottom, top, decimals, sb, name ), spinBox( sb ) { }
+    KDoubleSpinBoxValidator( KDoubleSpinBox *sb,double bottom, double top, int decimals)
+        : KDoubleValidator( bottom, top, decimals, sb), spinBox( sb ) { }
 
     virtual State validate( QString& str, int& pos ) const;
 
@@ -899,7 +890,7 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
     QString pref = spinBox->prefix();
     QString suff = spinBox->suffix();
     QString suffStriped = suff.stripWhiteSpace();
-    uint overhead = pref.length() + suff.length();
+    int overhead = pref.length() + suff.length();
     State state = Invalid;
 
     if ( overhead == 0 ) {
@@ -993,22 +984,19 @@ public:
   KDoubleSpinBoxValidator * mValidator;
 };
 
-KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
-  : QSpinBox( parent, name )
+KDoubleSpinBox::KDoubleSpinBox( QWidget * parent)
+  : QSpinBox( parent), d(new Private())
 {
-  editor()->setAlignment( Qt::AlignRight );
-  d = new Private();
+  lineEdit()->setAlignment( Qt::AlignRight );
   updateValidator();
   connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
 }
 
 KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
-				double value, int precision,
-				QWidget * parent, const char * name )
-  : QSpinBox( parent, name )
+				double value, QWidget *parent, int precision)
+  : QSpinBox( parent), d(new Private())
 {
-  editor()->setAlignment( Qt::AlignRight );
-  d = new Private();
+  lineEdit()->setAlignment( Qt::AlignRight );
   setRange( lower, upper, step, precision );
   setValue( value );
   connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
@@ -1036,7 +1024,7 @@ void KDoubleSpinBox::setRange( double lower, double upper, double step,
   setPrecision( precision, true ); // disable bounds checking, since
   setMinValue( lower );            // it's done in set{Min,Max}Value
   setMaxValue( upper );            // anyway and we want lower, upper
-  setLineStep( step );             // and step to have the right precision
+  setSingleStep( step );             // and step to have the right precision
 }
 
 int KDoubleSpinBox::precision() const {
@@ -1111,19 +1099,19 @@ void KDoubleSpinBox::setMaxValue( double value ) {
   updateValidator();
 }
 
-double KDoubleSpinBox::lineStep() const {
-  return d->mapToDouble( base::lineStep() );
+double KDoubleSpinBox::singleStep() const {
+  return d->mapToDouble( base::singleStep() );
 }
 
-void KDoubleSpinBox::setLineStep( double step ) {
+void KDoubleSpinBox::setSingleStep( double step ) {
   bool ok = false;
   if ( step > maxValue() - minValue() )
-    base::setLineStep( 1 );
+    base::setSingleStep( 1 );
   else
-    base::setLineStep( kMax( d->mapToInt( step, &ok ), 1 ) );
+    base::setSingleStep( kMax( d->mapToInt( step, &ok ), 1 ) );
 }
 
-QString KDoubleSpinBox::mapValueToText( int value ) {
+QString KDoubleSpinBox::textFromValue( int value ) const{
   if ( acceptLocalizedNumbers() )
     return KGlobal::locale()
       ->formatNumber( d->mapToDouble( value ), d->mPrecision );
@@ -1131,18 +1119,19 @@ QString KDoubleSpinBox::mapValueToText( int value ) {
     return QString().setNum( d->mapToDouble( value ), 'f', d->mPrecision );
 }
 
-int KDoubleSpinBox::mapTextToValue( bool * ok ) {
+int KDoubleSpinBox::valueFromText( const QString &text ) const{
   double value;
+  bool ok;
   if ( acceptLocalizedNumbers() )
-    value = KGlobal::locale()->readNumber( cleanText(), ok );
+    value = KGlobal::locale()->readNumber( text, &ok );
   else
-    value = cleanText().toDouble( ok );
-  if ( !*ok ) return 0;
+    value = cleanText().toDouble( &ok );
+  if ( !ok ) return 0;
   if ( value > maxValue() )
     value = maxValue();
   else if ( value < minValue() )
     value = minValue();
-  return d->mapToInt( value, ok );
+  return d->mapToInt( value, &ok );
 }
 
 void KDoubleSpinBox::setValidator( const QValidator * ) {
@@ -1155,9 +1144,10 @@ void KDoubleSpinBox::slotValueChanged( int value ) {
 
 void KDoubleSpinBox::updateValidator() {
   if ( !d->mValidator ) {
-    d->mValidator =  new KDoubleSpinBoxValidator( minValue(), maxValue(), precision(),
-					   this, "d->mValidator" );
-    base::setValidator( d->mValidator );
+    d->mValidator =  new KDoubleSpinBoxValidator(this, minValue(), maxValue(), precision());
+    d->mValidator->setObjectName("d->mValidator" );
+#warning KDE4 we NEED to fix the validation of values here
+//    base::setValidator( d->mValidator );
   } else
     d->mValidator->setRange( minValue(), maxValue(), precision() );
 }

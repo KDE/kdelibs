@@ -19,9 +19,9 @@
 
 #include <qdir.h>
 #include <qlayout.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qstringlist.h>
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 
 #include <kactionclasses.h>
 #include <kapplication.h>
@@ -62,7 +62,7 @@ public:
     KFileTreeBranch *branch;
     QString recentDirClass;
     KURL startURL;
-    QValueStack<KURL> dirsToList;
+    Q3ValueStack<KURL> dirsToList;
 
     bool comboLocked : 1;
 };
@@ -104,8 +104,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     // Create dir list
     m_treeView = new KFileTreeView( page );
     m_treeView->addColumn( i18n("Folder") );
-    m_treeView->setColumnWidthMode( 0, QListView::Maximum );
-    m_treeView->setResizeMode( QListView::AllColumns );
+    m_treeView->setColumnWidthMode( 0, Q3ListView::Maximum );
+    m_treeView->setResizeMode( Q3ListView::AllColumns );
 
     d->urlCombo = new KHistoryCombo( page, "url combo" );
     d->urlCombo->setTrapReturnKey( true );
@@ -118,7 +118,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     connect( d->urlCombo, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotComboTextChanged( const QString& ) ));
 
-    m_contextMenu = new QPopupMenu( this );
+    m_contextMenu = new Q3PopupMenu( this );
     KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), this);
     newFolder->plug(m_contextMenu);
     m_contextMenu->insertSeparator();
@@ -148,10 +148,10 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_mainLayout->addWidget( m_treeView, 1 );
     m_mainLayout->addWidget( d->urlCombo, 0 );
 
-    connect( m_treeView, SIGNAL( currentChanged( QListViewItem * )),
+    connect( m_treeView, SIGNAL( currentChanged( Q3ListViewItem * )),
              SLOT( slotCurrentChanged() ));
-    connect( m_treeView, SIGNAL( contextMenu( KListView *, QListViewItem *, const QPoint & )),
-             SLOT( slotContextMenu( KListView *, QListViewItem *, const QPoint & )));
+    connect( m_treeView, SIGNAL( contextMenu( KListView *, Q3ListViewItem *, const QPoint & )),
+             SLOT( slotContextMenu( KListView *, Q3ListViewItem *, const QPoint & )));
 
     connect( d->urlCombo, SIGNAL( activated( const QString& )),
              SLOT( slotURLActivated( const QString& )));
@@ -378,7 +378,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
         }
     }
 
-    QListViewItem *item = view()->currentItem();
+    Q3ListViewItem *item = view()->currentItem();
     if ( item )
     {
         item->setSelected( false );
@@ -387,7 +387,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
     }
 }
 
-void KDirSelectDialog::slotContextMenu( KListView *, QListViewItem *, const QPoint& pos )
+void KDirSelectDialog::slotContextMenu( KListView *, Q3ListViewItem *, const QPoint& pos )
 {
     m_contextMenu->popup( pos );
 }

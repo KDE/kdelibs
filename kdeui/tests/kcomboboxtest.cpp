@@ -6,6 +6,8 @@
 
 #include <assert.h>
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -17,7 +19,7 @@
 #include <qlayout.h>
 #include <qpixmap.h>
 #include <qlabel.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qtimer.h>
 
 
@@ -33,7 +35,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   delete testCombo; // not needed anymore  
   
   // Qt combobox
-  QHBox* hbox = new QHBox(this);
+  Q3HBox* hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   QLabel* lbl = new QLabel("&QCombobox:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -45,7 +47,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
   
   // Read-only combobox
-  hbox = new QHBox(this);
+  hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Read-Only Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -58,7 +60,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // Read-write combobox
-  hbox = new QHBox(this);
+  hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Editable Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -66,7 +68,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_rw = new KComboBox( true, hbox, "ReadWriteCombo" );
   lbl->setBuddy (m_rw);
   m_rw->setDuplicatesEnabled( true );
-  m_rw->setInsertionPolicy( QComboBox::NoInsertion );
+  m_rw->setInsertionPolicy( QComboBox::NoInsert );
   m_rw->setTrapReturnKey( true );
   QObject::connect (m_rw, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_rw, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
@@ -75,7 +77,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // History combobox...
-  hbox = new QHBox(this);
+  hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&History Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -83,7 +85,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_hc = new KHistoryCombo( true, hbox, "HistoryCombo" );
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
-  m_hc->setInsertionPolicy( QComboBox::NoInsertion );
+  m_hc->setInsertionPolicy( QComboBox::NoInsert );
   QObject::connect (m_hc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_hc, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
   QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));  
@@ -91,7 +93,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_hc->setTrapReturnKey(true);
 
   // Read-write combobox that is a replica of code in konqueror...
-  hbox = new QHBox(this);
+  hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel( "&Konq's Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -105,7 +107,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   vbox->addWidget (hbox);
 
   // Create an exit button
-  hbox = new QHBox (this);
+  hbox = new Q3HBox (this);
   m_btnExit = new QPushButton( "E&xit", hbox );
   QObject::connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
 
@@ -217,7 +219,11 @@ void KComboBoxTest::quitApp()
 
 int main ( int argc, char **argv)
 {
-  KApplication a(argc, argv, "kcomboboxtest");
+  KAboutData about("kcomboboxtest", "kcomboboxtest", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
+
   KComboBoxTest* t= new KComboBoxTest;
   a.setMainWidget (t);
   t->show ();

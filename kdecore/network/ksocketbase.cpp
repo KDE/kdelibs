@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003-2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003-2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
  */
 
 #include <config.h>
-#include <qmutex.h>
+#include <QMutex>
 #include "klocale.h"
 
 #include "ksocketbase.h"
@@ -43,7 +43,7 @@ public:
   QMutex mutex;
 
   KSocketBasePrivate()
-    : mutex(true)		// create recursive
+    : mutex(QMutex::Recursive)		// create recursive
   { }
 };
 
@@ -113,6 +113,17 @@ bool KSocketBase::broadcast() const
   return socketOptions() & Broadcast;
 }
 
+bool KSocketBase::setNoDelay(bool enable)
+{
+  return setSocketOptions((socketOptions() & ~NoDelay) | (enable ? NoDelay : 0));
+}
+
+bool KSocketBase::noDelay() const
+{
+  return socketOptions() & NoDelay;
+}
+
+
 KSocketDevice* KSocketBase::socketDevice() const
 {
   if (d->device)
@@ -155,6 +166,11 @@ bool KSocketBase::hasDevice() const
 void KSocketBase::setError(SocketError error)
 {
   d->socketError = error;
+}
+
+void KSocketBase::resetError()
+{
+  d->socketError = NoError;
 }
 
 KSocketBase::SocketError KSocketBase::error() const
@@ -248,7 +264,7 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
       break;
 
     default:
-      reason = QString::null;
+      reason = QString();
       break;
     }
 
@@ -280,7 +296,8 @@ QMutex* KSocketBase::mutex() const
   return &d->mutex;
 }
 
-KActiveSocketBase::KActiveSocketBase()
+KActiveSocketBase::KActiveSocketBase(QObject* parent)
+  : QIODevice(parent)
 {
 }
 
@@ -288,34 +305,61 @@ KActiveSocketBase::~KActiveSocketBase()
 {
 }
 
-int KActiveSocketBase::getch()
+bool KActiveSocketBase::open(OpenMode mode)
 {
-  unsigned char c;
-  if (readBlock((char*)&c, 1) != 1)
-    return -1;
-
-  return c;
+  QIODevice::open(mode);
+  QIODevice::seek(0);		// clear unget buffers
+  return true;
 }
 
-int KActiveSocketBase::putch(int ch)
+void KActiveSocketBase::setSocketDevice(KSocketDevice* dev)
 {
-  unsigned char c = (unsigned char)ch;
-  if (writeBlock((char*)&c, 1) != 1)
-    return -1;
-
-  return c;
+  KSocketBase::setSocketDevice(dev);
+  KActiveSocketBase::open(dev->openMode());
 }
 
-void KActiveSocketBase::setError(int status, SocketError error)
+qint64 KActiveSocketBase::read(char *data, qint64 len, KSocketAddress& from)
+{
+  // FIXME TODO: implement unget buffers
+  return readData(data, len, &from);
+}
+
+qint64 KActiveSocketBase::peek(char *data, qint64 len)
+{
+  return peekData(data, len, 0L);
+}
+
+qint64 KActiveSocketBase::peek(char *data, qint64 len, KSocketAddress& from)
+{
+  return peekData(data, len, &from);
+}
+
+qint64 KActiveSocketBase::write(const char *data, qint64 len, 
+				const KSocketAddress& to)
+{
+  return writeData(data, len, &to);
+}
+
+qint64 KActiveSocketBase::readData(char *data, qint64 len)
+{
+  return readData(data, len, 0L);
+}
+
+qint64 KActiveSocketBase::writeData(const char *data, qint64 len)
+{
+  return writeData(data, len, 0L);
+}
+
+void KActiveSocketBase::setError(SocketError error)
 {
   KSocketBase::setError(error);
-  setStatus(status);
+  setErrorString(KSocketBase::errorString());
 }
 
 void KActiveSocketBase::resetError()
 {
   KSocketBase::setError(NoError);
-  resetStatus();
+  setErrorString(QString());
 }
 
 KPassiveSocketBase::KPassiveSocketBase()

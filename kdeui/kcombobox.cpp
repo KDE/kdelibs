@@ -16,14 +16,16 @@
 
    You should have received a copy of the GNU Lesser General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <qclipboard.h>
-#include <qlistbox.h>
-#include <qpopupmenu.h>
+#include <q3listbox.h>
+#include <q3popupmenu.h>
 #include <qapplication.h>
+#include <qevent.h>
+#include <QAbstractItemView>
 
 #include <kcompletionbox.h>
 #include <kcursor.h>
@@ -159,12 +161,10 @@ void KComboBox::makeCompletion( const QString& text )
 
     else // read-only combo completion
     {
-        if( text.isNull() || !listBox() )
+        if( text.isNull() || !view() )
             return;
 
-        const int index = listBox()->index( listBox()->findItem( text ) );
-        if( index >= 0 )
-            setCurrentItem( index );
+	view()->keyboardSearch(text);
     }
 }
 
@@ -293,8 +293,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
 
         connect( d->klineEdit,
-                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
-                 SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
+                 SIGNAL( aboutToShowContextMenu( QMenu * )),
+                 SIGNAL( aboutToShowContextMenu( QMenu * )) );
 
         connect( d->klineEdit,
                  SIGNAL( completionBoxActivated( const QString& )),
@@ -370,14 +370,15 @@ void KHistoryCombo::init( bool useCompletion )
     myPixProvider = 0L;
 
     // obey HISTCONTROL setting
-    QCString histControl = getenv("HISTCONTROL");
+    Q3CString histControl = getenv("HISTCONTROL");
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 
-    connect( this, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
-             SLOT(addContextMenuItems(QPopupMenu*)) );
+    connect( this, SIGNAL(aboutToShowContextMenu(QMenu*)),
+             SLOT(addContextMenuItems(QMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
     connect( this, SIGNAL( returnPressed(const QString&) ), SLOT(slotReset()));
+    connect( this, SIGNAL( returnPressed(const QString&) ), SLOT( slotSimulateActivated(const QString&) ) );
 }
 
 KHistoryCombo::~KHistoryCombo()
@@ -433,7 +434,7 @@ void KHistoryCombo::clearHistory()
     setEditText( temp );
 }
 
-void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
+void KHistoryCombo::addContextMenuItems( QMenu* menu )
 {
     if ( menu )
     {
@@ -610,10 +611,10 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 void KHistoryCombo::wheelEvent( QWheelEvent *ev )
 {
     // Pass to poppable listbox if it's up
-    QListBox* const lb = listBox();
-    if ( lb && lb->isVisible() )
+    QAbstractItemView* const iv = view();
+    if ( iv && iv->isVisible() )
     {
-        QApplication::sendEvent( lb, ev );
+        QApplication::sendEvent( iv, ev );
         return;
     }
     // Otherwise make it change the text without emitting activated
@@ -672,6 +673,16 @@ void KHistoryCombo::slotClear()
 {
     clearHistory();
     emit cleared();
+}
+
+void KHistoryCombo::slotSimulateActivated( const QString& text )
+{
+    /* With the insertion policy NoInsertion, which we use by default, 
+       Qt doesn't emit activated on typed text if the item is not already there,
+       which is perhaps reasonable. Generate the signal ourselves if that's the case
+    */
+    if (insertionPolicy() == NoInsertion && findText(text) == -1)
+        emit activated(text);
 }
 
 void KComboBox::virtual_hook( int id, void* data )

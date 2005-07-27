@@ -18,7 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "vcardformatimpl.h"
+#include <qfile.h>
+#include <qtextstream.h>
+
+#include "address.h"
+#include "addressee.h"
+#include "vcardconverter.h"
 
 #include "vcardformat.h"
 
@@ -26,34 +31,91 @@ using namespace KABC;
 
 VCardFormat::VCardFormat()
 {
-  mImpl = new VCardFormatImpl;
 }
 
 VCardFormat::~VCardFormat()
 {
-  delete mImpl;
 }
 
-bool VCardFormat::load( AddressBook *addressBook, const QString &fileName )
+bool VCardFormat::load( Addressee &addressee, QFile *file )
 {
-  QFile f( fileName );
-  if ( !f.open( IO_ReadOnly ) ) return false;
-  
-  bool result = mImpl->loadAll( addressBook, 0, &f );
-  
-  f.close();
-  
-  return result;
+  QString data;
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
+
+  VCardConverter converter;
+  Addressee::List l = converter.parseVCards( data );
+
+  if ( ! l.first().isEmpty() ) {
+    addressee = l.first();
+    return true;
+  }
+
+  return false;
 }
 
-bool VCardFormat::save( AddressBook *addressBook, const QString &fileName )
+bool VCardFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
-  QFile f( fileName );
-  if ( !f.open( IO_WriteOnly ) ) return false;
-  
-  mImpl->saveAll( addressBook, 0, &f );
-  
-  f.close();
-  
+  QString data;
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  data = t.read();
+
+  VCardConverter converter;
+
+  Addressee::List l = converter.parseVCards( data );
+
+  Addressee::List::iterator itr;
+  for ( itr = l.begin(); itr != l.end(); ++itr) {
+    Addressee addressee = *itr;
+    addressee.setResource( resource );
+    addressee.setChanged( false );
+    resource->insertAddressee( addressee );
+  }
+
   return true;
+}
+
+void VCardFormat::save( const Addressee &addressee, QFile *file )
+{
+  VCardConverter converter ;
+  Addressee::List vcardlist;
+
+
+  vcardlist.append( addressee );
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << converter.createVCards( vcardlist );
+}
+
+void VCardFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
+{
+  VCardConverter converter;
+  Addressee::List vcardlist;
+
+  Resource::Iterator it;
+  for ( it = resource->begin(); it != resource->end(); ++it ) {
+    (*it).setChanged( false );
+    vcardlist.append( *it );
+  }
+
+  QTextStream t( file );
+  t.setEncoding( QTextStream::UnicodeUTF8 );
+  t << converter.createVCards( vcardlist );
+}
+
+bool VCardFormat::checkFormat( QFile *file ) const
+{
+  QByteArray line;
+
+  file->readLine( line.data(), 1024 );
+  line = line.stripWhiteSpace();
+  if ( line == "BEGIN:VCARD" )
+    return true;
+  else
+    return false;
 }

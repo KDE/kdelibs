@@ -43,7 +43,7 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widget
 	{
 		d->widget = widgetToWrap;
 		QString finalTabCaption;
-		if ( tabCaption == 0 )
+		if ( tabCaption.isEmpty() )
 		{
 			finalTabCaption = widgetToWrap->caption();
 			if ( finalTabCaption.isEmpty() && !widgetToWrap->icon() )
@@ -61,7 +61,7 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widget
 		                     widgetToWrap->caption(),
 		                     finalTabCaption );
 		d->widgetContainer->setWidget( widgetToWrap );
-		if ( tabToolTip != 0 )
+		if ( !tabToolTip.isEmpty() )
 		{
 			d->widgetContainer->setToolTipString( tabToolTip );
 		} 
@@ -116,7 +116,7 @@ void KMdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QString
 	KDockWidget *tmp = d->widgetContainer;
 
 	QString finalTabCaption;
-	if ( tabCaption == 0 )
+	if ( tabCaption.isEmpty() )
 	{
 		finalTabCaption = widgetToWrap->caption();
 		if ( finalTabCaption.isEmpty() && !widgetToWrap->icon() )
@@ -137,7 +137,7 @@ void KMdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QString
 		                                    widgetToWrap->caption(),
 		                                    finalTabCaption );
 		d->widgetContainer = tmp;
-		if ( tabToolTip != 0 )
+		if ( !tabToolTip.isEmpty() )
 		{
 			d->widgetContainer->setToolTipString( tabToolTip );
 		}
@@ -148,7 +148,7 @@ void KMdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QString
 		tmp->setTabPageLabel( finalTabCaption );
 		tmp->setPixmap( widgetToWrap->icon() ? ( *( widgetToWrap->icon() ) ) : QPixmap() );
 		tmp->setName( widgetToWrap->name() );
-		if ( tabToolTip != 0 )
+		if ( !tabToolTip.isEmpty() )
 		{
 			d->widgetContainer->setToolTipString( tabToolTip );
 		}
@@ -166,7 +166,7 @@ void KMdiToolViewAccessor::setWidgetToWrap( QWidget *widgetToWrap, const QString
 
 bool KMdiToolViewAccessor::eventFilter( QObject *, QEvent *e )
 {
-	if ( e->type() == QEvent::IconChange )
+	if ( e->type() == QEvent::WindowIconChange )
 	{
 		d->widgetContainer->setPixmap( d->widget->icon() ? ( *d->widget->icon() ) : QPixmap() );
 	}

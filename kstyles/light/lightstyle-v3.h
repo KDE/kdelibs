@@ -46,7 +46,7 @@ public:
     LightStyleV3();
     virtual ~LightStyleV3();
 
-    void polishPopupMenu( QPopupMenu * );
+    void polishPopupMenu( Q3PopupMenu * );
 
     void drawPrimitive(PrimitiveElement, QPainter *, const QRect &, const QColorGroup &,
 		       SFlags = Style_Default,

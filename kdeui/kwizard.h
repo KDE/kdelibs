@@ -16,14 +16,14 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */  
 
 #ifndef __KWIZARD_H
 #define __KWIZARD_H
 
-#include <qwizard.h>
+#include <q3wizard.h>
 
 #include <kdelibs_export.h>
 
@@ -43,14 +43,14 @@
 * @author Harri Porten <porten@kde.org>
 * @version 0.3 
 */
-class KDEUI_EXPORT KWizard : public QWizard
+class KDEUI_EXPORT KWizard : public Q3Wizard
 {
   Q_OBJECT
 public:
 /**
 * Constructor
 */
-  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
+  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, Qt::WFlags f = 0);
 /**
 * Destructor
 */

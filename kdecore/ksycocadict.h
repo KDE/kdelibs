@@ -20,7 +20,7 @@
 #define __ksycocadict_h__
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qdatastream.h>
 #include "kdelibs_export.h"
 
@@ -117,7 +117,7 @@ private:
    QDataStream *mStr;
    Q_INT32 mOffset;
    Q_UINT32 mHashTableSize;
-   QValueList<Q_INT32> mHashList;
+   QList<Q_INT32> mHashList;
 };
 
 #endif

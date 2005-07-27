@@ -50,7 +50,7 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
 
     d->tmplabel = new QLabel( this );
     d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
-    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::WordBreak );
+    d->tmplabel->setAlignment( Qt::AlignCenter | Qt::TextWordWrap );
     d->tmplabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
     d->tmplabel->show();
 

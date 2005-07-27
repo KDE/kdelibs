@@ -19,14 +19,14 @@
 */
 #include <qapplication.h>
 
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
-#include <qvgroupbox.h>
-#include <qhbuttongroup.h>
+#include <Q3HButtonGroup>
+#include <Q3ButtonGroup>
 #include <qradiobutton.h>
 
 #include <kmessagebox.h>
@@ -45,7 +45,7 @@
 using namespace KABC;
 
 LdapConfigWidget::LdapConfigWidget( QWidget* parent,
-  const char* name, WFlags fl ) : QWidget( parent, name, fl )
+  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
 {
   mProg = 0;
   mFlags = 0;
@@ -54,7 +54,7 @@ LdapConfigWidget::LdapConfigWidget( QWidget* parent,
 }
 
 LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
-  const char* name, WFlags fl ) : QWidget( parent, name, fl )
+  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
 {
   mFlags = flags;
   mProg = 0;
@@ -196,7 +196,7 @@ void LdapConfigWidget::initWidget()
   }
 
   if ( mFlags & W_SECBOX ) {
-    QHButtonGroup *btgroup = new QHButtonGroup( i18n( "Security" ), this );
+    Q3HButtonGroup *btgroup = new Q3HButtonGroup( i18n( "Security" ), this );
     mSecNO = new QRadioButton( i18n( "No" ), btgroup, "kcfg_ldapnosec" );
     mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup, "kcfg_ldaptls" );
     mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup, "kcfg_ldapssl" );
@@ -212,8 +212,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_AUTHBOX ) {
 
-    QButtonGroup *authbox =
-      new QButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
+    Q3ButtonGroup *authbox =
+      new Q3ButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
 
     mAnonymous = new QRadioButton( i18n( "Anonymous" ), authbox, "kcfg_ldapanon" );
     mSimple = new QRadioButton( i18n( "Simple" ), authbox, "kcfg_ldapsimple" );
@@ -284,7 +284,7 @@ void LdapConfigWidget::sendQuery()
   if ( mHost ) _url.setHost( mHost->text() );
   if ( mPort ) _url.setPort( mPort->value() );
   _url.setDn( "" );
-  _url.setAttributes( mAttr );
+  _url.setAttributes( QStringList( mAttr ) );
   _url.setScope( LDAPUrl::Base );
   if ( mVer ) _url.setExtension( "x-ver", QString::number( mVer->value() ) );
   if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls", "" );
@@ -333,7 +333,7 @@ void LdapConfigWidget::mQueryDNClicked()
 
 void LdapConfigWidget::setAnonymous( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(false);
   if ( mPassword ) mPassword->setEnabled(false);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -344,7 +344,7 @@ void LdapConfigWidget::setAnonymous( int state )
 
 void LdapConfigWidget::setSimple( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(false);
@@ -355,7 +355,7 @@ void LdapConfigWidget::setSimple( int state )
 
 void LdapConfigWidget::setSASL( int state )
 {
-  if ( state == QButton::Off ) return;
+  if ( state == QCheckBox::Off ) return;
   if ( mUser ) mUser->setEnabled(true);
   if ( mPassword ) mPassword->setEnabled(true);
   if ( mBindDN ) mBindDN->setEnabled(true);
@@ -607,19 +607,15 @@ void LdapConfigWidget::setFlags( int flags )
 
   // First delete all the child widgets.
   // FIXME: I hope it's correct
-  const QObjectList *ch = children();
-  QObjectList ch2 = *ch;
-  QObject *obj;
-  QWidget *widget;
+  QList<QObject*> ch = children();
 
-  obj = ch2.first();
-  while ( obj != 0 ) {
-    widget = dynamic_cast<QWidget*> (obj);
-    if ( widget && widget->parent() == this ) {
-      mainLayout->remove( widget );
-      delete ( widget );
-    }
-    obj = ch2.next();
+  foreach ( QObject*obj, ch ) {
+	  QWidget *widget;
+	  widget = dynamic_cast<QWidget*> (obj);
+	  if ( widget && widget->parent() == this ) {
+		  mainLayout->remove( widget );
+		  delete ( widget );
+	  }
   }
   // Re-create child widgets according to the new flags
   initWidget();

@@ -38,18 +38,18 @@
 #include <kio/netaccess.h>
 
 #include <qcheckbox.h>
-#include <qgroupbox.h>
-#include <qheader.h>
+#include <q3groupbox.h>
+#include <q3header.h>
 #include <qlabel.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qlayout.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpushbutton.h>
 #include <qstring.h>
 #include <qtooltip.h>
 #include <qtimer.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
+#include <q3vbox.h>
+#include <QHelpEvent>
 
 using namespace KNotify;
 
@@ -111,42 +111,6 @@ namespace KNotify
         }
     };
 
-    // Needed for displaying tooltips in the listview's QHeader
-    class KNotifyToolTip : public QToolTip
-    {
-    public:
-        KNotifyToolTip( QHeader *header )
-            : QToolTip( header )
-        {
-            m_tips[COL_EXECUTE] = i18n("Execute a program");
-            m_tips[COL_STDERR]  = i18n("Print to Standard error output");
-            m_tips[COL_MESSAGE] = i18n("Display a messagebox");
-            m_tips[COL_LOGFILE] = i18n("Log to a file");
-            m_tips[COL_SOUND]   = i18n("Play a sound");
-            m_tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
-        }
-        virtual ~KNotifyToolTip() {}
-
-    protected:
-        virtual void maybeTip ( const QPoint& p )
-        {
-            QHeader *header = static_cast<QHeader*>( parentWidget() );
-            int section = 0;
-
-            if ( header->orientation() == Horizontal )
-                section= header->sectionAt( p.x() );
-            else
-                section= header->sectionAt( p.y() );
-
-            if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(m_tips) / sizeof(QString)) ) )
-                return;
-
-            tip( header->sectionRect( section ), m_tips[section] );
-        }
-
-    private:
-        QString m_tips[6];
-    };
 
 }
 
@@ -163,7 +127,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
     : KDialogBase(parent, name, modal, i18n("Notification Settings"),
                   Ok | Apply | Cancel | Default, Ok, true )
 {
-    QVBox *box = makeVBoxMainWidget();
+    Q3VBox *box = makeVBoxMainWidget();
 
     m_notifyWidget = new KNotifyWidget( box, "knotify widget" );
 
@@ -213,7 +177,8 @@ class KNotifyWidget::Private
 {
 public:
     QPixmap pixmaps[6];
-    KNotifyToolTip *toolTip;
+    QString tips   [6];
+    Q3Header* header;
 };
 
 // simple access to all knotify-handled applications
@@ -253,7 +218,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     int w = KIcon::SizeSmall + 6;
 
-    QHeader *header = m_listview->header();
+    Q3Header *header = m_listview->header();
+    d->header = header;
     header->setLabel( COL_EXECUTE, pexec,    QString::null, w );
     header->setLabel( COL_STDERR,  pstderr,  QString::null, w );
     header->setLabel( COL_MESSAGE, pmessage, QString::null, w );
@@ -261,15 +227,22 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     header->setLabel( COL_SOUND,   psound,   QString::null, w );
     header->setLabel( COL_TASKBAR, ptaskbar, QString::null, w );
 
-    d->toolTip = new KNotifyToolTip( header );
+    header->installEventFilter( this );
+    d->tips[COL_EXECUTE] = i18n("Execute a program");
+    d->tips[COL_STDERR]  = i18n("Print to Standard error output");
+    d->tips[COL_MESSAGE] = i18n("Display a messagebox");
+    d->tips[COL_LOGFILE] = i18n("Log to a file");
+    d->tips[COL_SOUND]   = i18n("Play a sound");
+    d->tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
+
 
     m_playButton->setIconSet( SmallIconSet( "player_play" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
-    connect( m_listview, SIGNAL( currentChanged( QListViewItem * ) ),
-             SLOT( slotEventChanged( QListViewItem * ) ));
-    connect( m_listview, SIGNAL(clicked( QListViewItem *, const QPoint&, int)),
-             SLOT( slotItemClicked( QListViewItem *, const QPoint&, int )));
+    connect( m_listview, SIGNAL( currentChanged( Q3ListViewItem * ) ),
+             SLOT( slotEventChanged( Q3ListViewItem * ) ));
+    connect( m_listview, SIGNAL(clicked( Q3ListViewItem *, const QPoint&, int)),
+             SLOT( slotItemClicked( Q3ListViewItem *, const QPoint&, int )));
 
     connect( m_playSound, SIGNAL( toggled( bool )),
              SLOT( soundToggled( bool )) );
@@ -313,8 +286,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
         "<b>%s</b>: for the notification message,<br>"
         "<b>%w</b>: for the numeric window ID where the event originated,<br>"
         "<b>%i</b>: for the numeric event ID.");
-    QWhatsThis::add( m_execute, whatsThis );
-    QWhatsThis::add( m_executePath, whatsThis );
+    m_execute->setWhatsThis(whatsThis );
+    m_executePath->setWhatsThis(whatsThis );
     
     showAdvanced( false );
 
@@ -323,7 +296,6 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
 KNotifyWidget::~KNotifyWidget()
 {
-    delete d->toolTip;
     delete d;
 }
 
@@ -349,7 +321,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_taskbar->show();
 
 	m_passivePopup->setEnabled( m_messageBox->isChecked() );
-        m_actionsBoxLayout->setSpacing( KDialog::spacingHint() );
+        m_actionsBox->layout()->setSpacing( KDialog::spacingHint() );
     }
     else
     {
@@ -365,7 +337,7 @@ void KNotifyWidget::showAdvanced( bool show )
         m_stderr->hide();
         m_taskbar->hide();
 
-        m_actionsBoxLayout->setSpacing( 0 );
+        m_actionsBox->layout()->setSpacing( 0 );
     }
 }
 
@@ -400,13 +372,37 @@ void KNotifyWidget::clearVisible()
     slotEventChanged( 0L ); // disable widgets
 }
 
+bool KNotifyWidget::eventFilter( QObject * watched, QEvent * event )
+{
+  if ( watched == d->header && event->type() == QEvent::ToolTip)
+  {
+    QHelpEvent* he = static_cast<QHelpEvent*>(event);
+    int section = 0;
+
+    if ( d->header->orientation() == Qt::Horizontal )
+        section= d->header->sectionAt( he->pos().x() );
+    else
+        section= d->header->sectionAt( he->pos().y() );
+
+    if ( ( section < 0 ) || ( static_cast<uint>( section ) >= (sizeof(d->tips) / sizeof(QString)) ) )
+        return true;
+
+    QToolTip::showText( d->header->sectionRect( section ).bottomLeft(), d->tips[section],
+                       d->header );
+
+    return true;
+  }
+  
+  return KNotifyWidgetBase::eventFilter(watched, event);
+}
+
 void KNotifyWidget::showEvent( QShowEvent *e )
 {
     selectItem( m_listview->firstChild() );
     KNotifyWidgetBase::showEvent( e );
 }
 
-void KNotifyWidget::slotEventChanged( QListViewItem *item )
+void KNotifyWidget::slotEventChanged( Q3ListViewItem *item )
 {
     bool on = (item != 0L);
 
@@ -520,7 +516,7 @@ void KNotifyWidget::addVisibleApp( Application *app )
     m_visibleApps.append( app );
     addToView( app->eventList() );
 
-    QListViewItem *item = m_listview->selectedItem();
+    Q3ListViewItem *item = m_listview->selectedItem();
     if ( !item )
         item = m_listview->firstChild();
 
@@ -556,7 +552,7 @@ void KNotifyWidget::addToView( const EventList& events )
     }
 }
 
-void KNotifyWidget::widgetChanged( QListViewItem *item,
+void KNotifyWidget::widgetChanged( Q3ListViewItem *item,
                                    int what, bool on, QWidget *buddy )
 {
     if ( signalsBlocked() )
@@ -580,7 +576,7 @@ void KNotifyWidget::widgetChanged( QListViewItem *item,
 
 void KNotifyWidget::soundToggled( bool on )
 {
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
     bool doIcon = on && !m_soundPath->url().isEmpty();
@@ -590,7 +586,7 @@ void KNotifyWidget::soundToggled( bool on )
 
 void KNotifyWidget::loggingToggled( bool on )
 {
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
     bool doIcon = on && !m_logfilePath->url().isEmpty();
@@ -600,7 +596,7 @@ void KNotifyWidget::loggingToggled( bool on )
 
 void KNotifyWidget::executeToggled( bool on )
 {
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
     bool doIcon = on && !m_executePath->url().isEmpty();
@@ -615,7 +611,7 @@ void KNotifyWidget::messageBoxChanged()
 
     m_passivePopup->setEnabled( m_messageBox->isChecked() );
 
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
 
@@ -644,7 +640,7 @@ void KNotifyWidget::messageBoxChanged()
 
 void KNotifyWidget::stderrToggled( bool on )
 {
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
     item->setPixmap( COL_STDERR, on ? d->pixmaps[COL_STDERR] : QPixmap() );
@@ -653,7 +649,7 @@ void KNotifyWidget::stderrToggled( bool on )
 
 void KNotifyWidget::taskbarToggled( bool on )
 {
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
     item->setPixmap( COL_TASKBAR, on ? d->pixmaps[COL_TASKBAR] : QPixmap() );
@@ -665,7 +661,7 @@ void KNotifyWidget::soundFileChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
 
@@ -683,7 +679,7 @@ void KNotifyWidget::logfileChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
 
@@ -699,7 +695,7 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
 
@@ -710,7 +706,7 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     emit changed( true );
 }
 
-void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
+void KNotifyWidget::slotItemClicked( Q3ListViewItem *item, const QPoint&,
                                      int col )
 {
     if ( !item || !item->isSelected() )
@@ -764,7 +760,7 @@ void KNotifyWidget::sort( bool ascending )
     m_listview->sort();
 }
 
-void KNotifyWidget::selectItem( QListViewItem *item )
+void KNotifyWidget::selectItem( Q3ListViewItem *item )
 {
     if ( item )
     {
@@ -820,7 +816,7 @@ void KNotifyWidget::save()
     {
         if ( !kapp->dcopClient()->isAttached() )
             kapp->dcopClient()->attach();
-        kapp->dcopClient()->send("knotify", "", "reconfigure()", "");
+        DCOPRef("knotify", "").send("reconfigure()");
     }
 
     emit changed( false );
@@ -841,7 +837,7 @@ QString KNotifyWidget::makeRelative( const QString& fullPath )
 
 Event * KNotifyWidget::currentEvent()
 {
-    QListViewItem *current = m_listview->currentItem();
+    Q3ListViewItem *current = m_listview->currentItem();
     if ( !current )
         return 0L;
 
@@ -973,14 +969,14 @@ void KNotifyWidget::enableAll( int what, bool enable )
     }
 
     // now make the listview reflect the changes
-    QListViewItemIterator it( m_listview->firstChild() );
+    Q3ListViewItemIterator it( m_listview->firstChild() );
     for ( ; it.current(); ++it )
     {
         ListViewItem *item = static_cast<ListViewItem*>( it.current() );
         updatePixmaps( item );
     }
 
-    QListViewItem *item = m_listview->currentItem();
+    Q3ListViewItem *item = m_listview->currentItem();
     if ( !item )
         item = m_listview->firstChild();
     selectItem( item );
@@ -1132,14 +1128,14 @@ void Application::reloadEvents( bool revertToDefaults )
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-ListViewItem::ListViewItem( QListView *view, Event *event )
-    : QListViewItem( view ),
+ListViewItem::ListViewItem( Q3ListView *view, Event *event )
+    : Q3ListViewItem( view ),
       m_event( event )
 {
     setText( COL_EVENT, event->text() );
 }
 
-int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
+int ListViewItem::compare ( Q3ListViewItem * i, int col, bool ascending ) const
 {
     ListViewItem *item = static_cast<ListViewItem*>( i );
     int myPres = m_event->presentation;
@@ -1150,7 +1146,7 @@ int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
     switch ( col )
     {
         case COL_EVENT: // use default sorting
-            return QListViewItem::compare( i, col, ascending );
+            return Q3ListViewItem::compare( i, col, ascending );
 
         case COL_EXECUTE:
             action = KNotifyClient::Execute;
@@ -1175,7 +1171,7 @@ int ListViewItem::compare ( QListViewItem * i, int col, bool ascending ) const
     if ( (myPres & action) == (otherPres & action) )
     {
         // default sorting by event
-        return QListViewItem::compare( i, COL_EVENT, true );
+        return Q3ListViewItem::compare( i, COL_EVENT, true );
     }
 
     if ( myPres & action )

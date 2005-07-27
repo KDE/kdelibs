@@ -176,7 +176,7 @@ public:
     QString name;
     QString type; // KDE4: make it QVariant::Type
   };
-  typedef QValueList<ExtraField > ExtraFieldList;
+  typedef Q3ValueList<ExtraField > ExtraFieldList;
   /**
    * Definition of extra fields in the UDS entries, returned by a listDir operation.
    *

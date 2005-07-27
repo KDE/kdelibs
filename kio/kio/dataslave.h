@@ -96,7 +96,7 @@ namespace KIO {
 	  QueueStruct() {}
 	  QueueStruct(QueueType type) : type(type) {}
 	};
-        typedef QValueList<QueueStruct> DispatchQueue;
+        typedef Q3ValueList<QueueStruct> DispatchQueue;
 	DispatchQueue dispatchQueue;
 
 	DISPATCH_DECL1(mimeType, const QString &, s)

@@ -28,12 +28,12 @@
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 #ifdef KSSL_HAVE_SSL
-	QCString pass;
+	Q3CString pass;
 	Q_UNUSED(userdata);
 	Q_UNUSED(rwflag);
 
 	if (!buf) return -1;
-	int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password"));
+	int rc = KPasswordDialog::getPassword((QWidget*)0, pass, i18n("Certificate password"));
 	if (rc != KPasswordDialog::Accepted) return -1;
 
 	const uint passlen = pass.length();

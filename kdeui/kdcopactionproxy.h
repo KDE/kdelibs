@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __kdcopactionproxy_h__
 #define __kdcopactionproxy_h__
@@ -60,7 +60,7 @@ public:
    * Returns a list of exportable actions. The default implementation returns a list of actions
    * provided by a KActionCollection, if the first constructor has been used.
    */
-  virtual QValueList<KAction *> actions() const;
+  virtual QList<KAction *> actions() const;
   /**
    * Returns an action object with the given name. The default implementation queries the action object
    * from the KActionCollection, if the first constructor has been used.
@@ -77,7 +77,7 @@ public:
    *
    * The action with the given name has to be available through the #action method.
    */
-  virtual QCString actionObjectId( const QCString &name ) const;
+  virtual DCOPCString actionObjectId( const DCOPCString &name ) const;
 
   /**
    * Returns a map of all exported actions, with the action name as keys and a global DCOP reference
@@ -85,20 +85,20 @@ public:
    * The appId argument is used to specify the appid component of the DCOP reference. By default the
    * global application id is used ( kapp->dcopClient()->appId() ) .
    */
-  virtual QMap<QCString,DCOPRef> actionMap( const QCString &appId = QCString() ) const;
+  virtual QMap<DCOPCString,DCOPRef> actionMap( const DCOPCString &appId = DCOPCString() ) const;
 
   /**
    * Internal reimplementation of DCOPObjectProxy::process .
    */
-  virtual bool process( const QCString &obj, const QCString &fun, const QByteArray &data,
-                        QCString &replyType, QByteArray &replyData );
+  virtual bool process( const DCOPCString &obj, const DCOPCString &fun, const QByteArray &data,
+                        DCOPCString &replyType, QByteArray &replyData );
 
   /**
    * Called by the #process method and takes care of processing the object request for an
    * action object.
    */
-  virtual bool processAction( const QCString &obj, const QCString &fun, const QByteArray &data,
-                              QCString &replyType, QByteArray &replyData, KAction *action );
+  virtual bool processAction( const DCOPCString &obj, const DCOPCString &fun, const QByteArray &data,
+                              DCOPCString &replyType, QByteArray &replyData, KAction *action );
 private:
   void init( KActionCollection *collection, DCOPObject *parent );
 

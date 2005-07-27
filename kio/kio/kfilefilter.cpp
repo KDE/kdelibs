@@ -112,7 +112,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
     if ( !m_nameFilters.isEmpty() ) {
         bool ok = false;
 
-        QPtrListIterator<QRegExp> it( m_nameFilters );
+        Q3PtrListIterator<QRegExp> it( m_nameFilters );
         for ( ; it.current(); ++it ) {
             if ( it.current()->exactMatch( name ) ) { // match!
                 ok = true;

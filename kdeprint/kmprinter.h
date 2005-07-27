@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMPRINTER_H
@@ -26,7 +26,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kurl.h>
 #include <qmap.h>
 #include <kdeprint/kmobject.h>
@@ -146,7 +146,7 @@ public:
 	bool ownSoftDefault() const	{ return m_ownsoftdefault; }
 	void setOwnSoftDefault(bool on)	{ m_ownsoftdefault = on; }
 	static int compare(KMPrinter *p1, KMPrinter *p2);
-	const QString& option(const QString& key) const 		{ return m_options[key]; }
+	QString option(const QString& key) const 		{ return m_options[key]; }
 	bool hasOption(const QString& key) const 			{ return m_options.contains(key); }
 	void setOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_options[key] = value; }
 	void removeOption(const QString& key) 				{ m_options.remove(key); }
@@ -160,12 +160,12 @@ public:
 	bool autoConfigure(KPrinter *prt, QWidget *parent = 0);
 
 	// default options
-	const QString& defaultOption(const QString& key) const 		{ return m_defaultoptions[key]; }
+	QString defaultOption(const QString& key) const 		{ return m_defaultoptions[key]; }
 	void setDefaultOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_defaultoptions[key] = value; }
 	QMap<QString,QString> defaultOptions() const 			{ return m_defaultoptions; }
 	void setDefaultOptions(const QMap<QString,QString>& opts)	{ m_defaultoptions = opts; }
 	// edited options
-	const QString& editedOption(const QString& key) const 		{ return m_editedoptions[key]; }
+	QString editedOption(const QString& key) const 		{ return m_editedoptions[key]; }
 	void setEditedOption(const QString& key, const QString& value)	{ if (!key.isEmpty()) m_editedoptions[key] = value; }
 	QMap<QString,QString> editedOptions() const 			{ return m_editedoptions; }
 	void setEditedOptions(const QMap<QString,QString>& opts)	{ m_editedoptions = opts; }
@@ -225,11 +225,11 @@ protected:
 	int m_printercap;
 };
 
-class KMPrinterList : public QPtrList<KMPrinter>
+class KMPrinterList : public Q3PtrList<KMPrinter>
 {
 public:
-	KMPrinterList() : QPtrList<KMPrinter>() {}
-	virtual int compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2)
+	KMPrinterList() : Q3PtrList<KMPrinter>() {}
+	virtual int compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2)
 	{ return KMPrinter::compare((KMPrinter*)i1, (KMPrinter*)i2); }
 };
 

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef _KEDITTOOLBAR_H
 #define _KEDITTOOLBAR_H
@@ -28,7 +28,7 @@ class KActionCollection;
 class QComboBox;
 class QToolButton;
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
@@ -393,10 +393,10 @@ signals:
 protected slots:
   void slotToolbarSelected(const QString& text);
 
-  void slotInactiveSelected(QListViewItem *item);
-  void slotActiveSelected(QListViewItem *item);
+  void slotInactiveSelected(Q3ListViewItem *item);
+  void slotActiveSelected(Q3ListViewItem *item);
 
-  void slotDropped(KListView *list, QDropEvent *e, QListViewItem *after);
+  void slotDropped(KListView *list, QDropEvent *e, Q3ListViewItem *after);
 
   void slotInsertButton();
   void slotRemoveButton();
@@ -411,9 +411,9 @@ private slots:
 protected: // KDE4: make private
   void setupLayout();
 
-  void insertActive(ToolbarItem *item, QListViewItem *before, bool prepend = false);
+  void insertActive(ToolbarItem *item, Q3ListViewItem *before, bool prepend = false);
   void removeActive(ToolbarItem *item);
-  void moveActive(ToolbarItem *item, QListViewItem *before);
+  void moveActive(ToolbarItem *item, Q3ListViewItem *before);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
   void loadToolbarCombo(const QString& defaultToolbar = QString::null);

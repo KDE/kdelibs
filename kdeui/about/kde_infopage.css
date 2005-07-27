@@ -76,7 +76,7 @@ body {margin: 0px; padding: 0px; background-color: #418ade;}
   width: 100%;
   background-color: #5babe5;
   padding-top: 0.5ex;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid Qt::black;
   padding-bottom: 0.5ex;
 }
 

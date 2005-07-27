@@ -28,7 +28,7 @@ protected:
   bool expandMacro(QChar chr, QStringList &ret)
   {
     if (chr == 'm') {
-      ret = QString("expanded");
+      ret = QStringList(QString("expanded"));
       return true;
     }
     return false;
@@ -42,7 +42,7 @@ protected:
   bool expandMacro(const QString &str, QStringList &ret)
   {
     if (str == "macro") {
-      ret = QString("expanded");
+      ret = QStringList(QString("expanded"));
       return true;
     }
     return false;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
   QString s, s2;
 
   QMap<QChar,QStringList> map1;
-  map1.insert('n', "Restaurant \"Chew It\"");
+  map1.insert('n', QStringList(QString("Restaurant \"Chew It\"")));
   QStringList li;
   li << "element1" << "'element2'";
   map1.insert('l', li);

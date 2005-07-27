@@ -66,7 +66,7 @@ bool KScriptManager::removeScript( const QString &scriptName )
 }
 QStringList KScriptManager::scripts()
 {
-	QDictIterator<ScriptInfo> it( m_scripts );
+	Q3DictIterator<ScriptInfo> it( m_scripts );
 //	return m_scriptNames;
 	QStringList scriptList;
 	while ( it.current() )

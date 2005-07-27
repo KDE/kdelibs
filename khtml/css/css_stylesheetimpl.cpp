@@ -109,7 +109,7 @@ void StyleSheetImpl::setDisabled( bool disabled )
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString href)
     : StyleSheetImpl(parentSheet, href)
 {
-    m_lstChildren = new QPtrList<StyleBaseImpl>;
+    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
     m_doc = 0;
     m_implicit = false;
     m_namespaces = 0;
@@ -118,7 +118,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
     : StyleSheetImpl(parentNode, href)
 {
-    m_lstChildren = new QPtrList<StyleBaseImpl>;
+    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
     m_doc = parentNode->getDocument();
     m_implicit = _implicit;
     m_namespaces = 0;
@@ -127,7 +127,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
-    m_lstChildren = new QPtrList<StyleBaseImpl>;
+    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
     m_doc = 0;
     m_implicit = false;
     m_namespaces = 0;
@@ -136,7 +136,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
     : StyleSheetImpl(parentNode, orig->m_strHref)
 {
-    m_lstChildren = new QPtrList<StyleBaseImpl>;
+    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
@@ -152,7 +152,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     : StyleSheetImpl(ownerRule, orig->m_strHref)
 {
     // m_lstChildren is deleted in StyleListImpl
-    m_lstChildren = new QPtrList<StyleBaseImpl>;
+    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
@@ -301,7 +301,7 @@ void CSSStyleSheetImpl::setNonCSSHints()
 
 StyleSheetListImpl::~StyleSheetListImpl()
 {
-    for ( QPtrListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
+    for ( Q3PtrListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
         it.current()->deref();
 }
 
@@ -323,7 +323,7 @@ unsigned long StyleSheetListImpl::length() const
 {
     // hack so implicit BODY stylesheets don't get counted here
     unsigned long l = 0;
-    QPtrListIterator<StyleSheetImpl> it(styleSheets);
+    Q3PtrListIterator<StyleSheetImpl> it(styleSheets);
     for (; it.current(); ++it) {
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit())
             ++l;
@@ -334,7 +334,7 @@ unsigned long StyleSheetListImpl::length() const
 StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
 {
     unsigned long l = 0;
-    QPtrListIterator<StyleSheetImpl> it(styleSheets);
+    Q3PtrListIterator<StyleSheetImpl> it(styleSheets);
     for (; it.current(); ++it) {
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit()) {
             if (l == index)
@@ -380,9 +380,9 @@ CSSRuleImpl *MediaListImpl::parentRule() const
 
 void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 {
-    const QValueList<DOMString>::Iterator itEnd = m_lstMedia.end();
+    const Q3ValueList<DOMString>::Iterator itEnd = m_lstMedia.end();
 
-    for ( QValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
+    for ( Q3ValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         if( (*it) == oldMedium ) {
             m_lstMedia.remove( it );
             return;
@@ -393,9 +393,9 @@ void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 DOM::DOMString MediaListImpl::mediaText() const
 {
     DOMString text;
-    const QValueList<DOMString>::ConstIterator itEnd = m_lstMedia.end();
+    const Q3ValueList<DOMString>::ConstIterator itEnd = m_lstMedia.end();
 
-    for ( QValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
+    for ( Q3ValueList<DOMString>::ConstIterator it = m_lstMedia.begin(); it != itEnd; ++it ) {
         text += *it;
         text += ", ";
     }

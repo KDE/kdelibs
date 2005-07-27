@@ -34,12 +34,12 @@
 namespace KUnitTest
 {
     /*! @def KUNITTEST_MODULE(library,suite)
-    * Use this macro if you are creating a KUnitTest module named library. 
+    * Use this macro if you are creating a KUnitTest module named library.
     * This macro creates a module-class named a factory class. The module
     * will appear under the name suite in the test runner.
     * There is no need in calling the K_EXPORT_COMPONENT_FACTORY macro,
     * this is taken care of automatically.
-    * 
+    *
     * @code KUNITTEST_MODULE(kunittest_samplemodule,"TestSuite") @endcode
     */
     #define KUNITTEST_MODULE(library,suite)                                                 \
@@ -49,15 +49,15 @@ namespace KUnitTest
     public:                                                                                 \
         library##Module()                                                                   \
         {                                                                                   \
-            KUnitTest::RegistryIteratorType it(s_registry);                                 \
-            for( ; it.current(); ++it )                                                     \
-                KUnitTest::Runner::registerTester(it.currentKey(), it.current());           \
+            KUnitTest::Registry::const_iterator it = s_registry.constBegin();               \
+            for( ; it != s_registry.constEnd(); ++it )                                      \
+                KUnitTest::Runner::registerTester(it.key(), it.value());                    \
         }                                                                                   \
                                                                                             \
-        static KUnitTest::RegistryType s_registry;                                          \
+        static KUnitTest::Registry s_registry;                                              \
     };                                                                                      \
                                                                                             \
-    KUnitTest::RegistryType library##Module::s_registry;                                    \
+    KUnitTest::Registry library##Module::s_registry;                                        \
                                                                                             \
     void kunittest_registerModuleTester(const char *name, KUnitTest::Tester *test)          \
     {                                                                                       \

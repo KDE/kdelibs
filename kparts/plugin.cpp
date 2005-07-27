@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <config.h>
@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include <qfile.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qfileinfo.h>
 
 #include <klibloader.h>
@@ -86,12 +86,12 @@ QString Plugin::localXMLFile() const
 }
 
 //static
-QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
+Q3ValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 {
   if ( !instance )
     kdError(1000) << "No instance ???" << endl;
 
-  QValueList<PluginInfo> plugins;
+  Q3ValueList<PluginInfo> plugins;
 
   // KDE4: change * into *.rc and remove test for .desktop from the for loop below.
   const QStringList pluginDocs = instance->dirs()->findAllResources(
@@ -143,10 +143,10 @@ void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
   loadPlugins( parent, pluginInfos( instance ), instance );
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance *instance )
+void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos, const KInstance *instance )
 {
-   QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
-   QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
+   Q3ValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
+   Q3ValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
    {
      QString library = (*pIt).m_document.documentElement().attribute( "library" );
@@ -167,7 +167,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginI
 
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
+void Plugin::loadPlugins( QObject *parent, const Q3ValueList<PluginInfo> &pluginInfos )
 {
    loadPlugins(parent, pluginInfos, 0);
 }
@@ -182,39 +182,36 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return plugin;
 }
 
-QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
+Q3PtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 {
-  QPtrList<KParts::Plugin> objects;
+  Q3PtrList<KParts::Plugin> objects;
 
   if (!parent )
     return objects;
 
-  QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
 
-  QObjectListIt it( *plugins );
-  for ( ; it.current() ; ++it )
+  QObjectList::ConstIterator it = plugins.begin();
+  for ( ; it != plugins.end() ; ++it )
   {
-    objects.append( static_cast<Plugin *>( it.current() ) );
+    objects.append( static_cast<Plugin *>( *it ) );
   }
-
-  delete plugins;
 
   return objects;
 }
 
 bool Plugin::hasPlugin( QObject* parent, const QString& library )
 {
-  QObjectList *plugins = parent->queryList( "KParts::Plugin", 0, false, false );
-  QObjectListIt it( *plugins );
-  for ( ; it.current() ; ++it )
+  const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
+  
+  QObjectList::ConstIterator it = plugins.begin();
+  for ( ; it != plugins.end() ; ++it )
   {
-      if ( static_cast<Plugin *>( it.current() )->d->m_library == library )
+      if ( static_cast<Plugin *>( *it )->d->m_library == library )
       {
-          delete plugins;
           return true;
       }
   }
-  delete plugins;
   return false;
 }
 
@@ -227,9 +224,9 @@ void Plugin::setInstance( KInstance *instance )
 void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInstance* instance, bool enableNewPluginsByDefault )
 {
     KConfigGroup cfgGroup( instance->config(), "KParts Plugins" );
-    QValueList<PluginInfo> plugins = pluginInfos( instance );
-    QValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
-    QValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
+    Q3ValueList<PluginInfo> plugins = pluginInfos( instance );
+    Q3ValueList<PluginInfo>::ConstIterator pIt = plugins.begin();
+    Q3ValueList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
     {
         QDomElement docElem = (*pIt).m_document.documentElement();
@@ -268,12 +265,12 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
 
         // search through already present plugins
-        QObjectList *pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
-        QObjectListIt it( *pluginList );
+        QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
+         
         bool pluginFound = false;
-        for ( ; it.current() ; ++it )
+        for ( QObjectList::ConstIterator it = pluginList.begin(); it != pluginList.end() ; ++it )
         {
-            Plugin * plugin = static_cast<Plugin *>( it.current() );
+            Plugin * plugin = static_cast<Plugin *>( *it );
             if( plugin->d->m_library == library )
             {
                 // delete and unload disabled plugins
@@ -290,7 +287,6 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
                 break;
             }
         }
-        delete pluginList;
 
         // if the plugin is already loaded or if it's disabled in the
         // configuration do nothing

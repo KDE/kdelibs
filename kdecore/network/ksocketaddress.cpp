@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -33,8 +33,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qfile.h>
-#include <qobject.h>
+#include <QFile>
+#include <QObject>
 
 #include "klocale.h"
 #include "ksocketaddress.h"
@@ -74,7 +74,7 @@ const KIpAddress KIpAddress::anyhostV4(0L, 4);
 const KIpAddress KIpAddress::anyhostV6(0L, 6);
 
 // helper function to test if an IPv6 v4-mapped address is equal to its IPv4 counterpart
-static bool check_v4mapped(const Q_UINT32* v6addr, Q_UINT32 v4addr)
+static bool check_v4mapped(const quint32* v6addr, quint32 v4addr)
 {
   // check that the v6 is a v4-mapped address
   if (!(v6addr[0] == 0 && v6addr[1] == 0 && v6addr[2] == htonl(0x0000ffff)))
@@ -131,13 +131,13 @@ bool KIpAddress::setAddress(const QString& address)
   m_version = 0;
 
   // try to guess the address version
-  if (address.find(':') != -1)
+  if (address.indexOf(':') != -1)
     {
 #ifdef AF_INET6
       // guessing IPv6
 
-      Q_UINT32 buf[4];
-      if (inet_pton(AF_INET6, address.latin1(), buf))
+      quint32 buf[4];
+      if (inet_pton(AF_INET6, address.toLatin1(), buf))
 	{
 	  memcpy(m_data, buf, sizeof(m_data));
 	  m_version = 6;
@@ -149,8 +149,8 @@ bool KIpAddress::setAddress(const QString& address)
     }
   else
     {
-      Q_UINT32 buf;
-      if (inet_pton(AF_INET, address.latin1(), &buf))
+      quint32 buf;
+      if (inet_pton(AF_INET, address.toLatin1(), &buf))
 	{
 	  *m_data = buf;
 	  m_version = 4;
@@ -203,7 +203,7 @@ QString KIpAddress::toString() const
       return QString::fromLatin1(buf);
     }
 
-  return QString::null;
+  return QString();
 }
 
 /*
@@ -213,23 +213,23 @@ QString KIpAddress::toString() const
 struct our_sockaddr_in6
 {
 # ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  Q_UINT8		sin6_len;
-  Q_UINT8		sin6_family;
+  quint8		sin6_len;
+  quint8		sin6_family;
 # else  //!HAVE_STRUCT_SOCKADDR_SA_LEN
-  Q_UINT16		sin6_family;
+  quint16		sin6_family;
 # endif
-  Q_UINT16       	sin6_port;	/* RFC says in_port_t */
-  Q_UINT32		sin6_flowinfo;
-  Q_UINT8		sin6_addr[16]; // 24 bytes up to here
-  Q_UINT32		sin6_scope_id; // 28 bytes total
+  quint16       	sin6_port;	/* RFC says in_port_t */
+  quint32		sin6_flowinfo;
+  quint8		sin6_addr[16]; // 24 bytes up to here
+  quint32		sin6_scope_id; // 28 bytes total
 };
 
 // useful definitions
-#define MIN_SOCKADDR_LEN	sizeof(Q_UINT16)
+#define MIN_SOCKADDR_LEN	sizeof(quint16)
 #define SOCKADDR_IN_LEN		sizeof(sockaddr_in)
 #define MIN_SOCKADDR_IN6_LEN	((unsigned long) &(((our_sockaddr_in6*)0)->sin6_scope_id))
 #define SOCKADDR_IN6_LEN	sizeof(our_sockaddr_in6)
-#define MIN_SOCKADDR_UN_LEN	(sizeof(Q_UINT16) + sizeof(char))
+#define MIN_SOCKADDR_UN_LEN	(sizeof(quint16) + sizeof(char))
 
 
 class KNetwork::KSocketAddressData
@@ -257,7 +257,7 @@ public:
     struct our_sockaddr_in6 *in6;
     struct sockaddr_un      *un;
   } addr;
-  Q_UINT16 curlen, reallen;
+  quint16 curlen, reallen;
 
   KSocketAddressData()
     : ref(this)
@@ -279,7 +279,7 @@ public:
   inline void invalidate()
   { reallen = 0; }
 
-  void dup(const sockaddr* sa, Q_UINT16 len, bool clear = true);
+  void dup(const sockaddr* sa, quint16 len, bool clear = true);
 
   void makeipv4()
   {
@@ -337,7 +337,7 @@ public:
 };
 
 // create duplicates of
-void KSocketAddressData::dup(const sockaddr* sa, Q_UINT16 len, bool clear)
+void KSocketAddressData::dup(const sockaddr* sa, quint16 len, bool clear)
 {
   if (len < MIN_SOCKADDR_LEN)
     {
@@ -405,7 +405,7 @@ KSocketAddress::KSocketAddress()
 }
 
 // constructor from binary data
-KSocketAddress::KSocketAddress(const sockaddr *sa, Q_UINT16 len)
+KSocketAddress::KSocketAddress(const sockaddr *sa, quint16 len)
   : d(new KSocketAddressData)
 {
   setAddress(sa, len);
@@ -456,7 +456,7 @@ sockaddr* KSocketAddress::address()
   return d->addr.generic;
 }
 
-KSocketAddress& KSocketAddress::setAddress(const sockaddr* sa, Q_UINT16 len)
+KSocketAddress& KSocketAddress::setAddress(const sockaddr* sa, quint16 len)
 {
   if (sa != 0L && len >= MIN_SOCKADDR_LEN)
     d->dup(sa, len);
@@ -466,14 +466,14 @@ KSocketAddress& KSocketAddress::setAddress(const sockaddr* sa, Q_UINT16 len)
   return *this;
 }
 
-Q_UINT16 KSocketAddress::length() const
+quint16 KSocketAddress::length() const
 {
   if (d->invalid())
     return 0;
   return d->reallen;
 }
 
-KSocketAddress& KSocketAddress::setLength(Q_UINT16 len)
+KSocketAddress& KSocketAddress::setLength(quint16 len)
 {
   d->dup((sockaddr*)0L, len, false);
 
@@ -556,7 +556,7 @@ bool KSocketAddress::operator ==(const KSocketAddress& other) const
 QString KSocketAddress::nodeName() const
 {
   if (d->invalid())
-    return QString::null;
+    return QString();
 
   switch (d->addr.generic->sa_family)
     {
@@ -576,13 +576,13 @@ QString KSocketAddress::nodeName() const
     }
 
   // any other case, including AF_UNIX
-  return QString::null;
+  return QString();
 }
 
 QString KSocketAddress::serviceName() const
 {
   if (d->invalid())
-    return QString::null;
+    return QString();
 
   switch (d->addr.generic->sa_family)
     {
@@ -596,26 +596,26 @@ QString KSocketAddress::serviceName() const
       return d->ref.pathname();
     }
 
-  return QString::null;
+  return QString();
 }
 
 QString KSocketAddress::toString() const
 {
   if (d->invalid())
-    return QString::null;
+    return QString();
 
   QString fmt;
 
   if (d->addr.generic->sa_family == AF_INET)
-    fmt = "%1:%2";
+    fmt = QLatin1String("%1:%2");
 #ifdef AF_INET6
   else if (d->addr.generic->sa_family == AF_INET6)
-    fmt = "[%1]:%2";
+    fmt = QLatin1String("[%1]:%2");
 #endif
   else if (d->addr.generic->sa_family == AF_UNIX)
-    return QString::fromLatin1("unix:%1").arg(serviceName());
+    return QString(QLatin1String("unix:%1")).arg(serviceName());
   else
-    return i18n("1: the unknown socket address family number",
+    return i18n("1: the unknown socket address family number", 
 		"Unknown family %1").arg(d->addr.generic->sa_family);
 
   return fmt.arg(nodeName()).arg(serviceName());
@@ -681,7 +681,7 @@ KInetSocketAddress::KInetSocketAddress()
 }
 
 // binary data constructor
-KInetSocketAddress::KInetSocketAddress(const sockaddr* sa, Q_UINT16 len)
+KInetSocketAddress::KInetSocketAddress(const sockaddr* sa, quint16 len)
   : KSocketAddress(sa, len)
 {
   if (!d->invalid())
@@ -689,7 +689,7 @@ KInetSocketAddress::KInetSocketAddress(const sockaddr* sa, Q_UINT16 len)
 }
 
 // create from IP and port
-KInetSocketAddress::KInetSocketAddress(const KIpAddress& host, Q_UINT16 port)
+KInetSocketAddress::KInetSocketAddress(const KIpAddress& host, quint16 port)
 {
   setHost(host);
   setPort(port);
@@ -789,7 +789,7 @@ KInetSocketAddress& KInetSocketAddress::setHost(const KIpAddress& ip)
 }
 
 // returns the port
-Q_UINT16 KInetSocketAddress::port() const
+quint16 KInetSocketAddress::port() const
 {
   if (d->invalid())
     return 0;
@@ -808,7 +808,7 @@ Q_UINT16 KInetSocketAddress::port() const
   return 0;
 }
 
-KInetSocketAddress& KInetSocketAddress::setPort(Q_UINT16 port)
+KInetSocketAddress& KInetSocketAddress::setPort(quint16 port)
 {
   if (d->invalid())
     makeIPv4();
@@ -844,7 +844,7 @@ KInetSocketAddress& KInetSocketAddress::makeIPv6()
   return *this;
 }
 
-Q_UINT32 KInetSocketAddress::flowinfo() const
+quint32 KInetSocketAddress::flowinfo() const
 {
 #ifndef AF_INET6
   return 0;
@@ -856,7 +856,7 @@ Q_UINT32 KInetSocketAddress::flowinfo() const
 #endif
 }
 
-KInetSocketAddress& KInetSocketAddress::setFlowinfo(Q_UINT32 flowinfo)
+KInetSocketAddress& KInetSocketAddress::setFlowinfo(quint32 flowinfo)
 {
   makeIPv6();			// must set here
   d->addr.in6->sin6_flowinfo = flowinfo;
@@ -898,7 +898,7 @@ KUnixSocketAddress::KUnixSocketAddress()
 {
 }
 
-KUnixSocketAddress::KUnixSocketAddress(const sockaddr* sa, Q_UINT16 len)
+KUnixSocketAddress::KUnixSocketAddress(const sockaddr* sa, quint16 len)
   : KSocketAddress(sa, len)
 {
   if (!d->invalid() && d->addr.un->sun_family != AF_UNIX)
@@ -934,7 +934,7 @@ QString KUnixSocketAddress::pathname() const
 {
   if (!d->invalid() && d->addr.un->sun_family == AF_UNIX)
     return QFile::decodeName(d->addr.un->sun_path);
-  return QString::null;
+  return QString();
 }
 
 KUnixSocketAddress& KUnixSocketAddress::setPathname(const QString& path)

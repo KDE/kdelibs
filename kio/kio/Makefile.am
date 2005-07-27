@@ -46,7 +46,7 @@ libksycoca_la_SOURCES = \
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
 	krun.h kdirwatch.h kautomount.h kuserprofile.h \
-	kshred.h kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
+	kar.h ktar.h kzip.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kfileshare.h ksambashare.h knfsshare.h \
     kdirlister.h kservicegroup.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
@@ -60,7 +60,6 @@ include_HEADERS = \
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 libkiocore_la_SOURCES = authinfo.cpp \
-	kshred.cpp \
 	kprotocolmanager.cpp \
 	slave.cpp slaveinterface.cpp observer.stub \
 	sessiondata.cpp	scheduler.cpp \

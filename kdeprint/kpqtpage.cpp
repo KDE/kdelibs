@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kpqtpage.h"
@@ -25,11 +25,10 @@
 #include "util.h"
 
 #include <qcombobox.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -114,46 +113,46 @@ void KPQtPage::init()
 
 	// widget creation
 	m_pagesize = new QComboBox(this);
-          QWhatsThis::add(m_pagesize, whatsThisPageSizeOtPageLabel);
+          m_pagesize->setWhatsThis(whatsThisPageSizeOtPageLabel);
 	QLabel	*m_pagesizelabel = new QLabel(i18n("Page s&ize:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_pagesizelabel->setBuddy(m_pagesize);
-	m_orientbox = new QButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-          QWhatsThis::add(m_orientbox, whatsThisOrientationOtPageLabel);
-	m_colorbox = new QButtonGroup(0, Qt::Vertical, i18n("Color Mode"), this);
-          QWhatsThis::add(m_colorbox, whatsThisColorModeOtPageLabel);
+	m_orientbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
+          m_orientbox->setWhatsThis(whatsThisOrientationOtPageLabel);
+	m_colorbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Color Mode"), this);
+          m_colorbox->setWhatsThis(whatsThisColorModeOtPageLabel);
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
-          QWhatsThis::add(m_portrait, whatsThisOrientationOtPageLabel);
+          m_portrait->setWhatsThis(whatsThisOrientationOtPageLabel);
 
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
-          QWhatsThis::add(m_landscape, whatsThisOrientationOtPageLabel);
+          m_landscape->setWhatsThis(whatsThisOrientationOtPageLabel);
 
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
-          QWhatsThis::add(m_orientpix, whatsThisOrientationOtPageLabel);
+          m_orientpix->setWhatsThis(whatsThisOrientationOtPageLabel);
 
 	QRadioButton	*m_color = new QRadioButton(i18n("Colo&r"), m_colorbox);
-          QWhatsThis::add(m_color, whatsThisColorModeOtPageLabel);
+          m_color->setWhatsThis(whatsThisColorModeOtPageLabel);
 
 	QRadioButton	*m_grayscale = new QRadioButton(i18n("&Grayscale"), m_colorbox);
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
-          QWhatsThis::add(m_colorpix, whatsThisColorModeOtPageLabel);
+          m_colorpix->setWhatsThis(whatsThisColorModeOtPageLabel);
 
-	m_nupbox = new QButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
+	m_nupbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
         //  QWhatsThis::add(m_nupbox, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup1 = new QRadioButton("&1", m_nupbox);
-          QWhatsThis::add(m_nup1, whatsThisPagesPerSheetOtPageLabel);
+          m_nup1->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup2 = new QRadioButton("&2", m_nupbox);
-          QWhatsThis::add(m_nup2, whatsThisPagesPerSheetOtPageLabel);
+          m_nup2->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup4 = new QRadioButton("&4", m_nupbox);
-          QWhatsThis::add(m_nup4, whatsThisPagesPerSheetOtPageLabel);
+          m_nup4->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nupother = new QRadioButton(i18n("Ot&her"), m_nupbox);
-          QWhatsThis::add(m_nupother, whatsThisPagesPerSheetOtPageLabel);
+          m_nupother->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 
 	m_nuppix = new QLabel(m_nupbox);
 	m_nuppix->setAlignment(Qt::AlignCenter);
-          QWhatsThis::add(m_nuppix, whatsThisPagesPerSheetOtPageLabel);
+          m_nuppix->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
 
 	// layout creation
 	QGridLayout	*lay0 = new QGridLayout(this, 3, 2, 0, 10);
@@ -208,7 +207,7 @@ void KPQtPage::init()
 	else
 	{
 		DrListOption	*lopt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
-		QPtrListIterator<DrBase>	it(*(lopt->choices()));
+		Q3PtrListIterator<DrBase>	it(*(lopt->choices()));
 		for (; it.current(); ++it)
 		{
 			m_pagesize->insertItem(it.current()->get("text"));

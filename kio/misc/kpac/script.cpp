@@ -32,6 +32,8 @@
 #include <qregexp.h>
 #include <qstring.h>
 
+#include <kbufferedsocket.h>
+#include <ksocketaddress.h>
 #include <kurl.h>
 #include <kjs/object.h>
 #include <kresolver.h>
@@ -39,6 +41,7 @@
 #include "script.h"
 
 using namespace KJS;
+using namespace KNetwork;
 
 QString UString::qstring() const
 {
@@ -63,12 +66,12 @@ namespace
         static Address parse( const UString& ip )
             { return Address( ip.qstring(), true ); }
 
+        operator KInetSocketAddress() const { return m_address; }
+        operator String() const { return String( m_address.ipAddress().toString() ); }
         operator const in_addr_t() const {
           const sockaddr_in* sin = m_address;
           return sin->sin_addr.s_addr;
         }
-
-        operator String() const { return String( m_address.ipAddress().toString() ); }
 
     private:
         Address( const QString& host, bool numeric )
@@ -82,13 +85,13 @@ namespace
                KNetwork::KResolver::resolve( host, QString::null, flags,
                                              KNetwork::KResolver::IPv4Family );
 
-            if ( addresses.isEmpty() )
-              throw Error();
+            if ( addresses.error() || addresses.isEmpty() ) 
+	      throw Error();
 
             m_address = addresses.first().address().asInet();
         }
-
-        KNetwork::KInetSocketAddress m_address;
+         
+        KInetSocketAddress m_address;
     };
 
     struct Function : public ObjectImp
@@ -182,10 +185,12 @@ namespace
             if ( args.size() != 3 ) return Undefined();
             try
             {
-                in_addr_t host = Address::resolve( args[ 0 ].toString( exec ) );
-                in_addr_t subnet = Address::parse( args[ 1 ].toString( exec ) );
-                in_addr_t mask = Address::parse( args[ 2 ].toString( exec ) );
-                return Boolean( ( host & mask ) == ( subnet & mask ) );
+                KInetSocketAddress host = Address::resolve( args[ 0 ].toString( exec ) );
+                KInetSocketAddress subnet = Address::parse( args[ 1 ].toString( exec ) );
+                KInetSocketAddress mask = Address::parse( args[ 2 ].toString( exec ) );
+
+#warning "Write a method to do netmask comparison in the KNetwork library"
+                return Boolean( ( host.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) == ( subnet.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) );
             }
             catch ( const Address::Error& )
             {
@@ -439,23 +444,23 @@ namespace KPAC
 
     QString Script::evaluate( const KURL& url )
     {
-	ExecState *exec = m_interpreter.globalExec();
-	Value findFunc = m_interpreter.globalObject().get( exec, "FindProxyForURL" );
-	Object findObj = Object::dynamicCast( findFunc );
-	if (!findObj.isValid() || !findObj.implementsCall())
-	  throw Error( "No such function FindProxyForURL" );
-
-	Object thisObj;
-	List args;
-	args.append(String(url.url()));
-	args.append(String(url.host()));
-	Value retval = findObj.call( exec, thisObj, args );
-
-	if ( exec->hadException() ) {
-	  Value ex = exec->exception();
-	  exec->clearException();
-	  throw Error( ex.toString( exec ).qstring() );
-	}
+        ExecState *exec = m_interpreter.globalExec();
+        Value findFunc = m_interpreter.globalObject().get( exec, "FindProxyForURL" );
+        Object findObj = Object::dynamicCast( findFunc );
+        if (!findObj.isValid() || !findObj.implementsCall())
+            throw Error( "No such function FindProxyForURL" );
+    
+        Object thisObj;
+        List args;
+        args.append(String(url.url()));
+        args.append(String(url.host()));
+        Value retval = findObj.call( exec, thisObj, args );
+        
+        if ( exec->hadException() ) {
+            Value ex = exec->exception();
+            exec->clearException();
+            throw Error( ex.toString( exec ).qstring() );
+        }
 
         return retval.toString( exec ).qstring();
     }

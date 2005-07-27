@@ -22,7 +22,7 @@
 #ifndef __dptrtemplate_h__
 #define __dptrtemplate_h__
 
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 
 template<class Instance, class PrivateData>
 class dPtrTemplate {
@@ -31,7 +31,7 @@ public:
     {
         if ( !d_ptr ) {
             cleanup_d_ptr();
-            d_ptr = new QPtrDict<PrivateData>;
+            d_ptr = new Q3PtrDict<PrivateData>;
             qAddPostRoutine( cleanup_d_ptr );
         }
         PrivateData* ret = d_ptr->find( (void*) instance );
@@ -51,7 +51,7 @@ private:
     {
         delete d_ptr;
     }
-    static QPtrDict<PrivateData>* d_ptr;
+    static Q3PtrDict<PrivateData>* d_ptr;
 };
 
 #endif

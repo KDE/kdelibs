@@ -13,17 +13,19 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "marginvaluewidget.h"
 
 #include <math.h>
+#include <kglobal.h>
 
 MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent, const char *name)
-: KDoubleNumInput(below, value, parent, name)
+: KDoubleNumInput(below, kMin(0.0,value),kMax(0.0,value),value,parent,0.01,2)
 {
+        setObjectName(name);
 	m_mode = Pixels;
 	m_block = false;
 	setPrecision(0);

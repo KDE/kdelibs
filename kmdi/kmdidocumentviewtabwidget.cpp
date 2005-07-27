@@ -33,19 +33,22 @@ void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QString & label 
 	maybeShow();
 }
 
-void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIconSet & iconset, const QString & label )
+void KMdiDocumentViewTabWidget::addTab ( QWidget * child, const QIcon & iconset, const QString & label )
 {
 	KTabWidget::addTab( child, iconset, label );
 	showPage( child );
 	maybeShow();
 }
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 void KMdiDocumentViewTabWidget::addTab ( QWidget * child, QTab * tab )
 {
 	KTabWidget::addTab( child, tab );
 	showPage( child );
 	maybeShow();
 }
+#endif
 
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & label, int index )
 {
@@ -55,7 +58,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & lab
 	tabBar() ->repaint();
 }
 
-void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
+void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index )
 {
 	KTabWidget::insertTab( child, iconset, label, index );
 	showPage( child );
@@ -63,6 +66,8 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & ic
 	tabBar() ->repaint();
 }
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int index )
 {
 	KTabWidget::insertTab( child, tab, index );
@@ -70,6 +75,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, QTab * tab, int ind
 	maybeShow();
 	tabBar() ->repaint();
 }
+#endif
 
 void KMdiDocumentViewTabWidget::removePage ( QWidget * w )
 {

@@ -33,8 +33,8 @@
 #include <kdebug.h>
 
 #include <qstring.h>
-#include <qptrqueue.h>
-#include <qcstring.h> //QByteArray
+#include <q3ptrqueue.h>
+#include <q3cstring.h> //QByteArray
 
 #include <assert.h>
 
@@ -50,7 +50,7 @@ struct KAudioRecordStream::Data
 	bool blocking;
 	bool polling;
 	unsigned int pos;
-	QPtrQueue<QByteArray> inqueue;
+	Q3PtrQueue<QByteArray> inqueue;
 	QString title;
 };
 

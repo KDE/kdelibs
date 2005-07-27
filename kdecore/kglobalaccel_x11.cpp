@@ -26,11 +26,10 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>
-#include <private/qucomextra_p.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
@@ -144,7 +143,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 #endif
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
-	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
+	// Does anyone with more X-savvy know how to set a mask on QX11Info::appRootWindow so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator? -- ellis
 #ifndef NDEBUG
@@ -157,10 +156,10 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
 #endif
 			if( bGrab )
-				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
-					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
+				XGrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask,
+					QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeSync );
 			else
-				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, QX11Info::appRootWindow() );
 		}
 	}
 #ifndef NDEBUG
@@ -177,7 +176,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			kdDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if( m & keyModMaskX == 0 )
-					XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
+					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
 				}
                 }
 	}
@@ -229,8 +228,8 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
 	// do not change this line unless you really really know what you are doing (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
-		XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
-                XFlush( qt_xdisplay()); // avoid X(?) bug
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+                XFlush( QX11Info::display()); // avoid X(?) bug
         }
 
 	if( !m_bEnabled )
@@ -244,7 +243,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
 		// TODO: what's the xor operator in c++?
-		uint sym = XKeycodeToKeysym( qt_xdisplay(), codemod.code, 0 );
+		uint sym = XKeycodeToKeysym( QX11Info::display(), codemod.code, 0 );
 		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
 			switch( sym ) {
@@ -289,7 +288,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
                 static bool recursion_block = false;
                 if( !recursion_block ) {
                         recursion_block = true;
-		        QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
+		        Q3PopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
 		        connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
 		        pMenu->exec( QPoint( 0, 0 ) );
 		        disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
@@ -318,31 +317,29 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QUObject o[2];
-                    static_QUType_int.set(o+1,n);
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, Q_ARG(int, n));
                 }
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QUObject o[4];
-                    static_QUType_QString.set(o+1,pAction->name());
-                    static_QUType_QString.set(o+2,pAction->label());
-                    static_QUType_ptr.set(o+3,&seq);
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1
+                         ,Q_ARG(QString, pAction->name())
+                         ,Q_ARG(QString, pAction->label())
+                         ,Q_ARG(const KKeySequence *, &seq)
+                         );
                 }
 	} else {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 )
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, 0 );
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1);
 	}
 }
 
 void KGlobalAccelPrivate::slotActivated( int iAction )
 {
-	KAccelAction* pAction = actions().actionPtr( iAction );
+	KAccelAction* pAction = KAccelBase::actions().actionPtr( iAction );
 	if( pAction )
 		activate( pAction, KKeySequence() );
 }

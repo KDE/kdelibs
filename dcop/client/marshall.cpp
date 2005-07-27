@@ -25,11 +25,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 bool mkBool( const QString& s )
 {
-    if ( s.lower()  == "true" )
+    if ( s.toLower()  == "true" )
 	return true;
-    if ( s.lower()  == "yes" )
+    if ( s.toLower()  == "yes" )
 	return true;
-    if ( s.lower()  == "on" )
+    if ( s.toLower()  == "on" )
 	return true;
     if ( s.toInt() != 0 )
 	return true;
@@ -39,7 +39,7 @@ bool mkBool( const QString& s )
 
 QPoint mkPoint( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int x = strtol(s, &end, 10);
@@ -51,7 +51,7 @@ QPoint mkPoint( const QString &str )
 
 QSize mkSize( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int w = strtol(s, &end, 10);
@@ -63,7 +63,7 @@ QSize mkSize( const QString &str )
 
 QRect mkRect( const QString &str )
 {
-    const char *s = str.latin1();
+    const char *s = str.toLatin1().constData();
     char *end;
     while(*s && !isdigit(*s)) s++;
     int p1 = strtol(s, &end, 10);
@@ -91,16 +91,17 @@ QColor mkColor( const QString& s )
     return c;
 }
 
-const char *qStringToC(const QCString &s)
+const char *qStringToC(const QByteArray &s)
 {
    if (s.isEmpty())
       return "";
    return s.data();
 }
 
-QCString demarshal( QDataStream &stream, const QString &type )
+#warning FIX the marshalled types
+DCOPCString demarshal( QDataStream &stream, const QString &type )
 {
-    QCString result;
+    DCOPCString result;
 
     if ( type == "int" || type == "Q_INT32" )
     {
@@ -114,12 +115,12 @@ QCString demarshal( QDataStream &stream, const QString &type )
         result.setNum( i );
     } else if ( type == "long" || type == "long int" )
     {
-        long l;
+        qint32 l; // TODO: this is long in kde3!
         stream >> l;
         result.setNum( l );
     } else if ( type == "unsigned long" || type == "unsigned long int" )
     {
-        unsigned long l;
+        quint32 l; // TODO: this is ulong in kde3!
         stream >> l;
         result.setNum( l );
     } else if ( type == "float" )
@@ -133,13 +134,13 @@ QCString demarshal( QDataStream &stream, const QString &type )
         stream >> d;
         result.setNum( d, 'f' );
     } else if ( type == "Q_INT64" ) {
-        Q_INT64 i;
+        qint64 i;
         stream >> i;
-        result.sprintf( "%lld", i );
+        result = QString().sprintf( "%lld", i ).toAscii();
     } else if ( type == "Q_UINT64" ) {
-        Q_UINT64 i;
+        quint64 i;
         stream >> i;
-        result.sprintf( "%llu", i );
+        result = QString().sprintf( "%llu", i ).toAscii();
     } else if ( type == "bool" )
     {
         bool b;
@@ -149,77 +150,98 @@ QCString demarshal( QDataStream &stream, const QString &type )
     {
         QString s;
         stream >> s;
-        result = s.local8Bit();
+        result = s.toLocal8Bit();
+    } else if ( type == "QByteArray") 
+    {
+        QByteArray ba;
+        stream >> ba;
+        result  = ba;
     } else if ( type == "QCString" )
     {
         stream >> result;
     } else if ( type == "QCStringList" )
     {
-        return demarshal( stream, "QValueList<QCString>" );
+        return demarshal( stream, "QList<QCString>" );
     } else if ( type == "QStringList" )
     {
-        return demarshal( stream, "QValueList<QString>" );
+        return demarshal( stream, "QList<QString>" );
     } else if ( type == "QColor" )
     {
         QColor c;
         stream >> c;
-        result = c.name().local8Bit();
+        result = c.name().toLocal8Bit();
     } else if ( type == "QSize" )
     {
         QSize s;
         stream >> s;
-        result.sprintf( "%dx%d", s.width(), s.height() );
-    } else if ( type == "QPixmap" || type == "QImage" ) 
+        result = QString().sprintf( "%dx%d", s.width(), s.height() ).toAscii();
+    } else if ( type == "QPixmap" || type == "QImage" )
     {
         QImage i;
         stream >> i;
         QByteArray ba;
-        QBuffer buf( ba );
-        buf.open( IO_WriteOnly );
+        QBuffer buf( &ba );
+        buf.open( QIODevice::WriteOnly );
         i.save( &buf, "XPM" );
         result = ba;
     } else if ( type == "QPoint" )
     {
         QPoint p;
         stream >> p;
-        result.sprintf( "+%d+%d", p.x(), p.y() );
+        result = QString().sprintf( "+%d+%d", p.x(), p.y() ).toAscii();
     } else if ( type == "QRect" )
     {
         QRect r;
         stream >> r;
-        result.sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() );
+        result = QString().sprintf( "%dx%d+%d+%d", r.width(), r.height(), r.x(), r.y() ).toAscii();
     } else if ( type == "QVariant" )
     {
-        Q_INT32 type;
-        stream >> type;
-        return demarshal( stream, QVariant::typeToName( (QVariant::Type)type ) );
+        //OK, this is more than a bit eeky. Since we're in a compat mode,
+        //we can't get the name of the variant without unmarshalling it,
+        //via QVariant, but we also want to unmarshal it ourselves...
+        //So we unmarshal and remarshal via QVariant, and then do it
+        //ourselves with type known. Icky, isn't it?
+        QVariant var;
+        stream >> var;
+
+        QByteArray  buf;
+        QDataStream redump( &buf, QIODevice::WriteOnly );
+        redump.setVersion(QDataStream::Qt_3_1);
+        redump << var;
+
+        QDataStream replayed( buf );
+        quint32 id; replayed >> id; //Don't care about this anymore
+        
+
+        return demarshal( replayed, var.typeName() );
     } else if ( type == "DCOPRef" )
     {
         DCOPRef r;
         stream >> r;
-        result.sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) );
+        result = QString().sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) ).toAscii();
     } else if ( type == "KURL" )
     {
         KURL r;
         stream >> r;
-        result = r.url().local8Bit();
-    } else if ( type.left( 11 ) == "QValueList<" )
+        result = r.url().toLocal8Bit();
+    } else if ( type.startsWith("QList<") )
     {
-        if ( (uint)type.find( '>', 11 ) != type.length() - 1 )
+        if ( type.indexOf( '>' ) != type.length() - 1 )
             return result;
 
-        QString nestedType = type.mid( 11, type.length() - 12 );
+        QString nestedType = type.mid( strlen("QList<") );
+        nestedType.truncate(nestedType.length() - 1);
 
         if ( nestedType.isEmpty() )
             return result;
 
-        Q_UINT32 count;
+        quint32 count;
         stream >> count;
 
-        Q_UINT32 i = 0;
+        quint32 i = 0;
         for (; i < count; ++i )
         {
-            QCString arg = demarshal( stream, nestedType );
+            QByteArray arg = demarshal( stream, nestedType );
             result += arg;
 
             if ( i < count - 1 )
@@ -227,29 +249,29 @@ QCString demarshal( QDataStream &stream, const QString &type )
         }
     } else if ( type.left( 5 ) == "QMap<" )
     {
-        int commaPos = type.find( ',', 5 );
+        int commaPos = type.indexOf( ',', 5 );
 
         if ( commaPos == -1 )
             return result;
 
-        if ( (uint)type.find( '>', commaPos ) != type.length() - 1 )
+        if ( type.indexOf( '>', commaPos ) != type.length() - 1 )
             return result;
 
         QString keyType = type.mid( 5, commaPos - 5 );
         QString valueType = type.mid( commaPos + 1, type.length() - commaPos - 2 );
 
-        Q_UINT32 count;
+        quint32 count;
         stream >> count;
 
-        Q_UINT32 i = 0;
+        quint32 i = 0;
         for (; i < count; ++i )
         {
-            QCString key = demarshal( stream, keyType );
+            QByteArray key = demarshal( stream, keyType );
 
             if ( key.isEmpty() )
                 continue;
 
-            QCString value = demarshal( stream, valueType );
+            QByteArray value = demarshal( stream, valueType );
 
             if ( value.isEmpty() )
                 continue;
@@ -262,19 +284,20 @@ QCString demarshal( QDataStream &stream, const QString &type )
     }
     else
     {
-       result.sprintf( "<%s>", type.latin1());
+       result = QString().sprintf( "<%s>", type.toLatin1().data()).toAscii();
     }
 
     return result;
 
 }
 
-void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
+#warning FIX the marshalled types
+void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 {
     if (type == "QStringList")
-       type = "QValueList<QString>";
+       type = "QList<QString>";
     if (type == "QCStringList")
-       type = "QValueList<QCString>";
+       type = "QList<QCString>";
     if( i >= args.count() )
     {
 	qWarning("Not enough arguments.");
@@ -303,13 +326,13 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	arg << qv.toULongLong();
     }
     else if ( type == "long" )
-	arg << s.toLong();
+	arg << ( qint32 )s.toLong();
     else if ( type == "long int" )
-	arg << s.toLong();
+	arg << ( qint32 )s.toLong();
     else if ( type == "unsigned long" )
-	arg << s.toULong();
+	arg << ( quint32 )s.toULong();
     else if ( type == "unsigned long int" )
-	arg << s.toULong();
+	arg << ( quint32 )s.toULong();
     else if ( type == "float" )
 	arg << s.toFloat();
     else if ( type == "double" )
@@ -318,8 +341,10 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	arg << mkBool( s );
     else if ( type == "QString" )
 	arg << s;
+    else if ( type == "QByteArray")
+	arg << QByteArray( args[ i ] );
     else if ( type == "QCString" )
-	arg << QCString( args[ i ] );
+        arg << DCOPCString( args[ i ] );
     else if ( type == "QColor" )
 	arg << mkColor( s );
     else if ( type == "QPoint" )
@@ -332,7 +357,7 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	arg << KURL( s );
     else if ( type == "QVariant" ) {
 	if ( s == "true" || s == "false" )
-	    arg << QVariant( mkBool( s ), 42 );
+	    arg << QVariant( mkBool( s ) );
 	else if ( s.left( 4 ) == "int(" )
 	    arg << QVariant( s.mid(4, s.length()-5).toInt() );
 	else if ( s.left( 7 ) == "QPoint(" )
@@ -345,7 +370,7 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	    arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
 	else
 	    arg << QVariant( s );
-    } else if ( type.startsWith("QValueList<") ||
+    } else if ( type.startsWith("QList<") ||
 	        type == "KURL::List" ) {
 	if ( type == "KURL::List" )
             type = "KURL";
@@ -359,15 +384,15 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	   delim = ")";
 	i++;
 	QByteArray dummy_data;
-	QDataStream dummy_arg(dummy_data, IO_WriteOnly);
+	QDataStream dummy_arg(&dummy_data, QIODevice::WriteOnly);
 
-	uint j = i;
+	int j = i;
 	uint count = 0;
 	// Parse list to get the count
 	while (true) {
-	    if( j > args.count() )
+	    if( j >= args.count() )
 	    {
-		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		qWarning("List end-delimiter '%s' not found.", delim.toLatin1().constData());
 		exit(1);
 	    }
 	    if( QString::fromLocal8Bit( args[ j ] ) == delim )
@@ -375,12 +400,12 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	    marshall( dummy_arg, args, j, type );
 	    count++;
 	}
-	arg << (Q_UINT32) count;
+	arg << (quint32) count;
 	// Parse the list for real
 	while (true) {
 	    if( i > args.count() )
 	    {
-		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		qWarning("List end-delimiter '%s' not found.", delim.toLatin1().constData());
 		exit(1);
 	    }
 	    if( QString::fromLocal8Bit( args[ i ] ) == delim )
@@ -388,7 +413,7 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
 	    marshall( arg, args, i, type );
 	}
     } else {
-	qWarning( "cannot handle datatype '%s'", type.latin1() );
+	qWarning( "cannot handle datatype '%s'", type.toLatin1().constData() );
 	exit(1);
     }
     i++;

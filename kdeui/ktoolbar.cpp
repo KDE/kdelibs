@@ -19,15 +19,15 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <config.h>
 
 #ifdef KDE_USE_FINAL
 #undef Always
-#include <qdockwindow.h>
+#include <q3dockwindow.h>
 #endif
 
 #include <string.h>
@@ -37,10 +37,11 @@
 #include <qdrawutil.h>
 #include <qstring.h>
 #include <qrect.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qtimer.h>
 #include <qstyle.h>
 #include <qlayout.h>
+#include <QMouseEvent>
 
 #include <ktoolbar.h>
 #include <kmainwindow.h>
@@ -100,8 +101,12 @@ public:
         NewLineDefault = false;
         OffsetDefault = 0;
         PositionDefault = "Top";
-	HiddenDefault = false;
-        idleButtons.setAutoDelete(true);
+        HiddenDefault = false;
+    }
+
+    ~KToolBarPrivate() {
+        while (!idleButtons.isEmpty())
+            delete idleButtons.takeFirst();
     }
 
     int m_iconSize;
@@ -116,21 +121,21 @@ public:
 
     QWidget *m_parent;
 
-    QMainWindow::ToolBarDock oldPos;
+    Qt::ToolBarDock oldPos;
 
     KXMLGUIClient *m_xmlguiClient;
 
     struct ToolBarInfo
     {
         ToolBarInfo() : index( -1 ), offset( -1 ), newline( false ), dock( Qt::DockTop ) {}
-        ToolBarInfo( Qt::Dock d, int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {}
+        ToolBarInfo( Qt::ToolBarDock d, int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {}
         int index, offset;
         bool newline;
-        Qt::Dock dock;
+        Qt::ToolBarDock dock;
     };
 
     ToolBarInfo toolBarInfo;
-    QValueList<int> iconSizes;
+    QList<int> iconSizes;
     QTimer repaintTimer;
 
   // Default Values.
@@ -141,21 +146,21 @@ public:
   int OffsetDefault;
   QString PositionDefault;
 
-   QPtrList<QWidget> idleButtons;
+  QList<QWidget *> idleButtons;
 };
 
-KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
+KToolBarSeparator::KToolBarSeparator(Qt::Orientation o , bool l, Q3ToolBar *parent,
                                      const char* name )
-    :QFrame( parent, name ), line( l )
+    :Q3Frame( parent, name ), line( l )
 {
-    connect( parent, SIGNAL(orientationChanged(Orientation)),
-             this, SLOT(setOrientation(Orientation)) );
+    connect( parent, SIGNAL(orientationChanged(Qt::Orientation)),
+             this, SLOT(setOrientation(Qt::Orientation)) );
     setOrientation( o );
     setBackgroundMode( parent->backgroundMode() );
     setBackgroundOrigin( ParentOrigin );
 }
 
-void KToolBarSeparator::setOrientation( Orientation o )
+void KToolBarSeparator::setOrientation( Qt::Orientation o )
 {
     orient = o;
     setFrameStyle( NoFrame );
@@ -164,15 +169,17 @@ void KToolBarSeparator::setOrientation( Orientation o )
 void KToolBarSeparator::drawContents( QPainter* p )
 {
     if ( line ) {
-        QStyle::SFlags flags = QStyle::Style_Default;
+        QStyle::State flags = QStyle::State_None;
 
-        if ( orientation() == Horizontal )
-            flags = flags | QStyle::Style_Horizontal;
+        if ( orientation() == Qt::Horizontal )
+            flags = flags | QStyle::State_Horizontal;
 
-        style().drawPrimitive(QStyle::PE_DockWindowSeparator, p,
-                              contentsRect(), colorGroup(), flags);
+        QStyleOption opt;
+        opt.init(this);
+        opt.state = flags;
+        style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, p, this);
     } else {
-        QFrame::drawContents(p);
+        Q3Frame::drawContents(p);
     }
 }
 
@@ -183,8 +190,10 @@ void KToolBarSeparator::styleChange( QStyle& )
 
 QSize KToolBarSeparator::sizeHint() const
 {
-    int dim = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
-    return orientation() == Vertical ? QSize( 0, dim ) : QSize( dim, 0 );
+    QStyleOption opt;
+    opt.init(this);
+    int dim = style()->pixelMetric( QStyle::PM_ToolBarSeparatorExtent, &opt, this );
+    return orientation() == Qt::Vertical ? QSize( 0, dim ) : QSize( dim, 0 );
 }
 
 QSizePolicy KToolBarSeparator::sizePolicy() const
@@ -193,24 +202,26 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 }
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
-    : QToolBar( QString::fromLatin1( name ),
-      dynamic_cast<QMainWindow*>(parent),
+    : Q3ToolBar( QString::fromLatin1( name ),
+      dynamic_cast<Q3MainWindow*>(parent),
       parent, false,
       name ? name : "mainToolBar")
 {
+    if ( !dynamic_cast<Q3MainWindow*>(parent) );
+         setWindowFlags( windowFlags() & ~Qt::WindowType_Mask ); //We're not a top-level!
     init( readConfig, honorStyle );
 }
 
-KToolBar::KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
-    : QToolBar( QString::fromLatin1( name ),
+KToolBar::KToolBar( Q3MainWindow *parentWindow, Qt::ToolBarDock dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
+    : Q3ToolBar( QString::fromLatin1( name ),
       parentWindow, dock, newLine,
       name ? name : "mainToolBar")
 {
     init( readConfig, honorStyle );
 }
 
-KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
-    : QToolBar( QString::fromLatin1( name ),
+KToolBar::KToolBar( Q3MainWindow *parentWindow, QWidget *dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
+    : Q3ToolBar( QString::fromLatin1( name ),
       parentWindow, dock, newLine,
       name ? name : "mainToolBar")
 {
@@ -247,11 +258,11 @@ void KToolBar::init( bool readConfig, bool honorStyle )
         slotReadConfig();
 
     if ( mainWindow() )
-        connect( mainWindow(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
-                 this, SLOT( toolBarPosChanged( QToolBar * ) ) );
+        connect( mainWindow(), SIGNAL( toolBarPositionChanged( Q3ToolBar * ) ),
+                 this, SLOT( toolBarPosChanged( Q3ToolBar * ) ) );
 
     // Hack to make sure we recalculate our size when we dock.
-    connect( this, SIGNAL(placeChanged(QDockWindow::Place)), SLOT(rebuildLayout()) );
+    connect( this, SIGNAL(placeChanged(Q3DockWindow::Place)), SLOT(rebuildLayout()) );
 }
 
 int KToolBar::insertButton(const QString& icon, int id, bool enabled,
@@ -304,7 +315,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
 }
 
 
-int KToolBar::insertButton(const QString& icon, int id, QPopupMenu *popup,
+int KToolBar::insertButton(const QString& icon, int id, Q3PopupMenu *popup,
                             bool enabled, const QString &text, int index )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text );
@@ -316,7 +327,7 @@ int KToolBar::insertButton(const QString& icon, int id, QPopupMenu *popup,
 }
 
 
-int KToolBar::insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
+int KToolBar::insertButton(const QPixmap& pixmap, int id, Q3PopupMenu *popup,
                             bool enabled, const QString &text, int index )
 {
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text );
@@ -433,22 +444,16 @@ KAnimWidget *KToolBar::animatedWidget( int id )
     KAnimWidget *aw = dynamic_cast<KAnimWidget *>(*it);
     if ( aw )
         return aw;
-    QObjectList *l = queryList( "KAnimWidget" );
-    if ( !l || !l->first() ) {
-        delete l;
+    QList<KAnimWidget*> l = findChildren<KAnimWidget*>();
+    if ( l.isEmpty() )
         return 0;
-    }
 
-    for ( QObject *o = l->first(); o; o = l->next() ) {
-        KAnimWidget *aw = dynamic_cast<KAnimWidget *>(o);
+	foreach ( KAnimWidget *aw, l ) {
         if ( aw )
         {
-            delete l;
             return aw;
         }
-    }
-
-    delete l;
+	}
     return 0;
 }
 
@@ -484,7 +489,7 @@ void KToolBar::setButtonIcon( int id, const QString& _icon )
         button->setIcon( _icon );
 }
 
-void KToolBar::setButtonIconSet( int id, const QIconSet& iconset )
+void KToolBar::setButtonIconSet( int id, const QIcon& iconset )
 {
     KToolBarButton * button = getButton( id );
     if ( button )
@@ -492,7 +497,7 @@ void KToolBar::setButtonIconSet( int id, const QIconSet& iconset )
 }
 
 
-void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
+void KToolBar::setDelayedPopup (int id , Q3PopupMenu *_popup, bool toggle )
 {
     KToolBarButton * button = getButton( id );
     if ( button )
@@ -665,11 +670,12 @@ void KToolBar::setItemAutoSized (int id, bool yes )
 void KToolBar::clear ()
 {
     /* Delete any idle buttons, so QToolBar doesn't delete them itself, making a mess */
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
-       w->blockSignals(false);    
+    foreach(QWidget *w, d->idleButtons) 
+       w->blockSignals(false);
+
     d->idleButtons.clear();
-     
-    QToolBar::clear();
+
+    Q3ToolBar::clear();
     widget2id.clear();
     id2widget.clear();
 }
@@ -761,7 +767,7 @@ void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !mainWindow() )
         return;
-    mainWindow()->moveDockWindow( this, (Dock)bpos );
+    mainWindow()->moveDockWindow( this, (Qt::ToolBarDock)bpos );
     //kdDebug(220) << name() << " setBarPos dockWindowIndex=" << dockWindowIndex() << endl;
 }
 
@@ -770,12 +776,12 @@ KToolBar::BarPosition KToolBar::barPos() const
 {
     if ( !this->mainWindow() )
         return KToolBar::Top;
-    Dock dock;
+    Qt::ToolBarDock dock;
     int dm1, dm2;
     bool dm3;
-    this->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
-    if ( dock == DockUnmanaged ) {
-        return (KToolBar::BarPosition)DockTop;
+    this->mainWindow()->getLocation( (Q3ToolBar*)this, dock, dm1, dm3, dm2 );
+    if ( dock == Qt::DockUnmanaged ) {
+        return (KToolBar::BarPosition)Qt::DockTop;
     }
     return (BarPosition)dock;
 }
@@ -854,7 +860,7 @@ void KToolBar::setIconText(IconText icontext, bool update)
         doModeChange(); // tell buttons what happened
 
     // ugly hack to force a QMainWindow::triggerLayout( true )
-    QMainWindow *mw = mainWindow();
+    Q3MainWindow *mw = mainWindow();
     if ( mw ) {
         mw->setUpdatesEnabled( false );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
@@ -892,7 +898,7 @@ void KToolBar::setIconSize(int size, bool update)
 
     // ugly hack to force a QMainWindow::triggerLayout( true )
     if ( mainWindow() ) {
-        QMainWindow *mw = mainWindow();
+        Q3MainWindow *mw = mainWindow();
         mw->setUpdatesEnabled( false );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
         mw->setToolBarsMovable( !mw->toolBarsMovable() );
@@ -942,9 +948,9 @@ void KToolBar::setFlat (bool flag)
     if ( !mainWindow() )
         return;
     if ( flag )
-        mainWindow()->moveDockWindow( this, DockMinimized );
+        mainWindow()->moveDockWindow( this, Qt::DockMinimized );
     else
-        mainWindow()->moveDockWindow( this, DockTop );
+        mainWindow()->moveDockWindow( this, Qt::DockTop );
     // And remember to save the new look later
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
     if ( kmw )
@@ -963,7 +969,7 @@ void KToolBar::saveState()
     // first, try to save to the xml file
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
         //kdDebug(220) << name() << " saveState: saving to " << d->m_xmlguiClient->xmlFile() << endl;
-        QString barname(!::qstrcmp(name(), "unnamed") ? "mainToolBar" : name());
+        QString barname(objectName().isEmpty() ? "mainToolBar" : name());
         // try to find our toolbar
         d->modified = false;
         // go down one level to get to the right tags
@@ -1027,7 +1033,7 @@ void KToolBar::saveState()
 QString KToolBar::settingsGroup() const
 {
     QString configGroup;
-    if (!::qstrcmp(name(), "unnamed") || !::qstrcmp(name(), "mainToolBar"))
+    if (objectName().isEmpty() || !::qstrcmp(name(), "mainToolBar"))
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";
@@ -1097,18 +1103,16 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     // Don't use kmw->toolBarIterator() because you might
     // mess up someone else's iterator.  Make the list on your own
-    QPtrList<KToolBar> toolbarList;
-    QPtrList<QToolBar> lst;
-    for ( int i = (int)QMainWindow::DockUnmanaged; i <= (int)DockMinimized; ++i ) {
-        lst = kmw->toolBars( (ToolBarDock)i );
-        for ( QToolBar *tb = lst.first(); tb; tb = lst.next() ) {
-            if ( !tb->inherits( "KToolBar" ) )
-                continue;
-            toolbarList.append( (KToolBar*)tb );
-        }
+    QList<KToolBar*> toolbarList;
+    QList<Q3ToolBar*> lst;
+    for ( int i = (int)Qt::DockUnmanaged; i <= (int)Qt::DockMinimized; ++i ) {
+        lst = kmw->toolBars( (Qt::ToolBarDock)i );
+		foreach ( Q3ToolBar *tb, lst ) {
+            if ( tb->inherits( "KToolBar" ) )
+            	toolbarList.append( (KToolBar*)tb );
+		}
     }
-    QPtrListIterator<KToolBar> toolbarIterator( toolbarList );
-    if ( !kmw || toolbarIterator.count() > 1 )
+    if ( !kmw || toolbarList.count() > 1 )
         config->writeEntry("Index", index);
     else
         config->revertToDefault("Index");
@@ -1156,10 +1160,10 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
     if ( !mainWindow() )
         return;
-    QMainWindow *mw = mainWindow();
+    Q3MainWindow *mw = mainWindow();
     if ( mw->toolBarsMovable() && d->m_enableContext ) {
-        if ( m->button() == RightButton ) {
-	    QGuardedPtr<KToolBar> guard( this );
+        if ( m->button() == Qt::RightButton ) {
+	    QPointer<KToolBar> guard( this );
             int i = contextMenu()->exec( m->globalPos(), 0 );
 	    // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
 	    if ( guard )
@@ -1168,22 +1172,22 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
             case -1:
                 return; // popup canceled
             case CONTEXT_LEFT:
-                mw->moveDockWindow( this, DockLeft );
+                mw->moveDockWindow( this, Qt::DockLeft );
                 break;
             case CONTEXT_RIGHT:
-                mw->moveDockWindow( this, DockRight );
+                mw->moveDockWindow( this, Qt::DockRight );
                 break;
             case CONTEXT_TOP:
-                mw->moveDockWindow( this, DockTop );
+                mw->moveDockWindow( this, Qt::DockTop );
                 break;
             case CONTEXT_BOTTOM:
-                mw->moveDockWindow( this, DockBottom );
+                mw->moveDockWindow( this, Qt::DockBottom );
                 break;
             case CONTEXT_FLOAT:
-                mw->moveDockWindow( this, DockTornOff );
+                mw->moveDockWindow( this, Qt::DockTornOff );
                 break;
             case CONTEXT_FLAT:
-                mw->moveDockWindow( this, DockMinimized );
+                mw->moveDockWindow( this, Qt::DockMinimized );
                 break;
             case CONTEXT_ICONS:
                 setIconText( IconOnly );
@@ -1212,7 +1216,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
 void KToolBar::doModeChange()
 {
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+    foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
     d->idleButtons.clear();
 
@@ -1221,7 +1225,7 @@ void KToolBar::doModeChange()
 
 void KToolBar::rebuildLayout()
 {
-    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+    foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
     d->idleButtons.clear();
 
@@ -1239,15 +1243,15 @@ void KToolBar::rebuildLayout()
             continue;
         KToolBarSeparator *ktbs = dynamic_cast<KToolBarSeparator *>(w);
         if ( ktbs && !ktbs->showLine() ) {
-            l->addSpacing( orientation() == Vertical ? w->sizeHint().height() : w->sizeHint().width() );
+            l->addSpacing( orientation() == Qt::Vertical ? w->sizeHint().height() : w->sizeHint().width() );
             w->hide();
             continue;
         }
-        if ( dynamic_cast<QPopupMenu *>(w) ) // w is a QPopupMenu?
+        if ( dynamic_cast<Q3PopupMenu *>(w) ) // w is a QPopupMenu?
             continue;
         l->addWidget( w );
         w->show();
-        if ((orientation() == Horizontal) && dynamic_cast<QLineEdit *>(w)) // w is QLineEdit ?
+        if ((orientation() == Qt::Horizontal) && dynamic_cast<QLineEdit *>(w)) // w is QLineEdit ?
             l->addSpacing(2); // A little bit extra spacing behind it.
     }
     if ( rightAligned ) {
@@ -1272,20 +1276,21 @@ void KToolBar::childEvent( QChildEvent *e )
         QWidget * w = dynamic_cast<QWidget *>(e->child());
         if (!w || !(::qstrcmp( "qt_dockwidget_internal", w->name())))
         {
-           QToolBar::childEvent( e );
+           Q3ToolBar::childEvent( e );
            return;
         }
         if ( e->type() == QEvent::ChildInserted ) {
-            if ( !dynamic_cast<QPopupMenu *>(w)) { // e->child() is not a QPopupMenu
+            if ( !dynamic_cast<Q3PopupMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
-                if ( !widget2id.contains( w ) )
+                if ( !widget2id.contains( w ) && 
+		     !d->idleButtons.contains( w ) )
                 {
                     int dummy = -1;
                     insertWidgetInternal( w, dummy, -1 );
                 }
             }
-        } else {
+        } else if ( e->type() == QEvent::ChildRemoved ) {
             removeWidgetInternal( w );
         }
         if ( isVisibleTo( 0 ) )
@@ -1300,7 +1305,7 @@ void KToolBar::childEvent( QChildEvent *e )
                it.deleteCurrent();
         }
     }
-    QToolBar::childEvent( e );
+    Q3ToolBar::childEvent( e );
 }
 
 void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
@@ -1312,7 +1317,7 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
              this, SLOT( widgetDestroyed() ) );
     if ( index == -1 || index > (int)widgets.count() ) {
         index = (int)widgets.count();
-        widgets.append( w );
+        widgets.append( w );	
     }
     else
         widgets.insert( index, w );
@@ -1324,19 +1329,19 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
 
 void KToolBar::showEvent( QShowEvent *e )
 {
-    QToolBar::showEvent( e );
+    Q3ToolBar::showEvent( e );
     rebuildLayout();
 }
 
 void KToolBar::setStretchableWidget( QWidget *w )
 {
-    QToolBar::setStretchableWidget( w );
+    Q3ToolBar::setStretchableWidget( w );
     stretchableWidget = w;
 }
 
 QSizePolicy KToolBar::sizePolicy() const
 {
-    if ( orientation() == Horizontal )
+    if ( orientation() == Qt::Horizontal )
         return QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     else
         return QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
@@ -1370,7 +1375,7 @@ QSize KToolBar::sizeHint() const
              minSize += QSize(2, 0); // A little bit extra spacing behind it.
        }
 
-       minSize += QSize(QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
+       minSize += QSize(QApplication::style()->pixelMetric( QStyle::PM_ToolBarHandleExtent ), 0);
        minSize += QSize(margin*2, margin*2);
        break;
 
@@ -1389,12 +1394,12 @@ QSize KToolBar::sizeHint() const
           minSize = minSize.expandedTo(QSize(sh.width(), 0));
           minSize += QSize(0, sh.height()+1);
        }
-       minSize += QSize(0, QApplication::style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+       minSize += QSize(0, QApplication::style()->pixelMetric( QStyle::PM_ToolBarHandleExtent ));
        minSize += QSize(margin*2, margin*2);
        break;
 
      default:
-       minSize = QToolBar::sizeHint();
+       minSize = Q3ToolBar::sizeHint();
        break;
     }
     return minSize;
@@ -1417,19 +1422,25 @@ bool KToolBar::highlight() const
 
 void KToolBar::hide()
 {
-    QToolBar::hide();
+    Q3ToolBar::hide();
 }
 
 void KToolBar::show()
 {
-    QToolBar::show();
+    Q3ToolBar::show();
 }
 
 void KToolBar::resizeEvent( QResizeEvent *e )
 {
-    bool b = isUpdatesEnabled();
+    bool b       = isUpdatesEnabled();
+    bool restore = !testAttribute(Qt::WA_ForceUpdatesDisabled);
     setUpdatesEnabled( false );
-    QToolBar::resizeEvent( e );
+    Q3ToolBar::resizeEvent( e );
+    // Restore the updates enabled flag -- not that we use
+    // the "force" flags, since Qt itself may suspend
+    // repaints in a way that shows up in isUpdatesEnabled,
+    // and we don't want to get stuck non-repainting due to that
+    setUpdatesEnabled( restore );
     if (b)
     {
       if (layoutTimer->isActive())
@@ -1612,7 +1623,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         doUpdate = true;
     }
 
-    QMainWindow *mw = mainWindow();
+    Q3MainWindow *mw = mainWindow();
 
     // ...and if we should highlight
     if ( highlight != d->m_highlight ) {
@@ -1677,19 +1688,19 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool 
         bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
         bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
 
-        Dock pos(DockTop);
+        Qt::ToolBarDock pos(Qt::DockTop);
         if ( position == "Top" )
-            pos = DockTop;
+            pos = Qt::DockTop;
         else if ( position == "Bottom" )
-            pos = DockBottom;
+            pos = Qt::DockBottom;
         else if ( position == "Left" )
-            pos = DockLeft;
+            pos = Qt::DockLeft;
         else if ( position == "Right" )
-            pos = DockRight;
+            pos = Qt::DockRight;
         else if ( position == "Floating" )
-            pos = DockTornOff;
+            pos = Qt::DockTornOff;
         else if ( position == "Flat" )
-            pos = DockMinimized;
+            pos = Qt::DockMinimized;
 
         //kdDebug(220) << name() << " applySettings hidden=" << hidden << endl;
         if (hidden)
@@ -1722,7 +1733,7 @@ bool KToolBar::event( QEvent *e )
        return true;
     }
 
-    return QToolBar::event( e );
+    return Q3ToolBar::event( e );
 }
 
 void KToolBar::slotRepaint()
@@ -1738,34 +1749,34 @@ void KToolBar::slotRepaint()
     repaint( true );
 }
 
-void KToolBar::toolBarPosChanged( QToolBar *tb )
+void KToolBar::toolBarPosChanged( Q3ToolBar *tb )
 {
     if ( tb != this )
         return;
-    if ( d->oldPos == DockMinimized )
+    if ( d->oldPos == Qt::DockMinimized )
         rebuildLayout();
-    d->oldPos = (QMainWindow::ToolBarDock)barPos();
+    d->oldPos = (Qt::ToolBarDock)barPos();
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
     if ( kmw )
         kmw->setSettingsDirty();
 }
 
-static KToolBar::Dock stringToDock( const QString& attrPosition )
+static Qt::ToolBarDock stringToDock( const QString& attrPosition )
 {
-    KToolBar::Dock dock = KToolBar::DockTop;
+    Qt::ToolBarDock dock = Qt::DockTop;
     if ( !attrPosition.isEmpty() ) {
         if ( attrPosition == "top" )
-            dock = KToolBar::DockTop;
+            dock = Qt::DockTop;
         else if ( attrPosition == "left" )
-            dock = KToolBar::DockLeft;
+            dock = Qt::DockLeft;
         else if ( attrPosition == "right" )
-            dock = KToolBar::DockRight;
+            dock = Qt::DockRight;
         else if ( attrPosition == "bottom" )
-            dock = KToolBar::DockBottom;
+            dock = Qt::DockBottom;
         else if ( attrPosition == "floating" )
-            dock = KToolBar::DockTornOff;
+            dock = Qt::DockTornOff;
         else if ( attrPosition == "flat" )
-            dock = KToolBar::DockMinimized;
+            dock = Qt::DockMinimized;
     }
     return dock;
 }
@@ -1773,13 +1784,13 @@ static KToolBar::Dock stringToDock( const QString& attrPosition )
 
 void KToolBar::loadState( const QDomElement &element )
 {
-    QMainWindow *mw = mainWindow();
+    Q3MainWindow *mw = mainWindow();
 
     if ( !mw )
         return;
 
     {
-        QCString text = element.namedItem( "text" ).toElement().text().utf8();
+        Q3CString text = element.namedItem( "text" ).toElement().text().utf8();
         if ( text.isEmpty() )
             text = element.namedItem( "Text" ).toElement().text().utf8();
         if ( !text.isEmpty() )
@@ -1787,7 +1798,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     {
-        QCString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
+        Q3CString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
         if ( !attrFullWidth.isEmpty() )
             setFullSize( attrFullWidth == "true" );
     }
@@ -1822,10 +1833,10 @@ void KToolBar::loadState( const QDomElement &element )
     }
     //kdDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
 
-    Dock dock = stringToDock( element.attribute( "position" ).lower() );
+    Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).lower() );
 
     {
-        QCString attrIconText = element.attribute( "iconText" ).lower().latin1();
+        Q3CString attrIconText = element.attribute( "iconText" ).lower().latin1();
         if ( !attrIconText.isEmpty() ) {
             //kdDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
             if ( attrIconText == "icontextright" )
@@ -1919,7 +1930,7 @@ int KToolBar::dockWindowIndex()
     int index = 0;
     Q_ASSERT( mainWindow() );
     if ( mainWindow() ) {
-        QMainWindow::ToolBarDock dock;
+        Qt::ToolBarDock dock;
         bool newLine;
         int offset;
         mainWindow()->getLocation( this, dock, index, newLine, offset );
@@ -2058,7 +2069,7 @@ KPopupMenu *KToolBar::contextMenu()
   size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
-  QValueList<int> avSizes;
+  QList<int> avSizes;
   if (theme)
   {
       if (!::qstrcmp(QObject::name(), "mainToolBar"))
@@ -2068,45 +2079,42 @@ KPopupMenu *KToolBar::contextMenu()
   }
 
   d->iconSizes = avSizes;
-  qHeapSort(avSizes);
+  qSort(avSizes);
 
-  QValueList<int>::Iterator it;
   if (avSizes.count() < 10) {
       // Fixed or threshold type icons
-	  QValueList<int>::Iterator end(avSizes.end());
-      for (it=avSizes.begin(); it!=end; ++it) {
+      foreach ( int it, avSizes ) {
           QString text;
-          if ( *it < 19 )
-              text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-          else if (*it < 25)
-              text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-          else if (*it < 35)
-              text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+          if ( it < 19 )
+              text = i18n("Small (%1x%2)").arg(it).arg(it);
+          else if (it < 25)
+              text = i18n("Medium (%1x%2)").arg(it).arg(it);
+          else if (it < 35)
+              text = i18n("Large (%1x%2)").arg(it).arg(it);
           else
-              text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+              text = i18n("Huge (%1x%2)").arg(it).arg(it);
           //we use the size as an id, with an offset
-          size->insertItem( text, CONTEXT_ICONSIZES + *it );
+          size->insertItem( text, CONTEXT_ICONSIZES + it );
       }
   }
   else {
       // Scalable icons.
       const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
 
-      it = avSizes.begin();
       for (uint i = 0; i < 9; i++) {
-          while (it++ != avSizes.end()) {
-              if (*it >= progression[i]) {
+		  foreach ( int it, avSizes ) {
+              if (it >= progression[i]) {
                   QString text;
-                  if ( *it < 19 )
-                      text = i18n("Small (%1x%2)").arg(*it).arg(*it);
-                  else if (*it < 25)
-                      text = i18n("Medium (%1x%2)").arg(*it).arg(*it);
-                  else if (*it < 35)
-                      text = i18n("Large (%1x%2)").arg(*it).arg(*it);
+                  if ( it < 19 )
+                      text = i18n("Small (%1x%2)").arg(it).arg(it);
+                  else if (it < 25)
+                      text = i18n("Medium (%1x%2)").arg(it).arg(it);
+                  else if (it < 35)
+                      text = i18n("Large (%1x%2)").arg(it).arg(it);
                   else
-                      text = i18n("Huge (%1x%2)").arg(*it).arg(*it);
+                      text = i18n("Huge (%1x%2)").arg(it).arg(it);
                   //we use the size as an id, with an offset
-                  size->insertItem( text, CONTEXT_ICONSIZES + *it );
+                  size->insertItem( text, CONTEXT_ICONSIZES + it );
                   break;
               }
           }
@@ -2173,10 +2181,9 @@ void KToolBar::slotContextAboutToShow()
             break;
   }
 
-  QValueList<int>::ConstIterator iIt = d->iconSizes.begin();
-  QValueList<int>::ConstIterator iEnd = d->iconSizes.end();
-  for (; iIt != iEnd; ++iIt )
-      context->setItemChecked( CONTEXT_ICONSIZES + *iIt, false );
+  int size;
+  foreach(size, d->iconSizes)
+      context->setItemChecked( CONTEXT_ICONSIZES + size, false );
 
   context->setItemChecked( CONTEXT_ICONSIZES, false );
 
@@ -2228,7 +2235,7 @@ void KToolBar::slotContextAboutToHide()
   if ( configureAction )
     configureAction->unplug(context);
 
-  QPtrListIterator<QWidget> it( widgets );
+  Q3PtrListIterator<QWidget> it( widgets );
   QWidget *wdg;
   while ( ( wdg = it.current() ) != 0 ) {
     if ( wdg->inherits( "QToolButton" ) )

@@ -23,12 +23,12 @@
 #ifndef QT_NO_DRAGANDDROP
 
 KMultipleDrag::KMultipleDrag( QWidget *dragSource, const char *name )
-    : QDragObject( dragSource, name )
+    : Q3DragObject( dragSource, name )
 {
     m_dragObjects.setAutoDelete( true );
 }
 
-void KMultipleDrag::addDragObject( QDragObject *dragObject )
+void KMultipleDrag::addDragObject( Q3DragObject *dragObject )
 {
     //kdDebug() << "KMultipleDrag::addDragObject" << endl;
     m_dragObjects.append( dragObject );
@@ -43,7 +43,7 @@ QByteArray KMultipleDrag::encodedData( const char *mime ) const
 {
     //kdDebug() << "KMultipleDrag::encodedData " << mime << endl;
     // Iterate over the drag objects, and find the format in the right one
-    QPtrListIterator<QDragObject> it( m_dragObjects );
+    Q3PtrListIterator<Q3DragObject> it( m_dragObjects );
     for ( ; it.current(); ++it )
     {
         for ( int i = 0; it.current()->format( i ); ++i )
@@ -64,9 +64,9 @@ const char* KMultipleDrag::format( int i ) const
     // i=1 -> textdrag->format( 0 )
     // i=2 -> textdrag->format( 1 )
     // etc.
-    QValueList<int>::ConstIterator nit = m_numberFormats.begin();
-    QValueList<int>::ConstIterator nend = m_numberFormats.end();
-    QPtrListIterator<QDragObject> it( m_dragObjects );
+    QList<int>::ConstIterator nit = m_numberFormats.begin();
+    QList<int>::ConstIterator nend = m_numberFormats.end();
+    Q3PtrListIterator<Q3DragObject> it( m_dragObjects );
     for ( ; nit != nend && i >= *nit ; ++nit, ++it )
         i -= *nit;
     if ( it.current() )

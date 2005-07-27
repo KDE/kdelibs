@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmlprjobmanager.h"
@@ -24,7 +24,7 @@
 #include "kmjob.h"
 #include "lprsettings.h"
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <klocale.h>
 
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
@@ -35,10 +35,10 @@ KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStrin
 
 bool KMLprJobManager::listJobs(const QString& prname, JobType, int limit)
 {
-	QPtrList<KMJob>	jobList;
+	Q3PtrList<KMJob>	jobList;
 	jobList.setAutoDelete(false);
 	m_lpqhelper->listJobs(jobList, prname, limit);
-	QPtrListIterator<KMJob>	it(jobList);
+	Q3PtrListIterator<KMJob>	it(jobList);
 	for (; it.current(); ++it)
 		addJob(it.current());
 	return false;
@@ -58,10 +58,10 @@ int KMLprJobManager::actions()
 		return (KMJob::Remove | KMJob::Hold | KMJob::Resume);
 }
 
-bool KMLprJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg)
+bool KMLprJobManager::sendCommandSystemJob(const Q3PtrList<KMJob>& jobs, int action, const QString& arg)
 {
 	QString	msg;
-	QPtrListIterator<KMJob>	it(jobs);
+	Q3PtrListIterator<KMJob>	it(jobs);
 	bool	status(true);
 	LpcHelper	*helper = lpcHelper();
 

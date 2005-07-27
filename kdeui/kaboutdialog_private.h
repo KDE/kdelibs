@@ -15,8 +15,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  *
  */
 
@@ -24,7 +24,8 @@
 #define _KABOUTDIALOG_PRIVATE_H_
 
 #include <qlabel.h>
-class QFrame;
+#include <Q3MemArray>
+class Q3Frame;
 class QTabWidget;
 class QVBoxLayout;
 
@@ -46,7 +47,7 @@ class KImageTrackLabel : public QLabel
     };
 
   public:
-    KImageTrackLabel( QWidget * parent, const char * name=0, WFlags f=0 );
+    KImageTrackLabel( QWidget * parent, const char * name=0, Qt::WFlags f=0 );
 
   signals:
     void mouseTrack( int mode, const QMouseEvent *e );
@@ -99,18 +100,18 @@ class KAboutContainerBase : public QWidget
     void setProduct( const QString &appName, const QString &version,
 		     const QString &author, const QString &year );
 
-    QFrame *addTextPage( const QString &title, const QString &text,
+    Q3Frame *addTextPage( const QString &title, const QString &text,
 			 bool richText=false, int numLines=10 );
-    QFrame *addLicensePage( const QString &title, const QString &text,
+    Q3Frame *addLicensePage( const QString &title, const QString &text,
 			 int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
-      int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+      Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
     KAboutContainer *addScrolledContainerPage( const QString &title,
-      int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
+      Qt::Alignment childAlignment = Qt::AlignCenter, Qt::Alignment innerAlignment = Qt::AlignCenter );
 
-    QFrame *addEmptyPage( const QString &title );
+    Q3Frame *addEmptyPage( const QString &title );
 
-    KAboutContainer *addContainer( int childAlignment, int innerAlignment );
+    KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
   public slots:
     virtual void slotMouseTrack( int mode, const QMouseEvent *e );
@@ -132,9 +133,9 @@ class KAboutContainerBase : public QWidget
     QLabel  *mIconLabel;
     QLabel  *mVersionLabel;
     QLabel  *mAuthorLabel;
-    QFrame  *mImageFrame;
+    Q3Frame  *mImageFrame;
     QTabWidget *mPageTab;
-    QFrame  *mPlainSpace;
+    Q3Frame  *mPlainSpace;
 
     KAboutContainerBasePrivate* const d;
 };

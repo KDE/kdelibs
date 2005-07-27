@@ -25,13 +25,13 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include <qtextedit.h>
+#include <q3textedit.h>
 
 int main( int argc, char** argv )
 {
     KApplication app(argc, argv, "KSpell2Test");
 
-    QTextEdit *test = new QTextEdit();
+    Q3TextEdit *test = new Q3TextEdit();
     KSpell2::Highlighter *hl = new KSpell2::Highlighter( test );
     Q_UNUSED( hl );
     app.setMainWidget( test );

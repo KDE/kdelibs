@@ -38,7 +38,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qfontmetrics.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpalette.h>
 #include <qapplication.h>
 
@@ -219,7 +219,7 @@ public:
     }
 
     bool isTransparent() const {
-        return color.isValid() && qAlpha(color.rgb()) == 0;
+        return color.isValid() && qAlpha(color.rgba()) == 0;
     }
 
     bool operator==(const BorderValue& o) const

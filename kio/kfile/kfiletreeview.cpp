@@ -18,7 +18,8 @@
 */
 
 #include <qapplication.h>
-#include <qheader.h>
+#include <q3header.h>
+#include <qevent.h>
 #include <qtimer.h>
 #include <kdebug.h>
 #include <kdirnotify_stub.h>
@@ -41,8 +42,7 @@
 
 KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     : KListView( parent, name ),
-      m_wantOpenFolderPixmaps( true ),
-      m_toolTip( this )
+      m_wantOpenFolderPixmaps( true )
 {
     setDragEnabled(true);
     setSelectionModeExt( KListView::Single );
@@ -59,21 +59,21 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
              this, SLOT( slotAutoOpenFolder() ) );
 
     /* The executed-Slot only opens  a path, while the expanded-Slot populates it */
-    connect( this, SIGNAL( executed( QListViewItem * ) ),
-             this, SLOT( slotExecuted( QListViewItem * ) ) );
-    connect( this, SIGNAL( expanded ( QListViewItem *) ),
-    	     this, SLOT( slotExpanded( QListViewItem *) ));
-    connect( this, SIGNAL( collapsed( QListViewItem *) ),
-	     this, SLOT( slotCollapsed( QListViewItem* )));
+    connect( this, SIGNAL( executed( Q3ListViewItem * ) ),
+             this, SLOT( slotExecuted( Q3ListViewItem * ) ) );
+    connect( this, SIGNAL( expanded ( Q3ListViewItem *) ),
+    	     this, SLOT( slotExpanded( Q3ListViewItem *) ));
+    connect( this, SIGNAL( collapsed( Q3ListViewItem *) ),
+	     this, SLOT( slotCollapsed( Q3ListViewItem* )));
 
 
     /* connections from the konqtree widget */
     connect( this, SIGNAL( selectionChanged() ),
              this, SLOT( slotSelectionChanged() ) );
-    connect( this, SIGNAL( onItem( QListViewItem * )),
-	     this, SLOT( slotOnItem( QListViewItem * ) ) );
-    connect( this, SIGNAL(itemRenamed(QListViewItem*, const QString &, int)),
-             this, SLOT(slotItemRenamed(QListViewItem*, const QString &, int)));
+    connect( this, SIGNAL( onItem( Q3ListViewItem * )),
+	     this, SLOT( slotOnItem( Q3ListViewItem * ) ) );
+    connect( this, SIGNAL(itemRenamed(Q3ListViewItem*, const QString &, int)),
+             this, SLOT(slotItemRenamed(Q3ListViewItem*, const QString &, int)));
 
 
     m_bDrag = false;
@@ -93,12 +93,12 @@ KFileTreeView::~KFileTreeView()
 }
 
 
-bool KFileTreeView::isValidItem( QListViewItem *item)
+bool KFileTreeView::isValidItem( Q3ListViewItem *item)
 {
    if (!item)
       return false;
-   QPtrList<QListViewItem> lst;
-   QListViewItemIterator it( this );
+   Q3PtrList<Q3ListViewItem> lst;
+   Q3ListViewItemIterator it( this );
    while ( it.current() )
    {
       if ( it.current() == item )
@@ -118,7 +118,7 @@ void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
    ev->acceptAction();
    m_currentBeforeDropItem = selectedItem();
 
-   QListViewItem *item = itemAt( contentsToViewport( ev->pos() ) );
+   Q3ListViewItem *item = itemAt( contentsToViewport( ev->pos() ) );
    if( item )
    {
       m_dropItem = item;
@@ -140,13 +140,13 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
    e->acceptAction();
 
 
-   QListViewItem *afterme;
-   QListViewItem *parent;
+   Q3ListViewItem *afterme;
+   Q3ListViewItem *parent;
 
    findDrop( e->pos(), parent, afterme );
 
    // "afterme" is 0 when aiming at a directory itself
-   QListViewItem *item = afterme ? afterme : parent;
+   Q3ListViewItem *item = afterme ? afterme : parent;
 
    if( item && item->isSelectable() )
    {
@@ -192,8 +192,8 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
     }
 
     e->acceptAction();
-    QListViewItem *afterme;
-    QListViewItem *parent;
+    Q3ListViewItem *afterme;
+    Q3ListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
 
     //kdDebug(250) << " parent=" << (parent?parent->text(0):QString::null)
@@ -249,12 +249,12 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
 
 
 
-QDragObject * KFileTreeView::dragObject()
+Q3DragObject * KFileTreeView::dragObject()
 {
 
    KURL::List urls;
-   const QPtrList<QListViewItem> fileList = selectedItems();
-   QPtrListIterator<QListViewItem> it( fileList );
+   const Q3PtrList<Q3ListViewItem> fileList = selectedItems();
+   Q3PtrListIterator<Q3ListViewItem> it( fileList );
    for ( ; it.current(); ++it )
    {
       urls.append( static_cast<KFileTreeViewItem*>(it.current())->url() );
@@ -268,7 +268,7 @@ QDragObject * KFileTreeView::dragObject()
       pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
    hotspot.setX( pixmap.width() / 2 );
    hotspot.setY( pixmap.height() / 2 );
-   QDragObject* dragObject = new KURLDrag( urls, this );
+   Q3DragObject* dragObject = new KURLDrag( urls, this );
    if( dragObject )
       dragObject->setPixmap( pixmap, hotspot );
    return dragObject;
@@ -276,7 +276,7 @@ QDragObject * KFileTreeView::dragObject()
 
 
 
-void KFileTreeView::slotCollapsed( QListViewItem *item )
+void KFileTreeView::slotCollapsed( Q3ListViewItem *item )
 {
    KFileTreeViewItem *kftvi = static_cast<KFileTreeViewItem*>(item);
    kdDebug(250) << "hit slotCollapsed" << endl;
@@ -286,7 +286,7 @@ void KFileTreeView::slotCollapsed( QListViewItem *item )
    }
 }
 
-void KFileTreeView::slotExpanded( QListViewItem *item )
+void KFileTreeView::slotExpanded( Q3ListViewItem *item )
 {
    kdDebug(250) << "slotExpanded here !" << endl;
 
@@ -320,7 +320,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
 
 
 
-void KFileTreeView::slotExecuted( QListViewItem *item )
+void KFileTreeView::slotExecuted( Q3ListViewItem *item )
 {
     if ( !item )
         return;
@@ -390,7 +390,7 @@ KFileTreeBranch *KFileTreeView::addBranch(KFileTreeBranch *newBranch)
 KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
 {
    KFileTreeBranch *branch = 0;
-   QPtrListIterator<KFileTreeBranch> it( m_branches );
+   Q3PtrListIterator<KFileTreeBranch> it( m_branches );
 
    while ( (branch = it.current()) != 0 ) {
       ++it;
@@ -463,7 +463,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
 
 	 if( m_nextUrlToSelect.equals(url, true ))   // ignore trailing / on dirs
 	 {
-	    setCurrentItem( static_cast<QListViewItem*>(*it) );
+	    setCurrentItem( static_cast<Q3ListViewItem*>(*it) );
 	    m_nextUrlToSelect = KURL();
 	    end = true;
 	 }
@@ -497,7 +497,7 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
           * change the fileitem's pixmap to the open folder pixmap. */
          if( item->isDir() && m_wantOpenFolderPixmaps )
          {
-            if( isOpen( static_cast<QListViewItem*>(item)))
+            if( isOpen( static_cast<Q3ListViewItem*>(item)))
                pix = m_openFolderPixmap;
          }
       }
@@ -597,7 +597,7 @@ KURL KFileTreeView::currentURL() const
         return KURL();
 }
 
-void KFileTreeView::slotOnItem( QListViewItem *item )
+void KFileTreeView::slotOnItem( Q3ListViewItem *item )
 {
     KFileTreeViewItem *i = static_cast<KFileTreeViewItem *>( item );
     if( i )
@@ -610,7 +610,7 @@ void KFileTreeView::slotOnItem( QListViewItem *item )
     }
 }
 
-void KFileTreeView::slotItemRenamed(QListViewItem* item, const QString &name, int col)
+void KFileTreeView::slotItemRenamed(Q3ListViewItem* item, const QString &name, int col)
 {
    (void) item;
    kdDebug(250) << "Do not bother: " << name << col << endl;
@@ -659,17 +659,6 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 ///////////////////////////////////////////////////////////////////
 
 
-void KFileTreeViewToolTip::maybeTip( const QPoint & )
-{
-#if 0
-    QListViewItem *item = m_view->itemAt( point );
-    if ( item ) {
-	QString text = static_cast<KFileViewItem*>( item )->toolTipText();
-	if ( !text.isEmpty() )
-	    tip ( m_view->itemRect( item ), text );
-    }
-#endif
-}
 
 void KFileTreeView::virtual_hook( int id, void* data )
 { KListView::virtual_hook( id, data ); }

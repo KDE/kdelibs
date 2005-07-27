@@ -80,6 +80,7 @@
 //#undef K_WS_QTONLY
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <fixx11h.h>
 #endif
 
 #ifdef HAVE_DLFCN_H
@@ -152,7 +153,7 @@ static struct {
   int (*launcher_func)(int);
   bool debug_wait;
   int lt_dlopen_flag;
-  QCString errorMsg;
+  QByteArray errorMsg;
   bool launcher_ok;
   bool suicide;
 } d;
@@ -238,7 +239,7 @@ static void close_fds()
 static void exitWithErrorMsg(const QString &errorMsg)
 {
    fprintf( stderr, "%s\n", errorMsg.local8Bit().data() );
-   QCString utf8ErrorMsg = errorMsg.utf8();
+   QByteArray utf8ErrorMsg = errorMsg.utf8();
    d.result = 3; // Error with msg
    write(d.fd[1], &d.result, 1);
    int l = utf8ErrorMsg.length();
@@ -352,7 +353,7 @@ static void complete_startup_info( KStartupInfoId& id, pid_t pid )
 }
 #endif
 
-QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs, bool avoid_loops )
+QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* envs, bool avoid_loops )
 {
      QStringList paths;
      if( envc > 0 ) /* use the passed environment */
@@ -363,7 +364,7 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
      }
      else
          paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
-     QCString execpath = QFile::encodeName(
+     QByteArray execpath = QFile::encodeName(
          s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
      if( avoid_loops && !execpath.isEmpty())
      {
@@ -390,9 +391,9 @@ static pid_t launch(int argc, const char *_name, const char *args,
                     const char* startup_id_str = "0" )
 {
   int launcher = 0;
-  QCString lib;
-  QCString name;
-  QCString exec;
+  QByteArray lib;
+  QByteArray name;
+  QByteArray exec;
 
   if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
@@ -406,8 +407,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
      launcher = 1;
   }
 
-  QCString libpath;
-  QCString execpath;
+  QByteArray libpath;
+  QByteArray execpath;
   if (_name[0] != '/')
   {
      /* Relative name without '.la' */
@@ -489,16 +490,13 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if( reset_env ) // KWRAPPER/SHELL
      {
 
-         QStrList unset_envs;
+         QList<QByteArray> unset_envs;
          for( int tmp_env_count = 0;
               environ[tmp_env_count];
               tmp_env_count++)
              unset_envs.append( environ[ tmp_env_count ] );
-         for( QStrListIterator it( unset_envs );
-              it.current() != NULL ;
-              ++it )
+         foreach(QByteArray tmp, unset_envs)
          {
-             QCString tmp( it.current());
              int pos = tmp.find( '=' );
              if( pos >= 0 )
                  unsetenv( tmp.left( pos ));
@@ -521,7 +519,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #endif
      {
        int r;
-       QCString procTitle;
+       QByteArray procTitle;
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
        for (int i = 1;  i < argc; i++)
@@ -609,7 +607,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
            {
               const char * ltdlError = lt_dlerror();
               fprintf(stderr, "Could not find kdemain: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-              QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2").arg(libpath)
+              QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2")
+ 		 .arg(QLatin1String(libpath))
                  .arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
               exitWithErrorMsg(errorMsg);
            }
@@ -665,7 +664,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
              d.n = read(d.fd[0], &l, sizeof(int));
              if (d.n == sizeof(int))
              {
-                QCString tmp;
+                QByteArray tmp;
                 tmp.resize(l+1);
                 d.n = read(d.fd[0], tmp.data(), l);
                 tmp[l] = 0;
@@ -801,8 +800,8 @@ static void init_kdeinit_socket()
   chdir(home_dir);
 
   {
-     QCString path = home_dir;
-     QCString readOnly = getenv("KDE_HOME_READONLY");
+     QByteArray path = home_dir;
+     QByteArray readOnly = getenv("KDE_HOME_READONLY");
      if (access(path.data(), R_OK|W_OK))
      {
        if (errno == ENOENT)
@@ -1189,8 +1188,8 @@ static void handle_launcher_request(int sock = -1)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QCString olddisplay = getenv(DISPLAY);
-      QCString kdedisplay = getenv("KDE_DISPLAY");
+      QByteArray olddisplay = getenv(DISPLAY);
+      QByteArray kdedisplay = getenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
@@ -1431,7 +1430,7 @@ static void kdeinit_library_path()
    QStringList ld_library_path =
      QStringList::split(':', QFile::decodeName(getenv("LD_LIBRARY_PATH")));
 
-   QCString extra_path;
+   QByteArray extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
@@ -1453,7 +1452,7 @@ static void kdeinit_library_path()
       if ((d == "/lib") || (d == "/usr/lib"))
          continue;
 
-      QCString dir = QFile::encodeName(d);
+      QByteArray dir = QFile::encodeName(d);
 
       if (access(dir, R_OK))
           continue;
@@ -1471,7 +1470,7 @@ static void kdeinit_library_path()
    if (!extra_path.isEmpty())
       lt_dlsetsearchpath(extra_path.data());
 
-   QCString display = getenv(DISPLAY);
+   QByteArray display = getenv(DISPLAY);
    if (display.isEmpty())
    {
      fprintf(stderr, "kdeinit: Aborting. $"DISPLAY" is not set.\n");
@@ -1481,7 +1480,7 @@ static void kdeinit_library_path()
    if((i = display.findRev('.')) > display.findRev(':') && i >= 0)
      display.truncate(i);
 
-   QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
+   QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");
@@ -1491,7 +1490,7 @@ static void kdeinit_library_path()
    strcpy(sock_file_old, socketName.data());
 
    display.replace(":","_");
-   socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit_%1").arg(display), s_instance));
+   socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit_%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");

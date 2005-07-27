@@ -20,8 +20,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 
 #ifndef K_NUMINPUT_H
@@ -54,16 +54,14 @@ public:
     /**
      * Default constructor
      * @param parent If parent is 0, the new widget becomes a top-level window. If parent is another widget, this widget becomes a child window inside parent. The new widget is deleted when its parent is deleted.
-     * @param name The name is sent to the QObject constructor.
      */
-    KNumInput(QWidget* parent=0, const char* name=0);
+    KNumInput(QWidget* parent=0);
 
     /**
      * @param below A pointer to another KNumInput.
      * @param parent parent widget
-     * @param name name of the widget
      */
-    KNumInput(KNumInput* below, QWidget* parent=0, const char* name=0);
+    KNumInput(QWidget *parent,KNumInput* below);
     ~KNumInput();
 
     /**
@@ -84,7 +82,7 @@ public:
      *     @li @p AlignBottom  The label is placed below the edit/slider
      *
      */
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * @return the text of the label.
@@ -201,7 +199,7 @@ public:
      * Constructs an input control for integer values
      * with base 10 and initial value 0.
      */
-    KIntNumInput(QWidget *parent=0, const char *name=0);
+    KIntNumInput(QWidget *parent=0);
     /**
      * Constructor
      * It constructs a QSpinBox that allows the input of integer numbers
@@ -212,9 +210,8 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      */
-    KIntNumInput(int value, QWidget* parent=0, int base = 10, const char *name=0);
+    KIntNumInput(int value, QWidget *parent=0,int base = 10);
 
     /**
      * Constructor
@@ -231,9 +228,8 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      */
-    KIntNumInput(KNumInput* below, int value, QWidget* parent=0, int base = 10, const char *name=0);
+    KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
 
     /**
      * Destructor
@@ -307,7 +303,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
 
     /**
      * This method returns the minimum size necessary to display the
@@ -447,17 +443,7 @@ public:
      * Constructs an input control for double values
      * with initial value 0.00.
      */
-    KDoubleNumInput(QWidget *parent=0, const char *name=0);
-
-    /**
-     * @deprecated (value is rounded to a multiple of 1/100)
-     * Constructor
-     *
-     * @param value  initial value for the control
-     * @param parent parent QWidget
-     * @param name   internal name for this widget
-     */
-    KDoubleNumInput(double value, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KDoubleNumInput(QWidget *parent);
 
     /**
      * Constructor
@@ -468,29 +454,16 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      * @since 3.1
      */
-    KDoubleNumInput(double lower, double upper, double value, double step=0.01,
-		    int precision=2, QWidget *parent=0, const char *name=0);
+    KDoubleNumInput(double lower, double upper, double value, QWidget *parent=0,double step=0.01,
+		    int precision=2);
 
     /**
      * destructor
      */
     virtual ~KDoubleNumInput();
 
-    /**
-     * @deprecated (rounds @p value to a multiple of 1/100)
-     * Constructor
-     *
-     * puts it visually below other KNumInput
-     *
-     * @param  below
-     * @param  value  initial value for the control
-     * @param  parent parent QWidget
-     * @param  name   internal name for this widget
-     **/
-    KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0) KDE_DEPRECATED;
 
     /**
      * Constructor
@@ -510,12 +483,11 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
-     * @param name   internal name for this widget
      * @since 3.1
      */
     KDoubleNumInput(KNumInput* below,
-		    double lower, double upper, double value, double step=0.02,
-		    int precision=2, QWidget *parent=0, const char *name=0);
+		    double lower, double upper, double value, QWidget *parent=0,double step=0.02,
+		    int precision=2);
 
     /**
      * @return the current value.
@@ -595,7 +567,7 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
-    virtual void setLabel(const QString & label, int a = AlignLeft | AlignTop);
+    virtual void setLabel(const QString & label, int a = Qt::AlignLeft | Qt::AlignTop);
     virtual QSize minimumSizeHint() const;
     virtual bool eventFilter(QObject*, QEvent*);
 
@@ -715,7 +687,7 @@ public:
      *  and a slider, with minimal value 0, maximal value 99, step 1, base 10
      *  and initial value 0.
      */
-    KIntSpinBox( QWidget *parent=0, const char *name=0);
+    KIntSpinBox( QWidget *parent);
 
     /**
      *  Constructor.
@@ -729,10 +701,8 @@ public:
      *  @param value  The actual value.
      *  @param base   The base of the used number system.
      *  @param parent The parent of the widget.
-     *  @param name   The Name of the widget.
      */
-    KIntSpinBox(int lower, int upper, int step, int value, int base = 10,
-                QWidget* parent = 0, const char* name = 0);
+    KIntSpinBox(int lower, int upper, int step, int value, QWidget *parent,int base = 10);
 
     /**
      *  Destructor.
@@ -759,13 +729,13 @@ protected:
      *  Overloaded the method in QSpinBox
      *  to make use of the base given in the constructor.
      */
-    virtual QString mapValueToText(int);
+    virtual QString textFromValue(int) const;
 
     /**
      *  Overloaded the method in QSpinBox
      *  to make use of the base given in the constructor.
      */
-    virtual int mapTextToValue(bool*);
+    virtual int valueFromText(const QString &text) const;
 
 private:
     int val_base;
@@ -836,7 +806,7 @@ class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
   Q_OVERRIDE( double maxValue READ maxValue WRITE setMaxValue )
   Q_OVERRIDE( double minValue READ minValue WRITE setMinValue )
-  Q_OVERRIDE( double lineStep READ lineStep WRITE setLineStep )
+  Q_OVERRIDE( double singleStep READ singleStep WRITE setSingleStep )
   Q_OVERRIDE( double value READ value WRITE setValue )
   Q_PROPERTY( int precision READ precision WRITE setPrecision )
 
@@ -844,13 +814,13 @@ public:
   /** Constructs a KDoubleSpinBox with parent @p parent and
       default values for range and value (whatever QRangeControl
       uses) and precision (2). */
-  KDoubleSpinBox( QWidget * parent=0, const char * name=0 );
+  KDoubleSpinBox( QWidget * parent);
 
   /** Constructs a KDoubleSpinBox with parent @p parent, range
       [ @p lower, @p upper ], lineStep @p step, precision @p
       precision and initial value @p value. */
   KDoubleSpinBox( double lower, double upper, double step, double value,
-		  int precision=2, QWidget * parent=0, const char * name=0 );
+		  QWidget *parent,int precision=2);
 
   virtual ~KDoubleSpinBox();
 
@@ -915,13 +885,13 @@ public:
   void setMaxValue( double value );
 
   /** @return the current step size */
-  double lineStep() const;
+  double singleStep() const;
 
   /** Sets the step size for clicking the up/down buttons to @p step,
       subject to the constraints that @p step is first rounded to the
       current precision and then clipped to the meaningful interval
       [ 1, @p maxValue() - @p minValue() ]. */
-  void setLineStep( double step );
+  void setSingleStep( double step );
 
   /** Overridden to ignore any setValidator() calls. */
   void setValidator( const QValidator * );
@@ -937,8 +907,8 @@ public slots:
   virtual void setValue( double value );
 
 protected:
-  virtual QString mapValueToText(int);
-  virtual int mapTextToValue(bool*);
+  virtual QString textFromValue(int) const;
+  virtual int valueFromText(const QString &text) const;
 
 protected slots:
   void slotValueChanged( int value );

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmspecialprinterdlg.h"
@@ -32,8 +32,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>
@@ -63,16 +62,16 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( KSeparator::HLine, dummy);
 
 	sep->setFixedHeight(10);
-	QGroupBox	*m_gb = new QGroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
+	Q3GroupBox	*m_gb = new Q3GroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
 	m_command = new KXmlCommandSelector(true, m_gb, "CommandSelector", this);
 
-	QGroupBox *m_outfile_gb = new QGroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
+	Q3GroupBox *m_outfile_gb = new Q3GroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
 
 	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);
 
 	m_mimetype = new QComboBox(m_outfile_gb);
 	KMimeType::List	list = KMimeType::allMimeTypes();
-	for (QValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (Q3ValueList<KMimeType::Ptr>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		QString	mimetype = (*it)->name();
 		m_mimelist << mimetype;
@@ -101,11 +100,9 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	m_extensionlabel->setEnabled( false );
 	m_extension->setEnabled( false );
 
-	QWhatsThis::add(m_usefile,
-		i18n("<p>The command will use an output file. If checked, make sure the "
+	m_usefile->setWhatsThis(		i18n("<p>The command will use an output file. If checked, make sure the "
 		     "command contains an output tag.</p>"));
-	QWhatsThis::add(m_command,
-		i18n("<p>The command to execute when printing on this special printer. Either enter "
+	m_command->setWhatsThis(		i18n("<p>The command to execute when printing on this special printer. Either enter "
 			 "the command to execute directly, or associate/create a command object with/for "
 			 "this special printer. The command object is the preferred method as it provides "
 			 "support for advanced settings like mime type checking, configurable options and "
@@ -116,11 +113,11 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 			 "<li><b>%psl</b>: the paper size in lower case.</li>"
 			 "<li><b>%psu</b>: the paper size with the first letter in upper case.</li></ul>"));
 	QString mimetypeWhatsThis = i18n("<p>The default mimetype for the output file (e.g. application/postscript).</p>");
-	QWhatsThis::add(m_mimetypelabel, mimetypeWhatsThis);
-	QWhatsThis::add(m_mimetype, mimetypeWhatsThis);
+	m_mimetypelabel->setWhatsThis(mimetypeWhatsThis);
+	m_mimetype->setWhatsThis(mimetypeWhatsThis);
 	QString extensionWhatsThis = i18n("<p>The default extension for the output file (e.g. ps, pdf, ps.gz).</p>");
-	QWhatsThis::add(m_extensionlabel, extensionWhatsThis);
-	QWhatsThis::add(m_extension, extensionWhatsThis);
+	m_extensionlabel->setWhatsThis(extensionWhatsThis);
+	m_extension->setWhatsThis(extensionWhatsThis);
 
 	// layout creation
 	QVBoxLayout	*l0 = new QVBoxLayout(dummy, 0, 10);

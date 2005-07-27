@@ -45,7 +45,7 @@ class SlaveBasePrivate;
 class KIO_EXPORT SlaveBase
 {
 public:
-    SlaveBase( const QCString &protocol, const QCString &pool_socket, const QCString &app_socket);
+    SlaveBase( const Q3CString &protocol, const Q3CString &pool_socket, const Q3CString &app_socket);
     virtual ~SlaveBase();
 
     /**
@@ -382,7 +382,7 @@ public:
      * permissions change to it.
      * @param resume
      */
-    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume );
+    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume ); // KDE4 TODO: add long mtime (for #79937)
 
     /**
      * Finds all details for one file or directory.
@@ -708,7 +708,7 @@ public:
      * Cache authentication information is now stored automatically
      * by openPassDlg.
      */
-    void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
+    void sendAuthenticationKey( const Q3CString& gKey, const Q3CString& key, bool keep );
 
     /**
      * @obsolete as of 3.1. Use openPassDlg instead.
@@ -787,7 +787,7 @@ public:
     /**
      * Name of the protocol supported by this slave
      */
-    QCString mProtocol;
+    Q3CString mProtocol;
 
     Connection * m_pConnection;
 
@@ -810,7 +810,7 @@ public:
 
 protected:
     UDSEntryList pendingListEntries;
-    uint listEntryCurrentSize;
+    int listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
     Connection *appconn;
     QString mPoolSocket;

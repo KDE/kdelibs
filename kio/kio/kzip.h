@@ -24,8 +24,8 @@
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
-#include <qvaluelist.h>
+#include <q3dict.h>
+#include <q3valuelist.h>
 #include <karchive.h>
 
 class KZipFileEntry;
@@ -187,7 +187,7 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      * @param mode the mode of the file
      */
-    virtual bool openArchive( int mode );
+    virtual bool openArchive( QIODevice::OpenMode mode );
     /// Closes the archive
     virtual bool closeArchive();
 

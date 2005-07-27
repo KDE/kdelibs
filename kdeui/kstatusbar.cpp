@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <kdebug.h>
@@ -23,6 +23,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 
+#include <q3frame.h>
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent, const char *name) :
@@ -40,9 +41,9 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
 
   setLineWidth  (0);
-  setFrameStyle (QFrame::NoFrame);
+  setFrameStyle (Q3Frame::NoFrame);
 
-  setAlignment( AlignHCenter | AlignVCenter | SingleLine );
+  setAlignment( Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextSingleLine );
 
   connect (this, SIGNAL(itemPressed(int)), parent, SIGNAL(pressed(int)));
   connect (this, SIGNAL(itemReleased(int)), parent, SIGNAL(released(int)));

@@ -21,7 +21,7 @@
 #ifndef KABC_ADDRESSEEDIALOG_H
 #define KABC_ADDRESSEEDIALOG_H
 
-#include <qdict.h>
+#include <q3dict.h>
 
 #include <kdialogbase.h>
 #include <klineedit.h>
@@ -34,7 +34,7 @@ namespace KABC {
 /**
   @short Special ListViewItem, that is used by the AddresseeDialog.
 */
-class KABC_EXPORT AddresseeItem : public QListViewItem
+class KABC_EXPORT AddresseeItem : public Q3ListViewItem
 {
   public:
 
@@ -51,7 +51,7 @@ class KABC_EXPORT AddresseeItem : public QListViewItem
       @param parent    The parent listview.
       @param addressee The associated addressee.
     */
-    AddresseeItem( QListView *parent, const Addressee &addressee );
+    AddresseeItem( Q3ListView *parent, const Addressee &addressee );
 
     /**
       Returns the addressee.
@@ -130,8 +130,8 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
 
   private slots:
     void selectItem( const QString & );
-    void updateEdit( QListViewItem *item );
-    void addSelected( QListViewItem *item );
+    void updateEdit( Q3ListViewItem *item );
+    void addSelected( Q3ListViewItem *item );
     void removeSelected();
 
   protected slots:
@@ -139,7 +139,7 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
 
   private:
     void loadAddressBook();
-    void addCompletionItem( const QString &str, QListViewItem *item );
+    void addCompletionItem( const QString &str, Q3ListViewItem *item );
 
     bool mMultiple;
 
@@ -150,8 +150,8 @@ class KABC_EXPORT AddresseeDialog : public KDialogBase
 
     AddressBook *mAddressBook;
 
-    QDict<QListViewItem> mItemDict;
-    QDict<QListViewItem> mSelectedDict;
+    Q3Dict<Q3ListViewItem> mItemDict;
+    Q3Dict<Q3ListViewItem> mSelectedDict;
 
     class AddresseeDialogPrivate;
     AddresseeDialogPrivate *d;

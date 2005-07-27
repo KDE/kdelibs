@@ -34,8 +34,8 @@
 static const char *description = "KCookiejar regression test";
 
 static KCookieJar *jar;
-static QCString *lastYear;
-static QCString *nextYear;
+static QString *lastYear;
+static QString *nextYear;
 static KConfig *config = 0;
 
 
@@ -51,7 +51,7 @@ static void FAIL(const QString &msg)
    exit(1);
 }
 
-static void popArg(QCString &command, QCString & line)
+static void popArg(QString &command, QString & line)
 {
    int i = line.find(' ');
    if (i != -1)
@@ -62,25 +62,10 @@ static void popArg(QCString &command, QCString & line)
    else
    {
       command = line;
-      line = 0;
-   }   
-}
-
-
-static void popArg(QString &command, QCString & line)
-{
-   int i = line.find(' ');
-   if (i != -1)
-   {
-      command = QString::fromLatin1(line.left(i));
-      line = line.mid(i+1);
+      line = QString();
    }
-   else
-   {
-      command = QString::fromLatin1(line);
-      line = 0;
-   }   
 }
+
 
 static void clearConfig()
 {
@@ -112,7 +97,7 @@ static void saveCookies()
    jar->loadCookies(file);
 }
 
-static void processCookie(QCString &line)
+static void processCookie(QString &line)
 {
    QString policy;
    popArg(policy, line);
@@ -131,8 +116,8 @@ static void processCookie(QCString &line)
    line.replace("%LASTYEAR%", *lastYear);
    line.replace("%NEXTYEAR%", *nextYear);
 
-   KHttpCookieList list = jar->makeCookies(urlStr, line, 0);
-   
+   KHttpCookieList list = jar->makeCookies(urlStr, line.utf8(), 0);
+
    if (list.isEmpty())
       FAIL(QString("Failed to make cookies from: '%1'").arg(line));
 
@@ -148,7 +133,7 @@ static void processCookie(QCString &line)
    }
 }
 
-static void processCheck(QCString &line)
+static void processCheck(QString &line)
 {
    QString urlStr;
    popArg(urlStr, line);
@@ -158,7 +143,7 @@ static void processCheck(QCString &line)
    if (url.isEmpty())
       FAIL(QString("Missing URL"));
 
-   QString expectedCookies = QString::fromLatin1(line);
+   QString expectedCookies = line;
 
    QString cookies = jar->findCookies(urlStr, false, 0, 0).stripWhiteSpace();
    if (cookies != expectedCookies)
@@ -166,7 +151,7 @@ static void processCheck(QCString &line)
               .arg(cookies, expectedCookies));
 }
 
-static void processClear(QCString &line)
+static void processClear(QString &line)
 {
    if (line == "CONFIG")
       clearConfig();
@@ -176,36 +161,36 @@ static void processClear(QCString &line)
       FAIL(QString("Unknown command 'CLEAR %1'").arg(line));
 }
 
-static void processConfig(QCString &line)
+static void processConfig(QString &line)
 {
-   QCString key;
+   QString key;
    popArg(key, line);
 
    if (key.isEmpty())
       FAIL(QString("Missing Key"));
 
    config->setGroup("Cookie Policy");
-   config->writeEntry(key.data(), line.data());
+   config->writeEntry(key, line);
    jar->loadConfig(config, false);
 }
 
-static void processLine(QCString line)
+static void processLine(QString line)
 {
    if (line.isEmpty())
       return;
-   
+
    if (line[0] == '#')
    {
       if (line[1] == '#')
-         qWarning("%s", line.data());   
+         qWarning("%s", line.latin1());
       return;
    }
 
-   QCString command;
+   QString command;
    popArg(command, line);
    if (command.isEmpty())
       return;
-      
+
    if (command == "COOKIE")
       processCookie(line);
    else if (command == "CHECK")
@@ -222,10 +207,10 @@ static void processLine(QCString line)
 
 static void runRegression(const QString &filename)
 {
-   FILE *file = fopen(filename.local8Bit(), "r");
+   FILE *file = fopen(QFile::encodeName( filename ), "r");
    if (!file)
       FAIL(QString("Can't open '%1'").arg(filename));
-      
+
    char buf[4096];
    while (fgets(buf, sizeof(buf), file))
    {
@@ -235,19 +220,20 @@ static void runRegression(const QString &filename)
          l--;
          buf[l] = 0;
       }
-      processLine(buf);
+      processLine(QString::fromUtf8(buf));
    }
+   fclose( file );
    qWarning("%s OK", filename.local8Bit().data());
 }
 
 int main(int argc, char *argv[])
 {
    QString arg1;
-   QCString arg2;
+   QString arg2;
    QString result;
 
-   lastYear = new QCString(QString("Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()-1).utf8());
-   nextYear = new QCString(QString(" expires=Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()+1).utf8());
+   lastYear = new QString(QString("Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()-1));
+   nextYear = new QString(QString(" expires=Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()+1));
 
    KAboutData about("kcookietest", "kcookietest", "1.0", description, KAboutData::License_GPL, "(C) 2004 Waldo Bastian");
    KCmdLineArgs::init( argc, argv, &about);
@@ -255,16 +241,16 @@ int main(int argc, char *argv[])
    KCmdLineArgs::addCmdLineOptions( options );
 
    KInstance a("kcookietest");
-   
+
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    if (args->count() != 1)
       KCmdLineArgs::usage();
 
    jar = new KCookieJar;
 
-   clearConfig();   
-      
-   QString file = args->url(0).path();
+   clearConfig();
+
+   const QString file = args->url(0).path();
    runRegression(file);
    return 0;
 }

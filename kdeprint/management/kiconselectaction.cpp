@@ -13,13 +13,13 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kiconselectaction.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <ktoolbar.h>
@@ -33,7 +33,7 @@ public:
 		m_menu = 0;
 	}
 	QStringList	m_iconlst;
-	QPopupMenu*	m_menu;
+	Q3PopupMenu*	m_menu;
 };
 
 KIconSelectAction::KIconSelectAction(const QString& text, int accel, QObject* parent, const char* name)
@@ -52,7 +52,7 @@ void KIconSelectAction::updateIcons()
 	if (d->m_menu)
 	{
 		QStringList	lst = items();
-		for (uint id=0; id<lst.count(); ++id)
+		for (int id=0; id<lst.count(); ++id)
 			d->m_menu->changeItem(id, SmallIconSet(d->m_iconlst[id]), lst[id]);
 	}
 }

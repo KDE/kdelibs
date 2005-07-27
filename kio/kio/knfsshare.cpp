@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qfile.h>
 #include <qtextstream.h>
 
@@ -35,7 +35,7 @@ public:
   bool readExportsFile();
   bool findExportsFile();
   
-  QDict<bool> sharedPaths;
+  Q3Dict<bool> sharedPaths;
   QString exportsFile;
 };
 
@@ -78,83 +78,81 @@ bool KNFSSharePrivate::readExportsFile() {
   QFile f(exportsFile);
 
   kdDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
-  
-  if (!f.open(IO_ReadOnly)) {
+
+  if (!f.open(QIODevice::ReadOnly)) {
     kdError() << "KNFSShare: Could not open " << exportsFile << endl;
     return false;
   }
-  
- 
+
   sharedPaths.clear();
 
   QTextStream s( &f );
-  
+
   bool continuedLine = false; // is true if the line before ended with a backslash
   QString completeLine;
-  
-  while ( !s.eof() )
+
+  while ( !s.atEnd() )
   {
     QString currentLine = s.readLine().stripWhiteSpace();
 
     if (continuedLine) {
       completeLine += currentLine;
       continuedLine = false;
-    }      
+    }
     else
       completeLine = currentLine;
 
     // is the line continued in the next line ?
-    if ( completeLine[completeLine.length()-1] == '\\' )
+    if ( completeLine.endsWith(QLatin1String("\\")) )
     {
       continuedLine = true;
       // remove the ending backslash
-      completeLine.truncate( completeLine.length()-1 ); 
+      completeLine.chop(1);
       continue;
     }
-    
+
     // comments or empty lines
-    if (completeLine.isEmpty() ||
-        '#' == completeLine[0])
+    if (completeLine.startsWith(QLatin1String("#")))
     {
       continue;
     }
 
     QString path;
-    
+
     // Handle quotation marks
-    if ( completeLine[0] == '"' ) {
-      int i = completeLine.find('"',1);
+    if ( completeLine.startsWith(QLatin1String("\"")) ) {
+      int i = completeLine.indexOf(QLatin1Char('"'), 1);
       if (i == -1) {
-        kdError() << "KNFSShare: Parse error: Missing quotation mark: " << completeLine << endl;   
+        kdError() << "KNFSShare: Parse error: Missing quotation mark: " << completeLine << endl;
         continue;
       }
       path = completeLine.mid(1,i-1);
-      
+
     } else { // no quotation marks
-      int i = completeLine.find(' ');
+      int i = completeLine.indexOf(QLatin1Char(' '));
       if (i == -1)
-          i = completeLine.find('\t');
-          
-      if (i == -1) 
+          i = completeLine.indexOf(QLatin1Char('\t'));
+
+      if (i == -1)
         path = completeLine;
-      else 
+      else
         path = completeLine.left(i);
-      
-    }        
-    
+
+    }
+
     kdDebug(7000) << "KNFSShare: Found path: " << path << endl;
-    
+
     // normalize path
-    if ( path[path.length()-1] != '/' )
-             path += '/';
-    
-    bool b = true;             
-    sharedPaths.insert(path,&b);             
+    if ( !path.endsWith(QLatin1String("/")) )
+             path += QLatin1Char('/');
+
+    bool b = true;
+    sharedPaths.insert(path,&b);
   }
 
   f.close();
 
-  return true;  
+  return true;
 
 }
 
@@ -185,7 +183,7 @@ bool KNFSShare::isDirectoryShared( const QString & path ) const {
 
 QStringList KNFSShare::sharedDirectories() const {
   QStringList result;
-  QDictIterator<bool> it(d->sharedPaths);
+  Q3DictIterator<bool> it(d->sharedPaths);
   for( ; it.current(); ++it )
       result << it.currentKey();
       

@@ -223,7 +223,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
-  Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
+  Q_PROPERTY( Q3CString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
 
 public:
@@ -896,7 +896,7 @@ public:
    */
   QStringList frameNames() const;
 
-  QPtrList<KParts::ReadOnlyPart> frames() const;
+  Q3PtrList<KParts::ReadOnlyPart> frames() const;
 
   /**
    * Finds a frame by name. Returns 0L if frame can't be found.
@@ -1112,7 +1112,7 @@ protected:
    */
   void htmlError( int errorCode, const QString& text, const KURL& reqUrl );
 
-  virtual void customEvent( QCustomEvent *event );
+  virtual void customEvent( QEvent *event );
 
   /**
    * Eventhandler of the khtml::MousePressEvent.
@@ -1202,7 +1202,7 @@ public slots:
    */
   void stopAnimations();
 
-  QCString dcopObjectId() const;
+  Q3CString dcopObjectId() const;
 
   /**
    * Execute the specified snippet of JavaScript code.
@@ -1622,7 +1622,7 @@ private:
 
   bool initFindNode( bool selection, bool reverse, bool fromCursor );
 
-  void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
+  void extendSelection( DOM::NodeImpl* node, int offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   /** extends the current selection to the given content-coordinates @p x, @p y
    * @param x content x-coordinate
    * @param y content y-coordinate

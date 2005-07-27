@@ -30,7 +30,7 @@ namespace Keramik
 		if (factor > 100)
 		{
 			int h, s, v;
-			in.hsv(&h, &s, &v);
+			in.getHsv(&h, &s, &v);
 			
 			float mShare = v/230.0;
 			if (mShare > 1) mShare = 1;

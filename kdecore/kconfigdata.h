@@ -23,6 +23,7 @@
 #define _KCONFIGDATA_H
 
 #include <qmap.h> // generic red-black tree class
+#include <q3cstring.h>
 #include "kdelibs_export.h"
 
 /**
@@ -34,7 +35,7 @@ struct KDECORE_EXPORT KEntry
   KEntry()
     : mValue(0), bDirty(false), bNLS(false), 
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
-  QCString mValue;
+  QByteArray mValue;
   /**
    * Must the entry be written back to disk?
    */
@@ -68,18 +69,18 @@ struct KDECORE_EXPORT KEntry
  */
 struct KDECORE_EXPORT KEntryKey
 {
-  KEntryKey(const QCString& _group = 0,
-	    const QCString& _key = 0)
+  KEntryKey(const QByteArray& _group = 0,
+	    const QByteArray& _key = 0)
       : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
         c_key(_key.data()) {}
   /**
    * The "group" to which this EntryKey belongs
    */ 
-  QCString mGroup;
+  QByteArray mGroup;
   /**
    * The _actual_ key of the entry in question
    */ 
-  QCString mKey;
+  QByteArray mKey;
   /**
    * Entry is localised or not
    */ 

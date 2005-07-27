@@ -15,6 +15,9 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <qapplication.h>
+#include <qpaintengine.h>
+#include <qdesktopwidget.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qbitmap.h>
@@ -32,13 +35,7 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
-#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
-static bool qt_use_xrender=true;
-static bool qt_has_xft=true;
-#else
-extern bool qt_use_xrender;
-extern bool qt_has_xft;
-#endif
+
 class KIconEffectPrivate
 {
 public:
@@ -276,17 +273,46 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
     return result;
 }
 
+struct KIEImgEdit
+{
+    QImage& img;
+    QVector <QRgb> colors;
+    unsigned int*  data;
+    unsigned int   pixels;
+    
+    KIEImgEdit(QImage& _img):img(_img)
+    {
+	if (img.depth() > 8)
+	{
+	    data   = (unsigned int*)img.bits();
+	    pixels = img.width()*img.height();
+	}
+	else
+	{
+	    pixels = img.numColors();
+	    colors = img.colorTable();
+	    data   = (unsigned int*)colors.data();
+	}
+    }
+    
+    ~KIEImgEdit()
+    {
+	if (img.depth() <= 8)
+	    img.setColorTable(colors);
+    }
+};
+
 // Taken from KImageEffect. We don't want to link kdecore to kdeui! As long
 // as this code is not too big, it doesn't seem much of a problem to me.
 
 void KIconEffect::toGray(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    
+    
     int rval, gval, bval, val, alpha, i;
-    for (i=0; i<pixels; i++)
+    for (unsigned int i=0; i<ii.pixels; i++)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
@@ -299,17 +325,17 @@ void KIconEffect::toGray(QImage &img, float value)
 	} else
 	    data[i] = qRgba(val, val, val, alpha);
     }
+
 }
 
 void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+
     int rval, gval, bval, val, alpha, i;
     float rcol = col.red(), gcol = col.green(), bcol = col.blue();
-    for (i=0; i<pixels; i++)
+    for (unsigned int i=0; i<ii.pixels; i++)
     {
         val = qGray(data[i]);
         if (val < 128)
@@ -343,9 +369,10 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 }
 
 void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
-   int pixels = (img.depth() > 8) ? img.width()*img.height() : img.numColors();
-   unsigned int *data = img.depth() > 8 ? (unsigned int *) img.bits()
-         : (unsigned int *) img.colorTable();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+
    int rval, gval, bval, alpha, i;
    int rw = white.red(), gw = white.green(), bw = white.blue();
    int rb = black.red(), gb = black.green(), bb = black.blue();
@@ -394,16 +421,16 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
 
 void KIconEffect::deSaturate(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = (img.depth() > 8) ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+    
     QColor color;
     int h, s, v, i;
     for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
-        color.hsv(&h, &s, &v);
+        color.getHsv(&h, &s, &v);
         color.setHsv(h, (int) (s * (1.0 - value) + 0.5), v);
 	data[i] = qRgba(color.red(), color.green(), color.blue(),
 		qAlpha(data[i]));
@@ -412,10 +439,11 @@ void KIconEffect::deSaturate(QImage &img, float value)
 
 void KIconEffect::toGamma(QImage &img, float value)
 {
-    int pixels = (img.depth() > 8) ? img.width()*img.height()
-	    : img.numColors();
-    unsigned int *data = (img.depth() > 8) ? (unsigned int *) img.bits()
-	    : (unsigned int *) img.colorTable();
+    KIEImgEdit ii(img);
+    unsigned int* data = ii.data;
+    int         pixels = ii.pixels;
+
+    
     QColor color;
     int i, rval, gval, bval;
     float gamma;
@@ -424,7 +452,7 @@ void KIconEffect::toGamma(QImage &img, float value)
     for (i=0; i<pixels; i++)
     {
         color.setRgb(data[i]);
-        color.rgb(&rval, &gval, &bval);
+        color.getRgb(&rval, &gval, &bval);
         rval = static_cast<int>(pow(static_cast<float>(rval)/255 , gamma)*255);
         gval = static_cast<int>(pow(static_cast<float>(gval)/255 , gamma)*255);
         bval = static_cast<int>(pow(static_cast<float>(bval)/255 , gamma)*255);
@@ -442,7 +470,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	int width  = img.width();
 	int height = img.height();
 	
-	if (qt_use_xrender && qt_has_xft )
+	if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
 	  for (y=0; y<height; y++)
 	  {
 #ifdef WORDS_BIGENDIAN
@@ -459,7 +487,7 @@ void KIconEffect::semiTransparent(QImage &img)
 	else
 	  for (y=0; y<height; y++)
 	  {
-	    QRgb *line = (QRgb *) img.scanLine(y);
+	    QRgb* line = (QRgb*)img.scanLine(y);
 	    for (x=(y%2); x<width; x+=2)
 		line[x] &= 0x00ffffff;
 	  }
@@ -508,7 +536,7 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    if ( qt_use_xrender && qt_has_xft )
+    if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
     {
 	QImage img=pix.convertToImage();
 	semiTransparent(img);
@@ -517,8 +545,8 @@ void KIconEffect::semiTransparent(QPixmap &pix)
     }
 
     QImage img;
-    if (pix.mask() != 0L)
-	img = pix.mask()->convertToImage();
+    if (!pix.mask().isNull())
+	img = pix.mask().convertToImage();
     else
     {
 	img.create(pix.size(), 1, 2, QImage::BigEndian);
@@ -527,7 +555,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
 
     for (int y=0; y<img.height(); y++)
     {
-	QRgb *line = (QRgb *) img.scanLine(y);
+	QRgb* line = (QRgb*)img.scanLine(y);
 	QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
 	for (int x=0; x<(img.width()+31)/32; x++)
 	    line[x] &= pattern;
@@ -554,11 +582,11 @@ QImage KIconEffect::doublePixels(QImage src) const
     int x, y;
     if (src.depth() == 32)
     {
-	QRgb *l1, *l2;
+	QRgb* l1, *l2;
 	for (y=0; y<h; y++)
 	{
-	    l1 = (QRgb *) src.scanLine(y);
-	    l2 = (QRgb *) dst.scanLine(y*2);
+	    l1 = (QRgb*)src.scanLine(y);
+	    l2 = (QRgb*)dst.scanLine(y*2);
 	    for (x=0; x<w; x++)
 	    {
 		l2[x*2] = l2[x*2+1] = l1[x];
@@ -666,14 +694,14 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (src.depth() == 32)
     {
-	QRgb *oline, *sline;
+	QRgb* oline, *sline;
 	int r1, g1, b1, a1;
 	int r2, g2, b2, a2;
 
 	for (i=0; i<src.height(); i++)
 	{
-	    oline = (QRgb *) overlay.scanLine(i);
-	    sline = (QRgb *) src.scanLine(i);
+	    oline = (QRgb*)overlay.scanLine(i);
+	    sline = (QRgb*)src.scanLine(i);
 
 	    for (j=0; j<src.width(); j++)
 	    {
@@ -690,7 +718,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 		r2 = (a1 * r1 + (0xff - a1) * r2) >> 8;
 		g2 = (a1 * g1 + (0xff - a1) * g2) >> 8;
 		b2 = (a1 * b1 + (0xff - a1) * b2) >> 8;
-		a2 = QMAX(a1, a2);
+		a2 = qMax(a1, a2);
 
 		sline[j] = qRgba(r2, g2, b2, a2);
 	    }
@@ -703,6 +731,10 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
     void
 KIconEffect::visualActivate(QWidget * widget, QRect rect)
 {
+#ifdef __GNUC__
+    #warning "visualActivate is stubbed out. Needs fixing (or better) replacement"
+#endif    
+#if 0
     if (!KGlobalSettings::visualActivate())
         return;
 
@@ -741,7 +773,7 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
 
     // Use NotROP to avoid having to repaint the pixmap each time.
     p.setPen(QPen(Qt::black, 2, Qt::DotLine));
-    p.setRasterOp(Qt::NotROP);
+    // p.setRasterOp(Qt::NotROP); ###
 
     // The spacing between the rects we draw.
     // Use the minimum of width and height to avoid painting outside the
@@ -760,11 +792,12 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
         rect.setRect(c.x() - w / 2, c.y() - h / 2, w, h);
 
         p.drawRect(rect);
-        p.flush();
+        //p.flush();
 
         usleep(actDelay);
 
         p.drawRect(rect);
     }
+#endif    
 }
 

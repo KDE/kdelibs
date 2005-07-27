@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     KApplication a(false, false);
 
-    QCString recipient = args->getOption("recipient");
+    QByteArray recipient = args->getOption("recipient");
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
     else {
@@ -80,16 +80,16 @@ int main(int argc, char **argv) {
     }
     kdDebug() << "recp \"" << recipient << "\"\n";
 
-    QCString subject = args->getOption("subject");
+    Q3CString subject = args->getOption("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {
         if (subject.at(0) == '\'')
             subject = subject.mid(1).left(subject.length() - 2);
     }
-    QTextIStream input(stdin);
+    QTextStream input(stdin, QIODevice::ReadOnly);
     QString text, line;
-    while (!input.eof()) {
+    while (!input.atEnd()) {
         line = input.readLine();
         text += line + "\r\n";
     }
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
     sm->setSenderAddress(fromaddr);
     sm->setRecipientAddress(recipient);
     sm->setMessageSubject(subject);
-    sm->setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(recipient));
+    sm->setMessageHeader(QString::fromLatin1("From: %1\r\nTo: %2\r\n").arg(fromaddr).arg(QString(recipient)));
     sm->setMessageBody(text);
     sm->sendMessage();
 

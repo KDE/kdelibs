@@ -32,7 +32,7 @@ class QTimer;
 
 namespace KABC {
 
-class FormatPlugin;
+class Format;
 class Lock;
 
 /**
@@ -93,7 +93,7 @@ class KABC_EXPORT ResourceDir : public Resource
     void init( const QString &path, const QString &format );
 
   private:
-    FormatPlugin *mFormat;
+    Format *mFormat;
 
     KDirWatch mDirWatch;
 

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (C) 2001 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -12,19 +12,20 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef kwordwrap_h
 #define kwordwrap_h
 
-#include <qfontmetrics.h>
-#include <qvaluelist.h>
-#include <qrect.h>
-#include <qstring.h>
-
+#include <qnamespace.h>
 #include <kdelibs_export.h>
+
+class QFontMetrics;
+class QRect;
+class QString;
+class QPainter;
 
 /**
  * Word-wrap algorithm that takes into account beautifulness ;)
@@ -74,7 +75,7 @@ public:
      *         the rectangle given to formatText. The height is the
      *         text block. X and Y are always 0.
      */
-    QRect boundingRect() const { return m_boundingRect; }
+    QRect boundingRect() const;
 
     /**
      * @return the original string, with '\n' inserted where
@@ -101,7 +102,7 @@ public:
      *              does not fit (the @p painter's background must be set
      *              accordingly)
      */
-    void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignAuto ) const;
+    void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignLeft ) const;
 
     /**
      * Destructor.
@@ -138,11 +139,6 @@ public:
 
 private:
     KWordWrap( const QRect & r );
-    QValueList<int> m_breakPositions;
-    QValueList<int> m_lineWidths;
-    QRect m_boundingRect;
-    QString m_text;
-private:
     class KWordWrapPrivate* d;
 };
 

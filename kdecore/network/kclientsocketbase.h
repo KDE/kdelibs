@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -25,8 +25,8 @@
 #ifndef KCLIENTSOCKETBASE_H
 #define KCLIENTSOCKETBASE_H
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QObject>
+#include <QString>
 
 #include "ksocketbase.h"
 #include "kresolver.h"
@@ -44,9 +44,9 @@ class KClientSocketBasePrivate;
  * @note This class is abstract. If you're looking for a normal,
  *       client socket class, see @ref KStreamSocket and KBufferedSocket
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KClientSocketBase : public QObject, public KActiveSocketBase
+class KDECORE_EXPORT KClientSocketBase : public KActiveSocketBase
 {
   Q_OBJECT
 
@@ -90,7 +90,7 @@ public:
    * @param parent	the parent QObject object
    * @param name	the name of this object
    */
-  KClientSocketBase(QObject* parent, const char *name);
+  KClientSocketBase(QObject* parent);
 
   /**
    * Destructor.
@@ -202,8 +202,8 @@ public:
    * @param node	the nodename
    * @param service	the service
    */
-  virtual bool bind(const QString& node = QString::null,
-		    const QString& service = QString::null) = 0;
+  virtual bool bind(const QString& node = QString(),
+		    const QString& service = QString()) = 0;
 
   /**
    * Reimplemented from KSocketBase. Connect this socket to this
@@ -243,22 +243,16 @@ public:
    * @param node	the nodename
    * @param service	the service
    */
-  virtual bool connect(const QString& node = QString::null,
-		       const QString& service = QString::null) = 0;
+  virtual bool connect(const QString& node = QString(),
+		       const QString& service = QString(),
+		       OpenMode mode = ReadWrite) = 0;
 
   /**
    * @overload
    * Reimplemented from KSocketBase.
    */
-  virtual bool connect(const KResolverEntry& address);
-
-  /**
-   * @deprecated
-   * This is a convenience function provided to ease migrating from
-   * Qt 3.x's QSocket class.
-   */
-  inline void connectToHost(const QString& host, Q_UINT16 port)
-  { connect(host, QString::number(port)); }
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite);
 
   /**
    * Disconnects the socket.
@@ -271,8 +265,8 @@ public:
    *
    * You should not call this function; instead, use @ref connect
    */
-  virtual inline bool open(int)
-  { return connect(); }
+  virtual inline bool open(OpenMode mode)
+  { return connect(QString(), QString(), mode); }
 
   /**
    * Closes the socket. Reimplemented from QIODevice.
@@ -283,54 +277,22 @@ public:
   virtual void close();
 
   /**
-   * This call is not supported on sockets. Reimplemented from QIODevice.
+   * This call is not supported on unbuffered sockets. 
+   * Reimplemented from QIODevice.
    */
-  virtual void flush()
-  { }
+  virtual bool flush()
+  { return false; }
 
   /**
    * Returns the number of bytes available on this socket.
    * Reimplemented from KSocketBase.
    */
-  virtual Q_LONG bytesAvailable() const;
+  virtual qint64 bytesAvailable() const;
 
   /**
    * Waits for more data. Reimplemented from KSocketBase.
    */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L);
-
-  /**
-   * Reads data from a socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * @overload
-   * Reads data from a socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
-
-  /**
-   * Peeks data from the socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen);
-
-  /**
-   * @overload
-   * Peeks data from the socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress &from);
-
-  /**
-   * Writes data to the socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
-
-  /**
-   * @overload
-   * Writes data to the socket. Reimplemented from KSocketBase.
-   */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L);
 
   /**
    * Returns the local socket address. Reimplemented from KSocketBase.
@@ -442,7 +404,7 @@ signals:
    * @note if the connection is successful, the @ref connected signal will be
    *       emitted.
    */
-  void aboutToConnect(const KResolverEntry& remote, bool& skip);
+  void aboutToConnect(const KNetwork::KResolverEntry& remote, bool& skip);
 
   /**
    * This socket is emitted when the socket successfully connects
@@ -450,7 +412,7 @@ signals:
    *
    * @param remote	the remote address we did connect to
    */
-  void connected(const KResolverEntry& remote);
+  void connected(const KNetwork::KResolverEntry& remote);
 
   /**
    * This signal is emitted when the socket completes the
@@ -458,6 +420,8 @@ signals:
    */
   void closed();
 
+#if 0
+  // QIODevice already has this
   /**
    * This signal is emitted whenever the socket is ready for
    * reading -- i.e., there is data to be read in the buffers.
@@ -467,6 +431,7 @@ signals:
    * function. This signal is by default enabled.
    */
   void readyRead();
+#endif
 
   /**
    * This signal is emitted whenever the socket is ready for 
@@ -482,6 +447,22 @@ signals:
   void readyWrite();
 
 protected:
+  /**
+   * Reads data from a socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * Peeks data from the socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress *from);
+
+  /**
+   * @overload
+   * Writes data to the socket. Reimplemented from KSocketBase.
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to);
+
   /**
    * Sets the socket state to @p state. This function does not
    * emit the @ref stateChanged signal.

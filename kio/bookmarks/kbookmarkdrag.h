@@ -21,22 +21,22 @@
 #ifndef __kebdrag_h
 #define __kebdrag_h
 
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <kbookmark.h>
 
 // Clipboard/dnd data : URLs + XML for bookmarks
-class KIO_EXPORT KBookmarkDrag : public QUriDrag
+class KIO_EXPORT KBookmarkDrag : public Q3UriDrag
 {
 public:
-    static KBookmarkDrag * newDrag( const QValueList<KBookmark> & bookmarks,
+    static KBookmarkDrag * newDrag( const Q3ValueList<KBookmark> & bookmarks,
                                     QWidget * dragSource = 0,
                                     const char * name = 0 );
     static KBookmarkDrag * newDrag( const KBookmark & bookmark,
                                     QWidget * dragSource = 0,
                                     const char * name = 0 );
 protected:
-    KBookmarkDrag( const QValueList<KBookmark> & bookmarks,
-                   const QStrList & urls,
+    KBookmarkDrag( const Q3ValueList<KBookmark> & bookmarks,
+                   const Q3StrList & urls,
                    QWidget * dragSource,
                    const char * name );
 public:
@@ -46,10 +46,10 @@ public:
     virtual QByteArray encodedData( const char* mime ) const;
 
     static bool canDecode( const QMimeSource * e );
-    static QValueList<KBookmark> decode( const QMimeSource * e );
+    static Q3ValueList<KBookmark> decode( const QMimeSource * e );
 
 protected:
-    QValueList<KBookmark> m_bookmarks;
+    Q3ValueList<KBookmark> m_bookmarks;
     QDomDocument m_doc;
     class KBookmarkDragPrivate;
     KBookmarkDragPrivate * d;

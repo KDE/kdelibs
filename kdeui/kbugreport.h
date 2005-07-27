@@ -13,17 +13,17 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef _KBUGREPORT_H__
 #define _KBUGREPORT_H__
 
 #include <kdialogbase.h>
 
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 class QLineEdit;
-class QHButtonGroup;
+class Q3HButtonGroup;
 class KProcess;
 class KAboutData;
 class KBugReportPrivate;
@@ -103,12 +103,12 @@ protected:
   KProcess * m_process;
   const KAboutData * m_aboutData;
 
-  QMultiLineEdit * m_lineedit;
+  Q3MultiLineEdit * m_lineedit;
   QLineEdit * m_subject;
   QLabel * m_from;
   QLabel * m_version;
   QString m_strVersion;
-  QHButtonGroup * m_bgSeverity;
+  Q3HButtonGroup * m_bgSeverity;
   QPushButton * m_configureEmail;
 
 protected:

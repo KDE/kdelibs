@@ -13,25 +13,25 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMICONVIEW_H
 #define KMICONVIEW_H
 
 #include <kiconview.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "kmobject.h"
 
 class KMPrinter;
 
-class KMIconViewItem : public QIconViewItem, public KMObject
+class KMIconViewItem : public Q3IconViewItem, public KMObject
 {
 public:
-	KMIconViewItem(QIconView *parent, KMPrinter *p);
-	void updatePrinter(KMPrinter *printer = 0, int mode = QIconView::Bottom);
+	KMIconViewItem(Q3IconView *parent, KMPrinter *p);
+	void updatePrinter(KMPrinter *printer = 0, int mode = Qt::DockBottom);
 	bool isClass() const	{ return m_isclass; }
 
 protected:
@@ -54,7 +54,7 @@ public:
 	KMIconView(QWidget *parent = 0, const char *name = 0);
 	~KMIconView();
 
-	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinterList(Q3PtrList<KMPrinter> *list);
 	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 	void setViewMode(ViewMode);
@@ -64,14 +64,14 @@ signals:
 	void printerSelected(const QString&);
 
 protected slots:
-	void slotRightButtonClicked(QIconViewItem*, const QPoint&);
+	void slotRightButtonClicked(Q3IconViewItem*, const QPoint&);
 	void slotSelectionChanged();
 
 private:
 	KMIconViewItem* findItem(KMPrinter *p);
 
 private:
-	QPtrList<KMIconViewItem>	m_items;
+	Q3PtrList<KMIconViewItem>	m_items;
 	ViewMode		m_mode;
 };
 

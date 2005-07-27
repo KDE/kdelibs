@@ -472,6 +472,8 @@ public:
      */
     static int lastError() { return lastErrorCode; }
 
+signals:
+    void leaveModality();
 private:
     /**
      * Private constructor

@@ -38,14 +38,14 @@ class QLabel;
 class KIO_EXPORT KFileIconViewItem : public KIconViewItem
 {
 public:
-    KFileIconViewItem( QIconView *parent, const QString &text,
+    KFileIconViewItem( Q3IconView *parent, const QString &text,
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
     /**
      * @since 3.1
      */
-    KFileIconViewItem( QIconView *parent, KFileItem *fi )
+    KFileIconViewItem( Q3IconView *parent, KFileItem *fi )
 	: KIconViewItem( parent ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
@@ -145,7 +145,7 @@ public:
     // for KMimeTypeResolver
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileIconViewItem *item );
-    QScrollView *scrollWidget() const { return (QScrollView*) this; }
+    Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
     void setAcceptDrops(bool b) 
     {  
       KIconView::setAcceptDrops(b); 
@@ -188,7 +188,7 @@ protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
 
     // DND support
-    virtual QDragObject *dragObject();
+    virtual Q3DragObject *dragObject();
     virtual void contentsDragEnterEvent( QDragEnterEvent *e );
     virtual void contentsDragMoveEvent( QDragMoveEvent *e );
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
@@ -198,12 +198,12 @@ protected:
     bool acceptDrag(QDropEvent* e ) const;
 
 private slots:
-    void selected( QIconViewItem *item );
-    void slotActivate( QIconViewItem * );
-    void highlighted( QIconViewItem *item );
-    void showToolTip( QIconViewItem *item );
+    void selected( Q3IconViewItem *item );
+    void slotActivate( Q3IconViewItem * );
+    void highlighted( Q3IconViewItem *item );
+    void showToolTip( Q3IconViewItem *item );
     void removeToolTip();
-    void slotActivateMenu( QIconViewItem *, const QPoint& );
+    void slotActivateMenu( Q3IconViewItem *, const QPoint& );
     void slotSelectionChanged();
 
     void slotSmallColumns();
@@ -237,9 +237,9 @@ private:
     int th;
     int myIconSize;
 
-    virtual void insertItem(QIconViewItem *a, QIconViewItem *b) { KIconView::insertItem(a, b); }
-    virtual void setSelectionMode(QIconView::SelectionMode m) { KIconView::setSelectionMode(m); }
-    virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
+    virtual void insertItem(Q3IconViewItem *a, Q3IconViewItem *b) { KIconView::insertItem(a, b); }
+    virtual void setSelectionMode(Q3IconView::SelectionMode m) { KIconView::setSelectionMode(m); }
+    virtual void setSelected(Q3IconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
     bool canPreview( const KFileItem * ) const;
     void stopPreview();

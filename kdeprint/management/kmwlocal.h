@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMWLOCAL_H
@@ -26,7 +26,7 @@
 
 class QLineEdit;
 class KListView;
-class QListViewItem;
+class Q3ListViewItem;
 
 class KMWLocal : public KMWizardPage
 {
@@ -39,18 +39,18 @@ public:
 	void initPrinter(KMPrinter*);
 
 protected slots:
-	void slotPortSelected(QListViewItem*);
+	void slotPortSelected(Q3ListViewItem*);
 	void slotTextChanged( const QString& );
 
 protected:
 	void initialize();
-	QListViewItem* lookForItem( const QString& );
+	Q3ListViewItem* lookForItem( const QString& );
 
 protected:
 	KListView	*m_ports;
 	QLineEdit	*m_localuri;
 	QStringList	m_uris;
-	QListViewItem	*m_parents[4];
+	Q3ListViewItem	*m_parents[4];
 	bool		m_initialized;
 	bool m_block;
 };

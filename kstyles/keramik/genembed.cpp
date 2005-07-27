@@ -1,7 +1,7 @@
 /**
 A small utility to generate embedded images for Keramik, especially structured for easy recoloring...
 
-Copyright (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+Copyright (c) 2002, 2005 Maksim Orlovich <maksim@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -23,12 +23,13 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-#include <qfileinfo.h>
-#include <qimage.h>
-#include <qmap.h>
-#include <qregexp.h>
-#include <qtextstream.h>
-#include <qvaluevector.h>
+#include <QCoreApplication>
+#include <QColor>
+#include <QFileInfo>
+#include <QImage>
+#include <QMap>
+#include <QTextStream>
+#include <QVector>
 
 #include <kimageeffect.h>
 
@@ -120,9 +121,10 @@ int main(int argc, char** argv)
 	if (argc < 2)
 		return 0;
 
-	QValueVector<KeramikEmbedImage> images;
+	QCoreApplication qapp(argc, argv);
+	QVector<KeramikEmbedImage> images;
 
-	cout<<"#include <qintdict.h>\n\n";
+	cout<<"#include <QHash>\n\n";
 	cout<<"#include \"keramikimage.h\"\n\n";
 
 	QMap<QString, int> assignID;
@@ -314,7 +316,7 @@ int main(int argc, char** argv)
 
 	cout<<"static const KeramikEmbedImage  image_db[] = {\n";
 
-	for (unsigned int c=0; c<images.size(); c++)
+	for (int c=0; c<images.size(); c++)
 	{
 		cout<<"\t{ "<<(images[c].haveAlpha?"true":"false")<<","<<images[c].width<<", "<<images[c].height<<", "<<images[c].id<<", "<<(char *)images[c].data<<"},";
 		cout<<"\n";
@@ -335,22 +337,23 @@ int main(int argc, char** argv)
 	cout<<"\t\tdelete instance;\n";
 	cout<<"\t\tinstance=0;\n";
 	cout<<"\t}\n\n";
-	cout<<"\tKeramikEmbedImage* getImage(int id)\n";
+	cout<<"\tconst KeramikEmbedImage* getImage(int id)\n";
 	cout<<"\t{\n";
 	cout<<"\t\treturn images[id];\n";
 	cout<<"\t}\n\n";
 	cout<<"private:\n";
-	cout<<"\tKeramikImageDb():images(503)\n";
+	cout<<"\tKeramikImageDb()\n";
 	cout<<"\t{\n";
+	cout<<"\t\timages.reserve(503);";
 	cout<<"\t\tfor (int c=0; image_db[c].width; c++)\n";
 	cout<<"\t\t\timages.insert(image_db[c].id, &image_db[c]);\n";
 	cout<<"\t}\n";
 	cout<<"\tstatic KeramikImageDb* instance;\n";
-	cout<<"\tQIntDict<KeramikEmbedImage> images;\n";
+	cout<<"\tQHash<int, const KeramikEmbedImage*> images;\n";
 	cout<<"};\n\n";
 	cout<<"KeramikImageDb* KeramikImageDb::instance = 0;\n\n";
 
-	cout<<"KeramikEmbedImage* KeramikGetDbImage(int id)\n";
+	cout<<"const KeramikEmbedImage* KeramikGetDbImage(int id)\n";
 	cout<<"{\n";
 	cout<<"\treturn KeramikImageDb::getInstance()->getImage(id);\n";
 	cout<<"}\n\n";
@@ -364,7 +367,7 @@ int main(int argc, char** argv)
 
 
 	QFile file("keramikrc.h");
-	file.open(IO_WriteOnly);
+	file.open(QIODevice::WriteOnly);
 	QTextStream ts( &file);
 	ts<<"#ifndef KERAMIK_RC_H\n";
 	ts<<"#define KERAMIK_RC_H\n";

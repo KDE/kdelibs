@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmjobviewer.h"
@@ -32,7 +32,7 @@
 
 #include <klistview.h>
 #include <kstatusbar.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kpopupmenu.h>
@@ -53,6 +53,8 @@
 #include <qcheckbox.h>
 #include <kurldrag.h>
 #include <kconfig.h>
+#include <QDropEvent>
+#include <QMenuItem>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -177,7 +179,7 @@ void KMJobViewer::addToManager()
 	if (m_prname == i18n("All Printers"))
 	{
 		loadPrinters();
-		QPtrListIterator<KMPrinter>	it(m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
 			m_manager->addPrinter(it.current()->printerName(), (KMJobManager::JobType)m_type, it.current()->isSpecial());
 	}
@@ -193,7 +195,7 @@ void KMJobViewer::removeFromManager()
 {
 	if (m_prname == i18n("All Printers"))
 	{
-		QPtrListIterator<KMPrinter>	it(m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_printers);
 		for (; it.current(); ++it)
 			m_manager->removePrinter(it.current()->printerName(), (KMJobManager::JobType)m_type);
 	}
@@ -206,7 +208,7 @@ void KMJobViewer::removeFromManager()
 void KMJobViewer::refresh(bool reload)
 {
 	m_jobs.clear();
-	QPtrListIterator<KMJob>	it(m_manager->jobList(reload));
+	Q3PtrListIterator<KMJob>	it(m_manager->jobList(reload));
 	bool	all = (m_prname == i18n("All Printers")), active = (m_type == KMJobManager::ActiveJobs);
 	for (; it.current(); ++it)
 		if ((all || it.current()->printer() == m_prname)
@@ -239,17 +241,17 @@ void KMJobViewer::init()
 		m_view->addColumn(i18n("Size (KB)"));
 		m_view->addColumn(i18n("Page(s)"));
 		m_view->setColumnAlignment(5,Qt::AlignRight|Qt::AlignVCenter);
-		connect( m_view, SIGNAL( dropped( QDropEvent*, QListViewItem* ) ), SLOT( slotDropped( QDropEvent*, QListViewItem* ) ) );
+		connect( m_view, SIGNAL( dropped( QDropEvent*, Q3ListViewItem* ) ), SLOT( slotDropped( QDropEvent*, Q3ListViewItem* ) ) );
 		//m_view->addColumn(i18n("Printer"));
 		//m_view->setColumnAlignment(6,Qt::AlignRight|Qt::AlignVCenter);
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
-		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+		m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 		m_view->setLineWidth(1);
 		m_view->setSorting(0);
 		m_view->setAllColumnsShowFocus(true);
-		m_view->setSelectionMode(QListView::Extended);
+		m_view->setSelectionMode(Q3ListView::Extended);
 		connect(m_view,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
-		connect(m_view,SIGNAL(rightButtonPressed(QListViewItem*,const QPoint&,int)),SLOT(slotRightClicked(QListViewItem*,const QPoint&,int)));
+		connect(m_view,SIGNAL(rightButtonPressed(Q3ListViewItem*,const QPoint&,int)),SLOT(slotRightClicked(Q3ListViewItem*,const QPoint&,int)));
 		setCentralWidget(m_view);
 	}
 
@@ -285,7 +287,7 @@ void KMJobViewer::initActions()
 
 	if (!m_pop)
 	{
-		m_pop = new QPopupMenu(this);
+		m_pop = new Q3PopupMenu(this);
 		connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 		connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 		hact->plug(m_pop);
@@ -344,16 +346,16 @@ void KMJobViewer::initActions()
 	slotSelectionChanged();
 }
 
-void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all, bool use_specials)
+void KMJobViewer::buildPrinterMenu(Q3PopupMenu *menu, bool use_all, bool use_specials)
 {
 	loadPrinters();
 	menu->clear();
 
-	QPtrListIterator<KMPrinter>	it(m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_printers);
 	int	i(0);
 	if (use_all)
 	{
-		menu->insertItem(SmallIcon("fileprint"), i18n("All Printers"), i++);
+		menu->insertItem(QIcon(SmallIcon("fileprint")), i18n("All Printers"), i++);
 		menu->insertSeparator();
 	}
 	for (; it.current(); ++it, i++)
@@ -361,29 +363,29 @@ void KMJobViewer::buildPrinterMenu(QPopupMenu *menu, bool use_all, bool use_spec
 		if ( !it.current()->instanceName().isEmpty() ||
 				( it.current()->isSpecial() && !use_specials ) )
 			continue;
-		menu->insertItem(SmallIcon(it.current()->pixmap()), it.current()->printerName(), i);
+		menu->insertItem(QIcon(SmallIcon(it.current()->pixmap())), it.current()->printerName(), i);
 	}
 }
 
 void KMJobViewer::slotShowMoveMenu()
 {
-	QPopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
+	Q3PopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
 	buildPrinterMenu(menu, false, false);
 }
 
 void KMJobViewer::slotShowPrinterMenu()
 {
-	QPopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
+	Q3PopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
 	buildPrinterMenu(menu, true, true);
 }
 
 void KMJobViewer::updateJobs()
 {
-	QPtrListIterator<JobItem>	jit(m_items);
+	Q3PtrListIterator<JobItem>	jit(m_items);
 	for (;jit.current();++jit)
 		jit.current()->setDiscarded(true);
 
-	QPtrListIterator<KMJob>	it(m_jobs);
+	Q3PtrListIterator<KMJob>	it(m_jobs);
 	for (;it.current();++it)
 	{
 		KMJob	*j(it.current());
@@ -409,7 +411,7 @@ void KMJobViewer::updateJobs()
 
 JobItem* KMJobViewer::findItem(const QString& uri)
 {
-	QPtrListIterator<JobItem>	it(m_items);
+	Q3PtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->jobUri() == uri) return it.current();
 	return 0;
@@ -422,8 +424,8 @@ void KMJobViewer::slotSelectionChanged()
 	int	thread(0);
 	bool	completed(true), remote(false);
 
-	QPtrListIterator<JobItem>	it(m_items);
-	QPtrList<KMJob>	joblist;
+	Q3PtrListIterator<JobItem>	it(m_items);
+	Q3PtrList<KMJob>	joblist;
 
 	joblist.setAutoDelete(false);
 	for (;it.current();++it)
@@ -459,10 +461,10 @@ void KMJobViewer::slotSelectionChanged()
 	m_manager->validatePluginActions(actionCollection(), joblist);
 }
 
-void KMJobViewer::jobSelection(QPtrList<KMJob>& l)
+void KMJobViewer::jobSelection(Q3PtrList<KMJob>& l)
 {
 	l.setAutoDelete(false);
-	QPtrListIterator<JobItem>	it(m_items);
+	Q3PtrListIterator<JobItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->isSelected())
 			l.append(it.current()->job());
@@ -472,7 +474,7 @@ void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 {
 	KMTimer::self()->hold();
 
-	QPtrList<KMJob>	l;
+	Q3PtrList<KMJob>	l;
 	jobSelection(l);
 	if (!m_manager->sendCommand(l,cmd,arg))
 	{
@@ -515,7 +517,7 @@ void KMJobViewer::slotMove(int prID)
 	}
 }
 
-void KMJobViewer::slotRightClicked(QListViewItem*,const QPoint& p,int)
+void KMJobViewer::slotRightClicked(Q3ListViewItem*,const QPoint& p,int)
 {
 	if (m_pop) m_pop->popup(p);
 }
@@ -525,7 +527,7 @@ void KMJobViewer::loadPrinters()
 	m_printers.clear();
 
 	// retrieve printer list without reloading it (faster)
-	QPtrListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
+	Q3PtrListIterator<KMPrinter>	it(*(KMFactory::self()->manager()->printerList(false)));
 	for (;it.current();++it)
 	{
 		// keep only real printers (no instance, no implicit) and special printers
@@ -578,7 +580,7 @@ void KMJobViewer::slotClose()
 void KMJobViewer::loadPluginActions()
 {
 	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
-	QMenuData	*menu(0);
+  QMenuItem *item = 0;
 
 	if (m_standalone)
 	{
@@ -586,16 +588,16 @@ void KMJobViewer::loadPluginActions()
 		KAction	*act = actionCollection()->action("job_restart");
 		for (int i=0;i<act->containerCount();i++)
 		{
-			if (menuBar()->findItem(act->itemId(i), &menu))
+			if ((item = menuBar()->findItem(act->itemId(i))) && item->menu())
 			{
-				menuindex = mpopindex = menu->indexOf(act->itemId(i))+1;
+				menuindex = mpopindex = item->menu()->indexOf(act->itemId(i))+1;
 				break;
 			}
 		}
 	}
 
-	QValueList<KAction*>	acts = m_manager->createPluginActions(actionCollection());
-	for (QValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
+	Q3ValueList<KAction*>	acts = m_manager->createPluginActions(actionCollection());
+	for (Q3ValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
 	{
 		// connect the action to this
 		connect((*it), SIGNAL(activated(int)), SLOT(pluginActionActivated(int)));
@@ -604,15 +606,15 @@ void KMJobViewer::loadPluginActions()
 		(*it)->plug(toolBar(), toolbarindex++);
 		if (m_pop)
 			(*it)->plug(m_pop, mpopindex++);
-		if (menu)
-			(*it)->plug(static_cast<QPopupMenu*>(menu), menuindex++);
+		if (item->menu())
+			(*it)->plug(static_cast<Q3PopupMenu*>(item->menu()), menuindex++);
 	}
 }
 
 void KMJobViewer::removePluginActions()
 {
-	QValueList<KAction*>	acts = actionCollection()->actions("plugin");
-	for (QValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
+	Q3ValueList<KAction*>	acts = actionCollection()->actions("plugin");
+	for (Q3ValueListIterator<KAction*> it=acts.begin(); it!=acts.end(); ++it)
 	{
 		(*it)->unplugAll();
 		delete (*it);
@@ -668,7 +670,7 @@ void KMJobViewer::pluginActionActivated(int ID)
 {
 	KMTimer::self()->hold();
 
-	QPtrList<KMJob>	joblist;
+	Q3PtrList<KMJob>	joblist;
 	jobSelection(joblist);
 	if (!m_manager->doPluginAction(ID, joblist))
 		KMessageBox::error(this, "<qt>"+i18n("Operation failed.")+"<p>"+KMManager::self()->errorMsg()+"</p></qt>");
@@ -717,7 +719,7 @@ bool KMJobViewer::isSticky() const
 	return ( m_stickybox ? m_stickybox->isChecked() : false );
 }
 
-void KMJobViewer::slotDropped( QDropEvent *e, QListViewItem* )
+void KMJobViewer::slotDropped( QDropEvent *e, Q3ListViewItem* )
 {
 	QStringList files;
 	QString target;

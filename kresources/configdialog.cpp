@@ -25,7 +25,7 @@
 #include <klineedit.h>
 #include <kmessagebox.h>
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qcheckbox.h>
@@ -46,7 +46,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   QVBoxLayout *mainLayout = new QVBoxLayout( main, 0, spacingHint() );
 
-  QGroupBox *generalGroupBox = new QGroupBox( 2, Qt::Horizontal, main );
+  Q3GroupBox *generalGroupBox = new Q3GroupBox( 2, Qt::Horizontal, main );
   generalGroupBox->layout()->setSpacing( spacingHint() );
   generalGroupBox->setTitle( i18n( "General Settings" ) );
 
@@ -61,7 +61,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   mainLayout->addWidget( generalGroupBox );
 
-  QGroupBox *resourceGroupBox = new QGroupBox( 2, Qt::Horizontal,  main );
+  Q3GroupBox *resourceGroupBox = new Q3GroupBox( 2, Qt::Horizontal,  main );
   resourceGroupBox->layout()->setSpacing( spacingHint() );
   resourceGroupBox->setTitle( i18n( "%1 Resource Settings" )
                               .arg( factory->typeName( resource->type() ) ) );

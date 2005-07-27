@@ -1,9 +1,8 @@
 #!/usr/bin/perl -I/Users/duke/src/kde/kdebindings/kalyptus
 # -*- indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-
 
-# KDOC -- C++ and CORBA IDL interface documentation tool.
-# Sirtaj Singh Kang <taj@kde.org>, Jan 1999.
-# $Id$
+# dcopidl, based on kalyptus, based on KDOC, originally Sirtaj Singh Kang <taj@kde.org>, Jan 1999.
+# Current Maintainer: David Faure <faure@kde.org>
 
 # All files in this project are distributed under the GNU General
 # Public License. This is Free Software.
@@ -22,13 +21,12 @@ use kdocAstUtil;
 use kdocParseDoc;
 
 use vars qw/ %rootNodes $declNodeType @includes_list %options @formats_wanted $allow_k_dcop_accessors
-	$skipInternal %defines $defines $match_qt_defines
 	$libname $outputdir $parse_global_space $striphpath $doPrivate $readstdin
 	$Version $quiet $debug $debuggen $parseonly $currentfile $cSourceNode $exe
-	%formats %flagnames @allowed_k_dcop_accesors $allowed_k_dcop_accesors_re $rootNode 
+	%formats %flagnames @allowed_k_dcop_accesors $allowed_k_dcop_accesors_re $rootNode
 	@classStack $cNode $globalSpaceClassName
 	$lastLine $docNode @includes $cpp $defcppcmd $cppcmd $docincluded
-	$inExtern $inNamespace %stats %definitions @inputqueue @codeqobject /;
+	$inExtern $inNamespace %stats %definitions @inputqueue /;
 
 ## globals
 
@@ -62,23 +60,10 @@ $cpp = 0;
 $defcppcmd = "g++ -Wp,-C -E";
 $cppcmd = "";
 
-$exe = basename $0;
+#$exe = basename $0;
+$exe = "dcopidl";
 
 @inputqueue = ();
-@codeqobject = split "\n", <<CODE;
-public:
-    virtual QMetaObject *metaObject() const;
-    virtual const char *className() const;
-    virtual void* qt_cast( const char* );
-    virtual bool qt_invoke( int, QUObject* );
-    virtual bool qt_emit( int, QUObject* );
-    virtual bool qt_property( int, int, QVariant* );
-    static QMetaObject* staticMetaObject();
-    QObject* qObject();
-    static QString tr( const char *, const char * = 0 );
-    static QString trUtf8( const char *, const char * = 0 );
-private:
-CODE
 
 # Supported formats
 %formats = ( "dcopidl" => "kalyptusCxxToDcopIDL" );
@@ -110,20 +95,11 @@ $allowed_k_dcop_accesors_re = join("|", @allowed_k_dcop_accesors);
     QM_EXPORT_WORKSPACE => '',
     QT_NO_REMOTE => 'QT_NO_REMOTE',
     QT_ACCESSIBILITY_SUPPORT => 'QT_ACCESSIBILITY_SUPPORT',
-    Q_WS_X11 => 'Q_WS_X11',
+    Q_WS_X11 => '',
     Q_DISABLE_COPY => 'Q_DISABLE_COPY',
     Q_WS_QWS => 'undef',
     Q_WS_MAC => 'undef',
-    Q_OBJECT => <<'CODE',
-public:
-    virtual QMetaObject *metaObject() const;
-    virtual const char *className() const;
-    virtual bool qt_invoke( int, QUObject* );
-    virtual bool qt_emit( int, QUObject* );
-    static QString tr( const char *, const char * = 0 );
-    static QString trUtf8( const char *, const char * = 0 );
-private:
-CODE
+    Q_OBJECT => ''
 };
 
 =head1 KDOC -- Source documentation tool
@@ -138,15 +114,6 @@ Getopt::Long::config qw( no_ignore_case permute bundling auto_abbrev );
 
 GetOptions( \%options,
 	"format|f=s", \@formats_wanted,
-	"url|u=s",
-	"skip-internal", \$skipInternal,
-	"skip-deprecated|e",
-	"document-all|a",
-	"compress|z",
-	# HTML options
-	"html-cols=i",
-	"html-logo=s",
-
 	"strip-h-path",	\$striphpath,
 	"outputdir|d=s", \$outputdir,
 	"stdin|i",	\$readstdin,
@@ -160,8 +127,6 @@ GetOptions( \%options,
 	"docincluded",  \$docincluded,
 	"cppcmd|C=s",	\$cppcmd,
 	"includedir|I=s", \@includes,
-	"define=s", \%defines, # define a single preprocessing symbol
-	"defines=s", \$defines, # file containing preprocessing symbols, one per line
 
 	"quiet|q",	\$quiet,
 	"debug|D",	\$debug, # debug the parsing
@@ -184,59 +149,13 @@ if ( $#includes >= 0 && !$cpp ) {
 	die "$exe: --includedir requires --cpp\n";
 }
 
-# Check output formats. HTML is the default
-if( $#formats_wanted < 0 ) {
-	push @formats_wanted, "java";
-}
-
 foreach my $format ( @formats_wanted ) {
 	die "$exe: unsupported format '$format'.\n"
 		if !defined $formats{$format};
 }
 
-if( $defines )
-{
-    open( DEFS, $defines ) or die "Couldn't open $defines: $!\n";
-    my @defs = <DEFS>;
-    chomp @defs;
-    close DEFS;
-    foreach (@defs)
-    {
-        $defines{ $_ } = 1 unless exists $defines{ $_ };
-    }
-}
-
-# Check the %defines hash for QT_* symbols and compile the corresponding RE
-# Otherwise, compile the default ones. Used for filtering in readCxxLine.
-if ( my @qt_defines = map { ($_=~m/^QT_(.*)/)[0] } keys %defines)
-{
-    my $regexp = "m/^#\\s*ifn?def\\s+QT_(?:" . join('|', map { "\$qt_defines[$_]" } 0..$#qt_defines).")/o";
-    $match_qt_defines = eval "sub { my \$s=shift;
-                                   \$s=~/^#\\s*if(n)?def/ || return 0;
-                                   if(!\$1) { return \$s=~$regexp ? 0:1 }
-                                   else { return \$s=~$regexp ? 1:0 }
-                                  }";
-    die if $@;
-}
-else
-{
-    $match_qt_defines = eval q£
-    sub
-    {
-        my $s = shift;
-        $s =~ m/^\#\s*ifndef\s+QT_NO_(?:REMOTE| # not in the default compile options
-                                        NIS|    #  ...
-                                        XINERAMA|
-                                        IMAGEIO_(?:MNG|JPEG)|
-                                        STYLE_(?:MAC|INTERLACE|COMPACT)
-                                     )/x;
-    }
-    £;
-    die if $@;
-}
 # Check if there any files to process.
 # We do it here to prevent the libraries being loaded up first.
-
 checkFileArgs();
 
 ######
@@ -249,7 +168,7 @@ checkFileArgs();
 		kdocAstUtil::dumpAst( $rootNode );
 	}
 	else {
-		writeDocumentation();
+		writeOutput();
 	}
 
 	kdocAstUtil::printDebugStats() if $debug;
@@ -334,7 +253,7 @@ sub parseFiles
 }
 
 
-sub writeDocumentation
+sub writeOutput
 {
 	foreach my $node ( values %rootNodes ) {
 		# postprocess
@@ -401,27 +320,11 @@ LOOP:
 			}
 		}
 
-		if ( $p =~ /^\s*Q_OBJECT/ ) {
-			push @inputqueue, @codeqobject;
-			next;
-		}
-		# Hack, waiting for real handling of preprocessor defines
 		$p =~ s/QT_STATIC_CONST/static const/;
-		$p =~ s/KSVG_GET/KJS::Value get();/;
-		$p =~ s/KSVG_BASECLASS_GET/KJS::Value get();/;
-		$p =~ s/KSVG_BRIDGE/KJS::ObjectImp *bridge();/;
-		$p =~ s/KSVG_FORWARDGET/KJS::Value getforward();/;
-		$p =~ s/KSVG_PUT/bool put();/;
-		$p =~ s/KSVG_FORWARDPUT/bool putforward();/;
-		$p =~ s/KSVG_BASECLASS/virtual KJS::Value cache();/;
-		if ( $p =~ m/KSVG_DEFINE_PROTOTYPE\((\w+)\)/ ) {
-			push @inputqueue, split('\n',"namespace KSVG {\nclass $1 {\n};\n};");
-		}
 
-		next if ( $p =~ /^\s*$/s ); 		# blank lines
-#			|| $p =~ /^\s*Q_OBJECT/		# QObject macro
-#			);
-#
+		next if ( $p =~ /^\s*$/s		# blank lines
+			|| $p =~ /^\s*Q_OBJECT/		# QObject macro
+			);
 
 		next if ( $p =~ /^\s*Q_ENUMS/			# ignore Q_ENUMS
 						|| $p =~ /^\s*Q_PROPERTY/		# and Q_PROPERTY
@@ -434,7 +337,8 @@ LOOP:
 						|| $p =~ /^\s*KDOM_/
 			);
 
-		push @includes_list, $1 if $p =~ /^#include\s+<?(.*?)>?\s*$/;
+		push @includes_list, $1 if $p =~ /^#include\s+<(.*?)>\s*$/;
+		push @includes_list, $1 if $p =~ /^#include\s+"(.*?)"\s*$/;
 
 		# remove all preprocessor macros
 		if( $p =~ /^\s*#\s*(\w+)/ ) {
@@ -460,7 +364,6 @@ LOOP:
 				     $p =~ m/^#\s*else/ or
 				     $p =~ m/^#\s*if\s+defined\(Q_FULL_TEMPLATE_INSTANTIATION/ or
 				     $p =~ m/^#\s*ifdef\s+CONTAINER_CUSTOM_WIDGETS/ or
-				     &$match_qt_defines( $p ) or
 				     $p =~ m/^#\s*if\s+0\s+/ ) {
 				     my $if_depth = 1;
 				     while ( defined $p && $if_depth > 0 ) {

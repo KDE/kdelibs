@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -56,24 +56,11 @@
 #ifndef KSOCKETBASE_H
 #define KSOCKETBASE_H
 
-#include <qiodevice.h>
-#include <qstring.h>
+#include <QIODevice>
+#include <QString>
 
 #include "ksocketaddress.h"
 #include <kdelibs_export.h>
-
-/*
- * This is extending QIODevice's error codes
- *
- * According to qiodevice.h, the last error is IO_UnspecifiedError
- * These errors will never occur in functions declared in QIODevice
- * (except open, but you shouldn't call open)
- */
-#define IO_ListenError		(IO_UnspecifiedError+1)
-#define IO_AcceptError		(IO_UnspecifiedError+2)
-#define IO_LookupError		(IO_UnspecifiedError+3)
-#define IO_SocketCreateError	(IO_UnspecifiedError+4)
-#define IO_BindError		(IO_UnspecifiedError+5)
 
 class QMutex;
 
@@ -87,12 +74,12 @@ class KSocketBasePrivate;
  *  @brief Basic socket functionality.
  *
  * This class provides the basic socket functionlity for descended classes.
- * Socket classes are thread-safe and provide a recursive mutex should it be 
+ * Socket classes are thread-safe and provide a recursive mutex should it be
  * needed.
  *
  * @note This class is abstract.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KSocketBase
 {
@@ -114,6 +101,8 @@ public:
    *    has gone idle for far too long.
    *  - Broadcast: whether this socket is allowed to send broadcast packets
    *    and will receive packets sent to broadcast.
+   *  - NoDelay: disable the Nagle algorithm for socket types that support
+   *    it.
    */
   enum SocketOptions
     {
@@ -121,7 +110,8 @@ public:
       AddressReuseable = 0x02,
       IPv6Only = 0x04,
       Keepalive = 0x08,
-      Broadcast = 0x10
+      Broadcast = 0x10,
+      NoDelay = 0x20
     };
 
   /**
@@ -227,7 +217,7 @@ public:
    * socket options and calls @ref setSocketOptions.
    *
    * @param enable		whether to set this socket to blocking mode
-   * @returns whether setting this value was successful; it is NOT the 
+   * @returns whether setting this value was successful; it is NOT the
    *          final blocking mode.
    */
   virtual bool setBlocking(bool enable);
@@ -311,6 +301,28 @@ public:
   bool broadcast() const;
 
   /**
+   * Sets this socket's NoDelay flag.
+   * 
+   * Stream-oriented protocols, like TCP, have an internal algorithm 
+   * (called Nagle's algorithm) that collects data in a buffer so that
+   * the transmission doesn't occur after every single write operation. 
+   * The side-effect is that the transmission of short messages is
+   * delayed.
+   *
+   * Setting NoDelay to 'true' will disable this algorithm.
+   *
+   * @returns true if setting this flag was successful.
+   */
+  virtual bool setNoDelay(bool enable);
+
+  /**
+   * Retrieves this socket's NoDelay flag.
+   *
+   * @returns true if this socket's Nagle algorithm is disabled.
+   */
+  bool noDelay() const;
+
+  /**
    * Retrieves the socket implementation used on this socket.
    *
    * This function creates the device if none has been set
@@ -370,6 +382,11 @@ protected:
    */
   void setError(SocketError error);
 
+  /**
+   * Resets the socket error code and the I/O Device's status.
+   */
+  void resetError();
+
 public:
   /**
    * Retrieves the socket error code.
@@ -391,7 +408,7 @@ public:
    * problems regarding socket creation, connection and destruction in
    * multi-threaded programs. The classes are guaranteed to work while
    * the socket exists, but it's not wise to call connect in multiple
-   * threads. 
+   * threads.
    *
    * Also, this mutex must be unlocked before the object is destroyed, which
    * means you cannot use it to guard against other threads accessing the object
@@ -438,7 +455,7 @@ private:
  * This class provides the standard interfaces for active sockets, i.e.,
  * sockets that are used to connect to external addresses.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KActiveSocketBase: public QIODevice, virtual public KSocketBase
 {
@@ -446,12 +463,28 @@ public:
   /**
    * Constructor.
    */
-  KActiveSocketBase();
+  KActiveSocketBase(QObject* parent);
 
   /**
    * Destructor.
    */
   virtual ~KActiveSocketBase();
+
+  /**
+   * Unshadow errorString from QIODevice
+   */
+  inline QString errorString() const
+  { return QIODevice::errorString(); }
+
+  /**
+   * @reimplemented
+   */
+  virtual void setSocketDevice(KSocketDevice* device);
+
+  /**
+   * Reimplemented from QIODevice.
+   */
+  virtual bool open(OpenMode mode);
 
   /**
    * Binds this socket to the given address.
@@ -481,7 +514,8 @@ public:
    * @returns true if the connection was successful or has been successfully
    *          queued; false if an error occurred.
    */
-  virtual bool connect(const KResolverEntry& address) = 0;
+  virtual bool connect(const KResolverEntry& address, 
+		       OpenMode mode = ReadWrite) = 0;
 
   /**
    * Disconnects this socket from a connection, if possible.
@@ -504,21 +538,21 @@ public:
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset size() const
+  virtual qint64 size() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual Offset at() const
+  virtual qint64 pos() const
   { return 0; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return false.
    */
-  virtual bool at(Offset)
+  virtual bool seek(qint64)
   { return false; }
 
   /**
@@ -529,31 +563,22 @@ public:
   { return true; }
 
   /**
-   * Returns the number of bytes available for reading without
-   * blocking.
+   * Reads data from the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::read for
+   * more information.
    */
-  virtual Q_LONG bytesAvailable() const = 0;
-
-  /**
-   * Waits up to @p msecs for more data to be available on this socket.
-   *
-   * If msecs is -1, this call will block indefinetely until more data
-   * is indeed available; if it's 0, this function returns immediately.
-   *
-   * If @p timeout is not NULL, this function will set it to indicate
-   * if a timeout occurred.
-   *
-   * @returns the number of bytes available
-   */
-  virtual Q_LONG waitForMore(int msecs, bool *timeout = 0L) = 0;
+  inline qint64 read(char *data, qint64 maxlen)
+  { return QIODevice::read(data, maxlen); }
 
   /**
    * Reads data from the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::readBlock for
+   * Reimplemented from QIODevice. See QIODevice::read for
    * more information.
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG len) = 0;
+  inline QByteArray read(qint64 len)
+  { return QIODevice::read(len); }
 
   /** @overload
    * Receives data and the source address.
@@ -566,10 +591,10 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes read
    */
-  virtual Q_LONG readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from) = 0;
+  qint64 read(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
-   * Peeks the data in the socket.
+   * Peeks the data in the socket and the source address.
    *
    * This call will allow you to peek the data to be received without actually
    * receiving it -- that is, it will be available for further peekings and
@@ -579,9 +604,10 @@ public:
    * @param maxlen		the maximum number of bytes to peek
    * @returns the actual number of bytes copied into @p data
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen) = 0;
+  qint64 peek(char *data, qint64 maxlen);
 
-  /** @overload
+  /**
+   * @overload
    * Peeks the data in the socket and the source address.
    *
    * This call will allow you to peek the data to be received without actually
@@ -593,15 +619,16 @@ public:
    * @param from		the address of the sender will be stored here
    * @returns the actual number of bytes copied into @p data
    */
-  virtual Q_LONG peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from) = 0;
+  qint64 peek(char *data, qint64 maxlen, KSocketAddress& from);
 
   /**
    * Writes the given data to the socket.
    *
-   * Reimplemented from QIODevice. See QIODevice::writeBlock for
+   * Reimplemented from QIODevice. See QIODevice::write for
    * more information.
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len) = 0;
+  inline qint64 write(const char *data, qint64 len)
+  { return QIODevice::write(data, len); }
 
   /** @overload
    * Writes the given data to the destination address.
@@ -614,26 +641,26 @@ public:
    * @param to			the address to send to
    * @returns the number of bytes actually sent
    */
-  virtual Q_LONG writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to) = 0;
+  qint64 write(const char *data, qint64 len, const KSocketAddress& to);
 
   /**
-   * Reads one character from the socket.
-   * Reimplementation from QIODevice. See QIODevice::getch for more information.
+   * Waits up to @p msecs for more data to be available on this socket.
+   *
+   * If msecs is -1, this call will block indefinetely until more data
+   * is indeed available; if it's 0, this function returns immediately.
+   *
+   * If @p timeout is not NULL, this function will set it to indicate
+   * if a timeout occurred.
+   *
+   * @returns the number of bytes available
    */
-  virtual int getch();
-
-  /**
-   * Writes one character to the socket.
-   * Reimplementation from QIODevice. See QIODevice::putch for more information.
-   */
-  virtual int putch(int ch);
+  virtual qint64 waitForMore(int msecs, bool *timeout = 0L) = 0;
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
-   * This will always return -1;
    */
-  virtual int ungetch(int)
-  { return -1; }
+  void ungetChar(char)
+  { return; }
 
   /**
    * Returns this socket's local address.
@@ -658,12 +685,67 @@ public:
 
 protected:
   /**
-   * Sets the socket's error code and the I/O Device's status.
+   * Reads data from the socket.
    *
-   * @param status		the I/O Device status
+   * Reimplemented from QIODevice. See QIODevice::readData for
+   * more information.
+   */
+  virtual qint64 readData(char *data, qint64 len);
+
+  /** @overload
+   * Receives data and the source address.
+   *
+   * This call will read data in the socket and will also
+   * place the sender's address in @p from object.
+   *
+   * @param data		where to write the read data to
+   * @param maxlen		the maximum number of bytes to read
+   * @param from		the address of the sender will be stored here
+   * @returns the actual number of bytes read
+   */
+  virtual qint64 readData(char *data, qint64 maxlen, KSocketAddress* from) = 0;
+
+  /**
+   * Peeks the data in the socket and the source address.
+   *
+   * This call will allow you to peek the data to be received without actually
+   * receiving it -- that is, it will be available for further peekings and
+   * for the next read call.
+   *
+   * @param data		where to write the peeked data to
+   * @param maxlen		the maximum number of bytes to peek
+   * @param from		the address of the sender will be stored here
+   * @returns the actual number of bytes copied into @p data
+   */
+  virtual qint64 peekData(char *data, qint64 maxlen, KSocketAddress* from) = 0;
+
+  /**
+   * Writes the given data to the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::writeData for
+   * more information.
+   */
+  virtual qint64 writeData(const char *data, qint64 len);
+
+  /** @overload
+   * Writes the given data to the destination address.
+   *
+   * Note that not all socket connections allow sending data to different
+   * addresses than the one the socket is connected to.
+   *
+   * @param data		the data to write
+   * @param len			the length of the data
+   * @param to			the address to send to
+   * @returns the number of bytes actually sent
+   */
+  virtual qint64 writeData(const char *data, qint64 len, const KSocketAddress* to) = 0;
+
+  /**
+   * Sets the socket's error code.
+   *
    * @param error		the error code
    */
-  void setError(int status, SocketError error);
+  void setError(SocketError error);
 
   /**
    * Resets the socket error code and the I/O Device's status.
@@ -678,7 +760,7 @@ protected:
  * This socket provides the initial functionality for passive sockets,
  * i.e., sockets that accept incoming connections.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KPassiveSocketBase: virtual public KSocketBase
 {

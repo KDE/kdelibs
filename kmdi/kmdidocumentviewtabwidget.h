@@ -39,15 +39,17 @@ public:
 	 * \sa QTabWidget
 	 * \sa KTabWidget
 	 */
-	virtual void addTab ( QWidget * child, const QIconSet & iconset, const QString & label );
+	virtual void addTab ( QWidget * child, const QIcon & iconset, const QString & label );
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 	/**
 	 * Add a tab into the tabwidget
 	 * \sa QTabWidget
 	 * \sa KTabWidget
 	 */
 	virtual void addTab ( QWidget * child, QTab * tab );
-
+#endif
 	/**
 	 * Insert a tab into the tabwidget with a label
 	 * \sa QTabWidget
@@ -60,14 +62,17 @@ public:
 	 * \sa QTabWidget
 	 * \sa KTabWidget
 	 */
-	virtual void insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index = -1 );
+	virtual void insertTab ( QWidget * child, const QIcon & iconset, const QString & label, int index = -1 );
 
+#if 0
+//FIXME: Qt4 does not have QTab's
 	/**
 	 * Inserts a tab into the tabwidget
 	 * \sa QTabWidget
 	 * \sa KTabWidget
 	 */
 	virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
+#endif
 
 	/**
 	 * Removes the tab from the tabwidget

@@ -21,12 +21,14 @@
 
    You should have received a copy of the GNU Lesser General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <qclipboard.h>
 #include <qtimer.h>
+#include <qevent.h>
+#include <qstyle.h>
 
 #include <kconfig.h>
 #include <qtooltip.h>
@@ -90,7 +92,7 @@ public:
 
     int squeezedEnd;
     int squeezedStart;
-    BackgroundMode bgMode;
+    Qt::BackgroundMode bgMode;
     QString squeezedText;
     KCompletionBox *completionBox;
 };
@@ -319,7 +321,7 @@ void KLineEdit::setSqueezedText()
     d->squeezedEnd = 0;
     QString fullText = d->squeezedText;
     QFontMetrics fm(fontMetrics());
-    int labelWidth = size().width() - 2*frameWidth() - 2;
+    int labelWidth = size().width() - 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth) - 2;
     int textWidth = fm.width(fullText);
 
     if (textWidth > labelWidth)
@@ -379,7 +381,7 @@ void KLineEdit::setSqueezedText()
       QLineEdit::setText(fullText);
 
           QToolTip::remove( this );
-          QToolTip::hide();
+          QToolTip::showText(pos(), QString()); // hide
        }
 
        setCursorPosition(0);
@@ -512,17 +514,17 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     {
         KeyBindingMap keys = getKeyBindings();
         KGlobalSettings::Completion mode = completionMode();
-        bool noModifier = (e->state() == NoButton ||
-                           e->state() == ShiftButton ||
-                           e->state() == Keypad);
+        bool noModifier = (e->state() == Qt::NoButton ||
+                           e->state() == Qt::ShiftModifier ||
+                           e->state() == Qt::KeypadModifier);
 
         if ( (mode == KGlobalSettings::CompletionAuto ||
               mode == KGlobalSettings::CompletionPopupAuto ||
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             if ( !d->userSelection && hasSelectedText() &&
-                 ( e->key() == Key_Right || e->key() == Key_Left ) &&
-                 e->state()==NoButton )
+                 ( e->key() == Qt::Key_Right || e->key() == Qt::Key_Left ) &&
+                 e->state()==Qt::NoButton )
             {
                 QString old_txt = text();
                 d->disableRestoreSelection = true;
@@ -532,7 +534,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 deselect();
                 QLineEdit::keyPressEvent ( e );
                 int cPosition=cursorPosition();
-                if (e->key() ==Key_Right && cPosition > start )
+                if (e->key() ==Qt::Key_Right && cPosition > start )
                     validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
                 else
                     validateAndSet(old_txt, cPosition, start, old_txt.length());
@@ -541,7 +543,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 return;
             }
 
-            if ( e->key() == Key_Escape )
+            if ( e->key() == Qt::Key_Escape )
             {
                 if (hasSelectedText() && !d->userSelection )
                 {
@@ -562,7 +564,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         {
             QString keycode = e->text();
             if ( !keycode.isEmpty() && (keycode.unicode()->isPrint() ||
-                e->key() == Key_Backspace || e->key() == Key_Delete ) )
+                e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) )
             {
                 bool hasUserSelection=d->userSelection;
                 bool hadSelection=hasSelectedText();
@@ -592,7 +594,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( !hasSelectedText() && len /*&& cursorPosition() == len */)
                 {
-                    if ( e->key() == Key_Backspace )
+                    if ( e->key() == Qt::Key_Backspace )
                     {
                         if ( hadSelection && !hasUserSelection && !cursorNotAtEnd )
                         {
@@ -605,7 +607,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                             d->autoSuggest = false;
                     }
 
-                    if (e->key() == Key_Delete )
+                    if (e->key() == Qt::Key_Delete )
                         d->autoSuggest=false;
 
                     if ( emitSignals() )
@@ -614,7 +616,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if ( handleSignals() )
                         makeCompletion( txt );
 
-                    if(  (e->key() == Key_Backspace || e->key() == Key_Delete) )
+                    if(  (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
                         d->autoSuggest=true;
 
                     e->accept();
@@ -645,14 +647,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             // can set the new autocompletion again.
             if (hadSelection && !hasUserSelection && start>cPos &&
                ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
-                 e->key() == Key_Backspace || e->key() == Key_Delete ) )
+                 e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) )
             {
                 del();
                 setCursorPosition(cPos);
                 cursorNotAtEnd=true;
             }
 
-            uint selectedLength=selectedText().length();
+            int selectedLength=selectedText().length();
 
             d->disableRestoreSelection = true;
             QLineEdit::keyPressEvent ( e );
@@ -666,9 +668,9 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
             if ( txt != old_txt && len/* && ( cursorPosition() == len || force )*/ &&
                  ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
-                   e->key() == Key_Backspace || e->key() == Key_Delete) )
+                   e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete) )
             {
-                if ( e->key() == Key_Backspace )
+                if ( e->key() == Qt::Key_Backspace )
                 {
                     if ( hadSelection && !hasUserSelection && !cursorNotAtEnd )
                     {
@@ -681,7 +683,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                         d->autoSuggest = false;
                 }
 
-                if (e->key() == Key_Delete )
+                if (e->key() == Qt::Key_Delete )
                     d->autoSuggest=false;
 
                 if ( d->completionBox )
@@ -694,7 +696,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                   makeCompletion( txt );  // handle when requested...
                 }
 
-                if ( (e->key() == Key_Backspace || e->key() == Key_Delete ) &&
+                if ( (e->key() == Qt::Key_Backspace || e->key() == Qt::Key_Delete ) &&
                     mode == KGlobalSettings::CompletionPopupAuto )
                   d->autoSuggest=true;
 
@@ -792,7 +794,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    uint selectedLength = selectedText().length();
+    int selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
     QLineEdit::keyPressEvent ( e );
@@ -828,18 +830,16 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
-void KLineEdit::contextMenuEvent( QContextMenuEvent * e )
+void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
 {
-    if ( m_bEnableMenu )
-        QLineEdit::contextMenuEvent( e );
-}
+    if (!m_bEnableMenu)
+        return;
 
-QPopupMenu *KLineEdit::createPopupMenu()
-{
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    QPopupMenu *popup = QLineEdit::createPopupMenu();
+    QMenu *popup = createStandardContextMenu();
 
+    /* ###### QT4
       int id = popup->idAt(0);
       popup->changeItem( id - IdUndo, SmallIconSet("undo"), popup->text( id - IdUndo) );
       popup->changeItem( id - IdRedo, SmallIconSet("redo"), popup->text( id - IdRedo) );
@@ -847,13 +847,14 @@ QPopupMenu *KLineEdit::createPopupMenu()
       popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
       popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
       popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
+      */
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
     if ( compObj() && !isReadOnly() && kapp->authorize("lineedit_text_completion") )
     {
-        QPopupMenu *subMenu = new QPopupMenu( popup );
+        QMenu *subMenu = new QMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),
                  this, SLOT( completionMenuActivated( int ) ) );
 
@@ -895,7 +896,8 @@ QPopupMenu *KLineEdit::createPopupMenu()
     // inherit from this class! (DA)
     emit aboutToShowContextMenu( popup );
 
-    return popup;
+    popup->exec(e->globalPos());
+    delete popup;
 }
 
 void KLineEdit::completionMenuActivated( int id )
@@ -967,7 +969,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
     if( o == this )
     {
         KCursor::autoHideEventFilter( this, ev );
-        if ( ev->type() == QEvent::AccelOverride )
+        if ( ev->type() == QEvent::ShortcutOverride )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
             if (overrideAccel (e))
@@ -985,8 +987,8 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 bool trap = d->completionBox && d->completionBox->isVisible();
 
                 bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->state() == NoButton ||
-                                           e->state() == Keypad));
+                                          (e->state() == Qt::NoButton ||
+                                           e->state() == Qt::KeypadModifier));
 
                 // Qt will emit returnPressed() itself if we return false
                 if ( stopEvent )
@@ -1138,9 +1140,9 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     if (d->completionBox && d->completionBox->isVisible ())
     {
         int key = e->key();
-        ButtonState state = e->state();
-        if ((key == Key_Backtab || key == Key_Tab) &&
-            (state == NoButton || (state & ShiftButton)))
+        Qt::ButtonState state = e->state();
+        if ((key == Qt::Key_Backtab || key == Qt::Key_Tab) &&
+            (state == Qt::NoButton || (state & Qt::ShiftModifier)))
         {
             return true;
         }
@@ -1177,7 +1179,7 @@ void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
             bool wasSelected = d->completionBox->isSelected( d->completionBox->currentItem() );
             const QString currentSelection = d->completionBox->currentText();
             d->completionBox->setItems( items );
-            QListBoxItem* item = d->completionBox->findItem( currentSelection, Qt::ExactMatch );
+            Q3ListBoxItem* item = d->completionBox->findItem( currentSelection, Q3ListBox::ExactMatch );
             // If no item is selected, that means the listbox hasn't been manipulated by the user yet,
             // because it's not possible otherwise to have no selected item. In such case make
             // always the first item current and unselected, so that the current item doesn't jump.
@@ -1299,7 +1301,7 @@ QString KLineEdit::originalText() const
 void KLineEdit::focusInEvent( QFocusEvent* ev)
 {
     // Don't selectAll() in QLineEdit::focusInEvent if selection exists
-    if ( ev->reason() == QFocusEvent::Tab && inputMask().isNull() && hasSelectedText() )
+    if ( ev->reason() == Qt::TabFocusReason && inputMask().isNull() && hasSelectedText() )
         return;
     
     QLineEdit::focusInEvent(ev);

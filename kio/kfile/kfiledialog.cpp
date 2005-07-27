@@ -28,19 +28,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <qptrcollection.h>
+#include <q3ptrcollection.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpixmap.h>
 #include <qtextcodec.h>
 #include <qtooltip.h>
 #include <qtimer.h>
-#include <qwhatsthis.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
+#include <qx11info_x11.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -97,7 +97,7 @@
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
 
-template class QPtrList<KIO::StatJob>;
+template class Q3PtrList<KIO::StatJob>;
 
 namespace {
     static void silenceQToolBar(QtMsgType, const char *)
@@ -136,7 +136,7 @@ struct KFileDialogPrivate
     bool autoSelectExtChecked; // whether or not the _user_ has checked the above box
     QString extension; // current extension for this filter
 
-    QPtrList<KIO::StatJob> statJobs;
+    Q3PtrList<KIO::StatJob> statJobs;
 
     KURL::List urlList; //the list of selected urls
 
@@ -362,7 +362,7 @@ void KFileDialog::slotOk()
                 while ( it.current() ) {
                     name = (*it)->name();
                     if ( multi ) {
-                        name.prepend( '"' );
+                        name.prepend( QLatin1Char( '"' ) );
                         name.append( endQuote );
                     }
 
@@ -651,7 +651,7 @@ void KFileDialog::accept()
     locationEdit->changeItem( QString::null, 0 );
 
     KURL::List list = selectedURLs();
-    QValueListConstIterator<KURL> it = list.begin();
+    QList<KURL>::const_iterator it = list.begin();
     for ( ; it != list.end(); ++it ) {
         const KURL& url = *it;
         // we strip the last slash (-1) because KURLComboBox does that as well
@@ -752,7 +752,7 @@ void KFileDialog::multiSelectionChanged()
     KFileItemListIterator it ( *list );
     QString text;
     while ( (item = it.current()) ) {
-        text.append( begin ).append( item->name() ).append( '\"' );
+        text.append( begin ).append( item->name() ).append( QLatin1Char( '"' ) );
         ++it;
     }
 
@@ -801,8 +801,8 @@ void KFileDialog::updateLocationWhatsThis (void)
                              autocompletionWhatsThisText;
     }
 
-    QWhatsThis::add(d->locationLabel, whatsThisText);
-    QWhatsThis::add(locationEdit, whatsThisText);
+    d->locationLabel->setWhatsThis(whatsThisText);
+    locationEdit->setWhatsThis(whatsThisText);
 }
 
 void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
@@ -836,7 +836,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
     QToolTip::add( d->pathCombo, i18n("Often used folders") );
-    QWhatsThis::add( d->pathCombo, "<qt>" + i18n("Commonly used locations are listed here. "
+    d->pathCombo->setWhatsThis("<qt>" + i18n("Commonly used locations are listed here. "
                                                  "This includes standard locations, such as your home folder, as well as "
                                                  "locations that have been visited recently.") + autocompletionWhatsThisText);
 
@@ -914,12 +914,12 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
     coll->action( "reload" )->plug( toolbar );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
-    coll->action( "mkdir" )->setShortcut(Key_F10);
+    coll->action( "mkdir" )->setShortcut(Qt::Key_F10);
     coll->action( "mkdir" )->plug( toolbar );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Quick Access Navigation Panel"), Key_F9, coll,"toggleSpeedbar");
+        new KToggleAction(i18n("Show Quick Access Navigation Panel"), Qt::Key_F9, coll,"toggleSpeedbar");
     showSidebarAction->setCheckedState(i18n("Hide Quick Access Navigation Panel"));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
@@ -941,18 +941,18 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                             "<li>separating folders from files</li></ul></qt>"));
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
-    coll->action( "short view" )->setShortcut(Key_F6);
+    coll->action( "short view" )->setShortcut(Qt::Key_F6);
     menu->insert( coll->action( "short view" ));
-    coll->action( "detailed view" )->setShortcut(Key_F7);
+    coll->action( "detailed view" )->setShortcut(Qt::Key_F7);
     menu->insert( coll->action( "detailed view" ));
     menu->insert( coll->action( "separator" ));
-    coll->action( "show hidden" )->setShortcut(Key_F8);
+    coll->action( "show hidden" )->setShortcut(Qt::Key_F8);
     menu->insert( coll->action( "show hidden" ));
     menu->insert( showSidebarAction );
     menu->insert( showBookmarksAction );
-    coll->action( "preview" )->setShortcut(Key_F11);
+    coll->action( "preview" )->setShortcut(Qt::Key_F11);
     menu->insert( coll->action( "preview" ));
-    coll->action( "separate dirs" )->setShortcut(Key_F12);
+    coll->action( "separate dirs" )->setShortcut(Qt::Key_F12);
     menu->insert( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );
@@ -961,7 +961,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     menu->plug( toolbar );
 
     //Insert a separator.
-    KToolBarSeparator* spacerWidget = new KToolBarSeparator(Horizontal, false /*no line*/,
+    KToolBarSeparator* spacerWidget = new KToolBarSeparator(Qt::Horizontal, false /*no line*/,
                                                             toolbar);
     d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
@@ -1017,10 +1017,10 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                          "directly into the text area.<p>"
                          "Wildcards such as * and ? are allowed.</qt>");
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    QWhatsThis::add(d->filterLabel, whatsThisText);
+    d->filterLabel->setWhatsThis(whatsThisText);
     filterWidget = new KFileFilterCombo(d->mainWidget,
                                         "KFileDialog::filterwidget");
-    QWhatsThis::add(filterWidget, whatsThisText);
+    filterWidget->setWhatsThis(whatsThisText);
     setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
@@ -1062,7 +1062,7 @@ void KFileDialog::initGUI()
     delete d->boxLayout; // deletes all sub layouts
 
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
-    d->boxLayout->addWidget(toolbar, AlignTop);
+    d->boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     d->urlBarLayout = new QHBoxLayout( d->boxLayout ); // needed for the urlBar that may appear
     QVBoxLayout *vbox = new QVBoxLayout( d->urlBarLayout );
@@ -1072,13 +1072,13 @@ void KFileDialog::initGUI()
 
     QGridLayout* lafBox= new QGridLayout(2, 3, KDialog::spacingHint());
 
-    lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
-    lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
-    lafBox->addWidget(d->okButton, 0, 2, AlignVCenter);
+    lafBox->addWidget(d->locationLabel, 0, 0, Qt::AlignVCenter);
+    lafBox->addWidget(locationEdit, 0, 1, Qt::AlignVCenter);
+    lafBox->addWidget(d->okButton, 0, 2, Qt::AlignVCenter);
 
-    lafBox->addWidget(d->filterLabel, 1, 0, AlignVCenter);
-    lafBox->addWidget(filterWidget, 1, 1, AlignVCenter);
-    lafBox->addWidget(d->cancelButton, 1, 2, AlignVCenter);
+    lafBox->addWidget(d->filterLabel, 1, 0, Qt::AlignVCenter);
+    lafBox->addWidget(filterWidget, 1, 1, Qt::AlignVCenter);
+    lafBox->addWidget(d->cancelButton, 1, 2, Qt::AlignVCenter);
 
     lafBox->setColStretch(1, 4);
 
@@ -1324,7 +1324,7 @@ QString KFileDialog::getOpenFileNameWId(const QString& startDir,
     KFileDialog dlg(startDir, filter, parent, "filedialog", true);
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
-        XSetTransientForHint( qt_xdisplay(), dlg.winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dlg.winId(), parent_id );
 #else
     // TODO
 #endif
@@ -1398,7 +1398,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           const QString& caption)
 {
 #ifdef Q_WS_WIN
-    return QFileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory",
+    return Q3FileDialog::getExistingDirectory(startDir, parent, "getExistingDirectory",
                                              caption, true, true);
 #else
     KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent,
@@ -1489,7 +1489,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
     KURL u( ops->url() );
     QString name;
 
-    int count = line.contains( '"' );
+    const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
         u.setFileName( line );
         if ( u.isValid() )
@@ -1551,7 +1551,7 @@ QStringList KFileDialog::selectedFiles() const
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files ) {
             KURL::List urls = parseSelectedURLs();
-            QValueListConstIterator<KURL> it = urls.begin();
+            QList<KURL>::const_iterator it = urls.begin();
             while ( it != urls.end() ) {
                 if ( (*it).isLocalFile() )
                     list.append( (*it).path() );
@@ -1577,12 +1577,13 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
         dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( Saving );
+    dlg.setMode( KFile::File );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -1598,12 +1599,12 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
                                      WId parent_id,
                                      const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
-        XSetTransientForHint(qt_xdisplay(), dlg.winId(), parent_id);
+        XSetTransientForHint(QX11Info::display(), dlg.winId(), parent_id);
 #else
     // TODO
 #endif
@@ -1612,6 +1613,7 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
         dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( KFileDialog::Saving);
+    dlg.setMode( KFile::File );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
     dlg.exec();
@@ -1626,13 +1628,14 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = dir.at(0) == ':';
+    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
     KFileDialog dlg(specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
+    dlg.setMode( KFile::File );
 
     dlg.exec();
 
@@ -1976,8 +1979,7 @@ void KFileDialog::updateAutoSelectExtension (void)
 
         const QString locationLabelText = stripUndisplayable (d->locationLabel->text ());
         const QString filterLabelText = stripUndisplayable (d->filterLabel->text ());
-        QWhatsThis::add (d->autoSelectExtCheckBox,
-            "<qt>" +
+        d->autoSelectExtCheckBox->setWhatsThis(            "<qt>" +
                 i18n (
                   "This option enables some convenient features for "
                   "saving files with extensions:<br>"
@@ -2166,7 +2168,7 @@ KActionCollection * KFileDialog::actionCollection() const
 
 void KFileDialog::keyPressEvent( QKeyEvent *e )
 {
-    if ( e->key() == Key_Escape )
+    if ( e->key() == Qt::Key_Escape )
     {
         e->accept();
         d->cancelButton->animateClick();
@@ -2229,8 +2231,7 @@ void KFileDialog::toggleBookmarks(bool show)
                               i18n("Bookmarks"), 5);
         toolbar->getButton(HOTLIST_BUTTON)->setPopup(d->bookmarkHandler->menu(),
                                                      true);
-        QWhatsThis::add(toolbar->getButton(HOTLIST_BUTTON),
-                        i18n("<qt>This button allows you to bookmark specific locations. "
+        toolbar->getButton(HOTLIST_BUTTON)->setWhatsThis(                        i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
                                 "edit or select a bookmark.<p>"
                                 "These bookmarks are specific to the file dialog, but otherwise operate "

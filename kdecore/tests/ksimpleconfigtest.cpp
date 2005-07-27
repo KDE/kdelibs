@@ -6,6 +6,8 @@
 // demonstrates use of KSimpleConfig class
 
 #include <ksimpleconfig.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -20,7 +22,11 @@
 
 int main( int argc, char **argv )
 {
-  KApplication  a( argc, argv, "kconfigtest" );
+   KAboutData about("kconfigtest", "kconfigtest", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication a;
+
 
   KSimpleConfig aConfig( _PATH_TMP"/simpleconfig.cfg" );
 

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,9 @@
 
 #include <config.h>
 
-#include <qsocketnotifier.h>
-#include <qtimer.h>
-#include <qmutex.h>
+#include <QSocketNotifier>
+#include <QTimer>
+#include <QMutex>
 
 #include "ksocketaddress.h"
 #include "kresolver.h"
@@ -47,8 +47,8 @@ public:
   bool enableRead : 1, enableWrite : 1;
 };
 
-KClientSocketBase::KClientSocketBase(QObject *parent, const char *name)
-  : QObject(parent, name), d(new KClientSocketBasePrivate)
+KClientSocketBase::KClientSocketBase(QObject *parent)
+  : KActiveSocketBase(parent), d(new KClientSocketBasePrivate)
 {
   d->state = Idle;
   d->enableRead = true;
@@ -144,9 +144,11 @@ bool KClientSocketBase::lookup()
 
       // don't restart the lookups if they had succeeded and
       // the input values weren't changed
-      QObject::connect(&d->peerResolver, SIGNAL(finished(KResolverResults)), 
+      QObject::connect(&d->peerResolver, 
+		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
 		       this, SLOT(lookupFinishedSlot()));
-      QObject::connect(&d->localResolver, SIGNAL(finished(KResolverResults)), 
+      QObject::connect(&d->localResolver,
+		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
 		       this, SLOT(lookupFinishedSlot()));
 
       if (d->localResolver.status() <= 0)
@@ -207,7 +209,7 @@ bool KClientSocketBase::bind(const KResolverEntry& address)
   return false;
 }
 
-bool KClientSocketBase::connect(const KResolverEntry& address)
+bool KClientSocketBase::connect(const KResolverEntry& address, OpenMode mode)
 {
   if (state() == Connected)
     return true;		// to be compliant with the other classes
@@ -231,7 +233,7 @@ bool KClientSocketBase::connect(const KResolverEntry& address)
 	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
-	      setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
+	      KActiveSocketBase::open(mode | Unbuffered);
 	      emit connected(address);
 	    }
 	}
@@ -272,13 +274,14 @@ void KClientSocketBase::close()
   d->localResults = d->peerResults = KResolverResults();
 
   socketDevice()->close();
+  KActiveSocketBase::close();
   setState(Idle);
   emit stateChanged(Idle);
   emit closed();
 }
 
 // This function is unlike all the others because it is const
-Q_LONG KClientSocketBase::bytesAvailable() const
+qint64 KClientSocketBase::bytesAvailable() const
 {
   return socketDevice()->bytesAvailable();
 }
@@ -286,10 +289,10 @@ Q_LONG KClientSocketBase::bytesAvailable() const
 // All the functions below look really alike
 // Should I use a macro to define them?
 
-Q_LONG KClientSocketBase::waitForMore(int msecs, bool *timeout)
+qint64 KClientSocketBase::waitForMore(int msecs, bool *timeout)
 {
   resetError();
-  Q_LONG retval = socketDevice()->waitForMore(msecs, timeout);
+  qint64 retval = socketDevice()->waitForMore(msecs, timeout);
   if (retval == -1)
     {
       copyError();
@@ -298,10 +301,10 @@ Q_LONG KClientSocketBase::waitForMore(int msecs, bool *timeout)
   return retval;
 }
 
-Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress* from)
 {
   resetError();
-  Q_LONG retval = socketDevice()->readBlock(data, maxlen);
+  qint64 retval = socketDevice()->readData(data, maxlen, from);
   if (retval == -1)
     {
       copyError();
@@ -310,10 +313,10 @@ Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
+qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress* from)
 {
   resetError();
-  Q_LONG retval = socketDevice()->readBlock(data, maxlen, from);
+  qint64 retval = socketDevice()->peekData(data, maxlen, from);
   if (retval == -1)
     {
       copyError();
@@ -322,51 +325,17 @@ Q_LONG KClientSocketBase::readBlock(char *data, Q_ULONG maxlen, KSocketAddress& 
   return retval;
 }
 
-Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen)
+qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketAddress* to)
 {
   resetError();
-  Q_LONG retval = socketDevice()->peekBlock(data, maxlen);
+  qint64 retval = socketDevice()->writeData(data, len, to);
   if (retval == -1)
     {
       copyError();
       emit gotError(error());
     }
-  return retval;
-}
-
-Q_LONG KClientSocketBase::peekBlock(char *data, Q_ULONG maxlen, KSocketAddress& from)
-{
-  resetError();
-  Q_LONG retval = socketDevice()->peekBlock(data, maxlen, from);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
-  return retval;
-}
-
-Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len)
-{
-  resetError();
-  Q_LONG retval = socketDevice()->writeBlock(data, len);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
-  return retval;
-}
-
-Q_LONG KClientSocketBase::writeBlock(const char *data, Q_ULONG len, const KSocketAddress& to)
-{
-  resetError();
-  Q_LONG retval = socketDevice()->writeBlock(data, len, to);
-  if (retval == -1)
-    {
-      copyError();
-      emit gotError(error());
-    }
+  else
+    emit bytesWritten(retval);
   return retval;
 }
 
@@ -432,7 +401,7 @@ void KClientSocketBase::lookupFinishedSlot()
   if (d->peerResolver.status() < 0 || d->localResolver.status() < 0)
     {
       setState(Idle);		// backtrack
-      setError(IO_LookupError, LookupFailure);
+      setError(LookupFailure);
       emit stateChanged(Idle);
       emit gotError(LookupFailure);
       return;
@@ -471,7 +440,7 @@ void KClientSocketBase::stateChanging(SocketState newState)
 
 void KClientSocketBase::copyError()
 {
-  setError(socketDevice()->status(), socketDevice()->error());
+  setError(socketDevice()->error());
 }
 
 #include "kclientsocketbase.moc"

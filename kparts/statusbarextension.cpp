@@ -14,14 +14,14 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
  */
 
 #include "statusbarextension.h"
 
-#include <qvaluelist.h>
-#include <qobjectlist.h>
+#include <q3valuelist.h>
+#include <qobject.h>
 
 #include <kstatusbar.h>
 #include <kmainwindow.h>
@@ -88,16 +88,16 @@ StatusBarExtension::~StatusBarExtension()
 
 StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children() )
+    if ( !obj || obj->children().isEmpty() )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
-    const QObjectList *children = obj->children();
-    QObjectListIt it( *children );
-    for (; it.current(); ++it )
-        if ( it.current()->inherits( "KParts::StatusBarExtension" ) )
-            return static_cast<KParts::StatusBarExtension *>( it.current() );
+    const QObjectList &children = obj->children();
+    QObjectList::ConstIterator it = children.begin();
+    for (; it != children.end(); ++it )
+        if ( (*it)->inherits( "KParts::StatusBarExtension" ) )
+            return static_cast<KParts::StatusBarExtension *>( *it );
 
     return 0L;
 }
@@ -116,13 +116,13 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
   if ( gae->activated() )
   {
-    QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
     for ( ; it != m_statusBarItems.end() ; ++it )
       (*it).ensureItemShown( sb );
   }
   else
   {
-    QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+    Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
     for ( ; it != m_statusBarItems.end() ; ++it )
       (*it).ensureItemHidden( sb );
   }
@@ -150,7 +150,7 @@ void StatusBarExtension::setStatusBar( KStatusBar* status )
 void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
 {
   m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
-  QValueListIterator<StatusBarItem> it = m_statusBarItems.fromLast();
+  Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.fromLast();
   KStatusBar * sb = statusBar();
   Q_ASSERT(sb);
   if (sb)
@@ -160,7 +160,7 @@ void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool p
 void StatusBarExtension::removeStatusBarItem( QWidget * widget )
 {
   KStatusBar * sb = statusBar();
-  QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
+  Q3ValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
   for ( ; it != m_statusBarItems.end() ; ++it )
     if ( (*it).widget() == widget )
     {

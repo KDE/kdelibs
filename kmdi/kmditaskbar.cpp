@@ -37,7 +37,8 @@
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qstyle.h>
-
+#include <QMouseEvent>
+#include <QAbstractButton>
 #include <qnamespace.h>
 
 /*
@@ -63,7 +64,7 @@ KMdiTaskBarButton::KMdiTaskBarButton( KMdiTaskBar *pTaskBar, KMdiChildView *win_
 	m_pWindow = win_ptr;
 	QToolTip::add
 		( this, win_ptr->caption() );
-	setFocusPolicy( NoFocus );
+	setFocusPolicy( Qt::NoFocus );
 }
 
 KMdiTaskBarButton::~KMdiTaskBarButton()
@@ -73,10 +74,10 @@ void KMdiTaskBarButton::mousePressEvent( QMouseEvent* e )
 {
 	switch ( e->button() )
 	{
-	case QMouseEvent::LeftButton:
+	case Qt::LeftButton:
 		emit leftMouseButtonClicked( m_pWindow );
 		break;
-	case QMouseEvent::RightButton:
+	case Qt::RightButton:
 		emit rightMouseButtonClicked( m_pWindow );
 		break;
 	default:
@@ -95,12 +96,12 @@ void KMdiTaskBarButton::setNewText( const QString& s )
 void KMdiTaskBarButton::setText( const QString& s )
 {
 	m_actualText = s;
-	QButton::setText( s );
+	QAbstractButton::setText( s );
 }
 
 void KMdiTaskBarButton::fitText( const QString& origStr, int newWidth )
 {
-	QButton::setText( m_actualText );
+	QAbstractButton::setText( m_actualText );
 
 	int actualWidth = sizeHint().width();
 	int realLetterCount = origStr.length();
@@ -126,7 +127,7 @@ void KMdiTaskBarButton::fitText( const QString& origStr, int newWidth )
 		newLetterCount--;
 	}
 
-	QButton::setText( s );
+	QAbstractButton::setText( s );
 }
 
 QString KMdiTaskBarButton::actualText() const
@@ -140,7 +141,7 @@ QString KMdiTaskBarButton::actualText() const
 //
 //####################################################################
 
-KMdiTaskBar::KMdiTaskBar( KMdiMainFrm *parent, QMainWindow::ToolBarDock dock )
+KMdiTaskBar::KMdiTaskBar( KMdiMainFrm *parent, Qt::ToolBarDock dock )
 		: KToolBar( parent, "KMdiTaskBar",  /*honor_style*/ false,  /*readConfig*/ true )
 		, m_pCurrentFocusedWindow( 0 )
 		, m_pStretchSpace( 0 )
@@ -148,11 +149,11 @@ KMdiTaskBar::KMdiTaskBar( KMdiMainFrm *parent, QMainWindow::ToolBarDock dock )
 		, m_bSwitchedOn( false )
 {
 	m_pFrm = parent;
-	m_pButtonList = new QPtrList<KMdiTaskBarButton>;
+	m_pButtonList = new Q3PtrList<KMdiTaskBarButton>;
 	m_pButtonList->setAutoDelete( true );
 	//QT30   setFontPropagation(QWidget::SameFont);
 	setMinimumWidth( 1 );
-	setFocusPolicy( NoFocus );
+	setFocusPolicy( Qt::NoFocus );
 	parent->moveToolBar( this, dock ); //XXX obsolete!
 }
 
@@ -327,7 +328,7 @@ void KMdiTaskBar::layoutTaskBar( int taskBarWidth )
 	{
 		QFontMetrics fm = b->fontMetrics();
 		QString s = b->actualText();
-		QSize sz = fm.size( ShowPrefix, s );
+		QSize sz = fm.size( Qt::TextShowMnemonic, s );
 		int w = sz.width() + 6;
 		int h = sz.height() + sz.height() / 8 + 10;
 		w += h;
@@ -337,8 +338,9 @@ void KMdiTaskBar::layoutTaskBar( int taskBarWidth )
 	// if there's enough space, use actual width
 	int buttonCount = m_pButtonList->count();
 	int tbHandlePixel;
-	tbHandlePixel = style().pixelMetric( QStyle::PM_DockWindowHandleExtent, this );
-	int buttonAreaWidth = taskBarWidth - tbHandlePixel - style().pixelMetric( QStyle::PM_DefaultFrameWidth, this ) - 5;
+	QStyleOption option;
+	tbHandlePixel = style()->pixelMetric( QStyle::PM_DockWidgetHandleExtent, &option, this );
+	int buttonAreaWidth = taskBarWidth - tbHandlePixel - style()->pixelMetric( QStyle::PM_DefaultFrameWidth, &option, this ) - 5;
 	if ( ( ( allButtonsWidthHint ) <= buttonAreaWidth ) || ( width() < parentWidget() ->width() ) )
 	{
 		for ( b = m_pButtonList->first();b;b = m_pButtonList->next() )

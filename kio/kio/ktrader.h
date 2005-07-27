@@ -103,8 +103,8 @@ public:
     /**
      * A list of services.
      */
-    typedef QValueList<KService::Ptr> OfferList;
-    typedef QValueListIterator<KService::Ptr> OfferListIterator;
+    typedef Q3ValueList<KService::Ptr> OfferList;
+    typedef Q3ValueListIterator<KService::Ptr> OfferListIterator;
 
     /**
      * Standard destructor

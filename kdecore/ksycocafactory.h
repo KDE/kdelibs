@@ -22,15 +22,15 @@
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
 
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 class KSycoca;
 class QStringList;
 class QString;
 class KSycocaDict;
 class KSycocaResourceList;
 
-typedef QDict<KSycocaEntry::Ptr> KSycocaEntryDict;
+typedef Q3Dict<KSycocaEntry::Ptr> KSycocaEntryDict;
 
 /**
  * @internal
@@ -134,7 +134,7 @@ protected:
 /** This, instead of a typedef, allows to declare "class ..." in header files
  * @internal
  */
-class KDECORE_EXPORT KSycocaFactoryList : public QPtrList<KSycocaFactory>
+class KDECORE_EXPORT KSycocaFactoryList : public Q3PtrList<KSycocaFactory>
 {
 public:
    KSycocaFactoryList() { }

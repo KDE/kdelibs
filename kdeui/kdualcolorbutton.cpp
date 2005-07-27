@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "kdualcolorbutton.h"
@@ -25,6 +25,7 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <qdrawutil.h>
+#include <QDragEnterEvent>
 
 class KDualColorButton::KDualColorPrivate
 {
@@ -42,8 +43,8 @@ KDualColorButton::KDualColorButton(QWidget *parent, const char *name, QWidget* d
                               (const unsigned char *)dcolorarrow_bits, true);
     arrowBitmap->setMask(*arrowBitmap); // heh
     resetPixmap = new QPixmap((const char **)dcolorreset_xpm);
-    fg = QBrush(Qt::black, SolidPattern);
-    bg = QBrush(Qt::white, SolidPattern);
+    fg = QBrush(Qt::black, Qt::SolidPattern);
+    bg = QBrush(Qt::white, Qt::SolidPattern);
     curColor = Foreground;
     dragFlag = false;
     miniCtlFlag = false;
@@ -63,8 +64,8 @@ KDualColorButton::KDualColorButton(const QColor &fgColor, const QColor &bgColor,
                               (const unsigned char *)dcolorarrow_bits, true);
     arrowBitmap->setMask(*arrowBitmap);
     resetPixmap = new QPixmap((const char **)dcolorreset_xpm);
-    fg = QBrush(fgColor, SolidPattern);
-    bg = QBrush(bgColor, SolidPattern);
+    fg = QBrush(fgColor, Qt::SolidPattern);
+    bg = QBrush(bgColor, Qt::SolidPattern);
     curColor = Foreground;
     dragFlag = false;
     miniCtlFlag = false;
@@ -107,7 +108,7 @@ QSize KDualColorButton::sizeHint() const
 
 void KDualColorButton::setForeground(const QColor &c)
 {
-    fg = QBrush(c, SolidPattern);
+    fg = QBrush(c, Qt::SolidPattern);
     repaint(false);
 
     emit fgChanged(fg.color());
@@ -115,7 +116,7 @@ void KDualColorButton::setForeground(const QColor &c)
 
 void KDualColorButton::setBackground(const QColor &c)
 {
-    bg = QBrush(c, SolidPattern);
+    bg = QBrush(c, Qt::SolidPattern);
     repaint(false);
 
     emit bgChanged(bg.color());
@@ -124,9 +125,9 @@ void KDualColorButton::setBackground(const QColor &c)
 void KDualColorButton::setCurrentColor(const QColor &c)
 {
     if(curColor == Background)
-        bg = QBrush(c, SolidPattern);
+        bg = QBrush(c, Qt::SolidPattern);
     else
-        fg = QBrush(c, SolidPattern);
+        fg = QBrush(c, Qt::SolidPattern);
     repaint(false);
 }
 

@@ -21,11 +21,12 @@
 #define KDESASL_H
 
 #include <qstring.h>
+#include <qbytearray.h>
 
 #include <kdelibs_export.h>
 
 class KURL;
-class QStrIList;
+class Q3StrIList;
 
 /**
  * This library can create responses for SASL authentication for a given
@@ -91,16 +92,16 @@ public:
    * @returns the most secure method from the given methods and use it for
    * further operations.
    */
-  virtual QCString chooseMethod(const QStrIList aMethods);
+  virtual QByteArray chooseMethod(const Q3StrIList aMethods);
   /**
    * Explicitely set the SASL method used.
    */
-  virtual void setMethod(const QCString &aMethod);
+  virtual void setMethod(const QByteArray &aMethod);
   /**
    * @return the SASL method used.
    * @since 3.2
    */
-  QCString method() const;
+  QByteArray method() const;
   /**
    * @param numCalls number of times getResponse() has been called.
    * @return whether the challenge/response dialog has completed
@@ -126,7 +127,7 @@ public:
    * encoding. The challenge is decoded from base64 and the response is
    * encoded base64 if set to true.
    */
-   QCString getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = true);
+   QByteArray getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = true);
   /**
    * Create a response as above but place it in a QByteArray
    */
@@ -162,7 +163,7 @@ protected:
 
 private:
   QString mProtocol, mUser, mPass;
-  QCString mMethod;
+  QByteArray mMethod;
   bool mFirst;
 };
 

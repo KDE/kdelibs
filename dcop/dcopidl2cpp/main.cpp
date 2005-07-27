@@ -92,7 +92,7 @@ int main( int argc, char** argv )
     }
 
     QFile in( QFile::decodeName(argv[argpos]) );
-    if ( !in.open( IO_ReadOnly ) )
+    if ( !in.open( QIODevice::ReadOnly ) )
 	qFatal("Could not read %s", argv[argpos] );
 
     QDomDocument doc;
@@ -104,11 +104,11 @@ int main( int argc, char** argv )
     QString base( argv[argpos] );
     QString idl = base;
 
-    int pos = base.findRev( '.' );
+    int pos = base.lastIndexOf( '.' );
     if ( pos != -1 )
 	base = base.left( pos );
 
-    pos = idl.findRev('/');
+    pos = idl.lastIndexOf('/');
     if ( pos != -1 )
 	idl = idl.mid( pos+1 );
 
@@ -118,7 +118,7 @@ int main( int argc, char** argv )
     if ( generate_stub ) {
 	QString header = base;
 	generateStub( idl, header + "_stub.h", de );
-	pos = header.findRev('/');
+	pos = header.lastIndexOf('/');
 	if ( pos != -1 )
 	    header = header.mid( pos+1 );
 	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de);

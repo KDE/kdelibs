@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmlpdunixmanager.h"
@@ -39,7 +39,7 @@ class KTextBuffer
 {
 public:
 	KTextBuffer(QIODevice *dev) : m_stream(dev) {}
-	bool eof() const { return (m_stream.eof() && m_linebuf.isEmpty()); }
+	bool atEnd() const { return (m_stream.atEnd() && m_linebuf.isEmpty()); }
 	QString readLine();
 	void unreadLine(const QString& l) { m_linebuf = l; }
 private:
@@ -76,7 +76,7 @@ QString readLine(KTextBuffer& t)
 	QString	line, buffer;
 	bool	lineContinue(false);
 
-	while (!t.eof())
+	while (!t.atEnd())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')
@@ -118,7 +118,7 @@ QMap<QString,QString> readEntry(KTextBuffer& t)
 				entry["printer-name"] = l[0].left(p);	// only keep first name (discard aliases
 			else
 				entry["printer-name"] = l[0];
-			for (uint i=1; i<l.count(); i++)
+			for (int i=1; i<l.count(); i++)
 				if ((p=l[i].find('=')) != -1)
 					entry[l[i].left(p).stripWhiteSpace()] = l[i].right(l[i].length()-p-1).stripWhiteSpace();
 				else
@@ -152,12 +152,12 @@ QString getPrintcapFileName()
 	// check if LPRng system
 	QString	printcap("/etc/printcap");
 	QFile	f("/etc/lpd.conf");
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		kdDebug() << "/etc/lpd.conf found: probably LPRng system" << endl;
 		QTextStream	t(&f);
 		QString		line;
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.startsWith("printcap_path="))
@@ -184,12 +184,12 @@ QString getPrintcapFileName()
 void KMLpdUnixManager::parseEtcPrintcap()
 {
 	QFile	f(getPrintcapFileName());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			entry = readEntry(t);
 			if (entry.isEmpty() || !entry.contains("printer-name") || entry.contains("server"))
@@ -245,13 +245,13 @@ QString getEtcPrintersConfName()
 void KMLpdUnixManager::parseEtcPrintersConf()
 {
 	QFile	f(getEtcPrintersConfName());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		KTextBuffer	t(&f);
 		QMap<QString,QString>	entry;
 		QString		default_printer;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			entry = readEntry(t);
 			if (entry.isEmpty() || !entry.contains("printer-name"))
@@ -285,21 +285,18 @@ void KMLpdUnixManager::parseEtcPrintersConf()
 void KMLpdUnixManager::parseEtcLpPrinters()
 {
 	QDir	d("/etc/lp/printers");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Dirs);
-	if (!prlist)
-		return;
+	const QFileInfoList& prlist = d.entryInfoList(QDir::Dirs);
 
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	foreach(const QFileInfo& itFile, prlist)
 	{
-		if (it.current()->fileName() == "." || it.current()->fileName() == "..")
+		if (itFile.fileName() == "." || itFile.fileName() == "..")
 			continue;
-		QFile	f(it.current()->absFilePath() + "/configuration");
-		if (f.exists() && f.open(IO_ReadOnly))
+		QFile	f(itFile.absFilePath() + "/configuration");
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
 			QString		line, remote;
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				line = readLine(t);
 				if (line.isEmpty()) continue;
@@ -310,8 +307,8 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 				}
 			}
 			KMPrinter	*printer = new KMPrinter;
-			printer->setName(it.current()->fileName());
-			printer->setPrinterName(it.current()->fileName());
+			printer->setName(itFile.fileName());
+			printer->setPrinterName(itFile.fileName());
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())
@@ -327,16 +324,13 @@ void KMLpdUnixManager::parseEtcLpPrinters()
 void KMLpdUnixManager::parseEtcLpMember()
 {
 	QDir	d("/etc/lp/member");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Files);
-	if (!prlist)
-		return;
+	const QFileInfoList& prlist = d.entryInfoList(QDir::Files);
 
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	foreach(const QFileInfo& itFile, prlist)
 	{
 		KMPrinter	*printer = new KMPrinter;
-		printer->setName(it.current()->fileName());
-		printer->setPrinterName(it.current()->fileName());
+		printer->setName(itFile.fileName());
+		printer->setPrinterName(itFile.fileName());
 		printer->setType(KMPrinter::Printer);
 		printer->setState(KMPrinter::Idle);
 		printer->setDescription(i18n("Local printer"));
@@ -348,20 +342,17 @@ void KMLpdUnixManager::parseEtcLpMember()
 void KMLpdUnixManager::parseSpoolInterface()
 {
 	QDir	d("/usr/spool/interfaces/lp");
-	const QFileInfoList	*prlist = d.entryInfoList(QDir::Files);
-	if (!prlist)
-		return;
-
-	QFileInfoListIterator	it(*prlist);
-	for (;it.current();++it)
+	const QFileInfoList&	prlist = d.entryInfoList(QDir::Files);
+	
+	foreach(const QFileInfo& itFile, prlist)
 	{
-		QFile	f(it.current()->absFilePath());
-		if (f.exists() && f.open(IO_ReadOnly))
+		QFile	f(itFile.absFilePath());
+		if (f.exists() && f.open(QIODevice::ReadOnly))
 		{
 			KTextBuffer	t(&f);
 			QString		line, remote;
 
-			while (!t.eof())
+			while (!t.atEnd())
 			{
 				line = t.readLine().stripWhiteSpace();
 				if (line.startsWith("HOSTNAME"))
@@ -372,8 +363,8 @@ void KMLpdUnixManager::parseSpoolInterface()
 			}
 
 			KMPrinter	*printer = new KMPrinter;
-			printer->setName(it.current()->fileName());
-			printer->setPrinterName(it.current()->fileName());
+			printer->setName(itFile.fileName());
+			printer->setPrinterName(itFile.fileName());
 			printer->setType(KMPrinter::Printer);
 			printer->setState(KMPrinter::Idle);
 			if (!remote.isEmpty())

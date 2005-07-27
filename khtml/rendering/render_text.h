@@ -30,7 +30,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_line.h"
 
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 #include <assert.h>
 
 class QPainter;
@@ -130,7 +130,7 @@ private:
     friend class RenderText;
 };
 
-class InlineTextBoxArray : public QPtrVector<InlineTextBox>
+class InlineTextBoxArray : public Q3PtrVector<InlineTextBox>
 {
 public:
     InlineTextBoxArray();

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -28,9 +28,9 @@
 #include <sys/types.h>
 #include <netdb.h>
 
-#include <qptrlist.h>
-#include <qcstring.h>
-#include <qstringlist.h>
+#include <QList>
+#include <QByteArray>
+#include <QStringList>
 
 #include "kresolver.h"
 #include "kresolverworkerbase.h"
@@ -65,12 +65,13 @@ namespace KNetwork { namespace Internal
   class KStandardWorker: public KNetwork::KResolverWorkerBase
   {
   protected:
-    mutable QCString m_encodedName;
-    Q_UINT16 port;
+    mutable QByteArray m_encodedName;
+    quint16 port;
     int scopeid;
-    QPtrList<KNetwork::KResolverResults> resultList;
+    QList<KNetwork::KResolverResults*> resultList;
 
   public:
+    virtual ~KStandardWorker();
     bool sanityCheck();
 
     virtual bool preprocess();

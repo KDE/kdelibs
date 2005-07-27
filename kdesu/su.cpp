@@ -4,9 +4,9 @@
 *
 * This file is part of the KDE project, module kdesu.
 * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
-* 
-* This is free software; you can use this library under the GNU Library 
-* General Public License, version 2. See the file "COPYING.LIB" for the 
+*
+* This is free software; you can use this library under the GNU Library
+* General Public License, version 2. See the file "COPYING.LIB" for the
 * exact licensing terms.
 *
 * su.cpp: Execute a program as another user with "class SuProcess".
@@ -26,8 +26,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <qglobal.h>
-#include <qcstring.h>
 #include <qfile.h>
 
 #include <kdebug.h>
@@ -43,7 +41,7 @@
 #endif
 
 
-SuProcess::SuProcess(const QCString &user, const QCString &command)
+SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
 {
     m_User = user;
     m_Command = command;
@@ -73,18 +71,18 @@ int SuProcess::exec(const char *password, int check)
     if (check)
         setTerminal(true);
 
-    QCStringList args;
+    QList<QByteArray> args;
 
     if ((m_Scheduler != SchedNormal) || (m_Priority > 50))
         args += "root";
     else
         args += m_User;
-    
+
     args += "-c";
-    args += QCString(__KDE_BINDIR) + "/kdesu_stub";
+    args += QByteArray(__KDE_BINDIR) + "/kdesu_stub";
     args += "-";
 
-    QCString command = __PATH_SU;
+    QByteArray command = __PATH_SU;
     if (::access(__PATH_SU, X_OK) != 0)
     {
         command = QFile::encodeName(KGlobal::dirs()->findExe("su"));
@@ -102,7 +100,7 @@ int SuProcess::exec(const char *password, int check)
     SuErrors ret = (SuErrors) ConverseSU(password);
     // kdDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
 
-    if (ret == error) 
+    if (ret == error)
     {
         if (!check)
             kdError(900) << k_lineinfo << "Conversation with su failed\n";
@@ -126,13 +124,8 @@ int SuProcess::exec(const char *password, int check)
         return ret;
     }
 
-    if (m_bErase && password) 
-    {
-        char *ptr = const_cast<char *>(password);
-        const uint plen = strlen(password);
-        for (unsigned i=0; i < plen; i++)
-            ptr[i] = '\000';
-    }
+    if (m_bErase && password)
+        memset(const_cast<char *>(password), 0, qstrlen(password));
 
     if (ret == notauthorized)
     {
@@ -171,21 +164,21 @@ int SuProcess::exec(const char *password, int check)
 */
 
 int SuProcess::ConverseSU(const char *password)
-{	
+{
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;
     unsigned i, j;
     // kdDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
 
-    QCString line;
+    QByteArray line;
     while (true)
     {
-        line = readLine(); 
+        line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
         kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
 
-        switch (state) 
+        switch (state)
         {
             //////////////////////////////////////////////////////////////////////////
             case WaitForPrompt:
@@ -196,26 +189,26 @@ int SuProcess::ConverseSU(const char *password)
                     unreadLine(line);
                     return ok;
                 }
-    
+
                 while(waitMS(m_Fd,100)>0)
                 {
                     // There is more output available, so the previous line
                     // couldn't have been a password prompt (the definition
                     // of prompt being that  there's a line of output followed 
                     // by a colon, and then the process waits).
-                    QCString more = readLine();
+                    QByteArray more = readLine();
                     if (more.isEmpty())
                         break;
-    
+
                     line = more;
                     kdDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
                 }
-    
+
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.
                 const uint len = line.length();
-                for (i=0,j=0,colon=0; i<len; i++) 
+                for (i=0,j=0,colon=0; i<len; i++)
                 {
-                    if (line[i] == ':') 
+                    if (line[i] == ':')
                     {
                         j = i; colon++;
                         continue;
@@ -223,7 +216,7 @@ int SuProcess::ConverseSU(const char *password)
                     if (!isspace(line[i]))
                         j++;
                 }
-                if ((colon == 1) && (line[j] == ':')) 
+                if ((colon == 1) && (line[j] == ':'))
                 {
                     if (password == 0L)
                         return killme;
@@ -248,8 +241,8 @@ int SuProcess::ConverseSU(const char *password)
             //////////////////////////////////////////////////////////////////////////
             case CheckStar:
             {
-                QCString s = line.stripWhiteSpace();
-                if (s.isEmpty()) 
+                QByteArray s = line.trimmed();
+                if (s.isEmpty())
                 {
                     state=HandleStub;
                     break;

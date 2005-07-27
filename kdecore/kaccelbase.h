@@ -21,15 +21,15 @@
 #define _KACCELBASE_H
 
 #include <qmap.h>
-#include <qptrvector.h>
+#include <q3ptrvector.h>
 #include <qstring.h>
-#include <qvaluevector.h>
-#include <qvaluelist.h>
+#include <q3valuevector.h>
+#include <q3valuelist.h>
 
 #include "kaccelaction.h"
 #include "kkeyserver.h"
 
-class QPopupMenu;
+class Q3PopupMenu;
 class QWidget;
 
 //----------------------------------------------------
@@ -180,14 +180,14 @@ class KDECORE_EXPORT KAccelBase
 	 */
 	void writeSettings( KConfigBase* pConfig = 0 ) const;
 
-	QPopupMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
+	Q3PopupMenu* createPopupMenu( QWidget* pParent, const KKeySequence& );
 
  // Protected methods
  protected:
 	void slotRemoveAction( KAccelAction* );
 
 	struct X;
-	void createKeyList( QValueVector<struct X>& rgKeys );
+	void createKeyList( Q3ValueVector<struct X>& rgKeys );
 	bool insertConnection( KAccelAction* );
 	bool removeConnection( KAccelAction* );
 
@@ -212,7 +212,7 @@ class KDECORE_EXPORT KAccelBase
 
 	KAccelActions m_rgActions;
 	KKeyToActionMap m_mapKeyToAction;
-	QValueList<KAccelAction*> m_rgActionsNonUnique;
+	QList<KAccelAction*> m_rgActionsNonUnique;
 	bool m_bNativeKeys; // Use native key codes instead of Qt codes
 	bool m_bEnabled;
 	bool m_bConfigIsGlobal;

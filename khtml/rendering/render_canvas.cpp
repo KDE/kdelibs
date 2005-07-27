@@ -307,7 +307,7 @@ void RenderCanvas::deferredRepaint( RenderObject* o )
 void RenderCanvas::scheduleDeferredRepaints()
 {
     if (!needsFullRepaint()) {
-        QValueList<RenderObject*>::const_iterator it;
+        Q3ValueList<RenderObject*>::const_iterator it;
         for ( it = m_dirtyChildren.begin(); it != m_dirtyChildren.end(); ++it )
             (*it)->repaint();
     }
@@ -404,8 +404,8 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     int oldStartPos = m_selectionStartPos;
     RenderObject *oldEnd = m_selectionEnd;
     int oldEndPos = m_selectionEndPos;
-    QPtrList<RenderObject> oldSelectedInside;
-    QPtrList<RenderObject> newSelectedInside;
+    Q3PtrList<RenderObject> oldSelectedInside;
+    Q3PtrList<RenderObject> newSelectedInside;
     RenderObject *os = oldStart;
 
     while (os && os != oldEnd)
@@ -507,7 +507,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     // If so we have to draw them.
     // Could be faster by building list of non-intersecting rectangles rather
     // than unioning rectangles.
-    QPtrListIterator<RenderObject> oldIterator(oldSelectedInside);
+    Q3PtrListIterator<RenderObject> oldIterator(oldSelectedInside);
     bool firstRect = true;
     for (; oldIterator.current(); ++oldIterator){
         if (!newSelectedInside.containsRef(oldIterator.current())){
@@ -527,7 +527,7 @@ void RenderCanvas::setSelection(RenderObject *s, int sp, RenderObject *e, int ep
     // If so we have to draw them.
     // Could be faster by building list of non-intersecting rectangles rather
     // than unioning rectangles.
-    QPtrListIterator<RenderObject> newIterator(newSelectedInside);
+    Q3PtrListIterator<RenderObject> newIterator(newSelectedInside);
     firstRect = true;
     for (; newIterator.current(); ++newIterator){
         if (!oldSelectedInside.containsRef(newIterator.current())){

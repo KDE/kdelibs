@@ -120,7 +120,7 @@ signals:
     void error( int , const QString & );
     void connected();
     void finished();
-    void slaveStatus(pid_t, const QCString &, const QString &, bool);
+    void slaveStatus(pid_t, const QByteArray&, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
     void needSubURLData();
@@ -146,12 +146,12 @@ signals:
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void authorizationKey( const QCString&, const QCString&, bool );
+    void authorizationKey( const Q3CString&, const Q3CString&, bool );
 
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void delAuthorization( const QCString& grpkey );
+    void delAuthorization( const Q3CString& grpkey );
 
 protected:
     /////////////////

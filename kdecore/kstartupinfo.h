@@ -30,9 +30,11 @@ DEALINGS IN THE SOFTWARE.
 
 #ifdef Q_WS_X11 // FIXME(E): Redo in a less X11-specific way
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
+#include <qcoreevent.h>
+#include <qwindowdefs.h>
 #include "kdelibs_export.h"
 
 class KStartupInfoId;
@@ -89,7 +91,7 @@ class KDECORE_EXPORT KStartupInfo
          * with id startup_id should end.
          * @since 3.2
          */ 
-        static void appStarted( const QCString& startup_id );
+        static void appStarted( const QByteArray& startup_id );
         
         /**
          * Use this function if the application got a request with startup
@@ -100,7 +102,7 @@ class KDECORE_EXPORT KStartupInfo
          * needed only when a window is reused.
          * @since 3.2
          */
-        static void setNewStartupId( QWidget* window, const QCString& startup_id );
+        static void setNewStartupId( QWidget* window, const QByteArray& startup_id );
 
         /**
          * If your application shows temporarily some window during its startup,
@@ -118,7 +120,7 @@ class KDECORE_EXPORT KStartupInfo
          * user timestamp.
          * @since 3.3
          */
-        static QCString createNewStartupId();
+        static QByteArray createNewStartupId();
 	/**
 	 *
 	 */
@@ -300,13 +302,13 @@ class KDECORE_EXPORT KStartupInfo
 	 * @param window the id of the window
 	 * @param id the startup notification id
 	 */
-        static void setWindowStartupId( WId window, const QCString& id );
+        static void setWindowStartupId( WId window, const QByteArray& id );
 	/**
 	 * Returns startup notification identification of the given window.
 	 * @param w the id of the window
 	 * @return the startup notification id. Can be null if not found.
 	 */
-        static QCString windowStartupId( WId w );
+        static QByteArray windowStartupId( WId w );
         /**
          * @internal
          */
@@ -340,7 +342,7 @@ class KDECORE_EXPORT KStartupInfo
 	/**
 	 * 
 	 */ 
-	virtual void customEvent( QCustomEvent* e_P );
+	virtual void customEvent( QEvent* e_P );
     private slots:
         void startups_cleanup();
         void startups_cleanup_no_age();
@@ -358,13 +360,13 @@ class KDECORE_EXPORT KStartupInfo
         void remove_startup_pids( const KStartupInfoId& id, const KStartupInfoData& data );
         void remove_startup_pids( const KStartupInfoData& data );
         startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data );
-        bool find_id( const QCString& id_P, KStartupInfoId* id_O,
+        bool find_id( const QByteArray& id_P, KStartupInfoId* id_O,
             KStartupInfoData* data_O );
-        bool find_pid( pid_t pid_P, const QCString& hostname, KStartupInfoId* id_O,
+        bool find_pid( pid_t pid_P, const QByteArray& hostname, KStartupInfoId* id_O,
             KStartupInfoData* data_O );
-        bool find_wclass( QCString res_name_P, QCString res_class_P,
+        bool find_wclass( QByteArray res_name_P, QByteArray res_class_P,
             KStartupInfoId* id_O, KStartupInfoData* data_O );
-        static QCString get_window_hostname( WId w_P );
+        static QByteArray get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
         static QString check_required_startup_fields( const QString& msg,
@@ -412,12 +414,12 @@ class KDECORE_EXPORT KStartupInfoId
 	 * @param id the new identification, "0" for no notification or "" to read
 	 *           the environment variable
 	 */
-        void initId( const QCString& id = "" );
+        void initId( const QByteArray& id = "" );
 	/**
 	 * Returns the notification identifier as string.
 	 * @return the identification string for the notification
 	 */
-        const QCString& id() const;
+        const QByteArray& id() const;
         /**
          * Return the user timestamp for the startup notification, or 0 if no timestamp
          * is set.
@@ -544,20 +546,20 @@ class KDECORE_EXPORT KStartupInfoData
 	 * detected correctly.
 	 * @param wmclass the WM_CLASS value for the startup notification
 	 */
-        void setWMClass( const QCString& wmclass );
+        void setWMClass( const QByteArray& wmclass );
 	/**
 	 * Returns the WM_CLASS value for the startup notification, or binary name if not
 	 * available.
 	 * @return the WM_CLASS value for the startup notification, or the binary name
 	 *         if not set
 	 */
-        const QCString findWMClass() const;
+        const QByteArray findWMClass() const;
 	/**
 	 * Returns the WM_CLASS value for the startup notification, or empty if not available.
 	 * @return the WM_CLASS value for the startup notification, or empty
 	 *         if not set
 	 */
-        const QCString& WMClass() const;
+        const QByteArray& WMClass() const;
 	/**
 	 * Adds a PID to the list of processes that belong to the startup notification. It
 	 * may be used to increase the chance that the windows created by the starting
@@ -570,7 +572,7 @@ class KDECORE_EXPORT KStartupInfoData
 	 * Returns all PIDs for the startup notification.
 	 * @return the list of all PIDs
 	 */
-        const QValueList< pid_t >& pids() const;
+        const QList< pid_t >& pids() const;
 	/**
 	 * Checks whether the given @p pid is in the list of PIDs for starup
 	 * notification.
@@ -582,12 +584,12 @@ class KDECORE_EXPORT KStartupInfoData
 	 * it if PIDs are set.
 	 * @param hostname the application's hostname. If it's a null string, the current hostname is used
 	 */
-        void setHostname( const QCString& hostname = QCString());
+        void setHostname( const QByteArray& hostname = QByteArray());
 	/**
 	 * Returns the hostname for the startup notification.
 	 * @return the hostname
 	 */
-        const QCString& hostname() const;
+        const QByteArray& hostname() const;
 	
 	/**
 	 *
@@ -632,7 +634,7 @@ class KDECORE_EXPORT KStartupInfoData
         
         /**
          * Sets the X11 screen on which the startup notification should happen.
-         * This is usually not necessary to set, as it's set by default to qt_xscreen().
+         * This is usually not necessary to set, as it's set by default to QX11Info::screen().
          */
         void setScreen( int screen );
 

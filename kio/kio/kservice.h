@@ -53,7 +53,7 @@ class KIO_EXPORT KService : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KService> Ptr;
-  typedef QValueList<Ptr> List;
+  typedef Q3ValueList<Ptr> List;
 public:
   /**
    * Construct a temporary service with a given name, exec-line and icon.

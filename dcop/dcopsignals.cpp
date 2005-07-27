@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 
-template class QPtrList<DCOPSignalConnection>;
+template class Q3PtrList<DCOPSignalConnection>;
 
 DCOPSignals::DCOPSignals()
 {
@@ -35,11 +35,11 @@ DCOPSignals::DCOPSignals()
  * If "excludeSelf" is true, signal is never sent to "conn" itself.
  */
 void
-DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByteArray &data, bool excludeSelf)
+DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QByteArray &data, bool excludeSelf)
 {
-   QCString senderObj;
-   QCString fun = _fun;
-   int i = fun.find('#');
+   DCOPCString senderObj;
+   DCOPCString fun = _fun;
+   int i = fun.indexOf('#');
    if (i > -1)
    {
       senderObj = fun.left(i);
@@ -76,7 +76,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
          doSend = false;
       if (doSend)
       {
-         the_server->sendMessage(current->recvConn, conn ? conn->appId : QCString("DCOPServer"),
+         the_server->sendMessage(current->recvConn, conn ? conn->appId : DCOPCString("DCOPServer"),
                                  current->recvConn->appId, current->recvObj,
                                  current->slot, data);
       }
@@ -94,24 +94,24 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByte
  * "conn" unregisters.
  */
 bool
-DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal,
-                       DCOPConnection *conn, const QCString &receiverObj,
-                       const QCString &slot, bool Volatile)
+DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &senderObj,
+                       const DCOPCString &signal,
+                       DCOPConnection *conn, const DCOPCString &receiverObj,
+                       const DCOPCString &slot, bool Volatile)
 {
    // TODO: Check if signal and slot match
-   QCString signalArgs, slotArgs;
+   DCOPCString signalArgs, slotArgs;
    int i,j;
-   i = signal.find('(');
+   i = signal.indexOf('(');
    if (i < 0) return false;
    signalArgs = signal.mid(i+1);
-   j = signalArgs.find(')');
+   j = signalArgs.indexOf(')');
    if (j < 0) return false;
    signalArgs.truncate(j);
-   i = slot.find('(');
+   i = slot.indexOf('(');
    if (i < 0) return false;
    slotArgs = slot.mid(i+1);
-   j = slotArgs.find(')');
+   j = slotArgs.indexOf(')');
    if (j < 0) return false;
    slotArgs.truncate(j);
 
@@ -166,10 +166,10 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
  *   are disconnected.
  */
 bool
-DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj,
-                       const QCString &signal,
-                       DCOPConnection *conn, const QCString &receiverObj,
-                       const QCString &slot)
+DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &senderObj,
+                       const DCOPCString &signal,
+                       DCOPConnection *conn, const DCOPCString &receiverObj,
+                       const DCOPCString &slot)
 {
    if (sender.isEmpty() && signal.isEmpty())
    {
@@ -228,7 +228,7 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj
  *   All volatile connections for which "conn"/"obj" is the sender.
  */
 void
-DCOPSignals::removeConnections(DCOPConnection *conn, const QCString &obj)
+DCOPSignals::removeConnections(DCOPConnection *conn, const DCOPCString &obj)
 {
    DCOPSignalConnectionList *list = conn->_signalConnectionList;
    if (!list)

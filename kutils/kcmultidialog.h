@@ -23,7 +23,7 @@
 #ifndef KCMULTIDIALOG_H
 #define KCMULTIDIALOG_H
 
-#include <qptrdict.h>
+#include <q3ptrdict.h>
 
 #include <kdialogbase.h>
 #include <klocale.h>
@@ -173,7 +173,7 @@ signals:
      * @param instanceName The name of the instance that needs to reload its
      *                     configuration.
      */
-    void configCommitted( const QCString & instanceName );
+    void configCommitted( const Q3CString & instanceName );
 
 protected slots:
     /**
@@ -264,13 +264,13 @@ private:
         KService::Ptr service;
         /* KDE 4 Move to Private class */
     };
-    typedef QValueList<CreatedModule> ModuleList;
+    typedef Q3ValueList<CreatedModule> ModuleList;
     ModuleList m_modules;
 
     typedef QMap<KService::Ptr, KCModuleProxy*> OrphanMap;
     OrphanMap m_orphanModules;
 
-    QPtrDict<QStringList> moduleParentComponents;
+    Q3PtrDict<QStringList> moduleParentComponents;
     QString _docPath;
     int dialogface;
 

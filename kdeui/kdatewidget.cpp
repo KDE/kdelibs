@@ -12,12 +12,12 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qcombobox.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -37,7 +37,7 @@ public:
   KDateWidgetSpinBox(int min, int max, QWidget *parent)
     : QSpinBox(min, max, 1, parent)
   {
-     editor()->setAlignment(AlignRight);
+     lineEdit()->setAlignment(Qt::AlignRight);
   }
 };
 
@@ -58,8 +58,7 @@ KDateWidget::KDateWidget( QWidget *parent, const char *name )
   setDate(QDate());
 }
 
-// ### HPB change QDate to const QDate & in KDE 4.0
-KDateWidget::KDateWidget( QDate date, QWidget *parent,
+KDateWidget::KDateWidget( const QDate &date, QWidget *parent,
 			    const char *name )
   : QWidget( parent, name )
 {
@@ -122,8 +121,7 @@ KDateWidget::~KDateWidget()
   delete d;
 }
 
-// ### HPB change QDate to const QDate & in KDE 4.0
-void KDateWidget::setDate( QDate date )
+void KDateWidget::setDate( const QDate &date )
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 

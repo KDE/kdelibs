@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 1.875d.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -99,7 +99,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "./ppdparser.y"
+#line 1 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
 
 /*
  *  This file is part of the KDE libraries
@@ -116,8 +116,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #define YYSTYPE QStringList
@@ -161,22 +161,29 @@ typedef int YYSTYPE;
 
 
 /* Line 214 of yacc.c.  */
-#line 164 "./ppdparser.cpp"
+#line 165 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.cpp"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
+# ifndef YYFREE
+#  define YYFREE free
+# endif
+# ifndef YYMALLOC
+#  define YYMALLOC malloc
+# endif
+
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
-# if YYSTACK_USE_ALLOCA
-#  define YYSTACK_ALLOC alloca
+# ifdef YYSTACK_USE_ALLOCA
+#  if YYSTACK_USE_ALLOCA
+#   define YYSTACK_ALLOC alloca
+#  endif
 # else
-#  ifndef YYSTACK_USE_ALLOCA
-#   if defined (alloca) || defined (_ALLOCA_H)
-#    define YYSTACK_ALLOC alloca
-#   else
-#    ifdef __GNUC__
-#     define YYSTACK_ALLOC __builtin_alloca
-#    endif
+#  if defined (alloca) || defined (_ALLOCA_H)
+#   define YYSTACK_ALLOC alloca
+#  else
+#   ifdef __GNUC__
+#    define YYSTACK_ALLOC __builtin_alloca
 #   endif
 #  endif
 # endif
@@ -189,20 +196,20 @@ typedef int YYSTYPE;
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
 #   define YYSIZE_T size_t
 #  endif
-#  define YYSTACK_ALLOC malloc
-#  define YYSTACK_FREE free
+#  define YYSTACK_ALLOC YYMALLOC
+#  define YYSTACK_FREE YYFREE
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
-	 || (YYSTYPE_IS_TRIVIAL)))
+	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short yyss;
+  short int yyss;
   YYSTYPE yyvs;
   };
 
@@ -212,13 +219,13 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short) + sizeof (YYSTYPE))				\
+     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
@@ -254,7 +261,7 @@ union yyalloc
 #if defined (__STDC__) || defined (__cplusplus)
    typedef signed char yysigned_char;
 #else
-   typedef short yysigned_char;
+   typedef short int yysigned_char;
 #endif
 
 /* YYFINAL -- State number of the termination state. */
@@ -361,11 +368,11 @@ static const unsigned char yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "TRANSLATION", "OPENUI", "CLOSEUI", 
-  "OPENGROUP", "CLOSEGROUP", "DEFAULT", "KEYWORD", "OPTION", "STRINGPART", 
-  "QUOTED", "CONSTRAINT", "PAPERDIM", "IMGAREA", "FOODATA", "COMMENT", 
-  "'/'", "':'", "$accept", "ppdfile", "string", "value", "paperdim", 
-  "imgarea", "openui", "endui", "opengroup", "endgroup", "constraint", 
+  "$end", "error", "$undefined", "TRANSLATION", "OPENUI", "CLOSEUI",
+  "OPENGROUP", "CLOSEGROUP", "DEFAULT", "KEYWORD", "OPTION", "STRINGPART",
+  "QUOTED", "CONSTRAINT", "PAPERDIM", "IMGAREA", "FOODATA", "COMMENT",
+  "'/'", "':'", "$accept", "ppdfile", "string", "value", "paperdim",
+  "imgarea", "openui", "endui", "opengroup", "endgroup", "constraint",
   "ppdelement", 0
 };
 #endif
@@ -373,7 +380,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short yytoknum[] =
+static const unsigned short int yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,    47,    58
@@ -517,7 +524,7 @@ static const unsigned char yystos[] =
 
 #define YYACCEPT	goto yyacceptlab
 #define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrlab1
+#define YYERROR		goto yyerrorlab
 
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
@@ -552,11 +559,11 @@ while (0)
    are run).  */
 
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;
+# define YYLLOC_DEFAULT(Current, Rhs, N)		\
+   ((Current).first_line   = (Rhs)[1].first_line,	\
+    (Current).first_column = (Rhs)[1].first_column,	\
+    (Current).last_line    = (Rhs)[N].last_line,	\
+    (Current).last_column  = (Rhs)[N].last_column)
 #endif
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
@@ -600,17 +607,17 @@ do {								\
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
-| TOP (cinluded).                                                   |
+| TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (short *bottom, short *top)
+yy_stack_print (short int *bottom, short int *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short *bottom;
-    short *top;
+    short int *bottom;
+    short int *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
@@ -640,9 +647,9 @@ yy_reduce_print (yyrule)
 #endif
 {
   int yyi;
-  unsigned int yylineno = yyrline[yyrule];
+  unsigned int yylno = yyrline[yyrule];
   YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
-             yyrule - 1, yylineno);
+             yyrule - 1, yylno);
   /* Print the symbols being reduced, and their result.  */
   for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
     YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
@@ -679,7 +686,7 @@ int yydebug;
    SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
 
-#if YYMAXDEPTH == 0
+#if defined (YYMAXDEPTH) && YYMAXDEPTH == 0
 # undef YYMAXDEPTH
 #endif
 
@@ -877,9 +884,9 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short	yyssa[YYINITDEPTH];
-  short *yyss = yyssa;
-  register short *yyssp;
+  short int yyssa[YYINITDEPTH];
+  short int *yyss = yyssa;
+  register short int *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
@@ -916,6 +923,7 @@ yyparse ()
   yyssp = yyss;
   yyvsp = yyvs;
 
+
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -941,7 +949,7 @@ yyparse ()
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
@@ -969,7 +977,7 @@ yyparse ()
 	yystacksize = YYMAXDEPTH;
 
       {
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
@@ -1102,160 +1110,160 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 58 "./ppdparser.y"
+#line 58 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { yyval = yyvsp[0]; ;}
     break;
 
   case 5:
-#line 59 "./ppdparser.y"
+#line 59 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { yyvsp[-1] += yyvsp[0]; yyval = yyvsp[-1]; ;}
     break;
 
   case 6:
-#line 60 "./ppdparser.y"
+#line 60 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { yyvsp[-1] += yyvsp[0]; yyval = yyvsp[-1]; ;}
     break;
 
   case 7:
-#line 63 "./ppdparser.y"
+#line 63 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { yyval = yyvsp[0]; ;}
     break;
 
   case 8:
-#line 64 "./ppdparser.y"
-    { yyval = yyvsp[0][0].mid(1,yyvsp[0][0].length()-2); ;}
+#line 64 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
+    { yyval = QStringList(yyvsp[0][0].mid(1,yyvsp[0][0].length()-2)); ;}
     break;
 
   case 9:
-#line 65 "./ppdparser.y"
-    { yyval = yyvsp[-2][0].mid(1,yyvsp[-2][0].length()-2); ;}
+#line 65 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
+    { yyval = QStringList(yyvsp[-2][0].mid(1,yyvsp[-2][0].length()-2)); ;}
     break;
 
   case 10:
-#line 66 "./ppdparser.y"
+#line 66 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { yyval = yyvsp[-2]; ;}
     break;
 
   case 11:
-#line 69 "./ppdparser.y"
+#line 69 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putPaperDimension(yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 12:
-#line 70 "./ppdparser.y"
+#line 70 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putPaperDimension(yyvsp[-4][0], yyvsp[0][0]); ;}
     break;
 
   case 13:
-#line 73 "./ppdparser.y"
+#line 73 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putImageableArea(yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 14:
-#line 74 "./ppdparser.y"
+#line 74 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putImageableArea(yyvsp[-4][0], yyvsp[0][0]); ;}
     break;
 
   case 15:
-#line 77 "./ppdparser.y"
+#line 77 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->openUi(yyvsp[-2][0], QString::null, yyvsp[0][0]); ;}
     break;
 
   case 16:
-#line 78 "./ppdparser.y"
+#line 78 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->openUi(yyvsp[-4][0], yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 17:
-#line 81 "./ppdparser.y"
+#line 81 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->endUi(yyvsp[0][0]); ;}
     break;
 
   case 18:
-#line 82 "./ppdparser.y"
+#line 82 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->endUi(yyvsp[0][0]); ;}
     break;
 
   case 19:
-#line 85 "./ppdparser.y"
+#line 85 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->openGroup(yyvsp[0].join(" "), QString::null); ;}
     break;
 
   case 20:
-#line 86 "./ppdparser.y"
+#line 86 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->openGroup(yyvsp[-2].join(" "), yyvsp[0][0]); ;}
     break;
 
   case 21:
-#line 89 "./ppdparser.y"
+#line 89 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->endGroup(yyvsp[0].join(" ")); ;}
     break;
 
   case 22:
-#line 90 "./ppdparser.y"
+#line 90 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->endGroup(yyvsp[-2].join(" ")); ;}
     break;
 
   case 23:
-#line 93 "./ppdparser.y"
+#line 93 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putConstraint(yyvsp[-3][0], yyvsp[-1][0], yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 24:
-#line 94 "./ppdparser.y"
+#line 94 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putConstraint(yyvsp[-2][0], yyvsp[0][0], yyvsp[-1][0], QString::null); ;}
     break;
 
   case 25:
-#line 95 "./ppdparser.y"
+#line 95 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putConstraint(yyvsp[-2][0], yyvsp[-1][0], QString::null, yyvsp[0][0]); ;}
     break;
 
   case 26:
-#line 96 "./ppdparser.y"
+#line 96 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putConstraint(yyvsp[-1][0], yyvsp[0][0], QString::null, QString::null); ;}
     break;
 
   case 27:
-#line 99 "./ppdparser.y"
+#line 99 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putStatement2(yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 28:
-#line 100 "./ppdparser.y"
+#line 100 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putStatement(yyvsp[-3][0], yyvsp[-2][0], QString::null, yyvsp[0]); ;}
     break;
 
   case 29:
-#line 101 "./ppdparser.y"
+#line 101 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putStatement(yyvsp[-5][0], yyvsp[-4][0], yyvsp[-2][0], yyvsp[0]); ;}
     break;
 
   case 30:
-#line 102 "./ppdparser.y"
+#line 102 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putStatement(yyvsp[-4][0], yyvsp[-3][0], QString::null, yyvsp[-1]); ;}
     break;
 
   case 31:
-#line 103 "./ppdparser.y"
+#line 103 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putDefault(yyvsp[-2][0], yyvsp[0][0]); ;}
     break;
 
   case 32:
-#line 104 "./ppdparser.y"
+#line 104 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putDefault(yyvsp[-4][0], yyvsp[-2][0]); ;}
     break;
 
   case 41:
-#line 113 "./ppdparser.y"
+#line 113 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
     { builder->putFooData(yyvsp[0][0]); ;}
     break;
 
 
     }
 
-/* Line 999 of yacc.c.  */
-#line 1258 "./ppdparser.cpp"
+/* Line 1010 of yacc.c.  */
+#line 1267 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1296,18 +1304,33 @@ yyerrlab:
 	{
 	  YYSIZE_T yysize = 0;
 	  int yytype = YYTRANSLATE (yychar);
+	  const char* yyprefix;
 	  char *yymsg;
-	  int yyx, yycount;
+	  int yyx;
 
-	  yycount = 0;
 	  /* Start YYX at -YYN if negative to avoid negative indexes in
 	     YYCHECK.  */
-	  for (yyx = yyn < 0 ? -yyn : 0;
-	       yyx < (int) (sizeof (yytname) / sizeof (char *)); yyx++)
+	  int yyxbegin = yyn < 0 ? -yyn : 0;
+
+	  /* Stay within bounds of both yycheck and yytname.  */
+	  int yychecklim = YYLAST - yyn;
+	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+	  int yycount = 0;
+
+	  yyprefix = ", expecting ";
+	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	      yysize += yystrlen (yytname[yyx]) + 15, yycount++;
-	  yysize += yystrlen ("syntax error, unexpected ") + 1;
-	  yysize += yystrlen (yytname[yytype]);
+	      {
+		yysize += yystrlen (yyprefix) + yystrlen (yytname [yyx]);
+		yycount += 1;
+		if (yycount == 5)
+		  {
+		    yysize = 0;
+		    break;
+		  }
+	      }
+	  yysize += (sizeof ("syntax error, unexpected ")
+		     + yystrlen (yytname[yytype]));
 	  yymsg = (char *) YYSTACK_ALLOC (yysize);
 	  if (yymsg != 0)
 	    {
@@ -1316,16 +1339,13 @@ yyerrlab:
 
 	      if (yycount < 5)
 		{
-		  yycount = 0;
-		  for (yyx = yyn < 0 ? -yyn : 0;
-		       yyx < (int) (sizeof (yytname) / sizeof (char *));
-		       yyx++)
+		  yyprefix = ", expecting ";
+		  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
 		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
 		      {
-			const char *yyq = ! yycount ? ", expecting " : " or ";
-			yyp = yystpcpy (yyp, yyq);
+			yyp = yystpcpy (yyp, yyprefix);
 			yyp = yystpcpy (yyp, yytname[yyx]);
-			yycount++;
+			yyprefix = " or ";
 		      }
 		}
 	      yyerror (yymsg);
@@ -1346,25 +1366,27 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
-      /* Return failure if at end of input.  */
-      if (yychar == YYEOF)
+      if (yychar <= YYEOF)
         {
-	  /* Pop the error token.  */
-          YYPOPSTACK;
-	  /* Pop the rest of the stack.  */
-	  while (yyss < yyssp)
-	    {
-	      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-	      yydestruct (yystos[*yyssp], yyvsp);
-	      YYPOPSTACK;
-	    }
-	  YYABORT;
+          /* If at end of input, pop the error token,
+	     then the rest of the stack, then return failure.  */
+	  if (yychar == YYEOF)
+	     for (;;)
+	       {
+		 YYPOPSTACK;
+		 if (yyssp == yyss)
+		   YYABORT;
+		 YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
+		 yydestruct (yystos[*yyssp], yyvsp);
+	       }
         }
+      else
+	{
+	  YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
+	  yydestruct (yytoken, &yylval);
+	  yychar = YYEMPTY;
 
-      YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-      yydestruct (yytoken, &yylval);
-      yychar = YYEMPTY;
-
+	}
     }
 
   /* Else will try to reuse lookahead token after shifting the error
@@ -1372,9 +1394,27 @@ yyerrlab:
   goto yyerrlab1;
 
 
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------.
+| yyerrorlab -- error raised explicitly by YYERROR.  |
+`---------------------------------------------------*/
+yyerrorlab:
+
+#ifdef __GNUC__
+  /* Pacify GCC when the user code never invokes YYERROR and the label
+     yyerrorlab therefore never appears in user code.  */
+  if (0)
+     goto yyerrorlab;
+#endif
+
+  yyvsp -= yylen;
+  yyssp -= yylen;
+  yystate = *yyssp;
+  goto yyerrlab1;
+
+
+/*-------------------------------------------------------------.
+| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+`-------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 
@@ -1398,9 +1438,8 @@ yyerrlab1:
 
       YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
       yydestruct (yystos[yystate], yyvsp);
-      yyvsp--;
-      yystate = *--yyssp;
-
+      YYPOPSTACK;
+      yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
 
@@ -1449,7 +1488,7 @@ yyreturn:
 }
 
 
-#line 116 "./ppdparser.y"
+#line 116 "/opt/kde4/src/kde4/kdelibs/kdeprint/ppdparser.y"
 
 
 #undef builder

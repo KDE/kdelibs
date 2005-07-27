@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmwpassword.h"
@@ -23,7 +23,7 @@
 
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <qvbuttongroup.h>
+#include <Q3VButtonGroup>
 #include <qradiobutton.h>
 #include <qlayout.h>
 #include <klocale.h>
@@ -48,8 +48,8 @@ KMWPassword::KMWPassword(QWidget *parent, const char *name)
 	m_password->setEchoMode(QLineEdit::Password);
 	QLabel	*loginlabel_ = new QLabel(i18n("&Login:"),this);
 	QLabel	*passwdlabel_ = new QLabel(i18n("&Password:"),this);
-	m_btngroup = new QVButtonGroup( this );
-	m_btngroup->setFrameStyle( QFrame::NoFrame );
+	m_btngroup = new Q3VButtonGroup( this );
+//	m_btngroup->setFrameStyle( Q3Frame::NoFrame );
 	QRadioButton *btn1 = new QRadioButton( i18n( "&Anonymous (no login/password)" ), m_btngroup );
 	QRadioButton *btn2 = new QRadioButton( i18n( "&Guest account (login=\"guest\")" ), m_btngroup );
 	QRadioButton *btn3 = new QRadioButton( i18n( "Nor&mal account" ), m_btngroup );

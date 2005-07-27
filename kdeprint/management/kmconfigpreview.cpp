@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmconfigpreview.h"
 
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 
 #include <klocale.h>
@@ -36,7 +36,7 @@ KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
 	setPageHeader(i18n("Preview Settings"));
 	setPagePixmap("filefind");
 
-	QGroupBox *box = new QGroupBox(0, Qt::Vertical, i18n("Preview Program"), this);
+	Q3GroupBox *box = new Q3GroupBox(0, Qt::Vertical, i18n("Preview Program"), this);
 
 	m_useext = new QCheckBox(i18n("&Use external preview program"), box);
 	m_program = new KURLRequester(box);

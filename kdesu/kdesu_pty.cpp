@@ -38,7 +38,6 @@
 #endif
 
 #include <qglobal.h>
-#include <qcstring.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -235,7 +234,7 @@ int PTY::grantpt()
 	// Parent: wait for child
 	int ret;
 	waitpid(pid, &ret, 0);
-    	if (WIFEXITED(ret) && !WEXITSTATUS(ret))
+	if (WIFEXITED(ret) && !WEXITSTATUS(ret))
 	    return 0;
 	kdError(900) << k_lineinfo << "konsole_grantpty returned with error: "
 		     << WEXITSTATUS(ret) << "\n";
@@ -292,7 +291,7 @@ int PTY::unlockpt()
  * Return the slave side name.
  */
 
-QCString PTY::ptsname()
+QByteArray PTY::ptsname()
 {
     if (ptyfd < 0)
 	return 0;

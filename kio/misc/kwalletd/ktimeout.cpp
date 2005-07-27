@@ -69,7 +69,7 @@ void KTimeout::resetTimer(int id, int timeout) {
 void KTimeout::timeout() {
 	const QTimer *t = static_cast<const QTimer*>(sender());
 	if (t) {
-		QIntDictIterator<QTimer> it(_timers);
+		Q3IntDictIterator<QTimer> it(_timers);
 		for (; it.current(); ++it) {
 			if (it.current() == t) {
 				emit timedOut(it.currentKey());

@@ -26,7 +26,7 @@
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
 #include <qmetaobject.h>
@@ -100,7 +100,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
-	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
+	// Does anyone with more X-savvy know how to set a mask on QX11Info::appRootWindow so that
 	//  the irrelevant bits are always ignored and we can just make one XGrabKey
 	//  call per accelerator? -- ellis
 #ifndef NDEBUG
@@ -113,10 +113,10 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
 #endif
 			if( bGrab )
-				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
-					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
+				XGrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask,
+					QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeSync );
 			else
-				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+				XUngrabKey( QX11Info::display(), keyCodeX, keyModX | irrelevantBitsMask, QX11Info::appRootWindow() );
 		}
 	}
 #ifndef NDEBUG
@@ -133,7 +133,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 			kdDebug(125) << "grab failed!\n";
 			for( uint m = 0; m <= 0xff; m++ ) {
 				if( m & keyModMaskX == 0 )
-					XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
+					XUngrabKey( QX11Info::display(), keyCodeX, keyModX | m, QX11Info::appRootWindow() );
 				}
                 }
 	}
@@ -186,8 +186,8 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
 	// do not change this line unless you really really know what you are doing (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
-		XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
-                XFlush( qt_xdisplay()); // avoid X(?) bug
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+                XFlush( QX11Info::display()); // avoid X(?) bug
         }
 
 	if( !m_bEnabled )
@@ -201,7 +201,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	//  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
 	if( pEvent->xkey.state & KKeyServer::modXNumLock() ) {
 		// TODO: what's the xor operator in c++?
-		uint sym = XKeycodeToKeysym( qt_xdisplay(), codemod.code, 0 );
+		uint sym = XKeycodeToKeysym( QX11Info::display(), codemod.code, 0 );
 		// If this is a keypad key,
 		if( sym >= XK_KP_Space && sym <= XK_KP_9 ) {
 			switch( sym ) {

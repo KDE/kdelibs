@@ -62,7 +62,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (KJSDebugWin::debugWindow() && KJSDebugWin::debugWindow()->inSession())
     return;
 #endif
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(static_cast<Window*>(win.imp())->part());
+  KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.imp())->part());
   KJSProxy *proxy = 0L;
   if (part)
     proxy = part->jScript();
@@ -168,7 +168,7 @@ Object JSLazyEventListener::listenerObj() const
 void JSLazyEventListener::parseCode() const
 {
   if (!parsed) {
-    KHTMLPart *part = ::qt_cast<KHTMLPart *>(static_cast<Window*>(win.imp())->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<Window*>(win.imp())->part());
     KJSProxy *proxy = 0L;
     if (part)
       proxy = part->jScript();
@@ -196,7 +196,7 @@ void JSLazyEventListener::parseCode() const
         listener = Object();// Error creating function
       } else {
         DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(listener.imp());
-        declFunc->setName(Identifier(name));
+        declFunc->setName(Identifier(UString(name)));
 
         if (originalNode)
         {
@@ -759,13 +759,13 @@ Value DOMTextEvent::getValueProperty(ExecState *, int token) const
     return Boolean(tevent.numPad());
   // these modifier attributes actually belong into a KeyboardEvent interface
   case CtrlKey:
-    return Boolean(tevent.checkModifier(Qt::ControlButton));
+    return Boolean(tevent.checkModifier(Qt::ControlModifier));
   case ShiftKey:
-    return Boolean(tevent.checkModifier(Qt::ShiftButton));
+    return Boolean(tevent.checkModifier(Qt::ShiftModifier));
   case AltKey:
-    return Boolean(tevent.checkModifier(Qt::AltButton));
+    return Boolean(tevent.checkModifier(Qt::AltModifier));
   case MetaKey:
-    return Boolean(tevent.checkModifier(Qt::MetaButton));
+    return Boolean(tevent.checkModifier(Qt::MetaModifier));
   default:
     kdDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
     return KJS::Undefined();

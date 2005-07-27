@@ -177,7 +177,7 @@ struct KPtyPrivate {
    int slaveFd;
    struct winsize winSize;
 
-   QCString ttyName;
+   QByteArray ttyName;
 };
 
 /////////////////////////////
@@ -200,7 +200,7 @@ bool KPty::open()
   if (d->masterFd >= 0)
     return true;
 
-  QCString ptyName;
+  QByteArray ptyName;
 
   // Find a master pty that we can open ////////////////////////////////
 
@@ -234,8 +234,8 @@ bool KPty::open()
   {
     for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4; s4++)
     {
-      ptyName.sprintf("/dev/pty%c%c", *s3, *s4);
-      d->ttyName.sprintf("/dev/tty%c%c", *s3, *s4);
+      ptyName = QString().sprintf("/dev/pty%c%c", *s3, *s4).toAscii();
+      d->ttyName = QString().sprintf("/dev/tty%c%c", *s3, *s4).toAscii();
 
       d->masterFd = ::open(ptyName.data(), O_RDWR);
       if (d->masterFd >= 0)

@@ -23,7 +23,7 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
@@ -61,8 +61,8 @@ class KABC_EXPORT Address
     /**
       List of addresses.
     */
-    typedef QValueList<Address> List;
-    typedef QValueList<int> TypeList;
+    typedef Q3ValueList<Address> List;
+    typedef Q3ValueList<int> TypeList;
   
     /**
       Address types:

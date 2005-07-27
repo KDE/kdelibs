@@ -15,14 +15,17 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  *
  */
 
 // I (espen) prefer that header files are included alphabetically
 
 #include <qlabel.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <Q3ValueList>
 #include <kaboutapplication.h>
 #include <kaboutdialog_private.h>
 #include <kaboutdata.h>
@@ -73,7 +76,7 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
         QString::null, QString::null );
 
   if (!aboutData->programLogo().isNull())
-    setProgramLogo( aboutData->programLogo() );
+    setProgramLogo( QPixmap::fromImage(aboutData->programLogo()) );
 
   QString appPageText = aboutData->shortDescription() + "\n";
 
@@ -121,13 +124,11 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
     activeLabel->setText( text );
     authorPage->addWidget( activeLabel );
 
-    QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->authors().begin();
-   it != aboutData->authors().end(); ++it)
-    {
-      authorPage->addPerson( (*it).name(), (*it).emailAddress(),
-           (*it).webAddress(), (*it).task() );
-    }
+	QList<KAboutPerson> lst = aboutData->authors();
+	for (int i = 0; i < lst.size(); ++i) {
+		authorPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+                             lst.at(i).webAddress(), lst.at(i).task() );
+	}
   }
 
   int creditsCount = aboutData->credits().count();
@@ -135,22 +136,21 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
   {
     KAboutContainer *creditsPage =
       addScrolledContainerPage( i18n("&Thanks To") );
-    QValueList<KAboutPerson>::ConstIterator it;
-    for (it = aboutData->credits().begin();
-   it != aboutData->credits().end(); ++it)
-    {
-      creditsPage->addPerson( (*it).name(), (*it).emailAddress(),
-            (*it).webAddress(), (*it).task() );
-    }
+    
+	QList<KAboutPerson> lst = aboutData->credits();
+	for (int i = 0; i < lst.size(); ++i) {
+		creditsPage->addPerson( lst.at(i).name(), lst.at(i).emailAddress(),
+	                           lst.at(i).webAddress(), lst.at(i).task() );
+	}
   }
 
-  const QValueList<KAboutTranslator> translatorList = aboutData->translators();
+  const Q3ValueList<KAboutTranslator> translatorList = aboutData->translators();
 
   if(translatorList.count() > 0)
   {
       QString text = "<qt>";
 
-      QValueList<KAboutTranslator>::ConstIterator it;
+      Q3ValueList<KAboutTranslator>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
    text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"

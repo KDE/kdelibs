@@ -38,10 +38,10 @@
 #endif
 
 #include <stdlib.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
-#include <qptrdict.h>
-#include <qdict.h>
+#include <q3ptrdict.h>
+#include <q3dict.h>
 #include <qpixmap.h>
 #include <qbuffer.h>
 #include <qstringlist.h>
@@ -53,6 +53,8 @@
 
 #include <khtml_settings.h>
 #include <dom/dom_string.h>
+#include "imload/image.h"
+#include "imload/imageowner.h"
 
 class QMovie;
 class KHTMLPart;
@@ -158,7 +160,7 @@ namespace khtml
 
     protected:
         void setSize(int size);
-        QPtrDict<CachedObjectClient> m_clients;
+        Q3PtrDict<CachedObjectClient> m_clients;
 	DOM::DOMString m_url;
         QString m_accept;
         Request *m_request;
@@ -247,26 +249,27 @@ namespace khtml
     /**
      * a cached image
      */
-    class CachedImage : public QObject, public CachedObject
+    class CachedImage : public QObject, public CachedObject, public khtmlImLoad::ImageOwner
     {
 	Q_OBJECT
     public:
 	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept);
 	virtual ~CachedImage();
 
-	const QPixmap &pixmap() const;
+	//QPixmap pixmap() const;
 	const QPixmap &tiled_pixmap(const QColor& bg);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
-        QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
+        //QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
 
         void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
+
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
-        bool isTransparent() const { return isFullyTransparent; }
+        bool isTransparent() const { return false; } //### isFullyTransparent; }
         bool isErrorImage() const { return m_hadError; }
         bool isBlockedImage() const { return m_wasBlocked; }
         const QString& suggestedFilename() const { return m_suggestedFilename; }
@@ -284,30 +287,37 @@ namespace khtml
 
 	virtual void finish();
 
+
+        khtmlImLoad::Image* image() { return i; }
+
     protected:
 	void clear();
 
-    private slots:
-	/**
-	 * gets called, whenever a QMovie changes frame
-	 */
-	void movieUpdated( const QRect &rect );
-        void movieStatus(int);
-        void movieResize(const QSize&);
-        void deleteMovie();
-
     private:
-        void do_notify(const QPixmap& p, const QRect& r);
+        /**
+         Interface to the image
+        */
+        virtual void imageHasGeometry(khtmlImLoad::Image* img, int width, int height);
+        virtual void imageChange     (khtmlImLoad::Image* img, QRect region);
+        virtual void imageError      (khtmlImLoad::Image* img);
+        virtual void imageDone       (khtmlImLoad::Image* img);
+    private:
+        void doNotifyFinished();
+        
+        void do_notify(const QRect& r);
+        khtmlImLoad::Image* i;
 
         QString m_suggestedFilename;
 #ifdef IMAGE_TITLES
         QString m_suggestedTitle;
 #endif
-	QMovie* m;
+/*	QMovie* m;
         QPixmap* p;
-	QPixmap* bg;
+	
+        
+        mutable QPixmap* pixPart;*/
+        QPixmap* bg;
         QRgb bgColor;
-        mutable QPixmap* pixPart;
 
         ImageSource* imgSource;
         const char* formatType;  // Is the name of the movie format type
@@ -364,7 +374,7 @@ namespace khtml
         friend class ::KHTMLPart;
 
         QStringList m_reloadedURLs;
-        mutable QPtrDict<CachedObject> m_docObjects;
+        mutable Q3PtrDict<CachedObject> m_docObjects;
 	time_t m_expireDate;
 	time_t m_creationDate;
 	KIO::CacheControl m_cachePolicy;
@@ -417,10 +427,10 @@ namespace khtml
 	void servePendingRequests();
 
     protected:
-	QPtrList<Request> m_requestsPending;
-	QPtrDict<Request> m_requestsLoading;
+	Q3PtrList<Request> m_requestsPending;
+	Q3PtrDict<Request> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
-        KJPEGFormatType m_jpegloader;
+        // TODO KJPEGFormatType m_jpegloader;
 #endif
         QTimer m_timer;
     };
@@ -491,9 +501,9 @@ namespace khtml
 
         friend class CachedObject;
 
-	static QDict<CachedObject> *cache;
-        static QPtrList<DocLoader>* docloader;
-        static QPtrList<CachedObject> *freeList;
+	static Q3Dict<CachedObject> *cache;
+        static Q3PtrList<DocLoader>* docloader;
+        static Q3PtrList<CachedObject> *freeList;
         static void insertInLRUList(CachedObject*);
         static void removeFromLRUList(CachedObject*);
 

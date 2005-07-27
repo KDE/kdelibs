@@ -31,7 +31,7 @@ namespace KIDNA {
      *
      * If conversion is not possible, an empty string is returned.
      */
-    KDECORE_EXPORT QCString toAsciiCString(const QString &idna);
+    KDECORE_EXPORT QByteArray toAsciiCString(const QString &idna);
 
     /**
      * Converts an International Domain Name @p idna to 

@@ -13,18 +13,19 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <qimage.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
+#include <q3pointarray.h>
 #include <kimageeffect.h>
 #include "kselect.h"
+#include <QPaintEvent>
 
-#define STORE_W 8
-#define STORE_W2 STORE_W * 2
+
 
 //-----------------------------------------------------------------------------
 /*
@@ -41,8 +42,6 @@ KXYSelector::KXYSelector( QWidget *parent, const char *name )
 	minY = 0;
 	maxX = 100;
 	maxY = 100;
-	store.setOptimization( QPixmap::BestOptim );
-	store.resize( STORE_W2, STORE_W2 );
 }
 
 
@@ -98,7 +97,6 @@ QRect KXYSelector::contentsRect() const
 
 void KXYSelector::paintEvent( QPaintEvent *ev )
 {
-	QRect cursorRect( px - STORE_W, py - STORE_W, STORE_W2, STORE_W2);
 	QRect paintRect = ev->rect();
 
 	QPainter painter;
@@ -109,16 +107,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 			true, 2, &brush );
 
 	drawContents( &painter );
-	if (paintRect.contains(cursorRect))
-	{
-	   bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
-		STORE_W2, STORE_W2, CopyROP );
-	   drawCursor( &painter, px, py );
-        }
-        else if (paintRect.intersects(cursorRect))
-        {
-           repaint( cursorRect, false);
-        }
+	drawCursor( &painter, px, py );
 
 	painter.end();
 }
@@ -179,18 +168,11 @@ void KXYSelector::setPosition( int xp, int yp )
 	else if ( yp > height() - 2 )
 		yp = height() - 2;
 
-	QPainter painter;
-	painter.begin( this );
-
-	bitBlt( this, px - STORE_W, py - STORE_W, &store, 0, 0,
-			STORE_W2, STORE_W2, CopyROP );
-	bitBlt( &store, 0, 0, this, xp - STORE_W, yp - STORE_W,
-			STORE_W2, STORE_W2, CopyROP );
-	drawCursor( &painter, xp, yp );
 	px = xp;
 	py = yp;
 
-	painter.end();
+
+	update();
 }
 
 void KXYSelector::drawContents( QPainter * )
@@ -199,7 +181,7 @@ void KXYSelector::drawContents( QPainter * )
 
 void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
 {
-	p->setPen( QPen( white ) );
+	p->setPen( QPen( Qt::white ) );
 
 	p->drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
 	p->drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
@@ -215,14 +197,14 @@ void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
 
 
 KSelector::KSelector( QWidget *parent, const char *name )
-	: QWidget( parent, name ), QRangeControl()
+	: QWidget( parent, name ), Q3RangeControl()
 {
-	_orientation = Horizontal;
+	_orientation = Qt::Horizontal;
 	_indent = true;
 }
 
-KSelector::KSelector( Orientation o, QWidget *parent, const char *name )
-	: QWidget( parent, name ), QRangeControl()
+KSelector::KSelector( Qt::Orientation o, QWidget *parent, const char *name )
+	: QWidget( parent, name ), Q3RangeControl()
 {
 	_orientation = o;
 	_indent = true;
@@ -235,7 +217,7 @@ KSelector::~KSelector()
 
 QRect KSelector::contentsRect() const
 {
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 		return QRect( 2, 5, width()-9, height()-10 );
 	else
 		return QRect( 5, 2, width()-10, height()-9 );
@@ -253,7 +235,7 @@ void KSelector::paintEvent( QPaintEvent * )
 
 	if ( indent() )
 	{
-		if ( orientation() == Vertical )
+		if ( orientation() == Qt::Vertical )
 			qDrawShadePanel( &painter, 0, 3, width()-5, height()-6,
 				colorGroup(), true, 2, &brush );
 		else
@@ -285,18 +267,11 @@ void KSelector::wheelEvent( QWheelEvent *e )
 
 void KSelector::valueChange()
 {
-	QPainter painter;
-	QPoint pos;
+	QPoint prevPos, newPos;
 
-	painter.begin( this );
-
-	pos = calcArrowPos( prevValue() );
-	drawArrow( &painter, false, pos );   
-
-	pos = calcArrowPos( value() );
-	drawArrow( &painter, true, pos );   
-
-	painter.end();
+	prevPos = calcArrowPos( prevValue() );
+	newPos = calcArrowPos( value() );
+	update(QRect(prevPos, newPos));
 
 	emit valueChanged( value() );
 }
@@ -305,7 +280,7 @@ void KSelector::moveArrow( const QPoint &pos )
 {
 	int val;
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 		val = ( maxValue() - minValue() ) * (height()-pos.y()-3)
 				/ (height()-10) + minValue();
 	else
@@ -319,7 +294,7 @@ QPoint KSelector::calcArrowPos( int val )
 {
 	QPoint p;
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		p.setY( height() - ( (height()-10) * val
 				/ ( maxValue() - minValue() ) + 5 ) );
@@ -342,11 +317,11 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 {
   if ( show )
   {
-    QPointArray array(3);
+    Q3PointArray array(3);
 
     painter->setPen( QPen() );
     painter->setBrush( QBrush( colorGroup().buttonText() ) );
-    if ( orientation() == Vertical )
+    if ( orientation() == Qt::Vertical )
     {
       array.setPoint( 0, pos.x()+0, pos.y()+0 );
       array.setPoint( 1, pos.x()+5, pos.y()+5 );
@@ -363,7 +338,7 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
   } 
   else 
   {
-    if ( orientation() == Vertical )
+    if ( orientation() == Qt::Vertical )
     {
        repaint(pos.x(), pos.y()-5, 6, 11, true);
     }
@@ -383,7 +358,7 @@ KGradientSelector::KGradientSelector( QWidget *parent, const char *name )
 }
 
 
-KGradientSelector::KGradientSelector( Orientation o, QWidget *parent,
+KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent,
 		const char *name )
 	: KSelector( o, parent, name )
 {
@@ -415,7 +390,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 	int greenDiff = color2.green() - color1.green();
 	int blueDiff  = color2.blue() - color1.blue();
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		for ( int y = 0; y < image.height(); y++ )
 		{
@@ -461,7 +436,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), p );
 
-	if ( orientation() == Vertical )
+	if ( orientation() == Qt::Vertical )
 	{
 		int yPos = contentsRect().top() + painter->fontMetrics().ascent() + 2;
 		int xPos = contentsRect().left() + (contentsRect().width() -

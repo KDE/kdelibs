@@ -22,7 +22,7 @@
 #include <qtimer.h>
 
 #include <qregexp.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qevent.h>
 
 #include <ksqueezedtextlabel.h>
@@ -47,8 +47,8 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpopupmenu.h>
-#include <qheader.h>
+#include <q3popupmenu.h>
+#include <q3header.h>
 
 #include "observer_stub.h"
 #include "observer.h" // for static methods only
@@ -119,7 +119,7 @@ class ProgressConfigDialog:public KDialogBase
       QCheckBox *m_headerCb;
       QCheckBox *m_fixedWidthCb;
       KListView *m_columns;
-      QCheckListItem *(m_items[ListProgress::TB_MAX]);
+      Q3CheckListItem *(m_items[ListProgress::TB_MAX]);
 };
 
 ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
@@ -140,15 +140,15 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
    m_columns->setSorting(-1);
    m_columns->header()->hide();
 
-   m_items[ListProgress::TB_ADDRESS]        =new QCheckListItem(m_columns, i18n("URL"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_REMAINING_TIME] =new QCheckListItem(m_columns, i18n("Remaining Time", "Rem. Time"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_SPEED]          =new QCheckListItem(m_columns, i18n("Speed"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_TOTAL]          =new QCheckListItem(m_columns, i18n("Size"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_PROGRESS]       =new QCheckListItem(m_columns, i18n("%"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_COUNT]          =new QCheckListItem(m_columns, i18n("Count"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_RESUME]         =new QCheckListItem(m_columns, i18n("Resume", "Res."), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_LOCAL_FILENAME] =new QCheckListItem(m_columns, i18n("Local Filename"), QCheckListItem::CheckBox);
-   m_items[ListProgress::TB_OPERATION]      =new QCheckListItem(m_columns, i18n("Operation"), QCheckListItem::CheckBox);
+   m_items[ListProgress::TB_ADDRESS]        =new Q3CheckListItem(m_columns, i18n("URL"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_REMAINING_TIME] =new Q3CheckListItem(m_columns, i18n("Remaining Time", "Rem. Time"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_SPEED]          =new Q3CheckListItem(m_columns, i18n("Speed"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_TOTAL]          =new Q3CheckListItem(m_columns, i18n("Size"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_PROGRESS]       =new Q3CheckListItem(m_columns, i18n("%"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_COUNT]          =new Q3CheckListItem(m_columns, i18n("Count"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_RESUME]         =new Q3CheckListItem(m_columns, i18n("Resume", "Res."), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_LOCAL_FILENAME] =new Q3CheckListItem(m_columns, i18n("Local Filename"), Q3CheckListItem::CheckBox);
+   m_items[ListProgress::TB_OPERATION]      =new Q3CheckListItem(m_columns, i18n("Operation"), Q3CheckListItem::CheckBox);
 
    layout->addWidget(m_showSystemTrayCb);
    layout->addWidget(m_keepOpenCb);
@@ -174,9 +174,9 @@ bool ProgressConfigDialog::isChecked(int i) const
    return m_items[i]->isOn();
 }
 
-ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
+ProgressItem::ProgressItem( ListProgress* view, Q3ListViewItem *after, Q3CString app_id, int job_id,
                             bool showDefault )
-  : QListViewItem( view, after ) {
+  : Q3ListViewItem( view, after ) {
 
   listProgress = view;
 
@@ -354,7 +354,7 @@ void ProgressItem::setText(ListProgress::ListProgressFields field, const QString
         listProgress->m_squeezer->setText(t);
         t=listProgress->m_squeezer->text();
      }
-     QListViewItem::setText(listProgress->m_lpcc[field].index,t);
+     Q3ListViewItem::setText(listProgress->m_lpcc[field].index,t);
   }
 }
 
@@ -550,7 +550,7 @@ void ListProgress::columnWidthChanged(int column)
    //resqueeze if necessary
    if ((m_lpcc[TB_ADDRESS].enabled) && (column==m_lpcc[TB_ADDRESS].index))
    {
-      for (QListViewItem* lvi=firstChild(); lvi!=0; lvi=lvi->nextSibling())
+      for (Q3ListViewItem* lvi=firstChild(); lvi!=0; lvi=lvi->nextSibling())
       {
          ProgressItem *pi=(ProgressItem*)lvi;
          pi->setText(TB_ADDRESS,pi->fullLengthAddress());
@@ -617,10 +617,10 @@ UIServer::UIServer()
 
   connect( listProgress, SIGNAL( selectionChanged() ),
            SLOT( slotSelection() ) );
-  connect( listProgress, SIGNAL( executed( QListViewItem* ) ),
-           SLOT( slotToggleDefaultProgress( QListViewItem* ) ) );
-  connect( listProgress, SIGNAL( contextMenu( KListView*, QListViewItem *, const QPoint &)),
-           SLOT(slotShowContextMenu(KListView*, QListViewItem *, const QPoint&)));
+  connect( listProgress, SIGNAL( executed( Q3ListViewItem* ) ),
+           SLOT( slotToggleDefaultProgress( Q3ListViewItem* ) ) );
+  connect( listProgress, SIGNAL( contextMenu( KListView*, Q3ListViewItem *, const QPoint &)),
+           SLOT(slotShowContextMenu(KListView*, Q3ListViewItem *, const QPoint&)));
 
 
   // setup animation timer
@@ -671,11 +671,11 @@ void UIServer::applySettings()
      toolBar()->show();
 }
 
-void UIServer::slotShowContextMenu(KListView*, QListViewItem* item, const QPoint& pos)
+void UIServer::slotShowContextMenu(KListView*, Q3ListViewItem* item, const QPoint& pos)
 {
    if (m_contextMenu==0)
    {
-      m_contextMenu=new QPopupMenu(this);
+      m_contextMenu=new Q3PopupMenu(this);
       m_idCancelItem = m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
 //      m_contextMenu->insertItem(i18n("Toggle Progress"), this, SLOT(slotToggleDefaultProgress()));
       m_contextMenu->insertSeparator();
@@ -684,7 +684,7 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem* item, const QPoint
    if ( item )
        item->setSelected( true );
    bool enabled = false;
-   QListViewItemIterator it( listProgress );
+   Q3ListViewItemIterator it( listProgress );
    for ( ; it.current(); ++it ) {
      if ( it.current()->isSelected() ) {
        enabled = true;
@@ -743,12 +743,12 @@ void UIServer::slotApplyConfig()
    listProgress->writeSettings();
 }
 
-int UIServer::newJob( QCString observerAppId, bool showProgress )
+int UIServer::newJob( Q3CString observerAppId, bool showProgress )
 {
   kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
             << "Giving id=" << s_jobId+1 << endl;
 
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
     if ( it.current()->itemBelow() == 0L ) { // this will find the end of list
       break;
@@ -775,7 +775,7 @@ int UIServer::newJob( QCString observerAppId, bool showProgress )
 
 ProgressItem* UIServer::findItem( int id )
 {
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
 
   ProgressItem *item;
 
@@ -1016,7 +1016,7 @@ void UIServer::unmounting( int id, QString point )
   }
 }
 
-void UIServer::killJob( QCString observerAppId, int progressId )
+void UIServer::killJob( Q3CString observerAppId, int progressId )
 {
     // Contact the object "KIO::Observer" in the application <appId>
     Observer_stub observer( observerAppId, "KIO::Observer" );
@@ -1044,7 +1044,7 @@ void UIServer::slotQuit()
 void UIServer::slotUpdate() {
   // don't do anything if we don't have any inserted progress item
   // or if they're all hidden
-   QListViewItemIterator lvit( listProgress );
+   Q3ListViewItemIterator lvit( listProgress );
    bool visible = false;
    for ( ; lvit.current(); ++lvit )
       if ( ((ProgressItem*)lvit.current())->isVisible() ) {
@@ -1078,7 +1078,7 @@ void UIServer::slotUpdate() {
   ProgressItem *item;
 
   // count totals for statusbar
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
 
   for ( ; it.current(); ++it ) {
     item = (ProgressItem*) it.current();
@@ -1107,7 +1107,7 @@ void UIServer::slotUpdate() {
 void UIServer::setListMode( bool list )
 {
   m_bShowList = list;
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
     // When going to list mode -> hide all progress dialogs
     // When going back to separate dialogs -> show them all
@@ -1126,13 +1126,13 @@ void UIServer::setListMode( bool list )
   }
 }
 
-void UIServer::slotToggleDefaultProgress( QListViewItem *item ) {
+void UIServer::slotToggleDefaultProgress( Q3ListViewItem *item ) {
   ((ProgressItem*) item )->slotToggleDefaultProgress();
 }
 
 
 void UIServer::slotSelection() {
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
 
   for ( ; it.current(); ++it ) {
     if ( it.current()->isSelected() ) {
@@ -1155,7 +1155,7 @@ QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
                                                           inf.readOnly, inf.caption,
                                                           inf.comment, inf.commentLabel );
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( &data, QIODevice::WriteOnly );
     if ( result == QDialog::Accepted )
         inf.setModified( true );
     else
@@ -1182,7 +1182,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
       // Set the chain back onto the certificate
       QStringList cl =
                       QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
-      QPtrList<KSSLCertificate> ncl;
+      Q3PtrList<KSSLCertificate> ncl;
 
       ncl.setAutoDelete(true);
       for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
@@ -1290,7 +1290,7 @@ QByteArray UIServer::open_RenameDlg64( int id,
                                                       (time_t)mtimeSrc, (time_t)mtimeDest );
   kdDebug(7024) << "KIO::open_RenameDlg done" << endl;
   QByteArray data;
-  QDataStream stream( data, IO_WriteOnly );
+  QDataStream stream( &data, QIODevice::WriteOnly );
   stream << Q_UINT8(result) << newDest;
   if ( item && result != KIO::R_CANCEL )
     setItemVisible( item, true );
@@ -1339,7 +1339,7 @@ void UIServer::writeSettings() {
 
 
 void UIServer::slotCancelCurrent() {
-  QListViewItemIterator it( listProgress );
+  Q3ListViewItemIterator it( listProgress );
   ProgressItem *item;
 
   // kill selected jobs

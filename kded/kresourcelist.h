@@ -12,13 +12,13 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 #ifndef __kresourcelist_h__
 #define __kresourcelist_h__ 
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 #include <qregexp.h>
 
@@ -31,7 +31,7 @@ struct KSycocaResource
    QString extension; 
 };
 
-class KSycocaResourceList : public QValueList<KSycocaResource>
+class KSycocaResourceList : public Q3ValueList<KSycocaResource>
 {
 public:
    KSycocaResourceList() { };

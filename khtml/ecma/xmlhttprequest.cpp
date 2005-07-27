@@ -309,7 +309,7 @@ void XMLHttpRequest::send(const QString& _body)
   aborted = false;
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
-      job = KIO::http_post( url, QCString(_body.utf8()), false );
+      job = KIO::http_post( url, Q3CString(_body.utf8()), false );
       if(contentType.isNull())
 	job->addMetaData( "content-type", "Content-type: text/plain" );
       else
@@ -619,7 +619,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString method = args[0].toString(exec).qstring();
-      KHTMLPart *part = ::qt_cast<KHTMLPart *>(Window::retrieveActive(exec)->part());
+      KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
         return Undefined();
       KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());

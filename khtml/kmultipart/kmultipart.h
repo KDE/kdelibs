@@ -74,11 +74,11 @@ private slots:
 
 private:
     KParts::BrowserExtension* m_extension;
-    QGuardedPtr<KParts::ReadOnlyPart> m_part;
+    QPointer<KParts::ReadOnlyPart> m_part;
     bool m_isHTMLPart;
     bool m_partIsLoading;
     KIO::Job* m_job;
-    QCString m_boundary;
+    Q3CString m_boundary;
     int m_boundaryLength;
     QString m_mimeType; // the one handled by m_part - store the kservice instead?
     QString m_nextMimeType; // while parsing headers

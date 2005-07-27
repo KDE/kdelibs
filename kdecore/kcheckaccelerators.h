@@ -21,7 +21,7 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qobject.h>
 #include <qkeysequence.h>
 #include <qmap.h>
@@ -29,7 +29,7 @@
 #include <qtimer.h>
 
 class QMenuData;
-class QTextView;
+class Q3TextView;
 
 #include "kdelibs_export.h"
 
@@ -85,8 +85,8 @@ private:
     bool block;
     QTimer autoCheckTimer;
     void createDialog(QWidget *parent, bool automatic);
-    QGuardedPtr<QDialog> drklash;
-    QTextView *drklash_view;
+    QPointer<QDialog> drklash;
+    Q3TextView *drklash_view;
 
 private slots:
     void autoCheckSlot();

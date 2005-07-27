@@ -28,6 +28,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
@@ -77,7 +78,7 @@ private slots:
 
 private:
   KProcess         *dfProc;
-  QCString          dfStringErrOut;
+  Q3CString          dfStringErrOut;
   QString           m_mountPoint;
   bool              readingDFStdErrOut;
   class KDiskFreeSpPrivate;

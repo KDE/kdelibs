@@ -34,26 +34,26 @@
 #include <ksslcertificatehome.h>
 #include <ksslpkcs12.h>
 #include <ksslx509map.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <qfile.h>
-#include <qsortedlist.h>
+#include <q3sortedlist.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <qdatetime.h>
 
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kopenssl.h>
 
 // See design notes at end
 
 extern "C" {
-	KDE_EXPORT KDEDModule *create_kssld(const QCString &name) {
+	KDE_EXPORT KDEDModule *create_kssld(const Q3CString &name) {
 		return new KSSLD(name);
 	}
 
@@ -78,7 +78,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		}
 
 		QString encodedCertStr = cfg->readEntry("Certificate");
-		QCString encodedCert = encodedCertStr.local8Bit();
+		Q3CString encodedCert = encodedCertStr.local8Bit();
 	       	KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
 			cfg->deleteGroup(*i);
@@ -109,7 +109,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 }
 
 
-KSSLD::KSSLD(const QCString &name) : KDEDModule(name)
+KSSLD::KSSLD(const Q3CString &name) : KDEDModule(name)
 {
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
@@ -177,7 +177,7 @@ KSSLCNode *node;
 
 			// Also write the chain
 			QStringList qsl;
-			QPtrList<KSSLCertificate> cl =
+			Q3PtrList<KSSLCertificate> cl =
 						node->cert->chain().getChain();
 			for (KSSLCertificate *c = cl.first();
 							c != 0;
@@ -244,7 +244,7 @@ QStringList groups = cfg->groupList();
 			continue;
 		}
 
-		QCString encodedCert;
+		Q3CString encodedCert;
 		KSSLCertificate *newCert;
 
 		encodedCert = cfg->readEntry("Certificate").local8Bit();
@@ -638,7 +638,7 @@ QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
 
 QFile out(path);
 
-	if (!out.open(IO_WriteOnly))
+	if (!out.open(QIODevice::WriteOnly))
 		return false;
 
 KConfig cfg("ksslcalist", true, false);
@@ -699,14 +699,15 @@ return true;
 static QStringList caReadCerticatesFromFile(QString filename) {
 
 	QStringList certificates;
-	QString certificate, temp;
+	QString certificate;
 	QFile file(filename);
+        QByteArray temp(1000);
 
-	if (!file.open(IO_ReadOnly))
+	if (!file.open(QIODevice::ReadOnly))
 		return certificates;
 
 	while (!file.atEnd()) {
-		file.readLine(temp, 999);
+		file.readLine(temp.data(), 999);
 		if (temp.startsWith("-----BEGIN CERTIFICATE-----")) {
 			certificate = QString::null;
 			continue;
@@ -857,12 +858,12 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
 		QString email = static_cast<const QString &>(*iter).lower();
-		QMap<QString, QPtrVector<KSSLCertificate> >::iterator it = skEmail.find(email);
+		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email);
 
 		if (it == skEmail.end())
-			it = skEmail.insert(email, QPtrVector<KSSLCertificate>());
+			it = skEmail.insert(email, Q3PtrVector<KSSLCertificate>());
 
-		QPtrVector<KSSLCertificate> &elem = *it;
+		Q3PtrVector<KSSLCertificate> &elem = *it;
 		
 		if (elem.findRef(cert) == -1) {
 			unsigned int n = 0;
@@ -887,12 +888,12 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 	QStringList mails;
 	cert->getEmails(mails);
 	for(QStringList::const_iterator iter = mails.begin(); iter != mails.end(); ++iter) {
-		QMap<QString, QPtrVector<KSSLCertificate> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).lower());
+		QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).lower());
 
 		if (it == skEmail.end())
 		       break;
 
-		QPtrVector<KSSLCertificate> &elem = *it;
+		Q3PtrVector<KSSLCertificate> &elem = *it;
 
 		int n = elem.findRef(cert);
 		if (n != -1)
@@ -903,14 +904,14 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 
 QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 	QStringList rc;
-	QMap<QString, QPtrVector<KSSLCertificate> >::iterator it = skEmail.find(email.lower());
+	QMap<QString, Q3PtrVector<KSSLCertificate> >::iterator it = skEmail.find(email.lower());
 
 	kdDebug() << "GETKDEKey " << email.latin1() << endl;
 
 	if (it == skEmail.end())
 		return rc;
 
-	QPtrVector<KSSLCertificate> &elem = *it;
+	Q3PtrVector<KSSLCertificate> &elem = *it;
 	for (unsigned int n = 0; n < elem.size(); n++) {
 		KSSLCertificate *cert = elem.at(n);
 		if (cert) {

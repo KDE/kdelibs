@@ -21,7 +21,7 @@
 
 #include <kurl.h>
 #include <qstring.h>
-#include <qcstring.h>
+#include <qbytearray.h>
 #include <qtextcodec.h>
 
 class KRemoteEncodingPrivate;
@@ -62,19 +62,19 @@ public:
    * This function is supposed to work for dirnames, filenames
    * or a full pathname.
    */
-  QString decode(const QCString& name) const;
+  QString decode(const QByteArray& name) const;
 
   /**
    * Converts the given name from Unicode.
    * This function is supposed to work for dirnames, filenames
    * or a full pathname.
    */
-  QCString encode(const QString& name) const;
+  QByteArray encode(const QString& name) const;
 
   /**
    * Converts the given URL into its 8-bit components
    */
-  QCString encode(const KURL& url) const;
+  QByteArray encode(const KURL& url) const;
 
   /**
    * Converts the given URL into 8-bit form and separate the
@@ -83,12 +83,12 @@ public:
    *
    * The dirname is returned with the final slash always stripped
    */
-  QCString directory(const KURL& url, bool ignore_trailing_slash = true) const;
+  QByteArray directory(const KURL& url, bool ignore_trailing_slash = true) const;
 
   /**
    * Converts the given URL into 8-bit form and retrieve the filename.
    */
-  QCString fileName(const KURL& url) const;
+  QByteArray fileName(const KURL& url) const;
 
   /**
    * Returns the encoding being used.

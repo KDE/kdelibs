@@ -21,18 +21,16 @@
 #define __KSHORTCUTMENU_H
 
 #include <qmap.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 
 #include "kshortcut.h"
-
-class QLabel;
 
 class KAccelActions;
 
 /**
  * @internal
  */
-class KDECORE_EXPORT KShortcutMenu : public QPopupMenu
+class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
 {
 	Q_OBJECT
  public:
@@ -54,7 +52,6 @@ class KDECORE_EXPORT KShortcutMenu : public QPopupMenu
 	
 	KAccelActions* m_pActions;
 	KKeySequence m_seq;
-	QLabel* pTitle;
 	IndexToKKeySequence m_seqs;
 };
 

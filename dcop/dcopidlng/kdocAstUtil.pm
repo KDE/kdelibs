@@ -152,9 +152,9 @@ ANITER:
 
 			if( !defined $ref ) {
 				# ancestor undefined
-				warn "warning: ", $node->{astNodeName},
-					" inherits unknown class '",
-						$in->{astNodeName},"'\n";
+				#warn "warning: ", $node->{astNodeName},
+				#		" inherits unknown class '",
+				#			$in->{astNodeName},"'\n";
 
 				$parent->AddPropList( 'InBy', $node );
 			}

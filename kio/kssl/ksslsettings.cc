@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
-#include <qsortedlist.h>
+#include <q3sortedlist.h>
 
 #include "ksslsettings.h"
 #include <kglobal.h>
@@ -128,7 +128,7 @@ QString KSSLSettings::getCipherList() {
   QString tcipher;
   bool firstcipher = true;
   SSL_METHOD *meth = 0L;
-  QSortedList<CipherNode> cipherSort;
+  Q3SortedList<CipherNode> cipherSort;
 
   cipherSort.setAutoDelete(true);
 

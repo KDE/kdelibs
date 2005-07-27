@@ -26,7 +26,7 @@
 #include <typeinfo>
 
 #include <qwidget.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kuserprofile.h"
 #include "kmimetype.h"
@@ -74,7 +74,7 @@ public:
     QString m_preferredService;
     QString m_externalBrowser;
     QString m_localPath;
-    QGuardedPtr <QWidget> m_window;
+    QPointer <QWidget> m_window;
 };
 
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
@@ -222,16 +222,16 @@ public:
     bool hasUrls:1, hasSpec:1;
 
 protected:
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     const KService &service;
 };
 
 int
-KRunMX1::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
-   uint option = str[pos + 1];
+   uint option = str[pos + 1].unicode();
    switch( option ) {
    case 'c':
       ret << service.name().replace( '%', "%%" );
@@ -271,7 +271,7 @@ public:
     bool ignFile:1;
 
 protected:
-    virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
+    virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
     void subst( int option, const KURL &url, QStringList &ret );
@@ -304,9 +304,9 @@ KRunMX2::subst( int option, const KURL &url, QStringList &ret )
 }
 
 int
-KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
+KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 {
-   uint option = str[pos + 1];
+   uint option = str[pos + 1].unicode();
    switch( option ) {
    case 'f':
    case 'u':
@@ -330,7 +330,7 @@ KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
          subst( option, *it, ret );
       break;
    case '%':
-      ret = "%";
+      ret = QStringList(QString::fromLatin1("%"));
       break;
    default:
       return -2; // subst with same and skip
@@ -352,23 +352,6 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   KRunMX1 mx1( _service );
   KRunMX2 mx2( _urls );
 
-  /// compatibility hack -- KDE 4: remove
-  QRegExp re("^\\s*(?:/bin/)?sh\\s+-c\\s+(.*)$");
-  if (!re.search( exec )) {
-    exec = re.cap( 1 ).stripWhiteSpace();
-    for (uint pos = 0; pos < exec.length(); ) {
-      QChar c = exec.unicode()[pos];
-      if (c != '\'' && c != '"')
-        goto synerr; // what else can we do? after normal parsing the substs would be insecure
-      int pos2 = exec.find( c, pos + 1 ) - 1;
-      if (pos2 < 0)
-        goto synerr; // quoting error
-      memcpy( (void *)(exec.unicode() + pos), exec.unicode() + pos + 1, (pos2 - pos) * sizeof(QChar));
-      pos = pos2;
-      exec.remove( pos, 2 );
-    }
-  }
-
   if( !mx1.expandMacrosShellQuote( exec ) )
     goto synerr; // error in shell syntax
 
@@ -380,7 +363,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
     result << "kioexec" << "--tempfiles" << exec;
     result += _urls.toStringList();
     if (has_shell)
-      result = KShell::joinArgs( result );
+      result = QStringList( KShell::joinArgs( result ) );
     return result;
   }
 
@@ -395,7 +378,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
         result << exec;
         result += _urls.toStringList();
         if (has_shell)
-          result = KShell::joinArgs( result );
+          result = QStringList( KShell::joinArgs( result ) );
         return result;
       }
   }
@@ -527,7 +510,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   QString bin = KRun::binaryName( binName, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
   bool silent;
-  QCString wmclass;
+  QByteArray wmclass;
   KStartupInfoId id;
   bool startup_notify = KRun::checkStartupNotify( binName, service, &silent, &wmclass );
   if( startup_notify )
@@ -570,10 +553,10 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
 }
 
 // This code is also used in klauncher.
-bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* service, bool* silent_arg, QCString* wmclass_arg )
+bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* service, bool* silent_arg, QByteArray* wmclass_arg )
 {
   bool silent = false;
-  QCString wmclass;
+  QByteArray wmclass;
   if( service && service->property( "StartupNotify" ).isValid())
   {
       silent = !service->property( "StartupNotify" ).toBool();

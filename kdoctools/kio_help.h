@@ -10,9 +10,9 @@
 #include <unistd.h>
 
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 
 #include <kio/global.h>
@@ -22,7 +22,7 @@ class HelpProtocol : public KIO::SlaveBase
 {
 public:
 
-    HelpProtocol( bool ghelp, const QCString &pool, const QCString &app);
+    HelpProtocol( bool ghelp, const Q3CString &pool, const Q3CString &app);
     virtual ~HelpProtocol() { }
 
     virtual void get( const KURL& url );

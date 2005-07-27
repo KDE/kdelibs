@@ -22,16 +22,16 @@
 #include <kurldrag.h>
 #include <kdebug.h>
 
-KBookmarkDrag * KBookmarkDrag::newDrag( const QValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
+KBookmarkDrag * KBookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
 {
     KURL::List urls;
 
-    for ( QValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
+    for ( Q3ValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
        urls.append( (*it).url() );
     }
 
     // See KURLDrag::newDrag
-    QStrList uris;
+    Q3StrList uris;
     KURL::List::ConstIterator uit = urls.begin();
     KURL::List::ConstIterator uEnd = urls.end();
     // Get each URL encoded in utf8 - and since we get it in escaped
@@ -44,14 +44,14 @@ KBookmarkDrag * KBookmarkDrag::newDrag( const QValueList<KBookmark> & bookmarks,
 
 KBookmarkDrag * KBookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dragSource, const char * name )
 {
-    QValueList<KBookmark> bookmarks;
+    Q3ValueList<KBookmark> bookmarks;
     bookmarks.append( KBookmark(bookmark) );
     return newDrag(bookmarks, dragSource, name);
 }
 
-KBookmarkDrag::KBookmarkDrag( const QValueList<KBookmark> & bookmarks, const QStrList & urls,
+KBookmarkDrag::KBookmarkDrag( const Q3ValueList<KBookmark> & bookmarks, const Q3StrList & urls,
                   QWidget * dragSource, const char * name )
-    : QUriDrag( urls, dragSource, name ), m_bookmarks( bookmarks ), m_doc("xbel")
+    : Q3UriDrag( urls, dragSource, name ), m_bookmarks( bookmarks ), m_doc("xbel")
 {
     // We need to create the XML for this drag right now and not
     // in encodedData because when cutting a folder, the children
@@ -59,7 +59,7 @@ KBookmarkDrag::KBookmarkDrag( const QValueList<KBookmark> & bookmarks, const QSt
     // is requested.
     QDomElement elem = m_doc.createElement("xbel");
     m_doc.appendChild( elem );
-    for ( QValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
+    for ( Q3ValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
        elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
     }
     //kdDebug(7043) << "KBookmarkDrag::KBookmarkDrag " << m_doc.toString() << endl;
@@ -79,12 +79,12 @@ const char* KBookmarkDrag::format( int i ) const
 QByteArray KBookmarkDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
-    QCString mimetype( mime );
+    Q3CString mimetype( mime );
     if ( mimetype == "text/uri-list" )
-        return QUriDrag::encodedData( mime );
+        return Q3UriDrag::encodedData( mime );
     else if ( mimetype == "application/x-xbel" )
     {
-        a = m_doc.toCString();
+        a = m_doc.toByteArray();
         //kdDebug(7043) << "KBookmarkDrag::encodedData " << m_doc.toCString() << endl;
     }
     else if ( mimetype == "text/plain" )
@@ -98,7 +98,7 @@ QByteArray KBookmarkDrag::encodedData( const char* mime ) const
             for ( ; uit != uEnd ; ++uit )
                 uris.append( (*uit).prettyURL() );
 
-            QCString s = uris.join( "\n" ).local8Bit();
+            Q3CString s = uris.join( "\n" ).local8Bit();
             a.resize( s.length() + 1 ); // trailing zero
             memcpy( a.data(), s.data(), s.length() + 1 );
         }
@@ -112,9 +112,9 @@ bool KBookmarkDrag::canDecode( const QMimeSource * e )
            e->provides("text/plain");
 }
 
-QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
+Q3ValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
 {
-    QValueList<KBookmark> bookmarks;
+    Q3ValueList<KBookmark> bookmarks;
     if ( e->provides("application/x-xbel") )
     {
         QByteArray s( e->encodedData("application/x-xbel") );
@@ -123,7 +123,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
         doc.setContent( s );
         QDomElement elem = doc.documentElement();
         QDomNodeList children = elem.childNodes();
-        for ( uint childno = 0; childno < children.count(); childno++) 
+        for ( int childno = 0; childno < children.count(); childno++) 
         {
            bookmarks.append( KBookmark( children.item(childno).cloneNode(true).toElement() ));
         }
@@ -150,7 +150,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     {        
         //kdDebug(7043) << "KBookmarkDrag::decode text/plain" << endl;
         QString s;
-        if(QTextDrag::decode( e, s ))
+        if(Q3TextDrag::decode( e, s ))
         {
             
             QStringList listDragURLs = QStringList::split(QChar('\n'), s);

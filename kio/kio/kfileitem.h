@@ -23,7 +23,7 @@
 #include <qstringlist.h>
 #include <sys/stat.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kio/global.h>
 #include <kurl.h>
 #include <kmimetype.h>
@@ -598,12 +598,12 @@ private:
 /**
  * List of KFileItems
  */
-typedef QPtrList<KFileItem> KFileItemList;
+typedef Q3PtrList<KFileItem> KFileItemList;
 
 /**
  * Iterator for KFileItemList
  */
-typedef QPtrListIterator<KFileItem> KFileItemListIterator;
+typedef Q3PtrListIterator<KFileItem> KFileItemListIterator;
 
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
 KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );

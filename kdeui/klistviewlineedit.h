@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef KLISTVIEWLINEEDIT_H
 #define KLISTVIEWLINEEDIT_H
@@ -32,14 +32,14 @@ public:
 	KListViewLineEdit(KListView *parent);
 	~KListViewLineEdit();
 
-	QListViewItem *currentItem() const;
+	Q3ListViewItem *currentItem() const;
 
 signals:
-	void done(QListViewItem*, int);
+	void done(Q3ListViewItem*, int);
 
 public slots:
 	void terminate();
-	void load(QListViewItem *i, int c);
+	void load(Q3ListViewItem *i, int c);
 
 protected:
 	virtual void focusOutEvent(QFocusEvent *);
@@ -48,9 +48,9 @@ protected:
 	virtual bool event (QEvent *pe);
 
 	/// @since 3.1
-	void selectNextCell (QListViewItem *pi, int column, bool forward);
+	void selectNextCell (Q3ListViewItem *pi, int column, bool forward);
 	void terminate(bool commit);
-	QListViewItem *item;
+	Q3ListViewItem *item;
 	int col;
 	KListView* const p;
 

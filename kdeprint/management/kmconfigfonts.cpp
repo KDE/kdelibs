@@ -13,20 +13,19 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmconfigfonts.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qsettings.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <kconfig.h>
@@ -43,8 +42,8 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	setPageHeader(i18n("Font Settings"));
 	setPagePixmap("fonts");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("Fonts Embedding"), this);
-	QGroupBox	*box2 = new QGroupBox(0, Qt::Vertical, i18n("Fonts Path"), this);
+	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("Fonts Embedding"), this);
+	Q3GroupBox	*box2 = new Q3GroupBox(0, Qt::Vertical, i18n("Fonts Path"), this);
 
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), box);
 	m_fontpath = new KListView(box2);
@@ -81,12 +80,10 @@ KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
 	l4->addWidget(box);
 	l4->addWidget(box2);
 
-	QWhatsThis::add(m_embedfonts,
-			i18n("These options will automatically put fonts in the PostScript file "
+	m_embedfonts->setWhatsThis(			i18n("These options will automatically put fonts in the PostScript file "
                              "which are not present on the printer. Font embedding usually produces better print results "
 			     "(closer to what you see on the screen), but larger print data as well."));
-	QWhatsThis::add(m_fontpath, 
-			i18n("When using font embedding you can select additional directories where "
+	m_fontpath->setWhatsThis(			i18n("When using font embedding you can select additional directories where "
 			     "KDE should search for embeddable font files. By default, the X server "
 			     "font path is used, so adding those directories is not needed. The default "
 			     "search path should be sufficient in most cases."));
@@ -108,9 +105,9 @@ void KMConfigFonts::loadConfig(KConfig *)
 	QSettings	settings;
 	m_embedfonts->setChecked(settings.readBoolEntry("/qt/embedFonts", true));
 	QStringList	paths = settings.readListEntry("/qt/fontPath", ':');
-	QListViewItem	*item(0);
+	Q3ListViewItem	*item(0);
 	for (QStringList::ConstIterator it=paths.begin(); it!=paths.end(); ++it)
-		item = new QListViewItem(m_fontpath, item, *it);
+		item = new Q3ListViewItem(m_fontpath, item, *it);
 }
 
 void KMConfigFonts::saveConfig(KConfig *)
@@ -118,7 +115,7 @@ void KMConfigFonts::saveConfig(KConfig *)
 	QSettings	settings;
 	settings.writeEntry("/qt/embedFonts", m_embedfonts->isChecked());
 	QStringList	l;
-	QListViewItem	*item = m_fontpath->firstChild();
+	Q3ListViewItem	*item = m_fontpath->firstChild();
 	while (item)
 	{
 		l << item->text(0);
@@ -129,7 +126,7 @@ void KMConfigFonts::saveConfig(KConfig *)
 
 void KMConfigFonts::slotSelected()
 {
-	QListViewItem	*item = m_fontpath->selectedItem();
+	Q3ListViewItem	*item = m_fontpath->selectedItem();
 	m_remove->setEnabled(item);
 	m_up->setEnabled(item && item->itemAbove());
 	m_down->setEnabled(item && item->itemBelow());
@@ -139,10 +136,10 @@ void KMConfigFonts::slotAdd()
 {
 	if (m_addpath->url().isEmpty())
 		return;
-	QListViewItem	*lastItem(m_fontpath->firstChild());
+	Q3ListViewItem	*lastItem(m_fontpath->firstChild());
 	while (lastItem && lastItem->nextSibling())
 		lastItem = lastItem->nextSibling();
-	QListViewItem	*item = new QListViewItem(m_fontpath, lastItem, m_addpath->url());
+	Q3ListViewItem	*item = new Q3ListViewItem(m_fontpath, lastItem, m_addpath->url());
 	m_fontpath->setSelected(item, true);
 }
 
@@ -156,20 +153,20 @@ void KMConfigFonts::slotRemove()
 
 void KMConfigFonts::slotUp()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
+	Q3ListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemAbove())
 		return;
-	nitem = new QListViewItem(m_fontpath, citem->itemAbove()->itemAbove(), citem->text(0));
+	nitem = new Q3ListViewItem(m_fontpath, citem->itemAbove()->itemAbove(), citem->text(0));
 	delete citem;
 	m_fontpath->setSelected(nitem, true);
 }
 
 void KMConfigFonts::slotDown()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
+	Q3ListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemBelow())
 		return;
-	nitem = new QListViewItem(m_fontpath, citem->itemBelow(), citem->text(0));
+	nitem = new Q3ListViewItem(m_fontpath, citem->itemBelow(), citem->text(0));
 	delete citem;
 	m_fontpath->setSelected(nitem, true);
 }

@@ -8,6 +8,7 @@
 #define _KDIRWATCH_P_H
 
 #ifdef HAVE_FAM
+#include <limits.h>
 #include <fam.h>
 #endif
 
@@ -47,9 +48,9 @@ public:
     entryMode m_mode;
     bool isDir;
     // instances interested in events
-    QPtrList<Client> m_clients;
+    Q3PtrList<Client> m_clients;
     // nonexistent entries of this directory
-    QPtrList<Entry> m_entries;
+    Q3PtrList<Entry> m_entries;
     QString path;
 
     int msecLeft, freq;
@@ -115,7 +116,7 @@ public:
   bool useStat(Entry*);
 
   bool delayRemove;
-  QPtrList<Entry> removeList;
+  Q3PtrList<Entry> removeList;
 
   bool rescan_all;
   QTimer rescan_timer;
@@ -133,7 +134,7 @@ public:
   bool supports_dnotify;
   int mPipe[2];
   QSocketNotifier *mSn;
-  QIntDict<Entry> fd_Entry;
+  Q3IntDict<Entry> fd_Entry;
 
   static void dnotify_handler(int, siginfo_t *si, void *);
   static void dnotify_sigio_handler(int, siginfo_t *si, void *);

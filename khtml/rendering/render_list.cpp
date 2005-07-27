@@ -29,6 +29,7 @@
 #include "rendering/enumerate.h"
 #include "rendering/counter_tree.h"
 #include "html/html_listimpl.h"
+#include "imload/imagepainter.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
 #include "misc/loader.h"
@@ -36,12 +37,13 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 //#define BOX_DEBUG
 
 using namespace khtml;
 using namespace Enumerate;
+using namespace khtmlImLoad;
 
 const int cMarkerPadding = 7;
 
@@ -293,7 +295,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int offset = fm.ascent()*2/3;
     bool haveImage = m_listImage && !m_listImage->isErrorImage();
     if (haveImage)
-        offset = m_listImage->pixmap().width();
+        offset = m_listImage->pixmap_size().width();
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;
@@ -311,7 +313,8 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         xoff += haveImage ? cMarkerPadding : (m_width - bulletWidth);
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
-	p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
+        ImagePainter painter(m_listImage->image());
+        painter.paint( _tx + xoff, _ty, p );
         return;
     }
 
@@ -326,22 +329,22 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
     switch(style()->listStyleType()) {
     case LDISC:
         p->setBrush( color );
-        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LCIRCLE:
         p->setBrush( Qt::NoBrush );
-        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LSQUARE:
         p->setBrush( color );
-        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LBOX:
         p->setBrush( Qt::NoBrush );
-        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
+        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1), (offset>>1) );
         return;
     case LDIAMOND: {
-        static QPointArray diamond(4);
+        static QPolygon diamond(4);
         int x = _tx + xoff;
         int y = _ty + (3 * yoff)/2 - 1;
         int s = (offset>>2)+1;
@@ -359,25 +362,27 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         if (!m_item.isEmpty()) {
             if(listPositionInside()) {
             	if( style()->direction() == LTR) {
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
-                    p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip,
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
+                    p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip,
                                 QString::fromLatin1(". "));
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
-                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
-            	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+            	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             } else {
                 if (style()->direction() == LTR) {
                     const QString& punct(QString::fromLatin1(". "));
-                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, punct);
-                    p->drawText(_tx-offset/2-fm.width(punct), _ty, 0, 0, Qt::AlignRight|Qt::DontClip, m_item);
+                    int itemWidth = fm.width(m_item);
+                    int punctWidth = fm.width(punct);
+                    p->drawText(_tx-offset/2-punctWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+                    p->drawText(_tx-offset/2-punctWidth-itemWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
-            	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, punct);
-                    p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
+            	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
+                    p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
 	    }
         }
@@ -394,10 +399,10 @@ void RenderListMarker::layout()
     setNeedsLayout(false);
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
+void RenderListMarker::updatePixmap( const QRect& r, CachedImage *o)
 {
     if(o != m_listImage) {
-        RenderBox::setPixmap(p, r, o);
+        RenderBox::updatePixmap(r, o);
         return;
     }
 
@@ -414,10 +419,10 @@ void RenderListMarker::calcMinMaxWidth()
     m_markerWidth = m_width = 0;
 
     if(m_listImage && !m_listImage->isErrorImage()) {
-        m_markerWidth = m_listImage->pixmap().width() + cMarkerPadding;
+        m_markerWidth = m_listImage->pixmap_size().width() + cMarkerPadding;
         if (listPositionInside())
             m_width = m_markerWidth;
-        m_height = m_listImage->pixmap().height();
+        m_height = m_listImage->pixmap_size().height();
         m_minWidth = m_maxWidth = m_width;
         setMinMaxKnown();
         return;

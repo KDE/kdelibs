@@ -94,10 +94,10 @@ namespace KABC {
        * You need to call setFlags() after this.
        */
       LdapConfigWidget( QWidget* parent = 0, 
-        const char* name = 0, WFlags fl = 0 );
+        const char* name = 0, Qt::WFlags fl = 0 );
       /** Constructs a configuration widget */
       LdapConfigWidget( int flags, QWidget* parent = 0,
-        const char* name = 0, WFlags fl = 0 );
+        const char* name = 0, Qt::WFlags fl = 0 );
       /** Destructs a configuration widget */
       virtual ~LdapConfigWidget();
 

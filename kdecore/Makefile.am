@@ -27,7 +27,7 @@ SVGICONS=svgicons
 SVGICON_LIB=svgicons/libkdesvgicons.la
 endif
 
-SUBDIRS = malloc network $(SVGICONS) . kconfig_compiler tests
+SUBDIRS = malloc $(SVGICONS) . kconfig_compiler tests network 
 
 # For the future: examine if condensing the tons of *_LDFLAGS variables
 # into $(all_libraries) isn't better
@@ -38,7 +38,7 @@ lib_LIBRARIES = libkdefakes_nonpic.a
 
 include_HEADERS = kconfig.h kconfigskeleton.h \
 	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
-	kconfigbase.h kdesktopfile.h kurl.h ksock.h kaboutdata.h \
+	kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h \
 	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
@@ -51,29 +51,25 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
 	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
-	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h \
-	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
+	kprocio.h kasyncio.h \
+	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \
 	kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h \
-	kdemacros.h kde_file.h ktimezones.h
+	kdemacros.h kde_file.h ktimezones.h kmdcodec.h
 
-libkdefakes_la_SOURCES = fakes.c vsnprintf.c
+libkdefakes_la_SOURCES = fakes.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
 libkdefakes_la_LIBADD  = $(LIBSOCKET)
 
-libkdefakes_nonpic_a_SOURCES = fakes_nonpic.c vsnprintf_nonpic.c
+libkdefakes_nonpic_a_SOURCES = fakes_nonpic.c
 
 fakes_nonpic.c:$(srcdir)/fakes.c
 	-rm -f fakes_nonpic.c
 	$(LN_S) $(srcdir)/fakes.c fakes_nonpic.c
-
-vsnprintf_nonpic.c:  $(srcdir)/vsnprintf.c
-	-rm -f vsnprintf_nonpic.c
-	$(LN_S) $(srcdir)/vsnprintf.c vsnprintf_nonpic.c
 
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h netwm_p.h \
@@ -86,7 +82,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
-	kstandarddirs.cpp ksock.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
+	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \
 	klocale.cpp krfcdate.cpp kiconeffect.cpp kicontheme.cpp \
 	kiconloader.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
@@ -99,11 +95,11 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
-	ksockaddr.cpp kextsock.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
+	netsupp.cpp kprocio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
-	kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
+	kcodecs.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
-	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
+	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \
@@ -116,7 +112,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kqiodevicegzip_p.cpp ktimezones.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la network/libkdecorenetwork.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) $(LIB_IDN) ../kdefx/libkdefx.la
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) $(LIB_IDN) network/libkdecorenetwork.la # ../kdefx/libkdefx.la
 libkdecore_la_NMCHECK = $(srcdir)/libkdecore.nmcheck
 libkdecore_la_NMCHECKWEAK = $(srcdir)/libkdecore_weak.nmcheck $(srcdir)/libqt-mt_weak.nmcheck \
 	$(top_srcdir)/dcop/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/standard_weak.nmcheck

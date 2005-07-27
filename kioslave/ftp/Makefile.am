@@ -1,4 +1,4 @@
-INCLUDES= $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdecore/network $(all_includes)
 
 ####### Files
 

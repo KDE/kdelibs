@@ -23,7 +23,6 @@
 #include <config.h>
 
 #include <kde_file.h>
-#include <ksock.h>
 #include <qtimer.h>
 
 #include <sys/types.h>
@@ -37,6 +36,9 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
+#include <network/kresolver.h>
+#include <network/kstreamsocket.h>
+#include <network/ksocketdevice.h>
 
 #include "kio/connection.h"
 
@@ -121,22 +123,26 @@ void Connection::dequeue()
     }
 }
 
-void Connection::init(KSocket *sock)
+void Connection::init(KNetwork::KStreamSocket *sock)
 {
+    sock->setFamily(KNetwork::KResolver::LocalFamily);
+    sock->setBlocking(true);
+    sock->connect();
+
     delete notifier;
     notifier = 0;
 #ifdef Q_OS_UNIX //TODO: not yet available on WIN32
     delete socket;
     socket = sock;
-    fd_in = socket->socket();
-    f_out = KDE_fdopen( socket->socket(), "wb" );
+    fd_in = socket->socketDevice()->socket();
+    f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
 #endif
     if (receiver && ( fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        notifier = 0L;
 	if ( m_suspended ) {
             suspend();
 	}
-	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+	QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
     dequeue();
 }
@@ -165,10 +171,15 @@ void Connection::connect(QObject *_receiver, const char *_member)
     delete notifier;
     notifier = 0;
     if (receiver && (fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        if (socket == 0L)
+	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
         if ( m_suspended )
             suspend();
-	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+
+	if (notifier)
+	    QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+	if (socket)
+	    QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
 }
 
@@ -193,7 +204,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
     n = fwrite( data.data(), 1, data.size(), f_out );
 
-    if ( n != data.size() ) {
+    if ( n != (size_t)data.size() ) {
 	kdError(7017) << "Could not write data" << endl;
 	return false;
     }

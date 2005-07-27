@@ -20,6 +20,7 @@
 
 #include <qpainter.h>
 #include <qtimer.h>
+#include <qx11info_x11.h>
 #include <kapplication.h>
 #include "kscreensaver.h"
 #ifdef Q_WS_X11
@@ -55,7 +56,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
     if ( id )
     {
 #ifdef Q_WS_X11 //FIXME
-        XGetGeometry(qt_xdisplay(), (Drawable)id, &root, &ai, &ai,
+        XGetGeometry(QX11Info::display(), (Drawable)id, &root, &ai, &ai,
             &w, &h, &au, &au); 
 #endif
 
@@ -79,7 +80,7 @@ void KScreenSaver::embed( QWidget *w )
 {
     KApplication::sendPostedEvents();
 #ifdef Q_WS_X11 //FIXME
-    XReparentWindow(qt_xdisplay(), w->winId(), winId(), 0, 0);
+    XReparentWindow(QX11Info::display(), w->winId(), winId(), 0, 0);
 #endif
     w->setGeometry( 0, 0, width(), height() );
     KApplication::sendPostedEvents();
@@ -161,7 +162,7 @@ void KBlankEffect::timeout()
 void KBlankEffect::blankNormal()
 {
     QPainter p( d->widget );
-    p.fillRect( 0, 0, d->widget->width(), d->widget->height(), black );
+    p.fillRect( 0, 0, d->widget->width(), d->widget->height(), Qt::black );
     finished();
 }
 
@@ -169,7 +170,7 @@ void KBlankEffect::blankNormal()
 void KBlankEffect::blankSweepRight()
 {
     QPainter p( d->widget );
-    p.fillRect( d->effectProgress, 0, 50, d->widget->height(), black );
+    p.fillRect( d->effectProgress, 0, 50, d->widget->height(), Qt::black );
     kapp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->width() )
@@ -180,7 +181,7 @@ void KBlankEffect::blankSweepRight()
 void KBlankEffect::blankSweepDown()
 {
     QPainter p( d->widget );
-    p.fillRect( 0, d->effectProgress, d->widget->width(), 50, black );
+    p.fillRect( 0, d->effectProgress, d->widget->width(), 50, Qt::black );
     kapp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->height() )
@@ -214,7 +215,7 @@ void KBlankEffect::blankBlocks()
     for ( int i = 0; i < 2 && d->effectProgress < bx*by; i++ ) {
         int x = block[d->effectProgress]%bx;
         int y = block[d->effectProgress]/bx;
-        p.fillRect( x*64, y*64, 64, 64, black );
+        p.fillRect( x*64, y*64, 64, 64, Qt::black );
         d->effectProgress++;
     }
 

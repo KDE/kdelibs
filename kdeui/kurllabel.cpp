@@ -14,14 +14,15 @@
 
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA
-// 02110-1301  USA
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+// 02111-1307  USA
 
 #include <qcolor.h>
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qpixmap.h>
 #include <qapplication.h>
+#include <QMouseEvent>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -33,7 +34,7 @@ class KURLLabel::Private
 public:
   Private (const QString& url, KURLLabel* label)
     : URL (url),
-      Underline (true),
+      TextUnderline (true),
       LinkColor (KGlobalSettings::linkColor()),
       HighlightedLinkColor (Qt::red),
       Tip(url),
@@ -55,7 +56,7 @@ public:
   QString URL;
   QPixmap AltPixmap;
 
-  bool Underline;
+  bool TextUnderline;
   QColor LinkColor;
   QColor HighlightedLinkColor;
 
@@ -104,17 +105,17 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 
   switch (e->button())
     {
-    case LeftButton:
+    case Qt::LeftButton:
       emit leftClickedURL ();
       emit leftClickedURL (d->URL);
       break;
 
-    case MidButton:
+    case Qt::MidButton:
       emit middleClickedURL ();
       emit middleClickedURL (d->URL);
       break;
 
-    case RightButton:
+    case Qt::RightButton:
       emit rightClickedURL ();
       emit rightClickedURL (d->URL);
       break;
@@ -127,14 +128,14 @@ void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 void KURLLabel::setFont (const QFont& f)
 {
   QFont newFont = f;
-  newFont.setUnderline (d->Underline);
+  newFont.setUnderline (d->TextUnderline);
 
   QLabel::setFont (newFont);
 }
 
 void KURLLabel::setUnderline (bool on)
 {
-  d->Underline = on;
+  d->TextUnderline = on;
 
   setFont (font());
 }
@@ -291,7 +292,7 @@ void KURLLabel::enterEvent (QEvent* e)
 
       setLinkColor (d->HighlightedLinkColor);
 
-      d->RealUnderline = d->Underline;
+      d->RealUnderline = d->TextUnderline;
 
       if (d->Float)
         setUnderline (true);
@@ -319,7 +320,7 @@ void KURLLabel::leaveEvent (QEvent* e)
 
 bool KURLLabel::event (QEvent *e)
 {
-  if (e && e->type() == QEvent::ParentPaletteChange)
+  if (e && e->type() == QEvent::PaletteChange)
   {
     // use parentWidget() unless you are a toplevel widget, then try qAapp
     QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();

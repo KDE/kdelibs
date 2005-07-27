@@ -45,8 +45,9 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qregexp.h>
-#include <qstylesheet.h>
-#include <qvbox.h>
+#include <q3stylesheet.h>
+#include <q3vbox.h>
+#include <QX11Info>
 
 #include <assert.h>
 
@@ -55,7 +56,7 @@
 #endif
 
 extern "C" {
-   KDE_EXPORT KDEDModule *create_kwalletd(const QCString &name) {
+   KDE_EXPORT KDEDModule *create_kwalletd(const QByteArray &name) {
 	   return new KWalletD(name);
    }
 }
@@ -79,14 +80,14 @@ class KWalletTransaction {
 		DCOPClient *client;
 		DCOPClientTransaction *transaction;
 		Type tType;
-		QCString rawappid, returnObject;
-		QCString appid;
+		QByteArray rawappid, returnObject;
+		QByteArray appid;
 		uint wId;
 		QString wallet;
 };
 
 
-KWalletD::KWalletD(const QCString &name)
+KWalletD::KWalletD(const QByteArray &name)
 : KDEDModule(name), _failed(0) {
 	srand(time(0));
 	_showingFailureNotify = false;
@@ -98,9 +99,9 @@ KWalletD::KWalletD(const QCString &name)
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	connect(KApplication::dcopClient(),
-		SIGNAL(applicationRemoved(const QCString&)),
+		SIGNAL(applicationRemoved(const QByteArray&)),
 		this,
-		SLOT(slotAppUnregistered(const QCString&)));
+		SLOT(slotAppUnregistered(const QByteArray&)));
 	_dw = new KDirWatch(this, "KWallet Directory Watcher");
 	_dw->addDir(KGlobal::dirs()->saveLocation("kwallet"));
 	_dw->startScan(true);
@@ -142,7 +143,7 @@ void KWalletD::processTransactions() {
 	KWalletTransaction *xact;
 	while (!_transactions.isEmpty()) {
 		xact = _transactions.first();
-		QCString replyType;
+		DCOPCString replyType;
 		int res;
 
 		assert(xact->tType != KWalletTransaction::Unknown);
@@ -159,7 +160,7 @@ void KWalletD::processTransactions() {
 				// should not produce multiple password
 				// dialogs on a failure
 				if (res < 0) {
-					QPtrListIterator<KWalletTransaction> it(_transactions);
+					Q3PtrListIterator<KWalletTransaction> it(_transactions);
 					KWalletTransaction *x;
 					while ((x = it.current()) && x != xact) {
 						++it;
@@ -192,7 +193,7 @@ void KWalletD::processTransactions() {
 
 		if (xact->returnObject.isEmpty() && xact->tType != KWalletTransaction::ChangePassword) {
 			QByteArray replyData;
-			QDataStream stream(replyData, IO_WriteOnly);
+			QDataStream stream(&replyData, QIODevice::WriteOnly);
 			stream << res;
 			xact->client->endTransaction(xact->transaction, replyType, replyData);
 		}
@@ -203,20 +204,20 @@ void KWalletD::processTransactions() {
 }
 
 
-void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObject, uint wId) {
+void KWalletD::openAsynchronous(const QString& wallet, const QByteArray& returnObject, uint wId) {
 	DCOPClient *dc = callingDcopClient();
 	if (!dc) {
 		return;
 	}
 
-	QCString appid = dc->senderId();
+	QByteArray appid = dc->senderId();
 	if (!_enabled ||
 		!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
 		DCOPRef(appid, returnObject).send("walletOpenResult", -1);
 		return;
 	}
 
-	QCString peerName = friendlyDCOPPeerName();
+	QByteArray peerName = friendlyDCOPPeerName();
 
 	KWalletTransaction *xact = new KWalletTransaction;
 
@@ -255,7 +256,7 @@ int KWalletD::open(const QString& wallet, uint wId) {
 		return -1;
 	}
 
-	QCString appid = friendlyDCOPPeerName();
+	QByteArray appid = friendlyDCOPPeerName();
 
 	KWalletTransaction *xact = new KWalletTransaction;
 	_transactions.append(xact);
@@ -288,12 +289,12 @@ int KWalletD::open(const QString& wallet, uint wId) {
 }
 
 
-int KWalletD::doTransactionOpen(const QCString& appid, const QString& wallet, uint wId) {
+int KWalletD::doTransactionOpen(const QByteArray& appid, const QString& wallet, uint wId) {
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
 #ifdef Q_WS_X11
-		XSetTransientForHint(qt_xdisplay(), wiz->winId(), wId);
+		XSetTransientForHint(QX11Info::display(), wiz->winId(), wId);
 #endif
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
@@ -339,11 +340,11 @@ int KWalletD::doTransactionOpen(const QCString& appid, const QString& wallet, ui
 }
 
 
-int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool isPath, WId w) {
+int KWalletD::internalOpen(const QByteArray& appid, const QString& wallet, bool isPath, WId w) {
 	int rc = -1;
 	bool brandNew = false;
 
-	QCString thisApp;
+	QByteArray thisApp;
 	if (appid.isEmpty()) {
 		thisApp = "KDE System";
 	} else {
@@ -354,7 +355,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		return -1;
 	}
 
-	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
+	for (Q3IntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
 		if (i.current()->walletName() == wallet) {
 			rc = i.currentKey();
 			break;
@@ -380,9 +381,9 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				}
 				kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
 				if (appid.isEmpty()) {
-					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(Q3StyleSheet::escape(wallet)));
 				} else {
-					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(appid)).arg(QStyleSheet::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.").arg(Q3StyleSheet::escape(appid)).arg(Q3StyleSheet::escape(wallet)));
 				}
 				brandNew = false;
 				kpd->setButtonOK(KGuiItem(i18n("&Open"),"fileopen"));
@@ -396,16 +397,16 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			if (appid.isEmpty()) {
 				kpd->setPrompt(i18n("KDE has requested to open the wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request."));
 			} else {
-				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(QStyleSheet::escape(appid)));
+				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.").arg(Q3StyleSheet::escape(appid)));
 			}
 			brandNew = true;
 			kpd->setButtonOK(KGuiItem(i18n("&Open"),"fileopen"));
 		} else {
 			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 			if (appid.length() == 0) {
-				kpd->setPrompt(i18n("<qt>KDE has requested to create a new wallet named '<b>%1</b>'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(QStyleSheet::escape(wallet)));
+				kpd->setPrompt(i18n("<qt>KDE has requested to create a new wallet named '<b>%1</b>'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(Q3StyleSheet::escape(wallet)));
 			} else {
-				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to create a new wallet named '<b>%2</b>'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(QStyleSheet::escape(appid)).arg(QStyleSheet::escape(wallet)));
+				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to create a new wallet named '<b>%2</b>'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(Q3StyleSheet::escape(appid)).arg(Q3StyleSheet::escape(wallet)));
 			}
 			brandNew = true;
 			kpd->setButtonOK(KGuiItem(i18n("C&reate"),"filenew"));
@@ -419,7 +420,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		const char *p = 0L;
 		while (!b->isOpen()) {
 #ifdef Q_WS_X11
-			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
+			XSetTransientForHint(QX11Info::display(), kpd->winId(), w);
 #endif
 			KWin::setState( kpd->winId(), NET::KeepAbove );
 			KWin::setOnAllDesktops(kpd->winId(), true);
@@ -427,7 +428,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 				p = kpd->password();
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
 				if (!b->isOpen()) {
-					kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)").arg(QStyleSheet::escape(wallet)).arg(rc).arg(KWallet::Backend::openRCToString(rc)));
+					kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)").arg(Q3StyleSheet::escape(wallet)).arg(rc).arg(KWallet::Backend::openRCToString(rc)));
 					kpd->clearPassword();
 				}
 			} else {
@@ -467,7 +468,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			_timeouts->addTimer(rc, _idleTime);
 		}
 		QByteArray data;
-		QDataStream ds(data, IO_WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << wallet;
 		if (brandNew) {
 			emitDCOPSignal("walletCreated(QString)", data);
@@ -488,10 +489,10 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 }
 
 
-bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId w) {
+bool KWalletD::isAuthorizedApp(const QByteArray& appid, const QString& wallet, WId w) {
 	int response = 0;
 
-	QCString thisApp;
+	QByteArray thisApp;
 	if (appid.isEmpty()) {
 		thisApp = "KDE System";
 	} else {
@@ -501,12 +502,12 @@ bool KWalletD::isAuthorizedApp(const QCString& appid, const QString& wallet, WId
 	if (!implicitAllow(wallet, thisApp)) {
 		KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
 		if (appid.isEmpty()) {
-			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
+			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(Q3StyleSheet::escape(wallet)));
 		} else {
-			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)));
+			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(Q3StyleSheet::escape(QString(appid))).arg(Q3StyleSheet::escape(wallet)));
 		}
 #ifdef Q_WS_X11
-		XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
+		XSetTransientForHint(QX11Info::display(), dialog->winId(), w);
 #endif
 		KWin::setState(dialog->winId(), NET::KeepAbove);
 		KWin::setOnAllDesktops(dialog->winId(), true);
@@ -552,7 +553,7 @@ int KWalletD::deleteWallet(const QString& wallet) {
 		close(wallet, true);
 		QFile::remove(path);
 		QByteArray data;
-		QDataStream ds(data, IO_WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << wallet;
 		emitDCOPSignal("walletDeleted(QString)", data);
 		return 0;
@@ -563,7 +564,7 @@ int KWalletD::deleteWallet(const QString& wallet) {
 
 
 void KWalletD::changePassword(const QString& wallet, uint wId) {
-	QCString appid = friendlyDCOPPeerName();
+	QByteArray appid = friendlyDCOPPeerName();
 
 	KWalletTransaction *xact = new KWalletTransaction;
 
@@ -579,8 +580,8 @@ void KWalletD::changePassword(const QString& wallet, uint wId) {
 }
 
 
-void KWalletD::doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId) {
-	QIntDictIterator<KWallet::Backend> it(_wallets);
+void KWalletD::doTransactionChangePassword(const QByteArray& appid, const QString& wallet, uint wId) {
+	Q3IntDictIterator<KWallet::Backend> it(_wallets);
 	KWallet::Backend *w = 0L;
 	int handle = -1;
 	bool reclose = false;
@@ -609,11 +610,11 @@ void KWalletD::doTransactionChangePassword(const QCString& appid, const QString&
 
 	KPasswordDialog *kpd;
 	kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
-	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
+	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.").arg(Q3StyleSheet::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
 #ifdef Q_WS_X11
-	XSetTransientForHint(qt_xdisplay(), kpd->winId(), wId);
+	XSetTransientForHint(QX11Info::display(), kpd->winId(), wId);
 #endif
 	if (kpd->exec() == KDialog::Accepted) {
 		const char *p = kpd->password();
@@ -647,7 +648,7 @@ int KWalletD::close(const QString& wallet, bool force) {
 	int handle = -1;
 	KWallet::Backend *w = 0L;
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
 		if (it.current()->walletName() == wallet) {
@@ -688,7 +689,7 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 
 
 int KWalletD::close(int handle, bool force) {
-	QCString appid = friendlyDCOPPeerName();
+	QByteArray appid = friendlyDCOPPeerName();
 	KWallet::Backend *w = _wallets.find(handle);
 	bool contains = false;
 
@@ -729,8 +730,8 @@ int KWalletD::close(int handle, bool force) {
 }
 
 
-bool KWalletD::isOpen(const QString& wallet) const {
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+bool KWalletD::isOpen(const QString& wallet) {
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
 		if (it.current()->walletName() == wallet) {
@@ -766,16 +767,12 @@ QStringList KWalletD::wallets() const {
 
 	dir.setFilter(QDir::Files | QDir::NoSymLinks);
 
-	const QFileInfoList *list = dir.entryInfoList();
-	QFileInfoListIterator it(*list);
-	QFileInfo *fi;
-	while ((fi = it.current()) != 0L) {
-		QString fn = fi->fileName();
+	foreach (QFileInfo fi, dir.entryInfoList()) {
+		QString fn = fi.fileName();
 		if (fn.endsWith(".kwl")) {
 			fn.truncate(fn.length()-4);
 		}
 		rc += fn;
-		++it;
 	}
 	return rc;
 }
@@ -822,7 +819,7 @@ bool KWalletD::removeFolder(int handle, const QString& f) {
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		bool rc = b->removeFolder(f);
 		QByteArray data;
-		QDataStream ds(data, IO_WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << b->walletName();
 		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
@@ -838,7 +835,7 @@ bool KWalletD::createFolder(int handle, const QString& f) {
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		bool rc = b->createFolder(f);
 		QByteArray data;
-		QDataStream ds(data, IO_WriteOnly);
+		QDataStream ds(&data, QIODevice::WriteOnly);
 		ds << b->walletName();
 		emitDCOPSignal("folderListUpdated(QString)", data);
 		return rc;
@@ -868,15 +865,11 @@ QMap<QString,QByteArray> KWalletD::readMapList(int handle, const QString& folder
 
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		b->setFolder(folder);
-		QPtrList<KWallet::Entry> e = b->readEntryList(key);
 		QMap<QString, QByteArray> rc;
-		QPtrListIterator<KWallet::Entry> it(e);
-		KWallet::Entry *entry;
-		while ((entry = it.current())) {
+		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
 			if (entry->type() == KWallet::Wallet::Map) {
 				rc.insert(entry->key(), entry->map());
 			}
-			++it;
 		}
 		return rc;
 	}
@@ -905,13 +898,9 @@ QMap<QString, QByteArray> KWalletD::readEntryList(int handle, const QString& fol
 
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		b->setFolder(folder);
-		QPtrList<KWallet::Entry> e = b->readEntryList(key);
 		QMap<QString, QByteArray> rc;
-		QPtrListIterator<KWallet::Entry> it(e);
-		KWallet::Entry *entry;
-		while ((entry = it.current())) {
+		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
 			rc.insert(entry->key(), entry->value());
-			++it;
 		}
 		return rc;
 	}
@@ -952,15 +941,11 @@ QMap<QString, QString> KWalletD::readPasswordList(int handle, const QString& fol
 
 	if ((b = getWallet(friendlyDCOPPeerName(), handle))) {
 		b->setFolder(folder);
-		QPtrList<KWallet::Entry> e = b->readEntryList(key);
 		QMap<QString, QString> rc;
-		QPtrListIterator<KWallet::Entry> it(e);
-		KWallet::Entry *entry;
-		while ((entry = it.current())) {
+		foreach (KWallet::Entry *entry, b->readEntryList(key)) {
 			if (entry->type() == KWallet::Wallet::Password) {
 				rc.insert(entry->key(), entry->password());
 			}
-			++it;
 		}
 		return rc;
 	}
@@ -1090,10 +1075,10 @@ int KWalletD::removeEntry(int handle, const QString& folder, const QString& key)
 }
 
 
-void KWalletD::slotAppUnregistered(const QCString& app) {
+void KWalletD::slotAppUnregistered(const QByteArray& app) {
 	if (_handles.contains(app)) {
-		QValueList<int> l = _handles[app];
-		for (QValueList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
+		Q3ValueList<int> l = _handles[app];
+		for (Q3ValueList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
 			_handles[app].remove(*i);
 			KWallet::Backend *w = _wallets.find(*i);
 			if (w && !_leaveOpen && 0 == w->deref()) {
@@ -1106,7 +1091,7 @@ void KWalletD::slotAppUnregistered(const QCString& app) {
 
 
 void KWalletD::invalidateHandle(int handle) {
-	for (QMap<QCString,QValueList<int> >::Iterator i = _handles.begin();
+	for (QMap<QByteArray,Q3ValueList<int> >::Iterator i = _handles.begin();
 							i != _handles.end();
 									++i) {
 		i.data().remove(handle);
@@ -1114,7 +1099,7 @@ void KWalletD::invalidateHandle(int handle) {
 }
 
 
-KWallet::Backend *KWalletD::getWallet(const QCString& appid, int handle) {
+KWallet::Backend *KWalletD::getWallet(const QByteArray& appid, int handle) {
 	if (handle == 0) {
 		return 0L;
 	}
@@ -1154,12 +1139,12 @@ void KWalletD::notifyFailures() {
 
 void KWalletD::doCloseSignals(int handle, const QString& wallet) {
 	QByteArray data;
-	QDataStream ds(data, IO_WriteOnly);
+	QDataStream ds(&data, QIODevice::WriteOnly);
 	ds << handle;
 	emitDCOPSignal("walletClosed(int)", data);
 
 	QByteArray data2;
-	QDataStream ds2(data2, IO_WriteOnly);
+	QDataStream ds2(&data2, QIODevice::WriteOnly);
 	ds2 << wallet;
 	emitDCOPSignal("walletClosed(QString)", data2);
 
@@ -1186,11 +1171,11 @@ int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldN
 QStringList KWalletD::users(const QString& wallet) const {
 	QStringList rc;
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
 		if (it.current()->walletName() == wallet) {
-			for (QMap<QCString,QValueList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
+			for (QMap<QByteArray,Q3ValueList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
 				if (hit.data().contains(it.currentKey())) {
 					rc += hit.key();
 				}
@@ -1203,8 +1188,8 @@ QStringList KWalletD::users(const QString& wallet) const {
 }
 
 
-bool KWalletD::disconnectApplication(const QString& wallet, const QCString& application) {
-	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+bool KWalletD::disconnectApplication(const QString& wallet, const QByteArray& application) {
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
 						it.current();
 							++it) {
 		if (it.current()->walletName() == wallet) {
@@ -1220,7 +1205,7 @@ bool KWalletD::disconnectApplication(const QString& wallet, const QCString& appl
 				}
 
 				QByteArray data;
-				QDataStream ds(data, IO_WriteOnly);
+				QDataStream ds(&data, QIODevice::WriteOnly);
 				ds << wallet;
 				ds << application;
 				emitDCOPSignal("applicationDisconnected(QString,QCString)", data);
@@ -1236,7 +1221,7 @@ bool KWalletD::disconnectApplication(const QString& wallet, const QCString& appl
 
 void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 	QByteArray data;
-	QDataStream ds(data, IO_WriteOnly);
+	QDataStream ds(&data, QIODevice::WriteOnly);
 	ds << wallet;
 	ds << folder;
 	emitDCOPSignal("folderUpdated(QString,QString)", data);
@@ -1271,14 +1256,14 @@ void KWalletD::reconfigure() {
 	// Handle idle changes
 	if (_closeIdle) {
 		if (_idleTime != timeSave) { // Timer length changed
-			QIntDictIterator<KWallet::Backend> it(_wallets);
+			Q3IntDictIterator<KWallet::Backend> it(_wallets);
 			for (; it.current(); ++it) {
 				_timeouts->resetTimer(it.currentKey(), _idleTime);
 			}
 		}
 
 		if (!idleSave) { // add timers for all the wallets
-			QIntDictIterator<KWallet::Backend> it(_wallets);
+			Q3IntDictIterator<KWallet::Backend> it(_wallets);
 			for (; it.current(); ++it) {
 				_timeouts->addTimer(it.currentKey(), _idleTime);
 			}
@@ -1306,7 +1291,7 @@ void KWalletD::reconfigure() {
 	// Update if wallet was enabled/disabled
 	if (!_enabled) { // close all wallets
 		while (!_wallets.isEmpty()) {
-			QIntDictIterator<KWallet::Backend> it(_wallets);
+			Q3IntDictIterator<KWallet::Backend> it(_wallets);
 			if (!it.current()) { // necessary?
 				break;
 			}
@@ -1326,7 +1311,7 @@ bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) 
 		return true;
 	}
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
 		if (it.current()->walletName() == wallet) {
 			return it.current()->folderDoesNotExist(folder);
 		}
@@ -1345,7 +1330,7 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 		return true;
 	}
 
-	for (QIntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
+	for (Q3IntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
 		if (it.current()->walletName() == wallet) {
 			return it.current()->entryDoesNotExist(folder, key);
 		}
@@ -1359,22 +1344,24 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 }
 
 
-bool KWalletD::implicitAllow(const QString& wallet, const QCString& app) {
+bool KWalletD::implicitAllow(const QString& wallet, const QByteArray& app) {
 	return _implicitAllowMap[wallet].contains(QString::fromLocal8Bit(app));
 }
 
 
-bool KWalletD::implicitDeny(const QString& wallet, const QCString& app) {
+bool KWalletD::implicitDeny(const QString& wallet, const QByteArray& app) {
 	return _implicitDenyMap[wallet].contains(QString::fromLocal8Bit(app));
 }
 
 
-QCString KWalletD::friendlyDCOPPeerName() {
+QByteArray KWalletD::friendlyDCOPPeerName() {
 	DCOPClient *dc = callingDcopClient();
 	if (!dc) {
 		return "";
 	}
-	return dc->senderId().replace(QRegExp("-[0-9]+$"), "");
+    QString temp = dc->senderId();
+    temp.replace(QRegExp("-[0-9]+$"), "");
+	return temp.toLatin1();
 }
 
 
@@ -1387,9 +1374,9 @@ void KWalletD::timedOut(int id) {
 
 
 void KWalletD::closeAllWallets() {
-	QIntDict<KWallet::Backend> tw = _wallets;
+	Q3IntDict<KWallet::Backend> tw = _wallets;
 
-	for (QIntDictIterator<KWallet::Backend> it(tw); it.current(); ++it) {
+	for (Q3IntDictIterator<KWallet::Backend> it(tw); it.current(); ++it) {
 		closeWallet(it.current(), it.currentKey(), true);
 	}
 
@@ -1398,7 +1385,7 @@ void KWalletD::closeAllWallets() {
 	// All of this should be basically noop.  Let's just be safe.
 	_wallets.clear();
 
-	for (QMap<QString,QCString>::Iterator it = _passwords.begin();
+	for (QMap<QString,QByteArray>::Iterator it = _passwords.begin();
 						it != _passwords.end();
 						++it) {
 		it.data().fill(0);

@@ -21,7 +21,7 @@
 #ifndef KABC_PHONENUMBER_H
 #define KABC_PHONENUMBER_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstring.h>
 
 #include <kdelibs_export.h>
@@ -41,8 +41,8 @@ class KABC_EXPORT PhoneNumber
     friend KABC_EXPORT QDataStream &operator>>( QDataStream &, PhoneNumber & );
 
   public:
-    typedef QValueList<PhoneNumber> List;
-    typedef QValueList<int> TypeList;
+    typedef Q3ValueList<PhoneNumber> List;
+    typedef Q3ValueList<int> TypeList;
 
     /**
       @li @p Home -  Home number

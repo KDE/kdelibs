@@ -18,8 +18,10 @@
 */
 
 #include <qkeysequence.h>
-#include <qlabel.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
+#include <q3frame.h>
+
+#include <QKeyEvent>
 
 #include "kaccelaction.h"
 #include <kdebug.h>
@@ -28,20 +30,11 @@
 //#include <kkeynative.h>
 
 KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
-:	QPopupMenu( pParent ),
+:	Q3PopupMenu( pParent ),
 	m_pActions( pActions ),
 	m_seq( seq )
 {
 	kdDebug() << seq.toStringInternal() << endl;
-	
-	QFont fontTitle = KGlobalSettings::menuFont();
-	fontTitle.setBold( true );
-	
-	pTitle = new QLabel( "", (QWidget*)0 );
-	pTitle->setFont( fontTitle );
-	pTitle->setFrameShape( QFrame::Panel );	
-	
-	insertItem( pTitle );
 }
 
 bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
@@ -59,9 +52,9 @@ bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
 
 void KShortcutMenu::updateShortcuts()
 {
-	pTitle->setText( m_seq.toString() + ",..." );
+	setTitle( m_seq.toString() + ",..." );
 	
-	for( uint iItem = 1; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < count(); iItem++ ) {
 		int iAction = idAt( iItem );
 		if( iAction >= 0 ) {
 			KAccelAction* pAction = m_pActions->actionPtr( iAction );
@@ -84,14 +77,14 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 	KKey key( pEvent );
 	
 	switch( pEvent->key() ) {
-	 case Key_Shift:
-	 case Key_Control:
-	 case Key_Alt:
-	 case Key_Meta:
-	 case Key_Super_L:
-	 case Key_Super_R:
-	 case Key_Hyper_L:
-	 case Key_Hyper_R:
+	 case Qt::Key_Shift:
+	 case Qt::Key_Control:
+	 case Qt::Key_Alt:
+	 case Qt::Key_Meta:
+	 case Qt::Key_Super_L:
+	 case Qt::Key_Super_R:
+	 case Qt::Key_Hyper_L:
+	 case Qt::Key_Hyper_R:
 		break;
 	 default:
 		int iItem = searchForKey( key );
@@ -106,7 +99,7 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 			// And permit Enter, Return to select the item.
 			if( pEvent->key() == Qt::Key_Up    || pEvent->key() == Qt::Key_Down ||
 			    pEvent->key() == Qt::Key_Enter || pEvent->key() == Qt::Key_Return )
-				QPopupMenu::keyPressEvent( pEvent );
+				Q3PopupMenu::keyPressEvent( pEvent );
 			else
 				close();
 		}
@@ -122,7 +115,7 @@ int KShortcutMenu::searchForKey( KKey key )
 	int iItemFound = -1; // -1 indicates no match
 	uint iKey = m_seq.count();
 	
-	for( uint iItem = 1; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < count(); iItem++ ) {
 		if( m_seqs.contains( iItem ) ) {
 			KKey keyItem = m_seqs[iItem].key( iKey );
 			//kdDebug(125) << "iItem = " << iItem << " key = " << key.toStringInternal() << " keyItem = " << keyItem.toStringInternal() << endl;
@@ -145,7 +138,7 @@ void KShortcutMenu::keepItemsMatching( KKey key )
 	uint iKey = m_seq.count();
 	m_seq.setKey( iKey, key );
 	
-	for( uint iItem = 1; iItem < count(); iItem++ ) {
+	for( uint iItem = 0; iItem < count(); iItem++ ) {
 		if( m_seqs.contains( iItem ) ) {
 			KKey keyItem = m_seqs[iItem].key( iKey );
 			if( key != keyItem ) {

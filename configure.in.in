@@ -51,6 +51,7 @@ AC_CHECK_HEADERS(sys/param.h sys/mman.h sys/time.h sysent.h strings.h sys/stat.h
 
 DCOPIDL2CPP="compiled"
 DCOPIDL="compiled"
+## TODO REMOVE:
 DCOPIDLNG="compiled"
 MEINPROC="compiled"
 KDECONFIG="compiled"
@@ -67,7 +68,7 @@ KDE_CREATE_LIBS_ALIASES
 AC_DEFUN([KDE_DO_UIC_AGAIN],
 [
 AC_REQUIRE([AC_PATH_QT_MOC_UIC])
-UIC=$UIC_PATH
+UIC="$UIC_PATH -3 $UIC3_PATH"
 if test x$ac_uic_supports_nounload = xyes; then
     UIC="$UIC -nounload"
 fi
@@ -247,8 +248,10 @@ AC_CHECK_FUNC(posix_fadvise,[AC_DEFINE(HAVE_FADVISE,1,[Define is posix_fadvise i
 AC_SUBST(ICE_SUBDIR, 'ICE')
 AC_SUBST(ICE_RLIB, 'ICE/libkICE.la')
 
-AC_SUBST(DCOPIDL, '$(top_builddir)/dcop/dcopidl/dcopidl')
-AC_SUBST(DCOPIDLNG, '$(top_srcdir)/dcop/dcopidlng/dcopidlng')
+AC_SUBST(DCOPIDL, '$(top_srcdir)/dcop/dcopidlng/dcopidl --srcdir $(top_srcdir)/dcop/dcopidlng')
+AC_SUBST(DCOP_DEPENDENCIES, '$(top_srcdir)/dcop/dcopidlng/dcopidl $(top_srcdir)/dcop/dcopidlng/kalyptus $(top_srcdir)/dcop/dcopidlng/kalyptusCxxToDcopIDL.pm')
+## TODO REMOVE:
+AC_SUBST(DCOPIDLNG, '')
 AC_SUBST(DCOPIDL2CPP, '$(top_builddir)/dcop/dcopidl2cpp/dcopidl2cpp')
 AC_SUBST(MAKEKDEWIDGETS, '$(top_builddir)/kdewidgets/makekdewidgets')
 AC_SUBST(KCONFIG_COMPILER, '$(top_builddir)/kdecore/kconfig_compiler/kconfig_compiler')

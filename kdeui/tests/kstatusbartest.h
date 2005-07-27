@@ -2,11 +2,11 @@
 #define test_kstatusbar_h
 
 #include <kmenubar.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kstatusbar.h>
 #include <kmainwindow.h>
 
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 
 class testWindow  : public KMainWindow
 {
@@ -22,12 +22,12 @@ public slots:
     void slotMenu(int i);
     
 protected:
-    QPopupMenu *fileMenu;
-    QPopupMenu *smenu;
+    Q3PopupMenu *fileMenu;
+    Q3PopupMenu *smenu;
     KMenuBar *menuBar;
     KStatusBar *statusbar;
     bool insert;
-    QMultiLineEdit *widget;
+    Q3MultiLineEdit *widget;
 };
 #endif
 

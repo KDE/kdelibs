@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 /* NOTE: There are two copies of this .h and the .cpp file, with subtle differences.
@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <qcursor.h>
 #include <qapplication.h>
+#include <QMouseEvent>
 
 KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent, 
       const char *name) : QWidget( parent, name)
@@ -58,6 +59,8 @@ KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent,
    m_forcedAspectRatio=0;
 
    m_zoomFactor=1.0;
+   m_rubberBand = new QRubberBand(QRubberBand::Rectangle, m_label);
+   m_rubberBand->hide();
 }
 
 KPixmapRegionSelectorWidget::~KPixmapRegionSelectorWidget()
@@ -76,6 +79,7 @@ void KPixmapRegionSelectorWidget::setPixmap( const QPixmap &pixmap )
 void KPixmapRegionSelectorWidget::resetSelection()
 {
    m_selectedRegion = m_originalPixmap.rect();
+   m_rubberBand->hide();
    updatePixmap();
 }
 
@@ -107,16 +111,10 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    {
      m_linedPixmap = m_originalPixmap;
 
-     painter.begin(&m_linedPixmap);
-     painter.setRasterOp( Qt::XorROP );
-     painter.fillRect(0,0,m_linedPixmap.width(), m_linedPixmap.height(), 
-                  QBrush( QColor(255,255,255), Qt::BDiagPattern) );
-     painter.end();
-
      QImage image=m_linedPixmap.convertToImage();
      image=KImageEffect::fade(image, (float)0.4, QColor(0,0,0));
      m_linedPixmap.convertFromImage(image);
-   } 
+   }
 
    QPixmap pixmap = m_linedPixmap;
 
@@ -124,10 +122,15 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    painter.drawPixmap( m_selectedRegion.topLeft(), 
         m_originalPixmap, m_selectedRegion );
 
-   painter.setPen( QColor(255,255,255) );
-   painter.setRasterOp( Qt::XorROP );
+   if (m_selectedRegion == m_label->rect()) //### CHECK!
+        m_rubberBand->hide();
+   else
+   {
+        m_rubberBand->setGeometry(QRect(m_label -> mapToGlobal(m_selectedRegion.topLeft()),
+                                        m_selectedRegion.size()));
 
-   painter.drawRect( m_selectedRegion );
+        m_rubberBand->show();
+   }
 
    painter.end();
 
@@ -138,7 +141,7 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
    KPopupMenu *popup=new KPopupMenu(this, "PixmapRegionSelectorPopup");
-   popup->insertTitle(i18n("Image Operations"));
+   popup->addTitle(i18n("Image Operations"));
    
    KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
                                 0, this, SLOT(rotateClockwise()),
@@ -213,13 +216,13 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       QMouseEvent *mev= (QMouseEvent *)(ev);
       //kdDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
-      if ( mev->button() == RightButton )
+      if ( mev->button() == Qt::RightButton )
       {
          KPopupMenu *popup = createPopupMenu( );
          popup->exec( mev->globalPos() );
          delete popup;
          return TRUE;
-      };
+      }
 
       QCursor cursor;
 
@@ -426,7 +429,7 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
    {
          /* We have to resize the pixmap to get it complete on the screen */
          QImage image=m_originalPixmap.convertToImage();
-         m_originalPixmap.convertFromImage( image.smoothScale( width, height, QImage::ScaleMin ) );
+         m_originalPixmap.convertFromImage( image.smoothScale( width, height, Qt::KeepAspectRatio ) );
          double oldZoomFactor = m_zoomFactor;
          m_zoomFactor=m_originalPixmap.width()/(double)m_unzoomedPixmap.width();
 

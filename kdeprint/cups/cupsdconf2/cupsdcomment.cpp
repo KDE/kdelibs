@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdcomment.h"
@@ -49,10 +49,11 @@ bool Comment::load(QFile *f)
         comment_ = "";
         example_ = "";
 	key_ = "";
-        QString line, *current = &comment_;
+        QByteArray line;
+		QString *current = &comment_;
         while (!f->atEnd())
         {
-                f->readLine(line, 1024);
+                f->readLine(line.data(), 1024);
                 if (line.left(2) == "$$")
                 {
                         current = &example_;
@@ -115,7 +116,7 @@ bool CupsdComment::loadComments()
         comments_.setAutoDelete(true);
         comments_.clear();
         QFile	f(locate("data", "kdeprint/cupsd.conf.template"));
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
                 Comment         *comm;
                 while (!f.atEnd())

@@ -176,13 +176,13 @@ Resource::ConstIterator &Resource::ConstIterator::operator++( int )
 
 Resource::ConstIterator &Resource::ConstIterator::operator--()
 {
-  (d->mIt)--;
+  --(d->mIt);
   return *this;
 }
 
 Resource::ConstIterator &Resource::ConstIterator::operator--( int )
 {
-  (d->mIt)--;
+  --(d->mIt);
   return *this;
 }
 

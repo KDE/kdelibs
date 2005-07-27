@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmdriverdb.h"
@@ -110,7 +110,7 @@ void KMDriverDB::slotDbCreated()
 
 KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)
 {
-	QDict<KMDBEntryList>	*models = m_entries.find(manu);
+	Q3Dict<KMDBEntryList>	*models = m_entries.find(manu);
 	if (models)
 		return models->find(model);
 	return 0;
@@ -118,13 +118,13 @@ KMDBEntryList* KMDriverDB::findEntry(const QString& manu, const QString& model)
 
 KMDBEntryList* KMDriverDB::findPnpEntry(const QString& manu, const QString& model)
 {
-	QDict<KMDBEntryList>	*models = m_pnpentries.find(manu);
+	Q3Dict<KMDBEntryList>	*models = m_pnpentries.find(manu);
 	if (models)
 		return models->find(model);
 	return 0;
 }
 
-QDict<KMDBEntryList>* KMDriverDB::findModels(const QString& manu)
+Q3Dict<KMDBEntryList>* KMDriverDB::findModels(const QString& manu)
 {
 	return m_entries.find(manu);
 }
@@ -140,10 +140,10 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	}
 
 	// insert it in normal entries
-	QDict<KMDBEntryList>	*models = m_entries.find(entry->manufacturer);
+	Q3Dict<KMDBEntryList>	*models = m_entries.find(entry->manufacturer);
 	if (!models)
 	{
-		models = new QDict<KMDBEntryList>(17,false);
+		models = new Q3Dict<KMDBEntryList>(17,false);
 		models->setAutoDelete(true);
 		m_entries.insert(entry->manufacturer,models);
 	}
@@ -162,7 +162,7 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 		models = m_pnpentries.find(entry->manufacturer);
 		if (!models)
 		{
-			models = new QDict<KMDBEntryList>(17,false);
+			models = new Q3Dict<KMDBEntryList>(17,false);
 			models->setAutoDelete(true);
 			m_pnpentries.insert(entry->manufacturer,models);
 		}
@@ -197,14 +197,14 @@ void KMDriverDB::loadDbFile()
 	m_pnpentries.clear();
 
 	QFile	f(dbFile());
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 		QString		line;
 		QStringList	words;
 		KMDBEntry	*entry(0);
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty())

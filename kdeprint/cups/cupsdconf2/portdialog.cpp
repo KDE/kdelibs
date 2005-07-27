@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "portdialog.h"
@@ -26,7 +26,6 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 
@@ -73,9 +72,9 @@ QString PortDialog::listenString()
 
 void PortDialog::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(address_, conf->comments_.toolTip("address"));
-	QWhatsThis::add(port_, conf->comments_.toolTip("port"));
-	QWhatsThis::add(usessl_, conf->comments_.toolTip("usessl"));
+	address_->setWhatsThis(conf->comments_.toolTip("address"));
+	port_->setWhatsThis(conf->comments_.toolTip("port"));
+	usessl_->setWhatsThis(conf->comments_.toolTip("usessl"));
 }
 
 QString PortDialog::newListen(QWidget *parent, CupsdConf *conf)

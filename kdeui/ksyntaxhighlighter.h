@@ -17,21 +17,21 @@
 
  You should have received a copy of the GNU Library General Public License
  along with this library; see the file COPYING.LIB.  If not, write to
- the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- Boston, MA 02110-1301, USA.
+ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
 */
 
 #ifndef KSYNTAXHIGHLIGHTER_H
 #define KSYNTAXHIGHLIGHTER_H
 
-#include <qtextedit.h>
-#include <qsyntaxhighlighter.h>
+#include <q3textedit.h>
+#include <q3syntaxhighlighter.h>
 #include <qcolor.h>
 #include <qstringlist.h>
 
 #include <kdelibs_export.h>
 
-class QAccel;
+class Q3Accel;
 class QTimer;
 class KSpell;
 class KSpellConfig;
@@ -39,16 +39,16 @@ class KSpellConfig;
 /**
  * \brief Syntax sensitive text highlighter
  */
-class KDEUI_EXPORT KSyntaxHighlighter : public QSyntaxHighlighter
+class KDEUI_EXPORT KSyntaxHighlighter : public Q3SyntaxHighlighter
 {
 public:
     enum SyntaxMode {
 	PlainTextMode,
 	RichTextMode
     };
-    KSyntaxHighlighter( QTextEdit *textEdit,
+    KSyntaxHighlighter( Q3TextEdit *textEdit,
 			 bool colorQuoting = false,
-			 const QColor& QuoteColor0 = black,
+			 const QColor& QuoteColor0 = Qt::black,
 			 const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
 			 const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
 			 const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ),
@@ -65,10 +65,10 @@ private:
 class KDEUI_EXPORT KSpellingHighlighter : public KSyntaxHighlighter
 {
 public:
-    KSpellingHighlighter( QTextEdit *textEdit,
-			  const QColor& spellColor = red,
+    KSpellingHighlighter( Q3TextEdit *textEdit,
+			  const QColor& spellColor = Qt::red,
 			  bool colorQuoting = false,
-			  const QColor& QuoteColor0 = black,
+			  const QColor& QuoteColor0 = Qt::black,
 			  const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
 			  const QColor& QuoteColor2 = QColor( 0x00, 0x80, 0x00 ),
 			  const QColor& QuoteColor3 = QColor( 0x00, 0x80, 0x00 ) );
@@ -96,12 +96,12 @@ class KDEUI_EXPORT KDictSpellingHighlighter : public QObject, public KSpellingHi
 Q_OBJECT
 
 public:
-    KDictSpellingHighlighter( QTextEdit *textEdit,
+    KDictSpellingHighlighter( Q3TextEdit *textEdit,
 			      bool spellCheckingActive = true,
 			      bool autoEnable = true,
-			      const QColor& spellColor = red,
+			      const QColor& spellColor = Qt::red,
 			      bool colorQuoting = false,
-			      const QColor& QuoteColor0 = black,
+			      const QColor& QuoteColor0 = Qt::black,
 			      const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
 			      const QColor& QuoteColor2 = QColor( 0x00, 0x70, 0x00 ),
 			      const QColor& QuoteColor3 = QColor( 0x00, 0x60, 0x00 ),

@@ -26,7 +26,7 @@
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kstaticdeleter.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -103,9 +103,9 @@ bool khtml::hasSufficientContrast(const QColor &c1, const QColor &c2)
 // ### arbitrary value, to be adapted if necessary (LS)
 #define CONTRAST_DISTANCE 32
 
-  if (kAbs(c1.red() - c2.red()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.green() - c2.green()) > CONTRAST_DISTANCE) return true;
-  if (kAbs(c1.blue() - c2.blue()) > CONTRAST_DISTANCE) return true;
+  if (kAbs(c1.Qt::red() - c2.Qt::red()) > CONTRAST_DISTANCE) return true;
+  if (kAbs(c1.Qt::green() - c2.Qt::green()) > CONTRAST_DISTANCE) return true;
+  if (kAbs(c1.Qt::blue() - c2.Qt::blue()) > CONTRAST_DISTANCE) return true;
 
   return false;
 

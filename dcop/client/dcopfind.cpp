@@ -38,11 +38,11 @@ static DCOPClient* dcop = 0;
 static bool bAppIdOnly = 0;
 static bool bLaunchApp = 0;
 
-bool findObject( const char* app, const char* obj, const char* func, QCStringList args )
+bool findObject( const char* app, const char* obj, const char* func, DCOPCStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
-    int left = f.find( '(' );
-    int right = f.find( ')' );
+    int left = f.indexOf( '(' );
+    int right = f.indexOf( ')' );
 
     if ( right <  left )
     {
@@ -62,11 +62,11 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 
     QStringList types;
     if ( left >0 && left + 1 < right - 1) {
-	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
+	types = f.mid( left + 1, right - left - 1).split( ',', QString::SkipEmptyParts );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-	    QString lt = (*it).simplifyWhiteSpace();
+	    QString lt = (*it).simplified();
 
-	    int s = lt.find(' ');
+	    int s = lt.indexOf(' ');
 
 	    // If there are spaces in the name, there may be two
 	    // reasons: the parameter name is still there, ie.
@@ -76,7 +76,7 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 	    //
 	    if ( s > 0 )
 	    {
-		QStringList partl = QStringList::split(' ' , lt);
+		QStringList partl = lt.split(' ' , QString::SkipEmptyParts);
 
 		// The zero'th part is -- at the very least -- a
 		// type part. Any trailing parts *might* be extra
@@ -94,15 +94,15 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 		if (s<(int)partl.count()-1)
 		{
 			qWarning("The argument `%s' seems syntactically wrong.",
-				lt.latin1());
+				lt.toLatin1().constData());
 		}
 		if (s==(int)partl.count()-1)
 		{
-			partl.remove(partl.at(s));
+			partl.removeAll(partl.at(s));
 		}
 
 	    	lt = partl.join(" ");
-		lt = lt.simplifyWhiteSpace();
+		lt = lt.simplified();
 	    }
 
 	    (*it) = lt;
@@ -126,20 +126,21 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
     }
 
     QByteArray data;
-    QDataStream arg(data, IO_WriteOnly);
+    QDataStream arg(&data, QIODevice::WriteOnly);
+    arg.setVersion(QDataStream::Qt_3_1);
 
-    uint i = 0;
+    int i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
         marshall(arg, args, i, *it);
     }
-    if ( (uint) i != args.count() ) {
+    if ( i != args.count() ) {
 	qWarning( "arguments do not match" );
 	exit(1);
     }
 
-    QCString foundApp;
-    QCString foundObj;
-    if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) )
+    DCOPCString foundApp;
+    DCOPCString foundObj;
+    if ( dcop->findObject( app, obj, f.toLatin1().data(),  data, foundApp, foundObj) )
     {
        if (bAppIdOnly)
           puts(foundApp.data());
@@ -162,8 +163,9 @@ bool launchApp(QString app)
 
     QStringList URLs;
     QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg(data, IO_WriteOnly);
+    DCOPCString replyType;
+    QDataStream arg(&data, QIODevice::WriteOnly);
+    arg.setVersion(QDataStream::Qt_3_1);
     arg << app << URLs;
 
     if ( !dcop->call( "klauncher", "klauncher", "start_service_by_desktop_name(QString,QStringList)",
@@ -171,7 +173,8 @@ bool launchApp(QString app)
 	qWarning( "call to klauncher failed.");
         return false;
     }
-    QDataStream reply(replyData, IO_ReadOnly);
+    QDataStream reply(&replyData, QIODevice::ReadOnly);
+    reply.setVersion(QDataStream::Qt_3_1);
 
     if ( replyType != "serviceResult" )
     {
@@ -179,12 +182,12 @@ bool launchApp(QString app)
         return false;
     }
     int result;
-    QCString dcopName;
+    QByteArray dcopName;
     QString error;
     reply >> result >> dcopName >> error;
     if (result != 0)
     {
-        qWarning("Error starting '%s': %s", app.local8Bit().data(), error.local8Bit().data());
+        qWarning("Error starting '%s': %s", app.toLocal8Bit().data(), error.toLocal8Bit().data());
         return false;
     }
     return true;
@@ -226,9 +229,9 @@ int main( int argc, char** argv )
     client.attach();
     dcop = &client;
 
-    QCString app;
-    QCString objid;
-    QCString function;
+    QByteArray app;
+    QByteArray objid;
+    QByteArray function;
     char **args = 0;
     if ((argc > argi) && (strncmp(argv[argi], "DCOPRef(", 8)) == 0)
     {
@@ -264,7 +267,7 @@ int main( int argc, char** argv )
        argc = 0;
     }
 
-    QCStringList params;
+    DCOPCStringList params;
     for( int i = 0; i < argc; i++ )
         params.append( args[ i ] );
     bool ok = findObject( app, objid, function, params );

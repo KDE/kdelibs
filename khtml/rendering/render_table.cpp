@@ -429,7 +429,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
         // have all the styles sorted, we then do individual passes, painting each style of border
         // from lowest precedence to highest precedence.
         pI.phase = PaintActionCollapsedTableBorders;
-        QValueList<CollapsedBorderValue> borderStyles;
+        Q3ValueList<CollapsedBorderValue> borderStyles;
         collectBorders(borderStyles);
 #if 0
        QString m;
@@ -437,8 +437,8 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
          m += QString("%1 ").arg((*borderStyles.at(i)).width());
        kdDebug(6040) << m << endl;
 #endif
-        QValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-        QValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+        Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
+        Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
         for (; it != end; ++it) {
             m_currentBorder = &*it;
             for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
@@ -830,7 +830,7 @@ void RenderTable::dump(QTextStream &stream, const QString &ind) const
 	stream << " foot";
 
     stream << " [cspans:";
-    for ( unsigned int i = 0; i < columns.size(); i++ )
+    for ( int i = 0; i < columns.size(); i++ )
 	stream << " " << columns[i].span;
     stream << "]";
 }
@@ -1009,7 +1009,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 {
     int rSpan = cell->rowSpan();
     int cSpan = cell->colSpan();
-    QMemArray<RenderTable::ColumnStruct> &columns = table()->columns;
+    QVector<RenderTable::ColumnStruct> &columns = table()->columns;
     int nCols = columns.size();
 
     // ### mozilla still seems to do the old HTML way, even for strict DTD
@@ -1115,7 +1115,7 @@ void RenderTableSection::setCellWidths()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table, this=0x" << this << ")::setCellWidths()" << endl;
 #endif
-    QMemArray<int> &columnPos = table()->columnPos;
+    QVector<int> &columnPos = table()->columnPos;
 
 	int rows = grid.size();
     for ( int i = 0; i < rows; i++ ) {
@@ -1576,7 +1576,7 @@ void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
     RenderContainer::dump(stream,ind);
 
     stream << " grid=(" << grid.size() << "," << table()->numEffCols() << ")";
-    for ( unsigned int r = 0; r < grid.size(); r++ ) {
+    for ( int r = 0; r < grid.size(); r++ ) {
 	for ( int c = 0; c < table()->numEffCols(); c++ ) {
 	    if ( cellAt( r,  c ) && cellAt( r, c ) != (RenderTableCell *)-1 )
 		stream << " (" << cellAt( r, c )->row() << "," << cellAt( r, c )->col() << ","
@@ -2435,13 +2435,13 @@ public:
     int count;
 };
 
-static void addBorderStyle(QValueList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
+static void addBorderStyle(Q3ValueList<CollapsedBorderValue>& borderStyles, CollapsedBorderValue borderValue)
 {
     if (!borderValue.exists() || borderStyles.contains(borderValue))
         return;
 
-    QValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
-    QValueListIterator<CollapsedBorderValue> end = borderStyles.end();
+    Q3ValueListIterator<CollapsedBorderValue> it = borderStyles.begin();
+    Q3ValueListIterator<CollapsedBorderValue> end = borderStyles.end();
     for (; it != end; ++it) {
         CollapsedBorderValue result = compareBorders(*it, borderValue);
         if (result == *it) {
@@ -2453,7 +2453,7 @@ static void addBorderStyle(QValueList<CollapsedBorderValue>& borderStyles, Colla
     borderStyles.append(borderValue);
 }
 
-void RenderTableCell::collectBorders(QValueList<CollapsedBorderValue>& borderStyles)
+void RenderTableCell::collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles)
 {
     addBorderStyle(borderStyles, collapsedLeftBorder());
     addBorderStyle(borderStyles, collapsedRightBorder());

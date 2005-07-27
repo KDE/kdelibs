@@ -22,12 +22,14 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#include <q3valuelist.h>
+#include <q3cstring.h>
 
 #include <kdelibs_export.h>
 
 class KInstance;
 class KPluginInfo;
-class QWidgetStack;
+class Q3WidgetStack;
 class KConfig;
 class KConfigGroup;
 
@@ -135,7 +137,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *                     For example KViewCanvas passes KSimpleConfig(
          *                     "kviewcanvas" ).
          */
-        void addPlugins( const QValueList<KPluginInfo*> & plugininfos,
+        void addPlugins( const Q3ValueList<KPluginInfo*> & plugininfos,
                 const QString & catname = QString::null,
                 const QString & category = QString::null,
                 KConfig * config = 0 );
@@ -179,7 +181,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          * argument is the name of the parent component that needs to reload
          * its config
          */
-        void configCommitted( const QCString & instanceName );
+        void configCommitted( const Q3CString & instanceName );
 
     private:
         /**
@@ -187,7 +189,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *
          * @internal
          */
-        QWidgetStack * widgetStack();
+        Q3WidgetStack * widgetStack();
 
         /**
          * Show an info page in the widgetstack.
@@ -204,7 +206,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
         /**
          * @internal
          */
-	void addPluginsInternal( const QValueList<KPluginInfo*> plugininfos,
+	void addPluginsInternal( const Q3ValueList<KPluginInfo*> plugininfos,
                                  const QString & catname, const QString & category,
                                  KConfigGroup* cfgGroup );
 

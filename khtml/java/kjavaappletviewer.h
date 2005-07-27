@@ -31,11 +31,11 @@
 #include <kurl.h>
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include "kjavaappletwidget.h"
 
-class QTable;
+class Q3Table;
 class QLabel;
 class KJavaProcess;
 class KJavaAppletViewer;
@@ -72,7 +72,7 @@ public:
 public slots:
     void jsEvent (const QStringList & args);
 signals:
-    virtual void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
+    void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
 
 private:
     KJavaAppletViewer * m_viewer;
@@ -106,13 +106,13 @@ protected:
 private slots:
     void delayedCreateTimeOut ();
 private:
-    QGuardedPtr <CoverWidget> m_view;
+    QPointer <CoverWidget> m_view;
     KConfig * m_config;
     KJavaProcess * process;
     KJavaAppletViewerBrowserExtension * m_browserextension;
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     KParts::StatusBarExtension * m_statusbar;
-    QGuardedPtr <QLabel> m_statusbar_icon;
+    QPointer <QLabel> m_statusbar_icon;
     QString baseurl;
     bool m_closed;
 };
@@ -139,7 +139,7 @@ protected slots:
     void slotClose ();
 private:
     KJavaAppletWidget * m_appletWidget;
-    QTable * table;
+    Q3Table * table;
 };
 
 #endif

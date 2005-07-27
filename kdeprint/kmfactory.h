@@ -14,17 +14,17 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMFACTORY_H
 #define KMFACTORY_H
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qstringlist.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qpair.h>
 #include <dcopobject.h>
@@ -74,7 +74,7 @@ public:
 	KPrinterImpl* printerImplementation();
 	KConfig* printConfig(const QString& group = QString::null);
 	QString printSystem();
-	QValueList<PluginInfo> pluginList();
+	Q3ValueList<PluginInfo> pluginList();
 	PluginInfo pluginInfo(const QString& name);
 	void saveConfig();
 
@@ -123,7 +123,7 @@ private:
 
 	KConfig			*m_printconfig;
 	Settings		*m_settings;
-	QPtrList<KPReloadObject> m_objects;
+	Q3PtrList<KPReloadObject> m_objects;
 };
 
 #endif

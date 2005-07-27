@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef NETWORKSCANNER_H
@@ -22,7 +22,9 @@
 
 #include <qwidget.h>
 #include <kdialogbase.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
+
+namespace KNetwork { class KResolverEntry; }
 
 
 class KDEPRINT_EXPORT NetworkScanner : public QWidget
@@ -40,7 +42,7 @@ public:
 		int Port;
 	};
 
-	const QPtrList<NetworkScanner::SocketInfo>* printerList();
+	const Q3PtrList<NetworkScanner::SocketInfo>* printerList();
 
 	int timeout() const;
 	void setTimeout( int to );
@@ -55,7 +57,7 @@ signals:
 	void scanFinished();
 
 protected slots:
-	void slotConnectionSuccess();
+	void slotConnectionSuccess( const KNetwork::KResolverEntry& );
 	void slotConnectionFailed( int );
 	void slotTimeout();
 	void slotScanClicked();

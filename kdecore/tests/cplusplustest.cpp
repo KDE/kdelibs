@@ -17,14 +17,14 @@
 */
 
 #include <qstring.h>
-#include <qdict.h>
+#include <q3dict.h>
 
 class A { int foo; };
 class B { int bar; };
 class C : public A, public B { int foobar; };
 
-QDict<A> dictA;
-QDict<B> dictB;
+Q3Dict<A> dictA;
+Q3Dict<B> dictB;
 
 int main(int , char *[])
 {

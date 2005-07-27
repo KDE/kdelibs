@@ -11,18 +11,17 @@ should use "make distclean" instead of "make cvs-clean")
 
 <p>Make sure you get the following stuff from CVS:
 
-<p><ul><li>qt-copy (This is qt-3.3.2)
+<p><ul><li>qt-copy (currently a snapshot of qt-4.x)
 <li>arts
 <li>kdelibs
 <li>kdebase (strongly recommended but not strictly necessary)
-<li>any other package you are interested in
+<li>any other package you are interested in (as of 07Jun2005, only kdegraphics, kdenetwork, kdegames, kdeedu and playground available)
 </ul>
 
 <p>It is important that you compile AND INSTALL the above packages in the 
 above order.
 
-<p>Further you will need GNU make, autoconf 2.52, automake 1.5 and 
-a working C++ compiler (eg. gcc 2.95.2)
+<p>Further you will need GNU make, autoconf 2.52 and a working C++ compiler (e.g. gcc 3.3.x). 29 May 2005: It is not yet possible to use automake for compiling KDE-4. The latest version of usermake (from svn.kde.org/home/kde/trunk/kdenonbeta/unsermake) is required.
 
 <p><h3>Preparations</h3>
 
@@ -30,17 +29,17 @@ a working C++ compiler (eg. gcc 2.95.2)
 
 <p>1) Where do you want to have Qt installed? Qt is a bit lame in that it 
 basically installs itself in its own source-tree, but symlinks are your 
-friend. E.g you could link /usr/local/lib/qt3 to where you keep your Qt 
-source. Qt libs then end up in /usr/local/lib/qt3/lib.
+friend. E.g you could link /usr/local/lib/qt4 to where you keep your Qt 
+source. Qt libs then end up in /usr/local/lib/qt4/lib.
 
-<p>2) Where do you want to have KDE installed. A good candidate is /usr/local/kde
+<p>2) Where do you want to have KDE installed. A good candidate is /usr/local/kde4
 
 <p>Make sure you do (if using sh, ksh, or bash):
-<pre>export KDEDIR=/usr/local/kde</pre>
+<pre>export KDEDIR=/usr/local/kde4</pre>
 
 <p>With csh or tcsh the following is more appropriate:
 
-<pre>setenv KDEDIR /usr/local/kde</pre>
+<pre>setenv KDEDIR /usr/local/kde4</pre>
 
 <p>Now you want to make sure that Qt and KDE libraries are picked up correctly.
 
@@ -55,12 +54,13 @@ ldconfig -m $QTDIR/lib</pre>
 
 <p>You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
-<p>See http://www.kde.org/kde2-and-kde3.html for tips about setting up
-KDE 3.0 next to KDE 2.x.
+<!-- <p>See http://www.kde.org/kde2-and-kde3.html for tips about setting up
+KDE 3.0 next to KDE 2.x.-->
 
 <p><h3>Preparing CVS modules</h3>
-<p>
-All KDE modules require an "admin" sub-directory. You can create it by
+<p>NOTE: Is this still so?
+
+<p>All KDE modules require an "admin" sub-directory. You can create it by
 making a symbolic link from kde-common/admin, make sure to check out the
 kde-common module.
 <p>
@@ -70,20 +70,62 @@ cd kdelibs
 ln -s ../kde-common/admin
 </pre>
 
-<p><h3>Compiling</h3>
+<p>With the new source management technology, Subversion, handling
+this special sub-directory has to be done differently. If an "admin"
+sub-directory doesn't exist, do as follows($KDE_MODULE is the module
+you're working with):
+<pre>
+cd $KDE_MODULE
+svn propset svn:externals admin https://svn.kde.org/home/kde/branches/work/kde4/kde-common/admin
+
+<p>The URL in the above command has to be adapted to your situation:
+i.e. replace https with svn+ssh, replace svn.kde.org with your account
+name (e.g. username@svn.kde.org) and replace the work branch of the
+URL (/branches/work/kde4/) with the branch you're using
+(e.g. /trunk/KDE/kde-common/ for the main development tree).
+
+<p><h3>Compiling with unsermake</h3>
 
 <p>The magic sequence to compile &amp; install a package is:
-<pre>gmake -f Makefile.cvs
+<pre>export PATH=$PATH:/your/path/toward/unsermake/module # for (t)csh: setenv PATH ${PATH}:/your/path/toward/unsermake/module
+unsermake -f Makefile.cvs
 ./configure --enable-debug
-gmake
-gmake install </pre>
+unsermake
+unsermake install </pre>
 
-<p>(On Linux, GNU make is the default make, and gmake in the above commands
-can be replaced with make).
+<p><h3>Compiling with unsermake and a build directory different than the source directory</h3>
 
-<p>For Qt the magic sequence is:
+<p>Most of the KDE modules allow to store the compilation (build)
+objects at a different location in the filesystem than the location
+that contains the KDE sources. This setup provides a few advantages
+(like easier cleanup of builds). In order to compile KDE this way, the
+following sequence of commands is required, provided that
+SRC_DIR=/your/path/to/KDE/sources,
+BUILD_DIR=/your/path/to/build/objects/ and $KDE_MODULE is the module
+that you want to compile.
 
-<pre>./configure -debug -shared -qt-gif -thread -sm -system-zlib -system-libpng -system-jpeg
+<pre>export PATH=$PATH:/your/path/toward/unsermake/module # for (t)csh: setenv PATH ${PATH}:/your/path/toward/unsermake/module
+cd $SRC_DIR/$KDE_MODULE
+unsermake -f Makefile.cvs
+cd $BUILD_DIR
+mkdir $KDE_MODULE
+cd $KDE_MODULE
+$SRC_DIR/$KDE_MODULE/configure --enable-debug
+unsermake
+unsermake install </pre>
+
+
+<p><h3>Notes about compiling</h3>
+
+<p>Currently, it is not possible to use automake to generate makefiles
+for KDE-4.x. Unsermake is mandatory (see above). It is planned that,
+for KDE-4, a new build system to be adopted (like scons:
+http://scons.org), in order to paliate for the complex task of
+building a project of the size of KDE.
+
+<p>For configuring Qt, the magic sequence is:
+
+<pre>./configure -system-zlib -qt-gif -system-libjpeg -system-libpng -no-exceptions -debug -fast
 make</pre>
 
 <p><h3>Common problems</h3>
@@ -95,10 +137,33 @@ file, "Makefile.in" as well as "Makefile" files. So it can be that after
 some struggle to get QTDIR/KDEDIR setup correctly your setup is actually 
 correct, but old -incorrect- settings are still lying around.
 
-<p>The best thing to do in such a case is to do a "make cvs-clean". This 
-removes all files which aren't stored in CVS. You can then start all over 
-again with "makefile -f Makefile.cvs". Make sure you don't have any important 
-files lying around in your source tree any more, they will be deleted!
+<p>The best thing to do in such a case is to use the svn-clean script available in kdesdk/scripts . This
+removes all files which aren't stored in SVN. You can then start all over
+again with "unsermake -f Makefile.cvs". <b>WARNING: Make sure you don't have any important
+files lying around in your source tree any more, they will be deleted!</b>
+
+<h4>New directories</h4>:
+<p>When a new directory gets added to CVS it usually only contains a
+Makefile.am but not a Makefile. If you try to compile such a directory
+you will get an error like:
+
+<pre>
+  Making all in management
+  make[3]: Entering directory /home/gregturp/KDE/kdelibs/kdeprint/management'
+  make[3]: *** No rule to make target ll'.  Stop.
+  make[3]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint/management'
+  make[2]: *** [all-recursive] Error 1
+  make[2]: Leaving directory /home/gregturp/KDE/kdelibs/kdeprint'
+  make[1]: *** [all-recursive] Error 1
+  make[1]: Leaving directory /home/gregturp/KDE/kdelibs'
+  make: *** [all-recursive-am] Error 2
+</pre>
+
+<p>The solution is to redo "make -f Makefile.cvs; ./configure".
+
+<p>You can create a single Makefile from a Makefile.am file with the
+kdesdk/scripts/create_makefile script. Make sure to run it from the toplevel
+directory. (E.g. /home/username/KDE/kdelibs)
 
 
 <p><h3>Problems?</h3>

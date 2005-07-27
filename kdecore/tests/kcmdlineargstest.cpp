@@ -49,13 +49,13 @@ main(int argc, char *argv[])
    }   
    
    // Read the value of an option. 
-   QCString baudrate = args->getOption("baud"); // 9600 is the default value.
+   Q3CString baudrate = args->getOption("baud"); // 9600 is the default value.
    
    printf("Baudrate = %s\n", baudrate.data());
 
    printf("Full list of baudrates:\n");
-   QCStringList result = args->getOptionList("baud");
-   for(QCStringList::ConstIterator it=result.begin();
+   QByteArrayList result = args->getOptionList("baud");
+   for(QByteArrayList::ConstIterator it=result.begin();
        it != result.end();
        ++it)
    {

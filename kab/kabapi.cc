@@ -44,11 +44,11 @@ KabAPI::KabAPI(QWidget* parent, const char* name)
   showButtonApply(false);
   enableButtonSeparator(true);
   connect(listbox, SIGNAL(highlighted(int)), SLOT(entrySelected(int)));
-  connect(listbox, SIGNAL(doubleClicked ( QListBoxItem * )),SLOT(slotDoubleClicked ( QListBoxItem * )));
+  connect(listbox, SIGNAL(doubleClicked ( Q3ListBoxItem * )),SLOT(slotDoubleClicked ( Q3ListBoxItem * )));
 }
 
 
-void KabAPI::slotDoubleClicked ( QListBoxItem * )
+void KabAPI::slotDoubleClicked ( Q3ListBoxItem * )
 {
     accept();
 }

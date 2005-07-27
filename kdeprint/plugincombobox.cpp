@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "plugincombobox.h"
@@ -25,7 +25,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <qwhatsthis.h>
 
 PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 :QWidget(parent, name)
@@ -41,10 +40,10 @@ PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
                                                 " </qt>" );
 
 	m_combo = new QComboBox(this, "PluginCombo");
-        QWhatsThis::add(m_combo, whatsThisCurrentPrintsystem);
+        m_combo->setWhatsThis(whatsThisCurrentPrintsystem);
 	QLabel	*m_label = new QLabel(i18n("Print s&ystem currently used:"), this);
-        QWhatsThis::add(m_label, whatsThisCurrentPrintsystem);
-	m_label->setAlignment(AlignVCenter|AlignRight);
+        m_label->setWhatsThis(whatsThisCurrentPrintsystem);
+	m_label->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_label->setBuddy(m_combo);
 	m_plugininfo = new QLabel("Plugin information", this);
 	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 5);
@@ -53,9 +52,9 @@ PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 	l0->addWidget(m_combo, 0, 1);
 	l0->addWidget(m_plugininfo, 1, 1);
 
-	QValueList<KMFactory::PluginInfo>	list = KMFactory::self()->pluginList();
+	Q3ValueList<KMFactory::PluginInfo>	list = KMFactory::self()->pluginList();
 	QString			currentPlugin = KMFactory::self()->printSystem();
-	for (QValueList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
+	for (Q3ValueList<KMFactory::PluginInfo>::ConstIterator it=list.begin(); it!=list.end(); ++it)
 	{
 		m_combo->insertItem((*it).comment);
 		if ((*it).name == currentPlugin)
@@ -97,7 +96,7 @@ void PluginComboBox::configChanged()
                                                 " </qt>" );
 
 	m_plugininfo->setText(KMManager::self()->stateInformation());
-        QWhatsThis::add(m_plugininfo, whatsThisCurrentConnection);
+        m_plugininfo->setWhatsThis(whatsThisCurrentConnection);
 
 }
 

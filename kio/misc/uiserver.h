@@ -19,7 +19,7 @@
 #ifndef __kio_uiserver_h__
 #define __kio_uiserver_h__
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qdatetime.h>
 #include <qtimer.h>
 
@@ -103,16 +103,16 @@ protected:
 * One item in the ListProgress
 * @internal
 */
-class KIO_EXPORT ProgressItem : public QObject, public QListViewItem {
+class KIO_EXPORT ProgressItem : public QObject, public Q3ListViewItem {
 
   Q_OBJECT
 
 public:
-  ProgressItem( ListProgress* view, QListViewItem *after, QCString app_id, int job_id,
+  ProgressItem( ListProgress* view, Q3ListViewItem *after, Q3CString app_id, int job_id,
                 bool showDefault = true );
   ~ProgressItem();
 
-  QCString appId() { return m_sAppId; }
+  Q3CString appId() { return m_sAppId; }
   int jobId() { return m_iJobId; }
 
     bool keepOpen() const;
@@ -168,7 +168,7 @@ protected:
   void updateVisibility();
 
   // ids that uniquely identify this progress item
-  QCString m_sAppId;
+  Q3CString m_sAppId;
   int m_iJobId;
 
   // whether shown or not (it is hidden if a rename dialog pops up for the same job)
@@ -196,7 +196,7 @@ class QResizeEvent;
 class QHideEvent;
 class QShowEvent;
 class ProgressConfigDialog;
-class QPopupMenu;
+class Q3PopupMenu;
 class UIServerSystemTray;
 
 /**
@@ -236,7 +236,7 @@ k_dcop:
    *   other things, like SSL dialogs.
    * @return the job id
    */
-  int newJob( QCString appId, bool showProgress );
+  int newJob( Q3CString appId, bool showProgress );
 
   ASYNC jobFinished( int id );
 
@@ -376,12 +376,12 @@ protected slots:
 
   void slotCancelCurrent();
 
-  void slotToggleDefaultProgress( QListViewItem * );
+  void slotToggleDefaultProgress( Q3ListViewItem * );
   void slotSelection();
 
   void slotJobCanceled( ProgressItem * );
   void slotApplyConfig();
-  void slotShowContextMenu(KListView*, QListViewItem *item, const QPoint& pos);
+  void slotShowContextMenu(KListView*, Q3ListViewItem *item, const QPoint& pos);
 
 protected:
 
@@ -403,7 +403,7 @@ protected:
   void writeSettings();
 private:
 
-  void killJob( QCString observerAppId, int progressId );
+  void killJob( Q3CString observerAppId, int progressId );
 
   int m_initWidth;
   int m_initHeight;
@@ -418,7 +418,7 @@ private:
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
   ProgressConfigDialog *m_configDialog;
-  QPopupMenu* m_contextMenu;
+  Q3PopupMenu* m_contextMenu;
   UIServerSystemTray *m_systemTray;
 
   static int s_jobId;

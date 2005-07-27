@@ -92,7 +92,7 @@ void KRecentDirs::add(const QString &fileClass, const QString &directory)
    result.remove(directory);
    result.prepend(directory);
    while(result.count() > MAX_DIR_HISTORY)
-      result.remove(result.fromLast());
+      result.removeLast();
    config->writePathEntry(key, result);
    recentdirs_done(config);
 }

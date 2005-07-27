@@ -21,7 +21,7 @@
 #ifndef DOMPARSER_H
 #define DOMPARSER_H
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 #include <misc/shared.h>
@@ -48,7 +48,7 @@ private:
     enum { ParseFromString };
 
   private:
-    QGuardedPtr<DOM::DocumentImpl> doc;
+    QPointer<DOM::DocumentImpl> doc;
 
     friend class DOMParserProtoFunc;
   };

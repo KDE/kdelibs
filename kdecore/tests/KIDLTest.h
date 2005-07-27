@@ -7,7 +7,7 @@ class KIDLTest : virtual public DCOPObject
 {
     K_DCOP
 public:
-    KIDLTest( const QCString& id );
+    KIDLTest( const DCOPCString& id );
 
 k_dcop:
     virtual QString hello( const QString& name );

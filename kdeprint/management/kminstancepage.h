@@ -13,20 +13,20 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMINSTANCEPAGE_H
 #define KMINSTANCEPAGE_H
 
 #include "kmprinterpage.h"
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qwidget.h>
 
 class KListBox;
 class KMPrinter;
-class QButton;
+class QPushButton;
 
 class KMInstancePage : public QWidget, public KMPrinterPage
 {
@@ -51,7 +51,7 @@ protected:
 
 private:
 	KListBox		*m_view;
-	QValueList<QButton*>	m_buttons;
+	Q3ValueList<QPushButton*>	m_buttons;
 	KMPrinter		*m_printer;
 };
 

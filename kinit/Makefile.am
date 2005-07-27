@@ -15,7 +15,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes) $(KDEINIT_XFT_INCLUDES)
+INCLUDES = -I$(srcdir)/../libltdl/ -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdecore/network $(all_includes) $(KDEINIT_XFT_INCLUDES)
 
 SUBDIRS = . tests
 

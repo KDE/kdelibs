@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #ifndef DNSSDRESPONDER_H
@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qsocketnotifier.h>
-#include <qsignal.h>
+#include <q3signal.h>
 #include <config.h>
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
@@ -68,7 +68,7 @@ protected:
 
 bool domainIsLocal(const QString& domain);
 // Encodes domain name using utf8() or IDN 
-QCString domainToDNS(const QString &domain);
+QByteArray domainToDNS(const QString &domain);
 QString DNSToDomain(const char* domain);
 
 }

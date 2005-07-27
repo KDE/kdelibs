@@ -13,20 +13,20 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KFILELIST_H
 #define KFILELIST_H
 
 #include <qwidget.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kurl.h>
 
 class KListView;
 class QToolButton;
-class QListViewItem;
+class Q3ListViewItem;
 
 class KFileList : public QWidget
 {
@@ -51,7 +51,7 @@ protected:
 	void dragEnterEvent(QDragEnterEvent*);
 	void dropEvent(QDropEvent*);
 	void addFiles(const KURL::List&);
-	void selection(QPtrList<QListViewItem>&);
+	void selection(Q3PtrList<Q3ListViewItem>&);
 
 private:
 	KListView	*m_files;

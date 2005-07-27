@@ -29,7 +29,7 @@
 
 #include "khtml_part.h"
 
-#include <qguardedptr.h>
+#include <qpointer.h>
 
 #include <kaction.h>
 #include <kio/global.h>
@@ -85,8 +85,8 @@ private:
     void callExtensionProxyMethod( const char *method );
 
     KHTMLPart *m_part;
-    QGuardedPtr<QWidget> m_editableFormWidget;
-    QGuardedPtr<KParts::BrowserExtension> m_extensionProxy;
+    QPointer<QWidget> m_editableFormWidget;
+    QPointer<KParts::BrowserExtension> m_extensionProxy;
     bool m_connectedToClipboard;
 };
 
@@ -98,7 +98,7 @@ public:
 
   virtual QStringList frameNames() const;
 
-  virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
+  virtual const Q3PtrList<KParts::ReadOnlyPart> frames() const;
 
   virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 
@@ -169,7 +169,7 @@ protected slots:
 private:
     void init(KHTMLPart *part, bool direction);
 private:
-    QPopupMenu *m_popup;
+    Q3PopupMenu *m_popup;
     bool m_direction;
     KHTMLPart *m_part;
 };

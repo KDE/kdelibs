@@ -24,7 +24,7 @@
 #ifndef KRESOURCES_MANAGER_H
 #define KRESOURCES_MANAGER_H
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstringlist.h>
 
 #include <kdebug.h>
@@ -414,7 +414,7 @@ class Manager : private ManagerNotifier
   private:
     ManagerImpl *mImpl;
     Factory *mFactory;
-    QPtrList<ManagerObserver<T> > mObservers;
+    Q3PtrList<ManagerObserver<T> > mObservers;
 };
 
 }

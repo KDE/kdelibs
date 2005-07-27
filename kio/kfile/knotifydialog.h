@@ -141,9 +141,9 @@ namespace KNotify
     class Application;
     class Event;
     class ListViewItem;
-    typedef QPtrList<Event> EventList;
-    typedef QPtrListIterator<Application> ApplicationListIterator;
-    typedef QPtrListIterator<Event> EventListIterator;
+    typedef Q3PtrList<Event> EventList;
+    typedef Q3PtrListIterator<Application> ApplicationListIterator;
+    typedef Q3PtrListIterator<Event> EventListIterator;
 
     /**
      * @internal
@@ -173,10 +173,10 @@ namespace KNotify
     };
 
 
-    class KIO_EXPORT ApplicationList : public QPtrList<Application>
+    class KIO_EXPORT ApplicationList : public Q3PtrList<Application>
     {
-        virtual int compareItems ( QPtrCollection::Item item1,
-                                   QPtrCollection::Item item2 )
+        virtual int compareItems ( Q3PtrCollection::Item item1,
+                                   Q3PtrCollection::Item item2 )
         {
             return (static_cast<Application*>( item1 )->text() >=
                 static_cast<Application*>( item2 )->text()) ? 1 : -1;
@@ -240,15 +240,17 @@ namespace KNotify
         virtual void showEvent( QShowEvent * );
         virtual void enableAll( int what, bool enable );
 
+        virtual bool eventFilter ( QObject * watched, QEvent * event ); 
+
         void reload( bool revertToDefaults = false );
 
     protected slots:
         void playSound();
 
     private slots:
-        void slotItemClicked( QListViewItem *item, const QPoint& point, 
+        void slotItemClicked( Q3ListViewItem *item, const QPoint& point, 
                               int col );
-        void slotEventChanged( QListViewItem * );
+        void slotEventChanged( Q3ListViewItem * );
         void soundToggled( bool on );
         void loggingToggled( bool on );
         void executeToggled( bool on );
@@ -272,9 +274,9 @@ namespace KNotify
 
         static QString makeRelative( const QString& );
         void addToView( const EventList& events );
-        void widgetChanged( QListViewItem *item,
+        void widgetChanged( Q3ListViewItem *item,
                             int what, bool on, QWidget *buddy = 0L );
-        void selectItem( QListViewItem *item );
+        void selectItem( Q3ListViewItem *item );
 
         ApplicationList m_visibleApps;
         ApplicationList m_allApps;
@@ -323,13 +325,13 @@ namespace KNotify
     /**
      * @internal
      */
-    class ListViewItem : public QListViewItem
+    class ListViewItem : public Q3ListViewItem
     {
     public:
-        ListViewItem( QListView *view, Event *event );
+        ListViewItem( Q3ListView *view, Event *event );
 
         Event& event() { return *m_event; }
-        virtual int compare (QListViewItem * i, int col, bool ascending) const;
+        virtual int compare (Q3ListViewItem * i, int col, bool ascending) const;
 
     private:
         Event * m_event;

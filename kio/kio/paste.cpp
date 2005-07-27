@@ -37,9 +37,9 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qtextstream.h>
-#include <qvaluevector.h>
+#include <q3valuevector.h>
 
 static KURL getNewFileName( const KURL &u, const QString& text )
 {
@@ -95,14 +95,14 @@ static KIO::CopyJob* pasteDataAsyncTo( const KURL& new_url, const QByteArray& _d
 
 #ifndef QT_NO_MIMECLIPBOARD
 static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
-                                     const QValueVector<QCString>& formats,
+                                     const QStringList& formats,
                                      const QString& text,
                                      QWidget* widget,
                                      bool clipboard )
 {
     QStringList formatLabels;
-    for ( uint i = 0; i < formats.size(); ++i ) {
-        const QCString& fmt = formats[i];
+    for ( int i = 0; i < formats.size(); ++i ) {
+        const QString& fmt = formats[i];
         KMimeType::Ptr mime = KMimeType::mimeType( fmt );
         if ( mime != KMimeType::defaultMimeTypePtr() )
             formatLabels.append( i18n( "%1 (%2)" ).arg( mime->comment() ).arg( fmt ) );
@@ -127,7 +127,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     }
 
     const QString result = dlg.lineEditText();
-    const QCString chosenFormat = formats[ dlg.comboItem() ];
+    const QString chosenFormat = formats[ dlg.comboItem() ];
 
     kdDebug() << " result=" << result << " chosenFormat=" << chosenFormat << endl;
     KURL new_url( u );
@@ -137,7 +137,7 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     if ( clipboard ) {
         data = QApplication::clipboard()->data();
     }
-    const QByteArray ba = data->encodedData( chosenFormat );
+    const QByteArray ba = data->encodedData( chosenFormat.latin1() );
     return pasteDataAsyncTo( new_url, ba );
 }
 #endif
@@ -169,21 +169,21 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
   // Now check for plain text
   // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
   QString text;
-  if ( QTextDrag::canDecode( data ) && QTextDrag::decode( data, text ) )
+  if ( Q3TextDrag::canDecode( data ) && Q3TextDrag::decode( data, text ) )
   {
-      QTextStream txtStream( ba, IO_WriteOnly );
+      QTextStream txtStream( ba, QIODevice::WriteOnly );
       txtStream << text;
   }
   else
   {
-      QValueVector<QCString> formats;
+      QStringList formats;
       const char* fmt;
       for ( int i = 0; ( fmt = data->format( i ) ); ++i ) {
           if ( qstrcmp( fmt, "application/x-qiconlist" ) == 0 ) // see QIconDrag
               continue;
           if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
               continue;
-          if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+           if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
               continue;
           formats.append( fmt );
       }
@@ -191,7 +191,7 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
       if ( formats.size() > 1 ) {
           return chooseAndPaste( dest_url, data, formats, dialogText, widget, clipboard );
       }
-      ba = data->encodedData( formats.first() );
+      ba = data->encodedData( formats.first().latin1() );
   }
   if ( ba.size() == 0 )
   {
@@ -236,7 +236,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
   return pasteMimeSource( data, dest_url, QString::null, 0 /*TODO parent widget*/, true /*clipboard*/ );
 #else
   QByteArray ba;
-  QTextStream txtStream( ba, IO_WriteOnly );
+  QTextStream txtStream( ba, QIODevice::WriteOnly );
   QStringList data = QStringList::split("\n", QApplication::clipboard()->text());
   KURL::List urls;
   KURLDrag::decode(data, urls);

@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 /*
@@ -49,8 +49,8 @@
 #define _KDOCKWIDGET_2_2_
 
 #include <qpoint.h>
-#include <qptrlist.h>
-#include <qframe.h>
+#include <q3ptrlist.h>
+#include <q3frame.h>
 #include <qdom.h>
 #include <qtabwidget.h>
 
@@ -59,7 +59,7 @@
 #include <netwm_def.h>
 #else
 
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include "exportdockclass.h"
 #include "dummykmainwindow.h"
 #endif
@@ -73,8 +73,7 @@ class KDockWidgetPrivate;
 class KDockWidgetHeaderPrivate;
 class KDockArea;
 
-class QObjectList;
-class QPopupMenu;
+class Q3PopupMenu;
 class QVBoxLayout;
 class QHBoxLayout;
 class QPixmap;
@@ -83,7 +82,7 @@ class QPixmap;
 class KToolBar;
 class KConfig;
 #else
-class QToolBar;
+class Q3ToolBar;
 #endif
 
 class KDockContainer;
@@ -100,7 +99,7 @@ namespace KMDI
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT KDockWidgetAbstractHeader : public QFrame
+class KDEUI_EXPORT KDockWidgetAbstractHeader : public Q3Frame
 {
   Q_OBJECT
 public:
@@ -149,7 +148,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT KDockWidgetAbstractHeaderDrag : public QFrame
+class KDEUI_EXPORT KDockWidgetAbstractHeaderDrag : public Q3Frame
 {
   Q_OBJECT
 public:
@@ -446,7 +445,7 @@ public:
    */
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString::null,
-               const QString& strTabPageLabel = QString::fromLatin1( " " ), WFlags f = 0);
+               const QString& strTabPageLabel = QString::fromLatin1( " " ), Qt::WFlags f = 0);
 
   /**
    * Destructs a dockwidget.
@@ -885,7 +884,7 @@ private:
   // GROUP data
   QString firstName;
   QString lastName;
-  Orientation splitterOrientation;
+  Qt::Orientation splitterOrientation;
   bool isGroup;
   bool isTabGroup;
 protected:
@@ -1017,7 +1016,7 @@ public:
   /**
    * @return the popupmenu for showing/hiding dockwidgets
    */
-  QPopupMenu* dockHideShowMenu() const { return menu; }
+  Q3PopupMenu* dockHideShowMenu() const { return menu; }
 
   /**
    * @param dockName an internal QObject name
@@ -1247,12 +1246,12 @@ private:
    * A popup menu that contains one menuitem for each dockwidget that shows the current visibility state and
    * to show or hide the appropriate dockwidget.
    */
-  QPopupMenu* menu;
+  Q3PopupMenu* menu;
 
   /**
    * An internal list containing data for the menuitems for the visibility popup menu.
    */
-  QPtrList<MenuDockData> *menuData;
+  Q3PtrList<MenuDockData> *menuData;
 
 protected:
   virtual void virtual_hook( int id, void* data );
@@ -1324,7 +1323,7 @@ public:
    * @param name internal object name
    * @param f Qt::WidgetFlags widget flags
    */
-  KDockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
+  KDockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
 
   /**
    * Destructs a dockmainwindow.
@@ -1407,7 +1406,7 @@ public:
    *
    * @return the wanted popup menu
    */
-  QPopupMenu* dockHideShowMenu() const { return dockManager->dockHideShowMenu(); }
+  Q3PopupMenu* dockHideShowMenu() const { return dockManager->dockHideShowMenu(); }
 
   /**
    * This method shows the given dockwidget.
@@ -1503,7 +1502,7 @@ public:
 
 
   void activateDock(){ dockManager->activate(); }
-  QPopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
+  Q3PopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
   void makeDockVisible( KDockWidget* dock );
   void makeDockInvisible( KDockWidget* dock );
   void makeWidgetDockVisible( QWidget* widget );

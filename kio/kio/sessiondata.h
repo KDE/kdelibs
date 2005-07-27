@@ -47,8 +47,8 @@ public:
     /// @since 3.1
     struct AuthData;
 public slots:
-    void slotAuthData( const QCString&, const QCString&, bool );
-    void slotDelAuthData( const QCString& );
+    void slotAuthData( const Q3CString&, const Q3CString&, bool );
+    void slotDelAuthData( const Q3CString& );
 
 private:
     class AuthDataList;

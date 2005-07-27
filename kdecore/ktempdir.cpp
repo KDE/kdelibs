@@ -72,12 +72,12 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    // make sure the random seed is randomized
    (void) KApplication::random();
 
-   QCString nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
+   QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
    char *realName;
    if((realName=mkdtemp(nme.data())) == 0)
    {
        // Recreate it for the warning, mkdtemps emptied it
-       QCString nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
+       QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
        qWarning("KTempDir: Error trying to create %s: %s", nme.data(), strerror(errno));
        mError = errno;
        mTmpName = QString::null;
@@ -85,7 +85,7 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    }
 
    // got a return value != 0
-   QCString realNameStr(realName);
+   QByteArray realNameStr(realName);
    mTmpName = QFile::decodeName(realNameStr)+"/";
    kdDebug(180) << "KTempDir: Temporary directory created :" << mTmpName << endl;
    mode_t tmp = 0;

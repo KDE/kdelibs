@@ -18,11 +18,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 
 #include <kinputdialog.h>
@@ -46,7 +46,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
   QFrame *topFrame = plainPage();
   QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
-  mButtonGroup = new QButtonGroup( 1, Horizontal, i18n("Email Addresses"),
+  mButtonGroup = new Q3ButtonGroup( 1, Qt::Horizontal, i18n("Email Addresses"),
                                    topFrame );
   mButtonGroup->setRadioButtonExclusive( true );
   topLayout->addWidget( mButtonGroup );
@@ -62,7 +62,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
 
 QString EmailSelectDialog::selected()
 {
-  QButton *button = mButtonGroup->selected();
+  QAbstractButton *button = mButtonGroup->selected();
   if ( button ) return button->text();
   return QString::null;
 }
@@ -80,12 +80,12 @@ QString EmailSelectDialog::getEmail( const QStringList &emails, const QString &c
   return result;
 }
 
-class EditEntryItem : public QListViewItem
+class EditEntryItem : public Q3ListViewItem
 {
   public:
-    EditEntryItem( QListView *parent, const Addressee &addressee,
+    EditEntryItem( Q3ListView *parent, const Addressee &addressee,
                const QString &email=QString::null ) :
-      QListViewItem( parent ),
+      Q3ListViewItem( parent ),
       mAddressee( addressee ),
       mEmail( email )
     {
@@ -138,7 +138,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   nameLayout->addWidget( removeButton );
   connect( removeButton, SIGNAL( clicked() ), SLOT( removeList() ) );
 
-  mEntryView = new QListView( this );
+  mEntryView = new Q3ListView( this );
   mEntryView->addColumn( i18n("Name") );
   mEntryView->addColumn( i18n("Email") );
   mEntryView->addColumn( i18n("Use Preferred") );
@@ -157,7 +157,7 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   topLayout->addWidget( addEntryButton );
   connect( addEntryButton, SIGNAL( clicked() ), SLOT( addEntry() ) );
 
-  mAddresseeView = new QListView( this );
+  mAddresseeView = new Q3ListView( this );
   mAddresseeView->addColumn( i18n("Name") );
   mAddresseeView->addColumn( i18n("Preferred Email") );
   topLayout->addWidget( mAddresseeView );

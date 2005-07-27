@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 /*
@@ -40,7 +40,7 @@
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kextsock.h>
+#include <kbufferedsocket.h>
 #include <qfile.h>
 #include <unistd.h>
 
@@ -123,12 +123,7 @@ bool KdeprintChecker::checkExec(const KURL& url)
 bool KdeprintChecker::checkService(const KURL& url)
 {
 	QString	serv(url.path().mid(1));
-	KExtendedSocket	sock;
+	KNetwork::KBufferedSocket	sock;
 
-	bool	ok;
-	int	port = serv.toInt(&ok);
-
-	if (ok) sock.setAddress("localhost", port);
-	else sock.setAddress("localhost", serv);
-	return (sock.connect() == 0);
+	return sock.connect("localhost", serv);
 }

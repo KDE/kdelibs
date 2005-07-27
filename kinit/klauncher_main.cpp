@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <klocale.h>
 
 #include "klauncher_cmds.h"
@@ -54,7 +54,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       return 1;
    }
 
-   QCString cname = KApplication::launcher();
+   Q3CString cname = KApplication::launcher();
    char *name = cname.data();
    KCmdLineArgs::init(argc, argv, name, "KLauncher", "A service launcher.",
                        "v1.0");
@@ -70,7 +70,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    int maxTry = 3;
    while(true)
    {
-      QCString dcopName = KApplication::dcopClient()->registerAs(name, false);
+      Q3CString dcopName = KApplication::dcopClient()->registerAs(name, false);
       if (dcopName.isEmpty())
       {
          kdWarning() << "DCOP communication problem!" << endl;

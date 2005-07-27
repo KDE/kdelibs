@@ -1,4 +1,4 @@
-/**
+ /**
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
@@ -35,8 +35,10 @@
 #include <qapplication.h>
 #include <qlineedit.h>
 #include <kglobalsettings.h>
-#include <qobjectlist.h>
-#include <qvaluevector.h>
+#include <qobject.h>
+#include <q3valuevector.h>
+#include <QVector>
+#include <qpaintengine.h>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -180,7 +182,7 @@ bool RenderWidget::event( QEvent *e )
         repaint();
     }
     // eat all events - except if this is a frame (in which case KHTMLView handles it all)
-    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+    if ( qobject_cast<KHTMLView*>( m_widget ) )
         return QObject::event( e );
     return true;
 }
@@ -205,11 +207,11 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !strcmp(m_widget->name(), "__khtml") && !::qt_cast<QFrame*>(m_widget))
-                m_widget->setBackgroundMode( QWidget::NoBackground );
+            if ( !strcmp(m_widget->name(), "__khtml") && !qobject_cast<Q3Frame*>(m_widget))
+                m_widget->setBackgroundMode( Qt::NoBackground );
 
-            if (m_widget->focusPolicy() > QWidget::StrongFocus)
-                m_widget->setFocusPolicy(QWidget::StrongFocus);
+            if (m_widget->focusPolicy() > Qt::StrongFocus)
+                m_widget->setFocusPolicy(Qt::StrongFocus);
             // if we've already received a layout, apply the calculated space to the
             // widget immediately, but we have to have really been full constructed (with a non-null
             // style pointer).
@@ -306,12 +308,12 @@ void RenderWidget::updateFromElement()
         else
             m_widget->unsetPalette();
         // Border:
-        QFrame* frame = ::qt_cast<QFrame*>(m_widget);
-        if (frame) {
-            if (shouldPaintBackgroundOrBorder())
-            {
+        if (shouldPaintBackgroundOrBorder())
+        {
+            if (QFrame* frame = qobject_cast<QFrame*>(m_widget))
                 frame->setFrameShape(QFrame::NoFrame);
-            }
+            else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget))
+                lineEdit->setFrame(false);
         }
 
     }
@@ -418,8 +420,6 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
-#include <private/qinternal_p.h>
-
 // The PaintBuffer class provides a shared buffer for widget painting.
 //
 // It will grow to encompass the biggest widget encountered, in order to avoid
@@ -503,28 +503,28 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     if (r.isNull() || r.isEmpty() )
         return;
     QRegion blit(r);
-    QValueVector<QWidget*> cw;
-    QValueVector<QRect> cr;
+    Q3ValueVector<QWidget*> cw;
+    Q3ValueVector<QRect> cr;
 
-    if (widget->children()) {
+    if (!widget->children().isEmpty()) {
         // build region
-        QObjectListIterator it = *widget->children();
-        for (; it.current(); ++it) {
-            QWidget* const w = ::qt_cast<QWidget *>(it.current());
+        QList<QObject*> list = widget->children();
+	foreach ( QObject* it, list ) {
+	    QWidget* w = qobject_cast<QWidget* >(it);
 	    if ( w && !w->isTopLevel() && !w->isHidden()) {
 	        QRect r2 = w->geometry();
-	        blit -= r2;
-	        r2 = r2.intersect( r );
-	        r2.moveBy(-w->x(), -w->y());
-	        cr.append(r2);
-	        cw.append(w);
-            }
+		blit.subtract( r2 );
+		r2 = r2.intersect( r );
+		r2.moveBy(-w->x(), -w->y());
+		cr.append(r2);
+		cw.append(w);
+	    }
         }
     }
-    QMemArray<QRect> br = blit.rects();
+    QVector<QRect> br = blit.rects();
 
     const int cnt = br.size();
-    const bool external = p->device()->isExtDev();
+    const bool external = p->device()->paintEngine()->type() >= QPaintEngine::PostScript;
     QPixmap* const pm = PaintBuffer::grab( widget->size() );
     if (!pm)
     {
@@ -550,24 +550,20 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     }
 
     // send paint event
-    QPainter::redirect(widget, pm);
-    QPaintEvent e( r, false );
-    QApplication::sendEvent( widget, &e );
-    QPainter::redirect(widget, 0);
+    QPainter::setRedirected(widget, pm);
+    QPaintEvent e( r );
+    QApplication::sendEvent(widget, &e);
+    QPainter::restoreRedirected(widget);
 
     // transfer result
-    if ( external )
-        for ( int i = 0; i < cnt; ++i )
-            p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
-    else
-        for ( int i = 0; i < cnt; ++i )
-            bitBlt(p->device(), p->xForm( QPoint(tx, ty) + br[i].topLeft() ), pm, br[i]);
+    for ( int i = 0; i < cnt; ++i )
+        p->drawPixmap(QPoint(tx+br[i].x(), ty+br[i].y()), *pm, br[i]);
 
     // cleanup and recurse
     PaintBuffer::release();
-    QValueVector<QWidget*>::iterator cwit = cw.begin();
-    QValueVector<QWidget*>::iterator cwitEnd = cw.end();
-    QValueVector<QRect>::const_iterator crit = cr.begin();
+    Q3ValueVector<QWidget*>::iterator cwit = cw.begin();
+    Q3ValueVector<QWidget*>::iterator cwitEnd = cw.end();
+    Q3ValueVector<QRect>::const_iterator crit = cr.begin();
     for (; cwit != cwitEnd; ++cwit, ++crit)
         copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y());
 }
@@ -577,13 +573,10 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QPainter* const p = pI.p;
     allowWidgetPaintEvents = true;
 
-    const bool dsbld = QSharedDoubleBuffer::isDisabled();
-    QSharedDoubleBuffer::setDisabled(true);
     QRect rr = pI.r;
     rr.moveBy(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
     copyWidget(r, p, widget, tx, ty);
-    QSharedDoubleBuffer::setDisabled(dsbld);
 
     allowWidgetPaintEvents = false;
 }
@@ -591,7 +584,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     // no special event processing if this is a frame (in which case KHTMLView handles it all)
-    if ( ::qt_cast<KHTMLView *>( m_widget ) )
+    if ( qobject_cast<KHTMLView*>( m_widget ) )
         return false;
     if ( !element() ) return true;
 
@@ -605,7 +598,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     case QEvent::FocusOut:
         // Don't count popup as a valid reason for losing the focus
         // (example: opening the options of a select combobox shouldn't emit onblur)
-        if ( QFocusEvent::reason() != QFocusEvent::Popup )
+        if ( static_cast<QFocusEvent*>(e)->reason() != Qt::PopupFocusReason )
             handleFocusOut();
         break;
     case QEvent::FocusIn:
@@ -630,7 +623,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
             // currently focused. this avoids accidentally changing a select box
             // or something while wheeling a webpage.
             if (qApp->focusWidget() != widget() &&
-                widget()->focusPolicy() <= QWidget::StrongFocus)  {
+                widget()->focusPolicy() <= Qt::StrongFocus)  {
                 static_cast<QWheelEvent*>(e)->ignore();
                 QApplication::sendEvent(view(), e);
                 filtered = true;
@@ -716,25 +709,25 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
             switch (me.button()) {
             case 0:
-                button = LeftButton;
+                button = Qt::LeftButton;
                 break;
             case 1:
-                button = MidButton;
+                button = Qt::MidButton;
                 break;
             case 2:
-                button = RightButton;
+                button = Qt::RightButton;
                 break;
             default:
                 break;
             }
             if (me.ctrlKey())
-                state |= ControlButton;
+                state |= Qt::ControlModifier;
             if (me.altKey())
-                state |= AltButton;
+                state |= Qt::AltModifier;
             if (me.shiftKey())
-                state |= ShiftButton;
+                state |= Qt::ShiftModifier;
             if (me.metaKey())
-                state |= MetaButton;
+                state |= Qt::MetaModifier;
         }
 
 //     kdDebug(6000) << "sending event to widget "

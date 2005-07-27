@@ -26,7 +26,7 @@
 #ifndef RENDER_BLOCK_H
 #define RENDER_BLOCK_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "render_flow.h"
 
@@ -212,8 +212,8 @@ protected:
     int m_overflowWidth;
 
 private:
-    QPtrList<FloatingObject>* m_floatingObjects;
-    QPtrList<RenderObject>* m_positionedObjects;
+    Q3PtrList<FloatingObject>* m_floatingObjects;
+    Q3PtrList<RenderObject>* m_positionedObjects;
 
     bool m_childrenInline : 1;
     bool m_pre            : 1;

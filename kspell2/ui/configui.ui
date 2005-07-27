@@ -79,7 +79,7 @@
                 <string>Ignore These Words</string>
             </property>
             <property name="buttons">
-                <set>Remove|Add</set>
+                <set>KEditListBox::Remove|KEditListBox::Add</set>
             </property>
         </widget>
     </grid>

@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "kdcopactionproxy.h"
@@ -39,7 +39,7 @@ public:
 
   KActionCollection *m_actionCollection;
   DCOPObject *m_parent;
-  QCString m_prefix;
+  DCOPCString m_prefix;
   int m_pos;
 };
 
@@ -67,10 +67,10 @@ KDCOPActionProxy::~KDCOPActionProxy()
   delete d;
 }
 
-QValueList<KAction *>KDCOPActionProxy::actions() const
+QList<KAction *>KDCOPActionProxy::actions() const
 {
   if ( !d->m_actionCollection )
-    return QValueList<KAction *>();
+    return QList<KAction *>();
 
   return d->m_actionCollection->actions();
 }
@@ -83,30 +83,29 @@ KAction *KDCOPActionProxy::action( const char *name ) const
   return d->m_actionCollection->action( name );
 }
 
-QCString KDCOPActionProxy::actionObjectId( const QCString &name ) const
+DCOPCString KDCOPActionProxy::actionObjectId( const DCOPCString &name ) const
 {
   return d->m_prefix + name;
 }
 
-QMap<QCString,DCOPRef> KDCOPActionProxy::actionMap( const QCString &appId ) const
+QMap<DCOPCString,DCOPRef> KDCOPActionProxy::actionMap( const DCOPCString &appId ) const
 {
-  QMap<QCString,DCOPRef> res;
+  QMap<DCOPCString,DCOPRef> res;
 
-  QCString id = appId;
+  Q3CString id = appId;
   if ( id.isEmpty() )
     id = kapp->dcopClient()->appId();
 
-  QValueList<KAction *> lst = actions();
-  QValueList<KAction *>::ConstIterator it = lst.begin();
-  QValueList<KAction *>::ConstIterator end = lst.end();
-  for (; it != end; ++it )
-    res.insert( (*it)->name(), DCOPRef( id, actionObjectId( (*it)->name() ) ) );
+  QList<KAction *> lst = actions();
+  foreach ( KAction*it, lst ) {
+    res.insert( it->name(), DCOPRef( id, actionObjectId( it->name() ) ) );
+  }
 
   return res;
 }
 
-bool KDCOPActionProxy::process( const QCString &obj, const QCString &fun, const QByteArray &data,
-                                QCString &replyType, QByteArray &replyData )
+bool KDCOPActionProxy::process( const DCOPCString &obj, const DCOPCString &fun, const QByteArray &data,
+                                DCOPCString &replyType, QByteArray &replyData )
 {
   if ( obj.left( d->m_pos ) != d->m_prefix )
     return false;
@@ -118,8 +117,8 @@ bool KDCOPActionProxy::process( const QCString &obj, const QCString &fun, const 
   return processAction( obj, fun, data, replyType, replyData, act );
 }
 
-bool KDCOPActionProxy::processAction( const QCString &, const QCString &fun, const QByteArray &data,
-                                      QCString &replyType, QByteArray &replyData, KAction *action )
+bool KDCOPActionProxy::processAction( const DCOPCString&, const DCOPCString &fun, const QByteArray &data,
+                                      DCOPCString &replyType, QByteArray &replyData, KAction *action )
 {
   if ( fun == "activate()" )
   {
@@ -131,22 +130,24 @@ bool KDCOPActionProxy::processAction( const QCString &, const QCString &fun, con
   if ( fun == "isPlugged()" )
   {
     replyType = "bool";
-    QDataStream reply( replyData, IO_WriteOnly );
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
+	reply.setVersion(QDataStream::Qt_3_1 );
     reply << (Q_INT8)action->isPlugged();
     return true;
   }
 
   if ( fun == "functions()" )
   {
-    QValueList<QCString> res;
-    res << "QCStringList functions()";
+    DCOPCStringList res;
+    res << "QValueList<QCString> functions()";
     res << "void activate()";
     res << "bool isPlugged()";
 
     res += KDCOPPropertyProxy::functions( action );
 
-    replyType = "QCStringList";
-    QDataStream reply( replyData, IO_WriteOnly );
+    replyType = "QValueList<QCString>";
+    QDataStream reply( &replyData, QIODevice::WriteOnly );
+	reply.setVersion(QDataStream::Qt_3_1 );
     reply << res;
     return true;
   }

@@ -88,8 +88,8 @@
                 <property name="name">
                     <cstring>buttonGroup1</cstring>
                 </property>
-                <property name="frameShape">
-                    <enum>NoFrame</enum>
+                <property name="flat">
+                    <bool>true</bool>
                 </property>
                 <property name="title">
                     <string></string>

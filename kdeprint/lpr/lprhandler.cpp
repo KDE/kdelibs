@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "lprhandler.h"
@@ -26,7 +26,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qvaluestack.h>
+#include <q3valuestack.h>
 #include <klocale.h>
 
 #include <unistd.h>
@@ -172,10 +172,10 @@ void LprHandler::reset()
 DrMain* LprHandler::loadToolDriver(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.open(IO_ReadOnly))
+	if (f.open(QIODevice::ReadOnly))
 	{
 		DrMain	*driver = new DrMain;
-		QValueStack<DrGroup*>	groups;
+		Q3ValueStack<DrGroup*>	groups;
 		QTextStream	t(&f);
 		QStringList	l;
 		DrListOption	*lopt(0);

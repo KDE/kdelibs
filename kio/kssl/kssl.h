@@ -25,6 +25,7 @@
 #include <ksslpeerinfo.h>
 #include <ksslconnectioninfo.h>
 
+class QIODevice;
 class KSSLPrivate;
 class KSSLCertificate;
 class KSSLPKCS12;
@@ -198,6 +199,7 @@ public:
 	 *          -1 on other error.
 	 */
 	int connect(int sock);
+        int connect(QIODevice* sock);
 
 	/**
 	 *  Connect the SSL session to the remote host using the provided
@@ -209,6 +211,7 @@ public:
 	 *          -1 on other error.
 	 */
 	int accept(int sock);
+        int accept(QIODevice* sock);
 
 	/**
 	 *  Read data from the remote host via SSL.
@@ -217,7 +220,7 @@ public:
 	 *  @param len the maximum length of data to read.
 	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
 	 */
-	int read(void *buf, int len);
+	int read(char *buf, int len);
 
 	/**
 	 *  Peek at available data from the remote host via SSL.
@@ -226,7 +229,7 @@ public:
 	 *  @param len the maximum length of data to read.
 	 *  @return the number of bytes read, 0 on an exception, or -1 on error.
 	 */
-	int peek(void *buf, int len);
+	int peek(char *buf, int len);
 
 	/**
 	 *  Write data to the remote host via SSL.
@@ -236,7 +239,7 @@ public:
 	 *  @return the number of bytes written, 0 on an exception,
 	 *          or -1 on error.
 	 */
-	int write(const void *buf, int len);
+	int write(const char *buf, int len);
 
 	/**
 	 *  Determine if data is waiting to be read.

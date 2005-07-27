@@ -26,9 +26,9 @@
 
 class QImage;
 class QColor;
-class QWMatrix;
+class QMatrix;
 class QDomElement;
-class QPointArray;
+class Q3PointArray;
 
 class KDECORE_EXPORT KSVGIconPainter
 {
@@ -41,7 +41,7 @@ public:
 
 	QImage *image();
 
-	QWMatrix *worldMatrix();
+	QMatrix *worldMatrix();
 
 	void finish();
 
@@ -61,20 +61,20 @@ public:
 	void setStrokeDashOffset(const QString &dashOffset);
 	void setStrokeDashArray(const QString &dashes);
 
-	void setWorldMatrix(QWMatrix *worldMatrix);
+	void setWorldMatrix(QMatrix *worldMatrix);
 	void setClippingRect(int x, int y, int w, int h);
 
 	void drawRectangle(double x, double y, double w, double h, double rx, double ry);
 	void drawEllipse(double cx, double cy, double rx, double ry);
 	void drawLine(double x1, double y1, double x2, double y2);
-	void drawPolyline(QPointArray polyArray, int points = -1);
-	void drawPolygon(QPointArray polyArray);
+	void drawPolyline(Q3PointArray polyArray, int points = -1);
+	void drawPolygon(Q3PointArray polyArray);
 	void drawPath(const QString &data, bool fill);
 	void drawImage(double x, double y, QImage &image);
 
 	QColor parseColor(const QString &param);
-	Q_UINT32 toArtColor(const QColor &color);
-	Q_UINT32 parseOpacity(const QString &data);
+	quint32 toArtColor(const QColor &color);
+	quint32 parseOpacity(const QString &data);
 
 	double toPixel(const QString &s, bool hmode);
 	double dpi();
@@ -91,7 +91,7 @@ public:
 	QDomElement radialGradientElement(ArtGradientRadial *radial);
 	void addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element);
 
-	QWMatrix parseTransform(const QString &transform);
+	QMatrix parseTransform(const QString &transform);
 
 private:
 	struct Private;

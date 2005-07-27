@@ -116,7 +116,7 @@ void DataSlave::dispatchNext() {
 }
 
 void DataSlave::send(int cmd, const QByteArray &arr) {
-  QDataStream stream(arr, IO_ReadOnly);
+  QDataStream stream(arr);
 
   KURL url;
 
@@ -154,7 +154,7 @@ void DataSlave::setConfig(const MetaData &/*config*/) {
   // FIXME: decide to handle this directly or not at all
 #if 0
     QByteArray data;
-    QDataStream stream( data, IO_WriteOnly );
+    QDataStream stream( data, QIODevice::WriteOnly );
     stream << config;
     slaveconn.send( CMD_CONFIG, data );
 #endif

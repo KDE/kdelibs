@@ -24,7 +24,7 @@
 #define KWINMODULE_H
 
 #include <qobject.h>
-#include <qvaluelist.h>
+#include <qwindowdefs.h> //For WId
 #include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX
@@ -116,7 +116,7 @@ public:
      * \endcode
      * @return the list of all toplevel windows
      */
-    const QValueList<WId>& windows() const;
+    const QList<WId>& windows() const;
 
     /**
      * Returns the list of all toplevel windows currently managed by the
@@ -124,7 +124,7 @@ public:
      * higher). May be useful for pagers.
      * @return the list of all toplevel windows in stacking order
      */
-    const QValueList<WId>& stackingOrder() const;
+    const QList<WId>& stackingOrder() const;
 
     /**
      * Test to see if @p id still managed at present.
@@ -137,7 +137,7 @@ public:
      * Returns a list of the system tray windows.
      * @return a list of all system tray windows
      **/
-    const QValueList<WId>& systemTrayWindows() const;
+    const QList<WId>& systemTrayWindows() const;
 
     /**
      * Returns the current virtual desktop.
@@ -178,7 +178,7 @@ public:
      *        current desktop
      * @return the size and position of the desktop
      **/
-    QRect workArea( const QValueList<WId> &excludes, int desktop = -1) const;
+    QRect workArea( const QList<WId> &excludes, int desktop = -1) const;
 
     /**
      * Returns the name of the specified desktop.

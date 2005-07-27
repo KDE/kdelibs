@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -38,10 +38,11 @@
 #include <net/if.h>
 #endif
 
-#include <qthread.h>
-#include <qmutex.h>
-#include <qstrlist.h>
-#include <qfile.h>
+#include <QFile>
+#include <QList>
+#include <QMutex>
+#include <QTextStream>
+#include <QThread>
 
 #include "kdebug.h"
 #include "kglobal.h"
@@ -107,12 +108,12 @@ void KBlacklistWorker::loadBlacklist()
     {
       // for each file, each line is a domainname to be blacklisted
       QFile f(*it);
-      if (!f.open(IO_ReadOnly))
+      if (!f.open(QIODevice::ReadOnly))
 	continue;
 
       QTextStream stream(&f);
       stream.setEncoding(QTextStream::Latin1);
-      for (QString line = stream.readLine(); !line.isNull(); 
+      for (QString line = stream.readLine(); !line.isNull();
 	   line = stream.readLine())
 	{
 	  if (line.isEmpty())
@@ -120,11 +121,11 @@ void KBlacklistWorker::loadBlacklist()
 
 	  // make sure there are no surrounding whitespaces
 	  // and that it starts with .
-	  line = line.stripWhiteSpace();
+	  line = line.trimmed();
 	  if (line[0] != '.')
-	    line.prepend('.');
-	  
-	  blacklist.append(line.lower());
+	    line.prepend(QChar( '.') );
+
+	  blacklist.append(line.toLower());
 	}
     }
 }
@@ -181,7 +182,7 @@ namespace
    * In all cases, we prefer to use the new getaddrinfo(3) call. That means
    * it will always be used if it is found.
    *
-   * If it's not found, we have the option to use gethostbyname2_r, 
+   * If it's not found, we have the option to use gethostbyname2_r,
    * gethostbyname_r, gethostbyname2 and gethostbyname. If gethostbyname2_r
    * is defined, we will use it.
    *
@@ -207,13 +208,13 @@ namespace
   class GetHostByNameThread: public KResolverWorkerBase
   {
   public:
-    QCString m_hostname;	// might be different!
-    Q_UINT16 m_port;
+    QByteArray m_hostname;	// might be different!
+    quint16 m_port;
     int m_scopeid;
     int m_af;
     KResolverResults& results;
 
-    GetHostByNameThread(const char * hostname, Q_UINT16 port,
+    GetHostByNameThread(const char * hostname, quint16 port,
 			int scopeid, int af, KResolverResults* res) :
       m_hostname(hostname), m_port(port), m_scopeid(scopeid), m_af(af),
       results(*res)
@@ -240,7 +241,7 @@ namespace
     int my_h_errno;
     char *buf = 0L;
 
-    // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)", 
+    // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)",
     //	   m_hostname.data(), m_af);
 
     ResolverLocker resLock( this );
@@ -250,7 +251,7 @@ namespace
 	my_h_errno = HOST_NOT_FOUND;
 
 	// check blacklist
-	if (m_af != AF_INET && 
+	if (m_af != AF_INET &&
 	    KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_hostname)))
 	  break;
 
@@ -378,8 +379,8 @@ namespace
   class GetAddrInfoThread: public KResolverWorkerBase
   {
   public:
-    QCString m_node;
-    QCString m_serv;
+    QByteArray m_node;
+    QByteArray m_serv;
     int m_af;
     int m_flags;
     KResolverResults& results;
@@ -403,7 +404,7 @@ namespace
   bool GetAddrInfoThread::run()
   {
     // check blacklist
-    if ((m_af != AF_INET && m_af != AF_UNSPEC) && 
+    if ((m_af != AF_INET && m_af != AF_UNSPEC) &&
 	KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_node)))
       {
 	results.setError(KResolver::NoName);
@@ -518,14 +519,14 @@ namespace
 	    // cache the last canon name to avoid doing the ToUnicode processing unnecessarily
 	    if ((previous_canon && !p->ai_canonname) ||
 		(!previous_canon && p->ai_canonname) ||
-		(p->ai_canonname != previous_canon && 
+		(p->ai_canonname != previous_canon &&
 		 strcmp(p->ai_canonname, previous_canon) != 0))
 	      {
 		canon = KResolver::domainToUnicode(QString::fromAscii(p->ai_canonname));
 		previous_canon = p->ai_canonname;
 	      }
 
-	    results.append(KResolverEntry(p->ai_addr, p->ai_addrlen, p->ai_socktype, 
+	    results.append(KResolverEntry(p->ai_addr, p->ai_addrlen, p->ai_socktype,
 					  p->ai_protocol, canon, m_node));
 	  }
 
@@ -540,6 +541,11 @@ namespace
 #endif // HAVE_GETADDRINFO
 } // namespace
 
+KStandardWorker::~KStandardWorker()
+{
+  qDeleteAll(resultList);
+}
+
 bool KStandardWorker::sanityCheck()
 {
   // check that the requested values are sensible
@@ -547,8 +553,8 @@ bool KStandardWorker::sanityCheck()
   if (!nodeName().isEmpty())
     {
       QString node = nodeName();
-      if (node.find('%') != -1)
-	node.truncate(node.find('%'));
+      if (node.indexOf('%') != -1)
+	node.truncate(node.indexOf('%'));
 
       if (node.isEmpty() || node == QString::fromLatin1("*") ||
 	  node == QString::fromLatin1("localhost"))
@@ -559,7 +565,7 @@ bool KStandardWorker::sanityCheck()
 
 	  if (m_encodedName.isNull())
 	    {
-	      qDebug("could not encode hostname '%s' (UTF-8)", node.utf8().data());
+	      qDebug("could not encode hostname '%s' (UTF-8)", node.toUtf8().data());
 	      setError(KResolver::NoName);
 	      return false;		// invalid hostname!
 	    }
@@ -584,7 +590,7 @@ bool KStandardWorker::resolveScopeId()
 {
   // we must test the original name, not the encoded one
   scopeid = 0;
-  int pos = nodeName().findRev('%');
+  int pos = nodeName().lastIndexOf('%');
   if (pos == -1)
     return true;
 
@@ -597,7 +603,7 @@ bool KStandardWorker::resolveScopeId()
       // it's not a number
       // therefore, it's an interface name
 #ifdef HAVE_IF_NAMETOINDEX
-      scopeid = if_nametoindex(scopename.latin1());
+      scopeid = if_nametoindex(scopename.toLatin1());
 #else
       scopeid = 0;
 #endif
@@ -621,7 +627,7 @@ bool KStandardWorker::resolveService()
       else
 	{
 	  // it's a name. We need the protocol name in order to lookup.
-	  QCString protoname = protocolName();
+	  QByteArray protoname = protocolName();
 
 	  if (protoname.isEmpty() && protocol())
 	    {
@@ -639,7 +645,7 @@ bool KStandardWorker::resolveService()
 	    protoname = "tcp";
 
 	  // it's not, so we can do a port lookup
-	  int result = KResolver::servicePort(serviceName().latin1(), protoname);
+	  int result = KResolver::servicePort(serviceName().toLatin1(), protoname);
 	  if (result == -1)
 	    {
 	      // lookup failed!
@@ -648,7 +654,7 @@ bool KStandardWorker::resolveService()
 	    }
 
 	  // it worked, we have a port number
-	  port = (Q_UINT16)result;
+	  port = (quint16)result;
 	}
     }
 
@@ -667,7 +673,7 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
   if (!m_encodedName.isEmpty())
     return KResolver::AddrFamily; // non local hostname
 
-  if (protocol() || protocolName())
+  if (protocol() || !protocolName().isNull())
     return KResolver::BadFlags;	// cannot have Unix sockets with protocols
 
   QString pathname = serviceName();
@@ -687,7 +693,7 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
 
   results.append(KResolverEntry(sa, socktype, 0));
   setError(KResolver::NoError);
- 
+
   return KResolver::NoError;
 }
 
@@ -712,8 +718,8 @@ bool KStandardWorker::resolveNumerically()
   // now try to resolve the hostname numerically
   KInetSocketAddress sa;
   setError(KResolver::NoError);
-  sa.setHost(KIpAddress(QString::fromLatin1(m_encodedName)));
-  
+  sa.setHost(KIpAddress(QLatin1String(m_encodedName)));
+
   // if it failed, the length was reset to 0
   bool ok = sa.length() != 0;
 
@@ -783,7 +789,7 @@ bool KStandardWorker::resolveNumerically()
     }
   else
     {
-      // probably bad flags, since the address is not convertible without 
+      // probably bad flags, since the address is not convertible without
       // resolution
 
       setError(KResolver::BadFlags);
@@ -865,13 +871,12 @@ bool KStandardWorker::run()
     KResolver::SocketFamilies mask;
     int af;
   } families[] = { { KResolver::IPv4Family, AF_INET }
-#ifdef AF_INET6					  
+#ifdef AF_INET6
 		  , { KResolver::IPv6Family, AF_INET6 }
 #endif
   };
   int familyCount = sizeof(families)/sizeof(families[0]);
   bool skipIPv6 = !hasIPv6();
-  resultList.setAutoDelete(true);
 
   for (int i = 0; i < familyCount; i++)
     if (familyMask() & families[i].mask)
@@ -885,8 +890,8 @@ bool KStandardWorker::run()
 	KResolverResults *res = new KResolverResults;
 	resultList.append(res);
 #ifdef HAVE_GETADDRINFO
-	worker = new GetAddrInfoThread(m_encodedName, 
-				       serviceName().latin1(),
+	worker = new GetAddrInfoThread(m_encodedName,
+				       serviceName().toLatin1(),
 				       families[i].af, flags(), res);
 #else
 	worker = new GetHostByNameThread(m_encodedName, port, scopeid,
@@ -913,9 +918,9 @@ bool KStandardWorker::postprocess()
       return true;
     }
 
-  KResolverResults *rr = resultList.last();
-  while (rr)
+  for (int i = resultList.size(); i > 0; --i)
     {
+      KResolverResults* rr = resultList.at(i - 1);
       if (!rr->isEmpty())
 	{
 	  results.setError(KResolver::NoError);
@@ -928,7 +933,8 @@ bool KStandardWorker::postprocess()
 	// copy the error code over
 	setError(rr->error(), rr->systemError());
 
-      rr = resultList.prev();
+      delete rr;
+      resultList[i - 1] = 0L;
     }
 
   resultList.clear();
@@ -956,7 +962,7 @@ bool KGetAddrinfoWorker::preprocess()
 bool KGetAddrinfoWorker::run()
 {
   // make an AF_UNSPEC getaddrinfo(3) call
-  GetAddrInfoThread worker(m_encodedName, serviceName().latin1(), 
+  GetAddrInfoThread worker(m_encodedName, serviceName().toLatin1(),
 			   AF_UNSPEC, flags(), &results);
 
   if (!worker.run())

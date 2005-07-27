@@ -121,7 +121,7 @@ void KCatalogue::setFileName( const QString & fileName )
 
   doUnload();
 
-  QCString newFileName = QFile::encodeName( fileName );
+  QByteArray newFileName = QFile::encodeName( fileName );
 
   if ( !fileName.isEmpty() )
     {

@@ -1,5 +1,5 @@
 #include "notepad.h" // this plugin applies to a notepad part
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include "plugin_spellcheck.h"
 #include <kaction.h>
 #include <kgenericfactory.h>
@@ -28,7 +28,7 @@ void PluginSpellCheck::slotSpellCheck()
     else
     {
          NotepadPart * part = (NotepadPart *) parent();
-         QMultiLineEdit * widget = (QMultiLineEdit *) part->widget();
+         Q3MultiLineEdit * widget = (Q3MultiLineEdit *) part->widget();
          widget->selectAll(); //selects current line !
     }
 }

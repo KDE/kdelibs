@@ -22,7 +22,6 @@
 #include <klocale.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
@@ -71,13 +70,13 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent, const char *name)
 	setTitle(i18n("HTML Settings"));
 
 	m_printfriendly = new QCheckBox(i18n("Printer friendly mode (black text, no background)"), this);
-	QWhatsThis::add(m_printfriendly, whatsThisPrinterFriendlyMode);
+	m_printfriendly->setWhatsThis(whatsThisPrinterFriendlyMode);
 	m_printfriendly->setChecked(true);
 	m_printimages = new QCheckBox(i18n("Print images"), this);
-	QWhatsThis::add(m_printimages, whatsThisPrintImages);
+	m_printimages->setWhatsThis(whatsThisPrintImages);
 	m_printimages->setChecked(true);
 	m_printheader = new QCheckBox(i18n("Print header"), this);
-	QWhatsThis::add(m_printheader, whatsThisPrintHeader);
+	m_printheader->setWhatsThis(whatsThisPrintHeader);
 	m_printheader->setChecked(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);

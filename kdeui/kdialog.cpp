@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 
 #include <kconfig.h>
@@ -26,12 +26,15 @@
 #include <kstaticdeleter.h>
 
 #include <qlayout.h>
-#include <qobjectlist.h>
-#include <qguardedptr.h>
+#include <qobject.h>
+#include <qpointer.h>
 #include <qlineedit.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qtimer.h>
 #include <qcursor.h>
+#include <qx11info_x11.h>
+#include <QKeyEvent>
+#include <QDesktopWidget>
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -41,9 +44,9 @@
 const int KDialog::mMarginSize = 11;
 const int KDialog::mSpacingSize = 6;
 
-template class QPtrList<QLayoutItem>;
+template class Q3PtrList<QLayoutItem>;
 
-KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
+KDialog::KDialog(QWidget *parent, const char *name, bool modal, Qt::WFlags f)
   : QDialog(parent, name, modal, f), d(0)
 {
     KWhatsThisManager::init ();
@@ -58,11 +61,11 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   {
     switch ( e->key() )
     {
-      case Key_Escape:
-      case Key_Enter:
-      case Key_Return:
+      case Qt::Key_Escape:
+      case Qt::Key_Enter:
+      case Qt::Key_Return:
       {
-        if(testWFlags(WType_Dialog | WShowModal))
+        if(testAttribute(Qt::WA_ShowModal) && ( windowFlags() & Qt::Dialog ) )
 	{
           QDialog::keyPressEvent(e);
 	}
@@ -80,8 +83,8 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   else
   {
       // accept the dialog when Ctrl-Return is pressed
-      if ( e->state() == ControlButton &&
-           (e->key() == Key_Return || e->key() == Key_Enter) )
+      if ( e->state() == Qt::ControlModifier &&
+           (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
       {
           e->accept();
           accept();
@@ -124,7 +127,7 @@ void KDialog::setPlainCaption( const QString &caption )
   QDialog::setCaption( caption );
 
 #ifdef Q_WS_X11
-  NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
+  NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
   info.setName( caption.utf8().data() );
 #endif
 }
@@ -137,30 +140,28 @@ void KDialog::resizeLayout( QWidget *w, int margin, int spacing )
     resizeLayout( w->layout(), margin, spacing );
   }
 
-  if( w->children() )
+  if ( w->children().count() > 0 )
   {
-    const QObjectList * const l = w->children();
-    QObjectListIterator itr(*l);
-    QObject *o;
-    while ((o = itr.current()) != 0) {
-      if( o->isWidgetType() )
-      {
-	resizeLayout( (QWidget*)o, margin, spacing );
-      }
-      ++itr;
-    }
+	  QList<QObject*> l = w->children();
+	  foreach ( QObject *o, l ) {
+		  if( o->isWidgetType() )
+		  {
+			  resizeLayout( (QWidget*)o, margin, spacing );
+		  }
+	  }
   }
 }
 
 
-void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
+void KDialog::resizeLayout( QLayout *lay, int margin, int spacing )
 {
-  QLayoutIterator it = lay->iterator();
   QLayoutItem *child;
-  while ( (child = it.current() ) )
+  int pos = 0;
+  while ( (child = lay->itemAt(pos) ) )
   {
-    resizeLayout( child, margin, spacing );
-    ++it;
+    if ( child->layout() )
+      resizeLayout( child->layout(), margin, spacing );
+    ++pos;
   }
   if( lay->layout() )
   {
@@ -257,7 +258,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 class KDialogQueuePrivate
 {
 public:
-  QValueList< QGuardedPtr<QDialog> > queue;
+  Q3ValueList< QPointer<QDialog> > queue;
   bool busy;
 };
 

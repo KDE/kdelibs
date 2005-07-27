@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include "partmanager.h"
@@ -31,7 +31,7 @@
 
 using namespace KParts;
 
-template class QPtrList<Part>;
+template class Q3PtrList<Part>;
 
 namespace KParts {
 
@@ -76,14 +76,14 @@ public:
   Part * m_activePart;
   QWidget *m_activeWidget;
 
-  QPtrList<Part> m_parts;
+  Q3PtrList<Part> m_parts;
 
   PartManager::SelectionPolicy m_policy;
 
   Part *m_selectedPart;
   QWidget *m_selectedWidget;
 
-  QPtrList<QWidget> m_managedTopLevelWidgets;
+  Q3PtrList<QWidget> m_managedTopLevelWidgets;
   short int m_activationButtonMask;
   bool m_bIgnoreScrollBars;
   bool m_bAllowNestedParts;
@@ -118,12 +118,12 @@ PartManager::PartManager( QWidget *topLevel, QObject *parent, const char *name )
 
 PartManager::~PartManager()
 {
-  for ( QPtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
+  for ( Q3PtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
         it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
                 this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
 
-  for ( QPtrListIterator<Part> it( d->m_parts ); it.current(); ++it )
+  for ( Q3PtrListIterator<Part> it( d->m_parts ); it.current(); ++it )
   {
       it.current()->setManager( 0 );
   }
@@ -186,8 +186,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
   QWidget *w = static_cast<QWidget *>( obj );
 
-  if ( ( w->testWFlags( WType_Dialog ) && w->isModal() ) ||
-       w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) )
+  if ( ( ( w->windowFlags() && Qt::WType_Dialog ) && w->isModal() ) ||
+       ( w->windowFlags() && Qt::WType_Popup ) || ( w->windowFlags() && Qt::WStyle_Tool ) )
     return false;
 
   QMouseEvent* mev = 0L;
@@ -220,7 +220,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       part = findPartFromWidget( w );
 
 #ifdef DEBUG_PARTMANAGER
-    QCString evType = ( ev->type() == QEvent::MouseButtonPress ) ? "MouseButtonPress"
+    Q3CString evType = ( ev->type() == QEvent::MouseButtonPress ) ? "MouseButtonPress"
                       : ( ev->type() == QEvent::MouseButtonDblClick ) ? "MouseButtonDblClick"
                       : ( ev->type() == QEvent::FocusIn ) ? "FocusIn" : "OTHER! ERROR!";
 #endif
@@ -290,8 +290,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     w = w->parentWidget();
 
-    if ( w && ( ( w->testWFlags( WType_Dialog ) && w->isModal() ) ||
-                w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
+    if ( w && ( ( ( w->windowFlags() && Qt::WType_Dialog ) && w->isModal() ) ||
+                ( w->windowFlags() && Qt::WType_Popup ) || ( w->windowFlags() && Qt::WStyle_Tool ) ) )
     {
 #ifdef DEBUG_PARTMANAGER
       kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
@@ -309,7 +309,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
 Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 {
-  QPtrListIterator<Part> it ( d->m_parts );
+  Q3PtrListIterator<Part> it ( d->m_parts );
   for ( ; it.current() ; ++it )
   {
     Part *part = it.current()->hitTest( widget, pos );
@@ -321,7 +321,7 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 
 Part * PartManager::findPartFromWidget( QWidget * widget )
 {
-  QPtrListIterator<Part> it ( d->m_parts );
+  Q3PtrListIterator<Part> it ( d->m_parts );
   for ( ; it.current() ; ++it )
   {
     if ( widget == it.current()->widget() )
@@ -352,11 +352,11 @@ void PartManager::addPart( Part *part, bool setActive )
   }
 
   // Prevent focus problems
-  if ( part->widget() && part->widget()->focusPolicy() == QWidget::NoFocus )
+  if ( part->widget() && part->widget()->focusPolicy() == Qt::NoFocus )
   {
     kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
-  if ( part->widget() && part->widget()->focusPolicy() == QWidget::TabFocus )
+  if ( part->widget() && part->widget()->focusPolicy() == Qt::TabFocus )
   {
     kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
@@ -555,7 +555,7 @@ void PartManager::slotWidgetDestroyed()
                          //part will delete itself anyway, invoking removePart() in its destructor
 }
 
-const QPtrList<Part> *PartManager::parts() const
+const Q3PtrList<Part> *PartManager::parts() const
 {
   return &d->m_parts;
 }

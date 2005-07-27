@@ -13,26 +13,26 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmlistview.h"
 #include "kmprinter.h"
 #include "kmobject.h"
 
-#include <qheader.h>
+#include <q3header.h>
 #include <qpainter.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kcursor.h>
 
-class KMListViewItem : public QListViewItem, public KMObject
+class KMListViewItem : public Q3ListViewItem, public KMObject
 {
 public:
-	KMListViewItem(QListView *parent, const QString& txt);
-	KMListViewItem(QListViewItem *parent, const QString& txt);
-	KMListViewItem(QListViewItem *parent, KMPrinter *p);
+	KMListViewItem(Q3ListView *parent, const QString& txt);
+	KMListViewItem(Q3ListViewItem *parent, const QString& txt);
+	KMListViewItem(Q3ListViewItem *parent, KMPrinter *p);
 
 	virtual void paintCell(QPainter*, const QColorGroup&, int, int, int);
 	void updatePrinter(KMPrinter *p);
@@ -46,20 +46,20 @@ private:
 	bool	m_isclass;
 };
 
-KMListViewItem::KMListViewItem(QListView *parent, const QString& txt)
-: QListViewItem(parent,txt)
+KMListViewItem::KMListViewItem(Q3ListView *parent, const QString& txt)
+: Q3ListViewItem(parent,txt)
 {
 	init();
 }
 
-KMListViewItem::KMListViewItem(QListViewItem *parent, const QString& txt)
-: QListViewItem(parent,txt)
+KMListViewItem::KMListViewItem(Q3ListViewItem *parent, const QString& txt)
+: Q3ListViewItem(parent,txt)
 {
 	init();
 }
 
-KMListViewItem::KMListViewItem(QListViewItem *parent, KMPrinter *p)
-: QListViewItem(parent)
+KMListViewItem::KMListViewItem(Q3ListViewItem *parent, KMPrinter *p)
+: Q3ListViewItem(parent)
 {
 	init(p);
 }
@@ -101,25 +101,25 @@ void KMListViewItem::paintCell(QPainter *p, const QColorGroup& cg, int c, int w,
 		if (m_state & 0x2) f.setItalic(true);
 		p->setFont(f);
 	}
-	QListViewItem::paintCell(p,cg,c,w,a);
+	Q3ListViewItem::paintCell(p,cg,c,w,a);
 }
 
 //************************************************************************************************
 
 KMListView::KMListView(QWidget *parent, const char *name)
-: QListView(parent,name)
+: Q3ListView(parent,name)
 {
 	m_items.setAutoDelete(false);
 
 	addColumn("");
 	header()->hide();
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	setLineWidth(1);
 	setSorting(0);
 
-	connect(this,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),SLOT(slotRightButtonClicked(QListViewItem*,const QPoint&,int)));
+	connect(this,SIGNAL(contextMenuRequested(Q3ListViewItem*,const QPoint&,int)),SLOT(slotRightButtonClicked(Q3ListViewItem*,const QPoint&,int)));
 	connect(this,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
-	connect(this,SIGNAL(onItem(QListViewItem*)),SLOT(slotOnItem(QListViewItem*)));
+	connect(this,SIGNAL(onItem(Q3ListViewItem*)),SLOT(slotOnItem(Q3ListViewItem*)));
 	connect(this,SIGNAL(onViewport()),SLOT(slotOnViewport()));
 
 	m_root = new KMListViewItem(this,i18n("Print System"));
@@ -142,7 +142,7 @@ KMListView::~KMListView()
 {
 }
 
-void KMListView::slotRightButtonClicked(QListViewItem *item, const QPoint& p, int)
+void KMListView::slotRightButtonClicked(Q3ListViewItem *item, const QPoint& p, int)
 {
 	emit rightButtonClicked(item && item->depth() == 2 ? item->text(0) : QString::null, p);
 }
@@ -151,7 +151,7 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 {
 	if (p)
 	{
-		QPtrListIterator<KMListViewItem>	it(m_items);
+		Q3PtrListIterator<KMListViewItem>	it(m_items);
 		bool	isVirtual(p->isVirtual()), isClass(p->isClass());
 		for (;it.current();++it)
 			if (isVirtual)
@@ -171,24 +171,24 @@ KMListViewItem* KMListView::findItem(KMPrinter *p)
 
 KMListViewItem* KMListView::findItem(const QString& prname)
 {
-	QPtrListIterator<KMListViewItem>	it(m_items);
+	Q3PtrListIterator<KMListViewItem>	it(m_items);
 	for (; it.current(); ++it)
 		if (it.current()->depth() == 2 && it.current()->text(0) == prname)
 			return it.current();
 	return 0;
 }
 
-void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
+void KMListView::setPrinterList(Q3PtrList<KMPrinter> *list)
 {
 	bool 	changed(false);
 
-	QPtrListIterator<KMListViewItem>	it(m_items);
+	Q3PtrListIterator<KMListViewItem>	it(m_items);
 	for (;it.current();++it)
 		it.current()->setDiscarded(true);
 
 	if (list)
 	{
-		QPtrListIterator<KMPrinter>	it(*list);
+		Q3PtrListIterator<KMPrinter>	it(*list);
 		KMListViewItem			*item (0);
 		for (;it.current();++it)
 		{
@@ -213,7 +213,7 @@ void KMListView::setPrinterList(QPtrList<KMPrinter> *list)
 		}
 	}
 
-	QPtrList<KMListViewItem>	deleteList;
+	Q3PtrList<KMListViewItem>	deleteList;
 	deleteList.setAutoDelete(true);
 	for (uint i=0; i<m_items.count(); i++)
 		if (m_items.at(i)->isDiscarded())
@@ -242,7 +242,7 @@ void KMListView::slotSelectionChanged()
 
 void KMListView::setPrinter(const QString& prname)
 {
-	QPtrListIterator<KMListViewItem>	it(m_items);
+	Q3PtrListIterator<KMListViewItem>	it(m_items);
 	for (;it.current();++it)
 		if (it.current()->text(0) == prname)
 		{
@@ -256,7 +256,7 @@ void KMListView::setPrinter(KMPrinter *p)
 	setPrinter(p ? p->name() : QString::null);
 }
 
-void KMListView::slotOnItem(QListViewItem *)
+void KMListView::slotOnItem(Q3ListViewItem *)
 {
 	setCursor(KCursor::handCursor());
 }

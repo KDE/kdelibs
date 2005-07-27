@@ -26,7 +26,7 @@
 #include <qdatetime.h>
 #include <kapplication.h>
 #include <kswap.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kdebug.h>
 
 #include "des.h"
@@ -364,7 +364,7 @@ void KNTLM::convertKey( unsigned char *key_56, void* ks )
 QByteArray KNTLM::QString2UnicodeLE( const QString &target )
 {
   QByteArray unicode( target.length() * 2 );
-  for ( uint i = 0; i < target.length(); i++ ) {
+  for ( int i = 0; i < target.length(); i++ ) {
     ((Q_UINT16*)unicode.data())[ i ] = KFromToLittleEndian( target[i].unicode() );
   }
   return unicode;

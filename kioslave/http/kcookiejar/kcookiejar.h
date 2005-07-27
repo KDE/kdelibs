@@ -27,8 +27,8 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qdict.h>
-#include <qptrlist.h>
+#include <q3dict.h>
+#include <q3ptrlist.h>
 #include <time.h>
 
 class KConfig;
@@ -63,7 +63,7 @@ protected:
     bool    mCrossDomain;
     bool    mHttpOnly;
     bool    mExplicitPath;
-    QValueList<long> mWindowIds;
+    Q3ValueList<long> mWindowIds;
 
     QString cookieStr(bool useDOMFormat);
 
@@ -84,7 +84,7 @@ public:
     QString path(void) { return mPath; }
     QString name(void) { return mName; }
     QString value(void) { return mValue; }
-    QValueList<long> &windowIds(void) { return mWindowIds; }
+    Q3ValueList<long> &windowIds(void) { return mWindowIds; }
     void    fixDomain(const QString &domain) { mDomain = domain; }
     time_t  expireDate(void) { return mExpireDate; }
     int     protocolVersion(void) { return mProtocolVersion; }
@@ -96,10 +96,10 @@ public:
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
 };
 
-class KHttpCookieList : public QPtrList<KHttpCookie>
+class KHttpCookieList : public Q3PtrList<KHttpCookie>
 {
 public:
-    KHttpCookieList() : QPtrList<KHttpCookie>(), advice( KCookieDunno )
+    KHttpCookieList() : Q3PtrList<KHttpCookie>(), advice( KCookieDunno )
     { }
     virtual ~KHttpCookieList() { }
 
@@ -174,7 +174,7 @@ public:
      * cookie_headers should be a concatenation of all lines of a HTTP-header
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
-    KHttpCookieList makeCookies(const QString &_url, const QCString &cookie_headers, long windowId);
+    KHttpCookieList makeCookies(const QString &_url, const QByteArray &cookie_headers, long windowId);
 
     /**
      * This function parses cookie_headers and returns a linked list of
@@ -184,7 +184,7 @@ public:
      * cookie_domstr should be a concatenation of "name=value" pairs, separated
      * by a semicolon ';'.
      */
-    KHttpCookieList makeDOMCookies(const QString &_url, const QCString &cookie_domstr, long windowId);
+    KHttpCookieList makeDOMCookies(const QString &_url, const QByteArray &cookie_domstr, long windowId);
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.
@@ -350,8 +350,8 @@ protected:
 protected:
     QStringList m_domainList;
     KCookieAdvice m_globalAdvice;
-    QDict<KHttpCookieList> m_cookieDomains;
-    QDict<int> m_twoLevelTLD;
+    Q3Dict<KHttpCookieList> m_cookieDomains;
+    Q3Dict<int> m_twoLevelTLD;
 
     bool m_configChanged;
     bool m_cookiesChanged;

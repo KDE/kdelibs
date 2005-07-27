@@ -14,22 +14,22 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef DRIVERITEM_H
 #define DRIVERITEM_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 
 class DrBase;
 
-class DriverItem : public QListViewItem
+class DriverItem : public Q3ListViewItem
 {
 public:
-	DriverItem(QListView *parent, DrBase *item);
-	DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item);
+	DriverItem(Q3ListView *parent, DrBase *item);
+	DriverItem(Q3ListViewItem *parent, Q3ListViewItem *after, DrBase *item);
 
 	void updateText();
 	void updateTextRecursive();

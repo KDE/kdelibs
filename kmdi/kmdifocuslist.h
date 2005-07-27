@@ -34,7 +34,7 @@ public:
 protected slots:
 	void objectHasBeenDestroyed( QObject* );
 private:
-	QMap<QWidget*, QWidget::FocusPolicy> m_list;
+	QMap<QWidget*, Qt::FocusPolicy> m_list;
 
 };
 

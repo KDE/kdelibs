@@ -13,22 +13,22 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMPRINTERVIEW_H
 #define KMPRINTERVIEW_H
 
-#include <qwidgetstack.h>
-#include <qptrlist.h>
+#include <q3widgetstack.h>
+#include <q3ptrlist.h>
 
 class KMIconView;
 class KMListView;
 class KMPrinter;
-class QIconViewItem;
+class Q3IconViewItem;
 
-class KMPrinterView : public QWidgetStack
+class KMPrinterView : public Q3WidgetStack
 {
 	Q_OBJECT
 public:
@@ -37,7 +37,7 @@ public:
 	KMPrinterView(QWidget *parent = 0, const char *name = 0);
 	~KMPrinterView();
 
-	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinterList(Q3PtrList<KMPrinter> *list);
 	void setPrinter( KMPrinter* );
 	void setViewType(ViewType t);
 	ViewType viewType() const 	{ return m_type; }

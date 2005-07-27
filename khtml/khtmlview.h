@@ -26,7 +26,7 @@
 #define KHTMLVIEW_H
 
 // qt includes and classes
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 #include <kdelibs_export.h>
 
@@ -74,7 +74,7 @@ class KHTMLViewPrivate;
  *
  * Suitable for use as an application's main view.
  **/
-class KHTML_EXPORT KHTMLView : public QScrollView
+class KHTML_EXPORT KHTMLView : public Q3ScrollView
 {
     Q_OBJECT
 
@@ -180,6 +180,7 @@ signals:
 protected:
     void clear();
 
+    virtual bool event ( QEvent * event );
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void showEvent ( QShowEvent * );
     virtual void hideEvent ( QHideEvent *);

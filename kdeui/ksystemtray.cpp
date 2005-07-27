@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include "config.h"
@@ -32,12 +32,14 @@
 #include <kwin.h> 
 #include <kwinmodule.h> 
 #include <qxembed.h> 
+#include <QX11Info>
 #endif
 
 #include <kiconloader.h>
 #include <kconfig.h>
 
 #include <qapplication.h>
+#include <qevent.h>
 
 class KSystemTrayPrivate
 {
@@ -57,23 +59,24 @@ public:
 };
 
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
-    : QLabel( parent, name, WType_TopLevel )
+    : QLabel( parent, name, Qt::WType_TopLevel )
 {
 #ifdef Q_WS_X11
-    QXEmbed::initialize();
+    #warning KDE4 porting: reinstate when the new QXEmbed is ready
+    //QXEmbed::initialize();
 #endif
     
     d = new KSystemTrayPrivate;
     d->actionCollection = new KActionCollection(this);
 
 #ifdef Q_WS_X11
-    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
+    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): QX11Info::appRootWindow() );
 #endif
-    setBackgroundMode(X11ParentRelative);
+    setBackgroundMode(Qt::X11ParentRelative);
     setBackgroundOrigin(WindowOrigin);
     hasQuit = 0;
     menu = new KPopupMenu( this );
-    menu->insertTitle( kapp->miniIcon(), kapp->caption() );
+    menu->addTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
     KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 
@@ -105,7 +108,7 @@ KSystemTray::~KSystemTray()
 void KSystemTray::showEvent( QShowEvent * )
 {
     if ( !hasQuit ) {
-	menu->insertSeparator();
+        menu->addSeparator();
         KAction* action = d->actionCollection->action("minimizeRestore");
 
         if (action)
@@ -142,12 +145,12 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 	return;
 
     switch ( e->button() ) {
-    case LeftButton:
+    case Qt::LeftButton:
         toggleActive();
 	break;
-    case MidButton:
+    case Qt::MidButton:
 	// fall through
-    case RightButton:
+    case Qt::RightButton:
 	if ( parentWidget() ) {
             KAction* action = d->actionCollection->action("minimizeRestore");
 	    if ( parentWidget()->isVisible() )
@@ -156,7 +159,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 		action->setText( i18n("&Restore") );
 	}
 	contextMenuAboutToShow( menu );
-	menu->popup( e->globalPos() );
+	menu->exec( e->globalPos() );
 	break;
     default:
 	// nothing
@@ -251,11 +254,12 @@ void KSystemTray::activateOrHide()
     else
     {
         KWinModule module;
-        for( QValueList< WId >::ConstIterator it = module.stackingOrder().fromLast();
-             it != module.stackingOrder().end() && (*it) != pw->winId();
-             --it )
+        QListIterator< WId > it (module.stackingOrder());
+        it.toBack();
+        while( it.hasPrevious() )
         {
-            KWin::WindowInfo info2 = KWin::windowInfo( *it,
+            WId id = it.previous();
+            KWin::WindowInfo info2 = KWin::windowInfo( id,
                 NET::WMGeometry | NET::XAWMState | NET::WMState | NET::WMWindowType );
             if( info2.mappingState() != NET::Visible )
                 continue; // not visible on current desktop -> ignore

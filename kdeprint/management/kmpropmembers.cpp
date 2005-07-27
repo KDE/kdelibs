@@ -13,24 +13,24 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmpropmembers.h"
 #include "kmprinter.h"
 #include "kmwizard.h"
 
-#include <qtextview.h>
+#include <q3textview.h>
 #include <qlayout.h>
 #include <klocale.h>
 
 KMPropMembers::KMPropMembers(QWidget *parent, const char *name)
 : KMPropWidget(parent,name)
 {
-	m_members = new QTextView(this);
+	m_members = new Q3TextView(this);
 	m_members->setPaper(colorGroup().background());
-	m_members->setFrameStyle(QFrame::NoFrame);
+	m_members->setFrameStyle(Q3Frame::NoFrame);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 0);
 	main_->addWidget(m_members);

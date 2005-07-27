@@ -26,19 +26,20 @@
 #include "qapplication.h"
 #include "qpainter.h"
 #include "qpalette.h"
-#include "qframe.h"
+#include "q3frame.h"
 #include "qpushbutton.h"
 #include "qdrawutil.h"
-#include "qprogressbar.h"
+#include "q3progressbar.h"
 #include "qscrollbar.h"
 #include "qtabbar.h"
-#include "qguardedptr.h"
+#include "qpointer.h"
 #include "qlayout.h"
 #include "qlineedit.h"
 #include "qimage.h"
 #include "qcombobox.h"
 #include "qslider.h"
 #include "qstylefactory.h"
+#include <q3pointarray.h>
 
 
 class LightStyleV2Private
@@ -83,23 +84,23 @@ LightStyleV2::~LightStyleV2()
     }
 }
 
-void LightStyleV2::polishPopupMenu( QPopupMenu * menu )
+void LightStyleV2::polishPopupMenu( Q3PopupMenu * menu )
 {
     KStyle::polishPopupMenu(menu);
 }
 
 static void drawLightBevel(QPainter *p, const QRect &r, const QColorGroup &cg,
-			   QStyle::SFlags flags, const QBrush *fill = 0)
+			   QStyle::State flags, const QBrush *fill = 0)
 {
     QRect br = r;
-    bool sunken = (flags & (QStyle::Style_Down | QStyle::Style_On |
-			    QStyle::Style_Sunken));
+    bool sunken = (flags & (QStyle::State_Down | QStyle::State_On |
+			    QStyle::State_Sunken));
 
     p->setPen(cg.dark());
     p->drawRect(r);
 
-    if (flags & (QStyle::Style_Down | QStyle::Style_On |
-		 QStyle::Style_Sunken | QStyle::Style_Raised)) {
+    if (flags & (QStyle::State_Down | QStyle::State_On |
+		 QStyle::State_Sunken | QStyle::State_Raised)) {
 	// button bevel
 	if (sunken)
 	    p->setPen(cg.mid());
@@ -142,7 +143,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	    flags = ((flags | Style_Sunken) ^ Style_Sunken) | Style_Raised; 
 	    	//Don't show pressed too often (as in light 3)
 	    QBrush fill(cg.background());
-	    if (flags & QStyle::Style_Enabled)
+	    if (flags & QStyle::State_Enabled)
 		fill.setColor(cg.button());
 	    
 	    drawLightBevel(p, r, cg, flags, &fill);
@@ -155,10 +156,10 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
     case PE_ButtonTool:
 	{
 	    const QBrush *fill;
-	    if (flags & QStyle::Style_Enabled) {
-		if (flags & (QStyle::Style_Down |
-			     QStyle::Style_On |
-			     QStyle::Style_Sunken))
+	    if (flags & QStyle::State_Enabled) {
+		if (flags & (QStyle::State_Down |
+			     QStyle::State_On |
+			     QStyle::State_Sunken))
 		    fill = &cg.brush(QColorGroup::Midlight);
 		else
 		    fill = &cg.brush(QColorGroup::Button);
@@ -172,9 +173,9 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	{
 	    QBrush thefill;
 	    bool sunken =
-		(flags & (QStyle::Style_Down | QStyle::Style_On | QStyle::Style_Sunken));
+		(flags & (QStyle::State_Down | QStyle::State_On | QStyle::State_Sunken));
 
-	    if (flags & QStyle::Style_Enabled) {
+	    if (flags & QStyle::State_Enabled) {
 		if (sunken)
 		    thefill = cg.brush(QColorGroup::Midlight);
 		else
@@ -187,8 +188,8 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	    p->drawLine(r.topRight(),    r.bottomRight());
 	    p->drawLine(r.bottomRight(), r.bottomLeft());
 
-	    if (flags & (QStyle::Style_Down | QStyle::Style_On |
-			 QStyle::Style_Sunken | QStyle::Style_Raised)) {
+	    if (flags & (QStyle::State_Down | QStyle::State_On |
+			 QStyle::State_Sunken | QStyle::State_Raised)) {
 		// button bevel
 		if (sunken)
 		    p->setPen(cg.mid());
@@ -309,10 +310,10 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 		    p2.fillRect(0, 0, pm.width(), pm.height(),
 				cg.brush(QColorGroup::Highlight));
 		    p2.setPen(cg.highlightedText());
-		    p2.drawText(0, 0, pm.width(), pm.height(), AlignCenter, title);
+		    p2.drawText(0, 0, pm.width(), pm.height(), Qt::AlignCenter, title);
 		    p2.end();
 
-		    QWMatrix m;
+		    QMatrix m;
 		    m.rotate(270.0);
 		    pm = pm.xForm(m);
 		    p->drawPixmap(r.x(), r.y(), pm);
@@ -333,7 +334,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 		if (drawTitle) {
 		    p->fillRect(r, cg.brush(QColorGroup::Highlight));
 		    p->setPen(cg.highlightedText());
-		    p->drawText(r, AlignCenter, title);
+		    p->drawText(r, Qt::AlignCenter, title);
 		} else {
 		    p->fillRect(r, cg.background());
 		    p->setPen(cg.mid().dark());
@@ -540,7 +541,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 
     case PE_FocusRect:
 	{
-	    p->setBrush(NoBrush);
+	    p->setBrush(Qt::NoBrush);
 	    if (flags & Style_FocusAtBorder)
 		p->setPen(cg.shadow());
 	    else
@@ -563,7 +564,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 	
 
 	if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft) {
-	    QPointArray a;
+	    Q3PointArray a;
 
 	    switch ( pe ) {
 	    case PE_ArrowUp:
@@ -631,7 +632,7 @@ void LightStyleV2::drawControl( ControlElement control,
 	    tr.addCoords(0, 0,  0, -1);
 	    fr.addCoords(2, 2, -2, -2);
 	    
-	    if ( tb->shape() == QTabBar::RoundedBelow || tb->shape() == QTabBar::TriangularBelow) {
+	    if ( tb->shape() == QTabBar:: RoundedSouth || tb->shape() == QTabBar:: TriangularSouth) {
 		tr = r; tr.addCoords(0, 1, 0, 0);
 		fr = r; fr.addCoords(2, 2,-2, -4);
 		below = true;
@@ -776,7 +777,7 @@ void LightStyleV2::drawControl( ControlElement control,
 	    if (! widget || data.isDefault())
 		break;
 
-	    const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+	    const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
 	    QMenuItem *mi = data.menuItem();
 	    int tab = data.tabWidth();
 	    int maxpmw = data.maxIconWidth();
@@ -834,17 +835,17 @@ void LightStyleV2::drawControl( ControlElement control,
 		qDrawShadePanel(p, cr, cg, true, 1, &cg.brush(QColorGroup::Midlight));
 
 	    if (mi->iconSet()) {
-		QIconSet::Mode mode =
-		    (flags & Style_Enabled) ? QIconSet::Normal : QIconSet::Disabled;
+		QIcon::Mode mode =
+		    (flags & Style_Enabled) ? QIcon::Normal : QIcon::Disabled;
 		if ((flags & Style_Active) && (flags & Style_Enabled))
-		    mode = QIconSet::Active;
+		    mode = QIcon::Active;
 		QPixmap pixmap;
 		if (popupmenu->isCheckable() && mi->isChecked())
 		    pixmap =
-			mi->iconSet()->pixmap( QIconSet::Small, mode, QIconSet::On );
+			mi->iconSet()->pixmap( QIcon::Small, mode, QIcon::On );
 		else
 		    pixmap =
-			mi->iconSet()->pixmap( QIconSet::Small, mode );
+			mi->iconSet()->pixmap( QIcon::Small, mode );
 		QRect pmr(QPoint(0, 0), pixmap.size());
 		pmr.moveCenter(cr.center());
 		p->setPen(cg.text());
@@ -891,8 +892,8 @@ void LightStyleV2::drawControl( ControlElement control,
 
 		// draw accelerator/tab-text
 		if (t >= 0) {
-		    int alignFlag = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-		    alignFlag |= ( reverse ? AlignLeft : AlignRight );
+		    int alignFlag = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+		    alignFlag |= ( reverse ? Qt::AlignLeft : Qt::AlignRight );
 		    if (! (flags & Style_Enabled)) {
 			p->setPen(embosscolor);
 			tr.moveBy(1, 1);
@@ -904,8 +905,8 @@ void LightStyleV2::drawControl( ControlElement control,
 		    p->drawText(tr, alignFlag, text.mid(t + 1));
 		}
 
-		int alignFlag = AlignVCenter | ShowPrefix | DontClip | SingleLine;
-		alignFlag |= ( reverse ? AlignRight : AlignLeft );
+		int alignFlag = Qt::AlignVCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
+		alignFlag |= ( reverse ? Qt::AlignRight : Qt::AlignLeft );
 
 		if (! (flags & Style_Enabled)) {
 		    p->setPen(embosscolor);
@@ -919,10 +920,10 @@ void LightStyleV2::drawControl( ControlElement control,
 	    } else if (mi->pixmap()) {
 		QPixmap pixmap = *mi->pixmap();
 		if (pixmap.depth() == 1)
-		    p->setBackgroundMode(OpaqueMode);
+		    p->setBackgroundMode(Qt::OpaqueMode);
 		p->drawPixmap(ir.x(), ir.y() + (ir.height() - pixmap.height()) / 2, pixmap);
 		if (pixmap.depth() == 1)
-		    p->setBackgroundMode(TransparentMode);
+		    p->setBackgroundMode(Qt::TransparentMode);
 	    }
 
 	    if (mi->popup())
@@ -954,7 +955,7 @@ void LightStyleV2::drawControl( ControlElement control,
 		break;
 
 	    QMenuItem *mi = data.menuItem();
-	    drawItem(p, r, AlignCenter | ShowPrefix | DontClip | SingleLine, cg,
+	    drawItem(p, r, Qt::AlignCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine, cg,
 		     flags & Style_Enabled, mi->pixmap(), mi->text(), -1,
 		     &cg.buttonText());
 	    break;
@@ -978,7 +979,7 @@ void LightStyleV2::drawControlMask( ControlElement control,
 {
     switch (control) {
     case CE_PushButton:
-	p->fillRect(r, color1);
+	p->fillRect(r, Qt::color1);
 	break;
 
     default:
@@ -1084,7 +1085,7 @@ void LightStyleV2::drawComplexControl( ComplexControl control,
 
     case CC_SpinWidget:
 	{
-	    const QSpinWidget *spinwidget = (const QSpinWidget *) widget;
+	    const Q3SpinWidget *spinwidget = (const Q3SpinWidget *) widget;
 	    QRect frame, up, down;
 
 	    frame = querySubControlMetrics(CC_SpinWidget, widget,
@@ -1098,7 +1099,7 @@ void LightStyleV2::drawComplexControl( ComplexControl control,
 
 	    if ((controls & SC_SpinWidgetUp) && up.isValid()) {
 		PrimitiveElement pe = PE_SpinWidgetUp;
-		if ( spinwidget->buttonSymbols() == QSpinWidget::PlusMinus )
+		if ( spinwidget->buttonSymbols() == Q3SpinWidget::PlusMinus )
 		    pe = PE_SpinWidgetPlus;
 
 		p->setPen(cg.dark());
@@ -1131,7 +1132,7 @@ void LightStyleV2::drawComplexControl( ComplexControl control,
 
 	    if ((controls & SC_SpinWidgetDown) && down.isValid()) {
 		PrimitiveElement pe = PE_SpinWidgetDown;
-		if ( spinwidget->buttonSymbols() == QSpinWidget::PlusMinus )
+		if ( spinwidget->buttonSymbols() == Q3SpinWidget::PlusMinus )
 		    pe = PE_SpinWidgetMinus;
 
 		p->setPen(cg.dark());
@@ -1520,7 +1521,7 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 		break;
 
 	    QMenuItem *mi = data.menuItem();
-	    const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+	    const Q3PopupMenu *popupmenu = (const Q3PopupMenu *) widget;
 	    int maxpmw = data.maxIconWidth();
 	    int w = contentsSize.width(), h = contentsSize.height();
 
@@ -1542,8 +1543,8 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 		else if (! mi->text().isNull())
 		    h = QMAX(h, popupmenu->fontMetrics().height() + 2);
 		if (mi->iconSet() != 0)
-		    h = QMAX(h, mi->iconSet()->pixmap(QIconSet::Small,
-						      QIconSet::Normal).height());
+		    h = QMAX(h, mi->iconSet()->pixmap(QIcon::Small,
+						      QIcon::Normal).height());
 		h += 2;
 	    }
 
@@ -1561,7 +1562,7 @@ QSize LightStyleV2::sizeFromContents( ContentsType contents,
 	}
     case CT_ProgressBar:
 	{
-	    const QProgressBar* pb = static_cast<const QProgressBar*>(widget);
+	    const Q3ProgressBar* pb = static_cast<const Q3ProgressBar*>(widget);
 	    
 	    //If we have to display the indicator, and we do it on RHS, give some more room
 	    //for it. This tries to match the logic and the spacing in SR_ProgressBarGroove/Contents

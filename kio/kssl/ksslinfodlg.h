@@ -27,7 +27,7 @@
 #include "ksslx509map.h"
 #include "ksslcertificate.h"
 #include "kssl.h"
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 class QWidget;
 class KSSLCertBox;
@@ -121,7 +121,7 @@ public:
 	static KSSLCertBox *certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher=0);
 
 private:
-	QScrollView *buildCertInfo(const QString &certName);
+	Q3ScrollView *buildCertInfo(const QString &certName);
 	void displayCert(KSSLCertificate *x);
 
 	class KSSLInfoDlgPrivate;
@@ -146,7 +146,7 @@ private slots:
  * @see KSSLInfoDlg
  * @short KDE SSL Certificate Box
  */
-class KIO_EXPORT KSSLCertBox : public QScrollView {
+class KIO_EXPORT KSSLCertBox : public Q3ScrollView {
 public:
 	/**
 	 *  Construct a certificate box
@@ -155,7 +155,7 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param f widget flags for the object
 	 */
-	KSSLCertBox(QWidget *parent=0L, const char *name=0L, WFlags f=0);
+	KSSLCertBox(QWidget *parent=0L, const char *name=0L, Qt::WFlags f=0);
 
 	/**
 	 *  Change the contents of the widget
@@ -166,7 +166,7 @@ public:
 	void setValues(QString certName, QWidget *mailCatcher=0L);
 
 private:
-	QFrame *_frame;
+	Q3Frame *_frame;
 };
 
 #endif

@@ -13,16 +13,16 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef KMDRIVERDB_H
 #define KMDRIVERDB_H
 
 #include <qobject.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 #include <qstring.h>
 
 #include "kmdbentry.h"
@@ -41,8 +41,8 @@ public:
 	void init(QWidget *parent = 0);
 	KMDBEntryList* findEntry(const QString& manu, const QString& model);
 	KMDBEntryList* findPnpEntry(const QString& manu, const QString& model);
-	QDict<KMDBEntryList>* findModels(const QString& manu);
-	const QDict< QDict<KMDBEntryList> >& manufacturers() const	{ return m_entries; }
+	Q3Dict<KMDBEntryList>* findModels(const QString& manu);
+	const Q3Dict< Q3Dict<KMDBEntryList> >& manufacturers() const	{ return m_entries; }
 
 protected:
 	void loadDbFile();
@@ -58,8 +58,8 @@ signals:
 
 private:
 	KMDBCreator			*m_creator;
-	QDict< QDict<KMDBEntryList> >	m_entries;
-	QDict< QDict<KMDBEntryList> >	m_pnpentries;
+	Q3Dict< Q3Dict<KMDBEntryList> >	m_entries;
+	Q3Dict< Q3Dict<KMDBEntryList> >	m_pnpentries;
 
 	static KMDriverDB	*m_self;
 };

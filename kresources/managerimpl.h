@@ -24,8 +24,8 @@
 #define KRESOURCES_MANAGERIMPL_H
 
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qdict.h>
+#include <q3ptrlist.h>
+#include <q3dict.h>
 
 #include "manageriface.h"
 #include <kresources/resource.h>
@@ -63,10 +63,10 @@ class KRESOURCES_EXPORT ManagerImpl : virtual public ManagerIface
 
     Resource::List *resourceList();
 
-    QPtrList<Resource> resources();
+    Q3PtrList<Resource> resources();
 
     // Get only active or passive resources
-    QPtrList<Resource> resources( bool active );
+    Q3PtrList<Resource> resources( bool active );
 
     QStringList resourceNames();
 

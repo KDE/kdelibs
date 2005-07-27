@@ -11,27 +11,36 @@
 #ifndef KIMG_RGB_H
 #define KIMG_RGB_H
 
-#include <qmap.h>
-#include <qptrvector.h>
 
+#include <QImageIOHandler>
+#include <QMap>
+#include <QVector>
 
-class QImage;
-class QImageIO;
+class RGBHandler : public QImageIOHandler
+{
+public:
+    RGBHandler();
 
-extern "C" {
-void kimgio_rgb_read(QImageIO *);
-void kimgio_rgb_write(QImageIO *);
-}
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
 
+    QByteArray name() const;
 
-class RLEData : public QMemArray<uchar> {
+    static bool canRead(QIODevice *device);
+};
+
+class RLEData : public QVector<uchar> {
 public:
 	RLEData() {}
-	RLEData(const uchar *d, uint l, uint o) : m_offset(o) { duplicate(d, l); }
+        RLEData(const uchar *d, uint l, uint o) : m_offset(o) {
+            for (uint i = 0; i < l; ++i)
+                append(d[i]);
+        }
 	bool operator<(const RLEData&) const;
 	void write(QDataStream& s);
 	void print(QString) const;				// TODO remove
-	uint offset() { return m_offset; }
+	uint offset() const { return m_offset; }
 private:
 	uint			m_offset;
 };
@@ -41,7 +50,7 @@ class RLEMap : public QMap<RLEData, uint> {
 public:
 	RLEMap() : m_counter(0), m_offset(0) {}
 	uint insert(const uchar *d, uint l);
-	QPtrVector<RLEData> vector();
+	QVector<const RLEData*> vector();
 	void setBaseOffset(uint o) { m_offset = o; }
 private:
 	uint			m_counter;
@@ -51,15 +60,14 @@ private:
 
 class SGIImage {
 public:
-	SGIImage(QImageIO *);
+	SGIImage(QIODevice *device);
 	~SGIImage();
 
 	bool readImage(QImage&);
-	bool writeImage(QImage&);
+	bool writeImage(const QImage&);
 
 private:
 	enum { NORMAL, DITHERED, SCREEN, COLORMAP };		// colormap
-	QImageIO		*m_io;
 	QIODevice		*m_dev;
 	QDataStream		m_stream;
 
@@ -79,7 +87,7 @@ private:
 	QByteArray		m_data;
 	QByteArray::Iterator	m_pos;
 	RLEMap			m_rlemap;
-	QPtrVector<RLEData>	m_rlevector;
+	QVector<const RLEData*>	m_rlevector;
 	uint			m_numrows;
 
 	bool readData(QImage&);

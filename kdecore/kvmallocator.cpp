@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <qmap.h>
 
 #include <ktempfile.h>

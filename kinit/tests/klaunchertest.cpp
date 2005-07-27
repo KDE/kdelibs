@@ -22,7 +22,7 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <stdio.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kservice.h>
 
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 #if 0
    QString error;
-   QCString dcopService;
+   Q3CString dcopService;
    int pid;
    int result = KApplication::startServiceByDesktopName(
 		QString::fromLatin1("konsole"), QString::null, &error, &dcopService, &pid );

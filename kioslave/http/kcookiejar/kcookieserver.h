@@ -41,23 +41,23 @@ class KCookieServer : public KDEDModule
   Q_OBJECT
   K_DCOP
 public:
-  KCookieServer(const QCString &);
+  KCookieServer(const DCOPCString &);
   ~KCookieServer();
 
 k_dcop:
   QString findCookies(QString);
   QString findCookies(QString, long);
   QStringList findDomains();
-  QStringList findCookies(QValueList<int>,QString,QString,QString,QString);
+  QStringList findCookies(QList<int>,QString,QString,QString,QString);
   QString findDOMCookies(QString);
   QString findDOMCookies(QString, long);
-  void addCookies(QString, QCString, long);
+  void addCookies(QString, DCOPCString, long);
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
   void deleteSessionCookies(long);
   void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
-  void addDOMCookies(QString, QCString, long);
+  void addDOMCookies(QString, DCOPCString, long);
   /**
    * Sets the cookie policy for the domain associated with the specified URL.
    */
@@ -71,7 +71,7 @@ k_dcop:
 
 public:
   bool cookiesPending(const QString &url, KHttpCookieList *cookieList=0);
-  void addCookies(const QString &url, const QCString &cookieHeader,
+  void addCookies(const QString &url, const Q3CString &cookieHeader,
                   long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
 
@@ -89,9 +89,9 @@ protected:
   KConfig *mConfig;
 
 private:
-  virtual int newInstance(QValueList<QCString>) { return 0; }
+  virtual int newInstance(QList<QByteArray>) { return 0; }
   bool cookieMatches(KHttpCookie*, QString, QString, QString, QString);
-  void putCookie(QStringList&, KHttpCookie*, const QValueList<int>&);
+  void putCookie(QStringList&, KHttpCookie*, const QList<int>&);
   void saveCookieJar();
 };
 

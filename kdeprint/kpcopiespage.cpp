@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kpcopiespage.h"
@@ -26,12 +26,11 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qtooltip.h>
-#include <qwhatsthis.h>
 #include <qlayout.h>
 
 #include <kapplication.h>
@@ -164,45 +163,45 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 	setId(KPrinter::CopiesPage);
 
 	// widget creation
-	QButtonGroup	*m_pagebox = new QButtonGroup(0, Qt::Vertical, i18n("Page Selection"), this);
-	QWhatsThis::add(m_pagebox, whatsThisPageSelectionLabel);
+	Q3ButtonGroup	*m_pagebox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Page Selection"), this);
+	m_pagebox->setWhatsThis(whatsThisPageSelectionLabel);
 	m_all = new QRadioButton(i18n("&All"), m_pagebox);
-	QWhatsThis::add(m_all, whatsThisAllPagesLabel);
+	m_all->setWhatsThis(whatsThisAllPagesLabel);
 	m_current = new QRadioButton(i18n("Cu&rrent"), m_pagebox);
-	QWhatsThis::add(m_current, whatsThisCurrentPagesLabel);
+	m_current->setWhatsThis(whatsThisCurrentPagesLabel);
 	m_range = new QRadioButton(i18n("Ran&ge"), m_pagebox);
-	QWhatsThis::add(m_range, whatsThisPageRangeLabel);
+	m_range->setWhatsThis(whatsThisPageRangeLabel);
 	m_rangeedit = new QLineEdit(m_pagebox);
-	QWhatsThis::add(m_rangeedit, whatsThisPageRangeLabel);
+	m_rangeedit->setWhatsThis(whatsThisPageRangeLabel);
 	connect(m_range, SIGNAL(clicked()), m_rangeedit, SLOT(setFocus()));
 	QToolTip::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 //	QWhatsThis::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	//QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	//m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
-	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Output Settings"), this);
-	QWhatsThis::add(m_copybox, whatsThisCopiesLabel);
+	Q3GroupBox	*m_copybox = new Q3GroupBox(0, Qt::Vertical, i18n("Output Settings"), this);
+	m_copybox->setWhatsThis(whatsThisCopiesLabel);
 	m_collate = new QCheckBox(i18n("Co&llate"), m_copybox);
-	QWhatsThis::add(m_collate, whatsThisCollateLabel);
+	m_collate->setWhatsThis(whatsThisCollateLabel);
 	m_order = new QCheckBox(i18n("Re&verse"), m_copybox);
-	QWhatsThis::add(m_order, whatsThisReverseLabel);
+	m_order->setWhatsThis(whatsThisReverseLabel);
 	m_collatepix = new QLabel(m_copybox);
 	m_collatepix->setAlignment(Qt::AlignCenter);
 	m_collatepix->setMinimumHeight(70);
 	QLabel	*m_copieslabel = new QLabel(i18n("Cop&ies:"), m_copybox);
 	m_copies = new QSpinBox(m_copybox);
 	m_copies->setRange(1,999);
-	QWhatsThis::add(m_copies, whatsThisNumberOfCopiesLabel);
+	m_copies->setWhatsThis(whatsThisNumberOfCopiesLabel);
 	m_copieslabel->setBuddy(m_copies);
-	QWhatsThis::add(m_copieslabel, whatsThisNumberOfCopiesLabel);
+	m_copieslabel->setWhatsThis(whatsThisNumberOfCopiesLabel);
 	m_pageset = new QComboBox(m_pagebox);
 	m_pageset->insertItem(i18n("All Pages"));
 	m_pageset->insertItem(i18n("Odd Pages"));
 	m_pageset->insertItem(i18n("Even Pages"));
-	QWhatsThis::add(m_pageset, whatsThisPageSetLabel);
+	m_pageset->setWhatsThis(whatsThisPageSetLabel);
 	QLabel	*m_pagesetlabel = new QLabel(i18n("Page &set:"), m_pagebox);
 	m_pagesetlabel->setBuddy(m_pageset);
-	QWhatsThis::add(m_pagesetlabel, whatsThisPageSetLabel);
-	KSeparator	*sepline = new KSeparator(Horizontal, m_pagebox);
+	m_pagesetlabel->setWhatsThis(whatsThisPageSetLabel);
+	KSeparator	*sepline = new KSeparator(Qt::Horizontal, m_pagebox);
 	sepline->setMinimumHeight(10);
 
 	QWidget::setTabOrder( m_all, m_current );

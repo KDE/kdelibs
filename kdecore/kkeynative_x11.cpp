@@ -24,6 +24,7 @@
 #include <qwindowdefs.h>
 
 #if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
+#include <QX11Info>
 
 #include "kkeynative.h"
 #include "kkeyserver_x11.h"
@@ -114,7 +115,7 @@ bool KKeyNative::init( const KKey& key )
 	else if( m_sym == XK_Break || (m_sym == XK_Pause && (m_mod & ControlMask)) )
 		m_code = 114;
 	else
-		m_code = XKeysymToKeycode( qt_xdisplay(), m_sym );
+		m_code = XKeysymToKeycode( QX11Info::display(), m_sym );
 
 	if( !m_code && m_sym )
 		kdDebug(125) << "Couldn't get code for sym" << endl;

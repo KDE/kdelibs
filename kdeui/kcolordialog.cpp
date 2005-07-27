@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 //-----------------------------------------------------------------------------
 // KDE color selection dialog.
@@ -33,6 +33,7 @@
 
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#include <qdesktopwidget.h>
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <qfile.h>
@@ -67,10 +68,6 @@
 #include "config.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h> 
-
-// defined in qapplication_x11.cpp
-typedef int (*QX11EventFilter) (XEvent*);
-extern QX11EventFilter qt_set_x11_event_filter (QX11EventFilter filter);
 #endif
 
 struct ColorPaletteNameType
@@ -98,13 +95,16 @@ public:
    : QSpinBox(minValue, maxValue, step, parent, "kcolorspinbox")
   { }
 
+  
   // Override Qt's braindead auto-selection.
+  //XXX KDE4 : check this is no more necessary , was disabled to port to Qt4 //mikmak
+  /*
   virtual void valueChange()
   {
       updateDisplay();
       emit valueChanged( value() );
       emit valueChanged( currentValueText() );
-  }
+  }*/
 
 };
 
@@ -246,7 +246,7 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if ( QColor::numBitPlanes() <= 8 )
+	if ( pixmap->depth() <= 8 )
 	{
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
@@ -258,18 +258,16 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 //-----------------------------------------------------------------------------
 
 KValueSelector::KValueSelector( QWidget *parent, const char *name )
-	: KSelector( KSelector::Vertical, parent, name ), _hue(0), _sat(0)
+	: KSelector( Qt::Vertical, parent, name ), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
-	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
-KValueSelector::KValueSelector(Orientation o, QWidget *parent, const char *name
+KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent, const char *name
  )
 	: KSelector( o, parent, name), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
-	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
 void KValueSelector::updateContents()
@@ -295,7 +293,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 	uint *p;
 	QRgb rgb;
 
-	if ( orientation() == KSelector::Horizontal )
+	if ( orientation() == Qt::Horizontal )
 	{
 		for ( int v = 0; v < ySize; v++ )
 		{
@@ -310,7 +308,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if( orientation() == KSelector::Vertical )
+	if( orientation() == Qt::Vertical )
 	{
 		for ( int v = 0; v < ySize; v++ )
 		{
@@ -322,7 +320,7 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 		}
 	}
 
-	if ( QColor::numBitPlanes() <= 8 )
+	if ( pixmap->depth() <= 8 )
 	{
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
@@ -333,8 +331,9 @@ void KValueSelector::drawPalette( QPixmap *pixmap )
 //-----------------------------------------------------------------------------
 
 KColorCells::KColorCells( QWidget *parent, int rows, int cols )
-	: QGridView( parent )
+	: Q3GridView( parent )
 {
+	setFrameShape(QFrame::NoFrame);
 	shade = true;
 	setNumRows( rows );
 	setNumCols( cols );
@@ -351,8 +350,8 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 
 	setHScrollBarMode( AlwaysOff );
 	setVScrollBarMode( AlwaysOff );
-	viewport()->setBackgroundMode( PaletteBackground );
-	setBackgroundMode( PaletteBackground );
+	viewport()->setBackgroundMode( Qt::PaletteBackground );
+	setBackgroundMode( Qt::PaletteBackground );
 }
 
 KColorCells::~KColorCells()
@@ -388,8 +387,11 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 	painter->setBrush( QBrush( color ) );
 	painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
 
-	if ( row * numCols() + col == selected )
-		painter->drawWinFocusRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	if ( row * numCols() + col == selected ) {
+		painter->setCompositionMode( QPainter::CompositionMode_Xor );
+		painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	//	painter->drawWinFocusRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	}
 }
 
 void KColorCells::resizeEvent( QResizeEvent * )
@@ -424,7 +426,7 @@ int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
 
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
 {
-    if( !(e->state() && LeftButton)) return;
+    if( !(e->state() && Qt::LeftButton)) return;
 
     if(inMouse) {
         int delay = KGlobalSettings::dndEventDelay();
@@ -492,43 +494,33 @@ void KColorCells::mouseDoubleClickEvent( QMouseEvent * /*e*/ )
 KColorPatch::KColorPatch( QWidget *parent ) : QFrame( parent )
 {
 	setFrameStyle( QFrame::Panel | QFrame::Sunken );
-	colContext = 0;
 	setAcceptDrops( true);
 }
 
 KColorPatch::~KColorPatch()
 {
-  if ( colContext )
-    QColor::destroyAllocContext( colContext );
 }
 
 void KColorPatch::setColor( const QColor &col )
 {
-	if ( colContext )
-		QColor::destroyAllocContext( colContext );
-	colContext = QColor::enterAllocContext();
 	color.setRgb( col.rgb() );
-	color.alloc();
-	QColor::leaveAllocContext();
 
-	QPainter painter;
-
-	painter.begin( this );
-	drawContents( &painter );
-	painter.end();
+	update();
 }
 
-void KColorPatch::drawContents( QPainter *painter )
+void KColorPatch::paintEvent ( QPaintEvent* pe )
 {
-	painter->setPen( color );
-	painter->setBrush( QBrush( color ) );
-	painter->drawRect( contentsRect() );
+	QFrame::paintEvent( pe );
+	QPainter painter( this );
+	painter.setPen( color );
+	painter.setBrush( QBrush( color ) );
+	painter.drawRect( contentsRect() );
 }
 
 void KColorPatch::mouseMoveEvent( QMouseEvent *e )
 {
         // Drag color object
-        if( !(e->state() && LeftButton)) return;
+        if( !(e->state() && Qt::LeftButton)) return;
 	KColorDrag *d = new KColorDrag( color, this);
 	d->dragCopy();
 }
@@ -578,10 +570,10 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   combo->insertStringList( paletteList );
   layout->addWidget(combo);
 
-  sv = new QScrollView( this );
+  sv = new Q3ScrollView( this );
   QSize cellSize = QSize( mMinWidth, 120);
-  sv->setHScrollBarMode( QScrollView::AlwaysOff);
-  sv->setVScrollBarMode( QScrollView::AlwaysOn);
+  sv->setHScrollBarMode( Q3ScrollView::AlwaysOff);
+  sv->setVScrollBarMode( Q3ScrollView::AlwaysOn);
   QSize minSize = QSize(sv->verticalScrollBar()->width(), 0);
   minSize += QSize(sv->frameWidth(), 0);
   minSize += QSize(cellSize);
@@ -652,25 +644,28 @@ KPaletteTable::readNamedColor( void )
   for( int i=0; path[i]; ++i )
   {
     QFile paletteFile( path[i] );
-    if( !paletteFile.open( IO_ReadOnly ) )
+    if( !paletteFile.open( QIODevice::ReadOnly ) )
     {
       continue;
     }
 
-    QString line;
+    QByteArray line;
     QStringList list;
-    while( paletteFile.readLine( line, 100 ) != -1 )
+    while( !paletteFile.atEnd() )
     {
+      line = paletteFile.readLine();
+    
       int red, green, blue;
       int pos = 0;
 
-      if( sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
+      if( sscanf(line, "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
       {
 	//
 	// Remove duplicates. Every name with a space and every name
 	// that start with "gray".
 	//
 	QString name = line.mid(pos).stripWhiteSpace();
+	QByteArray s1 = line.mid(pos);
 	if( name.isNull() || name.find(' ') != -1 ||
 	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )
 	{
@@ -901,6 +896,8 @@ KPaletteTable::addToRecentColors( const QColor &color)
       setPalette( i18n( "palette name", colorPaletteName[ recentColorIndex ].m_displayName ) );
 }
 
+class KCDPickerFilter;
+
 class KColorDialog::KColorDialogPrivate {
 public:
     KPaletteTable *table;
@@ -928,9 +925,31 @@ public:
     KColor defaultColor;
     KColor selColor;
 #ifdef Q_WS_X11
-    QX11EventFilter oldfilter;
+    KCDPickerFilter* filter;
 #endif
 };
+
+#ifdef Q_WS_X11
+class KCDPickerFilter: public QWidget
+{
+public:
+  KCDPickerFilter(QWidget* parent): QWidget(parent)
+  {}
+
+  virtual bool x11Event (XEvent* event)
+  {
+    if (event->type == ButtonRelease)
+    {
+        QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
+                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
+        QApplication::sendEvent( parentWidget(), &e );
+        return true;
+    }
+    else return false;
+  }
+};
+
+#endif
 
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
@@ -942,7 +961,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->bRecursion = true;
   d->bColorPicking = false;
 #ifdef Q_WS_X11
-  d->oldfilter = 0;
+  d->filter = 0;
 #endif
   d->cbDefaultColor = 0L;
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
@@ -1000,28 +1019,25 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   // add the HSV fields
   //
   label = new QLabel( i18n("H:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
   d->hedit = new KColorSpinBox( 0, 359, 1, page );
-  d->hedit->setValidator( new QIntValidator( d->hedit ) );
   l_lbot->addWidget(d->hedit, 0, 3);
   connect( d->hedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
 
   label = new QLabel( i18n("S:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
   d->sedit = new KColorSpinBox( 0, 255, 1, page );
-  d->sedit->setValidator( new QIntValidator( d->sedit ) );
   l_lbot->addWidget(d->sedit, 1, 3);
   connect( d->sedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
 
   label = new QLabel( i18n("V:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
   d->vedit = new KColorSpinBox( 0, 255, 1, page );
-  d->vedit->setValidator( new QIntValidator( d->vedit ) );
   l_lbot->addWidget(d->vedit, 2, 3);
   connect( d->vedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotHSVChanged() ) );
@@ -1030,28 +1046,25 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   // add the RGB fields
   //
   label = new QLabel( i18n("R:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
   d->redit = new KColorSpinBox( 0, 255, 1, page );
-  d->redit->setValidator( new QIntValidator( d->redit ) );
   l_lbot->addWidget(d->redit, 0, 5);
   connect( d->redit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
 
   label = new QLabel( i18n("G:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
   d->gedit = new KColorSpinBox( 0, 255,1, page );
-  d->gedit->setValidator( new QIntValidator( d->gedit ) );
   l_lbot->addWidget(d->gedit, 1, 5);
   connect( d->gedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
 
   label = new QLabel( i18n("B:"), page );
-  label->setAlignment(AlignRight | AlignVCenter);
+  label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
   d->bedit = new KColorSpinBox( 0, 255, 1, page );
-  d->bedit->setValidator( new QIntValidator( d->bedit ) );
   l_lbot->addWidget(d->bedit, 2, 5);
   connect( d->bedit, SIGNAL( valueChanged(int) ),
   	SLOT( slotRGBChanged() ) );
@@ -1103,7 +1116,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   QPushButton *button = new QPushButton( page );
   button->setText(i18n("&Add to Custom Colors"));
-  l_hbox->addWidget(button, 0, AlignLeft);
+  l_hbox->addWidget(button, 0, Qt::AlignLeft);
   connect( button, SIGNAL( clicked()), SLOT( slotAddToCustomColors()));
 
   //
@@ -1111,7 +1124,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   button = new QPushButton( page );
   button->setPixmap( BarIcon("colorpicker"));
-  l_hbox->addWidget(button, 0, AlignHCenter );
+  l_hbox->addWidget(button, 0, Qt::AlignHCenter );
   connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));
 
   //
@@ -1128,28 +1141,28 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
   label = new QLabel( page );
   label->setText(i18n("Name:"));
-  l_grid->addWidget(label, 0, 1, AlignLeft);
+  l_grid->addWidget(label, 0, 1, Qt::AlignLeft);
 
   d->colorName = new QLabel( page );
-  l_grid->addWidget(d->colorName, 0, 2, AlignLeft);
+  l_grid->addWidget(d->colorName, 0, 2, Qt::AlignLeft);
 
   label = new QLabel( page );
   label->setText(i18n("HTML:"));
-  l_grid->addWidget(label, 1, 1, AlignLeft);
+  l_grid->addWidget(label, 1, 1, Qt::AlignLeft);
 
   d->htmlName = new QLineEdit( page );
   d->htmlName->setMaxLength( 13 ); // Qt's QColor allows 12 hexa-digits
   d->htmlName->setText("#FFFFFF"); // But HTML uses only 6, so do not worry about the size
   w = d->htmlName->fontMetrics().width(QString::fromLatin1("#DDDDDDD"));
   d->htmlName->setFixedWidth(w);
-  l_grid->addWidget(d->htmlName, 1, 2, AlignLeft);
+  l_grid->addWidget(d->htmlName, 1, 2, Qt::AlignLeft);
 
   connect( d->htmlName, SIGNAL( textChanged(const QString &) ),
       SLOT( slotHtmlChanged() ) );
 
   d->patch = new KColorPatch( page );
   d->patch->setFixedSize(48, 48);
-  l_grid->addMultiCellWidget(d->patch, 0, 1, 0, 0, AlignHCenter | AlignVCenter);
+  l_grid->addMultiCellWidget(d->patch, 0, 1, 0, 0, Qt::AlignHCenter | Qt::AlignVCenter);
   connect( d->patch, SIGNAL( colorChanged( const QColor&)),
 	   SLOT( setColor( const QColor&)));
 
@@ -1175,8 +1188,8 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 KColorDialog::~KColorDialog()
 {
 #ifdef Q_WS_X11
-    if (d->bColorPicking)
-        qt_set_x11_event_filter(d->oldfilter);
+    if (d->bColorPicking && kapp)
+        kapp->removeX11EventFilter(d->filter);
 #endif
     delete d;
 }
@@ -1485,30 +1498,16 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 }
 
 
-static QWidget *kde_color_dlg_widget = 0;
 
-#ifdef Q_WS_X11
-static int kde_color_dlg_handler(XEvent *event)
-{
-    if (event->type == ButtonRelease)
-    {
-        QMouseEvent e( QEvent::MouseButtonRelease, QPoint(),
-                       QPoint(event->xmotion.x_root, event->xmotion.y_root) , 0, 0 );
-        QApplication::sendEvent( kde_color_dlg_widget, &e );
-        return true;
-    }
-    return false;
-}
-#endif
 void
 KColorDialog::slotColorPicker()
 {
     d->bColorPicking = true;
 #ifdef Q_WS_X11
-    d->oldfilter = qt_set_x11_event_filter(kde_color_dlg_handler);
+    d->filter = new KCDPickerFilter(this);
+    kapp->installX11EventFilter(d->filter);
 #endif
-    kde_color_dlg_widget = this;
-    grabMouse( crossCursor );
+    grabMouse( Qt::CrossCursor );
     grabKeyboard();
 }
 
@@ -1519,8 +1518,8 @@ KColorDialog::mouseReleaseEvent( QMouseEvent *e )
   {
      d->bColorPicking = false;
 #ifdef Q_WS_X11
-     qt_set_x11_event_filter(d->oldfilter);
-     d->oldfilter = 0;
+     kapp->removeX11EventFilter(d->filter);
+     delete d->filter; d->filter = 0;
 #endif
      releaseMouse();
      releaseKeyboard();
@@ -1544,12 +1543,12 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
 {
   if (d->bColorPicking)
   {
-     if (e->key() == Key_Escape)
+     if (e->key() == Qt::Key_Escape)
      {
         d->bColorPicking = false;
 #ifdef Q_WS_X11
-        qt_set_x11_event_filter(d->oldfilter);
-        d->oldfilter = 0;
+        kapp->removeX11EventFilter(d->filter);
+        delete d->filter; d->filter = 0;
 #endif
         releaseMouse();
         releaseKeyboard();

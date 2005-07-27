@@ -69,7 +69,7 @@ namespace KSpell2
         void slotSkipAll();
         void slotSuggest();
         void slotChangeLanguage( const QString& );
-        void slotSelectionChanged( QListViewItem * );
+        void slotSelectionChanged( Q3ListViewItem * );
         void slotAutocorrect();
 
     private:

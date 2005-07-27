@@ -22,8 +22,8 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <qptrlist.h>
-#include <qvaluelist.h>
+#include <q3ptrlist.h>
+#include <q3valuelist.h>
 
 #include <kservice.h>
 
@@ -117,7 +117,7 @@ private:
 class KIO_EXPORT KServiceTypeProfile
 {
 public:
-  typedef QValueList<KServiceOffer> OfferList;
+  typedef Q3ValueList<KServiceOffer> OfferList;
 
   ~KServiceTypeProfile();
 
@@ -191,7 +191,7 @@ public:
    * Returns a list of all KServiceTypeProfiles.
    * @return a list of all KServiceTypeProfiles
    */
-  static const QPtrList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
+  static const Q3PtrList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
 
   /**
    * Clear all cached information
@@ -264,7 +264,7 @@ private:
   QString m_strGenericServiceType;
 
   static void initStatic();
-  static QPtrList<KServiceTypeProfile>* s_lstProfiles;
+  static Q3PtrList<KServiceTypeProfile>* s_lstProfiles;
   static bool s_configurationMode;
 private:
   class KServiceTypeProfilePrivate* d;

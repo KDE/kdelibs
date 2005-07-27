@@ -25,7 +25,7 @@
 #endif
 
 #include <kopenssl.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 KSSLSession::KSSLSession() : _session(0L) {
 }
@@ -69,7 +69,7 @@ return rc;
 KSSLSession *KSSLSession::fromString(const QString& s) {
 KSSLSession *session = 0L;
 #ifdef KSSL_HAVE_SSL
-QByteArray qba, qbb = s.local8Bit().copy();
+QByteArray qba, qbb = s.local8Bit();
 	KCodecs::base64Decode(qbb, qba);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
 	SSL_SESSION *ss = KOSSL::self()->d2i_SSL_SESSION(0L, &qbap, qba.size());

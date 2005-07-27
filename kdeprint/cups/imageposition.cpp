@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "imageposition.h"
@@ -27,17 +27,18 @@ static void draw3DPage(QPainter *p, QRect r)
 	// draw white page
 	p->fillRect(r,Qt::white);
 	// draw 3D border
+
 	p->setPen(Qt::black);
-	p->moveTo(r.left(),r.bottom());
-	p->lineTo(r.right(),r.bottom());
-	p->lineTo(r.right(),r.top());
+	p->drawLine(r.left(),r.bottom(), r.right(),r.bottom());
+	p->drawLine(r.right(),r.bottom(), r.right(),r.top());
+	
 	p->setPen(Qt::darkGray);
-	p->lineTo(r.left(),r.top());
-	p->lineTo(r.left(),r.bottom());
+	p->drawLine(r.right(),r.top(), r.left(),r.top());
+	p->drawLine(r.left(),r.top(), r.left(),r.bottom());
+	
 	p->setPen(Qt::gray);
-	p->moveTo(r.left()+1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.bottom()-1);
-	p->lineTo(r.right()-1,r.top()+1);
+	p->drawLine(r.left()+1,r.bottom()-1, r.right()-1,r.bottom()-1);
+	p->drawLine(r.right()-1,r.bottom()-1, r.right()-1,r.top()+1);
 }
 
 ImagePosition::ImagePosition(QWidget *parent, const char *name)

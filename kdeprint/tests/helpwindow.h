@@ -12,13 +12,13 @@
 #define HELPWINDOW_H
 
 #include <kmainwindow.h>
-#include <qtextbrowser.h>
+#include <q3textbrowser.h>
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qdir.h>
 
 class QComboBox;
-class QPopupMenu;
+class Q3PopupMenu;
 
 class HelpWindow : public KMainWindow
 {
@@ -47,13 +47,13 @@ private:
     void readHistory();
     void readBookmarks();
     
-    QTextBrowser* browser;
+    Q3TextBrowser* browser;
     QComboBox *pathCombo;
     int backwardId, forwardId;
     QString selectedURL;
     QStringList history, bookmarks;
     QMap<int, QString> mHistory, mBookmarks;
-    QPopupMenu *hist, *bookm;
+    Q3PopupMenu *hist, *bookm;
 
 };
 

@@ -16,7 +16,7 @@
 #ifdef HAVE_USLEEP
 #include <unistd.h>
 #endif
-#include <qaccel.h>
+#include <q3accel.h>
 #include <qcursor.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
@@ -48,7 +48,7 @@ KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char
     : KVideoWidget( 0, name )
 {
     this->videoWidget = parent;
-    setEraseColor( black );
+    setEraseColor( Qt::black );
     setCursor(QCursor(Qt::BlankCursor));
 }
 
@@ -65,7 +65,7 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (event->type == ClientMessage &&
 	event->xclient.message_type ==
-		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
+		XInternAtom( QX11Info::display(), "VPO_RESIZE_NOTIFY", False ))
     {
 	videoWidget->resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
@@ -73,7 +73,7 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
     return false;
 }
 
-KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const char *name, WFlags f )
+KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const char *name, Qt::WFlags f )
     : KXMLGUIClient( clientParent ),
     QWidget( parent, name, f )
 {
@@ -83,7 +83,7 @@ KVideoWidget::KVideoWidget( KXMLGUIClient *clientParent, QWidget *parent, const 
 	setXML(QString("<!DOCTYPE kpartgui>\n<kpartgui name=\"kvideowidget\" version=\"1\"><MenuBar><Menu name=\"edit\"><Separator/><Action name=\"double_size\"/><Action name=\"normal_size\"/><Action name=\"half_size\"/><Separator/><Action name=\"fullscreen_mode\"/></Menu></MenuBar><Toolbar name=\"VideoToolbar\"><text>Video Toolbar</text><Action name=\"fullscreen_mode\"/></Toolbar></kpartgui>"), true);
 }
 
-KVideoWidget::KVideoWidget( QWidget *parent, const char *name, WFlags f )
+KVideoWidget::KVideoWidget( QWidget *parent, const char *name, Qt::WFlags f )
     : QWidget( parent, name, f )
 {
 	init();
@@ -93,7 +93,7 @@ void KVideoWidget::init(void)
 {
     setMinimumSize(0, 0);
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
-    setFocusPolicy( ClickFocus );
+    setFocusPolicy( Qt::ClickFocus );
 
     fullscreenWidget = 0;
     poVideo	     = Arts::VideoPlayObject::null();
@@ -102,15 +102,15 @@ void KVideoWidget::init(void)
 
     // Setup actions
     new KToggleAction( i18n("Fullscreen &Mode"), "window_fullscreen",
-		       CTRL+SHIFT+Key_F, this, SLOT(fullscreenActivated()),
+		       Qt::CTRL+Qt::SHIFT+Qt::Key_F, this, SLOT(fullscreenActivated()),
 		       actionCollection(), "fullscreen_mode" );
-    new KRadioAction( i18n("&Half Size"), ALT+Key_0,
+    new KRadioAction( i18n("&Half Size"), Qt::ALT+Qt::Key_0,
 		      this, SLOT(halfSizeActivated()),
 		      actionCollection(), "half_size" );
-    new KRadioAction( i18n("&Normal Size"), ALT+Key_1,
+    new KRadioAction( i18n("&Normal Size"), Qt::ALT+Qt::Key_1,
 		      this, SLOT(normalSizeActivated()),
 		      actionCollection(), "normal_size" );
-    new KRadioAction( i18n("&Double Size"), ALT+Key_2,
+    new KRadioAction( i18n("&Double Size"), Qt::ALT+Qt::Key_2,
 		      this, SLOT(doubleSizeActivated()),
 		      actionCollection(), "double_size" );
 
@@ -146,7 +146,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	    poVideo = Arts::VideoPlayObject::null();
 	}
 
-	setBackgroundMode( PaletteBackground );
+	setBackgroundMode( Qt::PaletteBackground );
 	repaint();
 
 	// Resize GUI
@@ -172,14 +172,14 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	if (fullscreenWidget)
 	{
 	    poVideo.x11WindowId( fullscreenWidget->winId() );
-	    fullscreenWidget->setBackgroundMode( NoBackground );
+	    fullscreenWidget->setBackgroundMode( Qt::NoBackground );
 
-	    setEraseColor( black );
+	    setEraseColor( Qt::black );
 	}
 	else
 	{
 	    poVideo.x11WindowId( winId() );
-	    setBackgroundMode( NoBackground );
+	    setBackgroundMode( Qt::NoBackground );
 	}
         enable = true;
     }
@@ -202,13 +202,13 @@ QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
 	return QImage();
 
     // Get 32bit RGBA image data (stored in 1bpp pixmap)
-    XGetGeometry( qt_xdisplay(), pixmap, &root, &x, &y, &width, &height, &border, &depth );
+    XGetGeometry( QX11Info::display(), pixmap, &root, &x, &y, &width, &height, &border, &depth );
 
-    xImage = XGetImage( qt_xdisplay(), pixmap, 0, 0, width, height, 1, XYPixmap );
+    xImage = XGetImage( QX11Info::display(), pixmap, 0, 0, width, height, 1, XYPixmap );
 
     if (xImage == 0)
     {
-	XFreePixmap( qt_xdisplay(), pixmap );
+	XFreePixmap( QX11Info::display(), pixmap );
 	return QImage();
     }
 
@@ -217,7 +217,7 @@ QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
 
     // Free X11 resources and return Qt image
     XDestroyImage( xImage );
-    XFreePixmap( qt_xdisplay(), pixmap );
+    XFreePixmap( QX11Info::display(), pixmap );
 
     return qImage;
 #else
@@ -306,7 +306,7 @@ void KVideoWidget::mousePressEvent( QMouseEvent *event )
 	emit mouseButtonPressed( event->button(), pos, event->state() );
 
 	// ### Remove in KDE4
-	if ( event->button() == RightButton )
+	if ( event->button() == Qt::RightButton )
 		emit rightButtonPressed( pos );
 }
 
@@ -361,7 +361,7 @@ bool KVideoWidget::x11Event( XEvent *event )
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (event->type == ClientMessage &&
 	event->xclient.message_type ==
-		XInternAtom( qt_xdisplay(), "VPO_RESIZE_NOTIFY", False ))
+		XInternAtom( QX11Info::display(), "VPO_RESIZE_NOTIFY", False ))
     {
 	resizeNotify( event->xclient.data.l[0], event->xclient.data.l[1] );
     }
@@ -390,8 +390,8 @@ void KVideoWidget::fullscreenActivated()
 		this, SIGNAL(rightButtonPressed(const QPoint &)) );
 		 
 	// Leave fullscreen mode with <Escape> key
-	QAccel *a = new QAccel( fullscreenWidget );
-	a->connectItem( a->insertItem( Key_Escape ),
+	Q3Accel *a = new Q3Accel( fullscreenWidget );
+	a->connectItem( a->insertItem( Qt::Key_Escape ),
 			this, SLOT(setWindowed()) );
 
 	fullscreenWidget->setFocus();
@@ -400,7 +400,7 @@ void KVideoWidget::fullscreenActivated()
 	if (isEmbedded())
 	{
 	    poVideo.x11WindowId( fullscreenWidget->winId() );
-	    fullscreenWidget->setBackgroundMode( NoBackground );
+	    fullscreenWidget->setBackgroundMode( Qt::NoBackground );
 	}
     }
     else
@@ -408,7 +408,7 @@ void KVideoWidget::fullscreenActivated()
 	if (isEmbedded())
 	{
 	    poVideo.x11WindowId( winId() );
-	    setBackgroundMode( NoBackground );
+	    setBackgroundMode( Qt::NoBackground );
 	}
 
 	delete fullscreenWidget;

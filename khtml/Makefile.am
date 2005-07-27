@@ -24,17 +24,17 @@ JAVA_SUBDIR=java
 LIBKJAVA=
 endif
 
-SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma . kmultipart
+SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma imload . kmultipart 
 
 CLEANFILES = dummy.cpp
 
 lib_LTLIBRARIES = libkhtml.la
 kde_module_LTLIBRARIES = libkhtmlpart.la khtmlimagepart.la
 
-libkhtml_la_SOURCES = kjserrordlg.ui khtmlview.cpp khtml_part.cpp khtml_run.cpp\
+libkhtml_la_SOURCES = kjserrordlg.ui3 khtmlview.cpp khtml_part.cpp khtml_run.cpp\
 			khtml_factory.cpp khtml_settings.cc khtml_events.cpp \
 			khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel \
-			khtml_iface.cc khtml_printsettings.cpp htmlpageinfo.ui \
+			khtml_iface.cc khtml_printsettings.cpp htmlpageinfo.ui3 \
 			khtmlimage.cpp
 
 libkhtml_la_METASOURCES = AUTO
@@ -52,7 +52,7 @@ endif
 libkhtml_la_LDFLAGS = -version-info 6:0:2 -no-undefined $(VSCRIPT) $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
-	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \
+	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la ./imload/libkhtmlimload.la $(LIBKJAVA) \
 	$(LIB_KPARTS) \
 	$(LIBTHAI) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \

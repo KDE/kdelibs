@@ -29,6 +29,8 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qdialog.h>
 #include <qfile.h>
@@ -192,7 +194,10 @@ void KConfigTestView::writeButtonClicked()
 
 int main( int argc, char **argv )
 {
-  KApplication a( argc, argv, "bla" );
+   KAboutData about("kconfigtestgui", "kconfigtestgui", "version");
+   KCmdLineArgs::init(argc, argv, &about);
+
+   KApplication a;
 
   KConfigTestView *w = new KConfigTestView();
   a.setMainWidget( w );

@@ -13,19 +13,19 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+ *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
 
 #include "module.h"
 
-KDETrayModule::KDETrayModule( const QCString& obj )
+KDETrayModule::KDETrayModule( const Q3CString& obj )
     : KDEDModule( obj )
     {
     }
 
 extern "C" 
-KDE_EXPORT KDEDModule *create_kdetrayproxy( const QCString& obj )
+KDE_EXPORT KDEDModule *create_kdetrayproxy( const Q3CString& obj )
     {
     return new KDETrayModule( obj );
     }

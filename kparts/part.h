@@ -14,17 +14,17 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef _KPART_H
 #define _KPART_H
 
 #include <qstring.h>
 #include <qdom.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <kurl.h>
-
+#include <qcoreevent.h>
 #include <kxmlguiclient.h>
 
 class KInstance;
@@ -32,6 +32,7 @@ class QWidget;
 class KAction;
 class KActionCollection;
 class QEvent;
+class QPoint;
 struct QUnknownInterface;
 
 namespace KIO {
@@ -270,7 +271,7 @@ protected:
     /**
      * @internal
      */
-    virtual void customEvent( QCustomEvent *event );
+    virtual void customEvent( QEvent *event );
 
     /**
      * Convenience method which is called when the Part received a PartActivateEvent .
@@ -301,11 +302,13 @@ protected:
      */
     QWidget *hostContainer( const QString &containerName );
 
+signals:
+    void leaveModality();
 private slots:
     void slotWidgetDestroyed();
 
 private:
-    QGuardedPtr<QWidget> m_widget;
+    QPointer<QWidget> m_widget;
 
     PartManager * m_manager;
 

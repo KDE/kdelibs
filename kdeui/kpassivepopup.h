@@ -11,14 +11,14 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <qframe.h>
+#include <q3frame.h>
 
 #include <kdelibs_export.h>
 
 class QBoxLayout;
 class QTimer;
 class QLabel;
-class QVBox;
+class Q3VBox;
 
 /**
  * @short A dialog-like popup that displays messages without interupting the user.
@@ -65,7 +65,7 @@ class QVBox;
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de
  */
-class KDEUI_EXPORT KPassivePopup : public QFrame
+class KDEUI_EXPORT KPassivePopup : public Q3Frame
 {
     Q_OBJECT
     Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )
@@ -86,24 +86,24 @@ public:
     /**
      * Creates a popup for the specified widget.
      */
-    KPassivePopup( QWidget *parent=0, const char *name=0, WFlags f=0 );
+    KPassivePopup( QWidget *parent=0, const char *name=0, Qt::WFlags f = 0 );
 
     /**
      * Creates a popup for the specified window.
      */
-    KPassivePopup( WId parent, const char *name=0, WFlags f=0 );
+    KPassivePopup( WId parent, const char *name=0 );
 
     /**
      * Creates a popup for the specified widget.
      * @since 3.5
      */
-    KPassivePopup( int popupStyle, QWidget *parent=0, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
 
     /**
      * Creates a popup for the specified window.
      * @since 3.5
      */
-    KPassivePopup( int popupStyle, WId parent, const char *name=0, WFlags f=0 );
+    KPassivePopup( int popupStyle, WId parent, const char *name=0, Qt::WFlags f=0 );
 
     /**
      * Cleans up.
@@ -145,7 +145,7 @@ public:
      * @see setView( const QString&, const QString& )
      * @see setView( const QString&, const QString&, const QPixmap& )
      */
-    QVBox * standardView( const QString& caption, const QString& text,
+    Q3VBox * standardView( const QString& caption, const QString& text,
                           const QPixmap& icon, QWidget *parent = 0L );
 
     /**

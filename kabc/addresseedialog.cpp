@@ -20,7 +20,7 @@
 
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qregexp.h>
 
 #include <klocale.h>
@@ -33,8 +33,8 @@
 
 using namespace KABC;
 
-AddresseeItem::AddresseeItem( QListView *parent, const Addressee &addressee ) :
-  QListViewItem( parent ),
+AddresseeItem::AddresseeItem( Q3ListView *parent, const Addressee &addressee ) :
+  Q3ListViewItem( parent ),
   mAddressee( addressee )
 {
   setText( Name, addressee.realName() );
@@ -72,10 +72,10 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   mAddresseeList->setAllColumnsShowFocus( true );
   mAddresseeList->setFullWidth( true );
   listLayout->addWidget( mAddresseeList );
-  connect( mAddresseeList, SIGNAL( doubleClicked( QListViewItem * ) ),
+  connect( mAddresseeList, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
            SLOT( slotOk() ) );
-  connect( mAddresseeList, SIGNAL( selectionChanged( QListViewItem * ) ),
-           SLOT( updateEdit( QListViewItem * ) ) );
+  connect( mAddresseeList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
+           SLOT( updateEdit( Q3ListViewItem * ) ) );
 
   mAddresseeEdit = new KLineEdit( topWidget );
   mAddresseeEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
@@ -92,7 +92,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     topLayout->addLayout( selectedLayout );
     topLayout->setSpacing( spacingHint() );
 
-    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected"),
+    Q3GroupBox *selectedGroup = new Q3GroupBox( 1, Qt::Horizontal, i18n("Selected"),
                                               topWidget );
     selectedLayout->addWidget( selectedGroup );
 
@@ -101,14 +101,14 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     mSelectedList->addColumn( i18n("Email") );
     mSelectedList->setAllColumnsShowFocus( true );
     mSelectedList->setFullWidth( true );
-    connect( mSelectedList, SIGNAL( doubleClicked( QListViewItem * ) ),
+    connect( mSelectedList, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
              SLOT( removeSelected() ) );
 
     QPushButton *unselectButton = new QPushButton( i18n("Unselect"), selectedGroup );
     connect ( unselectButton, SIGNAL( clicked() ), SLOT( removeSelected() ) );
 
-    connect( mAddresseeList, SIGNAL( clicked( QListViewItem * ) ),
-             SLOT( addSelected( QListViewItem * ) ) );
+    connect( mAddresseeList, SIGNAL( clicked( Q3ListViewItem * ) ),
+             SLOT( addSelected( Q3ListViewItem * ) ) );
 
     setInitialSize( QSize( 650, 350 ) );
   }
@@ -140,7 +140,7 @@ void AddresseeDialog::loadAddressBook()
   }
 }
 
-void AddresseeDialog::addCompletionItem( const QString &str, QListViewItem *item )
+void AddresseeDialog::addCompletionItem( const QString &str, Q3ListViewItem *item )
 {
   if ( str.isEmpty() ) return;
 
@@ -152,7 +152,7 @@ void AddresseeDialog::selectItem( const QString &str )
 {
   if ( str.isEmpty() ) return;
 
-  QListViewItem *item = mItemDict.find( str );
+  Q3ListViewItem *item = mItemDict.find( str );
   if ( item ) {
     mAddresseeList->blockSignals( true );
     mAddresseeList->setSelected( item, true );
@@ -161,20 +161,20 @@ void AddresseeDialog::selectItem( const QString &str )
   }
 }
 
-void AddresseeDialog::updateEdit( QListViewItem *item )
+void AddresseeDialog::updateEdit( Q3ListViewItem *item )
 {
   mAddresseeEdit->setText( item->text( 0 ) );
   mAddresseeEdit->setSelection( 0, item->text( 0 ).length() );
 }
 
-void AddresseeDialog::addSelected( QListViewItem *item )
+void AddresseeDialog::addSelected( Q3ListViewItem *item )
 {
   AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
   if ( !addrItem ) return;
 
   Addressee a = addrItem->addressee();
 
-  QListViewItem *selectedItem = mSelectedDict.find( a.uid() );
+  Q3ListViewItem *selectedItem = mSelectedDict.find( a.uid() );
   if ( !selectedItem ) {
     selectedItem = new AddresseeItem( mSelectedList, a );
     mSelectedDict.insert( a.uid(), selectedItem );
@@ -183,7 +183,7 @@ void AddresseeDialog::addSelected( QListViewItem *item )
 
 void AddresseeDialog::removeSelected()
 {
-  QListViewItem *item = mSelectedList->selectedItem();
+  Q3ListViewItem *item = mSelectedList->selectedItem();
   AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
   if ( !addrItem ) return;
 
@@ -210,7 +210,7 @@ Addressee::List AddresseeDialog::addressees()
   AddresseeItem *aItem = 0;
 
   if ( mMultiple ) {
-    QListViewItem *item = mSelectedList->firstChild();
+    Q3ListViewItem *item = mSelectedList->firstChild();
     while( item ) {
       aItem = dynamic_cast<AddresseeItem *>( item );
       if ( aItem ) al.append( aItem->addressee() );

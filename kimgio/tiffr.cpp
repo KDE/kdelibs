@@ -60,92 +60,177 @@ static void tiff_unmap( thandle_t, tdata_t, toff_t )
 {
 }
 
-KDE_EXPORT void kimgio_tiff_read( QImageIO *io )
+TIFFRHandler::TIFFRHandler()
 {
-	TIFF *tiff;
-	uint32 width, height;
-	uint32 *data;
+}
 
-	// FIXME: use qdatastream
+bool TIFFRHandler::canRead() const
+{
+    return canRead(device());
+}
 
-	// open file
-	tiff = TIFFClientOpen( QFile::encodeName( io->fileName() ), "r",
-			       ( thandle_t )io->ioDevice(),
-			       tiff_read, tiff_write, tiff_seek, tiff_close, 
-			       tiff_size, tiff_map, tiff_unmap );
+bool TIFFRHandler::read(QImage *outImage)
+{
+    TIFF *tiff;
+    uint32 width, height;
+    uint32 *data;
 
-	if( tiff == 0 ) {
-		return;
-	}
+    // FIXME: use qdatastream
 
-	// create image with loaded dimensions
-	if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) != 1
-            || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
-            return;
+    // open file
+    tiff = TIFFClientOpen( QFile::encodeName( "kimg_file.tiff" ), "r",
+                           ( thandle_t )device(),
+                           tiff_read, tiff_write, tiff_seek, tiff_close,
+                           tiff_size, tiff_map, tiff_unmap );
 
-	QImage image( width, height, 32 );
-	if( image.isNull()) {
-		TIFFClose( tiff );
-		return;
-	}
-	data = (uint32 *)image.bits();
+    if( tiff == 0 ) {
+        return false;
+    }
 
-	//Sven: changed to %ld for 64bit machines
-	//debug( "unsigned size: %ld, uint32 size: %ld",
-	//	(long)sizeof(unsigned), (long)sizeof(uint32) );
+    // create image with loaded dimensions
+    if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) != 1
+        || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
+        return false;
 
-	// read data
-	bool stat =TIFFReadRGBAImage( tiff, width, height, data );
+    QImage image( width, height, 32 );
+    if( image.isNull()) {
+        TIFFClose( tiff );
+        return false;
+    }
+    data = (uint32 *)image.bits();
 
-	if( stat == 0 ) {
-		TIFFClose( tiff );
-		return;
-	}
+    //Sven: changed to %ld for 64bit machines
+    //debug( "unsigned size: %ld, uint32 size: %ld",
+    //	(long)sizeof(unsigned), (long)sizeof(uint32) );
 
-	// reverse red and blue
-	for( unsigned i = 0; i < width * height; ++i )
-	{
-		uint32 red = ( 0x00FF0000 & data[i] ) >> 16;
-		uint32 blue = ( 0x000000FF & data[i] ) << 16;
-		data[i] &= 0xFF00FF00;
-		data[i] += red + blue;
-	}
+    // read data
+    bool stat =TIFFReadRGBAImage( tiff, width, height, data );
 
-	// reverse image (it's upside down)
-	for( unsigned ctr = 0; ctr < (height>>1); ) {
-		unsigned *line1 = (unsigned *)image.scanLine( ctr );
-		unsigned *line2 = (unsigned *)image.scanLine( height 
-			- ( ++ctr ) );
+    if( stat == 0 ) {
+        TIFFClose( tiff );
+        return false;
+    }
 
-		for( unsigned x = 0; x < width; x++ ) {
-			int temp = *line1;
-			*line1 = *line2;
-			*line2 = temp;
-			line1++;
-			line2++;
-		}
+    // reverse red and blue
+    for( unsigned i = 0; i < width * height; ++i )
+    {
+        uint32 red = ( 0x00FF0000 & data[i] ) >> 16;
+        uint32 blue = ( 0x000000FF & data[i] ) << 16;
+        data[i] &= 0xFF00FF00;
+        data[i] += red + blue;
+    }
 
-		// swap rows
-	}
+    // reverse image (it's upside down)
+    for( unsigned ctr = 0; ctr < (height>>1); ) {
+        unsigned *line1 = (unsigned *)image.scanLine( ctr );
+        unsigned *line2 = (unsigned *)image.scanLine( height
+                                                      - ( ++ctr ) );
 
-	// set channel order to Qt order
-	// FIXME: Right now they are the same, but will it change?
+        for( unsigned x = 0; x < width; x++ ) {
+            int temp = *line1;
+            *line1 = *line2;
+            *line2 = temp;
+            line1++;
+            line2++;
+        }
+
+        // swap rows
+    }
+
+    // set channel order to Qt order
+    // FIXME: Right now they are the same, but will it change?
 
 //	for( int ctr = (image.numBytes() / sizeof(uint32))+1; ctr ; ctr-- ) {
 //		// TODO: manage alpha with TIFFGetA
-//		*data = qRgb( TIFFGetR( *data ), 
+//		*data = qRgb( TIFFGetR( *data ),
 //			TIFFGetG( *data ), TIFFGetB( *data ) );
 //		data++;
 //	}
-	TIFFClose( tiff );
+    TIFFClose( tiff );
 
-	io->setImage( image );
-	io->setStatus ( 0 );
+    *outImage = image;
+    return true;
 }
 
-KDE_EXPORT void kimgio_tiff_write( QImageIO * )
+bool TIFFRHandler::write(const QImage &)
 {
-	// TODO: stub
+    // TODO: stub
+    return false;
 }
+
+QByteArray TIFFRHandler::name() const
+{
+    return "tiff";
+}
+
+bool TIFFRHandler::canRead(QIODevice *device)
+{
+    if (!device) {
+        qWarning("TIFFRHandler::canRead() called with no device");
+        return false;
+    }
+
+    qint64 oldPos = device->pos();
+
+    char head[8];
+    qint64 readBytes = device->read(head, sizeof(head));
+    if (readBytes != sizeof(head)) {
+        if (device->isSequential()) {
+            while (readBytes > 0)
+                device->ungetChar(head[readBytes-- - 1]);
+        } else {
+            device->seek(oldPos);
+        }
+        return false;
+    }
+
+    if (device->isSequential()) {
+        while (readBytes > 0)
+            device->ungetChar(head[readBytes-- - 1]);
+    } else {
+        device->seek(oldPos);
+    }
+
+    return qstrncmp(head, "[MI][MI]", 8) == 0;
+}
+
+class TIFFRPlugin : public QImageIOPlugin
+{
+public:
+    QStringList keys() const;
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+QStringList TIFFRPlugin::keys() const
+{
+    return QStringList() << "tiff" << "TIFF" << "tif" << "TIF";
+}
+
+QImageIOPlugin::Capabilities TIFFRPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    if (format == "tiff" || format == "TIFF" ||
+        format == "tif"  || format == "TIF")
+        return Capabilities(CanRead);
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (device->isReadable() && TIFFRHandler::canRead(device))
+        cap |= CanRead;
+    return cap;
+}
+
+QImageIOHandler *TIFFRPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QImageIOHandler *handler = new TIFFRHandler;
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
+
+Q_EXPORT_PLUGIN(TIFFRPlugin)
 
 #endif

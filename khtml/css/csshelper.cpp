@@ -24,7 +24,7 @@
 #include <qfontmetrics.h>
 #include <qfontinfo.h>
 #include <qpaintdevice.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 #include <qfontdatabase.h>
 
 #include <kcharsets.h>

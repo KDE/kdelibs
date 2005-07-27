@@ -55,7 +55,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <qptrstack.h>
+#include <q3ptrstack.h>
 
 // Turn off inlining to avoid warning with newer gcc.
 #undef __inline
@@ -63,7 +63,7 @@
 #include "doctypes.cpp"
 #undef __inline
 
-template class QPtrStack<DOM::NodeImpl>;
+template class Q3PtrStack<DOM::NodeImpl>;
 
 using namespace DOM;
 using namespace khtml;
@@ -113,27 +113,23 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QCString replyType;
-    QByteArray params, reply;
-    QDataStream stream(params, IO_WriteOnly);
-    stream << URL().url() << windowId;
-    if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString,long int)", params,
-                                  replyType, reply))
+    DCOPRef   kcookiejar("kcookiejar", "kcookiejar");
+    DCOPReply reply = kcookiejar.call("findDOMCookies(QString,long int)",
+                  URL().url(), windowId);
+
+    if ( !reply.isValid() )
     {
        kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
     }
 
-    QDataStream stream2(reply, IO_ReadOnly);
-    if(replyType != "QString") {
+    QString result;
+    if ( !reply.get(result, "QString") ) {
          kdError(6010) << "DCOP function findDOMCookies(...) returns "
-                       << replyType << ", expected QString" << endl;
+                       << reply.type << ", expected QString" << endl;
          return DOMString();
     }
 
-    QString result;
-    stream2 >> result;
     return DOMString(result);
 }
 
@@ -146,8 +142,8 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
       windowId = v->topLevelWidget()->winId();
 
     QByteArray params;
-    QDataStream stream(params, IO_WriteOnly);
-    QCString fake_header("Set-Cookie: ");
+    QDataStream stream(&params, QIODevice::WriteOnly);
+    Q3CString fake_header("Set-Cookie: ");
     fake_header.append(value.string().latin1());
     fake_header.append("\n");
     stream << URL().url() << fake_header << windowId;
@@ -237,7 +233,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     //kdDebug(0) << "map pos of #:" << pos << endl;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
-    QMapConstIterator<QString,HTMLMapElementImpl*> it = mapMap.find(s);
+    QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.find(s);
 
     if (it != mapMap.end())
         return *it;

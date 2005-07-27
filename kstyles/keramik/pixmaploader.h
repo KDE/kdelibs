@@ -1,5 +1,7 @@
 /*
+   Copyright (c) 2003-2005 Maksim Orlovich <maksim@kde.org>
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
+   
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,9 +24,9 @@
 #ifndef __pixmaploader_h__
 #define __pixmaploader_h__
 
-#include <qintcache.h>
-#include <qdict.h>
+#include <qcache.h>
 #include <qimage.h>
+#include <QStyleOptionTab>
 
 class QPixmap;
 class QImage;
@@ -82,7 +84,7 @@ namespace Keramik
 
 			int key()
 			{
-				return (int)m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
+				return m_disabled ^ (m_blended << 1) ^ (m_id<<2) ^ (m_width<<14) ^ (m_height<<24) ^ m_colorCode ^ (m_bgCode<<8);
 			}
 
 			bool operator == (const KeramikCacheEntry& other)
@@ -106,7 +108,7 @@ namespace Keramik
 
 		QImage* getColored(int id, const QColor& color, const QColor& bg, bool blended);
 		QImage* getDisabled(int id, const QColor& color, const QColor& bg, bool blended);
-		QIntCache <KeramikCacheEntry>  m_pixmapCache;
+		QCache <int, KeramikCacheEntry>  m_pixmapCache;
 
 
 		unsigned char clamp[540];
@@ -317,15 +319,14 @@ namespace Keramik
 	class InactiveTabPainter : public RectTilePainter
 	{
 	public:
-		enum Mode { First, Middle, Last };
-		InactiveTabPainter( Mode mode, bool bottom );
+		InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool bottom );
 		virtual ~InactiveTabPainter() {};
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
 
 	private:
-		Mode m_mode;
+		QStyleOptionTab::TabPosition m_mode;
 		bool m_bottom;
 	};
 

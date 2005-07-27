@@ -15,8 +15,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
     */
 
 
@@ -25,12 +25,16 @@
 #endif
 
 #include "config.h"
+#include <stdio.h>
 #include <qevent.h>
-#include <qobjectlist.h>
-#include <qaccel.h>
+#include <qobject.h>
+#include <q3accel.h>
 #include <qpainter.h>
 #include <qstyle.h>
 #include <qtimer.h>
+#include <QDesktopWidget>
+#include <QMenuItem>
+#include <QStyleOptionMenuItem>
 
 #include <kconfig.h>
 #include <kglobalsettings.h>
@@ -44,6 +48,7 @@
 #include <kwin.h> 
 #include <kwinmodule.h> 
 #include <qxembed.h> 
+#include <qx11info_x11.h>
 
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h> 
@@ -105,11 +110,11 @@ static
 void initAtoms()
 {
     char nm[ 100 ];
-    sprintf( nm, "_KDE_TOPMENU_OWNER_S%d", DefaultScreen( qt_xdisplay()));
+    sprintf( nm, "_KDE_TOPMENU_OWNER_S%d", DefaultScreen( QX11Info::display()));
     char nm2[] = "_KDE_TOPMENU_MINSIZE";
     char* names[ 2 ] = { nm, nm2 };
     Atom atoms[ 2 ];
-    XInternAtoms( qt_xdisplay(), names, 2, False, atoms );
+    XInternAtoms( QX11Info::display(), names, 2, False, atoms );
     selection_atom = atoms[ 0 ];
     msg_type_atom = atoms[ 1 ];
 }
@@ -130,7 +135,10 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
 #ifdef Q_WS_X11
-    QXEmbed::initialize();
+#ifdef __GNUC__
+#warning this does initialize QXEmbed, no good idea atm
+#endif
+   // QXEmbed::initialize();
 #endif
     d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),
@@ -174,26 +182,26 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   {
 #ifdef Q_WS_X11
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
-          DefaultScreen( qt_xdisplay()));
+          DefaultScreen( QX11Info::display()));
       connect( d->selection, SIGNAL( newOwner( Window )),
           this, SLOT( updateFallbackSize()));
       connect( d->selection, SIGNAL( lostOwner()),
           this, SLOT( updateFallbackSize()));
 #endif
-      d->frameStyle = frameStyle();
-      d->lineWidth = lineWidth();
-      d->margin = margin();
+      d->frameStyle = 0; //frameStyle();
+      d->lineWidth = 0; //lineWidth();
+      d->margin = 0; //margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_Customize | WStyle_NoBorder, QPoint(0,0), false );
+      reparent( parentWidget(), Qt::WType_TopLevel | Qt::WStyle_Tool | Qt::WStyle_Customize | Qt::WStyle_NoBorder, QPoint(0,0), false );
 #ifdef Q_WS_X11
       KWin::setType( winId(), NET::TopMenu );
       if( parentWidget())
-          XSetTransientForHint( qt_xdisplay(), winId(), parentWidget()->topLevelWidget()->winId());
+          XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #endif
-      QMenuBar::setFrameStyle( NoFrame );
-      QMenuBar::setLineWidth( 0 );
-      QMenuBar::setMargin( 0 );
+      //QMenuBar::setFrameStyle( NoFrame );
+      //QMenuBar::setLineWidth( 0 );
+      //QMenuBar::setMargin( 0 );
       updateFallbackSize();
       d->min_size = QSize( 0, 0 );
       if( parentWidget() && !parentWidget()->isTopLevel())
@@ -206,7 +214,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       delete d->selection;
       d->selection = NULL;
 #endif
-      setBackgroundMode( PaletteButton );
+      setBackgroundMode( Qt::PaletteButton );
       setFrameStyle( d->frameStyle );
       setLineWidth( d->lineWidth );
       setMargin( d->margin );
@@ -249,14 +257,16 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 		if ( QApplication::sendEvent( topLevelWidget(), ev ) )
 		    return true;
 	    }
+            /* FIXME QEvent::ShowFullScreen is no more
             if(ev->type() == QEvent::ShowFullScreen )
                 // will update the state properly
                 setTopLevelMenuInternal( d->topLevel );
+            */
         }
         if( parentWidget() && obj == parentWidget() && ev->type() == QEvent::Reparent )
             {
 #ifdef Q_WS_X11
-            XSetTransientForHint( qt_xdisplay(), winId(), parentWidget()->topLevelWidget()->winId());
+            XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #else
             //TODO: WIN32?
 #endif
@@ -267,7 +277,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
             if( ev->type() == QEvent::Show )
                 {
 #ifdef Q_WS_X11
-                XSetTransientForHint( qt_xdisplay(), winId(), parentWidget()->topLevelWidget()->winId());
+                XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #else
                 //TODO: WIN32?
 #endif
@@ -439,7 +449,7 @@ bool KMenuBar::x11Event( XEvent* ev )
 
 void KMenuBar::updateMenuBarSize()
     {
-    menuContentsChanged(); // trigger invalidating calculated size
+    //menuContentsChanged(); // trigger invalidating calculated size
     resize( sizeHint());   // and resize to preferred size
     }
 
@@ -447,24 +457,24 @@ void KMenuBar::setFrameStyle( int style )
 {
     if( d->topLevel )
 	d->frameStyle = style;
-    else
-	QMenuBar::setFrameStyle( style );
+//     else
+// 	QMenuBar::setFrameStyle( style );
 }
 
 void KMenuBar::setLineWidth( int width )
 {
     if( d->topLevel )
 	d->lineWidth = width;
-    else
-	QMenuBar::setLineWidth( width );
+//     else
+// 	QMenuBar::setLineWidth( width );
 }
 
 void KMenuBar::setMargin( int margin )
 {
     if( d->topLevel )
 	d->margin = margin;
-    else
-	QMenuBar::setMargin( margin );
+//     else
+// 	QMenuBar::setMargin( margin );
 }
 
 void KMenuBar::closeEvent( QCloseEvent* e )
@@ -475,7 +485,7 @@ void KMenuBar::closeEvent( QCloseEvent* e )
         QMenuBar::closeEvent( e );
 }
 
-void KMenuBar::drawContents( QPainter* p )
+void KMenuBar::paintEvent( QPaintEvent* pe )
 {
     // Closes the BR77113
     // We need to overload this method to paint only the menu items
@@ -488,21 +498,23 @@ void KMenuBar::drawContents( QPainter* p )
     // Of course this hack can safely be removed when real transparency
     // will be available
 
-    if( !d->topLevel )
+//    if( !d->topLevel )
     {
-        QMenuBar::drawContents(p);
+        QMenuBar::paintEvent(pe);
     }
+#if 0
     else
     {
+        QPainter p(this);
         bool up_enabled = isUpdatesEnabled();
-        BackgroundMode bg_mode = backgroundMode();
+        Qt::BackgroundMode bg_mode = backgroundMode();
         BackgroundOrigin bg_origin = backgroundOrigin();
         
         setUpdatesEnabled(false);
-        setBackgroundMode(X11ParentRelative);
+        setBackgroundMode(Qt::X11ParentRelative);
         setBackgroundOrigin(WindowOrigin);
 
-	p->eraseRect( rect() );
+	p.eraseRect( rect() );
 	erase();
         
         QColorGroup g = colorGroup();
@@ -512,40 +524,49 @@ void KMenuBar::drawContents( QPainter* p )
         {
             QMenuItem *mi = findItem( idAt( i ) );
 
-            if ( !mi->text().isNull() || mi->pixmap() )
+            if ( !mi->text().isEmpty() || !mi->icon().isNull() )
             {
                 QRect r = itemRect(i);
                 if(r.isEmpty() || !mi->isVisible())
                     continue;
 
-                e = mi->isEnabledAndVisible();
+                e = mi->isEnabled() && mi->isVisible();
                 if ( e )
                     g = isEnabled() ? ( isActiveWindow() ? palette().active() :
                                         palette().inactive() ) : palette().disabled();
                 else
                     g = palette().disabled();
 
-                bool item_active = ( actItem ==  i );
+                bool item_active = ( activeAction() ==  mi );
 
-                p->setClipRect(r);
+                p.setClipRect(r);
 
                 if( item_active )
                 {
-                    QStyle::SFlags flags = QStyle::Style_Default;
-                    if (isEnabled() && e)
-                        flags |= QStyle::Style_Enabled;
-                    if ( item_active )
-                        flags |= QStyle::Style_Active;
-                    if ( item_active && actItemDown )
-                        flags |= QStyle::Style_Down;
-                    flags |= QStyle::Style_HasFocus;
+                    QStyleOptionMenuItem miOpt;
+                    miOpt.init(this);
+                    miOpt.rect = r;
+                    miOpt.text = mi->text();
+                    miOpt.icon = mi->icon();
+                    miOpt.palette = g;
 
-                    style().drawControl(QStyle::CE_MenuBarItem, p, this,
-                                        r, g, flags, QStyleOption(mi));
+                    QStyle::State flags = QStyle::State_None;
+                    if (isEnabled() && e)
+                        flags |= QStyle::State_Enabled;
+                    if ( item_active )
+                        flags |= QStyle::State_Active;
+                    if ( item_active && actItemDown )
+                        flags |= QStyle::State_Down;
+                    flags |= QStyle::State_HasFocus;
+                    
+                    mi->state = flags;
+                    
+                    
+                    style()->drawControl(QStyle::CE_MenuBarItem, &miOpt, &p, this);
                 }
                 else
                 {
-                    style().drawItem(p, r, AlignCenter | AlignVCenter | ShowPrefix,
+                    style()->drawItem(p, r, Qt::AlignCenter | Qt::AlignVCenter | Qt::TextShowMnemonic,
                                      g, e, mi->pixmap(), mi->text());
                 }
             }
@@ -555,6 +576,7 @@ void KMenuBar::drawContents( QPainter* p )
         setBackgroundMode(bg_mode);
         setUpdatesEnabled(up_enabled);
     }
+#endif
 }
 
 void KMenuBar::virtual_hook( int, void* )

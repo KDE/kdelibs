@@ -24,8 +24,8 @@
 #define _XML_Tokenizer_h_
 
 #include <qxml.h>
-#include <qptrlist.h>
-#include <qptrstack.h>
+#include <q3ptrlist.h>
+#include <q3ptrstack.h>
 #include <qobject.h>
 #include "misc/loader_client.h"
 #include "misc/stringit.h"
@@ -79,7 +79,7 @@ public:
     bool enterText();
     void exitText();
 
-    QString errorString();
+    QString errorString() const;
 
     bool fatalError( const QXmlParseException& exception );
 
@@ -94,7 +94,7 @@ private:
     QString errorProt;
     DOM::DocumentPtr *m_doc;
     KHTMLView *m_view;
-    QPtrStack<DOM::NodeImpl> m_nodes;
+    Q3PtrStack<DOM::NodeImpl> m_nodes;
     DOM::NodeImpl *m_rootNode;
 
     enum State {
@@ -139,14 +139,14 @@ public:
     virtual QChar next();
     virtual void setData( const QString& str );
     virtual void setData( const QByteArray& data );
-    virtual QString data();
+    virtual QString data() const;
 
     void appendXML( const QString& str );
     void setFinished( bool );
 
 private:
     QString      m_data;
-    uint         m_pos;
+    int          m_pos;
     const QChar *m_unicode;
     bool         m_finished;
 };
@@ -175,8 +175,8 @@ protected:
     void executeScripts();
     void addScripts(DOM::NodeImpl *n);
 
-    QPtrList<DOM::HTMLScriptElementImpl> m_scripts;
-    QPtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
+    Q3PtrList<DOM::HTMLScriptElementImpl> m_scripts;
+    Q3PtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
 
     XMLHandler m_handler;

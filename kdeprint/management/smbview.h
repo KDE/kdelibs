@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef SMBVIEW_H
@@ -33,7 +33,7 @@ public:
 	~SmbView();
 
 	void setLoginInfos(const QString& login, const QString& password);
-	void setOpen(QListViewItem*, bool);
+	void setOpen(Q3ListViewItem*, bool);
 	void init();
 	void abort();
 
@@ -51,12 +51,12 @@ protected:
 protected slots:
 	void slotReceivedStdout(KProcess*, char*, int);
 	void slotProcessExited(KProcess*);
-	void slotSelectionChanged(QListViewItem*);
+	void slotSelectionChanged(Q3ListViewItem*);
 
 private:
 	enum State { GroupListing, ServerListing, ShareListing, Idle };
 	int 		m_state;
-	QListViewItem	*m_current;
+	Q3ListViewItem	*m_current;
 	KProcess	*m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;

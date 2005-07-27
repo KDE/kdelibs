@@ -1,4 +1,6 @@
 #include "kgradienttest.h"
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kpixmapeffect.h>
 #include <qpainter.h>
@@ -98,7 +100,11 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "KGradientTest");
+    KAboutData about("KGradientTest", "KGradientTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication *app=new KApplication();
+
     KGradientWidget w;
     w.resize(250 * cols, 250 * rows);
     app->setMainWidget(&w);

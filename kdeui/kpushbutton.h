@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KPUSHBUTTON_H
@@ -25,7 +25,7 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h> 
 
-class QDragObject;
+class Q3DragObject;
 /**
  * This is nothing but a QPushButton with drag-support and KGuiItem support. You have to call
  * setDragEnabled( true ) and override the virtual method
@@ -55,7 +55,7 @@ public:
     /**
      * Constructor, that sets an icon and the button-text to @p text
      */
-    KPushButton( const QIconSet &icon, const QString &text,
+    KPushButton( const QIcon &icon, const QString &text,
 		     QWidget *parent, const char *name=0 );
 
     /**
@@ -104,7 +104,7 @@ public:
      * Sets the Icon Set for this button. It also takes into account hte
      * KGlobalSettings::showIconsOnPushButtons() setting.
      */
-    void setIconSet( const QIconSet &iconSet );
+    void setIconSet( const QIcon &iconSet );
 
     /**
     * Sets the text of the button
@@ -117,7 +117,7 @@ protected:
      * for the drag.
      * Default implementation returns 0L, so that no drag is initiated.
      */
-    virtual QDragObject * dragObject();
+    virtual Q3DragObject * dragObject();
 
     /**
      * Reimplemented to add drag-support

@@ -531,7 +531,7 @@ NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
 
 unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 {
-    QPtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
+    Q3PtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
     int len = 0;
     for ( unsigned i = 0; i < l.count(); i++ )
@@ -543,7 +543,7 @@ unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 
 NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
 {
-    QPtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
+    Q3PtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
     for ( unsigned i = 0; i < l.count(); i++ ) {
 

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -31,7 +31,7 @@
 
 namespace KNetwork {
 
-class KMulticastSocketImplPrivate;
+class KMulticastSocketDevicePrivate;
 
 /**
  * @class KMulticastSocketImpl kmulticastsocketdevice.h kmulticastsocketdevice.h
@@ -40,9 +40,9 @@ class KMulticastSocketImplPrivate;
  * This class is an interface providing methods for handling multicast 
  * operations.
  *
- * @author Thiago Macieira <thiago.macieira@kdemail.net>
+ * @author Thiago Macieira <thiago@kde.org>
  */
-class KMulticastSocketImpl: public KSocketDevice
+class KMulticastSocketDevice: public KSocketDevice
 {
 public:
   /**
@@ -143,7 +143,7 @@ public:
   virtual bool leaveGroup(const KSocketAddress& group,
 			  const KNetworkInterface& iface);
 private:
-  KMulticastSocketImplPrivate *d;
+  KMulticastSocketDevicePrivate *d;
 };
 
 }				// namespace KNetwork

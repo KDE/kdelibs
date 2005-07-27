@@ -45,11 +45,11 @@
 #include <dcopclient.h>
 
 #include <kapplication.h>
-#include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
 #include <klocale.h>
 #include <ksocks.h>
+#include <kstreamsocket.h>
 
 #include "kremoteencoding.h"
 
@@ -66,10 +66,10 @@
 
 using namespace KIO;
 
-template class QPtrList<QValueList<UDSAtom> >;
-typedef QValueList<QCString> AuthKeysList;
-typedef QMap<QString,QCString> AuthKeysMap;
-#define KIO_DATA QByteArray data; QDataStream stream( data, IO_WriteOnly ); stream
+template class Q3PtrList<Q3ValueList<UDSAtom> >;
+typedef Q3ValueList<Q3CString> AuthKeysList;
+typedef QMap<QString,Q3CString> AuthKeysMap;
+#define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
 
 namespace KIO {
@@ -80,7 +80,7 @@ public:
    SlaveBaseConfig(SlaveBase *_slave)
 	: slave(_slave) { }
 
-   bool internalHasGroup(const QCString &) const { qWarning("hasGroup(const QCString &)");
+   bool internalHasGroup(const QByteArray &) const { qWarning("hasGroup(const QByteArray &)");
 return false; }
 
    QStringList groupList() const { return QStringList(); }
@@ -156,9 +156,9 @@ static void genericsig_handler(int sigNumber)
 
 //////////////
 
-SlaveBase::SlaveBase( const QCString &protocol,
-                      const QCString &pool_socket,
-                      const QCString &app_socket )
+SlaveBase::SlaveBase( const Q3CString &protocol,
+                      const Q3CString &pool_socket,
+                      const Q3CString &app_socket )
     : mProtocol(protocol), m_pConnection(0),
       mPoolSocket( QFile::decodeName(pool_socket)),
       mAppSocket( QFile::decodeName(app_socket))
@@ -325,10 +325,14 @@ void SlaveBase::dispatchLoop()
 void SlaveBase::connectSlave(const QString& path)
 {
 #ifdef Q_OS_UNIX //TODO: KSocket not yet available on WIN32
-    appconn->init(new KSocket(QFile::encodeName(path)));
+    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(), 
+						QFile::encodeName(path));
+    appconn->init(sock);
+					      
     if (!appconn->inited())
     {
-        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl;
+        kdDebug(7019) << "SlaveBase: failed to connect to " << path << endl
+		      << "Reason: " << sock->errorString() << endl;
         exit();
     }
 
@@ -620,7 +624,7 @@ bool SlaveBase::requestNetwork(const QString& host)
     if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) != -1 )
     {
         bool status;
-        QDataStream stream( data, IO_ReadOnly );
+        QDataStream stream( data );
         stream >> status;
         return status;
     } else
@@ -663,7 +667,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
          }
 //if we can send all list entries of this dir which have not yet been sent
 //within maximum_updatetime, then make listEntryCurrentSize big enough for all of them
-         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > (d->totalSize-d->sentListEntries))
+         else if (((pendingListEntries.count()*maximum_updatetime)/diff) > static_cast<long>(d->totalSize-d->sentListEntries))
             listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
 //if we are below minimum_updatetime, estimate how much we will get within
 //maximum_updatetime
@@ -696,8 +700,8 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     d->sentListEntries+=(uint)list.count();
 }
 
-void SlaveBase::sendAuthenticationKey( const QCString& key,
-                                       const QCString& group,
+void SlaveBase::sendAuthenticationKey( const Q3CString& key,
+                                       const Q3CString& group,
                                        bool keepPass )
 {
     KIO_DATA << key << group << keepPass;
@@ -722,7 +726,7 @@ void SlaveBase::sigsegv_handler(int sig)
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
     char buffer[120];
-    snprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
+    qsnprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
     write(2, buffer, strlen(buffer));
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE
@@ -815,9 +819,6 @@ bool SlaveBase::openPassDlg( AuthInfo& info )
 
 bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 {
-    QCString replyType;
-    QByteArray params;
-    QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
@@ -825,29 +826,35 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, IO_WriteOnly);
+    DCOPRef kps( "kded", "kpasswdserver" );
+    kps.setDCOPClient( d->dcopClient );
+
+    DCOPReply reply;
 
     if (metaData("no-auth-prompt").lower() == "true")
-       stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
+       reply = kps.call("queryAuthInfo(KIO::AuthInfo, QString, long int, long int)", info,
+                QString("<NoAuthPrompt>"), windowId, s_seqNr);
     else
-       stream << info << errorMsg << windowId << s_seqNr;
+       reply = kps.call("queryAuthInfo(KIO::AuthInfo, QString, long int, long int)", info,
+                errorMsg, windowId, s_seqNr);
 
-    if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
-                               params, replyType, reply ) )
+
+    if ( !reply.isValid() )
     {
        kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
-    if ( replyType == "KIO::AuthInfo" )
+    if ( reply.type == "KIO::AuthInfo" )
     {
-       QDataStream stream2( reply, IO_ReadOnly );
+       QDataStream stream2( reply.data );
+       stream2.setVersion(QDataStream::Qt_3_1);
        stream2 >> authResult >> s_seqNr;
     }
     else
     {
        kdError(7019) << "DCOP function queryAuthInfo(...) returns "
-                     << replyType << ", expected KIO::AuthInfo" << endl;
+                     << reply.type << ", expected KIO::AuthInfo" << endl;
        return false;
     }
 
@@ -876,7 +883,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
     m_pConnection->send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
-        QDataStream stream( data, IO_ReadOnly );
+        QDataStream stream( data );
         int answer;
         stream >> answer;
         kdDebug(7019) << "got messagebox answer" << answer << endl;
@@ -956,7 +963,7 @@ void SlaveBase::setTimeoutSpecialCommand(int timeout, const QByteArray &data)
 
 void SlaveBase::dispatch( int command, const QByteArray &data )
 {
-    QDataStream stream( data, IO_ReadOnly );
+    QDataStream stream( data );
 
     KURL url;
     int i;
@@ -984,7 +991,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     {
         d->onHold = false;
         QString app_socket;
-        QDataStream stream( data, IO_ReadOnly);
+        QDataStream stream( data );
         stream >> app_socket;
         appconn->send( MSG_SLAVE_ACK );
         disconnectSlave();
@@ -994,7 +1001,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_SLAVE_HOLD:
     {
         KURL url;
-        QDataStream stream( data, IO_ReadOnly);
+        QDataStream stream( data );
         stream >> url;
         d->onHoldUrl = url;
         d->onHold = true;
@@ -1152,9 +1159,6 @@ bool SlaveBase::pingCacheDaemon() const
 
 bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 {
-    QCString replyType;
-    QByteArray params;
-    QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
 
@@ -1162,25 +1166,22 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, IO_WriteOnly);
-    stream << info << windowId;
+    DCOPRef kps( "kded", "kpasswdserver" );
+    kps.setDCOPClient( d->dcopClient );
 
-    if ( !d->dcopClient->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)",
-                               params, replyType, reply ) )
+    DCOPReply reply = kps.call("checkAuthInfo(KIO::AuthInfo, long int)",
+      info, windowId);
+
+    if ( !reply.isValid() )
     {
        kdWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
-    if ( replyType == "KIO::AuthInfo" )
-    {
-       QDataStream stream2( reply, IO_ReadOnly );
-       stream2 >> authResult;
-    }
-    else
+    if (!reply.get(authResult, "KIO::AuthInfo" ) )
     {
        kdError(7019) << "DCOP function checkAuthInfo(...) returns "
-                     << replyType << ", expected KIO::AuthInfo" << endl;
+                     << reply.type << ", expected KIO::AuthInfo" << endl;
        return false;
     }
     if (!authResult.isModified())
@@ -1199,7 +1200,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 
     (void) dcopClient(); // Make sure to have a dcop client.
 
-    QDataStream stream(params, IO_WriteOnly);
+    QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info << windowId;
 
     d->dcopClient->send( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );

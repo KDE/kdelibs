@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <stdlib.h>
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
       args.append("--incremental");
       args.append("--checkstamps");
       QString command = "kbuildsycoca";
-      QCString _launcher = KApplication::launcher();
+      Q3CString _launcher = KApplication::launcher();
       if (!DCOPRef(_launcher, _launcher).call("kdeinit_exec_wait", command, args).isValid())
       {
          qWarning("Can't talk to klauncher!");

@@ -88,7 +88,7 @@ private slots:
 private:
     void disposeImage();
 
-    QGuardedPtr<KHTMLPart> m_khtml;
+    QPointer<KHTMLPart> m_khtml;
     KParts::BrowserExtension *m_ext;
     QString m_mimeType;
     khtml::CachedImage *m_image;

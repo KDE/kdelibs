@@ -22,7 +22,7 @@ KFileMetaPreview::KFileMetaPreview( QWidget *parent, const char *name )
       haveAudioPreview( false )
 {
     QHBoxLayout *layout = new QHBoxLayout( this, 0, 0 );
-    m_stack = new QWidgetStack( this );
+    m_stack = new Q3WidgetStack( this );
     layout->addWidget( m_stack );
 
     // ###
@@ -137,7 +137,7 @@ void KFileMetaPreview::addPreviewProvider( const QString& mimeType,
 
 void KFileMetaPreview::clearPreviewProviders()
 {
-    QDictIterator<KPreviewWidgetBase> it( m_previewProviders );
+    Q3DictIterator<KPreviewWidgetBase> it( m_previewProviders );
     for ( ; it.current(); ++it )
         m_stack->removeWidget( it.current() );
 

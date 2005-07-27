@@ -10,11 +10,20 @@
 #ifndef KIMG_TIFFR_H
 #define KIMG_TIFFR_H
 
-class QImageIO;
+#include <QImageIOHandler>
 
-extern "C" {
-void kimgio_tiff_read( QImageIO *io );
-void kimgio_tiff_write( QImageIO *io );
-}
+class TIFFRHandler : public QImageIOHandler
+{
+public:
+    TIFFRHandler();
+
+    bool canRead() const;
+    bool read(QImage *image);
+    bool write(const QImage &image);
+
+    QByteArray name() const;
+
+    static bool canRead(QIODevice *device);
+};
 
 #endif

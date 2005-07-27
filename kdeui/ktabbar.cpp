@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <qapplication.h>
@@ -29,26 +29,36 @@
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <QMouseEvent>
 
 #include "ktabbar.h"
 #include "ktabwidget.h"
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
-    : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
-      mHoverCloseButtonTab( 0 ), mDragSwitchTab( 0 ), mHoverCloseButton( 0 ),
-      mHoverCloseButtonEnabled( false ), mHoverCloseButtonDelayed( true ),
-      mTabReorderingEnabled( false ), mTabCloseActivatePrevious( false )
+    : QTabBar( parent )
+    , mReorderStartTab( -1 )
+    , mReorderPreviousTab( -1 )
+    //, mHoverCloseButtonTab( 0 )
+    , mDragSwitchTab( -1 )
+    //, mHoverCloseButton( 0 )
+    //, mHoverCloseButtonEnabled( false )
+    //, mHoverCloseButtonDelayed( true )
+    , mTabReorderingEnabled( false )
+    , mTabCloseActivatePrevious( false )
 {
+    if (name)
+        setObjectName(name);
+
     setAcceptDrops( true );
     setMouseTracking( true );
 
-    mEnableCloseButtonTimer = new QTimer( this );
-    connect( mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
+    //mEnableCloseButtonTimer = new QTimer( this );
+    //connect( mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
 
     mActivateDragSwitchTabTimer = new QTimer( this );
     connect( mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
 
-    connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
+    //connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
 }
 
 KTabBar::~KTabBar()
@@ -57,7 +67,7 @@ KTabBar::~KTabBar()
     //delete d;
 }
 
-void KTabBar::setTabEnabled( int id, bool enabled )
+/*void KTabBar::setTabEnabled( int id, bool enabled )
 {
     QTab * t = tab( id );
     if ( t ) {
@@ -65,13 +75,13 @@ void KTabBar::setTabEnabled( int id, bool enabled )
             t->setEnabled( enabled );
             QRect r( t->rect() );
             if ( !enabled && id == currentTab() && count()>1 ) {
-                QPtrList<QTab> *tablist = tabList();
+                Q3PtrList<QTab> *tablist = tabList();
                 if ( mTabCloseActivatePrevious )
                     t = tablist->at( count()-2 );
                 else {
-                int index = indexOf( id );
-                index += ( index+1 == count() ) ? -1 : 1;
-                t = tabAt( index );
+                    int index = indexOf( id );
+                    index += ( index+1 == count() ) ? -1 : 1;
+                    t = tabAt( index );
                 }
 
                 if ( t->isEnabled() ) {
@@ -83,16 +93,16 @@ void KTabBar::setTabEnabled( int id, bool enabled )
             repaint( r );
         }
     }
-}
+}*/
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
-    if( e->button() != LeftButton )
+    if( e->button() != Qt::LeftButton )
         return;
 
-    QTab *tab = selectTab( e->pos() );
-    if( tab ) {
-        emit( mouseDoubleClick( indexOf( tab->identifier() ) ) );
+    int tab = selectTab( e->pos() );
+    if( tab != -1 ) {
+        emit( mouseDoubleClick( tab ) );
         return;
     }
     QTabBar::mouseDoubleClickEvent( e );
@@ -100,14 +110,14 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 
 void KTabBar::mousePressEvent( QMouseEvent *e )
 {
-    if( e->button() == LeftButton ) {
-        mEnableCloseButtonTimer->stop();
+    if( e->button() == Qt::LeftButton ) {
+        //mEnableCloseButtonTimer->stop();
         mDragStart = e->pos();
     }
-    else if( e->button() == RightButton ) {
-        QTab *tab = selectTab( e->pos() );
-        if( tab ) {
-            emit( contextMenu( indexOf( tab->identifier() ), mapToGlobal( e->pos() ) ) );
+    else if( e->button() == Qt::RightButton ) {
+        int tab = selectTab( e->pos() );
+        if( tab != -1 ) {
+            emit( contextMenu( tab, mapToGlobal( e->pos() ) ) );
             return;
         }
     }
@@ -116,8 +126,8 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( e->state() == LeftButton ) {
-        QTab *tab = selectTab( e->pos() );
+    if ( e->state() == Qt::LeftButton ) {
+        int tab = selectTab( e->pos() );
         if ( mDragSwitchTab && tab != mDragSwitchTab ) {
           mActivateDragSwitchTabTimer->stop();
           mDragSwitchTab = 0;
@@ -128,31 +138,31 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
             newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
          {
-            if( tab ) {
-                emit( initiateDrag( indexOf( tab->identifier() ) ) );
+            if( tab != -1 ) {
+                emit( initiateDrag( tab ) );
                 return;
            }
        }
     }
-    else if ( e->state() == MidButton ) {
+    else if ( e->state() == Qt::MidButton ) {
         if (mReorderStartTab==-1) {
             int delay = KGlobalSettings::dndEventDelay();
             QPoint newPos = e->pos();
             if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
                 newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
             {
-                QTab *tab = selectTab( e->pos() );
-                if( tab && mTabReorderingEnabled ) {
-                    mReorderStartTab = indexOf( tab->identifier() );
-                    grabMouse( sizeAllCursor );
+                int tab = selectTab( e->pos() );
+                if( tab != -1 && mTabReorderingEnabled ) {
+                    mReorderStartTab = tab;
+                    grabMouse( Qt::SizeAllCursor );
                     return;
                 }
             }
         }
         else {
-            QTab *tab = selectTab( e->pos() );
-            if( tab ) {
-                int reorderStopTab = indexOf( tab->identifier() );
+            int tab = selectTab( e->pos() );
+            if( tab != -1 ) {
+                int reorderStopTab = tab;
                 if ( mReorderStartTab!=reorderStopTab && mReorderPreviousTab!=reorderStopTab ) {
                     emit( moveTab( mReorderStartTab, reorderStopTab ) );
                     mReorderPreviousTab=mReorderStartTab;
@@ -163,10 +173,10 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         }
     }
 
-    if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
+    /*if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
         QTab *t = selectTab( e->pos() );
         if( t && t->iconSet() && t->isEnabled() ) {
-            QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
+            QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, QIcon::Normal );
             QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() +4);
 
             int xoff = 0, yoff = 0;
@@ -209,37 +219,37 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             delete mHoverCloseButton;
             mHoverCloseButton = 0;
         }
-    }
+    }*/
 
     QTabBar::mouseMoveEvent( e );
 }
 
-void KTabBar::enableCloseButton()
+/*void KTabBar::enableCloseButton()
 {
     mHoverCloseButton->setEnabled(true);
-}
+}*/
 
 void KTabBar::activateDragSwitchTab()
 {
-    QTab *tab = selectTab( mapFromGlobal( QCursor::pos() ) );
-    if ( tab && mDragSwitchTab == tab )
-    setCurrentTab( mDragSwitchTab );
+    int tab = selectTab( mapFromGlobal( QCursor::pos() ) );
+    if ( tab != -1 && mDragSwitchTab == tab )
+        setCurrentIndex( mDragSwitchTab );
     mDragSwitchTab = 0;
 }
 
 void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 {
-    if( e->button() == MidButton ) {
+    if( e->button() == Qt::MidButton ) {
         if ( mReorderStartTab==-1 ) {
-            QTab *tab = selectTab( e->pos() );
-            if( tab ) {
-                emit( mouseMiddleClick( indexOf( tab->identifier() ) ) );
+            int tab = selectTab( e->pos() );
+            if( tab != -1 ) {
+                emit( mouseMiddleClick( tab ) );
                 return;
             }
         }
         else {
             releaseMouse();
-            setCursor( arrowCursor );
+            setCursor( Qt::ArrowCursor );
             mReorderStartTab=-1;
             mReorderPreviousTab=-1;
         }
@@ -249,13 +259,13 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 
 void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 {
-    QTab *tab = selectTab( e->pos() );
-    if( tab ) {
+    int tab = selectTab( e->pos() );
+    if( tab != -1 ) {
         bool accept = false;
         // The receivers of the testCanDecode() signal has to adjust
         // 'accept' accordingly.
         emit testCanDecode( e, accept);
-        if ( accept && tab != QTabBar::tab( currentTab() ) ) {
+        if ( accept && tab != currentIndex() ) {
           mDragSwitchTab = tab;
           mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval()*2, true );
         }
@@ -268,11 +278,11 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 
 void KTabBar::dropEvent( QDropEvent *e )
 {
-    QTab *tab = selectTab( e->pos() );
-    if( tab ) {
+    int tab = selectTab( e->pos() );
+    if( tab != -1 ) {
         mActivateDragSwitchTabTimer->stop();
         mDragSwitchTab = 0;
-        emit( receivedDropEvent( indexOf( tab->identifier() ) , e ) );
+        emit( receivedDropEvent( tab , e ) );
         return;
     }
     QTabBar::dropEvent( e );
@@ -281,36 +291,36 @@ void KTabBar::dropEvent( QDropEvent *e )
 #ifndef QT_NO_WHEELEVENT
 void KTabBar::wheelEvent( QWheelEvent *e )
 {
-    if ( e->orientation() == Horizontal )
+    if ( e->orientation() == Qt::Horizontal )
         return;
 
     emit( wheelDelta( e->delta() ) );
 }
 #endif
 
-void KTabBar::setTabColor( int id, const QColor& color )
+void KTabBar::setTabColor( int /*id*/, const QColor& /*color*/ )
 {
-    QTab *t = tab( id );
+    /*QTab *t = tab( id );
     if ( t ) {
         mTabColors.insert( id, color );
         repaint( t->rect(), false );
-    }
+    }*/
 }
 
-const QColor &KTabBar::tabColor( int id  ) const
+const QColor &KTabBar::tabColor( int /*id*/  ) const
 {
-    if ( mTabColors.contains( id ) )
-        return mTabColors[id];
+    //if ( mTabColors.contains( id ) )
+        //return mTabColors[id];
 
     return colorGroup().foreground();
 }
 
-int KTabBar::insertTab( QTab *t, int index )
+/*int KTabBar::insertTab( QTab *t, int index )
 {
     int res = QTabBar::insertTab( t, index );
 
     if ( mTabCloseActivatePrevious && count() > 2 ) {
-        QPtrList<QTab> *tablist = tabList();
+        Q3PtrList<QTab> *tablist = tabList();
         tablist->insert( count()-2, tablist->take( tablist->findRef( t ) ) );
     }
 
@@ -321,20 +331,20 @@ void KTabBar::removeTab( QTab *t )
 {
     mTabColors.remove( t->identifier() );
     QTabBar::removeTab( t );
-}
+}*/
 
-void KTabBar::paintLabel( QPainter *p, const QRect& br,
+/*void KTabBar::paintLabel( QPainter *p, const QRect& br,
                           QTab *t, bool has_focus ) const
 {
     QRect r = br;
     bool selected = currentTab() == t->identifier();
     if ( t->iconSet() ) {
         // the tab has an iconset, draw it in the right mode
-        QIconSet::Mode mode = ( t->isEnabled() && isEnabled() )
-                                 ? QIconSet::Normal : QIconSet::Disabled;
-        if ( mode == QIconSet::Normal && has_focus )
-            mode = QIconSet::Active;
-        QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, mode );
+        QIcon::Mode mode = ( t->isEnabled() && isEnabled() )
+                                 ? QIcon::Normal : QIcon::Disabled;
+        if ( mode == QIcon::Normal && has_focus )
+            mode = QIcon::Active;
+        QPixmap pixmap = t->iconSet()->pixmap( QIcon::Small, mode );
         int pixw = pixmap.width();
         int pixh = pixmap.height();
         r.setLeft( r.left() + pixw + 4 );
@@ -350,12 +360,12 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
                        pixmap );
     }
 
-    QStyle::SFlags flags = QStyle::Style_Default;
+    QStyle::State flags = QStyle::State_None;
 
     if ( isEnabled() && t->isEnabled() )
-        flags |= QStyle::Style_Enabled;
+        flags |= QStyle::State_Enabled;
     if ( has_focus )
-        flags |= QStyle::Style_HasFocus;
+        flags |= QStyle::State_HasFocus;
 
     QColorGroup cg( colorGroup() );
     if ( mTabColors.contains( t->identifier() ) )
@@ -364,7 +374,7 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
     style().drawControl( QStyle::CE_TabBarLabel, p, this, r,
                              t->isEnabled() ? cg : palette().disabled(),
                              flags, QStyleOption(t) );
-}
+}*/
 
 bool KTabBar::isTabReorderingEnabled() const
 {
@@ -386,41 +396,61 @@ void KTabBar::setTabCloseActivatePrevious( bool on )
     mTabCloseActivatePrevious = on;
 }
 
-void KTabBar::closeButtonClicked()
+/*void KTabBar::closeButtonClicked()
 {
     emit closeRequest( indexOf( mHoverCloseButtonTab->identifier() ) );
-}
+}*/
 
-void KTabBar::setHoverCloseButton( bool button )
+void KTabBar::setHoverCloseButton( bool /*button*/ )
 {
-    mHoverCloseButtonEnabled = button;
+    // KDE4 porting: disabled
+    return;
+    
+    /*mHoverCloseButtonEnabled = button;
     if ( !button )
-        onLayoutChange();
+        tabLayoutChange();*/
 }
 
 bool KTabBar::hoverCloseButton() const
 {
-    return mHoverCloseButtonEnabled;
+    // KDE4 porting: disabled
+    return false;
+    
+    //return mHoverCloseButtonEnabled;
 }
 
-void KTabBar::setHoverCloseButtonDelayed( bool delayed )
+void KTabBar::setHoverCloseButtonDelayed( bool /*delayed*/ )
 {
-    mHoverCloseButtonDelayed = delayed;
+    // KDE4 porting: disabled
+    return;
+    
+    //mHoverCloseButtonDelayed = delayed;
 }
 
 bool KTabBar::hoverCloseButtonDelayed() const
 {
-    return mHoverCloseButtonDelayed;
+    // KDE4 porting: disabled
+    return false;
+    
+    //return mHoverCloseButtonDelayed;
 }
 
-void KTabBar::onLayoutChange()
+void KTabBar::tabLayoutChange()
 {
-    mEnableCloseButtonTimer->stop();
-    delete mHoverCloseButton;
-    mHoverCloseButton = 0;
-    mHoverCloseButtonTab = 0;
+    //mEnableCloseButtonTimer->stop();
+    //delete mHoverCloseButton;
+    //mHoverCloseButton = 0;
+    //mHoverCloseButtonTab = 0;
     mActivateDragSwitchTabTimer->stop();
     mDragSwitchTab = 0;
+}
+
+int KTabBar::selectTab( const QPoint & pos ) const
+{
+    for (int i = 0; i < count(); ++i)
+        if (tabRect(i).contains(pos))
+            return i;
+    return -1;
 }
 
 #include "ktabbar.moc"

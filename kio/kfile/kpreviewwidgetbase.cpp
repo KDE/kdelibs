@@ -15,13 +15,13 @@ public:
     QStringList supportedMimeTypes;
 };
 
-QPtrDict<KPreviewWidgetBase::KPreviewWidgetBasePrivate> * KPreviewWidgetBase::s_private;
+Q3PtrDict<KPreviewWidgetBase::KPreviewWidgetBasePrivate> * KPreviewWidgetBase::s_private;
 
 KPreviewWidgetBase::KPreviewWidgetBase( QWidget *parent, const char *name )
     : QWidget( parent, name )
 {
     if ( !s_private )
-        s_private = new QPtrDict<KPreviewWidgetBasePrivate>();
+        s_private = new Q3PtrDict<KPreviewWidgetBasePrivate>();
 
     s_private->insert( this, new KPreviewWidgetBasePrivate() );
 }

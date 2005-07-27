@@ -14,22 +14,22 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  */
 
 #include <qbitmap.h>
-#include <qgrid.h>
-#include <qhbox.h>
-#include <qheader.h>
+#include <q3grid.h>
+#include <q3hbox.h>
+#include <q3header.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qpixmap.h>
 #include <qsplitter.h>
 #include <qtabwidget.h>
-#include <qvbox.h>
-#include <qwidgetstack.h>
+#include <q3vbox.h>
+#include <q3widgetstack.h>
 #include <qpainter.h>
 #include <qstyle.h>
 
@@ -45,13 +45,13 @@
 #include "kpushbutton.h"
 #include "kguiitem.h"
 
-class KJanusWidget::IconListItem : public QListBoxItem
+class KJanusWidget::IconListItem : public Q3ListBoxItem
 {
   public:
-    IconListItem( QListBox *listbox, const QPixmap &pixmap,
+    IconListItem( Q3ListBox *listbox, const QPixmap &pixmap,
 		   const QString &text );
-    virtual int height( const QListBox *lb ) const;
-    virtual int width( const QListBox *lb ) const;
+    virtual int height( const Q3ListBox *lb ) const;
+    virtual int width( const Q3ListBox *lb ) const;
     int expandMinimumWidth( int width );
 
   protected:
@@ -81,7 +81,7 @@ public:
   QSplitter * mSplitter;
 };
 
-template class QPtrList<QListViewItem>;
+template class Q3PtrList<Q3ListViewItem>;
 
 
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
@@ -97,7 +97,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     d = new KJanusWidgetPrivate;
     d->mSplitter = 0;
 
-    QFrame *page;
+    Q3Frame *page;
     if( mFace == TreeList )
     {
       d->mSplitter = new QSplitter( this );
@@ -113,18 +113,18 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mTreeList->setRootIsDecorated(true);
       mTreeList->setSorting( -1 );
       connect( mTreeList, SIGNAL(selectionChanged()), SLOT(slotShowPage()) );
-      connect( mTreeList, SIGNAL(clicked(QListViewItem *)), SLOT(slotItemClicked(QListViewItem *)));
+      connect( mTreeList, SIGNAL(clicked(Q3ListViewItem *)), SLOT(slotItemClicked(Q3ListViewItem *)));
 
       //
       // Page area. Title at top with a separator below and a pagestack using
       // all available space at bottom.
       //
-      QFrame *p = new QFrame( d->mSplitter );
+      Q3Frame *p = new Q3Frame( d->mSplitter );
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
       hbox->addSpacing( KDialog::marginHint() );
 
-      page = new QFrame( p );
+      page = new Q3Frame( p );
       hbox->addWidget( page, 10 );
     }
     else
@@ -143,7 +143,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mIconList->verticalScrollBar()->installEventFilter( this );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
       hbox->addSpacing( KDialog::marginHint() );
-      page = new QFrame( this );
+      page = new Q3Frame( this );
       hbox->addWidget( page, 10 );
     }
 
@@ -155,17 +155,17 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     QVBoxLayout *vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
 
     mTitleLabel = new QLabel( QString::fromLatin1("Empty Page"), page, "KJanusWidgetTitleLabel" );
-    vbox->addWidget( mTitleLabel, 0, QApplication::reverseLayout() ? AlignRight : AlignLeft );
+    vbox->addWidget( mTitleLabel, 0, QApplication::reverseLayout() ? Qt::AlignRight : Qt::AlignLeft );
 
     QFont titleFont( mTitleLabel->font() );
     titleFont.setBold( true );
     mTitleLabel->setFont( titleFont );
 
     mTitleSep = new KSeparator( page );
-    mTitleSep->setFrameStyle( QFrame::HLine|QFrame::Plain );
+    mTitleSep->setFrameStyle( Q3Frame::HLine|Q3Frame::Plain );
     vbox->addWidget( mTitleSep );
 
-    mPageStack = new QWidgetStack( page );
+    mPageStack = new Q3WidgetStack( page );
     connect(mPageStack, SIGNAL(aboutToShow(QWidget *)),
             SIGNAL(aboutToShowPage(QWidget *)));
     vbox->addWidget( mPageStack, 10 );
@@ -188,7 +188,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   else
   {
     mFace = Plain;
-    mPlainPage = new QFrame( this );
+    mPlainPage = new Q3Frame( this );
     topLayout->addWidget( mPlainPage, 10 );
   }
 
@@ -212,7 +212,7 @@ bool KJanusWidget::isValid() const
 }
 
 
-QFrame *KJanusWidget::plainPage()
+Q3Frame *KJanusWidget::plainPage()
 {
   return mPlainPage;
 }
@@ -233,7 +233,7 @@ QWidget *KJanusWidget::FindParent()
   }
 }
 
-QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
+Q3Frame *KJanusWidget::addPage( const QStringList &items, const QString &header,
 			       const QPixmap &pixmap )
 {
   if( !mValid )
@@ -242,7 +242,7 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
     return 0;
   }
 
-  QFrame *page = new QFrame( FindParent(), "page" );
+  Q3Frame *page = new Q3Frame( FindParent(), "page" );
   addPageWidget( page, items, header, pixmap );
 
   return page;
@@ -253,13 +253,13 @@ void KJanusWidget::pageGone( QObject *obj )
   removePage( static_cast<QWidget*>( obj ) );
 }
 
-void KJanusWidget::slotReopen( QListViewItem * item )
+void KJanusWidget::slotReopen( Q3ListViewItem * item )
 {
   if( item )
     item->setOpen( true );
 }
 
-QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
+Q3Frame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 			       const QPixmap &pixmap )
 {
   QStringList items;
@@ -269,7 +269,7 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 
 
 
-QVBox *KJanusWidget::addVBoxPage( const QStringList &items,
+Q3VBox *KJanusWidget::addVBoxPage( const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -279,14 +279,14 @@ QVBox *KJanusWidget::addVBoxPage( const QStringList &items,
     return 0;
   }
 
-  QVBox *page = new QVBox(FindParent() , "page" );
+  Q3VBox *page = new Q3VBox(FindParent() , "page" );
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
   return page;
 }
 
-QVBox *KJanusWidget::addVBoxPage( const QString &itemName,
+Q3VBox *KJanusWidget::addVBoxPage( const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -295,7 +295,7 @@ QVBox *KJanusWidget::addVBoxPage( const QString &itemName,
   return addVBoxPage(items, header, pixmap);
 }
 
-QHBox *KJanusWidget::addHBoxPage( const QStringList &items,
+Q3HBox *KJanusWidget::addHBoxPage( const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -304,14 +304,14 @@ QHBox *KJanusWidget::addHBoxPage( const QStringList &items,
     return 0;
   }
 
-  QHBox *page = new QHBox(FindParent(), "page");
+  Q3HBox *page = new Q3HBox(FindParent(), "page");
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
   return page;
 }
 
-QHBox *KJanusWidget::addHBoxPage( const QString &itemName,
+Q3HBox *KJanusWidget::addHBoxPage( const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -320,7 +320,7 @@ QHBox *KJanusWidget::addHBoxPage( const QString &itemName,
   return addHBoxPage(items, header, pixmap);
 }
 
-QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
+Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
 				  const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
@@ -331,7 +331,7 @@ QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
     return 0;
   }
 
-  QGrid *page = new QGrid( n, dir, FindParent(), "page" );
+  Q3Grid *page = new Q3Grid( n, dir, FindParent(), "page" );
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -339,7 +339,7 @@ QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
 }
 
 
-QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
+Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
 				  const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )
@@ -349,11 +349,11 @@ QGrid *KJanusWidget::addGridPage( int n, Orientation dir,
   return addGridPage(n, dir, items, header, pixmap);
 }
 
-void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page)
+void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, Q3Frame *page)
 {
   bool isTop = true;
-  QListViewItem *curTop = 0, *child, *last, *newChild;
-  unsigned int index = 1;
+  Q3ListViewItem *curTop = 0, *child, *last, *newChild;
+  int index = 1;
   QStringList curPath;
 
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it, index++ ) {
@@ -376,9 +376,9 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
       // This node didn't have any children at all, lets just insert the
       // new child.
       if (isTop)
-        newChild = new QListViewItem(mTreeList, name);
+        newChild = new Q3ListViewItem(mTreeList, name);
       else
-        newChild = new QListViewItem(curTop, name);
+        newChild = new Q3ListViewItem(curTop, name);
 
     }
     else if (child) {
@@ -395,9 +395,9 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
     else {
       // the node had some children, but we didn't find the given name
       if (isTop)
-        newChild = new QListViewItem(mTreeList, last, name);
+        newChild = new Q3ListViewItem(mTreeList, last, name);
       else
-        newChild = new QListViewItem(curTop, last, name);
+        newChild = new Q3ListViewItem(curTop, last, name);
     }
 
     // Now make the element expandable if it is a path component, and make
@@ -423,7 +423,7 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
   }
 }
 
-void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
+void KJanusWidget::addPageWidget( Q3Frame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
   connect(page, SIGNAL(destroyed(QObject*)), SLOT(pageGone(QObject*)));
@@ -511,16 +511,13 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
   //
   // Hide old children
   //
-  QObjectList *l = (QObjectList*)mSwallowPage->children(); // silence please
-  for( uint i=0; i < l->count(); i++ )
-  {
-    QObject *o = l->at(i);
-    if( o->isWidgetType() )
-    {
-      ((QWidget*)o)->hide();
-    }
+  QList<QObject*> l = mSwallowPage->children(); // silence please
+  foreach ( QObject* o, l ) {
+	  if ( o->isWidgetType() )
+	  {
+		( ( QWidget* )o )->hide();
+	  }
   }
-
   //
   // Add new child or make default size
   //
@@ -553,7 +550,7 @@ bool KJanusWidget::slotShowPage()
 
   if( mFace == TreeList )
   {
-    QListViewItem *node = mTreeList->selectedItem();
+    Q3ListViewItem *node = mTreeList->selectedItem();
     if( !node ) { return false; }
 
     QWidget *stackItem = mTreeListToPageStack[node];
@@ -562,7 +559,7 @@ bool KJanusWidget::slotShowPage()
   }
   else if( mFace == IconList )
   {
-    QListBoxItem *node = mIconList->item( mIconList->currentItem() );
+    Q3ListBoxItem *node = mIconList->item( mIconList->currentItem() );
     if( !node ) { return false; }
     QWidget *stackItem = mIconListToPageStack[node];
     // Make sure to call through the virtual function showPage(int)
@@ -602,9 +599,9 @@ bool KJanusWidget::showPage( QWidget *w )
     mTitleLabel->setText( d->mIntToTitle[index] );
     if( mFace == TreeList )
     {
-      QMap<QListViewItem *, QWidget *>::Iterator it;
+      QMap<Q3ListViewItem *, QWidget *>::Iterator it;
       for (it = mTreeListToPageStack.begin(); it != mTreeListToPageStack.end(); ++it){
-        QListViewItem *key = it.key();
+        Q3ListViewItem *key = it.key();
         QWidget *val = it.data();
         if (val == w) {
           mTreeList->setSelected(key, true );
@@ -614,9 +611,9 @@ bool KJanusWidget::showPage( QWidget *w )
     }
     else
     {
-      QMap<QListBoxItem *, QWidget *>::Iterator it;
+      QMap<Q3ListBoxItem *, QWidget *>::Iterator it;
       for (it = mIconListToPageStack.begin(); it != mIconListToPageStack.end(); ++it){
-        QListBoxItem *key = it.key();
+        Q3ListBoxItem *key = it.key();
         QWidget *val = it.data();
         if (val == w) {
           mIconList->setSelected( key, true );
@@ -642,13 +639,13 @@ bool KJanusWidget::showPage( QWidget *w )
 int KJanusWidget::activePageIndex() const
 {
   if( mFace == TreeList) {
-    QListViewItem *node = mTreeList->selectedItem();
+    Q3ListViewItem *node = mTreeList->selectedItem();
     if( !node ) { return -1; }
     QWidget *stackItem = mTreeListToPageStack[node];
     return d->mPageToInt[stackItem];
   }
   else if (mFace == IconList) {
-    QListBoxItem *node = mIconList->item( mIconList->currentItem() );
+    Q3ListBoxItem *node = mIconList->item( mIconList->currentItem() );
     if( !node ) { return false; }
     QWidget *stackItem = mIconListToPageStack[node];
     return d->mPageToInt[stackItem];
@@ -716,7 +713,7 @@ void KJanusWidget::slotFontChanged()
 }
 
 // makes the treelist behave like the list of kcontrol
-void KJanusWidget::slotItemClicked(QListViewItem *it)
+void KJanusWidget::slotItemClicked(Q3ListViewItem *it)
 {
   if(it && (it->childCount()>0))
     it->setOpen(!it->isOpen());
@@ -759,7 +756,7 @@ QSize KJanusWidget::minimumSizeHint() const
 
     if( mFace == TreeList )
     {
-      s1.rwidth() += style().pixelMetric( QStyle::PM_SplitterWidth );
+      s1.rwidth() += style()->pixelMetric( QStyle::PM_SplitterWidth );
       s2 = mTreeList->minimumSize();
     }
     else
@@ -846,11 +843,11 @@ void KJanusWidget::unfoldTreeList( bool persist )
   if( mFace == TreeList )
   {
     if( persist )
-      connect( mTreeList, SIGNAL( collapsed( QListViewItem * ) ), this, SLOT( slotReopen( QListViewItem * ) ) );
+      connect( mTreeList, SIGNAL( collapsed( Q3ListViewItem * ) ), this, SLOT( slotReopen( Q3ListViewItem * ) ) );
     else
-      disconnect( mTreeList, SIGNAL( collapsed( QListViewItem * ) ), this, SLOT( slotReopen( QListViewItem * ) ) );
+      disconnect( mTreeList, SIGNAL( collapsed( Q3ListViewItem * ) ), this, SLOT( slotReopen( Q3ListViewItem * ) ) );
 
-    for( QListViewItem * item = mTreeList->firstChild(); item; item = item->itemBelow() )
+    for( Q3ListViewItem * item = mTreeList->firstChild(); item; item = item->itemBelow() )
       item->setOpen( true );
   }
 }
@@ -928,7 +925,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
 
 
 KJanusWidget::IconListBox::IconListBox( QWidget *parent, const char *name,
-					WFlags f )
+					Qt::WFlags f )
   :KListBox( parent, name, f ), mShowAll(false), mHeightValid(false),
    mWidthValid(false)
 {
@@ -940,7 +937,7 @@ void KJanusWidget::IconListBox::updateMinimumHeight()
   if( mShowAll && !mHeightValid )
   {
     int h = frameWidth()*2;
-    for( QListBoxItem *i = item(0); i; i = i->next() )
+    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
     {
       h += i->height( this );
     }
@@ -955,13 +952,13 @@ void KJanusWidget::IconListBox::updateWidth()
   if( !mWidthValid )
   {
     int maxWidth = 10;
-    for( QListBoxItem *i = item(0); i; i = i->next() )
+    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
     {
       int w = ((IconListItem *)i)->width(this);
       maxWidth = QMAX( w, maxWidth );
     }
 
-    for( QListBoxItem *i = item(0); i; i = i->next() )
+    for( Q3ListBoxItem *i = item(0); i; i = i->next() )
     {
       ((IconListItem *)i)->expandMinimumWidth( maxWidth );
     }
@@ -997,9 +994,9 @@ void KJanusWidget::IconListBox::setShowAll( bool showAll )
 
 
 
-KJanusWidget::IconListItem::IconListItem( QListBox *listbox, const QPixmap &pixmap,
+KJanusWidget::IconListItem::IconListItem( Q3ListBox *listbox, const QPixmap &pixmap,
                                           const QString &text )
-  : QListBoxItem( listbox )
+  : Q3ListBoxItem( listbox )
 {
   mPixmap = pixmap;
   if( mPixmap.isNull() )
@@ -1057,7 +1054,7 @@ void KJanusWidget::IconListItem::paint( QPainter *painter )
   }
 }
 
-int KJanusWidget::IconListItem::height( const QListBox *lb ) const
+int KJanusWidget::IconListItem::height( const Q3ListBox *lb ) const
 {
   if( text().isEmpty() )
   {
@@ -1071,7 +1068,7 @@ int KJanusWidget::IconListItem::height( const QListBox *lb ) const
 }
 
 
-int KJanusWidget::IconListItem::width( const QListBox *lb ) const
+int KJanusWidget::IconListItem::width( const Q3ListBox *lb ) const
 {
   int wt = lb->fontMetrics().boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text() ).width() + 10;
   int wp = mPixmap.width() + 10;
@@ -1094,7 +1091,7 @@ void KJanusWidget::removePage( QWidget *page )
 
   if ( mFace == TreeList )
   {
-    QMap<QListViewItem*, QWidget *>::Iterator i;
+    QMap<Q3ListViewItem*, QWidget *>::Iterator i;
     for( i = mTreeListToPageStack.begin(); i != mTreeListToPageStack.end(); ++i )
       if (i.data()==page)
       {
@@ -1109,7 +1106,7 @@ void KJanusWidget::removePage( QWidget *page )
   }
   else if ( mFace == IconList )
   {
-    QMap<QListBoxItem*, QWidget *>::Iterator i;
+    QMap<Q3ListBoxItem*, QWidget *>::Iterator i;
     for( i = mIconListToPageStack.begin(); i != mIconListToPageStack.end(); ++i )
       if (i.data()==page)
       {

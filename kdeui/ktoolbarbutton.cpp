@@ -17,8 +17,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <config.h>
@@ -27,13 +27,14 @@
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
 
+#include <qevent.h>
 #include <qstyle.h>
 #include <qimage.h>
 #include <qtimer.h>
 #include <qdrawutil.h>
 #include <qtooltip.h>
 #include <qbitmap.h>
-#include <qpopupmenu.h>
+#include <qmenu.h>
 #include <qcursor.h>
 #include <qpainter.h>
 #include <qlayout.h>
@@ -48,7 +49,7 @@
 // needed to get our instance
 #include <kmainwindow.h>
 
-template class QIntDict<KToolBarButton>;
+template class Q3IntDict<KToolBarButton>;
 
 class KToolBarButtonPrivate
 {
@@ -124,7 +125,7 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
             this,         SLOT( modeChange() ));
   }
 
-  setFocusPolicy( NoFocus );
+  setFocusPolicy( Qt::NoFocus );
 
   // connect all of our slots and start trapping events
   connect(this, SIGNAL( clicked() ),
@@ -157,7 +158,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
             this,         SLOT( modeChange() ));
   }
 
-  setFocusPolicy( NoFocus );
+  setFocusPolicy( Qt::NoFocus );
 
   // connect all of our slots and start trapping events
   connect(this, SIGNAL( clicked() ),
@@ -169,13 +170,26 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   installEventFilter(this);
 
   // set our pixmap and do our initial setup
-  setIconSet( QIconSet( pixmap ));
+  setIconSet( QIcon( pixmap ));
   modeChange();
 }
 
 KToolBarButton::~KToolBarButton()
 {
   delete d; d = 0;
+}
+
+void KToolBarButton::initStyleOption(QStyleOptionToolButton* opt) const
+{
+  opt->init(this);
+  opt->font      = KGlobalSettings::toolBarFont();
+  opt->icon      = icon();
+  opt->iconSize  = QSize(d->m_iconSize, d->m_iconSize);
+  opt->text      = textLabel();
+  opt->features  = QStyleOptionToolButton::None; //We don't Qt know about the menu, since we don't want the split-button!
+	//### delay stuff?
+  opt->subControls       = QStyle::SC_ToolButton;
+  opt->activeSubControls = 0; //### FIXME: !!
 }
 
 void KToolBarButton::modeChange()
@@ -246,7 +260,9 @@ void KToolBarButton::modeChange()
     break;
   }
 
-  mysize = style().sizeFromContents(QStyle::CT_ToolButton, this, mysize).
+  QStyleOptionToolButton opt;
+  initStyleOption(&opt);
+  mysize = style()->sizeFromContents(QStyle::CT_ToolButton, &opt,  mysize, this).
                expandedTo(QApplication::globalStrut());
 
   // make sure that this isn't taller then it is wide
@@ -290,7 +306,7 @@ void KToolBarButton::setIcon( const QString &icon )
         d->m_iconName, KIcon::Toolbar, d->m_iconSize ));
 }
 
-void KToolBarButton::setIconSet( const QIconSet &iconset )
+void KToolBarButton::setIconSet( const QIcon &iconset )
 {
   QToolButton::setIconSet( iconset );
 }
@@ -303,28 +319,28 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
     QToolButton::setPixmap( pixmap );
     return;
   }
-  QIconSet set = iconSet();
-  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Active );
+  QIcon set = iconSet();
+  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Active );
   QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDefaultPixmap( const QPixmap &pixmap )
 {
-  QIconSet set = iconSet();
-  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Normal );
+  QIcon set = iconSet();
+  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Normal );
   QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 {
-  QIconSet set = iconSet();
-  set.setPixmap( pixmap, QIconSet::Automatic, QIconSet::Disabled );
+  QIcon set = iconSet();
+  set.setPixmap( pixmap, QIcon::Automatic, QIcon::Disabled );
   QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDefaultIcon( const QString& icon )
 {
-  QIconSet set = iconSet();
+  QIcon set = iconSet();
   QPixmap pm;
   if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
@@ -332,13 +348,13 @@ void KToolBarButton::setDefaultIcon( const QString& icon )
   else
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
         d->m_iconSize );
-  set.setPixmap( pm, QIconSet::Automatic, QIconSet::Normal );
+  set.setPixmap( pm, QIcon::Automatic, QIcon::Normal );
   QToolButton::setIconSet( set );
 }
 
 void KToolBarButton::setDisabledIcon( const QString& icon )
 {
-  QIconSet set = iconSet();
+  QIcon set = iconSet();
   QPixmap pm;
   if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
@@ -346,25 +362,19 @@ void KToolBarButton::setDisabledIcon( const QString& icon )
   else
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
         d->m_iconSize );
-  set.setPixmap( pm, QIconSet::Automatic, QIconSet::Disabled );
+  set.setPixmap( pm, QIcon::Automatic, QIcon::Disabled );
   QToolButton::setIconSet( set );
 }
 
-QPopupMenu *KToolBarButton::popup()
-{
-  // obsolete
-  // KDE4: remove me
-  return QToolButton::popup();
-}
 
-void KToolBarButton::setPopup(QPopupMenu *p, bool)
+void KToolBarButton::setPopup(QMenu *p, bool)
 {
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(-1);
 }
 
 
-void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool)
+void KToolBarButton::setDelayedPopup (QMenu *p, bool)
 {
   QToolButton::setPopup(p);
   QToolButton::setPopupDelay(QApplication::startDragTime());
@@ -450,10 +460,10 @@ void KToolBarButton::mousePressEvent( QMouseEvent * e )
 {
   d->m_buttonDown = true;
 
-  if ( e->button() == MidButton )
+  if ( e->button() == Qt::MidButton )
   {
     // Get QToolButton to show the button being down while pressed
-    QMouseEvent ev( QEvent::MouseButtonPress, e->pos(), e->globalPos(), LeftButton, e->state() );
+    QMouseEvent ev( QEvent::MouseButtonPress, e->pos(), e->globalPos(), Qt::LeftButton, e->state() );
     QToolButton::mousePressEvent(&ev);
     return;
   }
@@ -462,10 +472,10 @@ void KToolBarButton::mousePressEvent( QMouseEvent * e )
 
 void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
 {
-  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & KeyButtonMask));
-  if ( e->button() == MidButton )
+  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
+  if ( e->button() == Qt::MidButton )
   {
-    QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), LeftButton, e->state() );
+    QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), Qt::LeftButton, e->state() );
     QToolButton::mouseReleaseEvent(&ev);
   }
   else
@@ -479,23 +489,31 @@ void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
     emit buttonClicked( d->m_id, state );
 }
 
-void KToolBarButton::drawButton( QPainter *_painter )
+void KToolBarButton::paintEvent( QPaintEvent* )
 {
-  QStyle::SFlags flags   = QStyle::Style_Default;
-  QStyle::SCFlags active = QStyle::SC_None;
+  QPainter painter(this);
+#ifdef __GNUC__
+    #warning "KDE4 port: Most of this can be removed, Qt can do this stuff now! -- Maks"
+#endif
+  QStyle::State flags   = QStyle::State_None;
+  QStyle::SubControls active = QStyle::SC_None;
 
   if (isDown()) {
-    flags  |= QStyle::Style_Down;
+    flags  |= QStyle::State_Sunken;
     active |= QStyle::SC_ToolButton;
   }
-  if (isEnabled()) 	flags |= QStyle::Style_Enabled;
-  if (isOn()) 		flags |= QStyle::Style_On;
-  if (isEnabled() && hasMouse())	flags |= QStyle::Style_Raised;
-  if (hasFocus())	flags |= QStyle::Style_HasFocus;
+  if (isEnabled()) 	flags |= QStyle::State_Enabled;
+  if (isOn()) 		flags |= QStyle::State_On;
+  if (isEnabled() && hasMouse())	flags |= QStyle::State_Raised;
+  if (hasFocus())	flags |= QStyle::State_HasFocus;
 
   // Draw a styled toolbutton
-  style().drawComplexControl(QStyle::CC_ToolButton, _painter, this, rect(),
-	colorGroup(), flags, QStyle::SC_ToolButton, active, QStyleOption());
+  QStyleOptionToolButton opt;
+  initStyleOption(&opt);
+  opt.state             = flags;
+  opt.activeSubControls = active;
+
+  style()->drawComplexControl(QStyle::CC_ToolButton, &opt, &painter, this);
 
   int dx, dy;
   QFont tmp_font(KGlobalSettings::toolBarFont());
@@ -505,49 +523,49 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only
   {
-    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
-            	QIconSet::Disabled,
-        isOn() ? QIconSet::On : QIconSet::Off );
+    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
+        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
+            	QIcon::Disabled,
+        isOn() ? QIcon::On : QIcon::Off );
     if( !pixmap.isNull())
     {
       dx = ( width() - pixmap.width() ) / 2;
       dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
   }
   else if (d->m_iconText == KToolBar::IconTextRight) // icon and text (if any)
   {
-    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
-            	QIconSet::Disabled,
-        isOn() ? QIconSet::On : QIconSet::Off );
+    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
+        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
+            	QIcon::Disabled,
+        isOn() ? QIcon::On : QIcon::Off );
     if( !pixmap.isNull())
     {
       dx = 4;
       dy = ( height() - pixmap.height() ) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
     {
-      textFlags = AlignVCenter|AlignLeft;
+      textFlags = Qt::AlignVCenter|Qt::AlignLeft;
       if (!pixmap.isNull())
         dx = 4 + pixmap.width() + 2;
       else
         dx = 4;
       dy = 0;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -559,10 +577,10 @@ void KToolBarButton::drawButton( QPainter *_painter )
   {
     if (!textLabel().isNull())
     {
-      textFlags = AlignVCenter|AlignLeft;
+      textFlags = Qt::AlignVCenter|Qt::AlignLeft;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = (height() - fm.lineSpacing()) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -572,29 +590,29 @@ void KToolBarButton::drawButton( QPainter *_painter )
   }
   else if (d->m_iconText == KToolBar::IconTextBottom)
   {
-    QPixmap pixmap = iconSet().pixmap( QIconSet::Automatic,
-        isEnabled() ? (d->m_isActive ? QIconSet::Active : QIconSet::Normal) :
-            	QIconSet::Disabled,
-        isOn() ? QIconSet::On : QIconSet::Off );
+    QPixmap pixmap = iconSet().pixmap( QIcon::Automatic,
+        isEnabled() ? (d->m_isActive ? QIcon::Active : QIcon::Normal) :
+            	QIcon::Disabled,
+        isOn() ? QIcon::On : QIcon::Off );
     if( !pixmap.isNull())
     {
       dx = (width() - pixmap.width()) / 2;
       dy = (height() - fm.lineSpacing() - pixmap.height()) / 2;
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
       }
-      _painter->drawPixmap( dx, dy, pixmap );
+      painter.drawPixmap( dx, dy, pixmap );
     }
 
     if (!textLabel().isNull())
     {
-      textFlags = AlignBottom|AlignHCenter;
+      textFlags = Qt::AlignBottom|Qt::AlignHCenter;
       dx = (width() - fm.width(textLabel())) / 2;
       dy = height() - fm.lineSpacing() - 4;
 
-      if ( isDown() && style().styleHint(QStyle::SH_GUIStyle) == WindowsStyle )
+      if ( isDown() && style()->styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle )
       {
         ++dx;
         ++dy;
@@ -606,62 +624,49 @@ void KToolBarButton::drawButton( QPainter *_painter )
   // Draw the text at the position given by textRect, and using textFlags
   if (!textLabel().isNull() && !textRect.isNull())
   {
-      _painter->setFont(KGlobalSettings::toolBarFont());
+      painter.setFont(KGlobalSettings::toolBarFont());
       if (!isEnabled())
-        _painter->setPen(palette().disabled().dark());
+        painter.setPen(palette().disabled().dark());
       else if(d->m_isRaised)
-        _painter->setPen(KGlobalSettings::toolBarHighlightColor());
+        painter.setPen(KGlobalSettings::toolBarHighlightColor());
       else
-	_painter->setPen( colorGroup().buttonText() );
-      _painter->drawText(textRect, textFlags, textLabel());
+	painter.setPen( colorGroup().buttonText() );
+      painter.drawText(textRect, textFlags, textLabel());
   }
 
   if (QToolButton::popup())
   {
-    QStyle::SFlags arrowFlags = QStyle::Style_Default;
+    QStyle::State arrowFlags = QStyle::State_None;
 
-    if (isDown())	arrowFlags |= QStyle::Style_Down;
-    if (isEnabled()) 	arrowFlags |= QStyle::Style_Enabled;
+    if (isDown())	arrowFlags |= QStyle::State_Sunken;
+    if (isEnabled()) 	arrowFlags |= QStyle::State_Enabled;
 
-      style().drawPrimitive(QStyle::PE_ArrowDown, _painter,
-          QRect(width()-7, height()-7, 7, 7), colorGroup(),
-	  arrowFlags, QStyleOption() );
+    QStyleOption opt;
+    opt.init(this);
+    opt.rect  = QRect(width()-7, height()-7, 7, 7);
+    opt.state = arrowFlags;
+    style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &opt, &painter);
   }
 }
 
-void KToolBarButton::paletteChange(const QPalette &)
+void KToolBarButton::changeEvent(QEvent* e)
 {
-  if(!d->m_isSeparator)
+  switch (e->type())
   {
-    modeChange();
-    repaint(false); // no need to delete it first therefore only false
+    case QEvent::PaletteChange:
+    case QEvent::ApplicationPaletteChange:
+      if(!d->m_isSeparator)
+      {
+        modeChange();
+        repaint(false); // no need to delete it first therefore only false
+      }
+      break;
+    case QEvent::FontChange:
+    case QEvent::ApplicationFontChange:
+      if (d->m_iconText != KToolBar::IconOnly)
+        modeChange();
+    default: ; //Shadup!
   }
-}
-
-bool KToolBarButton::event(QEvent *e)
-{
-  if (e->type() == QEvent::ParentFontChange || e->type() == QEvent::ApplicationFontChange)
-  {
-     //If we use toolbar text, apply the settings again, to relayout...
-     if (d->m_iconText != KToolBar::IconOnly)
-       modeChange();
-     return true;
-  }
-
-  return QToolButton::event(e);
-}
-
-
-void KToolBarButton::showMenu()
-{
-  // obsolete
-  // KDE4: remove me
-}
-
-void KToolBarButton::slotDelayTimeout()
-{
-  // obsolete
-  // KDE4: remove me
 }
 
 void KToolBarButton::slotClicked()
@@ -670,9 +675,9 @@ void KToolBarButton::slotClicked()
 
   // emit buttonClicked when the button was clicked while being in an extension popupmenu
   if ( d->m_parent && !d->m_parent->rect().contains( geometry().center() ) ) {
-    ButtonState state = KApplication::keyboardMouseState();
-    if ( ( state & MouseButtonMask ) == NoButton )
-      state = ButtonState( LeftButton | state );
+    Qt::ButtonState state = KApplication::keyboardMouseState();
+    if ( ( state & Qt::MouseButtonMask ) == Qt::NoButton )
+      state = Qt::ButtonState( Qt::LeftButton | state );
     emit buttonClicked( d->m_id, state ); // Doesn't work with MidButton
   }
 }

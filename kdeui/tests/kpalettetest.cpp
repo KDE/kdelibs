@@ -1,4 +1,6 @@
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qwidget.h>
 #include <qtimer.h>
@@ -12,7 +14,9 @@
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv, "KPalettetest" );
+    KAboutData about("KPaletteTest", "KPaletteTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+    KApplication a;
 
     QStringList palettes = KPalette::getPaletteList();
     for(QStringList::ConstIterator it = palettes.begin(); 

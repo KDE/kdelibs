@@ -272,7 +272,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
                        "px " +
                        QString::number(style->borderVerticalSpacing()) +
                        "px");
-        return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
+        return new CSSPrimitiveValueImpl(DOMString(string), CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING:
         return new CSSPrimitiveValueImpl(style->borderHorizontalSpacing(),
@@ -389,7 +389,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_FONT_FAMILY:
     {
         FontDef def = style->htmlFont().getFontDef();
-        return new CSSPrimitiveValueImpl(def.family, CSSPrimitiveValue::CSS_STRING);
+        return new CSSPrimitiveValueImpl(DOMString(def.family), CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_FONT_SIZE:
     {
@@ -555,7 +555,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         }
         if (string.length() == 0)
             string = "none";
-        return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
+        return new CSSPrimitiveValueImpl(DOMString(string), CSSPrimitiveValue::CSS_STRING);
     }
     case CSS_PROP_TEXT_INDENT:
         return valueForLength(style->textIndent(), renderer->contentWidth());

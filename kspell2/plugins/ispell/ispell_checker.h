@@ -35,7 +35,6 @@
 #include "ispell.h"
 
 #include <qstringlist.h>
-#include <qvaluelist.h>
 #include <qtextcodec.h>
 #include <qstring.h>
 
@@ -50,7 +49,7 @@ public:
 	QStringList suggestWord(const QString& word);
 
 	bool requestDictionary (const char * szLang);
-	static QValueList<QString> allDics();
+	static QStringList allDics();
 private:
 	ISpellChecker(const ISpellChecker&);	// no impl
 	void operator=(const ISpellChecker&);	// no impl

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "marginwidget.h"
@@ -26,7 +26,6 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qwhatsthis.h>
 #include <klocale.h>
 #include <kglobal.h>
 
@@ -146,21 +145,21 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	m_landscape = false;
 
 	m_custom = new QCheckBox(i18n("&Use custom margins"), this);
-	  QWhatsThis::add(m_custom, whatsThisCheckboxMarginWidget);
+	  m_custom->setWhatsThis(whatsThisCheckboxMarginWidget);
 	m_top = new MarginValueWidget(0, 0.0, this);
-	  QWhatsThis::add(m_top, whatsThisTopMarginWidget);
+	  m_top->setWhatsThis(whatsThisTopMarginWidget);
 	m_bottom = new MarginValueWidget(m_top, 0.0, this);
-	  QWhatsThis::add(m_bottom, whatsThisBottomMarginWidget);
+	  m_bottom->setWhatsThis(whatsThisBottomMarginWidget);
 	m_left = new MarginValueWidget(m_bottom, 0.0, this);
-	  QWhatsThis::add(m_left, whatsThisLeftMarginWidget);
+	  m_left->setWhatsThis(whatsThisLeftMarginWidget);
 	m_right = new MarginValueWidget(m_left, 0.0, this);
-	  QWhatsThis::add(m_right, whatsThisRightMarginWidget);
+	  m_right->setWhatsThis(whatsThisRightMarginWidget);
 	m_top->setLabel(i18n("&Top:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_bottom->setLabel(i18n("&Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_left->setLabel(i18n("Le&ft:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
-	  QWhatsThis::add(m_units, whatsThisMeasurementUnitMarginWidget);
+	  m_units->setWhatsThis(whatsThisMeasurementUnitMarginWidget);
 	m_units->insertItem(i18n("Pixels (1/72nd in)"));
 	if ( allowMetricUnit )
 	{
@@ -174,7 +173,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 	connect(m_units, SIGNAL(activated(int)), m_left, SLOT(setMode(int)));
 	connect(m_units, SIGNAL(activated(int)), m_right, SLOT(setMode(int)));
 	m_preview = new MarginPreview(this);
-	  QWhatsThis::add(m_preview, whatsThisDragAndPreviewMarginWidget);
+	  m_preview->setWhatsThis(whatsThisDragAndPreviewMarginWidget);
 	m_preview->setMinimumSize(60, 80);
 	m_preview->setPageSize(m_pagesize[ 0 ], m_pagesize[ 1 ]);
 	connect(m_preview, SIGNAL(marginChanged(int,float)), SLOT(slotMarginPreviewChanged(int,float)));

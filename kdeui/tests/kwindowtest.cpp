@@ -1,7 +1,7 @@
 #include <qmessagebox.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qpixmap.h>
-#include <qkeycode.h>
+#include <qnamespace.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qcursor.h>
@@ -17,7 +17,7 @@
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include "kwindowtest.h"
 
 #include <kglobal.h>
@@ -49,22 +49,22 @@ setAutoSaveSettings();
     menuBar = new KMenuBar (this);
 
     // First popup... 
-    fileMenu = new QPopupMenu;
+    fileMenu = new Q3PopupMenu;
     // We insert this popup in menubar with caption "File".
     // Prefix "&" means that "F" will be underlined
     menuBar->insertItem ("&File", fileMenu);
     // We insert item "Exit" with accelerator ALT-Q, and connect
     // it to application's exit-slot.
     fileMenu->insertItem ("&Exit", KApplication::kApplication(),
-                          SLOT( quit() ), ALT + Key_Q );
+                          SLOT( quit() ), Qt::ALT + Qt::Key_Q );
 
     // Another popup...
-    toolBarMenu = new QPopupMenu;
+    toolBarMenu = new Q3PopupMenu;
     menuBar->insertItem ("&Toolbars", toolBarMenu);
     toolBarMenu->insertItem ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
     toolBarMenu->insertItem ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
 
-    itemsMenu = new QPopupMenu;
+    itemsMenu = new Q3PopupMenu;
     menuBar->insertItem ("&Items", itemsMenu);
 
     exitB = true;   // exit button is shown
@@ -153,7 +153,7 @@ setAutoSaveSettings();
     tb->alignItemRight (6);
 
     // Another toolbar
-    tb1 = new KToolBar(this, QMainWindow::DockTop); // this one is normal and has separators
+    tb1 = new KToolBar(this, Qt::DockTop); // this one is normal and has separators
 
 
     pix = BarIcon("filenew");
@@ -208,7 +208,7 @@ setAutoSaveSettings();
     tb1->setTitle ("Toolbar 2");
 
     // Set main widget. In this example it is Qt's multiline editor.
-    widget = new QMultiLineEdit (this);
+    widget = new Q3MultiLineEdit (this);
 
     // Setup is now complete
 
@@ -232,7 +232,7 @@ setAutoSaveSettings();
 
     // This is not strictly related to toolbars, menubars or KMainWindow.
     // Setup popup for completions
-    completions = new QPopupMenu;
+    completions = new Q3PopupMenu;
   
     completions->insertItem("/");
     completions->insertItem("/usr/");
@@ -269,7 +269,7 @@ void testWindow::slotNew()
 void testWindow::slotOpen()
 {
   if (pr == 0)
-    pr = new QProgressBar (statusBar);
+    pr = new Q3ProgressBar (statusBar);
 //  statusBar->message(pr);
   timer = new QTimer (pr);
 
@@ -437,7 +437,7 @@ void testWindow::slotFrame()
      tb1->insertFrame(10, 100);
      tb1->alignItemRight (10); // this is pointless 'cause tb1 is not fullwidth
 
-     QFrame *myFrame = tb1->getFrame(10); // get frame pointer
+     Q3Frame *myFrame = tb1->getFrame(10); // get frame pointer
 
      if (myFrame == 0)
       {

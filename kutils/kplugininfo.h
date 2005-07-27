@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <qmap.h>
 #include <qstringlist.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <kservice.h>
 
 class KConfigGroup;
@@ -40,7 +40,7 @@ class KConfigGroup;
 class KUTILS_EXPORT KPluginInfo
 {
     public:
-        typedef QValueList<KPluginInfo*> List;
+        typedef Q3ValueList<KPluginInfo*> List;
 
         /**
          * Read plugin info from @p filename.
@@ -263,7 +263,7 @@ class KUTILS_EXPORT KPluginInfo
          * @return A list of Service pointers if the plugin installs one or more
          *         KCModule
          */
-        const QValueList<KService::Ptr> & kcmServices() const;
+        const Q3ValueList<KService::Ptr> & kcmServices() const;
 
         /**
          * Set the KConfigGroup to use for load()ing and save()ing the

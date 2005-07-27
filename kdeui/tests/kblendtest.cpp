@@ -1,4 +1,6 @@
 #include "kblendtest.h"
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <qpainter.h>
@@ -89,7 +91,11 @@ void KBlendWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv, "KBlendTest");
+    KAboutData about("KBlendTest", "KBlendTest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+
+    KApplication app;
+
     KBlendWidget w;
     app.setMainWidget(&w);
     w.show();

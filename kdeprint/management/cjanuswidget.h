@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef CJANUSWIDGET_H
@@ -22,11 +22,11 @@
 
 #include <qwidget.h>
 #include <qpixmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
-class QWidgetStack;
+class Q3WidgetStack;
 class QLabel;
-class QListBoxItem;
+class Q3ListBoxItem;
 
 class CJanusWidget : public QWidget
 {
@@ -41,7 +41,7 @@ public:
 	void clearPages();
 
 protected slots:
-	void slotSelected(QListBoxItem*);
+	void slotSelected(Q3ListBoxItem*);
 
 public:
 	class CPage;
@@ -50,14 +50,14 @@ public:
 
 private:
 	CPage* findPage(QWidget *w);
-	CPage* findPage(QListBoxItem *i);
-	QListBoxItem* findPrevItem(CPage*);
+	CPage* findPage(Q3ListBoxItem *i);
+	Q3ListBoxItem* findPrevItem(CPage*);
 
 private:
-	QPtrList<CPage>		m_pages;
+	Q3PtrList<CPage>		m_pages;
 	CListBox		*m_iconlist;
 	QLabel			*m_header;
-	QWidgetStack		*m_stack;
+	Q3WidgetStack		*m_stack;
 	QWidget			*m_empty;
 };
 

@@ -35,14 +35,6 @@
 #  define HAVE_GNU_INLINE_ASM
 #endif
 
-
-// Copied from kdecore/kdemacros.h
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 4)
-#  define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#else
-#  define KDE_NO_EXPORT
-#endif
-
 typedef void (*kde_sighandler_t) (int);
 
 #ifdef __i386__

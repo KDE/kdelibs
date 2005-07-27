@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #include <unistd.h>
 
@@ -26,12 +26,11 @@
 #include <qlayout.h>
 #include <qsize.h>
 #include <qevent.h>
-#include <qkeycode.h>
+#include <qnamespace.h>
 #include <qcheckbox.h>
 #include <qregexp.h>
-#include <qhbox.h>
-#include <qwhatsthis.h>
-#include <qptrdict.h>
+#include <q3hbox.h>
+#include <q3ptrdict.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -55,7 +54,7 @@
 
 // BCI: Add a real d-pointer and put the int into that
 
-static QPtrDict<int>* d_ptr = 0;
+static Q3PtrDict<int>* d_ptr = 0;
 
 static void cleanup_d_ptr() {
 	delete d_ptr;
@@ -63,7 +62,7 @@ static void cleanup_d_ptr() {
 
 static int * ourMaxLength( const KPasswordEdit* const e ) {
 	if ( !d_ptr ) {
-		d_ptr = new QPtrDict<int>;
+		d_ptr = new Q3PtrDict<int>;
 		d_ptr->setAutoDelete(true);
 		qAddPostRoutine( cleanup_d_ptr );
 	}
@@ -120,12 +119,6 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
 
 }
 
-KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
-    : QLineEdit(parent, name), m_EchoMode(echoMode)
-{
-    init();
-}
-
 KPasswordEdit::KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(echoMode)
 {
@@ -159,7 +152,7 @@ KPasswordEdit::~KPasswordEdit()
 
 void KPasswordEdit::insert(const QString &txt)
 {
-    const QCString localTxt = txt.local8Bit();
+    const Q3CString localTxt = txt.local8Bit();
     const unsigned int lim = localTxt.length();
     const int m_MaxLength = maxPasswordLength();
     for(unsigned int i=0; i < lim; ++i)
@@ -194,15 +187,15 @@ void KPasswordEdit::focusInEvent(QFocusEvent *e)
 void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()) {
-    case Key_Return:
-    case Key_Enter:
-    case Key_Escape:
+    case Qt::Key_Return:
+    case Qt::Key_Enter:
+    case Qt::Key_Escape:
 	e->ignore();
 	break;
-    case Key_Backspace:
-    case Key_Delete:
+    case Qt::Key_Backspace:
+    case Qt::Key_Delete:
     case 0x7f: // Delete
-	if (e->state() & (ControlButton | AltButton))
+	if (e->state() & (Qt::ControlModifier | Qt::AltModifier))
 	    e->ignore();
 	else if (m_Length) {
 	    m_Password[--m_Length] = '\000';
@@ -226,23 +219,21 @@ bool KPasswordEdit::event(QEvent *e) {
       case QEvent::MouseButtonRelease:
       case QEvent::MouseButtonDblClick:
       case QEvent::MouseMove:
-      case QEvent::IMStart:
-      case QEvent::IMCompose:
         return true; //Ignore
-
-      case QEvent::IMEnd:
+      case QEvent::InputMethod:
       {
-        QIMEvent* const ie = (QIMEvent*) e;
-        insert( ie->text() );
+        QInputMethodEvent* const ie = (QInputMethodEvent*) e;
+        if (!ie->commitString().isNull())
+            insert( ie->commitString() );
         return true;
       }
 
-      case QEvent::AccelOverride:
+      case QEvent::ShortcutOverride:
       {
         QKeyEvent* const k = (QKeyEvent*) e;
         switch (k->key()) {
-            case Key_U:
-                if (k->state() & ControlButton) {
+            case Qt::Key_U:
+                if (k->state() & Qt::ControlModifier) {
                     m_Length = 0;
                     m_Password[m_Length] = '\000';
                     showPass();
@@ -319,15 +310,6 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, con
     init();
 }
 
-KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
-                                 int extraBttn)
-    : KDialogBase(0L, "Password Dialog", true, "", Ok|Cancel|extraBttn,
-                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
-{
-    d->iconName = "password";
-    init();
-    setPrompt(prompt);
-}
 
 void KPasswordDialog::init()
 {
@@ -349,14 +331,14 @@ void KPasswordDialog::init()
     if (!pix.isNull()) {
 	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);
-	lbl->setAlignment(AlignHCenter|AlignVCenter);
+	lbl->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
 	lbl->setFixedSize(lbl->sizeHint());
-	m_pGrid->addWidget(lbl, 0, 0, AlignCenter);
+	m_pGrid->addWidget(lbl, 0, 0, Qt::AlignCenter);
     }
 
     m_pHelpLbl = new QLabel(m_pMain);
-    m_pHelpLbl->setAlignment(AlignLeft|AlignVCenter|WordBreak);
-    m_pGrid->addWidget(m_pHelpLbl, 0, 2, AlignLeft);
+    m_pHelpLbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap);
+    m_pGrid->addWidget(m_pHelpLbl, 0, 2, Qt::AlignLeft);
     m_pGrid->addRowSpacing(1, 10);
     m_pGrid->setRowStretch(1, 12);
 
@@ -366,10 +348,10 @@ void KPasswordDialog::init()
 
     // Row 3: Password editor #1
     lbl = new QLabel(m_pMain);
-    lbl->setAlignment(AlignLeft|AlignVCenter);
+    lbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
     lbl->setText(i18n("&Password:"));
     lbl->setFixedSize(lbl->sizeHint());
-    m_pGrid->addWidget(lbl, 7, 0, AlignLeft);
+    m_pGrid->addWidget(lbl, 7, 0, Qt::AlignLeft);
 
     QHBoxLayout *h_lay = new QHBoxLayout();
     m_pGrid->addLayout(h_lay, 7, 2);
@@ -393,14 +375,14 @@ void KPasswordDialog::init()
 	else
 	    m_Keep = 0;
 	connect(cb, SIGNAL(toggled(bool)), SLOT(slotKeep(bool)));
-	m_pGrid->addWidget(cb, 9, 2, AlignLeft|AlignVCenter);
+	m_pGrid->addWidget(cb, 9, 2, Qt::AlignLeft|Qt::AlignVCenter);
     } else if (m_Type == NewPassword) {
 	m_pGrid->addRowSpacing(8, 10);
 	lbl = new QLabel(m_pMain);
-	lbl->setAlignment(AlignLeft|AlignVCenter);
+	lbl->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
 	lbl->setText(i18n("&Verify:"));
 	lbl->setFixedSize(lbl->sizeHint());
-	m_pGrid->addWidget(lbl, 9, 0, AlignLeft);
+	m_pGrid->addWidget(lbl, 9, 0, Qt::AlignLeft);
 
 	h_lay = new QHBoxLayout();
 	m_pGrid->addLayout(h_lay, 9, 2);
@@ -415,11 +397,11 @@ void KPasswordDialog::init()
         m_pGrid->addRowSpacing(10, 10);
         m_pGrid->setRowStretch(10, 12);
 
-        QHBox* const strengthBox = new QHBox(m_pMain);
+        Q3HBox* const strengthBox = new Q3HBox(m_pMain);
         strengthBox->setSpacing(10);
         m_pGrid->addMultiCellWidget(strengthBox, 11, 11, 0, 2);
         QLabel* const passStrengthLabel = new QLabel(strengthBox);
-        passStrengthLabel->setAlignment(AlignLeft|AlignVCenter);
+        passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         passStrengthLabel->setText(i18n("Password strength meter:"));
         d->m_strengthBar = new KProgress(100, strengthBox, "PasswordStrengthMeter");
         d->m_strengthBar->setPercentageVisible(false);
@@ -430,15 +412,15 @@ void KPasswordDialog::init()
                                                 " - using a longer password;\n"
                                                 " - using a mixture of upper- and lower-case letters;\n"
                                                 " - using numbers or symbols, such as #, as well as letters."));
-        QWhatsThis::add(passStrengthLabel, strengthBarWhatsThis);
-        QWhatsThis::add(d->m_strengthBar, strengthBarWhatsThis);
+        passStrengthLabel->setWhatsThis(strengthBarWhatsThis);
+        d->m_strengthBar->setWhatsThis(strengthBarWhatsThis);
 
         // Row 6: Label saying whether the passwords match
         m_pGrid->addRowSpacing(12, 10);
         m_pGrid->setRowStretch(12, 12);
 
         d->m_MatchLabel = new QLabel(m_pMain);
-        d->m_MatchLabel->setAlignment(AlignLeft|AlignVCenter|WordBreak);
+        d->m_MatchLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextWordWrap);
         m_pGrid->addMultiCellWidget(d->m_MatchLabel, 13, 13, 0, 2);
         d->m_MatchLabel->setText(i18n("Passwords do not match"));
 
@@ -485,14 +467,14 @@ void KPasswordDialog::addLine(QString key, QString value)
 	return;
 
     QLabel *lbl = new QLabel(key, m_pMain);
-    lbl->setAlignment(AlignLeft|AlignTop);
+    lbl->setAlignment(Qt::AlignLeft|Qt::AlignTop);
     lbl->setFixedSize(lbl->sizeHint());
-    m_pGrid->addWidget(lbl, m_Row+2, 0, AlignLeft);
+    m_pGrid->addWidget(lbl, m_Row+2, 0, Qt::AlignLeft);
 
     lbl = new QLabel(value, m_pMain);
-    lbl->setAlignment(AlignTop|WordBreak);
+    lbl->setAlignment(Qt::AlignTop|Qt::TextWordWrap);
     lbl->setFixedSize(275, lbl->heightForWidth(275));
-    m_pGrid->addWidget(lbl, m_Row+2, 2, AlignLeft);
+    m_pGrid->addWidget(lbl, m_Row+2, 2, Qt::AlignLeft);
     ++m_Row;
 }
 
@@ -550,11 +532,12 @@ void KPasswordDialog::slotKeep(bool keep)
 
 
 // static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getPassword(QCString &password, QString prompt,
+int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, QString prompt,
 	int *keep)
 {
     const bool enableKeep = (keep && *keep);
-    KPasswordDialog* const dlg = new KPasswordDialog(int(Password), prompt, enableKeep);
+    KPasswordDialog* const dlg = new KPasswordDialog(Password, enableKeep,false,parent);
+    dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted) {
 	password = dlg->password();
@@ -567,9 +550,10 @@ int KPasswordDialog::getPassword(QCString &password, QString prompt,
 
 
 // static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getNewPassword(QCString &password, QString prompt)
+int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, QString prompt)
 {
-    KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, prompt);
+    KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);
+    dlg->setPrompt(prompt);
     const int ret = dlg->exec();
     if (ret == Accepted)
 	password = dlg->password();
@@ -629,15 +613,15 @@ void KPasswordDialog::enableOkBtn()
       if (pwlength > 5) pwlength = 5;
 
       const QRegExp numRxp("[0-9]", true, false);
-      int numeric = (int) (pass.contains(numRxp) / lengthFactor);
+      int numeric = (int) (pass.count(numRxp) / lengthFactor);
       if (numeric > 3) numeric = 3;
 
       const QRegExp symbRxp("\\W", false, false);
-      int numsymbols = (int) (pass.contains(symbRxp) / lengthFactor);
+      int numsymbols = (int) (pass.count(symbRxp) / lengthFactor);
       if (numsymbols > 3) numsymbols = 3;
 
       const QRegExp upperRxp("[A-Z]", true, false);
-      int upper = (int) (pass.contains(upperRxp) / lengthFactor);
+      int upper = (int) (pass.count(upperRxp) / lengthFactor);
       if (upper > 3) upper = 3;
 
       int pwstrength=((pwlength*10)-20) + (numeric*10) + (numsymbols*15) + (upper*10);

@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #define YYSTYPE QStringList
@@ -61,8 +61,8 @@ string:   STRINGPART            { $$ = $1; }
 ;
 
 value:   string                  { $$ = $1; }
-	   | QUOTED                  { $$ = $1[0].mid(1,$1[0].length()-2); }
-	   | QUOTED '/' TRANSLATION  { $$ = $1[0].mid(1,$1[0].length()-2); }
+	   | QUOTED                  { $$ = QStringList($1[0].mid(1,$1[0].length()-2)); }
+	   | QUOTED '/' TRANSLATION  { $$ = QStringList($1[0].mid(1,$1[0].length()-2)); }
 	   | string '/' TRANSLATION  { $$ = $1; }
 ;
 

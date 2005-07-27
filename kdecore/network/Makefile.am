@@ -1,5 +1,7 @@
 ## Makefile.am for libqt-addon
 
+SUBDIRS = tests
+
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
 noinst_LTLIBRARIES = libkdecorenetwork.la

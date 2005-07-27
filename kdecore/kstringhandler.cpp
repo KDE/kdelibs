@@ -24,13 +24,13 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
-static void parsePythonRange( const QCString &range, uint &start, uint &end )
+static void parsePythonRange( const QByteArray &range, int &start, int &end )
 {
     const int colon = range.find( ':' );
     if ( colon == -1 ) {
         start = range.toUInt();
         end = start;
-    } else if ( colon == int( range.length() - 1 ) ) {
+    } else if ( colon == range.length() - 1 ) {
         start = range.left( colon ).toUInt();
     } else if ( colon == 0 ) {
         end = range.mid( 1 ).toUInt();
@@ -40,7 +40,7 @@ static void parsePythonRange( const QCString &range, uint &start, uint &end )
     }
 }
 
-QString KStringHandler::word( const QString &text , uint pos )
+QString KStringHandler::word( const QString &text , int pos )
 {
     return text.section( ' ', pos, pos );
 }
@@ -59,20 +59,19 @@ QString KStringHandler::word( const QString &text , const char *range )
     if ( text.isEmpty() )
         return tmp;
 
-    uint pos = 0, cnt = list.count();
+    int pos = 0, cnt = list.count();
     parsePythonRange( range, pos, cnt );
 
     //
     // Extract words
     //
     int wordsToExtract = cnt-pos+1;
-    QStringList::Iterator it = list.at( pos);
 
-    while ( (it != list.end()) && (wordsToExtract-- > 0))
+    while ( pos < list.count() && (wordsToExtract-- > 0))
     {
-       tmp += *it;
+       tmp += list.at(pos);
        tmp += " ";
-       it++;
+       ++pos;
     }
 
     return tmp.stripWhiteSpace();
@@ -81,7 +80,7 @@ QString KStringHandler::word( const QString &text , const char *range )
 //
 // Insertion and removal routines
 //
-QString KStringHandler::insword( const QString &text , const QString &word , uint pos )
+QString KStringHandler::insword( const QString &text , const QString &word , int pos )
 {
     if ( text.isEmpty() )
         return word;
@@ -95,13 +94,13 @@ QString KStringHandler::insword( const QString &text , const QString &word , uin
     if ( pos >= list.count() )
         list.append( word );
     else
-        list.insert( list.at(pos) , word );
+        list.insert( pos, word );
 
     // Rejoin
     return list.join( " " );
 }
 
-QString KStringHandler::setword( const QString &text , const QString &word , uint pos )
+QString KStringHandler::setword( const QString &text , const QString &word , int pos )
 {
     if ( text.isEmpty() )
         return word;
@@ -137,22 +136,21 @@ QString KStringHandler::remrange( const QString &text , const char *range )
     if ( text.isEmpty() )
         return tmp;
 
-    uint pos = 0, cnt = list.count();
+    int pos = 0, cnt = list.count();
     parsePythonRange( range, pos, cnt );
 
     //
     // Remove that range of words
     //
     int wordsToDelete = cnt-pos+1;
-    QStringList::Iterator it = list.at( pos);
 
-    while ( (it != list.end()) && (wordsToDelete-- > 0))
-       it = list.remove( it );
+    while ( !list.isEmpty() && (wordsToDelete-- > 0))
+       list.removeAt(pos);
 
     return list.join( " " );
 }
 
-QString KStringHandler::remword( const QString &text , uint pos )
+QString KStringHandler::remword( const QString &text , int pos )
 {
     QString tmp = "";
 
@@ -252,20 +250,20 @@ QStringList KStringHandler::reverse( const QStringList &list )
 //
 // Left, Right, Center justification
 //
-QString KStringHandler::ljust( const QString &text , uint width )
+QString KStringHandler::ljust( const QString &text , int width )
 {
     return text.stripWhiteSpace().leftJustify( width );
 }
 
-QString KStringHandler::rjust( const QString &text , uint width )
+QString KStringHandler::rjust( const QString &text , int width )
 {
     return text.stripWhiteSpace().rightJustify( width );
 }
 
-QString KStringHandler::center( const QString &text , uint width )
+QString KStringHandler::center( const QString &text , int width )
 {
     const QString s = text.stripWhiteSpace();
-    const unsigned int length = s.length();
+    const int length = s.length();
     if ( width <= length ) {
         return s;
      }
@@ -277,7 +275,7 @@ QString KStringHandler::center( const QString &text , uint width )
     return result.leftJustify( width );
 }
 
-QString KStringHandler::lsqueeze( const QString & str, uint maxlen )
+QString KStringHandler::lsqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen) {
     int part = maxlen-3;
@@ -286,7 +284,7 @@ QString KStringHandler::lsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
-QString KStringHandler::csqueeze( const QString & str, uint maxlen )
+QString KStringHandler::csqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen && maxlen > 3) {
     int part = (maxlen-3)/2;
@@ -295,7 +293,7 @@ QString KStringHandler::csqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
-QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
+QString KStringHandler::rsqueeze( const QString & str, int maxlen )
 {
   if (str.length() > maxlen) {
     int part = maxlen-3;
@@ -304,19 +302,19 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
-QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& fontMetrics, int maxlen)
 {
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxPixels)
 {
-  uint nameWidth = fontMetrics.width(name);
+  int nameWidth = fontMetrics.width(name);
 
   if (maxPixels < nameWidth)
   {
     QString tmp = name;
-    const uint em = fontMetrics.maxWidth();
+    const int em = fontMetrics.maxWidth();
     maxPixels -= fontMetrics.width("...");
 
     while (maxPixels < nameWidth && !tmp.isEmpty())
@@ -334,14 +332,14 @@ QString KStringHandler::lPixelSqueeze(const QString& name, const QFontMetrics& f
   return name;
 }
 
-QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxlen)
 {
   return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, uint width)
+QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, int width)
 {
-  if ( s.isEmpty() || uint( fm.width( s ) ) <= width ) {
+  if ( s.isEmpty() || fm.width( s ) <= width ) {
     return s;
   }
 
@@ -355,14 +353,14 @@ QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, 
     return "...";
   }
 
-  unsigned int leftIdx = 0, rightIdx = length;
-  unsigned int leftWidth = fm.charWidth( s, leftIdx++ );
-  unsigned int rightWidth = fm.charWidth( s, --rightIdx );
-  while ( leftWidth + rightWidth < uint( maxWidth ) ) {
-    while ( leftWidth <= rightWidth && leftWidth + rightWidth < uint( maxWidth ) ) {
+  int leftIdx = 0, rightIdx = length;
+  int leftWidth = fm.charWidth( s, leftIdx++ );
+  int rightWidth = fm.charWidth( s, --rightIdx );
+  while ( leftWidth + rightWidth < maxWidth ) {
+    while ( leftWidth <= rightWidth && leftWidth + rightWidth < maxWidth ) {
       leftWidth += fm.charWidth( s, leftIdx++ );
     }
-    while ( rightWidth <= leftWidth && leftWidth + rightWidth < uint( maxWidth ) ) {
+    while ( rightWidth <= leftWidth && leftWidth + rightWidth < maxWidth ) {
       rightWidth += fm.charWidth( s, --rightIdx );
     }
   }
@@ -381,19 +379,19 @@ QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, 
   return s.left( leftIdx ) + "..." + s.right( rightIdx );
 }
 
-QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxlen)
 {
   return rPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, int maxPixels)
 {
-  uint nameWidth = fontMetrics.width(name);
+  int nameWidth = fontMetrics.width(name);
 
   if (maxPixels < nameWidth)
   {
     QString tmp = name;
-    const uint em = fontMetrics.maxWidth();
+    const int em = fontMetrics.maxWidth();
     maxPixels -= fontMetrics.width("...");
 
     while (maxPixels < nameWidth && !tmp.isEmpty())
@@ -453,7 +451,7 @@ bool KStringHandler::matchFileName( const QString& filename, const QString& patt
 }
 
   QStringList
-KStringHandler::perlSplit(const QString & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -479,7 +477,7 @@ KStringHandler::perlSplit(const QString & sep, const QString & s, uint max)
 }
 
   QStringList
-KStringHandler::perlSplit(const QChar & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -505,7 +503,7 @@ KStringHandler::perlSplit(const QChar & sep, const QString & s, uint max)
 }
 
   QStringList
-KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
+KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -561,7 +559,7 @@ QString KStringHandler::obscure( const QString &str )
 {
   QString result;
   const QChar *unicode = str.unicode();
-  for ( uint i = 0; i < str.length(); ++i )
+  for ( int i = 0; i < str.length(); ++i )
     result += ( unicode[ i ].unicode() < 0x20 ) ? unicode[ i ] :
         QChar( 0x1001F - unicode[ i ].unicode() );
 

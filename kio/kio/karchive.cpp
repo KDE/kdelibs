@@ -30,11 +30,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <qptrlist.h>
-#include <qptrstack.h>
-#include <qvaluestack.h>
+#include <q3ptrlist.h>
+#include <q3ptrstack.h>
+#include <q3valuestack.h>
 #include <qmap.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qdir.h>
 #include <qfile.h>
 
@@ -46,7 +46,7 @@
 #include "karchive.h"
 #include "klimitediodevice.h"
 
-template class QDict<KArchiveEntry>;
+template class Q3Dict<KArchiveEntry>;
 
 
 class KArchive::KArchivePrivate
@@ -56,10 +56,10 @@ public:
     bool closeSucceeded;
 };
 
-class PosSortedPtrList : public QPtrList<KArchiveFile> {
+class PosSortedPtrList : public Q3PtrList<KArchiveFile> {
 protected:
-    int compareItems( QPtrCollection::Item i1,
-                      QPtrCollection::Item i2 )
+    int compareItems( Q3PtrCollection::Item i1,
+                      Q3PtrCollection::Item i2 )
     {
         int pos1 = static_cast<KArchiveFile*>( i1 )->position();
         int pos2 = static_cast<KArchiveFile*>( i2 )->position();
@@ -88,7 +88,7 @@ KArchive::~KArchive()
     delete d;
 }
 
-bool KArchive::open( int mode )
+bool KArchive::open( QIODevice::OpenMode mode )
 {
     if ( m_dev && !m_dev->open( mode ) )
         return false;
@@ -161,7 +161,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     // if the opening fails, no content will follow the already written
     // header and the tar file is effectively f*cked up
     QFile file( fileName );
-    if ( !file.open( IO_ReadOnly ) )
+    if ( !file.open( QIODevice::ReadOnly ) )
     {
         kdWarning() << "KArchive::addLocalFile couldn't open file " << fileName << endl;
         return false;
@@ -510,7 +510,7 @@ QIODevice *KArchiveFile::device() const
 void KArchiveFile::copyTo(const QString& dest) const
 {
   QFile f( dest + "/"  + name() );
-  f.open( IO_ReadWrite | IO_Truncate );
+  f.open( QIODevice::ReadWrite | QIODevice::Truncate );
   f.writeBlock( data() );
   f.close();
 }
@@ -533,7 +533,7 @@ QStringList KArchiveDirectory::entries() const
 {
   QStringList l;
 
-  QDictIterator<KArchiveEntry> it( m_entries );
+  Q3DictIterator<KArchiveEntry> it( m_entries );
   for( ; it.current(); ++it )
     l.append( it.currentKey() );
 
@@ -606,8 +606,8 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   KArchiveFile* curFile;
 
 
-  QPtrStack<KArchiveDirectory> dirStack;
-  QValueStack<QString> dirNameStack;
+  Q3PtrStack<KArchiveDirectory> dirStack;
+  Q3ValueStack<QString> dirNameStack;
 
   dirStack.push( this );     // init stack at current directory
   dirNameStack.push( dest ); // ... with given path

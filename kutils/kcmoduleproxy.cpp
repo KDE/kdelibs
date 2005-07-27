@@ -22,18 +22,17 @@
 #include <qdatastream.h>
 #include <qevent.h>
 #include <qfileinfo.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qpoint.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qtextstream.h>
-#include <qvbox.h>
-#include <qwhatsthis.h>
+#include <q3vbox.h>
 #include <qwidget.h>
 
-#include <dcopclient.h>
 #include <qxembed.h>
+#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -94,13 +93,13 @@ class KCModuleProxy::KCModuleProxyPrivate
 		KCModule							*kcm;
 		QXEmbed								*embedWidget;
 		KProcess							*rootProcess;
-		QVBox								*embedFrame;
+		Q3VBox								*embedFrame;
 		KCModuleProxyIfaceImpl  			*dcopObject;
 		DCOPClient							*dcopClient;
 		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
 		KCModuleProxyRootCommunicatorImpl	*rootCommunicator;
 		QLabel								*rootInfo;
-		QCString							dcopName;
+		DCOPCString							dcopName;
 		KCModuleInfo 						modInfo;
 		bool 								withFallback;
 		bool 								changed;
@@ -191,7 +190,7 @@ KCModule * KCModuleProxy::realModule() const
 				SLOT( moduleDestroyed() ) );
 		connect( d->kcm, SIGNAL(quickHelpChanged()), 
 				SIGNAL(quickHelpChanged()));
-		QWhatsThis::add( that, d->kcm->quickHelp() );
+		that->setWhatsThis(d->kcm->quickHelp() );
 
 		d->topLayout->addWidget( d->kcm );
 
@@ -203,8 +202,8 @@ KCModule * KCModuleProxy::realModule() const
 			d->rootInfo = new QLabel( that, "rootInfo" );
 			d->topLayout->insertWidget( 0, d->rootInfo );
 
-			d->rootInfo->setFrameShape(QFrame::Box);
-			d->rootInfo->setFrameShadow(QFrame::Raised);
+			d->rootInfo->setFrameShape(Q3Frame::Box);
+			d->rootInfo->setFrameShadow(Q3Frame::Raised);
 
 			const QString msg = d->kcm->rootOnlyMsg();
 			if( msg.isEmpty() )
@@ -215,7 +214,7 @@ KCModule * KCModuleProxy::realModule() const
 			else
 				d->rootInfo->setText(msg);
 
-			QWhatsThis::add( d->rootInfo, i18n(
+			d->rootInfo->setWhatsThis(i18n(
 				  "This section requires special permissions, probably "
 				  "for system-wide changes; therefore, it is "
 				  "required that you provide the root password to be "
@@ -233,16 +232,16 @@ KCModule * KCModuleProxy::realModule() const
 		d->dcopClient->attach();
 
 		d->dcopClient->setNotifications( true );
-		connect( d->dcopClient, SIGNAL( applicationRemoved( const QCString& )),
-			SLOT( applicationRemoved( const QCString& )));
+		connect( d->dcopClient, SIGNAL( applicationRemoved( const QByteArray& )),
+			SLOT( applicationRemoved( const QByteArray& )));
 
 		/* Figure out the name of where the module is already loaded */
 		QByteArray replyData, data;
-		QCString replyType;
+		DCOPCString replyType;
 		QString result;
-		QDataStream arg, stream( replyData, IO_ReadOnly );
+		QDataStream arg, stream( replyData );
 
-		if( d->dcopClient->call( d->dcopName, d->dcopName, "applicationName()", 
+		if( d->dcopClient->call( d->dcopName, d->dcopName, DCOPCString("applicationName()"), 
 					data, replyType, replyData ))
 		{
 			stream >> result;
@@ -267,7 +266,7 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
-void KCModuleProxy::applicationRemoved( const QCString& app )
+void KCModuleProxy::applicationRemoved( const QByteArray & app )
 {
 	if( app == d->dcopName )
 	{
@@ -306,10 +305,10 @@ void KCModuleProxy::runAsRoot()
 	delete d->embedWidget;
 	delete d->embedFrame;
 
-	d->embedFrame = new QVBox( this, "embedFrame" );
-	d->embedFrame->setFrameStyle( QFrame::Box | QFrame::Raised );
+	d->embedFrame = new Q3VBox( this, "embedFrame" );
+	d->embedFrame->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
 
-	QPalette pal( red );
+	QPalette pal( Qt::red );
 	pal.setColor( QColorGroup::Background, 
 		colorGroup().background() );
 	d->embedFrame->setPalette( pal );
@@ -322,8 +321,8 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame->show();
 
 	QLabel *lblBusy = new QLabel(i18n("<big>Loading...</big>"), d->embedWidget, "lblBusy" );
-	lblBusy->setTextFormat(RichText);
-	lblBusy->setAlignment(AlignCenter);
+	lblBusy->setTextFormat(Qt::RichText);
+	lblBusy->setAlignment(Qt::AlignCenter);
 	lblBusy->setGeometry(0,0, d->kcm->width(), d->kcm->height());
 	lblBusy->show();
 
@@ -399,7 +398,7 @@ void KCModuleProxy::rootExited()
 	kdDebug(711) << k_funcinfo << endl;
 
 	if ( d->embedWidget->embeddedWinId() )
-		XDestroyWindow(qt_xdisplay(), d->embedWidget->embeddedWinId());
+		XDestroyWindow(QX11Info::display(), d->embedWidget->embeddedWinId());
 
 	delete d->embedWidget;
 	d->embedWidget = 0;
@@ -436,7 +435,7 @@ KCModuleProxy::~KCModuleProxy()
 void KCModuleProxy::deleteClient()
 {
 	if( d->embedWidget )
-		XKillClient(qt_xdisplay(), d->embedWidget->embeddedWinId());
+		XKillClient(QX11Info::display(), d->embedWidget->embeddedWinId());
 
 
 	delete d->kcm;
@@ -535,10 +534,10 @@ void KCModuleProxy::save()
 	}
 }
 
-void KCModuleProxy::callRootModule( const QCString& function )
+void KCModuleProxy::callRootModule( const Q3CString& function )
 {
 	QByteArray sendData, replyData;
-	QCString replyType;
+	DCOPCString replyType;
 
 	/* Note, we don't use d->dcopClient here, because it's used for 
 	 * the loaded module(and it's not "us" when this function is called) */
@@ -564,14 +563,14 @@ QString KCModuleProxy::quickHelp() const
 	else
 	{
 		QByteArray data, replyData;
-		QCString replyType;
+		DCOPCString replyType;
 
 		if (kapp->dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
 				  data, replyType, replyData))
 			kdDebug(711) << "Calling DCOP function bool changed() failed." << endl;
 		else
 		{
-			QDataStream reply(replyData, IO_ReadOnly);
+			QDataStream reply(replyData);
 			if (replyType == "QString")
 			{
 				QString result;
@@ -633,7 +632,7 @@ bool KCModuleProxy::rootMode() const
 	return d->rootMode;
 }
 
-QCString KCModuleProxy::dcopName() const
+Q3CString KCModuleProxy::dcopName() const
 {
 	return d->dcopName;
 }

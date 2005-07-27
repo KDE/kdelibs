@@ -689,7 +689,7 @@ dcop_connect()
     else
 	    hostName[sizeof(hostName)-1] = '\0';
 
-    snprintf(fileName, sizeof(fileName), ".DCOPserver_%s_%s", hostName, displayName);
+    snprintf(fileName, sizeof(fileName), ".DCOP4server_%s_%s", hostName, displayName);
     f = fopen(fileName, "r");
 
     if (NULL == f) {

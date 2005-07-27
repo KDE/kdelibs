@@ -13,21 +13,22 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef KEDITLISTBOX_H
 #define KEDITLISTBOX_H
 
-#include <qgroupbox.h>
-#include <qlistbox.h>
+#include <q3groupbox.h>
+#include <q3listbox.h>
 
 #include <kdelibs_export.h>
 
 class KLineEdit;
 class KComboBox;
 class QPushButton;
+class Q3StrList;
 
 class KEditListBoxPrivate;
 /**
@@ -41,7 +42,7 @@ class KEditListBoxPrivate;
  * \image html keditlistbox.png "KDE Edit List Box Widget"
  *
  */
-class KDEUI_EXPORT KEditListBox : public QGroupBox
+class KDEUI_EXPORT KEditListBox : public Q3GroupBox
 {
    Q_OBJECT
 
@@ -141,7 +142,7 @@ public:
       /**
        * Return a pointer to the embedded QListBox.
        */
-      QListBox* listBox() const     { return m_listBox; }
+      Q3ListBox* listBox() const     { return m_listBox; }
       /**
        * Return a pointer to the embedded QLineEdit.
        */
@@ -171,14 +172,6 @@ public:
        * See QListBox::insertStringList()
        */
       void insertStringList(const QStringList& list, int index=-1);
-      /**
-       * See QListBox::insertStringList()
-       */
-      void insertStrList(const QStrList* list, int index=-1);
-      /**
-       * See QListBox::insertStrList()
-       */
-      void insertStrList(const QStrList& list, int index=-1);
       /**
        * See QListBox::insertStrList()
        */
@@ -253,7 +246,7 @@ public:
       void typedSomething(const QString& text);
 
    private:
-      QListBox *m_listBox;
+      Q3ListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
       KLineEdit *m_lineEdit;

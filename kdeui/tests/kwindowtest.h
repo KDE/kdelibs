@@ -1,15 +1,15 @@
 #ifndef testwindow_h
 #define testwindow_h
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qtimer.h>
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 
-class QMultiLineEdit;
+class Q3MultiLineEdit;
 class KToolBarRadioGroup;
 class KHelpMenu;
 
@@ -50,10 +50,10 @@ public slots:
     void slotToggled(int);
 protected:
     KMenuBar *menuBar;
-    QPopupMenu *fileMenu;
-    QPopupMenu *itemsMenu;
-    QPopupMenu *completions;
-    QPopupMenu *toolBarMenu;
+    Q3PopupMenu *fileMenu;
+    Q3PopupMenu *itemsMenu;
+    Q3PopupMenu *completions;
+    Q3PopupMenu *toolBarMenu;
     KStatusBar *statusBar;
     KHelpMenu *helpMenu;
     KToolBar *tb;
@@ -62,9 +62,9 @@ protected:
     bool exitB;
     bool greenF;
     bool ena;
-    QMultiLineEdit *widget;
+    Q3MultiLineEdit *widget;
     QTimer *timer;
-    QProgressBar *pr;
+    Q3ProgressBar *pr;
     KToolBarRadioGroup *rg;
 };
 #endif

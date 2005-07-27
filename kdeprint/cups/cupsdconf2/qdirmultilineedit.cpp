@@ -13,14 +13,14 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "qdirmultilineedit.h"
 
 #include <qlayout.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qpushbutton.h>
 #include <klistview.h>
 #include <klocale.h>
@@ -34,7 +34,7 @@ QDirMultiLineEdit::QDirMultiLineEdit(QWidget *parent, const char *name)
 	m_view->header()->hide();
 	m_view->addColumn("");
 	m_view->setFullWidth(true);
-	connect(m_view, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotSelected(QListViewItem*)));
+	connect(m_view, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotSelected(Q3ListViewItem*)));
 
 	m_add = new QPushButton(this);
 	m_add->setPixmap(SmallIcon("folder_new"));
@@ -68,7 +68,7 @@ void QDirMultiLineEdit::setURLs(const QStringList& urls)
 
 QStringList QDirMultiLineEdit::urls()
 {
-	QListViewItem	*item = m_view->firstChild();
+	Q3ListViewItem	*item = m_view->firstChild();
 	QStringList	l;
 	while (item)
 	{
@@ -80,7 +80,7 @@ QStringList QDirMultiLineEdit::urls()
 
 void QDirMultiLineEdit::addURL(const QString& url)
 {
-	QListViewItem	*item = new QListViewItem(m_view, url);
+	Q3ListViewItem	*item = new Q3ListViewItem(m_view, url);
 	item->setRenameEnabled(0, true);
 }
 
@@ -93,7 +93,7 @@ void QDirMultiLineEdit::slotAddClicked()
 
 void QDirMultiLineEdit::slotRemoveClicked()
 {
-	QListViewItem	*item = m_view->currentItem();
+	Q3ListViewItem	*item = m_view->currentItem();
 	if (item)
 	{
 		delete item;
@@ -101,7 +101,7 @@ void QDirMultiLineEdit::slotRemoveClicked()
 	}
 }
 
-void QDirMultiLineEdit::slotSelected(QListViewItem *item)
+void QDirMultiLineEdit::slotSelected(Q3ListViewItem *item)
 {
 	m_remove->setEnabled((item != NULL));
 }

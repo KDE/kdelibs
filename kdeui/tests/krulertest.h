@@ -8,22 +8,22 @@
 #include <qwidget.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <knuminput.h>
 
 class KRuler;
 class QWidget;
-class QFrame;
+class Q3Frame;
 class QGridLayout;
 class QCheckBox;
-class QGroupBox;
+class Q3GroupBox;
 
 
-class MouseWidget : public QFrame
+class MouseWidget : public Q3Frame
 {
 Q_OBJECT
 public:
-MouseWidget( QWidget *parent=0, const char *name=0, WFlags f=0 );
+MouseWidget( QWidget *parent=0, const char *name=0, Qt::WFlags f=0 );
 
 signals:
   void newXPos(int);
@@ -75,15 +75,15 @@ private:
 
   KRuler *hruler, *vruler;
   QGridLayout *layout;
-  QFrame *miniwidget, *bigwidget;
-  QFrame *mainframe;
+  Q3Frame *miniwidget, *bigwidget;
+  Q3Frame *mainframe;
 
   QLabel *mouse_message;
-  QGroupBox *showMarks, *lineEdit, *vertrot;
+  Q3GroupBox *showMarks, *lineEdit, *vertrot;
   QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM, *showPT, *fixLen;
   KIntNumInput *beginMark, *endMark, *lengthInput;
   KDoubleNumInput *transX, *transY, *rotV;
-  QButtonGroup *metricstyle;
+  Q3ButtonGroup *metricstyle;
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 
 };

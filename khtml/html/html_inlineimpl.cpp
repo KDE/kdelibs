@@ -123,13 +123,13 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
             if ( e ) {
                 if ( e->ctrlKey() )
-                    state |= Qt::ControlButton;
+                    state |= Qt::ControlModifier;
                 if ( e->shiftKey() )
-                    state |= Qt::ShiftButton;
+                    state |= Qt::ShiftModifier;
                 if ( e->altKey() )
-                    state |= Qt::AltButton;
+                    state |= Qt::AltModifier;
                 if ( e->metaKey() )
-                    state |= Qt::MetaButton;
+                    state |= Qt::MetaModifier;
 
                 if ( e->button() == 0 )
                     button = Qt::LeftButton;
@@ -140,12 +140,12 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
             }
 	    else if ( k )
 	    {
-	      if ( k->checkModifier(Qt::ShiftButton) )
-                state |= Qt::ShiftButton;
-	      if ( k->checkModifier(Qt::AltButton) )
-                state |= Qt::AltButton;
-	      if ( k->checkModifier(Qt::ControlButton) )
-                state |= Qt::ControlButton;
+	      if ( k->checkModifier(Qt::ShiftModifier) )
+                state |= Qt::ShiftModifier;
+	      if ( k->checkModifier(Qt::AltModifier) )
+                state |= Qt::AltModifier;
+	      if ( k->checkModifier(Qt::ControlModifier) )
+                state |= Qt::ControlModifier;
 	      click();
 	    }
 

@@ -17,11 +17,12 @@
  *
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the Free
- * Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
 
-#include <qkeycode.h>
+#include <qnamespace.h>
+#include <QKeyEvent>
 
 #include "krestrictedline.h"
 
@@ -43,7 +44,7 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 {
   // let QLineEdit process "special" keys and return/enter
   // so that we still can use the default key binding
-  if (e->key() == Key_Enter || e->key() == Key_Return || e->key() == Key_Delete || e->ascii() < 32)
+  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Delete || e->ascii() < 32)
     {
       QLineEdit::keyPressEvent(e);
       return;

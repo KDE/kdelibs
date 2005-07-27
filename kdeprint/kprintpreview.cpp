@@ -14,8 +14,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kprintpreview.h"
@@ -23,7 +23,7 @@
 
 #include <qfile.h>
 #include <qlayout.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <kparts/part.h>
 #include <kaccel.h>
@@ -216,7 +216,7 @@ void KPrintPreview::initView(KLibFactory *factory)
 
 	// construct the layout
 	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_, 0, 0);
-	l0->addWidget(d->toolbar_, AlignTop);
+	l0->addWidget(d->toolbar_, Qt::AlignTop);
 	if (d->gvpart_)
 		l0->addWidget(d->gvpart_->widget());
 

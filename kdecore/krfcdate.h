@@ -21,6 +21,7 @@
 #define _KRFCDATE_H_
 
 #include <qstring.h>
+#include <q3cstring.h>
 #include <time.h>
 #include "kdelibs_export.h"
 
@@ -79,7 +80,7 @@ public:
    * @return the string representation of the date
    */
 
-   static QCString rfc2822DateString(time_t utcTime, int utcOffset);
+   static QByteArray rfc2822DateString(time_t utcTime, int utcOffset);
 
 
   /**
@@ -93,7 +94,7 @@ public:
    * @return the string representation of the date
    */
 
-   static QCString rfc2822DateString(time_t utcTime);
+   static QByteArray rfc2822DateString(time_t utcTime);
 
 };
 

@@ -23,7 +23,7 @@
 #define KDELIBS_KPALETTE_H
 
 #include <qcolor.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include "kdelibs_export.h"
@@ -214,7 +214,7 @@ public:
 
 private:   
    typedef struct { QColor color; QString name; } kolor;
-   QPtrList<kolor> mKolorList;
+   Q3PtrList<kolor> mKolorList;
    
    QString mName;
    QString mDesc;

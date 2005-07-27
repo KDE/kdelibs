@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #include <kedittoolbar.h>
 
@@ -22,12 +22,12 @@
 #include <qlayout.h>
 #include <qdir.h>
 #include <qfile.h>
-#include <qheader.h>
+#include <q3header.h>
 #include <qcombobox.h>
-#include <qdragobject.h>
+#include <q3dragobject.h>
 #include <qtoolbutton.h>
 #include <qlabel.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include <qapplication.h>
 #include <qtextstream.h>
 
@@ -45,6 +45,7 @@
 #include <kdebug.h>
 #include <kpushbutton.h>
 #include <kprocio.h>
+#include <QDropEvent>
 
 static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---");
 static const char * const separatorstring = I18N_NOOP("--- separator ---");
@@ -55,12 +56,12 @@ static const char * const separatorstring = I18N_NOOP("--- separator ---");
 static void dump_xml(const QDomDocument& doc)
 {
     QString str;
-    QTextStream ts(&str, IO_WriteOnly);
+    QTextStream ts(&str, QIODevice::WriteOnly);
     ts << doc;
     kdDebug() << str << endl;
 }
 
-typedef QValueList<QDomElement> ToolbarList;
+typedef Q3ValueList<QDomElement> ToolbarList;
 
 namespace
 {
@@ -83,21 +84,21 @@ public:
   ToolbarList  m_barList;
 };
 
-typedef QValueList<XmlData> XmlDataList;
+typedef Q3ValueList<XmlData> XmlDataList;
 
-class ToolbarItem : public QListViewItem
+class ToolbarItem : public Q3ListViewItem
 {
 public:
   ToolbarItem(KListView *parent, const QString& tag = QString::null, const QString& name = QString::null, const QString& statusText = QString::null)
-    : QListViewItem(parent),
+    : Q3ListViewItem(parent),
       m_tag(tag),
       m_name(name),
       m_statusText(statusText)
   {
   }
 
-  ToolbarItem(KListView *parent, QListViewItem *item, const QString &tag = QString::null, const QString& name = QString::null, const QString& statusText = QString::null)
-    : QListViewItem(parent, item),
+  ToolbarItem(KListView *parent, Q3ListViewItem *item, const QString &tag = QString::null, const QString& name = QString::null, const QString& statusText = QString::null)
+    : Q3ListViewItem(parent, item),
       m_tag(tag),
       m_name(name),
       m_statusText(statusText)
@@ -127,16 +128,16 @@ private:
 };
 
 #define TOOLBARITEMMIMETYPE "data/x-kde.toolbar.item"
-class ToolbarItemDrag : public QStoredDrag
+class ToolbarItemDrag : public Q3StoredDrag
 {
 public:
   ToolbarItemDrag(ToolbarItem *toolbarItem,
                     QWidget *dragSource = 0, const char *name = 0)
-    : QStoredDrag( TOOLBARITEMMIMETYPE, dragSource, name )
+    : Q3StoredDrag( TOOLBARITEMMIMETYPE, dragSource, name )
   {
     if (toolbarItem) {
       QByteArray data;
-      QDataStream out(data, IO_WriteOnly);
+      QDataStream out(&data, QIODevice::WriteOnly);
       out << toolbarItem->internalTag();
       out << toolbarItem->internalName();
       out << toolbarItem->statusText();
@@ -160,7 +161,7 @@ public:
       return false;
 
     QString internalTag, internalName, statusText, text;
-    QDataStream in(data, IO_ReadOnly);
+    QDataStream in(data);
     in >> internalTag;
     in >> internalName;
     in >> statusText;
@@ -183,7 +184,7 @@ public:
   {
   }
 protected:
-  virtual QDragObject *dragObject()
+  virtual Q3DragObject *dragObject()
   {
     ToolbarItem *item = dynamic_cast<ToolbarItem*>(selectedItem());
     if ( item ) {
@@ -283,7 +284,7 @@ public:
       static const QString &attrName = KGlobal::staticQString( "name" );
 
       QString name;
-      QCString txt( it.namedItem( tagText ).toElement().text().utf8() );
+      Q3CString txt( it.namedItem( tagText ).toElement().text().utf8() );
       if ( txt.isEmpty() )
           txt = it.namedItem( tagText2 ).toElement().text().utf8();
       if ( txt.isEmpty() )
@@ -325,7 +326,7 @@ public:
     for ( ; xit != m_xmlFiles.end(); ++xit )
     {
         kdDebug(240) << "XmlData type " << s_XmlTypeToString[(*xit).m_type] << " xmlFile: " << (*xit).m_xmlFile << endl;
-        for( QValueList<QDomElement>::Iterator it = (*xit).m_barList.begin();
+        for( Q3ValueList<QDomElement>::Iterator it = (*xit).m_barList.begin();
              it != (*xit).m_barList.end(); ++it ) {
             kdDebug(240) << "    Toolbar: " << toolbarName( *xit, *it ) << endl;
         }
@@ -453,8 +454,8 @@ void KEditToolbar::slotDefault()
     if ( d->m_factory )
     {
         const QString localPrefix = locateLocal("data", "");
-        QPtrList<KXMLGUIClient> clients(d->m_factory->clients());
-        QPtrListIterator<KXMLGUIClient> it( clients );
+        Q3PtrList<KXMLGUIClient> clients(d->m_factory->clients());
+        Q3PtrListIterator<KXMLGUIClient> it( clients );
 
         for( ; it.current(); ++it)
         {
@@ -645,8 +646,8 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
   actionCollection()->setWidget( this );
 
   // add all of the client data
-  QPtrList<KXMLGUIClient> clients(factory->clients());
-  QPtrListIterator<KXMLGUIClient> it( clients );
+  Q3PtrList<KXMLGUIClient> clients(factory->clients());
+  Q3PtrListIterator<KXMLGUIClient> it( clients );
   for( ; it.current(); ++it)
   {
     KXMLGUIClient *client = it.current();
@@ -711,7 +712,7 @@ void KEditToolbarWidget::rebuildKXMLGUIClients()
   if ( !factory() )
     return;
 
-  QPtrList<KXMLGUIClient> clients(factory()->clients());
+  Q3PtrList<KXMLGUIClient> clients(factory()->clients());
   //kdDebug(240) << "factory: " << clients.count() << " clients" << endl;
 
   // remove the elements starting from the last going to the first
@@ -727,7 +728,7 @@ void KEditToolbarWidget::rebuildKXMLGUIClients()
 
   // now, rebuild the gui from the first to the last
   //kdDebug(240) << "rebuilding the gui" << endl;
-  QPtrListIterator<KXMLGUIClient> cit( clients );
+  Q3PtrListIterator<KXMLGUIClient> cit( clients );
   for( ; cit.current(); ++cit)
   {
     KXMLGUIClient* client = cit.current();
@@ -786,9 +787,9 @@ void KEditToolbarWidget::setupLayout()
   int column2 = m_inactiveList->addColumn(""); // text
   m_inactiveList->setSorting( column2 );
   inactive_label->setBuddy(m_inactiveList);
-  connect(m_inactiveList, SIGNAL(selectionChanged(QListViewItem *)),
-          this,           SLOT(slotInactiveSelected(QListViewItem *)));
-  connect(m_inactiveList, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int  )),
+  connect(m_inactiveList, SIGNAL(selectionChanged(Q3ListViewItem *)),
+          this,           SLOT(slotInactiveSelected(Q3ListViewItem *)));
+  connect(m_inactiveList, SIGNAL( doubleClicked( Q3ListViewItem *, const QPoint &, int  )),
           this,           SLOT(slotInsertButton()));
 
   // our list of active actions
@@ -805,13 +806,13 @@ void KEditToolbarWidget::setupLayout()
   m_activeList->setSorting(-1);
   active_label->setBuddy(m_activeList);
 
-  connect(m_inactiveList, SIGNAL(dropped(KListView*,QDropEvent*,QListViewItem*)),
-          this,              SLOT(slotDropped(KListView*,QDropEvent*,QListViewItem*)));
-  connect(m_activeList, SIGNAL(dropped(KListView*,QDropEvent*,QListViewItem*)),
-          this,            SLOT(slotDropped(KListView*,QDropEvent*,QListViewItem*)));
-  connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
-          this,         SLOT(slotActiveSelected(QListViewItem *)));
-  connect(m_activeList, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int  )),
+  connect(m_inactiveList, SIGNAL(dropped(KListView*,QDropEvent*,Q3ListViewItem*)),
+          this,              SLOT(slotDropped(KListView*,QDropEvent*,Q3ListViewItem*)));
+  connect(m_activeList, SIGNAL(dropped(KListView*,QDropEvent*,Q3ListViewItem*)),
+          this,            SLOT(slotDropped(KListView*,QDropEvent*,Q3ListViewItem*)));
+  connect(m_activeList, SIGNAL(selectionChanged(Q3ListViewItem *)),
+          this,         SLOT(slotActiveSelected(Q3ListViewItem *)));
+  connect(m_activeList, SIGNAL( doubleClicked( Q3ListViewItem *, const QPoint &, int  )),
           this,           SLOT(slotRemoveButton()));
 
   // "change icon" button
@@ -824,7 +825,7 @@ void KEditToolbarWidget::setupLayout()
            this, SLOT( slotChangeIcon() ) );
 
   // The buttons in the middle
-  QIconSet iconSet;
+  QIcon iconSet;
 
   m_upAction     = new QToolButton(this);
   iconSet = SmallIconSet( "up" );
@@ -853,7 +854,7 @@ void KEditToolbarWidget::setupLayout()
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
 
   d->m_helpArea = new QLabel(this);
-  d->m_helpArea->setAlignment( Qt::WordBreak );
+  d->m_helpArea->setAlignment( Qt::TextWordWrap );
 
   // now start with our layouts
   QVBoxLayout *top_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
@@ -1086,7 +1087,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
   }
 }
 
-void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
+void KEditToolbarWidget::slotInactiveSelected(Q3ListViewItem *item)
 {
   ToolbarItem* toolitem = static_cast<ToolbarItem *>(item);
   if (item)
@@ -1102,7 +1103,7 @@ void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
   }
 }
 
-void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
+void KEditToolbarWidget::slotActiveSelected(Q3ListViewItem *item)
 {
   ToolbarItem* toolitem = static_cast<ToolbarItem *>(item);
   m_removeAction->setEnabled( item );
@@ -1134,7 +1135,7 @@ void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
   }
 }
 
-void KEditToolbarWidget::slotDropped(KListView *list, QDropEvent *e, QListViewItem *after)
+void KEditToolbarWidget::slotDropped(KListView *list, QDropEvent *e, Q3ListViewItem *after)
 {
   ToolbarItem *item = new ToolbarItem(m_inactiveList); // needs parent, use inactiveList temporarily
   if(!ToolbarItemDrag::decode(e, *item)) {
@@ -1185,7 +1186,7 @@ void KEditToolbarWidget::slotRemoveButton()
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
 
-void KEditToolbarWidget::insertActive(ToolbarItem *item, QListViewItem *before, bool prepend)
+void KEditToolbarWidget::insertActive(ToolbarItem *item, Q3ListViewItem *before, bool prepend)
 {
   if (!item)
     return;
@@ -1272,7 +1273,7 @@ void KEditToolbarWidget::slotUpButton()
   delete item;
 }
 
-void KEditToolbarWidget::moveActive( ToolbarItem* item, QListViewItem* before )
+void KEditToolbarWidget::moveActive( ToolbarItem* item, Q3ListViewItem* before )
 {
   QDomElement e = d->findElementForToolbarItem( item );
 

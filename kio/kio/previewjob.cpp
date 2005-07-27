@@ -45,7 +45,7 @@
 #include <kapplication.h>
 #include <ktempfile.h>
 #include <ktrader.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
@@ -71,7 +71,7 @@ struct KIO::PreviewJobPrivate
     KFileItemList initialItems;
     const QStringList *enabledPlugins;
     // Our todo list :)
-    QValueList<PreviewItem> items;
+    Q3ValueList<PreviewItem> items;
     // The current item
     PreviewItem currentItem;
     // The modification time of that URL
@@ -217,7 +217,7 @@ void PreviewJob::startPreview()
 
 void PreviewJob::removeItem( const KFileItem *item )
 {
-    for (QValueList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
+    for (Q3ValueList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
         if ((*it).item == item)
         {
             d->items.remove(it);
@@ -449,7 +449,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 #ifdef Q_OS_UNIX
     if (d->shmaddr)
     {
-        QDataStream str(data, IO_ReadOnly);
+        QDataStream str(data);
         int width, height, depth;
         bool alpha;
         str >> width >> height >> depth >> alpha;
@@ -486,9 +486,9 @@ void PreviewJob::emitPreview(const QImage &thumb)
         double imgRatio = (double)thumb.height() / (double)thumb.width();
         if (imgRatio > (double)d->height / (double)d->width)
             pix.convertFromImage(
-                thumb.smoothScale((int)QMAX((double)d->height / imgRatio, 1), d->height));
+                thumb.smoothScale(QMAX(int((double)d->height / imgRatio), 1), d->height));
         else pix.convertFromImage(
-            thumb.smoothScale(d->width, (int)QMAX((double)d->width * imgRatio, 1)));
+            thumb.smoothScale(d->width, QMAX(int((double)d->width * imgRatio), 1)));
     }
     else pix.convertFromImage(thumb);
     emit gotPreview(d->currentItem.item, pix);

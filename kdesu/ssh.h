@@ -4,16 +4,14 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
 #ifndef __SSH_h_Included__
 #define __SSH_h_Included__
-
-#include <qcstring.h>
 
 #include "stub.h"
 
@@ -26,7 +24,8 @@
 class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
-    SshProcess(const QCString &host=0, const QCString &user=0, const QCString &command=0);
+    SshProcess(const QByteArray &host = QByteArray(), const QByteArray &user = QByteArray(),
+               const QByteArray &command = QByteArray());
     ~SshProcess();
 
     enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
@@ -34,12 +33,12 @@ public:
     /**
      * Sets the target host.
      */
-    void setHost(const QCString &host) { m_Host = host; }
+    void setHost(const QByteArray &host) { m_Host = host; }
 
     /**
      * Sets the localtion of the remote stub.
      */
-    void setStub(const QCString &stub);
+    void setStub(const QByteArray &stub);
 
     /** 
      * Checks if the current user\@host needs a password. 
@@ -61,24 +60,24 @@ public:
      */
     int exec(const char *password, int check=0);
 
-    QCString prompt() { return m_Prompt; }
-    QCString error() { return m_Error; }
+    QByteArray prompt() const  { return m_Prompt; }
+    QByteArray error() const { return m_Error; }
 
 protected:
-    virtual QCString display();
-    virtual QCString displayAuth();
-    virtual QCString dcopServer();
+    virtual QByteArray display();
+    virtual QByteArray displayAuth();
+    virtual QByteArray dcopServer();
 
 private:
-    QCString dcopForward();
+    QByteArray dcopForward();
     int ConverseSsh(const char *password, int check);
 
     int m_dcopPort;
     int  m_dcopSrv;
-    QCString m_Prompt;
-    QCString m_Host;
-    QCString m_Error;
-    QCString m_Stub;
+    QByteArray m_Prompt;
+    QByteArray m_Host;
+    QByteArray m_Error;
+    QByteArray m_Stub;
 
 protected:
     virtual void virtual_hook( int id, void* data );

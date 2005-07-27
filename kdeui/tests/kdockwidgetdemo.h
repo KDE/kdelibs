@@ -4,24 +4,24 @@
 #include <kdockwidget.h>
 
 #include <qdialog.h>
-#include <qlistview.h>
+#include <q3listview.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtimer.h>
-#include <qscrollview.h>
-#include <qfiledialog.h>
-#include <qwidgetstack.h>
-#include <qvbox.h>
-#include <qurl.h>
+#include <q3scrollview.h>
+#include <q3filedialog.h>
+#include <q3widgetstack.h>
+#include <q3vbox.h>
+#include <q3url.h>
 #include <qpixmap.h>
 
-class QMultiLineEdit;
-class QTextView;
+class Q3MultiLineEdit;
+class Q3TextView;
 class QToolButton;
 class QSpinBox;
 class QShowEvent;
-class QPopupMenu;
+class Q3PopupMenu;
 
 class DirectoryView;
 class CustomFileDialog;
@@ -67,10 +67,10 @@ private:
   QToolButton *b_preview;
 };
 /******************************************************************************************************/
-class Directory : public QListViewItem
+class Directory : public Q3ListViewItem
 {
 public:
-    Directory( QListView * parent, const QString& filename );
+    Directory( Q3ListView * parent, const QString& filename );
     Directory( Directory * parent, const QString& filename );
 
     QString text( int column ) const;
@@ -86,11 +86,11 @@ private:
     bool readable;
 };
 
-class DirectoryView : public QListView
+class DirectoryView : public Q3ListView
 {Q_OBJECT
 public:
   DirectoryView( QWidget *parent = 0, const char *name = 0 );
-  virtual void setOpen ( QListViewItem *, bool );
+  virtual void setOpen ( Q3ListViewItem *, bool );
 
   QString selectedDir();
 
@@ -101,13 +101,13 @@ signals:
   void folderSelected( const QString & );
 
 protected slots:
-  void slotFolderSelected( QListViewItem * );
+  void slotFolderSelected( Q3ListViewItem * );
 
 private:
-  QString fullPath(QListViewItem* item);
+  QString fullPath(Q3ListViewItem* item);
 };
 /******************************************************************************************************/
-class PixmapView : public QScrollView
+class PixmapView : public Q3ScrollView
 {Q_OBJECT
 public:
   PixmapView( QWidget *parent );
@@ -118,7 +118,7 @@ private:
   QPixmap pixmap;
 };
 
-class Preview : public QWidgetStack
+class Preview : public Q3WidgetStack
 {Q_OBJECT
 public:
   Preview( QWidget *parent );
@@ -127,18 +127,18 @@ public slots:
   void showPreview( const QString& );
 
 private:
-  QMultiLineEdit *normalText;
-  QTextView *html;
+  Q3MultiLineEdit *normalText;
+  Q3TextView *html;
   PixmapView *pixmap;
 };
 
-class CustomFileDialog : public QFileDialog
+class CustomFileDialog : public Q3FileDialog
 {Q_OBJECT
 public:
   CustomFileDialog( QWidget* parent );
   ~CustomFileDialog();
 
-  void addToolButton( QButton * b, bool separator = false ){ QFileDialog::addToolButton(b,separator); }
+  void addToolButton( QAbstractButton * b, bool separator = false ){ Q3FileDialog::addToolButton(b,separator); }
   void setBookmark( QStringList& );
   QStringList getBookmark(){ return bookmarkList; }
 
@@ -154,7 +154,7 @@ protected slots:
   virtual void done( int );
 
 private:
-  QPopupMenu *bookmarkMenu;
+  Q3PopupMenu *bookmarkMenu;
   QStringList bookmarkList;
   int addId, clearId;
 };

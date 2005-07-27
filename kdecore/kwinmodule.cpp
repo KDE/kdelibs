@@ -22,16 +22,18 @@
 */
 
 #include <qwidget.h>
+#include <qx11info_x11.h>
 #ifdef Q_WS_X11 //FIXME
 #include "kwinmodule.h"
 #include "kwin.h"
 #include <X11/Xatom.h>
 #include "kapplication.h"
 #include "kdebug.h"
-#include <qtl.h>
-#include <qptrlist.h>
+#include <q3tl.h>
+#include <QHash>
 #include <klocale.h>
 #include <dcopclient.h>
+#include <QDesktopWidget>
 #include "netwm.h"
 
 static KWinModulePrivate* static_d = 0;
@@ -60,7 +62,7 @@ class KWinModulePrivate : public QWidget, public NETRootInfo4
 {
 public:
     KWinModulePrivate(int _what)
-	: QWidget(0,0), NETRootInfo4( qt_xdisplay(),
+	: QWidget(0,0), NETRootInfo4( QX11Info::display(),
                                      _what >= KWinModule::INFO_WINDOWS ?
                                      windows_properties : desktop_properties,
                                      2,
@@ -77,11 +79,11 @@ public:
     ~KWinModulePrivate()
     {
     }
-    QPtrList<KWinModule> modules;
+    QList<KWinModule *> modules;
 
-    QValueList<WId> windows;
-    QValueList<WId> stackingOrder;
-    QValueList<WId> systemTrayWindows;
+    QList<WId> windows;
+    QList<WId> stackingOrder;
+    QList<WId> systemTrayWindows;
 
     struct StrutData
     {
@@ -92,8 +94,8 @@ public:
         NETStrut strut;
         int desktop;
     };
-    QValueList<StrutData> strutWindows;
-    QValueList<WId> possibleStrutWindows;
+    QList<StrutData> strutWindows;
+    QList<WId> possibleStrutWindows;
     bool strutSignalConnected;
     int what;
 
@@ -134,12 +136,12 @@ void KWinModule::init(int what)
     }
     else if (static_d->what < what)
     {
-        QPtrList<KWinModule> modules = static_d->modules;
+        QList<KWinModule *> modules = static_d->modules;
         delete static_d;
         static_d = new KWinModulePrivate(what);
         static_d->modules = modules;
-        for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-            (*mit)->d = static_d;
+        foreach(KWinModule *m, modules)
+            m->d = static_d;
     }
     
     d = static_d;
@@ -148,19 +150,19 @@ void KWinModule::init(int what)
 
 KWinModule::~KWinModule()
 {
-    d->modules.removeRef( this );
+    d->modules.removeAll( this );
     if ( d->modules.isEmpty() ) {
 	delete d;
 	static_d = 0;
     }
 }
 
-const QValueList<WId>& KWinModule::windows() const
+const QList<WId>& KWinModule::windows() const
 {
     return d->windows;
 }
 
-const QValueList<WId>& KWinModule::stackingOrder() const
+const QList<WId>& KWinModule::stackingOrder() const
 {
     return d->stackingOrder;
 }
@@ -171,14 +173,14 @@ bool KWinModule::hasWId(WId w) const
     return d->windows.findIndex( w ) != -1;
 }
 
-const QValueList<WId>& KWinModule::systemTrayWindows() const
+const QList<WId>& KWinModule::systemTrayWindows() const
 {
     return d->systemTrayWindows;
 }
 
 bool KWinModulePrivate::x11Event( XEvent * ev )
 {
-    if ( ev->xany.window == qt_xrootwin() ) {
+    if ( ev->xany.window == QX11Info::appRootWindow() ) {
         int old_current_desktop = currentDesktop();
         WId old_active_window = activeWindow();
         int old_number_of_desktops = numberOfDesktops();
@@ -187,31 +189,31 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	NETRootInfo::event( ev, m, 5 );
 
 	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->currentDesktopChanged( currentDesktop() );
+	    foreach(KWinModule *m, modules)
+		emit m->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->activeWindowChanged( activeWindow() );
+	    foreach(KWinModule *m, modules)
+		emit m->activeWindowChanged( activeWindow() );
 	if ( m[ PROTOCOLS ] & DesktopNames )
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->desktopNamesChanged();
+	    foreach(KWinModule *m, modules)
+		emit m->desktopNamesChanged();
 	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->numberOfDesktopsChanged( numberOfDesktops() );
+	    foreach(KWinModule *m, modules)
+		emit m->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m[ PROTOCOLS ] & WorkArea )
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->workAreaChanged();
+	    foreach(KWinModule *m, modules)
+		emit m->workAreaChanged();
 	if ( m[ PROTOCOLS ] & ClientListStacking ) {
 	    updateStackingOrder();
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->stackingOrderChanged();
+	    foreach(KWinModule *m, modules)
+		emit m->stackingOrderChanged();
 	}
         if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-		emit (*mit)->showingDesktopChanged( showingDesktop());
+	    foreach(KWinModule *m, modules)
+		emit m->showingDesktopChanged( showingDesktop());
         }
     } else  if ( windows.findIndex( ev->xany.window ) != -1 ){
-	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
+	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
         unsigned long dirty[ 2 ];
 	ni.event( ev, dirty, 2 );
 	if ( ev->type ==PropertyNotify ) {
@@ -228,12 +230,12 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
         	possibleStrutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
-	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit ) {
-		emit (*mit)->windowChanged( ev->xany.window );
-                emit (*mit)->windowChanged( ev->xany.window, dirty );
-		emit (*mit)->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+	    foreach(KWinModule *m, modules) {
+		emit m->windowChanged( ev->xany.window );
+                emit m->windowChanged( ev->xany.window, dirty );
+		emit m->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
 		if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 )
-		    emit (*mit)->strutChanged();
+		    emit m->strutChanged();
 	    }
 	}
     }
@@ -243,7 +245,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 
 bool KWinModulePrivate::removeStrutWindow( WId w )
 {
-    for( QValueList< StrutData >::Iterator it = strutWindows.begin();
+    for( QList< StrutData >::Iterator it = strutWindows.begin();
          it != strutWindows.end();
          ++it )
         if( (*it).window == w ) {
@@ -263,10 +265,10 @@ void KWinModulePrivate::updateStackingOrder()
 void KWinModulePrivate::addClient(Window w)
 {
     if ( (what >= KWinModule::INFO_WINDOWS) && !QWidget::find( w ) )
-	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
+	XSelectInput( QX11Info::display(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = false;
     if( strutSignalConnected && modules.count() > 0 ) {
-        NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut | NET::WMDesktop );
+        NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             strutWindows.append( StrutData( w, strut, info.desktop()));
@@ -275,10 +277,10 @@ void KWinModulePrivate::addClient(Window w)
     } else
         possibleStrutWindows.append( w );
     windows.append( w );
-    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit ) {
-	emit (*mit)->windowAdded( w );
+    foreach(KWinModule *m, modules) {
+	emit m->windowAdded( w );
 	if ( emit_strutChanged )
-	    emit (*mit)->strutChanged();
+	    emit m->strutChanged();
     }
 }
 
@@ -286,7 +288,7 @@ void KWinModulePrivate::removeClient(Window w)
 {
     bool emit_strutChanged = removeStrutWindow( w );
     if( strutSignalConnected && possibleStrutWindows.findIndex( w ) != -1 && modules.count() > 0 ) {
-        NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
+        NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             emit_strutChanged = true;
@@ -294,25 +296,25 @@ void KWinModulePrivate::removeClient(Window w)
     }
     possibleStrutWindows.remove( w );
     windows.remove( w );
-    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit ) {
-	emit (*mit)->windowRemoved( w );
+    foreach(KWinModule *m, modules) {
+	emit m->windowRemoved( w );
 	if ( emit_strutChanged )
-	    emit (*mit)->strutChanged();
+	    emit m->strutChanged();
     }
 }
 
 void KWinModulePrivate::addSystemTrayWin(Window w)
 {
     systemTrayWindows.append( w );
-    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-	emit (*mit)->systemTrayWindowAdded( w );
+    foreach(KWinModule *m, modules)
+	emit m->systemTrayWindowAdded( w );
 }
 
 void KWinModulePrivate::removeSystemTrayWin(Window w)
 {
     systemTrayWindows.remove( w );
-    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
-	emit (*mit)->systemTrayWindowRemoved( w );
+    foreach(KWinModule *m, modules)
+	emit m->systemTrayWindowRemoved( w );
 }
 
 int KWinModule::currentDesktop() const
@@ -346,7 +348,7 @@ QRect KWinModule::workArea( int desktop ) const
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
-QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
+QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
 {
     QRect all = QApplication::desktop()->geometry();
     QRect a = all;
@@ -354,7 +356,7 @@ QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
     if (desktop == -1)
 	desktop = d->currentDesktop();
 
-    QValueList<WId>::ConstIterator it1;
+    QList<WId>::ConstIterator it1;
     for( it1 = d->windows.begin(); it1 != d->windows.end(); ++it1 ) {
 
 	if(exclude.findIndex(*it1) != -1) continue;
@@ -363,7 +365,7 @@ QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
 // to repeatedly find out struts of all windows. Therefore strut values for strut
 // windows are cached here.
         NETStrut strut;
-        QValueList< KWinModulePrivate::StrutData >::Iterator it2 = d->strutWindows.begin();
+        QList< KWinModulePrivate::StrutData >::Iterator it2 = d->strutWindows.begin();
         for( ;
              it2 != d->strutWindows.end();
              ++it2 )
@@ -374,7 +376,7 @@ QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
                 continue;
             strut = (*it2).strut;
         } else if( d->possibleStrutWindows.findIndex( *it1 ) != -1 ) {
-            NETWinInfo info( qt_xdisplay(), (*it1), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
+            NETWinInfo info( QX11Info::display(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
 	    strut = info.strut();
             d->possibleStrutWindows.remove( *it1 );
             d->strutWindows.append( KWinModulePrivate::StrutData( *it1, info.strut(), info.desktop()));
@@ -425,12 +427,8 @@ void KWinModule::doNotManage( const QString& title )
 {
     if ( !kapp->dcopClient()->isAttached() )
 	kapp->dcopClient()->attach();
-    QByteArray data, replyData;
-    QCString replyType;
-    QDataStream arg(data, IO_WriteOnly);
-    arg << title;
-    kapp->dcopClient()->call("kwin", "", "doNotManage(QString)",
-			     data, replyType, replyData);
+
+    DCOPRef("kwin", "").call("doNotManage", title);
 }
 
 #include "kwinmodule.moc"

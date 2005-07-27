@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "driveritem.h"
@@ -24,16 +24,16 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-DriverItem::DriverItem(QListView *parent, DrBase *item)
-: QListViewItem(parent), m_item(item), m_conflict(false)
+DriverItem::DriverItem(Q3ListView *parent, DrBase *item)
+: Q3ListViewItem(parent), m_item(item), m_conflict(false)
 {
 	setOpen(depth() < 3);
 	setPixmap(0,SmallIcon("fileprint"));
 	updateText();
 }
 
-DriverItem::DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item)
-: QListViewItem(parent, after), m_item(item), m_conflict(false)
+DriverItem::DriverItem(Q3ListViewItem *parent, Q3ListViewItem *after, DrBase *item)
+: Q3ListViewItem(parent, after), m_item(item), m_conflict(false)
 {
 	setOpen(depth() < 3);
 	if (item) setPixmap(0,SmallIcon((item->isOption() ? "document" : "folder")));
@@ -76,7 +76,7 @@ void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, i
 
 	// highlight rectangle
 	if (isSelected())
-		p->fillRect(0, 0, /*2+p->fontMetrics().width(text(0))+(pixmap(0) ? pixmap(0)->width()+2 : 0)*/ width, height(), (m_conflict ? red : cg.highlight()));
+		p->fillRect(0, 0, /*2+p->fontMetrics().width(text(0))+(pixmap(0) ? pixmap(0)->width()+2 : 0)*/ width, height(), (m_conflict ? Qt::red : cg.highlight()));
 
 	// draw pixmap
 	int	w(0);
@@ -90,7 +90,7 @@ void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, i
 	// draw Text
 	if (!m_item || !m_item->isOption() || isSelected())
 	{
-		p->setPen((isSelected() ? cg.highlightedText() : (m_conflict ? red : cg.text())));
+		p->setPen((isSelected() ? cg.highlightedText() : (m_conflict ? Qt::red : cg.text())));
 		p->drawText(w,0,width-w,height(),Qt::AlignLeft|Qt::AlignVCenter,text(0));
 	}
 	else
@@ -101,7 +101,7 @@ void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, i
 		p->setPen(cg.text());
 		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
 		w += w1;
-		p->setPen((m_conflict ? red : darkGreen));
+		p->setPen((m_conflict ? Qt::red : Qt::darkGreen));
 		s = m_item->prettyText();
 		w1 = p->fontMetrics().width(s);
 		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);

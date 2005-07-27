@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "cupsdnetworkpage.h"
@@ -27,7 +27,6 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <knuminput.h>
@@ -124,13 +123,13 @@ bool CupsdNetworkPage::saveConfig(CupsdConf *conf, QString&)
 
 void CupsdNetworkPage::setInfos(CupsdConf *conf)
 {
-	QWhatsThis::add(hostnamelookup_, conf->comments_.toolTip("hostnamelookups"));
-	QWhatsThis::add(keepalive_, conf->comments_.toolTip("keepalive"));
-	QWhatsThis::add(keepalivetimeout_, conf->comments_.toolTip("keepalivetimeout"));
-	QWhatsThis::add(maxclients_, conf->comments_.toolTip("maxclients"));
-	QWhatsThis::add(maxrequestsize_, conf->comments_.toolTip("maxrequestsize"));
-	QWhatsThis::add(clienttimeout_, conf->comments_.toolTip("timeout"));
-	QWhatsThis::add(listen_, conf->comments_.toolTip("listen"));
+	hostnamelookup_->setWhatsThis(conf->comments_.toolTip("hostnamelookups"));
+	keepalive_->setWhatsThis(conf->comments_.toolTip("keepalive"));
+	keepalivetimeout_->setWhatsThis(conf->comments_.toolTip("keepalivetimeout"));
+	maxclients_->setWhatsThis(conf->comments_.toolTip("maxclients"));
+	maxrequestsize_->setWhatsThis(conf->comments_.toolTip("maxrequestsize"));
+	clienttimeout_->setWhatsThis(conf->comments_.toolTip("timeout"));
+	listen_->setWhatsThis(conf->comments_.toolTip("listen"));
 }
 
 void CupsdNetworkPage::slotAdd()

@@ -21,13 +21,13 @@
 #ifndef KABC_FORMATFACTORY_H
 #define KABC_FORMATFACTORY_H
 
-#include <qdict.h>
+#include <q3dict.h>
 #include <qstring.h>
 
 #include <kconfig.h>
 #include <klibloader.h>
 
-#include "formatplugin.h"
+#include "format.h"
 
 namespace KABC {
 
@@ -49,7 +49,7 @@ struct FormatInfo
  * QStringList list = factory->formats();
  * QStringList::Iterator it;
  * for ( it = list.begin(); it != list.end(); ++it ) {
- *   KABC::FormatPlugin *format = factory->format( (*it) );
+ *   KABC::Format *format = factory->format( (*it) );
  *   // do something with format
  * }
  * \endcode
@@ -74,7 +74,7 @@ class KABC_EXPORT FormatFactory
      *
      * @param type   The type of the format, returned by formats()
      */
-    FormatPlugin *format( const QString &type );
+    Format *format( const QString &type );
 
     /**
      * Returns a list of all available format types.
@@ -94,7 +94,7 @@ class KABC_EXPORT FormatFactory
 
     static FormatFactory *mSelf;
 
-    QDict<FormatInfo> mFormatList;
+    Q3Dict<FormatInfo> mFormatList;
 };
 
 }

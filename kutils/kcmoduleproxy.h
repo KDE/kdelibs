@@ -23,7 +23,9 @@
 
 #include <qwidget.h>
 #include <qstringlist.h>
+#include <q3cstring.h>
 
+#include <dcopclient.h>
 #include <kservice.h>
 #include <kdelibs_export.h>
 
@@ -227,7 +229,7 @@ public:
 	 *
 	 * @since 3.4
 	 */
-	QCString dcopName() const;
+	Q3CString dcopName() const;
 
 public slots:
 
@@ -317,7 +319,7 @@ private slots:
 	* @param function the function signature of the function to call.
 	* @since 3.4
 	*/
-	void callRootModule( const QCString& function );
+	void callRootModule( const Q3CString& function );
 
 	/**
 	 * This is called when the module exits from root mode. It zeroes
@@ -344,7 +346,7 @@ private slots:
 	 *
 	 * @since 3.4
 	 */
-	void applicationRemoved( const QCString& app );
+	void applicationRemoved( const QByteArray& app );
 
 private:
 

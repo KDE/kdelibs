@@ -21,7 +21,7 @@
 #define KSORTABLEVALUELIST_H
 
 #include <qpair.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 #include "kdelibs_export.h"
 
 /**
@@ -127,7 +127,7 @@ public:
  * to sort all items.
  */
 template <class T, class Key = int>
-class KSortableValueList : public QValueList<KSortableItem<T, Key> >
+class KSortableValueList : public QList<KSortableItem<T, Key> >
 {
 public:
     /**
@@ -136,7 +136,7 @@ public:
      * @param t the second value
      */
     void insert( Key i, const T& t ) {
-        QValueList<KSortableItem<T, Key> >::append( KSortableItem<T, Key>( i, t ) );
+        QList<KSortableItem<T, Key> >::append( KSortableItem<T, Key>( i, t ) );
     }
     // add more as you please...
 
@@ -145,7 +145,7 @@ public:
      * @return the first value of the KSortableItem
      */
     T& operator[]( Key i ) {
-        return QValueList<KSortableItem<T, Key> >::operator[]( i ).value();
+        return QList<KSortableItem<T, Key> >::operator[]( i ).value();
     }
 
     /**
@@ -153,14 +153,14 @@ public:
      * @return the first value of the KSortableItem
      */
     const T& operator[]( Key i ) const {
-        return QValueList<KSortableItem<T, Key> >::operator[]( i ).value();
+        return QList<KSortableItem<T, Key> >::operator[]( i ).value();
     }
 
     /**
      * Sorts the KSortableItems.
      */
     void sort() {
-        qHeapSort( *this );
+        qSort( *this );
     }
 };
 

@@ -12,8 +12,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #include "config.h"
 
@@ -26,14 +26,15 @@
 #include <kdebug.h>
 
 #include "klistbox.h"
+#include <QKeyEvent>
 
-KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
-    : QListBox( parent, name, f ), d(0)
+KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
+    : Q3ListBox( parent, name, f ), d(0)
 {
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
-    connect( this, SIGNAL( onItem( QListBoxItem * ) ),
-	     this, SLOT( slotOnItem( QListBoxItem * ) ) );
+    connect( this, SIGNAL( onItem( Q3ListBoxItem * ) ),
+	     this, SLOT( slotOnItem( Q3ListBoxItem * ) ) );
     slotSettingsChanged(KApplication::SETTINGS_MOUSE);
     if (kapp)
     {
@@ -48,7 +49,7 @@ KListBox::KListBox( QWidget *parent, const char *name, WFlags f )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KListBox::slotOnItem( QListBoxItem *item )
+void KListBox::slotOnItem( Q3ListBoxItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
@@ -75,9 +76,9 @@ void KListBox::slotSettingsChanged(int category)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
 
-    disconnect( this, SIGNAL( mouseButtonClicked( int, QListBoxItem *,
+    disconnect( this, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *,
 						  const QPoint & ) ),
-		this, SLOT( slotMouseButtonClicked( int, QListBoxItem *,
+		this, SLOT( slotMouseButtonClicked( int, Q3ListBoxItem *,
 						    const QPoint & ) ) );
 //         disconnect( this, SIGNAL( doubleClicked( QListBoxItem *, 
 // 						 const QPoint & ) ),
@@ -86,9 +87,9 @@ void KListBox::slotSettingsChanged(int category)
 
     if( m_bUseSingle )
     {
-      connect( this, SIGNAL( mouseButtonClicked( int, QListBoxItem *, 
+      connect( this, SIGNAL( mouseButtonClicked( int, Q3ListBoxItem *, 
 						 const QPoint & ) ),
-	       this, SLOT( slotMouseButtonClicked( int, QListBoxItem *,
+	       this, SLOT( slotMouseButtonClicked( int, Q3ListBoxItem *,
 						   const QPoint & ) ) );
     }
     else
@@ -116,19 +117,19 @@ void KListBox::slotAutoSelect()
   if( !hasFocus() )
     setFocus();
 
-  ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
 
-  QListBoxItem* previousItem = item( currentItem() ); 
+  Q3ListBoxItem* previousItem = item( currentItem() ); 
   setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
-    if( (keybstate & ShiftButton) ) {
+    if( (keybstate & Qt::ShiftModifier) ) {
       bool block = signalsBlocked();
       blockSignals( true );
 
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlButton) )  
+      if( !(keybstate & Qt::ControlModifier) )  
 	clearSelection(); 
 
       bool select = !m_pCurrentItem->isSelected();
@@ -136,7 +137,7 @@ void KListBox::slotAutoSelect()
       viewport()->setUpdatesEnabled( false );
 
       bool down = index( previousItem ) < index( m_pCurrentItem );
-      QListBoxItem* it = down ? previousItem : m_pCurrentItem;
+      Q3ListBoxItem* it = down ? previousItem : m_pCurrentItem;
       for (;it ; it = it->next() ) {
 	if ( down && it == m_pCurrentItem ) {
 	  setSelected( m_pCurrentItem, select );
@@ -155,10 +156,10 @@ void KListBox::slotAutoSelect()
 
       emit selectionChanged();
 
-      if( selectionMode() == QListBox::Single )
+      if( selectionMode() == Q3ListBox::Single )
 	emit selectionChanged( m_pCurrentItem );
     }
-    else if( (keybstate & ControlButton) )
+    else if( (keybstate & Qt::ControlModifier) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected() );
     else {
       bool block = signalsBlocked();
@@ -176,14 +177,14 @@ void KListBox::slotAutoSelect()
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
 }
 
-void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
+void KListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )
 {
-  ButtonState keybstate = KApplication::keyboardMouseState();
+  Qt::ButtonState keybstate = KApplication::keyboardMouseState();
     
   m_pAutoSelect->stop();
   
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
-  if( !( m_bUseSingle && ((keybstate & ShiftButton) || (keybstate & ControlButton)) ) ) {
+  if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
     emit executed( item );
     emit executed( item, pos );
   }
@@ -198,17 +199,17 @@ void KListBox::emitExecute( QListBoxItem *item, const QPoint &pos )
 //
 void KListBox::keyPressEvent(QKeyEvent *e)
 {
-  if( e->key() == Key_Escape )
+  if( e->key() == Qt::Key_Escape )
   {
     e->ignore();
   }
-  else if( e->key() == Key_F1 )
+  else if( e->key() == Qt::Key_F1 )
   {
     e->ignore();
   }
   else
   {
-    QListBox::keyPressEvent(e);
+    Q3ListBox::keyPressEvent(e);
   }
 }
 
@@ -216,19 +217,19 @@ void KListBox::focusOutEvent( QFocusEvent *fe )
 {
   m_pAutoSelect->stop();
 
-  QListBox::focusOutEvent( fe );
+  Q3ListBox::focusOutEvent( fe );
 }
 
 void KListBox::leaveEvent( QEvent *e ) 
 {
   m_pAutoSelect->stop();
 
-  QListBox::leaveEvent( e );
+  Q3ListBox::leaveEvent( e );
 }
 
 void KListBox::contentsMousePressEvent( QMouseEvent *e )
 {
-  if( (selectionMode() == Extended) && (e->state() & ShiftButton) && !(e->state() & ControlButton) ) {
+  if( (selectionMode() == Extended) && (e->state() & Qt::ShiftModifier) && !(e->state() & Qt::ControlModifier) ) {
     bool block = signalsBlocked();
     blockSignals( true );
 
@@ -237,26 +238,26 @@ void KListBox::contentsMousePressEvent( QMouseEvent *e )
     blockSignals( block );
   }
 
-  QListBox::contentsMousePressEvent( e );
+  Q3ListBox::contentsMousePressEvent( e );
 }
 
 void KListBox::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 {
-  QListBox::contentsMouseDoubleClickEvent( e );
+  Q3ListBox::contentsMouseDoubleClickEvent( e );
 
-  QListBoxItem* item = itemAt( contentsToViewport( e->pos() ) );
+  Q3ListBoxItem* item = itemAt( contentsToViewport( e->pos() ) );
 
   if( item ) {
     emit doubleClicked( item, e->globalPos() );
 
-    if( (e->button() == LeftButton) && !m_bUseSingle )
+    if( (e->button() == Qt::LeftButton) && !m_bUseSingle )
       emitExecute( item, e->globalPos() );
   }
 }
 
-void KListBox::slotMouseButtonClicked( int btn, QListBoxItem *item, const QPoint &pos )
+void KListBox::slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos )
 {
-  if( (btn == LeftButton) && item )
+  if( (btn == Qt::LeftButton) && item )
     emitExecute( item, pos );
 }
 

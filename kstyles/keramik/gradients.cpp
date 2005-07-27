@@ -1,6 +1,6 @@
-/* Keramik Style for KDE3, gradient routines..
-   Copyright (c) 2002 Malte Starostik <malte@kde.org>
-                  (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+/* Keramik Style for KDE4, gradient routines..
+   Copyright (c) 2002       Malte Starostik <malte@kde.org>
+             (c) 2002, 2005 Maksim Orlovich <maksim@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,17 +17,16 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-// $Id$
 
-#include <qpainter.h>
-#include <qrect.h>
-#include <qcolor.h>
+#include <QPainter>
+#include <QRect>
+#include <QColor>
 
 #include "gradients.h"
 #include "colorutil.h"
 
-#include <qimage.h>
-#include <qintcache.h>
+#include <QImage>
+#include <QCache>
 #include <kimageeffect.h>
 
 namespace
@@ -65,7 +64,7 @@ namespace
 	};
 	
 	
-	QIntCache<GradientCacheEntry> cache(65636, 17);
+	QCache<int, GradientCacheEntry> cache(65636);
 	
 }
 
@@ -92,20 +91,15 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
 	GradientCacheEntry entry (width, height, c, menu);
 	GradientCacheEntry* cacheEntry = 0;
 	
-	cache.setAutoDelete(true);
-	
 	int key = entry.key();
 	
-	if ((cacheEntry = cache.find(key, false)))
+	if ((cacheEntry = cache.take(key)))
 	{
 		if (entry == *cacheEntry)
 		{
 			p->drawTiledPixmap(r, *cacheEntry->m_pixmap, horizontal? QPoint(0,py): QPoint(px,0));
 			return;
 		}
-		else
-			cache.remove(key);
-			//Remove old entry in case of conflicts.. otherwise we end up w/unreachable items in cache
 	}
 	
 	
@@ -162,16 +156,13 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
 
 	}
 		
-	bool cacheOK = false;
+	
 	GradientCacheEntry* imgToAdd = new GradientCacheEntry(entry);
-	cacheOK = cache.insert(imgToAdd->key(), imgToAdd, 
+	cache.insert(imgToAdd->key(), imgToAdd,
 		imgToAdd->m_pixmap->width() * imgToAdd->m_pixmap->height()*
 		imgToAdd->m_pixmap->depth()/8);
 		
 	p->drawTiledPixmap(r, *imgToAdd->m_pixmap, horizontal? QPoint(0,py): QPoint(px,0));
-	
-	if (!cacheOK)
-		delete imgToAdd;
 	
 	entry.m_pixmap = 0;//Don't free too early..
 }

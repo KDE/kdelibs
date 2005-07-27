@@ -13,25 +13,25 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef DROPTIONVIEW_H
 #define DROPTIONVIEW_H
 
 #include <qwidget.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qstringlist.h>
 
 class QLineEdit;
 class QSlider;
 class QLabel;
 class KListBox;
-class QListBoxItem;
-class QVButtonGroup;
-class QWidgetStack;
-class QListViewItem;
+class Q3ListBoxItem;
+class Q3VButtonGroup;
+class Q3WidgetStack;
+class Q3ListViewItem;
 class DrBase;
 class DriverItem;
 
@@ -108,11 +108,11 @@ protected slots:
 	void slotSelected(int);
 
 private:
-	QVButtonGroup	*m_group;
+	Q3VButtonGroup	*m_group;
 	QStringList	m_choices;
 };
 
-class DrOptionView : public QGroupBox
+class DrOptionView : public Q3GroupBox
 {
 	Q_OBJECT
 public:
@@ -124,10 +124,10 @@ signals:
 
 public slots:
 	void slotValueChanged(const QString&);
-	void slotItemSelected(QListViewItem*);
+	void slotItemSelected(Q3ListViewItem*);
 
 private:
-	QWidgetStack	*m_stack;
+	Q3WidgetStack	*m_stack;
 	DriverItem	*m_item;
 	bool		m_block;
 	bool		m_allowfixed;

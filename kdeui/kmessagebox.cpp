@@ -13,23 +13,24 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <qcheckbox.h>
-#include <qguardedptr.h>
-#include <qhbox.h>
+#include <qpointer.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qstringlist.h>
-#include <qvbox.h>
-#include <qvgroupbox.h>
-#include <qstylesheet.h>
-#include <qsimplerichtext.h>
+#include <q3vbox.h>
+#include <q3groupbox.h>
+#include <q3stylesheet.h>
+#include <q3simplerichtext.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qx11info_x11.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -131,7 +132,7 @@ static QString qrichtextify( const QString& text )
   QStringList lines = QStringList::split('\n', text);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
-    *it = QStyleSheet::convertFromPlainText( *it, QStyleSheetItem::WhiteSpaceNormal );
+    *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
   }
 
   return lines.join(QString::null);
@@ -151,7 +152,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                              const QString &ask, bool *checkboxReturn, int options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    QVBox *topcontents = new QVBox (dialog);
+    Q3VBox *topcontents = new Q3VBox (dialog);
     topcontents->setSpacing(KDialog::spacingHint()*2);
     topcontents->setMargin(KDialog::marginHint());
 
@@ -173,7 +174,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     int pref_height = 0;
     // Calculate a proper size for the text.
     {
-       QSimpleRichText rt(qt_text, dialog->font());
+       Q3SimpleRichText rt(qt_text, dialog->font());
        QRect d = KGlobalSettings::desktopGeometry(dialog);
 
        pref_width = d.width() / 3;
@@ -229,11 +230,11 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     {
        listbox=new KListBox( topcontents );
        listbox->insertStringList( strlist );
-       listbox->setSelectionMode( QListBox::NoSelection );
+       listbox->setSelectionMode( Q3ListBox::NoSelection );
        topcontents->setStretchFactor(listbox, 1);
     }
 
-    QGuardedPtr<QCheckBox> checkbox = 0;
+    QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
@@ -243,7 +244,8 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
 
     if (!details.isEmpty())
     {
-       QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details"), dialog);
+       Q3GroupBox *detailsGroup = new Q3GroupBox( i18n("Details"), dialog);
+       detailsGroup->setOrientation(Qt::Vertical);
        if ( details.length() < 512 ) {
          KActiveLabel *label3 = new KActiveLabel(qrichtextify(details),
                                                  detailsGroup);
@@ -254,7 +256,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
                                label3, SLOT(openLink(const QString &)));
          }
        } else {
-         QTextEdit* te = new QTextEdit(details, QString::null, detailsGroup);
+         Q3TextEdit* te = new Q3TextEdit(details, QString::null, detailsGroup);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
        }
@@ -304,7 +306,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
     // We use a QGuardedPtr because the dialog may get deleted
     // during exec() if the parent of the dialog gets deleted.
     // In that case the guarded ptr will reset to 0.
-    QGuardedPtr<KDialogBase> guardedDialog = dialog;
+    QPointer<KDialogBase> guardedDialog = dialog;
 
     int result = guardedDialog->exec();
     if (checkbox && checkboxReturn)
@@ -434,7 +436,7 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;
@@ -485,7 +487,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;
@@ -567,7 +569,7 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;
@@ -639,7 +641,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;
@@ -715,7 +717,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;
@@ -766,7 +768,7 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString::null, 0, options);
@@ -796,7 +798,7 @@ KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0, options, details);
@@ -843,7 +845,7 @@ KMessageBox::sorryWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, options);
@@ -873,7 +875,7 @@ KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString::null, 0, options, details);
@@ -919,7 +921,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id )
-        XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
+        XSetTransientForHint( QX11Info::display(), dialog->winId(), parent_id );
 #endif
 
     bool checkboxResult = false;

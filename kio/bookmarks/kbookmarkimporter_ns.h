@@ -22,7 +22,7 @@
 #define __kbookmarkimporter_ns_h
 
 #include <qdom.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 #include <kdemacros.h>
@@ -50,7 +50,7 @@ public:
     static QString mozillaBookmarksFile( bool forSaving=false );
 
 signals:
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+    void newBookmark( const QString & text, const Q3CString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();

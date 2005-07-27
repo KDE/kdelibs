@@ -29,7 +29,7 @@
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -39,6 +39,7 @@
 #include "misc/loader_client.h"
 #include "misc/helper.h"
 #include "rendering/render_style.h"
+#include <qtextstream.h>
 
 class QPainter;
 class QTextStream;
@@ -587,7 +588,7 @@ public:
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
 
     // Used by collapsed border tables.
-    virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
+    virtual void collectBorders(Q3ValueList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
     virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }
@@ -685,7 +686,7 @@ public:
      */
     virtual long maxOffset() const { return 0; }
 
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
+    virtual void updatePixmap(const QRect&, CachedImage *);
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

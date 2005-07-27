@@ -5,7 +5,7 @@
 
 #include <qobject.h>
 #include <qtimer.h>
-#include <ksock.h>
+#include <kbufferedsocket.h>
 
 /*int SMTPServerStatus[] = {
     220,  // greeting from server
@@ -104,8 +104,8 @@ public slots:
     void connectTimedOut();
     void interactTimedOut();
 
-    void socketRead(KSocket *);
-    void socketClose(KSocket *);
+    void socketReadyToRead();
+    void socketClosed();
 
 signals:
     void connectionClosed();
@@ -131,7 +131,7 @@ private:
 
     QString domainName;
 
-    KSocket *sock;
+    KNetwork::KBufferedSocket *sock;
     QTimer connectTimer;
     QTimer timeOutTimer;
     QTimer interactTimer;

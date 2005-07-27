@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #ifndef IPPREQUEST_H
@@ -23,6 +23,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <Q3ValueList>
 #include <qmap.h>
 
 #include <cups/ipp.h>
@@ -46,11 +47,11 @@ public:
 	void addName(int group, const QString& name, const QString& nm);
 	void addName(int group, const QString& name, const QStringList& nms);
 	void addInteger(int group, const QString& name, int value);
-	void addInteger(int group, const QString& name, const QValueList<int>& values);
+	void addInteger(int group, const QString& name, const Q3ValueList<int>& values);
 	void addEnum(int group, const QString& name, int value);
-	void addEnum(int group, const QString& name, const QValueList<int>& values);
+	void addEnum(int group, const QString& name, const Q3ValueList<int>& values);
 	void addBoolean(int group, const QString& name, bool value);
-	void addBoolean(int group, const QString& name, const QValueList<bool>& values);
+	void addBoolean(int group, const QString& name, const Q3ValueList<bool>& values);
 
 	void setOperation(int op);
 	void setHost(const QString& host);
@@ -90,7 +91,7 @@ protected:
 	void addString_p(int group, int type, const QString& name, const QString& value);
 	void addStringList_p(int group, int type, const QString& name, const QStringList& values);
 	void addInteger_p(int group, int type, const QString& name, int value);
-	void addIntegerList_p(int group, int type, const QString& name, const QValueList<int>& values);
+	void addIntegerList_p(int group, int type, const QString& name, const Q3ValueList<int>& values);
 	bool stringValue_p(const QString& name, QString& value, int type);
 	bool stringListValue_p(const QString& name, QStringList& values, int type);
 	bool integerValue_p(const QString& name, int& value, int type);
@@ -133,13 +134,13 @@ inline void IppRequest::addName(int group, const QString& name, const QStringLis
 inline void IppRequest::addInteger(int group, const QString& name, int value)
 { addInteger_p(group, IPP_TAG_INTEGER, name, value); }
 
-inline void IppRequest::addInteger(int group, const QString& name, const QValueList<int>& values)
+inline void IppRequest::addInteger(int group, const QString& name, const Q3ValueList<int>& values)
 { addIntegerList_p(group, IPP_TAG_INTEGER, name, values); }
 
 inline void IppRequest::addEnum(int group, const QString& name, int value)
 { addInteger_p(group, IPP_TAG_ENUM, name, value); }
 
-inline void IppRequest::addEnum(int group, const QString& name, const QValueList<int>& values)
+inline void IppRequest::addEnum(int group, const QString& name, const Q3ValueList<int>& values)
 { addIntegerList_p(group, IPP_TAG_ENUM, name, values); }
 
 inline bool IppRequest::integer(const QString& name, int& value)

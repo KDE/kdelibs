@@ -19,8 +19,8 @@
 #define __kio_global_h__
 
 #include <qstring.h>
-#include <qvaluelist.h>
-#include <qptrlist.h>
+#include <q3valuelist.h>
+#include <q3ptrlist.h>
 #include <qdatastream.h>
 #include <qdatetime.h>
 #include <qmap.h>
@@ -34,9 +34,9 @@
 namespace KIO
 {
   /// 64-bit file offset
-  typedef Q_LLONG fileoffset_t;
+  typedef qlonglong fileoffset_t;
   /// 64-bit file size
-  typedef Q_ULLONG filesize_t;
+  typedef qulonglong filesize_t;
 
   /**
    * Converts @p size from bytes to the string representation.
@@ -480,10 +480,12 @@ public:
 /**
  * An entry is the list of atoms containing all the informations for a file or URL
  */
-typedef QValueList<UDSAtom> UDSEntry;
-typedef QValueList<UDSEntry> UDSEntryList;
-typedef QValueListIterator<UDSEntry> UDSEntryListIterator;
-typedef QValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
+////// KDE4 TODO: m_uds is the key, QVariant would do the job as the value (to allow QDateTime etc.).
+//////  -> remove UDSAtom, turn UDSEntry into QHash<uint, QVariant>, and UDSEntryList can be a QList.
+typedef Q3ValueList<UDSAtom> UDSEntry;
+typedef Q3ValueList<UDSEntry> UDSEntryList;
+typedef Q3ValueListIterator<UDSEntry> UDSEntryListIterator;
+typedef Q3ValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
 
 /**
  * MetaData is a simple map of key/value strings.

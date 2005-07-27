@@ -36,7 +36,7 @@ class KCModuleProxyIfaceImpl: public QObject, virtual public KCModuleProxyIface
 public:
 
 	/* Reimplementations of DCOP members */
-	KCModuleProxyIfaceImpl( const QCString& name, KCModuleProxy* const client );
+	KCModuleProxyIfaceImpl( const Q3CString& name, KCModuleProxy* const client );
 
 	virtual void save();
 
@@ -78,7 +78,7 @@ class KCModuleProxyRootCommunicatorImpl: public QObject,
 	Q_OBJECT
 
 public:
-	KCModuleProxyRootCommunicatorImpl( const QCString& name, KCModuleProxy* const client );
+	KCModuleProxyRootCommunicatorImpl( const Q3CString& name, KCModuleProxy* const client );
 
 	/* Reimplementations of DCOP members */
 	virtual void changed( bool c );

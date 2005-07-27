@@ -38,13 +38,13 @@
 #define __HIGHCONTRAST_H
 
 #include <qbitmap.h>
-#include <qintdict.h>
+#include <q3intdict.h>
 #include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kstyle.h>
 
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 class HighContrastStyle : public KStyle
 {

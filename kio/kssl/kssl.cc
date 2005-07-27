@@ -41,8 +41,6 @@
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <ksock.h>
-#include <ksockaddr.h>
 
 #include <kopenssl.h>
 #include <ksslx509v3.h>
@@ -50,6 +48,11 @@
 #include <ksslsession.h>
 #include <klocale.h>
 #include <ksocks.h>
+
+#include <ksocketdevice.h>
+using namespace KNetwork;
+
+#warning "kssl.cc contains temporary functions! Clean up"
 
 #define sk_dup d->kossl->sk_dup
 
@@ -268,6 +271,14 @@ bool KSSL::setVerificationLogic() {
 return true;
 }
 
+// KDE4 FIXME: temporary code
+int KSSL::accept(QIODevice* dev) {
+	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	if (socket == 0L)
+		return -1;
+
+	return accept(socket->socketDevice()->socket());
+}
 
 int KSSL::accept(int sock) {
 #ifdef KSSL_HAVE_SSL
@@ -352,6 +363,15 @@ return rc;
 #else
 return -1;
 #endif
+}
+
+// KDE4 FIXME: temporary code
+int KSSL::connect(QIODevice* dev) {
+	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	if (socket == 0L)
+		return -1;
+
+	return connect(socket->socketDevice()->socket());
 }
 
 
@@ -461,7 +481,7 @@ return -1;
 }
 
 
-int KSSL::peek(void *buf, int len) {
+int KSSL::peek(char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	if (!m_bInit)
 		return -1;
@@ -473,7 +493,7 @@ return -1;
 }
 
 
-int KSSL::read(void *buf, int len) {
+int KSSL::read(char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	int rc = 0;
 	int maxIters = 10;
@@ -511,7 +531,7 @@ return -1;
 }
 
 
-int KSSL::write(const void *buf, int len) {
+int KSSL::write(const char *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	if (!m_bInit)
 		return -1;

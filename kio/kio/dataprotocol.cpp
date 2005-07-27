@@ -19,11 +19,11 @@
 #include "dataprotocol.h"
 
 #include <kdebug.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kurl.h>
 #include <kio/global.h>
 
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtextcodec.h>
@@ -31,9 +31,6 @@
 #ifdef DATAKIOSLAVE
 #  include <kinstance.h>
 #  include <stdlib.h>
-#endif
-#ifdef TESTKIO
-#  include <iostream.h>
 #endif
 
 #if !defined(DATAKIOSLAVE) && !defined(TESTKIO)
@@ -158,7 +155,7 @@ static QString parseQuotedString(const QString &buf, int &pos) {
       res += ch;
       escaped = false;
     } else {
-      switch (ch) {
+      switch (ch.unicode()) {
         case '"': parsing = false; break;
         case '\\': escaped = true; break;
         default: res += ch; break;
@@ -241,7 +238,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
 }
 
 #ifdef DATAKIOSLAVE
-DataProtocol::DataProtocol(const QCString &pool_socket, const QCString &app_socket)
+DataProtocol::DataProtocol(const Q3CString &pool_socket, const Q3CString &app_socket)
 	: SlaveBase("kio_data", pool_socket, app_socket) {
 #else
 DataProtocol::DataProtocol() {
@@ -269,11 +266,8 @@ void DataProtocol::get(const KURL& url) {
   int data_ofs = QMIN(hdr.data_offset,size);
   // FIXME: string is copied, would be nice if we could have a reference only
   QString url_data = hdr.url.mid(data_ofs);
-  QCString outData;
+  Q3CString outData;
 
-#ifdef TESTKIO
-//  cout << "current charset: \"" << *hdr.charset << "\"" << endl;
-#endif
   if (hdr.is_base64) {
     // base64 stuff is expected to contain the correct charset, so we just
     // decode it and pass it to the receiver

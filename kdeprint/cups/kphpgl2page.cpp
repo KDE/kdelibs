@@ -13,16 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kphpgl2page.h"
 
 #include <qcheckbox.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlayout.h>
-#include <qwhatsthis.h>
 #include <klocale.h>
 #include <knuminput.h>
 
@@ -110,19 +109,19 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 
 	setTitle("HP-GL/2");
 
-	QGroupBox	*box = new QGroupBox(0, Qt::Vertical, i18n("HP-GL/2 Options"), this);
+	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("HP-GL/2 Options"), this);
 
 	m_blackplot = new QCheckBox(i18n("&Use only black pen"), box);
-	  QWhatsThis::add(m_blackplot, whatsThisBlackplotHpgl2Page);
+	  m_blackplot->setWhatsThis(whatsThisBlackplotHpgl2Page);
 
 	m_fitplot = new QCheckBox(i18n("&Fit plot to page"), box);
-	  QWhatsThis::add(m_fitplot, whatsThisFitplotHpgl2Page);
+	  m_fitplot->setWhatsThis(whatsThisFitplotHpgl2Page);
 
-	m_penwidth = new KIntNumInput(1000, box);
+	m_penwidth = new KIntNumInput(1000,box);
 	m_penwidth->setLabel(i18n("&Pen width:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_penwidth->setSuffix(" [um]");
 	m_penwidth->setRange(0, 10000, 100, true);
-	  QWhatsThis::add(m_penwidth, whatsThisPenwidthHpgl2Page);
+	  m_penwidth->setWhatsThis(whatsThisPenwidthHpgl2Page);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 0, 10);
 	l0->addWidget(box);
@@ -132,7 +131,7 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 	l1->addWidget(m_blackplot);
 	l1->addWidget(m_fitplot);
 	l1->addWidget(m_penwidth);
-	  QWhatsThis::add(this, whatsThisAllOptionsHpgl2Page);
+	  this->setWhatsThis(whatsThisAllOptionsHpgl2Page);
 }
 
 KPHpgl2Page::~KPHpgl2Page()

@@ -13,12 +13,13 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+ *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
 
 #include "kdetrayproxy.h"
 
+#include <qx11info_x11.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <netwm.h>
@@ -35,24 +36,23 @@ KDETrayProxy::KDETrayProxy()
     connect( &selection, SIGNAL( newOwner( Window )), SLOT( newOwner( Window )));
     connect( &module, SIGNAL( windowAdded( WId )), SLOT( windowAdded( WId )));
     selection.owner();
-    for( QValueList< WId >::ConstIterator it = module.windows().begin();
-         it != module.windows().end();
-         ++it )
-        windowAdded( *it );
+    foreach( WId id, module.windows() )
+        windowAdded( id );
     kapp->installX11EventFilter( this ); // XSelectInput( StructureNotifyMask ) on windows is done by KWinModule
 //    kdDebug() << "Init done" << endl;
     }
 
 Atom KDETrayProxy::makeSelectionAtom()
     {
-    return XInternAtom( qt_xdisplay(), "_NET_SYSTEM_TRAY_S" + QCString().setNum( qt_xscreen()), False );
+	QX11Info inf;
+    return XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_S" + Q3CString().setNum( inf.screen()), False );
     }
 
 extern Time qt_x_time;
 
 void KDETrayProxy::windowAdded( WId w )
     {
-    NETWinInfo ni( qt_xdisplay(), w, qt_xrootwin(), NET::WMKDESystemTrayWinFor );
+    NETWinInfo ni( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMKDESystemTrayWinFor );
     WId trayWinFor = ni.kdeSystemTrayWinFor();
     if ( !trayWinFor ) // not a KDE tray window
         return;
@@ -76,7 +76,7 @@ void KDETrayProxy::windowAdded( WId w )
 void KDETrayProxy::newOwner( Window owner )
     {
 //    kdDebug() << "New owner:" << owner << endl;
-    for( QValueList< Window >::ConstIterator it = pending_windows.begin();
+    for( Q3ValueList< Window >::ConstIterator it = pending_windows.begin();
          it != pending_windows.end();
          ++it )
         dockWindow( *it, owner );
@@ -95,7 +95,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         }
     if( e->type == ReparentNotify && tray_windows.contains( e->xreparent.window ))
         {
-        if( e->xreparent.parent == qt_xrootwin())
+        if( e->xreparent.parent == QX11Info::appRootWindow())
             {
             if( !docked_windows.contains( e->xreparent.window ) || e->xreparent.serial >= docked_windows[ e->xreparent.window ] )
                 {
@@ -116,7 +116,7 @@ bool KDETrayProxy::x11Event( XEvent* e )
         if( docked_windows.contains( e->xunmap.window ) && e->xunmap.serial >= docked_windows[ e->xunmap.window ] )
             {
 //            kdDebug() << "Window unmapped:" << e->xunmap.window << endl;
-            XReparentWindow( qt_xdisplay(), e->xunmap.window, qt_xrootwin(), 0, 0 );
+            XReparentWindow( QX11Info::display(), e->xunmap.window, QX11Info::appRootWindow(), 0, 0 );
             // ReparentNotify will take care of the rest
             }
         }
@@ -126,21 +126,21 @@ bool KDETrayProxy::x11Event( XEvent* e )
 void KDETrayProxy::dockWindow( Window w, Window owner )
     {
 //    kdDebug() << "Docking " << w << " into " << owner << endl;
-    docked_windows[ w ] = XNextRequest( qt_xdisplay());
-    static Atom prop = XInternAtom( qt_xdisplay(), "_XEMBED_INFO", False );
+    docked_windows[ w ] = XNextRequest( QX11Info::display());
+    static Atom prop = XInternAtom( QX11Info::display(), "_XEMBED_INFO", False );
     long data[ 2 ] = { 0, 1 };
-    XChangeProperty( qt_xdisplay(), w, prop, prop, 32, PropModeReplace, (unsigned char*)data, 2 );
+    XChangeProperty( QX11Info::display(), w, prop, prop, 32, PropModeReplace, (unsigned char*)data, 2 );
     XSizeHints hints;
     hints.flags = PMinSize | PMaxSize;
     hints.min_width = 24;
     hints.max_width = 24;
     hints.min_height = 24;
     hints.max_height = 24;
-    XSetWMNormalHints( qt_xdisplay(), w, &hints );
+    XSetWMNormalHints( QX11Info::display(), w, &hints );
 //    kxerrorhandler ?
     XEvent ev;
     memset(&ev, 0, sizeof( ev ));
-    static Atom atom = XInternAtom( qt_xdisplay(), "_NET_SYSTEM_TRAY_OPCODE", False );
+    static Atom atom = XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_OPCODE", False );
     ev.xclient.type = ClientMessage;
     ev.xclient.window = owner;
     ev.xclient.message_type = atom;
@@ -150,20 +150,21 @@ void KDETrayProxy::dockWindow( Window w, Window owner )
     ev.xclient.data.l[ 2 ] = w;
     ev.xclient.data.l[ 3 ] = 0; // unused
     ev.xclient.data.l[ 4 ] = 0; // unused
-    XSendEvent( qt_xdisplay(), owner, False, NoEventMask, &ev );
+    XSendEvent( QX11Info::display(), owner, False, NoEventMask, &ev );
     }
 
 void KDETrayProxy::withdrawWindow( Window w )
     {
-    XWithdrawWindow( qt_xdisplay(), w, qt_xscreen());
-    static Atom wm_state = XInternAtom( qt_xdisplay(), "WM_STATE", False );
+	QX11Info inf;
+    XWithdrawWindow( QX11Info::display(), w, inf.screen());
+    static Atom wm_state = XInternAtom( QX11Info::display(), "WM_STATE", False );
     for(;;)
         {
         Atom type;
         int format;
         unsigned long length, after;
         unsigned char *data;
-        int r = XGetWindowProperty( qt_xdisplay(), w, wm_state, 0, 2,
+        int r = XGetWindowProperty( QX11Info::display(), w, wm_state, 0, 2,
             False, AnyPropertyType, &type, &format,
             &length, &after, &data );
         bool withdrawn = true;

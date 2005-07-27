@@ -42,6 +42,11 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "dom_nodeimpl.h"
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QEvent>
+#include <Q3PtrList>
 
 // from khtml_caret_p.h
 namespace khtml {
@@ -321,14 +326,14 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
-        m_regdListeners = new QPtrList<RegisteredEventListener>;
+        m_regdListeners = new Q3PtrList<RegisteredEventListener>;
 	m_regdListeners->setAutoDelete(true);
     }
 
     // if this id/listener/useCapture combination is already registered, do nothing.
     // the DOM2 spec says that "duplicate instances are discarded", and this keeps
     // the listener order intact.
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == *rl) {
             delete rl;
@@ -345,7 +350,7 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
 
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_regdListeners->removeRef(it.current());
@@ -356,11 +361,11 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
 void NodeImpl::setHTMLEventListener(int id, EventListener *listener)
 {
     if (!m_regdListeners) {
-        m_regdListeners = new QPtrList<RegisteredEventListener>;
+        m_regdListeners = new Q3PtrList<RegisteredEventListener>;
         m_regdListeners->setAutoDelete(true);
     }
 
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
 
     if (!listener) {
         for (; it.current(); ++it)
@@ -392,7 +397,7 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
     if (!m_regdListeners)
         return 0;
 
-    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
+    Q3PtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -423,7 +428,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // ### check that type specified
 
     // work out what nodes to send event to
-    QPtrList<NodeImpl> nodeChain;
+    Q3PtrList<NodeImpl> nodeChain;
     NodeImpl *n;
     for (n = this; n; n = n->parentNode()) {
         n->ref();
@@ -432,7 +437,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // trigger any capturing event handlers on our way down
     evt->setEventPhase(Event::CAPTURING_PHASE);
-    QPtrListIterator<NodeImpl> it(nodeChain);
+    Q3PtrListIterator<NodeImpl> it(nodeChain);
     for (; it.current() && it.current() != this && !evt->propagationStopped(); ++it) {
         evt->setCurrentTarget(it.current());
         it.current()->handleLocalEvents(evt,true);
@@ -590,9 +595,9 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
         default:
             break;
     }
-    bool ctrlKey = (_mouse->state() & Qt::ControlButton);
-    bool altKey = (_mouse->state() & Qt::AltButton);
-    bool shiftKey = (_mouse->state() & Qt::ShiftButton);
+    bool ctrlKey = (_mouse->state() & Qt::ControlModifier);
+    bool altKey = (_mouse->state() & Qt::AltModifier);
+    bool shiftKey = (_mouse->state() & Qt::ShiftModifier);
     bool metaKey = false; // ### qt support?
 
     EventImpl* const evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
@@ -655,8 +660,8 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     // removeEventListener (e.g. called from a JS event listener) might
     // invalidate the item after the current iterator (which "it" is pointing to).
     // So we make a copy of the list.
-    QPtrList<RegisteredEventListener> listeners = *m_regdListeners;
-    for (QPtrListIterator<RegisteredEventListener> it(listeners); it.current();) {
+    Q3PtrList<RegisteredEventListener> listeners = *m_regdListeners;
+    for (Q3PtrListIterator<RegisteredEventListener> it(listeners); it.current();) {
         RegisteredEventListener* current = it();
         if (current->id == evt->id() && current->useCapture == useCapture)
             current->listener->handleEvent(ev);
@@ -1833,7 +1838,7 @@ GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentPtr* doc)
     : NamedNodeMapImpl()
 {
     m_doc = doc->document();
-    m_contents = new QPtrList<NodeImpl>;
+    m_contents = new Q3PtrList<NodeImpl>;
 }
 
 GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
@@ -1847,7 +1852,7 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAware*/, DOMStringImpl* /*qName*/ ) const
 {
     // ## do we need namespace support in this class?
-    QPtrListIterator<NodeImpl> it(*m_contents);
+    Q3PtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
         if (it.current()->id() == id)
             return it.current();

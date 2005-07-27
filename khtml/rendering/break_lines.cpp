@@ -1,13 +1,14 @@
 #include <break_lines.h>
 #include <klibloader.h>
-#include "qcstring.h"
+#include "q3cstring.h"
 #include <qtextcodec.h>
-#include <qcleanuphandler.h>
+#include <q3cleanuphandler.h>
+#include <stdio.h>
 #include <config.h>
 
 
-/* If HAVE_LIBTHAI is defined, libkhtml will link against 
- * libthai since compile time. Otherwise it will try to 
+/* If HAVE_LIBTHAI is defined, libkhtml will link against
+ * libthai since compile time. Otherwise it will try to
  * dlopen at run-time
  *
  * Ott Pattara Nov 14, 2004
@@ -62,7 +63,7 @@ namespace khtml {
 	//printf("Entering isBreakableThai with pos = %d\n", pos);
 
 #ifndef HAVE_LIBTHAI
-	
+
 	KLibrary *lib = 0;
 
         /* load libthai dynamically */
@@ -96,7 +97,7 @@ namespace khtml {
         // build up string of thai chars
         if ( string != cache->string ) {
             //fprintf(stderr,"new string found (not in cache), calling libthai\n");
-            QCString cstr = thaiCodec->fromUnicode( QConstString(string,len).string());
+            Q3CString cstr = thaiCodec->fromUnicode( QConstString(string,len).string());
             //printf("About to call libthai::th_brk with str: %s",cstr.data());
 
             cache->numwbrpos = th_brk((const unsigned char*) cstr.data(), cache->wbrpos, cache->allocated);

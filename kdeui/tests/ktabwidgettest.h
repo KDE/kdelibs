@@ -6,14 +6,14 @@
 #include <ktabwidget.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <stdlib.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <time.h>
 #include <qcheckbox.h>
 #include <qtoolbutton.h>
 
-class Test : public QVBox
+class Test : public Q3VBox
 {
   Q_OBJECT
 public:
@@ -58,10 +58,10 @@ private:
   QToolButton*    mLeftWidget;
   QToolButton*    mRightWidget;
 
-  QPopupMenu*     mLeftPopup;
-  QPopupMenu*     mRightPopup;
-  QPopupMenu*     mTabbarContextPopup;
-  QPopupMenu*     mContextPopup;
+  Q3PopupMenu*     mLeftPopup;
+  Q3PopupMenu*     mRightPopup;
+  Q3PopupMenu*     mTabbarContextPopup;
+  Q3PopupMenu*     mContextPopup;
   QWidget*        mContextWidget;
 };
 

@@ -2,7 +2,7 @@ AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 
 SUBDIRS = cupsdconf2
 
-INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdecore/network -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
 
 kde_module_LTLIBRARIES = kdeprint_cups.la
 

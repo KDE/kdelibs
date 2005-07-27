@@ -1,7 +1,7 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qtimer.h>
 
 #include <kaboutdata.h>
@@ -35,7 +35,7 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ), 
              SLOT( slotReturnPressed(const QString&) ) );
 
-    QHBox *hbox = new QHBox (this);
+    Q3HBox *hbox = new Q3HBox (this);
     m_btnExit = new QPushButton( "E&xit", hbox );
     m_btnExit->setFixedSize(100,30);
     connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );

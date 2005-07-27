@@ -13,8 +13,8 @@
    
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef _VFOLDER_MENU_H_
@@ -23,9 +23,9 @@
 #include <qobject.h>
 #include <qdom.h>
 #include <qstringlist.h>
-#include <qptrdict.h>
-#include <qptrlist.h>
-#include <qvaluestack.h>
+#include <q3ptrdict.h>
+#include <q3ptrlist.h>
+#include <q3valuestack.h>
 
 #include <kservice.h>
 
@@ -42,9 +42,9 @@ public:
   public:
      QString name;
      QString directoryFile;
-     QPtrList<SubMenu> subMenus;
-     QDict<KService> items;
-     QDict<KService> excludeItems; // Needed when merging due to Move.
+     Q3PtrList<SubMenu> subMenus;
+     Q3Dict<KService> items;
+     Q3Dict<KService> excludeItems; // Needed when merging due to Move.
      QDomElement defaultLayoutNode;
      QDomElement layoutNode;
      bool isDeleted;
@@ -105,7 +105,7 @@ public:
   QStringList m_defaultLegacyDirs;
 
   QStringList m_directoryDirs; // Current set of applicable <DirectoryDir> dirs
-  QDict<SubMenu> m_legacyNodes; // Dictionary that stores Menu nodes 
+  Q3Dict<SubMenu> m_legacyNodes; // Dictionary that stores Menu nodes 
                                 // associated with legacy tree.
 
   class docInfo {
@@ -117,7 +117,7 @@ public:
   
 
   docInfo m_docInfo; // docInfo for current doc
-  QValueStack<VFolderMenu::docInfo> m_docInfoStack;
+  Q3ValueStack<VFolderMenu::docInfo> m_docInfoStack;
 
   class appsInfo {
   public:
@@ -126,15 +126,15 @@ public:
         dictCategories.setAutoDelete(true);
      }
 
-     QDict<KService::List> dictCategories; // category -> apps
-     QDict<KService> applications; // rel path -> service
-     QPtrDict<QString> appRelPaths; // service -> rel path
+     Q3Dict<KService::List> dictCategories; // category -> apps
+     Q3Dict<KService> applications; // rel path -> service
+     Q3PtrDict<QString> appRelPaths; // service -> rel path
   };
   
   appsInfo *m_appsInfo; // appsInfo for current menu
-  QPtrList<appsInfo> m_appsInfoStack; // All applicable appsInfo for current menu
-  QPtrList<appsInfo> m_appsInfoList; // List of all appsInfo objects.
-  QDict<KService> m_usedAppsDict; // all applications that have been allocated
+  Q3PtrList<appsInfo> m_appsInfoStack; // All applicable appsInfo for current menu
+  Q3PtrList<appsInfo> m_appsInfoList; // List of all appsInfo objects.
+  Q3Dict<KService> m_usedAppsDict; // all applications that have been allocated
   
   QDomDocument m_doc;
   SubMenu *m_rootMenu;
@@ -153,7 +153,7 @@ private:
   /**
    * Lookup applications by category
    */
-  QPtrList<KService::List> findCategory(const QString &category);
+  Q3PtrList<KService::List> findCategory(const QString &category);
   
   /**
    * Add new application
@@ -188,17 +188,17 @@ private:
   /**
    * Merge the items2 set into the items1 set
    */
-  void includeItems(QDict<KService> *items1, QDict<KService> *items2);
+  void includeItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2);
 
   /**
    * Remove all items from the items1 set that aren't also in the items2 set
    */
-  void matchItems(QDict<KService> *items1, QDict<KService> *items2);
+  void matchItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2);
 
   /**
    * Remove all items in the items2 set from the items1 set
    */
-  void excludeItems(QDict<KService> *items1, QDict<KService> *items2);
+  void excludeItems(Q3Dict<KService> *items1, Q3Dict<KService> *items2);
 
   /**
    * Search the parentMenu tree for the menu menuName and takes it
@@ -242,7 +242,7 @@ private:
   /**
    * Fill m_usedAppsDict with all applications from @p items
    */
-  void markUsedApplications(QDict<KService> *items);
+  void markUsedApplications(Q3Dict<KService> *items);
 
   /**
    * Register @p directory
@@ -254,7 +254,7 @@ private:
   void processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix);
   void processMenu(QDomElement &docElem, int pass);
   void layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout);
-  void processCondition(QDomElement &docElem, QDict<KService> *items);
+  void processCondition(QDomElement &docElem, Q3Dict<KService> *items);
 
   void initDirs();
   

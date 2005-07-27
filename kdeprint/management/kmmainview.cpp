@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmmainview.h"
@@ -35,13 +35,13 @@
 #include "kiconselectaction.h"
 #include "messagewindow.h"
 
-#include <qdockarea.h>
+#include <q3dockarea.h>
 #include <kmenubar.h>
 #include <qtimer.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
@@ -86,7 +86,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	// create widgets
 	m_printerview = new KMPrinterView(this, "PrinterView");
 	m_printerpages = new KMPages(this, "PrinterPages");
-	m_pop = new QPopupMenu(this);
+	m_pop = new Q3PopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
 	m_plugin = new PluginComboBox(this, "Plugin");
@@ -268,13 +268,13 @@ void KMMainView::initActions()
 	m_actions->action("view_pfilter")->plug(m_toolbar);
 
 	// add actions to the menu bar
-	QPopupMenu *menu = new QPopupMenu( this );
+	Q3PopupMenu *menu = new Q3PopupMenu( this );
 	m_actions->action( "printer_add" )->plug( menu );
 	m_actions->action( "printer_add_special" )->plug( menu );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
 	m_menubar->insertButton( "wizard", 0, true, i18n( "Add" ) );
 	m_menubar->getButton( 0 )->setPopup( menu, true );
-	menu = new QPopupMenu( this );
+	menu = new Q3PopupMenu( this );
 	m_actions->action("printer_state_change")->plug( menu );
 	m_actions->action("printer_spool_change")->plug( menu );
 	menu->insertSeparator();
@@ -289,19 +289,19 @@ void KMMainView::initActions()
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
 	m_menubar->insertButton( "printer2", 1, true, i18n( "Printer" ) );
 	m_menubar->getButton( 1 )->setPopup( menu, true );
-	menu = new QPopupMenu( this );
+	menu = new Q3PopupMenu( this );
 	m_actions->action("server_restart")->plug( menu );
 	m_actions->action("server_configure")->plug( menu );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
 	m_menubar->insertButton( "misc", 2, true, i18n( "Print Server" ) );
 	m_menubar->getButton( 2 )->setPopup( menu, true );
-	menu = new QPopupMenu( this );
+	menu = new Q3PopupMenu( this );
 	m_actions->action("manager_configure")->plug( menu );
 	m_actions->action("view_refresh")->plug( menu );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
 	m_menubar->insertButton( "konsole3", 3, true, i18n( "Print Manager" ) );
 	m_menubar->getButton( 3 )->setPopup( menu, true );
-	menu = new QPopupMenu( this );
+	menu = new Q3PopupMenu( this );
 	m_actions->action("view_printerinfos")->plug( menu );
 	m_actions->action("view_change")->plug( menu );
 	m_actions->action("orientation_change")->plug( menu );
@@ -313,7 +313,7 @@ void KMMainView::initActions()
 	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
 	m_menubar->getButton( 4 )->setPopup( menu, true );
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
-	menu = new QPopupMenu( this );
+	menu = new Q3PopupMenu( this );
 	m_actions->action( "invoke_help" )->plug( menu );
 	m_actions->action( "invoke_web" )->plug( menu );
 	m_menubar->insertButton( "help", 5, true, i18n( "Documentation" ) );
@@ -331,7 +331,7 @@ void KMMainView::slotRefresh()
 void KMMainView::slotTimer()
 {
 	kdDebug() << "KMMainView::slotTimer" << endl;
-	QPtrList<KMPrinter>	*printerlist = m_manager->printerList();
+	Q3PtrList<KMPrinter>	*printerlist = m_manager->printerList();
 	bool ok = m_manager->errorMsg().isEmpty();
 	m_printerview->setPrinterList(printerlist);
 	if ( m_first )
@@ -345,7 +345,7 @@ void KMMainView::slotTimer()
 			 *    - hard default printer
 			 *    - first printer
 			 */
-			QPtrListIterator<KMPrinter> it( *printerlist );
+			Q3PtrListIterator<KMPrinter> it( *printerlist );
 			KMPrinter *p1 = 0, *p2 = 0, *p3 = 0;
 			while ( it.current() )
 			{
@@ -463,8 +463,8 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		}
 		if (!printer->isSpecial())
 		{
-			QValueList<KAction*>	pactions = m_actions->actions("plugin");
-			for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+			Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
+			for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 				(*it)->plug(m_pop);
 			if (pactions.count() > 0)
 				m_pop->insertSeparator();
@@ -793,11 +793,11 @@ bool KMMainView::printerInfosShown() const
 void KMMainView::loadPluginActions()
 {
 	KMFactory::self()->manager()->createPluginActions(m_actions);
-	QValueList<KAction*>	pactions = m_actions->actions("plugin");
+	Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
 	int	index = m_pactionsindex;
 	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
-	QPopupMenu *menu = m_menubar->getButton( 1 )->popup();
-	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	QMenu *menu = m_menubar->getButton( 1 )->popup();
+	for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->plug(m_toolbar, index++);
 		( *it )->plug( menu );
@@ -806,8 +806,8 @@ void KMMainView::loadPluginActions()
 
 void KMMainView::removePluginActions()
 {
-	QValueList<KAction*>	pactions = m_actions->actions("plugin");
-	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
+	Q3ValueList<KAction*>	pactions = m_actions->actions("plugin");
+	for (Q3ValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->unplugAll();
 		delete (*it);

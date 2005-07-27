@@ -13,15 +13,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #define USE_QSOCKET
 
 #include "networkscanner.h"
 
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <kpushbutton.h>
 #include <qlayout.h>
 #include <qtimer.h>
@@ -29,13 +29,16 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qregexp.h>
-#include <qsocket.h>
 #include <klocale.h>
-#include <kextendedsocket.h>
+#include <kresolver.h>
+#include <kreverseresolver.h>
+#include <kbufferedsocket.h>
 #include <kmessagebox.h>
 #include <knumvalidator.h>
 #include <kdebug.h>
 #include <unistd.h>
+
+using namespace KNetwork;
 
 class NetworkScanner::NetworkScannerPrivate
 {
@@ -45,17 +48,13 @@ public:
 	int currentaddress;
 	int timeout;
 	bool scanning;
-	QPtrList<NetworkScanner::SocketInfo> printers;
+	Q3PtrList<NetworkScanner::SocketInfo> printers;
 
-	QProgressBar *bar;
+	Q3ProgressBar *bar;
 	KPushButton *scan, *settings;
 	QLabel *subnetlab;
 	QTimer *timer;
-#ifdef USE_QSOCKET
-	QSocket *socket;
-#else
-	KExtendedSocket *socket;
-#endif
+	KBufferedSocket *socket;
 
 	NetworkScannerPrivate( int portvalue ) : port( portvalue )
 	{
@@ -71,16 +70,17 @@ public:
 
 QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 {
+#warning "Upgrade NetworkScanner with KNetworkInterface"
 	char	buf[256];
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
-	infos.setAutoDelete(true);
+	KResolverResults infos = KResolver::resolve(buf, "80");
+
 	if (infos.count() > 0)
 	{
-		QString	IPstr = infos.first()->address()->nodeName();
-		int	p = IPstr.findRev('.');
+		QString	IPstr = infos[0].address().nodeName();
+		int	p = IPstr.findRev('.');	// this is wrong!! -thiago
 		IPstr.truncate(p);
 		return IPstr;
 	}
@@ -99,15 +99,11 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	: QWidget( parent, name )
 {
 	d = new NetworkScannerPrivate( port );
-	d->bar = new QProgressBar( 256, this );
+	d->bar = new Q3ProgressBar( 256, this );
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "viewmag" ), this );
 	d->timer = new QTimer( this );
-#ifdef USE_QSOCKET
-	d->socket = new QSocket( this );
-#else
-	d->socket = new KExtendedSocket();
-#endif
+	d->socket = new KBufferedSocket( QString(), QString(), this );
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
 	d->subnetlab = new QLabel( i18n( "Subnet: %1" ).arg( d->scanString() ), this );
 
@@ -121,20 +117,13 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
 	connect( d->timer, SIGNAL( timeout() ), SLOT( slotTimeout() ) );
 	connect( d->settings, SIGNAL( clicked() ), SLOT( slotSettingsClicked() ) );
 	connect( d->scan, SIGNAL( clicked() ), SLOT( slotScanClicked() ) );
-#ifdef USE_QSOCKET
-	connect( d->socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
-	connect( d->socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
-#else
-	connect( d->socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
-	connect( d->socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
-#endif
+
+	connect( d->socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ), SLOT( slotConnectionSuccess() ) );
+	connect( d->socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 }
 
 NetworkScanner::~NetworkScanner()
 {
-#ifndef USE_QSOCKET
-	delete d->socket;
-#endif
 	delete d;
 }
 
@@ -166,11 +155,7 @@ void NetworkScanner::slotScanClicked()
 	}
 	else
 	{
-#ifdef USE_QSOCKET
 		d->socket->close();
-#else
-		d->socket->cancelAsyncConnect();
-#endif
 		finish();
 	}
 }
@@ -199,14 +184,8 @@ void NetworkScanner::slotNext()
 		return;
 
 	d->timer->stop();
-#ifdef USE_QSOCKET
-	d->socket->connectToHost( d->prefixaddress + "." + QString::number( d->currentaddress ), d->port );
-	kdDebug() << "Address: " << d->socket->peerName() << ", Port: " << d->socket->peerPort() << endl;
-#else
-	d->socket->setAddress( d->prefixaddress + "." + QString::number( d->currentaddress ), d->port );
-	d->socket->startAsyncLookup();
-	kdDebug() << "Address: " << d->socket->host() << ", Port: " << d->socket->port() << endl;
-#endif
+	d->socket->connect( d->prefixaddress + "." + QString::number( d->currentaddress ), QString::number(d->port) );
+	kdDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
 	d->timer->start( d->timeout, true );
 }
 
@@ -229,41 +208,30 @@ void NetworkScanner::slotTimeout()
 	if ( !d->scanning )
 		return;
 
-#ifdef USE_QSOCKET
 	d->socket->close();
-#else
-	d->socket->cancelAsyncConnect();
-#endif
 	next();
 }
 
-void NetworkScanner::slotConnectionSuccess()
+void NetworkScanner::slotConnectionSuccess( const KResolverEntry& target )
 {
 	kdDebug() << "Success" << endl;
-#ifdef USE_QSOCKET
-	KSocketAddress *addr = KExtendedSocket::peerAddress( d->socket->socket() );
-#else
-	KSocketAddress *addr = const_cast<KSocketAddress*>( d->socket->peerAddress() );
-#endif
-	kdDebug() << "Connection success: " << ( addr ? addr->pretty() : QString( "ERROR" ) ) << endl;
-	kdDebug() << "Socket: " << d->socket->socket() << endl;
-	if ( addr )
+	kdDebug() << "Connection success: " << target.address().toString() << endl;
+	//kdDebug() << "Socket: " << d->socket->socket() << endl;
+
+	KInetSocketAddress addr = target.address().asInet();
+	if ( addr.ipVersion() )
 	{
 		SocketInfo *info = new SocketInfo;
-#ifdef USE_QSOCKET
-		info->IP = d->socket->peerName();
-#else
-		info->IP = d->socket->host();
-#endif
+		info->IP = addr.ipAddress().toString();
 		info->Port = d->port;
+
 		QString portname;
-		KExtendedSocket::resolve( addr, info->Name, portname );
+		KReverseResolver::resolve( addr, info->Name, portname );
 		d->printers.append( info );
 		d->socket->close();
-		delete addr;
 	}
 	else
-		kdDebug() << "Unconnected socket, skipping" << endl;
+		kdDebug() << "Connected to something odd!" << endl;
 	next();
 }
 
@@ -273,7 +241,7 @@ void NetworkScanner::slotConnectionFailed( int )
 	next();
 }
 
-const QPtrList<NetworkScanner::SocketInfo>* NetworkScanner::printerList()
+const Q3PtrList<NetworkScanner::SocketInfo>* NetworkScanner::printerList()
 {
 	return &( d->printers );
 }
@@ -313,7 +281,7 @@ void NetworkScanner::setPort( int p )
 bool NetworkScanner::checkPrinter( const QString& host, int port )
 {
 	// try first to find it in the SocketInfo list
-	QPtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
+	Q3PtrListIterator<NetworkScanner::SocketInfo> it( d->printers );
 	for ( ; it.current(); ++it )
 	{
 		if ( port == it.current()->Port && ( host == it.current()->IP ||
@@ -322,10 +290,9 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 	}
 
 	// not found in SocketInfo list, try to establish connection
-	KExtendedSocket extsock( host, port );
-	extsock.setBlockingMode( false );
-	extsock.setTimeout( 0, d->timeout * 1000 );
-	return ( extsock.connect() == 0 );
+	KStreamSocket sock( host, QString::number(port) );
+	sock.setTimeout( d->timeout );
+	return sock.connect();
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)
@@ -339,7 +306,7 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
 	QLabel	*portlabel = new QLabel(i18n("&Port:"),dummy);
 	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),dummy);
 	QLineEdit	*mm = new QLineEdit(dummy);
-	mm->setText(QString::fromLatin1(".[0-255]"));
+	mm->setText(QLatin1String(".[0-255]"));
 	mm->setReadOnly(true);
 	mm->setFixedWidth(fontMetrics().width(mm->text())+10);
 

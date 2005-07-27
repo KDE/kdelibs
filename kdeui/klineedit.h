@@ -23,8 +23,8 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #ifndef _KLINEEDIT_H
@@ -33,7 +33,7 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
-class QPopupMenu;
+class Q3PopupMenu;
 
 class KCompletionBox;
 class KURL;
@@ -388,7 +388,7 @@ signals:
      *
      * @param p the context menu about to be displayed
      */
-    void aboutToShowContextMenu( QPopupMenu * p );
+    void aboutToShowContextMenu( QMenu * p );
 
 public slots:
 
@@ -514,13 +514,6 @@ protected:
     * See QLineEdit::contextMenuEvent().
     */
     virtual void contextMenuEvent( QContextMenuEvent * );
-
-    /**
-    * Re-implemented for internal reasons.  API not affected.
-    *
-    * See QLineEdit::createPopupMenu().
-    */
-    virtual QPopupMenu *createPopupMenu();
 
     /**
     * Re-implemented to handle URI drops.

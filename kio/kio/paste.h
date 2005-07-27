@@ -20,7 +20,7 @@
 #define __kio_paste_h__
 
 #include <qstring.h>
-#include <qmemarray.h>
+#include <q3memarray.h>
 #include <kurl.h>
 class QWidget;
 class QMimeSource;

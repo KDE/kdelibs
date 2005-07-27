@@ -23,9 +23,10 @@
 #define _KJS_WINDOW_H_
 
 #include <qobject.h>
-#include <qguardedptr.h>
+#include <qpointer.h>
 #include <qmap.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qdatetime.h>
 
 #include "kjs_binding.h"
@@ -69,7 +70,7 @@ namespace KJS {
   };
 
   class KDE_EXPORT Window : public ObjectImp {
-    friend QGuardedPtr<KHTMLPart> getInstance();
+    friend QPointer<KHTMLPart> getInstance();
     friend class Location;
     friend class WindowFunc;
     friend class WindowQObject;
@@ -122,7 +123,7 @@ namespace KJS {
     // Set the current "event" object
     void setCurrentEvent( DOM::Event *evt );
 
-    QPtrDict<JSEventListener> jsEventListeners;
+    Q3PtrDict<JSEventListener> jsEventListeners;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
@@ -153,7 +154,7 @@ namespace KJS {
 
     bool checkIsSafeScript( KParts::ReadOnlyPart* activePart ) const;
 
-    QGuardedPtr<khtml::ChildFrame> m_frame;
+    QPointer<khtml::ChildFrame> m_frame;
     Screen *screen;
     History *history;
     External *external;
@@ -167,7 +168,7 @@ namespace KJS {
       DelayedActionId actionId;
       QVariant param; // just in case
     };
-    QValueList<DelayedAction> m_delayed;
+    Q3ValueList<DelayedAction> m_delayed;
   };
 
   /**
@@ -212,11 +213,13 @@ namespace KJS {
   protected:
     void timerEvent(QTimerEvent *e);
     void setNextTimer();
+    void killTimers();
   private:
     Window *parent;
-    QPtrList<ScheduledAction> scheduledActions;
+    Q3PtrList<ScheduledAction> scheduledActions;
     int pausedTime;
     int lastTimerId;
+    QList<int> timerIds;
   };
 
   class Location : public ObjectImp {
@@ -234,7 +237,7 @@ namespace KJS {
   private:
     friend class Window;
     Location(khtml::ChildFrame *f);
-    QGuardedPtr<khtml::ChildFrame> m_frame;
+    QPointer<khtml::ChildFrame> m_frame;
   };
 
 #ifdef Q_WS_QWS

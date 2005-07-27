@@ -1,25 +1,27 @@
 #include "kdockwidgetdemo.h"
 
-#include <qheader.h>
+#include <q3header.h>
 #include <qtoolbutton.h>
 #include <qtooltip.h>
-#include <qtextview.h>
+#include <q3textview.h>
 #include <qfileinfo.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
-#include <qmultilineedit.h>
+#include <q3multilineedit.h>
 #include <qevent.h>
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qpushbutton.h>
 #include <qpoint.h>
 #include <qmessagebox.h>
 #include <qmime.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 #include <qpainter.h>
 
 #include <kconfig.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 //#include <kimgio.h>
 #include <stdlib.h>
@@ -213,7 +215,7 @@ QStringList SFileDialog::getOpenFileNames( QString initially,
   SFileDialog* fd = new SFileDialog( initially, filter, name );
   if ( !caption.isNull() ) fd->setCaption( caption );
 
-  fd->fd->setMode( QFileDialog::ExistingFiles );
+  fd->fd->setMode( Q3FileDialog::ExistingFiles );
   fd->d_preview->undock();
   fd->b_preview->hide();
 
@@ -232,10 +234,10 @@ void SFileDialog::showEvent( QShowEvent *e )
 
 /******************************************************************************************************/
 PixmapView::PixmapView( QWidget *parent )
-:QScrollView( parent )
+:Q3ScrollView( parent )
 {
 //  kimgioRegister();
-  viewport()->setBackgroundMode( PaletteBase );
+  viewport()->setBackgroundMode( Qt::PaletteBase );
 }
 
 void PixmapView::setPixmap( const QPixmap &pix )
@@ -251,18 +253,18 @@ void PixmapView::drawContents( QPainter *p, int, int, int, int )
 }
 
 Preview::Preview( QWidget *parent )
-:QWidgetStack( parent )
+:Q3WidgetStack( parent )
 {
-    normalText = new QMultiLineEdit( this );
+    normalText = new Q3MultiLineEdit( this );
     normalText->setReadOnly( true );
-    html = new QTextView( this );
+    html = new Q3TextView( this );
     pixmap = new PixmapView( this );
     raiseWidget( normalText );
 }
 
 void Preview::showPreview( const QString &str )
 {
-  QUrl u(str);
+  Q3Url u(str);
   if ( u.isLocalFile() ){
   QString path = u.path();
   QFileInfo fi( path );
@@ -276,7 +278,7 @@ void Preview::showPreview( const QString &str )
 	if ( pix.isNull() ) {
 	    if ( fi.isFile() ) {
 		QFile f( path );
-		if ( f.open( IO_ReadOnly ) ) {
+		if ( f.open( QIODevice::ReadOnly ) ) {
 		    QTextStream ts( &f );
 		    QString text = ts.read();
 		    f.close();
@@ -395,14 +397,14 @@ static const char* globalbookmark_xpm[]={
 "............"};
 
 CustomFileDialog::CustomFileDialog( QWidget* parent )
-: QFileDialog( parent, 0, false )
+: Q3FileDialog( parent, 0, false )
 {
   QToolButton *p = new QToolButton( this );
 
   p->setPixmap( QPixmap( globalbookmark_xpm ) );
   QToolTip::add( p, tr( "Bookmarks" ) );
 
-  bookmarkMenu = new QPopupMenu( this );
+  bookmarkMenu = new Q3PopupMenu( this );
   connect( bookmarkMenu, SIGNAL( activated( int ) ), this, SLOT( bookmarkChosen( int ) ) );
   addId = bookmarkMenu->insertItem( "Add bookmark" );
   clearId = bookmarkMenu->insertItem( QPixmap(folder_trash), "Clear bookmarks" );
@@ -449,7 +451,7 @@ void CustomFileDialog::setBookmark( QStringList &s )
     "............",
     "............",
     "............"};
-    bookmarkMenu->insertItem( QIconSet( book_pix ), (*it) );
+    bookmarkMenu->insertItem( QIcon( book_pix ), (*it) );
 	}
 }
 
@@ -499,7 +501,7 @@ void CustomFileDialog::bookmarkChosen( int i )
     "............",
     "............",
     "............"};
-    bookmarkMenu->insertItem( QIconSet( book_pix ), dirPath() );
+    bookmarkMenu->insertItem( QIcon( book_pix ), dirPath() );
     return;
   }
 
@@ -607,7 +609,7 @@ static const char* folder_locked_xpm[] = {
 };
 
 Directory::Directory( Directory * parent, const QString& filename )
-:QListViewItem( parent ), f(filename)
+:Q3ListViewItem( parent ), f(filename)
 {
   p = parent;
   readable = QDir( fullName() ).isReadable();
@@ -619,8 +621,8 @@ Directory::Directory( Directory * parent, const QString& filename )
 }
 
 
-Directory::Directory( QListView * parent, const QString& filename )
-:QListViewItem( parent ), f(filename)
+Directory::Directory( Q3ListView * parent, const QString& filename )
+:Q3ListViewItem( parent ), f(filename)
 {
   p = 0;
   readable = QDir( fullName() ).isReadable();
@@ -638,32 +640,27 @@ void Directory::setOpen( bool o )
     QString s( fullName() );
     QDir thisDir( s );
     if ( !thisDir.isReadable() ) {
-    readable = false;
-    setExpandable( false );
-    return;
-  }
+      readable = false;
+      setExpandable( false );
+      return;
+    }
 
-  listView()->setUpdatesEnabled( false );
-  const QFileInfoList * files = thisDir.entryInfoList();
-  if ( files ){
-    QFileInfoListIterator it( *files );
-    QFileInfo * f;
-    while( (f=it.current()) != 0 ){
-      ++it;
-      if ( f->fileName() != "." && f->fileName() != ".." && f->isDir() )
-        (void)new Directory( this, f->fileName() );
-      }
+    listView()->setUpdatesEnabled( false );
+    QFileInfoList files = thisDir.entryInfoList();
+    foreach ( QFileInfo f, files ){
+      if ( f.fileName() != "." && f.fileName() != ".." && f.isDir() )
+        (void)new Directory( this, f.fileName() );
     }
     listView()->setUpdatesEnabled( true );
   }
-  QListViewItem::setOpen( o );
+  Q3ListViewItem::setOpen( o );
 }
 
 
 void Directory::setup()
 {
   setExpandable( true );
-  QListViewItem::setup();
+  Q3ListViewItem::setup();
 }
 
 
@@ -693,27 +690,27 @@ QString Directory::text( int column ) const
 }
 
 DirectoryView::DirectoryView( QWidget *parent, const char *name )
-:QListView( parent, name )
+:Q3ListView( parent, name )
 {
-  connect( this, SIGNAL( clicked( QListViewItem * ) ),
-           this, SLOT( slotFolderSelected( QListViewItem * ) ) );
-  connect( this, SIGNAL( doubleClicked( QListViewItem * ) ),
-           this, SLOT( slotFolderSelected( QListViewItem * ) ) );
-  connect( this, SIGNAL( returnPressed( QListViewItem * ) ),
-           this, SLOT( slotFolderSelected( QListViewItem * ) ) );
+  connect( this, SIGNAL( clicked( Q3ListViewItem * ) ),
+           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
+  connect( this, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
+           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
+  connect( this, SIGNAL( returnPressed( Q3ListViewItem * ) ),
+           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
 
   setAcceptDrops( true );
   viewport()->setAcceptDrops( true );
 }
 
-void DirectoryView::setOpen( QListViewItem* i, bool b )
+void DirectoryView::setOpen( Q3ListViewItem* i, bool b )
 {
-  QListView::setOpen(i,b);
+  Q3ListView::setOpen(i,b);
   setCurrentItem(i);
   slotFolderSelected(i);
 }
 
-void DirectoryView::slotFolderSelected( QListViewItem *i )
+void DirectoryView::slotFolderSelected( Q3ListViewItem *i )
 {
   if ( !i )	return;
 
@@ -721,7 +718,7 @@ void DirectoryView::slotFolderSelected( QListViewItem *i )
   emit folderSelected( dir->fullName() );
 }
 
-QString DirectoryView::fullPath(QListViewItem* item)
+QString DirectoryView::fullPath(Q3ListViewItem* item)
 {
   QString fullpath = item->text(0);
   while ( (item=item->parent()) ) {
@@ -735,14 +732,14 @@ QString DirectoryView::fullPath(QListViewItem* item)
 
 void DirectoryView::setDir( const QString &s )
 {
-  QListViewItemIterator it( this );
+  Q3ListViewItemIterator it( this );
   ++it;
   for ( ; it.current(); ++it ) {
     it.current()->setOpen( false );
   }
 
   QStringList lst( QStringList::split( "/", s ) );
-  QListViewItem *item = firstChild();
+  Q3ListViewItem *item = firstChild();
   QStringList::Iterator it2 = lst.begin();
   for ( ; it2 != lst.end(); ++it2 ) {
     while ( item ) {
@@ -768,7 +765,10 @@ QString DirectoryView::selectedDir()
 /**********************************************************************************************/
 
 int main(int argc, char* argv[]) {
-  KApplication app(argc,argv,"kdockwidgetdemo");
+  KAboutData about("kdockwidgetdemo", "kdockwidgetdemo", "version");
+  KCmdLineArgs::init(argc, argv, &about);
+
+  KApplication app;
 
 #if 0
   SFileDialog* openfile = new SFileDialog();
@@ -782,8 +782,9 @@ int main(int argc, char* argv[]) {
 #endif
 
 #if 1
-  QStringList s = SFileDialog::getOpenFileNames( QString::null, QString::fromLatin1("All (*)"),
-                                                QString::fromLatin1("DockWidget Demo"), "dialog1" );
+  QStringList s = SFileDialog::getOpenFileNames( QString::null, 
+          QStringList(QLatin1String("All (*)")), 
+          QLatin1String("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();
   for ( ; it != s.end(); ++it ){
     qDebug( "%s", (*it).local8Bit().data() );

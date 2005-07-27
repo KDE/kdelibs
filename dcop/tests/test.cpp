@@ -1,8 +1,8 @@
 #include "test.h"
-#include <kapplication.h>
+#include <qapplication.h>
 #include <iostream>
 #include <dcopclient.h>
-#include <kcmdlineargs.h>
+#include <qtextstream.h>
 
 
 
@@ -16,7 +16,7 @@ using namespace std;
 
 void batch()
 {
-	QTextStream output(  fopen( "batch.returns", "w" ) , IO_WriteOnly );	
+	QTextStream output(  fopen( "batch.returns", "w" ) , QIODevice::WriteOnly );	
 	Test* object = new Test;
 #include "batch.generated"
 }
@@ -31,12 +31,11 @@ int main(int argc, char** argv)
 		batch();
 		return 0;
 	}
-	KCmdLineArgs::init( argc, argv, "TestApp", "Tests the dcop familly of tools + libraries", "1.0" ); // FIXME
-	KApplication app;
-	if(!app.dcopClient()->attach(  ))
-		return 1;
-
-	app.dcopClient()->registerAs( "TestApp" );
+	QApplication app( argc, argv );
+        DCOPClient* dcopClient = new DCOPClient;
+	if (!dcopClient->attach())
+		return -1;
+	dcopClient->registerAs( "TestApp" );
 	new Test;
 	return app.exec();
 }

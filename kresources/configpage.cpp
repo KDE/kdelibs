@@ -21,7 +21,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 
@@ -58,11 +58,11 @@ ResourcePageInfo::~ResourcePageInfo() {
 }
 
 
-class ConfigViewItem : public QCheckListItem
+class ConfigViewItem : public Q3CheckListItem
 {
   public:
-    ConfigViewItem( QListView *parent, Resource* resource ) :
-      QCheckListItem( parent, resource->resourceName(), CheckBox ),
+    ConfigViewItem( Q3ListView *parent, Resource* resource ) :
+      Q3CheckListItem( parent, resource->resourceName(), CheckBox ),
       mResource( resource ),
       mIsStandard( false )
     {
@@ -104,7 +104,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
 
-  QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
+  Q3GroupBox *groupBox = new Q3GroupBox( i18n( "Resources" ), this );
   groupBox->setColumnLayout(0, Qt::Vertical );
   groupBox->layout()->setSpacing( 6 );
   groupBox->layout()->setMargin( 11 );
@@ -121,8 +121,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
   mListView->addColumn( i18n( "Standard" ) );
 
   groupBoxLayout->addWidget( mListView, 1, 0 );
-  connect(  mListView, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int ) ), this, SLOT( slotEdit() ) );
-  KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
+  connect(  mListView, SIGNAL( doubleClicked( Q3ListViewItem *, const QPoint &, int ) ), this, SLOT( slotEdit() ) );
+  KButtonBox *buttonBox = new KButtonBox( groupBox, Qt::Vertical );
   mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
   mRemoveButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
   mRemoveButton->setEnabled( false );
@@ -140,8 +140,8 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
            SLOT( slotFamilyChanged( int ) ) );
   connect( mListView, SIGNAL( selectionChanged() ),
            SLOT( slotSelectionChanged() ) );
-  connect( mListView, SIGNAL( clicked( QListViewItem * ) ),
-           SLOT( slotItemClicked( QListViewItem * ) ) );
+  connect( mListView, SIGNAL( clicked( Q3ListViewItem * ) ),
+           SLOT( slotItemClicked( Q3ListViewItem * ) ) );
 
   mLastItem = 0;
 
@@ -153,7 +153,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
 ConfigPage::~ConfigPage()
 {
-  QValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
+  Q3ValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it ) {
     (*it)->mManager->removeObserver( this );
   }
@@ -234,7 +234,7 @@ void ConfigPage::save()
 {
   saveResourceSettings();
 
-  QValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
+  Q3ValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it )
     (*it)->mManager->writeConfig( (*it)->mConfig );
 
@@ -325,7 +325,7 @@ void ConfigPage::slotAdd()
     // as standard resource
     if ( !resource->readOnly() ) {
       bool onlyReadOnly = true;
-      QListViewItem *it = mListView->firstChild();
+      Q3ListViewItem *it = mListView->firstChild();
       while ( it != 0 ) {
         ConfigViewItem *confIt = static_cast<ConfigViewItem*>( it );
         if ( !confIt->readOnly() && confIt != item )
@@ -350,7 +350,7 @@ void ConfigPage::slotRemove()
   if ( !mCurrentManager )
     return;
 
-  QListViewItem *item = mListView->currentItem();
+  Q3ListViewItem *item = mListView->currentItem();
   ConfigViewItem *confItem = static_cast<ConfigViewItem*>( item );
 
   if ( !confItem )
@@ -377,7 +377,7 @@ void ConfigPage::slotEdit()
   if ( !mCurrentManager )
     return;
 
-  QListViewItem *item = mListView->currentItem();
+  Q3ListViewItem *item = mListView->currentItem();
   ConfigViewItem *configItem = static_cast<ConfigViewItem*>( item );
   if ( !configItem )
     return;
@@ -419,7 +419,7 @@ void ConfigPage::slotStandard()
     return;
   }
 
-  QListViewItem *it = mListView->firstChild();
+  Q3ListViewItem *it = mListView->firstChild();
   while ( it != 0 ) {
     ConfigViewItem *configItem = static_cast<ConfigViewItem*>( it );
     if ( configItem->standard() )
@@ -481,7 +481,7 @@ void ConfigPage::resourceDeleted( Resource *resource )
 
 ConfigViewItem *ConfigPage::findItem( Resource *resource )
 {
-  QListViewItem *i;
+  Q3ListViewItem *i;
   for( i = mListView->firstChild(); i; i = i->nextSibling() ) {
     ConfigViewItem *item = static_cast<ConfigViewItem *>( i );
     if ( item->resource() == resource ) return item;
@@ -489,7 +489,7 @@ ConfigViewItem *ConfigPage::findItem( Resource *resource )
   return 0;
 }
 
-void ConfigPage::slotItemClicked( QListViewItem *item )
+void ConfigPage::slotItemClicked( Q3ListViewItem *item )
 {
   ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
   if ( !configItem ) return;
@@ -508,7 +508,7 @@ void ConfigPage::slotItemClicked( QListViewItem *item )
 void ConfigPage::saveResourceSettings()
 {
   if ( mCurrentManager ) {
-    QListViewItem *item = mListView->firstChild();
+    Q3ListViewItem *item = mListView->firstChild();
     while ( item ) {
       ConfigViewItem *configItem = static_cast<ConfigViewItem *>( item );
 

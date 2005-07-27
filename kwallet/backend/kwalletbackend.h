@@ -22,7 +22,7 @@
 #ifndef _KWALLETBACKEND_H
 #define _KWALLETBACKEND_H
 
-#include <kmdcodec.h>
+#include <kcodecs.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -32,7 +32,32 @@
 
 namespace KWallet {
 
-class MD5Digest;
+/**
+ * @internal
+ */
+class MD5Digest : public QByteArray {
+	public:
+		MD5Digest() : QByteArray(16) {}
+		MD5Digest(const KMD5::Digest d) : QByteArray() { duplicate(reinterpret_cast<const char *>(d), 16); }
+		virtual ~MD5Digest() {}
+
+		int operator<(const MD5Digest& r) const {
+				int i = 0;
+				char x, y;
+				for (; i < 16; ++i) {
+					x = at(i);
+					y = r.at(i);
+					if (x != y) {
+						break;
+					}
+				}
+				if (i < 16 && x < y) {
+					return 1;
+				}
+				return 0;
+			}
+};
+
 
 /* @internal
  */
@@ -78,8 +103,8 @@ class KDE_EXPORT Backend {
 		Entry *readEntry(const QString& key);
 		
 		// Look up a list of entries.  Supports wildcards.
-		// You delete the list.
-		QPtrList<Entry> readEntryList(const QString& key);
+		// You delete the list
+		QList<Entry*> readEntryList(const QString& key);
 
 		// Store an entry.
 		void writeEntry(Entry *e);
@@ -125,34 +150,8 @@ class KDE_EXPORT Backend {
 		typedef QMap< QString, Entry* > EntryMap;
 		typedef QMap< QString, EntryMap > FolderMap;
 		FolderMap _entries;
-		typedef QMap<MD5Digest, QValueList<MD5Digest> > HashMap;
+		typedef QMap<MD5Digest, QList<MD5Digest> > HashMap;
 		HashMap _hashes;
-};
-
-/**
- * @internal
- */
-class MD5Digest : public QByteArray {
-	public:
-		MD5Digest() : QByteArray(16) {}
-		MD5Digest(const KMD5::Digest d) : QByteArray() { duplicate(reinterpret_cast<const char *>(d), 16); }
-		virtual ~MD5Digest() {}
-
-		int operator<(const MD5Digest& r) const {
-				int i = 0;
-				char x, y;
-				for (; i < 16; ++i) {
-					x = at(i);
-					y = r.at(i);
-					if (x != y) {
-						break;
-					}
-				}
-				if (i < 16 && x < y) {
-					return 1;
-				}
-				return 0;
-			}
 };
 
 }

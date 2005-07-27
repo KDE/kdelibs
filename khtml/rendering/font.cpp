@@ -37,7 +37,7 @@
 
 #include <qpainter.h>
 #include <qfontdatabase.h>
-#include <qpaintdevicemetrics.h>
+#include <q3paintdevicemetrics.h>
 
 using namespace khtml;
 
@@ -60,6 +60,15 @@ inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int po
     return fm.width(s.string());
 }
 
+inline void drawDirectedText(QPainter *p, Qt::LayoutDirection d,
+    int x, int y, const QString &str)
+{
+    Qt::LayoutDirection saveDir = p->layoutDirection();
+    p->setLayoutDirection(d);
+    p->drawText(x, y, str);
+    p->setLayoutDirection(saveDir);
+}
+
 /** closes the current word and draws it
  * @param p painter
  * @param d text direction
@@ -75,27 +84,28 @@ inline int closeWordAndGetWidth(const QFontMetrics &fm, const QChar *str, int po
  *	will be set to wordEnd after function
  * @param wordEnd relative index pointing one position after the word ended
  */
-inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
+inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
 	int &x, int y, const short widths[], const QChar *str, int pos,
 	int &wordStart, int wordEnd)
 {
     if (wordEnd <= wordStart) return;
 
     int width = widths[wordStart];
-    if (d == QPainter::RTL)
+    if (d == Qt::RightToLeft)
       x -= width;
 
     QConstString s(str + pos + wordStart, wordEnd - wordStart);
-    p->drawText(x, y, s.string(), -1, d);
 
-    if (d != QPainter::RTL)
+    drawDirectedText( p, d, x, y, s.string() );
+
+    if (d != Qt::RightToLeft)
       x += width;
 
     wordStart = wordEnd;
 }
 
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
-        int toAdd, QPainter::TextDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
+        int toAdd, Qt::LayoutDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
     if (!str) return;
     QConstString cstr = QConstString(str, slen);
@@ -110,7 +120,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
         // long render texts (in the order of several megabytes).
         // Hence, only hand over the piece of text of the actual inline text box
 	QConstString cstr = QConstString(str + pos, len);
-	p->drawText( x, y, cstr.string(), 0, len, d );
+	drawDirectedText( p, d, x, y, cstr.string() );
     } else {
 	if (from < 0) from = 0;
 	if (to < 0) to = len;
@@ -123,7 +133,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	}
 
 	const int totWidth = width( str, slen, pos, len );
-	if ( d == QPainter::RTL ) {
+	if ( d == Qt::RightToLeft ) {
 	    x += totWidth + toAdd;
 	}
 	QString upper = qstr;
@@ -154,13 +164,13 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    const QConstString segStr(str + pos + from, to - from);
 	    const int preSegmentWidth = fm.width(cstr.string(), from);
 	    const int segmentWidth = fm.width(segStr.string());
-	    const int eff_x = d == QPainter::RTL ? x - preSegmentWidth - segmentWidth
+	    const int eff_x = d == Qt::RightToLeft ? x - preSegmentWidth - segmentWidth
 					: x + preSegmentWidth;
 
 	    // draw whole string segment, with optional background
 	    if ( bg.isValid() )
 		p->fillRect( eff_x, uy, segmentWidth, h, bg );
-	    p->drawText(eff_x, y, segStr.string(), -1, d);
+	    drawDirectedText( p, d, eff_x, y, segStr.string() );
 	    if (deco)
 	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth - 1, h, deco);
 	    return;
@@ -235,10 +245,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    widthList[lastWordBegin] = (short)width;
 	}
 
-        if (d == QPainter::RTL) x -= preSegmentWidth;
+        if (d == Qt::RightToLeft) x -= preSegmentWidth;
 	else x += preSegmentWidth;
 
-        const int startx = d == QPainter::RTL ? x-segmentWidth : x;
+        const int startx = d == Qt::RightToLeft ? x-segmentWidth : x;
 
 	// optionally draw background
 	if ( bg.isValid() )
@@ -258,14 +268,18 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    }
 	    if (is_space || mode == CharacterWise) {
 	        const int chw = widthList[i];
-	        if (d == QPainter::RTL)
+	        if (d == Qt::RightToLeft)
 		    x -= chw;
 
 		if ( scFont )
 		    p->setFont( lowercase ? *scFont : f );
-		p->drawText( x, y, (lowercase ? upper : qstr), pos+i, 1, d );
 
-	        if (d != QPainter::RTL)
+		 drawDirectedText( p, d, x, y, QString((lowercase ? upper : qstr)[pos+i]) );
+#ifdef __GNUC__
+  #warning "Light bloatery"
+#endif
+
+	        if (d != Qt::RightToLeft)
 		    x += chw;
 	    }
 
@@ -339,7 +353,7 @@ int Font::width( QChar *chs, int slen, int pos ) const
 }
 
 
-void Font::update( QPaintDeviceMetrics* devMetrics ) const
+void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
 {
     f.setFamily( fontDef.family.isEmpty() ? KHTMLFactory::defaultHTMLSettings()->stdFontName() : fontDef.family );
     f.setItalic( fontDef.italic );
@@ -354,7 +368,7 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
     // all other font properties should be set before this one!!!!
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
     {
-        const QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
+        const Q3ValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
         // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
@@ -363,8 +377,8 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
 
-        QValueList<int>::ConstIterator it = pointSizes.begin();
-        const QValueList<int>::ConstIterator itEnd = pointSizes.end();
+        Q3ValueList<int>::ConstIterator it = pointSizes.begin();
+        const Q3ValueList<int>::ConstIterator itEnd = pointSizes.end();
 
         for( ; it != itEnd; ++it )
         {

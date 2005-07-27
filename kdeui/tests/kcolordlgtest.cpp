@@ -13,10 +13,12 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kcolordialog.h"
 #include <kconfig.h>
@@ -27,8 +29,12 @@ int main( int argc, char *argv[] )
 	QColor color;
 
 	KLocale::setMainCatalogue("kdelibs");
-	QApplication::setColorMode( QApplication::CustomColors );
-	KApplication a( argc, argv, "KColorDialogTest" );
+	QApplication::setColorMode( QApplication::CustomColor );
+	KAboutData about("KColorDialogTest", "KColorDialogTest", "version");
+	KCmdLineArgs::init(argc, argv, &about);
+
+	KApplication a;
+
         KConfig aConfig;
         aConfig.setGroup( "KColorDialog-test" );
     

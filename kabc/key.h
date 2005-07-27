@@ -21,7 +21,7 @@
 #ifndef KABC_KEY_H
 #define KABC_KEY_H
 
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 #include <kdelibs_export.h>
 
@@ -36,8 +36,8 @@ class KABC_EXPORT Key
   friend KABC_EXPORT QDataStream &operator>>( QDataStream &, Key & );
 
 public:
-  typedef QValueList<Key> List;
-  typedef QValueList<int> TypeList;  
+  typedef Q3ValueList<Key> List;
+  typedef Q3ValueList<int> TypeList;  
 
   /**
    * Key types

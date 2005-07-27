@@ -21,6 +21,7 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 #include <config-kfile.h>
+#include <QEvent>
 
 #include "kfilefiltercombo.h"
 
@@ -95,7 +96,7 @@ QString KFileFilterCombo::currentFilter() const
 {
     QString f = currentText();
     if (f == text(currentItem())) { // user didn't edit the text
-	f = *filters.at(currentItem());
+	f = filters.at(currentItem());
         if ( d->isMimeFilter || (currentItem() == 0 && d->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }

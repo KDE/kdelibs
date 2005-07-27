@@ -13,7 +13,7 @@
 #include <kprinter.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <kapplication.h>
 #include <qapplication.h>
 #include <math.h>
@@ -33,7 +33,7 @@ void drawColorWheel( QPainter *p )
 
     for ( int i=0; i<36; i++ ) {		// draws 36 rotated rectangles
 
-        QWMatrix matrix;
+        QMatrix matrix;
         matrix.translate( 250.0F, 250.0F );	// move to center
         matrix.shear( 0.0F, 0.3F );		// twist it
         matrix.rotate( (float)i*10 );		// rotate 0,10,20,.. degrees
@@ -128,10 +128,10 @@ DrawThing ourDrawFunctions[] = {
 DrawView::DrawView()
 {
     setCaption( "Qt Draw Demo Application" );
-    setBackgroundColor( white );
+    setBackgroundColor( Qt::white );
 
     // Create a button group to contain all buttons
-    bgroup = new QButtonGroup( this );
+    bgroup = new Q3ButtonGroup( this );
     bgroup->resize( 200, 200 );
     connect( bgroup, SIGNAL(clicked(int)), SLOT(updateIt(int)) );
 

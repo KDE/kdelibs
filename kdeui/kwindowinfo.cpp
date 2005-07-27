@@ -4,7 +4,7 @@
  *   email                : rich@kde.org
  */
 
-#include <qobjectlist.h>
+#include <qobject.h>
 #include <qpixmap.h>
 #include <qtimer.h>
 #include <qtooltip.h>
@@ -85,17 +85,11 @@ void KWindowInfo::permanent( const QString &text )
 void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
 {
     if ( !oldText.isNull() ) {
-	QObjectList *l = queryList( "QTimer" );
-	QObjectListIt it( *l );
-	QObject *obj;
-
-	while ( (obj = it.current()) != 0 ) {
-	    ++it;
-	    delete obj;
+	QList<QTimer *> l = findChildren<QTimer *>();
+		foreach ( QObject*o , l ) {
+			delete o;
+		}
 	}
-	delete l;
-    }
-
     oldText = QString::null;
     display( text, pix );
 }
@@ -130,7 +124,7 @@ void KWindowInfo::save()
     if ( win->inherits( "KSystemTray" ) ) {
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	oldIcon = *(tray->pixmap());
-	oldText = QToolTip::textFor( tray );
+	oldText = tray->toolTip();
 	return;
     }
 

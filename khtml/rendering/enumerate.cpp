@@ -26,7 +26,7 @@
 #include "rendering/enumerate.h"
 
 #include <qstring.h>
-#include <qvaluelist.h>
+#include <q3valuelist.h>
 
 namespace khtml {
 
@@ -171,7 +171,7 @@ QString toHebrew( int number ) {
 
 static inline QString toLatin( int number, int base ) {
     if (number < 1) return QString::number(number);
-    QValueList<QChar> letters;
+    Q3ValueList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter a
         QChar letter = (QChar) (base + (number % 26));
@@ -198,7 +198,7 @@ QString toUpperLatin( int number ) {
 
 static inline QString toAlphabetic( int number, int base, const QChar alphabet[] ) {
     if (number < 1) return QString::number(number);
-    QValueList<QChar> letters;
+    Q3ValueList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter 1
         QChar letter = alphabet[number % base];
@@ -279,7 +279,7 @@ QString toUpperGreek( int number ) {
 
 static inline QString toNumeric( int number, int base ) {
     QString letter = QString::number(number);
-    for(unsigned int i = 0; i < letter.length(); i++) {
+    for(int i = 0; i < letter.length(); i++) {
         if (letter[i].isDigit())
         letter[i] = QChar(letter[i].digitValue()+base);
     }

@@ -14,15 +14,15 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include <config.h>
 
 #include "kmwsocketutil.h"
 
-#include <qprogressbar.h>
+#include <q3progressbar.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
@@ -34,10 +34,14 @@
 
 #include <kapplication.h>
 #include <klocale.h>
-#include <kextsock.h>
 #include <kdebug.h>
+#include <kresolver.h>
+#include <kreverseresolver.h>
+#include <kstreamsocket.h>
 
 #include <unistd.h>
+
+using namespace KNetwork;
 
 QString localRootIP();
 
@@ -140,23 +144,22 @@ KMWSocketUtil::KMWSocketUtil()
 
 bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostname)
 {
-	KExtendedSocket	sock(IPstr, port, KExtendedSocket::inetSocket|KExtendedSocket::streamSocket);
-	bool	result(false);
-	sock.setTimeout(0, timeout_ * 1000);
-	if (sock.connect() == 0)
+	KStreamSocket	sock(IPstr, QString::number(port));
+	sock.setTimeout(timeout_);
+	if (sock.connect())
 	{
 		if (hostname)
 		{
 			QString	portname;
-			KExtendedSocket::resolve((KSocketAddress*)(sock.peerAddress()), *hostname, portname);
+			KReverseResolver::resolve(sock.peerAddress(), *hostname, portname);
 		}
-		result = true;
+		return true;
 	}
-	sock.close();
-	return result;
+	else
+		return false;
 }
 
-bool KMWSocketUtil::scanNetwork(QProgressBar *bar)
+bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
 {
 	printerlist_.setAutoDelete(true);
 	printerlist_.clear();
@@ -204,11 +207,10 @@ QString localRootIP()
 	buf[0] = '\0';
 	if (!gethostname(buf, sizeof(buf)))
 		buf[sizeof(buf)-1] = '\0';
-	QPtrList<KAddressInfo>	infos = KExtendedSocket::lookup(buf, QString::null);
-	infos.setAutoDelete(true);
-	if (infos.count() > 0)
+	KResolverResults    infos = KResolver::resolve(buf, QString::null);
+	if (!infos.error() && infos.count() > 0)
 	{
-		QString	IPstr = infos.first()->address()->nodeName();
+		QString	IPstr = infos.first().address().nodeName();
 		int	p = IPstr.findRev('.');
 		IPstr.truncate(p);
 		return IPstr;

@@ -59,7 +59,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         /**
           Set list of plugins the dialog offers for selection. (Overwrites a previous list)
         */
-        void setPluginInfos( const QValueList<KPluginInfo *> &plugins );
+        void setPluginInfos( const Q3ValueList<KPluginInfo *> &plugins );
 
         /**
          * reimplemented
@@ -71,7 +71,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         void slotApply();
 
     private slots:
-        void executed( QListViewItem * );
+        void executed( Q3ListViewItem * );
 
     private:
         void savePluginInfos();

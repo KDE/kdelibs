@@ -1,9 +1,9 @@
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmessagebox.h>
-#include <qmultilineedit.h>
-#include <qkeycode.h>
+#include <q3multilineedit.h>
+#include <qnamespace.h>
 #include <qpixmap.h>
 #include <qcursor.h>
 
@@ -20,10 +20,10 @@ testWindow::testWindow (QWidget *, const char *name)
  {
     // Setup Menus
     menuBar = new KMenuBar (this);
-    fileMenu = new QPopupMenu;
+    fileMenu = new Q3PopupMenu;
     menuBar->insertItem ("&File", fileMenu);
     fileMenu->insertItem ("&Exit", KApplication::kApplication(),
-                          SLOT( quit() ), ALT + Key_Q );
+                          SLOT( quit() ), Qt::ALT + Qt::Key_Q );
     statusbar = new KStatusBar (this);
     statusbar->insertItem("Zoom: XXXX", 0);
     statusbar->insertItem("XXX", 1);
@@ -37,13 +37,13 @@ testWindow::testWindow (QWidget *, const char *name)
     connect (statusbar, SIGNAL(pressed(int)), this, SLOT(slotPress(int)));
     connect (statusbar, SIGNAL(released(int)), this, SLOT(slotClick(int)));
 
-    widget = new QMultiLineEdit (this);
+    widget = new Q3MultiLineEdit (this);
 
     setCentralWidget(widget);
 
     setCaption( KApplication::kApplication()->caption() );
 
-    smenu = new QPopupMenu;
+    smenu = new Q3PopupMenu;
   
     smenu->insertItem("50%");
     smenu->insertItem("75%");

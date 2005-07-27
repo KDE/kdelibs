@@ -22,7 +22,7 @@
 
 #include <dcopobject.h>
 #include <qstringlist.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <dcopref.h>
 #include "kdelibs_export.h"
 
@@ -56,14 +56,14 @@ k_dcop:
 	**/
 	void disableSessionManagement();
 	
-	QCString startupId();
-	QCString caption();
+	QByteArray startupId();
+	QByteArray caption();
 	
 	void quit();
 
 	void reparseConfiguration();
 
-	void updateUserTimestamp( ulong time );
+	void updateUserTimestamp( quint32 time );
 
 private:
 	KApplication *m_KApplication;

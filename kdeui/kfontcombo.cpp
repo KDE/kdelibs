@@ -12,19 +12,20 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 
 #include <qfontdatabase.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpainter.h>
 
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kfontdialog.h>
+#include <QListWidgetItem>
 
 #include "kfontcombo.h"
 #include "kfontcombo.moc"
@@ -53,14 +54,14 @@ struct KFontComboPrivate
     QString defaultFamily;
 };
 
-class KFontListItem : public QListBoxItem
+class KFontListItem : public QListWidgetItem
 {
 public:
     KFontListItem(const QString &fontName, KFontCombo *combo);
     virtual ~KFontListItem();
 
-    virtual int width(const QListBox *) const;
-    virtual int height(const QListBox *) const;
+    virtual int width(const Q3ListBox *) const;
+    virtual int height(const Q3ListBox *) const;
 
     void updateFont();
 
@@ -78,7 +79,7 @@ private:
 };
 
 KFontListItem::KFontListItem(const QString &fontName, KFontCombo *combo)
-    : QListBoxItem(combo->listBox()),
+    : QListWidgetItem(( QListWidget * ) combo->view()),
       m_combo(combo),
       m_fontName(fontName),
       m_font(0),
@@ -92,14 +93,14 @@ KFontListItem::~KFontListItem()
     delete m_font;
 }
 
-int KFontListItem::width(const QListBox *lb) const
+int KFontListItem::width(const Q3ListBox *lb) const
 {
     if (m_font)
        return QFontMetrics(*m_font).width(text()) + 6;
     return lb->fontMetrics().width(text()) + 6;
 }
 
-int KFontListItem::height(const QListBox *lb) const
+int KFontListItem::height(const Q3ListBox *lb) const
 {
     if (m_combo->d->displayFonts)
         return m_combo->d->lineSpacing + 2;
@@ -151,7 +152,7 @@ void KFontListItem::createFont()
 
     m_font = new QFont(m_fontName);
     QFontMetrics fm(*m_font);
-    for (unsigned int i = 0; i < m_fontName.length(); ++i)
+    for (int i = 0; i < m_fontName.length(); ++i)
         if (!fm.inFont(m_fontName[i]))
         {
             m_canPaintName = false;
@@ -336,9 +337,9 @@ void KFontCombo::updateFonts()
     if (!d->displayFonts)
         return;
 
-    for (unsigned int i = 0; i < listBox()->count(); ++i)
+    for (int i = 0; i < count(); ++i)
     {
-        KFontListItem *item = static_cast<KFontListItem *>(listBox()->item(i));
+        KFontListItem *item = static_cast<KFontListItem *>(( ( QListWidget* )view() )->item(i));
         item->updateFont();
     }
 }

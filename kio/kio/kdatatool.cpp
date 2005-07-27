@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999, 2000 Torben Weis <weis@kde.org>
-   Copyright (C) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (C) 2001 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -128,7 +128,7 @@ QString KDataToolInfo::iconName() const
 QStringList KDataToolInfo::commands() const
 {
     if ( !m_service )
-        return QString::null;
+        return QStringList();
 
     return m_service->property( "Commands" ).toStringList();
 }
@@ -136,7 +136,7 @@ QStringList KDataToolInfo::commands() const
 QStringList KDataToolInfo::userCommands() const
 {
     if ( !m_service )
-        return QString::null;
+        return QStringList();
 
     return QStringList::split( ',', m_service->comment() );
 }
@@ -167,9 +167,9 @@ KService::Ptr KDataToolInfo::service() const
     return m_service;
 }
 
-QValueList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
+Q3ValueList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QString& mimetype, KInstance* instance )
 {
-    QValueList<KDataToolInfo> lst;
+    Q3ValueList<KDataToolInfo> lst;
 
     QString constr;
 
@@ -236,14 +236,14 @@ void KDataToolAction::slotActivated()
     emit toolActivated( m_info, m_command );
 }
 
-QPtrList<KAction> KDataToolAction::dataToolActionList( const QValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
+Q3PtrList<KAction> KDataToolAction::dataToolActionList( const Q3ValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
 {
-    QPtrList<KAction> actionList;
+    Q3PtrList<KAction> actionList;
     if ( tools.isEmpty() )
         return actionList;
 
     actionList.append( new KActionSeparator() );
-    QValueList<KDataToolInfo>::ConstIterator entry = tools.begin();
+    Q3ValueList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
         QStringList userCommands = (*entry).userCommands();

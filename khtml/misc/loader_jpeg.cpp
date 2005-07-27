@@ -38,6 +38,7 @@
 #include <setjmp.h>
 #include <qdatetime.h>
 #include <kglobal.h>
+#include <qrect.h>
 
 extern "C" {
 #define XMD_H
@@ -186,6 +187,7 @@ khtml_jpeg_source_mgr::khtml_jpeg_source_mgr()
 
 // -----------------------------------------------------------------------------
 
+#if 0 // TODO: wait
 class KJPEGFormat : public QImageFormat
 {
 public:
@@ -538,6 +540,8 @@ const char* khtml::KJPEGFormatType::formatName() const
 {
     return "JPEG";
 }
+
+#endif
 
 #else
 #ifdef __GNUC__

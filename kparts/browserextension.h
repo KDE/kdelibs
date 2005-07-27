@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef __kparts_browserextension_h__
@@ -24,7 +24,7 @@
 #include <sys/types.h>
 
 #include <qpoint.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qdatastream.h>
 #include <qstringlist.h>
 #include <qpair.h>
@@ -33,7 +33,7 @@
 #include <kparts/event.h>
 
 class KFileItem;
-typedef QPtrList<KFileItem> KFileItemList;
+typedef Q3PtrList<KFileItem> KFileItemList;
 class QString;
 
 namespace KParts {
@@ -425,7 +425,7 @@ public:
    */
   QString actionText( const char * name ) const;
 
-  typedef QMap<QCString,QCString> ActionSlotMap;
+  typedef QMap<Q3CString,Q3CString> ActionSlotMap;
   /**
    * Returns a map containing the action names as keys and corresponding
    * SLOT()'ified method names as data entries.
@@ -475,11 +475,17 @@ public:
   void pasteRequest();
 
 // KDE invents support for public signals...
+// Would be nicer if we did a public_signals macro, in fact.
+#ifndef Q_MOC_RUN
 #undef signals
 #define signals public
+#endif
 signals:
+//public signals: // TODO
+#ifndef Q_MOC_RUN
 #undef signals
 #define signals protected
+#endif
   /**
    * Enables or disable a standard action held by the browser.
    *
@@ -690,7 +696,7 @@ private:
   KParts::ReadOnlyPart *m_part;
   URLArgs m_args;
 public:
-  typedef QMap<QCString,int> ActionNumberMap;
+  typedef QMap<Q3CString,int> ActionNumberMap;
 
 private:
   static ActionNumberMap * s_actionNumberMap;
@@ -728,7 +734,7 @@ public:
    *
    * Note that this method does not query the child objects recursively.
    */
-  virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
+  virtual const Q3PtrList<KParts::ReadOnlyPart> frames() const;
 
   /**
    * Returns the part that contains @p frame and that may be accessed
@@ -782,7 +788,7 @@ public:
   enum Type {
       TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString
   };
-  typedef QValueList<QPair<Type, QString> > ArgList;
+  typedef Q3ValueList<QPair<Type, QString> > ArgList;
 
   LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name = 0L );
 
@@ -809,7 +815,7 @@ signals:
   /**
    * notify a event from the part of object objid
    */
-  virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
+  void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
 };
 
 }

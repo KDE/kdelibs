@@ -14,18 +14,18 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#include <qlistview.h>
+#include <q3listview.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <kdelibs_export.h>
 
-class QDragObject;
+class Q3DragObject;
 class KConfig;
 class KLineEdit;
 /**
@@ -50,7 +50,7 @@ class KLineEdit;
  * Reimplement dragObject() and (possibly) startDrag(),
  * and setDragEnabled(true).
  */
-class KDEUI_EXPORT KListView : public QListView
+class KDEUI_EXPORT KListView : public Q3ListView
 {
   friend class KListViewItem;
 
@@ -102,10 +102,10 @@ public:
    *   This way e.g. SHIFT+up/PgUp then SHIFT+down/PgDn leaves no item selected
    */
   enum SelectionModeExt {
-	Single = QListView::Single,
-	Multi = QListView::Multi,
-	Extended = QListView::Extended,
-	NoSelection = QListView::NoSelection,
+	Single = Q3ListView::Single,
+	Multi = Q3ListView::Multi,
+	Extended = Q3ListView::Extended,
+	NoSelection = Q3ListView::NoSelection,
 	FileManager
   };
 
@@ -154,7 +154,7 @@ public:
    *
    * @deprecated
    */
-  QPtrList<QListViewItem> selectedItems() const;
+  Q3PtrList<Q3ListViewItem> selectedItems() const;
 
   /**
    * @return a list containing the currently selected items.
@@ -166,7 +166,7 @@ public:
    *
    * @since 3.4
    */
-  QPtrList<QListViewItem> selectedItems(bool includeHiddenItems) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
+  Q3PtrList<Q3ListViewItem> selectedItems(bool includeHiddenItems) const; // ### BIC: KDE 4: use an implicitly shared class! (QValutList?) and merge with above, default to true
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
@@ -174,21 +174,21 @@ public:
    *
    * (Un-deprecated in kde-3.4)
    */
-  void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
+  void moveItem(Q3ListViewItem *item, Q3ListViewItem *parent, Q3ListViewItem *after);
 
   /**
    * @return the last item (not child!) of this listview.
    *
    * @see lastChild()
    */
-  QListViewItem *lastItem() const;
+  Q3ListViewItem *lastItem() const;
 
   /**
    * @return the last child of this listview.
    *
    * @see lastItem()
    */
-  QListViewItem* lastChild () const;
+  Q3ListViewItem* lastChild () const;
 
   /**
    * @return the lineedit used for inline renaming.
@@ -249,14 +249,6 @@ public:
   int tooltipColumn() const;
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
-   */
-  bool createChildren() const KDE_DEPRECATED;
-
-  /**
    * @return true if drawing of the drop-highlighter has been enabled.  False by default.
    *
    * @see setDropHighlighter()
@@ -284,14 +276,14 @@ public:
    * @p item doesn't exist in this list view. This function takes
    * all items into account not only the visible ones.
    */
-  int itemIndex( const QListViewItem *item ) const;
+  int itemIndex( const Q3ListViewItem *item ) const;
 
   /**
    * Returns the item of @p index within the item tree or 0 if
    * @p index doesn't exist in this list view. This function takes
    * all items into account not only the visible ones.
    */
-  QListViewItem* itemAtIndex(int index);
+  Q3ListViewItem* itemAtIndex(int index);
 
   /**
    * @deprecated
@@ -322,7 +314,7 @@ public:
   /**
    * Reimplemented for full width support
    */
-  virtual int addColumn(const QIconSet& iconset, const QString& label, int width = -1);
+  virtual int addColumn(const QIcon& iconset, const QString& label, int width = -1);
   /**
    * Reimplemented for full width support
    *
@@ -384,7 +376,7 @@ public:
   /**
    * Reimplemented for internal reasons.
    */
-  virtual void takeItem(QListViewItem *i);
+  virtual void takeItem(Q3ListViewItem *i);
 
   /**
    * Set to true if the currently sorted column should be drawn shaded. Defaults to true
@@ -412,7 +404,7 @@ signals:
    * Note that you may not delete any QListViewItem objects in slots
    * connected to this signal.
    */
-  void executed( QListViewItem *item );
+  void executed( Q3ListViewItem *item );
 
   /**
    * This signal is emitted whenever the user executes an listview item.
@@ -425,7 +417,7 @@ signals:
    * Note that you may not delete any QListViewItem objects in slots
    * connected to this signal.
    */
-  void executed( QListViewItem *item, const QPoint &pos, int c );
+  void executed( Q3ListViewItem *item, const QPoint &pos, int c );
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -437,7 +429,7 @@ signals:
    *
    * @see acceptDrop()
    */
-  void dropped (QDropEvent * e, QListViewItem *after);
+  void dropped (QDropEvent * e, Q3ListViewItem *after);
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -451,7 +443,7 @@ signals:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
-  void dropped (KListView* list, QDropEvent* e, QListViewItem* after);
+  void dropped (KListView* list, QDropEvent* e, Q3ListViewItem* after);
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -465,7 +457,7 @@ signals:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
-  void dropped (KListView* list, QDropEvent* e, QListViewItem* parent, QListViewItem* after);
+  void dropped (KListView* list, QDropEvent* e, Q3ListViewItem* parent, Q3ListViewItem* after);
 
   /**
    * This signal gets emitted whenever something acceptable is
@@ -478,7 +470,7 @@ signals:
    * @param after is the item after which the drop occurred (or 0L, if
    * the drop was above all items
    */
-  void dropped (QDropEvent* e, QListViewItem* parent, QListViewItem* after);
+  void dropped (QDropEvent* e, Q3ListViewItem* parent, Q3ListViewItem* after);
 
   /**
    * This signal is emitted when ever the user moves an item in the list via
@@ -509,7 +501,7 @@ signals:
    * @param afterFirst the item that parameter item was in before the move, in the list
    * @param afterNow the item it's currently after.
    */
-  void moved (QListViewItem *item, QListViewItem *afterFirst, QListViewItem *afterNow);
+  void moved (Q3ListViewItem *item, Q3ListViewItem *afterFirst, Q3ListViewItem *afterNow);
 
 
   /**
@@ -517,7 +509,7 @@ signals:
    * each and every item moved, in order.  The first element in @p items associates
    * with the first of afterFirst and afterNow.
    */
-  void moved(QPtrList<QListViewItem> &items, QPtrList<QListViewItem> &afterFirst, QPtrList<QListViewItem> &afterNow);
+  void moved(Q3PtrList<Q3ListViewItem> &items, Q3PtrList<Q3ListViewItem> &afterFirst, Q3PtrList<Q3ListViewItem> &afterNow);
 
   /**
    * This signal gets emitted when an item is renamed via in-place renaming.
@@ -526,12 +518,12 @@ signals:
    * @param str is the new value of column @p col.
    * @param col is the renamed column.
    */
-  void itemRenamed(QListViewItem* item, const QString &str, int col);
+  void itemRenamed(Q3ListViewItem* item, const QString &str, int col);
 
   /**
    * Same as above, but without the extra information.
    */
-  void itemRenamed(QListViewItem* item);
+  void itemRenamed(Q3ListViewItem* item);
 
   /**
    * This signal is emitted when the shortcut key for popup-menus is pressed.
@@ -543,7 +535,7 @@ signals:
    * @param list is this listview.
    * @param item is the currentItem() at the time the key was pressed. May be 0L.
    */
-  void menuShortCutPressed (KListView* list, QListViewItem* item);
+  void menuShortCutPressed (KListView* list, Q3ListViewItem* item);
 
   /**
    * This signal is emitted whenever a context-menu should be shown for item @p i.
@@ -553,16 +545,16 @@ signals:
    * @param i is the item for which the menu should be shown. May be 0L.
    * @param p is the point at which the menu should be shown.
    */
-  void contextMenu (KListView* l, QListViewItem* i, const QPoint& p);
+  void contextMenu (KListView* l, Q3ListViewItem* i, const QPoint& p);
 
-  void itemAdded(QListViewItem *item);
-  void itemRemoved(QListViewItem *item);
+  void itemAdded(Q3ListViewItem *item);
+  void itemRemoved(Q3ListViewItem *item);
 
 public slots:
   /**
    * Rename column @p c of @p item.
    */
-  virtual void rename(QListViewItem *item, int c);
+  virtual void rename(Q3ListViewItem *item, int c);
 
   /**
    * By default, if you called setItemsRenameable(true),
@@ -633,14 +625,6 @@ public slots:
   virtual void setDropHighlighter(bool b);
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
-   */
-  virtual void setCreateChildren(bool b) KDE_DEPRECATED;
-
-  /**
    * Set the selection mode.
    *
    * A different name was chosen to avoid API-clashes with QListView::setSelectionMode().
@@ -682,7 +666,7 @@ protected:
    * @param p is translated from contents coordinates to viewport coordinates
    * before being passed to the above function.
    */
-  inline bool below (QListViewItem* i, const QPoint& p)
+  inline bool below (Q3ListViewItem* i, const QPoint& p)
   {
 	return below (itemRect(i), contentsToViewport(p));
   }
@@ -697,7 +681,7 @@ protected:
    * Emit signal executed.
    * @internal
    */
-  void emitExecute( QListViewItem *item, const QPoint &pos, int c );
+  void emitExecute( Q3ListViewItem *item, const QPoint &pos, int c );
 
   /**
    * Reimplemented for internal reasons.
@@ -729,12 +713,12 @@ protected:
   /**
    * @return the tooltip for @p column of @p item.
    */
-  virtual QString tooltip(QListViewItem* item, int column) const;
+  virtual QString tooltip(Q3ListViewItem* item, int column) const;
 
   /**
    * @return whether the tooltip for @p column of @p item shall be shown at point @p pos.
    */
-  virtual bool showTooltip(QListViewItem *item, const QPoint &pos, int column) const;
+  virtual bool showTooltip(Q3ListViewItem *item, const QPoint &pos, int column) const;
 
   /**
    * Reimplemented for internal reasons.
@@ -813,7 +797,7 @@ protected:
    *
    * @see setDragEnabled()
    */
-  virtual QDragObject *dragObject();
+  virtual Q3DragObject *dragObject();
 
   /**
    * @return true if the @p event provides some acceptable
@@ -829,7 +813,7 @@ protected:
    *
    * @return the rectangle that you painted to.
    */
-  virtual QRect drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);
+  virtual QRect drawDropVisualizer (QPainter *p, Q3ListViewItem *parent, Q3ListViewItem *after);
 
   /**
    * Paint the drag rectangle. If painter is null, don't try to :)
@@ -837,7 +821,7 @@ protected:
    *
    * @return the rectangle that you painted to.
    */
-  virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
+  virtual QRect drawItemHighlighter(QPainter *painter, Q3ListViewItem *item);
 
   /**
    * This method calls dragObject() and starts the drag.
@@ -908,7 +892,7 @@ protected:
    * in QListView instead.
    */
   // KDE 4: remove
-  void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
+  void doubleClicked( Q3ListViewItem *item, const QPoint &pos, int c );
 
 protected slots:
   /**
@@ -917,8 +901,8 @@ protected slots:
    */
   void slotSettingsChanged(int);
 
-  void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
-  void doneEditing(QListViewItem *item, int row);
+  void slotMouseButtonClicked( int btn, Q3ListViewItem *item, const QPoint &pos, int c );
+  void doneEditing(Q3ListViewItem *item, int row);
 
   /**
    * Repaint the rect where I was drawing the drop line.
@@ -933,18 +917,18 @@ protected slots:
   /**
    * Emit the contextMenu signal. This slot is for mouse actions.
    */
-  void emitContextMenu (QListViewItem*, const QPoint&, int);
+  void emitContextMenu (Q3ListViewItem*, const QPoint&, int);
 
   /**
    * Emit the contextMenu signal. This slot is for key presses.
    */
-  void emitContextMenu (KListView*, QListViewItem*);
+  void emitContextMenu (KListView*, Q3ListViewItem*);
 
   /**
    * Accessory slot for AutoSelect
    * @internal
    */
-  void slotOnItem( QListViewItem *item );
+  void slotOnItem( Q3ListViewItem *item );
 
   /**
    * Accessory slot for AutoSelect/ChangeCursorOverItem
@@ -970,7 +954,7 @@ protected:
   /**
    * Handle dropEvent when itemsMovable() is set to true.
    */
-  virtual void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
+  virtual void movableDropEvent (Q3ListViewItem* parent, Q3ListViewItem* afterme);
 
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
@@ -978,7 +962,7 @@ protected:
    * FIXME KDE 4.0: Make this method const so it can be called from an
    * acceptDrag method without ugly casts
    */
-  virtual void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
+  virtual void findDrop(const QPoint &pos, Q3ListViewItem *&parent, Q3ListViewItem *&after);
 
   /**
    * A special keyPressEvent (for FileManager selection mode).
@@ -990,14 +974,17 @@ protected:
    */
   int depthToPixels( int depth );
 
+#if 0
 private:
   class Tooltip;
+#endif
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
   class KListViewPrivate;
   KListViewPrivate* const d;
-  bool isExecuteArea( int x, QListViewItem* item );
+  bool isExecuteArea( int x, Q3ListViewItem* item );
 };
 
 /**
@@ -1006,7 +993,7 @@ private:
  *
  * @short listview item with alternate background color support
  */
-class KDEUI_EXPORT KListViewItem : public QListViewItem
+class KDEUI_EXPORT KListViewItem : public Q3ListViewItem
 {
   friend class KListView;
 public:
@@ -1016,30 +1003,30 @@ public:
    * don't mix KListViewItem (or subclasses) with QListViewItem
    * (or subclasses).
    */
-  KListViewItem(QListView *parent);
-  KListViewItem(QListViewItem *parent);
-  KListViewItem(QListView *parent, QListViewItem *after);
-  KListViewItem(QListViewItem *parent, QListViewItem *after);
+  KListViewItem(Q3ListView *parent);
+  KListViewItem(Q3ListViewItem *parent);
+  KListViewItem(Q3ListView *parent, Q3ListViewItem *after);
+  KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after);
 
-  KListViewItem(QListView *parent,
+  KListViewItem(Q3ListView *parent,
     QString, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null);
 
-  KListViewItem(QListViewItem *parent,
+  KListViewItem(Q3ListViewItem *parent,
     QString, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null);
 
-  KListViewItem(QListView *parent, QListViewItem *after,
+  KListViewItem(Q3ListView *parent, Q3ListViewItem *after,
     QString, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null);
 
-  KListViewItem(QListViewItem *parent, QListViewItem *after,
+  KListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
     QString, QString = QString::null,
     QString = QString::null, QString = QString::null,
     QString = QString::null, QString = QString::null,
@@ -1047,8 +1034,8 @@ public:
 
   virtual ~KListViewItem();
 
-  virtual void insertItem(QListViewItem *item);
-  virtual void takeItem(QListViewItem *item);
+  virtual void insertItem(Q3ListViewItem *item);
+  virtual void takeItem(Q3ListViewItem *item);
   /**
    * returns true if this item is to be drawn with the alternate background
    */

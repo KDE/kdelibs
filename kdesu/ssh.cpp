@@ -29,7 +29,6 @@
 #include <sys/stat.h>
 
 #include <qglobal.h>
-#include <qcstring.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -39,7 +38,7 @@
 #include "kcookie.h"
 
 
-SshProcess::SshProcess(const QCString &host, const QCString &user, const QCString &command)
+SshProcess::SshProcess(const QByteArray &host, const QByteArray &user, const QByteArray &command)
 {
     m_Host = host;
     m_User = user;
@@ -54,7 +53,7 @@ SshProcess::~SshProcess()
 }
 
 
-void SshProcess::setStub(const QCString &stub)
+void SshProcess::setStub(const QByteArray &stub)
 {
     m_Stub = stub;
 }
@@ -77,7 +76,7 @@ int SshProcess::exec(const char *password, int check)
     if (check)
     setTerminal(true);
 
-    QCStringList args;
+    QList<QByteArray> args;
     args += "-l"; args += m_User;
     args += "-o"; args += "StrictHostKeyChecking=no";
     args += m_Host; args += m_Stub;
@@ -105,12 +104,7 @@ int SshProcess::exec(const char *password, int check)
     }
 
     if (m_bErase && password)
-    {
-        char *ptr = const_cast<char *>(password);
-        const uint plen = strlen(password);
-        for (unsigned i=0; i < plen; i++)
-            ptr[i] = '\000';
-    }
+        memset(const_cast<char *>(password), 0, qstrlen(password));
 
     ret = ConverseStub(check);
     if (ret < 0)
@@ -146,32 +140,36 @@ int SshProcess::exec(const char *password, int check)
 * 14/SEP/2000: DCOP forwarding is not used anymore.
 */
 
-QCString SshProcess::dcopForward()
+QByteArray SshProcess::dcopForward()
 {
-    QCString result;
+    QByteArray result;
 
     setDcopTransport("tcp");
 
-    QCString srv = StubProcess::dcopServer();
+    QByteArray srv = StubProcess::dcopServer();
     if (srv.isEmpty())
         return result;
 
-    int i = srv.find('/');
+    int i = srv.indexOf('/');
     if (i == -1)
         return result;
     if (srv.left(i) != "tcp")
         return result;
-    int j = srv.find(':', ++i);
+    int j = srv.indexOf(':', ++i);
     if (j == -1)
         return result;
-    QCString host = srv.mid(i, j-i);
+    QByteArray host = srv.mid(i, j-i);
     bool ok;
     int port = srv.mid(++j).toInt(&ok);
     if (!ok)
         return result;
 
     m_dcopPort = 10000 + (int) ((40000.0 * rand()) / (1.0 + RAND_MAX));
-    result.sprintf("%d:%s:%d", m_dcopPort, host.data(), port);
+    result = QByteArray::number(m_dcopPort);
+    result += ":";
+    result += host;
+    result += ":";
+    result += QByteArray::number(port);
     return result;
 }
 
@@ -193,7 +191,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 {
     unsigned i, j, colon;
 
-    QCString line;
+    QByteArray line;
     int state = 0;
 
     while (state < 2)
@@ -211,7 +209,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
                 unreadLine(line);
                 return 0;
             }
-    
+
             // Match "Password: " with the regex ^[^:]+:[\w]*$.
             for (i=0,j=0,colon=0; i<len; i++)
             {
@@ -236,13 +234,13 @@ int SshProcess::ConverseSsh(const char *password, int check)
                 state++;
                 break;
             }
-    
+
             // Warning/error message.
             m_Error += line; m_Error += "\n";
             if (m_bTerminal)
-                fprintf(stderr, "ssh: %s\n", line.data());
+                fprintf(stderr, "ssh: %s\n", line.constData());
             break;
-    
+
         case 1:
             if (line.isEmpty())
             {
@@ -257,22 +255,22 @@ int SshProcess::ConverseSsh(const char *password, int check)
 
 
 // Display redirection is handled by ssh natively.
-QCString SshProcess::display()
+QByteArray SshProcess::display()
 {
     return "no";
 }
 
 
-QCString SshProcess::displayAuth()
+QByteArray SshProcess::displayAuth()
 {
     return "no";
 }
 
 
 // Return the remote end of the forwarded connection.
-QCString SshProcess::dcopServer()
+QByteArray SshProcess::dcopServer()
 {
-    return QCString().sprintf("tcp/localhost:%d", m_dcopPort);
+    return QByteArray("tcp/localhost:").append(QByteArray::number(m_dcopPort));
 }
 
 void SshProcess::virtual_hook( int id, void* data )

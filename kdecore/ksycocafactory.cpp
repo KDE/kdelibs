@@ -22,11 +22,11 @@
 #include "ksycocaentry.h"
 #include "ksycocadict.h"
 #include <qstringlist.h>
-#include <qdict.h>
+#include <q3dict.h>
 #include <kdebug.h>
 
-template class QDict<KSycocaEntry>;
-template class QDict<KSharedPtr<KSycocaEntry> >;
+template class Q3Dict<KSycocaEntry>;
+template class Q3Dict<KSharedPtr<KSycocaEntry> >;
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)
@@ -101,7 +101,7 @@ KSycocaFactory::save(QDataStream &str)
 
    // Write all entries.
    int entryCount = 0;
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
        it.current(); 
        ++it)
    {
@@ -115,7 +115,7 @@ KSycocaFactory::save(QDataStream &str)
    // Write indices...
    // Linear index
    str << (Q_INT32) entryCount;
-   for(QDictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
+   for(Q3DictIterator<KSycocaEntry::Ptr> it ( *m_entryDict ); 
        it.current(); 
        ++it)
    {

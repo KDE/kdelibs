@@ -36,7 +36,7 @@ public:
     virtual void terminate();
     virtual void reset();
     virtual bool readHeader() { return true; } // bzip2 handles it by itself ! Cool !
-    virtual bool writeHeader( const QCString & ) { return true; }
+    virtual bool writeHeader( const Q3CString & ) { return true; }
     virtual void setOutBuffer( char * data, uint maxlen );
     virtual void setInBuffer( const char * data, uint size );
     virtual int  inBufferAvailable() const;

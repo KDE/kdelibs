@@ -20,7 +20,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 
@@ -32,8 +32,9 @@
 #include <kdelibs_export.h>
 
 class KLanguageButtonPrivate;
-class QIconSet;
-class QPopupMenu;
+class QIcon;
+class QMenu;
+class QAction;
 
 /**
  * KLanguageButton provides a combobox with a 2-D dataset. It also supports icons.
@@ -80,7 +81,7 @@ public:
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
-  void insertItem( const QIconSet& icon, const QString &text,
+  void insertItem( const QIcon& icon, const QString &text,
                    const QString & id, const QString &submenu = QString::null,
                    int index = -1 );
   /**
@@ -110,7 +111,7 @@ public:
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.
    */
-  void insertSubmenu( const QIconSet & icon, const QString &text,
+  void insertSubmenu( const QIcon & icon, const QString &text,
                       const QString & id, const QString &submenu = QString::null,
                       int index = -1);
   /**
@@ -163,18 +164,17 @@ signals:
   void highlighted( const QString & id );
 
 private slots:
-  void slotActivated( int );
-  void slotHighlighted( int );
+  void slotTriggered( QAction* );
+  void slotHovered( QAction* );
 
 private:
-  int currentItem() const;
-  void setCurrentItem( int );
+  void setCurrentItem( QAction* );
   void init(const char * name);
 
   // work space for the new class
   QStringList *m_ids;
-  QPopupMenu *m_popup, *m_oldPopup;
-  int m_current;
+  QMenu *m_popup, *m_oldPopup;
+  QString m_current;
 
   KLanguageButtonPrivate * d;
 };

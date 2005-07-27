@@ -16,8 +16,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #ifndef KCOMPLETIONBOX_H
@@ -64,7 +64,7 @@ public:
     virtual QSize sizeHint() const;
 
     /**
-     * @returns true if selecting an item results in the emition of the selected signal.
+     * @returns true if selecting an item results in the emition of the @ref selected signal.
      *
      * @since 3.4.1
      */
@@ -141,7 +141,7 @@ public slots:
 
     /**
      * Set whether or not the selected signal should be emitted when an
-     * item is selected. By default the selected signal is emitted.
+     * item is selected. By default the @ref selected signal is emitted.
      *
      * @param state false if the signal should not be emitted.
      * @since 3.4.1
@@ -226,13 +226,13 @@ protected slots:
      * Called when an item was activated. Emits
      * activated() with the item.
      */
-    virtual void slotActivated( QListBoxItem * );
+    virtual void slotActivated( Q3ListBoxItem * );
 
 private slots:
-    void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
+    void slotSetCurrentItem( Q3ListBoxItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
     void canceled();
-    void slotItemClicked( QListBoxItem * );
+    void slotItemClicked( Q3ListBoxItem * );
 
 protected:
     virtual void virtual_hook( int id, void* data );

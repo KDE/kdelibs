@@ -15,15 +15,15 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 #ifndef __kpartmanager_h__
 #define __kpartmanager_h__
 
 #include <qobject.h>
 #include <qwidget.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kdelibs_export.h>
 
@@ -210,7 +210,7 @@ public:
   /**
    * Returns the list of parts being managed by the partmanager.
    */
-  const QPtrList<Part> *parts() const;
+  const Q3PtrList<Part> *parts() const;
 
   /**
    * Adds the @p topLevel widget to the list of managed toplevel widgets.

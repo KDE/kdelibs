@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-    Boston, MA 02110-1301, USA.
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include "kshortcutdialog.h"
@@ -26,6 +26,7 @@
 	#define XK_MISCELLANY
 	#include <X11/Xlib.h>	// For x11Event()
 	#include <X11/keysymdef.h> // For XK_...
+	#include <fixx11h.h>
 
 	#ifdef KeyPress
 		const int XKeyPress = KeyPress;
@@ -44,13 +45,13 @@
 #include <kshortcutdialog_simple.h>
 #include <kshortcutdialog_advanced.h>
 
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qcheckbox.h>
-#include <qframe.h>
+#include <q3frame.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qtimer.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -69,7 +70,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
                KDialogBase::Details|KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Cancel, true )
 {
         setButtonText(Details, i18n("Advanced"));
-        m_stack = new QVBox(this);
+        m_stack = new Q3VBox(this);
         m_stack->setMinimumWidth(360);
         m_stack->setSpacing(0);
         m_stack->setMargin(0);
@@ -404,23 +405,23 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	uint keySym = keyNative.sym();
 
 	switch( keySym ) {
-		case Key_Shift: 
+		case Qt::Key_Shift: 
 			m_mod |= KKey::SHIFT;
 			m_bRecording = true;
 			break;
-		case Key_Control:
+		case Qt::Key_Control:
 			m_mod |= KKey::CTRL;
 			m_bRecording = true;
 			break;
-		case Key_Alt:
+		case Qt::Key_Alt:
 			m_mod |= KKey::ALT;
 			m_bRecording = true;
 			break;
-		case Key_Menu:
-		case Key_Meta: //unused
+		case Qt::Key_Menu:
+		case Qt::Key_Meta: //unused
 			break;
 		default:
-			if( keyNative.sym() == Key_Return && m_iKey > 0 ) {
+			if( keyNative.sym() == Qt::Key_Return && m_iKey > 0 ) {
 				accept();
 				return;
 			}
@@ -466,15 +467,15 @@ bool KShortcutDialog::event ( QEvent * e )
 
 		bool change = true;
 		switch( keySym ) {
-		case Key_Shift: 
+		case Qt::Key_Shift: 
 			if (m_mod & KKey::SHIFT)
 				m_mod ^= KKey::SHIFT;
 			break;
-		case Key_Control:
+		case Qt::Key_Control:
 			if (m_mod & KKey::CTRL)
 				m_mod ^= KKey::CTRL;
 			break;
-		case Key_Alt:
+		case Qt::Key_Alt:
 			if (m_mod & KKey::ALT)
 				m_mod ^= KKey::ALT;
 			break;

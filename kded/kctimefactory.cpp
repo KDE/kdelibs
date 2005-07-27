@@ -12,8 +12,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kctimefactory.h"
@@ -54,7 +54,7 @@ KCTimeInfo::save(QDataStream &str)
   KSycocaFactory::save(str);
 
   m_dictOffset = str.device()->at();
-  QDictIterator<Q_UINT32> it(ctimeDict);
+  Q3DictIterator<Q_UINT32> it(ctimeDict);
   while( it.current())
   {
      str << it.currentKey() << *(it.current());
@@ -83,7 +83,7 @@ KCTimeInfo::ctime(const QString &path)
 }
 
 void
-KCTimeInfo::fillCTimeDict(QDict<Q_UINT32> &dict)
+KCTimeInfo::fillCTimeDict(Q3Dict<Q_UINT32> &dict)
 {
     assert(m_str);
     m_str->device()->at(m_dictOffset);

@@ -13,8 +13,8 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
  **/
 
 #include "kmvirtualmanager.h"
@@ -198,7 +198,7 @@ void KMVirtualManager::refresh()
         else
         { // parse printers looking for instances -> undiscarded them, real printers
           // are undiscarded by the manager itself. Also update printer status.
-                QPtrListIterator<KMPrinter>        it(m_manager->m_printers);
+                Q3PtrListIterator<KMPrinter>        it(m_manager->m_printers);
                 for (;it.current();++it)
                         if (!it.current()->instanceName().isEmpty())
 			{
@@ -229,7 +229,7 @@ QString KMVirtualManager::defaultPrinterName()
         return m_defaultprinter;
 }
 
-void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prname)
+void KMVirtualManager::virtualList(Q3PtrList<KMPrinter>& list, const QString& prname)
 {
 	// load printers if necessary
 	refresh();
@@ -238,7 +238,7 @@ void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prn
 	list.setAutoDelete(false);
 	list.clear();
 	kdDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
-	QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
+	Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
 	for (;it.current();++it)
 		if (it.current()->printerName() == prname)
 			list.append(it.current());
@@ -247,7 +247,7 @@ void KMVirtualManager::virtualList(QPtrList<KMPrinter>& list, const QString& prn
 void KMVirtualManager::loadFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.exists() && f.open(IO_ReadOnly))
+	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
 		QTextStream	t(&f);
 
@@ -256,7 +256,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 		QStringList	pair;
 		KMPrinter	*printer, *realprinter;
 
-		while (!t.eof())
+		while (!t.atEnd())
 		{
 			line = t.readLine().stripWhiteSpace();
 			if (line.isEmpty()) continue;
@@ -277,7 +277,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 					printer->addType(KMPrinter::Virtual);
 				}
 				// parse options
-				for (uint i=2; i<words.count(); i++)
+				for (int i=2; i<words.count(); i++)
 				{
 					pair = QStringList::split('=',words[i],false);
 					printer->setDefaultOption(pair[0],(pair.count() > 1 ? pair[1] : QString::null));
@@ -312,10 +312,10 @@ void KMVirtualManager::triggerSave()
 void KMVirtualManager::saveFile(const QString& filename)
 {
 	QFile	f(filename);
-	if (f.open(IO_WriteOnly))
+	if (f.open(QIODevice::WriteOnly))
 	{
 		QTextStream	t(&f);
-		QPtrListIterator<KMPrinter>	it(m_manager->m_printers);
+		Q3PtrListIterator<KMPrinter>	it(m_manager->m_printers);
 		for (;it.current();++it)
 		{
 			if (it.current()->isSpecial())
@@ -350,7 +350,7 @@ bool KMVirtualManager::testInstance(KMPrinter *p)
 		pr.setPrinterName(p->printerName());
 		pr.setSearchName(p->name());
 		pr.setOptions(p->defaultOptions());
-		return (pr.printFiles(testpage));
+		return (pr.printFiles(QStringList(testpage)));
 	}
 }
 

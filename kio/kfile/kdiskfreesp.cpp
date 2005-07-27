@@ -70,7 +70,7 @@ KDiskFreeSp::~KDiskFreeSp()
 **/
 void KDiskFreeSp::receivedDFStdErrOut(KProcess *, char *data, int len)
 {
-  QCString tmp(data,len+1);  // adds a zero-byte
+  Q3CString tmp(data,len+1);  // adds a zero-byte
   dfStringErrOut.append(tmp);
 }
 
@@ -98,11 +98,11 @@ void KDiskFreeSp::dfDone()
 {
   readingDFStdErrOut=true;
 
-  QTextStream t (dfStringErrOut, IO_ReadOnly);
+  QTextStream t (dfStringErrOut, QIODevice::ReadOnly);
   QString s=t.readLine();
   if ( (s.isEmpty()) || ( s.left(10) != QString::fromLatin1("Filesystem") ) )
     kdError() << "Error running df command... got [" << s << "]" << endl;
-  while ( !t.eof() ) {
+  while ( !t.atEnd() ) {
     QString u,v;
     s=t.readLine();
     s=s.simplifyWhiteSpace();
@@ -110,7 +110,7 @@ void KDiskFreeSp::dfDone()
       //kdDebug(kfile_area) << "GOT: [" << s << "]" << endl;
 
       if (s.find(BLANK)<0)      // devicename was too long, rest in next line
-	if ( !t.eof() ) {       // just appends the next line
+	if ( !t.atEnd() ) {       // just appends the next line
             v=t.readLine();
             s=s.append(v);
             s=s.simplifyWhiteSpace();

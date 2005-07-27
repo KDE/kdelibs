@@ -24,6 +24,7 @@
 
 #include <qmime.h>
 #include <kglobal.h>
+#include <Q3MimeSourceFactory>
 
 class KMimeSourceFactoryPrivate;
 /**
@@ -35,7 +36,7 @@ class KMimeSourceFactoryPrivate;
  *
  * @author Peter Putzer <putzer@kde.org>
  */
-class KDECORE_EXPORT KMimeSourceFactory : public QMimeSourceFactory
+class KDECORE_EXPORT KMimeSourceFactory : public Q3MimeSourceFactory
 {
 public:
 

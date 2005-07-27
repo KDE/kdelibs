@@ -37,7 +37,9 @@
 #include <kurlcompletion.h>
 #include <kwin.h>
 
+#include <QAbstractItemView>
 #include <qstyle.h>
+#include <QStyleOptionButton>
 
 #include "misc/helper.h"
 #include "xml/dom2_eventsimpl.h"
@@ -51,7 +53,7 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <qpopupmenu.h>
+#include <q3popupmenu.h>
 #include <qbitmap.h>
 
 using namespace khtml;
@@ -99,25 +101,26 @@ void RenderFormElement::layout()
         setNeedsLayout(false);
 }
 
-Qt::AlignmentFlags RenderFormElement::textAlignment() const
+
+Qt::AlignmentFlag RenderFormElement::textAlignment() const
 {
     switch (style()->textAlign()) {
         case LEFT:
         case KHTML_LEFT:
-            return AlignLeft;
+            return Qt::AlignLeft;
         case RIGHT:
         case KHTML_RIGHT:
-            return AlignRight;
+            return Qt::AlignRight;
         case CENTER:
         case KHTML_CENTER:
-            return AlignHCenter;
+            return Qt::AlignHCenter;
         case JUSTIFY:
             // Just fall into the auto code for justify.
         case TAAUTO:
-            return style()->direction() == RTL ? AlignRight : AlignLeft;
+            return style()->direction() == RTL ? Qt::AlignRight : Qt::AlignLeft;
     }
     assert(false); // Should never be reached.
-    return AlignLeft;
+    return Qt::AlignLeft;
 }
 
 // -------------------------------------------------------------------------
@@ -139,7 +142,7 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
     QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
-    b->setAutoMask(true);
+    //b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
 
@@ -155,8 +158,8 @@ void RenderCheckBox::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
-    QSize s( cb->style().pixelMetric( QStyle::PM_IndicatorWidth ),
-             cb->style().pixelMetric( QStyle::PM_IndicatorHeight ) );
+    QSize s( cb->style()->pixelMetric( QStyle::PM_IndicatorWidth ),
+             cb->style()->pixelMetric( QStyle::PM_IndicatorHeight ) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -165,7 +168,8 @@ void RenderCheckBox::calcMinMaxWidth()
 
 void RenderCheckBox::updateFromElement()
 {
-    widget()->setChecked(element()->checked());
+    if (widget()->isChecked() != element()->checked())
+        widget()->setChecked(element()->checked());
 
     RenderButton::updateFromElement();
 }
@@ -186,6 +190,7 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
 {
     QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
+    b->setAutoExclusive(false);
     setQWidget(b);
 
     // prevent firing toggled() signals on initialization
@@ -206,8 +211,8 @@ void RenderRadioButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
-    QSize s( rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
-             rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
+    QSize s( rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
+             rb->style()->pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -231,7 +236,7 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
 {
     QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
     setQWidget(p);
-    p->setAutoMask(true);
+    //p->setAutoMask(true);
     p->setMouseTracking(true);
 }
 
@@ -240,7 +245,7 @@ QString RenderSubmitButton::rawText()
     QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
     value = value.stripWhiteSpace();
     QString raw;
-    for(unsigned int i = 0; i < value.length(); i++) {
+    for(int i = 0; i < value.length(); i++) {
         raw += value[i];
         if(value[i] == '&')
             raw += '&';
@@ -261,15 +266,19 @@ void RenderSubmitButton::calcMinMaxWidth()
     if ( empty )
         raw = QString::fromLatin1("X");
     QFontMetrics fm = pb->fontMetrics();
-    QSize ts = fm.size( ShowPrefix, raw);
-    QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
+    QSize ts = fm.size( Qt::TextShowMnemonic, raw);
+    //Oh boy.
+    QStyleOptionButton butOpt;
+    butOpt.init(pb);
+    butOpt.text = raw;
+    QSize s(pb->style()->sizeFromContents( QStyle::CT_PushButton, &butOpt, ts, pb )
             .expandedTo(QApplication::globalStrut()));
-    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb) +
-		 pb->style().pixelMetric( QStyle::PM_DefaultFrameWidth, pb ) * 2;
+    int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
+		 pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
     int w = ts.width() + margin;
     int h = s.height();
     if (pb->isDefault() || pb->autoDefault()) {
-	int dbw = pb->style().pixelMetric( QStyle::PM_ButtonDefaultIndicator, pb ) * 2;
+	int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
 	w += dbw;
     }
 
@@ -387,21 +396,23 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
 }
 
 
-QPopupMenu *LineEditWidget::createPopupMenu()
+void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
-    QPopupMenu *popup = KLineEdit::createPopupMenu();
+    QMenu* popup = createStandardContextMenu();
 
+/*    menu->exec(e->globalPos());
+            delete menu;*/
+            
     if ( !popup ) {
-        return 0L;
+        return;
     }
-
-    connect( popup, SIGNAL( activated( int ) ),
-             this, SLOT( extendedMenuActivated( int ) ) );
 
     if (m_input->autoComplete()) {
         popup->insertSeparator();
-        int id = popup->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), ClearHistory );
-        popup->setItemEnabled( id, (compObj() && !compObj()->isEmpty()) );
+        QAction* act = popup->addAction( SmallIconSet("history_clear"), i18n("Clear &History"));
+        act->setEnabled(compObj() && !compObj()->isEmpty());
+        connect(act, SIGNAL(triggered()),
+                this, SLOT(clearHistoryActivated()));
     }
 
     if (echoMode() == QLineEdit::Normal &&
@@ -411,22 +422,30 @@ QPopupMenu *LineEditWidget::createPopupMenu()
         m_spellAction->plug(popup);
         m_spellAction->setEnabled( !text().isEmpty() );
     }
-
-    return popup;
 }
 
 
-void LineEditWidget::extendedMenuActivated( int id)
+void LineEditWidget::clearHistoryActivated()
 {
-    switch ( id )
-    {
-    case ClearHistory:
-        m_view->clearCompletionHistory(m_input->name().string());
-        if (compObj())
-          compObj()->clear();
-    default:
-        break;
+    m_view->clearCompletionHistory(m_input->name().string());
+    if (compObj())
+      compObj()->clear();
+}
+
+void LineEditWidget::paintEvent( QPaintEvent *pe )
+{
+    //Always paint our background color
+    QRect r = rect();
+    if (hasFrame()) {
+        int margin = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+        r = QRect(QPoint(margin, margin), QSize(width() - 2*margin, height() - 2*margin));
     }
+
+    QPainter p(this);
+    p.fillRect(r, palette().brush(QPalette::Base));
+    p.end();
+
+    KLineEdit::paintEvent( pe );
 }
 
 bool LineEditWidget::event( QEvent *e )
@@ -436,14 +455,14 @@ bool LineEditWidget::event( QEvent *e )
 
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & ControlButton ) {
+        if ( ke->state() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
-                case Key_Left:
-                case Key_Right:
-                case Key_Up:
-                case Key_Down:
-                case Key_Home:
-                case Key_End:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                case Qt::Key_Up:
+                case Qt::Key_Down:
+                case Qt::Key_Home:
+                case Qt::Key_End:
                     ke->accept();
                 default:
                 break;
@@ -536,13 +555,19 @@ void RenderLineEdit::calcMinMaxWidth()
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
+    
     int size = element()->size();
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
-    s = QSize(w + 2 + 2*widget()->frameWidth(),
-              kMax(h, 14) + 2 + 2*widget()->frameWidth())
-        .expandedTo(QApplication::globalStrut());
+
+    QStyleOption opt;
+    opt.init(widget());
+
+    int margin = static_cast<LineEditWidget*>(widget())->hasFrame() ? 4 : 0;
+    s = QSize(w + margin, kMax(h, 14) + margin);
+    s = widget()->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s);
+    s = s.expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -756,9 +781,12 @@ void RenderFileButton::calcMinMaxWidth()
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
     KLineEdit* edit = static_cast<KURLRequester*>( m_widget )->lineEdit();
-    QSize s = edit->style().sizeFromContents(QStyle::CT_LineEdit,
-                                             edit,
-          QSize(w + 2 + 2*edit->frameWidth(), kMax(h, 14) + 2 + 2*edit->frameWidth()))
+
+    QStyleOption opt;
+    opt.init(edit);
+    QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
+                                             &opt,
+          QSize(w + 2 + 2, kMax(h, 14) + 2 + 2), edit)
         .expandedTo(QApplication::globalStrut());
     QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
 
@@ -829,8 +857,8 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent, "__khtml")
 {
-    setAutoMask(true);
-    if (listBox()) listBox()->installEventFilter(this);
+    //setAutoMask(true);
+    if (view()) view()->installEventFilter(this);
     setMouseTracking(true);
 }
 
@@ -843,8 +871,8 @@ bool ComboBoxWidget::event(QEvent *e)
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 	switch(ke->key())
 	{
-	case Key_Return:
-	case Key_Enter:
+	case Qt::Key_Return:
+	case Qt::Key_Enter:
 	    popup();
 	    ke->accept();
 	    return true;
@@ -857,18 +885,18 @@ bool ComboBoxWidget::event(QEvent *e)
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 {
-    if (dest==listBox() &&  e->type()==QEvent::KeyPress)
+    if (dest==view() &&  e->type()==QEvent::KeyPress)
     {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
 	bool forward = false;
 	switch(ke->key())
 	{
-	case Key_Tab:
+	case Qt::Key_Tab:
 	    forward=true;
-	case Key_BackTab:
+	case Qt::Key_Backtab:
 	    // ugly hack. emulate popdownlistbox() (private in QComboBox)
 	    // we re-use ke here to store the reference to the generated event.
-	    ke = new QKeyEvent(QEvent::KeyPress, Key_Escape, 0, 0);
+	    ke = new QKeyEvent(QEvent::KeyPress, Qt::Key_Escape, 0, 0);
 	    QApplication::sendEvent(dest,ke);
 	    focusNextPrevChild(forward);
 	    delete ke;
@@ -921,7 +949,7 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
         }
         m_selectionChanged = true;
         m_optionsChanged = true;
@@ -931,7 +959,7 @@ void RenderSelect::updateFromElement()
     if ( m_optionsChanged ) {
         if (element()->m_recalcListItems)
             element()->recalcListItems();
-        QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+        QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
         if(m_useListBox) {
@@ -948,7 +976,7 @@ void RenderSelect::updateFromElement()
                     text = "";
 
                 if(m_useListBox) {
-                    QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+                    Q3ListBoxText *item = new Q3ListBoxText(QString(text.implementation()->s, text.implementation()->l));
                     static_cast<KListBox*>(m_widget)
                         ->insertItem(item, listIndex);
                     item->setSelectable(false);
@@ -956,7 +984,12 @@ void RenderSelect::updateFromElement()
                 else {
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+#ifdef __GNUC__
+  #warning "This needs fixing (though did it work in 3?)"
+#endif
+#if 0
 		    static_cast<KComboBox*>(m_widget)->listBox()->item(listIndex)->setSelectable(false);
+#endif
 		}
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
@@ -1035,7 +1068,7 @@ void RenderSelect::layout( )
     if(m_useListBox) {
         KListBox* w = static_cast<KListBox*>(m_widget);
 
-        QListBoxItem* p = w->firstItem();
+        Q3ListBoxItem* p = w->firstItem();
         int width = 0;
         int height = 0;
         while(p) {
@@ -1074,7 +1107,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
 
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
@@ -1089,7 +1122,7 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
 
     KHTMLAssert( !m_useListBox );
 
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1152,7 +1185,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
 
     // don't use listItems() here as we have to avoid recalculations - changing the
     // option list will make use update options not in the way the user expects them
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
+    QVector<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1173,7 +1206,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 KListBox* RenderSelect::createListBox()
 {
     KListBox *lb = new KListBox(view()->viewport(), "__khtml");
-    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+    lb->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
@@ -1193,7 +1226,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
-    QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
+    QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
@@ -1230,18 +1263,18 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-        setWordWrap(QTextEdit::WidgetWidth);
+        setWordWrap(Q3TextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
         setVScrollBarMode( AlwaysOn );
     }
     else {
-        setWordWrap(QTextEdit::NoWrap);
+        setWordWrap(Q3TextEdit::NoWrap);
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
     KCursor::setAutoHideCursor(viewport(), true);
-    setTextFormat(QTextEdit::PlainText);
-    setAutoMask(true);
+    setTextFormat(Qt::PlainText);
+    //setAutoMask(true);
     setMouseTracking(true);
 
     KActionCollection *ac = new KActionCollection(this);
@@ -1264,9 +1297,9 @@ TextAreaWidget::~TextAreaWidget()
 }
 
 
-QPopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
+Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
 {
-    QPopupMenu *popup = KTextEdit::createPopupMenu(pos);
+    Q3PopupMenu *popup = KTextEdit::createPopupMenu(pos);
 
     if ( !popup ) {
         return 0L;
@@ -1538,14 +1571,14 @@ bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
-        if ( ke->state() & ControlButton ) {
+        if ( ke->state() & Qt::ControlModifier ) {
             switch ( ke->key() ) {
-                case Key_Left:
-                case Key_Right:
-                case Key_Up:
-                case Key_Down:
-                case Key_Home:
-                case Key_End:
+                case Qt::Key_Left:
+                case Qt::Key_Right:
+                case Qt::Key_Up:
+                case Qt::Key_Down:
+                case Qt::Key_Home:
+                case Qt::Key_End:
                     ke->accept();
                 default:
                 break;
@@ -1599,7 +1632,7 @@ void RenderTextArea::calcMinMaxWidth()
     QSize size( kMax(element()->cols(), 1L)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 kMax(element()->rows(), 1L)*m.lineSpacing() + w->frameWidth()*4 +
-                (w->wordWrap() == QTextEdit::NoWrap ?
+                (w->wordWrap() == Q3TextEdit::NoWrap ?
                  w->horizontalScrollBar()->sizeHint().height() : 0)
         );
 
@@ -1671,7 +1704,7 @@ void RenderTextArea::close( )
 static QString expandLF(const QString& s)
 {
     // LF -> CRLF
-    unsigned crs = s.contains( '\n' );
+    unsigned crs = s.count( '\n' );
     if (crs == 0)
 	return s;
     unsigned len = s.length();

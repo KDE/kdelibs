@@ -11,6 +11,7 @@
 #include "ksycocafactory.h"
 #include "kimageio.h"
 
+class QImageIO;
 class KImageIOFormat;
 class KImageIOFormatList;
 
@@ -21,7 +22,7 @@ class KIO_EXPORT KImageIOFormat : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KImageIOFormat> Ptr;
-  typedef QValueList<Ptr> List;
+  typedef Q3ValueList<Ptr> List;
 public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * Read a KImageIOFormat description file

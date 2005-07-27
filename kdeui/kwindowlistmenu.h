@@ -52,13 +52,13 @@ public slots:
     void selectActiveWindow();
     
 protected slots:
-    void slotExec(int id);
+    void slotForceActiveWindow();
+    void slotSetCurrentDesktop();
     void slotUnclutterWindows();
     void slotCascadeWindows();
 
 private:
     KWinModule*         kwin_module;
-    QMap<int,WId>       map;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

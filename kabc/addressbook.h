@@ -22,7 +22,7 @@
 #define KABC_ADDRESSBOOK_H
 
 #include <qobject.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include <kresources/manager.h>
 
@@ -319,7 +319,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns a list of all resources.
      */
-    QPtrList<Resource> resources(); // KDE4: const
+    Q3PtrList<Resource> resources(); // KDE4: const
 
     /**
       Sets the @p ErrorHandler, that is used by error() to
@@ -418,7 +418,7 @@ class KABC_EXPORT AddressBook : public QObject
     KRES::Manager<Resource> *resourceManager();
 
   private:
-    QPtrList<Resource> mDummy; // Remove in KDE 4
+    Q3PtrList<Resource> mDummy; // Remove in KDE 4
     struct AddressBookData;
     AddressBookData *d;
 };
