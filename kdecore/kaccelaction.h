@@ -329,9 +329,9 @@ class KDECORE_EXPORT KAccelAction
 	static void useFourModifierKeys( bool use );
 
  protected:
-	QString m_sName,
-	        m_sLabel,
-	        m_sWhatsThis;
+	QString m_sName /**< Name of accel. @sa setName() */,
+	        m_sLabel /**< Label of accel. User-visible. */,
+	        m_sWhatsThis /**< WhatsThis help for accel. User-visible. */;
 	KShortcut m_cut;
 	KShortcut m_cutDefault3, m_cutDefault4;
 	const QObject* m_pObjSlot;
@@ -341,7 +341,9 @@ class KDECORE_EXPORT KAccelAction
 	int m_nIDAccel;
 	uint m_nConnections;
 
+	/** @internal Increment the number of connections to this accel. */
 	void incConnections();
+	/** @internal Decrement the number of connections to this accel (bouded by zero). */
 	void decConnections();
 
  private:
