@@ -6655,7 +6655,7 @@ void KHTMLPart::runAdFilter()
     if ( !d->m_doc )
         return;
 
-    QPtrDictIterator<khtml::CachedObject> it( d->m_doc->docLoader()->m_docObjects );
+    Q3PtrDictIterator<khtml::CachedObject> it( d->m_doc->docLoader()->m_docObjects );
     for ( ; it.current(); ++it )
         if ( it.current()->type() == khtml::CachedObject::Image ) {
             khtml::CachedImage *image = static_cast<khtml::CachedImage *>(it.current());
