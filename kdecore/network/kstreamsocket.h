@@ -106,7 +106,6 @@ public:
    * @param node	destination host
    * @param service	destination service to connect to
    * @param parent	the parent QObject object
-   * @param name	the name of this object
    */
   KStreamSocket(const QString& node = QString(), const QString& service = QString(),
 		QObject* parent = 0L);
@@ -196,6 +195,7 @@ public:
    *
    * @param node	the remote node to connect to
    * @param service	the service on the remote node to connect to
+   * @param mode        mode to operate this socket in
    */
   virtual bool connect(const QString& node = QString(),
 		       const QString& service = QString(),
