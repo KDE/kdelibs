@@ -1012,3 +1012,13 @@
 
 # CDR-wins bin-with-cue files
 #0	belong		0x00FFFFFF		application/x-cuebin
+
+# FITS (see RFC 4047)
+# The SIMPLE keyword is always on the first line, NAXIS on the third.
+# Lines are supposed to be exactly 80 characters long.
+# FITS files can be different but then they are not application/fits anymore.
+0       string          SIMPLE\ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ T	application/fits
+>160    string          NAXIS\ \ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 2	image/fits
+>160    string          NAXIS\ \ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 3	image/fits
+
+# kate: space-indent off; replace-tabs off;
