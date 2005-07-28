@@ -1107,7 +1107,7 @@ static void _insertSeparator(QString &str, const QString &separator,
   QString mainPart = str.section(decimalSymbol, 0, 0);
   QString fracPart = str.section(decimalSymbol, 1, 1,
 				 QString::SectionIncludeLeadingSep);
-  
+  if (fracPart==decimalSymbol) fracPart=QString();
   for (int pos = mainPart.length() - 3; pos > 0; pos -= 3)
     mainPart.insert(pos, separator);
 
@@ -1301,12 +1301,19 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   bool neg = (tmpString[0] == '-');
   if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
 
+  kdDebug()<<"tmpString:"<<tmpString<<endl;
+
   // Split off exponential part (including 'e'-symbol)
   QString mantString = tmpString.section('e', 0, 0,
 					 QString::SectionCaseInsensitiveSeps);
   QString expString = tmpString.section('e', 1, 1,
 					QString::SectionCaseInsensitiveSeps |
 					QString::SectionIncludeLeadingSep);
+  if (expString.length()==1) expString=QString();
+
+  kdDebug()<<"mantString:"<<mantString<<endl;
+  kdDebug()<<"expString:"<<expString<<endl;
+	
 
   if (round) _round(mantString, precision);
  
