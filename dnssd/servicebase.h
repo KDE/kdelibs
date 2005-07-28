@@ -45,6 +45,12 @@ public:
 	/**
 	@param name Service name - empty for metaservices
 	@param type Service type - empty for domains
+	@param domain Domain name for service
+	@param host   Host name for service
+	@param port   Port number for service
+
+	@todo Explain if @p domain is the FQDN, or if host + "." + domain is.
+	@todo Explain when @p port is needed (does it override @p name?).
 	 */
 	ServiceBase(const QString& name=QString::null,const QString& type=QString::null,
 		    const QString& domain=QString::null, const QString& host=QString::null,

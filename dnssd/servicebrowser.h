@@ -93,6 +93,8 @@ public:
 	/**
 	The same as above, but allows only one service type
 	@param type Type of services to browse for
+	@param autoResolve See Flags, equal to setting AutoResolve if
+			   @p autoResolve is true
 	@deprecated use previous constructor instead
 	 */
 	ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
@@ -100,6 +102,7 @@ public:
 	/**
 	Overloaded constructor used to create browser for one domain
 	
+	@param type Type of services to browse for
 	@param domain Domain name. You can add more domains later using addDomain and remove them
 	with removeDomain
 	@param flags One or more values from #Flags. AutoDelete flag has no effect 
