@@ -52,7 +52,6 @@ kprocctrl.cpp		Waldo Bastian <bastian@kde.org>
 kprocess.cpp		Waldo Bastian <bastian@kde.org>
 kprocio.cpp		Waldo Bastian <bastian@kde.org>
 krandomsequence.cpp	Waldo Bastian <bastian@kde.org>
-kregexp.cpp
 krfcdate.cpp		Waldo Bastian <bastian@kde.org>
 krootprop.cpp   	Lubos Lunak <l.lunak@kde.org>
 ksavefile.cpp		Waldo Bastian <bastian@kde.org>

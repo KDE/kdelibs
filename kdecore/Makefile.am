@@ -44,7 +44,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
 	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalogue.h \
-	kregexp.h kcompletion.h kstringhandler.h \
+	kcompletion.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
@@ -74,7 +74,7 @@ fakes_nonpic.c:$(srcdir)/fakes.c
 noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcompletion_private.h netwm_p.h \
 	kglobalaccel_x11.h kglobalaccel_win.h kkeyserver_x11.h kkeyserver.h \
-	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
+	kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
 	kprotocolinfofactory.h kqiodevicegzip_p.h
@@ -88,7 +88,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
 	kaccelaction.cpp kshortcutmenu.cpp kaccelbase.cpp kaccel.cpp \
 	kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp \
-	kcrash.cpp kurl.cpp kregexp.cpp kglobal.cpp kglobalsettings.cpp \
+	kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	kuniqueapplication.cpp kaccelmanager.cpp \
