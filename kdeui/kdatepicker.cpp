@@ -273,12 +273,6 @@ KDatePicker::tableClickedSlot()
   emit(tableClicked());
 }
 
-const QDate&
-KDatePicker::getDate() const
-{
-  return table->getDate();
-}
-
 const QDate &
 KDatePicker::date() const
 {

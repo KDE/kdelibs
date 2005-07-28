@@ -101,12 +101,6 @@ public:
   bool setDate(const QDate&);
 
   /**
-   * Returns the selected date.
-   * @deprecated
-   **/
-  const QDate& getDate() const KDE_DEPRECATED;
-
-  /**
    * @returns the selected date.
    */
   const QDate &date() const;
