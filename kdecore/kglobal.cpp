@@ -29,6 +29,7 @@
 
 #include <kapplication.h>
 
+#include <kdebug.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcharsets.h>
@@ -204,6 +205,7 @@ KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
 static void kglobal_freeAll()
 {
+    qDebug( "kglobal_freeAll!!\n%s", kdBacktrace().latin1() );
     delete KGlobal::_locale;
     KGlobal::_locale = 0;
     delete KGlobal::_charsets;
@@ -215,16 +217,12 @@ static void kglobal_freeAll()
     KGlobal::setActiveInstance(0);
 }
 
-static bool addedFreeAll = false;
-
 static void kglobal_init()
 {
-    if (addedFreeAll)
+    if (KGlobal::_staticDeleters)
         return;
 
-    addedFreeAll = true;
     KGlobal::_staticDeleters = new KStaticDeleterList;
-
     qAddPostRoutine( kglobal_freeAll );
 }
 
