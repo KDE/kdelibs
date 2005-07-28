@@ -163,7 +163,7 @@ protected:
      * request for connection.
      *
      * @param host hostname
-     * @param service service name (this is mapped to a port number)
+     * @param port port number to connect to
      * @param sendError if true sends error message to calling app.
      *
      * @return on succes, true is returned.
