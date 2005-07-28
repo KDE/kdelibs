@@ -1,5 +1,6 @@
 /*
    Copyright (c) 1997 Christian Esken (esken@kde.org)
+             (c) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,8 +35,8 @@ Q_OBJECT
 K_DCOP
 
 public:
-	KNotify( bool useArts );
-	~KNotify();
+    KNotify( bool useArts );
+    ~KNotify();
 
     enum PlayingFinishedStatus
     {
@@ -63,37 +64,41 @@ k_dcop:
                          const QString &text, QString sound, QString file,
                          int present, int level, int winId);
 */
-	void notify(const QString &event, const QString &fromApp,
-                         const QString &text, QString sound, QString file,
-                         int present, int level, int winId = 0, int eventId = 1);
+    void notify(const QString &event, const QString &fromApp,
+                const QString &text, QString sound, QString file,
+                int present, int level, int winId = 0, int eventId = 1);
 
 
-	void reconfigure();
-	void setVolume( int volume );
-        void sessionReady(); // from ksmserver
+    void reconfigure();
+    void setVolume( int volume );
+    void sessionReady(); // from ksmserver
 
 private:
-	bool notifyBySound(const QString &sound, const QString &appname, int eventId);
-	bool notifyByMessagebox(const QString &text, int level, WId winId);
-	bool notifyByLogfile(const QString &text, const QString &file);
-	bool notifyByStderr(const QString &text);
-	bool notifyByPassivePopup(const QString &text, const QString &appName,
-                                  WId winId );
-	bool notifyByExecute(const QString &command,
-                             const QString& event,
-                             const QString& fromApp,
-                             const QString& text,
-                             int winId,
-                             int eventId );
-	bool notifyByTaskbar( WId winId );
+    bool notifyBySound(const QString &sound, const QString &appname, int eventId);
+    bool notifyByMessagebox(const QString &text, int level, WId winId);
+    bool notifyByLogfile(const QString &text, const QString &file);
+    bool notifyByStderr(const QString &text);
+    bool notifyByPassivePopup(const QString &text, const QString &appName,
+                              WId winId );
+    bool notifyByExecute(const QString &command,
+                         const QString& event,
+                         const QString& fromApp,
+                         const QString& text,
+                         int winId,
+                         int eventId );
+    bool notifyByTaskbar( WId winId );
 
+    void soundFinished( int eventId, PlayingFinishedStatus reason );
 
-        WId checkWinId( const QString& appName, WId senderWinId );
+    WId checkWinId( const QString& appName, WId senderWinId );
 
-	/**
-	 * checks if eventname is a global event (exists in config/eventsrc)
-	 **/
-	bool isGlobal(const QString &eventname);
+    /**
+      * checks if eventname is a global event (exists in config/eventsrc)
+      **/
+    bool isGlobal(const QString &eventname);
+
+private slots:
+    void slotPlayerProcessExited( KProcess *proc );
 
 private:
     KNotifyPrivate* d;

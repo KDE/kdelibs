@@ -78,6 +78,7 @@ public:
     aKode::Player player;
     QString sink;
     KNotifyManager *manager;
+    int akodePlayerEventId;
 #endif
     bool useExternal;
     bool useKDEMM;
@@ -340,6 +341,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 bool KNotify::notifyBySound( const QString &sound, const QString &appname, int eventId )
 {
     if (sound.isEmpty()) {
+        soundFinished( eventId, NoSoundFile );
         return false;
     }
 
@@ -355,6 +357,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
     }
     if ( soundFile.isEmpty() )
     {
+        soundFinished( eventId, NoSoundFile );
         return false;
     }
 
@@ -365,17 +368,25 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
         //If we disabled audio, just return,
         if (!d->useKDEMM)
         {
+            soundFinished( eventId, NoSoundSupport );
             return false;
         }
 
         KURL soundURL;
         soundURL.setPath(soundFile);
 #if defined(HAVE_AKODE)
+        if (d->player.state() != aKode::Player::Open) {
+            soundFinished( eventId, PlayerBusy );
+            return false;
+        }
+
         if (d->player.load(std::string(soundFile.toUtf8()))) {
             d->player.play();
+            d->akodePlayerEventId = eventId;
             return true;
         }
 #endif
+        soundFinished( eventId, NoSoundSupport );
         return false;
 //	return KDE::Multimedia::Factory::self()->playSoundEvent(soundFile);
 
@@ -390,6 +401,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
         }
         if (proc->isRunning())
         {
+           soundFinished( eventId, PlayerBusy );
            return false; // Skip
         }
         proc->clearArguments();
@@ -399,6 +411,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
         return true;
     }
 
+    soundFinished( eventId, Unknown );
     return false;
 }
 
@@ -527,6 +540,21 @@ void KNotify::setVolume( int volume )
     d->volume = volume;
 }
 
+void KNotify::slotPlayerProcessExited( KProcess *proc )
+{
+    soundFinished( d->externalPlayerEventId,
+                   (proc->normalExit() && proc->exitStatus() == 0) ? PlayedOK : Unknown );
+}
+
+void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
+{
+    QByteArray data;
+    QDataStream stream( &data, IO_WriteOnly );
+    stream << eventId << (int) reason;
+
+    DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
+}
+
 WId KNotify::checkWinId( const QString &appName, WId senderWinId )
 {
     if ( senderWinId == 0 )
@@ -560,18 +588,23 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
 
 bool KNotify::event( QEvent *e )
 {
+#if defined(HAVE_AKODE)
     switch( e->type() )
     {
         case 3001: // eof
-        case 3002: // error
-#if defined(HAVE_AKODE)
             d->player.stop();
             d->player.unload();
-#endif
+            soundFinished( d->akodePlayerEventId, PlayedOK );
+            return true;
+        case 3002: // error
+            d->player.stop();
+            d->player.unload();
+            soundFinished( d->akodePlayerEventId, Unknown );
             return true;
         default:
             break;
     }
+#endif
 
     return QObject::event(e);
 }
