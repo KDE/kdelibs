@@ -39,7 +39,7 @@ lib_LIBRARIES = libkdefakes_nonpic.a
 include_HEADERS = kconfig.h kconfigskeleton.h \
 	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
 	kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h \
-	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kuniqueapp.h \
+	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
