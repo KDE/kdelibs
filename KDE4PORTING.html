@@ -72,9 +72,14 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KCharsets</H4>
 <p>Most of this class is (probably) obsolete, consider removing that class</p>
 
+<H4>KWin</H4>
+<li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
+<li>info(WId win) removed, use windowInfo() instead</li>
+<li>struct Info was removed, use WindowInfo instead</li>
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="kio">Changes in kdeui</A></H3>
+<H3><A NAME="kdeui">Changes in kdeui</A></H3>
 
 <H4>KDatePicker</H4>
 
@@ -131,10 +136,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
 <li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
 
-<H4>KWin</H4>
-<li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
-<li>info(WId win) removed, use windowInfo() instead</li>
-<li>struct Info was removed, use WindowInfo instead</li>
+<H4>KStdAction</H4>
+<li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 

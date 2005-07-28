@@ -244,26 +244,6 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
     return ret;
 }
 
-// obsolete
-KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *_name )
-{
-    KToggleAction *ret;
-    ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
-                            _name ? _name : name(ShowToolbar));
-    ret->setChecked(true);
-    return ret;
-
-}
-
-// obsolete
-KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *_name )
-{
-    KToggleToolBarAction *ret;
-    ret = new KToggleToolBarAction(toolBarName, i18n("Show &Toolbar"), parent,
-                            _name ? _name : name(ShowToolbar));
-    return ret;
-}
-
 KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
                                          KActionCollection* parent, const char *_name )
 {
