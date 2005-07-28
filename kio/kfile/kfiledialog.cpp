@@ -835,8 +835,9 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
                                      toolbar, "path combo" );
-    QToolTip::add( d->pathCombo, i18n("Often used folders") );
-    QWhatsThis::add( d->pathCombo, "<qt>" + i18n("Commonly used locations are listed here. "
+    QToolTip::add( d->pathCombo, i18n("Current location") );
+    QWhatsThis::add( d->pathCombo, "<qt>" + i18n("This is the currently listed location. "
+                                                 "The drop-down list also lists commonly used locations. "
                                                  "This includes standard locations, such as your home folder, as well as "
                                                  "locations that have been visited recently.") + autocompletionWhatsThisText);
 
