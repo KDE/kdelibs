@@ -2262,6 +2262,15 @@ refineResult(KMimeMagicResult *r, const QString & _filename)
 			tmp += "src";
 		r->setMimeType(tmp);
 	}
+	else
+	if ( tmp == "application/x-sharedlib" )
+	{
+		if ( _filename.find( ".so" ) == -1 ) 
+		{
+			tmp = "application/x-executable";
+			r->setMimeType( tmp );
+		}
+	}
 }
 
 KMimeMagicResult *
