@@ -90,6 +90,7 @@ public:
    *
    * @todo (Thiago, you saw this coming) Actually document this.
    *       What is the @p from for?
+   */
   virtual qint64 readBlock(char *data, Q_ULONG maxlen, KSocketAddress& from);
 
   /**
