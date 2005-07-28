@@ -43,6 +43,10 @@ struct KStdAccelInfo
 	bool bInitialized;
 };
 
+/** Array of predefined KStdAccelInfo objects, which cover all
+    the "standard" accelerators. Each enum value from StdAccel
+    should appear in this table.
+*/
 static KStdAccelInfo g_infoStdAccel[] =
 {
 	{AccelNone,            "Group:File", I18N_NOOP("File"), 0, 0, 0, 0, KShortcut(), false },
@@ -102,6 +106,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ AccelNone,           0, 0, 0, 0, 0, 0, KShortcut(), false }
 };
 
+/** Search for the KStdAccelInfo object associated with the given @p id. */
 static KStdAccelInfo* infoPtr( StdAccel id )
 {
 	if( id != AccelNone ) {
@@ -116,6 +121,9 @@ static KStdAccelInfo* infoPtr( StdAccel id )
 	return 0;
 }
 
+/** Initialize the accelerator @p id by checking if it is overridden
+    in the configuration file (and if it isn't, use the default).
+*/
 static void initialize( StdAccel id )
 {
 	KConfigGroupSaver saver( KGlobal::config(), "Shortcuts" );
