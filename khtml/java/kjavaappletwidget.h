@@ -28,7 +28,7 @@
 #ifndef Q_WS_QWS //FIXME(?) I don't think this is possible with Qt Embedded
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"
-#include <qxembed.h>
+#include <QX11EmbedContainer>
 #include <kwinmodule.h>
 
 /**
@@ -75,7 +75,7 @@
 
 class KJavaAppletWidgetPrivate;
 
-class KJavaAppletWidget : public QXEmbed
+class KJavaAppletWidget : public QX11EmbedContainer
 {
     Q_OBJECT
 public:

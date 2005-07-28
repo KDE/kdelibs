@@ -25,7 +25,8 @@
 #include <qfile.h> 
 
 #include <dcopclient.h>
-#include <qxembed.h>
+#include <QX11EmbedWidget>
+#include <QVBoxLayout>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -295,7 +296,10 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         {
             KCModuleProxy *module = new KCModuleProxy( modules.first()->desktopEntryName() );
             module->realModule();
-            QXEmbed::embedClientIntoWindow( module, id);
+            QX11EmbedContainer *container = new QX11EmbedContainer(module);
+            QVBoxLayout *vbox = new QVBoxLayout(module);
+            vbox->addWidget(container);
+            container->embedClient( id );
             app.exec();
             delete module;
         }
@@ -317,7 +321,10 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         id = args->getOption( "embed" ).toInt(&idValid);    
         if( idValid )
         {
-            QXEmbed::embedClientIntoWindow( dlg, id );
+            QX11EmbedContainer *container = new QX11EmbedContainer(dlg);
+            QVBoxLayout *vbox = new QVBoxLayout(dlg);
+            vbox->addWidget(container);
+            container->embedClient( id );
             dlg->exec();
             delete dlg;
         }

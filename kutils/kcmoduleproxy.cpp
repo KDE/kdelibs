@@ -31,7 +31,7 @@
 #include <q3vbox.h>
 #include <qwidget.h>
 
-#include <qxembed.h>
+#include <QX11EmbedWidget>
 #include <qx11info_x11.h>
 
 #include <kapplication.h>
@@ -91,7 +91,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 
 		QStringList							args;
 		KCModule							*kcm;
-		QXEmbed								*embedWidget;
+		QX11EmbedWidget							*embedWidget;
 		KProcess							*rootProcess;
 		Q3VBox								*embedFrame;
 		KCModuleProxyIfaceImpl  			*dcopObject;
@@ -316,7 +316,7 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame->setMidLineWidth( 2 );
 	d->topLayout->addWidget(d->embedFrame,1);
 
-	d->embedWidget = new QXEmbed( d->embedFrame, "embedWidget" );
+	d->embedWidget = new QX11EmbedWidget( d->embedFrame );
 
 	d->embedFrame->show();
 
@@ -397,8 +397,8 @@ void KCModuleProxy::rootExited()
 {
 	kdDebug(711) << k_funcinfo << endl;
 
-	if ( d->embedWidget->embeddedWinId() )
-		XDestroyWindow(QX11Info::display(), d->embedWidget->embeddedWinId());
+	if ( d->embedWidget->containerWinId() )
+		XDestroyWindow(QX11Info::display(), d->embedWidget->containerWinId());
 
 	delete d->embedWidget;
 	d->embedWidget = 0;
@@ -435,7 +435,7 @@ KCModuleProxy::~KCModuleProxy()
 void KCModuleProxy::deleteClient()
 {
 	if( d->embedWidget )
-		XKillClient(QX11Info::display(), d->embedWidget->embeddedWinId());
+		XKillClient(QX11Info::display(), d->embedWidget->containerWinId());
 
 
 	delete d->kcm;

@@ -40,9 +40,9 @@ private:
 int KJavaAppletWidget::appletCount = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
-   : QXEmbed ( parent, name)
+   : QX11EmbedContainer ( parent )
 {
-    setProtocol(QXEmbed::XPLAIN);
+    //setProtocol(QXEmbed::XPLAIN);
 
     m_applet = new KJavaApplet( this );
     d        = new KJavaAppletWidgetPrivate;
@@ -93,7 +93,7 @@ void KJavaAppletWidget::setWindow( WId w )
                     this,  SLOT( setWindow( WId ) ) );
 
 
-        embed( w );
+        embedClient( w );
         setFocus();
     }
 }
@@ -101,7 +101,7 @@ void KJavaAppletWidget::setWindow( WId w )
 QSize KJavaAppletWidget::sizeHint() const
 {
     kdDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
-    QSize rval = QXEmbed::sizeHint();
+    QSize rval = QX11EmbedContainer::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
     {
@@ -124,11 +124,11 @@ void KJavaAppletWidget::resize( int w, int h )
         m_applet->setSize( QSize( w, h ) );
     }
 
-    QXEmbed::resize( w, h );
+    QX11EmbedContainer::resize( w, h );
 }
 
 void KJavaAppletWidget::showEvent (QShowEvent * e) {
-    QXEmbed::showEvent(e);
+    QX11EmbedContainer::showEvent(e);
     if (!applet()->isCreated() && !applet()->appletClass().isEmpty()) {
         // delayed showApplet
         if (applet()->size().width() <= 0)
