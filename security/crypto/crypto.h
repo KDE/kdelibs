@@ -28,16 +28,18 @@
 #include <qcheckbox.h>
 #include <qdatetime.h>
 #include <qlineedit.h>
-#include <qlistview.h>
-#include <qptrlist.h>
+#include <q3listview.h>
+#include <q3ptrlist.h>
 #include <qtabwidget.h>
-#include <qvbuttongroup.h>
+//Added by qt3to4:
+#include <QGridLayout>
+#include <QLabel>
 
 #include <kcmodule.h>
 #include <ksimpleconfig.h>
 
 class QGridLayout;
-class QVButtonGroup;
+class Q3VButtonGroup;
 
 class KComboBox;
 class KCryptoConfig;
@@ -47,10 +49,10 @@ class KSSLSigners;
 class KURLLabel;
 class KURLRequester;
 
-class CipherItem : public QCheckListItem
+class CipherItem : public Q3CheckListItem
 {
 public:
-    CipherItem( QListView *view, const QString& cipher, int bits, int maxBits,
+    CipherItem( Q3ListView *view, const QString& cipher, int bits, int maxBits,
 		KCryptoConfig *module );
     ~CipherItem() {}
 
@@ -72,10 +74,10 @@ private:
 
 
 
-class OtherCertItem : public QListViewItem
+class OtherCertItem : public Q3ListViewItem
 {
 public:
-    OtherCertItem(QListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module );
+    OtherCertItem(Q3ListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module );
     ~OtherCertItem() {}
 
     QString configName() const;
@@ -102,10 +104,10 @@ private:
 
 
 
-class YourCertItem : public QListViewItem
+class YourCertItem : public Q3ListViewItem
 {
 public:
-    YourCertItem(QListView *view, QString pkcs, QString pass, QString name, KCryptoConfig *module );
+    YourCertItem(Q3ListView *view, QString pkcs, QString pass, QString name, KCryptoConfig *module );
     ~YourCertItem() {}
 
     QString configName() const;
@@ -132,10 +134,10 @@ private:
 
 
 
-class CAItem : public QListViewItem
+class CAItem : public Q3ListViewItem
 {
 public:
-    CAItem(QListView *view, QString name, QString cert, bool site, bool email, bool code, KCryptoConfig *module );
+    CAItem(Q3ListView *view, QString name, QString cert, bool site, bool email, bool code, KCryptoConfig *module );
     ~CAItem() {}
 
     QString configName() const;
@@ -166,10 +168,10 @@ private:
 
 
 
-class HostAuthItem : public QListViewItem
+class HostAuthItem : public Q3ListViewItem
 {
 public:
-    HostAuthItem(QListView *view, QString host, QString name, KCryptoConfig *module ) : QListViewItem(view, QString::null ) {
+    HostAuthItem(Q3ListView *view, QString host, QString name, KCryptoConfig *module ) : Q3ListViewItem(view, QString::null ) {
                                _name = name;  _host = host;
                                m_module = module;
                                setText(0, _host);
@@ -287,7 +289,7 @@ private:
 
   QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts, *tabAuth;
 
-  QListView *SSLv2Box, *SSLv3Box;
+  Q3ListView *SSLv2Box, *SSLv3Box;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave;
 
@@ -301,11 +303,11 @@ private:
   QPushButton *mCWall, *mCWus, *mCWexp, *mCWcompatible;
 
   QCheckBox *mWarnOnUnencrypted, *mWarnOnMixed;
-  QListView *yourSSLBox, *otherSSLBox, *caList;
+  Q3ListView *yourSSLBox, *otherSSLBox, *caList;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove;
   KPushButton *macClear;
-  QListBox *macBox;
+  Q3ListBox *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
               *yourSSLUnlock, *yourSSLVerify;
@@ -315,8 +317,8 @@ private:
   KSSLCertBox *ySubject, *yIssuer;
   QGridLayout *oGrid;
 
-  QVButtonGroup *policyGroup;
-  QVButtonGroup *cacheGroup;
+  Q3VButtonGroup *policyGroup;
+  Q3VButtonGroup *cacheGroup;
   QRadioButton *policyAccept, *policyReject, *policyPrompt;
   QRadioButton *cacheUntil, *cachePerm;
   QLabel *fromLabel, *untilLabel;
@@ -324,24 +326,24 @@ private:
   QLabel *yValidFrom, *yValidUntil;
   KURLLabel *untilDate;
 
-  QVGroupBox  *oInfo;
+  Q3GroupBox  *oInfo;
   KURLRequester *oPath;
   QPushButton *oTest;
-  QPtrList<OtherCertItem> otherCertDelList;
-  QPtrList<YourCertItem> yourCertDelList;
-  QPtrList<CAItem> caDelList;
+  Q3PtrList<OtherCertItem> otherCertDelList;
+  Q3PtrList<YourCertItem> yourCertDelList;
+  Q3PtrList<CAItem> caDelList;
 
   /* Personal Cert Policies tab */
   KComboBox *defCertBox;
   KComboBox *hostCertBox;
-  QVButtonGroup *defCertBG;
-  QHButtonGroup *hostCertBG;
+  Q3VButtonGroup *defCertBG;
+  Q3HButtonGroup *hostCertBG;
   QRadioButton *defSend, *defPrompt, *defDont;
   QRadioButton *hostSend, *hostPrompt, *hostDont;
-  QListView *hostAuthList;
+  Q3ListView *hostAuthList;
   QPushButton *authAdd, *authRemove;
   QLineEdit *authHost;
-  QPtrList<HostAuthItem> authDelList;
+  Q3PtrList<HostAuthItem> authDelList;
   QLabel *yHash, *pHash;
 
   /* CA stuff */

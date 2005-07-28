@@ -25,10 +25,12 @@
 
 #include "certexport.h"
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <QGridLayout>
 #include <klineedit.h>
 #include <kfiledialog.h>
 #include <qradiobutton.h>
-#include <qvbuttongroup.h>
+#include <q3buttongroup.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <klocale.h>
@@ -43,7 +45,8 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
 
    setCaption(i18n("X509 Certificate Export"));
 
-   QVButtonGroup *bg = new QVButtonGroup(i18n("Format"), this);
+   Q3ButtonGroup *bg = new Q3ButtonGroup(i18n("Format"), this);
+   bg->setOrientation(Qt::Vertical);
    _pem = new QRadioButton(i18n("&PEM"), bg);
    _netscape = new QRadioButton(i18n("&Netscape"), bg);
    _der = new QRadioButton(i18n("&DER/ASN1"), bg);
@@ -112,7 +115,7 @@ QString certt;
 
       QFile outFile(_filename->text());
 
-      if (!outFile.open(IO_WriteOnly)) {
+      if (!outFile.open(QIODevice::WriteOnly)) {
          KMessageBox::error(this, i18n("Error opening file for output."), i18n("SSL"));
          reject();
          return;

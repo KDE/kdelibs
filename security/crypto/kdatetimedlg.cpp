@@ -25,6 +25,8 @@
 #include "kdatetimedlg.h"
 #include <qlayout.h>
 #include <qlabel.h>
+//Added by qt3to4:
+#include <QGridLayout>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kdatepicker.h>
