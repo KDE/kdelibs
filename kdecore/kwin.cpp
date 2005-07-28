@@ -331,53 +331,6 @@ WId KWin::groupLeader( WId win )
 #endif
 }
 
-// this one is deprecated, KWin::WindowInfo should be used instead
-KWin::Info KWin::info( WId win )
-{
-    Info w;
-#ifdef Q_WS_X11
-    NETWinInfo inf( QX11Info::display(), win, QX11Info::appRootWindow(),
-		    NET::WMState |
-		    NET::WMStrut |
-		    NET::WMWindowType |
-		    NET::WMName |
-		    NET::WMVisibleName |
-		    NET::WMDesktop |
-		    NET::WMPid |
-		    NET::WMKDEFrameStrut |
-		    NET::XAWMState
-		    );
-
-    w.win = win;
-    w.state = inf.state();
-    w.mappingState = inf.mappingState();
-    w.strut = inf.strut();
-    w.windowType = inf.windowType( -1U );
-    if ( inf.name() ) {
-	w.name = QString::fromUtf8( inf.name() );
-    } else {
-	char* c = 0;
-	if ( XFetchName( QX11Info::display(), win, &c ) != 0 ) {
-	    w.name = QString::fromLocal8Bit( c );
-	    XFree( c );
-	}
-    }
-    if ( inf.visibleName() )
-	w.visibleName = QString::fromUtf8( inf.visibleName() );
-    else
-	w.visibleName = w.name;
-
-    w.desktop = inf.desktop();
-    w.onAllDesktops = inf.desktop() == NETWinInfo::OnAllDesktops;
-    w.pid = inf.pid();
-    NETRect frame, geom;
-    inf.kdeGeometry( frame, geom );
-    w.geometry.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
-    w.frameGeometry.setRect( frame.pos.x, frame.pos.y, frame.size.width, frame.size.height );
-#endif
-    return w;
-}
-
 QPixmap KWin::icon( WId win, int width, int height, bool scale )
 {
     return icon( win, width, height, scale, NETWM | WMHints | ClassHint | XApp );
@@ -707,13 +660,6 @@ void KWin::lowerWindow( WId win )
 #endif
 }
 
-void KWin::appStarted()
-{
-#ifdef Q_WS_X11
-    KStartupInfo::appStarted();
-#endif
-}
-
 class KWin::WindowInfoPrivate
 {
     public:
@@ -925,16 +871,6 @@ NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
 QString KWin::WindowInfo::visibleNameWithState() const
 {
     QString s = visibleName();
-    if ( isMinimized() ) {
-	s.prepend(QLatin1Char('('));
-	s.append(QLatin1Char(')'));
-    }
-    return s;
-}
-
-QString KWin::Info::visibleNameWithState() const
-{
-    QString s = visibleName;
     if ( isMinimized() ) {
 	s.prepend(QLatin1Char('('));
 	s.append(QLatin1Char(')'));
@@ -1161,28 +1097,6 @@ bool KWin::WindowInfo::isMinimized() const
 #else
     return false;
 #endif
-}
-
-bool KWin::Info::isMinimized() const
-{
-#ifdef Q_WS_X11
-    if( mappingState != NET::Iconic )
-        return false;
-    // NETWM 1.2 compliant WM - uses NET::Hidden for minimized windows
-    if(( state & NET::Hidden ) != 0
-	&& ( state & NET::Shaded ) == 0 ) // shaded may have NET::Hidden too
-        return true;
-    // older WMs use WithdrawnState for other virtual desktops
-    // and IconicState only for minimized
-    return icccmCompliantMappingState() ? false : true;
-#else
-    return false;
-#endif
-}
-
-bool KWin::Info::isIconified() const
-{
-    return isMinimized();
 }
 
 bool KWin::icccmCompliantMappingState()

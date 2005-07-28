@@ -451,55 +451,6 @@ public:
      */
     static QString readNameProperty( WId window, unsigned long atom );
 
-    /**
-     * @deprecated Use WindowInfo .
-     */
-    struct KDECORE_EXPORT Info
-    {
-      /// The window's id.
-	WId win;
-      /// The window's state.
- 	long unsigned int state;
-      /// The mapping state.
-	bool isMinimized() const;
-	bool isIconified() const;
-	NET::MappingState mappingState;
-      /// The strut.
-	NETStrut strut;
-      /// The window type.
-	NET::WindowType windowType;
-      /// The visible name of the window.
-	QString visibleName;
-      /// The name of the window.
-	QString name;
-      /// The number of the window's desktop.
-	int desktop;
-      /// true if the window is on all desktops.
-	bool onAllDesktops;
-      /// The process id of the window's owner
-	pid_t pid;
-      /// Position and size of the window contents.
-	QRect geometry;
-      /// Position and size of the window's frame.
-	QRect frameGeometry;
-
-	QString visibleNameWithState() const;
-    };
-
-    /**
-     * @deprecated
-     * Use windowInfo() .
-     */
-    static Info info( WId win ) KDE_DEPRECATED;
-
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-    /**
-     * @deprecated
-     * Use KStartupInfo::appStarted
-     */
-    static void appStarted() KDE_DEPRECATED;
 };
 
 

@@ -131,6 +131,10 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
 <li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
 
+<H4>KWin</H4>
+<li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
+<li>info(WId win) removed, use windowInfo() instead</li>
+<li>struct Info was removed, use WindowInfo instead</li>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
