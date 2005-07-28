@@ -44,7 +44,7 @@
 #include <q3whatsthis.h>
 
 #include "config.h"
-#include <qxembed.h>
+#include <QX11EmbedWidget>
 
 class KHelpMenuPrivate
 {
@@ -277,11 +277,12 @@ void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos(), true );
-  while ( w && !w->isTopLevel() && !w->inherits("QXEmbed")  )
+  while ( w && !w->isTopLevel() && !w->inherits("QX11EmbedWidget")  )
       w = w->parentWidget();
 #ifdef Q_WS_X11
-   if ( w && w->inherits("QXEmbed") )
-	  (( QXEmbed*) w )->enterWhatsThisMode();
+#warning how to enter whats this mode for a QX11EmbedWidget?
+//   if ( w && w->inherits("QX11EmbedWidget") )
+//	  (( QX11EmbedWidget*) w )->enterWhatsThisMode();
 #endif
 }
 
