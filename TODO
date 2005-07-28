@@ -304,3 +304,7 @@ that we would like to make for the next binary incompatible release.
   may be worthwhile to create a convenience class which mimics QList but allows for autoDeleting.
   (Caleb Tennis)
 
+- Many instances of creating containers on the heap instead of stack, can be replaced? (Caleb Tennis)
+
+- Places where things like "foo = new QString" seem like prime candidates for refactoring. (Caleb Tennis)
+
