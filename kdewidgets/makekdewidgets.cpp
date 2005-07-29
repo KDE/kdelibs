@@ -18,7 +18,6 @@ static const char classHeader[] = 	"/**\n"
 					"#include <QIcon>\n"
 					"#include <QtDesigner/QDesignerContainerExtension>\n"
 					"#include <QtDesigner/QDesignerCustomWidgetInterface>\n"
-					"#include <QtDesigner/QtDesigner>\n"
 					"#include <qplugin.h>\n"
 					"#include <qdebug.h>\n";
 ;
