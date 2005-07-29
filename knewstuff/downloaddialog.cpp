@@ -591,6 +591,10 @@ void DownloadDialog::slotSelected()
 Entry *DownloadDialog::getEntry()
 {
   QListViewItem *entryItem = currentEntryItem();
+
+  if(!entryItem)
+    return 0;
+
   QString entryName = entryItem->text(0);
 
   for(Entry *e = m_entries.first(); e; e = m_entries.next())
