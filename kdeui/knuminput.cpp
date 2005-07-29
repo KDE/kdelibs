@@ -207,8 +207,8 @@ KIntSpinBox::KIntSpinBox(QWidget *parent)
 {
     setRange(0,99);
     setSingleStep(1);
-    lineEdit()->setAlignment(Qt::AlignRight);
     val_base = 10;
+    lineEdit()->setAlignment(Qt::AlignRight);
     setValue(0);
 }
 
