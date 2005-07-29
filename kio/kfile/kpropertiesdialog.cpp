@@ -915,7 +915,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
     button->setIconSet( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
-    QToolTip::add(button, i18n("Edit file type"));
+    if ( d->mimeType == KMimeType::defaultMimeType() )
+       QToolTip::add(button, i18n("Create new file type"));
+    else
+       QToolTip::add(button, i18n("Edit file type"));
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
@@ -1084,11 +1087,21 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 void KFilePropsPlugin::slotEditFileType()
 {
 #ifdef Q_WS_X11
+  QString mime;
+  if ( d->mimeType == KMimeType::defaultMimeType() ) {
+    int pos = d->oldFileName.findRev( '.' );
+    if ( pos != -1 )
+	mime = "*" + d->oldFileName.mid(pos);
+    else
+	mime = "*";
+  }
+  else
+    mime = d->mimeType;
     //TODO: wrap for win32 or mac?
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
-                    + " " + KProcess::quote(d->mimeType),
+                    + " " + KProcess::quote(mime),
                     keditfiletype, keditfiletype /*unused*/);
 #endif
 }
@@ -2784,7 +2797,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   readonly->setChecked( ro );
 
   if ( unmountedStr.isEmpty() )
-    unmountedStr = KMimeType::mimeType(QString::fromLatin1("application/octet-stream"))->KServiceType::icon(); // default icon
+    unmountedStr = KMimeType::defaultMimeTypePtr()->KServiceType::icon(); // default icon
 
   unmounted->setIcon( unmountedStr );
 
@@ -3076,7 +3089,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
      QValueListIterator<KMimeType::Ptr> it(mimetypes.begin());
      for (; it != mimetypes.end(); ++it) {
         QString mimetype = (*it)->name();
-        if (mimetype == "application/octet-stream")
+        if (mimetype == KMimeType::defaultMimeType())
            continue;
         int index = mimetype.find("/");
         QString maj = mimetype.left(index);
