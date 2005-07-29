@@ -204,6 +204,10 @@ that we would like to make for the next binary incompatible release.
   Do we still need them? I recall that the original reason for their existance was multi-key
   emacs alike shortcuts, which Qt now supports since quite a while.
   (Simon)
+  No idea. As it's more or less unmaintained replacing as much as possible with Qt counterparts
+  would be indeed nice, but I don't know if it's possible. At least KGlobalAccel and KKeyDialog
+  stuff need to stay.
+  (Lubos)
 
 - KKeyDialog needs to be improved. It should simplify using KKeyChooser by not having to instantiate
   KDialogBase without restricting the possibilities of KKeyChooser (for instance, being able to
@@ -313,4 +317,3 @@ that we would like to make for the next binary incompatible release.
 
 - Remove all of the (const char *name) arguments to QObject derived classes. (Caleb Tennis)
 
-- KShortcut,KKey,KKeysequence, and a few more...can they be replaced with their Qt counterparts?
