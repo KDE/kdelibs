@@ -94,7 +94,7 @@ KGlobalAccelPrivate::~KGlobalAccelPrivate()
 void KGlobalAccelPrivate::setEnabled( bool bEnable )
 {
 	m_bEnabled = bEnable;
-	//updateConnections();
+	updateConnections();
 }
 
 bool KGlobalAccelPrivate::emitSignal( Signal )
