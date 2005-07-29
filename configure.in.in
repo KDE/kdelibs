@@ -26,7 +26,6 @@ AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
 dnl Checks for programs.
 AC_CHECK_COMPILERS
-KDE_ENABLE_HIDDEN_VISIBILITY
 AC_LIBLTDL_CONVENIENCE
 
 AC_ENABLE_SHARED(yes)
@@ -59,6 +58,8 @@ MAKEKDEWIDGETS="compiled"
 
 dnl Checks for libraries etc
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
+KDE_ENABLE_HIDDEN_VISIBILITY
+
 AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
 
