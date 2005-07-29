@@ -6661,11 +6661,8 @@ void KHTMLPart::runAdFilter()
             khtml::CachedImage *image = static_cast<khtml::CachedImage *>(it.current());
             bool wasBlocked = image->m_wasBlocked;
             image->m_wasBlocked = KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( (*it).url().string() ) );
-#warning "image->pixmap(), image->valid_rect() commented into misc/loader.h"; 			
-#if 0			
             if ( image->m_wasBlocked != wasBlocked )
-                image->do_notify(image->pixmap(), image->valid_rect());
-#endif			
+                image->do_notify(QRect(QPoint(0,0), image->pixmap_size()));
         }
 
     if ( KHTMLFactory::defaultHTMLSettings()->isHideAdsEnabled() ) {
