@@ -10,7 +10,8 @@ class Win
 public:
     Win();
 public slots:
-    void pythonExited( int status );
+    void pythonExited();
+    void forked();
 };
 
 #endif

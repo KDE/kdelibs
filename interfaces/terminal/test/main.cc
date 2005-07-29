@@ -9,6 +9,7 @@
 #include <qdir.h>
 #include <assert.h>
 #include <kmessagebox.h>
+#include <cassert>
 #include "main.h"
 #include "main.moc"
 
@@ -40,7 +41,23 @@ int main( int argc, char** argv )
     return a.exec();
 };
 
-void Win::pythonExited( int status )
+#include <iostream>
+
+void Win::pythonExited()
 {
-    KMessageBox::sorry( this, QString::fromUtf8( "Exited, status was %1" ).arg( status ) );
+    std::cerr << "hee, " << p << std::endl;
+    std::cerr << ( p->qt_cast( "TerminalInterface" ) ) << std::endl;
+    // KMessageBox::sorry( this, QString::fromUtf8( "Exited, status was %1" ).arg( status ) );
+    disconnect(p, SIGNAL( processExited() ),
+            this, SLOT( pythonExited() ));
+    TerminalInterface* t = static_cast<TerminalInterface*>( p->qt_cast( "TerminalInterface" ) );
+    QStrList l;
+    l.append( "echo" );
+    l.append( "hello world" );
+    t->startProgram( QString::fromUtf8( "/bin/echo" ), l );
+}
+
+void Win::forked()
+{
+    std::cerr << "hello from the child process!" << std::endl;
 }

@@ -1,5 +1,6 @@
-// interface.h
+// interface.h -*- C++ -*-
 // Copyright (C)  2002  Dominique Devriese <devriese@kde.org>
+// Copyright (C)  2005  Peter Rockai <me@mornfall.net>
 
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,9 +33,13 @@ class QStrList;
  * we can't have signals without having a QObject, which
  * TerminalInterface is not.
  * These are the signals you can connect to:
- *  void processExited( int status );
+ *  void processExited( KProcess *process );
  *  void receivedData( const QString& s );
  * See the example code below for how to connect to these..
+ * 
+ * The process provided by processExited() is obviously exited,
+ * and is only guaranteed to be valid until you return from the
+ * slot connected to it! 
  *
  * Use it like this:
  * \code
@@ -103,6 +108,59 @@ public:
    */
   virtual void sendInput( const QString& text ) = 0;
 
+};
+
+/**
+   This class is used analogically to TerminalInterface (see it's
+   documentation), but provides 2 further methods to change
+   konsole's behaviour.
+
+   For KDE 4, this class will be dropped again and the functionality
+   merged into TerminalInterface. Only use this if you really need
+   it for 3.5...
+
+   @see TerminalInterface
+
+   @since 3.5
+*/
+
+class ExtTerminalInterface
+{
+public:
+  /**
+   * This starts @p program, with arguments @p args
+   */
+  virtual void startProgram( const QString& program,
+                             const QStrList& args ) = 0;
+  /**
+   * If a shell is currently shown, this sends it a cd
+   * command. Otherwise, this starts a shell, and sends it a cd
+   * command too...
+   */
+  virtual void showShellInDir( const QString& dir ) = 0;
+
+  /**
+   * This sends @param text as input to the currently running
+   * program..
+   */
+  virtual void sendInput( const QString& text ) = 0;
+
+  /**
+     Call this to disable the automatic shell that
+     is normally loaded when konsolePart is instantiated;
+
+     You must call this function immediately after creating
+     the part! The shell is otherwise started as soon as the Qt
+     event loop is entered.
+  */       
+  virtual void setAutoStartShell(bool enabled) = 0;
+
+  /**
+     If set to true (which is default), konsolePart will destroy itself
+     as soon as the running program terminates. If false, you can
+     start another program instead or close it yourself.
+  */
+  virtual void setAutoDestroy(bool enabled) = 0;
 };
 
 #endif
