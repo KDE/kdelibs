@@ -195,7 +195,7 @@ void KNotify::loadConfig() {
         d->player.setManager(d->manager);
         // try to open suitable sink
         d->sink = kc->readPathEntry("aKode sink", "auto");
-        d->useKDEMM = d->player.open(std::string(d->sink.toUtf8()));
+        d->useKDEMM = d->player.open(d->sink.toAscii());
     }
 #endif
 
@@ -380,7 +380,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
             return false;
         }
 
-        if (d->player.load(std::string(soundFile.toUtf8()))) {
+        if (d->player.load(soundFile.toLocal8Bit())) {
             d->player.play();
             d->akodePlayerEventId = eventId;
             return true;
