@@ -332,14 +332,15 @@ class KDECORE_EXPORT KAccelAction
 	QString m_sName /**< Name of accel. @sa setName() */,
 	        m_sLabel /**< Label of accel. User-visible. */,
 	        m_sWhatsThis /**< WhatsThis help for accel. User-visible. */;
-	KShortcut m_cut;
-	KShortcut m_cutDefault3, m_cutDefault4;
-	const QObject* m_pObjSlot;
-	const char* m_psMethodSlot;
-	bool m_bConfigurable,
-	     m_bEnabled;
-	int m_nIDAccel;
-	uint m_nConnections;
+	KShortcut m_cut /**< Shortcut actually assigned. */;
+	KShortcut m_cutDefault3 /**< Default shortcut in 3-modifier layout */, 
+		  m_cutDefault4 /**< Default shortcur in 4-modifier layout */;
+	const QObject* m_pObjSlot /**< Object we will send signals to. */;
+	const char* m_psMethodSlot /**< Slot we send signals to, in m_pObjSlot */;
+	bool m_bConfigurable /**< Can this accel be configured by the user? */,
+	     m_bEnabled /**< Is this accel enabled? */;
+	int m_nIDAccel /**< Id of this accel, from the list of IDs */;
+	uint m_nConnections /**< Number of connections to this accel. */ ;
 
 	/** @internal Increment the number of connections to this accel. */
 	void incConnections();
@@ -546,11 +547,20 @@ class KDECORE_EXPORT KAccelActions
 	uint count() const;
 
  protected:
+	/** Base object that proxies signals from us. */
 	KAccelBase* m_pKAccelBase;
+	/** Array of actions we're hanging on to. */
 	KAccelAction** m_prgActions;
-	uint m_nSizeAllocated, m_nSize;
+	uint m_nSizeAllocated /**< Allocated size of the array. */, 
+	     m_nSize /**< Amount in use. */ ;
 
-	void resize( uint );
+	/** 
+	 * Resize the list to the given number @p new_size of entries. 
+	 * @todo Can you make it smaller?
+	 * @todo Implementation seems to break m_nSize.
+	 */
+	void resize( uint new_size );
+	/** Add a action to this collection. @todo Document ownership. */
 	void insertPtr( KAccelAction* );
 
  private:
