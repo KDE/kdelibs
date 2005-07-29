@@ -739,9 +739,9 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    qWarning("DCOPServer::DCOPReplyDelayed for unknown connection.");
 		else if ( !conn )
 		    qWarning("DCOPServer::DCOPReplyDelayed from unknown connection.");
-		else if (!conn->waitingForDelayedReply.removeRef( target->iceConn ))
+		else if (!conn->waitingForDelayedReply.removeAll( target->iceConn ))
 		    qWarning("DCOPServer::DCOPReplyDelayed from/to does not match. (#2)");
-                else if (!target->waitingOnReply.removeRef(iceConn))
+                else if (!target->waitingOnReply.removeAll(iceConn))
                        qWarning("DCOPServer::DCOPReplyDelayed for client who wasn't waiting on one!");
 	    }
 	    if ( target ) {
@@ -902,14 +902,14 @@ if (opcode == DCOPCall)
 	    if ( !connreply )
 		qWarning("DCOPServer::DCOPReply for unknown connection.");
 	    else {
-		conn->waitingForReply.removeRef( connreply->iceConn );
+		conn->waitingForReply.removeAll( connreply->iceConn );
 		if ( opcode == DCOPReplyWait )
                 {
 		    conn->waitingForDelayedReply.append( connreply->iceConn );
                 }
                 else
                 { // DCOPReply or DCOPReplyFailed
-                    if (!connreply->waitingOnReply.removeRef(iceConn))
+                    if (!connreply->waitingOnReply.removeAll(iceConn))
                        qWarning("DCOPServer::DCOPReply for client who wasn't waiting on one!");
                 }
 		IceGetHeader( connreply->iceConn, majorOpcode, opcode,
@@ -1130,7 +1130,7 @@ void DCOPServer::slotCleanDeadConnections()
 qWarning("DCOP Cleaning up dead connections.");
     while(!deadConnections.isEmpty())
     {
-       IceConn iceConn = deadConnections.take(0);
+       IceConn iceConn = deadConnections.takeFirst();
        IceSetShutdownNegotiation (iceConn, False);
        (void) IceCloseConnection( iceConn );
     }
@@ -1141,7 +1141,7 @@ qWarning("DCOP Cleaning up dead connections.");
  */
 void DCOPServer::ioError( IceConn iceConn  )
 {
-    deadConnections.removeRef(iceConn);
+    deadConnections.removeAll(iceConn);
     deadConnections.prepend(iceConn);
     m_deadConnectionTimer->start(0);
 }
@@ -1152,7 +1152,7 @@ void DCOPServer::processData( int /*socket*/ )
     IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
-        deadConnections.removeRef(iceConn);
+        deadConnections.removeAll(iceConn);
         if (deadConnections.isEmpty())
            m_deadConnectionTimer->stop();
 	IceSetShutdownNegotiation (iceConn, False);
@@ -1184,7 +1184,7 @@ void DCOPServer::newClient( int /*socket*/ )
 	    qWarning ("IO error opening ICE Connection!\n");
 	else
 	    qWarning ("ICE Connection rejected!\n");
-        deadConnections.removeRef(iceConn);
+        deadConnections.removeAll(iceConn);
 	(void) IceCloseConnection (iceConn);
     }
 }
@@ -1211,7 +1211,7 @@ void DCOPServer::removeConnection( void* data )
 
     // Send DCOPReplyFailed to all in conn->waitingForReply
     while (!conn->waitingForReply.isEmpty()) {
-	IceConn iceConn = conn->waitingForReply.take(0);
+	IceConn iceConn = conn->waitingForReply.takeFirst();
 	if (iceConn) {
 	    DCOPConnection* target = clients.find( iceConn );
 	    qWarning("DCOP aborting call from '%s' to '%s'", target ? target->appId.data() : "<unknown>" , conn->appId.data() );
@@ -1226,14 +1226,14 @@ void DCOPServer::removeConnection( void* data )
             _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForReply");
-            else if (!target->waitingOnReply.removeRef(conn->iceConn))
+            else if (!target->waitingOnReply.removeAll(conn->iceConn))
                qWarning("DCOP Error: client in waitingForReply wasn't waiting on reply");
 	}
     }
 
     // Send DCOPReplyFailed to all in conn->waitingForDelayedReply
     while (!conn->waitingForDelayedReply.isEmpty()) {
-	IceConn iceConn = conn->waitingForDelayedReply.take(0);
+	IceConn iceConn = conn->waitingForDelayedReply.takeFirst();
 	if (iceConn) {
 	    DCOPConnection* target = clients.find( iceConn );
 	    qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target ? target->appId.data() : "<unknown>", conn->appId.data() );
@@ -1248,13 +1248,13 @@ void DCOPServer::removeConnection( void* data )
             _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForDelayedReply");
-            else if (!target->waitingOnReply.removeRef(conn->iceConn))
+            else if (!target->waitingOnReply.removeAll(conn->iceConn))
                qWarning("DCOP Error: client in waitingForDelayedReply wasn't waiting on reply");
 	}
     }
     while (!conn->waitingOnReply.isEmpty())
     {
-	IceConn iceConn = conn->waitingOnReply.take(0);
+	IceConn iceConn = conn->waitingOnReply.takeFirst();
         if (iceConn) {
            DCOPConnection* target = clients.find( iceConn );
            if (!target)
@@ -1263,8 +1263,8 @@ void DCOPServer::removeConnection( void* data )
                continue;
            }
            qWarning("DCOP aborting while waiting for answer from '%s'", target->appId.data());
-           if (!target->waitingForReply.removeRef(conn->iceConn) &&
-               !target->waitingForDelayedReply.removeRef(conn->iceConn))
+           if (!target->waitingForReply.removeAll(conn->iceConn) &&
+               !target->waitingForDelayedReply.removeAll(conn->iceConn))
               qWarning("DCOP Error: called client has forgotten about caller");
         }
     }

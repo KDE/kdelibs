@@ -31,10 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QTextStream>
 #include <qstring.h>
 #include <qsocketnotifier.h>
-#include <q3ptrlist.h>
-#include <q3dict.h>
 #include <q3ptrdict.h>
-#include <q3intdict.h>
 #include <qapplication.h>
 #include <kdatastream.h>
 
@@ -99,9 +96,9 @@ public:
      * This allows us to do proper bookkeeping in case client A, client B
      * or both unregister during the call.
      */
-    Q3PtrList <_IceConn> waitingOnReply;
-    Q3PtrList <_IceConn> waitingForReply;
-    Q3PtrList <_IceConn> waitingForDelayedReply;
+    QList <IceConn> waitingOnReply;
+    QList <IceConn> waitingForReply;
+    QList <IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
     bool daemon;
     bool outputBlocked;
@@ -169,7 +166,7 @@ private:
     Q3AsciiDict<DCOPConnection> appIds; // index on app id
     Q3PtrDict<DCOPConnection> clients; // index on iceConn
     QHash<int, DCOPConnection*> fd_clients; // index on fd
-    Q3PtrList<_IceConn> deadConnections;
+    QList<IceConn> deadConnections;
 
 #ifdef Q_OS_WIN
     HANDLE m_evTerminate;
