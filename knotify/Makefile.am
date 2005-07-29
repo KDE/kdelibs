@@ -1,5 +1,5 @@
 
-INCLUDES= $(akode_includes) $(all_includes)
+INCLUDES= $(all_includes) $(akode_includes)
 
 ####### Files
 
