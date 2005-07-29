@@ -211,7 +211,6 @@ KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
 static void kglobal_freeAll()
 {
-    qDebug( "kglobal_freeAll!!\n%s", kdBacktrace().latin1() );
     delete KGlobal::_locale;
     KGlobal::_locale = 0;
     delete KGlobal::_charsets;
