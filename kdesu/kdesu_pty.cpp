@@ -65,7 +65,7 @@ extern "C" int unlockpt(int fd) __THROW;
 extern "C" char *_getpty(int *, int, mode_t, int);
 #endif
 
-#ifdef HAVE__PTY_H
+#ifdef HAVE_PTY_H
 	#include <pty.h>
 #endif
 
