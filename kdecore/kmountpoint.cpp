@@ -24,6 +24,7 @@
 #include <stdlib.h>
 
 #include <qfile.h>
+#include <qtextstream.h>
 
 #include "kstandarddirs.h"
 
@@ -172,7 +173,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
    QTextStream t (&f);
    QString s;
 
-   while (! t.eof()) 
+   while (! t.atEnd()) 
    {
       s=t.readLine().simplifyWhiteSpace();
       if ( s.isEmpty() || (s[0] == '#'))
