@@ -33,7 +33,7 @@ class KTabWidgetPrivate;
 /**
  * \brief A widget containing multiple tabs
  *
- * It extends the QT QTabWidget, providing extra optionally features such as close buttons when you hover
+ * It extends the Qt QTabWidget, providing extra optionally features such as close buttons when you hover
  * over the icon in the tab, and also adds functionality such as responding to mouse wheel scroll events to switch
  * the active tab.
  *
