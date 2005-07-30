@@ -1,3 +1,15 @@
+Checklist to ensure that zeroconf will work:
+
+1) Install Apple's mdnsd, at least version 85
+2) kdelibs (and kdebase for ksysguard) should be configured and compiled with dns_sd sdk (part
+of mdnsd installation) present - config.h should contain '#define HAVE_DNSSD 1'
+3) check /etc/nsswitch.conf and ensure that there is 'mdns' before 'dns' in
+line starting with 'host:'. It should be something like:
+host: files mdns dns
+4) ensure that mdnsd is being started in initscripts
+5) for testing: use kpf kicker applet to publish a directory, then open 'zeroconf:/'
+URL in konqueror. You should be able to see a local webserver with that published dir.
+
 For more information go here
 
 http://wiki.kde.org/tiki-index.php?page=Zeroconf%20in%20KDE
