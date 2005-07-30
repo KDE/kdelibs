@@ -33,6 +33,14 @@ class KTabWidgetPrivate;
 /**
  * \brief A widget containing multiple tabs
  *
+ * It extends the QT QTabWidget, providing extra optionally features such as close buttons when you hover
+ * over the icon in the tab, and also adds functionality such as responding to mouse wheel scroll events to switch
+ * the active tab.
+ *
+ * It is recommended to use KTabWidget instead of QTabWidget unless you have a good reason not to.
+ *
+ * See also the QTabWidget documentation.
+ *
  * @since 3.2
  */
 class KDEUI_EXPORT KTabWidget : public QTabWidget
