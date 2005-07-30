@@ -253,6 +253,7 @@ public:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
+        accessKeysEnabled = KHTMLFactory::defaultHTMLSettings()->accessKeysEnabled();
         emitCompletedAfterRepaint = CSNone;
     }
     void newScrollTimer(QWidget *view, int tid)
@@ -371,6 +372,7 @@ public:
     bool findLinksOnly;
     bool typeAheadActivated;
 #endif // KHTML_NO_TYPE_AHEAD_FIND
+    bool accessKeysEnabled;
     bool accessKeysActivated;
     bool accessKeysPreActivate;
     CompletedState emitCompletedAfterRepaint;
@@ -538,7 +540,7 @@ void KHTMLView::clear()
 
     if( d->typeAheadActivated )
         findTimeout();
-    if (d->accessKeysActivated)
+    if (d->accessKeysEnabled && d->accessKeysActivated)
         accessKeysTimeout();
     viewport()->unsetCursor();
     if ( d->cursor_icon_widget )
@@ -797,7 +799,7 @@ void KHTMLView::layout()
 	    showCaret();
         }/*end if*/
 #endif
-        if (d->accessKeysActivated) {
+        if (d->accessKeysEnabled && d->accessKeysActivated) {
             emit hideAccessKeys();
             displayAccessKeys();
         }
@@ -1385,7 +1387,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (_ke->key() == Key_Control && _ke->state()==0 && !d->accessKeysActivated) d->accessKeysPreActivate=true;
+    if (d->accessKeysEnabled && _ke->key() == Key_Control && _ke->state()==0 && !d->accessKeysActivated) d->accessKeysPreActivate=true;
 
     if (_ke->key() == Key_Shift && _ke->state()==0)
 	    d->scrollSuspendPreActivate=true;
@@ -1393,7 +1395,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
     // may eat the event
 
-    if (d->accessKeysActivated)
+    if (d->accessKeysEnabled && d->accessKeysActivated)
     {
         if (_ke->state()==0 || _ke->state()==ShiftButton) {
 	if (_ke->key() != Key_Shift) accessKeysTimeout();
@@ -1646,6 +1648,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	return;
     }
 
+    if (d->accessKeysEnabled) {
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
     if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && !(KApplication::keyboardMouseState() & Qt::ControlButton))
 	{
@@ -1655,6 +1658,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	    d->accessKeysPreActivate = false;
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
+    }
 
     if( d->scrollSuspendPreActivate && _ke->key() != Key_Shift )
         d->scrollSuspendPreActivate = false;
@@ -2982,7 +2986,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	default:
 	    break;
     }
-    if (d->accessKeysPreActivate && button!=-1)
+    if (d->accessKeysEnabled && d->accessKeysPreActivate && button!=-1)
     	d->accessKeysPreActivate=false;
 
     bool ctrlKey = (_mouse->state() & ControlButton);
@@ -3078,7 +3082,7 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::viewportWheelEvent(QWheelEvent* e)
 {
-    if (d->accessKeysPreActivate) d->accessKeysPreActivate=false;
+    if (d->accessKeysEnabled && d->accessKeysPreActivate) d->accessKeysPreActivate=false;
 
     if ( ( e->state() & ControlButton) == ControlButton )
     {
@@ -3360,7 +3364,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);
     }
-    if (d->accessKeysActivated) emit repaintAccessKeys();
+    if (d->accessKeysEnabled && d->accessKeysActivated) emit repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
         bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;
         d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;

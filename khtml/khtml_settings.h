@@ -176,6 +176,9 @@ public:
     bool isHideAdsEnabled() const;
     void addAdFilter( const QString &url );
 
+    // Access Keys
+    bool accessKeysEnabled() const;
+
     KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString::null ) const;
     KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString::null ) const;
     KJSWindowResizePolicy windowResizePolicy( const QString& hostname = QString::null ) const;

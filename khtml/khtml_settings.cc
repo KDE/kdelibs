@@ -84,6 +84,7 @@ public:
     bool m_adFilterEnabled : 1;
     bool m_hideAdsEnabled : 1;
     bool m_jsPopupBlockerPassivePopup : 1;
+    bool m_accessKeysEnabled : 1;
 
     // the virtual global "domain"
     KPerDomainSettings global;
@@ -310,6 +311,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if ( reset || config->hasKey( "BackRightClick" ) )
         d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
+  }
+
+  if (reset || config->hasGroup("Access Keys")) {
+      config->setGroup( "Access Keys" );
+      d->m_accessKeysEnabled = config->readBoolEntry( "Enabled", true );
   }
 
   if (reset || config->hasGroup("Filter Settings"))
@@ -688,6 +694,11 @@ bool KHTMLSettings::isOpenMiddleClickEnabled()
 bool KHTMLSettings::isBackRightClickEnabled()
 {
   return d->m_bBackRightClick;
+}
+
+bool KHTMLSettings::accessKeysEnabled() const
+{
+    return d->m_accessKeysEnabled;
 }
 
 bool KHTMLSettings::isAdFilterEnabled() const
