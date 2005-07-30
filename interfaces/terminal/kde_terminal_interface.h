@@ -23,6 +23,8 @@
 class QString;
 class QStrList;
 
+#include <kdemacros.h>
+
 /**
  * TerminalInterface is an interface implemented by KonsolePart to
  * allow developers access to the KonsolePart in ways that are not
@@ -87,7 +89,7 @@ class QStrList;
  *
  * @author Dominique Devriese <devriese@kde.org>
  */
-class TerminalInterface
+class KDE_EXPORT TerminalInterface
 {
 public:
   /**
@@ -124,7 +126,7 @@ public:
    @since 3.5
 */
 
-class ExtTerminalInterface
+class KDE_EXPORT ExtTerminalInterface
 {
 public:
   /**
