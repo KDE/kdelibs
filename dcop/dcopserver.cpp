@@ -52,7 +52,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdatastream.h>
-#include <q3ptrstack.h>
 #include <qtimer.h>
 
 #include "dcopserver.h"
@@ -71,9 +70,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // #define DCOP_DEBUG
 
 DCOPServer* the_server;
-
-template class Q3Dict<DCOPConnection>;
-template class Q3PtrDict<DCOPConnection>;
 
 #define _DCOPIceSendBegin(x)	\
    int fd = IceConnectionNumber( x );		\
@@ -713,7 +709,7 @@ void DCOPProcessMessage( IceConn iceConn, IcePointer /*clientData*/,
 void DCOPServer::processMessage( IceConn iceConn, int opcode,
 				 unsigned long length, Bool /*swap*/)
 {
-    DCOPConnection* conn = clients.find( iceConn );
+    DCOPConnection* conn = clients.value( iceConn );
     if ( !conn ) {
 	qWarning("DCOPServer::processMessage message from unknown connection. [opcode = %d]", opcode);
 	return;
@@ -780,10 +776,8 @@ if (opcode == DCOPSend)
 }
 //#endif
 		// handle a multicast.
-		Q3AsciiDictIterator<DCOPConnection> aIt(appIds);
 		int l = toApp.length()-1;
-		for ( ; aIt.current(); ++aIt) {
-		    DCOPConnection *client = aIt.current();
+		foreach (DCOPConnection *client, appIds) {
 		    if (!l || (strncmp(client->appId.data(), toApp.data(), l) == 0))
 			{
 			    IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
@@ -975,15 +969,15 @@ extern "C"
 }
 
 DCOPServer::DCOPServer(bool _suicide)
-    : QObject(0), currentClientNumber(0), appIds(263), clients(263)
+    : suicide(_suicide), 
+      shutdown(false),
+      currentClientNumber(0),
+      serverKey(42),
+      dcopSignals(new DCOPSignals)
 {
-    serverKey = 42;
-
-    suicide = _suicide;
-    shutdown = false;
-
-    dcopSignals = new DCOPSignals;
-
+    appIds.reserve(263);
+    clients.reserve(263);
+    
     if (_kde_IceLastMajorOpcode < 1 )
         IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
 				    const_cast<char *>("DUMMY"),
@@ -1106,7 +1100,7 @@ DCOPServer::~DCOPServer()
     m_logger->close();
     delete m_logger;
     while(!listener.empty())
-        delete listener.takeFirst());
+        delete listener.takeFirst();
 #endif
 #ifdef Q_OS_WIN
 	SetEvent(m_evTerminate);
@@ -1118,8 +1112,8 @@ DCOPConnection* DCOPServer::findApp( const DCOPCString& appId )
 {
     if ( appId.isNull() )
 	return 0;
-    DCOPConnection* conn = appIds.find( appId );
-    return conn;
+    else
+	return appIds.value( appId );
 }
 
 /*!
@@ -1213,7 +1207,7 @@ void DCOPServer::removeConnection( void* data )
     while (!conn->waitingForReply.isEmpty()) {
 	IceConn iceConn = conn->waitingForReply.takeFirst();
 	if (iceConn) {
-	    DCOPConnection* target = clients.find( iceConn );
+	    DCOPConnection* target = clients.value( iceConn );
 	    qWarning("DCOP aborting call from '%s' to '%s'", target ? target->appId.data() : "<unknown>" , conn->appId.data() );
 	    QByteArray reply;
 	    DCOPMsg *pMsg;
@@ -1235,7 +1229,7 @@ void DCOPServer::removeConnection( void* data )
     while (!conn->waitingForDelayedReply.isEmpty()) {
 	IceConn iceConn = conn->waitingForDelayedReply.takeFirst();
 	if (iceConn) {
-	    DCOPConnection* target = clients.find( iceConn );
+	    DCOPConnection* target = clients.value( iceConn );
 	    qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target ? target->appId.data() : "<unknown>", conn->appId.data() );
 	    QByteArray reply;
 	    DCOPMsg *pMsg;
@@ -1256,7 +1250,7 @@ void DCOPServer::removeConnection( void* data )
     {
 	IceConn iceConn = conn->waitingOnReply.takeFirst();
         if (iceConn) {
-           DCOPConnection* target = clients.find( iceConn );
+           DCOPConnection* target = clients.value( iceConn );
            if (!target)
            {
                qWarning("DCOP Error: still waiting for answer from non-existing client.");
@@ -1366,7 +1360,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 
     if ( obj == "emit")
     {
-        DCOPConnection* conn = clients.find( iceConn );
+        DCOPConnection* conn = clients.value( iceConn );
         if (conn) {
 	    //qDebug("DCOPServer: %s emits %s", conn->appId.data(), fun.data());
 	    dcopSignals->emitSignal(conn, fun, data, false);
@@ -1385,7 +1379,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 
             daemon = static_cast<bool>( iDaemon );
 
-	    DCOPConnection* conn = clients.find( iceConn );
+	    DCOPConnection* conn = clients.value( iceConn );
             if ( conn && !conn->appId.isNull() ) {
                 if ( daemon ) {
                     if ( !conn->daemon )
@@ -1426,10 +1420,10 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 	    DCOPCString app2 = readQByteArray(args);
 	    QDataStream reply( &replyData, QIODevice::WriteOnly );
 	    reply.setVersion(QDataStream::Qt_3_1);
-	    DCOPConnection* conn = clients.find( iceConn );
+	    DCOPConnection* conn = clients.value( iceConn );
 	    if ( conn && !app2.isEmpty() ) {
 		if ( !conn->appId.isNull() &&
-		     appIds.find( conn->appId ) == conn ) {
+		     appIds.value( conn->appId ) == conn ) {
 		    appIds.remove( conn->appId );
 
 		}
@@ -1452,7 +1446,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 #endif
 
 		conn->appId = app2;
-		if ( appIds.find( app2 ) != 0 ) {
+		if ( appIds.contains( app2 ) ) {
 		    // we already have this application, unify
 		    int n = 1;
 		    QByteArray tmp;
@@ -1461,7 +1455,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 			tmp.setNum( n );
 			tmp.prepend("-");
 			tmp.prepend( app2 );
-		    } while ( appIds.find( tmp ) != 0 );
+		    } while ( appIds.contains( tmp ) );
 		    conn->appId = tmp;
 		}
 		appIds.insert( conn->appId, conn );
@@ -1485,14 +1479,8 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
     else if ( fun == "registeredApplications()" ) {
 	QDataStream reply( &replyData, QIODevice::WriteOnly );
 	reply.setVersion(QDataStream::Qt_3_1);
-	DCOPCStringList applications;
-	Q3AsciiDictIterator<DCOPConnection> it( appIds );
-	while ( it.current() ) {
-	    applications << it.currentKey();
-	    ++it;
-	}
 	replyType = "QCStringList";
-	reply << applications;
+	reply << appIds.keys();
 	return true;
     } else if ( fun == "isApplicationRegistered(QCString)" ) {
 	QByteArray dataCopy = data;
@@ -1515,7 +1503,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 	if (!args.atEnd()) {
 	    qint8 notifyActive;
 	    args >> notifyActive;
-	    DCOPConnection* conn = clients.find( iceConn );
+	    DCOPConnection* conn = clients.value( iceConn );
 	    if ( conn ) {
 		if ( notifyActive )
 		    conn->notifyRegister++;
@@ -1526,7 +1514,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
 	    return true;
 	}
     } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCString,bool)") {
-        DCOPConnection* conn = clients.find( iceConn );
+        DCOPConnection* conn = clients.value( iceConn );
         if (!conn) return false;
         QByteArray dataCopy = data;
         QDataStream args(&dataCopy, QIODevice::ReadOnly );
@@ -1547,7 +1535,7 @@ bool DCOPServer::receive(const DCOPCString &/*app*/, const DCOPCString &obj,
         reply << (qint8) (b?1:0);
         return true;
     } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
-        DCOPConnection* conn = clients.find( iceConn );
+        DCOPConnection* conn = clients.value( iceConn );
         if (!conn) return false;
         QByteArray dataCopy = data;
         QDataStream args(&dataCopy, QIODevice::ReadOnly );
@@ -1577,7 +1565,6 @@ void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const D
     QDataStream datas( &data, QIODevice::WriteOnly );
     datas.setVersion(QDataStream::Qt_3_1);
     datas << appId;
-    Q3PtrDictIterator<DCOPConnection> it( clients );
     QByteArray ba;
     QDataStream ds( &ba, QIODevice::WriteOnly );
     ds.setVersion(QDataStream::Qt_3_1);
@@ -1585,9 +1572,7 @@ void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const D
        << type << data;
     int datalen = ba.size();
     DCOPMsg *pMsg = 0;
-    while ( it.current() ) {
-        DCOPConnection* c = it.current();
-        ++it;
+    foreach ( DCOPConnection* c, clients ) {
         if ( c->notifyRegister && (c != conn) ) {
             IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
                           sizeof(DCOPMsg), DCOPMsg, pMsg );

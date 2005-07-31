@@ -22,11 +22,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 
-template class Q3PtrList<DCOPSignalConnection>;
-
-DCOPSignals::DCOPSignals()
+DCOPSignals::~DCOPSignals()
 {
-   connections.setAutoDelete(true);
+    qDeleteAll(connections);
 }
 
 /**
@@ -46,9 +44,10 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QB
       fun = fun.mid(i+1);
    }
 
-   DCOPSignalConnectionList *list = connections.find(fun);
+   DCOPSignalConnectionList *list = connections.value(fun);
    if (!list) return;
-   for(DCOPSignalConnection *current = list->first(); current; current = list->next())
+   
+   foreach (DCOPSignalConnection *current, *list)
    {
       bool doSend = false;
       if (current->senderConn)
@@ -142,7 +141,7 @@ DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &sender
    current->recvObj = receiverObj;
    current->slot = slot;
 
-   DCOPSignalConnectionList *list = connections.find(signal);
+   DCOPSignalConnectionList *list = connections.value(signal);
    if (!list)
    {
       list = new DCOPSignalConnectionList;
@@ -177,16 +176,16 @@ DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &sen
       return true;
    }
 
-   DCOPSignalConnectionList *list = connections.find(signal);
+   DCOPSignalConnectionList *list = connections.value(signal);
    if (!list)
       return false; // Not found...
 
-   DCOPSignalConnection *next = 0;
    bool result = false;
 
-   for(DCOPSignalConnection *current = list->first(); current; current = next)
+   QMutableListIterator<DCOPSignalConnection*> it(*list);
+   while (it.hasNext())
    {
-      next = list->next();
+      DCOPSignalConnection *current = it.next();
 
       if (current->recvConn != conn)
          continue;
@@ -212,10 +211,10 @@ DCOPSignals::disconnectSignal( const DCOPCString &sender, const DCOPCString &sen
          continue;
 
       result = true;
-      list->removeRef(current);
-      conn->signalConnectionList()->removeRef(current);
+      it.remove();
+      conn->signalConnectionList()->removeAll(current);
       if (current->senderConn)
-         current->senderConn->signalConnectionList()->removeRef(current);
+         current->senderConn->signalConnectionList()->removeAll(current);
       delete current;
    }
    return result;
@@ -234,11 +233,10 @@ DCOPSignals::removeConnections(DCOPConnection *conn, const DCOPCString &obj)
    if (!list)
       return; // Nothing to do...
 
-   DCOPSignalConnection *next = 0;
-
-   for(DCOPSignalConnection *current = list->first(); current; current = next)
+   QMutableListIterator<DCOPSignalConnection*> it(*list);
+   while (it.hasNext())
    {
-      next = list->next();
+      DCOPSignalConnection *current = it.next();
 
       if (!obj.isEmpty())
       {
@@ -250,23 +248,23 @@ DCOPSignals::removeConnections(DCOPConnection *conn, const DCOPCString &obj)
       }
 
       if (current->senderConn && (current->senderConn != conn))
-         current->senderConn->signalConnectionList()->removeRef(current);
+         current->senderConn->signalConnectionList()->removeAll(current);
 
       if (current->recvConn != conn)
-         current->recvConn->signalConnectionList()->removeRef(current);
+         current->recvConn->signalConnectionList()->removeAll(current);
 
-      DCOPSignalConnectionList *signalList = connections.find(current->signal);
+      DCOPSignalConnectionList *signalList = connections.value(current->signal);
       if (signalList)
       {
-         signalList->removeRef(current);
+         signalList->removeAll(current);
          if (signalList->isEmpty())
-            connections.remove(current->signal);
+            delete connections.take(current->signal);
       }
       else
       {
          qDebug("Error: Signal Connection was not in signalList!\n");
       }
-      list->removeRef(current);
+      it.remove();
       delete current;
    }
 }

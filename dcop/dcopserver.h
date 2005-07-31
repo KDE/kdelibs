@@ -25,13 +25,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qobject.h>
 
 #include <QHash>
-#include <q3asciidict.h>
 #include <QByteArray>
 #include <QList>
 #include <QTextStream>
 #include <qstring.h>
 #include <qsocketnotifier.h>
-#include <q3ptrdict.h>
 #include <qapplication.h>
 #include <kdatastream.h>
 
@@ -129,7 +127,7 @@ public:
 
     DCOPConnection *findApp(const DCOPCString &appId);
     DCOPConnection *findConn(IceConn iceConn)
-       { return clients.find(iceConn); }
+       { return clients.value(iceConn); }
 
     void sendMessage(DCOPConnection *conn, const DCOPCString &sApp,
                      const DCOPCString &rApp, const DCOPCString &rObj,
@@ -163,8 +161,8 @@ private:
     QTimer *m_timer;
     QTimer *m_deadConnectionTimer;
     QList<DCOPListener*> listener;
-    Q3AsciiDict<DCOPConnection> appIds; // index on app id
-    Q3PtrDict<DCOPConnection> clients; // index on iceConn
+    QHash<DCOPCString, DCOPConnection*> appIds; // index on app id
+    QHash<void*, DCOPConnection*> clients; // index on iceConn
     QHash<int, DCOPConnection*> fd_clients; // index on fd
     QList<IceConn> deadConnections;
 
