@@ -27,6 +27,7 @@ Name[uz]=Керамика
 Name[xx]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=A style using alphablending
+Comment[et]=Alfablendingut kasutav stiil
 
 [KDE]
 WidgetStyle=Keramik
