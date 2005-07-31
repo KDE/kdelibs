@@ -91,6 +91,9 @@ public:
 public slots:
     void setCurrentURL( const KURL& url );
 
+protected slots:
+    virtual void slotUser1();
+
 protected:
     virtual void accept();
 
