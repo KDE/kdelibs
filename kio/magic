@@ -61,10 +61,12 @@
 0	string		.RMF		application/vnd.rn-realmedia
 
 # OGG files
+# For theora at position 87, see bug #109598
 0	string		OggS		application/ogg
 >28	string		\x01vorbis	audio/vorbis
 >28	string		fLaC		audio/x-oggflac
 >28	string		\x80theora	video/x-theora
+>87	string		\x80theora	video/x-theora
 >28	string		Speex\ \ 	audio/x-speex
 >29	string		video		video/x-ogm
 >29	string		FLAC		audio/x-oggflac
