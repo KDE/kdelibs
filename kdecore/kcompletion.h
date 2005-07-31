@@ -21,7 +21,6 @@
 #define KCOMPLETION_H
 
 #include <qmap.h>
-#include <q3ptrlist.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>

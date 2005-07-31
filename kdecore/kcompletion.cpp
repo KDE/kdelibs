@@ -715,18 +715,18 @@ void KCompTreeNode::remove( const QString& str )
     QString string = str;
     string += QChar(0x0);
 
-    Q3PtrVector<KCompTreeNode> deletables( string.length() + 1 );
+    QVector<KCompTreeNode *> deletables( string.length() + 1 );
 
     KCompTreeNode *child = 0L;
     KCompTreeNode *parent = this;
-    deletables.insert( 0, parent );
+    deletables.replace( 0, parent );
     
     int i = 0;
     for ( ; i < string.length(); i++ )
     {
         child = parent->find( string.at( i ) );
         if ( child )
-            deletables.insert( i + 1, child );
+            deletables.replace( i + 1, child );
         else
             break;
 
