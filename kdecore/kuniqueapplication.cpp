@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include <qfile.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -78,7 +78,7 @@ struct DCOPRequest {
 
 class KUniqueApplicationPrivate {
 public:
-   Q3PtrList <DCOPRequest> requestList;
+   QList <DCOPRequest *> requestList;
    bool processingRequest;
    bool firstInstance;
 };
@@ -428,7 +428,7 @@ KUniqueApplication::processDelayed()
   d->processingRequest = true;
   while( !d->requestList.isEmpty() )
   {
-     DCOPRequest *request = d->requestList.take(0);
+     DCOPRequest *request = d->requestList.takeFirst();
      QByteArray replyData;
      DCOPCString replyType;
      if (request->fun == "newInstance()") {
