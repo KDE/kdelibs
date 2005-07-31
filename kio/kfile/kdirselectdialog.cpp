@@ -88,7 +88,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    bool modal)
     : KDialogBase( parent, name, modal, i18n("Select Folder"),
                    Ok|Cancel|User1, Ok, false,
-                   KGuiItem( i18n("New Folder"), "folder_new" ) ),
+                   KGuiItem( i18n("New Folder..."), "folder_new" ) ),
       m_localOnly( localOnly )
 {
     d = new KDirSelectDialogPrivate;
