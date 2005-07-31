@@ -19,7 +19,6 @@
 #ifndef KSTRINGHANDLER_H
 #define KSTRINGHANDLER_H
 
-#include <stdlib.h>        // for atoi()
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qregexp.h>            // for the word ranges

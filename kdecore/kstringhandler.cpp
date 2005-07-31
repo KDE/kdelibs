@@ -17,10 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-/* AIX needs strings.h for str*casecmp(), and our config.h loads it on AIX
-   So we don't need to include strings.h explicitly */
-#include "config.h"
-
 #include "kstringhandler.h"
 #include "kglobal.h"
 
