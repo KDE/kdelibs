@@ -464,10 +464,25 @@ void DownloadDialog::slotDetails()
   KMessageBox::information(this, info, i18n("Details"));
 }
 
+Q3ListViewItem *DownloadDialog::currentEntryItem()
+{
+  switch(m_curtab)
+  {
+    case 0: return lv_r->currentItem(); break;
+    case 1: return lv_d->currentItem(); break;
+    case 2: return lv_l->currentItem(); break;
+    default:
+      return 0;
+  }
+}
+
 void DownloadDialog::slotInstall()
 {
   Entry *e = getEntry();
   if(!e) return;
+
+  m_entryitem = currentEntryItem();
+  m_entryname = m_entryitem->text(0);
 
   kdDebug() << "download entry now" << endl;
 
@@ -497,17 +512,16 @@ void DownloadDialog::install(Entry *e)
   kapp->config()->sync();
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
-  m_entryitem = lv_r->findItem(m_entryname, 0);
-  if(m_entryitem) m_entryitem->setPixmap(0, pix);
-  m_entryitem = lv_d->findItem(m_entryname, 0);
-  if(m_entryitem) m_entryitem->setPixmap(0, pix);
-  m_entryitem = lv_l->findItem(m_entryname, 0);
-  if(m_entryitem) m_entryitem->setPixmap(0, pix);
 
- 
-  QPushButton *in;
-  in = *(m_buttons[d->m_page]->at(0));
-  if(in) in->setEnabled(false);
+  if(m_entryitem)
+    m_entryitem->setPixmap(0, pix);
+
+  if(currentEntryItem() == m_entryitem)
+  {
+    QPushButton *in;
+    in = *(m_buttons[d->m_page]->at(0));
+    if(in) in->setEnabled(false);
+  }
 }
 
 void DownloadDialog::slotInstalled(KIO::Job *job)
@@ -576,17 +590,18 @@ void DownloadDialog::slotSelected()
 
 Entry *DownloadDialog::getEntry()
 {
-  if(m_curtab == 0) m_entryitem = lv_r->currentItem();
-  else if(m_curtab == 1) m_entryitem = lv_d->currentItem();
-  else if(m_curtab == 2) m_entryitem = lv_l->currentItem();
-  else return 0;
+  Q3ListViewItem *entryItem = currentEntryItem();
+
+  if(!m_entryitem)
+    return 0;
+
+  QString entryName = m_entryitem->text(0);
 
   m_entryname = m_entryitem->text(0);
 
   for(Entry *e = m_entries.first(); e; e = m_entries.next())
-  {
-    if(e->name() == m_entryname) return e;
-  }
+    if(e->name() == entryName)
+      return e;
 
   return 0;
 }

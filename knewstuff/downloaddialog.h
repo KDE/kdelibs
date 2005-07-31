@@ -208,6 +208,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void loadProvider(Provider *p);
     void install(Entry *e);
     int installStatus(Entry *e);
+    Q3ListViewItem *currentEntryItem();
 
     ProviderLoader *m_loader;
     QString m_entryname;
