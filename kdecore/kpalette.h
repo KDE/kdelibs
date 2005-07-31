@@ -23,7 +23,7 @@
 #define KDELIBS_KPALETTE_H
 
 #include <qcolor.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include "kdelibs_export.h"
@@ -139,14 +139,14 @@ public:
     * @return the number of colors
     **/
    int nrColors() const
-   	{ return (int) mKolorList.count(); }
+   	{ return (int) mColorList.count(); }
 
    /**
     * Find color by index.
     * @param index the index of the desired color
     * @return The @p index -th color of the palette, null if not found.
     **/
-   QColor color(int index);
+   QColor color(int index) const;
    
    /**
     * Find index by @p color.
@@ -163,7 +163,7 @@ public:
     * Note that not all palettes have named the colors. Null is
     * returned if the color does not exist or has no name.
     **/
-   QString colorName(int index);
+   QString colorName(int index) const;
    
    /**
     * Find color name by @p color.
@@ -172,7 +172,7 @@ public:
     * Note also that each palette can give the same color
     * a different name.
     **/
-   QString colorName(const QColor &color)
+   QString colorName(const QColor &color) const
    	{ return colorName( findColor(color)); }
    
    /**
@@ -213,8 +213,13 @@ public:
    	{ return changeColor( findColor(oldColor), newColor, newColorName); }
 
 private:   
-   typedef struct { QColor color; QString name; } kolor;
-   Q3PtrList<kolor> mKolorList;
+   struct ColorNode 
+   {
+       ColorNode(const QColor &c, const QString &n)
+         : color(c), name(n) {}
+       QColor color; QString name;
+   };
+   QList<ColorNode> mColorList;
    
    QString mName;
    QString mDesc;
