@@ -1564,7 +1564,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       {
         // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
         emit part->browserExtension()->requestFocus(part);
-        if ( KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required"), i18n("Close"), i18n("Do Not Close") )
+        if ( KMessageBox::questionYesNo( window->part()->widget(),
+                                         i18n("Close window?"), i18n("Confirmation Required"),
+                                         KStdGuiItem::close(), KStdGuiItem::cancel() )
              == KMessageBox::Yes )
           doClose = true;
       }
