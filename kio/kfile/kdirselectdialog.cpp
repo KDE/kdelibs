@@ -86,7 +86,9 @@ static KURL rootUrl(const KURL &url)
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    QWidget *parent, const char *name,
                                    bool modal)
-    : KDialogBase( parent, name, modal, i18n("Select Folder"), Ok|Cancel),
+    : KDialogBase( parent, name, modal, i18n("Select Folder"),
+                   Ok|Cancel|User1, Ok, false,
+                   KGuiItem( i18n("New Folder"), "folder_new" ) ),
       m_localOnly( localOnly )
 {
     d = new KDirSelectDialogPrivate;
@@ -103,7 +105,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     // Create dir list
     m_treeView = new KFileTreeView( page );
-    m_treeView->addColumn( i18n("Folder") );
+    m_treeView->addColumn( i18n("Folders") );
     m_treeView->setColumnWidthMode( 0, QListView::Maximum );
     m_treeView->setResizeMode( QListView::AllColumns );
 
@@ -285,6 +287,11 @@ void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
     d->speedBar->save( config );
 
     config->sync();
+}
+
+void KDirSelectDialog::slotUser1()
+{
+    slotMkdir();
 }
 
 void KDirSelectDialog::accept()
