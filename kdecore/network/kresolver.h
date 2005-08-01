@@ -1,5 +1,5 @@
 /*  -*- mode: C++; coding: utf-8; -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -913,6 +913,13 @@ public:
    *		name.
    */
   static QStrList serviceName(int port, const char *protoname);
+
+  /**
+   * Returns this machine's local hostname.
+   *
+   * @return this machine's local hostname
+   */
+  static QString localHostName();
 
 protected:
 
