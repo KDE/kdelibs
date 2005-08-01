@@ -198,6 +198,7 @@ class KDECORE_EXPORT KAccelBase
 	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
 
  protected:
+        virtual bool isEnabledInternal() const;
 	struct ActionInfo
 	{
 		KAccelAction* pAction;

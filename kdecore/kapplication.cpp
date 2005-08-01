@@ -73,6 +73,7 @@
 #include <kprotocolinfo.h>
 #include <kkeynative.h>
 #include <kmdcodec.h>
+#include <kglobalaccel.h>
 
 #if defined Q_WS_X11
 #include <kstartupinfo.h>
@@ -828,7 +829,7 @@ void KApplication::init(bool GUIenabled)
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
-                  (1 << KIPC::ClipboardConfigChanged);
+                  (1 << KIPC::ClipboardConfigChanged | (1 << KIPC::BlockShortcuts));
 #endif
 
   // Trigger creation of locale.
@@ -1778,6 +1779,11 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
             case KIPC::ClipboardConfigChanged:
                 KClipboardSynchronizer::newConfiguration(arg);
+                break;
+                
+            case KIPC::BlockShortcuts:
+                KGlobalAccel::blockShortcuts(arg);
+                emit kipcMessage(id, arg); // some apps may do additional things
                 break;
             }
         }
