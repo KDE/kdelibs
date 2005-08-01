@@ -777,7 +777,7 @@ if (opcode == DCOPSend)
 //#endif
 		// handle a multicast.
 		int l = toApp.length()-1;
-		foreach (DCOPConnection *client, appIds) {
+		Q_FOREACH (DCOPConnection *client, appIds) {
 		    if (!l || (strncmp(client->appId.data(), toApp.data(), l) == 0))
 			{
 			    IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
@@ -1572,7 +1572,7 @@ void DCOPServer::broadcastApplicationRegistration( DCOPConnection* conn, const D
        << type << data;
     int datalen = ba.size();
     DCOPMsg *pMsg = 0;
-    foreach ( DCOPConnection* c, clients ) {
+    Q_FOREACH (DCOPConnection* c, clients) {
         if ( c->notifyRegister && (c != conn) ) {
             IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
                           sizeof(DCOPMsg), DCOPMsg, pMsg );

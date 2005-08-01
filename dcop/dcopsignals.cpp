@@ -47,7 +47,7 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const DCOPCString &_fun, const QB
    DCOPSignalConnectionList *list = connections.value(fun);
    if (!list) return;
    
-   foreach (DCOPSignalConnection *current, *list)
+   Q_FOREACH (DCOPSignalConnection *current, *list)
    {
       bool doSend = false;
       if (current->senderConn)

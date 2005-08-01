@@ -1665,7 +1665,7 @@ bool DCOPClient::receive(const DCOPCString &/*app*/, const DCOPCString &objId,
         DCOPCString toMatch;
         toMatch = objId.left(objId.length()-1);
         QList<DCOPObject*> matchList = DCOPObject::match(toMatch);
-        foreach (DCOPObject *objPtr, matchList) {
+        Q_FOREACH (DCOPObject *objPtr, matchList) {
             objPtr->setCallingDcopClient(this);
             if (!objPtr->process(fun, data, replyType, replyData))
                 return false;
@@ -1673,7 +1673,7 @@ bool DCOPClient::receive(const DCOPCString &/*app*/, const DCOPCString &objId,
         return true;
     } else if (!DCOPObject::hasObject(objId)) {
         if ( DCOPObjectProxy::proxies ) {
-            foreach (DCOPObjectProxy* proxy, *DCOPObjectProxy::proxies) {
+            Q_FOREACH (DCOPObjectProxy* proxy, *DCOPObjectProxy::proxies) {
                 // TODO: it.current()->setCallingDcopClient(this);
                 if ( proxy->process( objId, fun, data, replyType, replyData ) )
                     return true;
@@ -1755,7 +1755,7 @@ bool DCOPClient::find(const DCOPCString &app, const DCOPCString &objId,
         DCOPCString toMatch;
         toMatch = objId.left(objId.length()-1);
         QList<DCOPObject*> matchList = DCOPObject::match(toMatch);
-        foreach(DCOPObject *objPtr, matchList)
+        Q_FOREACH (DCOPObject *objPtr, matchList)
         {
             replyType = 0;
             replyData = QByteArray();
@@ -2289,11 +2289,11 @@ DCOPClient::emergencyClose()
     client_map_t *map = DCOPClient_CliMap;
     if (!map) return;
 
-    foreach (DCOPClient* client, map->values()) {
+    Q_FOREACH (DCOPClient* client, map->values()) {
         if (client)
             clients.insert(client);
     }
-    foreach (DCOPClient *cl, clients)
+    Q_FOREACH (DCOPClient *cl, clients)
     {
         if (cl->d->iceConn) {
             IceProtocolShutdown(cl->d->iceConn, cl->d->majorOpcode);

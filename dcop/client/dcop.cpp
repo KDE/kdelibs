@@ -90,7 +90,7 @@ void queryApplications(const QByteArray &filter)
 {
     int filterLen = filter.length();
     DCOPCStringList apps = dcop->registeredApplications();
-    foreach(DCOPCString clientId, apps)
+    Q_FOREACH (DCOPCString clientId, apps)
     {
 	if ( (clientId != dcop->appId()) &&
              !startsWith(clientId, "anonymous",9) &&
@@ -112,7 +112,7 @@ void queryObjects( const QByteArray &app, const QByteArray &filter )
     bool ok = false;
     bool isDefault = false;
     DCOPCStringList objs = dcop->remoteObjects( app, &ok );
-    foreach (DCOPCString objId, objs)
+    Q_FOREACH (DCOPCString objId, objs)
     {
         if (objId == "default")
         {
@@ -413,7 +413,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
     if( !list.count() )
 	return result;
 
-    foreach ( QFileInfo fi, list ) {
+    Q_FOREACH ( QFileInfo fi, list ) {
 	if ( fi.isReadable() )
 	    result.append( fi.fileName() );
     }
