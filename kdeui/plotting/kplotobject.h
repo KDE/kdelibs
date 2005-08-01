@@ -1,3 +1,5 @@
+//Added by qt3to4:
+#include <Q3PtrList>
 /***************************************************************************
                           kplotobject.h - A list of points to be plotted
                              -------------------
@@ -169,7 +171,7 @@ public:
 	*/
 	DPoint* point( unsigned int i ) { return pList.at(i); }
 
-	QPtrList<DPoint>* points() { return &pList; }
+	Q3PtrList<DPoint>* points() { return &pList; }
 
 /**@short Add a point to the object's list.
 	*@param p the DPoint to add.
@@ -196,7 +198,7 @@ public:
 	void clearPoints() { pList.clear(); }
 
 private:
-	QPtrList<DPoint> pList;
+	Q3PtrList<DPoint> pList;
 	PTYPE Type;
 	unsigned int Size, Parameter;
 	QString Color, Name;

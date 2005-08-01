@@ -19,17 +19,21 @@
 #include <kdebug.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <Q3PointArray>
+#include <QResizeEvent>
+#include <QPaintEvent>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
 
 KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *parent, const char* name )
- : QWidget( parent, name, WNoAutoErase ),
+ : QWidget( parent, name, Qt::WNoAutoErase ),
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
  {
-	setBackgroundMode( QWidget::NoBackground );
+	setBackgroundMode( Qt::NoBackground );
 
 	//set DataRect
 	setLimits( x1, x2, y1, y2 );
@@ -184,7 +188,7 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::CURVE :
 				{
-					p->setPen( QPen( QColor( po->color() ), po->size(), (QPen::PenStyle)po->param() ) );
+					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
 					DPoint *dp = po->points()->first();
 					p->moveTo( dp->qpoint( PixRect, DataRect ) );
 					for ( dp = po->points()->next(); dp; dp = po->points()->next() )
@@ -195,16 +199,16 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				case KPlotObject::LABEL : //draw label centered at point in x, and slightly below point in y.
 				{
 					QPoint q = po->points()->first()->qpoint( PixRect, DataRect );
-					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::DontClip, po->name() );
+					p->drawText( q.x()-20, q.y()+6, 40, 10, Qt::AlignCenter | Qt::TextDontClip, po->name() );
 					break;
 				}
 
 				case KPlotObject::POLYGON :
 				{
-					p->setPen( QPen( QColor( po->color() ), po->size(), (QPen::PenStyle)po->param() ) );
+					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
 					p->setBrush( po->color() );
 
-					QPointArray a( po->count() );
+					Q3PointArray a( po->count() );
 
 					unsigned int i=0;
 					for ( DPoint *dp = po->points()->first(); dp; dp = po->points()->next() )
@@ -297,7 +301,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					QString str = QString( "%1" ).arg( lab, BottomAxis.labelFieldWidth(), BottomAxis.labelFmt(), BottomAxis.labelPrec() );
 					if ( px > 0 && px < PixRect.width() ) {
 						QRect r( px - BIGTICKSIZE, PixRect.height()+BIGTICKSIZE, 2*BIGTICKSIZE, BIGTICKSIZE );
-						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+						p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, str );
 					}
 				}
 		
@@ -343,7 +347,7 @@ void KPlotWidget::drawBox( QPainter *p ) {
 					QString str = QString( "%1" ).arg( lab, LeftAxis.labelFieldWidth(), LeftAxis.labelFmt(), LeftAxis.labelPrec() );
 					if ( py > 0 && py < PixRect.height() ) {
 						QRect r( -2*BIGTICKSIZE, py-SMALLTICKSIZE, 2*BIGTICKSIZE, 2*SMALLTICKSIZE );
-						p->drawText( r, Qt::AlignCenter | Qt::DontClip, str );
+						p->drawText( r, Qt::AlignCenter | Qt::TextDontClip, str );
 					}
 				}
 	

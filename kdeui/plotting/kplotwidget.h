@@ -19,6 +19,11 @@
 #define _KPLOTWIDGET_H_
 
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QResizeEvent>
+#include <QPaintEvent>
+#include <Q3PtrList>
 #include "kplotobject.h"
 #include "kplotaxis.h"
 
@@ -248,7 +253,7 @@ protected:
 	//Limits of the plot area in data units
 	DRect DataRect;
 	//List of KPlotObjects
-	QPtrList<KPlotObject> ObjectList;
+	Q3PtrList<KPlotObject> ObjectList;
 
 	//Colors
 	QColor cBackground, cForeground, cGrid;
