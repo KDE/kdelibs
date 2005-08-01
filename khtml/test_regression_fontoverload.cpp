@@ -30,6 +30,7 @@
 #include <qwidget.h>
 #include <assert.h>
 #include <QX11Info>
+#include <QPainter>
 #include <fixx11h.h>
 
 struct MetricsInfo {
@@ -72,22 +73,6 @@ static MetricsInfo compatMetrics[] = {
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
     {"-Adobe-Helvetica-Medium-R-Normal--10-100-75-75-P-56-ISO10646-1", 10, 1, 2},
     {"-Adobe-Helvetica-Medium-O-Normal--10-100-75-75-P-57-ISO10646-1", 10, 1, 2},
     {"-Adobe-Helvetica-Bold-R-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
@@ -136,22 +121,6 @@ static MetricsInfo compatMetrics[] = {
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
     {"-Adobe-Times-Medium-R-Normal--8-80-75-75-P-44-ISO10646-1", 7, 1, 1},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
-    {"-misc-ahem-medium-r-normal--17-120-100-100-c-166-iso10646-1", 13, 2, 2},
     {"-Adobe-Helvetica-Medium-R-Normal--10-100-75-75-P-56-ISO10646-1", 10, 1, 2},
     {"-Adobe-Helvetica-Medium-O-Normal--10-100-75-75-P-57-ISO10646-1", 10, 1, 2},
     {"-Adobe-Helvetica-Bold-R-Normal--10-100-75-75-P-60-ISO10646-1", 10, 1, 2},
@@ -176,12 +145,8 @@ static MetricsInfo* grabMetrics(QString name)
     for (int pos = 0; compatMetrics[pos].name; ++pos)
         if (name == QLatin1String(compatMetrics[pos].name))
             return &compatMetrics[pos];
-    qDebug("DON'T KNOW:%s", name.latin1());
     return 0;
 }
-
-#define AHEM  "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1"
-//#define AHEM "-misc-ahem-medium-r-normal--0-0-0-0-m-0-adobe-fontspecific"
 
 class QFakeFontEngine : public QFontEngineXLFD
 {
@@ -193,6 +158,8 @@ public:
 
     bool  haveMetrics;
     qreal m_ascent, m_descent, m_leading;
+    bool  ahem;
+    int   pixS;
 #if 0
     virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
                                          const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
@@ -208,6 +175,15 @@ public:
     int minRightBearing() const { return 0; }
     int cmap() const;
 #endif
+
+    Type type() const
+    {
+        if (ahem)
+            return QFontEngine::Freetype;
+        else
+            return QFontEngine::XLFD; 
+    }
+
 
     qreal ascent() const 
     {
@@ -227,7 +203,9 @@ public:
 
     qreal leading() const
     {
-      if (haveMetrics)
+      if (ahem)
+        return 0;
+      else if (haveMetrics)
         return m_leading;
       else
         return QFontEngineXLFD::leading();
@@ -236,11 +214,71 @@ public:
     bool canRender( const QChar *string,  int len );
 };
 
+//OK. This is evil. Since we don't use Xft, we hijack the FreeType painting hook in the X11 engine
+//for ahem, as unfortunately the drawing is in the paint engine, and not the font engine in Qt4
+class QPaintEngine;
+class KDE_EXPORT QX11PaintEngine: public QPaintEngine
+{
+    void drawFreetype(const QPointF &p, const QTextItemInt &si);
+};
+
+void qt_draw_transformed_rect(QPaintEngine *pe, int x, int y, int w, int h, bool fill);
+
+void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
+{
+    if (!si.num_glyphs) return;
+
+    QFakeFontEngine *eng = static_cast<QFakeFontEngine*>(si.fontEngine);
+
+    int x       = int(p.x());
+    int y       = int(p.y());
+    int pixS    = int(eng->pixS);
+    int advance = pixS;
+    int ascent  = int(eng->ascent());
+    int descent = int(eng->descent());
+
+    if (si.flags & QTextItem::RightToLeft)
+    {
+        x       = x + advance * (si.num_glyphs - 1);
+        advance = -advance;
+    }
+
+    for (int pos = 0; pos < si.num_glyphs; ++pos)
+    {
+        QRect rect;
+        switch (si.glyphs[pos].glyph)
+        {
+        case ' ':
+            rect = QRect();
+            break;
+        case 'p':
+            //Below the baseline, including it
+            rect = QRect(x, y, pixS, descent + 1);
+            break;
+        case 0xC9:
+            //Above the baseline
+            rect = QRect(x, y - ascent, pixS, ascent);
+            break;
+        default:
+            //Whole block
+            rect = QRect(x, y - ascent, pixS, pixS);
+        }
+
+        //A bit overkill, but this gets the job done without hassling with private data
+        qt_draw_transformed_rect(this, rect.x(), rect.y(), rect.width(), rect.height(), true);
+
+        x += advance;
+    }
+}
+
 
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
+    pixS = size;
+    ahem = QString::fromLatin1(name).contains("ahem");
     this->name = QLatin1String(name);
+
     MetricsInfo* metrics = grabMetrics(name);
     if (metrics)
     {
@@ -339,6 +377,11 @@ static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
     return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 }
 
+static QString ahem_pickxlfd( int pixelsize )
+{
+    return QString( "-misc-ahem-medium-r-normal--%1-*-100-100-c-*-iso10646-1" ).arg( pixelsize );
+}
+
 static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 {
     if ( pixelsize >= 24 )
@@ -366,7 +409,7 @@ QFontDatabase::findFont( int script, const QFontPrivate *fp,
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
     else if ( family == "ahem" )
-        xlfd = AHEM;
+        xlfd = ahem_pickxlfd( request.pixelSize );
     else
         xlfd = helv_pickxlfd( request.pixelSize,  request.style == QFont::StyleItalic, request.weight > 50 );
 
