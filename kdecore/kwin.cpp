@@ -78,9 +78,9 @@ static void kwin_net_create_atoms() {
 
 	atoms[n] = &kde_wm_change_state;
 	names[n++] = "_KDE_WM_CHANGE_STATE";
-        
+
         atoms[n] = &kde_wm_window_opacity;
-        names[n++] = (char*) "_KDE_WM_WINDOW_OPACITY";
+        names[n++] = (char*) "_NET_WM_WINDOW_OPACITY";
 
         atoms[n] = &kde_wm_window_shadow;
         names[n++] = (char*) "_KDE_WM_WINDOW_SHADOW";
