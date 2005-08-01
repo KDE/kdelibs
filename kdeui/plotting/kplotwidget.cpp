@@ -190,9 +190,12 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				{
 					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
 					DPoint *dp = po->points()->first();
+#warning "Qt4 : moveTo ? lineTo ?"
+#if 0					
 					p->moveTo( dp->qpoint( PixRect, DataRect ) );
 					for ( dp = po->points()->next(); dp; dp = po->points()->next() )
 						p->lineTo( dp->qpoint( PixRect, DataRect ) );
+#endif
 					break;
 				}
 
@@ -206,7 +209,8 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				case KPlotObject::POLYGON :
 				{
 					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
-					p->setBrush( po->color() );
+#warning "Qt4 p->setBrush( po->color() ); ?"
+					//p->setBrush( po->color() );
 
 					Q3PointArray a( po->count() );
 
