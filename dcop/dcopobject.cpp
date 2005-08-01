@@ -268,7 +268,7 @@ DCOPObjectProxy::DCOPObjectProxy( DCOPClient*)
 DCOPObjectProxy:: ~DCOPObjectProxy()
 {
     if ( proxies )
-	proxies->removeAt( proxies->indexOf(this) );
+	proxies->removeAll( this );
 }
 
 bool DCOPObjectProxy::process( const DCOPCString& /*obj*/,
