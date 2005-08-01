@@ -545,7 +545,9 @@ enum ETextDecoration {
 };
 
 enum EPageBreak {
-    PBAUTO, PBALWAYS, PBAVOID
+    PBAUTO, PBALWAYS, PBAVOID,
+    /* reserved for later use: */
+    PBLEFT, PBRIGHT
 };
 
 class StyleInheritedData : public Shared<StyleInheritedData>
@@ -575,12 +577,11 @@ public:
     short border_hspacing;
     short border_vspacing;
 
-    DOM::QuotesValueImpl* quotes;
-
     // Paged media properties.
     short widows;
     short orphans;
-    EPageBreak page_break_inside : 2;
+
+    DOM::QuotesValueImpl* quotes;
 };
 
 
@@ -711,7 +712,9 @@ protected:
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
 
-                unsigned int unused : 28;
+                bool _page_break_inside : 1; // AUTO/AVOID
+
+                unsigned int unused : 27;
             } f;
             Q_UINT64 _iflags;
         };
@@ -739,8 +742,8 @@ protected:
                 ETableLayout _table_layout : 1;
                 bool _flowAroundFloats :1;
 
-                EPageBreak _page_break_before : 2;
-                EPageBreak _page_break_after : 2;
+                EPageBreak _page_break_before : 3;
+                EPageBreak _page_break_after : 3;
 
                 PseudoId _styleType : 4;
 		bool _affectedByHover : 1;
@@ -748,7 +751,7 @@ protected:
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 22;
+                unsigned int unused : 20;
             } f;
             Q_UINT64 _niflags;
         };
@@ -799,6 +802,7 @@ protected:
 	inherited_flags.f._visuallyOrdered = false;
 	inherited_flags.f._htmlHacks=false;
 	inherited_flags.f._user_input = UI_NONE;
+	inherited_flags.f._page_break_inside = true;
         inherited_flags.f.unused = 0;
 
 	noninherited_flags._niflags = 0L; // for safety: without this, the equality method sometimes
@@ -998,7 +1002,7 @@ public:
 
     short widows() const { return inherited->widows; }
     short orphans() const { return inherited->orphans; }
-    EPageBreak pageBreakInside() const { return inherited->page_break_inside; }
+    bool pageBreakInside() const { return inherited_flags.f._page_break_inside; }
     EPageBreak pageBreakBefore() const { return noninherited_flags.f._page_break_before; }
     EPageBreak pageBreakAfter() const { return noninherited_flags.f._page_break_after; }
 
@@ -1151,7 +1155,7 @@ public:
 
     void setWidows(short w) { SET_VAR(inherited, widows, w); }
     void setOrphans(short o) { SET_VAR(inherited, orphans, o); }
-    void setPageBreakInside(EPageBreak b) { SET_VAR(inherited, page_break_inside, b); }
+    void setPageBreakInside(bool b) { inherited_flags.f._page_break_inside = b; }
     void setPageBreakBefore(EPageBreak b) { noninherited_flags.f._page_break_before = b; }
     void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
 

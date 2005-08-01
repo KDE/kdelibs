@@ -2253,8 +2253,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 break;
             case CSS_VAL_LEFT:
             case CSS_VAL_RIGHT:
+                // CSS2.1: "Conforming user agents may map left/right to always."
             case CSS_VAL_ALWAYS:
-                style->setPageBreakBefore(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                style->setPageBreakBefore(PBALWAYS);
                 break;
             case CSS_VAL_AVOID:
                 style->setPageBreakBefore(PBAVOID);
@@ -2273,8 +2274,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 break;
             case CSS_VAL_LEFT:
             case CSS_VAL_RIGHT:
+                // CSS2.1: "Conforming user agents may map left/right to always."
             case CSS_VAL_ALWAYS:
-                style->setPageBreakAfter(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                style->setPageBreakAfter(PBALWAYS);
                 break;
             case CSS_VAL_AVOID:
                 style->setPageBreakAfter(PBAVOID);
@@ -2287,9 +2289,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakInside, PageBreakInside, PageBreak)
         if (!primitiveValue) return;
         if (primitiveValue->getIdent() == CSS_VAL_AUTO)
-            style->setPageBreakInside(PBAUTO);
+            style->setPageBreakInside(true);
         else if (primitiveValue->getIdent() == CSS_VAL_AVOID)
-            style->setPageBreakInside(PBAVOID);
+            style->setPageBreakInside(false);
         return;
     }
 //    case CSS_PROP_PAUSE_AFTER:

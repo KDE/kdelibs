@@ -221,9 +221,8 @@ StyleInheritedData::StyleInheritedData()
       font(), color( RenderStyle::initialColor() ),
       border_hspacing( RenderStyle::initialBorderHorizontalSpacing() ),
       border_vspacing( RenderStyle::initialBorderVerticalSpacing() ),
-      quotes(0),
       widows( RenderStyle::initialWidows() ), orphans( RenderStyle::initialOrphans() ),
-      page_break_inside( RenderStyle::initialPageBreak() )
+      quotes(0)
 {
 }
 
@@ -238,7 +237,7 @@ StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
       font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
       border_hspacing( o.border_hspacing ),
       border_vspacing( o.border_vspacing ),
-      widows(o.widows), orphans(o.orphans), page_break_inside(o.page_break_inside)
+      widows(o.widows), orphans(o.orphans)
 {
     quotes = o.quotes;
     if (quotes) quotes->ref();
@@ -259,8 +258,7 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
         border_vspacing == o.border_vspacing &&
         quotes == o.quotes &&
         widows == o.widows &&
-        orphans == o.orphans &&
-        page_break_inside == o.page_break_inside;
+        orphans == o.orphans ;
 
     // doesn't work because structs are not packed
     //return memcmp(this, &o, sizeof(*this))==0;
