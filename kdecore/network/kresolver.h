@@ -914,6 +914,13 @@ public:
    */
   static QList<QByteArray> serviceName(int port, const char *protoname);
 
+  /**
+   * Returns this machine's local hostname.
+   *
+   * @return this machine's local hostname
+   */
+  static QString localHostName();
+
 protected:
 
   /**

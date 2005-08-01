@@ -27,12 +27,14 @@
 // System includes
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/param.h>
 #include <errno.h>
 #include <netdb.h>
 #include <time.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 // Qt includes
 #include <QCoreApplication>
@@ -855,6 +857,58 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 #endif
 
   return lst;
+}
+
+QString KResolver::localHostName()
+{
+  QByteArray name;
+  int len;
+
+#ifdef MAXHOSTNAMELEN
+  len = MAXHOSTNAMELEN;
+#else
+  len = 256;
+#endif
+
+  while (true)
+    {
+      name.resize(len);
+
+      if (gethostname(name.data(), len) == 0)
+	{
+	  // Call succeeded, but it's not guaranteed to be NUL-terminated
+	  // Fortunately, QByteArray is always NUL-terminated
+
+	  // Note that some systems return success even if they did truncation
+	  break;
+	}
+
+      // Call failed
+      if (errno == ENAMETOOLONG || errno == EINVAL)
+	len += 256;
+      else
+	{
+	  // Oops! Unknown error!
+	  name.clear();
+	}
+    }
+
+  if (name.isEmpty())
+    return QLatin1String("localhost");
+
+  if (name.find('.') == -1)
+    {
+      // not fully qualified
+      // must resolve
+      KResolverResults results = resolve(name, "0", CanonName);
+      if (results.isEmpty())
+	// cannot find a valid hostname!
+	return QLatin1String("localhost");
+      else
+	return results.first().canonicalName();
+    }
+
+  return domainToUnicode(name);
 }
 
 // forward declaration
