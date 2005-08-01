@@ -104,6 +104,7 @@ public:
     int wordCount, errorCount;
     int checksRequested, checksDone;
     int disablePercentage;
+    int disableWordCount;
     bool completeRehighlightRequired;
     bool active, automatic, autoReady;
     bool globalConfig, spellReady;
@@ -295,6 +296,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( Q3TextEdit *textEdit,
     KConfigGroupSaver cs( config, "KSpell" );
     d->disablePercentage = config->readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
     d->disablePercentage = QMIN( d->disablePercentage, 101 );
+    d->disableWordCount = config->readNumEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -567,7 +569,7 @@ void KDictSpellingHighlighter::slotAutoDetection()
 
     if ( d->automatic ) {
 	// tme = Too many errors
-	bool tme = d->errorCount * 100 >= d->disablePercentage * d->wordCount;
+	bool tme = d->wordCount >= d->disableWordCount && d->errorCount * 100 >= d->disablePercentage * d->wordCount;
 	if ( d->active && tme )
 	    d->active = false;
 	else if ( !d->active && !tme )
