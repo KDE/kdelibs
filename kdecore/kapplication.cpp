@@ -829,7 +829,7 @@ void KApplication::init(bool GUIenabled)
   kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
                   (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
                   (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
-                  (1 << KIPC::ClipboardConfigChanged | (1 << KIPC::BlockShortcuts));
+                  (1 << KIPC::ClipboardConfigChanged) | (1 << KIPC::BlockShortcuts);
 #endif
 
   // Trigger creation of locale.
