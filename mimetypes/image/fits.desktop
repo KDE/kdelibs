@@ -5,8 +5,10 @@ Type=MimeType
 MimeType=image/fits
 Icon=image
 Comment=FITS Image
+Comment[de]=FITS-Bild
 Comment[et]=FITS pildifail
 Comment[ga]=Íomhá FITS
+Comment[zh_CN]=FITS 图像
 ### TODO: what file patterns, especially that application/fits has the same
 # RFC 4047 tells that image/fits are also application/fits
 X-KDE-IsAlso=application/fits

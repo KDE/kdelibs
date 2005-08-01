@@ -1,8 +1,10 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Bzip2-ed Tar Archive
+Comment[de]=Bzip2-komprimiertes Tar-Archiv
 Comment[et]=Bzip2-tihendusega tar-arhiiv
 Comment[ga]=Cartlann tar comhbhrúite le bzip2
+Comment[zh_CN]=Bzip 压缩的 Tar 归档
 MimeType=application/x-tbz2
 Icon=tgz
 Type=MimeType

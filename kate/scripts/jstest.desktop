@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Name=Kate Part JavaScript Test
 Name[af]=Kate Deel Javaskript Toets
+Name[de]=Kate Part JavaScript-Test
 Name[et]=Kate komponendi JavaScripti test
 Name[gl]=Comprobar Kate Part JavaScript
 Name[pa]=Kate Part JavaScript ਜਾਂਚ
@@ -15,6 +16,7 @@ Comment=Script for testing kate part's scripting
 Comment[af]=Skript om te toets of Kate se skript masjien werk
 Comment[bg]=Скрипт за тестване на модулите за поддръжка на скриптове
 Comment[da]=Script til at teste katepart scripter
+Comment[de]=Ein Skript zum Testen der Skriptfunktionalität des Kate Parts.
 Comment[et]=Skript Kate komponendi skriptimisomaduste testimiseks
 Comment[gl]=Guión para probar os guións das partes de kate
 Comment[pa]=kate part ਦੀ ਸਕ੍ਰਿਪਟਿੰਗ ਦੀ ਜਾਂਚ ਲਈ ਸਕ੍ਰਿਪਟ
