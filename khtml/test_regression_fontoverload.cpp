@@ -26,18 +26,56 @@
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
 #include <qfont.h>
+#include <qpainter.h>
 #include "khtml_settings.h"
 #include <qwidget.h>
 #include <assert.h>
 
-#define AHEM  "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1"
-//#define AHEM "-misc-ahem-medium-r-normal--0-0-0-0-m-0-adobe-fontspecific"
-
 class QFakeFontEngine : public QFontEngineXLFD
 {
+    bool ahem;
+    int  pixS;
 public:
     QFakeFontEngine( XFontStruct *fs, const char *name, int size );
     ~QFakeFontEngine();
+
+    int leading() const
+    {
+        if (ahem)
+            return 0;
+        else
+            return QFontEngineXLFD::leading();
+    }
+
+    void draw( QPainter *p, int x, int y, const QTextEngine *engine, const QScriptItem *si, int textFlags )
+    {
+        //Sometimes X misrounds stuff for larger ahem, so we have to do it ourselves.
+        if (!ahem || (si->analysis.bidiLevel & 1) ) //We're fine if not ahem or bidi.
+            return QFontEngineXLFD::draw(p, x, y, engine, si, textFlags);
+
+        glyph_t* gl = engine->glyphs(si);
+        for (int pos = 0; pos < si->num_glyphs; ++pos)
+        {
+            switch (gl[pos])
+            {
+            case ' ':
+                break;
+            case 'p':
+                //Below the baseline, including it
+                p->fillRect(x, y, pixS, descent() + 1, p->pen().color());
+                break;
+            case 0xC9:
+                //Above the baseline
+                p->fillRect(x, y - ascent(), pixS, ascent(), p->pen().color());
+                break;
+            default:
+                //Whole block
+                p->fillRect(x, y - ascent(), pixS, pixS,  p->pen().color());
+            }
+            x += pixS;
+        }
+    }
+
 #if 0
     virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
                                          const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
@@ -59,7 +97,8 @@ public:
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
-
+    pixS = size;
+    ahem = QString::fromLatin1(name).contains("ahem");
 }
 
 QFakeFontEngine::~QFakeFontEngine()
@@ -147,6 +186,11 @@ static QString courier_pickxlfd( int pixelsize, bool italic, bool bold )
     return QString( "-adobe-courier-%1-%2-normal--%3-*-75-75-m-*-iso10646-1" ).arg( bold ? "bold" : "medium" ).arg( italic ? "o" : "r" ).arg( pixelsize );
 }
 
+static QString ahem_pickxlfd( int pixelsize )
+{
+    return QString( "-misc-ahem-medium-r-normal--%1-*-100-100-c-*-iso10646-1" ).arg( pixelsize );
+}
+
 static QString helv_pickxlfd( int pixelsize, bool italic, bool bold )
 {
     if ( pixelsize >= 24 )
@@ -174,7 +218,7 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     else if ( family == "times new roman" || family == "times" )
         xlfd = "-adobe-times-medium-r-normal--8-80-75-75-p-44-iso10646-1";
     else if ( family == "ahem" )
-        xlfd = AHEM;
+        xlfd = ahem_pickxlfd( request.pixelSize );
     else
         xlfd = helv_pickxlfd( request.pixelSize, request.italic, request.weight > 50 );
 
@@ -296,7 +340,7 @@ KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
 {
     static bool done = false;
     if (done) return;
-    QString xlfd = AHEM;
+    QString xlfd = ahem_pickxlfd(40);
     XFontStruct *xfs;
     xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
     if (!xfs) // as long as you don't do screenshots, it's maybe fine
