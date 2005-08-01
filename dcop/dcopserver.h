@@ -162,7 +162,7 @@ private:
     QTimer *m_deadConnectionTimer;
     QList<DCOPListener*> listener;
     QHash<DCOPCString, DCOPConnection*> appIds; // index on app id
-    QHash<void*, DCOPConnection*> clients; // index on iceConn
+    QHash<IceConn, DCOPConnection*> clients; // index on iceConn
     QHash<int, DCOPConnection*> fd_clients; // index on fd
     QList<IceConn> deadConnections;
 
