@@ -52,5 +52,8 @@ noinst_HEADERS = kresolver_p.h \
 	ksocketbuffer_p.h \
 	syssocket.h
 
+configdir = $(kde_confdir)
+config_DATA = ipv6blacklist
+
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
