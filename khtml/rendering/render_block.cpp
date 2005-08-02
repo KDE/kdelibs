@@ -47,6 +47,42 @@ using namespace DOM;
 
 namespace khtml {
 
+// -------------------------------------------------------------------------------------------------------
+
+// Our MarginInfo state used when laying out block children.
+RenderBlock::MarginInfo::MarginInfo(RenderBlock* block, int top, int bottom)
+{
+    // Whether or not we can collapse our own margins with our children.  We don't do this
+    // if we had any border/padding (obviously), if we're the root or HTML elements, or if
+    // we're positioned, floating, a table cell.
+    m_canCollapseWithChildren = !block->isCanvas() && !block->isRoot() && !block->isPositioned() &&
+        !block->isFloating() && !block->isTableCell() && !block->hasOverflowClip() && !block->isInlineBlockOrInlineTable();
+
+    m_canCollapseTopWithChildren = m_canCollapseWithChildren && (top == 0) /*&& block->style()->marginTopCollapse() != MSEPARATE */;
+
+    // If any height other than auto is specified in CSS, then we don't collapse our bottom
+    // margins with our children's margins.  To do otherwise would be to risk odd visual
+    // effects when the children overflow out of the parent block and yet still collapse
+    // with it.  We also don't collapse if we have any bottom border/padding.
+    m_canCollapseBottomWithChildren = m_canCollapseWithChildren && (bottom == 0) &&
+        (block->style()->height().isVariable() && block->style()->height().value() == 0) /*&& block->style()->marginBottomCollapse() != MSEPARATE*/;
+
+    m_quirkContainer = block->isTableCell() || block->isBody() /*|| block->style()->marginTopCollapse() == MDISCARD ||
+        block->style()->marginBottomCollapse() == MDISCARD*/;
+
+    m_atTopOfBlock = true;
+    m_atBottomOfBlock = false;
+
+    m_posMargin = m_canCollapseTopWithChildren ? block->maxTopMargin(true) : 0;
+    m_negMargin = m_canCollapseTopWithChildren ? block->maxTopMargin(false) : 0;
+
+    m_selfCollapsingBlockClearedFloat = false;
+
+    m_topQuirk = m_bottomQuirk = m_determinedTopQuirk = false;
+}
+
+// -------------------------------------------------------------------------------------------------------
+
 RenderBlock::RenderBlock(DOM::NodeImpl* node)
     : RenderFlow(node)
 {
@@ -192,7 +228,6 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
         if (newChild->isInline()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
-//            newChild->setNeedsLayoutAndMinMaxRecalc();
             return;
         }
         else if (beforeChild->parent()->firstChild() != beforeChild)
@@ -233,14 +268,12 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             if (beforeChild) {
                 if ( beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBlock() ) {
                     beforeChild->previousSibling()->addChild(newChild);
-//                    newChild->setNeedsLayoutAndMinMaxRecalc();
                     return;
                 }
             }
             else {
                 if ( m_last && m_last->isAnonymousBlock() ) {
                     m_last->addChild(newChild);
-//                    newChild->setNeedsLayoutAndMinMaxRecalc();
                     return;
                 }
             }
@@ -250,7 +283,6 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             RenderBox::addChild(newBox,beforeChild);
             newBox->addChild(newChild);
             newBox->setPos(newBox->xPos(), -500000);
-//            newChild->setNeedsLayoutAndMinMaxRecalc();
             return;
         }
         else {
@@ -532,7 +564,6 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // children.
     bool canCollapseOwnMargins = !isPositioned() && !isFloating() && !isTableCell();
 
-    //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if (childrenInline())
         layoutInlineChildren( relayoutChildren );
     else
@@ -579,7 +610,9 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     layoutPositionedObjects( relayoutChildren );
 
-    //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
+    // Always ensure our overflow width/height are at least as large as our width/height.
+    m_overflowWidth = kMax(m_overflowWidth, (int)m_width);
+    m_overflowHeight = kMax(m_overflowHeight, m_height);
 
     if (canCollapseOwnMargins && m_height == 0) {
         // We are a block with no border and padding and a computed height
@@ -596,18 +629,99 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         m_maxBottomNegMargin = m_maxBottomPosMargin = 0;
     }
 
-    // Always ensure our overflow width/height is at least as large as our width/height.
-    if (m_overflowWidth < m_width)
-        m_overflowWidth = m_width;
-    if (m_overflowHeight < m_height)
-        m_overflowHeight = m_height;
-
     // Update our scrollbars if we're overflow:auto/scroll now that we know if
     // we overflow or not.
     if (style()->hidesOverflow() && m_layer)
         m_layer->checkScrollbarsAfterLayout();
 
     setNeedsLayout(false);
+}
+
+void RenderBlock::adjustPositionedBlock(RenderObject* child, const MarginInfo& marginInfo)
+{
+    if (child->isBox() && child->hasStaticX()) {
+        if (style()->direction() == LTR)
+            static_cast<RenderBox*>(child)->setStaticX(borderLeft() + paddingLeft());
+        else
+            static_cast<RenderBox*>(child)->setStaticX(borderRight() + paddingRight());
+    }
+
+    if (child->isBox() && child->hasStaticY()) {
+        int marginOffset = 0;
+        if (!marginInfo.canCollapseWithTop()) {
+            int collapsedTopPos = marginInfo.posMargin();
+            int collapsedTopNeg = marginInfo.negMargin();
+            bool posMargin = child->marginTop() >= 0;
+            if (posMargin && child->marginTop() > collapsedTopPos)
+                collapsedTopPos = child->marginTop();
+            else if (!posMargin && child->marginTop() > collapsedTopNeg)
+                collapsedTopNeg = child->marginTop();
+            marginOffset += (collapsedTopPos - collapsedTopNeg) - child->marginTop();
+        }
+
+        static_cast<RenderBox*>(child)->setStaticY(m_height + marginOffset);
+    }
+}
+
+void RenderBlock::adjustFloatingBlock(const MarginInfo& marginInfo)
+{
+    // The float should be positioned taking into account the bottom margin
+    // of the previous flow.  We add that margin into the height, get the
+    // float positioned properly, and then subtract the margin out of the
+    // height again.  In the case of self-collapsing blocks, we always just
+    // use the top margins, since the self-collapsing block collapsed its
+    // own bottom margin into its top margin.
+    //
+    // Note also that the previous flow may collapse its margin into the top of
+    // our block.  If this is the case, then we do not add the margin in to our
+    // height when computing the position of the float.   This condition can be tested
+    // for by simply calling canCollapseWithTop.  See
+    // http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/046.html for
+    // an example of this scenario.
+    int marginOffset = marginInfo.canCollapseWithTop() ? 0 : marginInfo.margin();
+    m_height += marginOffset;
+    positionNewFloats();
+    m_height -= marginOffset;
+}
+
+RenderObject* RenderBlock::handleSpecialChild(RenderObject* child, const MarginInfo& marginInfo, CompactInfo& compactInfo, bool& handled)
+{
+    // Handle positioned children first.
+    RenderObject* next = handlePositionedChild(child, marginInfo, handled);
+    if (handled) return next;
+
+    // Handle floating children next.
+    next = handleFloatingChild(child, marginInfo, handled);
+    if (handled) return next;
+
+    // See if we have a compact element.  If we do, then try to tuck the compact element into the margin space of the next block.
+    next = handleCompactChild(child, compactInfo, marginInfo, handled);
+    if (handled) return next;
+
+    // Finally, see if we have a run-in element.
+    return handleRunInChild(child, handled);
+}
+
+RenderObject* RenderBlock::handlePositionedChild(RenderObject* child, const MarginInfo& marginInfo, bool& handled)
+{
+    if (child->isPositioned()) {
+        handled = true;
+        child->containingBlock()->insertPositionedObject(child);
+        adjustPositionedBlock(child, marginInfo);
+        return child->nextSibling();
+    }
+    return 0;
+}
+
+RenderObject* RenderBlock::handleFloatingChild(RenderObject* child, const MarginInfo& marginInfo, bool& handled)
+{
+    if (child->isFloating()) {
+        handled = true;
+        insertFloatingObject(child);
+        adjustFloatingBlock(marginInfo);
+        return child->nextSibling();
+    }
+    return 0;
 }
 
 static inline bool isAnonymousWhitespace( RenderObject* o ) {
@@ -618,107 +732,420 @@ static inline bool isAnonymousWhitespace( RenderObject* o ) {
            static_cast<RenderText *>(fc)->text()[0].unicode() == ' ';
 }
 
+RenderObject* RenderBlock::handleCompactChild(RenderObject* child, CompactInfo& compactInfo, const MarginInfo& marginInfo, bool& handled)
+{
+    // FIXME: We only deal with one compact at a time.  It is unclear what should be
+    // done if multiple contiguous compacts are encountered.  For now we assume that
+    // compact A followed by another compact B should simply be treated as block A.
+    if (child->isCompact() && !compactInfo.compact() && (child->childrenInline() || child->isReplaced())) {
+        // Get the next non-positioned/non-floating RenderBlock.
+        RenderObject* next = child->nextSibling();
+        RenderObject* curr = next;
+        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
+            curr = curr->nextSibling();
+        if (curr && curr->isRenderBlock() && !curr->isCompact() && !curr->isRunIn()) {
+            curr->calcWidth(); // So that horizontal margins are correct.
+            // Need to compute margins for the child as though it is a block.
+            child->style()->setDisplay(BLOCK);
+            child->calcWidth();
+            child->style()->setDisplay(COMPACT);
+
+            int childMargins = child->marginLeft() + child->marginRight();
+            int margin = style()->direction() == LTR ? curr->marginLeft() : curr->marginRight();
+            if (margin >= (childMargins + child->maxWidth())) {
+                // The compact will fit in the margin.
+                handled = true;
+                compactInfo.set(child, curr);
+                child->layoutIfNeeded();
+                int off = marginInfo.margin();
+                m_height += off + curr->marginTop() < child->marginTop() ?
+                            child->marginTop() - curr->marginTop() -off: 0;
+
+                child->setPos(0,0); // This position will be updated to reflect the compact's
+                                    // desired position and the line box for the compact will
+                                    // pick that position up.
+                return next;
+            }
+        }
+    }
+    return 0;
+}
+
+void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo)
+{
+    if (compactInfo.matches(child)) {
+        // We have a compact child to squeeze in.
+        RenderObject* compactChild = compactInfo.compact();
+        int compactXPos = borderLeft() + paddingLeft() + compactChild->marginLeft();
+        if (style()->direction() == RTL) {
+            compactChild->calcWidth(); // have to do this because of the capped maxwidth
+            compactXPos = width() - borderRight() - paddingRight() -
+                compactChild->width() - compactChild->marginRight();
+        }
+
+        int compactYPos = child->yPos() + child->borderTop() + child->paddingTop()
+                            - compactChild->paddingTop() - compactChild->borderTop();
+        int adj = 0;
+        KHTMLAssert(child->isRenderBlock());
+        InlineRunBox *b = static_cast<RenderBlock*>(child)->firstLineBox();
+        InlineRunBox *c = static_cast<RenderBlock*>(compactChild)->firstLineBox();
+        if (b && c) {
+            // adjust our vertical position
+            int vpos = compactChild->getVerticalPosition( true, child );
+            if (vpos == PositionBottom)
+                adj = b->height() > c->height() ? (b->height() + b->yPos() - c->height() - c->yPos()) : 0;
+            else if (vpos == PositionTop)
+                adj = b->yPos() - c->yPos();
+            else
+                adj = vpos;
+            compactYPos += adj;
+        }
+        Length newLineHeight( kMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)), khtml::Fixed);
+        child->style()->setLineHeight( newLineHeight );
+        child->setNeedsLayout( true, false );
+        child->layout();
+        compactChild->setPos(compactXPos, compactYPos); // Set the x position.
+        compactInfo.clear();
+    }
+}
+
+RenderObject* RenderBlock::handleRunInChild(RenderObject* child, bool& handled)
+{
+    // See if we have a run-in element with inline children.  If the
+    // children aren't inline, then just treat the run-in as a normal
+    // block.
+    if (child->isRunIn() && (child->childrenInline() || child->isReplaced())) {
+        // Get the next non-positioned/non-floating RenderBlock.
+        RenderObject* curr = child->nextSibling();
+        while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
+            curr = curr->nextSibling();
+        if (curr && (curr->isRenderBlock() && curr->childrenInline() && !curr->isCompact() && !curr->isRunIn())) {
+            // The block acts like an inline, so just null out its
+            // position.
+            handled = true;
+            child->setInline(true);
+            child->setPos(0,0);
+
+            // Remove the child.
+            RenderObject* next = child->nextSibling();
+            removeChildNode(child);
+
+            // Now insert the child under |curr|.
+            curr->insertChildNode(child, curr->firstChild());
+            return next;
+        }
+    }
+    return 0;
+}
+
+void RenderBlock::collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPosEstimate)
+{
+    // Get our max pos and neg top margins.
+    int posTop = child->maxTopMargin(true);
+    int negTop = child->maxTopMargin(false);
+
+    // For self-collapsing blocks, collapse our bottom margins into our
+    // top to get new posTop and negTop values.
+    if (child->isSelfCollapsingBlock()) {
+        posTop = kMax(posTop, (int)child->maxBottomMargin(true));
+        negTop = kMax(negTop, (int)child->maxBottomMargin(false));
+    }
+
+    // See if the top margin is quirky. We only care if this child has
+    // margins that will collapse with us.
+    bool topQuirk = child->isTopMarginQuirk() /*|| style()->marginTopCollapse() == MDISCARD*/;
+
+    if (marginInfo.canCollapseWithTop()) {
+        // This child is collapsing with the top of the
+        // block.  If it has larger margin values, then we need to update
+        // our own maximal values.
+        if (!style()->htmlHacks() || !marginInfo.quirkContainer() || !topQuirk) {
+            m_maxTopPosMargin = kMax(posTop, (int)m_maxTopPosMargin);
+            m_maxTopNegMargin = kMax(negTop, (int)m_maxTopNegMargin);
+        }
+
+        // The minute any of the margins involved isn't a quirk, don't
+        // collapse it away, even if the margin is smaller (www.webreference.com
+        // has an example of this, a <dt> with 0.8em author-specified inside
+        // a <dl> inside a <td>.
+        if (!marginInfo.determinedTopQuirk() && !topQuirk && (posTop-negTop)) {
+            m_topMarginQuirk = false;
+            marginInfo.setDeterminedTopQuirk(true);
+        }
+
+        if (!marginInfo.determinedTopQuirk() && topQuirk && marginTop() == 0)
+            // We have no top margin and our top child has a quirky margin.
+            // We will pick up this quirky margin and pass it through.
+            // This deals with the <td><div><p> case.
+            // Don't do this for a block that split two inlines though.  You do
+            // still apply margins in this case.
+            m_topMarginQuirk = true;
+    }
+
+    if (marginInfo.quirkContainer() && marginInfo.atTopOfBlock() && (posTop - negTop))
+        marginInfo.setTopQuirk(topQuirk);
+
+    int ypos = m_height;
+    if (child->isSelfCollapsingBlock()) {
+        // This child has no height.  We need to compute our
+        // position before we collapse the child's margins together,
+        // so that we can get an accurate position for the zero-height block.
+        int collapsedTopPos = kMax(marginInfo.posMargin(), (int)child->maxTopMargin(true));
+        int collapsedTopNeg = kMax(marginInfo.negMargin(), (int)child->maxTopMargin(false));
+        marginInfo.setMargin(collapsedTopPos, collapsedTopNeg);
+
+        // Now collapse the child's margins together, which means examining our
+        // bottom margin values as well.
+        marginInfo.setPosMarginIfLarger(child->maxBottomMargin(true));
+        marginInfo.setNegMarginIfLarger(child->maxBottomMargin(false));
+
+#ifdef APPLE_CHANGES
+        if (!marginInfo.canCollapseWithTop())
+#else
+        if (!marginInfo.atTopOfBlock())
+#endif
+            // We need to make sure that the position of the self-collapsing block
+            // is correct, since it could have overflowing content
+            // that needs to be positioned correctly (e.g., a block that
+            // had a specified height of 0 but that actually had subcontent).
+            ypos = m_height + collapsedTopPos - collapsedTopNeg;
+    }
+    else {
+#ifdef APPLE_CHANGES
+        if (child->style()->marginTopCollapse() == MSEPARATE) {
+            m_height += marginInfo.margin() + child->marginTop();
+            ypos = m_height;
+        }
+        else
+#endif
+        if (!marginInfo.atTopOfBlock() ||
+            (!marginInfo.canCollapseTopWithChildren()
+             && (!style()->htmlHacks() || !marginInfo.quirkContainer() || !marginInfo.topQuirk()))) {
+            // We're collapsing with a previous sibling's margins and not
+            // with the top of the block.
+            m_height += kMax(marginInfo.posMargin(), posTop) - kMax(marginInfo.negMargin(), negTop);
+            ypos = m_height;
+        }
+
+        marginInfo.setPosMargin(child->maxBottomMargin(true));
+        marginInfo.setNegMargin(child->maxBottomMargin(false));
+
+        if (marginInfo.margin())
+            marginInfo.setBottomQuirk(child->isBottomMarginQuirk() /*|| style()->marginBottomCollapse() == MDISCARD*/);
+
+        marginInfo.setSelfCollapsingBlockClearedFloat(false);
+    }
+
+    child->setPos(child->xPos(), ypos);
+    if (ypos != yPosEstimate) {
+        if (child->style()->width().isPercent() && child->usesLineWidth())
+            // The child's width is a percentage of the line width.
+            // When the child shifts to clear an item, its width can
+            // change (because it has more available line width).
+            // So go ahead and mark the item as dirty.
+            child->setChildNeedsLayout(true);
+
+        if (!child->flowAroundFloats() || child->hasFloats())
+            child->markAllDescendantsWithFloatsForLayout();
+
+        // Our guess was wrong. Make the child lay itself out again.
+        child->layoutIfNeeded();
+    }
+}
+
+void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInfo, int oldTopPosMargin, int oldTopNegMargin)
+{
+    int heightIncrease = getClearDelta(child);
+    if (heightIncrease) {
+        // The child needs to be lowered.  Move the child so that it just clears the float.
+        child->setPos(child->xPos(), child->yPos() + heightIncrease);
+
+        // Increase our height by the amount we had to clear.
+        if (!child->isSelfCollapsingBlock())
+            m_height += heightIncrease;
+        else {
+            // For self-collapsing blocks that clear, they may end up collapsing
+            // into the bottom of the parent block.  We simulate this behavior by
+            // setting our positive margin value to compensate for the clear.
+            marginInfo.setPosMargin(kMax(0, child->yPos() - m_height));
+            marginInfo.setNegMargin(0);
+            marginInfo.setSelfCollapsingBlockClearedFloat(true);
+        }
+
+        if (marginInfo.canCollapseWithTop()) {
+            // We can no longer collapse with the top of the block since a clear
+            // occurred.  The empty blocks collapse into the cleared block.
+            // FIXME: This isn't quite correct.  Need clarification for what to do
+            // if the height the cleared block is offset by is smaller than the
+            // margins involved.
+            m_maxTopPosMargin = oldTopPosMargin;
+            m_maxTopNegMargin = oldTopNegMargin;
+            marginInfo.setAtTopOfBlock(false);
+        }
+
+        // If our value of clear caused us to be repositioned vertically to be
+        // underneath a float, we might have to do another layout to take into account
+        // the extra space we now have available.
+        if (!child->style()->width().isFixed()  && child->usesLineWidth())
+            // The child's width is a percentage of the line width.
+            // When the child shifts to clear an item, its width can
+            // change (because it has more available line width).
+            // So go ahead and mark the item as dirty.
+            child->setChildNeedsLayout(true);
+        if (child->hasFloats())
+            child->markAllDescendantsWithFloatsForLayout();
+        child->layoutIfNeeded();
+    }
+}
+
+int RenderBlock::estimateVerticalPosition(RenderObject* child, const MarginInfo& marginInfo)
+{
+    // FIXME: We need to eliminate the estimation of vertical position, because
+    // when it's wrong we sometimes trigger a pathological relayout if there are
+    // intruding floats.
+    int yPosEstimate = m_height;
+    if (!marginInfo.canCollapseWithTop()) {
+        int childMarginTop = child->selfNeedsLayout() ? child->marginTop() : child->collapsedMarginTop();
+        yPosEstimate += kMax(marginInfo.margin(), childMarginTop);
+    }
+    return yPosEstimate;
+}
+
+void RenderBlock::determineHorizontalPosition(RenderObject* child)
+{
+    if (style()->direction() == LTR) {
+        int xPos = borderLeft() + paddingLeft();
+
+        // Add in our left margin.
+        int chPos = xPos + child->marginLeft();
+
+        // Some objects (e.g., tables, horizontal rules, overflow:auto blocks) avoid floats.  They need
+        // to shift over as necessary to dodge any floats that might get in the way.
+        if (child->flowAroundFloats()) {
+            int leftOff = leftOffset(m_height);
+            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
+                if (child->marginLeft() < 0)
+                    leftOff += child->marginLeft();
+                chPos = kMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
+            }
+            else if (leftOff != xPos) {
+                // The object is shifting right. The object might be centered, so we need to
+                // recalculate our horizontal margins. Note that the containing block content
+                // width computation will take into account the delta between |leftOff| and |xPos|
+                // so that we can just pass the content width in directly to the |calcHorizontalMargins|
+                // function.
+                static_cast<RenderBox*>(child)->calcHorizontalMargins(child->style()->marginLeft(), child->style()->marginRight(), lineWidth(child->yPos()));
+                chPos = leftOff + child->marginLeft();
+            }
+        }
+
+        child->setPos(chPos, child->yPos());
+    } else {
+        int xPos = m_width - borderRight() - paddingRight();
+        if (m_layer && style()->scrollsOverflow())
+            xPos -= m_layer->verticalScrollbarWidth();
+        int chPos = xPos - (child->width() + child->marginRight());
+        if (child->flowAroundFloats()) {
+            int rightOff = rightOffset(m_height);
+            if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isVariable()) {
+                if (child->marginRight() < 0)
+                    rightOff -= child->marginRight();
+                chPos = kMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
+            } else if (rightOff != xPos) {
+                // The object is shifting left. The object might be centered, so we need to
+                // recalculate our horizontal margins. Note that the containing block content
+                // width computation will take into account the delta between |rightOff| and |xPos|
+                // so that we can just pass the content width in directly to the |calcHorizontalMargins|
+                // function.
+                static_cast<RenderBox*>(child)->calcHorizontalMargins(child->style()->marginLeft(), child->style()->marginRight(), lineWidth(child->yPos()));
+                chPos = rightOff - child->marginRight() - child->width();
+            }
+        }
+        child->setPos(chPos, child->yPos());
+    }
+}
+
+void RenderBlock::setCollapsedBottomMargin(const MarginInfo& marginInfo)
+{
+#ifdef APPLE_CHANGES
+    if (marginInfo.canCollapseWithBottom() && !marginInfo.canCollapseWithTop()) {
+#else
+    if (marginInfo.canCollapseWithBottom() && !marginInfo.atTopOfBlock()) {
+#endif
+        // Update our max pos/neg bottom margins, since we collapsed our bottom margins
+        // with our children.
+        m_maxBottomPosMargin = kMax((int)m_maxBottomPosMargin, marginInfo.posMargin());
+        m_maxBottomNegMargin = kMax((int)m_maxBottomNegMargin, marginInfo.negMargin());
+
+        if (!marginInfo.bottomQuirk())
+            m_bottomMarginQuirk = false;
+
+        if (marginInfo.bottomQuirk() && marginBottom() == 0)
+            // We have no bottom margin and our last child has a quirky margin.
+            // We will pick up this quirky margin and pass it through.
+            // This deals with the <td><div><p> case.
+            m_bottomMarginQuirk = true;
+    }
+}
+
+void RenderBlock::handleBottomOfBlock(int top, int bottom, MarginInfo& marginInfo)
+{
+    // If our last flow was a self-collapsing block that cleared a float, then we don't
+    // collapse it with the bottom of the block.
+    if (!marginInfo.selfCollapsingBlockClearedFloat())
+        marginInfo.setAtBottomOfBlock(true);
+
+    // If we can't collapse with children then go ahead and add in the bottom margin.
+    if (!marginInfo.canCollapseWithBottom() && !marginInfo.canCollapseWithTop()
+        && (!style()->htmlHacks() || !marginInfo.quirkContainer() || !marginInfo.bottomQuirk()))
+        m_height += marginInfo.margin();
+
+    // Now add in our bottom border/padding.
+    m_height += bottom;
+
+    // Negative margins can cause our height to shrink below our minimal height (border/padding).
+    // If this happens, ensure that the computed height is increased to the minimal height.
+    m_height = kMax(m_height, top + bottom);
+
+    // Always make sure our overflow height is at least our height.
+    m_overflowHeight = kMax(m_height, m_overflowHeight);
+
+    // Update our bottom collapsed margin info.
+    setCollapsedBottomMargin(marginInfo);
+}
+
 void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren << endl;
 #endif
 
-    int xPos = borderLeft() + paddingLeft();
-    if( style()->direction() == RTL )
-        xPos = m_width - paddingRight() - borderRight();
+    int top = borderTop() + paddingTop();
+    int bottom = borderBottom() + paddingBottom();
+    if (m_layer && style()->scrollsOverflow())
+        bottom += m_layer->horizontalScrollbarHeight();
 
-    int toAdd = borderBottom() + paddingBottom();
-    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
-        toAdd += m_layer->horizontalScrollbarHeight();
+    m_height = m_overflowHeight = top;
 
-    m_height = borderTop() + paddingTop();
+    // The margin struct caches all our current margin collapsing state.
+    // The compact struct caches state when we encounter compacts.
+    MarginInfo marginInfo(this, top, bottom);
+    CompactInfo compactInfo;
 
     // Fieldsets need to find their legend and position it inside the border of the object.
     // The legend then gets skipped during normal layout.
     RenderObject* legend = layoutLegend(relayoutChildren);
 
-    int minHeight = m_height + toAdd;
-    m_overflowHeight = m_height;
-
-    RenderObject *child = firstChild();
-    RenderBlock *prevFlow = 0;
-
-    // A compact child that needs to be collapsed into the margin of the following block.
-    RenderObject* compactChild = 0;
-    // The block with the open margin that the compact child is going to place itself within.
-    RenderObject* blockForCompactChild = 0;
-    // For compact children that don't fit, we lay them out as though they are blocks.  This
-    // boolean allows us to temporarily treat a compact like a block and lets us know we need
-    // to turn the block back into a compact when we're done laying out.
-    bool treatCompactAsBlock = false;
-
-    // Whether or not we can collapse our own margins with our children.  We don't do this
-    // if we had any border/padding (obviously), if we're the root or HTML elements, or if
-    // we're positioned, floating, a table cell.
-    // For now we only worry about the top border/padding.  We will update the variable's
-    // value when it comes time to check against the bottom border/padding.
-    bool canCollapseWithChildren = !isCanvas() && !isRoot() && !isPositioned() &&
-        !isFloating() && !isTableCell() && !style()->hidesOverflow() && !isInlineBlockOrInlineTable();
-    bool canCollapseTopWithChildren = canCollapseWithChildren && (m_height == 0);
-
-    // If any height other than auto is specified in CSS, then we don't collapse our bottom
-    // margins with our children's margins.  To do otherwise would be to risk odd visual
-    // effects when the children overflow out of the parent block and yet still collapse
-    // with it.  We also don't collapse if we had any bottom border/padding (represented by
-    // |toAdd|).
-    bool canCollapseBottomWithChildren = canCollapseWithChildren && (toAdd == 0) &&
-        (style()->height().isVariable() && style()->height().value() == 0);
-
-    // Whether or not we are a quirky container, i.e., do we collapse away top and bottom
-    // margins in our container.
-    bool quirkContainer = isTableCell() || isBody();
-
-
-    // This flag tracks whether the child should collapse with the top margins of the block.
-    // It can remain set through multiple iterations as long as we keep encountering
-    // self-collapsing blocks.
-    bool topMarginContributor = true;
-
-    // These flags track the previous maximal positive and negative margins.
-    int prevPosMargin = canCollapseTopWithChildren ? maxTopMargin(true) : 0;
-    int prevNegMargin = canCollapseTopWithChildren ? maxTopMargin(false) : 0;
-
-    // Whether or not we encountered an element with clear set that actually had to
-    // be pushed down below a float.
-    int clearOccurred = false;
-
-    // If our last normal flow child was a self-collapsing block that cleared a float,
-    // we track it in this variable.
-    bool selfCollapsingBlockClearedFloat = false;
-
-    int oldPosMargin = prevPosMargin;
-    int oldNegMargin = prevNegMargin;
-
-    bool topChildQuirk = false;
-    bool bottomChildQuirk = false;
-    bool determinedTopQuirk = false;
-
-    bool strictMode = !style()->htmlHacks();
-
-    //kdDebug() << "RenderBlock::layoutBlockChildren " << prevMargin << endl;
-
-    //     QTime t;
-    //     t.start();
-
+    RenderObject* child = firstChild();
     while( child != 0 )
     {
-        // Sometimes an element will be shoved down away from a previous sibling, e.g., when
-        // clearing to pass beyond a float.  In this case, you don't need to collapse.  This
-        // boolean is updated with each iteration through our child list to reflect whether
-        // that particular child should be collapsed with its previous sibling (or with the top
-        // of the block).
-        bool shouldCollapseChild = true;
-
         if (legend == child) {
             child = child->nextSibling();
             continue; // Skip the legend, since it has already been positioned up in the fieldset's border.
         }
+
+        int oldTopPosMargin = m_maxTopPosMargin;
+        int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
         if (relayoutChildren || floatBottom() > m_y ||
@@ -726,178 +1153,35 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
             (child->isRenderBlock() && child->style()->height().isPercent()))
             child->setChildNeedsLayout(true);
 
-        //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->needsLayout() << endl;
-        //         kdDebug( 6040 ) << t.elapsed() << endl;
-        // ### might be some layouts are done two times... FIX that.
+        // Handle the four types of special elements first.  These include positioned content, floating content, compacts and
+        // run-ins.  When we encounter these four types of objects, we don't actually lay them out as normal flow blocks.
+        bool handled = false;
+        RenderObject* next = handleSpecialChild(child, marginInfo, compactInfo, handled);
+        if (handled) { child = next; continue; }
 
-        if (child->isPositioned())
-        {
-            child->containingBlock()->insertPositionedObject(child);
-            RenderStyle* s = child->style();
-
-            if ( child->isBox() && child->hasStaticX()) {
-                if (style()->direction() == LTR)
-                    static_cast<RenderBox*>( child )->setStaticX(xPos);
-                else
-                    static_cast<RenderBox*>( child )->setStaticX(borderRight()+paddingRight());
-            }
-            if ( child->isBox() && child->hasStaticY()) {
-                int marginOffset = 0;
-                bool shouldSynthesizeCollapse = (!topMarginContributor || !canCollapseTopWithChildren);
-                if (shouldSynthesizeCollapse) {
-                    int collapsedTopPos = prevPosMargin;
-                    int collapsedTopNeg = prevNegMargin;
-                    bool posMargin = child->marginTop() >= 0;
-                    if (posMargin && child->marginTop() > collapsedTopPos)
-                        collapsedTopPos = child->marginTop();
-                    else if (!posMargin && child->marginTop() > collapsedTopNeg)
-                        collapsedTopNeg = child->marginTop();
-                    marginOffset += (collapsedTopPos - collapsedTopNeg) - child->marginTop();
-                }
-
-                int yPosEstimate = m_height + marginOffset;
-                static_cast<RenderBox*>( child )->setStaticY( yPosEstimate );
-            }
-            child = child->nextSibling();
-            continue;
-        } else if (child->isReplaced())
-            child->layoutIfNeeded();
-
-        if ( child->isFloating() ) {
-            insertFloatingObject( child );
-
-            // The float should be positioned taking into account the bottom margin
-            // of the previous flow.  We add that margin into the height, get the
-            // float positioned properly, and then subtract the margin out of the
-            // height again.  In the case of self-collapsing blocks, we always just
-            // use the top margins, since the self-collapsing block collapsed its
-            // own bottom margin into its top margin. -dwh
-            int marginOffset = (!topMarginContributor || !canCollapseTopWithChildren) ? (prevPosMargin - prevNegMargin) : 0;
-
-            m_height += marginOffset;
-            positionNewFloats();
-            m_height -= marginOffset;
-
-            //kdDebug() << "RenderBlock::layoutBlockChildren inserting float at "<< m_height <<" prevMargin="<<prevMargin << endl;
-            child = child->nextSibling();
-            continue;
-        }
-
-        // See if we have a compact element.  If we do, then try to tuck the compact
-        // element into the margin space of the next block.
-        // FIXME: We only deal with one compact at a time.  It is unclear what should be
-        // done if multiple contiguous compacts are encountered.  For now we assume that
-        // compact A followed by another compact B should simply be treated as block A.
-        if (child->style()->display() == COMPACT && !compactChild && (child->childrenInline() || child->isReplaced())) {
-            // Get the next non-positioned/non-floating RenderBlock.
-            RenderObject* next = child->nextSibling();
-            RenderObject* curr = next;
-            while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)) )
-                curr = curr->nextSibling();
-            if (curr && curr->isRenderBlock() &&
-                curr->style()->display() != COMPACT &&
-                curr->style()->display() != RUN_IN) {
-                curr->calcWidth(); // So that horizontal margins are correct.
-                // Need to compute margins for the child as though it is a block.
-                child->style()->setDisplay(BLOCK);
-                child->calcWidth();
-                child->style()->setDisplay(COMPACT);
-                int childMargins = child->marginLeft() + child->marginRight();
-                int margin = style()->direction() == LTR ? curr->marginLeft() : curr->marginRight();
-                if (margin < (childMargins + child->maxWidth())) {
-                    // It won't fit. Kill the "compact" boolean and just treat
-                    // the child like a normal block. This is only temporary.
-                    child->style()->setDisplay(BLOCK);
-                    treatCompactAsBlock = true;
-                }
-                else {
-                    blockForCompactChild = curr;
-                    compactChild = child;
-                    child->layoutIfNeeded();
-                    int off = prevPosMargin - prevNegMargin;
-                    m_height += off + curr->marginTop() < child->marginTop() ?
-                                child->marginTop() - curr->marginTop() -off: 0;
-
-                    child->setPos(0,0); // This position will be updated to reflect the compact's
-                                        // desired position and the line box for the compact will
-                                        // pick that position up.
-                    child = next;
-                    continue;
-                }
-            }
-        }
-
-        // See if we have a run-in element with inline children.  If the
-        // children aren't inline, then just treat the run-in as a normal
-        // block.
-        if (child->style()->display() == RUN_IN && (child->childrenInline() || child->isReplaced())) {
-            // Get the next non-positioned/non-floating RenderBlock.
-            RenderObject* curr = child->nextSibling();
-            while (curr && (curr->isFloatingOrPositioned() || isAnonymousWhitespace(curr)))
-                curr = curr->nextSibling();
-            if (curr && (curr->isRenderBlock() && !curr->isAnonymous() && curr->childrenInline() &&
-                         curr->style()->display() != COMPACT &&
-                         curr->style()->display() != RUN_IN)) {
-                // The block acts like an inline, so just null out its
-                // position.
-                child->setInline(true);
-                child->setPos(0,0);
-
-                // Remove the child.
-                RenderObject* next = child->nextSibling();
-                removeChildNode(child);
-
-                // Now insert the child under |curr|.
-                curr->insertChildNode(child, curr->firstChild());
-                child = next;
-                continue;
-            }
-        }
-
-        // Note this occurs after the test for positioning and floating above, since
-        // we want to ensure that we don't artificially increase our height because of
-        // a positioned or floating child.
-        int fb = floatBottom();
-        if ( child->flowAroundFloats() && !style()->width().isVariable()) {
-            bool doClear = false;
-            if (child->style()->width().isPercent()) {
-                int oldw = child->width();
-                child->calcWidth();
-                doClear = (child->width() > lineWidth( m_height ));
-                child->setWidth( oldw );
-            } else if (child->minWidth() > lineWidth( m_height ))
-                doClear = true;
-
-            if (doClear && fb > m_height) {
-                m_height = fb;
-                shouldCollapseChild = false;
-                clearOccurred = true;
-                prevFlow = 0;
-            }
-        }
-
-        // take care in case we inherited floats
-        if (fb > m_height)
-            child->setChildNeedsLayout(true);
-
+        // The child is a normal flow object.  Compute its vertical margins now.
         child->calcVerticalMargins();
 
-        //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
+#ifdef APPLE_CHANGES /* margin-collapse not merged yet */
+        // Do not allow a collapse if the margin top collapse style is set to SEPARATE.
+        if (child->style()->marginTopCollapse() == MSEPARATE) {
+            marginInfo.setAtTopOfBlock(false);
+            marginInfo.clearMargin();
+        }
+#endif
 
         // Try to guess our correct y position.  In most cases this guess will
         // be correct.  Only if we're wrong (when we compute the real y position)
-        // will we have to relayout.
-        int yPosEstimate = m_height;
-        if (prevFlow)
-        {
-            yPosEstimate += kMax(prevFlow->collapsedMarginBottom(), child->marginTop());
-            if (prevFlow->yPos()+prevFlow->floatBottom() > yPosEstimate)
+        // will we have to potentially relayout.
+        int yPosEstimate = estimateVerticalPosition(child, marginInfo);
+
+        // If an element might be affected by the presence of floats, then always mark it for
+        // layout.
+        if ( child->flowAroundFloats() && child->usesLineWidth()) {
+            int fb = floatBottom();
+            if (fb > m_height || fb > yPosEstimate)
                 child->setChildNeedsLayout(true);
-            else
-                prevFlow=0;
         }
-        else if (!canCollapseTopWithChildren || !topMarginContributor)
-            yPosEstimate += child->marginTop();
 
         // Go ahead and position the child as though it didn't collapse with the top.
         child->setPos(child->xPos(), yPosEstimate);
@@ -905,223 +1189,28 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
         // Now determine the correct ypos based off examination of collapsing margin
         // values.
-        if (shouldCollapseChild) {
-            // Get our max pos and neg top margins.
-            int posTop = child->maxTopMargin(true);
-            int negTop = child->maxTopMargin(false);
-
-            // For self-collapsing blocks, collapse our bottom margins into our
-            // top to get new posTop and negTop values.
-            if (child->isSelfCollapsingBlock()) {
-                if (child->maxBottomMargin(true) > posTop)
-                    posTop = child->maxBottomMargin(true);
-                if (child->maxBottomMargin(false) > negTop)
-                    negTop = child->maxBottomMargin(false);
-            }
-
-            // See if the top margin is quirky. We only care if this child has
-            // margins that will collapse with us.
-            bool topQuirk = child->isTopMarginQuirk();
-
-            if (canCollapseTopWithChildren && topMarginContributor && !clearOccurred) {
-                // This child is collapsing with the top of the
-                // block.  If it has larger margin values, then we need to update
-                // our own maximal values.
-                if (strictMode || !quirkContainer || !topQuirk) {
-                    if (posTop > m_maxTopPosMargin)
-                        m_maxTopPosMargin = posTop;
-
-                    if (negTop > m_maxTopNegMargin)
-                        m_maxTopNegMargin = negTop;
-                }
-
-                // The minute any of the margins involved isn't a quirk, don't
-                // collapse it away, even if the margin is smaller (www.webreference.com
-                // has an example of this, a <dt> with 0.8em author-specified inside
-                // a <dl> inside a <td>.
-                if (!determinedTopQuirk && !topQuirk && (posTop-negTop)) {
-                    m_topMarginQuirk = false;
-                    determinedTopQuirk = true;
-                }
-
-                if (!determinedTopQuirk && topQuirk && marginTop() == 0)
-                    // We have no top margin and our top child has a quirky margin.
-                    // We will pick up this quirky margin and pass it through.
-                    // This deals with the <td><div><p> case.
-                    // Don't do this for a block that split two inlines though.  You do
-                    // still apply margins in this case.
-                    m_topMarginQuirk = true;
-            }
-
-            if (quirkContainer && topMarginContributor && (posTop-negTop))
-                topChildQuirk = topQuirk;
-
-            int ypos = m_height;
-            if (child->isSelfCollapsingBlock()) {
-                // This child has no height.  We need to compute our
-                // position before we collapse the child's margins together,
-                // so that we can get an accurate position for the zero-height block.
-                int collapsedTopPos = prevPosMargin;
-                int collapsedTopNeg = prevNegMargin;
-                if (child->maxTopMargin(true) > prevPosMargin)
-                    collapsedTopPos = prevPosMargin = child->maxTopMargin(true);
-                if (child->maxTopMargin(false) > prevNegMargin)
-                    collapsedTopNeg = prevNegMargin = child->maxTopMargin(false);
-
-                // Now collapse the child's margins together, which means examining our
-                // bottom margin values as well.
-                if (child->maxBottomMargin(true) > prevPosMargin)
-                    prevPosMargin = child->maxBottomMargin(true);
-                if (child->maxBottomMargin(false) > prevNegMargin)
-                    prevNegMargin = child->maxBottomMargin(false);
-
-                if (!topMarginContributor)
-                    // We need to make sure that the position of the self-collapsing block
-                    // is correct, since it could have overflowing content
-                    // that needs to be positioned correctly (e.g., a block that
-                    // had a specified height of 0 but that actually had subcontent).
-                    ypos = m_height + prevPosMargin - prevNegMargin;
-            }
-            else {
-                if (!topMarginContributor ||
-                    (!canCollapseTopWithChildren
-                     && (strictMode || !quirkContainer || !topChildQuirk)
-                     )) {
-                    // We're collapsing with a previous sibling's margins and not
-                    // with the top of the block.
-                    int absPos = prevPosMargin > posTop ? prevPosMargin : posTop;
-                    int absNeg = prevNegMargin > negTop ? prevNegMargin : negTop;
-                    int collapsedMargin = absPos - absNeg;
-                    m_height += collapsedMargin;
-                    ypos = m_height;
-                }
-                prevPosMargin = child->maxBottomMargin(true);
-                prevNegMargin = child->maxBottomMargin(false);
-
-                if (prevPosMargin-prevNegMargin) {
-                    bottomChildQuirk = child->isBottomMarginQuirk();
-                }
-                selfCollapsingBlockClearedFloat = false;
-            }
-
-            child->setPos(child->xPos(), ypos);
-            if (ypos != yPosEstimate) {
-                if (child->style()->width().isPercent() && child->usesLineWidth())
-                    // If the child shifts to clear an item, its width can
-                    // change (because it has more available line width).
-                    // So go ahead an mark the item as dirty.
-                    child->setChildNeedsLayout(true);
-
-                if (child->hasFloats() || hasFloats())
-                    child->markAllDescendantsWithFloatsForLayout();
-
-                // Our guess was wrong. Make the child lay itself out again.
-                child->layoutIfNeeded();
-            }
-        }
-        else
-            selfCollapsingBlockClearedFloat = false;
+        collapseMargins(child, marginInfo, yPosEstimate);
 
         // Now check for clear.
-        int heightIncrease = getClearDelta(child);
-        if (heightIncrease) {
-            // The child needs to be lowered.  Move the child so that it just clears the float.
-            child->setPos(child->xPos(), child->yPos() + heightIncrease);
-            clearOccurred = true;
+        clearFloatsIfNeeded(child, marginInfo, oldTopPosMargin, oldTopNegMargin);
 
-            // Increase our height by the amount we had to clear.
-            if (!child->isSelfCollapsingBlock())
-                m_height += heightIncrease;
-            else {
-                // For self-collapsing blocks that clear, they may end up collapsing
-                // into the bottom of the parent block.  We simulate this behavior by
-                // setting our positive margin value to compensate for the clear.
-                prevPosMargin = kMax(0, child->yPos() - m_height);
-                prevNegMargin = 0;
-                selfCollapsingBlockClearedFloat = true;
-            }
+        // We are no longer at the top of the block if we encounter a non-empty child.
+        // This has to be done after checking for clear, so that margins can be reset if a clear occurred.
+        if (marginInfo.atTopOfBlock() && !child->isSelfCollapsingBlock())
+            marginInfo.setAtTopOfBlock(false);
 
-            if (topMarginContributor && canCollapseTopWithChildren) {
-                // We can no longer collapse with the top of the block since a clear
-                // occurred.  The empty blocks collapse into the cleared block.
-                // XXX This isn't quite correct.  Need clarification for what to do
-                // if the height the cleared block is offset by is smaller than the
-                // margins involved. -dwh
-                m_maxTopPosMargin = oldPosMargin;
-                m_maxTopNegMargin = oldNegMargin;
-                topMarginContributor = false;
-            }
+        // Now place the child in the correct horizontal position
+        determineHorizontalPosition(child);
 
-            // If our value of clear caused us to be repositioned vertically to be
-            // underneath a float, we might have to do another layout to take into account
-            // the extra space we now have available.
-            if (!child->style()->width().isFixed() && child->usesLineWidth())
-                child->setChildNeedsLayout(true);
-            if (child->hasFloats())
-                child->markAllDescendantsWithFloatsForLayout();
-            child->layoutIfNeeded();
-        }
-
-        // Reset the top margin contributor to false if we encountered
-        // a non-empty child.  This has to be done after checking for clear,
-        // so that margins can be reset if a clear occurred.
-        if (topMarginContributor && !child->isSelfCollapsingBlock())
-            topMarginContributor = false;
-
-        int chPos = xPos;
-
-        if (style()->direction() == LTR) {
-            chPos += child->marginLeft();
-            // html blocks flow around floats
-            if (child->flowAroundFloats())
-            {
-                int leftOff = leftOffset(m_height);
-                if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
-                    if (child->marginLeft() < 0)
-                        leftOff += child->marginLeft();
-                    chPos = kMax(chPos, leftOff); // Let the float sit in the child's margin if it can fit.
-                } else if (leftOff != xPos) {
-                    // The object is shifting right. The object might be centered, so we need to
-                    // recalculate our horizontal margins. Note that the containing block content
-                    // width computation will take into account the delta between |leftOff| and |xPos|
-                    // so that we can just pass the content width in directly to the |calcHorizontalMargins|
-                    // function.
-                    // -dwh
-                    int cw = lineWidth( child->yPos() );
-                    static_cast<RenderBox*>(child)->calcHorizontalMargins
-                        ( child->style()->marginLeft(), child->style()->marginRight(), cw);
-                    chPos = leftOff + child->marginLeft();
-                }
-            }
-        } else {
-            chPos -= child->width() + child->marginRight();
-            if (child->flowAroundFloats()) {
-                int rightOff = rightOffset(m_height);
-                if (style()->textAlign() != KHTML_CENTER && !child->style()->marginRight().isVariable()) {
-                    if (child->marginRight() < 0)
-                        rightOff -= child->marginRight();
-                    chPos = kMin(chPos, rightOff - child->width()); // Let the float sit in the child's margin if it can fit.
-                } else if (rightOff != xPos) {
-                    // The object is shifting left. The object might be centered, so we need to
-                    // recalculate our horizontal margins. Note that the containing block content
-                    // width computation will take into account the delta between |rightOff| and |xPos|
-                    // so that we can just pass the content width in directly to the |calcHorizontalMargins|
-                    // function.
-                    // -dwh
-                    int cw = lineWidth( child->yPos() );
-                    static_cast<RenderBox*>(child)->calcHorizontalMargins
-                        ( child->style()->marginLeft(), child->style()->marginRight(), cw);
-                    chPos = rightOff - child->marginRight() - child->width();
-                }
-            }
-        }
-
-        child->setPos(chPos, child->yPos());
-
+        // Update our height now that the child has been placed in the correct position.
         m_height += child->height();
 
-        if (child->isRenderBlock())
-            prevFlow = static_cast<RenderBlock*>(child);
+#ifdef APPLE_CHANGES
+        if (child->style()->marginBottomCollapse() == MSEPARATE) {
+            m_height += child->marginBottom();
+            marginInfo.clearMargin();
+        }
+#endif
 
         if (child->hasOverhangingFloats() && !child->flowAroundFloats()) {
             // need to add the child's floats to our floating objects list, but not in the case where
@@ -1130,13 +1219,14 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // See if this child has made our overflow need to grow.
-        // XXXdwh Work with left overflow as well as right overflow.
+        // ### --dwh Work with left overflow as well as right overflow.
         int overflowDelta = - child->height() ;
         if ( child->isBlockFlow () && !child->isTable() && child->style()->hidesOverflow() )
             overflowDelta += child->height();
         else
             overflowDelta += child->overflowHeight();
 
+        // See if this child has made our overflow need to grow.
         int rightChildPos = child->xPos() + kMax(child->effectiveWidth(), (int)child->width());
         if (child->isRelPositioned()) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
@@ -1149,99 +1239,18 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
                overflowDelta += yoff;
         }
 
-        if (m_height + overflowDelta > m_overflowHeight)
-            m_overflowHeight = m_height + overflowDelta;
+        m_overflowHeight = kMax(m_height + overflowDelta, m_overflowHeight);
+        m_overflowWidth = kMax(rightChildPos, m_overflowWidth);
 
-        if (rightChildPos > m_overflowWidth)
-            m_overflowWidth = rightChildPos;
-
-        if (child == blockForCompactChild) {
-            blockForCompactChild = 0;
-            if (compactChild) {
-                // We have a compact child to squeeze in.
-                int compactXPos = xPos;
-                if (style()->direction() == LTR)
-                    compactXPos += compactChild->marginLeft();
-                else {
-                    compactChild->calcWidth(); // have to do this because of the capped maxwidth
-                    compactXPos -= compactChild->width() - compactChild->marginRight();
-                }
-
-                int compactYPos = child->yPos() + child->borderTop() + child->paddingTop()
-                                  - compactChild->paddingTop() - compactChild->borderTop();
-                int adj = 0;
-                KHTMLAssert(child->isRenderBlock());
-                InlineRunBox *b = static_cast<RenderBlock*>(child)->firstLineBox();
-                InlineRunBox *c = static_cast<RenderBlock*>(compactChild)->firstLineBox();
-                if (b && c) {
-                    // adjust our vertical position
-                    int vpos = compactChild->getVerticalPosition( true, child );
-                    if (vpos == PositionBottom)
-                        adj = b->height() > c->height() ? (b->height() + b->yPos() - c->height() - c->yPos()) : 0;
-                    else if (vpos == PositionTop)
-                        adj = b->yPos() - c->yPos();
-                    else
-                        adj = vpos;
-                    compactYPos += adj;
-                }
-                Length newLineHeight( kMax(compactChild->lineHeight(true)+adj, (int)child->lineHeight(true)),
-                                      khtml::Fixed);
-                child->style()->setLineHeight( newLineHeight );
-                child->setNeedsLayout( true, false );
-                child->layout();
-                compactChild->setPos(compactXPos, compactYPos); // Set the x position.
-                compactChild = 0;
-            }
-        }
-
-        // We did a layout as though the compact child was a block.  Set it back to compact now.
-        if (treatCompactAsBlock) {
-            child->style()->setDisplay(COMPACT);
-            treatCompactAsBlock = false;
-        }
+        // Insert our compact into the block margin if we have one.
+        insertCompactIfNeeded(child, compactInfo);
 
         child = child->nextSibling();
     }
 
-    // If our last flow was a self-collapsing block that cleared a float, then we don't
-    // collapse it with the bottom of the block.
-    if (selfCollapsingBlockClearedFloat)
-        canCollapseBottomWithChildren = false;
-
-    // If we can't collapse with children then go ahead and add in the bottom margins.
-    if (!canCollapseBottomWithChildren && (!topMarginContributor || !canCollapseTopWithChildren)
-        && (strictMode || !quirkContainer || !bottomChildQuirk))
-        m_height += prevPosMargin - prevNegMargin;
-
-    m_height += toAdd;
-
-    // Negative margins can cause our height to shrink below our minimal height (border/padding).
-    // If this happens, ensure that the computed height is increased to the minimal height.
-    if (m_height < minHeight)
-        m_height = minHeight;
-
-    // Always make sure our overflowheight is at least our height.
-    if (m_overflowHeight < m_height)
-        m_overflowHeight = m_height;
-
-    if (canCollapseBottomWithChildren && !topMarginContributor) {
-        // Update our max pos/neg bottom margins, since we collapsed our bottom margins
-        // with our children.
-        if (prevPosMargin > m_maxBottomPosMargin)
-            m_maxBottomPosMargin = prevPosMargin;
-
-        if (prevNegMargin > m_maxBottomNegMargin)
-            m_maxBottomNegMargin = prevNegMargin;
-
-        if (!bottomChildQuirk)
-            m_bottomMarginQuirk = false;
-
-        if (bottomChildQuirk && marginBottom() == 0)
-            // We have no bottom margin and our last child has a quirky margin.
-            // We will pick up this quirky margin and pass it through.
-            // This deals with the <td><div><p> case.
-            m_bottomMarginQuirk = true;
-    }
+    // Now do the handling of the bottom of the block, adding in our bottom border/padding and
+    // determining the correct collapsed bottom margin information.
+    handleBottomOfBlock(top, bottom, marginInfo);
 
     setNeedsLayout(false);
 }

@@ -1,3 +1,7 @@
+2005-08-02  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_block.{h,cpp}: Split layoutBlockChildren into several auxilary functions.
+
 2005-07-26  Andreas Kling <kling@impul.se>
 
         * html/htmlparser.cpp: Block <input type="image"> elements if SRC attribute is ad-filtered.

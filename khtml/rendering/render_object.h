@@ -262,6 +262,7 @@ public:
     bool isText() const { return m_isText; }
     bool isInline() const { return m_inline; }
     bool isCompact() const { return style()->display() == COMPACT; } // compact
+    bool isRunIn() const { return style()->display() == RUN_IN; } // run-in object
     bool mouseInside() const;
     bool isReplaced() const { return m_replaced; }
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
