@@ -311,6 +311,7 @@ static struct Builtin
     { "x-mac-roman", "apple roman" },
     { "macintosh", "apple roman" },
     { "mac", "apple roman" },
+    { "csiso2022jp", "jis7" }, // See bug #77243
     { 0, 0 }};
 
 // some different names for the encodings defined in the charmaps files.
