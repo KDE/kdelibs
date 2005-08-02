@@ -569,7 +569,7 @@ void KDictSpellingHighlighter::slotAutoDetection()
 
     if ( d->automatic ) {
 	// tme = Too many errors
-	bool tme = d->wordCount >= d->disableWordCount && d->errorCount * 100 >= d->disablePercentage * d->wordCount;
+        bool tme = ( d->wordCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
 	if ( d->active && tme )
 	    d->active = false;
 	else if ( !d->active && !tme )
