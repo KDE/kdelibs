@@ -179,7 +179,7 @@ static struct LanguageForEncoding
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
     { "winsami2", 16},
-    // ### TODO: Qt has ISO-8859-16 now too (but from which version on?)
+    // ### TODO: Qt has ISO-8859-16 now too
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
@@ -189,7 +189,7 @@ static struct Builtin
     const char* data;
     } const builtin[] = {
     { "iso-ir-111", "koi8-r" },
-    { "koi8-ru", "koi8-u" },
+    { "koi8-ru", "koi8-u" }, // ### TODO: alias known by Qt4
     { "koi8r", "koi8-r" },
     { "koi8u", "koi8-u" },
     { "koi unified", "koi8-r" },
@@ -198,7 +198,7 @@ static struct Builtin
     { "x-utf-8", "utf-8" },
     { "x-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt 
     { "unicode-1-1-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt
-    { "utf-16", "iso-10646-ucs-2" },
+    { "utf-16", "iso-10646-ucs-2" }, // ### TODO: Qt4 knows UTF-16
     { "utf16", "iso-10646-ucs-2" },
     { "ucs2", "iso-10646-ucs-2" },
     { "iso10646-1", "iso-10646-ucs-2" },
@@ -222,7 +222,7 @@ static struct Builtin
     { "shift_jis", "sjis" },
     { "shift-jis", "sjis" },
     { "x-sjis", "sjis" },
-    { "iso-2022-jp", "jis7" },
+    { "iso-2022-jp", "jis7" }, // ### TODO: ISO-2022-JP is now the default name in Qt4
     { "windows850", "ibm850" },
     { "windows866", "ibm866" },
     { "windows1251", "cp 1251" },
@@ -252,7 +252,7 @@ static struct Builtin
     { "x-windows-1255", "cp 1255" },
     { "x-windows-1256", "cp 1256" },
     { "x-windows-1257", "cp 1257" },
-    { "cp819", "iso 8859-1" },
+    { "cp819", "iso 8859-1" }, // ### TODO: alias known by Qt4
     { "cp850", "ibm850" },
     { "cp866", "ibm866" },
     { "cp-819", "iso 8859-1" },
@@ -278,16 +278,16 @@ static struct Builtin
     { "x-cp-1256", "cp 1256" },
     { "x-cp-1257", "cp 1257" },
     { "x-cp-10000", "apple roman" },
-    { "ibm819", "iso 8859-1" },
+    { "ibm819", "iso 8859-1" }, // ### TODO: alias known by Qt4
     { "tis620", "iso 8859-11" },
-    { "tis-620", "iso 8859-11" },
+    { "tis-620", "iso 8859-11" }, // ### TODO: alias known by Qt4
     { "thai-tis620", "iso 8859-11" },
-    { "windows-874", "iso 8859-11" },
-    { "windows874", "iso 8859-11" },
-    { "x-windows-874", "iso 8859-11" },
-    { "cp874", "iso 8859-11" },
-    { "cp-874", "iso 8859-11" },
-    { "x-cp-874", "iso 8859-11" },
+    { "windows-874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
+    { "windows874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
+    { "x-windows-874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
+    { "cp874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
+    { "cp-874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
+    { "x-cp-874", "iso 8859-11" }, // ### TODO: Qt4 knows CP874
     { "ksc5601.1987-0", "euckr" },
     { "ks_c_5601-1987", "euckr" },
     { "iso-8859-1", "iso 8859-1" },
