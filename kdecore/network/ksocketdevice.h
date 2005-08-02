@@ -402,6 +402,9 @@ private:
 class KSocketDeviceFactoryBase
 {
 public:
+  KSocketDeviceFactoryBase() {};
+  virtual ~KSocketDeviceFactoryBase() {};
+
   virtual KSocketDevice* create(KSocketBase*) const = 0;
 };
 
@@ -413,6 +416,9 @@ template<class Impl>
 class KSocketDeviceFactory: public KSocketDeviceFactoryBase
 {
 public:
+  KSocketDeviceFactory() {};
+  virtual ~KSocketDeviceFactory() {};
+
   virtual KSocketDevice* create(KSocketBase* parent) const
   { return new Impl(parent); }
 };
