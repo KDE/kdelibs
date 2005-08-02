@@ -1412,7 +1412,8 @@ invalid:
 CSSValueImpl* CSSParser::parseBackgroundColor()
 {
     int id = valueList->current()->id;
-    if (id == CSS_VAL__KHTML_TEXT || (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT) || id == CSS_VAL_MENU ||
+    if (id == CSS_VAL__KHTML_TEXT || id == CSS_VAL_TRANSPARENT ||
+        (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT) || id == CSS_VAL_MENU ||
         (id >= CSS_VAL_GREY && id < CSS_VAL__KHTML_TEXT && !strict))
        return new CSSPrimitiveValueImpl(id);
     return parseColor();
