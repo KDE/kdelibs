@@ -312,7 +312,7 @@ static struct Builtin
     { "x-mac-roman", "apple roman" },
     { "macintosh", "apple roman" },
     { "mac", "apple roman" },
-    { "csiso2022jp", "iso-2022-jp" }, // See bug #77243
+    { "csiso2022jp", "iso-2022-jp" }, // See bug #77243 
     { 0, 0 }};
 
 #if 0
