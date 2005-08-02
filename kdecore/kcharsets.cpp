@@ -619,6 +619,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
 	//dont forget to remove the #if 0 on the 2 structs at the top also if you reenable that;)
 	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
 	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
+        // Yes, it is useful (for examples EBCDIC in Kate or codepages for KOffice filters from/to MS formats) (goutte)
 #if 0
     // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
