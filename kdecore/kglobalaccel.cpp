@@ -65,6 +65,12 @@ bool KGlobalAccel::isEnabled()
 void KGlobalAccel::setEnabled( bool bEnabled )
 	{ d->setEnabled( bEnabled ); }
 
+void KGlobalAccel::blockShortcuts( bool block )
+        { KGlobalAccelPrivate::blockShortcuts( block ); }
+
+void KGlobalAccel::disableBlocking( bool disable )
+        { d->disableBlocking( disable ); }
+
 KAccelAction* KGlobalAccel::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
 		const KShortcut& cutDef3, const KShortcut& cutDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,

@@ -206,6 +206,15 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * KAccelActions::useFourModifierKeys().
 	 */
 	static bool useFourModifierKeys();
+        
+        /**
+         * @internal
+         */
+        static void blockShortcuts( bool block );
+        /**
+         * @internal
+         */
+        void disableBlocking( bool disable );
 
 private:
 
