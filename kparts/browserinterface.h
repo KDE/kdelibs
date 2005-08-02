@@ -25,10 +25,14 @@ namespace KParts
  * the following functionality through this interface:
  *
  * Qt properties:
- *   Q_PROPERTY( uint historyLength READ historyLength );
+ * <code>
+ * Q_PROPERTY( uint historyLength READ historyLength );
+ * </code>
  *
  * Callable methods:
- *       void goHistory( int );
+ * <code>
+ * void goHistory( int );
+ * </code>
  *
  */
 class KPARTS_EXPORT BrowserInterface : public QObject

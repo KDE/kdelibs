@@ -44,17 +44,19 @@ namespace KParts
  * where instancename is the name of the part's instance.
  *
  * You should also install a "plugin info" .desktop file with the same name.
- * \see KPluginInfo
+ * \see PluginInfo
  */
 class KPARTS_EXPORT Plugin : public QObject, virtual public KXMLGUIClient
 {
     Q_OBJECT
 public:
+    /**
+     * Struct holding information about a plugin
+     */
     struct PluginInfo
     {
-        QString m_relXMLFileName; // relative filename, i.e. kpartplugins/name
-        QString m_absXMLFileName; // full path of most recent filename matching the relative
-                                  // filename
+        QString m_relXMLFileName; ///< relative filename, i.e. kpartplugins/name
+        QString m_absXMLFileName; ///< full path of most recent filename matching the relative filename
         QDomDocument m_document;
     };
 

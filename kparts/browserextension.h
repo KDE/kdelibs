@@ -770,7 +770,7 @@ private:
 };
 
 /**
- * An extension class for LiveConnect, i.e. a call from JavaScript
+ * An extension class for LiveConnect, i.e\. a call from JavaScript
  * from a HTML page which embeds this part.
  * A part can have an object hierarchie by using objid as a reference
  * to an object.
@@ -807,7 +807,7 @@ public:
   static LiveConnectExtension *childObject( QObject *obj );
 signals:
   /**
-   * notify a event from the part of object objid
+   * notify an event from the part of object objid
    */
   virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
 };

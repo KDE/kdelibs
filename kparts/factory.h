@@ -50,7 +50,7 @@ public:
      * The QStringList can be used to pass additional arguments to the part.
      * If the part needs additional arguments, it should take them as
      * name="value" pairs. This is the way additional arguments will get passed
-     * to the part from eg. khtml. You can for example emebed the part into HTML
+     * to the part from eg. khtml. You can for example embed the part into HTML
      * by using the following code:
      * \code
      *    <object type="my_mimetype" data="url_to_my_data">
@@ -60,7 +60,7 @@ public:
      * \endcode
      * This could result in a call to
      * \code
-     *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
+     *     createPart( parentWidget, name, parentObject, parentName, "KParts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
      * \endcode
      *
@@ -83,8 +83,8 @@ public:
      const KInstance *partInstance();
 
      /**
-      * A convenience method for partInstance that takes care of retrieving
-      * the factory for a given library name and calling partInstance on it.
+      * A convenience method for partInstance() that takes care of retrieving
+      * the factory for a given library name and calling partInstance() on it.
       *
       * @param libraryName name of the library to query the instance from
       */

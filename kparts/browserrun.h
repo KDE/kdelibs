@@ -27,13 +27,16 @@ namespace KParts {
 
     /**
      * This class extends KRun to provide additional functionality for browsers:
-     * - "save or open" dialog boxes
-     * - "save" functionality
-     * - support for HTTP POST (including saving the result to a temp file if
+     * <ul>
+     * <li>"save or open" dialog boxes
+     * <li>"save" functionality
+     * <li>support for HTTP POST (including saving the result to a temp file if
      *   opening a separate application)
-     * - warning before launching executables off the web
-     * - custom error handling (i.e. treating errors as HTML pages)
-     * - generation of SSL metadata depending on the previous URL shown by the part
+     * <li>warning before launching executables off the web
+     * <li>custom error handling (i.e. treating errors as HTML pages)
+     * <li>generation of SSL metadata depending on the previous URL shown by the part
+     * </ul>
+     *
      * @author David Faure <faure@kde.org>
      */
     class KPARTS_EXPORT BrowserRun : public KRun
@@ -72,11 +75,20 @@ namespace KParts {
 
         //KParts::URLArgs urlArgs() const { return m_args; }
         //KParts::ReadOnlyPart* part() const { return m_part; }
+	
+	/**
+	 * @return the URL we're probing
+	 */
         KURL url() const { return m_strURL; }
-
+	
+	/**
+	 * @return true if no dialog will be shown in case of errors
+	 */
         bool hideErrorDialog() const;
         
-        // Suggested filename given by the server (e.g. HTTP content-disposition)
+        /**
+	 * @return Suggested filename given by the server (e.g. HTTP content-disposition)
+	 */
         QString suggestedFilename() const { return m_suggestedFilename; }
         
         enum AskSaveResult { Save, Open, Cancel };
@@ -90,7 +102,7 @@ namespace KParts {
          */
         static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString::null );
         /**
-         * Similar to askSave but for the case where the current application is
+         * Similar to askSave() but for the case where the current application is
          * able to embed the url itself (instead of passing it to another app).
          * @param url the URL in question
          * @param mimeType the mimetype of the URL

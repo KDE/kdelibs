@@ -171,8 +171,8 @@ private:
  *
  * <b>About the GUI elements:</b>\n
  *
- * Those elements trigger actions, defined by the part ( action()).
- * The layout of the actions in the GUI is defined by an XML file ( setXMLFile()).
+ * Those elements trigger actions, defined by the part (action()).
+ * The layout of the actions in the GUI is defined by an XML file (setXMLFile()).
  *
  * See also ReadOnlyPart and ReadWritePart, which define the
  * framework for a "viewer" part and for an "editor"-like part.
@@ -467,7 +467,7 @@ signals:
    * after a certain period of time. This signal is useful if you want
    * to give the user the ability to cancel such pending actions.
    *
-   * @p pendingAction true if a pending action exists, false otherwise.
+   * @param pendingAction true if a pending action exists, false otherwise.
    */
   void completed( bool pendingAction );
 
@@ -495,8 +495,8 @@ protected:
 
   /**
    * Reimplemented from Part, so that the window caption is set to
-   * the current url (decoded) when the part is activated
-   * This is the usual behavior in 99% of the apps
+   * the current url (decoded) when the part is activated.
+   * This is the usual behavior in 99% of the apps.
    * Reimplement if you don't like it - test for event->activated() !
    *
    * Technical note : this is done with GUIActivateEvent and not with
@@ -532,22 +532,22 @@ private:
  * A read-write part can be set to read-only mode, using setReadWrite().
  *
  * Part writers :
- * Any part inheriting ReadWritePart should check isReadWrite
+ * Any part inheriting ReadWritePart should check isReadWrite()
  * before allowing any action that modifies the part.
  * The part probably wants to reimplement setReadWrite, disable those
- * actions. Don't forget to call the parent setReadWrite.
+ * actions. Don't forget to call the parent setReadWrite().
  */
 class KPARTS_EXPORT ReadWritePart : public ReadOnlyPart
 {
   Q_OBJECT
 public:
   /**
-   * Constructor
+   * Constructor.
    * See parent constructor for instructions.
    */
   ReadWritePart( QObject *parent = 0, const char *name = 0 );
   /**
-   * Destructor
+   * Destructor.
    * Applications using a ReadWritePart should make sure, before
    * destroying it, to call closeURL().
    * In KMainWindow::queryClose(), for instance, they should allow

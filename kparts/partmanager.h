@@ -60,7 +60,7 @@ public:
 
   /**
    * This extends QFocusEvent::Reason with the non-focus-event reasons for partmanager to activate a part.
-   * To test for "any focusin reason", use < ReasonLeftClick
+   * To test for "any focusin reason", use < ReasonLeftClick.
    * NoReason usually means: explicit activation with @ref setActivePart.
    * @since 3.3
    */
@@ -148,7 +148,7 @@ public:
    * Adds a part to the manager.
    *
    * Sets it to the active part automatically if @p setActive is true (default ).
-   * Behavior fix in KDE3.4: the part's widget is shown only if setActive is true,
+   * Behavior fix in KDE3.4: the part's widget is shown only if @p setActive is true,
    * it used to be shown in all cases before.
    */
   virtual void addPart( Part *part, bool setActive = true );
@@ -173,7 +173,7 @@ public:
    * The active part receives activation events.
    *
    * @p widget can be used to specify which widget was responsible for the activation.
-   * This is important if you have multiple views for a document/part , like in KOffice .
+   * This is important if you have multiple views for a document/part, like in KOffice.
    */
   virtual void setActivePart( Part *part, QWidget *widget = 0L );
 
@@ -183,7 +183,7 @@ public:
   virtual Part *activePart() const;
 
   /**
-   * Returns the active widget of the current active part (see activePart ).
+   * Returns the active widget of the current active part (see activePart()).
    */
   virtual QWidget *activeWidget() const;
 
@@ -193,7 +193,7 @@ public:
    * The selected part receives selection events.
    *
    * @p widget can be used to specify which widget was responsible for the selection.
-   * This is important if you have multiple views for a document/part , like in KOffice .
+   * This is important if you have multiple views for a document/part, like in KOffice.
    */
   virtual void setSelectedPart( Part *part, QWidget *widget = 0L );
 
@@ -203,7 +203,7 @@ public:
   virtual Part *selectedPart() const;
 
   /**
-   * Returns the selected widget of the current selected part (see selectedPart ).
+   * Returns the selected widget of the current selected part (see selectedPart()).
    */
   virtual QWidget *selectedWidget() const;
 
@@ -215,9 +215,9 @@ public:
   /**
    * Adds the @p topLevel widget to the list of managed toplevel widgets.
    * Usually a PartManager only listens for events (for activation/selection)
-   * for one toplevel widget (and its children) , the one specified in the
+   * for one toplevel widget (and its children), the one specified in the
    * constructor. Sometimes however (like for example when using the KDE dockwidget
-   * library) , it is necessary to extend this.
+   * library), it is necessary to extend this.
    */
   void addManagedTopLevelWidget( const QWidget *topLevel );
   /**

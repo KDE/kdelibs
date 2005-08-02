@@ -62,15 +62,15 @@ protected slots:
   /**
    * Create the GUI (by merging the host's and the active part's)
    *
-   * Called on startup and whenever the active part changes
+   * Called on startup and whenever the active part changes.
    * For this you need to connect this slot to the
-   * KPartManager::activePartChanged() signal
+   * PartManager::activePartChanged() signal
    * @param part The active part (set to 0L if no part).
    */
   void createGUI( KParts::Part * part );
 
   /**
-   * Called when the active part wants to change the statusbar message
+   * Called when the active part wants to change the statusbar message.
    * Reimplement if your dock-mainwindow has a complex statusbar
    * (with several items)
    */
