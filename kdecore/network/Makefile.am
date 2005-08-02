@@ -28,7 +28,8 @@ libkdecorenetwork_la_SOURCES = kresolver.cpp \
 		khttpproxysocketdevice.cpp \
 		ksockssocketdevice.cpp \
 		kbufferedsocket.cpp \
-		ksocketbuffer.cpp
+		ksocketbuffer.cpp\
+		knetworkinterface.cpp
 
 include_HEADERS = kresolver.h \
 	kreverseresolver.h \
@@ -46,6 +47,7 @@ include_HEADERS = kresolver.h \
 	ksockssocketdevice.h \
 	kbufferedsocket.h \
 	kiobuffer.h
+	
 noinst_HEADERS = kresolver_p.h \
 	kresolverworkerbase.h \
 	kresolverstandardworkers_p.h \
