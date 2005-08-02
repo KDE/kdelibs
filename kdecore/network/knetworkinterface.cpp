@@ -17,6 +17,25 @@ using namespace KNetwork;
 class KNetwork::KNetworkInterfacePrivate : public QSharedData
 {
     public:
+        KNetworkInterfacePrivate();
+        KNetworkInterfacePrivate(const QString _name,
+                                 int _index,
+                                 int _flags,
+                                 KSocketAddress _address,
+                                 KSocketAddress _netmask,
+                                 KSocketAddress _broadcast,
+                                 KSocketAddress _destination);
+
+
+        KNetworkInterfacePrivate& operator= (const KNetworkInterfacePrivate& interface);
+
+        void init();
+        KNetworkInterfacePrivate *find(const QString &ifName);
+        KNetworkInterfacePrivate *find(int ifIndex);
+
+        void readInterfaces();
+        void readStats();
+
         QString name;
         int index;
         int flags;
@@ -71,175 +90,153 @@ class KNetwork::KNetworkInterfacePrivate : public QSharedData
 
         QMultiHash<QString, KNetworkInterfacePrivate*> nameMap;
         QMultiHash<int, KNetworkInterfacePrivate*> indexMap;
-
-        KNetworkInterfacePrivate()
-            : index(0),
-              flags(0)
-        {
-        }
-
-        KNetworkInterfacePrivate(const QString &ifName)
-            : name(ifName),
-              index(0),
-              flags(0)
-        {
-            init();
-        }
-
-
-        KNetworkInterfacePrivate(int ifID)
-            : index(ifID),
-              flags(0)
-        {
-            init();
-        }
-
-        KNetworkInterfacePrivate(const QString _name,
-                                 int _index,
-                                 int _flags,
-                                 KSocketAddress _address,
-                                 KSocketAddress _netmask,
-                                 KSocketAddress _broadcast,
-                                 KSocketAddress _destination)
-            : name(_name),
-              index(_index),
-              flags(_flags),
-              address(_address),
-              netmask(_netmask),
-              broadcast(_broadcast),
-              destination(_destination)
-        {
-            readStats();
-        }
-
-        ~KNetworkInterfacePrivate()
-        {
-        }
-
-        KNetworkInterfacePrivate& operator= (const KNetworkInterfacePrivate& interface)
-        {
-            name = interface.name;
-            index = interface.index;
-            flags = interface.flags;
-            stats = interface.stats;
-            address = interface.address;
-            netmask = interface.netmask;
-            broadcast = interface.broadcast;
-            destination = interface.destination;
-
-            return *this;
-        }
-
-        void readInterfaces()
-        {
-            nameMap.clear();
-            indexMap.clear();
-
-            struct ifaddrs *ads;
-            struct ifaddrs *a;
-
-            if (getifaddrs(&ads))
-            {
-                return;
-            }
-
-            a = ads;
-            while (a)
-            {
-                KNetworkInterfacePrivate *interface =
-                    new KNetworkInterfacePrivate(QString::fromUtf8(a->ifa_name),
-                                                 if_nametoindex(a->ifa_name),
-                                                 a->ifa_flags,
-                                                 KSocketAddress(a->ifa_addr, sizeof(sockaddr)),
-                                                 KSocketAddress(a->ifa_netmask, sizeof(sockaddr)),
-                                                 KSocketAddress(a->ifa_broadaddr, sizeof(sockaddr)),
-                                                 KSocketAddress(a->ifa_dstaddr, sizeof(sockaddr)));
-
-                nameMap.insert(interface->name, interface);
-                indexMap.insert(interface->index, interface);
-                a = a->ifa_next;
-            }
-
-            freeifaddrs(ads);
-        }
-
-        void readStats()
-        {
-            // Read basic info
-            QFile proc( "/proc/net/dev" );
-            if (!proc.open(QIODevice::ReadOnly))
-            {
-                qWarning("Can't open /proc/net/dev. No interfaces...");
-                return;
-            }
-
-            // Chuck out the first two lines
-            proc.readLine();
-            proc.readLine();
-
-            QString line = proc.readLine();
-            while (!line.isEmpty())
-            {
-                QString netif = line.section(":", 0, 0);
-                if (netif.simplified() == name)
-                {
-                    QString info = line.mid(netif.size() + 1, line.size());
-                    QStringList stat = info.split(" ", QString::SkipEmptyParts);
-
-                    // There's probably a better way to do this..
-                    stats.rxBytes = stat[0].toInt();
-                    stats.rxPackets = stat[1].toInt();
-                    stats.rxErrors = stat[2].toInt();
-                    stats.rxDropped = stat[3].toInt();
-                    stats.rxFifoErrors = stat[4].toInt();
-                    stats.rxFrameErrors = stat[5].toInt();
-                    stats.rxCompressed = stat[6].toInt();
-                    stats.rxMulticast = stat[7].toInt();
-
-                    stats.txBytes = stat[8].toInt();
-                    stats.txPackets = stat[9].toInt();
-                    stats.txErrors = stat[10].toInt();
-                    stats.txDropped = stat[11].toInt();
-                    stats.txFifoErrors = stat[12].toInt();
-                    stats.txColls = stat[13].toInt();
-                    stats.txCarrierErrors = stat[14].toInt();
-                    stats.txCompressed = stat[15].toInt();
-                }
-                line = proc.readLine();
-            }
-        }
-
-        void init()
-        {
-            readInterfaces();
-
-            if (!name.isEmpty() || index)
-            {
-                KNetworkInterfacePrivate *info = 0;
-                if(!name.isEmpty())
-                {
-                    info = (nameMap.find(name)).value();
-                }
-                else
-                {
-                    info = (indexMap.find(index)).value();
-                }
-                if (info)
-                {
-                    name = info->name;
-                    index = info->index;
-                    flags = info->flags;
-                    address = info->address;
-                    netmask = info->netmask;
-                    broadcast = info->broadcast;
-                    destination = info->destination;
-
-                    readStats();
-                }
-            }
-        }
-
 };
+
+KNetworkInterfacePrivate::KNetworkInterfacePrivate()
+    : index(0),
+      flags(0)
+{
+}
+
+KNetworkInterfacePrivate::KNetworkInterfacePrivate(const QString _name,
+                         int _index,
+                         int _flags,
+                         KSocketAddress _address,
+                         KSocketAddress _netmask,
+                         KSocketAddress _broadcast,
+                         KSocketAddress _destination)
+    : name(_name),
+      index(_index),
+      flags(_flags),
+      address(_address),
+      netmask(_netmask),
+      broadcast(_broadcast),
+      destination(_destination)
+{
+    readStats();
+}
+
+
+KNetworkInterfacePrivate& KNetworkInterfacePrivate::operator= (const KNetworkInterfacePrivate& interface)
+{
+    name = interface.name;
+    index = interface.index;
+    flags = interface.flags;
+    stats = interface.stats;
+    address = interface.address;
+    netmask = interface.netmask;
+    broadcast = interface.broadcast;
+    destination = interface.destination;
+
+    return *this;
+}
+
+void KNetworkInterfacePrivate::init()
+{
+   nameMap.clear();
+    indexMap.clear();
+
+    struct ifaddrs *ads;
+    struct ifaddrs *a;
+
+    if (getifaddrs(&ads))
+    {
+        return;
+    }
+
+    a = ads;
+    while (a)
+    {
+        KNetworkInterfacePrivate *interface = 0;
+        if (a->ifa_addr->sa_family == AF_INET)
+        {
+            interface = new KNetworkInterfacePrivate(QString::fromUtf8(a->ifa_name),
+                if_nametoindex(a->ifa_name),
+                a->ifa_flags,
+                KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in)),
+                KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in)),
+                KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in)),
+                KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in)));
+        }
+        else if (a->ifa_addr->sa_family == AF_INET6)
+        {
+            interface = new KNetworkInterfacePrivate(QString::fromUtf8(a->ifa_name),
+                if_nametoindex(a->ifa_name),
+                a->ifa_flags,
+                KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in6)),
+                KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in6)),
+                KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in6)),
+                KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in6)));
+        }
+
+        if (interface)
+        {
+            nameMap.insert(interface->name, interface);
+            indexMap.insert(interface->index, interface);
+        }
+        a = a->ifa_next;
+    }
+
+    freeifaddrs(ads);
+
+}
+
+
+KNetworkInterfacePrivate *KNetworkInterfacePrivate::find(const QString& ifName)
+{
+    return nameMap.find(ifName).value();
+}
+
+KNetworkInterfacePrivate *KNetworkInterfacePrivate::find(int ifIndex)
+{
+    return indexMap.find(ifIndex).value();
+}
+
+void KNetworkInterfacePrivate::readStats()
+{
+    // Read basic info
+    QFile proc( "/proc/net/dev" );
+    if (!proc.open(QIODevice::ReadOnly))
+    {
+        qWarning("Can't open /proc/net/dev. No interfaces...");
+        return;
+    }
+
+    // Chuck out the first two lines
+    proc.readLine();
+    proc.readLine();
+
+    QString line = proc.readLine();
+    while (!line.isEmpty())
+    {
+        QString netif = line.section(":", 0, 0);
+        if (netif.simplified() == name)
+        {
+            QString info = line.mid(netif.size() + 1, line.size());
+            QStringList stat = info.split(" ", QString::SkipEmptyParts);
+
+            // There's probably a better way to do this..
+            stats.rxBytes = stat[0].toInt();
+            stats.rxPackets = stat[1].toInt();
+            stats.rxErrors = stat[2].toInt();
+            stats.rxDropped = stat[3].toInt();
+            stats.rxFifoErrors = stat[4].toInt();
+            stats.rxFrameErrors = stat[5].toInt();
+            stats.rxCompressed = stat[6].toInt();
+            stats.rxMulticast = stat[7].toInt();
+
+            stats.txBytes = stat[8].toInt();
+            stats.txPackets = stat[9].toInt();
+            stats.txErrors = stat[10].toInt();
+            stats.txDropped = stat[11].toInt();
+            stats.txFifoErrors = stat[12].toInt();
+            stats.txColls = stat[13].toInt();
+            stats.txCarrierErrors = stat[14].toInt();
+            stats.txCompressed = stat[15].toInt();
+        }
+        line = proc.readLine();
+    }
+}
 
 ///////////////////////////////////
 //  Constructors
@@ -250,9 +247,11 @@ KNetworkInterface::KNetworkInterface()
 {
 }
 
-KNetworkInterface::KNetworkInterface(const QString &interface)
-    : d(new KNetworkInterfacePrivate(interface))
+KNetworkInterface::KNetworkInterface(const QString& ifname)
+    : d(new KNetworkInterfacePrivate)
 {
+    d->init();
+    d = d->find(ifname);
 }
 
 KNetworkInterface::KNetworkInterface(const KNetworkInterface &interface)
