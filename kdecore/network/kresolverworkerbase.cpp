@@ -105,6 +105,12 @@ bool KResolverWorkerBase::postprocess()
   return true;			// no post-processing is a always successful postprocessing
 }
 
+bool KResolverWorkerBase::enqueue(KResolver* res)
+{
+  KResolverManager::manager()->enqueue(res, th->data);
+  return true;
+}
+
 bool KResolverWorkerBase::enqueue(KResolverWorkerBase* worker)
 {
   RequestData *myself = th->data;
