@@ -390,7 +390,7 @@ class KSocketDeviceFactoryBase
 {
 public:
   KSocketDeviceFactoryBase() {};
-  virtual ~KSocketDeviceFactoryBase();
+  virtual ~KSocketDeviceFactoryBase() {};
 
   virtual KSocketDevice* create(KSocketBase*) const = 0;
 };
