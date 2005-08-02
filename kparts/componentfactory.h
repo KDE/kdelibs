@@ -46,7 +46,7 @@ namespace KParts
          *
          * Example of usage:
          * \code
-         *     MyPlugin *plugin = KParts::ComponentFactory::createInstanceFromFactory&lt;MyPlugin&gt;( factory, parent );
+         *     MyPlugin *plugin = KParts::ComponentFactory::createInstanceFromFactory<MyPlugin>( factory, parent );
          * \endcode
          *
          * @param factory The factory to ask for the creation of the component
@@ -78,7 +78,7 @@ namespace KParts
          *
          * Example of usage:
          * \code
-         *     KViewPart *doc = KParts::ComponentFactory::createPartInstanceFromFactory&lt;KViewPart&gt;( factory, parent );
+         *     KViewPart *doc = KParts::ComponentFactory::createPartInstanceFromFactory<KViewPart>( factory, parent );
          * \endcode
          *
          * @param factory The factory to ask for the creation of the component
@@ -307,13 +307,13 @@ namespace KParts
          * \endcode
          *
          * @param serviceType the type of service for which to find a plugin
-         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
+         * @param constraint an optional constraint to pass to the trader (see KIO::KTrader)
          * @param parent the parent object for the part itself
          * @param name the name that will be given to the part
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
-         *              (See enum ComponentLoadingError)
+         *              (See enum #ComponentLoadingError)
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
@@ -354,7 +354,7 @@ namespace KParts
          * \endcode
          *
          * @param serviceType the type of service for which to find a part, e.g. a mimetype
-         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
+         * @param constraint an optional constraint to pass to the trader (see KTrader)
          * @param parentWidget the parent widget, will be set as the parent of the part's widget
          * @param widgetName the name that will be given to the part's widget
          * @param parent the parent object for the part itself
@@ -362,7 +362,7 @@ namespace KParts
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
-         *              (See enum ComponentLoadingError)
+         *              (See enum #ComponentLoadingError)
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
