@@ -1,5 +1,18 @@
 2005-08-02  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        Imported background parsing and painting from WebCore.
+
+        * css/cssparser.{h,cpp}: New short-hand parser for background
+        * css/cssstyleselector.{h,cpp}:
+        * rendering/render_style.{h,cpp}: Support multiple backgrounds using BackgroundLayer
+        * rendering/render_box.{h,cpp}: Use paingBackgrounds to paint multiple backgrounds
+        * rendering/render_line.{h,cpp}: ditto
+        * rendering/render_object.{h,cpp}: ditto
+        * rendering/render_form.cpp:
+        * khtml/rendering/render_table.cpp:
+
+2005-08-02  Allan Sandfeld Jensen <kde@carewolf.com>
+
         * rendering/render_block.{h,cpp}: Split layoutBlockChildren into several auxilary functions.
 
 2005-07-26  Andreas Kling <kling@impul.se>

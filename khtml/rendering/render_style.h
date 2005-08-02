@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2002-2004 Apple Computer, Inc.
  *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -242,8 +242,18 @@ class OutlineValue : public BorderValue
             _auto = false;
         }
 
-        int _offset;
-        bool _auto;
+    bool operator==(const OutlineValue& o) const
+    {
+        return width==o.width && style==o.style && color==o.color && _offset == o._offset && _auto == o._auto;
+    }
+
+    bool operator!=(const OutlineValue& o) const
+    {
+        return !(*this == o);
+    }
+
+    int _offset;
+    bool _auto;
 };
 
 enum EBorderPrecedence { BOFF, BTABLE, BCOLGROUP, BCOL, BROWGROUP, BROW, BCELL };
@@ -402,6 +412,80 @@ enum EBackgroundRepeat {
     REPEAT, REPEAT_X, REPEAT_Y, NO_REPEAT
 };
 
+struct BackgroundLayer {
+public:
+    BackgroundLayer();
+    ~BackgroundLayer();
+
+    CachedImage* backgroundImage() const { return m_image; }
+    Length backgroundXPosition() const { return m_xPosition; }
+    Length backgroundYPosition() const { return m_yPosition; }
+    bool backgroundAttachment() const { return m_bgAttachment; }
+    EBackgroundRepeat backgroundRepeat() const { return m_bgRepeat; }
+    BackgroundLayer* next() const { return m_next; }
+    BackgroundLayer* next() { return m_next; }
+
+    bool isBackgroundImageSet() const { return m_imageSet; }
+    bool isBackgroundXPositionSet() const { return m_xPosSet; }
+    bool isBackgroundYPositionSet() const { return m_yPosSet; }
+    bool isBackgroundAttachmentSet() const { return m_attachmentSet; }
+    bool isBackgroundRepeatSet() const { return m_repeatSet; }
+
+    void setBackgroundImage(CachedImage* i) { m_image = i; m_imageSet = true; }
+    void setBackgroundXPosition(const Length& l) { m_xPosition = l; m_xPosSet = true; }
+    void setBackgroundYPosition(const Length& l) { m_yPosition = l; m_yPosSet = true; }
+    void setBackgroundAttachment(bool b) { m_bgAttachment = b; m_attachmentSet = true; }
+    void setBackgroundRepeat(EBackgroundRepeat r) { m_bgRepeat = r; m_repeatSet = true; }
+
+    void clearBackgroundImage() { m_imageSet = false; }
+    void clearBackgroundXPosition() { m_xPosSet = false; }
+    void clearBackgroundYPosition() { m_yPosSet = false; }
+    void clearBackgroundAttachment() { m_attachmentSet = false; }
+    void clearBackgroundRepeat() { m_repeatSet = false; }
+
+    void setNext(BackgroundLayer* n) { if (m_next != n) { delete m_next; m_next = n; } }
+
+    BackgroundLayer& operator=(const BackgroundLayer& o);
+    BackgroundLayer(const BackgroundLayer& o);
+
+    bool operator==(const BackgroundLayer& o) const;
+    bool operator!=(const BackgroundLayer& o) const {
+        return !(*this == o);
+    }
+
+    bool containsImage(CachedImage* c) const { if (c == m_image) return true; if (m_next) return m_next->containsImage(c); return false; }
+
+    bool hasImage() const {
+        if (m_image)
+            return true;
+        return m_next ? m_next->hasImage() : false;
+    }
+    bool hasFixedImage() const {
+        if (m_image && !m_bgAttachment)
+            return true;
+        return m_next ? m_next->hasFixedImage() : false;
+    }
+
+    void fillUnsetProperties();
+    void cullEmptyLayers();
+
+    CachedImage* m_image;
+
+    Length m_xPosition;
+    Length m_yPosition;
+
+    bool m_bgAttachment : 1;
+    EBackgroundRepeat m_bgRepeat : 2;
+
+    bool m_imageSet : 1;
+    bool m_attachmentSet : 1;
+    bool m_repeatSet : 1;
+    bool m_xPosSet : 1;
+    bool m_yPosSet : 1;
+
+    BackgroundLayer* m_next;
+};
+
 class StyleBackgroundData : public Shared<StyleBackgroundData>
 {
 public:
@@ -414,12 +498,9 @@ public:
 	return !(*this == o);
     }
 
-    QColor color;
-    CachedImage *image;
-
-    Length x_position;
-    Length y_position;
-    OutlineValue outline;
+    BackgroundLayer m_background;
+    QColor m_color;
+    OutlineValue m_outline;
 };
 
 //------------------------------------------------
@@ -732,8 +813,6 @@ protected:
             struct {
                 EDisplay _display : 5;
                 EDisplay _originalDisplay: 5;
-                EBackgroundRepeat _bg_repeat : 2;
-                bool _bg_attachment : 1;
                 EOverflow _overflow : 4 ;
                 EVerticalAlign _vertical_align : 4;
                 EClear _clear : 2;
@@ -751,7 +830,7 @@ protected:
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 20;
+                unsigned int unused : 23;
             } f;
             Q_UINT64 _niflags;
         };
@@ -809,8 +888,6 @@ protected:
 	                                  // makes use of uninitialised bits according to valgrind
 
         noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
-	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
-	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
 	noninherited_flags.f._overflow = initialOverflow();
 	noninherited_flags.f._vertical_align = initialVerticalAlign();
 	noninherited_flags.f._clear = initialClear();
@@ -856,6 +933,14 @@ public:
     bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
     bool        hasOffset() const { return surround->offset.nonZero(); }
+
+    bool hasBackground() const {
+        if (backgroundColor().isValid() && qAlpha(backgroundColor().rgb()) > 0)
+            return true;
+        else
+            return background->m_background.hasImage();
+    }
+    bool hasFixedBackgroundImage() const { return background->m_background.hasFixedImage(); }
 
     bool visuallyOrdered() const { return inherited_flags.f._visuallyOrdered; }
     void setVisuallyOrdered(bool b) {  inherited_flags.f._visuallyOrdered = b; }
@@ -908,10 +993,11 @@ public:
 
     unsigned short  outlineSize() const { return outlineWidth() + outlineOffset(); }
     unsigned short  outlineWidth() const
-    { if(background->outline.style == BNONE || background->outline.style == BHIDDEN) return 0;
-      else return background->outline.width; }
-    EBorderStyle    outlineStyle() const {  return background->outline.style; }
-    const QColor &  outlineColor() const {  return background->outline.color; }
+    { if(background->m_outline.style == BNONE || background->m_outline.style == BHIDDEN) return 0;
+      else return background->m_outline.width; }
+    EBorderStyle    outlineStyle() const {  return background->m_outline.style; }
+    bool outlineStyleIsAuto() const { return background->m_outline._auto; }
+    const QColor &  outlineColor() const {  return background->m_outline.color; }
 
     EOverflow overflow() const { return  noninherited_flags.f._overflow; }
     bool hidesOverflow() const { return overflow() != OVISIBLE; }
@@ -970,12 +1056,14 @@ public:
         return false;
     }
 
-    const QColor & backgroundColor() const { return background->color; }
-    CachedImage *backgroundImage() const { return background->image; }
-    EBackgroundRepeat backgroundRepeat() const { return  noninherited_flags.f._bg_repeat; }
-    bool backgroundAttachment() const { return  noninherited_flags.f._bg_attachment; }
-    Length backgroundXPosition() const { return background->x_position; }
-    Length backgroundYPosition() const { return background->y_position; }
+    const QColor & backgroundColor() const { return background->m_color; }
+    CachedImage *backgroundImage() const { return background->m_background.m_image; }
+    EBackgroundRepeat backgroundRepeat() const { return background->m_background.m_bgRepeat; }
+    bool backgroundAttachment() const { return background->m_background.m_bgAttachment; }
+    Length backgroundXPosition() const { return background->m_background.m_xPosition; }
+    Length backgroundYPosition() const { return background->m_background.m_yPosition; }
+    BackgroundLayer* accessBackgroundLayers() { return &(background.access()->m_background); }
+    const BackgroundLayer* backgroundLayers() const { return &(background->m_background); }
 
     // returns true for collapsing borders, false for separate borders
     bool borderCollapse() const { return inherited_flags.f._border_collapse; }
@@ -1013,8 +1101,8 @@ public:
     // CSS3 Getter Methods
     EBoxSizing boxSizing() const { return box->box_sizing; }
     int outlineOffset() const {
-        if (background->outline.style == BNONE || background->outline.style == BHIDDEN) return 0;
-        return background->outline._offset;
+        if (background->m_outline.style == BNONE || background->m_outline.style == BHIDDEN) return 0;
+        return background->m_outline._offset;
     }
     ShadowData* textShadow() const { return css3InheritedData->textShadow; }
     float opacity() { return css3NonInheritedData->opacity; }
@@ -1051,7 +1139,9 @@ public:
     void resetBorderRight() { SET_VAR(surround, border.right, BorderValue()) }
     void resetBorderBottom() { SET_VAR(surround, border.bottom, BorderValue()) }
     void resetBorderLeft() { SET_VAR(surround, border.left, BorderValue()) }
-    void resetOutline() { SET_VAR(background, outline, OutlineValue()) }
+    void resetOutline() { SET_VAR(background, m_outline, OutlineValue()) }
+
+    void setBackgroundColor(const QColor& v)    { SET_VAR(background, m_color, v) }
 
     void setBorderLeftWidth(unsigned short v)   {  SET_VAR(surround,border.left.width,v) }
     void setBorderLeftStyle(EBorderStyle v)     {  SET_VAR(surround,border.left.style,v) }
@@ -1065,9 +1155,13 @@ public:
     void setBorderBottomWidth(unsigned short v) {  SET_VAR(surround,border.bottom.width,v) }
     void setBorderBottomStyle(EBorderStyle v)   {  SET_VAR(surround,border.bottom.style,v) }
     void setBorderBottomColor(const QColor & v) {  SET_VAR(surround,border.bottom.color,v) }
-    void setOutlineWidth(unsigned short v) {  SET_VAR(background,outline.width,v) }
-    void setOutlineStyle(EBorderStyle v)   {  SET_VAR(background,outline.style,v) }
-    void setOutlineColor(const QColor & v) {  SET_VAR(background,outline.color,v) }
+    void setOutlineWidth(unsigned short v) {  SET_VAR(background,m_outline.width,v) }
+    void setOutlineStyle(EBorderStyle v, bool isAuto = false)
+    {
+        SET_VAR(background,m_outline.style,v)
+        SET_VAR(background,m_outline._auto, isAuto)
+    }
+    void setOutlineColor(const QColor & v) {  SET_VAR(background,m_outline.color,v) }
 
     void setOverflow(EOverflow v) {  noninherited_flags.f._overflow = v; }
     void setVisibility(EVisibility v) { inherited_flags.f._visibility = v; }
@@ -1110,12 +1204,9 @@ public:
     void setWordSpacing(int v) { SET_VAR(inherited,font.wordSpacing,v) }
     void setLetterSpacing(int v) { SET_VAR(inherited,font.letterSpacing,v) }
 
-    void setBackgroundColor(const QColor & v) {  SET_VAR(background,color,v) }
-    void setBackgroundImage(CachedImage *v) {  SET_VAR(background,image,v) }
-    void setBackgroundRepeat(EBackgroundRepeat v) {  noninherited_flags.f._bg_repeat = v; }
-    void setBackgroundAttachment(bool scroll) {  noninherited_flags.f._bg_attachment = scroll; }
-    void setBackgroundXPosition(Length v) {  SET_VAR(background,x_position,v) }
-    void setBackgroundYPosition(Length v) {  SET_VAR(background,y_position,v) }
+    void clearBackgroundLayers() { background.access()->m_background = BackgroundLayer(); }
+    void inheritBackgroundLayers(const BackgroundLayer& parent) { background.access()->m_background = parent; }
+    void adjustBackgroundLayers();
 
     void setBorderCollapse(bool collapse) { inherited_flags.f._border_collapse = collapse; }
     void setBorderHorizontalSpacing(short v) { SET_VAR(inherited,border_hspacing,v) }
@@ -1163,7 +1254,7 @@ public:
 
     // CSS3 Setters
     void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
-    void setOutlineOffset(unsigned short v) {  SET_VAR(background,outline._offset,v) }
+    void setOutlineOffset(unsigned short v) {  SET_VAR(background,m_outline._offset,v) }
     void setTextShadow(ShadowData* val, bool add=false);
     void setOpacity(float f) { SET_VAR(css3NonInheritedData, opacity, f); }
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }

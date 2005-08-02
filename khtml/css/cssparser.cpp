@@ -385,51 +385,6 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     return b;
 }
 
-CSSPrimitiveValueImpl *CSSParser::parseBackgroundPositionXY( int propId, bool forward, bool &ok )
-{
-    if ( forward )
-        valueList->next();
-
-    Value *value = valueList->current();
-
-    ok = true;
-
-    if ( !value )
-        return 0;
-
-    int id = value->id;
-
-    switch ( id ) {
-    case 0:
-        if ( !validUnit( value, FPercent|FLength, strict&(!nonCSSHint) ) )
-            ok = false;
-        break;
-
-    case CSS_VAL_LEFT:
-    case CSS_VAL_RIGHT:
-        if ( propId == CSS_PROP_BACKGROUND_POSITION_Y ) {
-            ok = false;
-            break;
-        }
-    case CSS_VAL_TOP:
-    case CSS_VAL_BOTTOM:
-        if ( propId == CSS_PROP_BACKGROUND_POSITION_X && ( id == CSS_VAL_BOTTOM || id == CSS_VAL_TOP ) ) {
-            ok = false;
-            break;
-        }
-    case CSS_VAL_CENTER:
-        return new CSSPrimitiveValueImpl( id );
-        break;
-    default:
-        ok = false;
-    }
-    if ( !ok )
-        return 0;
-    return new CSSPrimitiveValueImpl( value->fValue,
-                                      (CSSPrimitiveValue::UnitTypes) value->unit );
-}
-
-
 bool CSSParser::parseValue( int propId, bool important, int expected )
 {
     if ( !valueList ) return false;
@@ -660,175 +615,6 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         }
         break;
 
-    case CSS_PROP_BACKGROUND_REPEAT:    // repeat | repeat-x | repeat-y | no-repeat | inherit
-        if ( id >= CSS_VAL_REPEAT && id <= CSS_VAL_NO_REPEAT )
-            valid_primitive = true;
-        break;
-
-    case CSS_PROP_BACKGROUND_ATTACHMENT: // scroll | fixed
-        if ( id == CSS_VAL_SCROLL || id == CSS_VAL_FIXED )
-            valid_primitive = true;
-        break;
-
-    case CSS_PROP_BACKGROUND_POSITION:
-    {
-        CSSPrimitiveValueImpl *pos[2];
-        pos[0] = 0;
-        pos[1] = 0;
-        bool pos_ok[2];
-        pos_ok[0] = true;
-        pos_ok[1] = true;
-
-        // if we loop beyond our values, do not call ->next twice
-        bool skip_next = true;
-
-        /* Problem: center is ambigous
-         * In case of 'center' center defines X and Y coords
-         * In case of 'center top', center defines the Y coord
-         * in case of 'center left', center defines the X coord
-         * in case of 'center 30%' center defines the X coord
-         * in case of '30% center' center defines the Y coord
-         */
-        bool invalid = false;
-        switch( id ) {
-        case CSS_VAL_TOP:
-            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
-            if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
-                pos_ok[0] = false; // after top only key words are allowed
-            BACKGROUND_SKIP_CENTER( 0 )
-            pos[1] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
-            break;
-        case CSS_VAL_BOTTOM:
-            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, true, pos_ok[0] );
-            kdDebug() << "pos[0] " << pos[0] << " " << pos_ok[0] << endl;
-            if ( pos[0] && pos_ok[0] && pos[0]->primitiveType() != CSSPrimitiveValue::CSS_IDENT )
-                pos_ok[0] = false; // after bottom only key words are allowed
-            BACKGROUND_SKIP_CENTER( 0 )
-            pos[1] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
-            break;
-        case CSS_VAL_LEFT:
-            pos[0] = new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
-            pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
-            BACKGROUND_SKIP_CENTER( 1 )
-            // after left everything is allowed
-            break;
-        case CSS_VAL_RIGHT:
-            pos[0] = new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
-            pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
-            BACKGROUND_SKIP_CENTER( 1 )
-            // after right everything is allowed
-            break;
-        case CSS_VAL_CENTER:
-            value = valueList->next();
-            if ( !value ) {
-                // only one 'center'
-                pos[0] = 0;
-                pos[1] = 0;
-            } else {
-                bool ok = true;
-                CSSPrimitiveValueImpl *possibly_x = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, false, ok );
-                if ( !ok ) {
-                    assert( !possibly_x );
-                    pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
-                    BACKGROUND_SKIP_CENTER( 0 )
-                    pos[1] = 0;
-                } else {
-                    pos[0] = 0;
-                    pos[1] = possibly_x;
-                }
-            }
-            break;
-        case 0: // units
-            pos[0] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_X, false, pos_ok[0] );
-            if ( pos[0] ) {
-                pos[1] = parseBackgroundPositionXY( CSS_PROP_BACKGROUND_POSITION_Y, true, pos_ok[1] );
-
-                if ( pos_ok[1] && pos[1] && pos[1]->primitiveType() == CSSPrimitiveValue::CSS_IDENT ) {
-                    // as the first hit the horizontal value as unit, the second value can only
-                    // be either a unit or center, top or bottom
-                    switch ( pos[1]->getIdent() )
-                    {
-                    case CSS_VAL_RIGHT:
-                    case CSS_VAL_LEFT:
-                        pos_ok[1] = false;
-                        break;
-                    }
-                }
-            }
-            break;
-        default:
-            invalid = true;
-        }
-        if ( invalid )
-            break;
-
-        if ( !pos_ok[0] || !pos_ok[1] ) {
-            delete pos[0];
-            delete pos[1];
-            return false; // invalid
-        }
-
-
-        if ( !pos[0] )
-            pos[0] = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-        else if ( pos[0]->primitiveType() == CSSPrimitiveValue::CSS_IDENT )
-        {
-            // map the values to percentages
-            id = pos[0]->getIdent();
-            delete pos[0];
-            switch ( id ) {
-            case CSS_VAL_LEFT:
-                pos[0] =  new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            case CSS_VAL_CENTER:
-                pos[0] =  new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            case CSS_VAL_RIGHT:
-                pos[0] =  new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            default:
-                pos[0] = 0;
-                assert( false );
-                break;
-            }
-        }
-        if ( !pos[1] )
-            pos[1] = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-        else if ( pos[1]->primitiveType() == CSSPrimitiveValue::CSS_IDENT )
-        {
-            // map the values to percentages
-            id = pos[1]->getIdent();
-            delete pos[1];
-            switch ( id ) {
-            case CSS_VAL_TOP:
-                pos[1] =  new CSSPrimitiveValueImpl( 0, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            case CSS_VAL_CENTER:
-                pos[1] =  new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            case CSS_VAL_BOTTOM:
-                pos[1] =  new CSSPrimitiveValueImpl( 100, CSSPrimitiveValue::CSS_PERCENTAGE );
-                break;
-            default:
-                pos[1] = 0;
-                assert( false );
-                break;
-            }
-        }
-        --expected; // we only expect one as this is always done in one run
-        if ( skip_next )
-            valueList->next();
-        if ( valueList->current() && expected == 0)
-            return false;
-
-        addProperty( CSS_PROP_BACKGROUND_POSITION_X,
-                     pos[0],
-                     important );
-        addProperty( CSS_PROP_BACKGROUND_POSITION_Y,
-                     pos[1],
-                     important );
-        return true;
-    }
     case CSS_PROP_BORDER_SPACING:
     {
         const int properties[2] = { CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING,
@@ -870,17 +656,12 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             break;
         }
         /* nobreak */
-    case CSS_PROP_BACKGROUND_COLOR:     // <color> | transparent | inherit
-        if ( propId == CSS_PROP_BACKGROUND_COLOR && id == CSS_VAL_TRANSPARENT ) {
-            valid_primitive = true;
-            break;
-        }
-        /* nobreak */
-    case CSS_PROP_COLOR:                // <color> | transparent | inherit
-    case CSS_PROP_BORDER_TOP_COLOR:     // <color> | transparent | inherit
-    case CSS_PROP_BORDER_RIGHT_COLOR:   // <color> | transparent | inherit
-    case CSS_PROP_BORDER_BOTTOM_COLOR:  // <color> | transparent | inherit
-    case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | transparent | inherit
+    case CSS_PROP_BACKGROUND_COLOR:     // <color> | inherit
+    case CSS_PROP_BORDER_TOP_COLOR:     // <color> | inherit
+    case CSS_PROP_BORDER_RIGHT_COLOR:   // <color> | inherit
+    case CSS_PROP_BORDER_BOTTOM_COLOR:  // <color> | inherit
+    case CSS_PROP_BORDER_LEFT_COLOR:    // <color> | inherit
+    case CSS_PROP_COLOR:                // <color> | inherit
     case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
         if ( id == CSS_VAL__KHTML_TEXT || id == CSS_VAL_MENU ||
              (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT ) ||
@@ -906,26 +687,35 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
             valid_primitive = true;
         break;
 
-    case CSS_PROP_BACKGROUND_IMAGE:     // <uri> | none | inherit
+    case CSS_PROP_BACKGROUND_ATTACHMENT:
+    case CSS_PROP_BACKGROUND_IMAGE:
+    case CSS_PROP_BACKGROUND_POSITION:
+    case CSS_PROP_BACKGROUND_POSITION_X:
+    case CSS_PROP_BACKGROUND_POSITION_Y:
+    case CSS_PROP_BACKGROUND_REPEAT: {
+        CSSValueImpl *val1 = 0, *val2 = 0;
+        int propId1, propId2;
+        if (parseBackgroundProperty(propId, propId1, propId2, val1, val2)) {
+            addProperty(propId1, val1, important);
+            if (val2)
+                addProperty(propId2, val2, important);
+            return true;
+        }
+        return false;
+    }
     case CSS_PROP_LIST_STYLE_IMAGE:     // <uri> | none | inherit
-
-        if ( id == CSS_VAL_NONE ) {
+        if (id == CSS_VAL_NONE) {
             parsedValue = new CSSImageValueImpl();
             valueList->next();
-#ifdef CSS_DEBUG
-            kdDebug( 6080 ) << "empty image " << endl;
-#endif
-        } else if ( value->unit == CSSPrimitiveValue::CSS_URI ) {
+        }
+        else if (value->unit == CSSPrimitiveValue::CSS_URI ) {
             // ### allow string in non strict mode?
             DOMString uri = khtml::parseURL( domString( value->string ) );
-            if ( !uri.isEmpty() ) {
+            if (!uri.isEmpty()) {
                 parsedValue = new CSSImageValueImpl(
                     DOMString(KURL( styleElement->baseURL(), uri.string()).url()),
                     styleElement );
                 valueList->next();
-#ifdef CSS_DEBUG
-                kdDebug( 6080 ) << "image, url=" << uri.string() << " base=" << styleElement->baseURL().url() << endl;
-#endif
             }
         }
         break;
@@ -1168,17 +958,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     case CSS_PROP_BACKGROUND:
             // ['background-color' || 'background-image' ||'background-repeat' ||
         // 'background-attachment' || 'background-position'] | inherit
-    {
-        /* FIXME: in case the property is invalid, but parsed a position-x and -y, the
-           invalid catcher will add another _POSITION property, which doesn't really overwrite
-           the X and Y values. But this case is pretty stupid anyway.
-           testcase: "background-position: bottom right; background: center nonsense;" should
-           appear top left (initial values) */
-        const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
-                                    CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
-                                    CSS_PROP_BACKGROUND_COLOR };
-        return parseShortHand(properties, 5, important);
-    }
+	return parseBackgroundShorthand(important);
     case CSS_PROP_BORDER:
          // [ 'border-width' || 'border-style' || <color> ] | inherit
     {
@@ -1222,7 +1002,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         return parseShortHand(properties, 3, important);
     }
     case CSS_PROP_BORDER_COLOR:
-            // <color>{1,4} | transparent | inherit
+            // <color>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
                                     CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
@@ -1306,6 +1086,110 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         addProperty( propId, parsedValue, important );
         return true;
     }
+    return false;
+}
+
+void CSSParser::addBackgroundValue(CSSValueImpl*& lval, CSSValueImpl* rval)
+{
+    if (lval) {
+        if (lval->isValueList())
+            static_cast<CSSValueListImpl*>(lval)->append(rval);
+        else {
+            CSSValueImpl* oldVal = lval;
+            CSSValueListImpl* list = new CSSValueListImpl();
+            lval = list;
+            list->append(oldVal);
+            list->append(rval);
+        }
+    }
+    else
+        lval = rval;
+}
+
+bool CSSParser::parseBackgroundShorthand(bool important)
+{
+    // Position must come before color in this array because a plain old "0" is a legal color
+    // in quirks mode but it's usually the X coordinate of a position.
+    const int numProperties = 5;
+    const int properties[numProperties] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
+        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION, CSS_PROP_BACKGROUND_COLOR };
+
+    inParseShortHand = true;
+
+    bool parsedProperty[numProperties] = { false }; // compiler will repeat false as necessary
+    CSSValueImpl* values[numProperties] = { 0 }; // compiler will repeat 0 as necessary
+    CSSValueImpl* positionYValue = 0;
+    int i;
+
+    while (valueList->current()) {
+        Value* val = valueList->current();
+        if (val->unit == Value::Operator && val->iValue == ',') {
+            // We hit the end.  Fill in all remaining values with the initial value.
+            valueList->next();
+            for (i = 0; i < numProperties; ++i) {
+                if (properties[i] == CSS_PROP_BACKGROUND_COLOR && parsedProperty[i])
+                    // Color is not allowed except as the last item in a list.  Reject the entire
+                    // property.
+                    goto fail;
+
+                if (!parsedProperty[i] && properties[i] != CSS_PROP_BACKGROUND_COLOR) {
+                    addBackgroundValue(values[i], new CSSInitialValueImpl());
+                    if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
+                        addBackgroundValue(positionYValue, new CSSInitialValueImpl());
+                }
+                parsedProperty[i] = false;
+            }
+            if (!valueList->current())
+                break;
+        }
+
+        bool found = false;
+        for (i = 0; !found && i < numProperties; ++i) {
+            if (!parsedProperty[i]) {
+                CSSValueImpl *val1 = 0, *val2 = 0;
+                int propId1, propId2;
+		if (parseBackgroundProperty(properties[i], propId1, propId2, val1, val2)) {
+		    parsedProperty[i] = found = true;
+                    addBackgroundValue(values[i], val1);
+                    if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
+                        addBackgroundValue(positionYValue, val2);
+		}
+	    }
+	}
+
+        // if we didn't find at least one match, this is an
+        // invalid shorthand and we have to ignore it
+        if (!found)
+            goto fail;
+    }
+
+    // Fill in any remaining properties with the initial value.
+    for (i = 0; i < numProperties; ++i) {
+        if (!parsedProperty[i]) {
+            addBackgroundValue(values[i], new CSSInitialValueImpl());
+            if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
+                addBackgroundValue(positionYValue, new CSSInitialValueImpl());
+        }
+    }
+
+    // Now add all of the properties we found.
+    for (i = 0; i < numProperties; i++) {
+        if (properties[i] == CSS_PROP_BACKGROUND_POSITION) {
+            addProperty(CSS_PROP_BACKGROUND_POSITION_X, values[i], important);
+            addProperty(CSS_PROP_BACKGROUND_POSITION_Y, positionYValue, important);
+        }
+        else
+            addProperty(properties[i], values[i], important);
+    }
+
+    inParseShortHand = false;
+    return true;
+
+fail:
+    inParseShortHand = false;
+    for (int k = 0; k < numProperties; k++)
+        delete values[k];
+    delete positionYValue;
     return false;
 }
 
@@ -1523,6 +1407,228 @@ CSSValueImpl* CSSParser::parseCounterContent(ValueList *args, bool counters)
 invalid:
     delete counter;
     return 0;
+}
+
+CSSValueImpl* CSSParser::parseBackgroundColor()
+{
+    int id = valueList->current()->id;
+    if (id == CSS_VAL__KHTML_TEXT || (id >= CSS_VAL_AQUA && id <= CSS_VAL_WINDOWTEXT) || id == CSS_VAL_MENU ||
+        (id >= CSS_VAL_GREY && id < CSS_VAL__KHTML_TEXT && !strict))
+       return new CSSPrimitiveValueImpl(id);
+    return parseColor();
+}
+
+CSSValueImpl* CSSParser::parseBackgroundImage()
+{
+    if (valueList->current()->id == CSS_VAL_NONE)
+        return new CSSImageValueImpl();
+    if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
+        DOMString uri = khtml::parseURL(domString(valueList->current()->string));
+        if (!uri.isEmpty())
+            return new CSSImageValueImpl(DOMString(KURL(styleElement->baseURL(), uri.string()).url()),
+                                         styleElement);
+    }
+    return 0;
+}
+
+CSSValueImpl* CSSParser::parseBackgroundPositionXY(bool& xFound, bool& yFound)
+{
+    int id = valueList->current()->id;
+    if (id == CSS_VAL_LEFT || id == CSS_VAL_TOP || id == CSS_VAL_RIGHT || id == CSS_VAL_BOTTOM || id == CSS_VAL_CENTER) {
+        int percent = 0;
+        if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT) {
+            if (xFound)
+                return 0;
+            xFound = true;
+            if (id == CSS_VAL_RIGHT)
+                percent = 100;
+        }
+        else if (id == CSS_VAL_TOP || id == CSS_VAL_BOTTOM) {
+            if (yFound)
+                return 0;
+            yFound = true;
+            if (id == CSS_VAL_BOTTOM)
+                percent = 100;
+        }
+        else if (id == CSS_VAL_CENTER)
+            // Center is ambiguous, so we're not sure which position we've found yet, an x or a y.
+            percent = 50;
+        return new CSSPrimitiveValueImpl(percent, CSSPrimitiveValue::CSS_PERCENTAGE);
+    }
+    if (validUnit(valueList->current(), FPercent|FLength, strict))
+        return new CSSPrimitiveValueImpl(valueList->current()->fValue,
+                                         (CSSPrimitiveValue::UnitTypes)valueList->current()->unit);
+
+    return 0;
+}
+
+void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& value2)
+{
+    value1 = value2 = 0;
+    Value* value = valueList->current();
+
+    // Parse the first value.  We're just making sure that it is one of the valid keywords or a percentage/length.
+    bool value1IsX = false, value1IsY = false;
+    value1 = parseBackgroundPositionXY(value1IsX, value1IsY);
+    if (!value1)
+        return;
+
+    // It only takes one value for background-position to be correctly parsed if it was specified in a shorthand (since we
+    // can assume that any other values belong to the rest of the shorthand).  If we're not parsing a shorthand, though, the
+    // value was explicitly specified for our property.
+    value = valueList->next();
+
+    // First check for the comma.  If so, we are finished parsing this value or value pair.
+    if (value && value->unit == Value::Operator && value->iValue == ',')
+        value = 0;
+
+    bool value2IsX = false, value2IsY = false;
+    if (value) {
+        value2 = parseBackgroundPositionXY(value2IsX, value2IsY);
+        if (value2)
+            valueList->next();
+        else {
+            if (!inParseShortHand) {
+                delete value1;
+                value1 = 0;
+                return;
+            }
+        }
+    }
+
+    if (!value2)
+        // Only one value was specified.  If that value was not a keyword, then it sets the x position, and the y position
+        // is simply 50%.  This is our default.
+        // For keywords, the keyword was either an x-keyword (left/right), a y-keyword (top/bottom), or an ambiguous keyword (center).
+        // For left/right/center, the default of 50% in the y is still correct.
+        value2 = new CSSPrimitiveValueImpl(50, CSSPrimitiveValue::CSS_PERCENTAGE);
+
+    if (value1IsY || value2IsX) {
+        // Swap our two values.
+        CSSValueImpl* val = value2;
+        value2 = value1;
+        value1 = val;
+    }
+}
+
+bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
+                                        CSSValueImpl*& retValue1, CSSValueImpl*& retValue2)
+{
+    CSSValueListImpl *values = 0, *values2 = 0;
+    Value* val;
+    CSSValueImpl *value = 0, *value2 = 0;
+    bool allowComma = false;
+
+    retValue1 = retValue2 = 0;
+    propId1 = propId;
+    propId2 = propId;
+    if (propId == CSS_PROP_BACKGROUND_POSITION) {
+        propId1 = CSS_PROP_BACKGROUND_POSITION_X;
+        propId2 = CSS_PROP_BACKGROUND_POSITION_Y;
+    }
+
+    while ((val = valueList->current())) {
+        CSSValueImpl *currValue = 0, *currValue2 = 0;
+        if (allowComma) {
+            if (val->unit != Value::Operator || val->iValue != ',')
+                goto failed;
+            valueList->next();
+            allowComma = false;
+        }
+        else {
+            switch (propId) {
+                case CSS_PROP_BACKGROUND_ATTACHMENT:
+                    if (val->id == CSS_VAL_SCROLL || val->id == CSS_VAL_FIXED) {
+                        currValue = new CSSPrimitiveValueImpl(val->id);
+                        valueList->next();
+                    }
+                    break;
+                case CSS_PROP_BACKGROUND_COLOR:
+                    currValue = parseBackgroundColor();
+                    if (currValue)
+                        valueList->next();
+                    break;
+                case CSS_PROP_BACKGROUND_IMAGE:
+                    currValue = parseBackgroundImage();
+                    if (currValue)
+                        valueList->next();
+                    break;
+                case CSS_PROP_BACKGROUND_POSITION:
+                    parseBackgroundPosition(currValue, currValue2);
+                    // unlike the other functions, parseBackgroundPosition advances the valueList pointer
+                    break;
+                case CSS_PROP_BACKGROUND_POSITION_X: {
+                    bool xFound = false, yFound = true;
+                    currValue = parseBackgroundPositionXY(xFound, yFound);
+                    if (currValue)
+                        valueList->next();
+                    break;
+                }
+                case CSS_PROP_BACKGROUND_POSITION_Y: {
+                    bool xFound = true, yFound = false;
+                    currValue = parseBackgroundPositionXY(xFound, yFound);
+                    if (currValue)
+                        valueList->next();
+                    break;
+                }
+                case CSS_PROP_BACKGROUND_REPEAT:
+                    if (val->id >= CSS_VAL_REPEAT && val->id <= CSS_VAL_NO_REPEAT) {
+                        currValue = new CSSPrimitiveValueImpl(val->id);
+                        valueList->next();
+                    }
+                    break;
+            }
+
+            if (!currValue)
+                goto failed;
+
+            if (value && !values) {
+                values = new CSSValueListImpl();
+                values->append(value);
+                value = 0;
+            }
+
+            if (value2 && !values2) {
+                values2 = new CSSValueListImpl();
+                values2->append(value2);
+                value2 = 0;
+            }
+
+            if (values)
+                values->append(currValue);
+            else
+                value = currValue;
+            if (currValue2) {
+                if (values2)
+                    values2->append(currValue2);
+                else
+                    value2 = currValue2;
+            }
+            allowComma = true;
+        }
+
+        // When parsing the 'background' shorthand property, we let it handle building up the lists for all
+        // properties.
+        if (inParseShortHand)
+            break;
+    }
+
+    if (values && values->length()) {
+        retValue1 = values;
+        if (values2 && values2->length())
+            retValue2 = values2;
+        return true;
+    }
+    if (value) {
+        retValue1 = value;
+        retValue2 = value2;
+        return true;
+    }
+
+failed:
+    delete values; delete values2;
+    delete value; delete value2;
+    return false;
 }
 
 bool CSSParser::parseShape( int propId, bool important )
@@ -1852,9 +1958,10 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
         str.sprintf( "%06d", (int)(value->fValue+.5) );
         if ( !::parseColor( value->unit, str, c ) )
             return 0;
-    } else if ( value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
-              value->unit == CSSPrimitiveValue::CSS_IDENT ||
-              (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION) ) {
+    }
+    else if (value->unit == CSSPrimitiveValue::CSS_RGBCOLOR ||
+             value->unit == CSSPrimitiveValue::CSS_IDENT ||
+             (!strict && value->unit == CSSPrimitiveValue::CSS_DIMENSION)) {
         if ( !::parseColor( value->unit, qString( value->string ), c) )
             return 0;
     }

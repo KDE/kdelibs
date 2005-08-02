@@ -130,10 +130,10 @@ class ElementMappingCache
 {
 public:
     /**
-     For each name, we hold a reference count, and a 
-     pointer. If the item is in the table, which implies 
-     reference count is > 1, the name is a valid key. 
-     If the pointer is non-null, it points to the appropriate 
+     For each name, we hold a reference count, and a
+     pointer. If the item is in the table, which implies
+     reference count is > 1, the name is a valid key.
+     If the pointer is non-null, it points to the appropriate
      mapping
     */
     struct ItemInfo
@@ -148,7 +148,7 @@ public:
      Add a pointer as just one of candidates, not neccesserily the proper one
     */
     void add(const QString& id, NodeImpl* nd);
-    
+
     /**
      Set the pointer as the definite mapping; it must have already been added
     */
@@ -503,6 +503,8 @@ public:
     void setDomain( const DOMString &newDomain ); // not part of the DOM
 
     bool isURLAllowed(const QString& url) const;
+
+    HTMLElementImpl* body();
 
     DOMString toString() const;
 

@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2002-2004 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1254,27 +1254,16 @@ void RenderObject::setStyle(RenderStyle *style)
     RenderStyle *oldStyle = m_style;
     m_style = style;
 
-    CachedImage* ob = 0;
-    CachedImage* nb = 0;
+    updateBackgroundImages(oldStyle);
 
     if (m_style)
-    {
         m_style->ref();
-        nb = m_style->backgroundImage();
-    }
+
     if (oldStyle)
-    {
-        ob = oldStyle->backgroundImage();
         oldStyle->deref();
-    }
 
-    if( ob != nb ) {
-        if(ob) ob->deref(this);
-        if(nb) nb->ref(this);
-    }
+    setShouldPaintBackgroundOrBorder(m_style->hasBorder() || m_style->hasBackground());
 
-    setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() ||
-                                        m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
     if (m_parent) {
         if ( d >= RenderStyle::Position ) {
@@ -1348,6 +1337,21 @@ void RenderObject::setOverhangingContents(bool p)
             if (cb && cb != this)
                 cb->setOverhangingContents(false);
         }
+    }
+}
+
+void RenderObject::updateBackgroundImages(RenderStyle* oldStyle)
+{
+    // FIXME: This will be slow when a large number of images is used.  Fix by using a dict.
+    const BackgroundLayer* oldLayers = oldStyle ? oldStyle->backgroundLayers() : 0;
+    const BackgroundLayer* newLayers = m_style ? m_style->backgroundLayers() : 0;
+    for (const BackgroundLayer* currOld = oldLayers; currOld; currOld = currOld->next()) {
+        if (currOld->backgroundImage() && (!newLayers || !newLayers->containsImage(currOld->backgroundImage())))
+            currOld->backgroundImage()->deref(this);
+    }
+    for (const BackgroundLayer* currNew = newLayers; currNew; currNew = currNew->next()) {
+        if (currNew->backgroundImage() && (!oldLayers || !oldLayers->containsImage(currNew->backgroundImage())))
+            currNew->backgroundImage()->ref(this);
     }
 }
 
@@ -1713,7 +1717,7 @@ short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) con
             vpos = PositionBottom;
         } else {
             if (!ref) ref = parent();
-            bool checkParent = ref->isInline() && !ref->isReplacedBlock() && 
+            bool checkParent = ref->isInline() && !ref->isReplacedBlock() &&
                                !( ref->style()->verticalAlign() == TOP || ref->style()->verticalAlign() == BOTTOM );
             vpos = checkParent ? ref->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.

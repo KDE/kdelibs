@@ -283,7 +283,7 @@ QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257), 
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257),
       m_imageLoadEventTimer(0)
 {
     document->doc = this;
@@ -1245,6 +1245,24 @@ void DocumentImpl::open( bool clearEventListeners )
     m_decoderMibEnum = 0;
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
+}
+
+HTMLElementImpl* DocumentImpl::body()
+{
+    NodeImpl *de = documentElement();
+    if (!de)
+        return 0;
+
+    // try to prefer a FRAMESET element over BODY
+    NodeImpl* body = 0;
+    for (NodeImpl* i = de->firstChild(); i; i = i->nextSibling()) {
+        if (i->id() == ID_FRAMESET)
+            return static_cast<HTMLElementImpl*>(i);
+
+        if (i->id() == ID_BODY)
+            body = i;
+    }
+    return static_cast<HTMLElementImpl *>(body);
 }
 
 void DocumentImpl::close(  )
@@ -2494,7 +2512,7 @@ void DocumentImpl::dispatchImageLoadEventsNow()
         killTimer(m_imageLoadEventTimer);
         m_imageLoadEventTimer = 0;
     }
-    
+
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
     for (QPtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {

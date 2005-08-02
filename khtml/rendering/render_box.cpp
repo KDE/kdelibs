@@ -34,11 +34,12 @@
 #include "rendering/render_table.h"
 #include "rendering/render_inline.h"
 #include "rendering/render_block.h"
-#include "render_layer.h"
+#include "rendering/render_line.h"
+#include "rendering/render_layer.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
-#include "render_line.h"
+#include "html/html_elementimpl.h"
 
 #include <khtmlview.h>
 #include <kdebug.h>
@@ -311,33 +312,24 @@ void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
 void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintRootBoxDecorations()" << _tx << "/" << _ty << endl;
-    QColor c = style()->backgroundColor();
-    CachedImage *bg = style()->backgroundImage();
-
-    if (!c.isValid() && !bg) {
+    const BackgroundLayer* bgLayer = style()->backgroundLayers();
+    QColor bgColor = style()->backgroundColor();
+    if (document()->isHTMLDocument() && !style()->hasBackground()) {
         // Locate the <body> element using the DOM.  This is easier than trying
         // to crawl around a render tree with potential :before/:after content and
         // anonymous blocks created by inline <body> tags etc.  We can locate the <body>
         // render object very easily via the DOM.
-        RenderObject* bodyObject = 0;
-        for (DOM::NodeImpl* elt = element()->firstChild(); elt; elt = elt->nextSibling()) {
-            if (elt->id() == ID_BODY) {
-                bodyObject = elt->renderer();
-                break;
-            }
-            else if (elt->id() == ID_FRAMESET) {
-                break;
-            }
-        }
+        HTMLElementImpl* body = document()->body();
+        RenderObject* bodyObject = (body && body->id() == ID_BODY) ? body->renderer() : 0;
 
         if (bodyObject) {
-            c = bodyObject->style()->backgroundColor();
-            bg = bodyObject->style()->backgroundImage();
+            bgLayer = bodyObject->style()->backgroundLayers();
+            bgColor = bodyObject->style()->backgroundColor();
         }
     }
 
-    if( !c.isValid() && canvas()->view())
-        c = canvas()->view()->palette().active().color(QColorGroup::Base);
+    if( !bgColor.isValid() && canvas()->view())
+        bgColor = canvas()->view()->palette().active().color(QColorGroup::Base);
 
     int w = width();
     int h = height();
@@ -366,7 +358,7 @@ void RenderBox::paintRootBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     // I just love these little inconsistencies .. :-( (Dirk)
     int my = kMax(by, paintInfo.r.y());
 
-    paintBackground(paintInfo.p, c, bg, my, paintInfo.r.height(), bx, by, bw, bh);
+    paintBackgrounds(paintInfo.p, bgColor, bgLayer, my, paintInfo.r.height(), bx, by, bw, bh);
 
     if(style()->hasBorder())
         paintBorder( paintInfo.p, _tx, _ty, w, h, style() );
@@ -387,41 +379,47 @@ void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     int end = kMin( paintInfo.r.y() + paintInfo.r.height(), _ty + h );
     int mh = end - my;
 
-    if (!isWidget())
-        paintBackground(paintInfo.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+   // The <body> only paints its background if the root element has defined a background
+   // independent of the body.  Go through the DOM to get to the root element's render object,
+   // since the root could be inline and wrapped in an anonymous block.
+   if (!isBody() || !document()->isHTMLDocument() || document()->documentElement()->renderer()->style()->hasBackground())
+        paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
 
-    if(style()->hasBorder()) {
+   if(style()->hasBorder()) {
         paintBorder(paintInfo.p, _tx, _ty, w, h, style());
     }
 }
 
-void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int height)
+void RenderBox::paintBackgrounds(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
+ {
+    if (!bgLayer) return;
+    paintBackgrounds(p, c, bgLayer->next(), clipy, cliph, _tx, _ty, w, height);
+    paintBackground(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height);
+}
+
+void RenderBox::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
 {
-    paintBackgroundExtended(p, c, bg, clipy, cliph, _tx, _ty, w, height,
+    paintBackgroundExtended(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height,
                             borderLeft(), borderRight());
 }
 
-void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph,
+void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const BackgroundLayer* bgLayer, int clipy, int cliph,
                                         int _tx, int _ty, int w, int h,
                                         int bleft, int bright)
 {
     if ( cliph < 0 )
 	return;
 
-    if(c.isValid())
-        p->fillRect(_tx, clipy, w, cliph, c);
+    CachedImage* bg = bgLayer->backgroundImage();
+    bool shouldPaintBackgroundImage = bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage();
+    QColor bgColor = c;
+
+    // Paint the color first underneath all images.
+    if (!bgLayer->next() && bgColor.isValid() && qAlpha(bgColor.rgb()) > 0)
+        p->fillRect(_tx, clipy, w, cliph, bgColor);
 
     // no progressive loading of the background image
-    if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage()) {
-        //kdDebug( 6040 ) << "painting bgimage at " << _tx << "/" << _ty << endl;
-        // ### might need to add some correct offsets
-        // ### use paddingX/Y
-
-        //hacky stuff
-        RenderStyle* sptr = style();
-        if ( isRoot() && firstChild() && !style()->backgroundImage() )
-            sptr = firstChild()->style();
-
+    if (shouldPaintBackgroundImage) {
         int sx = 0;
         int sy = 0;
         int cw,ch;
@@ -433,15 +431,15 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
 
 	int pixw = bg->pixmap_size().width();
 	int pixh = bg->pixmap_size().height();
-        if (sptr->backgroundAttachment())
+        if (bgLayer->backgroundAttachment())
         {
             //scroll
             int pw = w - vpab;
             int ph = h - hpab;
-            EBackgroundRepeat bgr = sptr->backgroundRepeat();
+            EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
-                int xp = sptr->backgroundXPosition().minWidth(pw-pixw);
+                int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
                 if ( xp >= 0 )
                     cx = _tx + xp;
                 else {
@@ -457,7 +455,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                 cw = w;
                 cx = _tx;
                 if (pixw > 0) {
-                    int xp = sptr->backgroundXPosition().minWidth(pw-pixw);
+                    int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
                     if ((xp > 0) && (bgr == NO_REPEAT)) {
                         cx += xp;
                         cw -= xp;
@@ -469,7 +467,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
             }
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
-                int yp = sptr->backgroundYPosition().minWidth(ph-pixh);
+                int yp = bgLayer->backgroundYPosition().minWidth(ph-pixh);
                 if ( yp >= 0 )
                     cy = _ty + yp;
                 else {
@@ -486,7 +484,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
                 ch = h;
                 cy = _ty;
                 if (pixh > 0) {
-                    int yPosition = sptr->backgroundYPosition().minWidth(ph-pixh);
+                    int yPosition = bgLayer->backgroundYPosition().minWidth(ph-pixh);
                     if ((yPosition > 0) && (bgr == NO_REPEAT)) {
                         cy += yPosition;
                         ch -= yPosition;
@@ -506,23 +504,23 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
             int pw = vr.width();
             int ph = vr.height();
 
-            EBackgroundRepeat bgr = sptr->backgroundRepeat();
+            EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
-                cx = vr.x() + sptr->backgroundXPosition().minWidth(pw-pixw);
+                cx = vr.x() + bgLayer->backgroundXPosition().minWidth(pw-pixw);
             } else {
                 cw = pw;
                 cx = vr.x();
-                sx =  pixw ? pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
+                sx =  pixw ? pixw - ((bgLayer->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
             }
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
-                cy = vr.y() + sptr->backgroundYPosition().minWidth(ph-pixh);
+                cy = vr.y() + bgLayer->backgroundYPosition().minWidth(ph-pixh);
             } else {
                 ch = ph;
                 cy = vr.y();
-                sy = pixh ? pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh ) : 0;
+                sy = pixh ? pixh - ((bgLayer->backgroundYPosition().minWidth(ph-pixh)) % pixh ) : 0;
             }
 
             QRect fix(cx,cy,cw,ch);
@@ -535,22 +533,8 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImag
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
         }
 
-
-        //kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
-	int diff = clipy - cy;
-	if ( diff > 0 ) {
-	    cy += diff;
-	    sy += diff;
-	    if (pixh)
-		sy %= pixh;
-	    ch -= diff;
-	}
-	ch = kMin( ch, clipy + cliph - cy );
- 	//kdDebug() << "clip="<<cx << " cy="<<cy<< " cw="<<cw << " ch="<<ch << " sx="<<sx << " sy="<<sy << endl;
-
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
-//            p->drawTiledPixmap(cx, cy, cw, ch, bg->pixmap(), sx, sy);
 
     }
 }
@@ -677,8 +661,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
 {
     if (isPositioned()) {
         // Cache the x position only if we were an INLINE type originally.
-        bool wasInline = style()->originalDisplay() == INLINE ||
-                         style()->originalDisplay() == INLINE_TABLE;
+        bool wasInline = style()->isOriginalDisplayInlineType();
 
         if (wasInline && hasStaticX()) {
             // The value is cached in the xPos of the box.  We only need this value if
