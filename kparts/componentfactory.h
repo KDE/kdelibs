@@ -11,6 +11,9 @@ namespace KParts
 
     // this is a namespace and not a class because stupid egcs 1.1.2 doesn't grok
     // static template methods in classes. !@%@#$!
+    /**
+     * Namespace for KParts components
+     */
     namespace ComponentFactory
     {
         /**

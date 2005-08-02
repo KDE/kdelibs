@@ -24,5 +24,5 @@
  *
  * For a complete, and very simple, example of how to use KParts to display
  * any kind of file (i.e. making a generic viewer), see the docu for
- * KParts::ComponentFactory::createPartInstanceFromQuery
+ * KParts::ComponentFactory::createPartInstanceFromQuery()
  */
