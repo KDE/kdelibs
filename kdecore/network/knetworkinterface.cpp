@@ -4,7 +4,7 @@
 
 #include <QString>
 #include <QStringList>
-#include <QMap>
+#include <QList>
 #include <QMultiHash>
 #include <QFile>
 
@@ -18,7 +18,7 @@ class KNetwork::KNetworkInterfacePrivate : public QSharedData
 {
     public:
         KNetworkInterfacePrivate();
-        KNetworkInterfacePrivate(const QString _name,
+        KNetworkInterfacePrivate(const QString& _name,
                                  int _index,
                                  int _flags,
                                  KSocketAddress _address,
@@ -26,14 +26,22 @@ class KNetwork::KNetworkInterfacePrivate : public QSharedData
                                  KSocketAddress _broadcast,
                                  KSocketAddress _destination);
 
-
+        virtual ~KNetworkInterfacePrivate() {}
         KNetworkInterfacePrivate& operator= (const KNetworkInterfacePrivate& interface);
 
+// These all need to be moved to a QCache
         void init();
-        KNetworkInterfacePrivate *find(const QString &ifName);
+        void insert(const QString& _name,
+                    int _index,
+                    int _flags,
+                    KSocketAddress _address,
+                    KSocketAddress _netmask,
+                    KSocketAddress _broadcast,
+                    KSocketAddress _destination);
+
+        KNetworkInterfacePrivate *find(const QString& ifName);
         KNetworkInterfacePrivate *find(int ifIndex);
 
-        void readInterfaces();
         void readStats();
 
         QString name;
@@ -83,13 +91,13 @@ class KNetwork::KNetworkInterfacePrivate : public QSharedData
                 txCompressed;
         } stats;
 
-        KSocketAddress address;
-        KSocketAddress netmask;
-        KSocketAddress broadcast;
-        KSocketAddress destination;
+        QList<KSocketAddress> address;
+        QList<KSocketAddress> netmask;
+        QList<KSocketAddress> broadcast;
+        QList<KSocketAddress> destination;
 
-        QMultiHash<QString, KNetworkInterfacePrivate*> nameMap;
-        QMultiHash<int, KNetworkInterfacePrivate*> indexMap;
+        QHash<QString, KNetworkInterfacePrivate*> nameMap;
+        QHash<int, KNetworkInterfacePrivate*> indexMap;
 };
 
 KNetworkInterfacePrivate::KNetworkInterfacePrivate()
@@ -98,22 +106,54 @@ KNetworkInterfacePrivate::KNetworkInterfacePrivate()
 {
 }
 
-KNetworkInterfacePrivate::KNetworkInterfacePrivate(const QString _name,
-                         int _index,
-                         int _flags,
-                         KSocketAddress _address,
-                         KSocketAddress _netmask,
-                         KSocketAddress _broadcast,
-                         KSocketAddress _destination)
+KNetworkInterfacePrivate::KNetworkInterfacePrivate(const QString& _name,
+                                                   int _index,
+                                                   int _flags,
+                                                   KSocketAddress _address,
+                                                   KSocketAddress _netmask,
+                                                   KSocketAddress _broadcast,
+                                                   KSocketAddress _destination)
     : name(_name),
       index(_index),
-      flags(_flags),
-      address(_address),
-      netmask(_netmask),
-      broadcast(_broadcast),
-      destination(_destination)
+      flags(_flags)
 {
-    readStats();
+      address.append(_address);
+      netmask.append(_netmask);
+      broadcast.append(_broadcast);
+      destination.append(_destination);
+}
+
+void KNetworkInterfacePrivate::insert(const QString& _name,
+                                      int _index,
+                                      int _flags,
+                                      KSocketAddress _address,
+                                      KSocketAddress _netmask,
+                                      KSocketAddress _broadcast,
+                                      KSocketAddress _destination)
+{
+    KNetworkInterfacePrivate *nameMapPrivate = find(_name);
+    if (!nameMapPrivate)
+    {
+        KNetworkInterfacePrivate *interface =
+            new KNetworkInterfacePrivate(_name, _index, _flags,
+                                         _address, _netmask, _broadcast,
+                                         _destination);
+        nameMap.insert(interface->name, interface);
+        indexMap.insert(interface->index, interface);
+    }
+    else
+    {
+        nameMapPrivate->address.append(_address);
+        nameMapPrivate->netmask.append(_netmask);
+        nameMapPrivate->broadcast.append(_broadcast);
+        nameMapPrivate->destination.append(_broadcast);
+
+        KNetworkInterfacePrivate *indexMapPrivate = find(_index);
+        indexMapPrivate->address.append(_address);
+        indexMapPrivate->netmask.append(_netmask);
+        indexMapPrivate->broadcast.append(_broadcast);
+        indexMapPrivate->destination.append(_broadcast);
+    }
 }
 
 
@@ -133,7 +173,7 @@ KNetworkInterfacePrivate& KNetworkInterfacePrivate::operator= (const KNetworkInt
 
 void KNetworkInterfacePrivate::init()
 {
-   nameMap.clear();
+    nameMap.clear();
     indexMap.clear();
 
     struct ifaddrs *ads;
@@ -147,32 +187,25 @@ void KNetworkInterfacePrivate::init()
     a = ads;
     while (a)
     {
-        KNetworkInterfacePrivate *interface = 0;
         if (a->ifa_addr->sa_family == AF_INET)
         {
-            interface = new KNetworkInterfacePrivate(QString::fromUtf8(a->ifa_name),
-                if_nametoindex(a->ifa_name),
-                a->ifa_flags,
-                KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in)),
-                KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in)),
-                KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in)),
-                KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in)));
+            insert(QString::fromUtf8(a->ifa_name),
+                   if_nametoindex(a->ifa_name),
+                   a->ifa_flags,
+                   KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in)),
+                   KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in)),
+                   KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in)),
+                   KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in)));
         }
         else if (a->ifa_addr->sa_family == AF_INET6)
         {
-            interface = new KNetworkInterfacePrivate(QString::fromUtf8(a->ifa_name),
-                if_nametoindex(a->ifa_name),
-                a->ifa_flags,
-                KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in6)),
-                KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in6)),
-                KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in6)),
-                KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in6)));
-        }
-
-        if (interface)
-        {
-            nameMap.insert(interface->name, interface);
-            indexMap.insert(interface->index, interface);
+            insert(QString::fromUtf8(a->ifa_name),
+                   if_nametoindex(a->ifa_name),
+                   a->ifa_flags,
+                   KSocketAddress(a->ifa_addr, sizeof(struct sockaddr_in6)),
+                   KSocketAddress(a->ifa_netmask, sizeof(struct sockaddr_in6)),
+                   KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in6)),
+                   KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in6)));
         }
         a = a->ifa_next;
     }
@@ -181,15 +214,26 @@ void KNetworkInterfacePrivate::init()
 
 }
 
-
 KNetworkInterfacePrivate *KNetworkInterfacePrivate::find(const QString& ifName)
 {
-    return nameMap.find(ifName).value();
+    QHash<QString, KNetworkInterfacePrivate*>::iterator it = nameMap.find(ifName);
+    if (it != nameMap.end())
+    {
+        return it.value();
+    }
+
+    return 0;
 }
 
 KNetworkInterfacePrivate *KNetworkInterfacePrivate::find(int ifIndex)
 {
-    return indexMap.find(ifIndex).value();
+    QHash<int, KNetworkInterfacePrivate*>::iterator it = indexMap.find(ifIndex);
+    if (it != indexMap.end())
+    {
+        return it.value();
+    }
+
+    return 0;
 }
 
 void KNetworkInterfacePrivate::readStats()
@@ -252,6 +296,7 @@ KNetworkInterface::KNetworkInterface(const QString& ifname)
 {
     d->init();
     d = d->find(ifname);
+    d->readStats();
 }
 
 KNetworkInterface::KNetworkInterface(const KNetworkInterface &interface)
@@ -294,22 +339,22 @@ int KNetworkInterface::flags() const
     return d->flags;
 }
 
-KSocketAddress KNetworkInterface::address() const
+QList<KSocketAddress> KNetworkInterface::address() const
 {
     return d->address;
 }
 
-KSocketAddress KNetworkInterface::netmask() const
+QList<KSocketAddress> KNetworkInterface::netmask() const
 {
     return d->netmask;
 }
 
-KSocketAddress KNetworkInterface::broadcastAddress() const
+QList<KSocketAddress> KNetworkInterface::broadcastAddress() const
 {
     return d->broadcast;
 }
 
-KSocketAddress KNetworkInterface::destinationAddress() const
+QList<KSocketAddress> KNetworkInterface::destinationAddress() const
 {
     return d->destination;
 }

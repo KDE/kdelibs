@@ -63,10 +63,10 @@ public:
     int index() const;
     int flags() const;
 
-    KSocketAddress address() const;
-    KSocketAddress netmask() const;
-    KSocketAddress broadcastAddress() const;
-    KSocketAddress destinationAddress() const;
+    QList<KSocketAddress> address() const;
+    QList<KSocketAddress> netmask() const;
+    QList<KSocketAddress> broadcastAddress() const;
+    QList<KSocketAddress> destinationAddress() const;
 
     // Stats
     int sendBytes() const;
