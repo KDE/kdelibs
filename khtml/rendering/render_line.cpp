@@ -522,7 +522,7 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     // You can use p::first-line to specify a background. If so, the root line boxes for
     // a line may actually have to paint a background.
     RenderStyle* styleToUse = object()->style(m_firstLine);
-    if ((!parent() && m_firstLine && styleToUse != object()->style()) || 
+    if ((!parent() && m_firstLine && styleToUse != object()->style()) ||
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
         CachedImage* bg = styleToUse->backgroundImage();
 #warning "FIXME"
@@ -573,7 +573,7 @@ static bool shouldDrawDecoration(RenderObject* obj)
             shouldDraw = true;
             break;
         }
-        else if (curr->isText() && !curr->isBR() && (curr->style()->whiteSpace() == PRE ||
+        else if (curr->isText() && !curr->isBR() && (curr->style()->preserveWS() ||
                  !curr->element() || !curr->element()->containsOnlyWhitespace())) {
             shouldDraw = true;
             break;
