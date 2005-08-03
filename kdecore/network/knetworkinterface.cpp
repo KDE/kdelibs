@@ -143,16 +143,12 @@ void KNetworkInterfacePrivate::insert(const QString& _name,
     }
     else
     {
+        // no need to go through indexMap because they both hold
+        // pointers to the same thing..
         nameMapPrivate->address.append(_address);
         nameMapPrivate->netmask.append(_netmask);
         nameMapPrivate->broadcast.append(_broadcast);
         nameMapPrivate->destination.append(_broadcast);
-
-        KNetworkInterfacePrivate *indexMapPrivate = find(_index);
-        indexMapPrivate->address.append(_address);
-        indexMapPrivate->netmask.append(_netmask);
-        indexMapPrivate->broadcast.append(_broadcast);
-        indexMapPrivate->destination.append(_broadcast);
     }
 }
 
@@ -197,7 +193,7 @@ void KNetworkInterfacePrivate::init()
                    KSocketAddress(a->ifa_broadaddr, sizeof(struct sockaddr_in)),
                    KSocketAddress(a->ifa_dstaddr, sizeof(struct sockaddr_in)));
         }
-        else if (a->ifa_addr->sa_family == AF_INET6)
+        if (a->ifa_addr->sa_family == AF_INET6)
         {
             insert(QString::fromUtf8(a->ifa_name),
                    if_nametoindex(a->ifa_name),
