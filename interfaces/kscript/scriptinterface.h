@@ -18,7 +18,7 @@
 */
 
 /**
-*	\mainpage Generic interface for building scripting engines
+*	\section Generic interface for building scripting engines
 *
 *	This interface will create a generic API for implementing script engines.
 *	These engines can then be accessed from any application that supports this interface.

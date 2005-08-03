@@ -23,24 +23,28 @@
 #include <kaction.h>
 #include <kscript/scriptinterface.h>
 
+/**
+ * Script loader
+ */
 class ScriptLoader : virtual public QObject
 {
 	Q_OBJECT
 	public:
-		/* Defalut Constructor
+		/** 
+		* Default Constructor
 		*/
 		ScriptLoader(KMainWindow *parent=0);
 		~ScriptLoader();
-		/* Return the a KSelectAction with all of the scripts
+		/** Return the a KSelectAction with all of the scripts
 		 * @returns KSelectAction containing access to all of the scripts
 		 */
 		KSelectAction *getScripts();
 	public slots:
-		/* Activate the current action.
+		/** Activate the current action.
 		* @param QString actionName - the action that we wish to activate
 		*/
 		void runAction();
-		/* Stop the currently running scripts operations
+		/** Stop the currently running scripts operations
 		*/
 		void stopAction();
 	signals:
