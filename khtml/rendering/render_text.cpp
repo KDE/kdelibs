@@ -1357,8 +1357,10 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
                                     short& beginMaxW, short& endMaxW,
                                     short& minW, short& maxW, bool& stripFrontSpaces)
 {
-    bool isPre = style()->whiteSpace() == PRE;
-    if (isPre)
+    bool preserveWS = style()->preserveWS();
+    bool preserveLF = style()->preserveLF();
+    bool autoWrap = style()->autoWrap();
+    if (preserveWS)
         stripFrontSpaces = false;
 
     int len = str->l;
@@ -1379,16 +1381,16 @@ void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
     hasBreakableChar = m_hasBreakableChar;
     hasBreak = m_hasBreak;
 
-    if (stripFrontSpaces && (str->s[0].direction() == QChar::DirWS || (!isPre && str->s[0] == '\n'))) {
+    if (stripFrontSpaces && (str->s[0].direction() == QChar::DirWS || (!preserveLF && str->s[0] == '\n'))) {
         const Font *f = htmlFont( false );
         QChar space[1]; space[0] = ' ';
         int spaceWidth = f->width(space, 1, 0);
         maxW -= spaceWidth;
     }
 
-    stripFrontSpaces = !isPre && m_hasEndWS;
+    stripFrontSpaces = !preserveWS && m_hasEndWS;
 
-    if (style()->whiteSpace() == NOWRAP)
+    if (!autoWrap)
         minW = maxW;
     else if (minW > maxW)
         minW = maxW;
