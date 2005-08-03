@@ -580,7 +580,7 @@ static bool shouldDrawDecoration(RenderObject* obj)
             shouldDraw = true;
             break;
         }
-        else if (curr->isText() && !curr->isBR() && (curr->style()->whiteSpace() == PRE ||
+        else if (curr->isText() && !curr->isBR() && (curr->style()->preserveWS() ||
                  !curr->element() || !curr->element()->containsOnlyWhitespace())) {
             shouldDraw = true;
             break;
