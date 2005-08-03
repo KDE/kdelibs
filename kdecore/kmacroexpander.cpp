@@ -81,6 +81,7 @@ void KMacroExpanderBase::expandMacros( QString &str )
 
 namespace KMacroExpander {
 
+    /** @intern Quoting state of the expander code. Not available publicly. */
     enum Quoting { noquote, singlequote, doublequote, dollarquote, 
                    paren, subst, group, math };
     typedef struct {

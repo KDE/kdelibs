@@ -355,15 +355,25 @@ namespace KMacroExpander {
      * are simply join(" ")ed together.
      */
     KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
+    /**
+     * Same as above, except that the macros expand to string lists that
+     * are simply join(" ")ed together.
+     */
     KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
 
-    /*
+    /**
      * Same as above, except that the macros expand to string lists.
      * If the macro appears inside a quoted string, the list is simply
      * join(" ")ed together; otherwise every element expands to a separate
      * quoted string.
      */
     KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
+    /**
+     * Same as above, except that the macros expand to string lists.
+     * If the macro appears inside a quoted string, the list is simply
+     * join(" ")ed together; otherwise every element expands to a separate
+     * quoted string.
+     */
     KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
 }
 

@@ -121,19 +121,40 @@ class QWidget;
 class KDECORE_EXPORT KAccelBase
 {
  public:
+	/** Initialization mode of the KAccelBase, used in constructor. */
 	enum Init { QT_KEYS = 0x00, NATIVE_KEYS = 0x01 };
+
+	/** Enum for kinds of signals which may be emitted. */
 	enum Signal { KEYCODE_CHANGED };
 
+	/** Constructor. @p fInitCode should be a bitwise OR of
+	*   values from the Init enum.
+	*/
 	KAccelBase( int fInitCode );
 	virtual ~KAccelBase();
 
+	/** Returns number of actions in this handler. */
 	uint actionCount() const;
+	/** Returns a list of all the actions in this handler. */
 	KAccelActions& actions();
+	/** Returns whether this accelerator handler is enabled or not. */
 	bool isEnabled() const;
 
+	/** Returns a pointer to the KAccelAction named @p sAction. */
 	KAccelAction* actionPtr( const QString& sAction );
+	/** Const version of the above. */
 	const KAccelAction* actionPtr( const QString& sAction ) const;
+	/** Returns a pointer to the KAccelAction associated with
+	*   the key @p key. This function takes into account the
+	*   key mapping defined in the constructor.
+	*
+	*   May return 0 if no (or more than one)
+	*   action is associated with the key.
+	*/
 	KAccelAction* actionPtr( const KKey& key );
+	/** Basically the same as above, except a KKeyServer::Key
+	*   already has a key mapping defined (either NATIVE_KEYS or not).
+	*/
 	KAccelAction* actionPtr( const KKeyServer::Key& key );
 
 	const QString& configGroup() const { return m_sConfigGroup; }
