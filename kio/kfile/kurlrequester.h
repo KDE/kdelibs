@@ -283,7 +283,10 @@ private:
     KURLRequesterPrivate *d;
 };
 
-class KIO_EXPORT KURLComboRequester : public KURLRequester // For use in Qt Designer
+/**
+ * URL requester with a combo box, for use in Designer
+ */
+class KIO_EXPORT KURLComboRequester : public KURLRequester
 {
     Q_OBJECT
 public:

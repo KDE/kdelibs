@@ -62,6 +62,6 @@ messages:
 	$(XGETTEXT) `find . ../kioslave -name "*.cpp" -o -name "*.cc" -o -name "*.h"` -o $(podir)/kio.pot
 	rm -f rc.cpp
 
-DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui
+DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui kio/kio kio/kfile
 DOXYGEN_EXCLUDE = kssl/kssl
 include ../admin/Doxyfile.am

@@ -48,14 +48,3 @@ void* KTraderParse_newFIRST();
 void* KTraderParse_newRANDOM();
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
