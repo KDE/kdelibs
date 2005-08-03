@@ -40,8 +40,7 @@ class ScriptLoader : virtual public QObject
 		 */
 		KSelectAction *getScripts();
 	public slots:
-		/** Activate the current action.
-		* @param QString actionName - the action that we wish to activate
+		/** Run the current action.
 		*/
 		void runAction();
 		/** Stop the currently running scripts operations
