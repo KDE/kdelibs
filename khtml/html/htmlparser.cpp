@@ -672,9 +672,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #endif
                     parent->insertBefore(n, node, exceptioncode);
                     if (exceptioncode) {
-#ifdef PARSER_DEBUG
-                        kdDebug(6035) << "adding content before table failed.." << endl;
+#ifndef PARSER_DEBUG
+                        if (!n->isTextNode())
 #endif
+                            kdDebug(6035) << "adding content before table failed.." << endl;
                         break;
                     }
                     if ( n->isElementNode() && tagPriority[id] != 0 &&
@@ -719,6 +720,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_DT:
             popBlock(ID_DT);
+            handled = true;
+            break;
+        case ID_FORM:
+            popBlock(ID_FORM);
             handled = true;
             break;
         case ID_SELECT:
