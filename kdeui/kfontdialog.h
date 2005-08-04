@@ -46,6 +46,8 @@ class KIntNumInput;
  * it is preferable to use the convenience functions in
  * KFontDialog.
  *
+ * \image html kfontchooser.png "KDE Font Chooser"
+ *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
