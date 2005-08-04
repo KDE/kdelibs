@@ -304,7 +304,6 @@ static struct Builtin
     { "iso-8859-13", "iso 8859-13" },
     { "iso-8859-14", "iso 8859-14" },
     { "iso-8859-15", "iso 8859-15" },
-    { "tscii", "tscii" },
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
     { "x-winsami2", "winsami2" },
