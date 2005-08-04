@@ -506,6 +506,8 @@ public:
 
     bool isURLAllowed(const QString& url) const;
 
+    HTMLElementImpl* body();
+
     DOMString toString() const;
 
     void incDOMTreeVersion() { ++m_domtree_version; }

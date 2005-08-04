@@ -501,6 +501,44 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
             setBaseline(height());
     }
 }
+void InlineFlowBox::paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
+                                     int my, int mh, int _tx, int _ty, int w, int h, int xoff)
+{
+    if (!bgLayer)
+        return;
+    paintBackgrounds(p, c, bgLayer->next(), my, mh, _tx, _ty, w, h, xoff);
+    paintBackground(p, c, bgLayer, my, mh, _tx, _ty, w, h, xoff);
+}
+
+void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
+                                    int my, int mh, int _tx, int _ty, int w, int h, int xOffsetOnLine)
+{
+    CachedImage* bg = bgLayer->backgroundImage();
+#warning "FIXME"
+    bool hasBackgroundImage = bg && /*(bg->pixmap_size() == bg->valid_rect().size()) && */
+                              !bg->isTransparent() && !bg->isErrorImage();
+    if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
+        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight());
+    else {
+        // We have a background image that spans multiple lines.
+        // We need to adjust _tx and _ty by the width of all previous lines.
+        // Think of background painting on inlines as though you had one long line, a single continuous
+        // strip.  Even though that strip has been broken up across multiple lines, you still paint it
+        // as though you had one single line.  This means each line has to pick up the background where
+        // the previous line left off.
+        int startX = _tx - xOffsetOnLine;
+        int totalWidth = xOffsetOnLine;
+        for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
+            totalWidth += curr->width();
+        QRect clipRect(_tx, _ty, width(), height());
+        clipRect = p->xForm(clipRect);
+        p->save();
+        p->setClipRect( clipRect );
+        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, startX, _ty,
+                                          totalWidth, h, borderLeft(), borderRight());
+        p->restore();
+    }
+}
 
 void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _tx, int _ty, int xOffsetOnLine)
 {
@@ -524,40 +562,10 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     RenderStyle* styleToUse = object()->style(m_firstLine);
     if ((!parent() && m_firstLine && styleToUse != object()->style()) ||
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
-        CachedImage* bg = styleToUse->backgroundImage();
-#warning "FIXME"
-        bool hasBackgroundImage = bg && /* (bg->pixmap_size() == bg->valid_rect().size())  && */
-                                  !bg->isTransparent() && !bg->isErrorImage();
-        if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
-            object()->paintBackgroundExtended(pI.p, styleToUse->backgroundColor(),
-                                              bg, my, mh, _tx, _ty, w, h,
-                                              borderLeft(), borderRight());
-        else {
-            // We have a background image that spans multiple lines.
-            // We need to adjust _tx and _ty by the width of all previous lines.
-            // Think of background painting on inlines as though you had one long line, a single continuous
-            // strip.  Even though that strip has been broken up across multiple lines, you still paint it
-            // as though you had one single line.  This means each line has to pick up the background where
-            // the previous line left off.
-            int startX = _tx - xOffsetOnLine;
-            int totalWidth = xOffsetOnLine;
-            for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
-                totalWidth += curr->width();
-            QRect clipRect(_tx, _ty, width(), height());
-            pI.p->save();
-#ifdef APPLE_CHANGES
-            pI.p->addClip(clipRect);
-#else
-            pI.p->setClipRect( clipRect );
-#endif
-            object()->paintBackgroundExtended(pI.p, object()->style()->backgroundColor(),
-                                              object()->style()->backgroundImage(), my, mh, startX, _ty,
-                                              totalWidth, h,
-                                              borderLeft(), borderRight());
-            pI.p->restore();
-        }
+        QColor c = styleToUse->backgroundColor();
+        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), my, mh, _tx, _ty, w, h, xOffsetOnLine);
 
-        // :first-line cannot be used to put borders on a line. Always paint borders with our
+        // ::first-line cannot be used to put borders on a line. Always paint borders with our
         // non-first-line style.
         if (parent() && object()->style()->hasBorder())
             object()->paintBorder(pI.p, _tx, _ty, w, h, object()->style(), includeLeftEdge(), includeRightEdge());

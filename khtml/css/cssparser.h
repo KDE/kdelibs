@@ -117,6 +117,17 @@ namespace DOM {
 	bool parseShortHand( const int *properties, int numProperties, bool important );
 	bool parse4Values( const int *properties, bool important );
 	bool parseContent( int propId, bool important );
+
+        CSSValueImpl* parseBackgroundColor();
+        CSSValueImpl* parseBackgroundImage();
+        CSSValueImpl* parseBackgroundPositionXY(bool& xFound, bool& yFound);
+        void parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& value2);
+
+        bool parseBackgroundProperty(int propId, int& propId1, int& propId2, CSSValueImpl*& retValue1, CSSValueImpl*& retValue2);
+        bool parseBackgroundShorthand(bool important);
+
+        void addBackgroundValue(CSSValueImpl*& lval, CSSValueImpl* rval);
+
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
         bool parseCounter(int propId, bool increment, bool important);
@@ -124,7 +135,6 @@ namespace DOM {
         // returns the found property
         // 0 if nothing found (or ok == false)
         // @param forward if true, it parses the next in the list
-        CSSPrimitiveValueImpl *parseBackgroundPositionXY( int propId, bool forward, bool &ok );
 	CSSValueListImpl *parseFontFamily();
         CSSPrimitiveValueImpl *parseColor();
         CSSPrimitiveValueImpl *parseColorFromValue(Value* val);

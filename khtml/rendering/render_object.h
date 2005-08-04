@@ -263,6 +263,7 @@ public:
     bool isText() const { return m_isText; }
     bool isInline() const { return m_inline; }
     bool isCompact() const { return style()->display() == COMPACT; } // compact
+    bool isRunIn() const { return style()->display() == RUN_IN; } // run-in object
     bool mouseInside() const;
     bool isReplaced() const { return m_replaced; }
     bool isReplacedBlock() const { return isInline() && isReplaced() && isRenderBlock(); }
@@ -325,6 +326,8 @@ public:
 
     void scheduleRelayout(RenderObject *clippedObj = 0);
 
+    void updateBackgroundImages(RenderStyle* oldStyle);
+
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
     virtual short lineHeight( bool firstLine ) const;
@@ -350,7 +353,7 @@ public:
 
     virtual void paintBoxDecorations(PaintInfo&, int /*_tx*/, int /*_ty*/) {}
 
-    virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, CachedImage* /*bg*/,
+    virtual void paintBackgroundExtended(QPainter* /*p*/, const QColor& /*c*/, const BackgroundLayer */*bgLayer*/,
                                          int /*clipy*/, int /*cliph*/, int /*_tx*/, int /*_ty*/,
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/ ) {}
 

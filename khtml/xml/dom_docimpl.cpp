@@ -1248,6 +1248,24 @@ void DocumentImpl::open( bool clearEventListeners )
     m_tokenizer->begin();
 }
 
+HTMLElementImpl* DocumentImpl::body()
+{
+    NodeImpl *de = documentElement();
+    if (!de)
+        return 0;
+
+    // try to prefer a FRAMESET element over BODY
+    NodeImpl* body = 0;
+    for (NodeImpl* i = de->firstChild(); i; i = i->nextSibling()) {
+        if (i->id() == ID_FRAMESET)
+            return static_cast<HTMLElementImpl*>(i);
+
+        if (i->id() == ID_BODY)
+            body = i;
+    }
+    return static_cast<HTMLElementImpl *>(body);
+}
+
 void DocumentImpl::close(  )
 {
     if (parsing() || !m_tokenizer) return;

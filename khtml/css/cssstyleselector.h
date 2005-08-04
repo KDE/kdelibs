@@ -187,6 +187,12 @@ public:
     private:
         void init(const KHTMLSettings* settings);
 
+        void mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundImage(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundRepeat(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundYPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+
     public: // we need to make the enum public for SelectorCache
 	enum SelectorState {
 	    Unknown = 0,

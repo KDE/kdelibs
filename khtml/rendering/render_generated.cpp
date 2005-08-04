@@ -241,7 +241,11 @@ int RenderQuote::quoteCount() const
          case CLOSE_QUOTE:
          case NO_CLOSE_QUOTE:
             return -1;
+         case NO_QUOTE:
+            return 0;
     }
+    assert(false);
+    return 0;
 }
 
 void RenderQuote::generateContent()
@@ -266,6 +270,7 @@ void RenderQuote::generateContent()
             break;
          case NO_OPEN_QUOTE:
          case NO_CLOSE_QUOTE:
+         case NO_QUOTE:
             m_item = QString();
     }
 }
