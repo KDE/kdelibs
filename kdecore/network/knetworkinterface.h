@@ -57,6 +57,7 @@ public:
     KNetworkInterface& operator =(const KNetworkInterface&);
 
     bool isValid() const;
+    void updateStats();
 
     // getifaddrs info
     QString name() const;
