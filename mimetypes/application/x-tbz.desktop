@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Bzipped Tar Archive
+Comment=Bzip2-ed Tar Archive
 Comment[af]=Bzip gekompakteerde Tar Argief
 Comment[ar]=أرشيف TAR عن طريق Bzip
 Comment[az]=Bziplənmiş Tar Arxivi
@@ -74,9 +74,12 @@ Comment[zu]=Umqulu we-Tar lwe-Bzipped
 MimeType=application/x-tbz
 Icon=tgz
 Type=MimeType
-Patterns=*.tar.bz;*.tbz
+Patterns=*.tar.bz;*.tbz;*.tar.bz2;*.tbz2;
 
 [Property::X-KDE-LocalProtocol]
 Type=QString
 Value=tar
 
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.tar.bz2
