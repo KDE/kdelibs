@@ -144,7 +144,6 @@ class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
-  Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
   Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
   Q_PROPERTY( bool trapReturnKey READ trapReturnKey WRITE setTrapReturnKey )
 
@@ -262,11 +261,6 @@ public:
     * @param showMenu If @p true, show the context menu.
     */
     virtual void setContextMenuEnabled( bool showMenu );
-
-    /**
-    * Returns @p true when the context menu is enabled.
-    */
-    bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user
@@ -498,8 +492,6 @@ private:
      * Initializes the variables upon construction.
      */
     void init();
-    bool m_bEnableMenu; // ### BCI: unused, remove in KDE4
-    bool m_trapReturnKey; // ### BCI: unused, remove in KDE4
 
 protected:
     virtual void virtual_hook( int id, void* data );
