@@ -1765,7 +1765,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
             case KIPC::ClipboardConfigChanged:
                 KClipboardSynchronizer::newConfiguration(arg);
                 break;
-                
+
             case KIPC::BlockShortcuts:
                 KGlobalAccel::blockShortcuts(arg);
                 emit kipcMessage(id, arg); // some apps may do additional things
@@ -2148,12 +2148,6 @@ void KApplication::installKDEPropertyMap()
 #endif
 }
 
-void KApplication::invokeHelp( const QString& anchor,
-                               const QString& _appname) const
-{
-    return invokeHelp( anchor, _appname, "" );
-}
-
 #ifndef Q_WS_WIN
 // for win32 we're using simple help tools like Qt Assistant,
 // see kapplication_win.cpp
@@ -2193,26 +2187,6 @@ void KApplication::invokeHelp( const QString& anchor,
 
 
 
-void KApplication::invokeMailer(const QString &address, const QString &subject)
-{
-    return invokeMailer(address,subject,"");
-}
-
-void KApplication::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
-{
-   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
-       QStringList(), startup_id );
-}
-
-void KApplication::invokeMailer(const KURL &mailtoURL)
-{
-    return invokeMailer( mailtoURL, "" );
-}
-
-void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id )
-{
-    return invokeMailer( mailtoURL, startup_id, false);
-}
 
 void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
@@ -2247,12 +2221,6 @@ void KApplication::invokeMailer(const KURL &mailtoURL, const QByteArray& startup
    invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
 }
 
-void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
-                                const QString &subject, const QString &body,
-                                const QString & messageFile, const QStringList &attachURLs)
-{
-    return invokeMailer(to,cc,bcc,subject,body,messageFile,attachURLs,"");
-}
 
 #ifndef Q_WS_WIN
 // on win32, for invoking browser we're using win32 API
@@ -2452,11 +2420,6 @@ void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QS
 }
 #endif
 
-void KApplication::invokeBrowser( const QString &url )
-{
-    return invokeBrowser( url, "" );
-}
-
 #ifndef Q_WS_WIN
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
@@ -2653,12 +2616,6 @@ KApplication::startServiceByDesktopName( const QString& _name, const QStringList
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
 }
 
-int
-KApplication::kdeinitExec( const QString& name, const QStringList &args,
-                           QString *error, int *pid )
-{
-    return kdeinitExec( name, args, error, pid, "" );
-}
 
 int
 KApplication::kdeinitExec( const QString& name, const QStringList &args,
@@ -2668,12 +2625,6 @@ KApplication::kdeinitExec( const QString& name, const QStringList &args,
         name, args, error, 0, pid, startup_id, false);
 }
 
-int
-KApplication::kdeinitExecWait( const QString& name, const QStringList &args,
-                           QString *error, int *pid )
-{
-    return kdeinitExecWait( name, args, error, pid, "" );
-}
 
 int
 KApplication::kdeinitExecWait( const QString& name, const QStringList &args,

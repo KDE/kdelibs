@@ -411,13 +411,10 @@ public:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  void invokeHelp( const QString& anchor,
-                   const QString& appname,
-                   const QByteArray& startup_id ) const;
 
-  // KDE4 merge with above with startup_id = ""
   void invokeHelp( const QString& anchor = QString::null,
-                   const QString& appname = QString::null ) const;
+                   const QString& appname = QString::null,
+		   const QByteArray& startup_id = "") const;
 
   /**
    * Convenience method; invokes the standard email application.
@@ -427,9 +424,7 @@ public:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  void invokeMailer( const QString &address, const QString &subject, const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
-  void invokeMailer( const QString &address, const QString &subject );
+  void invokeMailer( const QString &address, const QString &subject,const QByteArray& startup_id = "" );
 
   /**
    * Invokes the standard email application.
@@ -440,11 +435,7 @@ public:
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
                The default is false; do not honour requests for attachments.
    */
-  void invokeMailer( const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments );
-  // KDE4 merge with above with allowAttachments = false
-  void invokeMailer( const KURL &mailtoURL, const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
-  void invokeMailer( const KURL &mailtoURL );
+  void invokeMailer( const KURL &mailtoURL, const QByteArray& startup_id = "" ,  bool allowAttachments = false );
 
   /**
    * Convenience method; invokes the standard email application.
@@ -463,12 +454,7 @@ public:
    */
   void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
                     const QString &subject, const QString &body,
-                    const QString &messageFile, const QStringList &attachURLs,
-                    const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
-  void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
-                    const QString &subject, const QString &body,
-                    const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList());
+                    const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList(),const QByteArray& startup_id = "" );
 
 public slots:
   /**
@@ -481,9 +467,7 @@ public slots:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    */
-  void invokeBrowser( const QString &url, const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
-  void invokeBrowser( const QString &url );
+  void invokeBrowser( const QString &url, const QByteArray& startup_id = "" );
 
   /**
    * If the widget with focus provides a cut() slot, call that slot.  Thus for a
@@ -711,11 +695,8 @@ public:
    *           "" ( empty string ) is the default
    * @return an error code indicating success (== 0) or failure (> 0).
    */
-  static int kdeinitExec( const QString& name, const QStringList &args,
-                QString *error, int *pid, const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
   static int kdeinitExec( const QString& name, const QStringList &args=QStringList(),
-                QString *error=0, int *pid = 0 );
+                QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
 
   /**
    * Starts a program via kdeinit and wait for it to finish.
@@ -734,11 +715,8 @@ public:
    *           "" ( empty string ) is the default
    * @return an error code indicating success (== 0) or failure (> 0).
    */
-  static int kdeinitExecWait( const QString& name, const QStringList &args,
-                QString *error, int *pid, const QByteArray& startup_id );
-  // KDE4 merge with above with startup_id = ""
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
-                QString *error=0, int *pid = 0 );
+                QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
 
   /**
    * Returns a text for the window caption.
