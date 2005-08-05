@@ -223,8 +223,6 @@ protected:
 protected:
   /// \deprecated
   QString i18n_customColors; /// ### KDE4: remove
-  /// \deprecated
-  QString i18n_recentColors; /// ### KDE4: remove
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;

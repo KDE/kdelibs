@@ -67,7 +67,7 @@
 
 #include "config.h"
 #ifdef Q_WS_X11
-#include <X11/Xlib.h> 
+#include <X11/Xlib.h>
 #endif
 
 struct ColorPaletteNameType
@@ -95,7 +95,7 @@ public:
    : QSpinBox(minValue, maxValue, step, parent, "kcolorspinbox")
   { }
 
-  
+
   // Override Qt's braindead auto-selection.
   //XXX KDE4 : check this is no more necessary , was disabled to port to Qt4 //mikmak
   /*
@@ -549,7 +549,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
     : QWidget( parent ), cells(0), mPalette(0), mMinWidth(minWidth), mCols(cols)
 {
   d = new KPaletteTablePrivate;
-  
+
   i18n_namedColors  = i18n("Named Colors");
 
   QStringList diskPaletteList = KPalette::getPaletteList();
@@ -654,7 +654,7 @@ KPaletteTable::readNamedColor( void )
     while( !paletteFile.atEnd() )
     {
       line = paletteFile.readLine();
-    
+
       int red, green, blue;
       int pos = 0;
 
@@ -752,8 +752,6 @@ void
 KPaletteTable::setPalette( const QString &_paletteName )
 {
   QString paletteName( _paletteName);
-  if (paletteName.isEmpty())
-     paletteName = i18n_recentColors;
 
   if (combo->currentText() != paletteName)
   {

@@ -98,7 +98,6 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
                            QCheckBox::ToggleState *sizeIsRelativeState )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
-  charsetsCombo = 0;
 
   QString mainWhatsThisText =
     i18n( "Here you can choose the font to be used." );

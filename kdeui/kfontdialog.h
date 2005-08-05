@@ -293,7 +293,6 @@ private:
   KListBox     *familyListBox;
   KListBox     *styleListBox;
   KListBox     *sizeListBox;
-  QComboBox    *charsetsCombo; // BIC: remove in KDE4
   QCheckBox    *sizeIsRelativeCheckBox;
 
   QFont        selFont;
