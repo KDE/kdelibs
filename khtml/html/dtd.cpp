@@ -597,7 +597,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         return check_array(childID, tag_list_1) || check_array(childID, tag_list_6);
     case ID_P:
         // P: ( _0 | TABLE ) *
-        return check_array(childID, tag_list_0) || (!strict && (childID == ID_TABLE || childID == ID_FORM));
+        return check_array(childID, tag_list_0) || (!strict && childID == ID_TABLE );
     case ID_H1:
     case ID_H2:
     case ID_H3:
@@ -721,6 +721,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         case ID_THEAD:
         case ID_TFOOT:
         case ID_TBODY:
+        case ID_FORM:
         case ID_SCRIPT:
             return true;
         default:
