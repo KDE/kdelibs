@@ -19,6 +19,7 @@
 #ifndef KBARHANDLER_H
 #define KBARHANDLER_H
 
+#include <QLinkedList>
 #include <qobject.h>
 #include <qpointer.h>
 #include <kxmlguiclient.h>
@@ -58,7 +59,7 @@ private:
 
     QPointer<KMainWindow> m_mainWindow;
     Q3PtrList<KAction> m_actions;
-    Q3PtrList<KToolBar> m_toolBars;
+    QLinkedList<KToolBar*> m_toolBars;
 };
 
 } // namespace KDEPrivate

@@ -18,7 +18,7 @@
 
 #include "ktoolbarhandler.h"
 
-#include <q3popupmenu.h>
+#include <QMenu>
 #include <kapplication.h>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
@@ -44,17 +44,13 @@ namespace
     class BarActionBuilder
     {
     public:
-        BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow, Q3PtrList<KToolBar> &oldToolBarList )
+        BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow, QLinkedList<KToolBar*> &oldToolBarList )
             : m_actionCollection( actionCollection ), m_mainWindow( mainWindow ), m_needsRebuild( false )
         {
-            QList<Q3DockWindow*> dockWindows = m_mainWindow->dockWindows();
-            foreach ( Q3DockWindow* dockWindowIt, dockWindows ) {
-
-                KToolBar *toolBar = dynamic_cast<KToolBar *>( dockWindowIt );
-                if ( !toolBar )
-                    continue;
-
-                if ( oldToolBarList.findRef( toolBar ) == -1 )
+            QList<KToolBar*>  toolBars = qFindChildren<KToolBar*>(m_mainWindow);
+            foreach( KToolBar * toolBar, toolBars) {
+		if (toolBar->mainWindow()!=m_mainWindow) continue;
+                if ( !oldToolBarList.contains( toolBar ) )
                     m_needsRebuild = true;
 
                 m_toolBars.append( toolBar );
@@ -71,9 +67,8 @@ namespace
             if ( !m_needsRebuild )
                 return Q3PtrList<KAction>();
 
-            Q3PtrListIterator<KToolBar> toolBarIt( m_toolBars );
-            for ( ; toolBarIt.current(); ++toolBarIt )
-                handleToolBar( toolBarIt.current() );
+            foreach(KToolBar* bar, m_toolBars)
+                handleToolBar( bar );
 
             Q3PtrList<KAction> actions;
 
@@ -97,7 +92,7 @@ namespace
             return actions;
         }
 
-        const Q3PtrList<KToolBar> &toolBars() const { return m_toolBars; }
+        const QLinkedList<KToolBar*> &toolBars() const { return m_toolBars; }
 
     private:
         void handleToolBar( KToolBar *toolBar )
@@ -114,7 +109,7 @@ namespace
         KActionCollection *m_actionCollection;
         KMainWindow *m_mainWindow;
 
-        Q3PtrList<KToolBar> m_toolBars;
+        QLinkedList<KToolBar*> m_toolBars;
         Q3PtrList<KAction> m_toolBarActions;
 
         bool m_needsRebuild : 1;
@@ -231,7 +226,7 @@ void ToolBarHandler::connectToActionContainer( KAction *action )
 
 void ToolBarHandler::connectToActionContainer( QWidget *container )
 {
-    Q3PopupMenu *popupMenu = dynamic_cast<Q3PopupMenu *>( container );
+    QMenu *popupMenu = dynamic_cast<QMenu *>( container );
     if ( !popupMenu )
         return;
 
