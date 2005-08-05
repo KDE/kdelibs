@@ -1,0 +1,12 @@
+<para>Oni donas permeson por kopii, distribui kaj/aŭ modifi tiun ĉi dokumenton
+surbaze de la terminoj de la Libera Licenco de Documentaro de GNU, 
+versio 1.1 aŭ posta publikigita de la Free Software
+Foundation; kun &FDLInvariantSections;, kun &FDLFrontCoverText;, kaj
+kun &FDLBackCoverText;. Kopio de la licenco estas inkluzivita en <xref linkend="gnu-fdl"/>.</para>
+<!--
+Local variables:
+mode: sgml
+sgml-general-insert-case: lower
+sgml-parent-document: ("index.docbook" "book" "bookinfo" "legalnotice" "para")
+End:
+-->
