@@ -210,7 +210,7 @@ public:
   /**
    * Execute the popup window.
    */
-  int exec(QPoint p); // KDE4: const QPoint&
+  int exec(const QPoint &p);
   /**
    * Execute the popup window.
    */
@@ -424,7 +424,7 @@ protected:
 private:
     class KDateTablePrivate;
     KDateTablePrivate *d;
-  
+
   void initAccels();
 };
 

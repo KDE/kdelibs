@@ -449,7 +449,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param persist If true the tree always stays unfolded.
      * @since 3.2
      */
-    /*virtual*/ void unfoldTreeList( bool persist = false ); //### KDE4 BIC add virtual
+    virtual void unfoldTreeList( bool persist = false );
 
     /**
      * Add a widget at the bottom of the TreeList/IconList.
@@ -459,7 +459,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *                KJanusWidget, too. To be on the save side just don't keep
      *                the pointer to this widget.
      */
-    /*virtual*/ void addWidgetBelowList( QWidget * widget ); // ### KDE4
+    virtual void addWidgetBelowList( QWidget * widget ); 
 
     /**
      * Add a button at the bottom of the TreeList/IconList.
@@ -471,8 +471,8 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @since 3.2
      */
-    /*virtual*/ void addButtonBelowList( const QString & text, QObject * recv,
-                    const char * slot ); //### KDE4
+    virtual void addButtonBelowList( const QString & text, QObject * recv,
+                    const char * slot ); 
 
     /**
      * The same as the above function, but with a KGuiItem providing the text
@@ -485,8 +485,8 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @since 3.2
      */
-    /*virtual*/ void addButtonBelowList( const KGuiItem & guiitem, QObject *
-                    recv, const char * slot ); //### KDE4
+    virtual void addButtonBelowList( const KGuiItem & guiitem, QObject *
+                    recv, const char * slot );
 
     /**
      * This function has only effect in IconList mode.
