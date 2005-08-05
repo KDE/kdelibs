@@ -2297,6 +2297,12 @@ static QStringList splitEmailAddressList( const QString & aStr )
   return list;
 }
 
+void KApplication::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
+{
+   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
+       QStringList(), startup_id );
+}
+
 void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
