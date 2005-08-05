@@ -386,25 +386,25 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 
 }
 
-DOMString CSSPrimitiveValue::getStringValue(  )
+DOMString CSSPrimitiveValue::getStringValue(  ) const
 {
     if(!impl) return DOMString();
     return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
 
-Counter CSSPrimitiveValue::getCounterValue(  )
+Counter CSSPrimitiveValue::getCounterValue(  ) const
 {
     if(!impl) return Counter();
     return ((CSSPrimitiveValueImpl *)impl)->getCounterValue(  );
 }
 
-Rect CSSPrimitiveValue::getRectValue(  )
+Rect CSSPrimitiveValue::getRectValue(  ) const
 {
     if(!impl) return Rect();
     return ((CSSPrimitiveValueImpl *)impl)->getRectValue(  );
 }
 
-RGBColor CSSPrimitiveValue::getRGBColorValue(  )
+RGBColor CSSPrimitiveValue::getRGBColorValue(  ) const
 {
     // ###
     return RGBColor();

@@ -524,8 +524,7 @@ public:
      * string value.
      *
      */
-    // ### KDE4: make this const!
-    DOM::DOMString getStringValue (  );
+    DOM::DOMString getStringValue (  ) const;
 
     /**
      * This method is used to get the Counter value. If this CSS value
@@ -540,8 +539,7 @@ public:
      * Counter value.
      *
      */
-    // ### KDE4: make this const!
-    Counter getCounterValue (  );
+    Counter getCounterValue (  ) const;
 
     /**
      * This method is used to get the Rect value. If this CSS value
@@ -556,8 +554,7 @@ public:
      * Rect value.
      *
      */
-    // ### KDE4: make this const!
-    Rect getRectValue (  );
+    Rect getRectValue (  ) const;
 
     /**
      * This method is used to get the RGB color. If this CSS value
@@ -573,8 +570,7 @@ public:
      * return a RGB color value.
      *
      */
-    // ### KDE4: make this const!
-    RGBColor getRGBColorValue (  );
+    RGBColor getRGBColorValue (  ) const;
 };
 
 
