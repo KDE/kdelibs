@@ -3021,11 +3021,6 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
   }
 }
 
-bool KHTMLPart::findTextNext()
-{
-  return findTextNext( false );
-}
-
 // New method
 bool KHTMLPart::findTextNext( bool reverse )
 {
@@ -3944,10 +3939,10 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
     return true;
   }
 
-  //If we're asked to open up an anchor in the current URL, in current window, 
-  //merely gotoanchor, and do not reload the new page. Note that this does 
+  //If we're asked to open up an anchor in the current URL, in current window,
+  //merely gotoanchor, and do not reload the new page. Note that this does
   //not apply if the URL is the same page, but without a ref
-  if (cURL.hasRef() && (!hasTarget || target == "_self")) 
+  if (cURL.hasRef() && (!hasTarget || target == "_self"))
   {
     KURL curUrl = this->url();
     if (urlcmp(cURL.url(), curUrl.url(),
@@ -6610,10 +6605,10 @@ void KHTMLPart::slotPrintFrame()
   if ( !ext )
     return;
 
-  
+
   const QMetaObject *mo = ext->metaObject();
 
-  
+
   if (mo->indexOfSlot( "print()") != -1)
     QMetaObject::invokeMethod(ext, "print()",  Qt::DirectConnection);
 }

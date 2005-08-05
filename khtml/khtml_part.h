@@ -734,19 +734,11 @@ public:
 
   /**
    * Finds the next occurence of a string set by @ref findText()
-   * @return true if a new match was found.
-   * @since 3.3
-   */
-  bool findTextNext();
-
-  /**
-   * Finds the next occurence of a string set by @ref findText()
    * @param reverse if true, revert seach direction (only if no find dialog is used)
    * @return true if a new match was found.
    * @since 3.5
    */
-  // KDE4 merge with default = false
-  bool findTextNext( bool reverse );
+  bool findTextNext( bool reverse = false );
 
   /**
    * Sets the Zoom factor. The value is given in percent, larger values mean a
