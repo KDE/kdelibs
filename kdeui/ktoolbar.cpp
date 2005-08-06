@@ -673,6 +673,7 @@ void KToolBar::clear ()
     foreach(QWidget *w, d->idleButtons) 
        w->blockSignals(false);
 
+    qDeleteAll( d->idleButtons );
     d->idleButtons.clear();
 
     Q3ToolBar::clear();
@@ -1218,6 +1219,8 @@ void KToolBar::doModeChange()
 {
     foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
+
+    qDeleteAll( d->idleButtons );
     d->idleButtons.clear();
 
     emit modechange();
@@ -1227,6 +1230,8 @@ void KToolBar::rebuildLayout()
 {
     foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
+
+    qDeleteAll( d->idleButtons );
     d->idleButtons.clear();
 
     layoutTimer->stop();
