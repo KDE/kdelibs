@@ -56,7 +56,9 @@ static const char * const language_names[] = {
 	I18N_NOOP( "Western European" ),
 	I18N_NOOP( "Tamil" ),
 	I18N_NOOP( "Unicode" ),
-	I18N_NOOP( "Northern Saami" )
+	I18N_NOOP( "Northern Saami" ),
+        I18N_NOOP( "Vietnamese" ),
+        I18N_NOOP( "South-Eastern Europe" )
 };
 
 // this list gives the charsets that can be used to display a file given in a certain encoding.
@@ -83,6 +85,7 @@ static const char* const charsets_for_encoding[] = {
     "iso 8859-11",           "iso8859-11", 0,
     "iso 8859-13",           "iso8859-13","unicode","iso8859-4", "iso8859-1", 0,
     "iso 8859-15",           "iso8859-15","unicode","iso8859-1", 0,
+    "iso 8859-16",           "iso8859-2", 0, // ISO-8859-2 is not a replacement
     "utf8",                  "unicode","iso8859-1", 0,
     "utf16",                 "unicode","iso8859-1", 0,
     "iso-10646-ucs-2",       "unicode","iso8859-1", 0,
@@ -94,6 +97,7 @@ static const char* const charsets_for_encoding[] = {
     "cp 1255",               "iso8859-8", 0,
     "cp 1256",               "unicode","iso8859-6", 0,
     "cp 1257",               "iso8859-13", "iso8859-4", 0,
+    "cp 1258",               "iso8859-1", 0, // ISO-8859-1 is not a replacement
     "ibm850",                "ibm850","unicode","iso8859-1", 0,
     "ibm852",                "unicode","iso-8859-2", 0,
     "ibm866",                "ibm866","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
@@ -109,6 +113,7 @@ static const char* const charsets_for_encoding[] = {
     "tscii",                 "tscii", 0,
     "pt 154",                "pt 154","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
     "winsami2",              "winsami2", "cp1252", "unicode", 0,
+    "cp 874",                "tis620", 0,
     0 }; // extra 0 for end
 
 // 0 other
@@ -128,6 +133,8 @@ static const char* const charsets_for_encoding[] = {
 // 14 Tamil
 // 15 Unicode
 // 16 Northern Sami
+// 17 Vietnamese
+// 18 South-Eastern Europe
 // ### FIXME KDE4: the name of the encodings should mostly be uppercase
 static struct LanguageForEncoding
     {
@@ -142,6 +149,7 @@ static struct LanguageForEncoding
     { "iso 8859-3", 3 },
     { "iso 8859-4", 2 },
     { "iso 8859-13", 2 },
+    { "iso 8859-16", 18 },
     { "cp 1250", 3 },
     { "cp 1254", 12 },
     { "cp 1257", 2 },
@@ -170,13 +178,15 @@ static struct LanguageForEncoding
     { "iso 8859-9", 12 },
     { "tis620", 11 },
     { "iso 8859-11", 11 },
+    { "cp 874", 11 },
+    { "cp 1258", 17 },
+    { "tscii", 14 },
     { "utf8", 15 },
     { "utf16", 15 },
     { "utf7", 15 }, // ### FIXME: UTF-7 is not in Qt
     { "ucs2", 15 },
     { "iso-10646-ucs-2", 15 },
     { "winsami2", 16},
-    // ### TODO: Qt has ISO-8859-16 now too (but from which version on?)
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
