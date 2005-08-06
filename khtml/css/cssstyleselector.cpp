@@ -77,12 +77,18 @@ if (isInherit) \
 #define HANDLE_INHERIT_AND_INITIAL(prop, Prop) \
 HANDLE_INHERIT(prop, Prop) \
 else if (isInitial) \
-    style->set##Prop(RenderStyle::initial##Prop());
+{\
+    style->set##Prop(RenderStyle::initial##Prop());\
+    return;\
+}
 
 #define HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(prop, Prop, Value) \
 HANDLE_INHERIT(prop, Prop) \
 else if (isInitial) \
-    style->set##Prop(RenderStyle::initial##Value());
+{\
+    style->set##Prop(RenderStyle::initial##Value());\
+    return;\
+}
 
 #define HANDLE_BACKGROUND_INHERIT_AND_INITIAL(prop, Prop) \
 if (isInherit) { \
@@ -682,6 +688,12 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
 
     // Cull out any useless layers and also repeat patterns into additional layers.
     style->adjustBackgroundLayers();
+
+    // Only use slow repaints if we actually have a background image.
+    // FIXME: We only need to invalidate the fixed regions when scrolling.  It's total overkill to
+    // prevent the entire view from blitting on a scroll.
+    if (style->hasFixedBackgroundImage() && view)
+        view->useSlowRepaints();
 }
 
 unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
