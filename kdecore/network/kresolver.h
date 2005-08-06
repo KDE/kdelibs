@@ -341,7 +341,8 @@ public:
    *		be found and recorded
    * @li NoResolve: request that no external resolution be performed. The given
    *		nodename and servicename will be resolved locally only.
-   * @li NoSrv: don't try to use SRV-based name-resolution.
+   * @li NoSrv: don't try to use SRV-based name-resolution. (deprecated)
+   * @li UseSrv: use SRV-based name resolution.
    * @li Multiport: the port/service argument is a list of port numbers and
    *		ranges. (future extension)
    *
@@ -353,7 +354,8 @@ public:
       CanonName = 0x02,
       NoResolve = 0x04,
       NoSrv = 0x08,
-      Multiport = 0x10
+      Multiport = 0x10,
+      UseSrv = 0x20
     };
 
   /**

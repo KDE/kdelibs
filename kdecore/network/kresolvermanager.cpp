@@ -53,7 +53,15 @@ extern "C" {
 #include "kresolver.h"
 #include "kresolver_p.h"
 #include "kresolverworkerbase.h"
-#include "kresolverstandardworkers_p.h"
+
+namespace KNetwork
+{
+  namespace Internal
+  {
+    void initSrvWorker();
+    void initStandardWorkers();
+  }
+}
 
 using namespace KNetwork;
 using namespace KNetwork::Internal;
@@ -325,6 +333,7 @@ KResolverManager::KResolverManager()
   globalManager = this;
   workers.setAutoDelete(true);
   currentRequests.setAutoDelete(true);
+  initSrvWorker();
   initStandardWorkers();
 
   pid = getpid();
