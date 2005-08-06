@@ -84,6 +84,7 @@ static const char* const charsets_for_encoding[] = {
     "iso 8859-9",            "iso8859-9","unicode","iso8859-1", 0,
     "iso 8859-11",           "iso8859-11", 0,
     "iso 8859-13",           "iso8859-13","unicode","iso8859-4", "iso8859-1", 0,
+    "iso 8859-14",           "iso8859-15", "iso8859-1", 0,
     "iso 8859-15",           "iso8859-15","unicode","iso8859-1", 0,
     "iso 8859-16",           "iso8859-2", 0, // ISO-8859-2 is not a replacement
     "utf8",                  "unicode","iso8859-1", 0,
@@ -143,6 +144,7 @@ static struct LanguageForEncoding
     } const language_for_encoding[] = {
     { "iso 8859-1", 13 },
     { "iso 8859-15", 13 },
+    { "iso 8859-14", 13 },
     { "cp 1252", 13 },
     { "ibm850", 13 },
     { "iso 8859-2", 3 },
