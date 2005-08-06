@@ -260,10 +260,12 @@ static struct Builtin
     { "x-cp-10000", "apple roman" },
     { "ibm819", "iso 8859-1" },
     { "thai-tis620", "iso 8859-11" },
-    { "windows-874", "iso 8859-11" },
-    { "windows874", "iso 8859-11" },
-    { "x-windows-874", "iso 8859-11" },
-    { "x-cp-874", "iso 8859-11" },
+    { "windows-874", "cp 874" },
+    { "windows874", "cp 874" },
+    { "x-windows-874", "cp 874" },
+    { "x-cp-874", "cp 874" },
+    { "ibm 874", "cp 874" },
+    { "ibm874", "cp 874" }, // Qt4 name
     { "ksc5601.1987-0", "euckr" },
     { "iso-8859-12", "iso 8859-12" }, // ### FIXME: does not exist!
     { "paratype-154", "pt 154" },
