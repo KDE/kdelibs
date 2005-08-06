@@ -280,6 +280,7 @@ static struct Builtin
     { "x-cp-874", "cp 874" },
     { "ibm 874", "cp 874" },
     { "ibm874", "cp 874" }, // Qt4 name
+    { "x-ibm874", "cp 874" },
     { "ksc5601.1987-0", "euckr" },
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
