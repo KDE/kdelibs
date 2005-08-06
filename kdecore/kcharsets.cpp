@@ -190,8 +190,10 @@ static struct Builtin
     { "iso-ir-111", "koi8-r" },
     { "koi8-ru", "koi8-u" }, // ### Qt 3.3 maps it to koi8-r
     { "koi unified", "koi8-r" }, // ### FIXME: Qt 3.3 seems to map this to EUC-KR, so this mapping is too late :-(
+    // Using ISO-8859-1 for ASCII is an approximation at write
     { "us-ascii", "iso 8859-1" },
     { "usascii", "iso 8859-1" },
+    { "ascii", "iso 8859-1" },
     { "x-utf-8", "utf-8" },
     { "x-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt 
     { "unicode-1-1-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt
@@ -267,7 +269,6 @@ static struct Builtin
     { "ibm 874", "cp 874" },
     { "ibm874", "cp 874" }, // Qt4 name
     { "ksc5601.1987-0", "euckr" },
-    { "iso-8859-12", "iso 8859-12" }, // ### FIXME: does not exist!
     { "paratype-154", "pt 154" },
     { "pt-154", "pt 154" },
     { "x-winsami2", "winsami2" },
