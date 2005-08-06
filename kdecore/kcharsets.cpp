@@ -235,6 +235,7 @@ static struct Builtin
     { "x-windows-1255", "cp 1255" },
     { "x-windows-1256", "cp 1256" },
     { "x-windows-1257", "cp 1257" },
+    { "x-windows-1258", "windows-1258" },
     { "cp-10000", "apple roman" },
     { "x-cp-850", "ibm850" },
     { "x-cp-866", "ibm866" },
@@ -246,6 +247,7 @@ static struct Builtin
     { "x-cp-1255", "cp 1255" },
     { "x-cp-1256", "cp 1256" },
     { "x-cp-1257", "cp 1257" },
+    { "x-cp-1258", "windows-1258" },
     { "x-cp-10000", "apple roman" },
     { "thai-tis620", "iso 8859-11" }, // ### TODO: TIS-620
     { "windows-874", "ibm874" },
