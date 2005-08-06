@@ -190,8 +190,10 @@ static struct Builtin
     } const builtin[] = {
     { "iso-ir-111", "koi8-r" },
     { "koi unified", "koi8-r" },
+    // ### FIXME: at write, using ISO-8859-1 for ASCII is only an approximation (as you cannot test if a character is part of the set).
     { "us-ascii", "iso 8859-1" },
     { "usascii", "iso 8859-1" },
+    { "ascii", "iso 8859-1" },
     { "x-utf-8", "utf-8" },
     { "x-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt 
     { "unicode-1-1-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt
