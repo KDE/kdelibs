@@ -39,8 +39,6 @@
 
 #include <assert.h>
 
-#define CHARSETS_COUNT 33
-
 static const char * const language_names[] = {
 	I18N_NOOP( "Other" ),
 	I18N_NOOP( "Arabic" ),
