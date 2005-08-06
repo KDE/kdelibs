@@ -96,7 +96,9 @@ static const char* const charsets_for_encoding[] = {
     "cp 1256",               "unicode","iso8859-6", 0,
     "cp 1257",               "iso8859-13", "iso8859-4", 0,
     "ibm850",                "ibm850","unicode","iso8859-1", 0,
+#if 0
     "ibm852",                "unicode","iso-8859-2", 0,
+#endif
     "ibm866",                "ibm866","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
     "tis620",                "iso8859-11", 0,
     "eucjp",                 "eucjp","unicode","iso8859-1", 0,
@@ -146,7 +148,9 @@ static struct LanguageForEncoding
     { "cp 1250", 3 },
     { "cp 1254", 12 },
     { "cp 1257", 2 },
+#if 0
     { "ibm852", 3 },
+#endif
     { "koi8-r", 6 },
     { "iso 8859-5", 6 },
     { "cp 1251", 6 },
@@ -565,12 +569,11 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
 #warning is it still usefull with Qt4 ?
-	//dont forget to remove the #if 0 on the 2 structs at the top also if you reenable that;)
+	//dont forget to remove the #if 0 on a few structs at the top also if you reenable that ;)  (search for 852 )
 	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
 	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
         // Yes, it is useful (for examples EBCDIC in Kate or codepages for KOffice filters from/to MS formats) (goutte)
 #if 0
-    // ### TODO: charmaps have changed a little since this code was written. The default dir should be changed and KFilterDev should be used for reading gzipped files.
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
