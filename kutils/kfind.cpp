@@ -196,7 +196,7 @@ void KFind::setData( int id, const QString& data, int startPos )
         if ( startPos != -1 )
             m_index = startPos;
         else if (m_options & KFindDialog::FindBackwards)
-            m_index = m_text.length();
+            m_index = m_text.isEmpty() ? 0 : m_text.length() - 1;
         else
             m_index = 0;
 #ifdef DEBUG_FIND
@@ -349,7 +349,7 @@ KFind::Result KFind::find()
                 m_text = d->data[++d->currentId]->text;
 
                 if ( m_options & KFindDialog::FindBackwards )
-                    m_index = m_text.length();
+                    m_index = m_text.isEmpty() ? 0 : m_text.length() - 1;
                 else
                     m_index = 0;
             }
