@@ -256,6 +256,7 @@ static struct Builtin
     { "windows874", "ibm874" },
     { "x-windows-874", "ibm874" },
     { "x-cp-874", "ibm874" },
+    { "x-ibm874", "ibm874" },
     { "ksc5601.1987-0", "euckr" },
     { "ks_c_5601-1987", "euckr" },
     // ### TODO: "PT 154" seems to have been removed from Qt
@@ -538,6 +539,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         return codec;
     }
 
+    // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
     QByteArray name = n.lower().latin1();
     QByteArray key = name;
     if (name.right(8) == "_charset")
