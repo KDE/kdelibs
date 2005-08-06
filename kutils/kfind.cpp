@@ -48,7 +48,7 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
         User1 | Close,
         User1,
         false,
-        i18n("&Find"))
+        KStdGuiItem::find())
 {
     setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>").arg(pattern), this ) );
 }
