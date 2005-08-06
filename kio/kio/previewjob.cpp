@@ -380,15 +380,17 @@ bool PreviewJob::statResultThumbnail()
 void PreviewJob::getOrCreateThumbnail()
 {
     // We still need to load the orig file ! (This is getting tedious) :)
-    KURL currentURL = d->currentItem.item->url();
-    if ( currentURL.isLocalFile() )
-        createThumbnail( currentURL.path() );
+    const KFileItem* item = d->currentItem.item;
+    const QString localPath = item->localPath();
+    if ( !localPath.isEmpty() )
+        createThumbnail( localPath );
     else
     {
         d->state = PreviewJobPrivate::STATE_GETORIG;
         KTempFile localFile;
         KURL localURL;
         localURL.setPath( d->tempName = localFile.name() );
+        const KURL currentURL = item->url();
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
                                          false, false /* No GUI */ );
         job->addMetaData("thumbnail","1");
