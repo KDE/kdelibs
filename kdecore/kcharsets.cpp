@@ -246,10 +246,10 @@ static struct Builtin
     { "x-cp-1257", "cp 1257" },
     { "x-cp-10000", "apple roman" },
     { "thai-tis620", "iso 8859-11" }, // ### TODO: TIS-620
-    { "windows-874", "iso 8859-11" }, // ### TODO: Qt4 knows IBM874
-    { "windows874", "iso 8859-11" }, // ### TODO: Qt4 knows IBM874
-    { "x-windows-874", "iso 8859-11" }, // ### TODO: Qt4 knows IBM874
-    { "x-cp-874", "iso 8859-11" }, // ### TODO: Qt4 knows IBM874
+    { "windows-874", "ibm874" },
+    { "windows874", "ibm874" },
+    { "x-windows-874", "ibm874" },
+    { "x-cp-874", "ibm874" },
     { "ksc5601.1987-0", "euckr" },
     { "ks_c_5601-1987", "euckr" },
     // ### TODO: "PT 154" seems to have been removed from Qt
