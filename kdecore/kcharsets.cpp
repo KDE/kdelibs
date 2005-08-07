@@ -112,7 +112,7 @@ static const char* const charsets_for_encoding[] = {
     "gb2312",                "gb2312.1980-0","unicode","iso8859-1", 0,
     "euckr",                 "euckr","unicode","iso8859-1", 0,
     "tscii",                 "tscii", 0,
-    "pt 154",                "pt 154","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
+//    "pt 154",                "pt 154","cp 1251","koi8-u","koi8-r","iso8859-5", 0,
     "winsami2",              "winsami2", "cp1252", "unicode", 0,
     "cp 874",                "tis620", 0,
     0 }; // extra 0 for end
@@ -160,7 +160,7 @@ static struct LanguageForEncoding
     { "iso 8859-5", 6 },
     { "cp 1251", 6 },
     { "koi8-u", 6 },
-    { "pt 154", 6 },
+//    { "pt 154", 6 },
     { "ibm866", 6 },
     { "big5", 5 },
     { "gb18030", 4 },
@@ -284,8 +284,6 @@ static struct Builtin
     { "ibm874", "cp 874" }, // Qt4 name
     { "x-ibm874", "cp 874" },
     { "ksc5601.1987-0", "euckr" },
-    { "paratype-154", "pt 154" },
-    { "pt-154", "pt 154" },
     { "x-winsami2", "winsami2" },
     { "x-mac-roman", "apple roman" },
     { "macintosh", "apple roman" },
@@ -319,6 +317,10 @@ static struct ConversionHints
     { "cp1250", "iso-8859-2" },
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
+    // KDE had always "CP 1251" as best fallback to PT 154. Now that Qt does not offer this encoding anymore, it is our fallback.
+    { "pt 154", "cp 1251" },
+    { "paratype-154", "cp 1251" },
+    { "pt-154", "cp 1251" },
     { 0, 0 }};
 
 
