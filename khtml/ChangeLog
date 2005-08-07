@@ -20,6 +20,9 @@
         * html/htmlparser.cpp: Block <input type="image"> elements if SRC attribute is ad-filtered.
         * khtml_part.cpp: Include <input type="image"> elements in AdBlocK filter runs.
 
+2005-07-25  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Use the charset provided by the remote host through the HTTP headers.
+
 2005-07-25  Andreas Kling <kling@impul.se>
 
         Make new ad filters have instant effect (either hide affected elements
