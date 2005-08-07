@@ -241,6 +241,7 @@ protected:
 	void setSize(int);
 	int neededSize();
 	void updateState();
+	virtual void paintEvent(QPaintEvent *);
 	virtual void drawButton(QPainter *);
 	virtual void drawButtonLabel(QPainter *);
 	void drawButtonStyled(QPainter *);
