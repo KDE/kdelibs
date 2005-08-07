@@ -30,6 +30,15 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
+
+void KReplaceTest::enterLoop()
+{
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(exitLoop()),
+            &eventLoop, SLOT(quit()));
+    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+}
+
 void KReplaceTest::replace( const QString &pattern, const QString &replacement, long options )
 {
     m_needEventLoop = false;
@@ -60,7 +69,7 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
     slotReplaceNext();
 
     if ( m_needEventLoop )
-        qApp->eventLoop()->enterLoop();
+        enterLoop();
 }
 
 void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int matchedLength )
@@ -115,7 +124,7 @@ void KReplaceTest::slotReplaceNext()
         }
 #endif
     if ( res == KFind::NoMatch && m_needEventLoop )
-        qApp->eventLoop()->exitLoop();
+        emit exitLoop();
 }
 
 void KReplaceTest::print()
@@ -130,7 +139,7 @@ void KReplaceTest::print()
 static void testReplaceSimple( int options, int button = 0 )
 {
     kdDebug() << "testReplaceSimple: " << options << endl;
-    KReplaceTest test( QString( "hellohello" ), button );
+    KReplaceTest test( QStringList() << QString( "hellohello" ), button );
     test.replace( "hello", "HELLO", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -145,7 +154,7 @@ static void testReplaceSimple( int options, int button = 0 )
 static void testReplaceBlank( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlank: " << options << endl;
-    KReplaceTest test( QString( "aaaaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaaaa" ), button );
     test.replace( "a", "", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -160,7 +169,7 @@ static void testReplaceBlank( int options, int button = 0 )
 static void testReplaceBlankSearch( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlankSearch: " << options << endl;
-    KReplaceTest test( QString( "bbbb" ), button );
+    KReplaceTest test( QStringList() << QString( "bbbb" ), button );
     test.replace( "", "foo", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -174,7 +183,7 @@ static void testReplaceLonger( int options, int button = 0 )
 {
     kdDebug() << "testReplaceLonger: " << options << endl;
     // Standard test of a replacement string longer than the matched string
-    KReplaceTest test( QString( "aaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaa" ), button );
     test.replace( "a", "bb", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -188,7 +197,7 @@ static void testReplaceLongerInclude( int options, int button = 0 )
 {
     kdDebug() << "testReplaceLongerInclude: " << options << endl;
     // Similar test, where the replacement string includes the search string
-    KReplaceTest test( QString( "a foo b" ), button );
+    KReplaceTest test( QStringList() << QString( "a foo b" ), button );
     test.replace( "foo", "foobar", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -202,7 +211,7 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
 {
     kdDebug() << "testReplaceLongerInclude2: " << options << endl;
     // Similar test, but with more chances of matches inside the replacement string
-    KReplaceTest test( QString( "aaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaa" ), button );
     test.replace( "a", "aa", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -216,7 +225,7 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
 static void testReplaceBackRef( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBackRef: " << options << endl;
-    KReplaceTest test( QString( "abc def" ), button );
+    KReplaceTest test( QStringList() << QString( "abc def" ), button );
     test.replace( "abc", "(\\0)", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );

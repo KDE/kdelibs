@@ -44,7 +44,7 @@ static bool check(QString txt, QString a, QString b) // from kurltest
   return true;
 }
 
-void KFindTest::changeText(uint line, const QString &text)
+void KFindTest::changeText(int line, const QString &text)
 {
 	Q_ASSERT(line < m_text.count());
 	Q_ASSERT(m_find != 0);

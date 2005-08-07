@@ -41,7 +41,12 @@ public slots:
     void slotReplaceNext();
     void slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
 
+signals:
+    void exitLoop();
+
 private:
+    void enterLoop();
+
     QStringList::Iterator m_currentPos;
     QStringList m_text;
     KReplace* m_replace;

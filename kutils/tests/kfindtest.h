@@ -40,7 +40,7 @@ class KFindTest : public QObject
 		void find(const QString &pattern, long options = 0);
 		void findNext(const QString &pattern = QString::null);
 
-		void changeText(uint line, const QString &text);
+		void changeText(int line, const QString &text);
 
 		const QStringList &hits() const { return m_hits; }
 		void clearHits() { m_hits.clear(); }
@@ -52,7 +52,7 @@ class KFindTest : public QObject
 	private:
 		KFind                 *m_find;
 		QStringList            m_text;
-		uint                   m_line;
+		int                   m_line;
 		QStringList            m_hits;
 };
 
