@@ -62,7 +62,7 @@
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <kprocess.h>
