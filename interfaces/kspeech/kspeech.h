@@ -21,6 +21,7 @@
 #ifndef _KSPEECH_H_
 #define _KSPEECH_H_
 
+#include <Q3CString>
 #include <dcopobject.h>
 #include <qstringlist.h>
 
