@@ -561,7 +561,7 @@ void KMultiTabBarTab::setIcon(const QPixmap& icon)
 				rotateMatrix.rotate(-90);
 			QPixmap pic=icon.xForm(rotateMatrix); //TODO FIX THIS, THIS SHOWS WINDOW
 			d->pix=pic;
-		        setIconSet(pic);
+			setIconSet(pic);
 		} else setIconSet(icon);
 	}
 }
@@ -632,6 +632,11 @@ void KMultiTabBarTab::showActiveTabText(bool show)
 	m_showActiveTabText=show;
 }
 
+void KMultiTabBarTab::paintEvent(QPaintEvent *ev) {
+	QPainter painter(this);
+	drawButton(&painter);
+}
+
 void KMultiTabBarTab::drawButtonLabel(QPainter *p) {
 	drawButton(p);
 }
@@ -672,6 +677,7 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	options.palette  = colorGroup();
 	options.text     = text();
 	options.icon     = icon();
+	options.iconSize = iconSize();
 
 	style()->drawControl(QStyle::CE_PushButton, &options, &painter, this);
 
