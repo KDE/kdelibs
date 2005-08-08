@@ -59,10 +59,13 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
     // Go to initial position
     if ( (options & KReplaceDialog::FromCursor) == 0 )
     {
-        if ( m_replace->options() & KFindDialog::FindBackwards )
-            m_currentPos = m_text.fromLast();
-        else
+        if ( m_text.isEmpty() )
+            return;
+        if ( m_replace->options() & KFindDialog::FindBackwards ) {
+            m_currentPos = --m_text.end();
+        } else {
             m_currentPos = m_text.begin();
+        }
     }
 
     // Launch first replacement
@@ -98,18 +101,24 @@ void KReplaceTest::slotReplaceNext()
 {
     //kdDebug() << k_funcinfo << endl;
     KFind::Result res = KFind::NoMatch;
-    while ( res == KFind::NoMatch && m_currentPos != m_text.end() ) {
-        if ( m_replace->needData() )
+    int backwards = m_replace->options() & KFindDialog::FindBackwards;
+    while ( res == KFind::NoMatch ) {
+        if ( m_replace->needData() ) {
             m_replace->setData( *m_currentPos );
+        }
 
         // Let KReplace inspect the text fragment, and display a dialog if a match is found
         res = m_replace->replace();
 
         if ( res == KFind::NoMatch ) {
-            if ( m_replace->options() & KFindDialog::FindBackwards )
+            QStringList::iterator lastItem = backwards ? m_text.begin() : --m_text.end();
+            if ( m_currentPos == lastItem )
+                break;
+            if ( m_replace->options() & KFindDialog::FindBackwards ) {
                 m_currentPos--;
-            else
+            } else {
                 m_currentPos++;
+            }
         }
     }
 
