@@ -1171,9 +1171,9 @@ void KRun::foundMimeType( const QString& type )
     return;
   }
 */
-  if (m_job && m_job->inherits("KIO::TransferJob"))
+  KIO::TransferJob *job = ::qt_cast<KIO::TransferJob *>( m_job );
+  if ( job )
   {
-     KIO::TransferJob *job = static_cast<KIO::TransferJob *>(m_job);
      job->putOnHold();
      KIO::Scheduler::publishSlaveOnHold();
      m_job = 0;

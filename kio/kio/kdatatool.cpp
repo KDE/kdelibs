@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999, 2000 Torben Weis <weis@kde.org>
-   Copyright (C) 2001 David Faure <david@mandrakesoft.com>
+   Copyright (C) 2001 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,16 +18,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qpixmap.h>
-#include <qfile.h>
 #include "kdatatool.h"
-#include <kinstance.h>
-#include <ktrader.h>
 
 #include <kstandarddirs.h>
-
 #include <klibloader.h>
 #include <kdebug.h>
+#include <kinstance.h>
+
+#include <ktrader.h>
+#include <kparts/componentfactory.h>
+
+#include <qpixmap.h>
+#include <qfile.h>
 
 /*************************************************
  *
@@ -146,19 +148,9 @@ KDataTool* KDataToolInfo::createTool( QObject* parent, const char* name ) const
     if ( !m_service )
         return 0;
 
-    KLibFactory* factory = KLibLoader::self()->factory( QFile::encodeName(m_service->library()) );
-
-    if( !factory )
-        return 0;
-
-    QObject* obj = factory->create( parent, name );
-    if ( !obj || !obj->inherits( "KDataTool" ) )
-    {
-        delete obj;
-        return 0;
-    }
-    KDataTool * tool = static_cast<KDataTool *>(obj);
-    tool->setInstance( m_instance );
+    KDataTool* tool = KParts::ComponentFactory::createInstanceFromService<KDataTool>( m_service, parent, name );
+    if ( tool )
+        tool->setInstance( m_instance );
     return tool;
 }
 
