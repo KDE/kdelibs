@@ -393,8 +393,13 @@ void KMimeType::init( KDesktopFile * config )
     m_mapProps.insert( XKDEText, config->readBoolEntry( XKDEText ) );
 
   QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
-  if ( config->hasKey( XKDEIsAlso ) )
-    m_mapProps.insert( XKDEIsAlso, config->readEntry( XKDEIsAlso ) );
+  if ( config->hasKey( XKDEIsAlso ) ) {
+    QString inherits = config->readEntry( XKDEIsAlso );
+    if ( inherits != name() )
+        m_mapProps.insert( XKDEIsAlso, inherits );
+    else
+        kdWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
+  }
 
   QString XKDEPatternsAccuracy = QString::fromLatin1("X-KDE-PatternsAccuracy");
   if ( config->hasKey( XKDEPatternsAccuracy ) )
