@@ -325,8 +325,11 @@ namespace KIO
     /// A local file path if the ioslave display files sitting
     /// on the local filesystem (but in another hierarchy, e.g. media:/)
     UDS_LOCAL_PATH = 72 | UDS_STRING,
+    /// Treat the file as a hidden file or as a normal file,
+    /// regardless of (the absence of) a leading dot in the filename.
+    UDS_HIDDEN = 80 | UDS_LONG,
 
-    // available: 80, 88, 92, 100, 108 etc.
+    // available: 88, 92, 100, 108 etc.
 
     /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,

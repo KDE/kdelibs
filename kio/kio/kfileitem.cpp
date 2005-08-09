@@ -62,6 +62,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
+  m_hidden( Auto ),
   d(0)
 {
   readUDSEntry( _urlIsDirectory );
@@ -80,6 +81,7 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
   m_bLink( false ),
   m_bIsLocalURL( _url.isLocalFile() ),
   m_bMimeTypeKnown( false ),
+  m_hidden( Auto ),
   d(0)
 {
   init( _determineMimeTypeOnDemand );
@@ -96,6 +98,7 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
   m_bMimeTypeKnown( !mimeType.isEmpty() ),
+  m_hidden( Auto ),
   d(0)
 {
   if (m_bMimeTypeKnown)
@@ -238,6 +241,13 @@ void KFileItem::readUDSEntry( bool _urlIsDirectory )
           d = new KFileItemPrivate();
         d->iconName = (*it).m_str;
         break;
+
+      case KIO::UDS_HIDDEN:
+        if ( (*it).m_long )
+          m_hidden = Hidden;
+        else
+          m_hidden = Shown;
+        break;
     }
   }
 
@@ -255,6 +265,7 @@ void KFileItem::refresh()
   m_user = QString::null;
   m_group = QString::null;
   m_metaInfo = KFileMetaInfo();
+  m_hidden = Auto;
 
   // Basically, we can't trust any information we got while listing.
   // Everything could have changed...
@@ -597,6 +608,9 @@ bool KFileItem::isWritable() const
 
 bool KFileItem::isHidden() const
 {
+  if ( m_hidden != Auto )
+      return m_hidden == Hidden;
+
   if ( !m_url.isEmpty() )
       return m_url.fileName()[0] == '.';
   else // should never happen
@@ -779,6 +793,7 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_user == item.m_user
              && m_group == item.m_group
              && m_bLink == item.m_bLink
+             && m_hidden == item.m_hidden
              && size() == item.size()
              && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
              && mimetype() == item.mimetype()
@@ -802,6 +817,7 @@ void KFileItem::assign( const KFileItem & item )
     m_pMimeType = item.m_pMimeType;
     m_strLowerCaseName = item.m_strLowerCaseName;
     m_bMimeTypeKnown = item.m_bMimeTypeKnown;
+    m_hidden = item.m_hidden;
     m_guessedMimeType   = item.m_guessedMimeType;
     m_access            = item.m_access;
     m_metaInfo          = item.m_metaInfo;
@@ -841,6 +857,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bLink = false;
   m_bIsLocalURL = _url.isLocalFile();
   m_bMimeTypeKnown = false;
+  m_hidden = Auto;
   m_guessedMimeType = QString::null;
   m_metaInfo = KFileMetaInfo();
 

@@ -2113,7 +2113,7 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
   if ( item->text() == dotdot )
     return false;
 
-  if ( !d->isShowingDotFiles && item->text()[0] == '.' )
+  if ( !d->isShowingDotFiles && item->isHidden() )
     return false;
 
   if ( item->isDir() || d->lstFilters.isEmpty() )
