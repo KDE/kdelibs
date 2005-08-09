@@ -3039,7 +3039,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
             }
             else
             {
-                if ( m_bCurrentOperationIsLink && ::qt_cast<KIO::DeleteJob*>( job ) )
+                if ( m_bCurrentOperationIsLink && qobject_cast<KIO::DeleteJob*>( job ) )
                 {
                     // Very special case, see a few lines below
                     // We are deleting the source of a symlink we successfully moved... ignore error
@@ -3056,7 +3056,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
     {
         // Special case for moving links. That operation needs two jobs, unlike others.
         if ( m_bCurrentOperationIsLink && m_mode == Move
-             && !::qt_cast<KIO::DeleteJob *>( job ) // Deleting source not already done
+             && !qobject_cast<KIO::DeleteJob *>( job ) // Deleting source not already done
              )
         {
             subjobs.remove( job );

@@ -1154,7 +1154,7 @@ void KRun::foundMimeType( const QString& type )
     return;
   }
 */
-  KIO::TransferJob *job = ::qt_cast<KIO::TransferJob *>( m_job );
+  KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>( m_job );
   if ( job )
   {
      job->putOnHold();
