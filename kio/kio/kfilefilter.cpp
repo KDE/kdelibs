@@ -84,7 +84,7 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 
     const QString& name = item->name();
 
-    if ( m_filterDotFiles && name.at(0) == '.' )
+    if ( m_filterDotFiles && item->isHidden() )
         return false;
 
     if ( m_filterSpecials && (name == dot || name == dotdot) )

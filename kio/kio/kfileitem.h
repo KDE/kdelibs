@@ -458,20 +458,20 @@ public:
    * Somewhat like an assignment operator, but more explicit.
    * Note: extra-data set with setExtraData() is not copied, so be careful
    * what you do!
-   * 
+   *
    * @param item the item to copy
    */
   void assign( const KFileItem & item );
 
   /**
    * Reinitialize KFileItem with a new UDSEntry.
-   * 
+   *
    * Note: extra-data set with setExtraData() is not changed or deleted, so
    * be careful what you do!
    *
    * KDirListerCache uses it to save new/delete calls by updating existing
    * items that are otherwise not needed anymore.
-   * 
+   *
    * @param entry the UDSEntry to assign to this KFileItem
    * @param url the file url
    * @param determineMimeTypeOnDemand specifies if the mimetype of the given
@@ -575,6 +575,10 @@ private:
   bool m_bIsLocalURL:1;
 
   bool m_bMimeTypeKnown:1;
+
+  enum { Auto = 0, Hidden = 1, Shown = 2 };
+  // One of Auto, Hidden, Shown. Auto: check leading dot.
+  unsigned char m_hidden:2;
 
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
