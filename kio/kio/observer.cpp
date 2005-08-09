@@ -111,13 +111,7 @@ MetaData Observer::metadata( int progressId )
 {
     KIO::Job * job = m_dctJobs[ progressId ];
     assert(job);
-    if ( job->inherits("KIO::TransferJob") )
-        return static_cast<KIO::TransferJob *>(job)->metaData();
-    else
-    {
-        kdWarning() << "Observer::metaData(" << progressId << ") called on a job that is a " << job->className() << endl;
-        return MetaData();
-    }
+    return job->metaData();
 }
 
 void Observer::slotTotalSize( KIO::Job* job, KIO::filesize_t size )
