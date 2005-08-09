@@ -142,22 +142,6 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
 }
 #endif
 
-// KDE4: remove
-KIO_EXPORT bool KIO::isClipboardEmpty()
-{
-#ifndef QT_NO_MIMECLIPBOARD
-  QMimeSource *data = QApplication::clipboard()->data();
-  if ( data->provides( "text/uri-list" ) && data->encodedData( "text/uri-list" ).size() > 0 )
-    return false;
-#else
-  // Happens with some versions of Qt Embedded... :/
-  // Guess.
-  QString data = QApplication::clipboard()->text();
-  if(data.contains("://"))
-	  return false;
-#endif
-  return true;
-}
 
 #ifndef QT_NO_MIMECLIPBOARD
 // The main method for dropping
@@ -268,11 +252,6 @@ KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data )
     tempFile.close();
 
     (void) KIO::NetAccess::upload( tempFile.name(), new_url, 0 );
-}
-
-KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
-{
-    return pasteDataAsync( u, _data, QString::null );
 }
 
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data, const QString& text )

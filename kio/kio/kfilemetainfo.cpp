@@ -975,10 +975,6 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
     return plugin;
 }
 
-KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
-{
-    return plugin( mimeType, QString::null );
-}
 
 KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QString& protocol)
 {

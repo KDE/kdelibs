@@ -1327,16 +1327,10 @@ public:
 
     /**
      *  @return a pointer to the plugin that belongs to the specified mimetype,
-     *  which means also load the plugin if it's not in memory
-     */
-    KFilePlugin * plugin( const QString& mimeType ); // KDE4: merge with method below
-
-    /**
-     *  @return a pointer to the plugin that belongs to the specified mimetype,
      *  for the given protocol.
      *  This loads the plugin if it's not in memory yet.
      */
-    KFilePlugin * plugin( const QString& mimeType, const QString& protocol );
+    KFilePlugin * plugin( const QString& mimeType, const QString& protocol = QString::null  );
 
     const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType ); // KDE4: merge with below
     const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol );

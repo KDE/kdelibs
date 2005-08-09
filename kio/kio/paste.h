@@ -56,17 +56,6 @@ namespace KIO {
    */
   KIO_EXPORT void pasteData( const KURL& destURL, const QByteArray& data );
 
-  /**
-   * Pastes the given @p data to the given destination URL.
-   * Note that this method requires the caller to have chosen the QByteArray
-   * to paste before hand, unlike pasteClipboard and pasteMimeSource.
-   *
-   * @param destURL the URL of the directory where the data will be pasted.
-   * The filename to use in that directory is prompted by this method.
-   * @param data the data to copy
-   * @see pasteClipboard()
-   */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data );
 
   /**
    * Pastes the given @p data to the given destination URL.
@@ -79,7 +68,7 @@ namespace KIO {
    * @param dialogText the text to show in the dialog
    * @see pasteClipboard()
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data, const QString& dialogText ); // KDE4: merge with above
+  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data, const QString& dialogText= QString::null );
 
 
   /**
@@ -104,12 +93,6 @@ namespace KIO {
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 
-  /**
-   * Checks whether the clipboard contains any URLs.
-   * @return true if not
-   * Not used anymore, wrong method name, so it will disappear in KDE4.
-   */
-  KIO_EXPORT_DEPRECATED bool isClipboardEmpty();
 
   /**
    * Returns the text to use for the Paste action, when the application supports

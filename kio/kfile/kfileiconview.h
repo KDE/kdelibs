@@ -88,7 +88,6 @@ public:
 
     virtual QWidget *widget() { return this; }
     virtual void clearView();
-    virtual void setAutoUpdate( bool ) {} // ### unused. remove in KDE4
 
     virtual void updateView( bool );
     virtual void updateView(const KFileItem*);
@@ -194,8 +193,7 @@ protected:
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
     virtual void contentsDropEvent( QDropEvent *ev );
 
-    // KDE4: Make virtual
-    bool acceptDrag(QDropEvent* e ) const;
+    virtual bool acceptDrag(QDropEvent* e ) const;
 
 private slots:
     void selected( Q3IconViewItem *item );
