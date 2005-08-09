@@ -81,7 +81,7 @@
 
 #include <kstandarddirs.h>
 #include <kio/ioslave_defaults.h>
-#include <klargefile.h>
+#include <kde_file.h>
 #include <kglobal.h>
 #include <kmimetype.h>
 

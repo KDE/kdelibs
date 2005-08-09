@@ -1157,11 +1157,6 @@ bool KIconLoader::alphaBlending(KIcon::Group group) const
     return d->mpGroups[group].alphaBlending;
 }
 
-QIcon KIconLoader::loadIconSet(const QString& name, KIcon::Group group, int size)
-{
-    return loadIconSet( name, group, size, false );
-}
-
 /*** class for delayed icon loading for QIconSet ***/
 
 #ifdef __GNUC__

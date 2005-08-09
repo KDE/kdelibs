@@ -61,7 +61,7 @@
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
 #include <kremoteencoding.h>
-#include <klargefile.h>
+#include <kde_file.h>
 
 #ifdef HAVE_STRTOLL
   #define charToLongLong(a) strtoll(a, 0, 10)

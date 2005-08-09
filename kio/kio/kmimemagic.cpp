@@ -23,7 +23,7 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-#include <klargefile.h>
+#include <kde_file.h>
 #include <assert.h>
 
 static int fsmagic(struct config_rec* conf, const char *fn, KDE_struct_stat *sb);

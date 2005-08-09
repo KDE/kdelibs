@@ -137,22 +137,8 @@ public:
      *          @p canReturnNull.
      * @since 3.1
      */
-    QIcon loadIconSet(const QString& name, KIcon::Group group, int size,
-                         bool canReturnNull);
-
-    // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
-    /**
-     * Creates an icon set, that will do on-demand loading of the icon.
-     * Loading itself is done by calling loadIcon .
-     *
-     * @param name The name of the icon, without extension.
-     * @param group The icon group. This will specify the size of and effects to
-     * be applied to the icon.
-     * @param size If nonzero, this overrides the size specified by @p group.
-     *             See KIcon::StdSizes.
-     * @return the icon set. Can be null when not found
-     */
-    QIcon loadIconSet(const QString& name, KIcon::Group group, int size=0);
+    QIcon loadIconSet(const QString& name, KIcon::Group group, int size = 0,
+                         bool canReturnNull = false);
 
     /**
      * Returns the path of an icon.

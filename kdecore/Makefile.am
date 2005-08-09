@@ -54,7 +54,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kprocio.h kasyncio.h \
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
+	kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h kmountpoint.h kuser.h klockfile.h \

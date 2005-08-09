@@ -48,7 +48,7 @@
 #include <kconfig.h>
 #include <kservice.h>
 #include <krfcdate.h>
-#include <kmdcodec.h>
+#include <kcodecs.h>
 #include <kinstance.h>
 #include <kmimemagic.h>
 #include <dcopclient.h>

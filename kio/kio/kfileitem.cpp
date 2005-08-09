@@ -41,7 +41,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <klargefile.h>
+#include <kde_file.h>
 #include <klocale.h>
 #include <kmimetype.h>
 #include <krun.h>

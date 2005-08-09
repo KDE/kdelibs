@@ -157,7 +157,6 @@ class KDECORE_EXPORT KXMessages
             Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P );
         QWidget* handle;
         Atom accept_atom2;
-        QByteArray cached_atom_name_; // KDE4 unused
         Atom accept_atom1;
         QMap< WId, QByteArray > incoming_messages;
         KXMessagesPrivate* d;
