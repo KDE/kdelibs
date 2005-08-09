@@ -291,11 +291,11 @@ private:
     mutable bool flatMode;
 // 
     int _contrast;
-//     bool _scrollBarLines;
+    bool _scrollBarLines;
 //     bool _animateProgressBar;
 //     bool _drawToolBarSeparator;
 //     bool _drawToolBarItemSeparator;
-//     bool _drawFocusRect;
+    bool _drawFocusRect;
 //     bool _drawTriangularExpander;
 //     bool _inputFocusHighlight;
     bool _customOverHighlightColor;

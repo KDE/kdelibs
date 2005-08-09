@@ -67,6 +67,7 @@
 // #include <qslider.h>
 #include <qsettings.h>
 // #include <kpixmap.h>
+#include <QStyleOption>
 
 #include "plastik.h"
 // #include "plastik.moc"
@@ -138,6 +139,9 @@ PlastikStyle::PlastikStyle() :
 //     kornMode(false),
     flatMode(false)
 {
+    // TODO: change this when double buttons are implemented
+    setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
+
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin, 3);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
@@ -156,11 +160,11 @@ PlastikStyle::PlastikStyle() :
     QSettings settings;
     _contrast = settings.readNumEntry("/Qt/KDE/contrast", 6);
 //     settings.beginGroup("/plastikstyle/Settings");
-//     _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
+    _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
 //     _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
 //     _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
 //     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
-//     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
+    _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
 //     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
 //     _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
     _customOverHighlightColor = settings.readBoolEntry("/customOverHighlightColor", false);
@@ -318,6 +322,278 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
             }
+
+        }
+        break;
+
+        case WT_ProgressBar:
+        {
+            // TODO
+        }
+        break;
+
+        case WT_MenuBar:
+        {
+            // TODO
+        }
+        break;
+
+        case WT_MenuBarItem:
+        {
+            switch (primitive)
+            {
+                case Generic::Bevel:
+                {
+                    // TODO: mouseOver highlight
+                    bool mouseOver = false;
+
+                    bool active  = flags & State_Selected;
+                    bool focused = flags & State_HasFocus;
+                    bool down = flags & State_Sunken;
+
+                    // TODO: set Background palette instead...
+                    p->fillRect(r, pal.background().color() );
+
+                    if (active && focused) {
+                        renderButton(p, r, pal, down, mouseOver, true);
+                    }
+
+                    return;
+                }
+            }
+        }
+        break;
+
+        case WT_Menu:
+        {
+            switch (primitive)
+            {
+                case Menu::Frame:
+                {
+                    // TODO: Plastik style frame
+                    break;
+                }
+
+                case Menu::Background:
+                {
+                    p->fillRect( r, pal.background().color().light( 105 ) );
+                    return;
+                }
+
+                case Menu::TearOff:
+                {
+                    // TODO: See Keramik...
+                    return;
+                }
+
+                //TODO:scrollr
+            }
+        }
+        break;
+
+        case WT_MenuItem:
+        {
+            switch (primitive)
+            {
+                case MenuItem::Separator:
+                {
+                    p->setPen( pal.mid().color() );
+                    p->drawLine( r.x()+5, r.y() /*+ 1*/, r.right()-5, r.y() );
+                    p->setPen( pal.light().color() );
+                    p->drawLine( r.x()+5, r.y() + 1, r.right()-5 , r.y() + 1 );
+
+                    return;
+                }
+
+                case MenuItem::ItemIndicator:
+                {
+                    if (enabled) {
+                        renderSurface(p, r, pal.background().color(), pal.highlight().color(), pal.highlight().color(),
+                                _contrast+3, Draw_Top|Draw_Bottom|Is_Horizontal);
+                    }
+                    else {
+                        drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
+                    }
+
+                    return;
+                }
+            }
+        }
+        break;
+
+        case WT_ScrollBar:
+        {
+            bool down = (flags & State_Sunken);
+
+            switch (primitive)
+            {
+                case ScrollBar::SliderVert:
+                case ScrollBar::SliderHor:
+                {
+                    bool horizontal = (primitive == ScrollBar::SliderHor);
+
+                    const WidgetState s = enabled?(down?IsPressed:IsEnabled):IsDisabled;
+                    const QColor surface = getColor(pal, DragButtonSurface, s);
+
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    if(!enabled) contourFlags|=Is_Disabled;
+                    renderContour(p, r, pal.background().color(), getColor(pal, DragButtonContour, s),
+                            contourFlags);
+
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    if(horizontal) surfaceFlags|=Is_Horizontal;
+                    if(!enabled) surfaceFlags|=Is_Disabled;
+                    if(r.height() >= 4)
+                        renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                                      pal.background().color(), surface, pal.background(),
+                                      _contrast+3, surfaceFlags);
+
+                    // set contour-like color for the case _scrollBarLines is set and we paint lines instead of dots.
+                    p->setPen(alphaBlendColors(pal.background().color(), surface.dark(enabled?140:120), 50) );
+
+                    const int d = 4;
+                    int n = ((horizontal?r.width():r.height())-8)/d;
+                    if(n>5) n=5;
+                    if(!horizontal) {
+                        for(int j = 0; j < n; j++) {
+                            int yPos = r.center().y()-(n*d)/2+d*j+1;
+                            if(_scrollBarLines)
+                                p->drawLine(r.x()+1, yPos, r.right()-1, yPos);
+                            else
+                            {
+                                for(int k = 3; k <= 13; k+=4) {
+                                    renderDot(p, QPoint(k, yPos), surface, false, true );
+                                }
+                            }
+                        }
+                    } else {
+                        for(int j = 0; j < n; j++) {
+                            int xPos = r.center().x()-(n*d)/2+d*j+1;
+                            if(_scrollBarLines)
+                                p->drawLine(xPos, r.y()+1, xPos, r.bottom()-1);
+                            else
+                            {
+                                for(int k = 3; k <= 13; k+=4) {
+                                    renderDot(p, QPoint(xPos, k), surface, false, true );
+                                }
+                            }
+                        }
+                    }
+
+                    return;
+                }
+
+                case ScrollBar::DoubleButtonHor:
+                {
+                    // TODO
+                }
+                break;
+
+                case ScrollBar::DoubleButtonVert:
+                {
+                    // TODO
+                }
+                break;
+
+                case ScrollBar::SingleButtonHor:
+                {
+                    bool down = flags&State_Sunken;
+
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+
+                    if(down) surfaceFlags|=Is_Sunken;
+                    if(!enabled) {
+                        contourFlags|=Is_Disabled;
+                        surfaceFlags|=Is_Disabled;
+                    }
+
+                    // TODO: round buttons. need to find out if it's an addPage or subPage button for that...
+                    contourFlags |= /*Round_UpperLeft|Round_BottomLeft|*/Is_Horizontal;
+                    surfaceFlags |= /*Round_UpperLeft|Round_BottomLeft|*/Is_Horizontal;
+
+                    renderContour(p, r, pal.background(), getColor(pal, ButtonContour),
+                            contourFlags);
+                    renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                                  pal.background(), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
+                            surfaceFlags);
+                    return;
+                }
+                break;
+
+                case ScrollBar::SingleButtonVert:
+                {
+                    bool down = flags&State_Sunken;
+
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+
+                    if(down) surfaceFlags|=Is_Sunken;
+                    if(!enabled) {
+                        contourFlags|=Is_Disabled;
+                        surfaceFlags|=Is_Disabled;
+                    }
+
+                    // TODO: round buttons. need to find out if it's an addPage or subPage button for that...
+//                     contourFlags |= Round_BottomLeft|Round_BottomRight;
+//                     surfaceFlags |= Round_BottomLeft|Round_BottomRight;
+
+                    renderContour(p, r, pal.background(), getColor(pal, ButtonContour),
+                                  contourFlags);
+                    renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                                  pal.background(), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast+3,
+                                  surfaceFlags);
+                    return;
+                }
+                break;
+
+                case ScrollBar::GrooveAreaVert:
+                case ScrollBar::GrooveAreaHor:
+                {
+                    bool hor = primitive==ScrollBar::GrooveAreaHor;
+                    bool on = flags&State_On;
+                    bool down = flags&State_Sunken;
+
+                    // TODO: double buffering still needed?
+                    // draw double buffered to avoid flickr...
+                    QPixmap buffer;
+                    if(hor) {
+                        buffer.resize(2, r.width() );
+                    } else {
+                        buffer.resize(r.height(), 2 );
+                    }
+                    QRect br(buffer.rect() );
+                    QPainter bp(&buffer);
+
+                    if (on || down) {
+                        bp.fillRect(br, QBrush(pal.mid().color().dark()));
+                    } else {
+                        if(hor) {
+                            bp.setPen(pal.background().color().dark(106));
+                            bp.drawLine(br.left(), br.top(), br.right(), br.top());
+                            bp.setPen(pal.background().color().light(106));
+                            bp.drawLine(br.left(), br.bottom(), br.right(), br.bottom());
+                            bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,pal.background());
+                        } else {
+                            bp.setPen(pal.background().color().dark(106));
+                            bp.drawLine(br.left(), br.top(), br.left(), br.bottom());
+                            bp.setPen(pal.background().color().light(106));
+                            bp.drawLine(br.right(), br.top(), br.right(), br.bottom());
+                            bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),pal.background());
+                        }
+                    }
+
+                    bp.fillRect(br, QBrush(pal.background().color().light(), Qt::Dense4Pattern));
+
+                    bp.end();
+
+                    p->drawTiledPixmap(r, buffer);
+
+                    return;
+                }
+            }
+
+            // TODO: arrows
 
         }
         break;
@@ -1811,149 +2087,9 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //             break;
 //         }
 // 
-//         case PE_ScrollBarSlider: {
-//             const WidgetState s = enabled?(down?IsPressed:IsEnabled):IsDisabled;
-//             const QColor surface = getColor(cg, DragButtonSurface, s);
 // 
-//             uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             if(!enabled) contourFlags|=Is_Disabled;
-//             renderContour(p, r, cg.background(), getColor(cg, DragButtonContour, s),
-//                     contourFlags);
 // 
-//             uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             if(horiz) surfaceFlags|=Is_Horizontal;
-//             if(!enabled) surfaceFlags|=Is_Disabled;
-//             if(r.height() >= 4)
-//                 renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-//                         cg.background(), surface, cg.background(),
-//                         _contrast+3, surfaceFlags);
-// 
-//             // set contour-like color for the case _scrollBarLines is set and we paint lines instead of dots.
-//             p->setPen(alphaBlendColors(cg.background(), surface.dark(enabled?140:120), 50) );
-// 
-//             const int d = 4;
-//             int n = ((horiz?r.width():r.height())-8)/d;
-//             if(n>5) n=5;
-//             if(!horiz) {
-//                 for(int j = 0; j < n; j++) {
-//                     int yPos = r.center().y()-(n*d)/2+d*j+1;
-//                     if(_scrollBarLines)
-//                         p->drawLine(r.x()+1, yPos, r.right()-1, yPos);
-//                     else
-//                     {
-//                         for(int k = 3; k <= 13; k+=4) {
-//                             renderDot(p, QPoint(k, yPos), surface, false, true );
-//                         }
-//                     }
-//                 }
-//             } else {
-//                 for(int j = 0; j < n; j++) {
-//                     int xPos = r.center().x()-(n*d)/2+d*j+1;
-//                     if(_scrollBarLines)
-//                         p->drawLine(xPos, r.y()+1, xPos, r.bottom()-1);
-//                     else
-//                     {
-//                         for(int k = 3; k <= 13; k+=4) {
-//                             renderDot(p, QPoint(xPos, k), surface, false, true );
-//                         }
-//                     }
-//                 }
-//             }
-// 
-//             break;
-//         }
-// 
-//         case PE_ScrollBarAddPage:
-//         case PE_ScrollBarSubPage: {
-//             // draw double buffered to avoid flicker...
-//             QPixmap buffer;
-//             if(flags & Style_Horizontal) {
-//                 buffer.resize(2, r.width() );
-//             } else {
-//                 buffer.resize(r.height(), 2 );
-//             }
-//             QRect br(buffer.rect() );
-//             QPainter bp(&buffer);
-// 
-//             if (on || down) {
-//                 bp.fillRect(br, QBrush(cg.mid().dark()));
-//             } else {
-//                 if(flags & Style_Horizontal) {
-//                     bp.setPen(cg.background().dark(106));
-//                     bp.drawLine(br.left(), br.top(), br.right(), br.top());
-//                     bp.setPen(cg.background().light(106));
-//                     bp.drawLine(br.left(), br.bottom(), br.right(), br.bottom());
-//                     bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,cg.background());
-//                 } else {
-//                     bp.setPen(cg.background().dark(106));
-//                     bp.drawLine(br.left(), br.top(), br.left(), br.bottom());
-//                     bp.setPen(cg.background().light(106));
-//                     bp.drawLine(br.right(), br.top(), br.right(), br.bottom());
-//                     bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),cg.background());
-//                 }
-//             }
-// 
-//             bp.fillRect(br, QBrush(cg.background().light(), Qt::Dense4Pattern));
-// 
-//             bp.end();
-// 
-//             p->drawTiledPixmap(r, buffer);
-//             break;
-//         }
-// 
-//     // SCROLLBAR BUTTONS
-//     // -----------------
-//         case PE_ScrollBarSubLine: {
-//             uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             if(down) surfaceFlags|=Is_Sunken;
-//             if(!enabled) {
-//                 contourFlags|=Is_Disabled;
-//                 surfaceFlags|=Is_Disabled;
-//             }
-//             if(horiz) {
-//                 contourFlags |= Round_UpperLeft|Round_BottomLeft|Is_Horizontal;
-//                 surfaceFlags |= Round_UpperLeft|Round_BottomLeft|Is_Horizontal;
-//             } else {
-//                 contourFlags |= Round_UpperLeft|Round_UpperRight;
-//                 surfaceFlags |= Round_UpperLeft|Round_UpperRight;
-//             }
-//             renderContour(p, r, cg.background(), getColor(cg, ButtonContour),
-//                     contourFlags);
-//             renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-//                     cg.background(), cg.button(), getColor(cg,MouseOverHighlight), _contrast+3,
-//                     surfaceFlags);
-// 
-//             p->setPen(cg.foreground());
-//             drawPrimitive((horiz ? PE_ArrowLeft : PE_ArrowUp), p, r, cg, flags);
-//             break;
-//         }
-// 
-//         case PE_ScrollBarAddLine: {
-//             uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-//             if(down) surfaceFlags|=Is_Sunken;
-//             if(!enabled) {
-//                 contourFlags|=Is_Disabled;
-//                 surfaceFlags|=Is_Disabled;
-//             }
-//             if(horiz) {
-//                 contourFlags |= Round_UpperRight|Round_BottomRight|Is_Horizontal;
-//                 surfaceFlags |= Round_UpperRight|Round_BottomRight|Is_Horizontal;
-//             } else {
-//                 contourFlags |= Round_BottomLeft|Round_BottomRight;
-//                 surfaceFlags |= Round_BottomLeft|Round_BottomRight;
-//             }
-//             renderContour(p, r, cg.background(), getColor(cg, ButtonContour),
-//                     contourFlags);
-//             renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-//                     cg.background(), cg.button(), getColor(cg,MouseOverHighlight), _contrast+3,
-//                     surfaceFlags);
-// 
-//             p->setPen(cg.foreground());
-//             drawPrimitive((horiz ? PE_ArrowRight : PE_ArrowDown), p, r, cg, flags);
-//             break;
-//         }
+
 // 
 //     // CHECKBOXES
 //     // ----------
@@ -2552,30 +2688,6 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //             break;
 //         }
 // 
-//     // MENUBAR ITEM (sunken panel on mouse over)
-//     // -----------------------------------------
-//         case CE_MenuBarItem: {
-//             QMenuItem *mi = opt.menuItem();
-//             bool active  = flags & Style_Active;
-//             bool focused = flags & Style_HasFocus;
-//             bool down = flags & Style_Down;
-//             const int text_flags =
-//                 Qt::AlignVCenter | Qt::AlignHCenter | Qt::TextShowMnemonic | Qt::TextDontClip | Qt::TextSingleLine;
-// 
-//             p->fillRect(r, cg.background());
-// 
-//             if (active && focused) {
-//                 if (down) {
-//                     drawPrimitive(PE_ButtonTool, p, r, cg, flags|Style_Down, opt);
-//                 } else {
-//                     drawPrimitive(PE_ButtonTool, p, r, cg, flags, opt);
-//                 }
-//             }
-// 
-//             p->setPen(cg.foreground() );
-//             p->drawText(r, text_flags, mi->text());
-//             break;
-//         }
 // 
 //     // POPUPMENU ITEM (highlighted on mouseover)
 //     // ------------------------------------------
