@@ -43,6 +43,7 @@
 #include <q3dict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qsettings.h>
 #include <qstring.h>
 #include <qstringlist.h>
 
@@ -1265,8 +1266,30 @@ QString KStandardDirs::kfsstnd_defaultbindir()
   return s->defaultbindir;
 }
 
+void KStandardDirs::addResourcesFrom_krcdirs()
+{
+    QString localFile = QDir::currentPath() + QDir::separator() + ".krcdirs";
+    if (!QFile::exists(localFile))
+        return;
+
+    QSettings iniFile(localFile, QSettings::IniFormat);
+    iniFile.beginGroup("KStandardDirs");
+    QStringList resources = iniFile.allKeys();
+    foreach(QString key, resources)
+    {
+        QDir path(iniFile.value(key).toString());
+        if (!path.exists())
+            continue;
+
+        if(path.makeAbsolute())
+            addResourceDir(key.ascii(), path.path());
+    }
+}
+
 void KStandardDirs::addKDEDefaults()
 {
+    addResourcesFrom_krcdirs();
+
     QStringList kdedirList;
 
     // begin KDEDIRS

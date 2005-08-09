@@ -636,6 +636,8 @@ public:
 	void addXdgConfigPrefix( const QString& dir, bool priority );
 	void addXdgDataPrefix( const QString& dir, bool priority );
 
+	void addResourcesFrom_krcdirs();
+
 	// If priority is true, the directory is added before any other,
 	// otherwise after
 	bool addResourceType( const char *type,
