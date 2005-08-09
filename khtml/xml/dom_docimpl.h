@@ -56,7 +56,6 @@ namespace khtml {
     class CounterNode;
     class CachedObject;
     class CachedCSSStyleSheet;
-    class RenderImage;
 }
 
 namespace DOM {
@@ -77,6 +76,7 @@ namespace DOM {
     class GenericRONamedNodeMapImpl;
     class HTMLDocumentImpl;
     class HTMLElementImpl;
+    class HTMLImageElementImpl;
     class NodeFilter;
     class NodeFilterImpl;
     class NodeIteratorImpl;
@@ -490,9 +490,9 @@ public:
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
 
-    void dispatchImageLoadEventSoon(khtml::RenderImage *);
+    void dispatchImageLoadEventSoon(HTMLImageElementImpl *);
     void dispatchImageLoadEventsNow();
-    void removeImage(khtml::RenderImage *);
+    void removeImage(HTMLImageElementImpl *);
     virtual void timerEvent(QTimerEvent *);
 
     // Returns the owning element in the parent document.
@@ -614,8 +614,8 @@ protected:
     //Forms, images, etc., must be quickly accessible via document.name.
     ElementMappingCache m_underDocNamedCache;
 
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
-    QPtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
+    QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
+    QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
 
     khtml::RenderArena* m_renderArena;

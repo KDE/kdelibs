@@ -25,6 +25,7 @@
 
 #include "html/html_inlineimpl.h"
 #include "misc/khtmllayout.h"
+#include "misc/loader_client.h"
 #include "rendering/render_object.h"
 
 #include <qregion.h>
@@ -35,7 +36,7 @@ class DOMString;
 class HTMLFormElementImpl;
 
 class HTMLImageElementImpl
-    : public HTMLElementImpl
+    : public HTMLElementImpl, public khtml::CachedObjectClient
 {
     friend class HTMLFormElementImpl;
 public:
@@ -70,9 +71,14 @@ public:
     /** See if the image has been completely downloaded. 
      * @return True if and only if the image is completely downloaded yet*/
     bool complete() const;
+
+    virtual void notifyFinished(khtml::CachedObject *finishedObj);
+    void dispatchLoadEvent();
 protected:
     DOMString usemap;
-    bool ismap;
+    bool ismap : 1;
+    bool loadEventSent : 1;
+    khtml::CachedImage  *m_image;
     HTMLFormElementImpl *m_form;
     DOMString            m_name;
 };

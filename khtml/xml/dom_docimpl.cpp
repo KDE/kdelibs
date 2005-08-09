@@ -1162,9 +1162,7 @@ void DocumentImpl::detach()
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    // Empty out these lists as a performance optimization, since detaching
-    // all the individual render objects will cause all the RenderImage
-    // objects to remove themselves from the lists.
+    // Empty out these lists as a performance optimization
     m_imageLoadEventDispatchSoonList.clear();
     m_imageLoadEventDispatchingList.clear();
     NodeBaseImpl::detach();
@@ -2479,7 +2477,7 @@ EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const 
     return part() ? part()->createHTMLEventListener(code, name, node) : 0;
 }
 
-void DocumentImpl::dispatchImageLoadEventSoon(khtml::RenderImage *image)
+void DocumentImpl::dispatchImageLoadEventSoon(HTMLImageElementImpl *image)
 {
     m_imageLoadEventDispatchSoonList.append(image);
     if (!m_imageLoadEventTimer) {
@@ -2487,7 +2485,7 @@ void DocumentImpl::dispatchImageLoadEventSoon(khtml::RenderImage *image)
     }
 }
 
-void DocumentImpl::removeImage(khtml::RenderImage *image)
+void DocumentImpl::removeImage(HTMLImageElementImpl *image)
 {
     // Remove instances of this image from both lists.
     // Use loops because we allow multiple instances to get into the lists.
@@ -2515,12 +2513,12 @@ void DocumentImpl::dispatchImageLoadEventsNow()
 
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (QPtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
-        khtml::RenderImage* image = it.current();
+    for (QPtrListIterator<HTMLImageElementImpl> it(m_imageLoadEventDispatchingList); it.current(); ) {
+        HTMLImageElementImpl* image = it.current();
         // Must advance iterator *before* dispatching call.
         // Otherwise, it might be advanced automatically if dispatching the call had a side effect
-        // of destroying the current HTMLImageLoader, and then we would advance past the *next* item,
-        // missing one altogether.
+        // of destroying the current HTMLImageElementImpl, and then we would advance past the *next*
+        // item, missing one altogether.
         ++it;
         image->dispatchLoadEvent();
     }

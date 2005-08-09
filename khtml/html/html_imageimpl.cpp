@@ -53,7 +53,7 @@ using namespace khtml;
 // -------------------------------------------------------------------------
 
 HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLElementImpl(doc), ismap(false), m_form(f)
+    : HTMLElementImpl(doc), ismap(false), loadEventSent(true), m_image(0), m_form(f)
 {
     if (m_form)
         m_form->registerImgElement(this);
@@ -61,6 +61,12 @@ HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc, HTMLFormElementImpl
 
 HTMLImageElementImpl::~HTMLImageElementImpl()
 {
+    if (getDocument())
+        getDocument()->removeImage(this);
+
+    if (m_image)
+        m_image->deref(this);
+
     if (m_form)
         m_form->removeImgElement(this);
 }
@@ -75,9 +81,25 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_ALT:
-    case ATTR_SRC:
         setChanged();
         break;
+    case ATTR_SRC: {
+        setChanged();
+
+        //Start loading the image already, to generate events
+        DOMString url = attr->value();
+        if (!url.isEmpty()) { //### why do we not hide or something when setting this?
+            CachedImage* newImage = getDocument()->docLoader()->requestImage(khtml::parseURL(url));
+            if (newImage && newImage != m_image) {
+                loadEventSent = false;
+                if (m_image)
+                    m_image->deref(this);
+                m_image = newImage;
+                m_image->ref(this);
+            }
+        }
+    }
+    break;
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())
             addCSSLength(CSS_PROP_WIDTH, attr->value());
@@ -156,6 +178,25 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+void HTMLImageElementImpl::notifyFinished(CachedObject *finishedObj)
+{
+    if (m_image == finishedObj) {
+        getDocument()->dispatchImageLoadEventSoon(this);
+    }
+}
+
+void HTMLImageElementImpl::dispatchLoadEvent()
+{
+    if (!loadEventSent) {
+        loadEventSent = true;
+        if (m_image->isErrorImage()) {
+            dispatchHTMLEvent(EventImpl::ERROR_EVENT, false, false);
+        } else {
+            dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
+        }
     }
 }
 

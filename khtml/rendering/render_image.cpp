@@ -63,7 +63,6 @@ RenderImage::RenderImage(NodeImpl *_element)
 
     m_selectionState = SelectionNone;
     berrorPic = false;
-    loadEventSent = false;
 
     const KHTMLSettings *settings = _element->getDocument()->view()->part()->settings();
     bUnfinishedImageFrame = settings->unfinishedImageFrame();
@@ -414,16 +413,6 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj) {
-        NodeImpl *node = element();
-        if (node) {
-            DocumentImpl *document = node->getDocument();
-            if (document) {
-                document->dispatchImageLoadEventSoon(this);
-            }
-        }
-    }
-
     if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
         oimage->deref( this );
         oimage = 0;
@@ -431,33 +420,6 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
     }
 
     RenderReplaced::notifyFinished(finishedObj);
-}
-
-void RenderImage::dispatchLoadEvent()
-{
-    if (!loadEventSent) {
-        NodeImpl *node = element();
-        if (node) {
-            loadEventSent = true;
-            if (image->isErrorImage()) {
-                node->dispatchHTMLEvent(EventImpl::ERROR_EVENT, false, false);
-            } else {
-                node->dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
-            }
-        }
-    }
-}
-
-void RenderImage::detach()
-{
-    NodeImpl *node = element();
-    if (node) {
-        DocumentImpl *document = node->getDocument();
-        if (document) {
-            document->removeImage(this);
-        }
-    }
-    RenderReplaced::detach();
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
@@ -523,7 +485,6 @@ void RenderImage::updateFromElement()
            // which can never happen here.
            /*&& (!style() || !style()->contentObject())*/
             ) {
-            loadEventSent = false;
             updateImage( new_image );
         }
     }
