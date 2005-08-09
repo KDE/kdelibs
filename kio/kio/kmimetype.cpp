@@ -393,8 +393,13 @@ void KMimeType::init( KDesktopFile * config )
     m_mapProps.insert( XKDEText, config->readBoolEntry( XKDEText ) );
 
   QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
-  if ( config->hasKey( XKDEIsAlso ) )
-    m_mapProps.insert( XKDEIsAlso, config->readEntry( XKDEIsAlso ) );
+  if ( config->hasKey( XKDEIsAlso ) ) {
+    QString inherits = config->readEntry( XKDEIsAlso );
+    if ( inherits != name() )
+        m_mapProps.insert( XKDEIsAlso, inherits );
+    else
+        kdWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
+  }
 
   QString XKDEPatternsAccuracy = QString::fromLatin1("X-KDE-PatternsAccuracy");
   if ( config->hasKey( XKDEPatternsAccuracy ) )
@@ -508,7 +513,7 @@ QString KMimeType::iconForURL( const KURL & _url, mode_t _mode )
     // if we don't find an icon, maybe we can use the one for the protocol
     if ( i == unknown || i.isEmpty() || mt == defaultMimeTypePtr()
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
-        || _url.path().length() <= 1 ) 
+        || _url.path().length() <= 1 )
     {
         i = favIconForURL( _url ); // maybe there is a favicon?
 
@@ -991,11 +996,11 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   }
 
   QStringList keys;
-  
+
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
     QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
     const QCString app = dcopcall.section(' ', 0,0).utf8();
-    
+
     QByteArray dataToSend;
     QDataStream dataStream(dataToSend, IO_WriteOnly);
     dataStream << file_list;
@@ -1010,7 +1015,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
                    function.utf8(),
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {
-	      
+
         QDataStream dataStreamIn(replyData, IO_ReadOnly);
         dataStreamIn >> keys;
       }
@@ -1018,7 +1023,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   }
 
   keys += cfg.readListEntry( "Actions", ';' ); //the desktop standard defines ";" as separator!
-  
+
   if ( keys.count() == 0 )
     return result;
 
