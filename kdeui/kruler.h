@@ -428,15 +428,6 @@ private:
   bool showbm;
   bool showem;
 
-  // #### KDE4 : All value* and show* below should be removed, unused
-
-  int valuelm; /* value per little, medium, big mark */
-  int valuemm;
-  int valuebm;
-  bool showValuelm;
-  bool showValuemm;
-  bool showValuebm;
-
   double ppm; /* pixel per mark */
 
   QString endlabel;

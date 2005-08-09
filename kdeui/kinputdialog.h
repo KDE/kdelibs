@@ -110,28 +110,15 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
      * @param name      Name of the dialog widget
      * @param validator A @ref QValidator to be associated with the line edit
      * @param mask      Mask associated with the line edit. See the
-     *                  documentation for @ref QLineEdit about masks.
-     *
+     *                  documentation for @ref QLineEdit about masks
+     * @param whatsThis a QWhatsThis text for the input widget.
      * @return String user entered if Ok was pressed, else a null string
      */
     static QString getText( const QString &caption, const QString &label,
         const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
         const char *name=0, QValidator *validator=0,
-        const QString &mask=QString::null );
-
-    /** 
-     * Same as @ref getText except it provides an extra parameter to specify 
-     * a QWhatsThis text for the input widget.
-     *
-     * ### KDE4: Merge with getText.
-     *
-     * @since KDE 3.3
-     **/
-    static QString text( const QString &caption, const QString &label, 
-        const QString &value=QString::null, bool *ok=0, QWidget *parent=0, 
-        const char *name=0, QValidator *validator=0,
-        const QString &mask=QString::null,
-        const QString& whatsThis=QString::null );
+        const QString &mask=QString::null, 
+	const QString& whatsThis=QString::null  );
 
     /**
      * Static convenience function to get a multiline string from the user.

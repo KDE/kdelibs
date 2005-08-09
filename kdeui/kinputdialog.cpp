@@ -255,15 +255,8 @@ KInputDialog::~KInputDialog()
   delete d;
 }
 
-QString KInputDialog::getText( const QString &caption, const QString &label,
-    const QString &value, bool *ok, QWidget *parent, const char *name,
-    QValidator *validator, const QString &mask )
-{
-  return text( caption, label, value, ok, parent, name, validator, mask,
-               QString::null );
-}
 
-QString KInputDialog::text( const QString &caption,
+QString KInputDialog::getText( const QString &caption,
     const QString &label, const QString &value, bool *ok, QWidget *parent,
     const char *name, QValidator *validator, const QString &mask,
     const QString &whatsThis )
