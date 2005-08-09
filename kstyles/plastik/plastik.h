@@ -41,7 +41,7 @@
 
 #include <kstyle.h>
 #include <qbitmap.h>
-#include <q3intcache.h>
+#include <QCache>
 
 #define u_arrow -4,1, 2,1, -3,0, 1,0, -2,-1, 0,-1, -1,-2
 #define d_arrow -4,-2, 2,-2, -3,-1, 1,-1, -2,0, 0,0, -1,1
@@ -56,86 +56,98 @@ class QTimer;
 
 class PlastikStyle : public KStyle
 {
-    Q_OBJECT
-
+//     Q_OBJECT
+// 
 public:
     PlastikStyle();
     virtual ~PlastikStyle();
 
-    void polish(QApplication* app );
-    void polish(QWidget* widget );
-    void unPolish(QWidget* widget );
+    virtual void drawKStylePrimitive(WidgetType widgetType, int primitive,
+                                     const QStyleOption* opt,
+                                     QRect r, QPalette pal, State flags,
+                                     QPainter* p,
+                                     const QWidget* widget = 0,
+                                     Option* kOpt = 0) const;
 
-    void drawKStylePrimitive(KStylePrimitive kpe,
-                             QPainter* p,
-                             const QWidget* widget,
-                             const QRect &r,
-                             const QColorGroup &cg,
-                             SFlags flags = Style_Default,
-                             const QStyleOption& = QStyleOption::Default ) const;
 
-    void drawPrimitive(PrimitiveElement pe,
-                       QPainter *p,
-                       const QRect &r,
-                       const QColorGroup &cg,
-                       SFlags flags = Style_Default,
-                       const QStyleOption &opt = QStyleOption::Default ) const;
 
-    void drawControl(ControlElement element,
-                     QPainter *p,
-                     const QWidget *widget,
-                     const QRect &r,
-                     const QColorGroup &cg,
-                     SFlags flags = Style_Default,
-                     const QStyleOption& = QStyleOption::Default ) const;
 
-    void drawControlMask( ControlElement, QPainter *, const QWidget *, const QRect &, const QStyleOption &) const;
-
-    void drawComplexControl(ComplexControl control,
-                            QPainter *p,
-                            const QWidget *widget,
-                            const QRect &r,
-                            const QColorGroup &cg,
-                            SFlags flags = Style_Default,
-                            SCFlags controls = SC_All,
-                            SCFlags active = SC_None,
-                            const QStyleOption& = QStyleOption::Default ) const;
-
-    int pixelMetric(PixelMetric m,
-                    const QWidget *widget = 0 ) const;
-
-    QRect subRect(SubRect r,
-                  const QWidget *widget ) const;
-
-    QRect querySubControlMetrics(ComplexControl control,
-                                 const QWidget *widget,
-                                 SubControl subcontrol,
-                                 const QStyleOption &opt = QStyleOption::Default ) const;
-
-    void drawComplexControlMask(QStyle::ComplexControl c,
-                                QPainter *p,
-                                const QWidget *w,
-                                const QRect &r,
-                                const QStyleOption &o=QStyleOption::Default) const;
-
-    QSize sizeFromContents(QStyle::ContentsType t,
-                           const QWidget *w,
-                           const QSize &s,
-                           const QStyleOption &o) const;
-
-    int styleHint(StyleHint, const QWidget * = 0,
-                  const QStyleOption & = QStyleOption::Default,
-                  QStyleHintReturn * = 0 ) const;
-
-protected:
-    enum TabPosition
-    {
-        First = 0,
-        Middle,
-        Last,
-        Single // only one tab!
-    };
-
+    
+// 
+//     void polish(QApplication* app );
+//     void polish(QWidget* widget );
+//     void unPolish(QWidget* widget );
+// 
+//     void drawKStylePrimitive(KStylePrimitive kpe,
+//                              QPainter* p,
+//                              const QWidget* widget,
+//                              const QRect &r,
+//                              const QColorGroup &cg,
+//                              SFlags flags = Style_Default,
+//                              const QStyleOption& = QStyleOption::Default ) const;
+// 
+//     void drawPrimitive(PrimitiveElement pe,
+//                        QPainter *p,
+//                        const QRect &r,
+//                        const QColorGroup &cg,
+//                        SFlags flags = Style_Default,
+//                        const QStyleOption &opt = QStyleOption::Default ) const;
+// 
+//     void drawControl(ControlElement element,
+//                      QPainter *p,
+//                      const QWidget *widget,
+//                      const QRect &r,
+//                      const QColorGroup &cg,
+//                      SFlags flags = Style_Default,
+//                      const QStyleOption& = QStyleOption::Default ) const;
+// 
+//     void drawControlMask( ControlElement, QPainter *, const QWidget *, const QRect &, const QStyleOption &) const;
+// 
+//     void drawComplexControl(ComplexControl control,
+//                             QPainter *p,
+//                             const QWidget *widget,
+//                             const QRect &r,
+//                             const QColorGroup &cg,
+//                             SFlags flags = Style_Default,
+//                             SCFlags controls = SC_All,
+//                             SCFlags active = SC_None,
+//                             const QStyleOption& = QStyleOption::Default ) const;
+// 
+//     int pixelMetric(PixelMetric m,
+//                     const QWidget *widget = 0 ) const;
+// 
+//     QRect subRect(SubRect r,
+//                   const QWidget *widget ) const;
+// 
+//     QRect querySubControlMetrics(ComplexControl control,
+//                                  const QWidget *widget,
+//                                  SubControl subcontrol,
+//                                  const QStyleOption &opt = QStyleOption::Default ) const;
+// 
+//     void drawComplexControlMask(QStyle::ComplexControl c,
+//                                 QPainter *p,
+//                                 const QWidget *w,
+//                                 const QRect &r,
+//                                 const QStyleOption &o=QStyleOption::Default) const;
+// 
+//     QSize sizeFromContents(QStyle::ContentsType t,
+//                            const QWidget *w,
+//                            const QSize &s,
+//                            const QStyleOption &o) const;
+// 
+//     int styleHint(StyleHint, const QWidget * = 0,
+//                   const QStyleOption & = QStyleOption::Default,
+//                   QStyleHintReturn * = 0 ) const;
+// 
+// protected:
+//     enum TabPosition
+//     {
+//         First = 0,
+//         Middle,
+//         Last,
+//         Single // only one tab!
+//     };
+// 
     enum ColorType
     {
         ButtonContour,
@@ -189,12 +201,12 @@ protected:
                        const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
                                Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight) const;
 
-    void renderMask(QPainter *p,
-                    const QRect &r,
-                    const QColor &color,
-                    const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight) const;
-
+//     void renderMask(QPainter *p,
+//                     const QRect &r,
+//                     const QColor &color,
+//                     const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+//                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight) const;
+// 
     void renderSurface(QPainter *p,
                         const QRect &r,
                         const QColor &backgroundColor,
@@ -214,19 +226,25 @@ protected:
 
     void renderButton(QPainter *p,
                       const QRect &r,
-                      const QColorGroup &g,
+                      const QPalette &pal,
                       bool sunken = false,
                       bool mouseOver = false,
                       bool horizontal = true,
                       bool enabled = true,
                       bool khtmlMode = false) const;
 
-    void renderPanel(QPainter *p,
-                     const QRect &r,
-                     const QColorGroup &g,
-                     const bool pseudo3d = true,
-                     const bool sunken = true) const;
-
+    // TODO: cleanup helper methods...
+    void renderCheckBox(QPainter *p, const QRect &r, const QPalette &pal,
+                        bool enabled, bool mouseOver, int primitive) const;
+    void renderRadioButton(QPainter *p, const QRect &r, const QPalette &pal,
+                           bool enabled, bool mouseOver, int primitive) const;
+// 
+//     void renderPanel(QPainter *p,
+//                      const QRect &r,
+//                      const QColorGroup &g,
+//                      const bool pseudo3d = true,
+//                      const bool sunken = true) const;
+// 
     void renderDot(QPainter *p,
                    const QPoint &point,
                    const QColor &baseColor,
@@ -238,63 +256,63 @@ protected:
                         const QColor &c1,
                         const QColor &c2,
                         bool horizontal = true) const;
-
-    void renderTab(QPainter *p,
-                   const QRect &r,
-                   const QColorGroup &g,
-                   bool mouseOver = false,
-                   const bool selected = false,
-                   const bool bottom = false,
-                   const TabPosition pos = Middle,
-                   const bool triangular = false,
-                   const bool cornerWidget = false) const;
-
-    virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-                                        const Q3PopupMenu* popup ) const;
-    
-    bool eventFilter(QObject *, QEvent *);
-
-    QWidget* hoverWidget;
-protected slots:
-    void khtmlWidgetDestroyed(QObject* w);
-
-    //Animation slots.
-    void updateProgressPos();
-    void progressBarDestroyed(QObject* bar);
-
-    inline QColor getColor(const QColorGroup &cg, const ColorType t, const bool enabled = true)const;
-    inline QColor getColor(const QColorGroup &cg, const ColorType t, const WidgetState s)const;
+// 
+//     void renderTab(QPainter *p,
+//                    const QRect &r,
+//                    const QColorGroup &g,
+//                    bool mouseOver = false,
+//                    const bool selected = false,
+//                    const bool bottom = false,
+//                    const TabPosition pos = Middle,
+//                    const bool triangular = false,
+//                    const bool cornerWidget = false) const;
+// 
+//     virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
+//                                         const Q3PopupMenu* popup ) const;
+//     
+//     bool eventFilter(QObject *, QEvent *);
+// 
+//     QWidget* hoverWidget;
+// protected slots:
+//     void khtmlWidgetDestroyed(QObject* w);
+// 
+//     //Animation slots.
+//     void updateProgressPos();
+//     void progressBarDestroyed(QObject* bar);
+// 
+    inline QColor getColor(const QPalette &pal, const ColorType t, const bool enabled = true)const;
+    inline QColor getColor(const QPalette &pal, const ColorType t, const WidgetState s)const;
 private:
-// Disable copy constructor and = operator
-    PlastikStyle( const PlastikStyle & );
-    PlastikStyle& operator=( const PlastikStyle & );
-
-    bool kickerMode, kornMode;
+// // Disable copy constructor and = operator
+//     PlastikStyle( const PlastikStyle & );
+//     PlastikStyle& operator=( const PlastikStyle & );
+// 
+//     bool kickerMode, kornMode;
     mutable bool flatMode;
-
+// 
     int _contrast;
-    bool _scrollBarLines;
-    bool _animateProgressBar;
-    bool _drawToolBarSeparator;
-    bool _drawToolBarItemSeparator;
-    bool _drawFocusRect;
-    bool _drawTriangularExpander;
-    bool _inputFocusHighlight;
+//     bool _scrollBarLines;
+//     bool _animateProgressBar;
+//     bool _drawToolBarSeparator;
+//     bool _drawToolBarItemSeparator;
+//     bool _drawFocusRect;
+//     bool _drawTriangularExpander;
+//     bool _inputFocusHighlight;
     bool _customOverHighlightColor;
     bool _customFocusHighlightColor;
     bool _customCheckMarkColor;
     QColor _overHighlightColor;
     QColor _focusHighlightColor;
     QColor _checkMarkColor;
-
-    QTab *hoverTab;
-
-    // track khtml widgets.
-    QMap<const QWidget*,bool> khtmlWidgets;
-
-    //Animation support.
-    QMap<QWidget*, int> progAnimWidgets;
-
+// 
+//     QTab *hoverTab;
+// 
+//     // track khtml widgets.
+//     QMap<const QWidget*,bool> khtmlWidgets;
+// 
+//     //Animation support.
+//     QMap<QWidget*, int> progAnimWidgets;
+// 
     // pixmap cache.
     enum CacheEntryType {
         cSurface,
@@ -349,18 +367,18 @@ private:
             return match;
         }
     };
-    Q3IntCache<CacheEntry> *pixmapCache;
-    
-    // For renderFocusRect
-    mutable QBitmap *verticalDots;
-    mutable QBitmap *horizontalDots;
-
-    // For KPE_ListViewBranch
-    mutable QBitmap *verticalLine;
-    mutable QBitmap *horizontalLine;
-    
-    // For progress bar animation
-    QTimer *animationTimer;
+    QCache<int, CacheEntry> *pixmapCache;
+//     
+//     // For renderFocusRect
+//     mutable QBitmap *verticalDots;
+//     mutable QBitmap *horizontalDots;
+// 
+//     // For KPE_ListViewBranch
+//     mutable QBitmap *verticalLine;
+//     mutable QBitmap *horizontalLine;
+//     
+//     // For progress bar animation
+//     QTimer *animationTimer;
 };
 
 #endif // __PLASTIK_H
