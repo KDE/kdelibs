@@ -439,19 +439,24 @@ Value XMLHttpRequest::getResponseHeader(const QString& name) const
   return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).stripWhiteSpace());
 }
 
-Value XMLHttpRequest::getStatus() const
+static Value httpStatus(const QString& response, bool textStatus = false)
 {
-  if (responseHeaders.isEmpty()) {
+  if (response.isEmpty()) {
     return Undefined();
   }
 
-  int endOfLine = responseHeaders.find("\n");
-  QString firstLine = endOfLine == -1 ? responseHeaders : responseHeaders.left(endOfLine);
+  int endOfLine = response.find("\n");
+  QString firstLine = (endOfLine == -1) ? response : response.left(endOfLine);
   int codeStart = firstLine.find(" ");
   int codeEnd = firstLine.find(" ", codeStart + 1);
 
   if (codeStart == -1 || codeEnd == -1) {
     return Undefined();
+  }
+
+  if (textStatus) {
+    QString statusText = firstLine.mid(codeEnd + 1, endOfLine - (codeEnd + 1)).stripWhiteSpace();
+    return String(statusText);
   }
 
   QString number = firstLine.mid(codeStart + 1, codeEnd - (codeStart + 1));
@@ -465,24 +470,14 @@ Value XMLHttpRequest::getStatus() const
   return Number(code);
 }
 
+Value XMLHttpRequest::getStatus() const
+{
+  return httpStatus(responseHeaders);
+}
+
 Value XMLHttpRequest::getStatusText() const
 {
-  if (responseHeaders.isEmpty()) {
-    return Undefined();
-  }
-
-  int endOfLine = responseHeaders.find("\n");
-  QString firstLine = endOfLine == -1 ? responseHeaders : responseHeaders.left(endOfLine);
-  int codeStart = firstLine.find(" ");
-  int codeEnd = firstLine.find(" ", codeStart + 1);
-
-  if (codeStart == -1 || codeEnd == -1) {
-    return Undefined();
-  }
-
-  QString statusText = firstLine.mid(codeEnd + 1, endOfLine - (codeEnd + 1)).stripWhiteSpace();
-
-  return String(statusText);
+  return httpStatus(responseHeaders, true);
 }
 
 void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &finalURL, const QString &headers)
@@ -544,6 +539,17 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 {
   if (state < Loaded ) {
     responseHeaders = job->queryMetaData("HTTP-Headers");
+
+    // NOTE: Replace a 304 response with a 200! Both IE and Mozilla do this.
+    // Problem first reported through bug# 110272.
+    int codeStart = responseHeaders.find("304");
+    if ( codeStart != -1) {
+      int codeEnd = responseHeaders.find("\n", codeStart+3);
+      if (codeEnd != -1)
+        responseHeaders.replace(codeStart, (codeEnd-codeStart), "200 OK");
+      // qDebug("Response Header: %s", responseHeaders.latin1());
+    }
+
     changeState(Loaded);
   }
 
