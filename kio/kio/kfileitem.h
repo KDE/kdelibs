@@ -576,9 +576,8 @@ private:
 
   bool m_bMimeTypeKnown:1;
 
-  enum { Auto = 0, Hidden = 1, Shown = 2 };
-  // One of Auto, Hidden, Shown. Auto: check leading dot.
-  unsigned char m_hidden:2;
+  // Auto: check leading dot.
+  enum { Auto, Hidden, Shown } m_hidden:3;
 
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
