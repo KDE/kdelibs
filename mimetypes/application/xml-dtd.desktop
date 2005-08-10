@@ -1,9 +1,12 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XML DTD Document
+Comment[bg]=Документ XML DTD
 Comment[de]=XML DTD-Dokument
 Comment[et]=XML DTD-dokument
 Comment[ga]=Cáipéis XML DTD
+Comment[sr]=XML DTD документ
+Comment[sr@Latn]=XML DTD документ
 Comment[zh_CN]=XML DTD 文档
 Icon=html
 Type=MimeType

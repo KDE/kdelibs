@@ -5,9 +5,12 @@ Type=MimeType
 MimeType=image/fits
 Icon=image
 Comment=FITS Image
+Comment[bg]=Изображение FITS
 Comment[de]=FITS-Bild
 Comment[et]=FITS pildifail
 Comment[ga]=Íomhá FITS
+Comment[sr]=FITS слика
+Comment[sr@Latn]=FITS слика
 Comment[zh_CN]=FITS 图像
 ### TODO: what file patterns, especially that application/fits has the same
 # RFC 4047 tells that image/fits are also application/fits

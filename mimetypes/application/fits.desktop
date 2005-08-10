@@ -3,9 +3,12 @@ Type=MimeType
 Encoding=UTF-8
 MimeType=application/fits
 Comment=FITS Data
+Comment[bg]=Данни FITS
 Comment[de]=FITS-Daten
 Comment[et]=FITS-andmed
 Comment[ga]=Sonraí FITS
+Comment[sr]=FITS подаци
+Comment[sr@Latn]=FITS подаци
 Comment[zh_CN]=FITs 数据
 Icon=binary
 # Note: application/fits is for any kind of FITS, so also for non-images
