@@ -1099,6 +1099,8 @@ void KRecentFilesAction::addURL( const KURL& url )
        return;
     QString     file = url.pathOrURL();
     QStringList lst = items();
+    KURL u = url; //make a copy (increase the reference counter?). 
+                  //Otherwise after d->m_urls.erase( title ) the url will be empty...
 
     // remove file if already in list
     QStringList::Iterator end = lst.end();
@@ -1127,7 +1129,7 @@ void KRecentFilesAction::addURL( const KURL& url )
     // add file to list
     QString title = url.fileName() + " [" + file + "]";
     d->m_shortNames.insert( title, url.fileName() );
-    d->m_urls.insert( title, url );
+    d->m_urls.insert( title, u );
     lst.prepend( title );
     setItems( lst );
 }
@@ -1136,6 +1138,8 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
+    KURL u = url; //make a copy (increase the reference counter?). 
+                  //Otherwise after d->m_urls.erase( title ) the url will be empty...
     QString     file = url.pathOrURL();
     QStringList lst = items();
 
@@ -1165,7 +1169,7 @@ void KRecentFilesAction::addURL( const KURL& url, const QString& name )
     // add file to list
     QString title = name + " [" + file + "]";
     d->m_shortNames.insert( title, name );
-    d->m_urls.insert( title, url );
+    d->m_urls.insert( title, u );
     lst.prepend( title );
     setItems( lst );
 }
@@ -1254,6 +1258,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     // write file list
     for( unsigned int i = 1 ; i <= lst.count() ; i++ )
     {
+        kdDebug(24000) << "Entry for " << lst[i-1] << d->m_urls[ lst[ i - 1 ] ] << endl;
         key = QString( "File%1" ).arg( i );
         value = d->m_urls[ lst[ i - 1 ] ].pathOrURL();
         config->writePathEntry( key, value );
