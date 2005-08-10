@@ -1202,7 +1202,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 		if( volmgt_check( devname.data() ) == 0 ) {
 			kdDebug(7101) << "VOLMGT: no media in "
 					<< devname.data() << endl;
-			err = "No Media inserted or Media not recognized.";
+			err = i18n("No Media inserted or Media not recognized.");
 			error( KIO::ERR_COULD_NOT_MOUNT, err );
 			return;
 		} else {
@@ -1212,7 +1212,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 			return;
 		}
 	} else {
-		err = "\"vold\" is not running.";
+		err = i18n("\"vold\" is not running.");
 		kdDebug(7101) << "VOLMGT: " << err << endl;
 		error( KIO::ERR_COULD_NOT_MOUNT, err );
 		return;
@@ -1245,8 +1245,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     if(!epath.isEmpty())
         path += QString::fromLatin1(":") + epath;
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
-    if (mountProg.isEmpty())
-        mountProg = "mount";
+    if (mountProg.isEmpty()){
+      error( KIO::ERR_COULD_NOT_MOUNT, i18n("Could not find program \"mount\""));
+      return;
+    }
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
@@ -1280,10 +1282,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
         kdDebug(7101) << buffer << endl;
 
-        system( buffer.data() );
+        int mount_ret = system( buffer.data() );
 
         QString err = testLogFile( tmp );
-        if ( err.isEmpty() )
+        if ( err.isEmpty() && mount_ret == 0)
         {
             finished();
             return;
@@ -1293,7 +1295,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             // Didn't work - or maybe we just got a warning
             QString mp = KIO::findDeviceMountPoint( _dev );
             // Is the device mounted ?
-            if ( !mp.isEmpty() )
+            if ( !mp.isEmpty() && mount_ret == 0)
             {
                 kdDebug(7101) << "mount got a warning: " << err << endl;
                 warning( err );
@@ -1416,7 +1418,7 @@ void FileProtocol::unmount( const QString& _point )
 		 *  media is mounted now, vold must've died for some reason
 		 *  during the user's session, so it should be restarted...
 		 */
-		err = "\"vold\" is not running.";
+		err = i18n("\"vold\" is not running.");
 		kdDebug(7101) << "VOLMGT: " << err << endl;
 		error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 		return;
@@ -1428,8 +1430,10 @@ void FileProtocol::unmount( const QString& _point )
        path += ":" + epath;
     QString umountProg = KGlobal::dirs()->findExe("umount", path);
 
-    if (umountProg.isEmpty())
-        umountProg = "umount";
+    if (umountProg.isEmpty()) {
+        error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
+        return;
+    }
     buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
@@ -1497,7 +1501,7 @@ bool FileProtocol::pumount(const QString &point)
     QString pumountProg = KGlobal::dirs()->findExe("pumount", path);
 
     if (pumountProg.isEmpty())
-        pumountProg = "pumount";
+        return false;
 
     QCString buffer;
     buffer.sprintf( "%s %s", QFile::encodeName(pumountProg).data(),
