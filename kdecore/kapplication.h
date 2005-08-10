@@ -96,7 +96,16 @@ class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 
   Q_OBJECT
 public:
-  enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
+  /** Position of the caption (presumably in the application window's
+  *   title bar). This enum appears to be unused.
+  *
+  * @todo Find out if this is used anywhere.
+  */
+  enum CaptionLayout {
+    CaptionAppLast=1 /**< Display the application name last (before document name). */, 
+    CaptionAppFirst /**< Display the application name first. */ , 
+    CaptionNoApp  /**< Do not display application name at all. */
+  };
 
   /**
    * This constructor takes aboutData and command line
@@ -350,14 +359,14 @@ public:
    */
     void propagateSessionManager();
 
-    /*
+    /**
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with KSessionManaged.
      * @internal
      */
   void commitData( QSessionManager& sm );
 
-    /*
+    /**
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with KSessionManaged.
      * @internal
@@ -525,6 +534,10 @@ public slots:
    */
   void invokeBrowser( const QString &url, const QCString& startup_id );
   // KDE4 merge with above with startup_id = ""
+  /**
+  * Invoke the standard browser. Uses a @p startup_id of "" (empty)
+  * and is otherwise the same as the above function.
+  */
   void invokeBrowser( const QString &url );
 
   /**
