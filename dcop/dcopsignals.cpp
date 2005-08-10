@@ -150,7 +150,7 @@ DCOPSignals::connectSignal( const DCOPCString &sender, const DCOPCString &sender
 
    list->append( current );
    conn->signalConnectionList()->append(current);
-   if (senderConn)
+   if (senderConn && senderConn != conn)
       senderConn->signalConnectionList()->append(current);
    return true;
 }
