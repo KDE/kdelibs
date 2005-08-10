@@ -1,3 +1,11 @@
+2005-08-10  Dawit Alemayehu <adawit@kde.org>
+        * ecma/xmlhttprequest.cpp: Convert a 304 (Not Modified) HTTP response in
+          XMLHttpRequest to a 200 (OK) response to make KHTML conform to IE's and
+          Mozilla's behavior. BUG: 110272
+
+        * ecma/xmlhttprequest.cpp: Factored out the HTTP status line parsing code
+          into a single function.
+
 2005-08-02  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Imported background parsing and painting from WebCore.
