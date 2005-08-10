@@ -935,7 +935,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
 @end
-@begin HTMLImageElementTable 14
+@begin HTMLImageElementTable 15
   name		KJS::HTMLElement::ImageName		DontDelete
   align		KJS::HTMLElement::ImageAlign		DontDelete
   alt		KJS::HTMLElement::ImageAlt		DontDelete
@@ -3445,6 +3445,8 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
 
 ////////////////////// Image Object ////////////////////////
 
+//Like in other browsers, we merely make a new HTMLImageElement
+//not in tree for this.
 ImageConstructorImp::ImageConstructorImp(ExecState *, const DOM::Document &d)
     : ObjectImp(), doc(d)
 {
@@ -3455,115 +3457,30 @@ bool ImageConstructorImp::implementsConstruct() const
   return true;
 }
 
-Object ImageConstructorImp::construct(ExecState *exec, const List &)
+Object ImageConstructorImp::construct(ExecState *exec, const List &list)
 {
-  /* TODO: fetch optional height & width from arguments */
-
-  Object result(new Image(exec, doc));
-  /* TODO: do we need a prototype ? */
-
-  return result;
-}
-
-const ClassInfo KJS::Image::info = { "Image", 0, &ImageTable, 0 };
-
-/* Source for ImageTable.
-@begin ImageTable 5
-  src		Image::Src		DontDelete
-  width		Image::Width		DontDelete|ReadOnly
-  height	Image::Height		DontDelete|ReadOnly
-  complete	Image::Complete		DontDelete|ReadOnly
-  onload	Image::OnLoad		DontDelete
-@end
-*/
-Image::Image(ExecState* exec, const DOM::Document &d)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype()), doc(d), img(0),
-  m_onLoadListener(0L)
-{
-}
-
-Value Image::tryGet(ExecState *exec, const Identifier &propertyName) const
-{
-  return DOMObjectLookupGetValue<Image,DOMObject>(exec, propertyName, &ImageTable, this);
-}
-
-Value Image::getValueProperty(ExecState *, int token) const
-{
-  switch (token) {
-  case Src:
-    return String(src);
-  case Complete:
-    return Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
-  case Width:
-    if ( !img )
-      return Undefined();
-    return Number(img->pixmap_size().width());
-  case Height:
-    if ( !img )
-      return Undefined();
-    return Number(img->pixmap_size().height());
-  case OnLoad:
-    if ( m_onLoadListener && m_onLoadListener->listenerObjImp())
-      return m_onLoadListener->listenerObj();
-    return Undefined();
-  default:
-    kdDebug(6070) << "WARNING: Image::getValueProperty unhandled token " << token << endl;
-    return Value();
+  bool widthSet = false, heightSet = false;
+  int width = 0, height = 0;
+  if (list.size() > 0) {
+    widthSet = true;
+    Value w = list.at(0);
+    width = w.toInt32(exec);
   }
-}
-
-void Image::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr)
-{
-  DOMObjectLookupPut<Image, DOMObject>( exec, propertyName, value, attr, &ImageTable, this );
-}
-
-void Image::putValueProperty(ExecState *exec, int token, const Value& value, int)
-{
-  switch (token) {
-  case Src:
-    src = value.toString(exec);
-    if ( img ) img->deref(this);
-    img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
-// ### img = doc ? doc->docLoader()->requestImage( src.string() ) : 0;
-    if ( img ) {
-      img->ref(this);
-      src = img->url();
-    }
-    break;
-  case OnLoad:
-    if ( m_onLoadListener )
-        m_onLoadListener->deref();
-    m_onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value,true);
-    if ( m_onLoadListener )
-        m_onLoadListener->ref();
-    break;
-  default:
-    kdDebug(6070) << "WARNING: Image::putValueProperty unhandled token " << token << endl;
+  if (list.size() > 1) {
+    heightSet = true;
+    Value h = list.at(1);
+    height = h.toInt32(exec);
   }
-}
 
-void Image::notifyFinished(khtml::CachedObject * finishedObj)
-{
-  if (img == finishedObj /*&& !loadEventSent*/ && m_onLoadListener ) {
-    //loadEventSent = true;
-    DOM::EventImpl *evt = new DOM::EventImpl( (DOM::EventImpl::EventId)ATTR_ONLOAD, false, false );
-    evt->setTarget( 0 );
-    evt->ref();
-    DOM::Event e(evt);
-    Object thisObj( this );
-    m_onLoadListener->hackSetThisObj( thisObj );
-    m_onLoadListener->handleEvent( e );
-    if ( m_onLoadListener ) // #57195
-        m_onLoadListener->hackUnsetThisObj();
-    evt->deref();
-  }
-}
+  HTMLImageElement image(doc.createElement("image"));
 
-Image::~Image()
-{
-  if ( img ) img->deref(this);
-  if ( m_onLoadListener )
-      m_onLoadListener->deref();
+  if (widthSet)
+    image.setWidth(width);
+
+  if (heightSet)
+    image.setHeight(height);
+
+  return Object::dynamicCast(getDOMNode(exec,image));
 }
 
 Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)

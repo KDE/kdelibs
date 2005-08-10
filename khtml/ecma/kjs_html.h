@@ -218,26 +218,6 @@ namespace KJS {
     DOM::Document doc;
   };
 
-  class Image : public DOMObject, public khtml::CachedObjectClient {
-  public:
-    Image(ExecState*, const DOM::Document &d);
-    ~Image();
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
-    virtual void tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, const Value& value, int);
-    virtual bool toBoolean(ExecState *) const { return true; }
-    virtual void notifyFinished(khtml::CachedObject * finishedObj);
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-    enum { Src, Complete, Width, Height, OnLoad };
-  private:
-    UString src;
-    DOM::Document doc;
-    khtml::CachedImage* img;
-    JSEventListener *m_onLoadListener;
-  };
-
   Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide=false);
   Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 

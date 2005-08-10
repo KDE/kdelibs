@@ -258,7 +258,15 @@ void HTMLImageElementImpl::insertedIntoDocument()
 
 long HTMLImageElementImpl::width() const
 {
-    if (!m_render) return getAttribute(ATTR_WIDTH).toInt();
+    if (!m_render) {
+        DOMString widthAttr = getAttribute(ATTR_WIDTH);
+        if (!widthAttr.isNull())
+            return widthAttr.toInt();
+        else if (m_image && m_image->pixmap_size().isValid())
+            return m_image->pixmap_size().width();
+        else
+            return 0;
+    }
 
     // ### make a unified call for this
     if (changed()) {
@@ -273,7 +281,15 @@ long HTMLImageElementImpl::width() const
 
 long HTMLImageElementImpl::height() const
 {
-    if (!m_render) return getAttribute(ATTR_HEIGHT).toInt();
+    if (!m_render) {
+        DOMString heightAttr = getAttribute(ATTR_HEIGHT);
+        if (!heightAttr.isNull())
+            return heightAttr.toInt();
+        else if (m_image && m_image->pixmap_size().isValid())
+            return m_image->pixmap_size().height();
+        else
+            return 0;
+    }
 
     // ### make a unified call for this
     if (changed()) {
@@ -308,10 +324,7 @@ QPixmap HTMLImageElementImpl::currentPixmap() const
 
 bool HTMLImageElementImpl::complete() const
 {
-    RenderImage *r = static_cast<RenderImage*>(renderer());
-    if(r)
-        return r->complete();
-    return false;
+    return m_image && m_image->valid_rect().size() == m_image->pixmap_size();
 }
 
 // -------------------------------------------------------------------------
