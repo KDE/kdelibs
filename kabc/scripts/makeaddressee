@@ -4,6 +4,8 @@ my $srcdir;
 $srcdir = `dirname $0` || die "Can't determine \$srcdir.";
 chomp $srcdir;
 
+chdir $srcdir ;
+
 if (!open( ENTRIES, "$srcdir/entrylist" ) ) {
   print "Can't open $srcdir/entrylist\n";
   exit 1;
