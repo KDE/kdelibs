@@ -142,15 +142,17 @@ public:
   static bool decode( QStringList const &e, KURL::List &uris );
 #endif
 
+  /// @reimp
+  virtual const char * format( int i ) const;
+  /// @reimp
+  virtual QByteArray encodedData( const char* mime ) const;
+
 protected:
   /**
    * @deprecated Use a KURLDrag constructor with a KURL::List
    */
   KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
             QWidget * dragSource, const char* name ) KDE_DEPRECATED;
-
-  virtual const char * format( int i ) const;
-  virtual QByteArray encodedData( const char* mime ) const;
 
 private:
   void init(const KURL::List &urls);

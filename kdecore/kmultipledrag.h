@@ -73,12 +73,12 @@ public:
      */
     void addDragObject( QDragObject *dragObject );
 
-protected:
     /**
      * Returns the data of a drag object with that supports the given
      * mime type.
      * @param mime the mime type to search
      * @return the data, or a null byte array if not found
+     * @reimp
      */
     virtual QByteArray encodedData( const char *mime ) const;
 
@@ -86,9 +86,11 @@ protected:
      * Returns the @p i'th supported format, or 0.
      * @param i the number of the format to check
      * @return the format with the number @p i, or 0 otherwise
+     * @reimp
      */
     virtual const char* format( int i ) const;
 
+protected:
 // KDE4: make private
     QPtrList<QDragObject> m_dragObjects;
     QValueList<int> m_numberFormats;
