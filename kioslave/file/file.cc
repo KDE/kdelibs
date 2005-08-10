@@ -1456,7 +1456,7 @@ bool FileProtocol::pmount(const QString &dev)
     QString pmountProg = KGlobal::dirs()->findExe("pmount", path);
 
     if (pmountProg.isEmpty())
-        pmountProg = "pmount";
+        return false;
 
     QCString buffer;
     buffer.sprintf( "%s %s", QFile::encodeName(pmountProg).data(),
