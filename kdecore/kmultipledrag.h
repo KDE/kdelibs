@@ -73,12 +73,12 @@ public:
      */
     void addDragObject( Q3DragObject *dragObject );
 
-protected:
     /**
      * Returns the data of a drag object with that supports the given
      * mime type.
      * @param mime the mime type to search
      * @return the data, or a null byte array if not found
+     * @reimp
      */
     virtual QByteArray encodedData( const char *mime ) const;
 
@@ -86,15 +86,15 @@ protected:
      * Returns the @p i'th supported format, or 0.
      * @param i the number of the format to check
      * @return the format with the number @p i, or 0 otherwise
+     * @reimp
      */
     virtual const char* format( int i ) const;
 
-// KDE4: make private
-    Q3PtrList<Q3DragObject> m_dragObjects;
-    QList<int> m_numberFormats;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    Q3PtrList<Q3DragObject> m_dragObjects;
+    QList<int> m_numberFormats;
     KMultipleDragPrivate* d;
 };
 
