@@ -151,7 +151,7 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
 
    list->append( current );
    conn->signalConnectionList()->append(current);
-   if (senderConn)
+   if (senderConn && senderConn != conn)
       senderConn->signalConnectionList()->append(current);
    return true;
 }
