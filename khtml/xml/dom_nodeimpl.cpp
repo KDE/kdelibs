@@ -664,14 +664,16 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
         // ECMA legacy hack
         if (current->useCapture == useCapture && evt->id() == EventImpl::CLICK_EVENT) {
             MouseEventImpl* me = static_cast<MouseEventImpl*>(evt);
-            // To find whether to call onclick or ondblclick, we can't
-            // * use me->detail(), it's 2 when clicking twice w/o moving, even very slowly
-            // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
-            // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
-            // dblclicks from the DOM API, we'll need a timer here (well in the doc).
-            if ( ( !me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
-              ( me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
-                current->listener->handleEvent(ev);
+            if (me->button() == 0) {
+                // To find whether to call onclick or ondblclick, we can't
+                // * use me->detail(), it's 2 when clicking twice w/o moving, even very slowly
+                // * use me->qEvent(), it's not available when using initMouseEvent/dispatchEvent
+                // So we currently store a bool in MouseEventImpl. If anyone needs to trigger
+                // dblclicks from the DOM API, we'll need a timer here (well in the doc).
+                if ( ( !me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_CLICK_EVENT) ||
+                  ( me->isDoubleClick() && current->id == EventImpl::KHTML_ECMA_DBLCLICK_EVENT) )
+                    current->listener->handleEvent(ev);
+            }
         }
     }
 }
