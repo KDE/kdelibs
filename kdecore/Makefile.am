@@ -144,7 +144,7 @@ uninstall-local:
 	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
 
 # If you add a color palette file here, please change kdelibs/kdeui/kcolordialog.cpp too to allow to translate the name
-colors_DATA = 40.colors Web.colors Royal.colors
+colors_DATA = 40.colors Web.colors Royal.colors Rainbow.colors
 colorsdir = $(kde_confdir)/colors
 
 EXTRA_DIST = generate_keys.sh $(kdebug_DATA) \
