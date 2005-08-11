@@ -130,6 +130,9 @@ public:
    * called automatically before creating KUniqueApplication if it hasn't
    * been called yet, without any performance impact.
    *
+   * Also note that you MUST call KUniqueApplication::addCmdLineOptions(),
+   * if you use command line options before start() is called.
+   *
    * @return true if registration is successful.
    *         false if another process was already running.
    */
