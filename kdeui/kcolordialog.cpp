@@ -84,6 +84,7 @@ const ColorPaletteNameType colorPaletteName[]=
     { "Recent_Colors", I18N_NOOP2( "palette name", "* Recent Colors *" ) },
     { "Custom_Colors", I18N_NOOP2( "palette name", "* Custom Colors *" ) },
     { "40.colors",     I18N_NOOP2( "palette name", "Forty Colors" ) },
+    { "Rainbow.colors",I18N_NOOP2( "palette name", "Rainbow Colors" ) },
     { "Royal.colors",  I18N_NOOP2( "palette name", "Royal Colors" ) },
     { "Web.colors",    I18N_NOOP2( "palette name", "Web Colors" ) },
     { 0, 0 } // end of data
