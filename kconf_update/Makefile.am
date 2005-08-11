@@ -31,5 +31,3 @@ METASOURCES = AUTO
 # Internal
 # noinst_HEADERS = kconf_update.h
 
-include $(top_srcdir)/admin/Doxyfile.am
-
