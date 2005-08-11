@@ -370,8 +370,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 case Menu::Frame:
                 {
-                    // TODO: Plastik style frame
-                    break;
+                    renderContour(p, r, pal.background().color(), pal.background().color().dark(200),
+                          Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
+                    return;
                 }
 
                 case Menu::Background:
@@ -386,7 +387,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                //TODO:scrollr
+                //TODO:scroller
             }
         }
         break;
@@ -2206,13 +2207,6 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //             renderPanel(p, r, cg, true, sunken);
 //             break;
 //         }
-// 
-//         case PE_PanelPopup: {
-//             renderContour(p, r, cg.background(), cg.background().dark(200),
-//                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
-//             break;
-//         }
-// 
 //     // MENU / TOOLBAR PANEL
 //     // --------------------
 //         case PE_PanelMenuBar:
