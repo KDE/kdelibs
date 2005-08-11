@@ -1624,58 +1624,60 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
 {
     unsigned long requestIndex = index;
 
-    m_cache.updateNodeListInfo(m_refNode->getDocument());
+    m_cache->updateNodeListInfo(m_refNode->getDocument());
 
     NodeImpl* n;
-    if (m_cache.current && index >= m_cache.position) {
-        unsigned long relIndex = index - m_cache.position;
-        n = recursiveItem(m_refNode, m_cache.current, relIndex);
+    if (m_cache->current.node && index >= m_cache->position) {
+        unsigned long relIndex = index - m_cache->position;
+        n = recursiveItem(m_refNode, m_cache->current.node, relIndex);
     }
     else
         n = recursiveItem(m_refNode, m_refNode->firstChild(), index);
 
-    if (n) {
-        m_cache.current  = n;
-        m_cache.position = requestIndex;
-    }
-
+    //We always update the cache state, to make starting iteration
+    //where it was left off easy.
+    m_cache->current.node  = n;
+    m_cache->position = requestIndex;
     return n;
 }
 
 unsigned long NodeListImpl::length() const
 {
-    m_cache.updateNodeListInfo(m_refNode->getDocument());
-    if (!m_cache.hasLength) {
-        m_cache.length    = recursiveLength( m_refNode );
-        m_cache.hasLength = true;
+    m_cache->updateNodeListInfo(m_refNode->getDocument());
+    if (!m_cache->hasLength) {
+        m_cache->length    = recursiveLength( m_refNode );
+        m_cache->hasLength = true;
     }
-    return m_cache.length;
+    return m_cache->length;
 }
 
 unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
 {
     unsigned long len = 0;
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
-        if ( n->nodeType() == Node::ELEMENT_NODE ) {
-            if (elementMatches(n))
+        bool recurse = true;
+        if (nodeMatches(n, recurse))
                 len++;
+        if (recurse)
             len+= recursiveLength(n);
         }
-    }
 
     return len;
 }
 
-NodeListImpl::NodeListImpl( NodeImpl *n )
+NodeListImpl::NodeListImpl( NodeImpl *n, int type, CacheFactory* factory )
 {
     m_refNode = n;
     m_refNode->ref();
-    
-    m_cache.clear(m_refNode->getDocument());
+
+    m_cache = m_refNode->getDocument()->acquireCachedNodeListInfo(
+                  factory ? factory : Cache::make,
+                  n, type );
 }
 
 NodeListImpl::~NodeListImpl()
 {
+    m_refNode->getDocument()->releaseCachedNodeListInfo(m_cache);
     m_refNode->deref();
 }
 
@@ -1699,24 +1701,26 @@ static NodeImpl* helperNext(NodeImpl* node, NodeImpl* absStart)
 NodeImpl *NodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
 {
     for(NodeImpl *n = start; n != 0; n = helperNext(n, absStart)) {
-        if ( n->nodeType() == Node::ELEMENT_NODE ) {
-            if (elementMatches(n))
+        bool recurse = true;
+        if (nodeMatches(n, recurse))
                 if (!offset--)
                     return n;
 
-            NodeImpl *depthSearch= recursiveItem(n, n->firstChild(), offset);
+        NodeImpl *depthSearch = recurse ? recursiveItem(n, n->firstChild(), offset) : 0;
             if (depthSearch)
                 return depthSearch;
         }
-    }
 
     return 0; // no matching node in this subtree
 }
 
+NodeListImpl::Cache::~Cache()
+{}
+
 void NodeListImpl::Cache::clear(DocumentImpl* doc)
 {
    hasLength = false;
-   current   = 0;
+   current.node = 0;
    version   = doc->domTreeVersion();
 }
 
@@ -1727,42 +1731,17 @@ void NodeListImpl::Cache::updateNodeListInfo(DocumentImpl* doc)
         clear(doc);
 }
 
-ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n ): NodeListImpl(n)
+ChildNodeListImpl::ChildNodeListImpl( NodeImpl *n ): NodeListImpl(n, CHILD_NODES)
 {}
 
-
-unsigned long ChildNodeListImpl::length() const
+bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/, bool& doRecurse ) const
 {
-    unsigned long len = 0;
-    NodeImpl *n;
-    for(n = m_refNode->firstChild(); n != 0; n = n->nextSibling())
-        len++;
-
-    return len;
-}
-
-NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
-{
-    unsigned int pos = 0;
-    NodeImpl *n = m_refNode->firstChild();
-
-    while( n != 0 && pos < index )
-    {
-        n = n->nextSibling();
-        pos++;
-    }
-
-    return n;
-}
-
-
-bool ChildNodeListImpl::elementMatches( NodeImpl* /*testNode*/ ) const
-{
+    doRecurse = false;
     return true;
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, NodeImpl::Id id )
-  : NodeListImpl(n),
+  : NodeListImpl(n, UNCACHEABLE),
     m_id(id),
     m_namespaceAware(false)
 {
@@ -1772,7 +1751,7 @@ TagNodeListImpl::TagNodeListImpl( NodeImpl *n, NodeImpl::Id id )
 }
 
 TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, const DOMString &localName )
-  : NodeListImpl(n),
+  : NodeListImpl(n, UNCACHEABLE),
     m_id(0),
     m_namespaceURI(namespaceURI),
     m_localName(localName),
@@ -1783,8 +1762,9 @@ TagNodeListImpl::TagNodeListImpl( NodeImpl *n, const DOMString &namespaceURI, co
 }
 
 
-bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
+bool TagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) const
 {
+    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
     if (m_namespaceAware)
 	return (m_matchAllNamespaces || testNode->namespaceURI() == m_namespaceURI) &&
 	       (m_matchAllNames || testNode->localName() == m_localName);
@@ -1798,12 +1778,13 @@ bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
 }
 
 NameNodeListImpl::NameNodeListImpl(NodeImpl *n, const DOMString &t )
-  : NodeListImpl(n),
+  : NodeListImpl(n, UNCACHEABLE),
     nodeName(t)
 {}
 
-bool NameNodeListImpl::elementMatches( NodeImpl *testNode ) const
+bool NameNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) const
 {
+    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 
@@ -1812,9 +1793,10 @@ NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, con
 {
 }
 
-bool NamedTagNodeListImpl::elementMatches( NodeImpl *testNode ) const
+bool NamedTagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& doRecurse ) const
 {
-    return TagNodeListImpl::elementMatches( testNode )
+    if ( testNode->nodeType() != Node::ELEMENT_NODE ) return false;
+    return TagNodeListImpl::nodeMatches( testNode, doRecurse )
         && static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 

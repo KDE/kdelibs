@@ -3118,7 +3118,7 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const Identifier &p) cons
 {
   if (p == lengthPropertyName)
     return true;
-  if ( collection.item(0).elementId() == ID_OPTION &&
+  if ( collection.handle()->getType() == HTMLCollectionImpl::SELECT_OPTIONS &&
        ( p == "selectedIndex" || p == "value" ) )
     return true;
   return DOMObject::hasProperty(exec, p);
@@ -3137,14 +3137,8 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyNam
     return Number(collection.length());
   }
 
-  if (collection.item(0).elementId() == ID_OPTION) {
-    DOM::HTMLSelectElement parentSelect;
-    DOM::Node node = collection.item(0).parentNode();
-    while(!node.isNull() && parentSelect.isNull()) {
-      if(node.elementId() == ID_SELECT)
-        parentSelect = static_cast<DOM::HTMLSelectElement>(node);
-      node = node.parentNode();
-    }
+  if (collection.handle()->getType() == HTMLCollectionImpl::SELECT_OPTIONS) {
+    DOM::HTMLSelectElement parentSelect = collection.base();
     if ( parentSelect.isNull() )
       return Undefined();
     if (propertyName == "selectedIndex") {
@@ -3240,26 +3234,25 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &prop
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii() << endl;
 #endif
+
   DOM::DOMString pstr = propertyName.string();
-  DOM::Node node = collection.namedItem(pstr);
-  if(!node.isNull())
-  {
-    DOM::Node next = collection.nextNamedItem(pstr);
-    if (next.isNull()) // single item
-    {
+
+  QValueList<DOM::NodeImpl*> matches = collection.handle()->namedItems(pstr);
+
+  if (!matches.isEmpty()) {
+    if (matches.size() == 1) {
+      DOM::Node node(matches[0]);
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning single node" << endl;
 #endif
       return getDOMNode(exec,node);
     }
-    else // multiple items, return a collection
-    {
+    else  {
+      // multiple items, return a collection
       QValueList<DOM::Node> nodes;
-      nodes.append(node);
-      do {
-        nodes.append(next);
-        next = collection.nextNamedItem(pstr);
-      } while (!next.isNull());
+      for (QValueList<DOM::NodeImpl*>::const_iterator i =  matches.begin();
+                                                      i != matches.end(); ++i)
+           nodes.append(DOM::Node(*i));
 #ifdef KJS_VERBOSE
       kdDebug(6070) << "returning list of " << nodes.count() << " nodes" << endl;
 #endif

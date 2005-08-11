@@ -362,6 +362,10 @@ DocumentImpl::~DocumentImpl()
 {
     assert( !m_render );
 
+    QIntDictIterator<NodeListImpl::Cache> it(m_nodeListCache);
+    for (; it.current(); ++it)
+        it.current()->deref();
+
     if (m_loadingXMLDoc)
 	m_loadingXMLDoc->deref(this);
     if (changedDocuments && m_docChanged)
@@ -2597,6 +2601,46 @@ KHTMLPart* DOM::DocumentImpl::part() const
 {
     // ### TODO: make this independent from a KHTMLView one day.
     return view() ? view()->part() : 0;
+}
+
+NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
+       NodeListImpl::CacheFactory* factory, NodeImpl* base, int type)
+{
+    //### might want to flush the dict when the version number
+    //changes
+    NodeListImpl::CacheKey key(base, type);
+
+    //Check to see if we have this sort of item cached.
+    NodeListImpl::Cache* cached =
+        (type == NodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.find(key.hash());
+
+    if (cached) {
+        if (cached->key == key) {
+            cached->ref(); //Add the nodelist's reference
+            return cached;
+        } else {
+            //Conflict. Drop our reference to the old item.
+            cached->deref();
+        }
+    }
+
+    //Nothing to reuse, make a new item.
+    NodeListImpl::Cache* newInfo = factory();
+    newInfo->key = key;
+    newInfo->clear(this);
+    newInfo->ref(); //Add the nodelist's reference
+
+    if (type != NodeListImpl::UNCACHEABLE) {
+        newInfo->ref(); //Add the cache's reference
+        m_nodeListCache.replace(key.hash(), newInfo);
+    }
+
+    return newInfo;
+}
+
+void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
+{
+    entry->deref();
 }
 
 // ----------------------------------------------------------------------------

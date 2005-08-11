@@ -35,6 +35,7 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qobject.h>
+#include <qintcache.h>
 #include <qintdict.h>
 #include <qdict.h>
 #include <qmap.h>
@@ -521,6 +522,10 @@ public:
         return m_underDocNamedCache;
     }
 
+    NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
+                                                   NodeImpl* base, int type);
+    void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
+
 signals:
     void finishedParsing();
 
@@ -613,6 +618,9 @@ protected:
 
     //Forms, images, etc., must be quickly accessible via document.name.
     ElementMappingCache m_underDocNamedCache;
+
+    //Cache for nodelists and collections.
+    QIntDict<NodeListImpl::Cache> m_nodeListCache;
 
     QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
     QPtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;

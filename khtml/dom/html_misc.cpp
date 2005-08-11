@@ -161,7 +161,7 @@ Node HTMLCollection::base() const
     if ( !impl )
         return 0;
 
-    return static_cast<HTMLCollectionImpl*>( impl )->base;
+    return static_cast<HTMLCollectionImpl*>( impl )->m_refNode;
 }
 
 Node HTMLCollection::firstItem() const

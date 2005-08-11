@@ -499,20 +499,63 @@ class NodeImpl;
 
 class NodeListImpl : public khtml::Shared<NodeListImpl>
 {
-    //### This is pretty much the same as HTMLCollectionImpl::CollectionInfo --- 
-    //perhaps consider merging (field names are the same, usage slightly different)
-    struct Cache
+public:
+    //Type of the item stored in the cache.
+    enum Type {
+        UNCACHEABLE, //Too complex to be cached like this
+        CHILD_NODES,
+        LAST_NODE_LIST = CHILD_NODES
+    };
+
+    struct CacheKey
     {
+        NodeImpl* baseNode;
+        int       type;
+
+        CacheKey(): type(UNCACHEABLE) {}
+
+        CacheKey(NodeImpl* _baseNode, int _type):
+            baseNode(_baseNode), type(_type)
+        {}
+
+        int hash() const
+        {
+            return int(reinterpret_cast<unsigned long>(baseNode) >> 2) ^
+                       (unsigned(type) << 26);
+        }
+
+        bool operator==(const CacheKey& other) const
+        {
+            return baseNode == other.baseNode &&
+                   type     == other.type;
+        }
+    };
+
+    struct Cache: public khtml::Shared<Cache>
+    {
+        static Cache* make() { return new Cache; }
+    
+        CacheKey key;//### We must store this in here due to QCache in Qt3 sucking
+
         unsigned int version;
-        NodeImpl*    current;
+        union
+        {
+            NodeImpl*    node;
+            unsigned int index;
+        } current;
         unsigned int position;
         unsigned int length;
         bool         hasLength;
-        void clear(DocumentImpl* doc);
+        
         void updateNodeListInfo(DocumentImpl* doc);
+
+        virtual void clear(DocumentImpl* doc);
+        virtual ~Cache();
     };
-public:
-    NodeListImpl(NodeImpl* node);
+
+    typedef Cache* CacheFactory();
+
+    NodeListImpl(NodeImpl* node, int type, CacheFactory* factory = 0);
     virtual ~NodeListImpl();
 
     // DOM methods & attributes for NodeList
@@ -525,10 +568,13 @@ protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
     NodeImpl *recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
-    virtual bool elementMatches( NodeImpl *testNode ) const = 0;
 
-    NodeImpl*     m_refNode;
-    mutable Cache m_cache;
+    // Override this to determine what nodes to return. Set doRecurse to 
+    // false if the children of this node do not need to be entered.
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const = 0;
+
+    NodeImpl*      m_refNode;
+    mutable Cache* m_cache;
 };
 
 class ChildNodeListImpl : public NodeListImpl
@@ -537,12 +583,8 @@ public:
  
     ChildNodeListImpl( NodeImpl *n);
     
-    // DOM methods overridden from  parent classes
-    virtual unsigned long length() const;
-    virtual NodeImpl *item ( unsigned long index ) const;
-
 protected:
-    virtual bool elementMatches( NodeImpl *testNode ) const;
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
 };
 
 
@@ -558,7 +600,7 @@ public:
     // Other methods (not part of DOM)
 
 protected:
-    virtual bool elementMatches( NodeImpl *testNode ) const;
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
     NodeImpl::Id m_id;
     DOMString m_namespaceURI;
     DOMString m_localName;
@@ -580,7 +622,7 @@ public:
     // Other methods (not part of DOM)
 
 protected:
-    virtual bool elementMatches( NodeImpl *testNode ) const;
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
 
     DOMString nodeName;
 };
@@ -594,7 +636,7 @@ class NamedTagNodeListImpl : public TagNodeListImpl
 public:
     NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name );
 protected:
-    virtual bool elementMatches( NodeImpl *testNode ) const;
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
     DOMString nodeName;
 };
 

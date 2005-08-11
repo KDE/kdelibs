@@ -23,6 +23,7 @@
 #ifndef HTML_MISCIMPL_H
 #define HTML_MISCIMPL_H
 
+#include <qvaluelist.h>
 #include "html_elementimpl.h"
 #include "misc/shared.h"
 
@@ -44,13 +45,13 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLCollectionImpl : public khtml::Shared<HTMLCollectionImpl>
+class HTMLCollectionImpl : public NodeListImpl
 {
     friend class DOM::HTMLCollection;
 public:
     enum Type {
         // from HTMLDocument
-        DOC_IMAGES = 0, // all IMG elements in the document
+        DOC_IMAGES = LAST_NODE_LIST + 1, // all IMG elements in the document
         DOC_APPLETS,   // all OBJECT and APPLET elements
         DOC_FORMS,     // all FORMS
         DOC_LAYERS,    // all LAYERS
@@ -67,51 +68,35 @@ public:
         MAP_AREAS,
         DOC_ALL,        // "all" elements (IE)
         NODE_CHILDREN,   // first-level children (IE)
+        FORM_ELEMENTS,   // input elements in a form
         LAST_TYPE
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
 
-    virtual ~HTMLCollectionImpl();
-    unsigned long length() const;
-    // Only when iterating forward, it will use caching, ie. making it O(1).
-    virtual NodeImpl *item ( unsigned long index ) const;
     // obsolete and not domtree changes save
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;
 
-    NodeImpl *namedItem ( const DOMString &name ) const;
+    virtual NodeImpl *namedItem ( const DOMString &name ) const;
     // In case of multiple items named the same way
-    NodeImpl *nextNamedItem( const DOMString &name ) const;
+    virtual NodeImpl *nextNamedItem( const DOMString &name ) const;
 
-    struct CollectionInfo {
-        CollectionInfo() : version((unsigned int) ~0) {}
-        unsigned int version;
-        NodeImpl *current;
-        unsigned int position;
-        unsigned int length;
-        bool haslength;
-    };
+    QValueList<NodeImpl*> namedItems( const DOMString &name ) const;
+
+    int getType() const {
+        return type;
+    }
 protected:
-    virtual unsigned long calcLength(NodeImpl *current) const;
-    virtual NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
-    virtual NodeImpl *getNamedItem(NodeImpl *current, int attr_id, const DOMString &name) const;
-    virtual NodeImpl *nextNamedItemInternal( const DOMString &name ) const;
-    void updateCollectionInfo() const;
-    // the base node, the collection refers to
-    NodeImpl *base;
     // The collection list the following elements
-    int type;
-    mutable CollectionInfo *info;
+    int type:8;
 
-    // ### add optimization, so that a linear loop through the
-    // Collection [using item(i)] is O(n) and not O(n^2)!
-    // But for that we need to get notified in case of changes in the dom structure...
-    //NodeImpl *current;
-    //int currentPos;
+    // Reimplemented from NodeListImpl
+    virtual bool nodeMatches( NodeImpl *testNode, bool& doRecurse ) const;
 
-    // For nextNamedItem()
-    mutable bool idsDone;
+    // Helper for name iteration: checks whether ID matches,
+    // and inserts any name-matching things into namedItemsWithName
+    bool checkForNameMatch(NodeImpl *node, const DOMString &name) const;
 };
 
 // this whole class is just a big hack to find form elements even in
@@ -121,22 +106,20 @@ class HTMLFormCollectionImpl : public HTMLCollectionImpl
 {
 public:
     // base must inherit HTMLGenericFormElementImpl or this won't work
-    HTMLFormCollectionImpl(NodeImpl* _base)
-        : HTMLCollectionImpl(_base, 0)
-    {}
+    HTMLFormCollectionImpl(NodeImpl* _base);
     ~HTMLFormCollectionImpl() { }
 
     virtual NodeImpl *item ( unsigned long index ) const;
-    virtual NodeImpl *firstItem() const;
-    virtual NodeImpl *nextItem() const;
-protected:
-    virtual unsigned long calcLength(NodeImpl* current) const;
-    virtual NodeImpl *getItem(NodeImpl *current, int index, int& pos) const;
-    virtual NodeImpl *getNamedItem(NodeImpl* current, int attr_id, const DOMString& name) const;
-    virtual NodeImpl *nextNamedItemInternal( const DOMString &name ) const;
+    virtual unsigned long length() const;
+
+    virtual NodeImpl *namedItem ( const DOMString &name ) const;
+    // In case of multiple items named the same way
+    virtual NodeImpl *nextNamedItem( const DOMString &name ) const;
+
 private:
-    NodeImpl* getNamedFormItem(int attr_id, const DOMString& name, int duplicateNumber) const;
-    mutable int currentPos;
+    mutable unsigned currentNamePos;
+    mutable unsigned currentNameImgPos;
+    mutable bool foundInput;
 };
 
 

@@ -34,8 +34,6 @@ class QString;
 
 namespace DOM {
 
-    class HTMLCollection;
-    class NodeList;
     class Element;
     class HTMLElement;
     class HTMLElementImpl;
@@ -77,8 +75,6 @@ public:
     // This is independent of the actual doctype, of course. (#86446)
     void setHTMLRequested( bool html ) { m_htmlRequested = html; }
 
-    HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
-
 protected:
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
@@ -92,8 +88,6 @@ protected slots:
      * Repaints, so that all links get the proper color
      */
     void slotHistoryChanged();
-private:
-    HTMLCollectionImpl::CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
 };
 
 } //namespace
