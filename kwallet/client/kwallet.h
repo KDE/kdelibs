@@ -32,6 +32,7 @@
 
 class DCOPRef;
 
+/** Namespace collecting all the Wallet-related classes. */
 namespace KWallet {
 
 /**
