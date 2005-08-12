@@ -13,7 +13,7 @@ impossible to use KProcess.
 
 You want to use this if you need to start a new process which needs to be a 
 child of your process, e.g. because you want to catch stdout/stderr or need 
-to send it data via stdin. You should never use this to start other KDE 
+to send it data via stdin. You should never use this to start other KDE 
 applications unless your application is called kgdb :-) If you need to
 send/receive text like data to/from the process, you are probably better 
 off with KProcIO

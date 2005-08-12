@@ -84,7 +84,7 @@ class SlaveInterfacePrivate;
 
 /**
  * There are two classes that specifies the protocol between application
- * ( KIO::Job) and kioslave. SlaveInterface is the class to use on the application
+ * (KIO::Job) and kioslave. SlaveInterface is the class to use on the application
  * end, SlaveBase is the one to use on the slave end.
  *
  * A call to foo() results in a call to slotFoo() on the other end.
@@ -103,8 +103,9 @@ public:
     void setProgressId( int id ) { m_progressId = id; }
     int progressId() const { return m_progressId; }
 
-    // Send our answer to the MSG_RESUME (canResume) request
-    // (to tell the "put" job whether to resume or not)
+    /** Send our answer to the MSG_RESUME (canResume) request
+     * (to tell the "put" job whether to resume or not)
+     */
     void sendResumeAnswer( bool resume );
 
     void setOffset( KIO::filesize_t offset );
@@ -144,12 +145,12 @@ signals:
     void connectFinished();
 
     /**
-     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
+     * @deprecated. Obsolete as of 3.1. Replaced by kpassword, a kded module.
      */
     void authorizationKey( const QCString&, const QCString&, bool );
 
     /**
-     * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
+     * @deprecated. Obsolete as of 3.1. Replaced by kpassword, a kded module.
      */
     void delAuthorization( const QCString& grpkey );
 

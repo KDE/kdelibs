@@ -894,7 +894,7 @@ public:
 /**
    * Convenience function.
    *
-   * Convert unicoded string to local encoding and use %-style
+   * Convert unicoded string to local encoding and use %%-style
    * encoding for all common delimiters / non-ascii characters.
    * @param str String to encode (can be QString::null).
    * @param encoding_hint MIB of encoding to use.
@@ -906,7 +906,7 @@ public:
   /**
    * Convenience function.
    *
-   * Convert unicoded string to local encoding and use %-style
+   * Convert unicoded string to local encoding and use %%-style
    * encoding for all common delimiters / non-ascii characters
    * as well as the slash '/'.
    * @param str String to encode

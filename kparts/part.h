@@ -143,8 +143,8 @@ protected:
   void loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance );
 
   /**
-   * For a KParts::Part: call this before setInstance.
-   * For a KParts::MainWindow: call this before createGUI.
+   * For a KParts::Part: call this before setInstance().
+   * For a KParts::MainWindow: call this before createGUI().
    */
   void setPluginLoadingMode( PluginLoadingMode loadingMode );
 

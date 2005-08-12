@@ -103,7 +103,7 @@ namespace KIO {
         /**
 	 * Returns the error text if there has been an error.
          * Only call if error is not 0.
-         * This is really internal, better use errorString or errorDialog.
+         * This is really internal, better use errorString() or errorDialog().
 	 *
          * @return a string to help understand the error, usually the url
          * related to the error. Only valid if error() is not 0.
@@ -160,18 +160,15 @@ namespace KIO {
          *
          * The default is false.
          *
-         * See also isAutoErrorHandlingEnabled , showErrorDialog
-         *
          * @param enable enable or disable automatic error handling
          * @param parentWidget the parent widget, passed to showErrorDialog.
 	 *        Can be 0 for top-level
-	 * @see isAutoErrorHandlingEnabled()
+	 * @see isAutoErrorHandlingEnabled(), showErrorDialog()
          */
         void setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget = 0 );
 
         /**
          * Returns whether automatic error handling is enabled or disabled.
-         * See also setAutoErrorHandlingEnabled .
 	 * @return true if automatic error handling is enabled
 	 * @see setAutoErrorHandlingEnabled()
          */
@@ -212,7 +209,6 @@ namespace KIO {
 
         /**
          * Returns whether message display is enabled or disabled.
-         * See also setInteractive .
          * @return true if message display is enabled
          * @see setInteractive()
          * @since 3.4.1
