@@ -193,13 +193,13 @@ public:
 
   /**
      @deprecated
-     Use operator<< instead.
+     Use operator<<() instead.
 
 	 Sets the executable to be started with this KProcess object.
 	 Returns false if the process is currently running (in that
 	 case the executable remains unchanged).
 
-	 @see operator<<
+	 @see operator<<()
 
   */
   bool setExecutable(const QString& proc) KDE_DEPRECATED;

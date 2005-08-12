@@ -220,7 +220,7 @@ public:
      */
     KLibrary* globalLibrary( const char *name );
 
-    /*
+    /**
      * Returns an error message that can be useful to debug the problem.
      * Returns QString::null if the last call to library() was successful.
      * You can call this function more than once. The error message is only

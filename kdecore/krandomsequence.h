@@ -26,12 +26,12 @@ class QGList;
  * A class to create a pseudo-random sequence
  *
  * Given a seed number, this class will produce a sequence of
- * pseudo-random numbers.  This would typically be used in
+ * pseudo-random numbers. This would typically be used in
  * applications like games.
  *
  * In general, you should instantiate a KRandomSequence object and
- * pass along your seed number in the constructor.  From then on,
- * simply call getDouble or getLong to obtain the next
+ * pass along your seed number in the constructor. From then on,
+ * simply call getDouble() or getLong() to obtain the next
  * number in the sequence.
  *
  * @author Sean Harmer <sh@astro.keele.ac.uk>

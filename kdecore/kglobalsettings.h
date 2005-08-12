@@ -104,7 +104,7 @@ class KDECORE_EXPORT KGlobalSettings
      * This enum describes the return type for insertTearOffHandle() whether to insert
      * a handle or not. Applications who independently want to use handles in their popup menus
      * should test for Application level before calling the appropriate function in KPopupMenu.
-     * @since 3,1
+     * @since 3.1
      **/
     enum TearOffHandle {
       Disable = 0, ///< disable tear-off handles
@@ -510,7 +510,7 @@ class KDECORE_EXPORT KGlobalSettings
      * The layout scheme to use for dialog buttons
      * 
      * @return Returns the number of the scheme to use.
-     * @see KDialogBase::setButtonStyle
+     * @see KDialogBase::setButtonStyle()
      * @since 3.3
      */
     static int buttonLayout();

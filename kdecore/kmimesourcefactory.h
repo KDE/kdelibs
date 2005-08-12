@@ -31,7 +31,7 @@ class KMimeSourceFactoryPrivate;
  * find images.
  *
  * Normally you don't have to instantiate this class at all, KApplication does that for
- * you automagically and sets QMimeSourceFactory::setDefaultFactory.
+ * you automagically and sets QMimeSourceFactory::setDefaultFactory().
  *
  * @author Peter Putzer <putzer@kde.org>
  */

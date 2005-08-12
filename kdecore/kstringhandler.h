@@ -43,9 +43,9 @@
  *
  * The ranges are a fairly powerful way of getting/stripping words from
  * a string. These ranges function, for the large part, as they would in
- * python. See the word(const QString&, int) and remword(const QString&, int) functions for more detail.
+ * python. See the word(const QString&, const char *) and remword(const QString&, uint) functions for more detail.
  *
- * This class contains no data members of it own. All strings are cut
+ * This class contains no data members of its own. All strings are cut
  * on the fly and returned as new qstrings/qstringlists.
  *
  * Quick example on how to use:

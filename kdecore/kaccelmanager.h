@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2002 Matthias Hölzer-Klüpfel <mhk@kde.org>
+    Copyright (C) 2002 Matthias Hoelzer-Kluepfel <mhk@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,7 +33,7 @@ class QString;
  * This class can be used to find a valid and working set of
  * accelerators for any widget.
  *
- * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  * @since 3.1
 */
 
@@ -78,7 +78,7 @@ public:
     static void last_manage(QString &added,  QString &changed,  QString &removed);
 
     /**
-     * Use this method for a widget (and it's children) you want no accels to be set on.
+     * Use this method for a widget (and its children) you want no accels to be set on.
      * @since 3.4
      */
     static void setNoAccel( QWidget *widget );

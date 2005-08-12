@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2002 Matthias H�zer-Klpfel <mhk@kde.org>
+    Copyright (C) 2002 Matthias Hoelzer-Kluepfel <mhk@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,7 +36,7 @@ class QWidgetStack;
  * It keeps a list weights, telling how valuable each character
  * would be as an accelerator.
  *
- * @author Matthias H�zer-Klpfel <mhk@kde.org>
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
 */
 
 class KAccelString
@@ -84,7 +84,7 @@ typedef QValueList<KAccelString> KAccelStringList;
  * This class encapsulates the algorithm finding the 'best'
  * distribution of accelerators in a hierarchy of widgets.
  *
- * @author Matthias H�zer-Klpfel <mhk@kde.org>
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
 */
 
 class KAccelManagerAlgorithm
@@ -92,23 +92,23 @@ class KAccelManagerAlgorithm
 public:
 
   enum {
-    // Default control weight
+    /// Default control weight
     DEFAULT_WEIGHT = 50,
-    // Additional weight for first character in string
+    /// Additional weight for first character in string
     FIRST_CHARACTER_EXTRA_WEIGHT = 50,
-    // Additional weight for the beginning of a word
+    /// Additional weight for the beginning of a word
     WORD_BEGINNING_EXTRA_WEIGHT = 50,
-    // Additional weight for the dialog buttons (large, we basically never want these reassigned)
+    /// Additional weight for the dialog buttons (large, we basically never want these reassigned)
     DIALOG_BUTTON_EXTRA_WEIGHT = 300,
-    // Additional weight for a 'wanted' accelerator
+    /// Additional weight for a 'wanted' accelerator
     WANTED_ACCEL_EXTRA_WEIGHT = 150,
-    // Default weight for an 'action' widget (ie, pushbuttons)
+    /// Default weight for an 'action' widget (ie, pushbuttons)
     ACTION_ELEMENT_WEIGHT = 50,
-    // Default weight for group boxes (low priority)
+    /// Default weight for group boxes (low priority)
     GROUP_BOX_WEIGHT = -2000,
-    // Default weight for menu titles
+    /// Default weight for menu titles
     MENU_TITLE_WEIGHT = 250,
-    // Additional weight for KDE standard accelerators
+    /// Additional weight for KDE standard accelerators
     STANDARD_ACCEL = 300
   };
 
@@ -126,7 +126,7 @@ class QPopupMenu;
  *
  * This is necessary for dynamic menus like for example in kicker.
  *
- * @author Matthias H�zer-Klpfel <mhk@kde.org>
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
 */
 
 class KPopupAccelManager : public QObject

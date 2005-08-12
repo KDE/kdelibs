@@ -38,8 +38,9 @@ class KAboutDataPrivate;
  * Normally you should at least define the person's name.
  *
  * Example Usage within a main():
- * 
- * KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
+ *
+ * \code
+ *   KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
  *                   I18N_NOOP("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
  *                   I18N_NOOP("Copyright (c) 2003 Developer"));
@@ -48,6 +49,7 @@ class KAboutDataPrivate;
  *   about.addCredit("Joe User", I18N_NOOP("A lot of bug reports"),
  *                   "joe.user@host.org", 0);
  *   KCmdLineArgs::init(argc, argv, &about);
+ * \endcode
  */
 class KDECORE_EXPORT KAboutPerson
 {

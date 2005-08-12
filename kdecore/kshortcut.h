@@ -535,7 +535,7 @@ class KDECORE_EXPORT KKeySequence
 * \endcode
 *
 * Note that a shortcut cannot have more than 2 key combinations associated with it, so the above
-* code would not do anything (and .append would return false) if the closeAction already had
+* code would not do anything (and append() would return false) if the closeAction already had
 * an key and alternate key.
 * 
 */

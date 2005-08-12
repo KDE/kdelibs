@@ -79,9 +79,9 @@ class KAccelPrivate;
  * pAccel->insert( KStdAccel::Print, this, SLOT(slotPrint()) );
  *
  * // Update the shortcuts by read any user-defined settings from the
- * //  application's config file.
+ * // application's config file.
  * pAccel->readSettings();
- *\endcode
+ * \endcode
  *
  * @short Configurable shortcut support for widgets.
  * @see KGlobalAccel
@@ -115,14 +115,14 @@ class KDECORE_EXPORT KAccel : public QAccel
 
 	/**
 	 * @internal
-	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
+	 * Returns the KAccel's @p KAccelActions, a list of @p KAccelAction.
 	 * @return the KAccelActions of the KAccel
 	 */
 	KAccelActions& actions();
 
 	/**
 	 * @internal
-	 * Returns the KAccel's @p KAccelActions, a list of @p KAccepAction.
+	 * Returns the KAccel's @p KAccelActions, a list of @p KAccelAction.
 	 * @return the KAccelActions of the KAccel
 	 */
 	const KAccelActions& actions() const;
