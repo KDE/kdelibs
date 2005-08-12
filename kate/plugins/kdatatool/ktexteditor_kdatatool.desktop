@@ -34,7 +34,6 @@ Name[lt]=KTextEditor KDataTool priedas
 Name[lv]=KTextEditor KDataTool spraudnis
 Name[mk]=KTextEditor KDataTool приклучок
 Name[mn]=Текст боловсруулагчийн өгөгдлийн хэрэгслийн плугин
-Name[ms]=Plug masuk KDataTool KTextEditor
 Name[mt]=Name=Plagin ta' KTextEditor - KDataTool
 Name[nb]=KTextEditor KDataTool-programtillegg
 Name[nds]=KTextEditor-Plugin för KDataTool
@@ -104,7 +103,6 @@ Comment[lt]=Įjungia duomenų įrankius, tokius kaip sinonimų žodynas ir rašy
 Comment[lv]=Ieslēdz instalētos datu rīkus kā tēzaurs un pareizrakstības pārbaudītājs
 Comment[mk]=Овозможување на алатки како енциклопедија или проверка на правопис (ако се инсталирани)
 Comment[mn]=thesaurus and spell check (хэрвээ суусан бол) гэх мэт өгөгдлийн хэрэгслүүдийг нээнэ.
-Comment[ms]=Membolehkan alatan data seperti tesaurus dan periksa ejaan(jika dipasang)
 Comment[mt]=Ippermetti l-użu ta' għodda bħat-teżawru u spell check (jekk installati)
 Comment[nb]=Skru på dataverktøy som ordbok og stavekontroll (hvis det er installert)
 Comment[nds]=Warktüüch as Thesaurus oder Klookschriever anmaken (wenn op dien Reekner)
