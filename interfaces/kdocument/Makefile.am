@@ -1,4 +1,4 @@
-INCLUDES = -I../ $(all_includes)
+INCLUDES = -I$(top_srcdir)/interfaces $(all_includes)
 
 lib_LTLIBRARIES = libkdocument.la
 
