@@ -220,7 +220,7 @@ void Job::emitResult()
   if ( m_error && d->m_interactive && d->m_autoErrorHandling )
     showErrorDialog( d->m_errorParentWidget );
   emit result(this);
-  delete this;
+  deleteLater();
 }
 
 void Job::kill( bool quietly )
