@@ -16,7 +16,6 @@ Comment[de]=OASIS OpenDocument Textverarbeitungsvorlage
 Comment[es]=Plantilla de documento de texto de OpenDocument OASIS
 Comment[et]=OASIS-e OpenDocument tekstidokumendi mall
 Comment[eu]=OASIS OpenDocument testu txantiloia
-Comment[fr]=Modèle de document texte OASIS OpenDocument
 Comment[gl]=Modelo de Texto OASIS OpenDocument
 Comment[hi]=ओएसिस ओपनडाकुमेंट पाठ टैम्प्लेट
 Comment[hu]=OASIS-dokumentumsablon
@@ -43,7 +42,6 @@ Comment[sv]=OASIS OpenDocument textmall
 Comment[ta]=OASIS திறந்த ஆவண உரை வார்ப்புரு
 Comment[tg]=Ҳуҷҷати Матнии OASIS
 Comment[tr]=OASIS OpenDocument Metin Şablonu
-Comment[uk]=Шаблон текстового документу OASIS OpenDocument
 Comment[xx]=xxOASIS OpenDocument Text Templatexx
 Comment[zh_CN]=OASIS OpenDocument 文本文档模板
 [Property::X-KDE-NativeExtension]
