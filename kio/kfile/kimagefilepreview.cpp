@@ -39,13 +39,14 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     autoMode = config->readBoolEntry( "Automatic Preview", true );
 
     QGridLayout *vb = new QGridLayout( this, 2, 2, 0, KDialog::spacingHint() );
-    vb->addItem( new QSpacerItem(KDialog::marginHint(), 0, QSizePolicy::Fixed), 0, 0 );
+    vb->addItem( new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0 );
 
     imageLabel = new QLabel( this );
-    imageLabel->setFrameStyle( Q3Frame::Panel | Q3Frame::Sunken );
     imageLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
     imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );
     vb->addWidget( imageLabel, 0, 1 );
+
+    vb->addItem( new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 2 );
 
     QHBoxLayout *hb = new QHBoxLayout( 0 );
     vb->addLayout( hb, 1, 1 );
