@@ -2047,9 +2047,15 @@ KFilePermissionsPropsPlugin::~KFilePermissionsPropsPlugin()
   delete d;
 }
 
-bool KFilePermissionsPropsPlugin::supports( KFileItemList /*_items*/ )
+bool KFilePermissionsPropsPlugin::supports( KFileItemList _items )
 {
-  return true;
+  KFileItemList::const_iterator it = _items.constBegin();
+  for ( ; it != _items.constEnd(); ++it ) {
+    KFileItem *item = *it;
+    if( !item->user().isEmpty() || !item->group().isEmpty() )
+      return true;
+  }
+  return false;
 }
 
 // sets a combo box in the Access Control frame
