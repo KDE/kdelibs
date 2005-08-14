@@ -73,6 +73,7 @@ class QString;
 	class KScriptClientInterface
 	{
 	public:
+		virtual ~KScriptClientInterface(){};
 		enum Result { ResultSuccess, ResultFailure, ResultContinue, ResultBreak };
 		/**
 		*	This function will allow the main application of any errors

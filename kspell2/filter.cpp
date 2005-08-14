@@ -161,7 +161,7 @@ Word Filter::previousWord() const
 
 Word Filter::wordAtPosition( unsigned int pos ) const
 {
-    if ( pos > m_buffer.length() )
+    if ( (int)pos > m_buffer.length() )
         return Filter::end();
 
     int currentPosition = pos - 1;
@@ -278,7 +278,7 @@ QChar Filter::skipToLetter( uint &fromPosition ) const
 
     QChar currentChar = m_buffer[ fromPosition ];
     while ( !currentChar.isLetter() &&
-            fromPosition < m_buffer.length() ) {
+            (int)fromPosition < m_buffer.length() ) {
         ++fromPosition;
         currentChar = m_buffer[ fromPosition ];
     }

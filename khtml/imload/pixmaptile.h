@@ -48,7 +48,7 @@ public:
     PixmapTile()
     {}
 
-    ~PixmapTile()
+    virtual ~PixmapTile()
     {
         if (cacheNode)
             ImageManager::pixmapCache()->removeEntry(this);

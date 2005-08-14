@@ -1110,7 +1110,7 @@ void RenderSelect::layout( )
     QVector<HTMLGenericFormElementImpl*> listItems = element()->listItems();
 
     bool foundOption = false;
-    for (uint i = 0; i < listItems.size() && !foundOption; i++)
+    for (int i = 0; i < listItems.size() && !foundOption; i++)
 	foundOption = (listItems[i]->id() == ID_OPTION);
 
     m_widget->setEnabled(foundOption && ! element()->disabled());
@@ -1129,7 +1129,7 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
 
         if ( !found ) {
             // this one is not selectable,  we need to find an option element
-            while ( ( unsigned ) index < listItems.size() ) {
+            while ( index < listItems.size() ) {
                 if ( listItems[index]->id() == ID_OPTION ) {
                     found = true;
                     break;
@@ -1151,8 +1151,8 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
         if ( found ) {
             bool changed = false;
 
-            for ( unsigned int i = 0; i < listItems.size(); ++i )
-                if ( listItems[i]->id() == ID_OPTION && i != (unsigned int) index )
+            for ( int i = 0; i < listItems.size(); ++i )
+                if ( listItems[i]->id() == ID_OPTION && i !=  index )
                 {
                     HTMLOptionElementImpl* opt = static_cast<HTMLOptionElementImpl*>( listItems[i] );
                     changed |= (opt->m_selected == true);
@@ -1186,7 +1186,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
     // don't use listItems() here as we have to avoid recalculations - changing the
     // option list will make use update options not in the way the user expects them
     QVector<HTMLGenericFormElementImpl*> listItems = element()->m_listItems;
-    for ( unsigned i = 0; i < listItems.count(); i++ )
+    for ( int i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
         if ( listItems[i]->id() == ID_OPTION )

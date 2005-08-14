@@ -708,7 +708,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     int secondLen = addValues ? addValues->count() : 0;
     int totalLen = firstLen + secondLen;
 
-    if (inlineProps.size() < (int)totalLen)
+    if (inlineProps.size() < totalLen)
 	{
         inlineProps.resize(totalLen + 1);
 	}

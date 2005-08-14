@@ -41,6 +41,7 @@ class KFileItem;
 class KIO_EXPORT KFileFilter
 {
 public:
+	virtual ~KFileFilter() {};
     /**
      * Checks the given @p item.
      * @param item the item to filter

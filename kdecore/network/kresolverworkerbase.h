@@ -289,8 +289,8 @@ protected:
 class KResolverWorkerFactoryBase
 {
 public:
+  virtual ~KResolverWorkerFactoryBase() {};
   virtual KResolverWorkerBase* create() const = 0;
-
   /**
    * Wrapper call to register workers
    *

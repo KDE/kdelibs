@@ -10,6 +10,7 @@ class ImageLoader;
 class GIFLoaderProvider: public ImageLoaderProvider
 {
 public:
+	virtual ~GIFLoaderProvider(){};
     virtual Type type();
 
     virtual ImageLoader* loaderFor(const QByteArray& prefix);

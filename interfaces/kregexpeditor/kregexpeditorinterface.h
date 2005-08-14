@@ -77,6 +77,8 @@ public:
    */
   virtual QString regExp() const = 0;
 
+  virtual ~KRegExpEditorInterface(){};
+
 protected:
 // These are signals: in classes that actually implement the interface.
 

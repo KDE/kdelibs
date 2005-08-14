@@ -37,7 +37,8 @@ created and registered with ImageManager::loaderDatabase().
 class ImageLoaderProvider
 {
 public:
-    enum Type
+    virtual ~ImageLoaderProvider(){};
+	enum Type
     {
         Efficient,
         Foreign

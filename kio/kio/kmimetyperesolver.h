@@ -35,6 +35,7 @@
 class KIO_EXPORT KMimeTypeResolverBase
 {
 public:
+	virtual ~KMimeTypeResolverBase() {};
     virtual void slotViewportAdjusted() = 0;
     virtual void slotProcessMimeIcons() = 0;
 protected:

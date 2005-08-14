@@ -1377,7 +1377,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
   for( ; it != list.end(); ++it )
     {
       QString value = *it;
-      uint i;
+      int i;
       int strLength(value.length());
       for( i = 0; i < strLength; i++ )
         {

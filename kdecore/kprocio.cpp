@@ -237,7 +237,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   //in case there's no '\n' at the end of the buffer
   if ((len<0) && 
-      ((unsigned int)rbi<recvbuffer.length()))
+      (rbi<recvbuffer.length()))
   {
      recvbuffer=recvbuffer.mid (rbi);
      rbi=0;

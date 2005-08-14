@@ -310,6 +310,7 @@ private:
 class KIO_EXPORT KBookmarkOwner
 {
 public:
+    virtual ~KBookmarkOwner() {};
   /**
    * This function is called if the user selects a bookmark.  It will
    * open up the bookmark in a default fashion unless you override it.

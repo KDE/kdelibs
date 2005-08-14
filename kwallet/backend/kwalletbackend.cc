@@ -90,7 +90,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/urandom")) {
 		QFile devrand("/dev/urandom");
 		if (devrand.open(QIODevice::ReadOnly)) {
-			unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+			int rc = devrand.readBlock(randBlock.data(), randBlock.size());
 
 			if (rc != randBlock.size()) {
 				return -3;		// not enough data read
@@ -105,8 +105,8 @@ static int getRandomBlock(QByteArray& randBlock) {
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
 		if (devrand.open(QIODevice::ReadOnly)) {
-		unsigned int rc = 0;
-		unsigned int cnt = 0;
+		int rc = 0;
+		int cnt = 0;
 
 			do {
 				int rc2 = devrand.readBlock(randBlock.data() + rc, randBlock.size());
@@ -132,7 +132,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 		if (QFile::exists(randFilename)) {
 			QFile devrand(randFilename);
 			if (devrand.open(QIODevice::ReadOnly)) {
-				unsigned int rc = devrand.readBlock(randBlock.data(), randBlock.size());
+				int rc = devrand.readBlock(randBlock.data(), randBlock.size());
 				if (rc != randBlock.size()) {
 					return -3;      // not enough data read
 				}
@@ -574,7 +574,7 @@ int Backend::sync(const QByteArray& password) {
 		wholeFile[(int)(i+blksz)] = (decrypted.size() >> 8*(3-i))&0xff;
 	}
 
-	for (unsigned int i = 0; i < decrypted.size(); i++) {
+	for (int i = 0; i < decrypted.size(); i++) {
 		wholeFile[(int)(i+blksz+4)] = decrypted[i];
 	}
 

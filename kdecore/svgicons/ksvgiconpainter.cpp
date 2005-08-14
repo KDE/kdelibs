@@ -129,7 +129,7 @@ public:
 
 	void ensureSpace(QVector<ArtBpath> &vec, int index)
 	{
-		if(vec.size() == (unsigned int) index)
+		if(vec.size() == index)
 			vec.resize(index + 1);
 	}
 
@@ -1768,7 +1768,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 
 					index++;
 
-					if(vec.size() == (unsigned int) index)
+					if(vec.size() == index)
 						vec.resize(index + 1);
 
 					vec[index].code = (ArtPathcode)ART_END2;
@@ -1807,7 +1807,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 
 					index++;
 
-					if(vec.size() == (unsigned int) index)
+					if(vec.size() ==  index)
 						vec.resize(index + 1);
 
 					vec[index].code = (ArtPathcode)ART_END2;
@@ -2245,7 +2245,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 		{
 			index++;
 
-			if(vec.size() == (unsigned int) index)
+			if(vec.size() ==  index)
 				vec.resize(index + 1);
 
 			vec[index].code = ART_LINETO;
@@ -2264,7 +2264,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 		{
 			index++;
 
-			if(vec.size() == (unsigned int) index)
+			if(vec.size() ==  index)
 				vec.resize(index + 1);
 
 			vec[index].code = (ArtPathcode)ART_END2;
@@ -2279,7 +2279,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	// Close
 	index++;
 
-	if(vec.size() == (unsigned int) index)
+	if(vec.size() ==  index)
 		vec.resize(index + 1);
 
 	vec[index].code = ART_END;

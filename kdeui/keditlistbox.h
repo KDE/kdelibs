@@ -67,7 +67,9 @@ public:
             : m_representationWidget( repWidget ),
               m_lineEdit( edit ) {}
         KDEUI_EXPORT CustomEditor( KComboBox *combo );
-
+		
+		KDEUI_EXPORT virtual ~CustomEditor() {};
+		
         KDEUI_EXPORT void setRepresentationWidget( QWidget *repWidget ) {
             m_representationWidget = repWidget;
         }

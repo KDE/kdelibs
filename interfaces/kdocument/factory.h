@@ -28,3 +28,4 @@ namespace KDocument {
 	Factory *factory(KParts::Factory* _factory);
 }
 #endif
+

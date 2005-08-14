@@ -462,3 +462,4 @@ void KNetworkInterface::updateStats()
 {
     d->readStats();
 }
+

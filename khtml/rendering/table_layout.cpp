@@ -241,7 +241,7 @@ void FixedTableLayout::calcMinMaxWidth()
 
     if ( !tableWidth ) {
 	bool haveNonFixed = false;
-	for ( unsigned int i = 0; i < width.size(); i++ ) {
+	for ( int i = 0; i < width.size(); i++ ) {
 	    if ( !width[i].isFixed() ) {
 		haveNonFixed = true;
 		break;
@@ -575,7 +575,7 @@ void AutoTableLayout::calcMinMaxWidth()
     int maxNonPercent = 0;
 
     int remainingPercent = 100;
-    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( int i = 0; i < layoutStruct.size(); i++ ) {
 	minWidth += layoutStruct[i].effMinWidth;
 	maxWidth += layoutStruct[i].effMaxWidth;
 	if ( layoutStruct[i].effWidth.isPercent() ) {
@@ -632,7 +632,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	layoutStruct[i].effMaxWidth = layoutStruct[i].maxWidth;
     }
 
-    for ( unsigned int i = 0; i < spanCells.size(); i++ ) {
+    for ( int i = 0; i < spanCells.size(); i++ ) {
 	RenderTableCell *cell = spanCells[i];
 	if ( !cell || cell == (RenderTableCell *)-1 )
 	    break;
@@ -837,7 +837,7 @@ void AutoTableLayout::insertSpanCell( RenderTableCell *cell )
     }
 
     // add them in sort. This is a slow algorithm, and a binary search or a fast sorting after collection would be better
-    unsigned int pos = 0;
+    int pos = 0;
     int span = cell->colSpan();
     while ( pos < spanCells.size() && spanCells[pos] && span > spanCells[pos]->colSpan() )
 	pos++;
@@ -1161,7 +1161,7 @@ void AutoTableLayout::layout()
 void AutoTableLayout::calcPercentages() const
 {
     total_percent = 0;
-    for ( unsigned int i = 0; i < layoutStruct.size(); i++ ) {
+    for ( int i = 0; i < layoutStruct.size(); i++ ) {
 	if ( layoutStruct[i].width.isPercent() )
 	    total_percent += layoutStruct[i].width.value();
     }
