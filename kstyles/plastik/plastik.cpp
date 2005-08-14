@@ -142,6 +142,7 @@ PlastikStyle::PlastikStyle() :
     // TODO: change this when double buttons are implemented
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
 
+    setWidgetLayoutProp(WT_PushButton, PushButton::DefaultIndicatorMargin, 1);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin, 3);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
@@ -243,6 +244,15 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 {
                     bool sunken   = (flags & State_On) || (flags & State_Sunken);
 
+                    // TODO: set different background color for default buttons (Bevel is drawn on top of DefaultButtonBevel)
+//                     const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
+//                     if (bOpt &&  //### helper function in KStyle?
+//                         (bOpt->features & QStyleOptionButton::DefaultButton)) {
+//             QColorGroup g2 = cg;
+//             if (isDefault)
+//                 g2.setColor(QColorGroup::Background, cg.background().dark(120) );
+//                     }
+
                     renderButton(p, r, pal, sunken/*,
                                  bool mouseOver,
                                  bool horizontal,
@@ -252,7 +262,15 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                // TODO: default button
+                case PushButton::DefaultButtonBevel:
+                {
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+                    if(!enabled) contourFlags|=Is_Disabled;
+                    renderContour(p, r, pal.background().color(), pal.background().color().dark(120), contourFlags);
+
+                    return;
+                }
             }
         }
         break;
@@ -2053,24 +2071,7 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //                 break;
 //             }
 //         }
-//         case PE_ButtonBevel:
-//         case PE_ButtonTool:
-//         case PE_ButtonDropDown:
-//         case PE_ButtonCommand: {
-//             bool khtmlMode = opt.isDefault() ? false : khtmlWidgets.contains(opt.widget());
-//             renderButton(p, r, cg, (on||down), mouseOver, true, enabled, khtmlMode );
-//             break;
-//         }
-// 
-//         case PE_ButtonDefault: {
-//             uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-//                     Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-//             if(!enabled) contourFlags|=Is_Disabled;
-//             renderContour(p, r, cg.background(), cg.background().dark(120),
-//                     contourFlags);
-//             break;
-//         }
-// 
+
 //         case PE_SpinWidgetPlus:
 //         case PE_SpinWidgetMinus: {
 //             p->setPen( cg.buttonText() );
@@ -2576,31 +2577,6 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //                     break;
 //                     default:
 //                             KStyle::drawControl(element, p, widget, r, cg, flags, opt);
-//             }
-// 
-//             break;
-//         }
-// 
-//         case CE_PushButton: {
-//             QPushButton *button = (QPushButton *)widget;
-// 
-//             const bool isDefault = enabled && button->isDefault();
-// 
-//             if (button->isFlat() )
-//                   = true;
-// 
-//             if (widget == hoverWidget)
-//                 flags |= Style_MouseOver;
-// 
-//             QColorGroup g2 = cg;
-//             if (isDefault)
-//                 g2.setColor(QColorGroup::Background, cg.background().dark(120) );
-//             drawPrimitive(PE_ButtonBevel, p,
-//                     isDefault?QRect(r.x()+1,r.y()+1,r.width()-2,r.height()-2):r,
-//                     g2, flags, QStyleOption(button) );
-// 
-//             if (isDefault ) {
-//                 drawPrimitive(PE_ButtonDefault, p, r, cg, flags);
 //             }
 // 
 //             break;
