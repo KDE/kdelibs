@@ -365,9 +365,64 @@
 		<Include>
 			<And>
 			<Category>Utility</Category>
+			<Not><Category>Accessibility</Category></Not>
+			<Not><Category>X-KDE-Utilities-Desktop</Category></Not>
+			<Not><Category>X-KDE-Utilities-File</Category></Not>
+			<Not><Category>X-KDE-Utilities-Peripherals</Category></Not>
+			<Not><Category>X-KDE-Utilities-PIM</Category></Not>
 			<Not><Category>X-KDE-More</Category></Not>
 			</And>
 		</Include>
+		<Menu>
+			<Name>Accessibility</Name>
+			<Directory>kde-utilities-accessibility.directory</Directory>
+			<Include>
+				<And>
+				<Category>Utility</Category>
+				<Category>Accessibility</Category>
+				</And>
+			</Include>
+		</Menu>
+		<Menu>
+			<Name>Desktop</Name>
+			<Directory>kde-utilities-desktop.directory</Directory>
+			<Include>
+				<And>
+				<Category>Utility</Category>
+				<Category>X-KDE-Utilities-Desktop</Category>
+				</And>
+			</Include>
+		</Menu>
+		<Menu>
+			<Name>File</Name>
+			<Directory>kde-utilities-file.directory</Directory>
+			<Include>
+				<And>
+				<Category>Utility</Category>
+				<Category>X-KDE-Utilities-File</Category>
+				</And>
+			</Include>
+		</Menu>
+		<Menu>
+			<Name>Peripherals</Name>
+			<Directory>kde-utilities-peripherals.directory</Directory>
+			<Include>
+				<And>
+				<Category>Utility</Category>
+				<Category>X-KDE-Utilities-Peripherals</Category>
+				</And>
+			</Include>
+		</Menu>
+		<Menu>
+			<Name>PIM</Name>
+			<Directory>kde-utilities-pim.directory</Directory>
+			<Include>
+				<And>
+				<Category>Utility</Category>
+				<Category>X-KDE-Utilities-PIM</Category>
+				</And>
+			</Include>
+		</Menu>
 		<Menu>
 			<Name>XUtilities</Name>
 			<Directory>kde-utilities-xutils.directory</Directory>
