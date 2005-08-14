@@ -301,8 +301,21 @@
 			<Menuname>More</Menuname>
 		</Layout>
 		<Include>
+                        <And>
 			<Category>Office</Category>
-		</Include>
+                        <Not><Category>X-KDE-More</Category></Not>
+                        </And>
+                </Include>
+                <Menu>
+                        <Name>More</Name>
+                        <Directory>kde-more.directory</Directory>
+                        <Include>
+                                <And>
+                                <Category>Office</Category>
+                                <Category>X-KDE-More</Category>
+                                </And>
+                        </Include>
+                </Menu>
 	</Menu>
 	<Menu>
 		<Name>Settingsmenu</Name>
