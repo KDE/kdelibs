@@ -35,20 +35,21 @@ namespace khtmlImLoad {
 class ImageOwner
 {
 public:
+    virtual ~ImageOwner() {};
     /**
      Called to notify the owner when the intrinic size is available
-     
+
      ### what should be done on scale()/dontScale()?
     */
     virtual void imageHasGeometry(Image* img, int width, int height) = 0;
-    
+
     /**
      Called to notify the owner that a portion has changed
-     
+
      ### what should be done on scale()/dontScale()?
      */
     virtual void imageChange(Image* img, QRect region) = 0;
-    
+
     /**
      Called to notify the owner that the image is broken
     */
