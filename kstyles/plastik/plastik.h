@@ -139,15 +139,15 @@ public:
 //                   const QStyleOption & = QStyleOption::Default,
 //                   QStyleHintReturn * = 0 ) const;
 // 
-// protected:
-//     enum TabPosition
-//     {
-//         First = 0,
-//         Middle,
-//         Last,
-//         Single // only one tab!
-//     };
-// 
+protected:
+    enum TabPosition
+    {
+        First = 0,
+        Middle,
+        Last,
+        Single // only one tab!
+    };
+
     enum ColorType
     {
         ButtonContour,
@@ -256,16 +256,17 @@ public:
                         const QColor &c1,
                         const QColor &c2,
                         bool horizontal = true) const;
-// 
-//     void renderTab(QPainter *p,
-//                    const QRect &r,
-//                    const QColorGroup &g,
-//                    bool mouseOver = false,
-//                    const bool selected = false,
-//                    const bool bottom = false,
-//                    const TabPosition pos = Middle,
-//                    const bool triangular = false,
-//                    const bool cornerWidget = false) const;
+
+    void renderTab(QPainter *p,
+                   const QRect &r,
+                   const QPalette &pal,
+                   bool mouseOver,
+                   const bool selected,
+                   const bool bottom,
+                   const QStyleOptionTab::TabPosition pos /*const TabPosition pos = Middle*/,
+                   const bool triangular = false,
+                   const bool cornerWidget = false,
+                   const bool reverseLayout = false) const;
 // 
 //     virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
 //                                         const Q3PopupMenu* popup ) const;

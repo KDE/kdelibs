@@ -749,6 +749,31 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
+        case WT_Tab:
+        {
+            const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
+            bool reverseLayout = tabOpt->direction == Qt::RightToLeft;
+
+            switch (primitive)
+            {
+                case Tab::NorthTab:
+                case Tab::SouthTab:
+                {
+                    QStyleOptionTab::TabPosition pos = tabOpt->position;
+
+                    // TODO: tab painting needs a lot of work in order to handle east and west tabs.
+                    // TODO: handle triangular...
+                    // TODO: either overlap tabs 1 pixel, or adapt painting.
+                    renderTab(p, r, pal, false /* TODO mouseOver*/, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
+
+                    return;
+
+                }
+
+            }
+
+        }
+        break;
     }
 
     // default fallback
@@ -1621,266 +1646,265 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //     pix.fill( cg.background().light(105) );
 // }
 // 
-// void PlastikStyle::renderTab(QPainter *p,
-//                             const QRect &r,
-//                             const QColorGroup &g,
-//                             bool mouseOver,
-//                             const bool selected,
-//                             const bool bottom,
-//                             const TabPosition pos,
-//                             const bool triangular,
-//                             const bool cornerWidget) const
-// {
-//     const bool reverseLayout = QApplication::reverseLayout();
-// 
-//     const bool isFirst = (pos == First) || (pos == Single);
-//     const bool isLast = (pos == Last);
-//     const bool isSingle = (pos == Single);
-// 
-//     if (selected) {
-//     // is selected
-// 
-//     // the top part of the tab which is nearly the same for all positions
-//         QRect Rc; // contour
-//         if (!bottom) {
-//             if (isFirst && !cornerWidget && !reverseLayout) {
-//                 Rc = QRect(r.x(), r.y(), r.width()-1, r.height()-3);
-//             } else if (isFirst && !cornerWidget && reverseLayout) {
-//                 Rc = QRect(r.x()+1, r.y(), r.width()-1, r.height()-3);
-//             } else {
-//                 Rc = QRect(r.x()+1, r.y(), r.width()-2, r.height()-3);
-//             }
-//         } else {
-//             if (isFirst && !cornerWidget && !reverseLayout) {
-//                 Rc = QRect(r.x(), r.y()+3, r.width()-1, r.height()-3);
-//             } else if (isFirst && !cornerWidget && reverseLayout) {
-//                 Rc = QRect(r.x()+1, r.y()+3, r.width()-1, r.height()-3);
-//             } else {
-//                 Rc = QRect(r.x()+1, r.y()+3, r.width()-2, r.height()-3);
-//             }
-//         }
-//         const QRect Rs(Rc.x()+1, bottom?Rc.y():Rc.y()+1, Rc.width()-2, Rc.height()-1); // the resulting surface
-//         // the area where the fake border shoudl appear
-//         const QRect Rb(r.x(), bottom?r.top():Rc.bottom()+1, r.width(), r.height()-Rc.height() );
-// 
-//         uint contourFlags = Draw_Left|Draw_Right;
-//         if(!bottom) {
-//             contourFlags |= Draw_Top|Round_UpperLeft|Round_UpperRight;
-//         } else {
-//             contourFlags |= Draw_Bottom|Round_BottomLeft|Round_BottomRight;
-//         }
-//         renderContour(p, Rc,
-//                       g.background(), getColor(g,PanelContour),
-//                       contourFlags);
-// 
-//         // surface
-//         if(!bottom) {
-//             p->setPen(getColor(g,PanelLight) );
-//             p->drawLine(Rs.x()+1, Rs.y(), Rs.right()-1, Rs.y() );
-//             renderGradient(p, QRect(Rs.x(), Rs.y()+1, 1, Rs.height()-1),
-//                            getColor(g,PanelLight), getColor(g,PanelLight2));
-//             renderGradient(p, QRect(Rs.right(), Rs.y()+1, 1, Rs.height()-1),
-//                             getColor(g,PanelDark), getColor(g,PanelDark2));
-//         } else {
-//             p->setPen(alphaBlendColors(g.background(), g.background().dark(160), 100) );
-//             p->drawLine(Rs.x()+1, Rs.bottom(), Rs.right()-1, Rs.bottom() );
-//             renderGradient(p, QRect(Rs.x(), Rs.y(), 1, Rs.height()-1),
-//                             getColor(g,PanelLight), getColor(g,PanelLight2));
-//             renderGradient(p, QRect(Rs.right(), Rs.y(), 1, Rs.height()-1),
-//                             getColor(g,PanelDark), getColor(g,PanelDark2));
-//         }
-// 
-//     // some "position specific" paintings...
-//         // draw parts of the inactive tabs around...
-//         if(!isSingle) {
-//             p->setPen(alphaBlendColors(g.background(), getColor(g, ButtonContour), 50) );
-//             if( (!isFirst&&!reverseLayout) || (!isLast&&reverseLayout) ) {
-//                 p->drawPoint(r.left(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
-//                 renderSurface(p, QRect(r.left(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
-//                             g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast,
-//                             Draw_Top|Draw_Bottom|Is_Horizontal);
-//             }
-//             if( (!isLast&&!reverseLayout) || (!isFirst&&reverseLayout) ) {
-//                 p->drawPoint(r.right(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
-//                 renderSurface(p, QRect(r.right(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
-//                             g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast,
-//                             Draw_Top|Draw_Bottom|Is_Horizontal);
-//             }
-//         }
-//         // left connection from the panel border to the tab. :)
-//         if(isFirst && !reverseLayout && !cornerWidget) {
-//             p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//             p->drawLine(Rb.x(), Rb.y(), Rb.x(), Rb.bottom() );
-//             p->setPen(getColor(g,PanelLight) );
-//             p->drawLine(Rb.x()+1, Rb.y(), Rb.x()+1, Rb.bottom() );
-//         } else if(isFirst && reverseLayout && !cornerWidget) {
-//             p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//             p->drawLine(Rb.right(), Rb.y(), Rb.right(), Rb.bottom() );
-//             p->setPen(getColor(g,PanelDark) );
-//             p->drawLine(Rb.right()-1, Rb.y(), Rb.right()-1, Rb.bottom() );
-//         }
-//         // rounded connections to the panel...
-//         if(!bottom) {
-//             // left
-//             if( (!isFirst && !reverseLayout) || (reverseLayout) || (isFirst && !reverseLayout && cornerWidget) ) {
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.x(), Rb.y());
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x(), Rb.y()+1);
-//                 p->drawPoint(Rb.x()+1, Rb.y());
-//             }
-//             // right
-//             if( (!reverseLayout) || (!isFirst && reverseLayout) || (isFirst && reverseLayout && cornerWidget) ) {
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.right(), Rb.y());
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right(), Rb.y()+1);
-//                 p->drawPoint(Rb.right()-1, Rb.y());
-//             }
-//         } else {
-//             // left
-//             if( (!isFirst && !reverseLayout) || (reverseLayout) || (isFirst && !reverseLayout && cornerWidget) ) {
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.x(), Rb.bottom());
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x(), Rb.bottom()-1);
-//                 p->drawPoint(Rb.x()+1, Rb.bottom());
-//             }
-//             // right
-//             if( (!reverseLayout) || (!isFirst && reverseLayout) || (isFirst && reverseLayout && cornerWidget) ) {
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.right(), Rb.bottom());
-//                 p->setPen( alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right(), Rb.bottom()-1);
-//                 p->drawPoint(Rb.right()-1, Rb.bottom());
-//             }
-//         }
-// 
-//     } else {
-//     // inactive tabs
-// 
-//     // the top part of the tab which is nearly the same for all positions
-//         QRect Rc; // contour
-//         if (isFirst&&reverseLayout ) {
-//             Rc = QRect(r.x()+1, (bottom?r.y()+2:(triangular?r.y()+2:r.y()+3)), r.width()-2, (triangular?r.height()-4:r.height()-5) );
-//         } else {
-//             Rc = QRect(r.x()+1, (bottom?r.y()+2:(triangular?r.y()+2:r.y()+3)), r.width()-1, (triangular?r.height()-4:r.height()-5) );
-//         }
-//         QRect Rs; // the resulting surface
-//         if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
-//             Rs = QRect(Rc.x()+1, bottom?Rc.y():Rc.y()+1, Rc.width()-2, Rc.height()-1);
-//         } else {
-//             Rs = QRect(Rc.x(), bottom?Rc.y():Rc.y()+1, Rc.width()-1, Rc.height()-1);
-//         }
-//         // the area where the fake border shoudl appear
-//         const QRect Rb(r.x(), bottom?r.y():Rc.bottom()+1, r.width(), 2 );
-// 
-//         uint contourFlags;
-//         if(!bottom) {
-//             if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
-//                 contourFlags = Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft;
-//             } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
-//                 contourFlags = Draw_Right|Draw_Top|Round_UpperRight;
-//             } else {
-//                 contourFlags = Draw_Right|Draw_Top;
-//             }
-//         } else {
-//             if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
-//                 contourFlags = Draw_Left|Draw_Right|Draw_Bottom|Round_BottomLeft;
-//             } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
-//                 contourFlags = Draw_Right|Draw_Bottom|Round_BottomRight;
-//             } else {
-//                 contourFlags = Draw_Right|Draw_Bottom;
-//             }
-//         }
-//         renderContour(p, Rc,
-//                         g.background(), getColor(g, ButtonContour),
-//                         contourFlags);
-// 
-//         uint surfaceFlags = Is_Horizontal;
-//         if(mouseOver) {
-//             surfaceFlags |= (bottom?Highlight_Bottom:Highlight_Top);
-//             surfaceFlags |= Is_Highlight;
-//         }
-//         if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
-//             if(!bottom)
-//                 surfaceFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft;
-//             else
-//                 surfaceFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_BottomLeft;
-//         } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
-//             if(!bottom)
-//                 surfaceFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight;
-//             else
-//                 surfaceFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_BottomRight;
-//         } else {
-//             surfaceFlags |= Draw_Top|Draw_Bottom;
-//         }
-//         renderSurface(p, Rs,
-//                         g.background(), g.button(), getColor(g,MouseOverHighlight), _contrast,
-//                         surfaceFlags);
-// 
-//     // some "position specific" paintings...
-//         // fake parts of the panel border
-//         if(!bottom) {
-//             p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//             p->drawLine(Rb.x(), Rb.y(), ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.y());
-//             p->setPen(getColor(g,PanelLight) );
-//             p->drawLine(Rb.x(), Rb.y()+1, ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.y()+1 );
-//         } else {
-//             p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//             p->drawLine(Rb.x(), Rb.bottom(), ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.bottom());
-//             p->setPen(getColor(g,PanelDark) );
-//             p->drawLine(Rb.x(), Rb.bottom()-1, ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.bottom()-1 );
-//         }
-//         // fake the panel border edge for tabs which are aligned left-most
-//         // (i.e. only if there is no widget in the corner of the tabwidget!)
-//         if(isFirst&&!reverseLayout&&!cornerWidget)
-//         // normal layout
-//         {
-//             if (!bottom) {
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.x()+1, Rb.y()+1 );
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x(), Rb.y()+1 );
-//                 p->setPen(g.background() );
-//                 p->drawPoint(Rb.x(), Rb.y() );
-//                 p->setPen(alphaBlendColors( alphaBlendColors(g.background(), getColor(g, ButtonContour), 50), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x()+1, Rb.y() );
-//             } else {
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.x()+1, Rb.bottom()-1 );
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x(), Rb.bottom()-1 );
-//                 p->setPen(g.background() );
-//                 p->drawPoint(Rb.x(), Rb.bottom() );
-//                 p->setPen(alphaBlendColors( alphaBlendColors(g.background(), getColor(g, ButtonContour), 50), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.x()+1, Rb.bottom() );
-//             }
-//         } else if(isFirst&&reverseLayout&&!cornerWidget)
-//         // reverse layout
-//         {
-//             if (!bottom) {
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.right()-1, Rb.y()+1 );
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right(), Rb.y()+1 );
-//                 p->setPen(g.background() );
-//                 p->drawPoint(Rb.right(), Rb.y() );
-//                 p->setPen(alphaBlendColors( alphaBlendColors(g.background(), getColor(g, ButtonContour), 50), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right()-1, Rb.y() );
-//             } else {
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 50) );
-//                 p->drawPoint(Rb.right()-1, Rb.bottom()-1 );
-//                 p->setPen(alphaBlendColors(g.background(), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right(), Rb.bottom()-1 );
-//                 p->setPen(g.background() );
-//                 p->drawPoint(Rb.right(), Rb.bottom() );
-//                 p->setPen(alphaBlendColors( alphaBlendColors(g.background(), getColor(g, ButtonContour), 50), getColor(g,PanelContour), 150) );
-//                 p->drawPoint(Rb.right()-1, Rb.bottom() );
-//             }
-//         }
-//     }
-// }
+void PlastikStyle::renderTab(QPainter *p,
+                            const QRect &r,
+                            const QPalette &pal,
+                            bool mouseOver,
+                            const bool selected,
+                            const bool bottom,
+                            const QStyleOptionTab::TabPosition pos/*const TabPosition pos*/,
+                            const bool triangular,
+                            const bool cornerWidget,
+                            const bool reverseLayout) const
+{
+    const bool isFirst = pos == QStyleOptionTab::Beginning || pos == QStyleOptionTab::OnlyOneTab/* (pos == First) || (pos == Single)*/;
+    const bool isLast = pos == QStyleOptionTab::End /*(pos == Last)*/;
+    const bool isSingle = pos == QStyleOptionTab::OnlyOneTab /*(pos == Single)*/;
+
+    if (selected) {
+    // is selected
+
+    // the top part of the tab which is nearly the same for all positions
+        QRect Rc; // contour
+        if (!bottom) {
+            if (isFirst && !cornerWidget && !reverseLayout) {
+                Rc = QRect(r.x(), r.y(), r.width()-1, r.height()-3);
+            } else if (isFirst && !cornerWidget && reverseLayout) {
+                Rc = QRect(r.x()+1, r.y(), r.width()-1, r.height()-3);
+            } else {
+                Rc = QRect(r.x()+1, r.y(), r.width()-2, r.height()-3);
+            }
+        } else {
+            if (isFirst && !cornerWidget && !reverseLayout) {
+                Rc = QRect(r.x(), r.y()+3, r.width()-1, r.height()-3);
+            } else if (isFirst && !cornerWidget && reverseLayout) {
+                Rc = QRect(r.x()+1, r.y()+3, r.width()-1, r.height()-3);
+            } else {
+                Rc = QRect(r.x()+1, r.y()+3, r.width()-2, r.height()-3);
+            }
+        }
+        const QRect Rs(Rc.x()+1, bottom?Rc.y():Rc.y()+1, Rc.width()-2, Rc.height()-1); // the resulting surface
+        // the area where the fake border shoudl appear
+        const QRect Rb(r.x(), bottom?r.top():Rc.bottom()+1, r.width(), r.height()-Rc.height() );
+
+        uint contourFlags = Draw_Left|Draw_Right;
+        if(!bottom) {
+            contourFlags |= Draw_Top|Round_UpperLeft|Round_UpperRight;
+        } else {
+            contourFlags |= Draw_Bottom|Round_BottomLeft|Round_BottomRight;
+        }
+        renderContour(p, Rc,
+                      pal.background().color(), getColor(pal,PanelContour),
+                      contourFlags);
+
+        // surface
+        if(!bottom) {
+            p->setPen(getColor(pal,PanelLight) );
+            p->drawLine(Rs.x()+1, Rs.y(), Rs.right()-1, Rs.y() );
+            renderGradient(p, QRect(Rs.x(), Rs.y()+1, 1, Rs.height()-1),
+                           getColor(pal,PanelLight), getColor(pal,PanelLight2));
+            renderGradient(p, QRect(Rs.right(), Rs.y()+1, 1, Rs.height()-1),
+                            getColor(pal,PanelDark), getColor(pal,PanelDark2));
+        } else {
+            p->setPen(alphaBlendColors(pal.background().color(), pal.background().color().dark(160), 100) );
+            p->drawLine(Rs.x()+1, Rs.bottom(), Rs.right()-1, Rs.bottom() );
+            renderGradient(p, QRect(Rs.x(), Rs.y(), 1, Rs.height()-1),
+                            getColor(pal,PanelLight), getColor(pal,PanelLight2));
+            renderGradient(p, QRect(Rs.right(), Rs.y(), 1, Rs.height()-1),
+                            getColor(pal,PanelDark), getColor(pal,PanelDark2));
+        }
+
+    // some "position specific" paintings...
+        // draw parts of the inactive tabs around...
+        if(!isSingle) {
+            p->setPen(alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour), 50) );
+            if( (!isFirst&&!reverseLayout) || (!isLast&&reverseLayout) ) {
+                p->drawPoint(r.left(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
+                renderSurface(p, QRect(r.left(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
+                            pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                            Draw_Top|Draw_Bottom|Is_Horizontal);
+            }
+            if( (!isLast&&!reverseLayout) || (!isFirst&&reverseLayout) ) {
+                p->drawPoint(r.right(), bottom?(triangular?r.bottom()-2:r.bottom()-3):(triangular?r.top()+2:r.top()+3) );
+                renderSurface(p, QRect(r.right(), bottom?r.top()+3:(triangular?r.top()+3:r.top()+4), 1, (triangular?r.height()-6:r.height()-7) ),
+                            pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                            Draw_Top|Draw_Bottom|Is_Horizontal);
+            }
+        }
+        // left connection from the panel border to the tab. :)
+        if(isFirst && !reverseLayout && !cornerWidget) {
+            p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+            p->drawLine(Rb.x(), Rb.y(), Rb.x(), Rb.bottom() );
+            p->setPen(getColor(pal,PanelLight) );
+            p->drawLine(Rb.x()+1, Rb.y(), Rb.x()+1, Rb.bottom() );
+        } else if(isFirst && reverseLayout && !cornerWidget) {
+            p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+            p->drawLine(Rb.right(), Rb.y(), Rb.right(), Rb.bottom() );
+            p->setPen(getColor(pal,PanelDark) );
+            p->drawLine(Rb.right()-1, Rb.y(), Rb.right()-1, Rb.bottom() );
+        }
+        // rounded connections to the panel...
+        if(!bottom) {
+            // left
+            if( (!isFirst && !reverseLayout) || (reverseLayout) || (isFirst && !reverseLayout && cornerWidget) ) {
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.x(), Rb.y());
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x(), Rb.y()+1);
+                p->drawPoint(Rb.x()+1, Rb.y());
+            }
+            // right
+            if( (!reverseLayout) || (!isFirst && reverseLayout) || (isFirst && reverseLayout && cornerWidget) ) {
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.right(), Rb.y());
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right(), Rb.y()+1);
+                p->drawPoint(Rb.right()-1, Rb.y());
+            }
+        } else {
+            // left
+            if( (!isFirst && !reverseLayout) || (reverseLayout) || (isFirst && !reverseLayout && cornerWidget) ) {
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.x(), Rb.bottom());
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x(), Rb.bottom()-1);
+                p->drawPoint(Rb.x()+1, Rb.bottom());
+            }
+            // right
+            if( (!reverseLayout) || (!isFirst && reverseLayout) || (isFirst && reverseLayout && cornerWidget) ) {
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.right(), Rb.bottom());
+                p->setPen( alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right(), Rb.bottom()-1);
+                p->drawPoint(Rb.right()-1, Rb.bottom());
+            }
+        }
+
+    } else {
+    // inactive tabs
+
+    // the top part of the tab which is nearly the same for all positions
+        QRect Rc; // contour
+        if (isFirst&&reverseLayout ) {
+            Rc = QRect(r.x()+1, (bottom?r.y()+2:(triangular?r.y()+2:r.y()+3)), r.width()-2, (triangular?r.height()-4:r.height()-5) );
+        } else {
+            Rc = QRect(r.x()+1, (bottom?r.y()+2:(triangular?r.y()+2:r.y()+3)), r.width()-1, (triangular?r.height()-4:r.height()-5) );
+        }
+        QRect Rs; // the resulting surface
+        if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
+            Rs = QRect(Rc.x()+1, bottom?Rc.y():Rc.y()+1, Rc.width()-2, Rc.height()-1);
+        } else {
+            Rs = QRect(Rc.x(), bottom?Rc.y():Rc.y()+1, Rc.width()-1, Rc.height()-1);
+        }
+        // the area where the fake border shoudl appear
+        const QRect Rb(r.x(), bottom?r.y():Rc.bottom()+1, r.width(), 2 );
+
+        uint contourFlags;
+        if(!bottom) {
+            if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
+                contourFlags = Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft;
+            } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
+                contourFlags = Draw_Right|Draw_Top|Round_UpperRight;
+            } else {
+                contourFlags = Draw_Right|Draw_Top;
+            }
+        } else {
+            if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
+                contourFlags = Draw_Left|Draw_Right|Draw_Bottom|Round_BottomLeft;
+            } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
+                contourFlags = Draw_Right|Draw_Bottom|Round_BottomRight;
+            } else {
+                contourFlags = Draw_Right|Draw_Bottom;
+            }
+        }
+        renderContour(p, Rc,
+                        pal.background().color(), getColor(pal, ButtonContour),
+                        contourFlags);
+
+        uint surfaceFlags = Is_Horizontal;
+        if(mouseOver) {
+            surfaceFlags |= (bottom?Highlight_Bottom:Highlight_Top);
+            surfaceFlags |= Is_Highlight;
+        }
+        if ( (isFirst&&!reverseLayout) || (isLast&&reverseLayout) ) {
+            if(!bottom)
+                surfaceFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft;
+            else
+                surfaceFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_BottomLeft;
+        } else if ( (isLast&&!reverseLayout) || (isFirst&&reverseLayout) ) {
+            if(!bottom)
+                surfaceFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight;
+            else
+                surfaceFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_BottomRight;
+        } else {
+            surfaceFlags |= Draw_Top|Draw_Bottom;
+        }
+        renderSurface(p, Rs,
+                        pal.background().color(), pal.button(), getColor(pal,MouseOverHighlight), _contrast,
+                        surfaceFlags);
+
+    // some "position specific" paintings...
+        // fake parts of the panel border
+        if(!bottom) {
+            p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+            p->drawLine(Rb.x(), Rb.y(), ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.y());
+            p->setPen(getColor(pal,PanelLight) );
+            p->drawLine(Rb.x(), Rb.y()+1, ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.y()+1 );
+        } else {
+            p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+            p->drawLine(Rb.x(), Rb.bottom(), ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.bottom());
+            p->setPen(getColor(pal,PanelDark) );
+            p->drawLine(Rb.x(), Rb.bottom()-1, ((isLast&&!reverseLayout)||(isFirst&&reverseLayout&&cornerWidget))?Rb.right():Rb.right()-1, Rb.bottom()-1 );
+        }
+        // fake the panel border edge for tabs which are aligned left-most
+        // (i.e. only if there is no widget in the corner of the tabwidget!)
+        if(isFirst&&!reverseLayout&&!cornerWidget)
+        // normal layout
+        {
+            if (!bottom) {
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.x()+1, Rb.y()+1 );
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x(), Rb.y()+1 );
+                p->setPen(pal.background().color() );
+                p->drawPoint(Rb.x(), Rb.y() );
+                p->setPen(alphaBlendColors( alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour), 50), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x()+1, Rb.y() );
+            } else {
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.x()+1, Rb.bottom()-1 );
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x(), Rb.bottom()-1 );
+                p->setPen(pal.background().color() );
+                p->drawPoint(Rb.x(), Rb.bottom() );
+                p->setPen(alphaBlendColors( alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour), 50), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.x()+1, Rb.bottom() );
+            }
+        } else if(isFirst&&reverseLayout&&!cornerWidget)
+        // reverse layout
+        {
+            if (!bottom) {
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.right()-1, Rb.y()+1 );
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right(), Rb.y()+1 );
+                p->setPen(pal.background().color() );
+                p->drawPoint(Rb.right(), Rb.y() );
+                p->setPen(alphaBlendColors( alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour), 50), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right()-1, Rb.y() );
+            } else {
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 50) );
+                p->drawPoint(Rb.right()-1, Rb.bottom()-1 );
+                p->setPen(alphaBlendColors(pal.background().color(), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right(), Rb.bottom()-1 );
+                p->setPen(pal.background().color() );
+                p->drawPoint(Rb.right(), Rb.bottom() );
+                p->setPen(alphaBlendColors( alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour), 50), getColor(pal,PanelContour), 150) );
+                p->drawPoint(Rb.right()-1, Rb.bottom() );
+            }
+        }
+    }
+}
 // 
 // void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
 //                                       QPainter *p,
@@ -2525,138 +2549,6 @@ void PlastikStyle::renderGradient(QPainter *painter,
 //     switch (element) {
 // 
 
-
-//     // TABS
-//     // ----
-//         case CE_TabBarTab: {
-//             const QTabBar * tb = (const QTabBar *) widget;
-//             bool cornerWidget = false;
-//             if( qobject_cast<QTabWidget>(tb->parent()) ) {
-//                 const QTabWidget *tw = (const QTabWidget*)tb->parent();
-//                 // is there a corner widget in the (top) left edge?
-//                 QWidget *cw = tw->cornerWidget(Qt::TopLeftCorner);
-//                 if(cw)
-//                     cornerWidget = true;
-//             }
-//             QTabBar::Shape tbs = tb->shape();
-//             bool selected = false;
-//             if (flags & Style_Selected) selected = true;
-//             TabPosition pos;
-//             if (tb->count() == 1) {
-//                 pos = Single;
-//             } else if ((tb->indexOf(opt.tab()->identifier()) == 0)) {
-//                 pos = First;
-//             } else if (tb->indexOf(opt.tab()->identifier()) == tb->count() - 1) {
-//                 pos = Last;
-//             } else {
-//                 pos = Middle;
-//             }
-// 
-//             bool mouseOver = false;
-//             if (opt.tab() == hoverTab) {
-//                 mouseOver = true;
-//                 flags |= Style_MouseOver;
-//             }
-// 
-//             switch (tbs) {
-//                 case QTabBar:: TriangularNorth:
-// //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, false, pos);
-//                     renderTab(p, r, cg, mouseOver, selected, false, pos, true, cornerWidget);
-//                     break;
-//                 case QTabBar::RoundedNorth:
-//                     renderTab(p, r, cg, mouseOver, selected, false, pos, false, cornerWidget);
-//                     break;
-//                 case QTabBar:: TriangularSouth:
-// //                     renderTriangularTab(p, r, cg, (flags & Style_MouseOver), selected, true, pos);
-//                     renderTab(p, r, cg, mouseOver, selected, true, pos, true, cornerWidget);
-//                     break;
-//                 case QTabBar:: RoundedSouth:
-//                     renderTab(p, r, cg, mouseOver, selected, true, pos, false, cornerWidget);
-//                     break;
-//                     default:
-//                             KStyle::drawControl(element, p, widget, r, cg, flags, opt);
-//             }
-// 
-//             break;
-//         }
-// 
-//         case CE_PushButtonLabel:
-//         {
-//             int x, y, w, h;
-//             r.rect( &x, &y, &w, &h );
-// 
-//             const QPushButton* button = static_cast<const QPushButton *>( widget );
-//             bool active = button->isOn() || button->isDown();
-//             bool cornArrow = false;
-// 
-//             // Shift button contents if pushed.
-//             if ( active )
-//             {
-//                 x += pixelMetric(PM_ButtonShiftHorizontal, widget);
-//                 y += pixelMetric(PM_ButtonShiftVertical, widget);
-//                 flags |= Style_Sunken;
-//             }
-// 
-//             // Does the button have a popup menu?
-//             if ( button->isMenuButton() )
-//             {
-//                 int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-//                 if ( button->iconSet() && !button->iconSet()->isNull()  &&
-//                     (dx + button->iconSet()->pixmap (QIcon::Small, QIcon::Normal, QIcon::Off ).width()) >= w )
-//                 {
-//                     cornArrow = true; //To little room. Draw the arrow in the corner, don't adjust the widget
-//                 }
-//                 else
-//                 {
-//                     drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - dx - 8, y + 2, dx, h - 4), r ),
-//                                 cg, flags, opt );
-//                     w -= dx;
-//                 }
-//             }
-// 
-//             // Draw the icon if there is one
-//             if ( button->iconSet() && !button->iconSet()->isNull() )
-//             {
-//                 QIcon::Mode  mode  = QIcon::Disabled;
-//                 QIcon::State state = QIcon::Off;
-// 
-//                 if (button->isEnabled())
-//                     mode = button->hasFocus() ? QIcon::Active : QIcon::Normal;
-//                 if (button->isToggleButton() && button->isOn())
-//                     state = QIcon::On;
-// 
-//                 QPixmap pixmap = button->iconSet()->pixmap( QIcon::Small, mode, state );
-// 
-//                 if (button->text().isEmpty() && !button->pixmap())
-//                     p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2,
-//                                     pixmap );
-//                 else
-//                     p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
-// 
-//                 if (cornArrow) //Draw over the icon
-//                     drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - 6, x + h - 6, 7, 7), r ),
-//                                 cg, flags, opt );
-// 
-// 
-//                 int  pw = pixmap.width();
-//                 x += pw + 4;
-//                 w -= pw + 4;
-//             }
-// 
-//             // Make the label indicate if the button is a default button or not
-//             drawItem( p, QRect(x, y, w, h), Qt::AlignCenter|Qt::TextShowMnemonic, button->colorGroup(),
-//                         button->isEnabled(), button->pixmap(), button->text(), -1,
-//                         &button->colorGroup().buttonText() );
-// 
-// 
-//             if ( flags & Style_HasFocus )
-//                 drawPrimitive( PE_FocusRect, p,
-//                                 visualRect( subRect( SR_PushButtonFocusRect, widget ), widget ),
-//                                 cg, flags );
-//             break;
-//         }
-// 
-// 
 //     // POPUPMENU ITEM (highlighted on mouseover)
 //     // ------------------------------------------
 //         case CE_PopupMenuItem: {
