@@ -685,13 +685,14 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   bool bDesktopFile = isDesktopFile(item);
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
-  bool hasRoot = isLocal && properties->kurl().path() == QString::fromLatin1("/");
+  bool hasRoot = properties->kurl().path() == QString::fromLatin1("/");
   QString iconStr = KMimeType::iconForURL(properties->kurl(), mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
   d->mimeType = item->mimetype();
-  KIO::filesize_t totalSize = item->size();
+  bool hasTotalSize;
+  KIO::filesize_t totalSize = item->size(hasTotalSize);
   QString magicMimeComment;
   if ( isLocal ) {
       KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( properties->kurl().path() );
@@ -800,7 +801,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
               magicMimeComment = QString::null;
       }
 
-      if ( isLocal && url.path() == QString::fromLatin1("/") )
+      if ( url.path() == QString::fromLatin1("/") )
         hasRoot = true;
       if ( (*it)->isDir() && !(*it)->isLink() )
       {
@@ -810,7 +811,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       else
       {
         iFileCount++;
-        totalSize += (*it)->size();
+	bool hasSize;
+        totalSize += (*it)->size(hasSize);
+	hasTotalSize = hasTotalSize || hasSize;
       }
     }
   }
@@ -948,16 +951,22 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow++, 2);
   }
 
-  l = new QLabel(i18n("Size:"), d->m_frame );
-  grid->addWidget(l, curRow, 0);
+  if( hasDirs || hasTotalSize ) {
+    l = new QLabel(i18n("Size:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
 
-  m_sizeLabel = new QLabel( d->m_frame );
-  grid->addWidget( m_sizeLabel, curRow++, 2 );
+    m_sizeLabel = new QLabel( d->m_frame );
+    grid->addWidget( m_sizeLabel, curRow++, 2 );
+  } else {
+    m_sizeLabel = 0;
+  }
 
   if ( !hasDirs ) // Only files [and symlinks]
   {
-    m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize))
-			 .arg(KGlobal::locale()->formatNumber(totalSize, 0)));
+    if(hasTotalSize) {
+      m_sizeLabel->setText(KIO::convertSizeWithBytes(totalSize));
+    }
+    
     m_sizeDetermineButton = 0L;
     m_sizeStopButton = 0L;
   }
@@ -996,8 +1005,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
     QDateTime dt;
-    time_t tim = item->time(KIO::UDS_CREATION_TIME);
-    if ( tim )
+    bool hasTime;
+    time_t tim = item->time(KIO::UDS_CREATION_TIME, hasTime);
+    if ( hasTime )
     {
       l = new QLabel(i18n("Created:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
@@ -1007,8 +1017,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KIO::UDS_MODIFICATION_TIME);
-    if ( tim )
+    tim = item->time(KIO::UDS_MODIFICATION_TIME, hasTime);
+    if ( hasTime )
     {
       l = new QLabel(i18n("Modified:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
@@ -1018,8 +1028,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KIO::UDS_ACCESS_TIME);
-    if ( tim )
+    tim = item->time(KIO::UDS_ACCESS_TIME, hasTime);
+    if ( hasTime )
     {
       l = new QLabel(i18n("Accessed:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
@@ -1167,7 +1177,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 					    const QString& )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
+	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3%% used)")
 	.arg(KIO::convertSizeFromKB(kBAvail))
 	.arg(KIO::convertSizeFromKB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));

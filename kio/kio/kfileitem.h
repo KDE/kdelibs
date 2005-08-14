@@ -212,6 +212,7 @@ public:
    */
   QString localPath() const;
 
+  //FIXME KDE4 deprecate this in favor of size(bool &hasSize)
   /**
    * Returns the size of the file, if known.
    * @return the file size, or 0 if not known
@@ -219,18 +220,35 @@ public:
   KIO::filesize_t size() const;
 
   /**
+   * Returns the size of the file, if known, and sets @p hasSize to false if not known
+   * @param @hasSize This is set to true if the size is known, and false if not known
+   * @return the file size, or 0 if not known
+   */ 
+  KIO::filesize_t size(bool &hasSize) const;
+  
+  //FIXME KDE4 deprecate this in favor of time(unsigned int which, bool &hasSize)
+  /**
    * Requests the modification, access or creation time, depending on @p which.
-   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
+   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or UDS_CREATION_TIME
    * @return the time asked for, (time_t)0 if not available
    * @see timeString()
    */
   time_t time( unsigned int which ) const;
 
   /**
+   * Requests the modification, access or creation time, depending on @p which.
+   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or UDS_CREATION_TIME
+   * @param hasTime This is set to true is the time is known, and false if not known
+   * @return the time asked for, (time_t)0 if not known/available
+   * @see timeString()
+   */
+  time_t time( unsigned int which, bool &hasTime ) const;
+
+  /**
    * Requests the modification, access or creation time as a string, depending
    * on @p which.
-   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
-   * @returns a formatted string of the requested time.
+   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or UDS_CREATION_TIME
+   * @returns a formatted string of the requested time, QString::null if time is not known
    * @see time
    */
   QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;

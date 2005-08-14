@@ -42,6 +42,14 @@
 #include <volmgt.h>
 #endif
 
+KIO_EXPORT QString KIO::convertSizeWithBytes( KIO::filesize_t size )
+{
+    if ( size >= 1024 )
+        return convertSize( size ) + " (" + i18n( "%1 B" ).arg( KGlobal::locale()->formatNumber(size, 0) ) + ")";
+    else
+	return convertSize( size );
+}
+
 KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
     double fsize = size;

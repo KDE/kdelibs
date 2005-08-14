@@ -47,6 +47,14 @@ namespace KIO
   KIO_EXPORT QString convertSize( KIO::filesize_t size );
 
   /**
+   * Converts @p size from bytes to a string representation with includes
+   * the size in bytes.
+   * e.g. 90 B, 240 B, 1.4 KB (1495 B), 2.6MB (2,734,344 B), 0 B
+   * @param  size  size in bytes
+   * @return converted size as a string - e.g. 1.4 KB (1495 B), 45 B
+   */
+  KIO_EXPORT QString convertSizeWithBytes( KIO::filesize_t size );
+  /**
    * Converts a size to a string representation
    * Not unlike QString::number(...)
    *

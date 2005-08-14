@@ -333,8 +333,9 @@ QString KFileItem::localPath() const
   return QString::null;
 }
 
-KIO::filesize_t KFileItem::size() const
+KIO::filesize_t KFileItem::size(bool &exists) const
 {
+  exists = true;
   if ( m_size != (KIO::filesize_t) -1 )
     return m_size;
 
@@ -352,11 +353,24 @@ KIO::filesize_t KFileItem::size() const
     if ( KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 )
         return buf.st_size;
   }
+  exists = false;
   return 0L;
+}
+
+KIO::filesize_t KFileItem::size() const
+{
+  bool exists;
+  return size(exists);
 }
 
 time_t KFileItem::time( unsigned int which ) const
 {
+  bool hasTime;
+  return time(which, hasTime);
+}
+time_t KFileItem::time( unsigned int which, bool &hasTime ) const
+{
+  hasTime = true;
   unsigned int mappedWhich = 0;
 
   switch( which ) {
@@ -388,13 +402,20 @@ time_t KFileItem::time( unsigned int which ) const
     KDE_struct_stat buf;
     if ( KDE_stat( QFile::encodeName(m_url.path(-1)), &buf ) == 0 )
     {
+	if(which == KIO::UDS_CREATION_TIME) {
+	    // We can't determine creation time for local files
+	    hasTime = false;
+            m_time[mappedWhich] = static_cast<time_t>(0);
+	    return m_time[mappedWhich];
+	}
         m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                                buf.st_mtime :
-                               (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
-                               static_cast<time_t>(0); // We can't determine creation time for local files
+                               /* which == KIO::UDS_ACCESS_TIME)*/
+			       buf.st_atime;
         return m_time[mappedWhich];
     }
   }
+  hasTime = false;
   return static_cast<time_t>(0);
 }
 
@@ -675,8 +696,10 @@ QString KFileItem::getStatusBarInfo()
   }
   else if ( S_ISREG( m_fileMode ) )
   {
-      text += QString(" (%1)").arg( KIO::convertSize( size() ) );
-      text += "  ";
+      bool hasSize;
+      KIO::filesize_t sizeValue = size(hasSize);
+      if(hasSize)
+        text += QString(" (%1)  ").arg( KIO::convertSize( sizeValue ) );
       text += mimeComment();
   }
   else if ( S_ISDIR ( m_fileMode ) )
@@ -715,20 +738,25 @@ QString KFileItem::getToolTipText(int maxcount)
   } else
     tip += type + end;
 
-  if ( !S_ISDIR ( m_fileMode ) )
-    tip += start + i18n("Size:") + mid +
-           QString("%1 (%2)").arg(KIO::convertSize(size()))
-                             .arg(KGlobal::locale()->formatNumber(size(), 0)) +
-           end;
-
-  tip += start + i18n("Modified:") + mid +
-         timeString( KIO::UDS_MODIFICATION_TIME) + end
+  if ( !S_ISDIR ( m_fileMode ) ) {
+    bool hasSize;
+    KIO::filesize_t sizeValue = size(hasSize);
+    if(hasSize)
+      tip += start + i18n("Size:") + mid +
+             KIO::convertSizeWithBytes(sizeValue) + end;
+  }
+  QString timeStr = timeString( KIO::UDS_MODIFICATION_TIME);
+  if(!timeStr.isEmpty())
+    tip += start + i18n("Modified:") + mid +
+           timeStr + end;
 #ifndef Q_WS_WIN //TODO: show win32-specific permissions
-         +start + i18n("Owner:") + mid + user() + " - " + group() + end +
-         start + i18n("Permissions:") + mid +
-         parsePermissions(m_permissions) + end
+  QString userStr = user();
+  QString groupStr = group();
+  if(!userStr.isEmpty() || !groupStr.isEmpty())
+    tip += start + i18n("Owner:") + mid + userStr + " - " + groupStr + end +
+           start + i18n("Permissions:") + mid +
+           parsePermissions(m_permissions) + end;
 #endif
-				 ;
 
   if (info.isValid() && !info.isEmpty() )
   {
@@ -786,6 +814,8 @@ void KFileItem::run()
 
 bool KFileItem::cmp( const KFileItem & item )
 {
+    bool hasSize1,hasSize2,hasTime1,hasTime2;
+    hasSize1 = hasSize2 = hasTime1 = hasTime2 = false;
     return ( m_strName == item.m_strName
              && m_bIsLocalURL == item.m_bIsLocalURL
              && m_fileMode == item.m_fileMode
@@ -794,8 +824,10 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_group == item.m_group
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
-             && size() == item.size()
-             && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
+             && size(hasSize1) == item.size(hasSize2)
+	     && hasSize1 == hasSize2
+             && time(KIO::UDS_MODIFICATION_TIME, hasTime1) == item.time(KIO::UDS_MODIFICATION_TIME, hasTime2)
+	     && hasTime1 == hasTime2
              && mimetype() == item.mimetype()
              && (!d || !item.d || d->iconName == item.d->iconName) );
 }
@@ -941,8 +973,12 @@ QString KFileItem::parsePermissions(mode_t perm) const
 // check if we need to cache this
 QString KFileItem::timeString( unsigned int which ) const
 {
+    bool hasTime;
+    time_t time_ = time(which, hasTime);
+    if(!hasTime) return QString::null;
+    
     QDateTime t;
-    t.setTime_t( time(which) );
+    t.setTime_t( time_);
     return KGlobal::locale()->formatDateTime( t );
 }
 
