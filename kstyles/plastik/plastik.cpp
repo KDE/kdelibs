@@ -568,6 +568,12 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     return;
                 }
+
+                case MenuItem::CheckColumn:
+                {
+                    // empty
+                    return;
+                }
             }
         }
         break;
