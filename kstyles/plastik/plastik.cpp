@@ -148,6 +148,8 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
 
+    setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
+
     
 //     hoverWidget = 0;
 //     hoverTab = 0;
@@ -162,7 +164,7 @@ PlastikStyle::PlastikStyle() :
     _contrast = settings.readNumEntry("/Qt/KDE/contrast", 6);
 //     settings.beginGroup("/plastikstyle/Settings");
     _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
-//     _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
+    _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
 //     _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
 //     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
@@ -346,7 +348,137 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         case WT_ProgressBar:
         {
-            // TODO
+//             const Q3ProgressBar *pb = dynamic_cast<const Q3ProgressBar*>(widget);
+//             int steps = pb->totalSteps();
+
+            const QColor bg = enabled?pal.base().color():pal.background().color(); // background
+            const QColor fg = enabled?pal.highlight().color():pal.background().color().dark(110); // foreground
+
+
+            switch (primitive)
+            {
+                case Generic::Bevel:
+                {
+                    renderContour(p, r, pal.background().color(), getColor(pal, ButtonContour, enabled) );
+                    p->setPen(bg.dark(105) );
+                    p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
+                    p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
+                    p->setPen(bg.light(105) );
+                    p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
+                    p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
+
+                    // fill background
+                    p->fillRect(r.adjusted(2,2,-2,-2), bg );
+
+                    return;
+                }
+
+                case ProgressBar::BusyIndicator:
+                {
+                    renderContour( p, r/*QRect( r.x()+progress, r.y(), barWidth, r.height() )*/,
+                                   bg, fg.dark(160),
+                                   Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|
+                                           Round_BottomRight|Round_UpperLeft|Round_BottomLeft );
+                    renderSurface(p, QRect( r.x()+/*progress+*/1, r.y()+1, r.width()-2, r.height()-2 ),
+                                  bg, fg, pal.highlight().color(),
+                                  2*(_contrast/3),
+                                  Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                          Round_UpperRight|Round_BottomRight|
+                                          Round_UpperLeft|Round_BottomLeft|Is_Horizontal);
+
+                    return;
+                }
+
+                case ProgressBar::Indicator:
+                {
+                    bool reverseLayout = opt->direction == Qt::RightToLeft;
+
+                    QRect Rcontour = r;
+                    QRect Rsurface(Rcontour.left()+1, Rcontour.top()+1, Rcontour.width()-2, Rcontour.height()-2);
+
+                    renderContour(p, Rcontour,
+                                  bg, fg.dark(160),
+                                  reverseLayout ? Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft
+                        : Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight);
+
+                    QRegion mask(Rsurface);
+                    if(reverseLayout) {
+                        mask -= QRegion(Rsurface.left(), Rsurface.top(), 1, 1);
+                        mask -= QRegion(Rsurface.left(), Rsurface.bottom(), 1, 1);
+                    } else {
+                        mask -= QRegion(Rsurface.right(), Rsurface.top(), 1, 1);
+                        mask -= QRegion(Rsurface.right(), Rsurface.bottom(), 1, 1);
+                    }
+                    p->setClipRegion(mask);
+                    int counter = 0;
+                    QPixmap surfaceTile(21, r.height()-2);
+                    QPainter surfacePainter(&surfaceTile);
+                    // - 21 pixel -
+                    //  __________
+                    // |    `    `| <- 3
+                    // | 1   | 2  |
+                    // |____,____,| <- 3
+                    // 1 = light, 11 pixel, 1 pixel overlapping with 2
+                    // 2 = dark, 11 pixel, 1 pixel overlapping with 3
+                    // 3 = light edges
+                    const int tileHeight = surfaceTile.height();
+                    // 3
+                    renderSurface(&surfacePainter,
+                                    QRect(20, 0, 11, tileHeight),
+                                    fg.light(105), fg, pal.highlight().color(), 2*(_contrast/3),
+                                    reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperLeft|Round_BottomLeft|Is_Horizontal
+                                    : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperRight|Round_BottomRight|Is_Horizontal);
+                    // 2
+                    renderSurface(&surfacePainter,
+                                    QRect(10, 0, 11, tileHeight),
+                                    fg, fg.light(105), pal.highlight().color(), 2*(_contrast/3),
+                                    reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperLeft|Round_BottomLeft|Is_Horizontal
+                                    : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperRight|Round_BottomRight|Is_Horizontal);
+                    // 1
+                    renderSurface(&surfacePainter,
+                                    QRect(0, 0, 11, tileHeight),
+                                    fg.light(105), fg, pal.highlight().color(), 2*(_contrast/3),
+                                    reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperLeft|Round_BottomLeft|Is_Horizontal
+                                    : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
+                                            Round_UpperRight|Round_BottomRight|Is_Horizontal);
+
+                    surfacePainter.end();
+                    int staticShift = 0;
+                    int animShift = 0;
+                    if (!_animateProgressBar) {
+                        staticShift = (reverseLayout ? Rsurface.left() : Rsurface.right()) % 40 - 40;
+                    } else {
+                        // TODO
+//                         // find the animation Offset for the current Widget
+//                         QWidget* nonConstWidget = const_cast<QWidget*>(widget);
+//                         QMapConstIterator<QWidget*, int> iter = progAnimWidgets.find(nonConstWidget);
+//                         if (iter != progAnimWidgets.end())
+//                             animShift = iter.data();
+                        animShift = 0;
+                    }
+                    while((counter*10) < (Rsurface.width()+20)) {
+                        counter++;
+                        if (reverseLayout) {
+                            // from right to left, overlap 1 pixel with the previously drawn tile
+                            p->drawPixmap(Rsurface.right()-counter*20-animShift+40+staticShift, r.top()+1,
+                                        surfaceTile);
+                        } else {
+                            // from left to right, overlap 1 pixel with the previously drawn tile
+                            p->drawPixmap(Rsurface.left()+counter*20+animShift-40+staticShift, r.top()+1,
+                                        surfaceTile);
+                        }
+                    }
+
+                    p->setClipping(false);
+
+                    return;
+                }
+            }
         }
         break;
 
@@ -2392,142 +2524,8 @@ void PlastikStyle::renderGradient(QPainter *painter,
 // 
 //     switch (element) {
 // 
-//     // PROGRESSBAR
-//     // -----------
-//         case CE_ProgressBarGroove: {
-//             const QColor content = enabled?cg.base():cg.background();
-//             renderContour(p, r, cg.background(), getColor(cg, ButtonContour, enabled) );
-//             p->setPen(content.dark(105) );
-//             p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
-//             p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
-//             p->setPen(content.light(105) );
-//             p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
-//             p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
-//             break;
-//         }
-// 
-//         case CE_ProgressBarContents: {
-//             const Q3ProgressBar *pb = dynamic_cast<const Q3ProgressBar*>(widget);
-//             int steps = pb->totalSteps();
-// 
-//             const QColor bg = enabled?cg.base():cg.background(); // background
-//             const QColor fg = enabled?cg.highlight():cg.background().dark(110); // foreground
-// 
-//             if( steps == 0 ) { // Busy indicator
-//                 static const int barWidth = 10;
-//                 int progress = pb->progress() % (2*(r.width()-barWidth));
-//                 if( progress < 0)
-//                     progress = 0;
-//                 if( progress > r.width()-barWidth )
-//                     progress = (r.width()-barWidth)-(progress-(r.width()-barWidth));
-//                 p->fillRect( QRect( r.x(), r.y(), r.width(), r.height() ), bg );
-//                 renderContour( p, QRect( r.x()+progress, r.y(), barWidth, r.height() ),
-//                                 bg, fg.dark(160),
-//                                 Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|
-//                                     Round_BottomRight|Round_UpperLeft|Round_BottomLeft );
-//                 renderSurface(p, QRect( r.x()+progress+1, r.y()+1, barWidth-2, r.height()-2 ),
-//                                     bg, fg, cg.highlight(),
-//                                     2*(_contrast/3),
-//                                     Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperRight|Round_BottomRight|
-//                                         Round_UpperLeft|Round_BottomLeft|Is_Horizontal);
-//             } else {
-//                 double percent = static_cast<double>(pb->progress()) / static_cast<double>(steps);
-// 
-//                 int w = static_cast<int>(r.width() * percent);
-//                 // renderContour/renderSurface handle small sizes not very well, so set a minimal
-//                 // progressbar width...
-//                 if(w<4) w = 4;
-//                 int w2 = r.width()-(r.width()-w);
-// 
-//                 QRect Rempty(reverseLayout?r.left():r.left()+w-1, r.top(), r.width()-w+1, r.height() );
-//                 QRect Rcontour(reverseLayout?r.right()-w2+1:r.left(), r.top(), w2, r.height() );
-//                 QRect Rsurface(Rcontour.left()+1, Rcontour.top()+1, w2-2, Rcontour.height()-2);
-// 
-//                 p->fillRect(Rempty, bg);
-// 
-//                 renderContour(p, Rcontour,
-//                               bg, fg.dark(160),
-//                               reverseLayout ? Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft
-//                               : Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight);
-// 
-//                 QRegion mask(Rsurface);
-//                 if(reverseLayout) {
-//                     mask -= QRegion(Rsurface.left(), Rsurface.top(), 1, 1);
-//                     mask -= QRegion(Rsurface.left(), Rsurface.bottom(), 1, 1);
-//                 } else {
-//                     mask -= QRegion(Rsurface.right(), Rsurface.top(), 1, 1);
-//                     mask -= QRegion(Rsurface.right(), Rsurface.bottom(), 1, 1);
-//                 }
-//                 p->setClipRegion(mask);
-//                 int counter = 0;
-//                 QPixmap surfaceTile(21, r.height()-2);
-//                 QPainter surfacePainter(&surfaceTile);
-//                 // - 21 pixel -
-//                 //  __________
-//                 // |    `    `| <- 3
-//                 // | 1   | 2  |
-//                 // |____,____,| <- 3
-//                 // 1 = light, 11 pixel, 1 pixel overlapping with 2
-//                 // 2 = dark, 11 pixel, 1 pixel overlapping with 3
-//                 // 3 = light edges
-//                 const int tileHeight = surfaceTile.height();
-//                 // 3
-//                 renderSurface(&surfacePainter,
-//                                 QRect(20, 0, 11, tileHeight),
-//                                 fg.light(105), fg, cg.highlight(), 2*(_contrast/3),
-//                                 reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperLeft|Round_BottomLeft|Is_Horizontal
-//                                 : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperRight|Round_BottomRight|Is_Horizontal);
-//                 // 2
-//                 renderSurface(&surfacePainter,
-//                                 QRect(10, 0, 11, tileHeight),
-//                                 fg, fg.light(105), cg.highlight(), 2*(_contrast/3),
-//                                 reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperLeft|Round_BottomLeft|Is_Horizontal
-//                                 : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperRight|Round_BottomRight|Is_Horizontal);
-//                 // 1
-//                 renderSurface(&surfacePainter,
-//                                 QRect(0, 0, 11, tileHeight),
-//                                 fg.light(105), fg, cg.highlight(), 2*(_contrast/3),
-//                                 reverseLayout ? Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperLeft|Round_BottomLeft|Is_Horizontal
-//                                 : Draw_Right|Draw_Left|Draw_Top|Draw_Bottom|
-//                                         Round_UpperRight|Round_BottomRight|Is_Horizontal);
-// 
-//                 surfacePainter.end();
-//                 int staticShift = 0;
-//                 int animShift = 0;
-//                 if (!_animateProgressBar) {
-//                     staticShift = (reverseLayout ? Rsurface.left() : Rsurface.right()) % 40 - 40;
-//                 } else {
-//                     // find the animation Offset for the current Widget
-//                     QWidget* nonConstWidget = const_cast<QWidget*>(widget);
-//                     QMapConstIterator<QWidget*, int> iter = progAnimWidgets.find(nonConstWidget);
-//                     if (iter != progAnimWidgets.end())
-//                         animShift = iter.data();
-//                 }
-//                 while((counter*10) < (Rsurface.width()+20)) {
-//                     counter++;
-//                     if (reverseLayout) {    
-//                         // from right to left, overlap 1 pixel with the previously drawn tile
-//                         p->drawPixmap(Rsurface.right()-counter*20-animShift+40+staticShift, r.top()+1,
-//                                     surfaceTile);
-//                     } else {
-//                         // from left to right, overlap 1 pixel with the previously drawn tile
-//                         p->drawPixmap(Rsurface.left()+counter*20+animShift-40+staticShift, r.top()+1,
-//                                     surfaceTile);
-//                     }
-//                 }
-// 
-//                 p->setClipping(false);
-//             }
-// 
-//             break;
-//         }
-// 
+
+
 //     // TABS
 //     // ----
 //         case CE_TabBarTab: {
