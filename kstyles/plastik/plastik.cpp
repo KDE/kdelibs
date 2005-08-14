@@ -750,8 +750,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
             }
 
-            // TODO: arrows
-
         }
         break;
 
@@ -780,6 +778,72 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         }
         break;
+    }
+
+
+    // Arrows
+    if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft) {
+        QPolygon a;
+
+        switch (primitive) {
+            case Generic::ArrowUp: {
+                a.setPoints(7, u_arrow);
+                break;
+            }
+            case Generic::ArrowDown: {
+                a.setPoints(7, d_arrow);
+                break;
+            }
+            case Generic::ArrowLeft: {
+                a.setPoints(7, l_arrow);
+                break;
+            }
+            case Generic::ArrowRight: {
+                a.setPoints(7, r_arrow);
+                break;
+            }
+//                         default: {
+//                             if (flags & Style_Up) {
+//                                 a.setPoints(7, u_arrow);
+//                             } else {
+//                                 a.setPoints(7, d_arrow);
+//                             }
+//                         }
+        }
+
+                const QMatrix oldMatrix( p->worldMatrix() );
+
+//                     if (flags & Style_Down) {
+//                         p->translate(pixelMetric(PM_ButtonShiftHorizontal),
+//                                         pixelMetric(PM_ButtonShiftVertical));
+//                     }
+
+        a.translate((r.x()+r.width()/2), (r.y()+r.height()/2));
+//                     // extra-pixel-shift, correcting some visual tics...
+//                     switch(pe) {
+//                         case Generic::ArrowLeft:
+//                         case Generic::ArrowRight:
+//                             a.translate(0, -1);
+//                             break;
+//                         case PE_SpinWidgetUp:
+//                         case PE_SpinWidgetDown:
+//                             a.translate(+1, 0);
+//                             break;
+//                         default:
+//                             a.translate(0, 0);
+//                     }
+
+        KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
+        QColor               arrowColor = colorOpt->color.color(pal);
+
+        p->setPen(arrowColor);
+
+        p->drawLineSegments(a, 0, 3);
+        p->drawPoint(a[6]);
+
+        p->setWorldMatrix( oldMatrix );
+
+        return;
     }
 
     // default fallback
@@ -2458,80 +2522,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //         }
 // 
 
-// 
-//         case PE_SpinWidgetUp:
-//         case PE_SpinWidgetDown:
-//         case PE_HeaderArrow:
-//         case PE_ArrowUp:
-//         case PE_ArrowDown:
-//         case PE_ArrowLeft:
-//         case PE_ArrowRight: {
-//             Q3PointArray a;
-// 
-//             switch (pe) {
-//                 case PE_SpinWidgetUp:
-//                 case PE_ArrowUp: {
-//                     a.setPoints(7, u_arrow);
-//                     break;
-//                 }
-//                 case PE_SpinWidgetDown:
-//                 case PE_ArrowDown: {
-//                     a.setPoints(7, d_arrow);
-//                     break;
-//                 }
-//                 case PE_ArrowLeft: {
-//                     a.setPoints(7, l_arrow);
-//                     break;
-//                 }
-//                 case PE_ArrowRight: {
-//                     a.setPoints(7, r_arrow);
-//                     break;
-//                 }
-//                 default: {
-//                     if (flags & Style_Up) {
-//                         a.setPoints(7, u_arrow);
-//                     } else {
-//                         a.setPoints(7, d_arrow);
-//                     }
-//                 }
-//             }
-// 
-//             const QMatrix oldMatrix( p->worldMatrix() );
-// 
-//             if (flags & Style_Down) {
-//                 p->translate(pixelMetric(PM_ButtonShiftHorizontal),
-//                                 pixelMetric(PM_ButtonShiftVertical));
-//             }
-// 
-//             a.translate((r.x()+r.width()/2), (r.y()+r.height()/2));
-//             // extra-pixel-shift, correcting some visual tics...
-//             switch(pe) {
-//                 case PE_ArrowLeft:
-//                 case PE_ArrowRight:
-//                     a.translate(0, -1);
-//                     break;
-//                 case PE_SpinWidgetUp:
-//                 case PE_SpinWidgetDown:
-//                     a.translate(+1, 0);
-//                     break;
-//                 default:
-//                     a.translate(0, 0);
-//             }
-// 
-//             if (p->pen() == Qt::NoPen) {
-//                 if (flags & Style_Enabled) {
-//                     p->setPen(cg.buttonText());
-//                 } else {
-//                     p->setPen(cg.highlightedText());
-//                 }
-//             }
-//             p->drawLineSegments(a, 0, 3);
-//             p->drawPoint(a[6]);
-// 
-//             p->setWorldMatrix( oldMatrix );
-// 
-//             break;
-//         }
+
 // 
 //         default: {
 //             return KStyle::drawPrimitive(pe, p, r, cg, flags, opt);
