@@ -131,6 +131,9 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 6);
 
     setWidgetLayoutProp(WT_Tab, Tab::FocusMargin, 3);
+
+    setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20);
+    setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 16);
 }
 
 
@@ -1473,6 +1476,18 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_TabBarTabVSpace:
             return 0;
+
+        case PM_SliderControlThickness:
+            return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
+
+        case PM_SliderLength:
+            return widgetLayoutProp(WT_Slider, Slider::HandleLength);
+
+        case PM_SliderThickness:
+        {
+            // not sure what the difference to PM_SliderControlThickness actually is
+            return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
+        }
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
@@ -1723,6 +1738,11 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
 void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* opt,
                                    QPainter *p,      const QWidget* w) const
 {
+    //Extract the stuff we need out of the option
+    State flags = opt->state;
+    QRect      r     = opt->rect;
+    QPalette   pal   = opt->palette;
+
     if (cc == CC_ScrollBar)
     {
         QStyleOptionComplex* mutableOpt = const_cast<QStyleOptionComplex*>(opt);
@@ -1731,6 +1751,40 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             //If we paint one of the buttons, must paint both!
             mutableOpt->subControls |= SC_ScrollBarSubPage | SC_ScrollBarAddLine;
         }
+    }
+    else if (cc == CC_Slider)
+    {
+        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(opt))
+        {
+            QRect groove = subControlRect(CC_Slider, slider, SC_SliderGroove, w);
+            QRect handle = subControlRect(CC_Slider, slider, SC_SliderHandle, w);
+            bool hor = slider->orientation == Qt::Horizontal;
+
+            if (slider->subControls & SC_SliderTickmarks)
+            {
+                // TODO: make tickmarks customizable with Slider::Tickmark-primitives?
+                QStyleOptionSlider tmpSlider = *slider;
+                tmpSlider.subControls = SC_SliderTickmarks;
+                QCommonStyle::drawComplexControl(cc, &tmpSlider, p, w);
+            }
+
+            if ((slider->subControls & SC_SliderGroove) && groove.isValid())
+            {
+                drawKStylePrimitive(WT_Slider, hor ? Slider::GrooveHor : Slider::GrooveVert, opt, groove, pal, flags, p, w);
+            }
+
+            if (slider->subControls & SC_SliderHandle)
+            {
+                drawKStylePrimitive(WT_Slider, hor ? Slider::HandleHor : Slider::HandleVert, opt, handle, pal, flags, p, w);
+
+                if (slider->state & State_HasFocus) {
+                    QRect focus = subElementRect(SE_SliderFocusRect, slider, w);
+                    drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, focus, pal, flags, p, w, 0);
+                }
+            }
+
+        }
+
     }
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);

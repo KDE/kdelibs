@@ -286,6 +286,7 @@ protected:
         WT_MenuItem,
         WT_ScrollBar,
         WT_Tab,
+        WT_Slider,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -625,6 +626,28 @@ protected:
             EastTab,
             WestTab,
             SouthTab
+        };
+    };
+
+    struct Slider
+    {
+        // TODO: custom slider tickmarks?
+
+        enum LayoutProp
+        {
+            HandleThickness,                        // The height of a slider in horizontal direction
+            HandleLength                            // The width of a slider in horizontal direction
+        };
+
+        /**
+         From generic primitives, FocusIndicator is used
+        */
+        enum Primitive
+        {
+            HandleVert = Generic::WidgetSpecificBase,   // A vertical slider handle
+            HandleHor,                                  // A horizontal slider handle
+            GrooveVert,                                 // A vertical slider groove
+            GrooveHor                                   // A horizontal slider groove
         };
     };
    
