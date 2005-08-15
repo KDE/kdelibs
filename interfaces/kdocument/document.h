@@ -5,7 +5,7 @@
 
 namespace KDocument {
 	class View;
-	class Document : public KParts::ReadWritePart {
+	class KDE_EXPORT Document : public KParts::ReadWritePart {
 		Q_OBJECT
 		public:
 			Document(QObject *parent): KParts::ReadWritePart(parent) {}

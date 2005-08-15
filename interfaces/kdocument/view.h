@@ -5,7 +5,7 @@
 #include <kxmlguiclient.h>
 
 namespace KDocument {
-	class View : public QWidget, public KXMLGUIClient {
+	class KDE_EXPORT View : public QWidget, public KXMLGUIClient {
 		Q_OBJECT
 		public:
 			View(QWidget *parent):QWidget(parent),KXMLGUIClient() {}
