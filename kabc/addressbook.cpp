@@ -578,7 +578,7 @@ Addressee AddressBook::findByUid( const QString &uid )
   return Addressee();
 }
 
-Addressee::List AddressBook::allAddressees()
+Addressee::List AddressBook::allAddressees() const
 {
   Addressee::List list;
 
@@ -589,7 +589,7 @@ Addressee::List AddressBook::allAddressees()
   return list;
 }
 
-Addressee::List AddressBook::findByName( const QString &name )
+Addressee::List AddressBook::findByName( const QString &name ) const
 {
   Addressee::List results;
 
@@ -600,7 +600,7 @@ Addressee::List AddressBook::findByName( const QString &name )
   return results;
 }
 
-Addressee::List AddressBook::findByEmail( const QString &email )
+Addressee::List AddressBook::findByEmail( const QString &email ) const
 {
   Addressee::List results;
 
@@ -611,7 +611,7 @@ Addressee::List AddressBook::findByEmail( const QString &email )
   return results;
 }
 
-Addressee::List AddressBook::findByCategory( const QString &category )
+Addressee::List AddressBook::findByCategory( const QString &category ) const
 {
   Addressee::List results;
 
@@ -634,7 +634,7 @@ void AddressBook::dump() const
   kdDebug(5700) << "AddressBook::dump() ---  end  ---" << endl;
 }
 
-QString AddressBook::identifier()
+QString AddressBook::identifier() const
 {
   QStringList identifier;
 
@@ -648,7 +648,7 @@ QString AddressBook::identifier()
   return identifier.join( ":" );
 }
 
-Field::List AddressBook::fields( int category )
+Field::List AddressBook::fields( int category ) const
 {
   if ( d->mAllFields.isEmpty() ) {
     d->mAllFields = Field::allFields();
@@ -748,7 +748,7 @@ bool AddressBook::removeResource( Resource *resource )
   return true;
 }
 
-Q3PtrList<Resource> AddressBook::resources()
+Q3PtrList<Resource> AddressBook::resources() const
 {
   Q3PtrList<Resource> list;
 

@@ -236,7 +236,7 @@ class KABC_EXPORT AddressBook : public QObject
       @param addr The addresee you are looking for.
      */
     Iterator find( const Addressee &addr ); // KDE4: const
-
+	
     /**
       Searches an addressee with the specified unique identifier.
 
@@ -249,7 +249,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns a list of all addressees in the address book.
      */
-    Addressee::List allAddressees(); // KDE4: const
+    Addressee::List allAddressees() const;
 
     /**
       Searches all addressees which match the specified name.
@@ -257,7 +257,7 @@ class KABC_EXPORT AddressBook : public QObject
       @param name The name you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByName( const QString &name ); // KDE4: const
+    Addressee::List findByName( const QString &name ) const;
 
     /**
       Searches all addressees which match the specified email address.
@@ -265,7 +265,7 @@ class KABC_EXPORT AddressBook : public QObject
       @param email The email address you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByEmail( const QString &email ); // KDE4: const
+    Addressee::List findByEmail( const QString &email ) const;
 
     /**
       Searches all addressees which belongs to the specified category.
@@ -273,19 +273,19 @@ class KABC_EXPORT AddressBook : public QObject
       @param category The category you are looking for.
       @return A list of all matching addressees.
      */
-    Addressee::List findByCategory( const QString &category ); // KDE4: const
+    Addressee::List findByCategory( const QString &category ) const;
 
     /**
       Returns a string identifying this addressbook. The identifier is
       created by concatenation of the resource identifiers.
      */
-    virtual QString identifier(); // KDE4: const
+    virtual QString identifier() const; 
 
     /**
       Returns a list of all Fields known to the address book which are associated
       with the given field category.
      */
-    Field::List fields( int category = Field::All ); // KDE4: const
+    Field::List fields( int category = Field::All ) const;
 
     /**
       Add custom field to address book.
@@ -319,7 +319,7 @@ class KABC_EXPORT AddressBook : public QObject
     /**
       Returns a list of all resources.
      */
-    Q3PtrList<Resource> resources(); // KDE4: const
+    Q3PtrList<Resource> resources() const;
 
     /**
       Sets the @p ErrorHandler, that is used by error() to
