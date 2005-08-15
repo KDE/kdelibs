@@ -127,13 +127,7 @@ static const unsigned char radiomark_light_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x0c, 0x00, 0x04, 0x00, 0x04, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-// // popupmenu item constants...
-// static const int itemHMargin = 6;
-// static const int itemFrame = 2;
-// static const int arrowHMargin = 6;
-// static const int rightBorder = 12;
-// 
-// 
+
 PlastikStyle::PlastikStyle() :
 //     kickerMode(false),
 //     kornMode(false),
@@ -939,8 +933,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                         p->setClipping(false);
                     }
 
-//                     return;
-                    break;
+                    return;
                 }
 
                 case Slider::GrooveHor:
@@ -961,8 +954,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                     Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
                     }
 
-//                     return;
-                    break;
+                    return;
                 }
             }
 
