@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #define KDE_QT_ONLY
-#include "../../kdecore/kurl.cpp"
+//#include "../../kdecore/kurl.cpp"
 
 bool mkBool( const QString& s )
 {
@@ -219,11 +219,13 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
         DCOPRef r;
         stream >> r;
         result = QString().sprintf( "DCOPRef(%s,%s)", qStringToC(r.app()), qStringToC(r.object()) ).toAscii();
+#if 0
     } else if ( type == "KURL" )
     {
         KURL r;
         stream >> r;
         result = r.url().toLocal8Bit();
+#endif
     } else if ( type.startsWith("QList<") )
     {
         if ( type.indexOf( '>' ) != type.length() - 1 )
@@ -353,8 +355,10 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
 	arg << mkSize( s );
     else if ( type == "QRect" )
 	arg << mkRect( s );
+#if 0
     else if ( type == "KURL" )
 	arg << KURL( s );
+#endif
     else if ( type == "QVariant" ) {
 	if ( s == "true" || s == "false" )
 	    arg << QVariant( mkBool( s ) );
