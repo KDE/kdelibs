@@ -148,6 +148,9 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
 
+    setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, 1);
+    setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 13);
+
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
 
     
@@ -572,6 +575,37 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 case MenuItem::CheckColumn:
                 {
                     // empty
+                    return;
+                }
+
+                case MenuItem::CheckOn:
+                {
+                    renderCheckBox(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, CheckBox::CheckOn);
+                    return;
+                }
+
+                case MenuItem::CheckOff:
+                {
+                    renderCheckBox(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, CheckBox::CheckOff);
+                    return;
+                }
+
+                case MenuItem::RadioOn:
+                {
+                    renderRadioButton(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, RadioButton::RadioOn);
+                    return;
+                }
+
+                case MenuItem::RadioOff:
+                {
+                    renderRadioButton(p, r, pal, true /*TODO enabled*/, false /*mouseOver*/, RadioButton::RadioOff);
+                    return;
+                }
+
+                case MenuItem::CheckIcon:
+                {
+                    // TODO
+                    renderButton(p, r, pal, true /*sunken*/);
                     return;
                 }
             }
