@@ -1041,11 +1041,6 @@ QStringList KFileMetaInfoProvider::preferredGroups( const QString& mimeType ) co
     return service->property("PreferredGroups").toStringList();
 }
 
-const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mimeType )
-{
-    return mimeTypeInfo( mimeType, QString::null );
-}
-
 const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mimeType, const QString& protocol )
 {
     //kdDebug(7033) << "mimeTypeInfo() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;

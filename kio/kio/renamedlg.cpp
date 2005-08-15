@@ -113,42 +113,42 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     setCaption( _caption );
 
     d->bCancel = new KPushButton( KStdGuiItem::cancel(), this );
-    connect(d->bCancel, SIGNAL(clicked()), this, SLOT(b0Pressed()));
+    connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
     if ( ! (_mode & M_NORENAME ) ) {
         d->bRename = new QPushButton( i18n( "&Rename" ), this );
         d->bRename->setEnabled(false);
         d->bSuggestNewName = new QPushButton( i18n( "Suggest New &Name" ), this );
-        connect(d->bSuggestNewName, SIGNAL(clicked()), this, SLOT(b8Pressed()));
-        connect(d->bRename, SIGNAL(clicked()), this, SLOT(b1Pressed()));
+        connect(d->bSuggestNewName, SIGNAL(clicked()), this, SLOT(suggestNewNamePressed()));
+        connect(d->bRename, SIGNAL(clicked()), this, SLOT(renamePressed()));
     }
 
     if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
         d->bSkip = new QPushButton( i18n( "&Skip" ), this );
-        connect(d->bSkip, SIGNAL(clicked()), this, SLOT(b2Pressed()));
+        connect(d->bSkip, SIGNAL(clicked()), this, SLOT(skipPressed()));
 
         d->bAutoSkip = new QPushButton( i18n( "&Auto Skip" ), this );
-        connect(d->bAutoSkip, SIGNAL(clicked()), this, SLOT(b3Pressed()));
+        connect(d->bAutoSkip, SIGNAL(clicked()), this, SLOT(autoSkipPressed()));
     }
 
     if ( _mode & M_OVERWRITE ) {
         d->bOverwrite = new QPushButton( i18n( "&Overwrite" ), this );
-        connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(b4Pressed()));
+        connect(d->bOverwrite, SIGNAL(clicked()), this, SLOT(overwritePressed()));
 
         if ( _mode & M_MULTI ) {
             d->bOverwriteAll = new QPushButton( i18n( "O&verwrite All" ), this );
-            connect(d->bOverwriteAll, SIGNAL(clicked()), this, SLOT(b5Pressed()));
+            connect(d->bOverwriteAll, SIGNAL(clicked()), this, SLOT(overwriteAllPressed()));
         }
     }
 
     if ( _mode & M_RESUME ) {
         d->bResume = new QPushButton( i18n( "&Resume" ), this );
-        connect(d->bResume, SIGNAL(clicked()), this, SLOT(b6Pressed()));
+        connect(d->bResume, SIGNAL(clicked()), this, SLOT(resumePressed()));
 
         if ( _mode & M_MULTI )
         {
             d->bResumeAll = new QPushButton( i18n( "R&esume All" ), this );
-            connect(d->bResumeAll, SIGNAL(clicked()), this, SLOT(b7Pressed()));
+            connect(d->bResumeAll, SIGNAL(clicked()), this, SLOT(resumeAllPressed()));
         }
     }
 
@@ -414,13 +414,13 @@ KURL RenameDlg::newDestURL()
   return newDest;
 }
 
-void RenameDlg::b0Pressed()
+void RenameDlg::cancelPressed()
 {
   done( 0 );
 }
 
 // Rename
-void RenameDlg::b1Pressed()
+void RenameDlg::renamePressed()
 {
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
@@ -477,7 +477,7 @@ QString RenameDlg::suggestName(const KURL& baseURL, const QString& oldName)
 }
 
 // Propose button clicked
-void RenameDlg::b8Pressed()
+void RenameDlg::suggestNewNamePressed()
 {
   /* no name to play with */
   if ( d->m_pLineEdit->text().isEmpty() )
@@ -489,32 +489,32 @@ void RenameDlg::b8Pressed()
   return;
 }
 
-void RenameDlg::b2Pressed()
+void RenameDlg::skipPressed()
 {
   done( 2 );
 }
 
-void RenameDlg::b3Pressed()
+void RenameDlg::autoSkipPressed()
 {
   done( 3 );
 }
 
-void RenameDlg::b4Pressed()
+void RenameDlg::overwritePressed()
 {
   done( 4 );
 }
 
-void RenameDlg::b5Pressed()
+void RenameDlg::overwriteAllPressed()
 {
   done( 5 );
 }
 
-void RenameDlg::b6Pressed()
+void RenameDlg::resumePressed()
 {
   done( 6 );
 }
 
-void RenameDlg::b7Pressed()
+void RenameDlg::resumeAllPressed()
 {
   done( 7 );
 }

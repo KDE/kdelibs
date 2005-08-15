@@ -94,16 +94,15 @@ public:
   static QString suggestName(const KURL& baseURL, const QString& oldName);
 
 public slots:
-  /// KDE4: rename to cancelPressed(), renamePressed() etc.
-  void b0Pressed();
-  void b1Pressed();
-  void b2Pressed();
-  void b3Pressed();
-  void b4Pressed();
-  void b5Pressed();
-  void b6Pressed();
-  void b7Pressed();
-  void b8Pressed();
+  void cancelPressed();
+  void renamePressed();
+  void skipPressed();
+  void autoSkipPressed();
+  void overwritePressed();
+  void overwriteAllPressed();
+  void resumePressed();
+  void resumeAllPressed();
+  void suggestNewNamePressed();
 
 protected slots:
   void enableRenameButton(const QString &);

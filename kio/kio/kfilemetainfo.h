@@ -1332,8 +1332,7 @@ public:
      */
     KFilePlugin * plugin( const QString& mimeType, const QString& protocol = QString::null  );
 
-    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType ); // KDE4: merge with below
-    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol );
+    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol = QString::null );
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
