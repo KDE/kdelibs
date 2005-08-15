@@ -253,7 +253,9 @@ public:
 #endif // KHTML_NO_TYPE_AHEAD_FIND
 	accessKeysActivated = false;
 	accessKeysPreActivate = false;
+        KHTMLFactory *factory = new KHTMLFactory( true );
         accessKeysEnabled = KHTMLFactory::defaultHTMLSettings()->accessKeysEnabled();
+        delete factory;
         emitCompletedAfterRepaint = CSNone;
     }
     void newScrollTimer(QWidget *view, int tid)
