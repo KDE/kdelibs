@@ -812,11 +812,6 @@ bool SlaveBase::dispatch()
     return true;
 }
 
-bool SlaveBase::openPassDlg( AuthInfo& info )
-{
-    return openPassDlg(info, QString::null);
-}
-
 bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 {
     AuthInfo authResult;

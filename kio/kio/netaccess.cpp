@@ -110,11 +110,6 @@ bool NetAccess::upload(const QString& src, const KURL& target, QWidget* window)
                                   false, window, false /*copy*/ );
 }
 
-bool NetAccess::copy( const KURL & src, const KURL & target )
-{
-  return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, 0L );
-}
-
 bool NetAccess::copy( const KURL & src, const KURL & target, QWidget* window )
 {
   return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, window );

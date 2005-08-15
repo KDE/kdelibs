@@ -176,14 +176,8 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool copy( const KURL& src, const KURL& target, QWidget* window );
+    static bool copy( const KURL& src, const KURL& target, QWidget* window = 0L );
     // KDE4: rename to file_copy
-
-    /**
-     * @deprecated. Use the function above instead.
-     */
-    static bool copy( const KURL& src, const KURL& target ) KDE_DEPRECATED;
-    // KDE4: merge with above
 
     /**
      * Full-fledged equivalent of KIO::file_copy

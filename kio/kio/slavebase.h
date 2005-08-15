@@ -642,13 +642,7 @@ public:
      * @return      @p true if user clicks on "OK", @p false otherwsie.
      * @since 3.1
      */
-    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg );
-
-    /**
-     * Same as above function except it does not need error message.
-     * BIC: Combine this function with the above for KDE4.
-     */
-    bool openPassDlg( KIO::AuthInfo& info );
+    bool openPassDlg( KIO::AuthInfo& info, const QString &errorMsg = QString::null );
 
     /**
      * Checks for cached authentication based on parameters
