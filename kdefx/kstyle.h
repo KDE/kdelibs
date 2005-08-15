@@ -501,8 +501,15 @@ protected:
      The Generic::Text, Generic::ArrowLeft/Right primitives
      are also used
 
+     There are two MenuItem modes, toggled by CheckAlongsideButton.
      Horizontal layout inside the items is as follow:
-     |icon/checkmark|CheckSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
+     - CheckAlongsideButton disabled:
+
+                  |icon/checkmark|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
+
+     - Layout with CheckAlongsideButton enabled:
+
+       |checkmark|CheckSpace|icon|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
 
      The icon/checkmark column is at least CheckWidth wide in all cases.
 
@@ -516,8 +523,11 @@ protected:
         enum LayoutProp
         {
             Margin,       //Margin for each entry
-            CheckWidth = Margin + MarginInc, //Minimum size of the checkmark column
-            CheckSpace,                      //Space between the column and text one
+            CheckAlongsideIcon = Margin + MarginInc, //Set to non-zero to have checkmarks painted separate from icons
+            CheckWidth,                      //Size of the checkmark column (CheckAlongsideButton enabled)
+            CheckSpace,                      //Space between the checkmark column and the icon column (CheckAlongsideButton enabled)
+            IconWidth,                       //Minimum size of the icon column
+            IconSpace,                       //Space between the icon column and text one
             AccelSpace,                      //Space between text and accel
             ArrowSpace,                      //Space to reserve for the menu arrow
             ArrowWidth,
@@ -531,11 +541,12 @@ protected:
 
         enum Primitive
         {
-            //### radio one?
             CheckColumn = Generic::WidgetSpecificBase, //Background of the checkmark/icon column
             CheckOn,     //The checkmark - on
             CheckOff,    //The checkmark - off
-            CheckIcon,   //Checked icon.
+            RadioOn,     //The checkmark of exclusive actions - on
+            RadioOff,    //The checkmark of exclusive actions - off
+            CheckIcon,   //Checked mark, painted below the icon when LayoutProp CheckAlongsideButton is disabled.
             Separator,   //A separator item.
             ItemIndicator //Shows the active item
         };

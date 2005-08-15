@@ -105,6 +105,8 @@ KStyle::KStyle()
 
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 12);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace, 3);
+    setWidgetLayoutProp(WT_MenuItem, MenuItem::IconWidth, 12);
+    setWidgetLayoutProp(WT_MenuItem, MenuItem::IconSpace, 3);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth, 11);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace, 3);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::Margin,     2);
@@ -849,11 +851,23 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             QRect ir = insideMargin(r, WT_MenuItem, MenuItem::Margin);
 
 
-            //First, figure out the left column width.
-            int leftColW = miOpt->maxIconWidth;
-            leftColW     = qMax(leftColW, widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth));
-                         
-            //And the right one...
+            //First, figure out the left column width. When CheckAlongsideIcon is disabled it's just
+            // the icon column width. Otherwise it consists of CheckWidth+CheckSpace+icon column width.
+            int iconColW = miOpt->maxIconWidth;
+            iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth));
+            int checkColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth);
+            int checkSpace = widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace);
+
+            int leftColW = iconColW;
+            // only use the additional check row if the menu has checkable menuItems.
+            bool checkAlongsideIcon = (miOpt->menuHasCheckableItems &&
+                    widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon) );
+            if (checkAlongsideIcon)
+            {
+                leftColW = checkColW + checkSpace + iconColW;
+            }
+
+            //And the right arrow column...
             int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace) +
                             widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth);
 
@@ -886,20 +900,70 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //Readjust the column rectangle back to proper height
             leftColRect = QRect(ir.x(), ir.y(), leftColW, ir.height());
-            //### render checkbox, etc. properly
+            // Paint checkbox, etc.
+            if (!checkAlongsideIcon && !miOpt->icon.isNull() )
+            {
+                // there is an icon and the item is checked, so paint a CheckIcon
+                if (miOpt->checked)
+                {
+                    drawKStylePrimitive(WT_MenuItem, MenuItem::CheckIcon,
+                                        option, handleRTL(option, leftColRect), pal, flags,
+                                        p, widget);
+                }
+            }
+            else
+            {
+                // paint a normal check- resp. radiomark.
+                QRect checkColRect;
+                if (checkAlongsideIcon)
+                {
+                    checkColRect = QRect(leftColRect.x(), leftColRect.y(),
+                                         checkColW, leftColRect.height() );
+                }
+                else
+                {
+                    checkColRect = leftColRect;
+                }
+
+                bool checked = miOpt->checked;
+                if (miOpt->checkType == QStyleOptionMenuItem::NonExclusive)
+                {
+                    drawKStylePrimitive(WT_MenuItem, checked ? MenuItem::CheckOn : MenuItem::CheckOff,
+                                        option, handleRTL(option, checkColRect), pal, flags,
+                                        p, widget);
+                }
+                else if (miOpt->checkType == QStyleOptionMenuItem::Exclusive)
+                {
+                    drawKStylePrimitive(WT_MenuItem, checked ? MenuItem::RadioOn : MenuItem::RadioOff,
+                                        option, handleRTL(option, checkColRect), pal, flags,
+                                        p, widget);
+                }
+            }
+            // Paint the menu icon.
             if (!miOpt->icon.isNull())
             {
                 int iconSize = pixelMetric(PM_SmallIconSize);
+
+                QRect iconColRect;
+                if (checkAlongsideIcon)
+                {
+                    iconColRect = QRect(leftColRect.x()+checkColW+checkSpace, leftColRect.y(),
+                                        leftColRect.width()-(checkColW+checkSpace), leftColRect.height() );
+                }
+                else
+                {
+                    iconColRect = leftColRect;
+                }
                 IconOption icoOpt;
                 icoOpt.icon   = miOpt->icon;
                 icoOpt.active = flags & State_Selected;
                 drawKStylePrimitive(WT_MenuItem, Generic::Icon, option,
-                                    handleRTL(option, centerRect(leftColRect, iconSize, iconSize)),
+                                    handleRTL(option, centerRect(iconColRect, iconSize, iconSize)),
                                     pal, flags, p, widget, &icoOpt);
             }
 
             //Now include the spacing when calculating the next columns
-            leftColW += widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace);
+            leftColW += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace);
 
             //Render the text, including any accel.
             QString text = miOpt->text;
@@ -2028,9 +2092,19 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 case QStyleOptionMenuItem::DefaultItem: //huh?
                 case QStyleOptionMenuItem::SubMenu:
                 {
-                    int leftColW =  miOpt->maxIconWidth;
-                    leftColW     =  qMax(leftColW, widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth));
-                    leftColW     += widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace);
+                    int iconColW = miOpt->maxIconWidth;
+                    iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth));
+
+                    int leftColW = iconColW;
+                    if (miOpt->menuHasCheckableItems &&
+                        widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon) )
+                    {
+                        leftColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth) +
+                                widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace) +
+                                iconColW;
+                    }
+
+                    leftColW     += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace);
 
                     int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace) +
                                     widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth);
