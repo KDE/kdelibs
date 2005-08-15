@@ -10,7 +10,7 @@
  *      Copyright (C) 2002      Malte Starostik   <malte@kde.org>
  *                (C) 2002-2003 Maksim Orlovich  <maksim@kde.org>
  *      Portions  (C) 2001-2002 Karol Szwed     <gallium@kde.org>
- *                (C) 2001-2002 Fredrik Höglund <fredrik@kde.org>
+ *                (C) 2001-2002 Fredrik HÃ¶glund <fredrik@kde.org>
  *                (C) 2000 Daniel M. Duley       <mosfet@kde.org>
  *                (C) 2000 Dirk Mueller         <mueller@kde.org>
  *                (C) 2001 Martijn Klingens    <klingens@kde.org>
@@ -287,6 +287,7 @@ protected:
         WT_ScrollBar,
         WT_Tab,
         WT_Slider,
+        WT_Tree,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -650,7 +651,35 @@ protected:
             GrooveHor                                   // A horizontal slider groove
         };
     };
-   
+
+    /**
+     For trees, all the control we provide here is to provide a cap on the size
+     of the expander widget, which is always square. There are 4 primitives to
+     implement: open and closed expander, and horizontal and vertical lines.
+     If you're using dots, it's suggested you use global brush alignment to
+     keep it all nicely aligned.
+
+     The default implementation has a Windows-like look
+
+     Note: if you set MaxExpanderSize to a value less than 9, designer will
+     look funny. The value should also be odd, or value - 1 will be used.
+    */
+    struct Tree
+    {
+        enum LayoutProp
+        {
+            MaxExpanderSize
+        };
+    
+        enum Primitive
+        {
+            ExpanderClosed = Generic::WidgetSpecificBase,
+            ExpanderOpen,
+            HorizontalBranch,
+            VerticalBranch
+        };
+    };
+
     ///Interface for the style to configure various metrics that KStyle has customizable.
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
     

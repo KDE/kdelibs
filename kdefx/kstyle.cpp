@@ -10,7 +10,7 @@
  *      Copyright (C) 2002      Malte Starostik   <malte@kde.org>
  *                (C) 2002-2003 Maksim Orlovich  <maksim@kde.org>
  *      Portions  (C) 2001-2002 Karol Szwed     <gallium@kde.org>
- *                (C) 2001-2002 Fredrik H�lund <fredrik@kde.org>
+ *                (C) 2001-2002 Fredrik Höglund <fredrik@kde.org>
  *                (C) 2000 Daniel M. Duley       <mosfet@kde.org>
  *                (C) 2000 Dirk Mueller         <mueller@kde.org>
  *                (C) 2001 Martijn Klingens    <klingens@kde.org>
@@ -129,13 +129,13 @@ KStyle::KStyle()
                             ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
 
     setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 6);
-
     setWidgetLayoutProp(WT_Tab, Tab::FocusMargin, 3);
+
+    setWidgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, 9);
 
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 16);
 }
-
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
 {
@@ -149,6 +149,33 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                  const QWidget* widget,
                                  KStyle::Option* kOpt) const
 {
+    if (widgetType == WT_Tree)
+    {
+        switch (primitive)
+        {
+            case Tree::VerticalBranch:
+            case Tree::HorizontalBranch:
+                //### FIXME: set sane color.
+                p->fillRect(r, QBrush(Qt::Dense4Pattern));
+                return;
+            case Tree::ExpanderOpen:
+            case Tree::ExpanderClosed:
+            {
+                p->setPen(pal.text().color());
+                drawInsideRect(p, r); //the border.
+                int signLineSize = r.width()/4;
+                p->drawLine(r.center().x() - signLineSize, r.center().y(),
+                            r.center().x() + signLineSize, r.center().y()); //-
+                if (primitive == Tree::ExpanderClosed) //vertical line of +
+                    p->drawLine(r.center().x(), r.center().y() - signLineSize,
+                                r.center().x(), r.center().y() + signLineSize);
+                return;
+            }
+            default:
+                break;
+        }
+    }
+
     if (primitive == Generic::Text)
     {
         KStyle::TextOption* textOpts = extractOption<KStyle::TextOption*>(kOpt);
@@ -369,7 +396,65 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_IndicatorArrowRight:
             drawKStylePrimitive(WT_Generic, Generic::ArrowRight, option, r, pal, flags, painter, widget);
             return;
+        case PE_IndicatorMenuCheckMark:
+            //### check flags
+            drawKStylePrimitive(WT_MenuItem, MenuItem::CheckOn, option, r, pal, flags, painter, widget);
+            return;
+        case PE_IndicatorBranch:
+        {
+            int centerX = r.x() + r.width()/2;
+            int centerY = r.y() + r.height()/2;
 
+            int expanderAdjust = 0;
+            
+            //First, determine whether we need to draw an expander.
+            if (flags & State_Children)
+            {
+                //How large should we make it?
+                int sizeLimit = qMin(qMin(r.width(), r.height()),
+                                     widgetLayoutProp(WT_Tree, Tree::MaxExpanderSize));
+                if ((sizeLimit & 1) == 0)
+                    --sizeLimit;
+
+                expanderAdjust = sizeLimit/2 + 1;
+
+                QRect expanderRect = QRect(centerX - sizeLimit/2, centerY - sizeLimit/2,
+                                           sizeLimit, sizeLimit);
+
+                drawKStylePrimitive(WT_Tree, flags & State_Open ? Tree::ExpanderOpen : Tree::ExpanderClosed,
+                                    option, expanderRect, pal, flags, painter, widget);
+            }
+
+            //Now, draw the branches. The top line gets drawn unless we're completely
+            //w/o any indication of a neightbor
+            if (flags & (State_Item | State_Children | State_Sibling))
+            {
+                QRect topLine = QRect(QPoint(centerX, r.y()), QPoint(centerX, centerY - expanderAdjust));
+                drawKStylePrimitive(WT_Tree, Tree::VerticalBranch, option, topLine, pal, flags, painter, widget);
+            }
+
+            //The right/left (depending on dir) line gets drawn if we have an item
+            if (flags & State_Item)
+            {
+                QRect horLine;
+                if (option->direction == Qt::LeftToRight)
+                    horLine = QRect(QPoint(centerX + expanderAdjust, centerY),
+                                    QPoint(r.right(), centerY));
+                else
+                    horLine = QRect(QPoint(r.left(), centerY),
+                                    QPoint(centerX - expanderAdjust, centerY));
+                drawKStylePrimitive(WT_Tree, Tree::HorizontalBranch, option, horLine, pal, flags, painter, widget);
+            }
+
+            //The bottom if we have a sibling
+            if (flags & State_Sibling)
+            {
+                QRect botLine = QRect(QPoint(centerX, centerY + expanderAdjust),
+                                      QPoint(centerX, r.bottom()));
+                drawKStylePrimitive(WT_Tree, Tree::VerticalBranch, option, botLine, pal, flags, painter, widget);
+            }
+            return;
+        }
         case PE_FrameMenu:
             drawKStylePrimitive(WT_Menu, Menu::Frame, option, r, pal, flags, painter, widget);
             return;
@@ -1743,49 +1828,138 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
     QRect      r     = opt->rect;
     QPalette   pal   = opt->palette;
 
-    if (cc == CC_ScrollBar)
+    switch (cc)
     {
-        QStyleOptionComplex* mutableOpt = const_cast<QStyleOptionComplex*>(opt);
-        if ((mutableOpt->subControls & SC_ScrollBarSubLine) || (mutableOpt->subControls & SC_ScrollBarAddLine))
+        case CC_ScrollBar:
         {
-            //If we paint one of the buttons, must paint both!
-            mutableOpt->subControls |= SC_ScrollBarSubPage | SC_ScrollBarAddLine;
+            QStyleOptionComplex* mutableOpt = const_cast<QStyleOptionComplex*>(opt);
+            if ((mutableOpt->subControls & SC_ScrollBarSubLine) || (mutableOpt->subControls & SC_ScrollBarAddLine))
+            {
+                //If we paint one of the buttons, must paint both!
+                mutableOpt->subControls |= SC_ScrollBarSubPage | SC_ScrollBarAddLine;
+            }
+            //Note: we falldown to the base intentionally
         }
-    }
-    else if (cc == CC_Slider)
-    {
-        if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(opt))
+        break;
+
+        case CC_Q3ListView:
         {
-            QRect groove = subControlRect(CC_Slider, slider, SC_SliderGroove, w);
-            QRect handle = subControlRect(CC_Slider, slider, SC_SliderHandle, w);
-            bool hor = slider->orientation == Qt::Horizontal;
+            const QStyleOptionQ3ListView* lvOpt = qstyleoption_cast<const QStyleOptionQ3ListView*>(opt);
+            if (lvOpt->subControls & SC_Q3ListView)
+                QCommonStyle::drawComplexControl(cc, opt, p, w);
 
-            if (slider->subControls & SC_SliderTickmarks)
+            if (lvOpt->items.isEmpty())
+                return;
+
+            // If we have a branch or are expanded...
+            if (lvOpt->subControls & (SC_Q3ListViewBranch | SC_Q3ListViewExpand))
             {
-                // TODO: make tickmarks customizable with Slider::Tickmark-primitives?
-                QStyleOptionSlider tmpSlider = *slider;
-                tmpSlider.subControls = SC_SliderTickmarks;
-                QCommonStyle::drawComplexControl(cc, &tmpSlider, p, w);
-            }
+                QStyleOptionQ3ListViewItem item  = lvOpt->items.at(0);
 
-            if ((slider->subControls & SC_SliderGroove) && groove.isValid())
+                int y = r.y();
+
+                QStyleOption opt; //For painting
+                opt.palette   = lvOpt->palette;
+                opt.direction = Qt::LeftToRight;
+
+                if (lvOpt->activeSubControls == SC_All && lvOpt->subControls & SC_Q3ListViewExpand) {
+                    //### CHECKME: this is from KStyle3, and needs to be re-checked
+                    // We only need to draw a vertical line
+                    //Route through the Qt4 style-call.
+                    QStyleOption opt;
+                    opt.rect  = r;
+                    opt.state = State_Sibling;
+                    drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
+                } else {
+                    int childPos = 1;
+
+                    // Draw all the expand/close boxes, and nearby branches
+                    while (childPos < lvOpt->items.size() && y < r.height())
+                    {
+                        const QStyleOptionQ3ListViewItem& child = lvOpt->items.at(childPos);
+                        if (!(child.features & QStyleOptionQ3ListViewItem::Visible))
+                            continue;
+
+                        //Route through the Qt4 style-call.
+                        opt.rect  = QRect(r.x(), y, r.width(), child.height);
+                        opt.state = State_Item;
+
+                        if (child.features & QStyleOptionQ3ListViewItem::Expandable || child.childCount)
+                        {
+                            opt.state |= State_Children;
+                            opt.state |= (child.state & State_Open);
+                        }
+
+                        //See if we have a visible sibling
+                        int siblingPos = 0;
+                        for (siblingPos = childPos + 1; siblingPos < lvOpt->items.size(); ++siblingPos)
+                        {
+                            if (lvOpt->items.at(siblingPos).features & QStyleOptionQ3ListViewItem::Visible)
+                            {
+                                opt.state |= State_Sibling;
+                                break;
+                            }
+                        }
+
+                        //If on screen, paint it
+                        if (y + child.height > 0)
+                            drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
+
+                        if (!siblingPos)
+                            break;
+
+                        //If we have a sibling, and an expander, also have to draw
+                        //a line for below the immediate area
+                        if ((opt.state & State_Children) && (opt.state & State_Sibling))
+                        {
+                            opt.state = State_Sibling;
+                            opt.rect  = QRect(r.x(), y + child.height, r.width(), child.totalHeight - child.height);
+                            if (opt.rect.height())
+                                drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
+                        }
+
+                        y += child.totalHeight;
+                        childPos = siblingPos;
+                    } //loop through items
+                } //complex case
+            } //if have branch or expander
+        } //CC_Q3ListView
+        break;
+
+        case CC_Slider:
+        {
+            if (const QStyleOptionSlider *slider = qstyleoption_cast<const QStyleOptionSlider *>(opt))
             {
-                drawKStylePrimitive(WT_Slider, hor ? Slider::GrooveHor : Slider::GrooveVert, opt, groove, pal, flags, p, w);
-            }
+                QRect groove = subControlRect(CC_Slider, slider, SC_SliderGroove, w);
+                QRect handle = subControlRect(CC_Slider, slider, SC_SliderHandle, w);
+                bool hor = slider->orientation == Qt::Horizontal;
 
-            if (slider->subControls & SC_SliderHandle)
-            {
-                drawKStylePrimitive(WT_Slider, hor ? Slider::HandleHor : Slider::HandleVert, opt, handle, pal, flags, p, w);
-
-                if (slider->state & State_HasFocus) {
-                    QRect focus = subElementRect(SE_SliderFocusRect, slider, w);
-                    drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, focus, pal, flags, p, w, 0);
+                if (slider->subControls & SC_SliderTickmarks)
+                {
+                    // TODO: make tickmarks customizable with Slider::Tickmark-primitives?
+                    QStyleOptionSlider tmpSlider = *slider;
+                    tmpSlider.subControls = SC_SliderTickmarks;
+                    QCommonStyle::drawComplexControl(cc, &tmpSlider, p, w);
                 }
-            }
 
-        }
+                if ((slider->subControls & SC_SliderGroove) && groove.isValid())
+                {
+                    drawKStylePrimitive(WT_Slider, hor ? Slider::GrooveHor : Slider::GrooveVert, opt, groove, pal, flags, p, w);
+                }
 
-    }
+                if (slider->subControls & SC_SliderHandle)
+                {
+                    drawKStylePrimitive(WT_Slider, hor ? Slider::HandleHor : Slider::HandleVert, opt, handle, pal, flags, p, w);
+    
+                    if (slider->state & State_HasFocus) {
+                        QRect focus = subElementRect(SE_SliderFocusRect, slider, w);
+                        drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, focus, pal, flags, p, w, 0);
+                    }
+                }
+            } //option OK
+            return;
+        } //CC_Slider
+    } //switch
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);
 }
