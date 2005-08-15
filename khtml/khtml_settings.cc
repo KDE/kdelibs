@@ -333,24 +333,31 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) 
       {
           QString name = it.key();
-          QString value = it.data();
+          QString url = it.data();
 
-          if (value.startsWith("!"))
+          if (url.startsWith("!"))
               continue;
 
           if (name.startsWith("Filter"))
           {
-              if (value.length()>2 && value[0]=='/' && value[value.length()-1] == '/')
+              if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')
               {
-                  QString inside = value.mid(1, value.length()-2);
+                  QString inside = url.mid(1, url.length()-2);
                   QRegExp rx(inside);
                   d->adFilters.append(rx);
               }
               else
               {
-                QRegExp rx(value);
-                rx.setWildcard(true);
-                d->adFilters.append(rx);
+                  QRegExp rx;
+                  int left,right;
+                  
+                  for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
+                  for (left=0; left<right && url[left]=='*' ; ++left);
+                  
+                  rx.setWildcard(true);
+                  rx.setPattern(url.mid(left,right-left));
+                  
+                  d->adFilters.append(rx);
               }
           }
       }
@@ -754,8 +761,13 @@ void KHTMLSettings::addAdFilter( const QString &url )
     }
     else
     {
+        int left,right;
+        
         rx.setWildcard(true);
-        rx.setPattern(url);
+        for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
+        for (left=0; left<right && url[left]=='*' ; ++left);
+        
+        rx.setPattern(url.mid(left,right-left));
     }
 
     if (rx.isValid())
