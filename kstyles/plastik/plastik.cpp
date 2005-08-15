@@ -153,6 +153,9 @@ PlastikStyle::PlastikStyle() :
 
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
 
+    setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
+    setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
+
     
 //     hoverWidget = 0;
 //     hoverTab = 0;
@@ -797,6 +800,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 case Tab::NorthTab:
                 case Tab::SouthTab:
                 {
+                    // TODO: check if tabOpt != 0...
                     QStyleOptionTab::TabPosition pos = tabOpt->position;
 
                     // TODO: tab painting needs a lot of work in order to handle east and west tabs.
@@ -808,6 +812,158 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 }
 
+            }
+
+        }
+        break;
+
+        case WT_Slider:
+        {
+            switch (primitive)
+            {
+                case Slider::HandleHor:
+                case Slider::HandleVert:
+                {
+
+                    bool horizontal = primitive == Slider::HandleHor;
+
+                    const bool pressed = (flags&State_Sunken);
+                    const WidgetState s = enabled?(pressed?IsPressed:IsEnabled):IsDisabled;
+                    const QColor contour = getColor(pal,DragButtonContour,s),
+                                surface = getColor(pal,DragButtonSurface,s);
+
+                    int xcenter = (r.left()+r.right()) / 2;
+                    int ycenter = (r.top()+r.bottom()) / 2;
+
+                    if (horizontal) {
+                        renderContour(p, QRect(xcenter-5, ycenter-6, 11, 10),
+                                      pal.background().color(), contour,
+                                    Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft|Round_UpperRight);
+
+                        // manual contour: vertex
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 50) );
+                        p->drawPoint(xcenter-5+1, ycenter+4);
+                        p->drawPoint(xcenter+5-1, ycenter+4);
+                        p->drawPoint(xcenter-5+2, ycenter+5);
+                        p->drawPoint(xcenter+5-2, ycenter+5);
+                        p->drawPoint(xcenter-5+3, ycenter+6);
+                        p->drawPoint(xcenter+5-3, ycenter+6);
+                        p->drawPoint(xcenter-5+4, ycenter+7);
+                        p->drawPoint(xcenter+5-4, ycenter+7);
+                        // anti-aliasing of the contour... sort of. :)
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 80) );
+                        p->drawPoint(xcenter, ycenter+8);
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 150) );
+                        p->drawPoint(xcenter-5, ycenter+4);
+                        p->drawPoint(xcenter+5, ycenter+4);
+                        p->drawPoint(xcenter-5+1, ycenter+5);
+                        p->drawPoint(xcenter+5-1, ycenter+5);
+                        p->drawPoint(xcenter-5+2, ycenter+6);
+                        p->drawPoint(xcenter+5-2, ycenter+6);
+                        p->drawPoint(xcenter-5+3, ycenter+7);
+                        p->drawPoint(xcenter+5-3, ycenter+7);
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 190) );
+                        p->drawPoint(xcenter-5+4, ycenter+8);
+                        p->drawPoint(xcenter+5-4, ycenter+8);
+
+
+                        QRegion mask(xcenter-4, ycenter-5, 9, 13);
+                        mask -= QRegion(xcenter-4, ycenter+4, 1, 4);
+                        mask -= QRegion(xcenter-3, ycenter+5, 1, 3);
+                        mask -= QRegion(xcenter-2, ycenter+6, 1, 2);
+                        mask -= QRegion(xcenter-1, ycenter+7, 1, 1);
+                        mask -= QRegion(xcenter+1, ycenter+7, 1, 1);
+                        mask -= QRegion(xcenter+2, ycenter+6, 1, 2);
+                        mask -= QRegion(xcenter+3, ycenter+5, 1, 3);
+                        mask -= QRegion(xcenter+4, ycenter+4, 1, 4);
+                        p->setClipRegion(mask);
+                        uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft|Round_UpperRight|Is_Horizontal;
+                        if(!enabled)
+                            surfaceFlags |= Is_Disabled;
+                        renderSurface(p, QRect(xcenter-4, ycenter-5, 9, 13),
+                                      pal.background().color(), surface, getColor(pal,MouseOverHighlight),
+                                    _contrast+3, surfaceFlags);
+                        renderDot(p, QPoint(xcenter-3, ycenter-3), surface, false, true );
+                        renderDot(p, QPoint(xcenter+2,   ycenter-3), surface, false, true );
+                        p->setClipping(false);
+                    } else {
+                        renderContour(p, QRect(xcenter-6, ycenter-5, 10, 11),
+                                      pal.background().color(), contour,
+                                    Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft);
+
+                        // manual contour: vertex
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 50) );
+                        p->drawPoint(xcenter+4, ycenter-5+1);
+                        p->drawPoint(xcenter+4, ycenter+5-1);
+                        p->drawPoint(xcenter+5, ycenter-5+2);
+                        p->drawPoint(xcenter+5, ycenter+5-2);
+                        p->drawPoint(xcenter+6, ycenter-5+3);
+                        p->drawPoint(xcenter+6, ycenter+5-3);
+                        p->drawPoint(xcenter+7, ycenter-5+4);
+                        p->drawPoint(xcenter+7, ycenter+5-4);
+                        // anti-aliasing. ...sort of :)
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 80) );
+                        p->drawPoint(xcenter+8, ycenter);
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 150) );
+                        p->drawPoint(xcenter+4, ycenter-5);
+                        p->drawPoint(xcenter+4, ycenter+5);
+                        p->drawPoint(xcenter+5, ycenter-5+1);
+                        p->drawPoint(xcenter+5, ycenter+5-1);
+                        p->drawPoint(xcenter+6, ycenter-5+2);
+                        p->drawPoint(xcenter+6, ycenter+5-2);
+                        p->drawPoint(xcenter+7, ycenter-5+3);
+                        p->drawPoint(xcenter+7, ycenter+5-3);
+                        p->setPen(alphaBlendColors(pal.background().color(), contour, 190) );
+                        p->drawPoint(xcenter+8, ycenter-5+4);
+                        p->drawPoint(xcenter+8, ycenter+5-4);
+
+                        QRegion mask(xcenter-5, ycenter-4, 13, 9);
+                        mask -= QRegion(xcenter+4, ycenter-4, 4, 1);
+                        mask -= QRegion(xcenter+5, ycenter-3, 3, 1);
+                        mask -= QRegion(xcenter+6, ycenter-2, 2, 1);
+                        mask -= QRegion(xcenter+7, ycenter-1, 1, 1);
+                        mask -= QRegion(xcenter+7, ycenter+1, 1, 1);
+                        mask -= QRegion(xcenter+6, ycenter+2, 2, 1);
+                        mask -= QRegion(xcenter+5, ycenter+3, 3, 1);
+                        mask -= QRegion(xcenter+4, ycenter+4, 4, 1);
+                        p->setClipRegion(mask);
+                        uint surfaceFlags = Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft|
+                                        Round_UpperRight|Is_Horizontal;
+                        if(!enabled)
+                            surfaceFlags |= Is_Disabled;
+                        renderSurface(p, QRect(xcenter-5, ycenter-4, 13, 9),
+                                      pal.background().color(), surface, getColor(pal,MouseOverHighlight),
+                                    _contrast+3, surfaceFlags);
+                        renderDot(p, QPoint(xcenter-3, ycenter-3), surface, false, true );
+                        renderDot(p, QPoint(xcenter-3,   ycenter+2), surface, false, true );
+                        p->setClipping(false);
+                    }
+
+//                     return;
+                    break;
+                }
+
+                case Slider::GrooveHor:
+                case Slider::GrooveVert:
+                {
+
+                    bool horizontal = primitive == Slider::GrooveHor;
+
+                    if (horizontal) {
+                        int center = r.y()+r.height()/2;
+                        renderContour(p, QRect(r.left(), center-2, r.width(), 4),
+                                      pal.background(), pal.background().color().dark(enabled?150:130),
+                                    Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
+                    } else {
+                        int center = r.x()+r.width()/2;
+                        renderContour(p, QRect(center-2, r.top(), 4, r.height()),
+                                      pal.background(), pal.background().color().dark(enabled?150:130),
+                                    Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
+                    }
+
+//                     return;
+                    break;
+                }
             }
 
         }
@@ -2027,142 +2183,8 @@ void PlastikStyle::renderTab(QPainter *p,
 // //  SLIDER
 // //  ------
 //     switch( kpe ) {
-//         case KPE_SliderGroove: {
-//             const QSlider* slider = (const QSlider*)widget;
-//             bool horizontal = slider->orientation() == Qt::Horizontal;
-// 
-//             if (horizontal) {
-//                 int center = r.y()+r.height()/2;
-//                 renderContour(p, QRect(r.left(), center-2, r.width(), 4),
-//                               cg.background(), cg.background().dark(enabled?150:130),
-//                               Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
-//             } else {
-//                 int center = r.x()+r.width()/2;
-//                 renderContour(p, QRect(center-2, r.top(), 4, r.height()),
-//                               cg.background(), cg.background().dark(enabled?150:130),
-//                               Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
-//             }
-//             break;
-//         }
-// 
-//         case KPE_SliderHandle: {
-//                 const QSlider* slider = (const QSlider*)widget;
-//                 bool horizontal = slider->orientation() == Qt::Horizontal;
-// 
-//                 const bool pressed = (flags&Style_Active);
-//                 const WidgetState s = enabled?(pressed?IsPressed:IsEnabled):IsDisabled;
-//                 const QColor contour = getColor(cg,DragButtonContour,s),
-//                              surface = getColor(cg,DragButtonSurface,s);
-// 
-//                 int xcenter = (r.left()+r.right()) / 2;
-//                 int ycenter = (r.top()+r.bottom()) / 2;
-// 
-//                 if (horizontal) {
-//                     renderContour(p, QRect(xcenter-5, ycenter-6, 11, 10),
-//                                 cg.background(), contour,
-//                                 Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft|Round_UpperRight);
-// 
-//                     // manual contour: vertex
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 50) );
-//                     p->drawPoint(xcenter-5+1, ycenter+4);
-//                     p->drawPoint(xcenter+5-1, ycenter+4);
-//                     p->drawPoint(xcenter-5+2, ycenter+5);
-//                     p->drawPoint(xcenter+5-2, ycenter+5);
-//                     p->drawPoint(xcenter-5+3, ycenter+6);
-//                     p->drawPoint(xcenter+5-3, ycenter+6);
-//                     p->drawPoint(xcenter-5+4, ycenter+7);
-//                     p->drawPoint(xcenter+5-4, ycenter+7);
-//                     // anti-aliasing of the contour... sort of. :)
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 80) );
-//                     p->drawPoint(xcenter, ycenter+8);
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 150) );
-//                     p->drawPoint(xcenter-5, ycenter+4);
-//                     p->drawPoint(xcenter+5, ycenter+4);
-//                     p->drawPoint(xcenter-5+1, ycenter+5);
-//                     p->drawPoint(xcenter+5-1, ycenter+5);
-//                     p->drawPoint(xcenter-5+2, ycenter+6);
-//                     p->drawPoint(xcenter+5-2, ycenter+6);
-//                     p->drawPoint(xcenter-5+3, ycenter+7);
-//                     p->drawPoint(xcenter+5-3, ycenter+7);
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 190) );
-//                     p->drawPoint(xcenter-5+4, ycenter+8);
-//                     p->drawPoint(xcenter+5-4, ycenter+8);
-// 
-// 
-//                     QRegion mask(xcenter-4, ycenter-5, 9, 13);
-//                     mask -= QRegion(xcenter-4, ycenter+4, 1, 4);
-//                     mask -= QRegion(xcenter-3, ycenter+5, 1, 3);
-//                     mask -= QRegion(xcenter-2, ycenter+6, 1, 2);
-//                     mask -= QRegion(xcenter-1, ycenter+7, 1, 1);
-//                     mask -= QRegion(xcenter+1, ycenter+7, 1, 1);
-//                     mask -= QRegion(xcenter+2, ycenter+6, 1, 2);
-//                     mask -= QRegion(xcenter+3, ycenter+5, 1, 3);
-//                     mask -= QRegion(xcenter+4, ycenter+4, 1, 4);
-//                     p->setClipRegion(mask);
-//                     uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Round_UpperLeft|Round_UpperRight|Is_Horizontal;
-//                     if(!enabled)
-//                         surfaceFlags |= Is_Disabled;
-//                     renderSurface(p, QRect(xcenter-4, ycenter-5, 9, 13),
-//                                 cg.background(), surface, getColor(cg,MouseOverHighlight),
-//                                 _contrast+3, surfaceFlags);
-//                     renderDot(p, QPoint(xcenter-3, ycenter-3), surface, false, true );
-//                     renderDot(p, QPoint(xcenter+2,   ycenter-3), surface, false, true );
-//                     p->setClipping(false);
-//                 } else {
-//                     renderContour(p, QRect(xcenter-6, ycenter-5, 10, 11),
-//                                 cg.background(), contour,
-//                                 Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft);
-// 
-//                     // manual contour: vertex
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 50) );
-//                     p->drawPoint(xcenter+4, ycenter-5+1);
-//                     p->drawPoint(xcenter+4, ycenter+5-1);
-//                     p->drawPoint(xcenter+5, ycenter-5+2);
-//                     p->drawPoint(xcenter+5, ycenter+5-2);
-//                     p->drawPoint(xcenter+6, ycenter-5+3);
-//                     p->drawPoint(xcenter+6, ycenter+5-3);
-//                     p->drawPoint(xcenter+7, ycenter-5+4);
-//                     p->drawPoint(xcenter+7, ycenter+5-4);
-//                     // anti-aliasing. ...sort of :)
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 80) );
-//                     p->drawPoint(xcenter+8, ycenter);
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 150) );
-//                     p->drawPoint(xcenter+4, ycenter-5);
-//                     p->drawPoint(xcenter+4, ycenter+5);
-//                     p->drawPoint(xcenter+5, ycenter-5+1);
-//                     p->drawPoint(xcenter+5, ycenter+5-1);
-//                     p->drawPoint(xcenter+6, ycenter-5+2);
-//                     p->drawPoint(xcenter+6, ycenter+5-2);
-//                     p->drawPoint(xcenter+7, ycenter-5+3);
-//                     p->drawPoint(xcenter+7, ycenter+5-3);
-//                     p->setPen(alphaBlendColors(cg.background(), contour, 190) );
-//                     p->drawPoint(xcenter+8, ycenter-5+4);
-//                     p->drawPoint(xcenter+8, ycenter+5-4);
-// 
-//                     QRegion mask(xcenter-5, ycenter-4, 13, 9);
-//                     mask -= QRegion(xcenter+4, ycenter-4, 4, 1);
-//                     mask -= QRegion(xcenter+5, ycenter-3, 3, 1);
-//                     mask -= QRegion(xcenter+6, ycenter-2, 2, 1);
-//                     mask -= QRegion(xcenter+7, ycenter-1, 1, 1);
-//                     mask -= QRegion(xcenter+7, ycenter+1, 1, 1);
-//                     mask -= QRegion(xcenter+6, ycenter+2, 2, 1);
-//                     mask -= QRegion(xcenter+5, ycenter+3, 3, 1);
-//                     mask -= QRegion(xcenter+4, ycenter+4, 4, 1);
-//                     p->setClipRegion(mask);
-//                     uint surfaceFlags = Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft|
-//                                     Round_UpperRight|Is_Horizontal;
-//                     if(!enabled)
-//                         surfaceFlags |= Is_Disabled;
-//                     renderSurface(p, QRect(xcenter-5, ycenter-4, 13, 9),
-//                                 cg.background(), surface, getColor(cg,MouseOverHighlight),
-//                                 _contrast+3, surfaceFlags);
-//                     renderDot(p, QPoint(xcenter-3, ycenter-3), surface, false, true );
-//                     renderDot(p, QPoint(xcenter-3,   ycenter+2), surface, false, true );
-//                     p->setClipping(false);
-//                 }
-// 
-//                 break;
-//             }
+
+
 // 
 //         case KPE_ListViewExpander: {
 //             int radius = (r.width() - 4) / 2;
@@ -3408,12 +3430,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //     // ------------
 //         case PM_ProgressBarChunkWidth:
 //             return 10;
-// 
-//     // SLIDER
-//     // ------
-//         case PM_SliderLength:
-//             return 11;
-// 
+//
 //     // MENU INDICATOR
 //     // --------------
 //         case PM_MenuButtonIndicator:
