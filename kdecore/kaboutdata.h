@@ -542,6 +542,52 @@ class KDECORE_EXPORT KAboutData
      */
     QString copyrightStatement() const;
 
+    /**
+     * Returns the plain text displayed around the list of authors instead
+     * of the default message telling users to send bug reports to bugAddress().
+     *
+     * @return the plain text displayed around the list of authors instead
+     *         of the default message.  Can be QString::null.
+     */
+    QString customAuthorPlainText() const;
+
+    /**
+     * Returns the rich text displayed around the list of authors instead
+     * of the default message telling users to send bug reports to bugAddress().
+     *
+     * @return the rich text displayed around the list of authors instead
+     *         of the default message.  Can be QString::null.
+     */
+    QString customAuthorRichText() const;
+
+    /**
+     * Returns whether custom text should be displayed around the list of
+     * authors.
+     *
+     * @return whether custom text should be displayed around the list of
+     *         authors.
+     */
+    bool customAuthorTextEnabled() const;
+    
+    /**
+     * Sets the custom text displayed around the list of authors instead
+     * of the default message telling users to send bug reports to bugAddress().
+     *
+     * @param plainText The plain text.
+     * @param richText The rich text.
+     *
+     * Both parameters can be QString::null to not display any message at
+     * all.  Call unsetCustomAuthorText() to revert to the default mesage.
+     */
+    void setCustomAuthorText(const QString &plainText, const QString &richText);
+    
+    /**
+     * Clears any custom text displayed around the list of authors and falls
+     * back to the default message telling users to send bug reports to
+     * bugAddress().
+     */
+    void unsetCustomAuthorText();
+    
   private:
     const char *mAppName;
     const char *mProgramName;
