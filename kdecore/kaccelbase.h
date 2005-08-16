@@ -157,12 +157,21 @@ class KDECORE_EXPORT KAccelBase
 	*/
 	KAccelAction* actionPtr( const KKeyServer::Key& key );
 
+	/** Returns the name of the configuration group these
+	*   accelerators are stored in. The default is "Shortcuts".
+	*/
 	const QString& configGroup() const { return m_sConfigGroup; }
+	/** Set the group (in the configuration file) for storing
+	*   accelerators.
+	*/
 	void setConfigGroup( const QString& group );
 	void setConfigGlobal( bool global );
 	virtual void setEnabled( bool bEnabled ) = 0;
+	/** Returns whether autoupdate is enabled for these accelerators. */
 	bool getAutoUpdate() { return m_bAutoUpdate; }
-	// return value of AutoUpdate flag before this call.
+	/** Enables (or disables) autoupdate for these accelerators.
+	*   @return the value of autoupdate before the call.
+	*/
 	bool setAutoUpdate( bool bAuto );
 
 // Procedures for manipulating Actions.
