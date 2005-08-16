@@ -378,6 +378,7 @@ void Addressee::insertEmail( const QString &email, bool preferred )
     return;
 
   detach();
+  mData->empty = false;
 
   QStringList::Iterator it = mData->emails.find( email );
 
