@@ -49,6 +49,7 @@
 #include <qstyleoption.h>
 #include <QEvent>
 #include <QScrollBar>
+#include <QVariant>
 //#include <QStyleOptionButton>
 
 #include <stdio.h> //###debug
@@ -406,7 +407,6 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             int centerY = r.y() + r.height()/2;
 
             int expanderAdjust = 0;
-            
             //First, determine whether we need to draw an expander.
             if (flags & State_Children)
             {
@@ -1862,12 +1862,22 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 opt.palette   = lvOpt->palette;
                 opt.direction = Qt::LeftToRight;
 
+                //Remap the painter so (0,0) corresponds to the origin
+                //of the widget, to help out the line align code.
+                //Extract the paint offset. Here be dragons
+                //(and not the cute green Patron of the project, either)
+                int cX = w ? w->property("contentsX").toInt() : 0;
+                int cY = w ? w->property("contentsY").toInt() : 0;
+
+                QPoint adjustCoords = p->matrix().map(QPoint(0,0)) + QPoint(cX, cY);
+                p->translate(-adjustCoords);
+
                 if (lvOpt->activeSubControls == SC_All && lvOpt->subControls & SC_Q3ListViewExpand) {
-                    //### CHECKME: this is from KStyle3, and needs to be re-checked
+                    //### CHECKME: this is from KStyle3, and needs to be re-checked/tested
                     // We only need to draw a vertical line
                     //Route through the Qt4 style-call.
                     QStyleOption opt;
-                    opt.rect  = r;
+                    opt.rect  = QRect(r.topLeft() + adjustCoords, r.size());
                     opt.state = State_Sibling;
                     drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
                 } else {
@@ -1881,7 +1891,8 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                             continue;
 
                         //Route through the Qt4 style-call.
-                        opt.rect  = QRect(r.x(), y, r.width(), child.height);
+                        opt.rect  = QRect(r.x() + adjustCoords.x(), y + adjustCoords.y(),
+                                          r.width(), child.height);
                         opt.state = State_Item;
 
                         if (child.features & QStyleOptionQ3ListViewItem::Expandable || child.childCount)
@@ -1913,7 +1924,9 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                         if ((opt.state & State_Children) && (opt.state & State_Sibling))
                         {
                             opt.state = State_Sibling;
-                            opt.rect  = QRect(r.x(), y + child.height, r.width(), child.totalHeight - child.height);
+                            opt.rect  = QRect(r.x() + adjustCoords.x(),
+                                              y + adjustCoords.y() + child.height,
+                                              r.width(), child.totalHeight - child.height);
                             if (opt.rect.height())
                                 drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
                         }
@@ -1922,6 +1935,8 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                         childPos = siblingPos;
                     } //loop through items
                 } //complex case
+
+                p->translate(-adjustCoords);
             } //if have branch or expander
         } //CC_Q3ListView
         break;
