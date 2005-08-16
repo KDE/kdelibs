@@ -108,21 +108,31 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
       i18n("A&uthor") : i18n("A&uthors");
     KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
 
-    QString text;
-    KActiveLabel* activeLabel = new KActiveLabel( authorPage );
-    if ( aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
-       text = i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs, do not mail the authors directly.\n" );
-    else {
-       if( aboutData->authors().count() == 1 && ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) )
-       {
-         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>." ).arg( aboutData->authors().first().emailAddress() ).arg( aboutData->authors().first().emailAddress() );
-       }
-       else {
-         text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>, do not mail the authors directly.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress() );
-       }
+    if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty ())
+    {
+      QString text;
+      KActiveLabel* activeLabel = new KActiveLabel( authorPage );
+      if (!aboutData->customAuthorTextEnabled())
+      {
+        if ( aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
+          text = i18n( "Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n" );
+        else {
+          if( aboutData->authors().count() == 1 && ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) )
+          {
+            text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>.\n" ).arg( aboutData->authors().first().emailAddress() ).arg( aboutData->authors().first().emailAddress() );
+          }
+          else {
+            text = i18n( "Please report bugs to <a href=\"mailto:%1\">%2</a>.\n" ).arg(aboutData->bugAddress()).arg(aboutData->bugAddress() );
+          }
+        }
+      }
+      else
+      {
+        text = aboutData->customAuthorRichText();
+      }
+      activeLabel->setText( text );
+      authorPage->addWidget( activeLabel );
     }
-    activeLabel->setText( text );
-    authorPage->addWidget( activeLabel );
 
 	QList<KAboutPerson> lst = aboutData->authors();
 	for (int i = 0; i < lst.size(); ++i) {

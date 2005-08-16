@@ -617,15 +617,22 @@ KCmdLineArgs::parseAllArgs()
        } else {
          printQ( i18n("This application was written by somebody who wants to remain anonymous.") );
        }
-       if (!about->bugAddress().isEmpty())
+       if (about)
        {
-         if ( about->bugAddress() == "submit@bugs.kde.org" )
-           printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
-         else {
-           if( about->authors().count() == 1 && about->authors().first().emailAddress() == about->bugAddress() )
-             printQ( i18n( "Please report bugs to %1.\n" ).arg( about->authors().first().emailAddress() ) );
-           else
-             printQ( i18n( "Please report bugs to %1, do not mail the authors directly.\n" ).arg(about->bugAddress()) );
+         if (!about->customAuthorTextEnabled ())
+         {
+           if (about->bugAddress().isEmpty() || about->bugAddress() == "submit@bugs.kde.org" )
+             printQ( i18n( "Please use http://bugs.kde.org to report bugs.\n" ) );
+           else {
+             if( about->authors().count() == 1 && about->authors().first().emailAddress() == about->bugAddress() )
+               printQ( i18n( "Please report bugs to %1.\n" ).arg( about->authors().first().emailAddress() ) );
+             else
+               printQ( i18n( "Please report bugs to %1.\n" ).arg(about->bugAddress()) );
+           }
+         }
+         else
+         {
+           printQ(about->customAuthorPlainText());
          }
        }
        exit(0);

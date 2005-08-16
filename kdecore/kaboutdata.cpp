@@ -79,6 +79,7 @@ public:
         , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails")
         , productName(0)
         , programLogo(0)
+        , customAuthorTextEnabled(false)
         {}
     ~KAboutDataPrivate()
         {
@@ -88,6 +89,8 @@ public:
     const char *translatorEmail;
     const char *productName;
     QImage* programLogo;
+    QString customAuthorPlainText, customAuthorRichText;
+    bool customAuthorTextEnabled;
 };
 
 
@@ -444,3 +447,40 @@ KAboutData::copyrightStatement() const
   else
      return QString::null;
 }
+
+QString
+KAboutData::customAuthorPlainText() const
+{
+  return d->customAuthorPlainText;
+}
+
+QString
+KAboutData::customAuthorRichText() const
+{
+  return d->customAuthorRichText;
+}
+
+bool
+KAboutData::customAuthorTextEnabled() const
+{
+  return d->customAuthorTextEnabled;
+}
+    
+void
+KAboutData::setCustomAuthorText(const QString &plainText, const QString &richText)
+{
+  d->customAuthorPlainText = plainText;
+  d->customAuthorRichText = richText;
+
+  d->customAuthorTextEnabled = true;
+}
+    
+void
+KAboutData::unsetCustomAuthorText()
+{
+  d->customAuthorPlainText = QString::null;
+  d->customAuthorRichText = QString::null;
+
+  d->customAuthorTextEnabled = false;
+}
+
