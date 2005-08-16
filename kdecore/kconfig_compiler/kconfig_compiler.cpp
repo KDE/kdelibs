@@ -1128,7 +1128,7 @@ int main( int argc, char **argv )
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( IO_WriteOnly ) ) {
-    kdError() << "Can't open '" << headerFileName << "for writing." << endl;
+    kdError() << "Can't open '" << headerFileName << "' for writing." << endl;
     return 1;
   }
 
@@ -1408,7 +1408,7 @@ int main( int argc, char **argv )
 
   QFile implementation( baseDir + implementationFileName );
   if ( !implementation.open( IO_WriteOnly ) ) {
-    kdError() << "Can't open '" << implementationFileName << "for writing."
+    kdError() << "Can't open '" << implementationFileName << "' for writing."
               << endl;
     return 1;
   }
