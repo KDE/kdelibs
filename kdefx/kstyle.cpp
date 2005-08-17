@@ -1936,7 +1936,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     } //loop through items
                 } //complex case
 
-                p->translate(-adjustCoords);
+                p->translate(adjustCoords);
             } //if have branch or expander
         } //CC_Q3ListView
         break;
