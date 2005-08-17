@@ -548,7 +548,8 @@ bool KBuildSycoca::recreate()
     QDataStream str( &ksycocastamp );
     str << newTimestamp;
     str << existingResourceDirs();
-    str << g_vfolder->allDirectories(); // Extra resource dirs
+    if (g_vfolder)
+        str << g_vfolder->allDirectories(); // Extra resource dirs
 
     // Recreate compatibility symlink
     QString oldPath = oldSycocaPath();
