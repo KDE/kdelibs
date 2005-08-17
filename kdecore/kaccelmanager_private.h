@@ -91,6 +91,7 @@ class KAccelManagerAlgorithm
 {
 public:
 
+  /// Constants used in the algorithm
   enum {
     /// Default control weight
     DEFAULT_WEIGHT = 50,
@@ -112,6 +113,7 @@ public:
     STANDARD_ACCEL = 300
   };
 
+  /// Method to call to find the best distribution of accelerators.
   static void findAccelerators(KAccelStringList &result, QString &used);
 
 };

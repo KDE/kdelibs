@@ -240,7 +240,9 @@ class KDECORE_EXPORT KAccelShortcutList : public KShortcutList
 	virtual bool save() const;
 
  protected:
+	/** Actions (collection) for this shortcut list. Set by constructor. */
 	KAccelActions& m_actions;
+	/** Is this shortcut list global? Access through isGlobal() */
 	bool m_bGlobal;
 
  protected:
