@@ -38,7 +38,7 @@ using namespace KABC;
 
 extern "C"
 {
-  FormatPlugin *format()
+  KDE_EXPORT FormatPlugin *format()
   {
     return new BinaryFormat;
   }
