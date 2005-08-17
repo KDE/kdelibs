@@ -10,11 +10,13 @@
 #ifndef KIMG_PSD_H
 #define KIMG_PSD_H
 
+#include <kdemacros.h>
+
 class QImageIO;
 
 extern "C" {
-void kimgio_psd_read( QImageIO * );
-void kimgio_psd_write( QImageIO * );
+KDE_EXPORT void kimgio_psd_read( QImageIO * );
+KDE_EXPORT void kimgio_psd_write( QImageIO * );
 }
 
 #endif
