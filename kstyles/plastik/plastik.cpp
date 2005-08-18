@@ -1267,6 +1267,47 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         }
         break;
+
+        case WT_Header:
+        {
+            switch (primitive)
+            {
+                case Header::SectionHor:
+                case Header::SectionVert:
+                {
+                    if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(opt)) {
+                        bool isFirst = (primitive==Header::SectionHor)&&(header->position == QStyleOptionHeader::Beginning);
+
+                        // TODO: mouseOver highlight...
+                        bool mouseOver = false;
+
+                        uint contourFlags = Draw_Right|Draw_Top|Draw_Bottom;
+                        if (isFirst)
+                            contourFlags |= Draw_Left;
+                        if(!enabled) contourFlags|=Is_Disabled;
+                        renderContour(p, r, pal.background().color(), getColor(pal,ButtonContour),
+                                        contourFlags);
+
+                        uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                        if(!enabled) surfaceFlags|=Is_Disabled;
+                        else {
+                            if(flags&State_On || flags&State_Sunken) surfaceFlags|=Is_Sunken;
+                            else {
+                                if(mouseOver) {
+                                    surfaceFlags|=Is_Highlight|Highlight_Top|Highlight_Bottom;
+                                }
+                            }
+                        }
+                        renderSurface(p, QRect(isFirst?r.left()+1:r.left(), r.top()+1, isFirst?r.width()-2:r.width()-1, r.height()-2),
+                                    pal.background().color(), pal.button().color(), getColor(pal,MouseOverHighlight), _contrast,
+                                        surfaceFlags);
+                    }
+
+                    return;
+                }
+            }
+        }
+        break;
     }
 
 
@@ -2618,42 +2659,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //             if(_drawFocusRect)
 //                 p->drawWinFocusRect( r );
 //             break;
-//         }
-// 
-//         case PE_HeaderSection: {
-//             // the taskbar buttons seems to be painted with PE_HeaderSection but I
-//             // want them look like normal buttons (at least for now. :) )
-//             if(!kickerMode) {
-//                 // detect if this is the left most header item
-//                 bool isFirst = false;
-//                 Q3Header *header = dynamic_cast<Q3Header*>(p->device() );
-//                 if (header) {
-//                     isFirst = header->mapToIndex(header->sectionAt(r.x() ) ) == 0;
-//                 }
-// 
-//                 uint contourFlags = Draw_Right|Draw_Top|Draw_Bottom;
-//                 if (isFirst)
-//                     contourFlags |= Draw_Left;
-//                 if(!enabled) contourFlags|=Is_Disabled;
-//                 renderContour(p, r, cg.background(), getColor(cg,ButtonContour),
-//                                 contourFlags);
-// 
-//                 uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
-//                 if(!enabled) surfaceFlags|=Is_Disabled;
-//                 else {
-//                     if(on||down) surfaceFlags|=Is_Sunken;
-//                     else {
-//                         if(mouseOver) {
-//                             surfaceFlags|=Is_Highlight|Highlight_Top|Highlight_Bottom;
-//                         }
-//                     }
-//                 }
-//                 renderSurface(p, QRect(isFirst?r.left()+1:r.left(), r.top()+1, isFirst?r.width()-2:r.width()-1, r.height()-2),
-//                                 cg.background(), cg.button(), getColor(cg,MouseOverHighlight), _contrast,
-//                                 surfaceFlags);
-// 
-//                 break;
-//             }
 //         }
 
 // 
