@@ -2083,7 +2083,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
                 if (cb->subControls & SC_ComboBoxFrame)
                 {
-                    drawKStylePrimitive(WT_SpinBox, ComboBox::Frame, opt, r, pal, flags, p, w);
+                    drawKStylePrimitive(WT_ComboBox, ComboBox::Frame, opt, r, pal, flags, p, w);
                 }
 
                 if (cb->subControls & SC_ComboBoxEditField)
@@ -2098,7 +2098,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     drawKStylePrimitive(WT_ComboBox, ComboBox::Button, opt, buttonRect, pal, flags, p, w);
 
                     // draw symbol...
-                    drawKStylePrimitive(WT_SpinBox, Generic::ArrowDown, opt, buttonRect, pal, flags, p, w);
+                    drawKStylePrimitive(WT_ComboBox, Generic::ArrowDown, opt, buttonRect, pal, flags, p, w);
                 }
 
                 return;
