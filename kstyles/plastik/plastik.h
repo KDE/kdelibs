@@ -298,7 +298,7 @@ private:
 //     bool _drawToolBarItemSeparator;
     bool _drawFocusRect;
 //     bool _drawTriangularExpander;
-//     bool _inputFocusHighlight;
+    bool _inputFocusHighlight;
     bool _customOverHighlightColor;
     bool _customFocusHighlightColor;
     bool _customCheckMarkColor;

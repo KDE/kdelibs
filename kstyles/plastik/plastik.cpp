@@ -150,6 +150,13 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
 
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth, 2);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth, 2+16+1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Left, 2);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Right, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Top, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Bot, 1);
     
 //     hoverWidget = 0;
 //     hoverTab = 0;
@@ -169,7 +176,7 @@ PlastikStyle::PlastikStyle() :
 //     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
 //     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
-//     _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
+    _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
     _customOverHighlightColor = settings.readBoolEntry("/customOverHighlightColor", false);
     _overHighlightColor.setNamedColor( settings.readEntry("/overHighlightColor", "black") );
     _customFocusHighlightColor = settings.readBoolEntry("/customFocusHighlightColor", false);
@@ -234,6 +241,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                        const QWidget* widget,
                                        KStyle::Option* kOpt) const
 {
+    bool reverseLayout = opt->direction == Qt::RightToLeft;
+
     bool enabled = flags & State_Enabled;
 
     switch (widgetType)
@@ -391,8 +400,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case ProgressBar::Indicator:
                 {
-                    bool reverseLayout = opt->direction == Qt::RightToLeft;
-
                     QRect Rcontour = r;
                     QRect Rsurface(Rcontour.left()+1, Rcontour.top()+1, Rcontour.width()-2, Rcontour.height()-2);
 
@@ -787,7 +794,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         case WT_Tab:
         {
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
-            bool reverseLayout = tabOpt->direction == Qt::RightToLeft;
 
             switch (primitive)
             {
@@ -953,6 +959,149 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                       pal.background(), pal.background().color().dark(enabled?150:130),
                                     Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
                     }
+
+                    return;
+                }
+            }
+
+        }
+        break;
+
+        case WT_SpinBox:
+        {
+//             const Q3SpinWidget *sw = dynamic_cast<const Q3SpinWidget *>(widget);
+//             SFlags sflags = flags;
+//             PrimitiveElement pe;
+
+            // TODO: focus highlight
+            bool hasFocus = false;
+//             if (sw)
+//                 hasFocus = sw->hasFocus();
+
+            const QColor buttonColor = enabled?pal.button().color():pal.background().color();
+            const QColor inputColor = enabled?pal.base().color():pal.background().color();
+
+            switch (primitive)
+            {
+                case SpinBox::Frame:
+                {
+                    QRect editField = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxEditField, widget);
+
+                    // contour
+                    const bool heightDividable = ((r.height()%2) == 0);
+                    if (_inputFocusHighlight && hasFocus && enabled)
+                    {
+                        QRect editFrame = r;
+                        QRect buttonFrame = r;
+
+                        uint editFlags = 0;
+                        uint buttonFlags = 0;
+
+                        // Hightlight only the part of the contour next to the control buttons
+                        if (reverseLayout)
+                        {
+                            // querySubControlMetrics doesn't work right for reverse Layout
+                            int dx = r.right() - editField.right();
+                            editFrame.setLeft(editFrame.left() + dx);
+                            buttonFrame.setRight(editFrame.left() - 1);
+                            editFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
+                            buttonFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
+                        }
+                        else
+                        {
+                            editFrame.setRight(editField.right());
+                            buttonFrame.setLeft(editField.right() + 1);
+
+                            editFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
+                            buttonFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
+                        }
+                        renderContour(p, editFrame, pal.background().color(), pal.highlight().color(), editFlags);
+                        renderContour(p, buttonFrame, pal.background().color(),
+                                    getColor(pal, ButtonContour, enabled), buttonFlags);
+                    }
+                    else
+                    {
+                        renderContour(p, subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxFrame, widget),
+                                      pal.background().color(), getColor(pal, ButtonContour, enabled) );
+                    }
+                    p->setPen(alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour, enabled), 50) );
+                    p->drawLine(reverseLayout?editField.left()-2:editField.right()+2, r.top()+1,
+                                reverseLayout?editField.left()-2:editField.right()+2, r.bottom()-1);
+                    p->drawLine(reverseLayout?r.left()+1:editField.right()+2+1, r.top()+1+(r.height()-2)/2,
+                                reverseLayout?editField.right()-2-1:r.right()-1, r.top()+1+(r.height()-2)/2);
+                    if(heightDividable)
+                        p->drawLine(reverseLayout?r.left()+1:editField.right()+2+1, r.top()+1+(r.height()-2)/2-1,
+                                    reverseLayout?editField.right()-2-1:r.right()-1, r.top()+1+(r.height()-2)/2-1);
+
+                    // thin frame around the input area
+                    const QRect Rcontent = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxEditField, widget).adjusted(-1,-1,1,1);
+                    if (_inputFocusHighlight && hasFocus && enabled)
+                    {
+                        p->setPen( getColor(pal,FocusHighlight).dark(130) );
+                    }
+                    else
+                    {
+                        p->setPen(inputColor.dark(130) );
+                    }
+                    p->drawLine(Rcontent.left(), reverseLayout?Rcontent.top():Rcontent.top()+1,
+                            Rcontent.left(), reverseLayout?Rcontent.bottom():Rcontent.bottom()-1 );
+                    p->drawLine(Rcontent.left()+1, Rcontent.top(),
+                            reverseLayout?Rcontent.right()-1:Rcontent.right(), Rcontent.top() );
+                    if (_inputFocusHighlight && hasFocus && enabled)
+                    {
+                        p->setPen( getColor(pal,FocusHighlight).light(130) );
+                    }
+                    else
+                    {
+                        p->setPen(inputColor.light(130) );
+                    }
+                    p->drawLine(Rcontent.left()+1, Rcontent.bottom(), Rcontent.right()-1, Rcontent.bottom() );
+                    p->drawLine(Rcontent.right(), Rcontent.top()+1,
+                            Rcontent.right(), reverseLayout?Rcontent.bottom()-1:Rcontent.bottom() );
+
+                    return;
+                }
+
+                case SpinBox::ButtonUp:
+                {
+                    QRect upRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxUp, widget);
+
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                    if(reverseLayout) {
+                        surfaceFlags |= Round_UpperLeft;
+                    } else {
+                        surfaceFlags |= Round_UpperRight;
+                    }
+                    if (false /*TODO (widget == hoverWidget) || (sflags & Style_MouseOver)*/) {
+                        surfaceFlags |= Is_Highlight;
+                        surfaceFlags |= Highlight_Top|Highlight_Left|Highlight_Right;
+                    }
+                    if (flags & State_Sunken) surfaceFlags|=Is_Sunken;
+                    if(!enabled) surfaceFlags|=Is_Disabled;
+                    renderSurface(p, upRect, pal.background().color(), buttonColor, getColor(pal,MouseOverHighlight),
+                                _contrast, surfaceFlags);
+
+                    return;
+                }
+
+                case SpinBox::ButtonDown:
+                {
+                    QRect downRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxDown, widget);
+
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                    if(reverseLayout) {
+                        surfaceFlags |= Round_BottomLeft;
+                    } else {
+                        surfaceFlags |= Round_BottomRight;
+                    }
+                    if (false /*TODO (widget == hoverWidget) || (sflags & Style_MouseOver)*/) {
+                        surfaceFlags |= Is_Highlight;
+                        surfaceFlags |= Highlight_Bottom|Highlight_Left|Highlight_Right;
+                    }
+                    if (flags & State_Sunken) surfaceFlags|=Is_Sunken;
+                    if(!enabled) surfaceFlags|=Is_Disabled;
+                    renderSurface(p, downRect, pal.background().color(), buttonColor, getColor(pal,MouseOverHighlight),
+                                  _contrast, surfaceFlags);
 
                     return;
                 }
@@ -2888,167 +3037,7 @@ void PlastikStyle::renderTab(QPainter *p,
 // 
 //             break;
 //         }
-// 
-//     // SPINWIDGETS
-//     // -----------
-//         case CC_SpinWidget: {
-//             static const unsigned int handleWidth = 15;
-// 
-//             const Q3SpinWidget *sw = dynamic_cast<const Q3SpinWidget *>(widget);
-//             SFlags sflags = flags;
-//             PrimitiveElement pe;
-// 
-//             bool hasFocus = false;
-//             if (sw)
-//                 hasFocus = sw->hasFocus();
-// 
-//             const QColor buttonColor = enabled?cg.button():cg.background();
-//             const QColor inputColor = enabled?cg.base():cg.background();
-// 
-//             // contour
-//             const bool heightDividable = ((r.height()%2) == 0);
-//             if (_inputFocusHighlight && hasFocus && enabled)
-//             {
-//                 QRect editField = querySubControlMetrics(control, widget, SC_SpinWidgetEditField);
-//                 QRect editFrame = r;
-//                 QRect buttonFrame = r;
-//                 
-//                 uint editFlags = 0;
-//                 uint buttonFlags = 0;
-//                 
-//                 // Hightlight only the part of the contour next to the control buttons
-//                 if (reverseLayout)
-//                 {
-//                     // querySubControlMetrics doesn't work right for reverse Layout
-//                     int dx = r.right() - editField.right();
-//                     editFrame.setLeft(editFrame.left() + dx);
-//                     buttonFrame.setRight(editFrame.left() - 1);
-//                     editFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
-//                     buttonFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
-//                 }
-//                 else
-//                 {
-//                     editFrame.setRight(editField.right());
-//                     buttonFrame.setLeft(editField.right() + 1);
-//                     
-//                     editFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
-//                     buttonFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
-//                 }
-//                 renderContour(p, editFrame, cg.background(), cg.highlight(), editFlags);
-//                 renderContour(p, buttonFrame, cg.background(), 
-//                               getColor(cg, ButtonContour, enabled), buttonFlags);
-//             }
-//             else
-//             {
-//                 renderContour(p, querySubControlMetrics(control, widget, SC_SpinWidgetFrame),
-//                               cg.background(), getColor(cg, ButtonContour, enabled) );
-//             }
-//             p->setPen(alphaBlendColors(cg.background(), getColor(cg, ButtonContour, enabled), 50) );
-//             p->drawLine(reverseLayout?r.left()+1+handleWidth:r.right()-handleWidth-1, r.top()+1,
-//                     reverseLayout?r.left()+1+handleWidth:r.right()-handleWidth-1, r.bottom()-1);
-//             p->drawLine(reverseLayout?r.left()+1:r.right()-handleWidth, r.top()+1+(r.height()-2)/2,
-//                     reverseLayout?r.left()+handleWidth:r.right()-1, r.top()+1+(r.height()-2)/2);
-//             if(heightDividable)
-//                 p->drawLine(reverseLayout?r.left()+1:r.right()-handleWidth, r.top()+1+(r.height()-2)/2-1,
-//                         reverseLayout?r.left()+handleWidth:r.right()-1, r.top()+1+(r.height()-2)/2-1);
-// 
-//             // surface
-//             QRect upRect = QRect(reverseLayout?r.left()+1:r.right()-handleWidth, r.top()+1,
-//                     handleWidth, (r.height()-2)/2);
-//             QRect downRect = QRect(reverseLayout?r.left()+1:r.right()-handleWidth,
-//                     heightDividable?r.top()+1+((r.height()-2)/2):r.top()+1+((r.height()-2)/2)+1,
-//                     handleWidth, ((r.height()-2)/2) );
-//             if(heightDividable) {
-//                 upRect = QRect(upRect.left(), upRect.top(), upRect.width(), upRect.height()-1 );
-//                 downRect = QRect(downRect.left(), downRect.top()+1, downRect.width(), downRect.height()-1 );
-//             }
-// 
-//             uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
-//             if(reverseLayout) {
-//                 surfaceFlags |= Round_UpperLeft;
-//             } else {
-//                 surfaceFlags |= Round_UpperRight;
-//             }
-//             if ((widget == hoverWidget) || (sflags & Style_MouseOver)) {
-//                 surfaceFlags |= Is_Highlight;
-//                 surfaceFlags |= Highlight_Top|Highlight_Left|Highlight_Right;
-//             }
-//             if (active==SC_SpinWidgetUp) surfaceFlags|=Is_Sunken;
-//             if(!enabled) surfaceFlags|=Is_Disabled;
-//             renderSurface(p, upRect, cg.background(), buttonColor, getColor(cg,MouseOverHighlight),
-//                            _contrast, surfaceFlags);
-//             surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
-//             if(reverseLayout) {
-//                 surfaceFlags |= Round_BottomLeft;
-//             } else {
-//                 surfaceFlags |= Round_BottomRight;
-//             }
-//             if ((widget == hoverWidget) || (sflags & Style_MouseOver)) {
-//                 surfaceFlags |= Is_Highlight;
-//                 surfaceFlags |= Highlight_Bottom|Highlight_Left|Highlight_Right;
-//             }
-//             if (active==SC_SpinWidgetDown) surfaceFlags|=Is_Sunken;
-//             if(!enabled) surfaceFlags|=Is_Disabled;
-//             renderSurface(p, downRect, cg.background(), buttonColor, getColor(cg,MouseOverHighlight),
-//                            _contrast, surfaceFlags);
-// 
-//             // icons...
-//             sflags = Style_Default | Style_Enabled;
-//             if (active == SC_SpinWidgetUp) {
-//                 sflags |= Style_On;
-//                 sflags |= Style_Sunken;
-//             } else
-//                 sflags |= Style_Raised;
-//             if (sw->buttonSymbols() == Q3SpinWidget::PlusMinus)
-//                 pe = PE_SpinWidgetPlus;
-//             else
-//                 pe = PE_SpinWidgetUp;
-//             p->setPen(cg.foreground());
-//             drawPrimitive(pe, p, upRect, cg, sflags);
-// 
-//             sflags = Style_Default | Style_Enabled;
-//             if (active == SC_SpinWidgetDown) {
-//                 sflags |= Style_On;
-//                 sflags |= Style_Sunken;
-//             } else
-//                 sflags |= Style_Raised;
-//             if (sw->buttonSymbols() == Q3SpinWidget::PlusMinus)
-//                 pe = PE_SpinWidgetMinus;
-//             else
-//                 pe = PE_SpinWidgetDown;
-//             p->setPen(cg.foreground());
-//             drawPrimitive(pe, p, downRect, cg, sflags);
-// 
-//             // thin frame around the input area
-//             const QRect Rcontent = QRect(reverseLayout?r.left()+1+handleWidth+1:r.left()+1, r.top()+1,
-//                     r.width()-1-2-handleWidth, r.height()-2);
-//             if (_inputFocusHighlight && hasFocus && enabled)
-//             {
-//               p->setPen( getColor(cg,FocusHighlight).dark(130) );
-//             }
-//             else
-//             {
-//               p->setPen(inputColor.dark(130) );
-//             }
-//             p->drawLine(Rcontent.left(), reverseLayout?Rcontent.top():Rcontent.top()+1,
-//                     Rcontent.left(), reverseLayout?Rcontent.bottom():Rcontent.bottom()-1 );
-//             p->drawLine(Rcontent.left()+1, Rcontent.top(),
-//                     reverseLayout?Rcontent.right()-1:Rcontent.right(), Rcontent.top() );
-//             if (_inputFocusHighlight && hasFocus && enabled)
-//             {
-//               p->setPen( getColor(cg,FocusHighlight).light(130) );
-//             }
-//             else
-//             {
-//               p->setPen(inputColor.light(130) );
-//             }
-//             p->drawLine(Rcontent.left()+1, Rcontent.bottom(), Rcontent.right()-1, Rcontent.bottom() );
-//             p->drawLine(Rcontent.right(), Rcontent.top()+1,
-//                     Rcontent.right(), reverseLayout?Rcontent.bottom()-1:Rcontent.bottom() );
-// 
-//             break;
-//         }
-// 
+
 //         default:
 //             KStyle::drawComplexControl(control, p, widget,
 //                                         r, cg, flags, controls,
