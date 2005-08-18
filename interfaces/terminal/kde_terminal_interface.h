@@ -85,6 +85,7 @@ class Q3StrList;
 class TerminalInterface
 {
 public:
+  virtual ~TerminalInterface(){};
   /**
    * This starts @p program, with arguments @p args
    */
