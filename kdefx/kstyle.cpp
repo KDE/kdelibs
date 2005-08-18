@@ -313,11 +313,13 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         
     }
+#if 0 //Reenable if you need a debug aid
     else
     {
         p->setPen(Qt::red);
         drawInsideRect(p, r);
     }
+#endif
 }
 
 
@@ -2037,6 +2039,15 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     drawKStylePrimitive(WT_SpinBox, SpinBox::EditField, opt, editField, pal, flags, p, w);
                 }
 
+                QRect upRect, downRect;
+                if (sb->subControls & (SC_SpinBoxUp | SC_SpinBoxDown))
+                {
+                    upRect   = subControlRect(CC_SpinBox, opt, SC_SpinBoxUp,   w);
+                    downRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxDown, w);
+                    QRect buttonAreaRect = upRect | downRect;
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::ButtonArea, opt, buttonAreaRect, pal, flags, p, w);
+                }
+
                 if (sb->subControls & SC_SpinBoxUp)
                 {
                     // adjust the sunken state flag...
@@ -2046,7 +2057,6 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     else
                         upFlags &= ~State_Sunken;
 
-                    QRect upRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxUp, w);
                     drawKStylePrimitive(WT_SpinBox, SpinBox::UpButton, opt, upRect, pal, upFlags, p, w);
 
                     // draw symbol...
@@ -2067,7 +2077,6 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     else
                         downFlags &= ~State_Sunken;
 
-                    QRect downRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxDown, w);
                     drawKStylePrimitive(WT_SpinBox, SpinBox::DownButton, opt, downRect, pal, downFlags, p, w);
 
                     // draw symbol...

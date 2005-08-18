@@ -723,7 +723,8 @@ protected:
             UpButton,
             DownButton,
             PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
-            MinusSymbol
+            MinusSymbol,
+            ButtonArea         // Are including both of the buttons, painted before them
         };
     };
 
