@@ -1,3 +1,7 @@
+2005-08-18 Luís Pedro Coelho <luis@luispedro.org>
+        * rendering/render_image.cpp:  Scale images correctly (adjust both height and width)
+          when max-width is used.
+
 2005-08-10  Dawit Alemayehu <adawit@kde.org>
         * ecma/xmlhttprequest.cpp: Convert a 304 (Not Modified) HTTP response in
           XMLHttpRequest to a 200 (OK) response to make KHTML conform to IE's and
