@@ -289,6 +289,7 @@ protected:
         WT_Slider,
         WT_Tree,
         WT_SpinBox,
+        WT_ComboBox,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -712,7 +713,7 @@ protected:
         };
 
         /**
-         From generic primitives, arrows are also used
+         From generic primitives, ArrowUp and ArrowDown are also used
         */
         enum Primitive
         {
@@ -748,10 +749,11 @@ protected:
             SupportFrameless = ButtonMargin + MarginInc // Set to non-zero to indicate that you are able to handle frame-less
                                // ComboBoxes. For a ComboBox with no frame, FrameWidth and
                                // Top/Bottom/Right ButtonMargin is ignored.
+                    // TODO: focus indicator margin.
         };
 
         /**
-        From generic primitives, arrows are also used
+        From generic primitives, ArrowDown and FocusIndicator are also used
          */
         enum Primitive
         {

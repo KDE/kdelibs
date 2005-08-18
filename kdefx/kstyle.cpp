@@ -143,6 +143,12 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Right, 1);
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Bot, 1);
+
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonWidth, 16);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Right, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -2020,7 +2026,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 if (sb->subControls & SC_SpinBoxEditField)
                 {
                     QRect editField = subControlRect(CC_SpinBox, opt, SC_SpinBoxEditField, w);
-                    drawKStylePrimitive(WT_SpinBox, SpinBox::Frame, opt, editField, pal, flags, p, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::EditField, opt, editField, pal, flags, p, w);
                 }
 
                 if (sb->subControls & SC_SpinBoxUp)
@@ -2068,6 +2074,36 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 return;
             } //option OK
         } //CC_SpinBox
+
+        case CC_ComboBox:
+        {
+            if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt) )
+            {
+                // TODO: FocusIndicator
+
+                if (cb->subControls & SC_ComboBoxFrame)
+                {
+                    drawKStylePrimitive(WT_SpinBox, ComboBox::Frame, opt, r, pal, flags, p, w);
+                }
+
+                if (cb->subControls & SC_ComboBoxEditField)
+                {
+                    QRect editField = subControlRect(CC_ComboBox, opt, SC_ComboBoxEditField, w);
+                    drawKStylePrimitive(WT_ComboBox, ComboBox::EditField, opt, editField, pal, flags, p, w);
+                }
+
+                if (cb->subControls & SC_ComboBoxArrow)
+                {
+                    QRect buttonRect = subControlRect(CC_ComboBox, opt, SC_ComboBoxArrow, w);
+                    drawKStylePrimitive(WT_ComboBox, ComboBox::Button, opt, buttonRect, pal, flags, p, w);
+
+                    // draw symbol...
+                    drawKStylePrimitive(WT_SpinBox, Generic::ArrowDown, opt, buttonRect, pal, flags, p, w);
+                }
+
+                return;
+            } //option OK
+        } //CC_Combo
     } //switch
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);
@@ -2233,7 +2269,7 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                                 QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
                 }
             }
-        }
+        } //CC_ScrollBar
 
         case CC_SpinBox:
         {
@@ -2293,8 +2329,45 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     case SC_SpinBoxFrame:
                         return (sb->frame || !supportFrameless) ? r : QRect();
                 }
-            }
+            } //option ok
         } //CC_SpinBox
+
+        case CC_ComboBox:
+        {
+            if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
+
+                int fw = widgetLayoutProp(WT_ComboBox, SpinBox::FrameWidth);
+                int bw = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonWidth);
+                int bm = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin);
+                int bml = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Left);
+                int bmr = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Right);
+                int bmt = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Top);
+                int bmb = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Bot);
+                bool supportFrameless = widgetLayoutProp(WT_ComboBox, SpinBox::SupportFrameless);
+
+                // ComboBox without a frame, set the corresponding layout values to 0, reduce button width.
+                if (supportFrameless && !cb->frame)
+                {
+                    bw = bw - bmr; // reduce button with as the right button margin will be ignored.
+                    fw = 0;
+                    bmt = bmb = bmr = 0;
+                }
+
+                switch (subControl) {
+                    case SC_ComboBoxFrame:
+                        return (cb->frame || !supportFrameless) ? r : QRect();
+                    case SC_ComboBoxArrow:
+                        return handleRTL(option,
+                                         QRect(r.right()-bw+bml+1, r.top()+bmt, bw-bml-bmr, r.height()-bmt-bmb) );
+                    case SC_ComboBoxEditField:
+                        return handleRTL(option,
+                                         QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
+                    case SC_ComboBoxListBoxPopup:
+                        // TODO: need to add layoutProps to control the popup rect?
+                        return cb->popupRect;
+                }
+            } //option ok
+        } //CC_ComboBox
     }
 
     return QCommonStyle::subControlRect(control, option, subControl, widget);
