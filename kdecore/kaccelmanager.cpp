@@ -267,7 +267,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
   foreach ( QWidget *w , childList ) {
     // Ignore unless we have the direct parent
     if(qobject_cast<QWidget *>(w->parent()) != widget) continue;
-	
+
     if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
         continue;
 
@@ -445,11 +445,6 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
  This class is just here to provide a clean public API...
 
  *********************************************************************/
-
-void KAcceleratorManager::manage(QWidget *widget)
-{
-    KAcceleratorManager::manage(widget, false);
-}
 
 void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 {
