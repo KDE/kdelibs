@@ -125,6 +125,9 @@ public:
 
 		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight,
 								loader.size(keramik_scrollbar_vbar_arrow1).height());
+
+		setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 12);
+		setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, loader.size(keramik_slider).height());
 	}
 	
 	void drawKStylePrimitive(WidgetType widgetType, int primitive, 
@@ -604,8 +607,42 @@ public:
 					return;
 				//### TODO: Handle east, west tabs
 				};
-				
-			}
+			} //WT_Tab
+			break;
+
+			case WT_Slider:
+			{
+				switch (primitive)
+				{
+					case Slider::GrooveVert:
+						Keramik::RectTilePainter(keramik_slider_vgroove, true, false).draw(
+							p, r, pal.button().color(), pal.background().color(), disabled);
+						return;
+					case Slider::GrooveHor:
+						Keramik::RectTilePainter(keramik_slider_hgroove, false).draw(
+							p, r, pal.button().color(), pal.background().color(), disabled);
+						return;
+					case Slider::HandleVert:
+					case Slider::HandleHor:
+					{
+						if (primitive == Slider::HandleHor)
+							r.setY(r.y() + 2);
+						else
+							r.setX(r.x() + 2);
+
+						QColor hl = pal.highlight().color();
+						if (!disabled && flags & State_Active)
+							hl = Keramik::ColorUtil::lighten(pal.highlight().color() ,110);
+
+						int primCode = (primitive == Slider::HandleVert) ?
+											keramik_vslider : keramik_slider;
+						
+						Keramik::ScaledPainter(primCode).draw(
+							p, r, disabled ? pal.button().color() : hl, Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend);
+						return;
+					}
+				}
+			} //WT_Slider
 			break;
 		}
 
