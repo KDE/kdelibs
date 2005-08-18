@@ -718,10 +718,10 @@ protected:
         {
             Frame = Generic::WidgetSpecificBase,
             EditField,
-            ButtonUp,
-            ButtonDown,
-            SymbolPlus,        // SymbolPlus and SymbolMinus are centering primitives
-            SymbolMinus
+            UpButton,
+            DownButton,
+            PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
+            MinusSymbol
         };
     };
 

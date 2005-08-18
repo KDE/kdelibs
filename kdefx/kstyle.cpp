@@ -187,19 +187,16 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
     {
         switch (primitive)
         {
-            case SpinBox::SymbolPlus:
-            case SpinBox::SymbolMinus:
+            case SpinBox::PlusSymbol:
+            case SpinBox::MinusSymbol:
             {
                 p->setPen( pal.buttonText().color() );
 
                 int l = QMIN( r.width()-2, r.height()-2 );
-                // make the length even so that we get a nice symmetric plus...
-                if(l%2 == 0)
-                    --l;
                 QPoint c = r.center();
 
                 p->drawLine( c.x()-l/2, c.y(), c.x()+l/2, c.y() );
-                if (primitive == SpinBox::SymbolPlus ) {
+                if (primitive == SpinBox::PlusSymbol ) {
                     p->drawLine( c.x(), c.y()-l/2, c.x(), c.y()+l/2 );
                 }
 
@@ -2036,12 +2033,12 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                         upFlags &= ~State_Sunken;
 
                     QRect upRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxUp, w);
-                    drawKStylePrimitive(WT_SpinBox, SpinBox::ButtonUp, opt, upRect, pal, upFlags, p, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::UpButton, opt, upRect, pal, upFlags, p, w);
 
                     // draw symbol...
                     int primitive;
                     if (sb->buttonSymbols == QAbstractSpinBox::PlusMinus)
-                        primitive = SpinBox::SymbolPlus;
+                        primitive = SpinBox::PlusSymbol;
                     else
                         primitive = Generic::ArrowUp;
                     drawKStylePrimitive(WT_SpinBox, primitive, opt, upRect, pal, upFlags, p, w);
@@ -2057,12 +2054,12 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                         downFlags &= ~State_Sunken;
 
                     QRect downRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxDown, w);
-                    drawKStylePrimitive(WT_SpinBox, SpinBox::ButtonDown, opt, downRect, pal, downFlags, p, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::DownButton, opt, downRect, pal, downFlags, p, w);
 
                     // draw symbol...
                     int primitive;
                     if (sb->buttonSymbols == QAbstractSpinBox::PlusMinus)
-                        primitive = SpinBox::SymbolMinus;
+                        primitive = SpinBox::MinusSymbol;
                     else
                         primitive = Generic::ArrowDown;
                     drawKStylePrimitive(WT_SpinBox, primitive, opt, downRect, pal, downFlags, p, w);

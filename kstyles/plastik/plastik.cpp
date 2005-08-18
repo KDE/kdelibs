@@ -1062,7 +1062,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case SpinBox::ButtonUp:
+                case SpinBox::UpButton:
                 {
                     QRect upRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxUp, widget);
 
@@ -1084,7 +1084,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case SpinBox::ButtonDown:
+                case SpinBox::DownButton:
                 {
                     QRect downRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxDown, widget);
 
