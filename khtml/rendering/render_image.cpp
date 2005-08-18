@@ -502,9 +502,10 @@ short RenderImage::calcReplacedWidth() const
     const Length w = style()->width();
 
     if (w.isVariable()) {
-        const Length h = style()->height();
-        if ( m_intrinsicHeight > 0 && ( h.isPercent() || h.isFixed() ) )
-            return ( ( h.isPercent() ? calcReplacedHeight() : h.value() )*intrinsicWidth() ) / m_intrinsicHeight;
+	int h = RenderReplaced::calcReplacedHeight();
+	if (m_intrinsicHeight > 0 && h!= m_intrinsicHeight) {
+            return (h*intrinsicWidth())/m_intrinsicHeight;
+	}
     }
 
     return RenderReplaced::calcReplacedWidth();
@@ -515,9 +516,9 @@ int RenderImage::calcReplacedHeight() const
     const Length h = style()->height();
 
     if (h.isVariable()) {
-        const Length w = style()->width();
-        if( m_intrinsicWidth > 0 && ( w.isFixed() || w.isPercent() ))
-            return (( w.isPercent() ? calcReplacedWidth() : w.value() ) * intrinsicHeight()) / m_intrinsicWidth;
+	int w = RenderReplaced::calcReplacedWidth();
+        if( m_intrinsicWidth > 0 && w != m_intrinsicWidth )
+            return (w*intrinsicHeight())/m_intrinsicWidth;
 
     }
 
