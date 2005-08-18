@@ -118,12 +118,7 @@ public:
 // 
 //     QRect subRect(SubRect r,
 //                   const QWidget *widget ) const;
-// 
-//     QRect querySubControlMetrics(ComplexControl control,
-//                                  const QWidget *widget,
-//                                  SubControl subcontrol,
-//                                  const QStyleOption &opt = QStyleOption::Default ) const;
-// 
+
 //     void drawComplexControlMask(QStyle::ComplexControl c,
 //                                 QPainter *p,
 //                                 const QWidget *w,

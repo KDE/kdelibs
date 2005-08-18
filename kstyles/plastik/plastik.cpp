@@ -157,7 +157,14 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Right, 1);
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Bot, 1);
-    
+
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, 2);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonWidth, 2+16+1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Left, 2);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Right, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
+
 //     hoverWidget = 0;
 //     hoverTab = 0;
 // 
@@ -1102,6 +1109,154 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     if(!enabled) surfaceFlags|=Is_Disabled;
                     renderSurface(p, downRect, pal.background().color(), buttonColor, getColor(pal,MouseOverHighlight),
                                   _contrast, surfaceFlags);
+
+                    return;
+                }
+            }
+
+        }
+        break;
+
+        case WT_ComboBox:
+        {
+            bool editable = false;
+            if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt) )
+                editable = cb->editable;
+
+            // TODO: focus highlight
+            bool hasFocus = false;
+
+            const QColor buttonColor = enabled?pal.button().color():pal.background().color();
+            const QColor inputColor = enabled?(editable?pal.base().color():pal.button().color() ):pal.background().color();
+            QRect editField = subControlRect(CC_ComboBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_ComboBoxEditField, widget);
+
+            switch (primitive)
+            {
+                case ComboBox::Frame:
+                {
+                    // TODO: pressed state
+
+                    uint contourFlags = 0;
+//                     if( khtmlWidgets.contains(cb) )
+//                         contourFlags |= Draw_AlphaBlend;
+
+                    if (_inputFocusHighlight && hasFocus && editable && enabled)
+                    {
+                        QRect editFrame = r;
+                        QRect buttonFrame = r;
+
+                        uint editFlags = contourFlags;
+                        uint buttonFlags = contourFlags;
+
+                        // Hightlight only the part of the contour next to the control button
+                        if (reverseLayout)
+                        {
+                            // querySubControlMetrics doesn't work right for reverse Layout
+                            int dx = r.right() - editField.right();
+                            editFrame.setLeft(editFrame.left() + dx);
+                            buttonFrame.setRight(editFrame.left() - 1);
+                            editFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
+                            buttonFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
+                        }
+                        else
+                        {
+                            editFrame.setRight(editField.right());
+                            buttonFrame.setLeft(editField.right() + 1);
+
+                            editFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
+                            buttonFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
+                        }
+                        renderContour(p, editFrame, pal.background().color(),  getColor(pal,FocusHighlight,enabled), editFlags);
+                        renderContour(p, buttonFrame, pal.background().color(),
+                                    getColor(pal, ButtonContour, enabled), buttonFlags);
+                    }
+                    else
+                    {
+                        contourFlags |= Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+                        renderContour(p, r, pal.background().color(), getColor(pal, ButtonContour, enabled), contourFlags);
+                    }
+                    //extend the contour: between input and handler...
+                    p->setPen(alphaBlendColors(pal.background().color(), getColor(pal, ButtonContour, enabled), 50) );
+                    if(reverseLayout) {
+                        p->drawLine(editField.left()-2, r.top()+1, editField.left()-2, r.bottom()-1);
+                    } else {
+                        p->drawLine(editField.right()+2, r.top()+1, editField.right()+2, r.bottom()-1);
+                    }
+
+                    QRect Rsurface = editField.adjusted(-1,-1,1,1);
+                    if(!editable) {
+                        int surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                        if(reverseLayout) {
+                            surfaceFlags |= Round_UpperRight|Round_BottomRight;
+                        } else {
+                            surfaceFlags |= Round_UpperLeft|Round_BottomLeft;
+                        }
+
+                        if (false/*TODO (widget == hoverWidget) || (flags & Style_MouseOver)*/) {
+                            surfaceFlags |= Is_Highlight;
+                            surfaceFlags |= Highlight_Top|Highlight_Bottom;
+                        }
+                        renderSurface(p, Rsurface,
+                                    pal.background().color(), buttonColor, getColor(pal,MouseOverHighlight), enabled?_contrast+3:(_contrast/2),
+                                    surfaceFlags);
+                    } else {
+                        // thin frame around the input area
+                        if (_inputFocusHighlight && hasFocus && editable && enabled)
+                        {
+                            p->setPen( getColor(pal,FocusHighlight).dark(130) );
+                        }
+                        else
+                        {
+                            p->setPen(inputColor.dark(130) );
+                        }
+                        p->drawLine(Rsurface.x(), reverseLayout?Rsurface.y():Rsurface.y()+1,
+                                Rsurface.x(), reverseLayout?Rsurface.bottom():Rsurface.bottom()-1);
+                        p->drawLine(Rsurface.x()+1, Rsurface.y(),
+                                reverseLayout?Rsurface.right()-1:Rsurface.right(), Rsurface.y() );
+                        if (_inputFocusHighlight && hasFocus && editable && enabled)
+                        {
+                            p->setPen( getColor(pal,FocusHighlight).light(130) );
+                        }
+                        else
+                        {
+                            p->setPen(inputColor.light(130) );
+                        }
+                        p->drawLine(reverseLayout?Rsurface.x():Rsurface.x()+1, Rsurface.bottom(),
+                                reverseLayout?Rsurface.right()-1:Rsurface.right(), Rsurface.bottom() );
+                        p->drawLine(Rsurface.right(), Rsurface.top()+1,
+                                Rsurface.right(), Rsurface.bottom()-1 );
+
+                        // input area
+                        p->fillRect(editField, inputColor );
+                    }
+
+                    return;
+                }
+
+                case ComboBox::EditField:
+                {
+                    // empty
+                    return;
+                }
+
+                case ComboBox::Button:
+                {
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
+                    if(reverseLayout) {
+                        surfaceFlags |= Round_UpperLeft|Round_BottomLeft;
+                    } else {
+                        surfaceFlags |= Round_UpperRight|Round_BottomRight;
+                    }
+
+                    if (false /*TODO (widget == hoverWidget) || (flags & Style_MouseOver)*/) {
+                        surfaceFlags |= Is_Highlight;
+                        if(editable) surfaceFlags |= Highlight_Left|Highlight_Right;
+                        surfaceFlags |= Highlight_Top|Highlight_Bottom;
+                    }
+                    renderSurface(p, r,
+                                pal.background().color(), buttonColor, getColor(pal,MouseOverHighlight), enabled?_contrast+3:(_contrast/2),
+                                surfaceFlags);
 
                     return;
                 }
@@ -2498,26 +2653,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //             }
 //         }
 
-//         case PE_SpinWidgetPlus:
-//         case PE_SpinWidgetMinus: {
-//             p->setPen( cg.buttonText() );
-// 
-//             int l = QMIN( w-2, h-2 );
-//             // make the length even so that we get a nice symmetric plus...
-//             if(l%2 != 0)
-//                 --l;
-//             QPoint c = r.center();
-// 
-//             p->drawLine( c.x()-l/2, c.y(), c.x()+l/2, c.y() );
-//             if ( pe == PE_SpinWidgetPlus ) {
-//                 p->drawLine( c.x(), c.y()-l/2, c.x(), c.y()+l/2 );
-//             }
-//             break;
-//         }
-// 
-// 
-// 
-
 // 
 //     // CHECKBOXES
 //     // ----------
@@ -2822,162 +2957,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //     const bool reverseLayout = QApplication::reverseLayout();
 // 
 //     const bool enabled = (flags & Style_Enabled);
-// 
-//     switch(control) {
-//     // COMBOBOX
-//     // --------
-//         case CC_ComboBox: {
-//             static const unsigned int handleWidth = 15;
-// 
-//             const QComboBox *cb = dynamic_cast<const QComboBox *>(widget);
-//             // at the moment cb is only needed to check if the combo box is editable or not.
-//             // if cb doesn't exist, just assume false and the app (gideon! ;) ) at least doesn't crash.
-//             bool editable = false;
-//             bool hasFocus = false;
-//             if (cb) {
-//                 editable = cb->editable();
-//                 hasFocus = cb->hasFocus();
-//             }
-// 
-//             const QColor buttonColor = enabled?cg.button():cg.background();
-//             const QColor inputColor = enabled?(editable?cg.base():cg.button())
-//                                               :cg.background();
-// 
-//             uint contourFlags = 0;
-//             if( khtmlWidgets.contains(cb) )
-//                 contourFlags |= Draw_AlphaBlend;
-//             
-//             if (_inputFocusHighlight && hasFocus && editable && enabled)
-//             {
-//                 QRect editField = querySubControlMetrics(control, widget, SC_ComboBoxEditField);
-//                 QRect editFrame = r;
-//                 QRect buttonFrame = r;
-//                 
-//                 uint editFlags = contourFlags;
-//                 uint buttonFlags = contourFlags;
-//                 
-//                 // Hightlight only the part of the contour next to the control button
-//                 if (reverseLayout)
-//                 {
-//                     // querySubControlMetrics doesn't work right for reverse Layout
-//                     int dx = r.right() - editField.right();
-//                     editFrame.setLeft(editFrame.left() + dx);
-//                     buttonFrame.setRight(editFrame.left() - 1);
-//                     editFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
-//                     buttonFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
-//                 }
-//                 else
-//                 {
-//                     editFrame.setRight(editField.right());
-//                     buttonFrame.setLeft(editField.right() + 1);
-//                     
-//                     editFlags |= Draw_Left|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_BottomLeft;
-//                     buttonFlags |= Draw_Right|Draw_Top|Draw_Bottom|Round_UpperRight|Round_BottomRight;
-//                 }
-//                 renderContour(p, editFrame, cg.background(),  getColor(cg,FocusHighlight,enabled), editFlags);
-//                 renderContour(p, buttonFrame, cg.background(), 
-//                               getColor(cg, ButtonContour, enabled), buttonFlags); 
-//             }
-//             else
-//             {
-//                 contourFlags |= Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-//                     Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-//                 renderContour(p, r, cg.background(), getColor(cg, ButtonContour, enabled), contourFlags);
-//             }
-//             //extend the contour: between input and handler...
-//             p->setPen(alphaBlendColors(cg.background(), getColor(cg, ButtonContour, enabled), 50) );
-//             if(reverseLayout) {
-//                 p->drawLine(r.left()+1+handleWidth, r.top()+1, r.left()+1+handleWidth, r.bottom()-1);
-//             } else {
-//                 p->drawLine(r.right()-handleWidth-1, r.top()+1, r.right()-handleWidth-1, r.bottom()-1);
-//             }
-// 
-//             const QRect RbuttonSurface(reverseLayout?r.left()+1:r.right()-handleWidth, r.top()+1,
-//                                         handleWidth, r.height()-2);
-//             const QRect RcontentSurface(reverseLayout?r.left()+1+handleWidth+1:r.left()+1, r.top()+1,
-//                                          r.width()-handleWidth-3, r.height()-2);
-// 
-//             // handler
-// 
-//             uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
-//             if(reverseLayout) {
-//                 surfaceFlags |= Round_UpperLeft|Round_BottomLeft;
-//             } else {
-//                 surfaceFlags |= Round_UpperRight|Round_BottomRight;
-//             }
-// 
-//             if ((widget == hoverWidget) || (flags & Style_MouseOver)) {
-//                 surfaceFlags |= Is_Highlight;
-//                 if(editable) surfaceFlags |= Highlight_Left|Highlight_Right;
-//                 surfaceFlags |= Highlight_Top|Highlight_Bottom;
-//             }
-//             renderSurface(p, RbuttonSurface,
-//                            cg.background(), buttonColor, getColor(cg,MouseOverHighlight), enabled?_contrast+3:(_contrast/2),
-//                            surfaceFlags);
-// 
-//             if(!editable) {
-//                 surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
-//                 if(reverseLayout) {
-//                     surfaceFlags |= Round_UpperRight|Round_BottomRight;
-//                 } else {
-//                     surfaceFlags |= Round_UpperLeft|Round_BottomLeft;
-//                 }
-// 
-//                 if ((widget == hoverWidget) || (flags & Style_MouseOver)) {
-//                     surfaceFlags |= Is_Highlight;
-//                     surfaceFlags |= Highlight_Top|Highlight_Bottom;
-//                 }
-//                 renderSurface(p, RcontentSurface,
-//                                cg.background(), buttonColor, getColor(cg,MouseOverHighlight), enabled?_contrast+3:(_contrast/2),
-//                                surfaceFlags);
-//                 if (hasFocus) {
-//                     drawPrimitive(PE_FocusRect, p,
-//                         QRect(RcontentSurface.x() + 2,
-//                             RcontentSurface.y() + 2,
-//                             RcontentSurface.width() - 4,
-//                             RcontentSurface.height() - 4), cg);
-//                 }
-//             } else {
-//                 // thin frame around the input area
-//                 if (_inputFocusHighlight && hasFocus && editable && enabled)
-//                 {
-//                   p->setPen( getColor(cg,FocusHighlight).dark(130) );
-//                 }
-//                 else
-//                 {
-//                   p->setPen(inputColor.dark(130) );
-//                 }
-//                 p->drawLine(RcontentSurface.x(), reverseLayout?RcontentSurface.y():RcontentSurface.y()+1,
-//                         RcontentSurface.x(), reverseLayout?RcontentSurface.bottom():RcontentSurface.bottom()-1);
-//                 p->drawLine(RcontentSurface.x()+1, RcontentSurface.y(),
-//                         reverseLayout?RcontentSurface.right()-1:RcontentSurface.right(), RcontentSurface.y() );
-//                 if (_inputFocusHighlight && hasFocus && editable && enabled)
-//                 {
-//                   p->setPen( getColor(cg,FocusHighlight).light(130) );
-//                 }
-//                 else
-//                 {
-//                   p->setPen(inputColor.light(130) );
-//                 }
-//                 p->drawLine(reverseLayout?RcontentSurface.x():RcontentSurface.x()+1, RcontentSurface.bottom(),
-//                         reverseLayout?RcontentSurface.right()-1:RcontentSurface.right(), RcontentSurface.bottom() );
-//                 p->drawLine(RcontentSurface.right(), RcontentSurface.top()+1,
-//                         RcontentSurface.right(), RcontentSurface.bottom()-1 );
-// 
-//                 // input area
-//                 p->fillRect(RcontentSurface.x()+1, RcontentSurface.y()+1,
-//                         RcontentSurface.width()-2, RcontentSurface.height()-2, inputColor );
-//             }
-// 
-//             p->setPen(cg.foreground());
-//             drawPrimitive(PE_SpinWidgetDown, p, RbuttonSurface, cg, Style_Default|Style_Enabled|Style_Raised);
-// 
-//             // QComboBox draws the text using cg.text(), we can override this
-//             // from here
-//             p->setPen( cg.buttonText() );
-//             p->setBackgroundColor( cg.button() );
-//             break;
-//         }
+
 // 
 //     // TOOLBUTTON
 //     // ----------
@@ -3070,80 +3050,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //         }
 //     }
 // }
-// 
-// QRect PlastikStyle::querySubControlMetrics(ComplexControl control,
-//                                           const QWidget *widget,
-//                                           SubControl subcontrol,
-//                                           const QStyleOption &opt) const
-// {
-//     if (!widget) {
-//         return QRect();
-//     }
-// 
-//     QRect r(widget->rect());
-//     switch (control) {
-//         case CC_ComboBox: {
-//             switch (subcontrol) {
-//                 case SC_ComboBoxEditField: {
-//                     // TODO: is the handler width in pixelmetric?
-//                     return QRect(r.left()+2, r.top()+2, r.width()-4-15-1, r.height()-4);
-//                 }
-//                 default: {
-//                     return KStyle::querySubControlMetrics(control, widget, subcontrol, opt);
-//                 }
-//             }
-//             break;
-//         }
-//         case CC_SpinWidget: {
-//             const int fw = 2; // Frame width...
-// 
-//             const bool heightDividable = ((r.height()%2) == 0);
-// 
-//             QSize bs;
-//             if(heightDividable) {
-//                 bs.setHeight(QMAX(8, (r.height()-2)/2));
-//             } else {
-//                 bs.setHeight(QMAX(8, (r.height()-2-1)/2));
-//             }
-//             bs.setWidth(15);
-// 
-//             const int buttonsLeft = /*reverseLayout?r.left()+1:*/r.right()-bs.width();
-// 
-//             switch (subcontrol) {
-//                 case SC_SpinWidgetUp: {
-//                     return QRect(buttonsLeft, r.top()+1, bs.width(), bs.height() );
-//                 }
-//                 case SC_SpinWidgetDown: {
-//                     if(heightDividable) {
-//                         return QRect(buttonsLeft, r.top()+1+bs.height(),
-//                                 bs.width(), r.height()-(bs.height()+2) );
-//                     } else {
-//                         return QRect(buttonsLeft, r.top()+1+bs.height()+1,
-//                                 bs.width(), r.height()-(bs.height()+2+1) );
-//                     }
-//                 }
-//                 case SC_SpinWidgetFrame: {
-//                     return QRect(r.left(), r.top(), r.width(), r.height() );
-//                 }
-//                 case SC_SpinWidgetEditField: {
-//                     return QRect(r.left()+fw, r.top()+fw,
-//                             r.width()-(bs.width()+1+2*fw), r.height()-2*fw);
-//                 }
-//                 case SC_SpinWidgetButtonField: {
-//                     return QRect(buttonsLeft, r.top()+1, bs.width(), r.height()-2);
-//                 }
-//                 default: {
-//                     return KStyle::querySubControlMetrics(control, widget, subcontrol, opt);
-//                 }
-//             }
-//             break;
-//         }
-//         default: {
-//             return KStyle::querySubControlMetrics(control, widget, subcontrol, opt);
-//         }
-//     }
-// }
-// 
+
 // int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 // {
 //     switch(m) {
@@ -3209,9 +3116,7 @@ void PlastikStyle::renderTab(QPainter *p,
 // 
 //     // FRAMES
 //     // ------
-//         case PM_SpinBoxFrameWidth:
-//             return 1;
-// 
+
 //         case PM_MenuBarFrameWidth:
 //             return 1;
 // 
