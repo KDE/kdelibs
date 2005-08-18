@@ -136,6 +136,13 @@ KStyle::KStyle()
 
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 16);
+
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth, 16);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Right, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Top, 1);
+    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Bot, 1);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -170,6 +177,32 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 if (primitive == Tree::ExpanderClosed) //vertical line of +
                     p->drawLine(r.center().x(), r.center().y() - signLineSize,
                                 r.center().x(), r.center().y() + signLineSize);
+                return;
+            }
+            default:
+                break;
+        }
+    }
+    else if (widgetType == WT_SpinBox)
+    {
+        switch (primitive)
+        {
+            case SpinBox::SymbolPlus:
+            case SpinBox::SymbolMinus:
+            {
+                p->setPen( pal.buttonText().color() );
+
+                int l = QMIN( r.width()-2, r.height()-2 );
+                // make the length even so that we get a nice symmetric plus...
+                if(l%2 == 0)
+                    --l;
+                QPoint c = r.center();
+
+                p->drawLine( c.x()-l/2, c.y(), c.x()+l/2, c.y() );
+                if (primitive == SpinBox::SymbolPlus ) {
+                    p->drawLine( c.x(), c.y()-l/2, c.x(), c.y()+l/2 );
+                }
+
                 return;
             }
             default:
@@ -1974,6 +2007,70 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             } //option OK
             return;
         } //CC_Slider
+
+        case CC_SpinBox:
+        {
+            if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(opt) )
+            {
+                bool activeSbUp = sb->activeSubControls&SC_SpinBoxUp && (flags & State_Sunken);
+                bool activeSbDown = sb->activeSubControls&SC_SpinBoxDown && (flags & State_Sunken);
+
+                if (sb->subControls & SC_SpinBoxFrame)
+                {
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::Frame, opt, r, pal, flags, p, w);
+                }
+
+                if (sb->subControls & SC_SpinBoxEditField)
+                {
+                    QRect editField = subControlRect(CC_SpinBox, opt, SC_SpinBoxEditField, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::Frame, opt, editField, pal, flags, p, w);
+                }
+
+                if (sb->subControls & SC_SpinBoxUp)
+                {
+                    // adjust the sunken state flag...
+                    State upFlags = flags;
+                    if (activeSbUp)
+                        upFlags |= State_Sunken;
+                    else
+                        upFlags &= ~State_Sunken;
+
+                    QRect upRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxUp, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::ButtonUp, opt, upRect, pal, upFlags, p, w);
+
+                    // draw symbol...
+                    int primitive;
+                    if (sb->buttonSymbols == QAbstractSpinBox::PlusMinus)
+                        primitive = SpinBox::SymbolPlus;
+                    else
+                        primitive = Generic::ArrowUp;
+                    drawKStylePrimitive(WT_SpinBox, primitive, opt, upRect, pal, upFlags, p, w);
+                }
+
+                if (sb->subControls & SC_SpinBoxDown)
+                {
+                    // adjust the sunken state flag...
+                    State downFlags = flags;
+                    if (activeSbDown)
+                        downFlags |= State_Sunken;
+                    else
+                        downFlags &= ~State_Sunken;
+
+                    QRect downRect = subControlRect(CC_SpinBox, opt, SC_SpinBoxDown, w);
+                    drawKStylePrimitive(WT_SpinBox, SpinBox::ButtonDown, opt, downRect, pal, downFlags, p, w);
+
+                    // draw symbol...
+                    int primitive;
+                    if (sb->buttonSymbols == QAbstractSpinBox::PlusMinus)
+                        primitive = SpinBox::SymbolMinus;
+                    else
+                        primitive = Generic::ArrowDown;
+                    drawKStylePrimitive(WT_SpinBox, primitive, opt, downRect, pal, downFlags, p, w);
+                }
+
+                return;
+            } //option OK
+        } //CC_SpinBox
     } //switch
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);
@@ -1984,7 +2081,7 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
                                        SubControl subControl, const QWidget* w) const
 {
     QRect r = option->rect;
-    
+
     if (control == CC_ScrollBar)
     {
         switch (subControl)
@@ -2002,7 +2099,7 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
                     return handleRTL(option, QRect(r.x(), r.y(), majorSize, r.height()));
                 else
                     return handleRTL(option, QRect(r.x(), r.y(), r.width(), majorSize));
-                    
+
             }
 
             //The "bottom" arrow
@@ -2021,7 +2118,7 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
             }
         }
     }
-    
+
     return QRect();
 }
 
@@ -2030,9 +2127,12 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                                 SubControl subControl, const QWidget* widget) const
 {
     QRect r = option->rect;
-    
-    if (control == CC_ScrollBar)
+
+    switch (control)
     {
+        case CC_ScrollBar:
+        {
+            // TODO: indentation
         switch (subControl)
         {
             //For both arrows, we return -everything-,
@@ -2078,7 +2178,7 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     return groove;
 
                 //Figure out how much room we have..
-                int space; 
+                int space;
                 if (option->state & State_Horizontal)
                     space = groove.width();
                 else
@@ -2137,7 +2237,69 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                             QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
             }
         }
+        }
+
+        case CC_SpinBox:
+        {
+            if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
+
+                int fw = widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth);
+                int bw = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth);
+                int bml = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Left);
+                int bmr = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Right);
+                int bmt = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Top);
+                int bmb = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Bot);
+                int bs = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing);
+                bool symmButtons = widgetLayoutProp(WT_SpinBox, SpinBox::SymmetricButtons);
+                bool supportFrameless = widgetLayoutProp(WT_SpinBox, SpinBox::SupportFrameless);
+
+                // SpinBox without a frame, set the corresponding layout values to 0, reduce button width.
+                if (supportFrameless && !sb->frame)
+                {
+                    bw = bw - bmr; // reduce button with as the right button margin will be ignored.
+                    fw = 0;
+                    bmt = bmb = bmr = 0;
+                }
+
+                const int buttonsWidth = bw-bml-bmr;
+                const int buttonsLeft = r.right()-bw+bml+1;
+
+                // compute the height of each button...
+                int availableButtonHeight = r.height()-bmt-bmb - bs;
+                if (symmButtons)
+                {
+                    // make sure the availableButtonHeight is even by reducing the
+                    // button spacing by 1 if necessary. Results in both buttons
+                    // of the same height...
+                    if (availableButtonHeight%2 != 0)
+                    {
+                        --bs;
+
+                        // recalculate...
+                        availableButtonHeight = r.height()-bmt-bmb - bs;
+                    }
+                }
+                int heightUp = availableButtonHeight / 2;
+                int heightDown = availableButtonHeight - heightUp;
+
+
+                switch (subControl) {
+                    case SC_SpinBoxUp:
+                        return handleRTL(option,
+                                         QRect(buttonsLeft, r.top()+bmt, buttonsWidth, heightUp) );
+                    case SC_SpinBoxDown:
+                        return handleRTL(option,
+                                         QRect(buttonsLeft, r.bottom()-bmb-heightDown+1, buttonsWidth, heightDown) );
+                    case SC_SpinBoxEditField:
+                        return handleRTL(option,
+                                         QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
+                    case SC_SpinBoxFrame:
+                        return (sb->frame || !supportFrameless) ? r : QRect();
+                }
+            }
+        } //CC_SpinBox
     }
+
     return QCommonStyle::subControlRect(control, option, subControl, widget);
 }
 

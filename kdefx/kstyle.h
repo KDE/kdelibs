@@ -288,6 +288,7 @@ protected:
         WT_Tab,
         WT_Slider,
         WT_Tree,
+        WT_SpinBox,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -677,6 +678,50 @@ protected:
             ExpanderOpen,
             HorizontalBranch,
             VerticalBranch
+        };
+    };
+
+    struct SpinBox
+    {
+        /**
+         The description applies to LTR mode.
+
+         FrameWidth and ButtonWidth are used to size of the contents area. To
+         the EditField, FrameWidth is added at the left, top, bottom while
+         ButtonWidth is added at the right.
+
+         The ButtonMargin is measured from the right side of the EditField and
+         the outside. Inside it, the up and down buttons are aligned with
+         spacing ButtonSpacing.
+
+         To make sure that both buttons are always of the same height, 
+        */
+        enum LayoutProp
+        {
+            FrameWidth,
+            ButtonWidth,
+            ButtonMargin,
+            ButtonSpacing = ButtonMargin + MarginInc,
+            SymmetricButtons,  // Set to non-zero to make sure both buttons are always of the same
+                               // height. To achieve this, the spacing of the buttons will be reduced
+                               // by 1 if necessary to avoid rounding problems. Needs to be handled
+                               // in your drawing code.
+            SupportFrameless   // Set to non-zero to indicate that you are able to handle frame-less
+                               // SpinBoxes. For a SpinBox with no frame, FrameWidth and
+                               // Top/Bottom/Right ButtonMargin is ignored.
+        };
+
+        /**
+         From generic primitives, arrows are also used
+        */
+        enum Primitive
+        {
+            Frame = Generic::WidgetSpecificBase,
+            EditField,
+            ButtonUp,
+            ButtonDown,
+            SymbolPlus,        // SymbolPlus and SymbolMinus are centering primitives
+            SymbolMinus
         };
     };
 
