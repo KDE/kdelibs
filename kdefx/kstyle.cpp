@@ -1609,6 +1609,12 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             // not sure what the difference to PM_SliderControlThickness actually is
             return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
         }
+
+        case PM_SpinBoxFrameWidth:
+            return widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth);
+
+        case PM_ComboBoxFrameWidth:
+            return widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth);
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
