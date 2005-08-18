@@ -142,6 +142,9 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
 
+    setWidgetLayoutProp(WT_CheckBox, CheckBox::Size, 13);
+    setWidgetLayoutProp(WT_RadioButton, RadioButton::Size, 13);
+
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, 1);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 13);
 
