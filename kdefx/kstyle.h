@@ -725,6 +725,42 @@ protected:
         };
     };
 
+    struct ComboBox
+    {
+        /**
+        The description applies to LTR mode.
+
+        FrameWidth and ButtonWidth are used to size of the contents area. To
+        the EditField, FrameWidth is added at the left, top, bottom while
+        ButtonWidth is added at the right.
+
+        The ButtonMargin is measured from the right side of the EditField and
+        the outside. Inside it, the up and down buttons are aligned with
+        spacing ButtonSpacing.
+
+        To make sure that both buttons are always of the same height,
+         */
+        enum LayoutProp
+        {
+            FrameWidth,
+            ButtonWidth,
+            ButtonMargin,
+            SupportFrameless = ButtonMargin + MarginInc // Set to non-zero to indicate that you are able to handle frame-less
+                               // ComboBoxes. For a ComboBox with no frame, FrameWidth and
+                               // Top/Bottom/Right ButtonMargin is ignored.
+        };
+
+        /**
+        From generic primitives, arrows are also used
+         */
+        enum Primitive
+        {
+            Frame = Generic::WidgetSpecificBase, // TODO: Generic::Frame?
+            EditField,
+            Button
+        };
+    };
+
     ///Interface for the style to configure various metrics that KStyle has customizable.
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
     

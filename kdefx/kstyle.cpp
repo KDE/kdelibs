@@ -2129,111 +2129,110 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
     {
         case CC_ScrollBar:
         {
-            // TODO: indentation
-        switch (subControl)
-        {
-            //For both arrows, we return -everything-,
-            //to get stuff to repaint right. See internalSubControlRect
-            //for the real thing
-            case SC_ScrollBarSubLine:
-            case SC_ScrollBarAddLine:
-                return r;
-
-            //The main groove area. This is used to compute the others...
-            case SC_ScrollBarGroove:
+            switch (subControl)
             {
-                QRect top = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarSubLine, widget));
-                QRect bot = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarAddLine, widget));
+                //For both arrows, we return -everything-,
+                //to get stuff to repaint right. See internalSubControlRect
+                //for the real thing
+                case SC_ScrollBarSubLine:
+                case SC_ScrollBarAddLine:
+                    return r;
 
-                QPoint topLeftCorner, botRightCorner;
-                if (option->state & State_Horizontal)
+                //The main groove area. This is used to compute the others...
+                case SC_ScrollBarGroove:
                 {
-                    topLeftCorner  = QPoint(top.right() + 1, top.top());
-                    botRightCorner = QPoint(bot.left()  - 1, top.bottom());
+                    QRect top = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarSubLine, widget));
+                    QRect bot = handleRTL(option, internalSubControlRect(control, option, SC_ScrollBarAddLine, widget));
+
+                    QPoint topLeftCorner, botRightCorner;
+                    if (option->state & State_Horizontal)
+                    {
+                        topLeftCorner  = QPoint(top.right() + 1, top.top());
+                        botRightCorner = QPoint(bot.left()  - 1, top.bottom());
+                    }
+                    else
+                    {
+                        topLeftCorner  = QPoint(top.left(),  top.bottom() + 1);
+                        botRightCorner = QPoint(top.right(), bot.top()    - 1);
+                    }
+
+                    return handleRTL(option, QRect(topLeftCorner, botRightCorner));
                 }
-                else
+
+                case SC_ScrollBarFirst:
+                case SC_ScrollBarLast:
+                    return QRect();
+
+                case SC_ScrollBarSlider:
                 {
-                    topLeftCorner  = QPoint(top.left(),  top.bottom() + 1);
-                    botRightCorner = QPoint(top.right(), bot.top()    - 1);
+                    const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
+
+                    //We do handleRTL here to unreflect things if need be
+                    QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
+
+                    if (slOpt->minimum == slOpt->maximum)
+                        return groove;
+
+                    //Figure out how much room we have..
+                    int space;
+                    if (option->state & State_Horizontal)
+                        space = groove.width();
+                    else
+                        space = groove.height();
+
+                    //Calculate the portion of this space that the slider should take up.
+                    int sliderSize = int(space * float(slOpt->pageStep) /
+                                            (slOpt->maximum - slOpt->minimum + slOpt->pageStep));
+
+                    if (sliderSize < widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight))
+                        sliderSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight);
+
+                    if (sliderSize > space)
+                        sliderSize = space;
+
+                    //What do we have remaining?
+                    space = space - sliderSize;
+
+                    //uhm, yeah, nothing much
+                    if (space <= 0)
+                        return groove;
+
+                    int pos = qRound(float(slOpt->sliderPosition - slOpt->minimum)/
+                                            (slOpt->maximum - slOpt->minimum)*space);
+                    if (option->state & State_Horizontal)
+                        return handleRTL(option, QRect(groove.x() + pos, groove.y(), sliderSize, groove.height()));
+                    else
+                        return handleRTL(option, QRect(groove.x(), groove.y() + pos, groove.width(), sliderSize));
                 }
 
-                return handleRTL(option, QRect(topLeftCorner, botRightCorner));
+                case SC_ScrollBarSubPage:
+                {
+                    //We do handleRTL here to unreflect things if need be
+                    QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
+                    QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
+
+                    //We're above the slider in the groove.
+                    if (option->state & State_Horizontal)
+                        return handleRTL(option, QRect(groove.x(), groove.y(), slider.x() - groove.x(), groove.height()));
+                    else
+                        return handleRTL(option, QRect(groove.x(), groove.y(), groove.width(), slider.y() - groove.y()));
+                }
+
+                case SC_ScrollBarAddPage:
+                {
+                    //We do handleRTL here to unreflect things if need be
+                    QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
+                    QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
+
+                    //We're below the slider in the groove.
+                    if (option->state & State_Horizontal)
+                        return handleRTL(option,
+                                QRect(slider.right() + 1, groove.y(), groove.right() - slider.right(), groove.height()));
+                    else
+                        return handleRTL(option,
+                                QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
+                }
             }
-
-            case SC_ScrollBarFirst:
-            case SC_ScrollBarLast:
-                return QRect();
-
-            case SC_ScrollBarSlider:
-            {
-                const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
-
-                //We do handleRTL here to unreflect things if need be
-                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
-
-                if (slOpt->minimum == slOpt->maximum)
-                    return groove;
-
-                //Figure out how much room we have..
-                int space;
-                if (option->state & State_Horizontal)
-                    space = groove.width();
-                else
-                    space = groove.height();
-
-                //Calculate the portion of this space that the slider should take up.
-                int sliderSize = int(space * float(slOpt->pageStep) /
-                                        (slOpt->maximum - slOpt->minimum + slOpt->pageStep));
-
-                if (sliderSize < widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight))
-                    sliderSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight);
-
-                if (sliderSize > space)
-                    sliderSize = space;
-
-                //What do we have remaining?
-                space = space - sliderSize;
-
-                //uhm, yeah, nothing much
-                if (space <= 0)
-                    return groove;
-
-                int pos = qRound(float(slOpt->sliderPosition - slOpt->minimum)/
-                                        (slOpt->maximum - slOpt->minimum)*space);
-                if (option->state & State_Horizontal)
-                    return handleRTL(option, QRect(groove.x() + pos, groove.y(), sliderSize, groove.height()));
-                else
-                    return handleRTL(option, QRect(groove.x(), groove.y() + pos, groove.width(), sliderSize));
-            }
-
-            case SC_ScrollBarSubPage:
-            {
-                //We do handleRTL here to unreflect things if need be
-                QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
-                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
-
-                //We're above the slider in the groove.
-                if (option->state & State_Horizontal)
-                    return handleRTL(option, QRect(groove.x(), groove.y(), slider.x() - groove.x(), groove.height()));
-                else
-                    return handleRTL(option, QRect(groove.x(), groove.y(), groove.width(), slider.y() - groove.y()));
-            }
-
-            case SC_ScrollBarAddPage:
-            {
-                //We do handleRTL here to unreflect things if need be
-                QRect slider = handleRTL(option, subControlRect(control, option, SC_ScrollBarSlider, widget));
-                QRect groove = handleRTL(option, subControlRect(control, option, SC_ScrollBarGroove, widget));
-
-                //We're below the slider in the groove.
-                if (option->state & State_Horizontal)
-                    return handleRTL(option,
-                            QRect(slider.right() + 1, groove.y(), groove.right() - slider.right(), groove.height()));
-                else
-                    return handleRTL(option,
-                            QRect(groove.x(), slider.bottom() + 1, groove.width(), groove.bottom() - slider.bottom()));
-            }
-        }
         }
 
         case CC_SpinBox:
