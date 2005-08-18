@@ -1,6 +1,7 @@
 /**
  * KStyle for KDE4
  * Copyright (C) 2004-2005 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2005      Sandro Giessl <sandro@giessl.com>
  *
  * Based in part on the following software:
  *  KStyle for KDE3
@@ -149,8 +150,7 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Right, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin, 5);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin+Right, 16);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin, 1);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -2093,7 +2093,8 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
                     // focus indicator
                     if (cb->state & State_HasFocus) {
-                        QRect focusRect = insideMargin(r, WT_ComboBox, ComboBox::FocusMargin);
+                        QRect editField = subControlRect(CC_ComboBox, opt, SC_ComboBoxEditField, w);
+                        QRect focusRect = insideMargin(editField, WT_ComboBox, ComboBox::FocusMargin);
                         drawKStylePrimitive(WT_ComboBox, Generic::FocusIndicator, opt, focusRect, pal, flags, p, w, 0);
                     }
                 }

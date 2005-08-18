@@ -1,6 +1,7 @@
 /**
  * KStyle for KDE4
  * Copyright (C) 2004-2005 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2005      Sandro Giessl <sandro@giessl.com>
  *
  * Based in part on the following software:
  *  KStyle for KDE3
@@ -737,6 +738,8 @@ protected:
 
         The ButtonMargin is measured from the right side of the EditField and
         the outside. Inside it, the button is aligned.
+
+        The FocusMargin is measured from the EditField rect.
 
         To make sure that both buttons are always of the same height,
          */
