@@ -1198,14 +1198,6 @@ void KFileDialog::enterURL( const QString& url )
     setURL( KURL::fromPathOrURL( KURLCompletion::replacedPath( url, true, true )) );
 }
 
-void KFileDialog::toolbarCallback(int) // SLOT
-{
-    /*
-     * yes, nothing uses this anymore.
-     * it used to be used to show the configure dialog
-     */
-}
-
 
 void KFileDialog::setSelection(const QString& url)
 {
@@ -1275,13 +1267,6 @@ void KFileDialog::slotLoadingFinished()
         ops->setCurrentItem( d->selection );
 }
 
-// ### remove in KDE4
-void KFileDialog::pathComboChanged( const QString& )
-{
-}
-void KFileDialog::dirCompletion( const QString& ) // SLOT
-{
-}
 void KFileDialog::fileCompletion( const QString& match )
 {
     if ( match.isEmpty() && ops->view() )

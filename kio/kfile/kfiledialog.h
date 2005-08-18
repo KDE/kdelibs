@@ -550,13 +550,13 @@ public:
 				   const QString& filter= QString::null,
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
-           
-                   
+
+
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      * @since 3.4
-     */         
+     */
     static QString getSaveFileNameWId(const QString& dir, const QString& filter,
                                      WId parent_id,
                                      const QString& caption);
@@ -910,21 +910,6 @@ protected slots:
     void enterURL( const QString& url );
     void locationActivated( const QString& url );
 
-    /**
-     * @deprecated,
-     */
-    // ### remove in KDE4
-    void toolbarCallback(int);
-    /**
-     * @deprecated
-     */
-    // ### remove in KDE4
-    void pathComboChanged( const QString& );
-    /**
-     * @deprecated
-     */
-    // ### remove in KDE4
-    void dirCompletion( const QString& );
 
     void slotFilterChanged();
     void fileHighlighted(const KFileItem *i);
