@@ -2242,10 +2242,11 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 
                 int fw = widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth);
                 int bw = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth);
-                int bml = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Left);
-                int bmr = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Right);
-                int bmt = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Top);
-                int bmb = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Bot);
+                int bm = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin);
+                int bml = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Left);
+                int bmr = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Right);
+                int bmt = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Top);
+                int bmb = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Bot);
                 int bs = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing);
                 bool symmButtons = widgetLayoutProp(WT_SpinBox, SpinBox::SymmetricButtons);
                 bool supportFrameless = widgetLayoutProp(WT_SpinBox, SpinBox::SupportFrameless);
