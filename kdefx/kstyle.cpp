@@ -151,6 +151,10 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin, 1);
+
+    setWidgetLayoutProp(WT_Header, Header::ContentsMargin, 3);
+    setWidgetLayoutProp(WT_Header, Header::TextToIconSpace, 3);
+    setWidgetLayoutProp(WT_Header, Header::IndicatorSize, 9);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -498,7 +502,11 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_FrameMenu:
             drawKStylePrimitive(WT_Menu, Menu::Frame, option, r, pal, flags, painter, widget);
             return;
-            
+        case PE_IndicatorHeaderArrow:
+        {
+            drawKStylePrimitive(WT_Header, (flags&State_UpArrow)?Generic::ArrowUp:Generic::ArrowDown, option, r, pal, flags, painter, widget);
+            return;
+        }
     }
     
     QCommonStyle::drawPrimitive(elem, option, painter, widget);
@@ -1482,6 +1490,52 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             }
             return;
         }
+
+        case CE_HeaderSection:
+        {
+            if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+                drawKStylePrimitive(WT_Header, (header->orientation==Qt::Horizontal)?Header::SectionHor:Header::SectionVert,
+                                    option, r, pal, flags, p, widget);
+                return;
+            }
+        }
+
+        case CE_HeaderLabel:
+        {
+            if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+                QRect textRect = r;
+                if (!header->icon.isNull()) {
+                    bool enabled = flags & State_Enabled;
+                    QPixmap pm = header->icon.pixmap(pixelMetric(PM_SmallIconSize), enabled?QIcon::Normal:QIcon::Disabled);
+
+                    // TODO: respect header->iconAlignment.
+                    bool reverseLayout = header->direction == Qt::RightToLeft;
+                    int iy = r.top()+(r.height()-pm.height())/2;
+                    int ix = reverseLayout ? r.right()-pm.width() : r.left();
+                    QRect iconRect = QRect(ix, iy, pm.width(), pm.height() );
+
+                    IconOption iconOpt;
+                    iconOpt.icon = pm;
+                    drawKStylePrimitive(WT_Header, Generic::Icon, option, iconRect, pal, flags, p, widget, &iconOpt);
+
+                    // adjust the rect for the text...
+                    int spacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);
+                    if (reverseLayout)
+                    {
+                        textRect.setRight(r.right()-iconRect.width()-spacing );
+                    }
+                    else
+                    {
+                        textRect.setLeft(r.x()+iconRect.width()+spacing );
+                    }
+                }
+
+                TextOption lbOpt(header->text);
+                lbOpt.hAlign = header->textAlignment;
+                drawKStylePrimitive(WT_Header, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
+            }
+            return;
+        }
     }
     
     QCommonStyle::drawControl(element, option, p, widget);
@@ -1619,6 +1673,9 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_ComboBoxFrameWidth:
             return widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth);
+
+        case PM_HeaderMarkSize:
+            return widgetLayoutProp(WT_Header, Header::IndicatorSize);
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
@@ -2659,6 +2716,21 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             //contentsSize, so we just expand that. Qt also takes care of
             //the vertical thing.
             return expandDim(contentsSize, WT_Tab, Tab::ContentsMargin);
+
+        case CT_HeaderSection:
+        {
+            if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+                QSize s = contentsSize;
+
+                QSize iconSize = header->icon.isNull() ? QSize(0,0) : QSize(22,22);
+                QSize textSize = header->fontMetrics.size(0, header->text);
+                int iconSpacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);
+                int w = iconSize.width() + iconSpacing + textSize.width();
+                int h = QMAX(iconSize.height(), textSize.height() );
+
+                return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin);
+            }
+        }
     }
     
     return QCommonStyle::sizeFromContents(type, option, contentsSize, widget);

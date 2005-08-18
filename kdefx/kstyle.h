@@ -291,6 +291,7 @@ protected:
         WT_Tree,
         WT_SpinBox,
         WT_ComboBox,
+        WT_Header,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -763,6 +764,25 @@ protected:
             Frame = Generic::WidgetSpecificBase, // TODO: Generic::Frame?
             EditField,
             Button
+        };
+    };
+
+    struct Header
+    {
+        enum LayoutProp
+        {
+            ContentsMargin,                                // used to size the contents.
+            TextToIconSpace = ContentsMargin + MarginInc,  // space that is allocated between icon and text if both exist
+            IndicatorSize
+        };
+
+        /**
+        From generic primitives, text, ArrowUp, ArrowDown and FocusIndicator are also used
+         */
+        enum Primitive
+        {
+            SectionHor = Generic::WidgetSpecificBase,
+            SectionVert
         };
     };
 
