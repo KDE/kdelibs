@@ -185,7 +185,7 @@ PlastikStyle::PlastikStyle() :
 //     _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
 //     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
-//     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
+    _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
     _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
     _customOverHighlightColor = settings.readBoolEntry("/customOverHighlightColor", false);
     _overHighlightColor.setNamedColor( settings.readEntry("/overHighlightColor", "black") );
@@ -1305,6 +1305,50 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     return;
                 }
+            }
+        }
+        break;
+
+        case WT_Tree:
+        {
+            switch (primitive)
+            {
+                case Tree::VerticalBranch:
+                case Tree::HorizontalBranch:
+                {
+                //### FIXME: set sane color.
+                    QBrush brush(Qt::Dense4Pattern);
+                    brush.setColor(pal.mid().color() );
+                    p->fillRect(r, brush);
+                    return;
+                }
+                case Tree::ExpanderOpen:
+                case Tree::ExpanderClosed:
+                {
+                    int radius = (r.width() - 4) / 2;
+                    int centerx = r.x() + r.width()/2;
+                    int centery = r.y() + r.height()/2;
+
+                    renderContour(p, r, pal.base().color(), pal.dark().color(), Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight );
+
+                    p->setPen( pal.text().color() );
+                    if(!_drawTriangularExpander)
+                    {
+                        // plus or minus
+                        p->drawLine( centerx - radius, centery, centerx + radius, centery );
+                        if (primitive == Tree::ExpanderClosed) // Collapsed = On
+                            p->drawLine( centerx, centery - radius, centerx, centery + radius );
+                    } else {
+                        if(primitive == Tree::ExpanderClosed)
+                            drawKStylePrimitive(WT_Generic, Generic::ArrowRight, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
+                        else
+                            drawKStylePrimitive(WT_Generic, Generic::ArrowDown, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
+                    }
+
+                    return;
+                }
+                default:
+                    break;
             }
         }
         break;
@@ -2508,126 +2552,7 @@ void PlastikStyle::renderTab(QPainter *p,
         }
     }
 }
-// 
-// void PlastikStyle::drawKStylePrimitive(KStylePrimitive kpe,
-//                                       QPainter *p,
-//                                       const QWidget* widget,
-//                                       const QRect &r,
-//                                       const QColorGroup &cg,
-//                                       SFlags flags,
-//                                       const QStyleOption& opt) const
-// {
-//     // some "global" vars...
-//     const bool enabled = (flags & Style_Enabled);
-// 
-// //  SLIDER
-// //  ------
-//     switch( kpe ) {
 
-
-// 
-//         case KPE_ListViewExpander: {
-//             int radius = (r.width() - 4) / 2;
-//             int centerx = r.x() + r.width()/2;
-//             int centery = r.y() + r.height()/2;
-// 
-//             renderContour(p, r, cg.base(), cg.dark(), Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight );
-// 
-//             p->setPen( cg.text() );
-//             if(!_drawTriangularExpander)
-//             {
-//                 // plus or minus
-//                 p->drawLine( centerx - radius, centery, centerx + radius, centery );
-//                 if ( flags & Style_On ) // Collapsed = On
-//                     p->drawLine( centerx, centery - radius, centerx, centery + radius );
-//             } else if(_drawTriangularExpander) {
-//               if( flags & Style_On )
-//                 drawPrimitive(PE_ArrowRight, p, QRect(r.x()+1,r.y()+1,r.width(),r.height()), cg,ButtonContour, flags);
-//               if( flags & Style_Off )
-//                 drawPrimitive(PE_ArrowDown, p, QRect(r.x()+1,r.y()+1,r.width(),r.height()), cg,ButtonContour, flags);
-//             }
-// 
-//             break;
-//         }
-// 
-//     // copied and slightly modified from KStyle.
-//     case KPE_ListViewBranch: {
-//         // Typical Windows style listview branch element (dotted line).
-// 
-//         // Create the dotline pixmaps if not already created
-//         if ( !verticalLine )
-//         {
-//             // make 128*1 and 1*128 bitmaps that can be used for
-//             // drawing the right sort of lines.
-//             verticalLine   = new QBitmap( 1, 129, true );
-//             horizontalLine = new QBitmap( 128, 1, true );
-//             Q3PointArray a( 64 );
-//             QPainter p2;
-//             p2.begin( verticalLine );
-// 
-//             int i;
-//             for( i=0; i < 64; i++ )
-//                 a.setPoint( i, 0, i*2+1 );
-//             p2.setPen( Qt::color1 );
-//             p2.drawPoints( a );
-//             p2.end();
-//             QApplication::flushX();
-//             verticalLine->setMask( *verticalLine );
-// 
-//             p2.begin( horizontalLine );
-//             for( i=0; i < 64; i++ )
-//                 a.setPoint( i, i*2+1, 0 );
-//             p2.setPen( Qt::color1 );
-//             p2.drawPoints( a );
-//             p2.end();
-//             QApplication::flushX();
-//             horizontalLine->setMask( *horizontalLine );
-//         }
-// 
-//         p->setPen( cg.mid() );
-// 
-//         if (flags & Style_Horizontal)
-//         {
-//             int point = r.x();
-//             int other = r.y();
-//             int end = r.x()+r.width();
-//             int thickness = r.height();
-// 
-//             while( point < end )
-//             {
-//                 int i = 128;
-//                 if ( i+point > end )
-//                     i = end-point;
-//                 p->drawPixmap( point, other, *horizontalLine, 0, 0, i, thickness );
-//                 point += i;
-//             }
-// 
-//         } else {
-//             int point = r.y();
-//             int other = r.x();
-//             int end = r.y()+r.height();
-//             int thickness = r.width();
-//             int pixmapoffset = (flags & Style_NoChange) ? 0 : 1;	// ### Hackish
-// 
-//             while( point < end )
-//             {
-//                 int i = 128;
-//                 if ( i+point > end )
-//                     i = end-point;
-//                 p->drawPixmap( other, point, *verticalLine, 0, pixmapoffset, thickness, i );
-//                 point += i;
-//             }
-//         }
-// 
-//         break;
-//     }
-// 
-//         default:
-//             KStyle::drawKStylePrimitive(kpe, p, widget, r, cg, flags, opt);
-//     }
-// }
-// 
-// 
 // void PlastikStyle::drawPrimitive(PrimitiveElement pe,
 //                                 QPainter *p,
 //                                 const QRect &r,

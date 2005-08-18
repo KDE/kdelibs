@@ -292,7 +292,7 @@ private:
 //     bool _drawToolBarSeparator;
 //     bool _drawToolBarItemSeparator;
     bool _drawFocusRect;
-//     bool _drawTriangularExpander;
+    bool _drawTriangularExpander;
     bool _inputFocusHighlight;
     bool _customOverHighlightColor;
     bool _customFocusHighlightColor;
