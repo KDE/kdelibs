@@ -149,6 +149,8 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Right, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin, 5);
+    setWidgetLayoutProp(WT_ComboBox, ComboBox::FocusMargin+Right, 16);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -2010,7 +2012,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
     
                     if (slider->state & State_HasFocus) {
                         QRect focus = subElementRect(SE_SliderFocusRect, slider, w);
-                        drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, focus, pal, flags, p, w, 0);
+                        drawKStylePrimitive(WT_Slider, Generic::FocusIndicator, opt, focus, pal, flags, p, w, 0);
                     }
                 }
             } //option OK
@@ -2085,11 +2087,15 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
         {
             if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt) )
             {
-                // TODO: FocusIndicator
-
                 if (cb->subControls & SC_ComboBoxFrame)
                 {
                     drawKStylePrimitive(WT_ComboBox, ComboBox::Frame, opt, r, pal, flags, p, w);
+
+                    // focus indicator
+                    if (cb->state & State_HasFocus) {
+                        QRect focusRect = insideMargin(r, WT_ComboBox, ComboBox::FocusMargin);
+                        drawKStylePrimitive(WT_ComboBox, Generic::FocusIndicator, opt, focusRect, pal, flags, p, w, 0);
+                    }
                 }
 
                 if (cb->subControls & SC_ComboBoxEditField)

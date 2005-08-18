@@ -736,8 +736,7 @@ protected:
         ButtonWidth is added at the right.
 
         The ButtonMargin is measured from the right side of the EditField and
-        the outside. Inside it, the up and down buttons are aligned with
-        spacing ButtonSpacing.
+        the outside. Inside it, the button is aligned.
 
         To make sure that both buttons are always of the same height,
          */
@@ -746,10 +745,10 @@ protected:
             FrameWidth,
             ButtonWidth,
             ButtonMargin,
-            SupportFrameless = ButtonMargin + MarginInc // Set to non-zero to indicate that you are able to handle frame-less
+            FocusMargin = ButtonMargin + MarginInc,    // Focus margin for ComboBoxes that aren't editable
+            SupportFrameless = FocusMargin + MarginInc // Set to non-zero to indicate that you are able to handle frame-less
                                // ComboBoxes. For a ComboBox with no frame, FrameWidth and
                                // Top/Bottom/Right ButtonMargin is ignored.
-                    // TODO: focus indicator margin.
         };
 
         /**
