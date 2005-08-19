@@ -2,6 +2,9 @@
 Type=PSD
 Header=^8BPS
 Name=Adobe Photoshop Image
+Name[br]=Skeudenn Adobe Photoshop
+Name[cy]=Delwedd Adobe Photoshop
+Name[ga]=Íomhá Adobe Photoshop
 Read=true
 Write=false
 Suffices=psd,PSD
