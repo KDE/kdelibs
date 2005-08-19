@@ -69,7 +69,7 @@ public:
 	/**
 	Availability of DNS-SD services.
 	@li Working - available
-	@li Stopped - not available because mdnsd daemon is not running. This flag is currently unused
+	@li Stopped - not available because mdnsd daemon is not running. 
 	@li Unsupported - not available because KDE was compiled without DNS-SD support
 	*/
 	enum State { Working, Stopped, Unsupported };

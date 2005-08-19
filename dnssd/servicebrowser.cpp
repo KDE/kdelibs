@@ -18,7 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <signal.h>
+#include <errno.h>
 #include <qstringlist.h>
+#include <qfile.h>
 #include "domainbrowser.h"
 #include "query.h"
 #include "servicebrowser.h"
@@ -26,6 +29,8 @@
 #ifdef HAVE_DNSSD
 #include <dns_sd.h>
 #endif
+
+#define MDNSD_PID "/var/run/mdnsd.pid"
 
 namespace DNSSD
 {
@@ -81,11 +86,16 @@ ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int fla
 const ServiceBrowser::State ServiceBrowser::isAvailable()
 {
 #ifdef HAVE_DNSSD
-//	DNSServiceRef ref;
-//	bool ok (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError); 
-//	if (ok) DNSServiceRefDeallocate(ref);
-//	return (ok) ? Working : Stopped;
-	return Working;
+	QFile f(MDNSD_PID);
+	if (!f.open(IO_ReadOnly)) return Stopped; // no pidfile
+	QString line;
+	if (f.readLine(line,16)<1) return Stopped;
+	unsigned int pid = line.toUInt();
+	if (pid==0) return Stopped;           // not a pid
+	return (kill(pid,0)==0 || errno==EPERM) ? Working : Stopped; 
+	// signal 0 only checks if process is running, mdnsd is probably owned by 'nobody' so we will
+	// get EPERM, if mdnsd is not running error will be ESRCH
+	
 #else
 	return Unsupported;
 #endif
