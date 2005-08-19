@@ -133,6 +133,7 @@ void ServiceBrowser::startBrowse()
 {
 	if (d->m_running) return;
 	d->m_running=true;
+	if (isAvailable()!=Working) return;
 	if (d->m_domains->isRunning()) {
 		QStringList::const_iterator itEnd  = d->m_domains->domains().end();
 		for ( QStringList::const_iterator it = d->m_domains->domains().begin(); it != itEnd; ++it )

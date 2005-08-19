@@ -23,6 +23,7 @@
 #include "settings.h"
 #include "remoteservice.h"
 #include "query.h"
+#include "servicebrowser.h"
 #include <kapplication.h>
 
 namespace DNSSD
@@ -69,6 +70,7 @@ void DomainBrowser::startBrowse()
 {
 	if (d->m_running) return;
 	d->m_running=true;
+	if (ServiceBrowser::isAvailable()!=ServiceBrowser::Working) return;
 	QStringList::const_iterator itEnd = d->m_domains.end();
 	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) {
 		emit domainAdded(*it);
