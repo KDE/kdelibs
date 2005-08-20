@@ -49,12 +49,32 @@
                                 </And>
                         </Include>
                 </Menu>
+		<Menu>
+			<Name>Translation</Name>
+			<Directory>kde-development-translation.directory</Directory>
+			<Include>
+				<And>
+				<Category>Development</Category>
+				<Category>Translation</Category>
+				</And>
+			</Include>
+		</Menu>
+		<Menu>
+			<Name>Web Development</Name>
+			<Directory>kde-development-webdevelopment.directory</Directory>
+			<Include>
+				<And>
+				<Category>Development</Category>
+				<Category>WebDevelopment</Category>
+				</And>
+			</Include>
+		</Menu>
                 <Include>
                         <And>
                         <Category>Development</Category>
-                        <Not>
-                        <Category>X-KDE-KDevelopIDE</Category>
-                        </Not>
+                        <Not><Category>X-KDE-KDevelopIDE</Category></Not>
+                        <Not><Category>Translation</Category></Not>
+                        <Not><Category>WebDevelopment</Category></Not>
                         </And>
                 </Include>
         </Menu>
@@ -75,13 +95,6 @@
 				</Or>
 				<Not><Category>Education</Category></Not>
 			</And>
-		</Include>
-	</Menu>
-	<Menu>
-		<Name>Editors</Name>
-		<Directory>kde-editors.directory</Directory>
-		<Include>
-			<Category>TextEditor</Category>
 		</Include>
 	</Menu>
 	<Menu>
@@ -220,6 +233,13 @@
 			</Not>
 			</And>
 		</Include>
+               <Menu>
+                        <Name>Toys</Name>
+                        <Directory>kde-toys.directory</Directory>
+                        <Include>
+                                 <Category>Amusement</Category>
+                        </Include>
+               </Menu>
 	</Menu>
 	<Menu>
 		<Name>Graphics</Name>
@@ -353,13 +373,6 @@
 		</Menu>
 	</Menu>
 	<Menu>
-		<Name>Toys</Name>
-		<Directory>kde-toys.directory</Directory>
-		<Include>
-			<Category>Amusement</Category>
-		</Include>
-	</Menu>
-	<Menu>
 		<Name>Utilities</Name>
 		<Directory>kde-utilities.directory</Directory>
 		<Include>
@@ -393,6 +406,13 @@
 				</And>
 			</Include>
 		</Menu>
+                <Menu>
+                        <Name>Editors</Name>
+                        <Directory>kde-editors.directory</Directory>
+                        <Include>
+                                <Category>TextEditor</Category>
+                        </Include>
+                </Menu>
 		<Menu>
 			<Name>File</Name>
 			<Directory>kde-utilities-file.directory</Directory>
