@@ -18,7 +18,7 @@ AC_DEFUN([KDE_CHECK_AKODE],
 ])
 
 AC_ARG_WITH(akode,
-    [AS_HELP_STRING([--with-akode],
+    [AC_HELP_STRING([--with-akode],
         [Enable the aKode audio-decoder @<:@default=check@:>@])],
     [], with_akode=check)
 
