@@ -74,7 +74,10 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KLocale</H4>
 
 <H4>KCharsets</H4>
-<p>Most of this class is (probably) obsolete, consider removing that class</p>
+<p>KCharsets::codecForName cannot use glibc's i18n data anymore currently</p>
+<p><b>TODO</b>: see which member functions can be removed</p>
+<p><b>TODO</b>: simplification of the encoding list tables
+   (simply name and description, no need of two tables and an lists of aliases.</p>
 
 <H4>KWin</H4>
 <li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
