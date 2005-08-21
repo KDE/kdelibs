@@ -500,7 +500,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
         }
         case PE_FrameMenu:
-            drawKStylePrimitive(WT_Menu, Menu::Frame, option, r, pal, flags, painter, widget);
+            drawKStylePrimitive(WT_Menu, Generic::Frame, option, r, pal, flags, painter, widget);
             return;
         case PE_IndicatorHeaderArrow:
         {
@@ -2087,7 +2087,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
                 if (sb->subControls & SC_SpinBoxFrame)
                 {
-                    drawKStylePrimitive(WT_SpinBox, SpinBox::Frame, opt, r, pal, flags, p, w);
+                    drawKStylePrimitive(WT_SpinBox, Generic::Frame, opt, r, pal, flags, p, w);
                 }
 
                 if (sb->subControls & SC_SpinBoxEditField)
@@ -2155,7 +2155,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             {
                 if (cb->subControls & SC_ComboBoxFrame)
                 {
-                    drawKStylePrimitive(WT_ComboBox, ComboBox::Frame, opt, r, pal, flags, p, w);
+                    drawKStylePrimitive(WT_ComboBox, Generic::Frame, opt, r, pal, flags, p, w);
 
                     // focus indicator
                     if (cb->state & State_HasFocus) {

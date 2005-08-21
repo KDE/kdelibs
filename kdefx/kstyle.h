@@ -320,6 +320,7 @@ protected:
             Text,        //Passes in TextOption
             Icon,        //Passes in IconOption
             FocusIndicator,
+            Frame,
             ArrowUp,    //Note: the arrows are centering primitives
             ArrowDown,
             ArrowRight,
@@ -481,7 +482,7 @@ protected:
     };
 
     /**
-     No default primitives are used
+     From default primitives, Frame is used
     */
     struct Menu
     {
@@ -495,8 +496,7 @@ protected:
 
         enum Primitive
         {
-            Frame = Generic::WidgetSpecificBase,      //The menu frame
-            Background, //Menu and menu item background
+            Background = Generic::WidgetSpecificBase, //Menu and menu item background
             TearOff,
             Scroller
         };
@@ -715,12 +715,11 @@ protected:
         };
 
         /**
-         From generic primitives, ArrowUp and ArrowDown are also used
+         From generic primitives, Frame, ArrowUp and ArrowDown are also used
         */
         enum Primitive
         {
-            Frame = Generic::WidgetSpecificBase,
-            EditField,
+            EditField = Generic::WidgetSpecificBase,
             UpButton,
             DownButton,
             PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
@@ -757,12 +756,11 @@ protected:
         };
 
         /**
-        From generic primitives, ArrowDown and FocusIndicator are also used
+        From generic primitives, Frame, ArrowDown and FocusIndicator are also used
          */
         enum Primitive
         {
-            Frame = Generic::WidgetSpecificBase, // TODO: Generic::Frame?
-            EditField,
+            EditField = Generic::WidgetSpecificBase,
             Button
         };
     };

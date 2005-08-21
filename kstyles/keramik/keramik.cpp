@@ -313,7 +313,7 @@ public:
 			{
 				switch (primitive)
 				{
-					case Menu::Frame:
+					case Generic::Frame:
 					{
 						qDrawShadePanel(p, r, pal);
 						return;

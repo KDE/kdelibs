@@ -535,7 +535,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Menu::Frame:
+                case Generic::Frame:
                 {
                     renderContour(p, r, pal.background().color(), pal.background().color().dark(200),
                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
@@ -993,7 +993,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case SpinBox::Frame:
+                case Generic::Frame:
                 {
                     QRect editField = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxEditField, widget);
 
@@ -1135,7 +1135,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case ComboBox::Frame:
+                case Generic::Frame:
                 {
                     // TODO: pressed state
 
