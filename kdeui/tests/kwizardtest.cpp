@@ -25,7 +25,7 @@
 
 int main(int argc, char **argv)
 {
-  KApplication a(argc,argv,"kwizardtest");
+  KApplication a;
   KWizard *wiz = new KWizard(0, "kwizardtest", false);
   QObject::connect((QObject*) wiz->cancelButton(), SIGNAL(clicked()),
 		   &a, SLOT(quit()));
