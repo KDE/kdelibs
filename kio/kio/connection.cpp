@@ -252,6 +252,10 @@ int Connection::read( int* _cmd, QByteArray &data )
 		kdError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }
+	    if ( !n ) { // 0 indicates end of file
+        	kdError(7017) << "Connection ended unexpectedly (" << n << "/" << bytesToGo << ")" << endl;
+      		return -1;
+    	    }
 
 	    bytesRead += n;
 	    bytesToGo -= n;
