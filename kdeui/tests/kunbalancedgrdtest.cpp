@@ -166,7 +166,7 @@ void myTopWidget::rebalance()
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "KUnbalancedGradientTest");
+    KApplication *app = new KApplication;
     myTopWidget w;
     app->setMainWidget(&w);
     w.show();
