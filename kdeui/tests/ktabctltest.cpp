@@ -90,7 +90,7 @@ void TopLevel::okPressed()
 
 int main( int argc, char ** argv )
 {
-    a = new KApplication ( argc, argv, "KTabCtlTest" );
+    a = new KApplication;
 
     a->setFont(default_font);
 
