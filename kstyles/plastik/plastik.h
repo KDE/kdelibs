@@ -1,5 +1,5 @@
-/* Plastik widget style for KDE 3
-   Copyright (C) 2003 Sandro Giessl <ceebx@users.sourceforge.net>
+/* Plastik widget style for KDE 4
+   Copyright (C) 2003-2005 Sandro Giessl <sandro@giessl.com>
 
    based on the KDE style "dotNET":
    Copyright (C) 2001-2002, Chris Lee <clee@kde.org>
@@ -364,15 +364,7 @@ private:
         }
     };
     QCache<int, CacheEntry> *pixmapCache;
-//     
-//     // For renderFocusRect
-//     mutable QBitmap *verticalDots;
-//     mutable QBitmap *horizontalDots;
-// 
-//     // For KPE_ListViewBranch
-//     mutable QBitmap *verticalLine;
-//     mutable QBitmap *horizontalLine;
-//     
+
 //     // For progress bar animation
 //     QTimer *animationTimer;
 };

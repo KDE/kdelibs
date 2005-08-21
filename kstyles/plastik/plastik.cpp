@@ -1,5 +1,5 @@
-/* Plastik widget style for KDE 3
-   Copyright (C) 2003 Sandro Giessl <ceebx@users.sourceforge.net>
+/* Plastik widget style for KDE 4
+   Copyright (C) 2003-2005 Sandro Giessl <sandro@giessl.com>
 
    based on the KDE style "dotNET":
 
@@ -2576,15 +2576,6 @@ void PlastikStyle::renderTab(QPainter *p,
 // 
 //     int x2, y2;
 //     r.coords(&x, &y, &x2, &y2);
-// 
-//     switch(pe) {
-//     // BUTTONS
-//     // -------
-//         case PE_FocusRect: {
-//             if(_drawFocusRect)
-//                 p->drawWinFocusRect( r );
-//             break;
-//         }
 
 // 
 //     // CHECKBOXES
@@ -2931,15 +2922,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //     // --------------
 //         case PM_MenuButtonIndicator:
 //             return 8;
-// 
-//     // CHECKBOXES / RADIO BUTTONS
-//     // --------------------------
-//         case PM_ExclusiveIndicatorWidth:    // Radiobutton size
-//         case PM_ExclusiveIndicatorHeight:   // 13x13
-//         case PM_IndicatorWidth:             // Checkbox size
-//         case PM_IndicatorHeight:            // 13x13
-//             return 13;
-// 
+
 //     // FRAMES
 //     // ------
 
