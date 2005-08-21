@@ -212,7 +212,7 @@ void TopLevel::slotToggleSingleColumn( bool b )
 
 int main( int argc, char ** argv )
 {
-    app = new KApplication ( argc, argv, "ItemContainerTest" );
+    app = new KApplication;
 
     TopLevel *toplevel = new TopLevel(0, "itemcontainertest");
 
