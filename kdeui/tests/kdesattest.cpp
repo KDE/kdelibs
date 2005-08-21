@@ -14,7 +14,7 @@ KDesatWidget::KDesatWidget(QWidget *parent, const char *name)
 {
 
     image = QImage("testimage.png");
-    slide = new KDoubleNumInput(this,0,700,700,1,2 /*, "desat"*/);
+    slide = new KDoubleNumInput(0, 700, 700, this, 1, 2);
     slide->setRange(0, 1, 0.001);
     slide->setLabel("Desaturate: ", Qt::AlignVCenter | Qt::AlignLeft);
     connect(slide,SIGNAL(valueChanged(double)), this, SLOT(change(double)));
