@@ -104,7 +104,7 @@ testWindow::~testWindow ()
 
 int main( int argc, char *argv[] )
 {
-        KApplication *myApp = new KApplication( argc, argv, "KStatusBarTest" );
+	KApplication *myApp = new KApplication;
         testWindow *test = new testWindow;
 
         myApp->setMainWidget(test);
