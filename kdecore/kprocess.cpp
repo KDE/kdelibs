@@ -88,7 +88,7 @@
 
 class KProcessPrivate {
 public:
-   KProcessPrivate() : 
+   KProcessPrivate() :
      usePty(KProcess::NoCommunication),
      addUtmp(false), useShell(false),
 #ifdef Q_OS_UNIX
@@ -143,31 +143,6 @@ KProcess::KProcess( QObject* parent, const char *name )
   err[0] = err[1] = -1;
 }
 
-KProcess::KProcess()
-  : QObject(),
-    run_mode(NotifyOnExit),
-    runs(false),
-    pid_(0),
-    status(0),
-    keepPrivs(false),
-    innot(0),
-    outnot(0),
-    errnot(0),
-    communication(NoCommunication),
-    input_data(0),
-    input_sent(0),
-    input_total(0)
-{
-  KProcessController::ref();
-  KProcessController::theKProcessController->addKProcess(this);
-
-  d = new KProcessPrivate;
-
-  out[0] = out[1] = -1;
-  in[0] = in[1] = -1;
-  err[0] = err[1] = -1;
-}
-
 void
 KProcess::setEnvironment(const QString &name, const QString &value)
 {
@@ -177,10 +152,10 @@ KProcess::setEnvironment(const QString &name, const QString &value)
 void
 KProcess::setWorkingDirectory(const QString &dir)
 {
-   d->wd = dir;   
-} 
+   d->wd = dir;
+}
 
-void 
+void
 KProcess::setupEnvironment()
 {
    QMap<QString,QString>::Iterator it;
@@ -847,7 +822,7 @@ int KProcess::childOutput(int fdno)
      int len;
 
      len = ::read(fdno, buffer, 1024);
-     
+
      if (len > 0) {
         buffer[len] = 0; // Just in case.
         emit receivedStdout(this, buffer, len);

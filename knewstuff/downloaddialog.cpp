@@ -151,14 +151,9 @@ DownloadDialog::~DownloadDialog()
     delete d;
 }
 
-void DownloadDialog::load()
+void DownloadDialog::load(const QString &providerList)
 {
-  m_loader->load(m_filter, d->m_providerlist);
-}
-
-void DownloadDialog::load(QString providerList)
-{
-  m_loader->load(m_filter, providerList);
+    m_loader->load(m_filter, providerList.isEmpty() ? d->m_providerlist: providerList);
 }
 
 void DownloadDialog::clear()
@@ -365,7 +360,7 @@ int DownloadDialog::installStatus(Entry *entry)
   QDate date;
   QString datestring;
   int installed;
- 
+
   kapp->config()->setGroup("KNewStuffStatus");
   datestring = kapp->config()->readEntry(entry->name());
   if(datestring.isNull()) installed = 0;

@@ -172,12 +172,7 @@ public:
    * Constructor
    * @since 3.2
    */
-  KProcess( QObject* parent, const char *name = 0 );
-
-  /**
-   * Constructor
-   */ // KDE4 merge with the above
-  KProcess();
+  KProcess( QObject* parent=0L, const char *name = 0 );
 
   /**
    *Destructor:
@@ -438,7 +433,7 @@ public:
 
   /**
    * @brief Close stdin, stdout, stderr and the pty
-   * 
+   *
    * This is the same that calling all close* functions in a row:
    * @see closeStdin, @see closeStdout, @see closeStderr and @see closePty
    */
