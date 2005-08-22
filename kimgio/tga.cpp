@@ -250,12 +250,12 @@ namespace {	// Private.
 		if( tga.flags & TGA_ORIGIN_UPPER ) {
 			y_start = 0;
 			y_step = 1;
-			y_end = tga.height - 1;
+			y_end = tga.height;
 		}
 		else {
 			y_start = tga.height - 1;
 			y_step = -1;
-			y_end = 0;
+			y_end = -1;
 		}
 
 		uchar * src = image;
