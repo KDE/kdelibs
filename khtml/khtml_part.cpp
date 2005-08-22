@@ -56,6 +56,7 @@ using namespace DOM;
 #include "khtmlview.h"
 #include <kparts/partmanager.h>
 #include "ecma/kjs_proxy.h"
+#include "ecma/kjs_window.h"
 #include "khtml_settings.h"
 #include "kjserrordlg.h"
 
@@ -243,6 +244,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
   d->m_statusBarIconLabel = 0L;
   d->m_statusBarPopupLabel = 0L;
+  d->m_openableSuppressedPopups = 0;
+  d->m_suppressedPopupOriginParts.clear();
 
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
@@ -1876,6 +1879,13 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   if (!parentPart()) {
     removeJSErrorExtension();
     setSuppressedPopupIndicator( false );
+    d->m_openableSuppressedPopups = 0;
+    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
+       KJS::Window *w = KJS::Window::retrieveWindow( part );
+       if (w)
+           w->forgetSuppressedWindows();
+    }
+    d->m_suppressedPopupOriginParts.clear();
   }
 
   // ###
@@ -7307,9 +7317,20 @@ void KHTMLPart::setDebugScript( bool enable )
 
 void KHTMLPart::setSuppressedPopupIndicator( bool enable )
 {
+    setSuppressedPopupIndicator( enable, 0 );
+}
+
+void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart )
+{
     if ( parentPart() ) {
-        parentPart()->setSuppressedPopupIndicator( enable );
+        parentPart()->setSuppressedPopupIndicator( enable, originPart );
         return;
+    }
+
+    if ( enable && originPart ) {
+        d->m_openableSuppressedPopups++;
+        if ( d->m_suppressedPopupOriginParts.find( originPart ) == -1 )
+            d->m_suppressedPopupOriginParts.append( originPart );
     }
 
     if ( enable && !d->m_statusBarPopupLabel ) {
@@ -7325,7 +7346,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
         if (d->m_settings->jsPopupBlockerPassivePopup()) {
             QPixmap px;
             px = MainBarIcon( "window_suppressed" );
-            KPassivePopup::message(i18n("Popup Window Blocked"),i18n("This page has attempted to open a popup window but was blocked.\n You can click on this icon in the status bar to control this behavior."),px,d->m_statusBarPopupLabel);
+            KPassivePopup::message(i18n("Popup Window Blocked"),i18n("This page has attempted to open a popup window but was blocked.\nYou can click on this icon in the status bar to control this behavior\nor to open the popup."),px,d->m_statusBarPopupLabel);
         }
     } else if ( !enable && d->m_statusBarPopupLabel ) {
         QToolTip::remove( d->m_statusBarPopupLabel );
@@ -7338,7 +7359,9 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
 void KHTMLPart::suppressedPopupMenu() {
   KPopupMenu *m = new KPopupMenu(0L);
   m->setCheckable(true);
-  m->insertItem(i18n("&Show Blocked Window Passive Popup Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
+  if ( d->m_openableSuppressedPopups )
+      m->insertItem(i18n("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
+  m->insertItem(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
   m->setItemChecked(57,d->m_settings->jsPopupBlockerPassivePopup());
   m->insertItem(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));
   m->popup(QCursor::pos());
@@ -7348,6 +7371,19 @@ void KHTMLPart::togglePopupPassivePopup() {
   // Same hack as in disableJSErrorExtension()
   d->m_settings->setJSPopupBlockerPassivePopup( !d->m_settings->jsPopupBlockerPassivePopup() );
   DCOPClient::mainClient()->send("konqueror*", "KonquerorIface", "reparseConfiguration()", QByteArray());
+}
+
+void KHTMLPart::showSuppressedPopups() {
+    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
+       KJS::Window *w = KJS::Window::retrieveWindow( part );
+       if (w) {
+           w->showSuppressedWindows();
+           w->forgetSuppressedWindows();
+       }
+    }
+    setSuppressedPopupIndicator( false );
+    d->m_openableSuppressedPopups = 0;
+    d->m_suppressedPopupOriginParts.clear();
 }
 
 // Extension to use for "view document source", "save as" etc.

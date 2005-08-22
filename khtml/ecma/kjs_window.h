@@ -105,6 +105,7 @@ namespace KJS {
     void goHistory(int steps);
     void goURL(ExecState* exec, const QString& url, bool lockHistory);
     Value openWindow(ExecState *exec, const List &args);
+    Value executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
@@ -142,6 +143,10 @@ namespace KJS {
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onselect, Onsubmit, Onunload };
     WindowQObject *winq;
+
+    void forgetSuppressedWindows();
+    void showSuppressedWindows();
+
   protected:
     enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
 
@@ -168,6 +173,16 @@ namespace KJS {
       QVariant param; // just in case
     };
     QValueList<DelayedAction> m_delayed;
+
+    struct SuppressedWindowInfo {
+      SuppressedWindowInfo() {}  // for QValueList
+      SuppressedWindowInfo( ExecState *e, KURL u, QString fr, QString fe ) : exec(e), url(u), frameName(fr), features(fe) {}
+      ExecState *exec;
+      KURL url;
+      QString frameName;
+      QString features;
+    };
+    QValueList<SuppressedWindowInfo> m_suppressedWindowInfo;
   };
 
   /**

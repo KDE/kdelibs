@@ -1032,9 +1032,16 @@ public:
 
   /**
    * Shows or hides the suppressed popup indicator
+   * @deprecated
    * @since 3.4
    */
   void setSuppressedPopupIndicator( bool enable );
+
+  /**
+   * Shows or hides the suppressed popup indicator
+   * @since 3.5
+   */
+  void setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart );
 
   /**
    * @internal
@@ -1490,6 +1497,11 @@ private slots:
    * @internal
    */
   void togglePopupPassivePopup();
+
+  /**
+   * @internal
+   */
+  void showSuppressedPopups();
 
   /**
    * @internal

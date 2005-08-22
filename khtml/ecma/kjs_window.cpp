@@ -1348,21 +1348,39 @@ Value Window::openWindow(ExecState *exec, const List& args)
     if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
       policy = KHTMLSettings::KJSWindowOpenAllow;
   }
+
+  QString frameName = args.size() > 1 ? args[1].toString(exec).qstring() : QString("_blank");
+
+  v = args[2];
+  QString features;
+  if (!v.isNull() && v.type() != UndefinedType && v.toString(exec).size() > 0) {
+    features = v.toString(exec).qstring();
+    // Buggy scripts have ' at beginning and end, cut those
+    if (features.startsWith("\'") && features.endsWith("\'"))
+      features = features.mid(1, features.length()-2);
+  }
+
   if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
-    part->setSuppressedPopupIndicator(true);
+    if ( url.isEmpty() )
+      part->setSuppressedPopupIndicator(true, 0);
+    else {
+      part->setSuppressedPopupIndicator(true, part);
+      m_suppressedWindowInfo.append( SuppressedWindowInfo( exec, url, frameName, features ) );
+    }
     return Undefined();
   } else {
+    return executeOpenWindow(exec, url, frameName, features);
+  }
+}
+
+Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features)
+{
+    KHTMLPart *p = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+    KHTMLView *widget = p->view();
     KParts::WindowArgs winargs;
 
     // scan feature argument
-    KJS::Value v = args[2];
-    if (!v.isNull() && v.type() != UndefinedType && v.toString(exec).size() > 0) {
-      QString features = v.toString(exec).qstring();
-
-      // Buggy scripts have ' at beginning and end, cut those
-      if (features.startsWith("\'") && features.endsWith("\'"))
-        features = features.mid(1, features.length()-2);
-
+    if (!features.isEmpty()) {
       // specifying window params means false defaults
       winargs.menuBarVisible = false;
       winargs.toolBarsVisible = false;
@@ -1427,10 +1445,8 @@ Value Window::openWindow(ExecState *exec, const List& args)
     }
 
     KParts::URLArgs uargs;
-    KHTMLPart *p = part;
-    uargs.frameName = args.size() > 1 ?
-                      args[1].toString(exec).qstring()
-                      : QString("_blank");
+    uargs.frameName = frameName;
+
     if ( uargs.frameName.lower() == "_top" )
     {
       while ( p->parentPart() )
@@ -1483,6 +1499,20 @@ Value Window::openWindow(ExecState *exec, const List& args)
       return Window::retrieve(khtmlpart); // global object
     } else
       return Undefined();
+}
+
+void Window::forgetSuppressedWindows()
+{
+  m_suppressedWindowInfo.clear();
+}
+
+void Window::showSuppressedWindows()
+{
+  QValueList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
+  m_suppressedWindowInfo.clear();
+  QValueList<SuppressedWindowInfo>::Iterator it = suppressedWindowInfo.begin();
+  for ( ; it != suppressedWindowInfo.end() ; ++it ) {
+    executeOpenWindow((*it).exec, (*it).url, (*it).frameName, (*it).features);
   }
 }
 
