@@ -244,6 +244,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_statusBarIconLabel = 0L;
   d->m_statusBarPopupLabel = 0L;
   d->m_openableSuppressedPopups = 0;
+  qDeleteAll(d->m_suppressedPopupOriginParts);
   d->m_suppressedPopupOriginParts.clear();
 
   d->m_bSecurityInQuestion = false;
@@ -7375,6 +7376,7 @@ void KHTMLPart::showSuppressedPopups() {
     }
     setSuppressedPopupIndicator( false );
     d->m_openableSuppressedPopups = 0;
+    qDeleteAll(d->m_suppressedPopupOriginParts);
     d->m_suppressedPopupOriginParts.clear();
 }
 
