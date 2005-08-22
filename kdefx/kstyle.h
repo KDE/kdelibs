@@ -293,6 +293,7 @@ protected:
         WT_SpinBox,
         WT_ComboBox,
         WT_Header,
+        WT_LineEdit,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -315,6 +316,11 @@ protected:
     ///Basic primitives, which may be used with everything
     struct Generic
     {
+        enum LayoutProp
+        {
+            DefaultFrameWidth   // The FrameWidth used by LineEdit, ... TODO: find a better place for the layoutProp
+        };
+
         enum Primitive
         {
             Bevel,
@@ -803,6 +809,22 @@ protected:
         {
             SectionHor = Generic::WidgetSpecificBase,
             SectionVert
+        };
+    };
+
+    struct LineEdit
+    {
+        /**
+        No LayoutProps for now.
+        TODO: Add FrameWidth property...
+        */
+
+        /**
+        From generic primitives, Frame is used
+         */
+        enum Primitive
+        {
+            Panel = Generic::WidgetSpecificBase     // The panel for (usually disabled) lineedits.
         };
     };
 

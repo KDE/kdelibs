@@ -74,6 +74,8 @@ static const QCOORD r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2
 KStyle::KStyle()
 {
     //Set up some default metrics...
+    setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
+
     setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin, 10);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin,    5);
     setWidgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, 2);
@@ -526,6 +528,18 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_FrameTabWidget:
         {
             drawKStylePrimitive(WT_TabWidget, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
+
+        case PE_PanelLineEdit:
+        {
+            drawKStylePrimitive(WT_LineEdit, LineEdit::Panel,option,r,pal,flags,painter,widget);
+            return;
+        }
+
+        case PE_FrameLineEdit:
+        {
+            drawKStylePrimitive(WT_LineEdit, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
     }
@@ -1579,6 +1593,9 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 {
     switch (metric)
     {
+        case PM_DefaultFrameWidth:
+            return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth);
+
         case PM_ButtonMargin:
             return 0; //Better not return anything here since we already
             //incorporated this into SE_PushButtonContents
