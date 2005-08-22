@@ -133,6 +133,8 @@ PlastikStyle::PlastikStyle() :
 //     kornMode(false),
     flatMode(false)
 {
+setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 1);
+
     // TODO: change this when double buttons are implemented
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
 
@@ -1371,6 +1373,86 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 default:
                     break;
             }
+        }
+        break;
+
+        case WT_LineEdit:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    bool isReadOnly = false;
+                    bool isEnabled = true;
+                    bool hasFocus = false;
+// TODO: fixme...
+//                     // panel is highlighted by default if it has focus, but if we have access to the
+//                     // widget itself we can try to avoid highlighting in case it's readOnly or disabled.
+//                     if (p->device() && dynamic_cast<QLineEdit*>(p->device()))
+//                     {
+//                         QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(p->device());
+//                         isReadOnly = lineEdit->isReadOnly();
+//                         isEnabled = lineEdit->isEnabled();
+//                     }
+
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+
+// TODO: fixme...
+//                     // HACK!!
+//                     //
+//                     // In order to draw nice edges in khtml, we need to paint alpha-blended.
+//                     // On the other hand, we can't paint alpha-blended in normal widgets.
+//                     //
+//                     // In this place there is no reliable way to detect if we are in khtml; the
+//                     // only thing we know is that khtml buffers its widgets into a pixmap. So
+//                     // when the paint device is a QPixmap, chances are high that we are in khtml.
+//                     // It's possible that this breaks other things, so let's see how it works...
+//                     if (p->device() && dynamic_cast<QPixmap*>(p->device() ) ) {
+//                         contourFlags += Draw_AlphaBlend;
+//                     }
+
+                    if ( _inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
+                    {
+                        renderContour(p, r, pal.background().color(),
+                                    getColor(pal,FocusHighlight,enabled), contourFlags );
+                    }
+                    else
+                    {
+                        renderContour(p, r, pal.background().color(),
+                                    getColor(pal, ButtonContour, enabled), contourFlags );
+                    }
+                    const QColor contentColor = enabled?pal.base().color():pal.background().color();
+                    if (_inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
+                    {
+                        p->setPen( getColor(pal,FocusHighlight).dark(130) );
+                    }
+                    else
+                    {
+                        p->setPen(contentColor.dark(130) );
+                    }
+                    p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2 );
+                    p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
+                    if (_inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
+                    {
+                        p->setPen( getColor(pal,FocusHighlight).light(130) );
+                    }
+                    else
+                    {
+                    p->setPen(contentColor.light(130) );
+                    }
+                    p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
+                    p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2 );
+
+                    return;
+                }
+
+                case LineEdit::Panel:
+                {
+                    // TODO
+                }
+            }
+
         }
         break;
     }
@@ -2640,69 +2722,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //             renderPanel(p, r, cg, true, sunken);
 //             break;
 //         }
-// 
-//         case PE_PanelLineEdit: {
-//             bool isReadOnly = false;
-//             bool isEnabled = true;
-//             // panel is highlighted by default if it has focus, but if we have access to the
-//             // widget itself we can try to avoid highlighting in case it's readOnly or disabled.
-//             if (p->device() && dynamic_cast<QLineEdit*>(p->device()))
-//             {
-//                 QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(p->device());
-//                 isReadOnly = lineEdit->isReadOnly();
-//                 isEnabled = lineEdit->isEnabled();
-//             }
-// 
-//             uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-//                     Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-// 
-//             // HACK!!
-//             //
-//             // In order to draw nice edges in khtml, we need to paint alpha-blended.
-//             // On the other hand, we can't paint alpha-blended in normal widgets.
-//             //
-//             // In this place there is no reliable way to detect if we are in khtml; the
-//             // only thing we know is that khtml buffers its widgets into a pixmap. So
-//             // when the paint device is a QPixmap, chances are high that we are in khtml.
-//             // It's possible that this breaks other things, so let's see how it works...
-//             if (p->device() && dynamic_cast<QPixmap*>(p->device() ) ) {
-//                 contourFlags += Draw_AlphaBlend;
-//             }
-// 
-//             if ( _inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
-//             {
-//                 renderContour(p, r, cg.background(),
-//                               getColor(cg,FocusHighlight,enabled), contourFlags );
-//             }
-//             else
-//             {
-//                 renderContour(p, r, cg.background(),
-//                               getColor(cg, ButtonContour, enabled), contourFlags );
-//             }
-//             const QColor contentColor = enabled?cg.base():cg.background();
-//             if (_inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
-//             {
-//                 p->setPen( getColor(cg,FocusHighlight).dark(130) );
-//             }
-//             else
-//             {
-//                 p->setPen(contentColor.dark(130) );
-//             }
-//             p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2 );
-//             p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
-//             if (_inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
-//             {
-//                 p->setPen( getColor(cg,FocusHighlight).light(130) );
-//             }
-//             else
-//             {
-//               p->setPen(contentColor.light(130) );
-//             }
-//             p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
-//             p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2 );
-//             break;
-//         }
-// 
+
 //         case PE_StatusBarSection: {
 //             renderContour(p, r, cg.background(), cg.background().dark(160),
 //                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
