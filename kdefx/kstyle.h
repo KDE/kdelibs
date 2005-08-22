@@ -294,6 +294,7 @@ protected:
         WT_ComboBox,
         WT_Header,
         WT_LineEdit,
+        WT_GroupBox,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -825,6 +826,17 @@ protected:
         {
             Panel     // The panel for (usually disabled) lineedits.
         };
+    };
+
+    struct GroupBox
+    {
+        /**
+        No LayoutProps for now.
+        */
+
+        /**
+        From generic primitives, Frame is used
+         */
     };
 
     ///Interface for the style to configure various metrics that KStyle has customizable.

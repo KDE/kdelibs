@@ -542,6 +542,12 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             drawKStylePrimitive(WT_LineEdit, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
+
+        case PE_FrameGroupBox:
+        {
+            drawKStylePrimitive(WT_GroupBox, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
     }
     
     QCommonStyle::drawPrimitive(elem, option, painter, widget);
