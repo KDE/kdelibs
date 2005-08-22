@@ -1437,6 +1437,21 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         }
         break;
+
+        case WT_GroupBox:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    renderPanel(p, r, pal, false);
+
+                    return;
+                }
+            }
+
+        }
+        break;
     }
 
 
@@ -2686,17 +2701,7 @@ void PlastikStyle::renderTab(QPainter *p,
 // 
 //             break;
 //         }
-// 
-// 
-//         case PE_PanelGroupBox:
-//         case PE_GroupBoxFrame: {
-//             if ( opt.isDefault() || opt.lineWidth() <= 0 )
-//                 break;
-//             renderPanel(p, r, cg, false);
-// 
-//             break;
-//         }
-// 
+
 //         case PE_WindowFrame:
 //         case PE_Panel: {
 //             if ( opt.isDefault() || opt.lineWidth() <= 0 )
