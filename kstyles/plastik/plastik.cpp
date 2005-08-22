@@ -133,7 +133,7 @@ PlastikStyle::PlastikStyle() :
 //     kornMode(false),
     flatMode(false)
 {
-setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 1);
+    setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
 
     // TODO: change this when double buttons are implemented
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
