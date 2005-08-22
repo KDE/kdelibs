@@ -150,6 +150,8 @@ PlastikStyle::PlastikStyle() :
 
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
 
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
+
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
 
@@ -801,14 +803,14 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
-        case WT_Tab:
+        case WT_TabBar:
         {
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
 
             switch (primitive)
             {
-                case Tab::NorthTab:
-                case Tab::SouthTab:
+                case TabBar::NorthTab:
+                case TabBar::SouthTab:
                 {
                     // TODO: check if tabOpt != 0...
                     QStyleOptionTab::TabPosition pos = tabOpt->position;

@@ -130,8 +130,12 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
                             ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
 
-    setWidgetLayoutProp(WT_Tab, Tab::ContentsMargin, 6);
-    setWidgetLayoutProp(WT_Tab, Tab::FocusMargin, 3);
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabContentsMargin, 6);
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabFocusMargin, 3);
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 0);
+    setWidgetLayoutProp(WT_TabBar, TabBar::BaseHeight, 2);
+    setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
+    setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
 
     setWidgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, 9);
 
@@ -505,6 +509,16 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_IndicatorHeaderArrow:
         {
             drawKStylePrimitive(WT_Header, (flags&State_UpArrow)?Generic::ArrowUp:Generic::ArrowDown, option, r, pal, flags, painter, widget);
+            return;
+        }
+        case PE_FrameTabBarBase:
+        {
+            drawKStylePrimitive(WT_TabBar, TabBar::BaseFrame,option,r,pal,flags,painter,widget);
+            return;
+        }
+        case PE_IndicatorTabTear:
+        {
+            drawKStylePrimitive(WT_TabBar, TabBar::ScrollButton,option,r,pal,flags,painter,widget);
             return;
         }
     }
@@ -1363,16 +1377,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             switch (tabSide(tabOpt))
             {
             case North:
-                prim = Tab::NorthTab; break;
+                prim = TabBar::NorthTab; break;
             case South:
-                prim = Tab::SouthTab; break;
+                prim = TabBar::SouthTab; break;
             case East:
-                prim = Tab::EastTab; break;
+                prim = TabBar::EastTab; break;
             default:
-                prim = Tab::WestTab; break;
+                prim = TabBar::WestTab; break;
             }
 
-            drawKStylePrimitive(WT_Tab, prim, option, r, pal, flags, p, widget);
+            drawKStylePrimitive(WT_TabBar, prim, option, r, pal, flags, p, widget);
 
             break;
         }
@@ -1383,7 +1397,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (!tabOpt) return;
 
             //First, we get our content region.
-            QRect labelRect = marginAdjustedTab(tabOpt, Tab::ContentsMargin);
+            QRect labelRect = marginAdjustedTab(tabOpt, TabBar::TabContentsMargin);
 
             Side tabSd = tabSide(tabOpt);
             
@@ -1399,7 +1413,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 if (tabOpt->text.isNull())
                 {
                     //Icon only. Easy.
-                    drawKStylePrimitive(WT_Tab, Generic::Icon, option, labelRect,
+                    drawKStylePrimitive(WT_TabBar, Generic::Icon, option, labelRect,
                                         pal, flags, p, widget, &icoOpt);
                     return;
                 }
@@ -1419,7 +1433,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                         //Adjust the text rect.
                         labelRect.setLeft(labelRect.x() + iconSize +
-                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
                     }
                     else
                     {
@@ -1429,7 +1443,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                         //Adjust the text rect
                         labelRect.setWidth(labelRect.width() - iconSize -
-                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
                     }
                 }
                 else
@@ -1445,19 +1459,19 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         iconRect = QRect(labelRect.x(), labelRect.y(),
                                          labelRect.width(), iconSize);
                         labelRect.setTop(labelRect.x() + iconSize +
-                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
                     }
                     else
                     {
                         iconRect = QRect(labelRect.x(), labelRect.height() - iconSize,
                                          labelRect.width(), iconSize);
                         labelRect.setHeight(labelRect.height() - iconSize -
-                            widgetLayoutProp(WT_Tab, Tab::TextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
                     }
                 }
 
                 //Draw the thing
-                drawKStylePrimitive(WT_Tab, Generic::Icon, option, iconRect,
+                drawKStylePrimitive(WT_TabBar, Generic::Icon, option, iconRect,
                                     pal, flags, p, widget, &icoOpt);
             } //if have icon.
 
@@ -1470,7 +1484,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     case South:
                     {
                         TextOption lbOpt(tabOpt->text);
-                        drawKStylePrimitive(WT_Tab, Generic::Text, option, labelRect,
+                        drawKStylePrimitive(WT_TabBar, Generic::Text, option, labelRect,
                                             pal, flags, p, widget, &lbOpt);
                         break;
                     }
@@ -1484,8 +1498,8 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //If need be, draw focus rect
             if (tabOpt->state & State_HasFocus)
             {
-                QRect focusRect = marginAdjustedTab(tabOpt, Tab::FocusMargin);
-                drawKStylePrimitive(WT_Tab, Generic::FocusIndicator, option, focusRect,
+                QRect focusRect = marginAdjustedTab(tabOpt, TabBar::TabFocusMargin);
+                drawKStylePrimitive(WT_TabBar, Generic::FocusIndicator, option, focusRect,
                                     pal, flags, p, widget);
             }
             return;
@@ -1650,11 +1664,23 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
                     return 0;
             }
             
-            return widgetLayoutProp(WT_Tab, Tab::TextToIconSpace);
+            return widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace);
         }
 
         case PM_TabBarTabVSpace:
             return 0;
+
+        case PM_TabBarBaseHeight:
+            return widgetLayoutProp(WT_TabBar, TabBar::BaseHeight);
+
+        case PM_TabBarBaseOverlap:
+            return widgetLayoutProp(WT_TabBar, TabBar::BaseOverlap);
+
+        case PM_TabBarTabOverlap:
+            return widgetLayoutProp(WT_TabBar, TabBar::TabOverlap);
+
+        case PM_TabBarScrollButtonWidth:
+            return widgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth);
 
         case PM_SliderControlThickness:
             return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
@@ -1739,7 +1765,7 @@ QRect KStyle::marginAdjustedTab(const QStyleOptionTab* tabOpt, int property) con
     QRect idializedGeometry = vertical ? QRect(0, 0, r.height(), r.width())
                                         : QRect(0, 0, r.width(),  r.height());
 
-    QRect contentArea = insideMargin(idializedGeometry, WT_Tab, property);
+    QRect contentArea = insideMargin(idializedGeometry, WT_TabBar, property);
 
     int leftMargin  = contentArea.x();
     int rightMargin = idializedGeometry.width() - 1 - contentArea.right();
@@ -2715,7 +2741,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             //With our PM_TabBarTabHSpace/VSpace, Qt should give us what we want for
             //contentsSize, so we just expand that. Qt also takes care of
             //the vertical thing.
-            return expandDim(contentsSize, WT_Tab, Tab::ContentsMargin);
+            return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin);
 
         case CT_HeaderSection:
         {

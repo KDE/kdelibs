@@ -553,13 +553,13 @@ public:
 
 			}
 
-			case WT_Tab:
+			case WT_TabBar:
 			{
 				const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
 				switch (primitive)
 				{
-					case Tab::NorthTab:
-					case Tab::SouthTab:
+					case TabBar::NorthTab:
+					case TabBar::SouthTab:
 					{
 						QStyleOptionTab::TabPosition pos = tabOpt->position;
 						//Adjust for RTL
@@ -579,7 +579,7 @@ public:
 							if (pos != QStyleOptionTab::End)
 									tabRect.setWidth( tabRect.width() + 1);
 	
-							Keramik::ActiveTabPainter(primitive == Tab::SouthTab).draw(p, tabRect,
+							Keramik::ActiveTabPainter(primitive == TabBar::SouthTab).draw(p, tabRect,
 									pal.button().color().light(110), pal.background().color(),
 									disabled);
 						}
@@ -587,7 +587,7 @@ public:
 						{
 							int x, y, w, h;
 							r.getRect(&x, &y, &w, &h);
-							if (primitive == Tab::SouthTab)
+							if (primitive == TabBar::SouthTab)
 							{
 								Keramik::InactiveTabPainter(pos, true).draw(
 									p, x, y, w, h - 3, pal.button().color(), pal.background().color(),

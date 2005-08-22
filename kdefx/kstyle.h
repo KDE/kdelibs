@@ -286,7 +286,7 @@ protected:
         WT_Menu,
         WT_MenuItem,
         WT_ScrollBar,
-        WT_Tab,
+        WT_TabBar,
         WT_Slider,
         WT_Tree,
         WT_SpinBox,
@@ -598,7 +598,7 @@ protected:
         };
     };
 
-    struct Tab
+    struct TabBar
     {
         /**
          Each tab is basically built hiearchically out of the following areas:
@@ -615,9 +615,13 @@ protected:
         */
         enum LayoutProp
         {
-            ContentsMargin,
-            FocusMargin     = ContentsMargin + MarginInc,
-            TextToIconSpace = FocusMargin    + MarginInc
+            TabContentsMargin,
+            TabFocusMargin     = TabContentsMargin + MarginInc,
+            TabTextToIconSpace = TabFocusMargin    + MarginInc,
+            TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
+            BaseHeight,
+            BaseOverlap,
+            ScrollButtonWidth
         };
     
         /**
@@ -630,7 +634,9 @@ protected:
             NorthTab,
             EastTab,
             WestTab,
-            SouthTab
+            SouthTab,
+            BaseFrame,
+            ScrollButton
         };
     };
 
