@@ -233,13 +233,13 @@ protected:
                         bool enabled, bool mouseOver, int primitive) const;
     void renderRadioButton(QPainter *p, const QRect &r, const QPalette &pal,
                            bool enabled, bool mouseOver, int primitive) const;
-// 
-//     void renderPanel(QPainter *p,
-//                      const QRect &r,
-//                      const QColorGroup &g,
-//                      const bool pseudo3d = true,
-//                      const bool sunken = true) const;
-// 
+
+    void renderPanel(QPainter *p,
+                     const QRect &r,
+                     const QPalette &pal,
+                     const bool pseudo3d = true,
+                     const bool sunken = true) const;
+
     void renderDot(QPainter *p,
                    const QPoint &point,
                    const QColor &baseColor,

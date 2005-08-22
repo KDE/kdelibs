@@ -152,6 +152,8 @@ PlastikStyle::PlastikStyle() :
 
     setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
 
+    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
+
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
 
@@ -822,6 +824,23 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     return;
 
+                }
+
+                // TODO: TabBar::EastTab, TabBar::WestTab, TabBar::BaseFrame, TabBar::ScrollButton
+
+            }
+
+        }
+        break;
+
+        case WT_TabWidget:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    renderPanel(p, r, pal, true, flags&State_Sunken);
+                    return;
                 }
 
             }
@@ -2239,56 +2258,56 @@ void PlastikStyle::renderGradient(QPainter *painter,
     if(!insertOk)
         delete result;
 }
-// 
-// void PlastikStyle::renderPanel(QPainter *p,
-//                               const QRect &r,
-//                               const QColorGroup &g,
-//                               const bool pseudo3d,
-//                               const bool sunken) const
-// {
-//     int x, x2, y, y2, w, h;
-//     r.rect(&x,&y,&w,&h);
-//     r.coords(&x, &y, &x2, &y2);
-// 
+
+void PlastikStyle::renderPanel(QPainter *p,
+                              const QRect &r,
+                              const QPalette &pal,
+                              const bool pseudo3d,
+                              const bool sunken) const
+{
+    int x, x2, y, y2, w, h;
+    r.rect(&x,&y,&w,&h);
+    r.coords(&x, &y, &x2, &y2);
+
 //     if (kickerMode &&
 //             p->device() && p->device()->devType() == QInternal::Widget &&
 //             Q3CString(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
 //     //  Stolen wholesale from Keramik. I don't like it, but oh well.
 //         if (sunken) {
 //             const QCOORD corners[] = { x2, y, x2, y2, x, y2, x, y };
-//             p->setPen(g.background().dark());
+//             p->setPen(pal.background().color().dark());
 //             p->drawConvexPolygon(Q3PointArray(4, corners));
-//             p->setPen(g.background().light());
+//             p->setPen(pal.background().color().light());
 //             p->drawPolyline(Q3PointArray(4, corners), 0, 3);
 //         } else {
 //             const QCOORD corners[] = { x, y2, x, y, x2, y, x2, y2 };
-//             p->setPen(g.background().dark());
+//             p->setPen(pal.background().color().dark());
 //             p->drawPolygon(Q3PointArray(4, corners));
-//             p->setPen(g.background().light());
+//             p->setPen(pal.background().color().light());
 //             p->drawPolyline(Q3PointArray(4, corners), 0, 3);
 //         }
 //     } else {
-//         renderContour(p, r, g.background(), getColor(g, PanelContour) );
-// 
-//         if(pseudo3d) {
-//             if (sunken) {
-//                 p->setPen(getColor(g, PanelDark) );
-//             } else {
-//                 p->setPen(getColor(g, PanelLight) );
-//             }
-//             p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1);
-//             p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
-//             if (sunken) {
-//                 p->setPen(getColor(g, PanelLight) );
-//             } else {
-//                 p->setPen(getColor(g, PanelDark) );
-//             }
-//             p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1);
-//             p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
-//         }
+        renderContour(p, r, pal.background().color(), getColor(pal, PanelContour) );
+
+        if(pseudo3d) {
+            if (sunken) {
+                p->setPen(getColor(pal, PanelDark) );
+            } else {
+                p->setPen(getColor(pal, PanelLight) );
+            }
+            p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1);
+            p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
+            if (sunken) {
+                p->setPen(getColor(pal, PanelLight) );
+            } else {
+                p->setPen(getColor(pal, PanelDark) );
+            }
+            p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1);
+            p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
+        }
 //     }
-// }
-// 
+}
+
 // void PlastikStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
 //     const Q3PopupMenu* /* popup */ ) const
 // {
@@ -2689,12 +2708,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
 //             break;
 //         }
-// 
-//         case PE_TabBarBase: // Still not sure what this one does
-//         case PE_PanelTabWidget: {
-//             renderPanel(p, r, cg, true, sunken);
-//             break;
-//         }
+
 //     // MENU / TOOLBAR PANEL
 //     // --------------------
 //         case PE_PanelMenuBar:
