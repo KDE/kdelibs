@@ -323,7 +323,7 @@ protected:
 
         enum Primitive
         {
-            Bevel,
+            Bevel = 0xFFFF,
             Text,        //Passes in TextOption
             Icon,        //Passes in IconOption
             FocusIndicator,
@@ -331,8 +331,7 @@ protected:
             ArrowUp,    //Note: the arrows are centering primitives
             ArrowDown,
             ArrowRight,
-            ArrowLeft,
-            WidgetSpecificBase = 0xFFFF
+            ArrowLeft
         };
     };
     
@@ -372,7 +371,7 @@ protected:
         
         enum Primitive
         {
-            DefaultButtonBevel = Generic::WidgetSpecificBase
+            DefaultButtonBevel
         };
     };
 
@@ -404,7 +403,7 @@ protected:
         
         enum Primitive
         {
-            CheckOff = Generic::WidgetSpecificBase,
+            CheckOff,
             CheckOn,
             CheckTriState
         };
@@ -425,7 +424,7 @@ protected:
         
         enum Primitive
         {
-            RadioOff = Generic::WidgetSpecificBase,
+            RadioOff,
             RadioOn
         };
     };
@@ -459,7 +458,7 @@ protected:
     
         enum Primitive
         {
-            Indicator = Generic::WidgetSpecificBase,
+            Indicator,
             BusyIndicator
         };
     };
@@ -503,7 +502,7 @@ protected:
 
         enum Primitive
         {
-            Background = Generic::WidgetSpecificBase, //Menu and menu item background
+            Background, //Menu and menu item background
             TearOff,
             Scroller
         };
@@ -554,7 +553,7 @@ protected:
 
         enum Primitive
         {
-            CheckColumn = Generic::WidgetSpecificBase, //Background of the checkmark/icon column
+            CheckColumn, //Background of the checkmark/icon column
             CheckOn,     //The checkmark - on
             CheckOff,    //The checkmark - off
             RadioOn,     //The checkmark of exclusive actions - on
@@ -592,7 +591,7 @@ protected:
             //Note: when drawing the double-buttons, you need to check
             //the active subcontrol inside the QStyleOption, to determine
             //which half is active.
-            SingleButtonVert = Generic::WidgetSpecificBase, //Used to draw a 1-button bevel, vertical
+            SingleButtonVert, //Used to draw a 1-button bevel, vertical
             SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
             DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
             DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
@@ -636,8 +635,8 @@ protected:
         */
         enum Primitive
         {
-            EastText  = Generic::WidgetSpecificBase, //Special rotated text for east tabs.
-            WestText,                                //Special rotated text for west tabs.
+            EastText, //Special rotated text for east tabs.
+            WestText, //Special rotated text for west tabs.
             NorthTab,
             EastTab,
             WestTab,
@@ -677,10 +676,10 @@ protected:
         */
         enum Primitive
         {
-            HandleVert = Generic::WidgetSpecificBase,   // A vertical slider handle
-            HandleHor,                                  // A horizontal slider handle
-            GrooveVert,                                 // A vertical slider groove
-            GrooveHor                                   // A horizontal slider groove
+            HandleVert,   // A vertical slider handle
+            HandleHor,    // A horizontal slider handle
+            GrooveVert,   // A vertical slider groove
+            GrooveHor     // A horizontal slider groove
         };
     };
 
@@ -705,7 +704,7 @@ protected:
     
         enum Primitive
         {
-            ExpanderClosed = Generic::WidgetSpecificBase,
+            ExpanderClosed,
             ExpanderOpen,
             HorizontalBranch,
             VerticalBranch
@@ -747,7 +746,7 @@ protected:
         */
         enum Primitive
         {
-            EditField = Generic::WidgetSpecificBase,
+            EditField,
             UpButton,
             DownButton,
             PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
@@ -788,7 +787,7 @@ protected:
          */
         enum Primitive
         {
-            EditField = Generic::WidgetSpecificBase,
+            EditField,
             Button
         };
     };
@@ -807,7 +806,7 @@ protected:
          */
         enum Primitive
         {
-            SectionHor = Generic::WidgetSpecificBase,
+            SectionHor,
             SectionVert
         };
     };
@@ -824,7 +823,7 @@ protected:
          */
         enum Primitive
         {
-            Panel = Generic::WidgetSpecificBase     // The panel for (usually disabled) lineedits.
+            Panel     // The panel for (usually disabled) lineedits.
         };
     };
 
