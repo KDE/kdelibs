@@ -1006,10 +1006,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //             SFlags sflags = flags;
 //             PrimitiveElement pe;
 
-            // TODO: focus highlight
-            bool hasFocus = false;
-//             if (sw)
-//                 hasFocus = sw->hasFocus();
+            bool hasFocus = flags & State_HasFocus;
 
             const QColor buttonColor = enabled?pal.button().color():pal.background().color();
             const QColor inputColor = enabled?pal.base().color():pal.background().color();
@@ -1149,8 +1146,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt) )
                 editable = cb->editable;
 
-            // TODO: focus highlight
-            bool hasFocus = false;
+            bool hasFocus = flags & State_HasFocus;
 
             const QColor buttonColor = enabled?pal.button().color():pal.background().color();
             const QColor inputColor = enabled?(editable?pal.base().color():pal.button().color() ):pal.background().color();
@@ -1383,8 +1379,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 case Generic::Frame:
                 {
                     bool isReadOnly = false;
-                    bool isEnabled = true;
-                    bool hasFocus = false;
+                    bool isEnabled = flags & State_Enabled;
+                    bool hasFocus = flags & State_HasFocus;
+
 // TODO: fixme...
 //                     // panel is highlighted by default if it has focus, but if we have access to the
 //                     // widget itself we can try to avoid highlighting in case it's readOnly or disabled.
@@ -1392,25 +1389,10 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //                     {
 //                         QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(p->device());
 //                         isReadOnly = lineEdit->isReadOnly();
-//                         isEnabled = lineEdit->isEnabled();
 //                     }
 
                     uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-
-// TODO: fixme...
-//                     // HACK!!
-//                     //
-//                     // In order to draw nice edges in khtml, we need to paint alpha-blended.
-//                     // On the other hand, we can't paint alpha-blended in normal widgets.
-//                     //
-//                     // In this place there is no reliable way to detect if we are in khtml; the
-//                     // only thing we know is that khtml buffers its widgets into a pixmap. So
-//                     // when the paint device is a QPixmap, chances are high that we are in khtml.
-//                     // It's possible that this breaks other things, so let's see how it works...
-//                     if (p->device() && dynamic_cast<QPixmap*>(p->device() ) ) {
-//                         contourFlags += Draw_AlphaBlend;
-//                     }
 
                     if ( _inputFocusHighlight && hasFocus && !isReadOnly && isEnabled)
                     {
