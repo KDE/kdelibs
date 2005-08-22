@@ -1879,7 +1879,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     removeJSErrorExtension();
     setSuppressedPopupIndicator( false );
     d->m_openableSuppressedPopups = 0;
-    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
+    foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
        KJS::Window *w = KJS::Window::retrieveWindow( part );
        if (w)
            w->forgetSuppressedWindows();
@@ -7321,7 +7321,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
     if ( enable && originPart ) {
         d->m_openableSuppressedPopups++;
-        if ( d->m_suppressedPopupOriginParts.find( originPart ) == -1 )
+        if ( d->m_suppressedPopupOriginParts.indexOf( originPart ) == -1 )
             d->m_suppressedPopupOriginParts.append( originPart );
     }
 
@@ -7366,7 +7366,7 @@ void KHTMLPart::togglePopupPassivePopup() {
 }
 
 void KHTMLPart::showSuppressedPopups() {
-    for ( KHTMLPart* part = d->m_suppressedPopupOriginParts.first(); part; part = d->m_suppressedPopupOriginParts.next() ) {
+    foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
        KJS::Window *w = KJS::Window::retrieveWindow( part );
        if (w) {
            w->showSuppressedWindows();

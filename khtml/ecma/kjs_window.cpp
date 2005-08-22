@@ -1366,7 +1366,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
 
 Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString& frameName, const QString& features)
 {
-    KHTMLPart *p = ::qt_cast<KHTMLPart *>(m_frame->m_part);
+    KHTMLPart *p = qobject_cast<KHTMLPart *>(m_frame->m_part);
     KHTMLView *widget = p->view();
     KParts::WindowArgs winargs;
 
@@ -1499,11 +1499,10 @@ void Window::forgetSuppressedWindows()
 
 void Window::showSuppressedWindows()
 {
-  QValueList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
+  QList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
   m_suppressedWindowInfo.clear();
-  QValueList<SuppressedWindowInfo>::Iterator it = suppressedWindowInfo.begin();
-  for ( ; it != suppressedWindowInfo.end() ; ++it ) {
-    executeOpenWindow((*it).exec, (*it).url, (*it).frameName, (*it).features);
+  foreach ( SuppressedWindowInfo info, suppressedWindowInfo ) {
+    executeOpenWindow(info.exec, info.url, info.frameName, info.features);
   }
 }
 
