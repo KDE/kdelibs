@@ -137,6 +137,8 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
 
+    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
+
     setWidgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, 9);
 
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20);
@@ -519,6 +521,11 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_IndicatorTabTear:
         {
             drawKStylePrimitive(WT_TabBar, TabBar::ScrollButton,option,r,pal,flags,painter,widget);
+            return;
+        }
+        case PE_FrameTabWidget:
+        {
+            drawKStylePrimitive(WT_TabWidget, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
     }
@@ -1944,6 +1951,21 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             //The same as the contents area..
             return subElementRect(SE_PushButtonContents, option, widget);
         }
+
+
+// TODO: this does work and set the correct contents rect. but then, PE_FrameTabWidget
+//       rect is painted _around_ the contents, with 2 pixel frame width. the 2 pixel-hardcoding
+//       doesn't seem to have an end, so it would probably be easier to ask the Trolls to offer
+//       a PM_TabWidgetFrameWidth.
+//         case SE_TabWidgetTabPane:
+//         case SE_TabWidgetTabContents:
+//         {
+//             // QCommonStyle always assumes a frame width of 2. For a custom frame width, we can
+//             // simply re-adjust the rect and don't need to calculate the rect ourself.
+//             QRect contents = QCommonStyle::subElementRect(sr, option, widget).adjusted(-2,-2,2,2);
+//             int fw = widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth);
+//             return contents.adjusted(fw,fw,-fw,-fw);
+//         }
     }
     
     return QCommonStyle::subElementRect(sr, option, widget);
@@ -2742,6 +2764,13 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             //contentsSize, so we just expand that. Qt also takes care of
             //the vertical thing.
             return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin);
+
+// TODO: see SE_TabWidgetTabContents comment.
+//         case CT_TabWidget:
+//         {
+//             return contentsSize + QSize (2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth),
+//                                          2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth) );
+//         }
 
         case CT_HeaderSection:
         {

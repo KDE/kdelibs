@@ -287,6 +287,7 @@ protected:
         WT_MenuItem,
         WT_ScrollBar,
         WT_TabBar,
+        WT_TabWidget,
         WT_Slider,
         WT_Tree,
         WT_SpinBox,
@@ -619,9 +620,9 @@ protected:
             TabFocusMargin     = TabContentsMargin + MarginInc,
             TabTextToIconSpace = TabFocusMargin    + MarginInc,
             TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
-            BaseHeight,
-            BaseOverlap,
-            ScrollButtonWidth
+            BaseHeight,        // The height of the tabBar's base. usually the frame width.
+            BaseOverlap,       // The number of pixels the tabs overlap with the base (i.e. tabWidget frame).
+            ScrollButtonWidth  // Buttons which are shown when there's not enough space for tabs.
         };
     
         /**
@@ -638,6 +639,21 @@ protected:
             BaseFrame,
             ScrollButton
         };
+    };
+
+    struct TabWidget
+    {
+        /**
+
+        */
+        enum LayoutProp
+        {
+            FrameWidth      // TODO: this is ignored for now. See SE_TabWidgetTabContents comment.
+        };
+
+        /**
+         From generic primitives, Frame is used
+        */
     };
 
     struct Slider
