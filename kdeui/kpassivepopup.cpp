@@ -205,8 +205,12 @@ void KPassivePopup::show()
 
     if ( d->fixedPosition.isNull() )
 	positionSelf();
-    else
-	setAnchor( d->fixedPosition );
+    else {
+	if( d->popupStyle == Balloon )
+	    setAnchor( d->fixedPosition );
+	else
+	    move( d->fixedPosition );
+    }
     Q3Frame::show();
 
     int delay = hideDelay;
