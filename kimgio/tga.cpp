@@ -128,11 +128,6 @@ namespace {	// Private.
 		ushort r : 5;
 	};
 	
-	static bool HasAlpha( const TgaHeader & tga )
-	{
-		return tga.pixel_size == 32;
-	}
-
 	struct TgaHeaderInfo {
 		bool rle;
 		bool pal;
@@ -190,8 +185,10 @@ namespace {	// Private.
 			return false;
 		}
 		
-		// Enable alpha buffer for transparent images.
-		if( HasAlpha( tga ) ) {
+                // Bits 0-3 are the numbers of alpha bits (can be zero!)
+                const int numAlphaBits = tga.flags & 0xf;
+                // However alpha exists only in the 32 bit format.
+		if( tga.pixel_size == 32 && tga.flags ) {
 			img.setAlphaBuffer( true );
 		}
 
@@ -259,7 +256,7 @@ namespace {	// Private.
 		}
 
 		uchar * src = image;
-
+               
 		for( int y = y_start; y != y_end; y += y_step ) {
 			QRgb * scanline = (QRgb *) img.scanLine( y );
 		
@@ -294,7 +291,9 @@ namespace {	// Private.
 				}
 				else if( tga.pixel_size == 32 ) {
 					for( int x = 0; x < tga.width; x++ ) {
-						scanline[x] = qRgba( src[2], src[1], src[0], src[3] );
+                                                // ### TODO: verify with images having really some alpha data
+                                                const uchar alpha = ( src[3] << ( 8 - numAlphaBits ) );
+						scanline[x] = qRgba( src[2], src[1], src[0], alpha );
 						src += 4;
 					}
 				}
