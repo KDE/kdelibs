@@ -290,7 +290,7 @@ private:
     bool _scrollBarLines;
     bool _animateProgressBar;
 //     bool _drawToolBarSeparator;
-//     bool _drawToolBarItemSeparator;
+    bool _drawToolBarItemSeparator;
     bool _drawFocusRect;
     bool _drawTriangularExpander;
     bool _inputFocusHighlight;

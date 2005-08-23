@@ -174,6 +174,13 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
 
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, 1);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, 1);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, 0);
+
+    setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 4);
+    setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
+
 //     hoverWidget = 0;
 //     hoverTab = 0;
 // 
@@ -189,7 +196,7 @@ PlastikStyle::PlastikStyle() :
     _scrollBarLines = settings.readBoolEntry("/scrollBarLines", false);
     _animateProgressBar = settings.readBoolEntry("/animateProgressBar", false);
 //     _drawToolBarSeparator = settings.readBoolEntry("/drawToolBarSeparator", true);
-//     _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
+    _drawToolBarItemSeparator = settings.readBoolEntry("/drawToolBarItemSeparator", true);
     _drawFocusRect = settings.readBoolEntry("/drawFocusRect", true);
     _drawTriangularExpander = settings.readBoolEntry("/drawTriangularExpander", false);
     _inputFocusHighlight = settings.readBoolEntry("/inputFocusHighlight", true);
@@ -1450,6 +1457,83 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
             }
 
+        }
+        break;
+
+        case WT_ToolBar:
+        {
+            switch (primitive)
+            {
+                case ToolBar::Handle:
+                {
+                    int counter = 1;
+
+                    if(flags & State_Horizontal) {
+                        int center = r.left()+r.width()/2;
+                        for(int j = r.top()+2; j <= r.bottom()-3; j+=3) {
+                            if(counter%2 == 0) {
+                                renderDot(p, QPoint(center+1, j), pal.background().color(), true, true);
+                            } else {
+                                renderDot(p, QPoint(center-2, j), pal.background().color(), true, true);
+                            }
+                            counter++;
+                        }
+                    } else {
+                        int center = r.top()+r.height()/2;
+                        for(int j = r.left()+2; j <= r.right()-3; j+=3) {
+                            if(counter%2 == 0) {
+                                renderDot(p, QPoint(j, center+1), pal.background().color(), true, true);
+                            } else {
+                                renderDot(p, QPoint(j, center-2), pal.background().color(), true, true);
+                            }
+                            counter++;
+                        }
+                    }
+
+                    return;
+                }
+
+                case ToolBar::Separator:
+                {
+                    if(_drawToolBarItemSeparator) {
+                        if(flags & State_Horizontal) {
+                            int center = r.left()+r.width()/2;
+                            p->setPen( getColor(pal, PanelDark) );
+                            p->drawLine( center-1, r.top()+3, center-1, r.bottom()-3 );
+                            p->setPen( getColor(pal, PanelLight) );
+                            p->drawLine( center, r.top()+3, center, r.bottom()-3 );
+                        } else {
+                            int center = r.top()+r.height()/2;
+                            p->setPen( getColor(pal, PanelDark) );
+                            p->drawLine( r.x()+3, center-1, r.right()-3, center-1 );
+                            p->setPen( getColor(pal, PanelLight) );
+                            p->drawLine( r.x()+3, center, r.right()-3, center );
+                        }
+                    }
+
+                    return;
+                }
+
+                case ToolBar::Panel:
+                {
+                    return;
+                }
+            }
+        }
+        break;
+
+        case WT_ToolButton:
+        {
+            switch (primitive)
+            {
+                case Generic::Bevel:
+                {
+                    if (flags&State_Enabled)
+                        renderButton(p, r, pal, flags&State_Sunken||flags&State_On);
+
+                    return;
+                }
+            }
         }
         break;
     }
@@ -2743,67 +2827,6 @@ void PlastikStyle::renderTab(QPainter *p,
 // 
 //             break;
 //         }
-// 
-//     // TOOLBAR/DOCK WINDOW HANDLE
-//     // --------------------------
-//         case PE_DockWindowResizeHandle: {
-//             renderButton(p, r, cg);
-//             break;
-//         }
-// 
-//         case PE_DockWindowHandle: {
-// 
-//             int counter = 1;
-// 
-//             if(horiz) {
-//                 int center = r.left()+r.width()/2;
-//                 for(int j = r.top()+2; j <= r.bottom()-3; j+=3) {
-//                     if(counter%2 == 0) {
-//                         renderDot(p, QPoint(center+1, j), cg.background(), true, true);
-//                     } else {
-//                         renderDot(p, QPoint(center-2, j), cg.background(), true, true);
-//                     }
-//                     counter++;
-//                 }
-//             } else {
-//                 int center = r.top()+r.height()/2;
-//                 for(int j = r.left()+2; j <= r.right()-3; j+=3) {
-//                     if(counter%2 == 0) {
-//                         renderDot(p, QPoint(j, center+1), cg.background(), true, true);
-//                     } else {
-//                         renderDot(p, QPoint(j, center-2), cg.background(), true, true);
-//                     }
-//                     counter++;
-//                 }
-//             }
-// 
-//             break;
-//         }
-// 
-//     // TOOLBAR SEPARATOR
-//     // -----------------
-//         case PE_DockWindowSeparator: {
-//             p->fillRect(r, cg.background());
-// 
-//             if(_drawToolBarItemSeparator) {
-//                 if(horiz) {
-//                     int center = r.left()+r.width()/2;
-//                     p->setPen( getColor(cg, PanelDark) );
-//                     p->drawLine( center-1, r.top()+3, center-1, r.bottom()-3 );
-//                     p->setPen( getColor(cg, PanelLight) );
-//                     p->drawLine( center, r.top()+3, center, r.bottom()-3 );
-//                 } else {
-//                     int center = r.top()+r.height()/2;
-//                     p->setPen( getColor(cg, PanelDark) );
-//                     p->drawLine( r.x()+3, center-1, r.right()-3, center-1 );
-//                     p->setPen( getColor(cg, PanelLight) );
-//                     p->drawLine( r.x()+3, center, r.right()-3, center );
-//                 }
-//             }
-//             break;
-//         }
-// 
-
 
 // 
 //         default: {
@@ -2913,12 +2936,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //         case PM_MenuBarItemSpacing: {
 //             return 6;
 //         }
-// 
-// //     // extra space between toolbar items
-// //         case PM_ToolBarItemSpacing: {
-// //             return 4;
-// //         }
-// 
+
 //     // SCROLL BAR
 //         case PM_ScrollBarSliderMin: {
 //             return 21;
