@@ -60,7 +60,7 @@ namespace KIO {
         virtual void suspend();
         virtual void resume();
         virtual bool suspended();
-        virtual void send(int cmd, const QByteArray &arr = QByteArray());
+        virtual void send(int cmd, const QByteArray &data = QByteArray());
 
 	virtual void hold(const KURL &url);
 

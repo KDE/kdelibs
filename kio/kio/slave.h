@@ -140,10 +140,13 @@ namespace KIO {
 	/**
 	 * Creates a new slave.
 	 *
-	 * @param _error is the error code on failure and undefined else.
-	 * @param _error_text is the error text on failure and undefined else.
+	 * @param protocol protocol the slave is for.
+	 * @param url URL the slave should operate on.
+	 * @param error is the error code on failure and undefined else.
+	 * @param error_text is the error text on failure and undefined else.
 	 *
 	 * @return 0 on failure, or a pointer to a slave otherwise.
+	 * @todo What are legal @p protocol values?
 	 */
 	static Slave* createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text );
 
@@ -172,7 +175,7 @@ namespace KIO {
 	 * @param data byte array containing data
 	 * @since 3.2
 	 */
-        void send(int cmd, const QByteArray &arr = QByteArray());// TODO(BIC): make virtual
+        void send(int cmd, const QByteArray &data = QByteArray());// TODO(BIC): make virtual
 	// == end communication with connected kioslave ==
 
 	/**
