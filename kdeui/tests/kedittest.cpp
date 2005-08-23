@@ -4,7 +4,7 @@
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "kedittest" );
+  KApplication app;
   KEdit *edit = new KEdit( 0L );
   Q3PopupMenu *pop = new Q3PopupMenu( 0L );
   pop->insertItem( "Popupmenu item" );
