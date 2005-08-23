@@ -167,21 +167,24 @@ KRulerTest::KRulerTest( const char *name )
   vertrot = new Q3GroupBox("Value of rotate translate for Vert.", bigwidget);
   vertrot->setFixedSize(140, 80);
   vertrot->move(330,4+160+80+4);
-  transX = new KDoubleNumInput(0.0, vertrot);
+  transX = new KDoubleNumInput(vertrot);
+  transX->setValue(0.0);
   transX->setRange(-1000, 1000, 1, false);
   transX->move(5, 15);
   transX->setFixedSize(transX->sizeHint());
   //transX->setLabel("transx", AlignLeft);
   connect(transX, SIGNAL(valueChanged(double)), 
 	  SLOT(slotSetXTrans(double)) );
-  transY = new KDoubleNumInput(-12.0, vertrot);
+  transY = new KDoubleNumInput(vertrot);
+  transY->setValue(-12.0);
   transY->setRange(-1000, 1000, 1, false);
   transY->move(5, 35);
   transY->setFixedSize(transY->sizeHint());
   //transY->setLabel("transy", AlignLeft);
   connect(transY, SIGNAL(valueChanged(double)), 
 	  SLOT(slotSetYTrans(double)) );
-  rotV = new KDoubleNumInput(90.0, vertrot);
+  rotV = new KDoubleNumInput(vertrot);
+  rotV->setValue(90.0);
   rotV->setRange(-1000, 1000, 1, false);
   rotV->move(5, 55);
   rotV->setFixedSize(rotV->sizeHint());
@@ -362,7 +365,7 @@ int main(int argc, char **argv)
   KApplication *testapp;
   KRulerTest   *window;
 
-  testapp = new KApplication(argc, argv,"krulertest");
+  testapp = new KApplication;
   testapp->setFont(QFont("Helvetica",12),true);
 
   window = new KRulerTest("main");
