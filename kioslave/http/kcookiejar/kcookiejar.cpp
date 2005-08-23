@@ -773,14 +773,24 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         while ((*cookieStr == ';') || (*cookieStr == ' '))
         {
             cookieStr++;
-            
+
             // Name-Value pair follows
             cookieStr = parseNameValue(cookieStr, Name, Value);
 
             QCString cName = Name.lower().latin1();
             if (cName == "domain")
             {
-                lastCookie->mDomain = Value.lower();
+                QString dom = Value.lower();
+                // RFC2965 3.2.2: If an explicitly specified value does not
+                // start with a dot, the user agent supplies a leading dot
+                if(dom.length() && dom[0] != '.')
+                    dom.prepend(".");
+                // remove a trailing dot
+                if(dom.length() > 2 && dom[dom.length()-1] == '.')
+                    dom = dom.left(dom.length()-1);
+
+                if(dom.contains('.') > 1 || dom == ".local")
+                    lastCookie->mDomain = dom;
             }
             else if (cName == "max-age")
             {

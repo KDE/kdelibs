@@ -38,6 +38,11 @@ CHECK http://w.y.z/ Cookie: $Version=1; some_value2=foobar; $Path="/"; some_valu
 COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=; Version=1; Path="/"; Max-Age=0
 CHECK http://w.y.z/ Cookie: $Version=1; some_value2=foobar; $Path="/"
 CLEAR COOKIES
+## Check if we prepend domain with a dot
+COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=value2; Version=1; Path="/"; Domain=.y.z; Max-Age=3600
+COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=value3; Version=1; Path="/"; Domain=y.z.; Max-Age=3600
+CHECK http://w.y.z/ Cookie: $Version=1; some_value=value3; $Path="/"; $Domain=".y.z"
+CLEAR COOKIES
 ## Check if multiple cookies on a single line work
 ## FIXME
 #COOKIE ASK http://w.y.z/ Set-Cookie2: some_value=value3; Version=1; Path="/"; Max-Age=3600, some_value2=foobar; Version=1; Path="/"; Max-Age=3600
