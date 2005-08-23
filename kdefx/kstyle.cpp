@@ -163,6 +163,16 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_Header, Header::ContentsMargin, 3);
     setWidgetLayoutProp(WT_Header, Header::TextToIconSpace, 3);
     setWidgetLayoutProp(WT_Header, Header::IndicatorSize, 9);
+
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, 6);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::SeparatorExtent, 6);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::ExtensionExtent, 10);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, 2);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, 3);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, 1);
+
+    setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 5);
+    setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -548,6 +558,26 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             drawKStylePrimitive(WT_GroupBox, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
+
+        case PE_IndicatorToolBarHandle:
+            drawKStylePrimitive(WT_ToolBar, ToolBar::Handle,option,r,pal,flags,painter,widget);
+            return;
+
+        case PE_IndicatorToolBarSeparator:
+            drawKStylePrimitive(WT_ToolBar, ToolBar::Separator,option,r,pal,flags,painter,widget);
+            return;
+
+        case PE_PanelToolBar:
+            drawKStylePrimitive(WT_ToolBar, ToolBar::Panel,option,r,pal,flags,painter,widget);
+            return;
+
+        case PE_PanelButtonTool:
+            drawKStylePrimitive(WT_ToolButton, Generic::Bevel,option,r,pal,flags,painter,widget);
+            return;
+
+        case PE_IndicatorButtonDropDown:
+            drawKStylePrimitive(WT_ToolButton, Generic::ArrowDown, option, r, pal, flags, painter, widget);
+            return;
     }
     
     QCommonStyle::drawPrimitive(elem, option, painter, widget);
@@ -705,7 +735,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             
             return;
         }
-        
+
         case CE_DockWidgetTitle:
         {
             const QStyleOptionDockWidget* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidget*>(option);
@@ -1732,6 +1762,18 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_HeaderMarkSize:
             return widgetLayoutProp(WT_Header, Header::IndicatorSize);
+
+        case PM_ToolBarFrameWidth:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth);
+
+        case PM_ToolBarHandleExtent:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent);
+
+        case PM_ToolBarItemMargin:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin);
+
+        case PM_ToolBarItemSpacing:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing);
     }
 
     return QCommonStyle::pixelMetric(metric, option, widget);
@@ -2254,6 +2296,59 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 return;
             } //option OK
         } //CC_Combo
+
+        case CC_ToolButton:
+        {
+            if (const QStyleOptionToolButton *tool = qstyleoption_cast<const QStyleOptionToolButton *>(opt)) {
+                QRect buttonRect = subControlRect(cc, tool, SC_ToolButton, w);
+                QRect menuRect = subControlRect(cc, tool, SC_ToolButtonMenu, w);
+
+                // State_AutoRaise: only draw button when State_MouseOver
+                State bflags = tool->state;
+                if (bflags & State_AutoRaise) {
+                    if (!(bflags & State_MouseOver)) {
+                        bflags &= ~State_Raised;
+                    }
+                }
+                State mflags = bflags;
+
+                // mouse pressed...
+                if (tool->activeSubControls & SC_ToolButton)
+                    bflags |= State_Sunken;
+                if (tool->activeSubControls & SC_ToolButtonMenu)
+                    mflags |= State_Sunken;
+
+                QStyleOption tOpt(0);
+                tOpt.palette = pal;
+
+                if (tool->subControls & SC_ToolButton) {
+                    if (bflags & (State_Sunken | State_On | State_Raised)) {
+                        tOpt.rect = buttonRect;
+                        tOpt.state = bflags;
+                        drawPrimitive(PE_PanelButtonTool, &tOpt, p, w);
+                    }
+                }
+
+                if (tool->subControls & SC_ToolButtonMenu) {
+                    tOpt.rect = menuRect;
+                    tOpt.state = mflags;
+                    drawPrimitive(PE_IndicatorButtonDropDown, &tOpt, p, w);
+                }
+
+                if (flags & State_HasFocus) {
+                    QRect focusRect = insideMargin(r, WT_ToolButton, ToolButton::FocusMargin);
+                    tOpt.rect = focusRect;
+                    tOpt.state = bflags;
+                    drawKStylePrimitive(WT_ToolButton, Generic::FocusIndicator, &tOpt, focusRect, pal, bflags, p, w);
+                }
+
+                // label
+                drawControl(CE_ToolButtonLabel, opt, p, w);
+
+                return;
+            }
+            break;
+        } //CC_ToolButton
     } //switch
 
     QCommonStyle::drawComplexControl(cc, opt, p, w);
@@ -2629,7 +2724,12 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             //### TODO: Handle minimum size limits, extra spacing as in current styles ??
             return expandDim(size, WT_PushButton, PushButton::ContentsMargin);
         }
-        
+
+        case CT_ToolButton:
+        {
+            return expandDim(contentsSize, WT_ToolButton, ToolButton::ContentsMargin);
+        }
+
         case CT_CheckBox:        
         {
             //Add size for indicator ### handle empty case differently?            
@@ -2798,8 +2898,6 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
         case CT_HeaderSection:
         {
             if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
-                QSize s = contentsSize;
-
                 QSize iconSize = header->icon.isNull() ? QSize(0,0) : QSize(22,22);
                 QSize textSize = header->fontMetrics.size(0, header->text);
                 int iconSpacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);

@@ -295,6 +295,8 @@ protected:
         WT_Header,
         WT_LineEdit,
         WT_GroupBox,
+        WT_ToolBar,
+        WT_ToolButton,
         WT_Limit = 0xFFFF ///For enum extensibility
     };
 
@@ -837,6 +839,47 @@ protected:
         /**
         From generic primitives, Frame is used
          */
+    };
+
+    struct ToolBar
+    {
+        enum LayoutProps
+        {
+            HandleExtent,       // The width(hor)/height(vert) of a ToolBar handle
+            SeparatorExtent,    // The width/height of a ToolBar separator
+            ExtensionExtent,    // The width/height of a ToolBar extender, when there is not enough room for toolbar buttons
+            PanelFrameWidth,
+            ItemMargin,
+            ItemSpacing
+        };
+
+        enum Primitive
+        {
+            Handle, // TODO: handlehor, handlevert?
+            Separator,
+            Panel
+        };
+    };
+
+    struct ToolButton
+    {
+        /**
+        ContentsMargin is used to size the contents.
+        */
+        enum LayoutProps
+        {
+            ContentsMargin,
+            FocusMargin            = ContentsMargin + MarginInc,
+            DummyProp      = FocusMargin + MarginInc,
+        };
+
+        // TODO: implement CE_ToolButtonLabel to have own Generic::Text,
+        //        Generic::Icon, and LayoutProps PressedShiftHorizontal,
+        //        PressedShiftVertical, TextToIconSpace, MenuIndicatorSize...
+
+        /**
+        From generic primitives, Bevel, ArrowDown are used.
+        */
     };
 
     ///Interface for the style to configure various metrics that KStyle has customizable.
