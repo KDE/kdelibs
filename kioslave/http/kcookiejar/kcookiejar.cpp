@@ -789,7 +789,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if(dom.length() > 2 && dom[dom.length()-1] == '.')
                     dom = dom.left(dom.length()-1);
 
-                if(dom.contains('.') > 1 || dom == ".local")
+                if(dom.count('.') > 1 || dom == ".local")
                     lastCookie->mDomain = dom;
             }
             else if (cName == "max-age")
