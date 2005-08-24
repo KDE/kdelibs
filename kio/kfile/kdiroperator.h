@@ -214,7 +214,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see KFileView
      * @see KFileIconView
      * @see KFileDetailView
-     * @see KFileCombiView
+     * @see KCombiView
      * @see view
      */
 	// ### KDE4: make virtual
