@@ -203,6 +203,7 @@ KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
 KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
+__attribute__((destructor))
 static void kglobal_freeAll()
 {
     delete KGlobal::_locale;
@@ -222,7 +223,6 @@ static void kglobal_init()
         return;
 
     KGlobal::_staticDeleters = new KStaticDeleterList;
-    qAddPostRoutine( kglobal_freeAll );
 }
 
 int kasciistricmp( const char *str1, const char *str2 )
