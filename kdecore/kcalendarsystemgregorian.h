@@ -38,12 +38,12 @@ class KCalendarSystemGregorianPrivate;
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
+  /** Constructor. Just like KCalendarSystem::KCalendarSystem(). */
   KCalendarSystemGregorian (const KLocale * locale = 0);
   virtual ~KCalendarSystemGregorian ();
 

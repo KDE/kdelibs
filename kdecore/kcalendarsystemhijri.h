@@ -38,12 +38,12 @@ class KCalendarSystemHijriPrivate;
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @since 3.2
  */
 class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem
 {
 public:
+  /** Constructor. Just like KCalendarSystem::KCalendarSystem(). */
   KCalendarSystemHijri(const KLocale * locale = 0);
   virtual ~KCalendarSystemHijri();
 

@@ -344,6 +344,10 @@ public:
   virtual bool isSolar() const = 0;
 
 protected:
+  /**
+   * Gets the locale the calendar uses for translations. Set in
+   * the constructor.
+   */
   const KLocale * locale() const;
 
 private:

@@ -45,6 +45,7 @@ class KCalendarSystemHebrewPrivate;
 class KDECORE_EXPORT KCalendarSystemHebrew : public KCalendarSystem
 {
 public:
+  /** Constructor. Just like KCalendarSystem::KCalendarSystem(). */
   KCalendarSystemHebrew(const KLocale * locale = 0);
   virtual ~KCalendarSystemHebrew();
 
