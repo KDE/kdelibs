@@ -4,6 +4,7 @@ Type=MimeType
 MimeType=uri/rtspt
 Icon=video
 Comment=rtspt: URIs
+Comment[br]=URIoù rtspt:
 Comment[bs]=rtspt: URI
 Comment[cs]=rtspt: URI
 Comment[da]=rtspt: URI'er
