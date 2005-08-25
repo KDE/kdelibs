@@ -65,7 +65,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.oasis.opendocument.image.desktop \
 	vnd.oasis.opendocument.chart.desktop \
 	x-java-jnlp-file.desktop xml-dtd.desktop fits.desktop \
-	x-rar-compressed.desktop
+	x-rar-compressed.desktop \
+	x-sqlite2.desktop x-sqlite3.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
