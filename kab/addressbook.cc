@@ -116,7 +116,7 @@ class StringKabKeyMap : public map<QString, KabKey, QStringLess>
 };
 
 // ----- another derived map class:
-class KeyNameMap : public map<const char*, const QString, less<const char*> >
+class KeyNameMap : public map<const char*, QString, less<const char*> >
 { // same thing
 };
 
@@ -164,47 +164,47 @@ bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
       fields=new KeyNameMap;
       Q_CHECK_PTR(fields);
       if(!fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Headline"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Position"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Organization"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Department"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Sub-Department"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Delivery Label"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Address"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Zipcode"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("City"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Country"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("As in addresses", "State"))).second)
 	{
 	  kdDebug(KAB_KDEBUG_AREA) 
@@ -259,83 +259,83 @@ bool AddressBook::Entry::nameOfField(const char* key, QString& value)
       fields=new KeyNameMap;
       Q_CHECK_PTR(fields);
       if(!fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Title"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Rank"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Formatted Name"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Name Prefix"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("First Name"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Middle Name"))).second 
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	 (Fields[counter++], i18n("Last Name"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Birthday"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Comment"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Talk Addresses"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Email Addresses"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Keywords"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Telephone Number"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("URLs"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("User Field 1"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("User Field 2"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("User Field 3"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("User Field 4"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Custom"))).second
 	 ||
 	 !fields->insert
-	 (map<const char*, const QString, less<const char*> >::value_type
+	 (map<const char*, QString, less<const char*> >::value_type
 	  (Fields[counter++], i18n("Categories"))).second)
 	{
 	  kdDebug(KAB_KDEBUG_AREA) 
