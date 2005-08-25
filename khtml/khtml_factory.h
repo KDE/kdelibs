@@ -40,6 +40,7 @@ class KDE_EXPORT KHTMLFactory : public KParts::Factory
 {
   Q_OBJECT
   friend class DOM::DocumentImpl;
+  friend class KHTMLViewPrivate;
 public:
   KHTMLFactory( bool clone = false );
   virtual ~KHTMLFactory();
