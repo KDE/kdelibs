@@ -89,8 +89,7 @@
  * is less than 4.
  * Instead of the other meaning, make sure that the numeric value of "X-KDE-Blah" is less than 4.
  *
- * Please read http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html for
- * a more complete description of the trader language syntax.
+ * See also the formal syntax defined in @ref tradersyntax .
  *
  * @short Provides a way to query the KDE infrastructure for specific
  *        applications or components.
@@ -193,5 +192,117 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 };
+
+/** @page tradersyntax Trader Syntax
+ *
+ *
+ * @section Literals
+ *
+ * As elementary atoms of the constraint language, KTrader supports
+ * booleans, integers, floats and strings. Boolean literals are
+ * @a TRUE and @a FALSE . Integers can be positive or negative,
+ * i.e. @a 42 and @a -10 are legal values. Floating point
+ * numbers are @a 3.141592535 or @a -999.999 . Scientific notation
+ * like @a 1.5e-2 is not supported. Character literals are delimited
+ * by single quotation marks, e.g. @a 'Bernd' .
+ *
+ *
+ * @section Symbols
+ *
+ * Identifiers in query string are interpreted as property names, which
+ * are listed in the service's <tt>.desktop</tt> file. For example,
+ * <tt>Name</tt> is the name of the service, <tt>ServiceTypes</tt> is a
+ * list of the service types it supports. Note that only properties can
+ * be written as-is which start with an alphabetical character and contain
+ * only alphanumerical characters. Other properties have to be enclosed in
+ * brackets, e.g. <tt>[X-KDE-Init]</tt>. Properties must not contain any
+ * special characters other than <tt>-</tt>.
+ *
+ * Special property names:
+ *   - <b>DesktopEntryName</b> stands for the filename of the service
+ *     desktop entry without any extension. This can be useful to
+ *     exclude some specific services.
+ *   - <b>DesktopEntryPath</b> stands for the relative or full path
+ *     to the .desktop file, see KService::desktopEntryPath. Mentionned
+ *     here for completeness, better not use it (things can be moved
+ *     around).
+ *   - <b>Library</b> is the property whose value is set by
+ *     <tt>X-KDE-Library</tt> in the .desktop file. This renaming
+ *     happened to conform to the desktop file standard, but the
+ *     property name didn't change.
+ *
+ *
+ * @section Comparison
+ *
+ * Supported comparison operators are:
+ *
+ *   - <tt>==</tt>
+ *   - <tt>!=</tt>
+ *   - <tt>&lt;</tt>
+ *   - <tt>&lt;=</tt>
+ *   - <tt>&gt;</tt>
+ *   - <tt>&gt;=</tt>
+ *
+ *
+ * @section Arithmetic Arithmetic and boolean expressions
+ *
+ *   - <tt>+</tt>
+ *   - <tt>-</tt>
+ *   - <tt>*</tt>
+ *   - <tt>/</tt>
+ *   - <tt>and</tt>
+ *   - <tt>or</tt>
+ *   - <tt>not</tt>
+ *
+ * Note that the arithmetic operators are possible for integers and
+ * floating point numbers. <tt>-</tt> is both a unary and binary operator,
+ * <tt>not</tt> is a unary operator.
+ *
+ *
+ * @section Other Other operators
+ *
+ *   - <tt>~</tt>
+ *   - <tt>in</tt>
+ *   - <tt>exist</tt>
+ *   - <tt>()</tt>
+ *
+ * The tilde operator stands for a substring match. For example,
+ * <tt>KParts ~ 'KParts/ReadOnlyPart'</tt> is TRUE. The membership
+ * operator <tt>in</tt> tests whether a value is in a list. A list is a
+ * string with semi-colon- or comma-separated entries, depending on the
+ * type. An example for the membership operator is
+ * <tt>'text/plain' in ServiceTypes</tt>.
+ * The <tt>exist</tt> tests whether a certain property is defined in the
+ * <tt>.desktop</tt> file. Subexpressions are written in parentheses.
+ *
+ * Warning, testing the contents of a property only works if the property
+ * is specified. There is not support for default values. If the property
+ * might be missing, and you still want such services to be included, you
+ * have to check for existence before testing it. For instance, to say
+ * that MyProp is a boolean that defaults to true, and that you want the
+ * services that have it set to true, use:
+ * <tt>not exist MyProp or MyProp</tt>
+ * Simply testing for <tt>MyProp</tt> would
+ * exclude the services without the property at all.
+ *
+ *
+ * @section Examples
+ *
+ * The following examples show filters for .desktop files.
+ * <tt>Type</tt>, <tt>ServiceTypes</tt> and <tt>MimeType</tt> are
+ * properties in .desktop files. Be aware that within KTrader MimeType
+ * properties are understood as ServiceTypes ones.
+ *
+ *
+ *   - <tt>Type == 'Application'</tt>@n
+ *     All services that are applications.
+ *   - <tt>'KParts/ReadOnlyPart' in ServiceTypes</tt>@n
+ *     All read-only KParts.
+ *   - <tt>('KParts/ReadOnlyPart' in ServiceTypes) and ('text/plain' in ServiceTypes)</tt>@n
+ *     All read-only KParts that handle the mime type 'text/plain'.
+ *
+ * @author Bernd Gehrmann <a href="mailto:bernd@kdevelop.org">bernd@kdevelop.org</a>
+*/
+
 
 #endif
