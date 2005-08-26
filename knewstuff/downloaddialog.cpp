@@ -91,42 +91,12 @@ class DateSortListViewItem : public KListViewItem
   }
 };
 
-// BEGIN deprecated for KDE 4
-DownloadDialog::DownloadDialog(Engine *engine, QWidget *)
-: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
-  KDialogBase::Close, KDialogBase::Close)
-{
-  init(engine);
-}
-
-DownloadDialog::DownloadDialog(QWidget *)
-: KDialogBase(KDialogBase::IconList, i18n("Get Hot New Stuff"),
-  KDialogBase::Close, KDialogBase::Close)
-{
-  init(0);
-}
-
-void DownloadDialog::open(const QString &type)
-{
-  DownloadDialog d;
-  d.setType(type);
-  d.load();
-  d.exec();
-}
-// END deprecated for KDE 4
 
 DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption)
 : KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
   KDialogBase::Close, KDialogBase::Close)
 {
   init(engine);
-}
-
-DownloadDialog::DownloadDialog(QWidget *, const QString& caption)
-: KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
-  KDialogBase::Close, KDialogBase::Close)
-{
-  init(0);
 }
 
 void DownloadDialog::init(Engine *engine)
@@ -585,7 +555,7 @@ void DownloadDialog::slotSelected()
 
 Entry *DownloadDialog::getEntry()
 {
-  Q3ListViewItem *entryItem = currentEntryItem();
+  m_entryitem = currentEntryItem();
 
   if(!m_entryitem)
     return 0;
@@ -663,7 +633,7 @@ void DownloadDialog::slotApply()
 
 void DownloadDialog::open(const QString& type, const QString& caption)
 {
-  DownloadDialog d(0, caption);
+  DownloadDialog d(0L, 0, caption);
   d.setType(type);
   d.load();
   d.exec();
