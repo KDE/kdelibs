@@ -50,6 +50,7 @@ struct DownloadDialog::Private
 {
     QString m_providerlist;
     QWidget *m_page;
+    KListView *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
 };
 
 class NumSortListViewItem : public KListViewItem
@@ -207,7 +208,6 @@ void DownloadDialog::addProvider(Provider *p)
   KTabCtl *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;
-  KListView *lvtmp_r, *lvtmp_d, *lvtmp_l;
   QTextBrowser *rt;
   QString tmp;
   int ret;
@@ -256,27 +256,27 @@ void DownloadDialog::addProvider(Provider *p)
   QHBoxLayout *box = new QHBoxLayout(frame);
   box->add(ctl);
 
-  lvtmp_r = new KListView(w_r);
-  lvtmp_r->addColumn(i18n("Name"));
-  lvtmp_r->addColumn(i18n("Version"));
-  lvtmp_r->addColumn(i18n("Rating"));
-  lvtmp_r->setSorting(2, false);
+  d->m_lvtmp_r = new KListView(w_r);
+  d->m_lvtmp_r->addColumn(i18n("Name"));
+  d->m_lvtmp_r->addColumn(i18n("Version"));
+  d->m_lvtmp_r->addColumn(i18n("Rating"));
+  d->m_lvtmp_r->setSorting(2, false);
 
-  lvtmp_d = new KListView(w_d);
-  lvtmp_d->addColumn(i18n("Name"));
-  lvtmp_d->addColumn(i18n("Version"));
-  lvtmp_d->addColumn(i18n("Downloads"));
-  lvtmp_d->setSorting(2, false);
+  d->m_lvtmp_d = new KListView(w_d);
+  d->m_lvtmp_d->addColumn(i18n("Name"));
+  d->m_lvtmp_d->addColumn(i18n("Version"));
+  d->m_lvtmp_d->addColumn(i18n("Downloads"));
+  d->m_lvtmp_d->setSorting(2, false);
 
-  lvtmp_l = new KListView(w_l);
-  lvtmp_l->addColumn(i18n("Name"));
-  lvtmp_l->addColumn(i18n("Version"));
-  lvtmp_l->addColumn(i18n("Release Date"));
-  lvtmp_l->setSorting(2, false);
+  d->m_lvtmp_l = new KListView(w_l);
+  d->m_lvtmp_l->addColumn(i18n("Name"));
+  d->m_lvtmp_l->addColumn(i18n("Version"));
+  d->m_lvtmp_l->addColumn(i18n("Release Date"));
+  d->m_lvtmp_l->setSorting(2, false);
 
-  connect(lvtmp_r, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_r, SIGNAL(selectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
 
   rt = new QTextBrowser(frame);
   rt->setMinimumWidth(150);
@@ -297,14 +297,14 @@ void DownloadDialog::addProvider(Provider *p)
   connect(de, SIGNAL(clicked()), SLOT(slotDetails()));
 
   QVBoxLayout *box2 = new QVBoxLayout(w_r);
-  box2->add(lvtmp_r);
+  box2->add(d->m_lvtmp_r);
   QVBoxLayout *box3 = new QVBoxLayout(w_d);
-  box3->add(lvtmp_d);
+  box3->add(d->m_lvtmp_d);
   QVBoxLayout *box4 = new QVBoxLayout(w_l);
-  box4->add(lvtmp_l);
+  box4->add(d->m_lvtmp_l);
 
   QValueList<KListView*> *v = new QValueList<KListView*>;
-  *v << lvtmp_r << lvtmp_d << lvtmp_l;
+  *v << d->m_lvtmp_r << d->m_lvtmp_d << d->m_lvtmp_l;
   m_map[frame] = v;
   m_rts[frame] = rt;
   QValueList<QPushButton*> *vb = new QValueList<QPushButton*>;
@@ -312,7 +312,7 @@ void DownloadDialog::addProvider(Provider *p)
   m_buttons[frame] = vb;
   m_providers[frame] = p;
 
-  kdDebug() << "addProvider()/end; lvtmp_r = " << lvtmp_r << endl;
+  kdDebug() << "addProvider()/end; d->m_lvtmp_r = " << d->m_lvtmp_r << endl;
 
   if(m_engine) slotPage(frame);
 
@@ -365,7 +365,7 @@ int DownloadDialog::installStatus(Entry *entry)
   QDate date;
   QString datestring;
   int installed;
- 
+
   kapp->config()->setGroup("KNewStuffStatus");
   datestring = kapp->config()->readEntry(entry->name());
   if(datestring.isNull()) installed = 0;
@@ -428,6 +428,9 @@ void DownloadDialog::slotDetails()
 {
   Entry *e = getEntry();
   if(!e) return;
+  d->m_lvtmp_r->setEnabled( false );
+  d->m_lvtmp_l->setEnabled( false );
+  d->m_lvtmp_d->setEnabled( false );
 
   QString lang = KGlobal::locale()->language();
 
@@ -494,9 +497,7 @@ void DownloadDialog::slotInstall()
   else
   {
     m_s = new KNewStuffGeneric(e->type(), this);
-
     m_entry = e;
-
     KURL source = e->payload();
     KURL dest = KURL(m_s->downloadDestination(e));
 
@@ -528,7 +529,6 @@ void DownloadDialog::slotInstalled(KIO::Job *job)
 {
   bool ret = (job->error() == 0);
   KIO::FileCopyJob *cjob;
-
   if(ret)
   {
     cjob = static_cast<KIO::FileCopyJob*>(job);
@@ -546,6 +546,9 @@ void DownloadDialog::slotInstalled(KIO::Job *job)
     KMessageBox::information(this, i18n("Installation successful."), i18n("Installation"));
   }
   else KMessageBox::error(this, i18n("Installation failed."), i18n("Installation"));
+  d->m_lvtmp_r->setEnabled( true );
+  d->m_lvtmp_l->setEnabled( true );
+  d->m_lvtmp_d->setEnabled( true );
 
   delete m_s;
 }
