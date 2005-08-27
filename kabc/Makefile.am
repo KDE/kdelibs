@@ -42,7 +42,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   errorhandler.h field.h format.h formatfactory.h format.h geo.h key.h \
   phonenumber.h picture.h plugin.h resource.h \
   secrecy.h sound.h stdaddressbook.h timezone.h \
-  vcardformat.h ldifconverter.h \
+  vcardformat.h vcardconverter.h ldifconverter.h \
   addresslineedit.h ldapclient.h addresseelist.h lock.h locknull.h ldif.h \
   ldapurl.h ldapconfigwidget.h sortmode.h
 
