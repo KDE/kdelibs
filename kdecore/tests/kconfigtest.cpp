@@ -108,6 +108,8 @@ void KConfigTest::revertEntries()
 
 void KConfigTest::allTests()
 {
+  writeConfigFile();
+
   KConfig sc2( "kconfigtest" );
 
   KConfigGroup sc3( &sc2, "AAA");

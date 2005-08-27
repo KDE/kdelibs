@@ -22,7 +22,7 @@ INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
 AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
-	kstddirstest kurltest kurltest4 kuniqueapptest ktempfiletest krandomsequencetest \
+	kstddirstest kurltest kurltest4 kuniqueapptest krandomsequencetest \
 	kdebugtest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
 	cplusplustest kiconloadertest kmdcodectest knotifytest \
@@ -50,7 +50,6 @@ kstddirstest_SOURCES = kstddirstest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
 kapptest_SOURCES = kapptest.cpp
-ktempfiletest_SOURCES = ktempfiletest.cpp
 krandomsequencetest_SOURCES = krandomsequencetest.cpp
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
 kcmdlineargstest_SOURCES = kcmdlineargstest.cpp
@@ -78,8 +77,15 @@ kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
-check_LTLIBRARIES = kunittest_kconfig.la
+check_LTLIBRARIES = kunittest_kconfig.la kunittest_ktempfile.la
 
 kunittest_kconfig_la_SOURCES = kconfigtest.cpp
 kunittest_kconfig_la_LIBADD = $(LIB_KUNITTEST)
 kunittest_kconfig_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
+
+kunittest_ktempfile_la_SOURCES = ktempfiletest.cpp
+kunittest_ktempfile_la_LIBADD = $(LIB_KUNITTEST)
+kunittest_ktempfile_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
+
+check-local:
+	kunittestmodrunner

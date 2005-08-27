@@ -22,33 +22,60 @@
 #include "kapplication.h"
 #include "kstandarddirs.h"
 #include <qstring.h>
+#include <qfile.h>
+#include <qdir.h>
 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int
-main(int argc, char *argv[])
+#include <kunittest/tester.h>
+#include <kunittest/module.h>
+
+class KTempFileTest : public KUnitTest::Tester
 {
-   KAboutData about("ktempfiletest", "ktempfiletest", "version");
-   KCmdLineArgs::init(argc, argv, &about);
+public:
+    void allTests() {
+        basicTest();
+        fixedExtension();
+        homeDir();
+    }
+private:
+    void basicTest();
+    void fixedExtension();
+    void homeDir();
+};
 
-   KApplication a;
+KUNITTEST_MODULE( kunittest_ktempfile, "KTempFileTest" );
+KUNITTEST_MODULE_REGISTER_TESTER( KTempFileTest );
 
+void KTempFileTest::basicTest()
+{
    printf("Making tempfile after KApplication constructor.\n");
    KTempFile f4;
-   printf("Filename = %s\n", f4.name().ascii());
+   qDebug("Filename = %s", qPrintable(f4.name()));
+   bool exists = QFile::exists( f4.name() );
+   CHECK( exists, true );
+}
 
+void KTempFileTest::fixedExtension()
+{
    printf("Making tempfile with \".ps\" extension.\n");
    KTempFile f2(QString::null, ".ps");
-   printf("Filename = %s\n", f2.name().ascii());
-
-   printf("Making tempfile in home directory.\n");
-   KTempFile f3(QString((const char *)getenv("HOME"))+"/testXXX", ".myEXT", 0666);
-   printf("Filename = %s\n", f3.name().ascii());
-
-   QString name = locateLocal("socket", "test");
-   printf("Socket Filename = %s\n", name.ascii());
-
-   printf("Done.\n");
+   qDebug("Filename = %s", qPrintable(f2.name()));
+   CHECK( f2.name().right(3), QString::fromLatin1(".ps") );
 }
+
+void KTempFileTest::homeDir()
+{
+   printf("Making tempfile in home directory.\n");
+   const QString home = QDir::homeDirPath();
+   KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
+   qDebug("Filename = %s", qPrintable(f3.name()));
+   CHECK( f3.name().left( home.length() ), home );
+   CHECK( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
+}
+
+//QString name = locateLocal("socket", "test");
+//printf("Socket Filename = %s\n", name.ascii());
+
