@@ -617,19 +617,7 @@ void BrowserExtension::createActionSlotMap()
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )
 {
-    if ( !obj )
-        return 0L;
-
-    // we try to do it on our own, in hope that we are faster than
-    // queryList, which looks kind of big :-)
-    foreach ( QObject * child, obj->children() )
-        if ( child->inherits( "KParts::BrowserExtension" ) )
-            return static_cast<KParts::BrowserExtension *>( child );
-
-    return 0L;
-    
-    // The following would probably work as well
-    // return obj->findChild<KParts::BrowserExtension *>();
+    return obj ? obj->findChild<KParts::BrowserExtension *>() : 0;
 }
 
 namespace KParts

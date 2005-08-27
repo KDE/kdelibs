@@ -317,6 +317,7 @@ private:
 
 class ReadWritePart;
 class ReadOnlyPartPrivate;
+class BrowserExtension;
 
 /**
  * Base class for any "viewer" part.
@@ -397,6 +398,13 @@ public:
    * @return always true, but the return value exists for reimplementations
    */
   virtual bool closeURL();
+
+  /**
+   * This convenience method returns the browserExtension for this part,
+   * or 0 if there isn't any.
+   * @since 4.0
+   */
+  BrowserExtension* browserExtension() const;
 
 public:
   /**

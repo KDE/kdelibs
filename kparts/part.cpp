@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
-             (C) 1999 David Faure <faure@kde.org>
+             (C) 1999-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #include <kparts/plugin.h>
 #include <kparts/mainwindow.h>
 #include <kparts/partmanager.h>
+#include <kparts/browserextension.h>
 
 #include <qapplication.h>
 #include <qfile.h>
@@ -425,20 +426,25 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
 
 bool ReadOnlyPart::openStream( const QString& mimeType, const KURL& url )
 {
-    if ( !closeURL() )
-        return false;
-    m_url = url;
-    return doOpenStream( mimeType );
+  if ( !closeURL() )
+    return false;
+  m_url = url;
+  return doOpenStream( mimeType );
 }
 
 bool ReadOnlyPart::writeStream( const QByteArray& data )
 {
-    return doWriteStream( data );
+  return doWriteStream( data );
 }
 
 bool ReadOnlyPart::closeStream()
 {
-    return doCloseStream();
+  return doCloseStream();
+}
+
+BrowserExtension* ReadOnlyPart::browserExtension() const
+{
+  return findChild<KParts::BrowserExtension *>();
 }
 
 //////////////////////////////////////////////////
