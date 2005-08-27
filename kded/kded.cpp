@@ -112,10 +112,6 @@ Kded::Kded(bool checkUpdates)
   m_pTimer = new QTimer(this);
   connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
-  QTimer::singleShot(100, this, SLOT(installCrashHandler()));
-
-  QTimer::singleShot(500, this, SLOT(initModules()));
-
   m_pDirWatch = 0;
 
   m_windowIdList.setAutoDelete(true);
@@ -174,7 +170,7 @@ void Kded::initModules()
             dontLoad = true;
          if (dontLoad)
             noDemandLoad(service->desktopEntryName());
-            
+
          if (dontLoad && !autoload)
             unloadModule(service->desktopEntryName().latin1());
      }
@@ -353,7 +349,7 @@ void Kded::updateResourceList()
   delete KSycoca::self();
 
   if (!b_checkUpdates) return;
-  
+
   if (delayedCheck) return;
 
   QStringList dirs = KSycoca::self()->allResourceDirs();
@@ -425,6 +421,8 @@ void Kded::recreate(bool initial)
       }
       else
          m_needDelayedCheck = false;
+      QTimer::singleShot(100, this, SLOT(installCrashHandler()));
+      QTimer::singleShot(500, this, SLOT(initModules()));
    }
 }
 
@@ -442,7 +440,7 @@ void Kded::recreateDone()
       m_recreateRequests.remove(m_recreateRequests.begin());
    }
    m_recreateBusy = false;
-   
+
    // Did a new request come in while building?
    if (!m_recreateRequests.isEmpty())
    {
@@ -674,7 +672,7 @@ class KDEDQtDCOPObject : public DCOPObject
 {
 public:
   KDEDQtDCOPObject() : DCOPObject("qt/kded") { }
-  
+
   virtual bool process(const DCOPCString &fun, const QByteArray &data,
                        DCOPCString& replyType, QByteArray &replyData)
     {
@@ -685,7 +683,7 @@ public:
         return true;
       }
       return DCOPObject::process(fun, data, replyType, replyData);
-    }                       
+    }
 
   DCOPCStringList functions()
     {
@@ -859,6 +857,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      signal(SIGTERM, sighandler);
      signal(SIGHUP, sighandler);
      KDEDApplication k;
+
+     // Not sure why kded is created before KDEDApplication
+     // but if it has to be, then it needsto be moved to the main thread
+     // before it can use timers (DF)
+     kded->moveToThread( k.thread() );
 
      kded->recreate(true); // initial
 
