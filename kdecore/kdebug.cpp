@@ -537,17 +537,25 @@ kdbgstream& kdbgstream::operator<<( const QVariant& v) {
 
 kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!print) return *this;
-    output += '[';
-    int i = 0;
-    int sz = QMIN( data.size(), 64 );
-    for ( ; i < sz ; ++i ) {
-        output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
-        if ( i < sz )
-            output += ' ';
+    bool isBinary = false;
+    for ( int i = 0; i < data.size() && !isBinary ; ++i ) {
+        if ( data[i] < 32 )
+            isBinary = true;
     }
-    if ( sz < data.size() )
-        output += "...";
-    output += ']';
+    if ( isBinary ) {
+        output += '[';
+        int sz = QMIN( data.size(), 64 );
+        for ( int i = 0; i < sz ; ++i ) {
+            output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
+            if ( i < sz )
+                output += ' ';
+        }
+        if ( sz < data.size() )
+            output += "...";
+        output += ']';
+    } else {
+        output += QLatin1String( data );
+    }
     return *this;
 }
 
