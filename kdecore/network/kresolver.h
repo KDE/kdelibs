@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -185,7 +185,7 @@ class KResolverResultsPrivate;
  * you may use all its member functions here to access the elements.
  *
  * A KResolverResults object is associated with a resolution, so, in addition
- * to the resolved elements, you can also retrieve information about the 
+ * to the resolved elements, you can also retrieve information about the
  * resolution process itself, like the nodename that was resolved or an error
  * code.
  *
@@ -570,7 +570,7 @@ public:
    * These three are the only values to which it is guaranteed that
    * resolution will work. Some systems may define other constants (such as
    * SOCK_RDM for reliable datagrams), but support is implementation-defined.
-   * 
+   *
    * @param type		the wanted socket type (SOCK_* constants). Set
    *				0 to use the default.
    */
@@ -591,7 +591,7 @@ public:
    * by both. If you set:
    * @li the number and the name: both values will be stored internally; you
    *		may set the name to an empty value, if wanted
-   * @li the number only (name = NULL): the name will be searched in the 
+   * @li the number only (name = NULL): the name will be searched in the
    *		protocols database
    * @li the name only (number = 0): the number will be searched in the
    *		database
@@ -688,7 +688,7 @@ signals:
    * way or another (success or failure). The @p results parameter
    * will contain the resolved data.
    *
-   * Note: if you are doing multiple resolutions, you can use the 
+   * Note: if you are doing multiple resolutions, you can use the
    * QObject::sender() function to distinguish one Resolver object from
    * another.
    *
@@ -756,8 +756,8 @@ public:
    *
    * \code
    *   KResolver* qres = new KResolver(host, service);
-   *   QObject::connect(qres, SIGNAL(finished(KResolverResults)),
-   *			  userObj, userSlot);
+   *   QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)),
+   *		        userObj, userSlot);
    *   qres->setFlags(flags);
    *   qres->setFamily(families);
    *   return qres->start();
@@ -786,7 +786,7 @@ public:
    * for DNS lookups. This is the base for International Domain Name support
    * over the Internet.
    *
-   * Note this function may fail, in which case it'll return a null 
+   * Note this function may fail, in which case it'll return a null
    * QByteArray. Reasons for failure include use of unknown code
    * points (Unicode characters).
    *
@@ -841,7 +841,7 @@ public:
    * the micro symbol 'µ' will be changed to the Greek mu 'μ'.
    *
    * Two equivalent domains have the same normalised form. And the
-   * normalised form of a normalised domain is itself (i.e., if 
+   * normalised form of a normalised domain is itself (i.e., if
    * d is normalised, the following is true: d == normalizeDomain(d) )
    *
    * This operation is equivalent to encoding and the decoding a Unicode
@@ -933,7 +933,7 @@ private:
   KResolverPrivate* d;
   friend class KResolverResults;
   friend class ::KNetwork::Internal::KResolverManager;
-  
+
   static QStringList *idnDomains;
 };
 

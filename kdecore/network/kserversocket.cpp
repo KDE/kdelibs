@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -51,7 +51,7 @@ public:
   KServerSocketPrivate()
     : state(None), timeout(0), bindWhenFound(false), listenWhenBound(false),
       useKBufferedSocket(true)
-  { 
+  {
     resolver.setFlags(KResolver::Passive);
     resolver.setFamily(KResolver::KnownFamily);
   }
@@ -60,14 +60,14 @@ public:
 KServerSocket::KServerSocket(QObject* parent)
   : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(const KNetwork::KResolverResults&)),
 		   this, SLOT(lookupFinishedSlot()));
 }
 
 KServerSocket::KServerSocket(const QString& service, QObject* parent)
   : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(const KNetwork::KResolverResults&)),
 		   this, SLOT(lookupFinishedSlot()));
   d->resolver.setServiceName(service);
 }
@@ -76,7 +76,7 @@ KServerSocket::KServerSocket(const QString& node, const QString& service,
 			     QObject* parent)
   : QObject(parent), d(new KServerSocketPrivate)
 {
-  QObject::connect(&d->resolver, SIGNAL(finished(KNetwork::KResolverResults)), 
+  QObject::connect(&d->resolver, SIGNAL(finished(const KNetwork::KResolverResults&)),
 		   this, SLOT(lookupFinishedSlot()));
   setAddress(node, service);
 }
@@ -406,7 +406,7 @@ bool KServerSocket::doListen()
       emit gotError(error());
       return false;		// failed to listen
     }
-  
+
   // set up ready accept signal
   QObject::connect(socketDevice()->readNotifier(), SIGNAL(activated(int)),
 		   this, SIGNAL(readyAccept()));
