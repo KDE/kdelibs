@@ -149,6 +149,10 @@ public:
 class DCOPClientPrivate
 {
 public:
+    DCOPClientPrivate( DCOPClient* client )
+        : parent( client ),
+          postMessageTimer( client ) // for the moveToThread() call
+    {}
     DCOPClient *parent;
     DCOPCString appId;
     IceConn iceConn;
@@ -600,8 +604,7 @@ void DCOPClient::setMainClient( DCOPClient* client )
 
 DCOPClient::DCOPClient()
 {
-    d = new DCOPClientPrivate;
-    d->parent = this;
+    d = new DCOPClientPrivate( this );
     d->iceConn = 0L;
     d->key = 0;
     d->currentKey = 0;
@@ -691,6 +694,8 @@ void DCOPClient::bindToApp()
                                           QSocketNotifier::Read, 0);
         QObject::connect(d->notifier, SIGNAL(activated(int)),
                 SLOT(processSocketData(int)));
+
+        moveToThread( qApp->thread() );
     }
 }
 
