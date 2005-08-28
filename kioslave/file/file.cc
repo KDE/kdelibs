@@ -389,7 +389,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 
                 if ( fd < 0 )
                 {
-                    kdDebug(7101) << "####################### COULD NOT WRITE " << dest << _mode << endl;
+                    kdDebug(7101) << "####################### COULD NOT WRITE " << dest << " _mode=" << _mode << endl;
                     kdDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")" << endl;
                     if ( errno == EACCES )
                         error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
@@ -604,7 +604,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
                 remove( _dest.data() );
             }
             else {
-                error( KIO::ERR_SLAVE_DEFINED, 
+                error( KIO::ERR_SLAVE_DEFINED,
                         i18n("Cannot copy file from %1 to %2. (Errno: %3)")
                         .arg( src.path() ).arg( dest.path() ).arg( errno ) );
             }
@@ -683,7 +683,7 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
     Q3CString _src( QFile::encodeName(src.path()));
     Q3CString _dest( QFile::encodeName(dest.path()));
     KDE_struct_stat buff_src;
-    if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
+    if ( KDE_lstat( _src.data(), &buff_src ) == -1 ) {
         if ( errno == EACCES )
            error( KIO::ERR_ACCESS_DENIED, src.path() );
         else
@@ -1090,8 +1090,6 @@ void FileProtocol::listDir( const KURL& url)
     chdir(path_buffer);
 
     finished();
-
-    kdDebug(7101) << "=============== BYE ===========" << endl;
 }
 
 /*
@@ -1454,14 +1452,14 @@ bool FileProtocol::pmount(const QString &dev)
 bool FileProtocol::pumount(const QString &point)
 {
     QString real_point = KStandardDirs::realPath(point);
-		
+
     KMountPoint::List mtab = KMountPoint::currentMountPoints();
 
     KMountPoint::List::const_iterator it = mtab.begin();
     KMountPoint::List::const_iterator end = mtab.end();
 
     QString dev;
-	
+
     for (; it!=end; ++it)
     {
         QString tmp = (*it)->mountedFrom();

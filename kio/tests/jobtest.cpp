@@ -23,17 +23,21 @@
 
 #include <kurl.h>
 #include <kapplication.h>
+#include <klargefile.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 
 #include <qfileinfo.h>
 #include <qeventloop.h>
+#include <qdir.h>
+#include <qfileinfo.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <qdir.h>
+#include <unistd.h>
+#include <errno.h>
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
@@ -102,6 +106,7 @@ void JobTest::runAll()
     moveFileToSamePartition();
     moveDirectoryToSamePartition();
     moveFileToOtherPartition();
+    moveSymlinkToOtherPartition();
     moveDirectoryToOtherPartition();
     moveFileNoPermissions();
     moveDirectoryNoPermissions();
@@ -122,6 +127,23 @@ static void createTestFile( const QString& path )
     f.close();
 }
 
+static void createTestSymlink( const QString& path )
+{
+    // Create symlink if it doesn't exist yet
+    KDE_struct_stat buf;
+    if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
+        bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
+        if ( !ok )
+            kdFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
+        assert( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+        assert( S_ISLNK( buf.st_mode ) );
+    } else {
+        assert( S_ISLNK( buf.st_mode ) );
+    }
+    qDebug( "symlink %s created", qPrintable( path ) );
+    assert( QFileInfo( path ).isSymLink() );
+}
+
 static void createTestDirectory( const QString& path )
 {
     QDir dir;
@@ -129,6 +151,8 @@ static void createTestDirectory( const QString& path )
     if ( !ok && !dir.exists() )
         kdFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
+    createTestSymlink( path + "/testlink" );
+    assert( QFileInfo( path + "/testlink" ).isSymLink() );
 }
 
 void JobTest::enterLoop()
@@ -259,11 +283,37 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
     assert( QFile::exists( src ) ); // it's back
 }
 
+static void moveLocalSymlink( const QString& src, const QString& dest )
+{
+    KDE_struct_stat buf;
+    assert ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 );
+    KURL u;
+    u.setPath( src );
+    KURL d;
+    d.setPath( dest );
+
+    // move the symlink with move, NOT with file_move
+    bool ok = KIO::NetAccess::move( u, d );
+    if ( !ok )
+        kdWarning() << KIO::NetAccess::lastError() << endl;
+    assert( ok );
+    assert ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
+    assert( !QFile::exists( src ) ); // not there anymore
+
+    // move it back with KIO::move()
+    ok = KIO::NetAccess::move( d, u, 0 );
+    assert( ok );
+    assert ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
+    assert ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
+}
+
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
+    kdDebug() << k_funcinfo << src << " " << dest << endl;
     assert( QFile::exists( src ) );
     assert( QFileInfo( src ).isDir() );
     assert( QFileInfo( src + "/testfile" ).isFile() );
+    assert( QFileInfo( src + "/testlink" ).isSymLink() );
     KURL u;
     u.setPath( src );
     KURL d;
@@ -275,6 +325,8 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
     assert( QFileInfo( dest ).isDir() );
     assert( QFileInfo( dest + "/testfile" ).isFile() );
     assert( !QFile::exists( src ) ); // not there anymore
+
+    assert( QFileInfo( dest + "/testlink" ).isSymLink() );
 }
 
 void JobTest::moveFileToSamePartition()
@@ -304,11 +356,20 @@ void JobTest::moveFileToOtherPartition()
     moveLocalFile( filePath, dest );
 }
 
+void JobTest::moveSymlinkToOtherPartition()
+{
+    kdDebug() << k_funcinfo << endl;
+    const QString filePath = homeTmpDir() + "testlink";
+    const QString dest = otherTmpDir() + "testlink_moved";
+    createTestSymlink( filePath );
+    moveLocalSymlink( filePath, dest );
+}
+
 void JobTest::moveDirectoryToOtherPartition()
 {
     kdDebug() << k_funcinfo << endl;
     const QString src = homeTmpDir() + "dirFromHome";
-    const QString dest = homeTmpDir() + "dirFromHome_moved";
+    const QString dest = otherTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
     moveLocalDirectory( src, dest );
 }
@@ -373,7 +434,11 @@ void JobTest::listRecursive()
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     assert( ok );
     m_names.sort();
-    check( "listRecursive", m_names.join( "," ), ".,..,dirFromHome,dirFromHome/testfile,dirFromHome_copied,dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/testfile,fileFromHome,fileFromHome_copied" );
+    check( "listRecursive", m_names.join( "," ), ".,..,"
+            "dirFromHome,dirFromHome/testfile,dirFromHome/testlink,dirFromHome_copied,"
+            "dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/dirFromHome/testlink,"
+            "dirFromHome_copied/testfile,dirFromHome_copied/testlink,"
+            "fileFromHome,fileFromHome_copied" );
 }
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )

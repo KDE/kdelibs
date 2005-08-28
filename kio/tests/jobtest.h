@@ -44,6 +44,7 @@ public:
     void moveFileToSamePartition();
     void moveDirectoryToSamePartition();
     void moveFileToOtherPartition();
+    void moveSymlinkToOtherPartition();
     void moveDirectoryToOtherPartition();
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
