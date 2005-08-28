@@ -480,7 +480,10 @@ void DownloadDialog::slotInstall()
 {
   Entry *e = getEntry();
   if(!e) return;
-  
+
+  d->m_lvtmp_r->setEnabled( false );
+  d->m_lvtmp_l->setEnabled( false );
+  d->m_lvtmp_d->setEnabled( false );
   m_entryitem = currentEntryItem();
   m_entryname = m_entryitem->text(0);
 
