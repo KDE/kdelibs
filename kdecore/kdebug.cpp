@@ -539,7 +539,7 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!print) return *this;
     bool isBinary = false;
     for ( int i = 0; i < data.size() && !isBinary ; ++i ) {
-        if ( data[i] < 32 )
+        if ( data[i] < 32 || data[i] > 127 )
             isBinary = true;
     }
     if ( isBinary ) {
