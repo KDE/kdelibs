@@ -267,52 +267,9 @@ void RenderInline::paint(PaintInfo& i,
 
     i.phase = oldphase;
     if (style()->visibility() == VISIBLE && i.phase == PaintActionOutline) {
-#ifdef APPLE_CHANGES
-        if (style()->outlineStyleIsAuto())
-            paintFocusRing(i.p, _tx, _ty);
-        else
-#endif
         paintOutlines(i.p, _tx, _ty);
     }
 }
-
-#ifdef APPLE_CHANGES
-void RenderInline::addFocusRingRects(QPainter *p, int _tx, int _ty)
-{
-    for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-        p->addFocusRingRect(_tx + curr->xPos(),
-                            _ty + curr->yPos(),
-                            curr->width(),
-                            curr->height());
-    }
-
-    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling()) {
-        if (!curr->isText())
-            curr->addFocusRingRects(p, _tx + curr->xPos(), _ty + curr->yPos());
-    }
-
-    if (continuation())
-        continuation()->addFocusRingRects(p,
-                                          _tx - containingBlock()->xPos() + continuation()->xPos(),
-                                          _ty - containingBlock()->yPos() + continuation()->yPos());
-}
-
-void RenderInline::paintFocusRing(QPainter *p, int tx, int ty)
-{
-    int ow = style()->outlineWidth();
-    if (ow == 0 || m_isContinuation) // Continuations get painted by the original inline.
-        return;
-
-    QColor oc = style()->outlineColor();
-    if (!oc.isValid())
-        oc = style()->color();
-
-    p->initFocusRing(ow,  style()->outlineOffset(), oc);
-    addFocusRingRects(p, tx, ty);
-    p->drawFocusRing();
-    p->clearFocusRing();
-}
-#endif
 
 /**
  * Appends the given coordinate-pair to the point-array if it is not

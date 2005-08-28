@@ -514,8 +514,7 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
                                     int my, int mh, int _tx, int _ty, int w, int h, int xOffsetOnLine)
 {
     CachedImage* bg = bgLayer->backgroundImage();
-#warning "FIXME"
-    bool hasBackgroundImage = bg && /*(bg->pixmap_size() == bg->valid_rect().size()) && */
+    bool hasBackgroundImage = bg && bg->isComplete() && 
                               !bg->isTransparent() && !bg->isErrorImage();
     if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
         object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight());

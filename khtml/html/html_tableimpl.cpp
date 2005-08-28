@@ -707,10 +707,22 @@ long HTMLTableRowElementImpl::rowIndex() const
     if ( !table || table->id() != ID_TABLE )
 	return -1;
 
+    HTMLTableSectionElementImpl *head = static_cast<HTMLTableElementImpl *>(table)->tHead();
     HTMLTableSectionElementImpl *foot = static_cast<HTMLTableElementImpl *>(table)->tFoot();
+
+    if ( head ) {
+        const NodeImpl *row = head->firstChild();
+        while ( row ) {
+            if ( row == this )
+                return rIndex;
+            rIndex++;
+            row = row->nextSibling();
+        }
+    }
+
     NodeImpl *node = table->firstChild();
     while ( node ) {
-        if ( node != foot && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) ) {
+        if ( node != foot && node != head && (node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY) ) {
 	    HTMLTableSectionElementImpl* section = static_cast<HTMLTableSectionElementImpl *>(node);
 	    const NodeImpl *row = section->firstChild();
 	    while ( row ) {

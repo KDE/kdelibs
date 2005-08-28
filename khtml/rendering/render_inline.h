@@ -75,11 +75,6 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
-#ifdef APPLE_CHANGES
-    virtual void addFocusRingRects(QPainter *painter, int _tx, int _ty);
-    void paintFocusRing(QPainter *p, int tx, int ty);
-#endif
-
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
 protected:

@@ -79,15 +79,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
     if ( !thisObj.isValid() ) {
-      if ( m_hackThisObj.isValid() ) { // special hack for Image
-        thisObj = m_hackThisObj;
-      }
-      else
-      {
-        // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
-        // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
-        thisObj = win;
-      }
+      // Window events (window.onload/window.onresize etc.) must have 'this' set to the window.
+      // DocumentImpl::defaultEventHandler sets currentTarget to 0 to mean 'window'.
+      thisObj = win;
     }
 
     Window *window = static_cast<Window*>(win.imp());

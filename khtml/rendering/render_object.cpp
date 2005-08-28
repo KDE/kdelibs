@@ -1732,7 +1732,7 @@ short RenderObject::getVerticalPosition( bool firstLine, RenderObject* ref ) con
             vpos = PositionBottom;
         } else {
             if (!ref) ref = parent();
-            bool checkParent = ref->isInline() && !ref->isReplacedBlock() && 
+            bool checkParent = ref->isInline() && !ref->isReplacedBlock() &&
                                !( ref->style()->verticalAlign() == TOP || ref->style()->verticalAlign() == BOTTOM );
             vpos = checkParent ? ref->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.

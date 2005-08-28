@@ -58,7 +58,6 @@ namespace khtml {
     class CounterNode;
     class CachedObject;
     class CachedCSSStyleSheet;
-    class RenderImage;
 }
 
 namespace DOM {
@@ -79,6 +78,7 @@ namespace DOM {
     class GenericRONamedNodeMapImpl;
     class HTMLDocumentImpl;
     class HTMLElementImpl;
+    class HTMLImageElementImpl;
     class NodeFilter;
     class NodeFilterImpl;
     class NodeIteratorImpl;
@@ -132,10 +132,10 @@ class ElementMappingCache
 {
 public:
     /**
-     For each name, we hold a reference count, and a 
-     pointer. If the item is in the table, which implies 
-     reference count is > 1, the name is a valid key. 
-     If the pointer is non-null, it points to the appropriate 
+     For each name, we hold a reference count, and a
+     pointer. If the item is in the table, which implies
+     reference count is > 1, the name is a valid key.
+     If the pointer is non-null, it points to the appropriate
      mapping
     */
     struct ItemInfo
@@ -150,7 +150,7 @@ public:
      Add a pointer as just one of candidates, not neccesserily the proper one
     */
     void add(const QString& id, NodeImpl* nd);
-    
+
     /**
      Set the pointer as the definite mapping; it must have already been added
     */
@@ -492,9 +492,9 @@ public:
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
 
-    void dispatchImageLoadEventSoon(khtml::RenderImage *);
+    void dispatchImageLoadEventSoon(HTMLImageElementImpl *);
     void dispatchImageLoadEventsNow();
-    void removeImage(khtml::RenderImage *);
+    void removeImage(HTMLImageElementImpl *);
     virtual void timerEvent(QTimerEvent *);
 
     // Returns the owning element in the parent document.
@@ -522,6 +522,10 @@ public:
     {
         return m_underDocNamedCache;
     }
+
+    NodeListImpl::Cache* acquireCachedNodeListInfo(NodeListImpl::CacheFactory* fact,
+                                                   NodeImpl* base, int type);
+    void                 releaseCachedNodeListInfo(NodeListImpl::Cache* cache);
 
 signals:
     void finishedParsing();
@@ -616,8 +620,11 @@ protected:
     //Forms, images, etc., must be quickly accessible via document.name.
     ElementMappingCache m_underDocNamedCache;
 
-    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchSoonList;
-    Q3PtrList<khtml::RenderImage> m_imageLoadEventDispatchingList;
+    //Cache for nodelists and collections.
+    Q3IntDict<NodeListImpl::Cache> m_nodeListCache;
+
+    Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
+    Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
 
     khtml::RenderArena* m_renderArena;

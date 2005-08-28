@@ -118,7 +118,7 @@ public:
 
     void insertFloatingObject(RenderObject *o);
     void removeFloatingObject(RenderObject *o);
- 
+
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();

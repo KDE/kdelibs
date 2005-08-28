@@ -285,7 +285,7 @@ Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257), 
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257),
       m_imageLoadEventTimer(0)
 {
     document->doc = this;
@@ -363,6 +363,10 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 DocumentImpl::~DocumentImpl()
 {
     assert( !m_render );
+
+    Q3IntDictIterator<NodeListImpl::Cache> it(m_nodeListCache);
+    for (; it.current(); ++it)
+        it.current()->deref();
 
     if (m_loadingXMLDoc)
 	m_loadingXMLDoc->deref(this);
@@ -1163,9 +1167,7 @@ void DocumentImpl::detach()
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    // Empty out these lists as a performance optimization, since detaching
-    // all the individual render objects will cause all the RenderImage
-    // objects to remove themselves from the lists.
+    // Empty out these lists as a performance optimization
     m_imageLoadEventDispatchSoonList.clear();
     m_imageLoadEventDispatchingList.clear();
     NodeBaseImpl::detach();
@@ -2480,7 +2482,7 @@ EventListener *DocumentImpl::createHTMLEventListener(const QString& code, const 
     return part() ? part()->createHTMLEventListener(code, name, node) : 0;
 }
 
-void DocumentImpl::dispatchImageLoadEventSoon(khtml::RenderImage *image)
+void DocumentImpl::dispatchImageLoadEventSoon(HTMLImageElementImpl *image)
 {
     m_imageLoadEventDispatchSoonList.append(image);
     if (!m_imageLoadEventTimer) {
@@ -2488,7 +2490,7 @@ void DocumentImpl::dispatchImageLoadEventSoon(khtml::RenderImage *image)
     }
 }
 
-void DocumentImpl::removeImage(khtml::RenderImage *image)
+void DocumentImpl::removeImage(HTMLImageElementImpl *image)
 {
     // Remove instances of this image from both lists.
     // Use loops because we allow multiple instances to get into the lists.
@@ -2513,15 +2515,15 @@ void DocumentImpl::dispatchImageLoadEventsNow()
         killTimer(m_imageLoadEventTimer);
         m_imageLoadEventTimer = 0;
     }
-    
+
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (Q3PtrListIterator<khtml::RenderImage> it(m_imageLoadEventDispatchingList); it.current(); ) {
-        khtml::RenderImage* image = it.current();
+    for (Q3PtrListIterator<HTMLImageElementImpl> it(m_imageLoadEventDispatchingList); it.current(); ) {
+        HTMLImageElementImpl* image = it.current();
         // Must advance iterator *before* dispatching call.
         // Otherwise, it might be advanced automatically if dispatching the call had a side effect
-        // of destroying the current HTMLImageLoader, and then we would advance past the *next* item,
-        // missing one altogether.
+        // of destroying the current HTMLImageElementImpl, and then we would advance past the *next*
+        // item, missing one altogether.
         ++it;
         image->dispatchLoadEvent();
     }
@@ -2600,6 +2602,46 @@ KHTMLPart* DOM::DocumentImpl::part() const
 {
     // ### TODO: make this independent from a KHTMLView one day.
     return view() ? view()->part() : 0;
+}
+
+NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
+       NodeListImpl::CacheFactory* factory, NodeImpl* base, int type)
+{
+    //### might want to flush the dict when the version number
+    //changes
+    NodeListImpl::CacheKey key(base, type);
+
+    //Check to see if we have this sort of item cached.
+    NodeListImpl::Cache* cached =
+        (type == NodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.find(key.hash());
+
+    if (cached) {
+        if (cached->key == key) {
+            cached->ref(); //Add the nodelist's reference
+            return cached;
+        } else {
+            //Conflict. Drop our reference to the old item.
+            cached->deref();
+        }
+    }
+
+    //Nothing to reuse, make a new item.
+    NodeListImpl::Cache* newInfo = factory();
+    newInfo->key = key;
+    newInfo->clear(this);
+    newInfo->ref(); //Add the nodelist's reference
+
+    if (type != NodeListImpl::UNCACHEABLE) {
+        newInfo->ref(); //Add the cache's reference
+        m_nodeListCache.replace(key.hash(), newInfo);
+    }
+
+    return newInfo;
+}
+
+void DOM::DocumentImpl::releaseCachedNodeListInfo(NodeListImpl::Cache* entry)
+{
+    entry->deref();
 }
 
 // ----------------------------------------------------------------------------

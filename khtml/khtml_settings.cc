@@ -313,8 +313,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
   }
 
-  if (reset || config->hasGroup("Access Keys"))
-  {
+  if (reset || config->hasGroup("Access Keys")) {
       config->setGroup( "Access Keys" );
       d->m_accessKeysEnabled = config->readBoolEntry( "Enabled", true );
   }
@@ -350,13 +349,13 @@ void KHTMLSettings::init( KConfig * config, bool reset )
               {
                   QRegExp rx;
                   int left,right;
-                  
+
                   for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
                   for (left=0; left<right && url[left]=='*' ; ++left);
-                  
+
                   rx.setWildcard(true);
                   rx.setPattern(url.mid(left,right-left));
-                  
+
                   d->adFilters.append(rx);
               }
           }
@@ -762,11 +761,11 @@ void KHTMLSettings::addAdFilter( const QString &url )
     else
     {
         int left,right;
-        
+
         rx.setWildcard(true);
         for (right=url.length(); right>0 && url[right-1]=='*' ; --right);
         for (left=0; left<right && url[left]=='*' ; ++left);
-        
+
         rx.setPattern(url.mid(left,right-left));
     }
 

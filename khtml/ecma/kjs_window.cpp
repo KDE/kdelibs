@@ -457,13 +457,9 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
   if (part->document().isHTMLDocument()) { // might be XML
     DOM::HTMLDocument doc = part->htmlDocument();
     // Keep in sync with tryGet
-    NamedTagLengthDeterminer::TagLength tags[3] = {
-      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
-    };
-    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
-    for (int i = 0; i < 3; i++)
-      if (tags[i].length > 0)
-        return true;
+
+    if (static_cast<DOM::DocumentImpl*>(doc.handle())->underDocNamedCache().get(p.qstring()))
+      return true;
 
     return !doc.getElementById(p.string()).isNull();
   }
@@ -803,16 +799,29 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       part->document().isHTMLDocument()) { // might be XML
     // This is only for images, forms, layers and applets, see KJS::HTMLDocument::tryGet
     DOM::HTMLDocument doc = part->htmlDocument();
-    NamedTagLengthDeterminer::TagLength tags[4] = {
-      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
-    };
-    NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
-    for (int i = 0; i < 4; i++)
-      if (tags[i].length > 0) {
-        if (tags[i].length == 1)
-          return getDOMNode(exec, tags[i].last);
-        // Get all the items with the same name
-        return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
+
+    DOM::ElementMappingCache::ItemInfo* info =
+        static_cast<DOM::DocumentImpl*>(doc.handle())->underDocNamedCache().get(p.qstring());
+    if (info) {
+      if (info->nd)
+        return getDOMNode(exec, info->nd);
+      else {
+        //No cached mapping, do it by hand
+        NamedTagLengthDeterminer::TagLength tags[4] = {
+          {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
+        };
+        NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
+        for (int i = 0; i < 4; i++)
+          if (tags[i].length > 0) {
+            if (tags[i].length == 1) {
+              //Have a single answer -> cache
+              info->nd = tags[i].last;
+              return getDOMNode(exec, tags[i].last);
+            }
+            // Get all the items with the same name
+            return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
+        }
+      }
     }
 
     DOM::Element element = doc.getElementById(p.string() );

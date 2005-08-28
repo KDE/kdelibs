@@ -196,6 +196,7 @@ public:
     };
 
     virtual Id id() const;
+    virtual bool isEnumeratable() const { return true; }
 
     DOMString type() const;
     typeEnum buttonType() const { return m_type; }

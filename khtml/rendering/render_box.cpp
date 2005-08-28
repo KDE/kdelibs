@@ -411,8 +411,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
 	return;
 
     CachedImage* bg = bgLayer->backgroundImage();
-#warning "FIXME"
-    bool shouldPaintBackgroundImage = bg /*&& bg->pixmap_size() == bg->valid_rect().size() */ && !bg->isTransparent() && !bg->isErrorImage();
+    bool shouldPaintBackgroundImage = bg && bg->isComplete() && !bg->isTransparent() && !bg->isErrorImage();
     QColor bgColor = c;
 
     // Paint the color first underneath all images.

@@ -56,6 +56,7 @@ using namespace DOM;
 using namespace khtml;
 using namespace khtmlImLoad;
 
+
 // -------------------------------------------------------------------------
 
 RenderImage::RenderImage(NodeImpl *_element)
@@ -65,7 +66,6 @@ RenderImage::RenderImage(NodeImpl *_element)
 
     m_selectionState = SelectionNone;
     berrorPic = false;
-    loadEventSent = false;
 
     const KHTMLSettings *settings = _element->getDocument()->view()->part()->settings();
     bUnfinishedImageFrame = settings->unfinishedImageFrame();
@@ -277,6 +277,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                 int ax = _tx + leftBorder + leftPad + 2;
                 int ay = _ty + topBorder + topPad + 2;
                 const QFontMetrics &fm = style()->fontMetrics();
+
                 if (cWidth>5 && cHeight>=fm.height())
                     paintInfo.p->drawText(ax, ay+1, cWidth - 4, cHeight - 4, Qt::TextWordWrap, text );
             }
@@ -364,16 +365,6 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj) {
-        NodeImpl *node = element();
-        if (node) {
-            DocumentImpl *document = node->getDocument();
-            if (document) {
-                document->dispatchImageLoadEventSoon(this);
-            }
-        }
-    }
-
     if ( ( image == finishedObj || oimage == finishedObj ) && oimage ) {
         oimage->deref( this );
         oimage = 0;
@@ -381,33 +372,6 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
     }
 
     RenderReplaced::notifyFinished(finishedObj);
-}
-
-void RenderImage::dispatchLoadEvent()
-{
-    if (!loadEventSent) {
-        NodeImpl *node = element();
-        if (node) {
-            loadEventSent = true;
-            if (image->isErrorImage()) {
-                node->dispatchHTMLEvent(EventImpl::ERROR_EVENT, false, false);
-            } else {
-                node->dispatchHTMLEvent(EventImpl::LOAD_EVENT, false, false);
-            }
-        }
-    }
-}
-
-void RenderImage::detach()
-{
-    NodeImpl *node = element();
-    if (node) {
-        DocumentImpl *document = node->getDocument();
-        if (document) {
-            document->removeImage(this);
-        }
-    }
-    RenderReplaced::detach();
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
@@ -473,7 +437,6 @@ void RenderImage::updateFromElement()
            // which can never happen here.
            /*&& (!style() || !style()->contentObject())*/
             ) {
-            loadEventSent = false;
             updateImage( new_image );
         }
     }
@@ -492,9 +455,10 @@ short RenderImage::calcReplacedWidth() const
     const Length w = style()->width();
 
     if (w.isVariable()) {
-        const Length h = style()->height();
-        if ( m_intrinsicHeight > 0 && ( h.isPercent() || h.isFixed() ) )
-            return ( ( h.isPercent() ? calcReplacedHeight() : h.value() )*intrinsicWidth() ) / m_intrinsicHeight;
+	int h = RenderReplaced::calcReplacedHeight();
+	if (m_intrinsicHeight > 0 && h!= m_intrinsicHeight) {
+            return (h*intrinsicWidth())/m_intrinsicHeight;
+	}
     }
 
     return RenderReplaced::calcReplacedWidth();
@@ -505,9 +469,9 @@ int RenderImage::calcReplacedHeight() const
     const Length h = style()->height();
 
     if (h.isVariable()) {
-        const Length w = style()->width();
-        if( m_intrinsicWidth > 0 && ( w.isFixed() || w.isPercent() ))
-            return (( w.isPercent() ? calcReplacedWidth() : w.value() ) * intrinsicHeight()) / m_intrinsicWidth;
+	int w = RenderReplaced::calcReplacedWidth();
+        if( m_intrinsicWidth > 0 && w != m_intrinsicWidth )
+            return (w*intrinsicHeight())/m_intrinsicWidth;
 
     }
 

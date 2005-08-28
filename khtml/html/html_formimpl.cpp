@@ -1350,11 +1350,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         m_size = attr->val() ? attr->val()->toInt() : 20;
         break;
     case ATTR_ALT:
-        // TODO: Webcore has:
-        // if (m_render && m_type == IMAGE)
-        //   static_cast<RenderImage*>(m_render)->updateAltText();
     case ATTR_SRC:
-        if (m_render && m_type == IMAGE) m_render->updateFromElement();
+        if (m_type == IMAGE)
+            setChanged();
         break;
     case ATTR_USEMAP:
         // ### ignore for the moment
@@ -1896,7 +1894,7 @@ long HTMLSelectElementImpl::selectedIndex() const
             o++;
         }
     }
-    Q_ASSERT(m_multiple || items.isEmpty());
+//    Q_ASSERT(m_multiple || items.isEmpty());
     return -1;
 }
 

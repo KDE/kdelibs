@@ -269,6 +269,8 @@ namespace khtml
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
+
+        bool isComplete() const { return i && i->complete(); }
         bool isTransparent() const { return false; } //### isFullyTransparent; }
         bool isErrorImage() const { return m_hadError; }
         bool isBlockedImage() const { return m_wasBlocked; }

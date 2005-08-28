@@ -39,8 +39,6 @@ namespace KJS {
      */
     JSEventListener(Object _listener, ObjectImp *_compareListenerImp, const Object &_win, bool _html = false);
     virtual ~JSEventListener();
-    void hackSetThisObj( Object& thisObj ) { m_hackThisObj = thisObj; }
-    void hackUnsetThisObj() { m_hackThisObj = Object(0L); }
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
     // Return the KJS function object executed when this event is emitted
@@ -66,7 +64,7 @@ namespace KJS {
     // the correct event listener, as well as the 'listener.handleEvent' function, we need to call.
     mutable ObjectImp *compareListenerImp;
     bool html;
-    Object win, m_hackThisObj;
+    Object win;
   };
 
   class JSLazyEventListener : public JSEventListener {

@@ -328,7 +328,7 @@ void RenderTable::layout()
             // Completely empty tables (with no sections or anything) should at least honor specified height
             // in strict mode.
             m_height += th;
-        }            
+        }
     }
     int bl = borderLeft();
     if (!collapseBorders())
@@ -1983,7 +1983,7 @@ short RenderTableCell::baselinePosition( bool ) const
 	    offset += o->paddingTop() + o->borderTop();
 	o = o->firstChild();
     }
-    
+
     if (!o->isInline())
         return paddingTop() + borderTop() + contentHeight();
 
