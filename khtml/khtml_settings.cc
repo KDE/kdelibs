@@ -220,7 +220,7 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
   key = jsPrefix + QString::fromLatin1("WindowOpenPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowOpenPolicy = (KJSWindowOpenPolicy)
-    		config->readUnsignedNumEntry( key, KJSWindowOpenAllow );
+    		config->readUnsignedNumEntry( key, KJSWindowOpenSmart );
   else if ( !global )
     pd_settings.m_windowOpenPolicy = d->global.m_windowOpenPolicy;
 
@@ -329,7 +329,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       QMap<QString,QString> entryMap = config->entryMap("Filter Settings");
       QMap<QString,QString>::ConstIterator it;
       d->adFilters.reserve(entryMap.count());
-      for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) 
+      for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
       {
           QString name = it.key();
           QString url = it.data();
@@ -739,7 +739,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 }
 
 void KHTMLSettings::addAdFilter( const QString &url )
-{   
+{
     KConfig config( "khtmlrc", false, false );
     config.setGroup( "Filter Settings" );
 
@@ -777,7 +777,7 @@ void KHTMLSettings::addAdFilter( const QString &url )
                            rx.errorString(),
                            i18n("Filter error"));
     }
-}   
+}
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
