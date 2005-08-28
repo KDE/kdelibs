@@ -211,6 +211,13 @@ struct KPARTS_EXPORT WindowArgs
     WindowArgsPrivate *d; // don't use before KDE4, many KDE-3.x didn't have an explicit destructor
 };
 
+/**
+ * The KParts::OpenURLEvent event informs that a given part has opened a given URL.
+ * Applications can use this event to send this information to interested plugins.
+ *
+ * The event should be sent before opening the URL in the part, so that the plugins
+ * can use part()->url() to get the old URL.
+ */
 class KPARTS_EXPORT OpenURLEvent : public Event
 {
 public:
