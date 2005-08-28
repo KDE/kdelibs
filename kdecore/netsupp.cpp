@@ -49,6 +49,8 @@
 extern int h_errno;
 #endif
 
+#include <kdemacros.h>
+
 #if !defined(kde_sockaddr_in6)
 /*
  * kde_sockaddr_in6 might have got defined even though we #undef'ed
@@ -1237,5 +1239,5 @@ int inet_pton(int af, const char *cp, void *buf)
 namespace KDE
 {
   /** @internal */
-  extern const int resolverFlags = KRF_getaddrinfo | KRF_resolver | KRF_afinet6 | KRF_inet_ntop | KRF_inet_pton;
+  extern const int KDE_EXPORT resolverFlags = KRF_getaddrinfo | KRF_resolver | KRF_afinet6 | KRF_inet_ntop | KRF_inet_pton;
 }
