@@ -428,9 +428,6 @@ void DownloadDialog::slotDetails()
 {
   Entry *e = getEntry();
   if(!e) return;
-  d->m_lvtmp_r->setEnabled( false );
-  d->m_lvtmp_l->setEnabled( false );
-  d->m_lvtmp_d->setEnabled( false );
 
   QString lang = KGlobal::locale()->language();
 
