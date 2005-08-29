@@ -22,6 +22,7 @@
 #include <q3dragobject.h>
 #include <qevent.h>
 #include <qtooltip.h>
+#include <qwhatsthis.h>
 
 #include "config.h"
 
@@ -125,9 +126,8 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
-    //FIXME: see bug #111642
-    //QToolTip::add( this, d->item.toolTip() );
-    //QWhatsThis::add( this, d->item.whatsThis() );
+    QToolTip::add( this, d->item.toolTip() );
+    QWhatsThis::add( this, d->item.whatsThis() );
 }
 
 void KPushButton::setGuiItem( KStdGuiItem::StdItem item )
