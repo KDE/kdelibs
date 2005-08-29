@@ -379,17 +379,13 @@ public:
      */
     KStatusBar *statusBar();
 
-    /**
-     * List of members of KMainWindow class.
-     */
-    static Q3PtrList<KMainWindow>* memberList;
 
     //KDE4: replace with memberList() and make memberList member private
     /**
      * List of members of KMainWindow class.
      * @since 3.4
      */
-    static Q3PtrList<KMainWindow>* getMemberList();
+    static Q3PtrList<KMainWindow>* memberList();
 
     /**
      * Returns a pointer to the toolbar with the specified name.
@@ -999,6 +995,10 @@ private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
     QList<KToolBar*> toolbarList;
+    /**
+     * List of members of KMainWindow class.
+     */
+    static Q3PtrList<KMainWindow>* mMemberList;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

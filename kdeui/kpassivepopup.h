@@ -126,9 +126,9 @@ public:
     virtual void setView( const QString &caption, const QString &text, const QPixmap &icon );
 
     /**
-     * Returns a widget that is used as standard view if one of the 
+     * Returns a widget that is used as standard view if one of the
      * setView() methods taking the QString arguments is used.
-     * You can use the returned widget to customize the passivepopup while 
+     * You can use the returned widget to customize the passivepopup while
      * keeping the look similar to the "standard" passivepopups.
      *
      * After customizing the widget, pass it to setView( QWidget* )
@@ -179,8 +179,8 @@ public:
      */
     void setAnchor( const QPoint& anchor );
 
-    // TODO KDE4: give all the statics method a const QPoint p = QPoint() that in 
-    // case the point is not null calls the show(cosnt QPoint &p) method instead
+    // TODO KDE4: give all the statics method a const QPoint p = QPoint() that in
+    // case the point is not null calls the show(const QPoint &p) method instead
     // the show() one.
     /**
      * Convenience method that displays popup with the specified  message  beside the

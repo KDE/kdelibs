@@ -79,7 +79,7 @@ public:
     Q3PtrList<Q3DockWindow> hiddenDockWindows;
 };
 
-Q3PtrList<KMainWindow>* KMainWindow::memberList = 0L;
+Q3PtrList<KMainWindow>* KMainWindow::mMemberList = 0L;
 static bool no_query_exit = false;
 static KMWSessionManaged* ksm = 0;
 static KStaticDeleter<KMWSessionManaged> ksmd;
@@ -96,13 +96,13 @@ public:
     bool saveState( QSessionManager& )
     {
         KConfig* config = KApplication::kApplication()->sessionConfig();
-        if ( KMainWindow::memberList->first() ){
+        if ( KMainWindow::memberList()->first() ){
             // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
             // hook is useful for better document orientation
-            KMainWindow::memberList->first()->saveGlobalProperties(config);
+            KMainWindow::memberList()->first()->saveGlobalProperties(config);
         }
 
-        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
         int n = 0;
         for (it.toFirst(); it.current(); ++it){
             n++;
@@ -118,7 +118,7 @@ public:
         // not really a fast method but the only compatible one
         if ( sm.allowsInteraction() ) {
             bool canceled = false;
-            Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+            Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
             ::no_query_exit = true;
             for (it.toFirst(); it.current() && !canceled;){
                 KMainWindow *window = *it;
@@ -187,8 +187,8 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
-    if( !memberList )
-        memberList = new Q3PtrList<KMainWindow>;
+    if( !mMemberList )
+        mMemberList = new Q3PtrList<KMainWindow>;
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
@@ -231,7 +231,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     }
     setName( s );
 
-    memberList->append( this );
+    mMemberList->append( this );
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
@@ -318,7 +318,7 @@ KMainWindow::~KMainWindow()
     delete mb;
     delete d->m_interface;
     delete d;
-    memberList->remove( this );
+    mMemberList->remove( this );
 }
 
 KPopupMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
@@ -639,7 +639,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         e->accept();
 
         int not_withdrawn = 0;
-        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList);
+        Q3PtrListIterator<KMainWindow> it(*KMainWindow::memberList());
         for (it.toFirst(); it.current(); ++it){
             if ( !it.current()->isHidden() && it.current()->isTopLevel() && it.current() != this )
                 not_withdrawn++;
@@ -1197,14 +1197,14 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 void KMainWindow::setIcon( const QPixmap& p )
 {
     Q3MainWindow::setIcon( p );
-#ifdef Q_WS_X11 
+#ifdef Q_WS_X11
     // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
     // is used by KMainWindow, sets it
     KWin::setIcons( winId(), p, QPixmap());
 #endif
 }
 
-Q3PtrList<KMainWindow>* KMainWindow::getMemberList() { return memberList; }
+Q3PtrList<KMainWindow>* KMainWindow::memberList() { return mMemberList; }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
 // DF: because they compile KDE much faster :)
