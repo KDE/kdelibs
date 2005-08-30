@@ -115,7 +115,7 @@ RegExp::RegExp(const UString &p, int f)
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
   int errorCode = regcomp(&preg, intern.ascii(), regflags);
-  if (regcomp(&preg, intern.ascii(), regflags) != 0) {
+  if (errorCode != 0) {
 #ifndef NDEBUG
     char errorMessage[80];
     regerror(errorCode, &preg, errorMessage, sizeof errorMessage);
