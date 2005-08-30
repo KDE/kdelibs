@@ -1177,7 +1177,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 					    const QString& )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3%% used)")
+	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
 	.arg(KIO::convertSizeFromKB(kBAvail))
 	.arg(KIO::convertSizeFromKB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
