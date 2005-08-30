@@ -12,6 +12,7 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qdir.h>
+#include <qgroupbox.h>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -61,80 +62,84 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   le_dest->setText( dest );
 
   // Operation groupbox & buttons
-  opButtons = new Q3ButtonGroup( "Operation", main_widget );
-  topLayout->addWidget( opButtons, 10 );
-  connect( opButtons, SIGNAL(clicked(int)), SLOT(changeOperation(int)) );
+  opButtons = new QButtonGroup( main_widget );
+  QGroupBox *box = new QGroupBox( "Operation", main_widget );
+  topLayout->addWidget( box, 10 );
+  connect( opButtons, SIGNAL(buttonClicked(QAbstractButton*)), SLOT(changeOperation(QAbstractButton*)) );
 
-  QBoxLayout *hbLayout = new QHBoxLayout( opButtons, 15 );
+  QBoxLayout *hbLayout = new QHBoxLayout( box, 15 );
 
-  rbList = new QRadioButton( "List", opButtons );
-  opButtons->insert( rbList, List );
+  rbList = new QRadioButton( "List", box );
+  opButtons->addButton( rbList );
   hbLayout->addWidget( rbList, 5 );
 
-  rbListRecursive = new QRadioButton( "ListRecursive", opButtons );
-  opButtons->insert( rbListRecursive, ListRecursive );
+  rbListRecursive = new QRadioButton( "ListRecursive", box );
+  opButtons->addButton( rbListRecursive );
   hbLayout->addWidget( rbListRecursive, 5 );
 
-  rbStat = new QRadioButton( "Stat", opButtons );
-  opButtons->insert( rbStat, Stat );
+  rbStat = new QRadioButton( "Stat", box );
+  opButtons->addButton( rbStat );
   hbLayout->addWidget( rbStat, 5 );
 
-  rbGet = new QRadioButton( "Get", opButtons );
-  opButtons->insert( rbGet, Get );
+  rbGet = new QRadioButton( "Get", box );
+  opButtons->addButton( rbGet );
   hbLayout->addWidget( rbGet, 5 );
 
-  rbPut = new QRadioButton( "Put", opButtons );
-  opButtons->insert( rbPut, Put );
+  rbPut = new QRadioButton( "Put", box );
+  opButtons->addButton( rbPut );
   hbLayout->addWidget( rbPut, 5 );
 
-  rbCopy = new QRadioButton( "Copy", opButtons );
-  opButtons->insert( rbCopy, Copy );
+  rbCopy = new QRadioButton( "Copy", box );
+  opButtons->addButton( rbCopy );
   hbLayout->addWidget( rbCopy, 5 );
 
-  rbMove = new QRadioButton( "Move", opButtons );
-  opButtons->insert( rbMove, Move );
+  rbMove = new QRadioButton( "Move", box );
+  opButtons->addButton( rbMove );
   hbLayout->addWidget( rbMove, 5 );
 
-  rbDelete = new QRadioButton( "Delete", opButtons );
-  opButtons->insert( rbDelete, Delete );
+  rbDelete = new QRadioButton( "Delete", box );
+  opButtons->addButton( rbDelete );
   hbLayout->addWidget( rbDelete, 5 );
 
-  rbShred = new QRadioButton( "Shred", opButtons );
-  opButtons->insert( rbShred, Shred );
+  rbShred = new QRadioButton( "Shred", box );
+  opButtons->addButton( rbShred );
   hbLayout->addWidget( rbShred, 5 );
 
-  rbMkdir = new QRadioButton( "Mkdir", opButtons );
-  opButtons->insert( rbMkdir, Mkdir );
+  rbMkdir = new QRadioButton( "Mkdir", box );
+  opButtons->addButton( rbMkdir );
   hbLayout->addWidget( rbMkdir, 5 );
 
-  rbMimetype = new QRadioButton( "Mimetype", opButtons );
-  opButtons->insert( rbMimetype, Mimetype );
+  rbMimetype = new QRadioButton( "Mimetype", box );
+  opButtons->addButton( rbMimetype );
   hbLayout->addWidget( rbMimetype, 5 );
 
-  opButtons->setButton( op );
-  changeOperation( op );
+  QAbstractButton *b = opButtons->buttons()[op];
+  b->setChecked( true );
+  changeOperation( b );
 
   // Progress groupbox & buttons
-  progressButtons = new Q3ButtonGroup( "Progress dialog mode", main_widget );
-  topLayout->addWidget( progressButtons, 10 );
+  progressButtons = new QButtonGroup( main_widget );
+  box = new QGroupBox( "Progress dialog mode", main_widget );
+  topLayout->addWidget( box, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
-  hbLayout = new QHBoxLayout( progressButtons, 15 );
+  hbLayout = new QHBoxLayout( box, 15 );
 
-  rbProgressNone = new QRadioButton( "None", progressButtons );
-  progressButtons->insert( rbProgressNone, ProgressNone );
+  rbProgressNone = new QRadioButton( "None", box );
+  progressButtons->insert( rbProgressNone );
   hbLayout->addWidget( rbProgressNone, 5 );
 
-  rbProgressDefault = new QRadioButton( "Default", progressButtons );
-  progressButtons->insert( rbProgressDefault, ProgressDefault );
+  rbProgressDefault = new QRadioButton( "Default", box );
+  progressButtons->insert( rbProgressDefault );
   hbLayout->addWidget( rbProgressDefault, 5 );
 
-  rbProgressStatus = new QRadioButton( "Status", progressButtons );
-  progressButtons->insert( rbProgressStatus, ProgressStatus );
+  rbProgressStatus = new QRadioButton( "Status", box );
+  progressButtons->insert( rbProgressStatus );
   hbLayout->addWidget( rbProgressStatus, 5 );
 
-  progressButtons->setButton( pr );
-  changeProgressMode( pr );
+  b = progressButtons->buttons()[pr];
+  b->setChecked( true );
+  changeProgressMode( b );
 
   // statusbar progress widget
   statusProgress = new StatusbarProgress( statusBar() );
@@ -188,18 +193,18 @@ void KioslaveTest::slotQuit(){
 }
 
 
-void KioslaveTest::changeOperation( int id ) {
+void KioslaveTest::changeOperation( QAbstractButton *b ) {
   // only two urls for copy and move
   bool enab = rbCopy->isChecked() || rbMove->isChecked();
 
   le_dest->setEnabled( enab );
 
-  selectedOperation = id;
+  selectedOperation = opButtons->buttons().indexOf( b );
 }
 
 
-void KioslaveTest::changeProgressMode( int id ) {
-  progressMode = id;
+void KioslaveTest::changeProgressMode( QAbstractButton *b ) {
+  progressMode = progressButtons->buttons().indexOf( b ); 
 
   if ( progressMode == ProgressStatus ) {
     statusBar()->show();
@@ -400,11 +405,14 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
             if ((*it2).m_uds == UDS_NAME)
                 kdDebug() << "" << ( *it2 ).m_str << endl;
             else if ( (*it2).m_uds == UDS_EXTRA) {
-                Q_ASSERT( extraFieldsIt != extraFields.end() );
-                QString column = (*extraFieldsIt).name;
-                //QString type = (*extraFieldsIt).type;
-                kdDebug() << "  Extra data (" << column << ") :" << ( *it2 ).m_str << endl;
-                ++extraFieldsIt;
+                if ( extraFieldsIt != extraFields.end() ) {
+                    QString column = (*extraFieldsIt).name;
+                    //QString type = (*extraFieldsIt).type;
+                    kdDebug() << "  Extra data (" << column << ") :" << ( *it2 ).m_str << endl;
+                    ++extraFieldsIt;
+                } else {
+                    kdDebug() << "  Extra data (UNDEFINED) :" << ( *it2 ).m_str << endl;
+                }
             }
         }
     }

@@ -16,7 +16,7 @@
 #include <qlineedit.h>
 #include <qradiobutton.h>
 #include <qpushbutton.h>
-#include <q3buttongroup.h>
+#include <qbuttongroup.h>
 #include <qwidget.h>
 
 #include <kmainwindow.h>
@@ -33,9 +33,9 @@ public:
   KioslaveTest( QString src, QString dest, uint op, uint pr );
   ~KioslaveTest() {}
 
-  enum Operations { List, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Shred, Mkdir, Mimetype };
+  enum Operations { List = 0, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Shred, Mkdir, Mimetype };
 
-  enum ProgressModes { ProgressNone, ProgressDefault, ProgressStatus };
+  enum ProgressModes { ProgressNone = 0, ProgressDefault, ProgressStatus };
 
 protected:
 
@@ -51,7 +51,7 @@ protected:
   QLineEdit *le_dest;
 
   // operation stuff
-  Q3ButtonGroup *opButtons;
+  QButtonGroup *opButtons;
 
   QRadioButton *rbList;
   QRadioButton *rbListRecursive;
@@ -66,7 +66,7 @@ protected:
   QRadioButton *rbMimetype;
 
   // progress stuff
-  Q3ButtonGroup *progressButtons;
+  QButtonGroup *progressButtons;
 
   QRadioButton *rbProgressNone;
   QRadioButton *rbProgressDefault;
@@ -78,8 +78,8 @@ protected:
   QPushButton *close;
 
 protected slots:
-  void changeOperation( int id );
-  void changeProgressMode( int id );
+  void changeOperation( QAbstractButton *b );
+  void changeProgressMode( QAbstractButton *b );
 
   void startJob();
   void stopJob();
