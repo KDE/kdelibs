@@ -176,7 +176,7 @@ namespace ThreadWeaver {
             QMutexLocker l (m_mutex);
             for ( int i = 0; i < qMin ( reserve,  noOfNewJobs ); ++i )
             {
-                Thread *th = new Thread(this);
+                Thread *th = createThread();
                 m_inventory.append(th);
                 connect ( th,  SIGNAL ( jobStarted ( Thread*,  Job* ) ),
                           SIGNAL ( threadBusy ( Thread*,  Job* ) ) );
@@ -192,6 +192,10 @@ namespace ThreadWeaver {
         }
     }
 
+    Thread* WeaverImpl::createThread()
+    {
+        return new Thread ( this );
+    }
 
     bool WeaverImpl::dequeue ( Job* job )
     {

@@ -110,6 +110,10 @@ namespace ThreadWeaver {
         /** Adjust active thread count.
             This is a helper function for incActiveThreadCount and decActiveThreadCount. */
         void adjustActiveThreadCount ( int diff );
+        /** Factory method to create the threads.
+            Overload in adapted Weaver implementations.
+        */
+        virtual Thread* createThread();
         /** Adjust the inventory size.
 
 	    This method creates threads on demand. Threads in the inventory
