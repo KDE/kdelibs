@@ -37,4 +37,5 @@ void SampleTester::allTests()
 {
   int i = 2;
   CHECK( i + 2, 4 );
+  VERIFY( i + 2 > 3 );
 }

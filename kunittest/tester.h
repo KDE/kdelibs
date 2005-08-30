@@ -334,6 +334,13 @@ using namespace std;
  */
 #define CHECK( x, y ) check( __FILE__, __LINE__, #x, x, y, false )
 
+/*! @def VERIFY( cond )
+ * Use this macro to check that a boolean condition is true. For example
+ *
+ * @code VERIFY( numberOfRows() > 0 ); @endcode
+ */
+#define VERIFY( cond ) check( __FILE__, __LINE__, #cond, cond, true, false )
+
 /*! @def XFAIL(x,y)
  * Use this macro to perform a check you expect to fail. For example
  *

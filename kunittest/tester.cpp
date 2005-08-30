@@ -71,14 +71,14 @@ namespace KUnitTest
 
         foreach ( QByteArray sl, allSlots )
         {
-            const QString str = sl;
-            if ( str.startsWith("test") )
+            if ( sl.startsWith("test") )
             {
                 m_results = results(sl);
+                Q_ASSERT( m_results );
                 m_results->clear();
 
                 cout << "KUnitTest_Debug_BeginSlot[" << sl.data() << "]" << endl;
-                invokeMember(str);
+                invokeMember(sl);
                 cout << "KUnitTest_Debug_EndSlot[" << sl.data() << "]" << endl;
             }
         }
