@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="18">
+<kpartgui name="khtmlpart" version="19">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -26,15 +26,15 @@
   <Action name="setEncoding" />
   <Action name="useStylesheet" />
   <ActionList name="debugScriptList" />
-<!--
+
   <Separator />
   <Action name="debugRenderTree" />
   <Action name="debugDOMTree" />
--->
+
  </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
- <Action name="find" /> 
+ <Action name="find" />
  <Separator />
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
