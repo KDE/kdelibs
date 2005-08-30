@@ -221,7 +221,6 @@ KURIFilter::KURIFilter()
 
 KURIFilter::~KURIFilter()
 {
-    s_self = 0;
 }
 
 bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
