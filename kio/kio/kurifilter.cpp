@@ -203,7 +203,7 @@ void KURIFilterPlugin::setArguments( KURIFilterData& data, const QString& args )
 }
 
 //********************************************  KURIFilter **********************************************
-KURIFilter *KURIFilter::m_self;
+KURIFilter *KURIFilter::m_self = 0;
 static KStaticDeleter<KURIFilter> kurifiltersd;
 
 KURIFilter *KURIFilter::self()
