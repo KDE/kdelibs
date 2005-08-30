@@ -639,7 +639,7 @@ protected:
     void loadPlugins();
 
 private:
-    static KURIFilter *m_self;
+    static KURIFilter *s_self;
     KURIFilterPluginList m_lstPlugins;
     KURIFilterPrivate *d;
 };
