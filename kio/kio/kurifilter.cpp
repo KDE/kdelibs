@@ -203,14 +203,14 @@ void KURIFilterPlugin::setArguments( KURIFilterData& data, const QString& args )
 }
 
 //********************************************  KURIFilter **********************************************
-KURIFilter *KURIFilter::m_self = 0;
+KURIFilter *KURIFilter::s_self = 0;
 static KStaticDeleter<KURIFilter> kurifiltersd;
 
 KURIFilter *KURIFilter::self()
 {
-    if (!m_self)
-        m_self = kurifiltersd.setObject(m_self, new KURIFilter);
-    return m_self;
+    if (!s_self)
+        s_self = kurifiltersd.setObject(s_self, new KURIFilter);
+    return s_self;
 }
 
 KURIFilter::KURIFilter()
@@ -221,7 +221,7 @@ KURIFilter::KURIFilter()
 
 KURIFilter::~KURIFilter()
 {
-    m_self = 0;
+    s_self = 0;
 }
 
 bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
