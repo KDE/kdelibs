@@ -114,10 +114,15 @@ RegExp::RegExp(const UString &p, int f)
   //    ;
   // Note: the Global flag is already handled by RegExpProtoFunc::execute
 
-  if (regcomp(&preg, intern.ascii(), regflags) == 0)
-    regcomp(&preg, "", regflags);
-  else
+  int errorCode = regcomp(&preg, intern.ascii(), regflags);
+  if (regcomp(&preg, intern.ascii(), regflags) != 0) {
+#ifndef NDEBUG
+    char errorMessage[80];
+    regerror(errorCode, &preg, errorMessage, sizeof errorMessage);
+    fprintf(stderr, "KJS: regcomp failed with '%s'", errorMessage);
+#endif
     valid = false;
+  }
 #endif
 }
 
