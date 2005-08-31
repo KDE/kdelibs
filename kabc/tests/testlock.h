@@ -24,9 +24,11 @@
 #include "lock.h"
 
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QLabel>
 
 class QLabel;
-class QListView;
+class Q3ListView;
 
 class KABC_EXPORT LockWidget : public QWidget
 {
@@ -45,7 +47,7 @@ class KABC_EXPORT LockWidget : public QWidget
     KABC::Lock *mLock;
 
     QLabel *mStatus;
-    QListView *mLockView;
+    Q3ListView *mLockView;
 };
 
 #endif

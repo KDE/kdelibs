@@ -45,7 +45,7 @@ int main(int argc,char **argv)
   QString filename = StdAddressBook::fileName();
   
   QFile f( filename );
-  if ( !f.open( IO_ReadOnly ) ) {
+  if ( !f.open( QIODevice::ReadOnly ) ) {
     kdDebug() << "Error opening file '" << filename << "' for reading." << endl;
     return 1;
   }
@@ -58,7 +58,7 @@ int main(int argc,char **argv)
   text = QString::fromUtf8( text.local8Bit() );
   text.replace( "\n", "\r\n" );
   
-  if ( !f.open( IO_WriteOnly ) ) {
+  if ( !f.open( QIODevice::WriteOnly ) ) {
     kdDebug() << "Error opening file '" << filename << "' for writing." << endl;
     return 1;
   }
