@@ -518,7 +518,10 @@ public:
            it !=  metaData.end();
            ++it)
       {
-         replace(it.key(), it.data());
+         QMap<QString,QString>::Iterator match = find(it.key());
+         if (match != end()) {
+           insert(it.key(), it.value());
+         }
       }
       return *this;
    }
