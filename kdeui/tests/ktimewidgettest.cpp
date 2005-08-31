@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {
   KLocale::setMainCatalogue("kdelibs");
-  KApplication app(argc, argv, "KTimeWidgettest");
+  KApplication app;
   KTimeWidget timeWidget;
   app.setMainWidget(&timeWidget);
   timeWidget.show();

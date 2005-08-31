@@ -23,7 +23,7 @@
 
 int main(int argc, char *argv[])
 {
-	KApplication app(argc, argv, "KWordWrapTest");
+	KApplication app;
 	
 	QFont font( "helvetica", 12 ); // let's hope we all have the same...
 	QFontMetrics fm( font );

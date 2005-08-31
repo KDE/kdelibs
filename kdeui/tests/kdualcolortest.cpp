@@ -6,6 +6,9 @@
 #include <klocale.h>
 #include <qlayout.h>
 #include <qpalette.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <QHBoxLayout>
 
 KDualColorWidget::KDualColorWidget(QWidget *parent, const char *name)
     : QWidget(parent, name)

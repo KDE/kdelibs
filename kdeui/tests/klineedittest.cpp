@@ -3,6 +3,8 @@
 #include <qlayout.h>
 #include <q3hbox.h>
 #include <qtimer.h>
+//Added by qt3to4:
+#include <QVBoxLayout>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

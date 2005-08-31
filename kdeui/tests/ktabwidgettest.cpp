@@ -1,6 +1,12 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <q3dragobject.h>
+//Added by qt3to4:
+#include <QGridLayout>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QLabel>
+#include <Q3PopupMenu>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -355,7 +361,7 @@ void Test::toggleLabels(bool state)
 int main(int argc, char** argv )
 {
     KCmdLineArgs::init(argc, argv, "ktabwidgettest", "ktabwidget test app", "1.0");
-    KApplication app(argc, argv);
+    KApplication app;
     Test *t = new Test();
 
     app.setMainWidget( t );

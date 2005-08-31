@@ -18,7 +18,7 @@ void Client::slotSec()
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, "kxmlguitest" );
+    KApplication app;
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // Let's add $PWD (ideally $srcdir instead...) to it

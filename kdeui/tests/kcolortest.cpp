@@ -8,6 +8,9 @@
 #include <qdatetime.h>
 #include <qdesktopwidget.h>
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QPaintEvent>
 
 bool fullscreen = false, oldway = false, intvsfade = false;
 int max = 20; // how many steps

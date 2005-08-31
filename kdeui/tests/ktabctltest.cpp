@@ -19,6 +19,8 @@
 #include <qtabbar.h>
 #include <qpalette.h>
 #include <q3multilineedit.h>
+//Added by qt3to4:
+#include <QResizeEvent>
 
 #include <stdio.h>
 #include <stdlib.h>

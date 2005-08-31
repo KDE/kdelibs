@@ -24,6 +24,9 @@
 #include <qlabel.h>
 #include <qdialog.h>
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 int main(int argc, char **argv) {
    KAboutData about("kbuttonboxtest", "kbuttonboxtest", "version");

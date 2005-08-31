@@ -1,5 +1,7 @@
 #include <kapplication.h>
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QTimerEvent>
 #include "kprogress.h"
 
 

@@ -21,6 +21,8 @@
 #include <qlabel.h>
 #include <q3hbox.h>
 #include <qtimer.h>
+//Added by qt3to4:
+#include <QVBoxLayout>
 
 
 KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )

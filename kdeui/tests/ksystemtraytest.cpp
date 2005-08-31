@@ -1,5 +1,7 @@
 #include <ksystemtray.h>
 #include <kapplication.h>
+//Added by qt3to4:
+#include <QLabel>
 
 int main(int argc, char **argv)
 {

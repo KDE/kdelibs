@@ -7,6 +7,11 @@
 #include <qlabel.h>
 #include <qevent.h>
 #include <q3groupbox.h>
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <Q3Frame>
+#include <QGridLayout>
+#include <QResizeEvent>
 
 /*
 void

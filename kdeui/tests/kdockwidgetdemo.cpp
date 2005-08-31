@@ -18,6 +18,9 @@
 #include <qmime.h>
 #include <q3strlist.h>
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QShowEvent>
 
 #include <kconfig.h>
 #include <kaboutdata.h>

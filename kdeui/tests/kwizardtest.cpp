@@ -20,6 +20,8 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <QHBoxLayout>
 #include <kapplication.h>
 #include <kwizard.h>
 

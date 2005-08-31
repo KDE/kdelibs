@@ -15,6 +15,8 @@
 #include "kdockwidgettest.h"
 
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <QPixmap>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kapplication.h>

@@ -17,6 +17,8 @@
 */
 
 #include <qpointer.h>
+//Added by qt3to4:
+#include <QLabel>
 
 #include <kapplication.h>
 #include <kmainwindow.h>
@@ -84,7 +86,7 @@ public:
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "ktoolbarlabelactiontest" );
+  KApplication app;
 
   KGlobal::instance()->dirs()->addResourceDir("data", ".");
 

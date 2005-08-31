@@ -23,6 +23,8 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qtextcodec.h>
+//Added by qt3to4:
+#include <Q3CString>
 
 int main(int argc, char **argv)
 {

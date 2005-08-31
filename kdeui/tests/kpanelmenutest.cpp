@@ -2,6 +2,8 @@
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <dcopclient.h>
+//Added by qt3to4:
+#include <QLabel>
 
 TestWidget::TestWidget(QWidget *parent, const char *name)
     : QLabel(parent, name)
@@ -57,7 +59,7 @@ void TestWidget::slotSubMenuCalled(int id)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "menutest");
+    KApplication *app = new KApplication;
     
     TestWidget w;
     app->setMainWidget(&w);

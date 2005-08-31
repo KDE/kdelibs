@@ -10,6 +10,9 @@
 
 #include <qlayout.h>
 #include <q3groupbox.h>
+//Added by qt3to4:
+#include <QHBoxLayout>
+#include <QBoxLayout>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
