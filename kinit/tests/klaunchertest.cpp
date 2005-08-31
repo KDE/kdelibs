@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
    KApplication::kdeinitExec("konsole");
 
-   KApplication k(argc, argv, "klaunchertest");
+   KApplication k;
  
    kapp->dcopClient()->registerAs( kapp->name()) ;
 
