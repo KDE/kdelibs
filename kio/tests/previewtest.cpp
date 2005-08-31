@@ -6,7 +6,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klineedit.h>
-
+#include <kcmdlineargs.h>
 #include <kio/previewjob.h>
 
 #include "previewtest.moc"
@@ -55,7 +55,8 @@ void PreviewTest::slotFailed()
 
 int main(int argc, char **argv)
 {
-    KApplication app;//(argc, argv, "previewtest");
+    KCmdLineArgs::init(argc,argv,"previewtest", 0, 0, 0, 0);
+    KApplication app;
     PreviewTest *w = new PreviewTest;
     w->show();
     app.setMainWidget(w);

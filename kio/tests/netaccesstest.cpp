@@ -21,11 +21,12 @@
 #include <kurl.h>
 #include <kio/netaccess.h>
 #include <qfile.h>
+#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
-  KApplication app;//( argc, argv, "netaccesstest", true /* it _has_ a GUI ! */);
-
+  KCmdLineArgs::init(argc,argv,"netaccesstest", 0, 0, 0, 0);
+  KApplication app;
   KURL srcURL( "ftp://ftp.kde.org/pub/kde/README" );
   KURL tmpURL( "file:/tmp/netaccesstest_README" );
 

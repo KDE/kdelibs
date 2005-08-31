@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kdirlister.h>
 #include <kdebug.h>
-
+#include <kcmdlineargs.h>
 #include "kdirlistertest.h"
 
 #include <cstdlib>
@@ -151,7 +151,8 @@ void KDirListerTest::completed()
 
 int main ( int argc, char *argv[] )
 {
-  KApplication app;//( argc, argv, "kdirlistertest" );
+    KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, 0, 0, 0 );
+  KApplication app;
 
   KDirListerTest *test = new KDirListerTest( 0 );
   test->show();

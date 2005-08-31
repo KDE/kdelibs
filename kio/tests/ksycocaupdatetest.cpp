@@ -1,10 +1,12 @@
 #include <kservice.h>
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 
 int main(int argc, char *argv[])
 {
-   KApplication k;//(argc,argv,"whatever"); // KMessageBox needs KApp for makeStdCaption
+    KCmdLineArgs::init(argc,argv,"whatever", 0, 0, 0, 0);
+   KApplication k;// KMessageBox needs KApp for makeStdCaption
 
    KService::rebuildKSycoca(0);
    return 0;

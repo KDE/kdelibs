@@ -2,12 +2,13 @@
 #include <kio/defaultprogress.h>
 #include <kurl.h>
 #include <kdebug.h>
-
+#include <kcmdlineargs.h>
 using namespace KIO;
 
 int main(int argc, char **argv)
 {
-    KApplication app;//(argc, argv, "kdefaultprogresstest");
+    KCmdLineArgs::init( argc, argv, "kdefaultprogresstest", 0, 0, 0, 0 );
+    KApplication app;
 
     DefaultProgress* dlg = new DefaultProgress();
     KURL src("http://this.host.doesn't.exist/this/dir/neither/andthisfileneither");

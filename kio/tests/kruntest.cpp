@@ -26,7 +26,7 @@
 #include <kshell.h>
 #include <kservice.h>
 #include <kde_file.h>
-
+#include <kcmdlineargs.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qdir.h>
@@ -121,8 +121,8 @@ void checkPDE(const KService &service, const KURL::List &urls, bool hs, bool tf,
 
 int main(int argc, char **argv)
 {
-  KApplication app;//( argc, argv, "kruntest", true /* it _has_ a GUI ! */);
-
+  KCmdLineArgs::init(argc,argv,"kruntest", 0, 0, 0, 0);
+  KApplication app;
   // First some non-interactive tests
   checkBN( "/usr/bin/ls", true, "ls");
   checkBN( "/usr/bin/ls", false, "/usr/bin/ls");

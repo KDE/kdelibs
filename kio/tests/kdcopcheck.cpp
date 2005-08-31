@@ -9,7 +9,7 @@
 #include <kprotocolinfo.h>
 #include <kprocess.h>
 #include <qtimer.h>
-
+#include <kcmdlineargs.h>
 #include "kdcopcheck.h"
 #include <dcopclient.h>
 
@@ -91,7 +91,8 @@ int TestService::exec()
 int main(int argc, char *argv[])
 {
    putenv("IGNORE_SYCOCA_VERSION=true");
-   KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+   KCmdLineArgs::init( argc,argv,"whatever",0, 0, 0, 0 );
+   KApplication k( true, false/*noGUI*/ );// KMessageBox needs KApp for makeStdCaption
 
    k.dcopClient()->setNotifications(true);
 
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
                result = "Unique";
             else if (n == KService::DCOP_Multi)
                result = "Multi";
-           
+
             qWarning("%s %s", (*it)->desktopEntryPath().latin1(),
                               result.latin1());
          }
