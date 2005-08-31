@@ -14,9 +14,10 @@
 #include <q3stylesheet.h>
 #include <stdlib.h>
 #include <QDesktopWidget>
-
+#include <kcmdlineargs.h>
 int main( int argc, char ** argv )
 {
+    KCmdLineArgs::init( argc, argv, "helpviewer", 0, 0, 0, 0);
     KApplication a;
 
     QString home;
@@ -25,7 +26,7 @@ int main( int argc, char ** argv )
     else
         home = QString(getenv("QTDIR")) + "/doc/html/index.html";
 
-    
+
     HelpWindow *help = new HelpWindow(home, ".", 0, "help viewer");
 
     if ( QApplication::desktop()->width() > 400

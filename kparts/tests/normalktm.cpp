@@ -13,7 +13,7 @@
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
-
+#include <kcmdlineargs.h>
 #include <kmenubar.h>
 #include <Q3PopupMenu>
 Shell::Shell()
@@ -77,7 +77,7 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( m_splitter, "editor", 
+  m_editorpart = new NotepadPart( m_splitter, "editor",
                                   this, "NotepadPart" );
   m_editorpart->setReadWrite(); // read-write mode
   ////// m_manager->addPart( m_editorpart );
@@ -108,7 +108,8 @@ void Shell::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-  KApplication app; // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
+    KCmdLineArgs::init( argc, argv, "kpartstest" , 0, 0, 0, 0 );
+    KApplication app; // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
 
   Shell *shell = new Shell;
 

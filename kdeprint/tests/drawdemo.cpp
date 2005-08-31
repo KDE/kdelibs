@@ -17,7 +17,7 @@
 #include <kapplication.h>
 #include <qapplication.h>
 #include <math.h>
-
+#include <kcmdlineargs.h>
 
 //
 // This function draws a color wheel.
@@ -245,6 +245,7 @@ void DrawView::resizeEvent( QResizeEvent * )
 
 int main( int argc, char **argv )
 {
+    KCmdLineArgs::init( argc, argv, "drawdemo",0,0,0,0 );
     KApplication app;
     DrawView   draw;
     app.setMainWidget( &draw );

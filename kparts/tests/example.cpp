@@ -6,7 +6,7 @@
 #include <qsplitter.h>
 #include <qcheckbox.h>
 #include <qdir.h>
-
+#include <kcmdlineargs.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -82,7 +82,7 @@ void Shell::embedEditor()
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
-  m_editorpart = new NotepadPart( m_splitter, "editor", 
+  m_editorpart = new NotepadPart( m_splitter, "editor",
                                   this, "NotepadPart" );
   m_editorpart->setReadWrite(); // read-write mode
   m_manager->addPart( m_editorpart );
@@ -121,6 +121,7 @@ void Shell::slotFileEdit()
 
 int main( int argc, char **argv )
 {
+    KCmdLineArgs::init( argc, argv, "kpartstest",0,0,0,0 );
   KApplication app;
 
   Shell *shell = new Shell;
