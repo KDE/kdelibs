@@ -22,10 +22,10 @@
 #ifndef __sha1__ko__h
 #define __sha1__ko__h
 
-
+#include <kdemacros.h>
 /* @internal
  */
-class SHA1 {
+class KDE_EXPORT SHA1 {
 	public:
 		SHA1();
 		virtual ~SHA1();

@@ -26,7 +26,7 @@ int rc;
      printf("Error processing the data.  rc=%d\n", rc);
   } else printf("Done.\n");
 
-const unsigned char *res = sha1->getHash();
+const unsigned char *res = sha1->hash();
 
   if (res) {
      for (int i = 0; i < 20; i++) {

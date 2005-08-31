@@ -33,11 +33,11 @@
 #endif
 
 #include "blockcipher.h"
-
+#include <kdemacros.h>
 
 /* @internal
  */
-class BlowFish : public BlockCipher {
+class KDE_EXPORT BlowFish : public BlockCipher {
 	public:
 		BlowFish();
 		virtual ~BlowFish();
