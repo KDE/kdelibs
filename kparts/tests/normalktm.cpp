@@ -15,7 +15,7 @@
 #include <klocale.h>
 
 #include <kmenubar.h>
-
+#include <Q3PopupMenu>
 Shell::Shell()
 {
   // We can do this "switch active part" because we have a splitter with
@@ -108,7 +108,7 @@ void Shell::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-  KApplication app( argc, argv, "kpartstest" ); // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
+  KApplication app; // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
 
   Shell *shell = new Shell;
 

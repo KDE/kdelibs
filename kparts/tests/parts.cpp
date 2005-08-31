@@ -43,7 +43,7 @@ bool Part1::openFile()
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
-    while ( !t.eof() ) {
+    while ( !t.atEnd() ) {
       s += t.readLine() + "\n";
     }
     f.close();
