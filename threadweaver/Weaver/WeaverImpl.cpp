@@ -333,4 +333,12 @@ namespace ThreadWeaver {
 	debug (1, "WeaverImpl::finish: done.\n\n\n" );
     }
 
+    void WeaverImpl::requestAbort()
+    {
+        for ( int i = 0; i<m_inventory.size(); ++i )
+        {
+            m_inventory[i]->requestAbort();
+        }
+    }
+
 }

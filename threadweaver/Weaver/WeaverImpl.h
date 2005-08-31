@@ -59,7 +59,7 @@ namespace ThreadWeaver {
         virtual void resume();
         bool isEmpty ();
 	bool isIdle ();
-	int queueLength ();
+        int queueLength ();
         /** Assign a job to the calling thread.
 	    This is supposed to be called from the Thread objects in
 	    the inventory. Do not call this method from your code.
@@ -95,6 +95,7 @@ namespace ThreadWeaver {
             to all idle threads. */
         void assignJobs();
 	int noOfThreads ();
+        void requestAbort();
     signals:
         /** A Thread has been created. */
         void threadStarted ( Thread* );

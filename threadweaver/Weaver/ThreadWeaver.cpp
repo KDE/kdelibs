@@ -316,4 +316,9 @@ namespace ThreadWeaver {
         return m_weaverinterface->noOfThreads();
     }
 
+    void Weaver::requestAbort()
+    {
+        m_weaverinterface->requestAbort();
+    }
+
 }

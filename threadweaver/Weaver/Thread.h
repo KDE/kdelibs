@@ -17,6 +17,7 @@
 */
 
 #include <QThread>
+#include <QMutex>
 
 namespace ThreadWeaver {
 
@@ -40,7 +41,7 @@ namespace ThreadWeaver {
 	/** The destructor. */
         ~Thread();
 
-        /** Overloaded to execute the assigned jobs.
+        /** Overload to execute the assigned jobs.
 	    Whenever the thread is idle, it will ask it's Weaver parent for a
 	    Job to do. The Weaver will either return a Job or a Nil
 	    pointer. When a Nil pointer is returned, it tells the thread to
@@ -60,8 +61,12 @@ namespace ThreadWeaver {
 	    ID. */
 	const unsigned int id();
 
-	/** Post an event, will be received and processed by the Weaver. */
-	// void post (Event::Action, Job* = 0);
+        /** Request the abortion of the current job.
+            If there is no current job, this method will do nothing, but can
+            safely be called.
+            It forwards the request to the current Job.
+         */
+        void requestAbort();
 
     signals:
         /** The thread has been started. */
@@ -73,9 +78,12 @@ namespace ThreadWeaver {
     private:
         WeaverImpl *m_parent;
 
+        Job* m_job;
+
 	const unsigned int m_id;
 
 	static unsigned int sm_Id;
+        static QMutex sm_mutex;
 
 	static unsigned int makeId();
     };

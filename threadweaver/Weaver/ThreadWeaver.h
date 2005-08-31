@@ -77,6 +77,7 @@ namespace ThreadWeaver {
 	bool isIdle ();
 	int queueLength ();
 	int noOfThreads ();
+        void requestAbort();
     protected:
         WeaverInterface *m_weaverinterface;
 	/** The application-global Weaver instance.

@@ -31,7 +31,7 @@ namespace ThreadWeaver {
 	It is essential for the ThreadWeaver library that as a kind of
         convention, the different creators of Job objects do not touch the
         protected data members of the Job until somehow notified by the
-        Job. See the SPR signal for an example.
+        Job.
 
 	Also, please note that Jobs may not be executed twice. Create two
 	different objects to perform two consecutive or parallel runs.
@@ -39,30 +39,6 @@ namespace ThreadWeaver {
 	Jobs may declare dependancies. If Job B depends on Job A, B may not be
 	executed before A is finished.
 
-	Jobs may emit process requests as signals. Consider process requests
-	as a kind of synchronized call to the main thread.
-	Process Requests are a generic means for Job derivate programmers to have
-	the jobs interact with the creators (in the main thread) during
-	processing time. To avoid race
-	conditions and extensive locking and unlocking, the thread executing the
-	job is suspended during the period needed to process the request.
-
-	There are two kinds of process requests (we introduce abbreviations,
-	also in the signal names and the code,
-	only to save typing). Both are emitted by signals in the main thread:
-	- Synchronous Process Requests (SPR): Synchronous requests expect that the
-	complete request is performed in the slots connected to the signals. For
-	example, to update a widget according to the progress of the job, a SPR
-	may be used. In such cases, the Job's execution will be resumed
-	immediately after the signal has been processed.
-	- Asynchronous Process Requests (APR): For APRs, the job emitting the
-	signal does not assume anything about the amount of time needed to
-	perform the operation. Therefore, the thread is not waked after the
-	signal returns. The creator has to wake to thread whenever it is
-	ready by calling the wakeAPR method.
-
-	Note: When using an APR, you better make sure to receive the signal
-	with some object, otherwise the calling thread will block forever!
     */
 
     class Job : public QObject
@@ -87,6 +63,22 @@ namespace ThreadWeaver {
             Do not overload this method to create your own Job
             implementation, overload run(). */
         void execute(Thread*);
+
+        /** Abort the execution of the job.
+            Call this method to ask the Job to abort if it is currently executed.
+            Please note that the default implementation of the method does
+            nothing (!). This is due to the fact that there is no generic
+            method to abort a Job processing. Not even a default boolean flag
+            makes sense, as Job could, for example, be in an event loop and
+            will need to create an exit event.
+            You have to reimplement the method to actually initiate an abort
+            action.
+            The method is not pure virtual because users are not supposed to
+            be forced to always implement requestAbort().
+            Also, this method is supposed to return immidiately, not after the
+            abort has completed. It requests the abort, the Job has to act on
+            the request. */
+        virtual void requestAbort () {}
 
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }

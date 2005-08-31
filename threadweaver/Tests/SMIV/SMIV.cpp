@@ -84,6 +84,7 @@ void SMIV::on_pbSelectFiles_clicked()
 void SMIV::on_pbCancel_clicked()
 {
     weaver->dequeue();
+    weaver->requestAbort();
     ui.pbSelectFiles->setEnabled(true);
     ui.pbCancel->setEnabled(false);
     ui.pbSuspend->setEnabled(false);
