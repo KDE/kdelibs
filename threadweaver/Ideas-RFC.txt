@@ -1,0 +1,16 @@
+This document is our own "Request for Comments". We list ideas here on how to
+improve ThreadWeaver and discuss them. You can also vote on them by adding or
+removing a star in front of the text after the bullet like this: 
+- *** job priorities
+=============================>--------------------<==========================
+
+- * job priorities
+- * job categories
+- thread scheduling priorities on the OS scheduler level (may actually not
+  work on Linux)
+- cancellation of dependant jobs if a dependancy raises an error
+  (all-or-nothing)
+- JobSequence objects (a queue of Jobs that will be executed in order,
+  automatically sets up deps)
+- * virtual aboutToBeQueued method for jobs (allows jobs to queue subjobs
+  before themselves)
