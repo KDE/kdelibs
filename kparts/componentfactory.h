@@ -209,7 +209,7 @@ namespace KParts
                 return 0;
             }
 
-            return createInstanceFromLibrary<T>( library.local8Bit().data(), parent,
+            return createInstanceFromLibrary<T>( library.toLocal8Bit().data(), parent,
 	    					 name, args, error );
         }
 
@@ -230,7 +230,7 @@ namespace KParts
                 return 0;
             }
 
-            return createPartInstanceFromLibrary<T>( library.local8Bit().data(), parentWidget,
+            return createPartInstanceFromLibrary<T>( library.toLocal8Bit().data(), parentWidget,
                                                      widgetName, parent, name, args, error );
         }
 
