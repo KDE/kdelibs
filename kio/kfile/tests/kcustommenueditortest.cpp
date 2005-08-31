@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
   KLocale::setMainCatalogue("kdelibs");
-  KApplication app(argc, argv, "KCustomMenuEditorTest");
+  KApplication app;
   KCustomMenuEditor editor(0);
   KConfig *cfg = new KConfig("kdesktop_custom_menu2");
   editor.load(cfg);
@@ -15,5 +15,6 @@ int main(int argc, char** argv)
      editor.save(cfg);
      cfg->sync();
   }
+  delete cfg;
 }
 

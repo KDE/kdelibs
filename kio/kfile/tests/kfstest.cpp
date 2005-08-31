@@ -44,7 +44,7 @@
 
 int main(int argc, char **argv)
 {
-    KApplication a(argc, argv, "kfstest");
+    KApplication a;
     QString name1;
     QStringList names;
 

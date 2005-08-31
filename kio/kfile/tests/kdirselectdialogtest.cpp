@@ -5,9 +5,9 @@
 
 int main( int argc, char **argv )
 {
-    KApplication app(argc, argv, "kdirselectdialogtest");
+    KApplication app;
 
-    KURL u = KDirSelectDialog::selectDirectory( (argc >= 1) ? argv[1] : QString::null );
+    KURL u = KDirSelectDialog::selectDirectory( (argc >= 1) ? argv[1] : QString());
     if ( u.isValid() )
         KMessageBox::information( 0L,
                                 QString::fromLatin1("You selected the url: %1")
