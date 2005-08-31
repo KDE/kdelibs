@@ -91,7 +91,7 @@ int TestService::exec()
 int main(int argc, char *argv[])
 {
    putenv("IGNORE_SYCOCA_VERSION=true");
-   KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+   KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
    k.dcopClient()->setNotifications(true);
 

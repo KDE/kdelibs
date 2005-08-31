@@ -7,7 +7,7 @@ using namespace KIO;
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv, "kdefaultprogresstest");
+    KApplication app;//(argc, argv, "kdefaultprogresstest");
 
     DefaultProgress* dlg = new DefaultProgress();
     KURL src("http://this.host.doesn't.exist/this/dir/neither/andthisfileneither");

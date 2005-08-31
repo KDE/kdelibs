@@ -151,7 +151,7 @@ void KDirListerTest::completed()
 
 int main ( int argc, char *argv[] )
 {
-  KApplication app( argc, argv, "kdirlistertest" );
+  KApplication app;//( argc, argv, "kdirlistertest" );
 
   KDirListerTest *test = new KDirListerTest( 0 );
   test->show();

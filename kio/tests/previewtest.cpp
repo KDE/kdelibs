@@ -55,7 +55,7 @@ void PreviewTest::slotFailed()
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv, "previewtest");
+    KApplication app;//(argc, argv, "previewtest");
     PreviewTest *w = new PreviewTest;
     w->show();
     app.setMainWidget(w);

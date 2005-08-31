@@ -121,7 +121,7 @@ void checkPDE(const KService &service, const KURL::List &urls, bool hs, bool tf,
 
 int main(int argc, char **argv)
 {
-  KApplication app( argc, argv, "kruntest", true /* it _has_ a GUI ! */);
+  KApplication app;//( argc, argv, "kruntest", true /* it _has_ a GUI ! */);
 
   // First some non-interactive tests
   checkBN( "/usr/bin/ls", true, "ls");

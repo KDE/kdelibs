@@ -24,7 +24,7 @@
 
 int main(int argc, char **argv)
 {
-  KApplication app( argc, argv, "netaccesstest", true /* it _has_ a GUI ! */);
+  KApplication app;//( argc, argv, "netaccesstest", true /* it _has_ a GUI ! */);
 
   KURL srcURL( "ftp://ftp.kde.org/pub/kde/README" );
   KURL tmpURL( "file:/tmp/netaccesstest_README" );
