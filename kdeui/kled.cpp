@@ -30,7 +30,7 @@
 #include <qpainter.h>
 #include <qimage.h>
 #include <qcolor.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kpixmapeffect.h>
 #include "kled.h"
 
