@@ -39,7 +39,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstringhandler.h>
 
 #include <netwm.h> 
-#include <kapplication.h>
+#include <QApplication>
 #include <kstyle.h>
 #include <dcopclient.h>
 
@@ -113,7 +113,7 @@ void KWindowListMenu::init()
 
     // Make sure the popup is not too wide, otherwise clicking in the middle of kdesktop
     // wouldn't leave any place for the popup, and release would activate some menu entry.    
-    int maxwidth = kapp->desktop()->screenGeometry( this ).width() / 2 - 100;
+    int maxwidth = qApp->desktop()->screenGeometry( this ).width() / 2 - 100;
 
     clear();
 

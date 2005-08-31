@@ -15,12 +15,12 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __KDUALCOLORBTN_H
-#define __KDUALCOLORBTN_H
+#ifndef KDUALCOLORBTN_H
+#define KDUALCOLORBTN_H
 
 class QBitmap;
-#include <qbrush.h>
-#include <qwidget.h>
+#include <QBrush>
+#include <QWidget>
 
 #include <kdelibs_export.h>
 
@@ -93,6 +93,7 @@ public:
      * controls.
      */
     virtual QSize sizeHint() const;
+
 public slots:
     /**
      * Sets the foreground color.
@@ -110,6 +111,7 @@ public slots:
      * Sets the color of the selected item.
      */
     void setCurrentColor(const QColor &c);
+
 signals:
     /**
      * Emitted when the foreground color is changed.
@@ -139,6 +141,7 @@ protected:
     // Dnd
     virtual void dragEnterEvent(QDragEnterEvent *ev);
     virtual void dropEvent(QDropEvent *ev);
+
 private:
     QBitmap *arrowBitmap;
     QPixmap *resetPixmap;
@@ -149,9 +152,11 @@ private:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+
 private:
     class KDualColorPrivate;
     KDualColorPrivate *d;
 };
 
 #endif
+

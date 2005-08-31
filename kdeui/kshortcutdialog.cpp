@@ -221,7 +221,7 @@ void KShortcutDialog::updateDetails()
 		m_simple->m_txtShortcut->setFocus();
 		m_adv->m_btnMultiKey->setChecked( false );
 	}
-	kapp->processEvents();
+	qApp->processEvents();
 	adjustSize();
 }
 

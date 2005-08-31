@@ -215,7 +215,7 @@ void KProgressDialog::slotAutoShow()
     }
 
     show();
-    kapp->processEvents();
+    qApp->processEvents();
     mShown = true;
 }
 
