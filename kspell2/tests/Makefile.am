@@ -20,5 +20,8 @@ test_dialog_LDADD = ../ui/libkspell2.la $(LIB_KDECORE)
 test_highlighter_SOURCES = test_highlighter.cpp
 test_highlighter_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)
 
+test_config_SOURCES = test_config.cpp
+test_config_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)
+
 test_configdialog_SOURCES = test_configdialog.cpp
 test_configdialog_LDADD = ../ui/libkspell2_noinst.la ../libkspell2base.la $(LIB_KDECORE)

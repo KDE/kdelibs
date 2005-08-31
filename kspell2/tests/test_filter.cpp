@@ -23,11 +23,13 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-
+#include <kcmdlineargs.h>
 using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
+    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+
     KApplication app;
 
     QString buffer = QString( "This is     a sample buffer.      Please test me." );

@@ -24,11 +24,13 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-
+#include <kcmdlineargs.h>
 #include <q3textedit.h>
 
 int main( int argc, char** argv )
 {
+    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+
     KApplication app;
 
     Q3TextEdit *test = new Q3TextEdit();

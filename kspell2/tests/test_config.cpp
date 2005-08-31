@@ -26,6 +26,8 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
+    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+
     KApplication app(argc, argv, "KSpell2Test");
 
     SettingsDialog *dialog = new SettingsDialog( 0 );

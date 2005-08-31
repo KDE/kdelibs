@@ -23,13 +23,14 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-
+#include <kcmdlineargs.h>
 #include <qdatetime.h>
 
 using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
+    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
     KApplication app;
 
     Broker::Ptr broker = Broker::openBroker();

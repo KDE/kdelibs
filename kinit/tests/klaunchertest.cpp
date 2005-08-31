@@ -1,10 +1,10 @@
 /*
-    This file is part of KDE 
+    This file is part of KDE
 
     Copyright (C) 1998 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License 
+    modify it under the terms of the GNU General Public License
     version 2 as published by the Free Software Foundation.
 
     This software is distributed in the hope that it will be useful,
@@ -24,14 +24,14 @@
 #include <stdio.h>
 #include <q3valuelist.h>
 #include <kservice.h>
-
+#include <kcmdlineargs.h>
 
 int main(int argc, char *argv[])
 {
    KApplication::kdeinitExec("konsole");
-
+   KCmdLineArgs::init( argc, argv, "klaunchertest", 0, 0, 0, 0);
    KApplication k;
- 
+
    kapp->dcopClient()->registerAs( kapp->name()) ;
 
 #if 0
