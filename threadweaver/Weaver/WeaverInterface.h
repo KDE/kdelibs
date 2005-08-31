@@ -125,8 +125,9 @@ namespace ThreadWeaver {
         virtual int noOfThreads () = 0;
         /** Request aborts of the currently executed jobs.
             It is important to understand that aborts are requested, but
-	    cannot be guaranteed, as not all Job classes support. It is up to
-	    the application to decide if and how job aborts are necessary. */
+	    cannot be guaranteed, as not all Job classes support it. It is up
+	    to the application to decide if and how job aborts are
+	    necessary. */
         virtual void requestAbort() = 0;
     signals:
 	/** This signal is emitted when the Weaver has finished ALL currently
