@@ -245,7 +245,7 @@ void DrawView::resizeEvent( QResizeEvent * )
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, "drawdemo" );
+    KApplication app;
     DrawView   draw;
     app.setMainWidget( &draw );
     draw.show();

@@ -13,11 +13,11 @@
 #include <qwindowsstyle.h>
 #include <q3stylesheet.h>
 #include <stdlib.h>
-
+#include <QDesktopWidget>
 
 int main( int argc, char ** argv )
 {
-    KApplication a(argc, argv, "helpviewer");
+    KApplication a;
 
     QString home;
     if (argc > 1)
