@@ -30,7 +30,7 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
-    KApplication app(argc, argv, "KSpell2Test");
+    KApplication app;
 
     Broker::Ptr broker = Broker::openBroker();
 

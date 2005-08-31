@@ -54,7 +54,7 @@ void TestDialog::doneChecking( const QString& buf )
 
 int main( int argc, char** argv )
 {
-    KApplication app(argc, argv, "KSpell2Test");
+    KApplication app;
 
     TestDialog test;
     test.check( "This is a sample buffer. Whih this thingg will "

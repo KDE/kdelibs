@@ -28,7 +28,7 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
-    KApplication app(argc, argv, "Filter");
+    KApplication app;
 
     QString buffer = QString( "This is     a sample buffer.      Please test me." );
 

@@ -159,7 +159,7 @@ void BackgroundTest::slotMisspelling( const QString& word, int start )
 
 int main( int argc, char** argv )
 {
-    KApplication app(argc, argv, "KSpell2Test");
+    KApplication app;
 
     BackgroundTest test;
 

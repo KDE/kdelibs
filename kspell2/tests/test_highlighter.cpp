@@ -29,7 +29,7 @@
 
 int main( int argc, char** argv )
 {
-    KApplication app(argc, argv, "KSpell2Test");
+    KApplication app;
 
     Q3TextEdit *test = new Q3TextEdit();
     KSpell2::Highlighter *hl = new KSpell2::Highlighter( test );
