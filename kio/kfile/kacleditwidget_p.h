@@ -29,6 +29,7 @@
 #include <kfileitem.h>
 #include <kdialogbase.h>
 #include <qpixmap.h>
+#include <qcombobox.h>
 
 class KACLListViewItem;
 class QPushButton;
