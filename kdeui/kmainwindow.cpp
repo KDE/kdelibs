@@ -1152,46 +1152,10 @@ void KMainWindow::paintEvent( QPaintEvent * pe )
     Q3MainWindow::paintEvent(pe); //Upcall to handle SH_MainWindow_SpaceBelowMenuBar rendering
 }
 
-QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
-{
-    KToolBar *tb = (KToolBar*)child( "mainToolBar", "KToolBar" );
-    if (tb && !tb->isHidden()) {
-        switch( tb->barPos() )
-        {
-          case KToolBar::Top:
-          case KToolBar::Bottom:
-            size += QSize(0, tb->sizeHint().height());
-            break;
-
-          case KToolBar::Left:
-          case KToolBar::Right:
-            size += QSize(toolBar()->sizeHint().width(), 0);
-            break;
-
-          case KToolBar::Flat:
-            size += QSize(0, 3+kapp->style()->pixelMetric( QStyle::PM_ToolBarHandleExtent ));
-            break;
-
-          default:
-            break;
-        }
-    }
-    KMenuBar *mb = internalMenuBar();
-    if (mb && !mb->isHidden()) {
-        size += QSize(0,mb->heightForWidth(size.width()));
-        if (style()->styleHint(QStyle::SH_MainWindow_SpaceBelowMenuBar))
-           size += QSize( 0, dockWindowsMovable() ? 1 : 2);
-    }
-    QStatusBar *sb = internalStatusBar();
-    if( sb && !sb->isHidden() )
-       size += QSize(0, sb->sizeHint().height());
-
-    return size;
-}
-
 #if KDE_IS_VERSION( 3, 9, 0 )
 #ifdef __GNUC__
 #warning Remove, should be in Qt
+// TODO does qt4?
 #endif
 #endif
 void KMainWindow::setIcon( const QPixmap& p )

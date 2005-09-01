@@ -58,6 +58,10 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KPalette</H4>
 <p>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</p>
 
+<H4>KProcess</h4>
+<li>setExecutable() was removed in favor of using operator << </li>
+<li>getPid() was removed for just pid()</li>
+
 <H4>KPixmapSplitter</H4>
 
 <H4>KRegExp</H4>
@@ -68,6 +72,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KStyle</H4>
 
 <H4>KURL</H4>
+<li>filename() has been removed, use fileName() instead</li>
 
 <H4>KMD5</H4>
 
@@ -112,6 +117,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KMainWindow</H4>
 <li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private
+<li>sizeForCentralWidgetSize(QSize size) returned the size the mainwindow should have so that the central widget will be of size.  You normally don't need this, the recommended way to achieve a certain central widget size is as follows.<br>
+ * Override sizeHint() in the central widget so that it returns the desired size.<br>
+ * Call updateGeometry() in the central widget whenever the desired size changes. This ensures that the new sizeHint() is properly propagated to any parent layout.<br>
+ * Now call adjustSize() in the mainwindow to resize the mainwindow such that the central widget will become the desired size.
+</li>
 
 <H4>KAboutDialog</H4>
 <li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed
@@ -138,6 +148,9 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KPopupTitle</H4>
 <li>Removed - QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in KDE3</li>
+
+<H4>KStatusBar</H4>
+<li>The unused BarStatus enum was removed.</li>
 
 <H4>KEditListBox</H4>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>

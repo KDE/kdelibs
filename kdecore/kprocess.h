@@ -185,20 +185,6 @@ public:
   virtual ~KProcess();
 
   /**
-     @deprecated
-     Use operator<< instead.
-
-	 Sets the executable to be started with this KProcess object.
-	 Returns false if the process is currently running (in that
-	 case the executable remains unchanged).
-
-	 @see operator<<
-
-  */
-  bool setExecutable(const QString& proc) KDE_DEPRECATED;
-
-
-  /**
    * Sets the executable and the command line argument list for this process.
    *
    * For example, doing an "ls -l /usr/local/bin" can be achieved by:
@@ -291,12 +277,6 @@ public:
    * @return the pid of the process or 0 if no process has been started yet.
    **/
   pid_t pid() const;
-
-  /**
-   * @deprecated
-   * Use pid() instead.
-   */
-  KDE_DEPRECATED pid_t getPid() const { return pid(); }
 
   /**
    * Suspend processing of data from stdout of the child process.

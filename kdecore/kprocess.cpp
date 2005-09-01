@@ -228,19 +228,6 @@ void KProcess::setBinaryExecutable(const char *filename)
    d->executable = filename;
 }
 
-bool KProcess::setExecutable(const QString& proc)
-{
-  if (runs) return false;
-
-  if (proc.isEmpty())  return false;
-
-  if (!arguments.isEmpty())
-     arguments.remove(arguments.begin());
-  arguments.prepend(QFile::encodeName(proc));
-
-  return true;
-}
-
 KProcess &KProcess::operator<<(const QStringList& args)
 {
   QStringList::ConstIterator it = args.begin();

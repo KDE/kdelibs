@@ -640,24 +640,6 @@ public:
     void ignoreInitialGeometry();
 
     /**
-     * @return the size the mainwindow should have so that the central
-     * widget will be of @p size.
-     *
-     * @deprecated You normally don't need this, the recommended way to achieve a
-     *   certain central widget size is as follows:
-     *     @li Override sizeHint() in the central widget so that it
-     *      returns the desired size.
-     *     @li Call updateGeometry() in the central widget whenever the
-     *      desired size changes. This ensures that the new sizeHint() is properly
-     *      propagated to any parent layout.
-     *     @li Now call adjustSize() in the mainwindow to resize the
-     *      mainwindow such that the central widget will become the desired size.
-     *
-     */
-    // KDE4 to be removed
-    QSize sizeForCentralWidgetSize(QSize size) KDE_DEPRECATED;
-
-    /**
      * @internal
      */
     // KDE4 remove

@@ -90,13 +90,6 @@ class KDEUI_EXPORT KStatusBar : public QStatusBar
 
 public:
   /**
-   * @deprecated
-   * WARNING: This enum is only for backward compatibility and it may be removed.
-   * No method here uses it.
-   */
-  enum BarStatus{ Toggle, Show, Hide };
-
-  /**
    *  Constructs a status bar. @p parent is usually KMainWindow.
    */
   KStatusBar( QWidget* parent = 0L, const char* name = 0L );
