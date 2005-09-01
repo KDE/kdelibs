@@ -184,7 +184,7 @@ KVMAllocator::free(Block *block_p)
  * Copy data from a virtual memory block to normal memory
  */
 bool
-KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
+KVMAllocator::copy (void *dest, Block *src, int _offset, size_t length)
 {
    //kdDebug(180)<<"VM read: seek "<<(long)src->start<<" +"<<_offset<<":"<<length<<endl;
    lseek(d->tempfile->handle(), src->start+_offset, SEEK_SET);
@@ -214,7 +214,7 @@ KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
  * Copy data from normal memory to a virtual memory block
  */
 bool
-KVMAllocator::copyBlock(Block *dest, void *src, int _offset, size_t length)
+KVMAllocator::copy (Block *dest, void *src, int _offset, size_t length)
 {
    //kdDebug(180)<<"VM write: seek "<<(long)dest->start<<" +"<<_offset<< ":" << length << endl;
    lseek(d->tempfile->handle(), dest->start+_offset, SEEK_SET);

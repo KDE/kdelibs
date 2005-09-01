@@ -72,9 +72,8 @@ public:
      * @param _offset the offset in the source block
      * @param length the length of the data to copy
      * @return true on success, false on failure, see errno for details
-     * @since 3.2
      */
-    bool copyBlock(void *dest, Block *src, int _offset = 0, size_t length = 0);
+    bool copy (void *dest, Block *src, int _offset = 0, size_t length = 0);
      
     /**
      * Copy @p length bytes from normal memory at address @p src to 
@@ -84,9 +83,8 @@ public:
      * @param _offset the offset in the destination block
      * @param length the length of the data to copy
      * @return true on success, false on failure, see errno for details
-     * @since 3.2
      */
-    bool copyBlock(Block *dest, void *src, int _offset = 0, size_t length = 0);
+    bool copy (Block *dest, void *src, int _offset = 0, size_t length = 0);
 
     /**
      * Map a virtual memory block in memory
