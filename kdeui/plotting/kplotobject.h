@@ -1,5 +1,3 @@
-//Added by qt3to4:
-#include <Q3PtrList>
 /***************************************************************************
                           kplotobject.h - A list of points to be plotted
                              -------------------
@@ -20,17 +18,17 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-
 class QString;
 class QPainter;
 
 #include <kdemacros.h>
 
-/**class DRect
-	*@short equivalent of QRect with double x,y coordinates
-	*@author Jason Harris
-	*@version 1.0
-	*/
+/**
+ * @class DRect
+ * @short Equivalent of QRect with double x,y coordinates
+ * @author Jason Harris
+ * @version 1.0
+ */
 class KDE_EXPORT DRect {
 public:
 	DRect() { DRect( 0.0, 0.0, 1.0, 1.0 ); }
@@ -53,11 +51,12 @@ private:
 	double X,Y,W,H;
 };
 
-/**class DPoint
-	*@short equivalent of QPoint with double x,y coordinates
-	*@author Jason Harris
-	*@version 1.0
-	*/
+/**
+ * @class DPoint
+ * @short equivalent of QPoint with double x,y coordinates
+ * @author Jason Harris
+ * @version 1.0
+ */
 class KDE_EXPORT DPoint {
 public:
 	DPoint() { DPoint( 0.0, 0.0 ); }
@@ -80,125 +79,148 @@ private:
 	double X, Y;
 };
 
-/**@class KPlotObject
-	*@short Encapsulates an object to be plotted in a KPlotWidget.
-	*@author Jason Harris
-	*@version 1.0
-	*Each KPlotObject consists of a list of QPoints, an object type, a color, a size,
-	*and a QString name.  An additional integer (param) specifies something further
-	*about the object's appearance, depending on its type.  There is a draw function
-	*for plotting the object on a KPlotWidget's QPainter.
-	*/
+/**
+ * @class KPlotObject
+ * @short Encapsulates an object to be plotted in a KPlotWidget.
+ * @author Jason Harris
+ * @version 1.0
+ * Each KPlotObject consists of a list of QPoints, an object type, a color, a size,
+ * and a QString name. An additional integer (param) specifies something further
+ * about the object's appearance, depending on its type.  There is a draw function
+ * for plotting the object on a KPlotWidget's QPainter.
+ */
 class KDE_EXPORT KPlotObject{
 public:
-/**@enum PTYPE
-	*The Type classification of the KPlotObject
-	*/
+	/**
+	 * @enum PTYPE
+	 * The Type classification of the KPlotObject
+	 */
 	enum PTYPE { POINTS=0, CURVE=1, LABEL=2, POLYGON=3, UNKNOWN_TYPE };
 
-/**@enum PPARAM
-	*Parameter specifying the kind of points
-	*/
+	/**
+	 * @enum PPARAM
+	 * Parameter specifying the kind of points
+	 */
 	enum PPARAM { DOT=0, CIRCLE=1, SQUARE=2, LETTER=3, UNKNOWN_POINT };
 
-/**@enum CPARAM
-	*Parameter specifying the kind of line.  These are numerically equal to
-	*the Qt::PenStyle enum values.
+	/**
+	 * @enum CPARAM
+	 * Parameter specifying the kind of line. These are numerically equal to
+	 * the Qt::PenStyle enum values.
 	*/
 	enum CPARAM { NO_LINE=0, SOLID=1, DASHED=2, DOTTED=3, DASHDOTTED=4, DASHDOTDOTTED=5, UNKNOWN_CURVE };
 
-/**Default constructor.  Create a POINTS-type object with an empty list of points.
-	*/
+	/**
+	 * Default constructor.  Create a POINTS-type object with an empty list of points.
+	 */
 	KPlotObject();
 
-/**Constructor.  Create a KPlotObject according to the arguments.
-	*/
+	/**
+	 * Constructor. Create a KPlotObject according to the arguments.
+	 */
 	KPlotObject( const QString &name, const QString &color, PTYPE otype, unsigned int size=2, unsigned int param=0 );
 
-/**Destructor (empty)
-	*/
+	/**
+	 * Destructor (empty)
+	 */
 	~KPlotObject();
 
-/**@return the KPlotObject's Name
-	*/
+	/**
+	 * @return the KPlotObject's Name
+	 */
 	QString name() const { return Name; }
 
-/**@short set the KPlotObject's Name
-	*@param n the new name
-	*/
+	/**
+	 * Set the KPlotObject's Name
+	 * @param n the new name
+	 */
 	void setName( const QString &n ) { Name = n; }
 
-/**@return the KPlotObject's Color
-	*/
+	/**
+	 * @return the KPlotObject's Color
+	 */
 	QString color() const { return Color; }
 
-/**@short set the KPlotObject's Color
-	*@param c the new color
-	*/
+	/**
+	 * Set the KPlotObject's Color
+	 * @param c the new color
+	 */
 	void setColor( const QString &c ) { Color = c; }
 
-/**@return the KPlotObject's Type
-	*/
+	/**
+	 * @return the KPlotObject's Type
+	 */
 	PTYPE type() const { return Type; }
 
-/**@short set the KPlotObject's Type
-	*@param t the new type
-	*/
+	/**
+	 * Set the KPlotObject's Type
+	 * @param t the new type
+	 */
 	void setType( PTYPE t ) { Type = t; }
 
-/**@return the KPlotObject's Size
+	/**
+	 * @return the KPlotObject's Size
 	*/
 	unsigned int size() const { return Size; }
 
-/**@short set the KPlotObject's Size
-	*@param s the new size
-	*/
+	/**
+	 * Set the KPlotObject's Size
+	 * @param s the new size
+	 */
 	void setSize( unsigned int s ) { Size = s; }
 
-/**@return the KPlotObject's type-specific Parameter
-	*Parameter is an unsigned int because it can either be a PPARAM or a CPARAM enum.
-	*/
+	/**
+	 * @return the KPlotObject's type-specific Parameter
+	 * Parameter is an unsigned int because it can either be a PPARAM or a CPARAM enum.
+	 */
 	unsigned int param() const { return Parameter; }
 
-/**@short set the KPlotObject's type-specific Parameter
-	*@param p the new parameter
-	*Parameter is an unsigned int because it can either be a PPARAM or a CPARAM enum.
-	*/
+	/**
+	 * Set the KPlotObject's type-specific Parameter
+	 * @param p the new parameter
+	 * Parameter is an unsigned int because it can either be a PPARAM or a CPARAM enum.
+	 */
 	void setParam( unsigned int p ) { Parameter = p; }
 
-/**@return a pointer to the DPoint at position i
-	*@param i the index of the desired point.
-	*/
+	/**
+	 * @return a pointer to the DPoint at position i
+	 * @param i the index of the desired point.
+	 */
 	DPoint* point( unsigned int i ) { return pList.at(i); }
 
-	Q3PtrList<DPoint>* points() { return &pList; }
+	QList<DPoint*> *points() { return &pList; }
 
-/**@short Add a point to the object's list.
-	*@param p the DPoint to add.
-	*/
+	/**
+	 * Add a point to the object's list.
+	 * @param p the DPoint to add.
+	 */
 	void addPoint( const DPoint &p ) { pList.append( new DPoint( p.x(), p.y() ) ); }
 
-/**@short Add a point to the object's list.  This is an overloaded function,
-	*provided for convenience.  It behaves essentially like the above function.
-	*@param p pointer to the DPoint to add.
-	*/
+	/**
+	 * Add a point to the object's list.
+	 * @overload
+	 * @param p pointer to the DPoint to add.
+	 */
 	void addPoint( DPoint *p ) { pList.append( p ); }
 
-/**@short remove the QPoint at position index from the list of points
-	*@param index the index of the point to be removed.
-	*/
-	void removePoint( unsigned int index );
+	/**
+	 * Remove the QPoint at position index from the list of points
+	 * @param index the index of the point to be removed.
+	 */
+	void removePoint( int index );
 
-/**@return the number of QPoints currently in the list
-	*/
+	/**
+	 * @return the number of QPoints currently in the list
+	 */
 	unsigned int count() const { return pList.count(); }
 
-/**@short clear the Object's points list
-	*/
+	/**
+	 * Clear the Object's points list
+	 */
 	void clearPoints() { pList.clear(); }
 
 private:
-	Q3PtrList<DPoint> pList;
+	QList<DPoint*> pList;
 	PTYPE Type;
 	unsigned int Size, Parameter;
 	QString Color, Name;

@@ -17,12 +17,10 @@
 
 #include <math.h> //for log10(), pow(), modf()
 #include <kdebug.h>
+#include <qevent.h>
 #include <qpainter.h>
 #include <qpixmap.h>
-//Added by qt3to4:
-#include <Q3PointArray>
-#include <QResizeEvent>
-#include <QPaintEvent>
+#include <qpolygon.h>
 
 #include "kplotwidget.h"
 #include "kplotwidget.moc"
@@ -32,7 +30,7 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
    dXtick(0.0), dYtick(0.0),
    nmajX(0), nminX(0), nmajY(0), nminY(0),
    ShowTickMarks( true ), ShowTickLabels( true ), ShowGrid( false )
- {
+{
 	setBackgroundMode( Qt::NoBackground );
 
 	//set DataRect
@@ -46,16 +44,15 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
 	buffer = new QPixmap();
 
 	//default colors:
-	setBGColor( QColor( "black" ) );
-	setFGColor( QColor( "white" ) );
-	setGridColor( QColor( "grey" ) );
-
-	ObjectList.setAutoDelete( TRUE );
+	setBGColor( Qt::black );
+	setFGColor( Qt::white );
+	setGridColor( Qt::gray );
 }
 
 KPlotWidget::~KPlotWidget()
 {
 	delete (buffer);
+	ObjectList.clear();
 }
 
 void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
@@ -158,8 +155,8 @@ void KPlotWidget::paintEvent( QPaintEvent* /* e */ ) {
 }
 
 void KPlotWidget::drawObjects( QPainter *p ) {
-	for ( KPlotObject *po = ObjectList.first(); po; po = ObjectList.next() ) {
-
+	for ( QList<KPlotObject*>::ConstIterator it = ObjectList.begin(); it != ObjectList.constEnd(); ++it ) {
+		KPlotObject *po = ( *it );
 		if ( po->points()->count() ) {
 			//draw the plot object
 			p->setPen( QColor( po->color() ) );
@@ -169,8 +166,9 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				{
 					p->setBrush( QColor( po->color() ) );
 
-					for ( DPoint *dp = po->points()->first(); dp; dp = po->points()->next() ) {
-						QPoint q = dp->qpoint( PixRect, DataRect );
+					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+					{
+						QPoint q = ( *dpit )->qpoint( PixRect, DataRect );
 						int x1 = q.x() - po->size()/2;
 						int y1 = q.y() - po->size()/2;
 
@@ -212,11 +210,11 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 #warning "Qt4 p->setBrush( po->color() ); ?"
 					//p->setBrush( po->color() );
 
-					Q3PointArray a( po->count() );
+					QPolygon a( po->count() );
 
 					unsigned int i=0;
-					for ( DPoint *dp = po->points()->first(); dp; dp = po->points()->next() )
-						a.setPoint( i++, dp->qpoint( PixRect, DataRect ) );
+					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+						a.setPoint( i++, ( *dpit )->qpoint( PixRect, DataRect ) );
 
 					p->drawPolygon( a );
 					break;

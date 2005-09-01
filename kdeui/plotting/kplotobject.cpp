@@ -31,20 +31,18 @@ KPlotObject::KPlotObject( const QString &n, const QString &c, PTYPE t, unsigned 
 	setType( t );
 	setSize( s );
 	setParam( p );
-
-	pList.setAutoDelete( TRUE );
 }
 
 KPlotObject::~KPlotObject()
 {
 }
 
-void KPlotObject::removePoint( unsigned int index ) {
-	if ( index > pList.count() - 1 ) {
+void KPlotObject::removePoint( int index ) {
+	if ( ( index < 1 ) || ( index > pList.count() - 1 ) ) {
 		kdWarning() << i18n( "Ignoring attempt to remove non-existent plot object" ) << endl;
 		return;
 	}
 
-	pList.remove( index );
+	pList.removeAt( index );
 }
 
