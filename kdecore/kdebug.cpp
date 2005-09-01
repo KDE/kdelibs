@@ -35,7 +35,7 @@
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
-#include <q3intdict.h>
+#include <qhash.h>
 
 #include <qstring.h>
 #include <qdatetime.h>
@@ -64,32 +64,28 @@
 #include <execinfo.h>
 #endif
 
-class KDebugEntry;
-
-class KDebugEntry
+struct KDebugEntry
 {
-public:
-    KDebugEntry (int n, const QByteArray& d) {number=n; descr=d;}
+    KDebugEntry (unsigned int n = 0, const QByteArray& d = QByteArray()) {number=n; descr=d;}
     unsigned int number;
     QByteArray descr;
 };
 
-static Q3IntDict<KDebugEntry> *KDebugCache;
+typedef QHash<unsigned int, KDebugEntry> debug_cache;
+static debug_cache *KDebugCache;
 
-static KStaticDeleter< Q3IntDict<KDebugEntry> > kdd;
+static KStaticDeleter< debug_cache > kdd;
 
 static QByteArray getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
-    kdd.setObject(KDebugCache, new Q3IntDict<KDebugEntry>( 601 ));
+    kdd.setObject(KDebugCache, new debug_cache);
     // Do not call this deleter from ~KApplication
     KGlobal::unregisterStaticDeleter(&kdd);
-    KDebugCache->setAutoDelete(true);
   }
 
-  KDebugEntry *ent = KDebugCache->find( _num );
-  if ( ent )
-    return ent->descr;
+  if ( KDebugCache->contains( _num ) )
+    return KDebugCache->value( _num ).descr;
 
   if ( !KDebugCache->isEmpty() ) // areas already loaded
     return QByteArray();
@@ -131,18 +127,17 @@ static QByteArray getDescrFromNum(unsigned int _num)
           ch=line[++i];
       } while ( ch >= '0' && ch <= '9');
 
-      const Q_ULONG number = QString( line.mid(numStart,i) ).toULong(); // ###
+      unsigned int number = QString( line.mid(numStart,i) ).toUInt(); // ###
 
       while (line[i] && line[i] <= ' ')
         i++;
 
-      KDebugCache->insert(number, new KDebugEntry(number, line.mid(i, len-i-1)));
+      KDebugCache->insert(number, KDebugEntry(number, line.mid(i, len-i-1)));
   }
   file.close();
 
-  ent = KDebugCache->find( _num );
-  if ( ent )
-      return ent->descr;
+  if ( KDebugCache->contains( _num ) )
+      return KDebugCache->value( _num ).descr;
 
   return QByteArray();
 }
@@ -198,7 +193,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
 
   if (kDebug_data->config && kDebug_data->oldarea != nArea) {
-    kDebug_data->config->setGroup( QString::number(static_cast<int>(nArea)) );
+    kDebug_data->config->setGroup( QString::number(nArea) );
     kDebug_data->oldarea = nArea;
     if ( nArea > 0 && KGlobal::_instance )
       kDebug_data->aAreaName = getDescrFromNum(nArea);
@@ -314,112 +309,168 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         abort();
 }
 
-kdbgstream &perror( kdbgstream &s) { return s << QString::fromLocal8Bit(strerror(errno)); }
-kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
-kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
+kdbgstream &perror( kdbgstream &s)
+{
+    return s << QString::fromLocal8Bit(strerror(errno));
+}
+kdbgstream kdDebug(int area)
+{
+    return kdbgstream(area, KDEBUG_INFO);
+}
+kdbgstream kdDebug(bool cond, int area)
+{
+    if (cond)
+        return kdDebug(area);
+    return kdbgstream(0, 0, false);
+}
 
-kdbgstream kdError(int area) { return kdbgstream("ERROR: ", area, KDEBUG_ERROR); }
-kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream("ERROR: ", area, KDEBUG_ERROR); else return kdbgstream(0,0,false); }
-kdbgstream kdWarning(int area) { return kdbgstream("WARNING: ", area, KDEBUG_WARN); }
-kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream("WARNING: ", area, KDEBUG_WARN); else return kdbgstream(0,0,false); }
-kdbgstream kdFatal(int area) { return kdbgstream("FATAL: ", area, KDEBUG_FATAL); }
-kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream("FATAL: ", area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
+kdbgstream kdError(int area)
+{
+    return kdbgstream("ERROR: ", area, KDEBUG_ERROR);
+}
+kdbgstream kdError(bool cond, int area)
+{
+    if (cond)
+        return kdError(area);
+    return kdbgstream(0,0,false);
+}
 
-kdbgstream::kdbgstream(kdbgstream &str)
- : output(str.output), area(str.area), level(str.level), print(str.print) 
-{ 
-    str.output.truncate(0); 
+kdbgstream kdWarning(int area)
+{
+    return kdbgstream("WARNING: ", area, KDEBUG_WARN);
+}
+kdbgstream kdWarning(bool cond, int area)
+{
+     if (cond)
+         return kdWarning(area);
+     return kdbgstream(0,0,false);
+}
+
+kdbgstream kdFatal(int area)
+{
+    return kdbgstream("FATAL: ", area, KDEBUG_FATAL);
+}
+kdbgstream kdFatal(bool cond, int area)
+{
+    if (cond)
+        return kdFatal(area);
+    return kdbgstream(0,0,false);
+}
+
+struct kdbgstream::Private {
+    QString output;
+    unsigned int area, level;
+    bool print;
+    Private(const Private& p)
+        : output(p.output), area(p.area), level(p.level), print(p.print) { ; }
+    Private(const QString& str, uint a, uint lvl, bool p)
+        : output(str), area(a), level(lvl), print(p)  { ; }
+    Private(unsigned int a, unsigned int l, bool p)
+        : area(a), level(l), print(p)  { ; }
+};
+
+kdbgstream::kdbgstream(unsigned int _area, unsigned int _level, bool _print)
+    : d(new Private(_area, _level, _print))
+{
+}
+
+kdbgstream::kdbgstream(const char * initialString, unsigned int _a,
+                       unsigned int _lvl, bool _p)
+    : d(new Private(QString::fromLatin1(initialString), _a, _lvl, _p))
+{
+}
+
+kdbgstream::kdbgstream(const kdbgstream &str)
+    : d(new Private(*(str.d)))
+{
+    str.d->output.truncate(0);
 }
 
 void kdbgstream::flush() {
-    if (output.isEmpty() || !print)
+    if (d->output.isEmpty() || !d->print)
 	return;
-    kDebugBackend( level, area, output.local8Bit().data() );
-    output = QString::null;
+    kDebugBackend( d->level, d->area, d->output.local8Bit().data() );
+    d->output = QString::null;
 }
 
 kdbgstream &kdbgstream::form(const char *format, ...)
 {
+    if (!d->print)
+        return *this;
+
     char buf[4096];
     va_list arguments;
     va_start( arguments, format );
     qvsnprintf( buf, sizeof(buf), format, arguments );
     va_end(arguments);
     *this << buf;
+
     return *this;
 }
 
-kdbgstream::~kdbgstream() {
-    if (!output.isEmpty()) {
+kdbgstream::~kdbgstream()
+{
+    if (!d->output.isEmpty()) {
 	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
         fprintf(stderr, "%s", kdBacktrace().latin1());
 	*this << "\n";
     }
-}
-
-kdbgstream& kdbgstream::operator << (char ch)
-{
-  if (!print) return *this;
-  if (!isprint(ch))
-    output += "\\x" + QString::number( static_cast<uint>( ch ), 16 ).rightJustify(2, '0');
-  else {
-    output += ch;
-    if (ch == '\n') flush();
-  }
-  return *this;
+    delete d;
 }
 
 kdbgstream& kdbgstream::operator << (QChar ch)
 {
-  if (!print) return *this;
-  if (!ch.isPrint())
-    output += "\\x" + QString::number( ch.unicode(), 16 ).rightJustify(2, '0');
-  else {
-    output += ch;
-    if (ch == '\n') flush();
-  }
-  return *this;
+    if (!d->print)
+        return *this;
+
+    if (!ch.isPrint())
+        d->output += QString("\\x")
+	          + QString::number(ch.unicode(), 16).rightJustified(2, '0');
+    else {
+        d->output += ch;
+        if (ch == '\n')
+            flush();
+    }
+
+    return *this;
 }
 
-kdbgstream& kdbgstream::operator << (QWidget* widget)
+kdbgstream& kdbgstream::operator<<(const QString& string)
 {
-    return *this << const_cast< const QWidget* >( widget );
+    if (!d->print)
+        return *this;
+
+    d->output += string;
+    if (d->output.length() && d->output.at(d->output.length() -1 ) == '\n')
+        flush();
+    return *this;
 }
 
 kdbgstream& kdbgstream::operator << (const QWidget* widget)
 {
-  QString string, temp;
+  if (!d->print)
+      return *this;
+
+  QString string;
   // -----
   if(widget==0)
     {
-      string=(QString)"[Null pointer]";
+      string=QString("[Null pointer]");
     } else {
-      temp.setNum((ulong)widget, 16);
-      string=(QString)"["+widget->className()+" pointer "
-	+ "(0x" + temp + ")";
-      if(widget->name(0)==0)
-	{
+      string = QString("[%1 pointer(0x%2)").arg(widget->className())
+                    .arg(QString::number(ulong(widget), 16)
+		         .rightJustified(8, '0'));
+      if(widget->objectName().isEmpty()) {
 	  string += " to unnamed widget, ";
-	} else {
-	  string += (QString)" to widget " + widget->name() + ", ";
-	}
-      string += "geometry="
-	+ QString().setNum(widget->width())
-	+ "x"+QString().setNum(widget->height())
-	+ "+"+QString().setNum(widget->x())
-	+ "+"+QString().setNum(widget->y())
-	+ "]";
+      } else {
+	  string += QString(" to widget %1, ").arg(widget->objectName());
+      }
+      string += QString("geometry=%1x%2+%3+%4]").arg(widget->width())
+                     .arg(widget->height())
+		     .arg(widget->x())
+		     .arg(widget->y());
     }
-  if (!print)
-    {
-      return *this;
-    }
-  output += string;
-  if (output.at(output.length() -1 ) == '\n')
-    {
-      flush();
-    }
-  return *this;
+  return *this << string;
 }
 /*
  * either use 'output' directly and do the flush if needed
@@ -432,23 +483,31 @@ kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
 }
 kdbgstream& kdbgstream::operator<<( const QDate& date) {
     *this << date.toString();
-
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QTime& time ) {
     *this << time.toString();
     return *this;
 }
+kdbgstream& kdbgstream::operator<<( KDBGFUNC f ) {
+    if (!d->print) return *this;
+    return (*f)(*this);
+}
 kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
-    *this << "(" << p.x() << ", " << p.y() << ")";
+    *this << QString("(%1, %2)").arg(p.x()).arg(p.y());
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QSize& s ) {
-    *this << "[" << s.width() << "x" << s.height() << "]";
+    *this << QString("[%1x%2]").arg(s.width()).arg(s.height());
     return *this;
 }
+static QString s_rectString(const QRect& r)
+{
+    QString str("%1,%2 - %3x%4]");
+    return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
+}
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
-    *this << "[" << r.x() << "," << r.y() << " - " << r.width() << "x" << r.height() << "]";
+    *this << s_rectString( r );
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
@@ -456,7 +515,7 @@ kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
 
     QVector<QRect>rs=reg.rects();
     for (int i=0;i<rs.size();++i)
-        *this << QString("[%1,%2 - %3x%4] ").arg(rs[i].x()).arg(rs[i].y()).arg(rs[i].width()).arg(rs[i].height() ) ;
+        *this << s_rectString( rs[i] ) + ' ';
 
     *this <<"]";
     return *this;
@@ -466,18 +525,17 @@ kdbgstream& kdbgstream::operator<<( const KURL& u ) {
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
-    *this << "(";
-    *this << l.join(",");
-    *this << ")";
-
-    return *this;
+    if ( !d->print ) return *this;
+    return *this << static_cast<QList<QString> >(l);
+}
+static QString s_makeColorName(const QColor& c) {
+    QString s("(invalid/default)");
+    if ( c.isValid() )
+        s = c.name();
+    return s;
 }
 kdbgstream& kdbgstream::operator<<( const QColor& c ) {
-    if ( c.isValid() )
-        *this <<c.name();
-    else
-        *this << "(invalid/default)";
-    return *this;
+    return *this << s_makeColorName( c );
 }
 kdbgstream& kdbgstream::operator<<( const QPen& p ) {
     static const char* const s_penStyles[] = {
@@ -485,19 +543,12 @@ kdbgstream& kdbgstream::operator<<( const QPen& p ) {
         "DashDotDotLine" };
     static const char* const s_capStyles[] = {
         "FlatCap", "SquareCap", "RoundCap" };
-    *this << "[ style:";
-    *this << s_penStyles[ p.style() ];
-    *this << " width:";
-    *this << p.width();
-    *this << " color:";
-    if ( p.color().isValid() )
-        *this << p.color().name();
-    else
-        *this <<"(invalid/default)";
+    *this << "[ style:" << s_penStyles[ p.style() ];
+    *this << " width:" << p.width();
+    *this << " color:" << s_makeColorName( p.color() );
     if ( p.width() > 0 ) // cap style doesn't matter, otherwise
     {
-        *this << " capstyle:";
-        *this << s_capStyles[ p.capStyle() >> 4 ];
+        *this << " capstyle:" << s_capStyles[ p.capStyle() >> 4 ];
         // join style omitted
     }
     *this <<" ]";
@@ -508,16 +559,12 @@ kdbgstream& kdbgstream::operator<<( const QBrush& b) {
         "NoBrush", "SolidPattern", "Dense1Pattern", "Dense2Pattern", "Dense3Pattern",
         "Dense4Pattern", "Dense5Pattern", "Dense6Pattern", "Dense7Pattern",
         "HorPattern", "VerPattern", "CrossPattern", "BDiagPattern", "FDiagPattern",
-        "DiagCrossPattern" };
+        "DiagCrossPattern", "LinearGradientPattern", "ConicalGradientPattern",
+        "RadialGradientPattern", "TexturePattern"
+    };
 
-    *this <<"[ style: ";
-    *this <<s_brushStyles[ b.style() ];
-    *this <<" color: ";
-    // can't use operator<<(str, b.color()) because that terminates a kdbgstream (flushes)
-    if ( b.color().isValid() )
-        *this <<b.color().name() ;
-    else
-        *this <<"(invalid/default)";
+    *this <<"[ style: " << s_brushStyles[ b.style() ];
+    *this <<" color: " << s_makeColorName( b.color() );
     if ( b.pixmap() )
         *this <<" has a pixmap";
     *this <<" ]";
@@ -525,36 +572,35 @@ kdbgstream& kdbgstream::operator<<( const QBrush& b) {
 }
 
 kdbgstream& kdbgstream::operator<<( const QVariant& v) {
-    *this << "[variant: ";
-    *this << v.typeName();
+    *this << "[variant: " << v.typeName();
     // For now we just attempt a conversion to string.
     // Feel free to switch(v.type()) and improve the output.
-    *this << " toString=";
-    *this << v.toString();
+    if ( v.canConvert(QVariant::String) )
+        *this << " toString=" << v.toString();
     *this << "]";
     return *this;
 }
 
 kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
-    if (!print) return *this;
+    if (!d->print) return *this;
     bool isBinary = false;
     for ( int i = 0; i < data.size() && !isBinary ; ++i ) {
-        if ( data[i] < 32 || data[i] > 127 )
+        if ( data[i] < 32 || (unsigned char)data[i] > 127 )
             isBinary = true;
     }
     if ( isBinary ) {
-        output += '[';
+        d->output += '[';
         int sz = QMIN( data.size(), 64 );
         for ( int i = 0; i < sz ; ++i ) {
-            output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
+            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
             if ( i < sz )
-                output += ' ';
+                d->output += ' ';
         }
         if ( sz < data.size() )
-            output += "...";
-        output += ']';
+            d->output += "...";
+        d->output += ']';
     } else {
-        output += QLatin1String( data );
+        d->output += QLatin1String( data );
     }
     return *this;
 }
@@ -584,17 +630,11 @@ QString kdBacktrace(int levels)
     return s;
 }
 
-QString kdBacktrace()
-{
-    return kdBacktrace(-1 /*all*/);
-}
-
 void kdClearDebugConfig()
 {
     delete kDebug_data->config;
     kDebug_data->config = 0;
 }
-
 
 // Needed for --enable-final
 #ifdef NDEBUG

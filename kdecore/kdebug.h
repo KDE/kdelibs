@@ -82,24 +82,19 @@ class KDECORE_EXPORT kdbgstream {
   /**
    * @internal
    */
-    kdbgstream(unsigned int _area, unsigned int _level, bool _print = true) :
-      area(_area), level(_level),  print(_print) { }
-    kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
-      output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
+    kdbgstream(unsigned int _area, unsigned int _level, bool _print = true);
+    kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true);
     /// Copy constructor
-    kdbgstream(kdbgstream &str);
-    kdbgstream(const kdbgstream &str) :
-      output(str.output), area(str.area), level(str.level), print(str.print) {}
-    ~kdbgstream();
+    kdbgstream(const kdbgstream &str);
+    virtual ~kdbgstream();
+
     /**
      * Prints the given value.
      * @param i the boolean to print (as "true" or "false")
      * @return this stream
      */
     kdbgstream &operator<<(bool i)  {
-	if (!print) return *this;
-	output += QString::fromLatin1(i ? "true" : "false");
-	return *this;
+        return *this << QString::fromLatin1(i ? "true" : "false" );
     }
     /**
      * Prints the given value.
@@ -107,9 +102,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(short i)  {
-	if (!print) return *this;
-	QString tmp; tmp.setNum(i); output += tmp;
-	return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -117,23 +110,23 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(unsigned short i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
      * @param ch the char to print
      * @return this stream
      */
-    kdbgstream &operator<<(char ch);
+    kdbgstream& operator<<(char ch) {
+        return *this << QChar(ch);
+    }
     /**
      * Prints the given value.
      * @param ch the unsigned char to print
      * @return this stream
      */
     kdbgstream &operator<<(unsigned char ch) {
-        return operator<<( static_cast<char>( ch ) );
+        return *this << QChar(ch);
     }
     /**
      * Prints the given value.
@@ -141,9 +134,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(int i)  {
-	if (!print) return *this;
-	QString tmp; tmp.setNum(i); output += tmp;
-	return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -151,9 +142,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(unsigned int i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -161,9 +150,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(long i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -171,9 +158,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(unsigned long i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -181,9 +166,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(qlonglong i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
     /**
      * Prints the given value.
@@ -191,15 +174,13 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(qulonglong i) {
-        if (!print) return *this;
-        QString tmp; tmp.setNum(i); output += tmp;
-        return *this;
+        return *this << QString::number( i );
     }
 
     /**
      * Flushes the output.
      */
-    void flush(); //AB: maybe this should be virtual! would save some trouble for some 3rd party projects
+    virtual void flush(); 
 
     /**
      * Prints the given value.
@@ -213,24 +194,14 @@ class KDECORE_EXPORT kdbgstream {
      * @param string the string to print
      * @return this stream
      */
-    kdbgstream &operator<<(const QString& string) {
-	if (!print) return *this;
-	output += string;
-	if (output.length() && output.at(output.length() -1 ) == '\n')
-	    flush();
-	return *this;
-    }
+    kdbgstream &operator<<(const QString& string);
     /**
      * Prints the given value.
      * @param string the string to print
      * @return this stream
      */
     kdbgstream &operator<<(const char *string) {
-	if (!print) return *this;
-	output += QString::fromUtf8(string);
-	if (output.length() && output.at(output.length() - 1) == '\n')
-	    flush();
-	return *this;
+        return *this << QString::fromUtf8(string);
     }
     /**
      * Prints the given value.
@@ -238,26 +209,21 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream& operator<<(const void * p) {
-        form("%p", p);
-        return *this;
+        return form("%p", p);
     }
     /**
      * Invokes the given function.
      * @param f the function to invoke
      * @return the return value of @p f
      */
-    kdbgstream& operator<<(KDBGFUNC f) {
-	if (!print) return *this;
-	return (*f)(*this);
-    }
+    kdbgstream& operator<<(KDBGFUNC f);
     /**
      * Prints the given value.
      * @param d the double to print
      * @return this stream
      */
     kdbgstream& operator<<(double d) {
-      QString tmp; tmp.setNum(d); output += tmp;
-      return *this;
+        return *this << QString::number( d );
     }
     /**
      * Prints the string @p format which can contain
@@ -265,7 +231,7 @@ class KDECORE_EXPORT kdbgstream {
      * @param format the printf-style format
      * @return this stream
      */
-    kdbgstream &form(const char *format, ...)
+    kdbgstream& form(const char *format, ...)
 #ifdef __GNUC__
       __attribute__ ( ( format ( printf, 2, 3 ) ) )
 #endif
@@ -277,7 +243,6 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream& operator << (const QWidget* widget);
-    kdbgstream& operator << (QWidget* widget); // KDE4 merge
 
     /**
      * Prints the given value.
@@ -340,7 +305,6 @@ class KDECORE_EXPORT kdbgstream {
      * @param list the stringlist to print
      * @return this stream
      */
-    // ### KDE4: Remove in favor of template operator for QValueList<T> below
     kdbgstream& operator << ( const QStringList& list);
 
     /**
@@ -391,22 +355,20 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream& operator << ( const QList<T> &list );
 
  private:
-    QString output;
-    unsigned int area, level;
-    bool print;
-    kdbgstreamprivate* d;
+    class Private;
+    mutable Private* d;
 };
 
 template <class T>
 kdbgstream &kdbgstream::operator<<( const QList<T> &list )
 {
     *this << "(";
-    typename QList<T>::ConstIterator it = list.begin();
     if ( !list.isEmpty() ) {
-      *this << *it++;
-    }
-    for ( ; it != list.end(); ++it ) {
-      *this << "," << *it;
+      typename QList<T>::ConstIterator it = list.begin();
+      *this << *it;
+      while (++it != list.end()) {
+        *this << "," << *it;
+      }
     }
     *this << ")";
     return *this;
@@ -418,7 +380,7 @@ kdbgstream &kdbgstream::operator<<( const QList<T> &list )
  * @param s the debug stream to write to
  * @return the debug stream (@p s)
  */
-inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
+inline kdbgstream &endl( kdbgstream &s) { return s << "\n"; }
 
 /**
  * \relates KGlobal
@@ -428,6 +390,13 @@ inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
  */
 inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
 
+/**
+ * \relates KGlobal
+ * Print a message describing the last system error.
+ * @param s the debug stream to write to
+ * @return the debug stream (@p s)
+ * @see perror(3)
+ */
 KDECORE_EXPORT kdbgstream &perror( kdbgstream &s);
 
 /**
@@ -540,7 +509,6 @@ class KDECORE_EXPORT kndbgstream {
      * @return this stream
      */
     kndbgstream& operator << (const QWidget*) { return *this; }
-    kndbgstream& operator << (QWidget*) { return *this; } // KDE4 merge
     /**
      * Does nothing.
      * @return this stream
@@ -587,13 +555,20 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
  * @see kndDebug()
  */
 KDECORE_EXPORT kdbgstream kdDebug(int area = 0);
+/**
+ * \relates KGlobal
+ * Returns a debug stream. You can use it to conditionally
+ * print debug information.
+ * @param cond the condition to test, if true print debugging info
+ * @param area an id to identify the output, 0 for default
+ */
 KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
 /**
  * \relates KGlobal
  * Returns a backtrace.
  * @return a backtrace
  */
-KDECORE_EXPORT QString kdBacktrace();
+//KDECORE_EXPORT QString kdBacktrace();
 /**
  * \relates KGlobal
  * Returns a backtrace.
@@ -601,16 +576,15 @@ KDECORE_EXPORT QString kdBacktrace();
  * @return a backtrace
  * @since 3.1
  */
-KDECORE_EXPORT QString kdBacktrace(int levels);
+KDECORE_EXPORT QString kdBacktrace(int levels=-1);
 /**
  * Returns a dummy debug stream. The stream does not print anything.
  * @param area an id to identify the output, 0 for default
  * @see kdDebug()
  */
-inline kndbgstream kndDebug(int area = 0) { Q_UNUSED(area); return kndbgstream(); }
+inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
-inline QString kndBacktrace() { return QString::null; }
-inline QString kndBacktrace(int) { return QString::null; }
+inline QString kndBacktrace(int = -1) { return QString(); }
 
 /**
  * \relates KGlobal
@@ -619,6 +593,13 @@ inline QString kndBacktrace(int) { return QString::null; }
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kdWarning(int area = 0);
+/**
+ * \relates KGlobal
+ * Returns a warning stream. You can use it to conditionally
+ * print warning information.
+ * @param cond the condition to test, if true print warning
+ * @param area an id to identify the output, 0 for default
+ */
 KDECORE_EXPORT kdbgstream kdWarning(bool cond, int area = 0);
 /**
  * \relates KGlobal
@@ -627,6 +608,13 @@ KDECORE_EXPORT kdbgstream kdWarning(bool cond, int area = 0);
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kdError(int area = 0);
+/**
+ * \relates KGlobal
+ * Returns an error stream. You can use it to conditionally
+ * print error information
+ * @param cond the condition to test, if true print error
+ * @param area an id to identify the output, 0 for default
+ */
 KDECORE_EXPORT kdbgstream kdError(bool cond, int area = 0);
 /**
  * \relates KGlobal
@@ -635,6 +623,13 @@ KDECORE_EXPORT kdbgstream kdError(bool cond, int area = 0);
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kdFatal(int area = 0);
+/**
+ * \relates KGlobal
+ * Returns a fatal error stream. You can use it to conditionally
+ * print error information
+ * @param cond the condition to test, if true print error
+ * @param area an id to identify the output, 0 for default
+ */
 KDECORE_EXPORT kdbgstream kdFatal(bool cond, int area = 0);
 
 /**
