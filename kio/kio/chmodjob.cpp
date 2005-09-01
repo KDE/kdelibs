@@ -183,6 +183,13 @@ void ChmodJob::chmodNextFile()
         kdDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyURL()
                       << " to " << QString::number(info.permissions,8) << endl;
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
+        // copy the metadata for acl and default acl
+        const QString aclString = queryMetaData( "ACL_STRING" );
+        const QString defaultAclString = queryMetaData( "DEFAULT_ACL_STRING" );
+        if ( !aclString.isEmpty() )
+            job->addMetaData( "ACL_STRING", aclString );
+        if ( !defaultAclString.isEmpty() )
+            job->addMetaData( "DEFAULT_ACL_STRING", defaultAclString );
         addSubjob(job);
     }
     else

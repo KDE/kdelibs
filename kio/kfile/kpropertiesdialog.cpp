@@ -46,10 +46,14 @@ extern "C" {
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <sys/types.h>
+#include <attr/xattr.h>
 }
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+#include <algorithm>
+#include <functional>
 
 #include <qfile.h>
 #include <qdir.h>
@@ -67,6 +71,8 @@ extern "C" {
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <qprogressbar.h>
+#include <qvbox.h>
+#include <qvaluevector.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -106,11 +112,13 @@ extern "C" {
 #include <kprocess.h>
 #include <krun.h>
 #include <klistview.h>
+#include <kacl.h>
 #include "kfilesharedlg.h"
 
 #include "kpropertiesdesktopbase.h"
 #include "kpropertiesdesktopadvbase.h"
 #include "kpropertiesmimetypebase.h"
+#include "kacleditwidget.h"
 
 #include "kpropertiesdialog.h"
 
@@ -1469,6 +1477,9 @@ public:
   KFilePermissionsPropsPlugin::PermissionsMode pmode;
   bool canChangePermissions;
   bool isIrregular;
+  bool hasExtendedACL;
+  KACL extendedACL;
+  KACL defaultACL;
 };
 
 #define UniOwner    (S_IRUSR|S_IWUSR|S_IXUSR)
@@ -1523,6 +1534,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   d->isIrregular = isIrregular(permissions, isDir, isLink);
   strOwner = item->user();
   strGroup = item->group();
+  d->hasExtendedACL = item->ACL().isExtended() || item->defaultACL().isValid();
+  d->extendedACL = item->ACL();
+  d->defaultACL = item->defaultACL();
 
   if ( properties->items().count() > 1 )
   {
@@ -1532,9 +1546,10 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     for ( ++it /*no need to check the first one again*/ ; it.current(); ++it )
     {
       if (!d->isIrregular)
-	d->isIrregular |= isIrregular((*it)->permissions(),
-				      (*it)->isDir() == isDir,
-				      (*it)->isLink() == isLink);
+        d->isIrregular |= isIrregular((*it)->permissions(),
+                                      (*it)->isDir() == isDir,
+                                      (*it)->isLink() == isLink);
+      d->hasExtendedACL = d->hasExtendedACL || (*it)->hasExtendedACL();
       if ( (*it)->isLink() != isLink )
         isLink = false;
       if ( (*it)->isDir() != isDir )
@@ -1831,23 +1846,28 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   QGroupBox *gb;
   QGridLayout *gl;
 
+  QVBox *mainVBox = dlg.makeVBoxMainWidget();
+
   // Group: Access Permissions
-  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), mainVBox );
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
-  dlg.setMainWidget(gb);
 
   gl = new QGridLayout (gb->layout(), 6, 6);
   gl->addRowSpacing(0, 10);
 
-  l = new QLabel(i18n("Class"), gb);
+  QValueVector<QWidget*> theNotSpecials;
+
+  l = new QLabel(i18n("Class"), gb );
   gl->addWidget(l, 1, 0);
+  theNotSpecials.append( l );
 
   if (isDir)
     l = new QLabel( i18n("Show\nEntries"), gb );
   else
     l = new QLabel( i18n("Read"), gb );
   gl->addWidget (l, 1, 1);
+  theNotSpecials.append( l );
   QString readWhatsThis;
   if (isDir)
     readWhatsThis = i18n("This flag allows viewing the content of the folder.");
@@ -1860,6 +1880,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   else
     l = new QLabel( i18n("Write"), gb );
   gl->addWidget (l, 1, 2);
+  theNotSpecials.append( l );
   QString writeWhatsThis;
   if (isDir)
     writeWhatsThis = i18n("This flag allows adding, renaming and deleting of files. "
@@ -1878,6 +1899,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     execWhatsThis = i18n("Enable this flag to allow executing the file as a program.");
   }
   QWhatsThis::add(l, execWhatsThis);
+  theNotSpecials.append( l );
   // GJ: Add space between normal and special modes
   QSize size = l->sizeHint();
   size.setWidth(size.width() + 15);
@@ -1897,12 +1919,15 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   cl[0] = new QLabel( i18n("User"), gb );
   gl->addWidget (cl[0], 2, 0);
+  theNotSpecials.append( cl[0] );
 
   cl[1] = new QLabel( i18n("Group"), gb );
   gl->addWidget (cl[1], 3, 0);
+  theNotSpecials.append( cl[1] );
 
   cl[2] = new QLabel( i18n("Others"), gb );
   gl->addWidget (cl[2], 4, 0);
+  theNotSpecials.append( cl[2] );
 
   l = new QLabel(i18n("Set UID"), gb);
   gl->addWidget(l, 2, 5);
@@ -1971,7 +1996,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   QCheckBox *cba[3][4];
   for (int row = 0; row < 3 ; ++row) {
     for (int col = 0; col < 4; ++col) {
-      QCheckBox *cb = new QCheckBox(gb);
+      QCheckBox *cb = new QCheckBox( gb );
+      if ( col != 3 ) theNotSpecials.append( cb );
       cba[row][col] = cb;
       cb->setChecked(aPermissions & fperm[row][col]);
       if ( aPartialPermissions & fperm[row][col] )
@@ -2012,6 +2038,26 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
   gl->setColStretch(6, 10);
 
+  KACLEditWidget *extendedACLs = 0;
+  bool fileSystemSupportsACLs = false;
+
+  // FIXME make it work with partial entries
+  if ( properties->items().count() == 1 ) {
+    QCString pathCString = QFile::encodeName( properties->item()->url().path() );
+    fileSystemSupportsACLs =
+      getxattr( pathCString.data(), "system.posix_acl_access", NULL, 0 ) >= 0 || errno == ENODATA;
+  }
+  if ( fileSystemSupportsACLs  ) {
+    std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );
+    extendedACLs = new KACLEditWidget( mainVBox );
+    if ( d->extendedACL.isValid() && d->extendedACL.isExtended() )
+      extendedACLs->setACL( d->extendedACL );
+    else
+      extendedACLs->setACL( KACL( aPermissions ) );
+
+    if ( d->defaultACL.isValid() )
+      extendedACLs->setDefaultACL( d->defaultACL );
+  }
   if (dlg.exec() != KDialogBase::Accepted)
     return;
 
@@ -2044,6 +2090,15 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   permissions = orPermissions;
   d->partialPermissions = andPermissions;
+
+  // override with the acls, if present
+  if ( extendedACLs ) {
+    d->extendedACL = extendedACLs->getACL();
+    d->defaultACL = extendedACLs->getDefaultACL();
+    d->hasExtendedACL = d->extendedACL.isExtended() || d->defaultACL.isValid();
+    permissions = d->extendedACL.basePermissions();
+    permissions |= ( andPermissions | orPermissions ) & ( S_ISUID|S_ISGID|S_ISVTX );
+  }
 
   emit changed();
   updateAccessControls();
@@ -2188,7 +2243,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
   case PermissionsOnlyFiles:
     enableAccessControls(d->canChangePermissions && !d->isIrregular);
     if (d->canChangePermissions)
-      d->explanationLabel->setText(d->isIrregular ?
+      d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
 				   i18n("This file uses advanced permissions",
 				      "These files use advanced permissions.",
 				      properties->items().count()) : "");
@@ -2202,9 +2257,14 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     }
     break;
   case PermissionsOnlyDirs:
-    enableAccessControls(d->canChangePermissions && !d->isIrregular);
+    enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
+    // if this is a dir, and we can change permissions, don't dis-allow 
+    // recursive, we can do that for ACL setting.
+    if ( d->cbRecursive )
+       d->cbRecursive->setEnabled( d->canChangePermissions && !d->isIrregular );
+
     if (d->canChangePermissions)
-      d->explanationLabel->setText(d->isIrregular ?
+      d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
 				   i18n("This folder uses advanced permissions.",
 				      "These folders use advanced permissions.",
 				      properties->items().count()) : "");
@@ -2218,9 +2278,9 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     }
     break;
   case PermissionsMixed:
-    enableAccessControls(d->canChangePermissions && !d->isIrregular);
+    enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
     if (d->canChangePermissions)
-      d->explanationLabel->setText(d->isIrregular ?
+      d->explanationLabel->setText(d->isIrregular || d->hasExtendedACL ?
 				   i18n("These files use advanced permissions.") : "");
     break;
     if (d->partialPermissions & S_ISVTX) {
@@ -2366,31 +2426,45 @@ void KFilePermissionsPropsPlugin::applyChanges()
     }
   }
 
-  if ( !owner.isEmpty() || !group.isEmpty() || recursive || permissionChange)
-  {
-    KIO::Job * job;
-    if (files.count() > 0) {
-      job = KIO::chmod( files, orFilePermissions, ~andFilePermissions,
-			owner, group, false );
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-	       SLOT( slotChmodResult( KIO::Job * ) ) );
-      // Wait for job
-      QWidget dummy(0,0,WType_Dialog|WShowModal);
-      qt_enter_modal(&dummy);
-      qApp->enter_loop();
-      qt_leave_modal(&dummy);
-    }
-    if (dirs.count() > 0) {
-      job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
-			owner, group, recursive );
-      connect( job, SIGNAL( result( KIO::Job * ) ),
-	       SLOT( slotChmodResult( KIO::Job * ) ) );
-      // Wait for job
-      QWidget dummy(0,0,WType_Dialog|WShowModal);
-      qt_enter_modal(&dummy);
-      qApp->enter_loop();
-      qt_leave_modal(&dummy);
-    }
+  const bool ACLChange = ( d->extendedACL !=  properties->item()->ACL() );
+  const bool defaultACLChange = ( d->defaultACL != properties->item()->defaultACL() );
+
+  if ( owner.isEmpty() && group.isEmpty() && !recursive 
+      && !permissionChange && !ACLChange && !defaultACLChange )
+    return;
+
+  KIO::Job * job;
+  if (files.count() > 0) {
+    job = KIO::chmod( files, orFilePermissions, ~andFilePermissions,
+        owner, group, false );
+    if ( ACLChange )
+      job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
+    if ( defaultACLChange )
+      job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
+
+    connect( job, SIGNAL( result( KIO::Job * ) ),
+        SLOT( slotChmodResult( KIO::Job * ) ) );
+    // Wait for job
+    QWidget dummy(0,0,WType_Dialog|WShowModal);
+    qt_enter_modal(&dummy);
+    qApp->enter_loop();
+    qt_leave_modal(&dummy);
+  }
+  if (dirs.count() > 0) {
+    job = KIO::chmod( dirs, orDirPermissions, ~andDirPermissions,
+        owner, group, recursive );
+    if ( ACLChange )
+      job->addMetaData( "ACL_STRING", d->extendedACL.isValid()?d->extendedACL.asString():"ACL_DELETE" );
+    if ( defaultACLChange )
+      job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
+
+    connect( job, SIGNAL( result( KIO::Job * ) ),
+        SLOT( slotChmodResult( KIO::Job * ) ) );
+    // Wait for job
+    QWidget dummy(0,0,WType_Dialog|WShowModal);
+    qt_enter_modal(&dummy);
+    qApp->enter_loop();
+    qt_leave_modal(&dummy);
   }
 }
 

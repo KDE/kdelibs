@@ -39,7 +39,7 @@ include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
-	kfilespeedbar.h kpreviewprops.h
+	kfilespeedbar.h kpreviewprops.h kacleditwidget.h kacleditwidget_p.h images.h
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
@@ -56,7 +56,7 @@ libkfile_la_SOURCES = \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
 	kfilemetapreview.cpp kpropertiesdesktopbase.ui \
 	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui \
-	kencodingfiledialog.cpp
+	kencodingfiledialog.cpp kacleditwidget.cpp
 
 libkfile_la_COMPILE_FIRST = $(srcdir)/../kio/kdirnotify_stub.h
 

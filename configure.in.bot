@@ -126,3 +126,11 @@ if test "$EXRSTATUS" = "old"; then
   echo "if you want EXR image format support"
   echo ""
 fi
+
+if test "$USE_POSIX_ACL" != "yes"; then
+  echo ""
+  echo "libacl was not found. Without that library, you will not be able"
+  echo "to manage access control lists on file systems that support them,"
+  echo "such as ext3 or reiserfs."
+  echo ""
+fi

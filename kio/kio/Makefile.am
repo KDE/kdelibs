@@ -41,7 +41,10 @@ libksycoca_la_SOURCES = \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
-	dataslave.cpp dataprotocol.cpp
+	dataslave.cpp dataprotocol.cpp 
+#if USE_POSIX_ACL
+  libksycoca_la_SOURCES += kacl.cpp
+#endif
 
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
@@ -54,7 +57,10 @@ include_HEADERS = \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
 	kmimetyperesolver.h kdcopservicestarter.h kremoteencoding.h \
-	kmimetypechooser.h
+	kmimetypechooser.h 
+#if USE_POSIX_ACL
+include_HEADERS += kacl.h
+#endif
 
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
