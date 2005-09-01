@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# author : Thomas Nagy
-# license: BSD
-# parser for xml files to use with kde3 stuff (to be converted for qt4)
-
 from xml.sax import make_parser 
 from xml.sax.handler import ContentHandler 
 
@@ -14,10 +10,9 @@ def exists(env):
 
 class SconsHandler(ContentHandler): 
 
-	def __init__ (self, envi, builddir):
+	def __init__ (self, envi):
 		self.envname = ""
 		self.env = envi
-		self.builddir="" #envi['_BUILDDIR_']
 
 		#self.dump = True
 		self.dump = False
@@ -42,54 +37,56 @@ class SconsHandler(ContentHandler):
     
 		self.srclist=[]
 
-	def adrl(self, file):
-		if self.builddir:
-			dir=self.env.join(self.builddir,file).lstrip('/')
-		else:
-			dir=file.lstrip('/')
-		return dir
     
 	def dump_commands(self, str):
 		if self.dump:
 			print str
    
+	# helper
+	def _add_dir(self, var):
+		#ladd_dir = lambda x: self.dir+"/"+x
+		#return map( ladd_dir, var )
+		lst = []
+		for file in var:
+			lst.append( str("./"+self.dir+"/"+file) )
+
+		#print "-"
+		#for file in lst:
+		#	print file+" "
+		return lst
+			
+    
 	def startElement(self, name, attrs): 
 
 		if name == 'icondirent':
-			dir = attrs.get('dir', '')
-			sbdir = attrs.get('subdir', '')
+			dir = attrs.get('dir', None)
 			if dir:
 				#if self.env.has_key("DUMPCONFIG"):
 				#	print "env.KDEicon('"+dir+")'"
-				self.env.KDEicon('*', self.adrl(dir), subdir=sbdir)
+				self.env.KDEicon('*', dir)
 		elif name == 'subdirent':
 			dir = attrs.get('dir', None)
 			if dir:
 				#if self.env.has_key("DUMPCONFIG"):
 				#	print "env.SConscript('"+dir+"/SConscript')"
-				self.env.SConscript(self.env.join(self.adrl(dir),"SConscript"))
+				self.env.SConscript(dir+"/SConscript")
 		elif name == 'docdir':
-			self.appname = self.adrl( attrs.get('name', None) )
+			self.appname = attrs.get('name', None)
 		elif name == 'docdirent':
 			dir = attrs.get('dir', None)
 			lang = attrs.get('lang', None)
 			if dir and lang:
 				#if self.env.has_key("DUMPCONFIG"):
 				#	print "env.docfolder('"+dir+"', '"+lang+"', '"+self.appname+"')"
-				self.env.docfolder(self.adrl(dir), lang, self.appname)
-		elif name == 'podir':
-			dir = attrs.get('dir', None)
-			appname = attrs.get('name', None)
-			if dir and appname:
-				if self.env.has_key('_BUILDDIR_'): dir=self.env.join(self.env['_BUILDDIR_'], dir)
-				self.env.KDElang(dir, appname)
+				self.env.docfolder(dir, lang, self.appname)
+
 		elif name == 'install':
 			self.type   = attrs.get('type', None)
 			self.subdir = attrs.get('subdir', None)
 
 		elif name == 'file':
 			name = attrs.get('name', None)
-			if self.type:
+			if self.type and self.subdir:
 				#if self.env.has_key("DUMPCONFIG"):
 				#	print "env.KDEinstall('"+self.type+"', '"+self.subdir+"', '"+name+"')"
 				self.env.KDEinstall(self.type, self.subdir, name)
@@ -115,19 +112,12 @@ class SconsHandler(ContentHandler):
 			self.obj.iskdelib   = str(attrs.get('iskdelib', 0))
 			self.obj.libprefix  = str(attrs.get('libprefix', ''))
 
-			self.obj.chdir      = self.adrl(str(attrs.get('chdir', '')))
-			self.obj.dirprefix  = self.adrl(str(attrs.get('dirprefix', './')))
-			if not self.obj.dirprefix: self.obj.dirprefix='./' # avoid silly errors
+			self.obj.chdir      = str(attrs.get('chdir', ''))
 
 		elif name == 'source':
 			file = attrs.get('file', None)
-			condition = attrs.get('condition', "");
-			lst=condition.split(':')
-			for c in lst:
-				if self.env.has_key(c):
-					self.obj.source.append( file )
-					break
-			if file and not condition: self.obj.source.append( file )
+			if file: self.obj.source.append( file )
+			#self.obj.source="settings.kcfgc pmanager_part.cpp preader.cpp"
 
 	def endElement(self, name): 
 		if name == 'compile':
@@ -135,9 +125,9 @@ class SconsHandler(ContentHandler):
 
 def generate(env):
 	
-	def xmlfile(env, file, builddir=''):
+	def xmlfile(env, file):
 		parser = make_parser()
-		curHandler = SconsHandler(env, builddir)
+		curHandler = SconsHandler(env)
 		parser.setContentHandler(curHandler)
 		parser.parse(open(file))
 
