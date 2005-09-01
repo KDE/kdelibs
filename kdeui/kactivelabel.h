@@ -56,6 +56,8 @@ public:
      */
     KActiveLabel(const QString & text, QWidget * parent, const char * name = 0);
 
+    virtual ~KActiveLabel();
+
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
@@ -70,16 +72,14 @@ public slots:
     virtual void openLink(const QString & link);
 
 private slots:
-    void paletteChanged();
     void setSource( const QString &) { }
 
-private:
-    void init();
 protected:
     virtual void virtual_hook( int id, void* data );
     virtual void focusInEvent( QFocusEvent* fe );
     virtual void focusOutEvent( QFocusEvent* fe );
     virtual void keyPressEvent ( QKeyEvent * e );
+    virtual bool event(QEvent *e);
 private:
     KActiveLabelPrivate *d;
 };

@@ -26,43 +26,53 @@
 #include <QFocusEvent>
 #include <QWhatsThis>
 
+struct KActiveLabelPrivate
+{
+    KActiveLabelPrivate(KActiveLabel *qq);
+
+    void updatePalette();
+
+    KActiveLabel *q;
+};
+
+KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
+    : q(qq)
+{
+   q->setTextFormat(Qt::RichText);
+   q->setVScrollBarMode(Q3ScrollView::AlwaysOff);
+   q->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+   q->setFrameStyle(Q3Frame::NoFrame);
+   q->setFocusPolicy( Qt::TabFocus );
+   updatePalette();
+
+   QObject::connect(q, SIGNAL(linkClicked(const QString &)),
+                    q, SLOT(openLink(const QString &)));
+}
+
+void KActiveLabelPrivate::updatePalette()
+{
+    QPalette p = q->palette();
+    p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
+    p.setColor(QColorGroup::Text, p.color(QPalette::Normal, QColorGroup::Foreground));
+    q->setPalette(p);
+}
+
 KActiveLabel::KActiveLabel(QWidget * parent, const char * name)
  : Q3TextBrowser(parent, name)
 {
-   init();
+    d = new KActiveLabelPrivate(this);
 }
 
 KActiveLabel::KActiveLabel(const QString &text, QWidget * parent, const char * name)
  : Q3TextBrowser(parent, name)
 {
-   init();
-   setText(text);
+    d = new KActiveLabelPrivate(this);
+    setText(text);
 }
 
-void KActiveLabel::init()
+KActiveLabel::~KActiveLabel()
 {
-   setTextFormat(Qt::RichText);
-   setVScrollBarMode(Q3ScrollView::AlwaysOff);
-   setHScrollBarMode(Q3ScrollView::AlwaysOff);
-   setFrameStyle(Q3Frame::NoFrame);
-   setFocusPolicy( Qt::TabFocus );
-   paletteChanged();
-
-   connect(this, SIGNAL(linkClicked(const QString &)),
-           this, SLOT(openLink(const QString &)));
-   if (kapp)
-   {
-      connect(kapp, SIGNAL(kdisplayPaletteChanged()),
-              this, SLOT(paletteChanged()));
-   }
-}
-
-void KActiveLabel::paletteChanged()
-{
-   QPalette p = kapp ? kapp->palette() : palette();
-   p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
-   p.setColor(QColorGroup::Text, p.color(QPalette::Normal, QColorGroup::Foreground));
-   setPalette(p);
+    delete d;
 }
 
 void KActiveLabel::openLink(const QString & link)
@@ -110,6 +120,17 @@ void KActiveLabel::keyPressEvent( QKeyEvent *e )
     default:
         Q3TextBrowser::keyPressEvent( e );
     }
+}
+
+bool KActiveLabel::event(QEvent *e)
+{
+    // call the base implementation first so it updates
+    // our palette
+    const bool result = Q3TextBrowser::event(e);
+    if (e->type() == QEvent::ApplicationPaletteChange) {
+        d->updatePalette();
+    }
+    return result;
 }
 
 QSize KActiveLabel::minimumSizeHint() const
