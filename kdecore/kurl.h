@@ -974,17 +974,6 @@ public:
    */
   static URIMode uriModeForProtocol(const QString& protocol);
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-  /**
-   * @deprecated change code to call fileName()
-   */
-	QString filename( bool _ignore_trailing_slash_in_path = true ) const
-  {
-    return fileName(_ignore_trailing_slash_in_path);
-  }
-
 protected:
   void reset();
   void parseURL( const QString& _url, int encoding_hint = 0 );
