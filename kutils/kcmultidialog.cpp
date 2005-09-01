@@ -37,6 +37,7 @@
 #include <krun.h>
 #include <kstdguiitem.h>
 #include <kuser.h>
+#include <kpushbutton.h>
 
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
