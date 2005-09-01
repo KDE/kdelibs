@@ -1,0 +1,2 @@
+The classes here are only for convenience of porting, they are not supposed to be used for a long time. You should move on to replacement classes provided by the framework or implement 
+something yourself for the long run.

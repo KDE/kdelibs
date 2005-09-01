@@ -11,9 +11,9 @@ namespace KDocument {
 			View(QWidget *parent):QWidget(parent),KXMLGUIClient() {}
 			virtual ~View() {};
 		signals:
-			void focusIn ( View *view );
-			void focusOut ( View *view );
-			void informationMessage ( View *view, const QString &message );
+			void focusIn ( KDocument::View *view );
+			void focusOut ( KDocument::View *view );
+			void informationMessage ( KDocument::View *view, const QString &message );
 	};
 }
 

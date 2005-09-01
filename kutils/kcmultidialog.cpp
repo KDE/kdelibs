@@ -24,7 +24,7 @@
 #include <qcursor.h>
 #include <q3hbox.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

@@ -61,7 +61,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
 		kxmlguiclient.h kxmlgui.h kxmlguibuilder.h kxmlguifactory.h \
 		kpixmapio.h kwordwrap.h \
-		kedittoolbar.h kdockwidget.h kanimwidget.h \
+		kedittoolbar.h kanimwidget.h \
 		krootpixmap.h kaboutkde.h kaboutapplication.h \
 		kpushbutton.h kdcopactionproxy.h kcolorcombo.h \
 		kcompletionbox.h ksqueezedtextlabel.h \
@@ -108,7 +108,6 @@ libkdeui_la_SOURCES = \
 		kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp \
 		kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp \
 		kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp \
-		kdockwidget.cpp kdockwidget_private.cpp \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp kpushbutton.cpp \
@@ -127,7 +126,7 @@ libkdeui_la_SOURCES = \
 		kwhatsthismanager.cpp kiconviewsearchline.cpp \
 		ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp
 
-noinst_HEADERS = kdockwidget_private.h kdockwidget_p.h klistviewlineedit.h \
+noinst_HEADERS = klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kxmlguifactory_p.h \
 		kstdaction_p.h kwhatsthismanager_p.h
