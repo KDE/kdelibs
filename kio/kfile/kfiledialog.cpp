@@ -236,21 +236,6 @@ QString KFileDialog::currentFilter() const
     return filterWidget->currentFilter();
 }
 
-// deprecated
-void KFileDialog::setFilterMimeType(const QString &label,
-                                    const KMimeType::List &types,
-                                    const KMimeType::Ptr &defaultType)
-{
-    d->mimetypes.clear();
-    d->filterLabel->setText(label);
-
-    KMimeType::List::ConstIterator it;
-    for( it = types.begin(); it != types.end(); ++it)
-        d->mimetypes.append( (*it)->name() );
-
-    setMimeFilter( d->mimetypes, defaultType->name() );
-}
-
 void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
                                  const QString& defaultType )
 {
@@ -293,12 +278,6 @@ QString KFileDialog::currentMimeFilter() const
 KMimeType::Ptr KFileDialog::currentFilterMimeType()
 {
     return KMimeType::mimeType( currentMimeFilter() );
-}
-
-void KFileDialog::setPreviewWidget(const QWidget *w) {
-    ops->setPreviewWidget(w);
-    ops->clearHistory();
-    d->hasView = true;
 }
 
 void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {

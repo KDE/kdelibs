@@ -301,18 +301,6 @@ public:
     QString currentFilter() const;
 
     /**
-     * Sets the filter up to specify the output type.
-     *
-     * @param label the label to use instead of "Filter:"
-     * @param types a list of mimetypes that can be used as output format
-     * @param defaultType the default mimetype to use as output format.
-     *
-     * Do not use in conjunction with setFilter()
-     * @deprecated
-     */
-    void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType) KDE_DEPRECATED;
-
-    /**
      * Returns the mimetype for the desired output format.
      *
      * This is only valid if setFilterMimeType() has been called
@@ -350,22 +338,6 @@ public:
      *  Clears any mime- or namefilter. Does not reload the directory.
      */
     void clearFilter();
-
-    /**
-     * @deprecated
-     * Add a preview widget and enter the preview mode.
-     *
-     * In this mode
-     * the dialog is split and the right part contains your widget.
-     * This widget has to inherit QWidget and it has to implement
-     * a slot showPreview(const KURL &); which is called
-     * every time the file changes. You may want to look at
-     * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
-     *
-     * Ownership is transferred to KFileDialog. You need to create the
-     * preview-widget with "new", i.e. on the heap.
-     */
-    void setPreviewWidget(const QWidget *w) KDE_DEPRECATED;
 
     /**
      * Adds a preview widget and enters the preview mode.
