@@ -28,6 +28,13 @@ bin_PROGRAMS = meinproc
 meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
 meinproc_SOURCES = meinproc.cpp
 
+noinst_PROGRAMS = genshortcutents
+genshortcutents_SOURCES = genshortcutents.cpp
+genshortcutents_LDADD = $(LIB_KDECORE)
+
+kde-standard-accels.entities: genshortcutents
+	$(top_builddir)/kdoctools/genshortcutents -o $(top_builddir)/kdoctools/kde-standard-accels.entities
+
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
 	$(LN_S) $(srcdir)/xslt.cpp xslt_pure.cpp
@@ -44,7 +51,7 @@ updatedir = $(kde_datadir)/kconf_update
 messages:
 	$(XGETTEXT) *.cpp -o $(podir)/kio_help.pot
 
-install-data-local:
+install-data-local: kde-standard-accels.entities
 	@(for subdir in customization docbook; do \
 	   for dir in `( cd $(srcdir)/$$subdir && find . -type d ! -name CVS | grep -v '\.svn' )`; do \
 		$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/ksgmltools2/$$subdir/$$dir ;\
@@ -53,7 +60,8 @@ install-data-local:
 			$(INSTALL_DATA) $(srcdir)/$$subdir/$$file  $(DESTDIR)$(kde_datadir)/ksgmltools2/$$subdir/$$file; fi ;\
 	   	done ;\
 	   done ;\
-	done )
+	done;\
+	$(INSTALL_DATA) $(top_builddir)/kdoctools/kde-standard-accels.entities $(DESTDIR)$(kde_datadir)/ksgmltools2/customization/entities )
 
 uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization	
@@ -62,8 +70,7 @@ uninstall-local:
 kbzip2filter.cpp:
 	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
 
-CLEANFILES = kbzip2filter.cpp xslt_pure.o xslt_pure.cpp checkXML
-
+CLEANFILES = kbzip2filter.cpp xslt_pure.o xslt_pure.cpp checkXML kde-standard-accels.entities genshortcutents
 
 include $(top_srcdir)/admin/Doxyfile.am
 
