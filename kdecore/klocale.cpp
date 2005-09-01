@@ -541,86 +541,6 @@ QString KLocale::country() const
   return m_country;
 }
 
-QString KLocale::monthName(int i, bool shortName) const
-{
-  if ( shortName )
-    switch ( i )
-      {
-      case 1:   return translate("January", "Jan");
-      case 2:   return translate("February", "Feb");
-      case 3:   return translate("March", "Mar");
-      case 4:   return translate("April", "Apr");
-      case 5:   return translate("May short", "May");
-      case 6:   return translate("June", "Jun");
-      case 7:   return translate("July", "Jul");
-      case 8:   return translate("August", "Aug");
-      case 9:   return translate("September", "Sep");
-      case 10:  return translate("October", "Oct");
-      case 11:  return translate("November", "Nov");
-      case 12:  return translate("December", "Dec");
-      }
-  else
-    switch (i)
-      {
-      case 1:   return translate("January");
-      case 2:   return translate("February");
-      case 3:   return translate("March");
-      case 4:   return translate("April");
-      case 5:   return translate("May long", "May");
-      case 6:   return translate("June");
-      case 7:   return translate("July");
-      case 8:   return translate("August");
-      case 9:   return translate("September");
-      case 10:  return translate("October");
-      case 11:  return translate("November");
-      case 12:  return translate("December");
-      }
-
-  return QString::null;
-}
-
-QString KLocale::monthNamePossessive(int i, bool shortName) const
-{
-  if ( shortName )
-    switch ( i )
-      {
-      case 1:   return translate("of January", "of Jan");
-      case 2:   return translate("of February", "of Feb");
-      case 3:   return translate("of March", "of Mar");
-      case 4:   return translate("of April", "of Apr");
-      case 5:   return translate("of May short", "of May");
-      case 6:   return translate("of June", "of Jun");
-      case 7:   return translate("of July", "of Jul");
-      case 8:   return translate("of August", "of Aug");
-      case 9:   return translate("of September", "of Sep");
-      case 10:  return translate("of October", "of Oct");
-      case 11:  return translate("of November", "of Nov");
-      case 12:  return translate("of December", "of Dec");
-      }
-  else
-    switch (i)
-      {
-      case 1:   return translate("of January");
-      case 2:   return translate("of February");
-      case 3:   return translate("of March");
-      case 4:   return translate("of April");
-      case 5:   return translate("of May long", "of May");
-      case 6:   return translate("of June");
-      case 7:   return translate("of July");
-      case 8:   return translate("of August");
-      case 9:   return translate("of September");
-      case 10:  return translate("of October");
-      case 11:  return translate("of November");
-      case 12:  return translate("of December");
-      }
-
-  return QString::null;
-}
-
-QString KLocale::weekDayName (int i, bool shortName) const
-{
-  return calendar()->weekDayName(i, shortName);
-}
 
 void KLocale::insertCatalogue( const QString & catalog )
 {
@@ -1009,11 +929,6 @@ int KLocale::weekStartDay() const
   return d->weekStartDay;
 }
 
-bool KLocale::weekStartsMonday() const //deprecated
-{
-  doFormatInit();
-  return (d->weekStartDay==1);
-}
 
 QString KLocale::decimalSymbol() const
 {
@@ -1175,10 +1090,6 @@ QString KLocale::formatMoney(double num,
   return res;
 }
 
-QString KLocale::formatMoney(const QString &numStr) const
-{
-  return formatMoney(numStr.toDouble());
-}
 
 QString KLocale::formatNumber(double num, int precision) const
 {
@@ -1192,10 +1103,6 @@ QString KLocale::formatLong(long num) const
   return formatNumber((double)num, 0);
 }
 
-QString KLocale::formatNumber(const QString &numStr) const
-{
-  return formatNumber(numStr, true, 2);
-}
 
 // increase the digit at 'position' by one
 static void _inc_by_one(QString &str, int position)
@@ -1948,11 +1855,6 @@ bool KLocale::use12Clock() const
     return false;
 }
 
-QString KLocale::languages() const
-{
-  return d->languageList.join( QString::fromLatin1(":") );
-}
-
 QStringList KLocale::languageList() const
 {
   return d->languageList;
@@ -2109,15 +2011,6 @@ void KLocale::setTimeFormat(const QString & format)
 {
   doFormatInit();
   m_timeFormat = format.stripWhiteSpace();
-}
-
-void KLocale::setWeekStartsMonday(bool start) //deprecated
-{
-  doFormatInit();
-  if (start)
-    d->weekStartDay = 1;
-  else
-    d->weekStartDay = 7;
 }
 
 void KLocale::setWeekStartDay(int day)
@@ -2448,8 +2341,6 @@ KLocale & KLocale::operator=(const KLocale & rhs)
   return *this;
 }
 
-bool KLocale::setCharset(const QString & ) { return true; }
-QString KLocale::charset() const { return QString::fromLatin1("UTF-8"); }
 
 // KDE4: remove
 #if 0

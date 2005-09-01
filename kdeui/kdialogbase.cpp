@@ -893,79 +893,15 @@ void KDialogBase::showButtonCancel( bool state )
 }
 
 
-void KDialogBase::setButtonOKText( const QString &text,
-				   const QString &tooltip,
-				   const QString &quickhelp )
-{
-  QPushButton *pb = actionButton( Ok );
-  if( !pb )
-  {
-    return;
-  }
-
-  const QString whatsThis = i18n( ""
-    "If you press the <b>OK</b> button, all changes\n"
-    "you made will be used to proceed.");
-
-  pb->setText( text.isEmpty() ? i18n("&OK") : text );
-  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
-
-  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Accept settings") : tooltip );
-  pb->setWhatsThis(quickhelp.isEmpty() ? whatsThis : quickhelp );
-}
-
-
 void KDialogBase::setButtonOK( const KGuiItem &item /* = KStdGuiItem::ok() */ )
 {
   setButtonGuiItem( Ok, item );
 }
 
 
-void KDialogBase::setButtonApplyText( const QString &text,
-				      const QString &tooltip,
-				      const QString &quickhelp )
-{
-  QPushButton *pb = actionButton( Apply );
-  if( !pb )
-  {
-    return;
-  }
-
-  const QString whatsThis = i18n( ""
-    "When clicking <b>Apply</b>, the settings will be\n"
-    "handed over to the program, but the dialog\n"
-    "will not be closed. "
-    "Use this to try different settings. ");
-
-  pb->setText( text.isEmpty() ? i18n("&Apply") : text );
-  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
-
-  QToolTip::add( pb, tooltip.isEmpty() ? i18n("Apply settings") : tooltip );
-  pb->setWhatsThis(quickhelp.isEmpty() ? whatsThis : quickhelp );
-}
-
-
 void KDialogBase::setButtonApply( const KGuiItem &item /* = KStdGuiItem::apply() */ )
 {
   setButtonGuiItem( Apply, item );
-}
-
-
-void KDialogBase::setButtonCancelText( const QString& text,
-				       const QString& tooltip,
-				       const QString& quickhelp )
-{
-  QPushButton *pb = actionButton( Cancel );
-  if( !pb )
-  {
-    return;
-  }
-
-  pb->setText( text.isEmpty() ? i18n("&Cancel") : text );
-  d->mButton.resize( false, 0, spacingHint(), mButtonOrientation );
-
-  QToolTip::add( pb, tooltip );
-  pb->setWhatsThis(quickhelp );
 }
 
 
@@ -1486,31 +1422,9 @@ int KDialogBase::pageIndex( QWidget *widget ) const
   return ( mJanus ? mJanus->pageIndex( widget) : -1);
 }
 
-
-// Deprecated
-QRect KDialogBase::getContentsRect() const
+QSize KDialogBase::calculateSize(int w, int h) const
 {
-  QRect r;
-  r.setLeft( marginHint() );
-  r.setTop( marginHint() + (mUrlHelp ? mUrlHelp->height() : 0) );
-  r.setRight( width() - marginHint() );
-  int h = (!mActionSep ? 0 : mActionSep->minimumSize().height()+marginHint());
-  if( d->mButton.box )
-  {
-    r.setBottom( height() - d->mButton.box->minimumSize().height() - h );
-  }
-  else
-  {
-    r.setBottom( height() - h );
-  }
-
-  return r;
-}
-
-
-// Deprecated
-void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
-{
+  int ulx, uly, lrx, lry;
   ulx = marginHint();
   uly = marginHint();
   if( mUrlHelp  )
@@ -1524,13 +1438,6 @@ void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
   {
     lry += mActionSep->minimumSize().height() + marginHint();
   }
-}
-
-
-QSize KDialogBase::calculateSize(int w, int h) const
-{
-  int ulx, uly, lrx, lry;
-  getBorderWidths(ulx, uly, lrx, lry);
   return QSize(ulx+w+lrx,uly+h+lry);
 }
 
@@ -1665,9 +1572,6 @@ bool KDialogBase::haveBackgroundTile()
 {
   return ( !mTile || mTile->get() );
 }
-
-// Deprecated. For compatibility only.
-const QPixmap *KDialogBase::getBackgroundTile() { return backgroundTile(); }
 
 const QPixmap *KDialogBase::backgroundTile()
 {

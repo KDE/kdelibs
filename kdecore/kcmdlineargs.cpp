@@ -133,15 +133,6 @@ KCmdLineArgs::init(int _argc, char **_argv, const char *_appname, const char* pr
 }
 
 void
-KCmdLineArgs::init(int _argc, char **_argv, const char *_appname,
-                   const char *_description, const char *_version, bool noKApp)
-{
-   init(_argc, _argv,
-        new KAboutData(_appname, _appname, _version, _description),
-        noKApp);
-}
-
-void
 KCmdLineArgs::initIgnore(int _argc, char **_argv, const char *_appname )
 {
    init(_argc, _argv,

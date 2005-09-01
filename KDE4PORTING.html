@@ -39,6 +39,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H3><A NAME="kdecore">Changes in kdecore</A></H3>
 
+
 <H4>Header file names</H4>
 <UL>
   kuniqueapp.h => kuniqueapplication.h
@@ -70,14 +71,30 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KStringHandler</H4>
 
+
 <H4>KStyle</H4>
 
 <H4>KURL</H4>
 <li>filename() has been removed, use fileName() instead</li>
+<li>isMalformed -&gt; !isValid()
 
 <H4>KMD5</H4>
 
 <H4>KLocale</H4>
+<li> QString formatNumber(const QString &numStr) const -&gt;   QString formatNumber(const QString &numStr, bool round=true, int precision=2) const;
+<li> bool weekStartsMonday() const -&gt; int weekStartDay() const
+<li> QString monthName(int i, bool shortName = false) const -&gt QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate & date, bool shortName = false ) const = 0;
+<li> QString weekDayName(int i, bool shortName = false) const -&gt; calendar()-&gt;weekDayName
+<li> QString monthNamePossessive(int i, bool shortName = false) const -&gt; calendar()-&gt;monthNamePossessive()
+<li> void setWeekStartsMonday(bool start) -&gt; setWeekStartDay
+<li> languages() -&gt; languageList()
+<li> formatMoney(const QString &numStr) -&gt   QString formatMoney(double num, const QString & currency = QString::null, int digits = -1) const;
+<li> charset() -&gt gone
+<li> setCharset() -&gt gone
+
+<H4>KCmdLineArgs</H4>
+<li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
+
 
 <H4>KCharsets</H4>
 <p>KCharsets::codecForName cannot use glibc's i18n data anymore currently</p>
@@ -99,6 +116,16 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
+
+<H4>KDialogBase><H4>
+<li>setButtonOKText -&gt; setButtonOk
+<li>setButtonApplyText -&gt; setButtonApply
+<li>setButtonCancelText -&gt; setButtonCancel
+<li>getBackgroundTile -&gt; backgroundTile
+<li>getContentsRect -&gt; gone
+<li>getBorderWidths -&gt; gone
+
+
 
 <H4>KDatePicker</H4>
 
@@ -236,9 +263,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <p>
 
 
-<H3>KDock*/KMDI</H3>
 <p>KDockWidgets -> kde3support K3DockWidget<br>
-KParts::DockWindow -> kde3support KParts::DockWindow3br>
+KParts::DockWindow -> kde3support KParts::DockWindow3<br>
 KMDI* --> kdeSupport K3MDI*</p>
 
 <H3>libkmid</H3>

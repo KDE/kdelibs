@@ -249,15 +249,6 @@ public:
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
                     const char *_version, bool noKApp = false);
-   /**
-    * @deprecated
-    * You should convert any calls to this method to use the one
-    * above, by adding in the program name to be used for display
-    * purposes. Do not forget to mark it for translation using I18N_NOOP.
-    */
-  static void init(int _argc, char **_argv,
-                   const char *_appname, const char *_description,
-                   const char *_version, bool noKApp = false) KDE_DEPRECATED;
 
   /**
    * Initialize class.

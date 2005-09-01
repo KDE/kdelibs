@@ -529,10 +529,6 @@ public:
    *         whether sub URLs are well-formed, too.
    */
   bool isValid() const  { return !m_bIsMalformed; }
-  /**
-   * @deprecated Use !isValid() instead.
-   */
-  KDE_DEPRECATED bool isMalformed() const { return !isValid(); }
 
   /**
    * Checks whether the file is local.

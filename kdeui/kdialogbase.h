@@ -883,24 +883,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      */
     void setButtonOK( const KGuiItem &item = KStdGuiItem::ok() );
 
-    /**
-     * @deprecated. Use setButtonOk() instead.
-     *
-     * Sets the text of the OK button.
-     *
-     * If the default parameters are used
-     * (that is, if no parameters are given) the standard texts are set:
-     * The button shows "OK", the tooltip contains "Accept settings."
-     * (internationalized) and the quickhelp text explains the standard
-     * behavior of the OK button in settings dialogs.
-     *
-     * @param text Button text.
-     * @param tooltip Tooltip text.
-     * @param quickhelp Quick help text.
-     */
-    void setButtonOKText( const QString &text=QString::null,
-			  const QString &tooltip=QString::null,
-			  const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
      * Sets the appearance of the Apply button.
@@ -913,24 +895,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      */
     void setButtonApply( const KGuiItem &item = KStdGuiItem::apply() );
 
-    /**
-     * @deprecated. Use setButtonApply() instead.
-     *
-     * Sets the text of the Apply button.
-     *
-     * If the default parameters are
-     * used (that is, if no parameters are given) the standard texts are set:
-     * The button shows "Apply", the tooltip contains "Apply settings."
-     * (internationalized) and the quickhelp text explains the standard
-     * behavior of the apply button in settings dialogs.
-     *
-     * @param text Button text.
-     * @param tooltip Tooltip text.
-     * @param quickhelp Quick help text.
-     */
-    void setButtonApplyText( const QString &text=QString::null,
-			     const QString &tooltip=QString::null,
-			     const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
      * Sets the appearance of the Cancel button.
@@ -942,23 +906,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @since 3.2
      */
     void setButtonCancel( const KGuiItem &item = KStdGuiItem::cancel() );
-
-    /**
-     * @deprecated. Use setButtonCancel() instead.
-     *
-     * Sets the text of the Cancel button.
-     *
-     *  If the default parameters are
-     * used (that is, if no parameters are given) the standard texts are set:
-     * The button shows "Cancel", everything else will not be set.
-     *
-     * @param text Button text.
-     * @param tooltip Tooltip text.
-     * @param quickhelp Quick help text.
-     */
-    void setButtonCancelText( const QString &text=QString::null,
-			      const QString &tooltip=QString::null,
-			      const QString &quickhelp=QString::null ) KDE_DEPRECATED;
 
     /**
      * Sets the text of any button.
@@ -1111,11 +1058,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      *
      **/
     static const QPixmap *backgroundTile();
-    /**
-     * @deprecated
-     * Use backgroundTile() instead.
-     */
-    static const QPixmap *getBackgroundTile() KDE_DEPRECATED;
+
 
     /**
      * Sets the background tile.
@@ -1132,32 +1075,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param state @p true will make the tile visible.
      */
     void showTile( bool state );
-
-    /**
-     * @deprecated
-     * Do not use this method. It is included for compatibility reasons.
-     *
-     * This method returns the border widths in all directions the dialog
-     * needs for itself. Respect this, or get bad looking results.
-     * The references are upper left x (@p ulx), upper left y (@p uly),
-     * lower right x (@p lrx), and lower left y (@p lly).
-     * The results are differences in pixels from the
-     * dialogs corners.
-     */
-    void  getBorderWidths( int& ulx, int& uly, int& lrx, int& lry ) const KDE_DEPRECATED;
-
-    /**
-     * @deprecated
-     * Do not use this method. It is included for compatibility reasons.
-     *
-     * This method returns the contents rectangle of the work area. Place
-     * your widgets inside this rectangle, and use it to set up
-     * their geometry. Be careful: The rectangle is only valid after
-     * resizing the dialog, as it is a result of the resizing process.
-     * If you need the "overhead" the dialog needs for its elements,
-     * use getBorderWidths().
-     */
-    QRect getContentsRect() const KDE_DEPRECATED;
 
     /**
      * Calculate the size hint for the dialog.

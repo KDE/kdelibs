@@ -406,28 +406,19 @@ public:
   QString formatNumber(double num, int precision = -1) const;
 
   /**
-   * @deprecated
-   *
-   * KDE 4.0: merge with formatNumber(const QString int)
-   *
-   * calls formatNumber(numStr, 2)
-   */
-  QString formatNumber(const QString &numStr) const KDE_DEPRECATED;
-
-  /**
    * Given a string representing a number, converts that to a numeric
    * string containing the localized numeric equivalent.
    *
    * e.g. given 123456.78F, return "123,456.78" (for some European country).
    *
    * @param numStr The number to convert
-   * @param round Round  fractional digits.
-   * @param precision Number of fractional digits used.
+   * @param round Round  fractional digits. (default true)
+   * @param precision Number of fractional digits used. (default 2)
    *
    * @return The number as a localized string
    * @since 3.5
    */
-  QString formatNumber(const QString &numStr, bool round, int precision) const;
+  QString formatNumber(const QString &numStr, bool round=true, int precision=2) const;
 
   /**
    * Given an integer, converts that to a numeric string containing
@@ -506,82 +497,12 @@ public:
   bool use12Clock() const;
 
   /**
-   * @deprecated
-   *
-   * Please use the weekStartDay method instead.
-   *
-   * Use this to determine if the user wants the week to start on Monday.
-   *
-   * @return true if the week starts on Monday
-   */
-  bool weekStartsMonday() const KDE_DEPRECATED; //### remove for KDE 4.0
-
-  /**
    * Use this to determine which day is the first day of the week.
    *
    * @return an integer (Monday=1..Sunday=7)
    * @since 3.1
    */
   int weekStartDay() const;
-
-  /**
-   * @deprecated
-   *
-   * Returns a string containing the name of the month name used in the Gregorian calendar.
-   *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the month
-   * 
-   * Typically the correct replacement for this deprecated class is
-   * calendar()->monthString(), which requires a QDate (rather than an
-   * integer month) or both a month and a year.
-   * This will work across different calendars.
-   * Note that you also need to add 
-   * \code
-   * #include <kcalendarsystem.h>
-   * \endcode
-   * to the applicable file.
-   */
-  QString monthName(int i, bool shortName = false) const KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   *
-   * Returns a string containing the possessive form of the month name used in the Gregorian calendar.
-   * ("of January", "of February", etc.)
-   * It's needed in long format dates in some languages.
-   *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The possessive form of the name of the month
-   * @since 3.1
-   *
-   * Typically the correct replacement for this deprecated class is
-   * calendar()->monthNamePossessive(), which requires a QDate (rather than
-   * an integer month) or both a month and a year.
-   * This will work across different calendars.
-   * Note that you also need to add 
-   * \code
-   * #include <kcalendarsystem.h>
-   * \endcode
-   * to the applicable file.
-  */
-  QString monthNamePossessive(int i, bool shortName = false) const KDE_DEPRECATED;
-
-  /**
-   * @deprecated use calendar()->weekDayName
-   *
-   * Returns a string containing the name of the week day used in the Gregorian calendar.
-   *
-   * @param i the day number of the week starting at 1/Monday.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the day
-   */
-  QString weekDayName(int i, bool shortName = false) const KDE_DEPRECATED;
 
   /**
    * Returns a pointer to the calendar system object.
@@ -870,16 +791,6 @@ public:
    */
   void setTimeFormat(const QString & format);
 
-  /**
-   * @deprecated
-   *
-   * Please use setWeekStartDay instead.
-   *
-   * Changes how KLocale defines the first day in week.
-   *
-   * @param start True if Monday is the first day in the week
-   */
-  void setWeekStartsMonday(bool start) KDE_DEPRECATED; //### remove for KDE 4.0
 
   /**
    * Changes how KLocale defines the first day in week.
@@ -1140,34 +1051,6 @@ public:
    */
   static QString _initLanguage(KConfigBase *config);
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-  /**
-   * @deprecated
-   * use formatMoney(double)
-   */
-  QString formatMoney(const QString &numStr) const KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * Use languageList()
-   *
-   * @return String containing language codes separated by colons
-   */
-  QString languages() const KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * @return True
-   */
-  bool setCharset(const QString & charset) KDE_DEPRECATED;
-
-  /**
-   * @deprecated
-   * @see encoding
-   */
-  QString charset() const KDE_DEPRECATED;
 
 protected:
   /**
