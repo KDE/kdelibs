@@ -217,9 +217,18 @@ void Addressee::setNameFromString( const QString &str )
     if ( rightOffset < 0 )
       return;
 
-    if ( rightOffset - 1 >= 0 && helper->containsPrefix( parts[ rightOffset - 1 ].lower() ) ) {
-      setFamilyName( parts[ rightOffset - 1 ] + spaceStr + parts[ rightOffset ] );
-      rightOffset--;
+    QStringList inclusionList;
+    for ( int n = 1; (rightOffset - n >= 0) && (n < 4); ++n ) {
+      if ( helper->containsPrefix( parts[ rightOffset - n ].lower() ) ) {
+        qDebug( "add %s", parts[ rightOffset - n ].latin1()  );
+        inclusionList.prepend( parts[ rightOffset - n ] );
+      } else
+        break;
+    }
+
+    if ( !inclusionList.isEmpty() ) {
+      setFamilyName( inclusionList.join( " " ) + spaceStr + parts[ rightOffset ] );
+      rightOffset -= inclusionList.count();
     } else {
       if ( helper->tradeAsFamilyName() )
         setFamilyName( parts[ rightOffset ] );
