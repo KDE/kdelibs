@@ -54,7 +54,6 @@
  * KStringHandler kstr;
  * QString line = "This is a test of the strings";
  *
- * cout << "1> " << kstr.word( line , "4:" ) << "\n";
  * cout << "2> " << kstr.remrange( line , "2:5" ) << "\n";
  * cout << "2> " << kstr.reverse( line ) << "\n";
  * cout << "2> " << kstr.center( kstr.word( line , 4 ) , 15 ) << "\n";
@@ -69,16 +68,6 @@
 class KDECORE_EXPORT KStringHandler
 {
 public:
-    /** Returns the nth word in the string if found
-      * Returns a EMPTY (not null) string otherwise.
-      * Note that the FIRST index is 0.
-      * @param text the string to search for the words
-      * @param pos the position of the word to search
-      * @return the word, or an empty string if not found
-      * @deprecated use QString::section instead
-      */
-    static QString        word( const QString &text , int pos ) KDE_DEPRECATED;
-
     /** Returns a range of words from that string.
       * Ie:
       * @li "0" returns the very first word
@@ -174,27 +163,6 @@ public:
       */
     static QStringList    reverse( const QStringList &list );
 
-    /** Left-justifies a string and returns a string at least 'width' characters
-      * wide.
-      * If the string is longer than the @p width, the original
-      * string is returned. It is never truncated.
-      * @param text the text to justify
-      * @param width the desired width of the new string
-      * @return the resulting string
-      * @deprecated use QString::leftJustify instead
-      */
-    static QString        ljust( const QString &text , int width ) KDE_DEPRECATED;
-
-    /** Right-justifies a string and returns a string at least 'width' characters
-      * wide.
-      * If the string is longer than the @p width, the original
-      * string is returned. It is never truncated.
-      * @param text the text to justify
-      * @param width the desired width of the new string
-      * @return the resulting string
-      * @deprecated use QString::rightJustify instead
-      */
-    static QString        rjust( const QString &text , int width ) KDE_DEPRECATED;
 
     /** Centers a string and returns a string at least 'width' characters
       * wide.
@@ -426,16 +394,6 @@ public:
      */
     static QString from8Bit( const char *str );
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-    /**
-     * @deprecated Use matchFileName () instead.
-     */
-    static KDE_DEPRECATED bool matchFilename( const QString& filename, const QString& pattern )
-    {
-        return matchFileName (filename, pattern);
-    };
 
 };
 #endif

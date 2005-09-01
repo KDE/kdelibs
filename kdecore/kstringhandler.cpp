@@ -36,11 +36,6 @@ static void parsePythonRange( const QByteArray &range, int &start, int &end )
     }
 }
 
-QString KStringHandler::word( const QString &text , int pos )
-{
-    return text.section( ' ', pos, pos );
-}
-
 QString KStringHandler::word( const QString &text , const char *range )
 {
     // Format in: START:END
@@ -243,18 +238,6 @@ QStringList KStringHandler::reverse( const QStringList &list )
     return tmp;
 }
 
-//
-// Left, Right, Center justification
-//
-QString KStringHandler::ljust( const QString &text , int width )
-{
-    return text.stripWhiteSpace().leftJustify( width );
-}
-
-QString KStringHandler::rjust( const QString &text , int width )
-{
-    return text.stripWhiteSpace().rightJustify( width );
-}
 
 QString KStringHandler::center( const QString &text , int width )
 {
