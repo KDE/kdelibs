@@ -226,14 +226,6 @@ public:
    */
   KDesktopFile* copyTo(const QString &file) const;
 
-#ifdef KDE_NO_COMPAT
-private:
-#endif
-  /**
-   * @deprecated Use fileName() instead.
-   */
-    KDE_DEPRECATED QString filename() const { return fileName(); };
-
 private:
 
   // copy-construction and assignment are not allowed

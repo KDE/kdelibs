@@ -54,6 +54,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KLibFactory</H4>
 
 <H4>KDesktopFile</H4>
+<p>QString filename() const -> QString fileName() const</p>
 
 <H4>KPalette</H4>
 <p>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</p>
@@ -92,8 +93,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KNetwork::KResolver</H4>
 <li>the signal finished(KResolverResults) is now finished(const KNetwork::KResolverResults&amp;)</li>
 
-<H4></H4>
-<li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
+<H4>KVMAllocator</H4>
+<p>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</p>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
