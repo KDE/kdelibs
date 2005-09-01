@@ -18,6 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifndef QT_NO_CAST_FROM_ASCII
+#define QT_NO_CAST_FROM_ASCII
+#endif
+#ifndef QT_NO_CAST_TO_ASCII
+#define QT_NO_CAST_TO_ASCII
+#endif
+
 #include "kdebug.h"
 
 #ifdef NDEBUG
@@ -90,13 +97,13 @@ static QByteArray getDescrFromNum(unsigned int _num)
   if ( !KDebugCache->isEmpty() ) // areas already loaded
     return QByteArray();
 
-  QString filename(locate("config","kdebug.areas"));
+  QString filename(locate("config", QLatin1String("kdebug.areas")));
   if (filename.isEmpty())
       return QByteArray();
 
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly)) {
-    qWarning("Couldn't open %s", filename.local8Bit().data());
+    qWarning("Couldn't open %s", filename.toLocal8Bit().data());
     file.close();
     return QByteArray();
   }
@@ -127,7 +134,7 @@ static QByteArray getDescrFromNum(unsigned int _num)
           ch=line[++i];
       } while ( ch >= '0' && ch <= '9');
 
-      unsigned int number = QString( line.mid(numStart,i) ).toUInt(); // ###
+      unsigned int number = line.mid(numStart, i).toUInt(); // ###
 
       while (line[i] && line[i] <= ' ')
         i++;
@@ -183,8 +190,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   if (!kDebug_data->config && KGlobal::_instance )
   {
-      kDebug_data->config = new KConfig("kdebugrc", false, false);
-      kDebug_data->config->setGroup("0");
+      kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), false, false);
+      kDebug_data->config->setGroup( QLatin1String("0") );
 
       //AB: this is necessary here, otherwise all output with area 0 won't be
       //prefixed with anything, unless something with area != 0 is called before
@@ -211,25 +218,25 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   switch( nLevel )
   {
   case KDEBUG_INFO:
-      key = "InfoOutput";
-      aCaption = "Info";
+      key = QLatin1String( "InfoOutput" );
+      aCaption = QLatin1String( "Info" );
       nPriority = LOG_INFO;
       break;
   case KDEBUG_WARN:
-      key = "WarnOutput";
-      aCaption = "Warning";
+      key = QLatin1String( "WarnOutput" );
+      aCaption = QLatin1String( "Warning" );
       nPriority = LOG_WARNING;
 	break;
   case KDEBUG_FATAL:
-      key = "FatalOutput";
-      aCaption = "Fatal Error";
+      key = QLatin1String( "FatalOutput" );
+      aCaption = QLatin1String( "Fatal Error" );
       nPriority = LOG_CRIT;
       break;
   case KDEBUG_ERROR:
   default:
       /* Programmer error, use "Error" as default */
-      key = "ErrorOutput";
-      aCaption = "Error";
+      key = QLatin1String( "ErrorOutput" );
+      aCaption = QLatin1String( "Error" );
       nPriority = LOG_ERR;
       break;
   }
@@ -276,7 +283,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
           aKey = "ErrorFilename";
           break;
       }
-      QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, "kdebug.dbg") );
+      QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
       aOutputFile.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered );
       aOutputFile.writeBlock( buf, strlen( buf ) );
       aOutputFile.close();
@@ -287,8 +294,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // Since we are in kdecore here, we cannot use KMsgBox and use
       // QMessageBox instead
       if ( !kDebug_data->aAreaName.isEmpty() )
-          aCaption += QString("(%1)").arg( ( const char* ) kDebug_data->aAreaName );
-      QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
+          aCaption += QString::fromAscii("(%1)").arg( QString::fromUtf8( kDebug_data->aAreaName.data() ) );
+      QMessageBox::warning( 0L, aCaption, QString::fromUtf8( data ), i18n("&OK") );
       break;
   }
   case 2: // Shell
@@ -424,11 +431,11 @@ kdbgstream& kdbgstream::operator << (QChar ch)
         return *this;
 
     if (!ch.isPrint())
-        d->output += QString("\\x")
-	          + QString::number(ch.unicode(), 16).rightJustified(2, '0');
+        d->output += QLatin1String("\\x")
+	          + QString::number(ch.unicode(), 16).rightJustified(2, QLatin1Char('0') );
     else {
         d->output += ch;
-        if (ch == '\n')
+        if ( ch == QLatin1Char( '\n' ) )
             flush();
     }
 
@@ -441,7 +448,7 @@ kdbgstream& kdbgstream::operator<<(const QString& string)
         return *this;
 
     d->output += string;
-    if (d->output.length() && d->output.at(d->output.length() -1 ) == '\n')
+    if ( d->output.length() && d->output.at(d->output.length() -1 ) == QLatin1Char('\n') )
         flush();
     return *this;
 }
@@ -455,20 +462,20 @@ kdbgstream& kdbgstream::operator << (const QWidget* widget)
   // -----
   if(widget==0)
     {
-      string=QString("[Null pointer]");
+      string = QString::fromAscii("[Null pointer]");
     } else {
-      string = QString("[%1 pointer(0x%2)").arg(widget->className())
+      string = QString::fromAscii("[%1 pointer(0x%2)").arg(QString::fromUtf8(widget->className()))
                     .arg(QString::number(ulong(widget), 16)
-		         .rightJustified(8, '0'));
+		         .rightJustified(8, QLatin1Char('0')));
       if(widget->objectName().isEmpty()) {
-	  string += " to unnamed widget, ";
+	  string += QString::fromAscii( " to unnamed widget, " );
       } else {
-	  string += QString(" to widget %1, ").arg(widget->objectName());
+	  string += QString::fromAscii(" to widget %1, ").arg(widget->objectName());
       }
-      string += QString("geometry=%1x%2+%3+%4]").arg(widget->width())
-                     .arg(widget->height())
-		     .arg(widget->x())
-		     .arg(widget->y());
+      string += QString::fromAscii("geometry=%1x%2+%3+%4]").arg(widget->width())
+                .arg(widget->height())
+                .arg(widget->x())
+                .arg(widget->y());
     }
   return *this << string;
 }
@@ -494,16 +501,16 @@ kdbgstream& kdbgstream::operator<<( KDBGFUNC f ) {
     return (*f)(*this);
 }
 kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
-    *this << QString("(%1, %2)").arg(p.x()).arg(p.y());
+    *this << QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QSize& s ) {
-    *this << QString("[%1x%2]").arg(s.width()).arg(s.height());
+    *this << QString::fromAscii("[%1x%2]").arg(s.width()).arg(s.height());
     return *this;
 }
 static QString s_rectString(const QRect& r)
 {
-    QString str("%1,%2 - %3x%4]");
+    QString str = QString::fromAscii("%1,%2 - %3x%4]");
     return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
 }
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
@@ -515,7 +522,7 @@ kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
 
     QVector<QRect>rs=reg.rects();
     for (int i=0;i<rs.size();++i)
-        *this << s_rectString( rs[i] ) + ' ';
+        *this << s_rectString( rs[i] ) + QLatin1Char( ' ' );
 
     *this <<"]";
     return *this;
@@ -529,7 +536,7 @@ kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
     return *this << static_cast<QList<QString> >(l);
 }
 static QString s_makeColorName(const QColor& c) {
-    QString s("(invalid/default)");
+    QString s = QString::fromAscii("(invalid/default)");
     if ( c.isValid() )
         s = c.name();
     return s;
@@ -589,18 +596,18 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
             isBinary = true;
     }
     if ( isBinary ) {
-        d->output += '[';
+        d->output += QLatin1Char('[');
         int sz = QMIN( data.size(), 64 );
         for ( int i = 0; i < sz ; ++i ) {
-            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, '0');
+            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, QLatin1Char('0'));
             if ( i < sz )
-                d->output += ' ';
+                d->output += QLatin1Char(' ');
         }
         if ( sz < data.size() )
-            d->output += "...";
-        d->output += ']';
+            d->output += QLatin1String("...");
+        d->output += QLatin1Char(']');
     } else {
-        d->output += QLatin1String( data );
+        d->output += QString::fromAscii( data ); // using ascii as advertised
     }
     return *this;
 }
@@ -617,13 +624,13 @@ QString kdBacktrace(int levels)
 
     if ( levels != -1 )
         n = QMIN( n, levels );
-    s = "[\n";
+    s = QLatin1String("[\n");
 
     for (int i = 0; i < n; ++i)
         s += QString::number(i) +
-             QString::fromLatin1(": ") +
-             QString::fromLatin1(strings[i]) + QString::fromLatin1("\n");
-    s += "]\n";
+             QString::fromAscii(": ") +
+             QString::fromLatin1(strings[i]) + QString::fromAscii("\n");
+    s += QLatin1String("]\n");
     if (strings)
         free (strings);
 #endif

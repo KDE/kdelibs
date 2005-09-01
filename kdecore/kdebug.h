@@ -118,7 +118,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream& operator<<(char ch) {
-        return *this << QChar(ch);
+        return *this << QLatin1Char(ch);
     }
     /**
      * Prints the given value.
@@ -126,7 +126,7 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream &operator<<(unsigned char ch) {
-        return *this << QChar(ch);
+        return *this << QLatin1Char(ch);
     }
     /**
      * Prints the given value.
@@ -180,7 +180,7 @@ class KDECORE_EXPORT kdbgstream {
     /**
      * Flushes the output.
      */
-    virtual void flush(); 
+    virtual void flush();
 
     /**
      * Prints the given value.
@@ -338,7 +338,9 @@ class KDECORE_EXPORT kdbgstream {
     kdbgstream& operator << ( const QVariant& variant );
 
     /**
-     * Prints the given value.
+     * Prints the given bytearray value, interpreting it as either
+     * a raw byte array (if it contains non-printable characters)
+     * or as a ascii string otherwise.
      * @param data the byte array to print
      * @return this stream
      * @since 3.3
