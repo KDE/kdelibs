@@ -75,12 +75,6 @@ public:
      * @since 3.2
      */
     bool copyBlock(void *dest, Block *src, int _offset = 0, size_t length = 0);
-
-    /**
-     * @deprecated
-     * @see copyBlock
-     */
-    void copy(void *dest, Block *src, int _offset = 0, size_t length = 0) KDE_DEPRECATED;
      
     /**
      * Copy @p length bytes from normal memory at address @p src to 
@@ -93,12 +87,6 @@ public:
      * @since 3.2
      */
     bool copyBlock(Block *dest, void *src, int _offset = 0, size_t length = 0);
-
-    /**
-     * @deprecated
-     * @see copyBlock
-     */
-    void copy(Block *dest, void *src, int _offset = 0, size_t length = 0) KDE_DEPRECATED;  
 
     /**
      * Map a virtual memory block in memory

@@ -183,12 +183,6 @@ KVMAllocator::free(Block *block_p)
 /**
  * Copy data from a virtual memory block to normal memory
  */
-void
-KVMAllocator::copy(void *dest, Block *src, int _offset, size_t length)
-{
-   (void) copyBlock(dest, src, _offset, length);
-}
-
 bool
 KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
 {
@@ -219,12 +213,6 @@ KVMAllocator::copyBlock(void *dest, Block *src, int _offset, size_t length)
 /**
  * Copy data from normal memory to a virtual memory block
  */
-void
-KVMAllocator::copy(Block *dest, void *src, int _offset, size_t length)
-{
-   (void) copyBlock(dest, src, _offset, length);
-}
-
 bool
 KVMAllocator::copyBlock(Block *dest, void *src, int _offset, size_t length)
 {
