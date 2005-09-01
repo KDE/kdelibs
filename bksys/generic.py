@@ -141,35 +141,41 @@ class genobj:
 		else: env['USE_THE_FORCE_LUKE'].append(self)
 
 	def joinpath(self, val):
+		if len(self.dirprefix)<3: return val
 		dir=self.dirprefix
-
 		thing=self.orenv.make_list(val)
 		files=[]
 		bdir="./"
 		if self.orenv.has_key('_BUILDDIR_'): bdir=self.orenv['_BUILDDIR_']
-
-		for v in thing:
-			files.append( self.orenv.join(bdir, dir, v) )
-
-		#for f in files: print f
-		#print "\n"
+		for v in thing: files.append( self.orenv.join(bdir, dir, v) )
 		return files
 
 	# a list of paths, with absolute and relative ones
 	def fixpath(self, val):
+		def reldir(dir):
+			ndir    = SCons.Node.FS.default_fs.Dir(dir).srcnode().abspath
+			rootdir = SCons.Node.FS.default_fs.Dir('#').abspath
+			return ndir.replace(rootdir, '').lstrip('/')
+
 		dir=self.dirprefix
+		if not len(dir)>2: dir=reldir('.')
 
 		thing=self.orenv.make_list(val)
 		ret=[]
 		bdir="./"
 		if self.orenv.has_key('_BUILDDIR_'): bdir=self.orenv['_BUILDDIR_']
 		for v in thing:
-			if v[:2] == "./" or v[:3] == "../":
-				ret.append( self.orenv.join(bdir, dir, v) )
-			elif v[:1] == "#" or v[:1] == "/":
-				ret.append( v )
+			#if v[:2] == "./" or v[:3] == "../":
+			#	ret.append( self.orenv.join('#', bdir, dir, v) )
+			#elif v[:1] == "#" or v[:1] == "/":
+			#	ret.append( v )
+			#else:
+			#	ret.append( self.orenv.join('#', bdir, dir, v) )
+			if v[:1] == "#" or v[:1] == "/":
+				ret.append(v)
 			else:
-				ret.append( self.orenv.join(bdir, dir, v) )
+				ret.append( self.orenv.join('#', bdir, dir, v) )
+
 		return ret
 
 	def lockworkdir(self):
@@ -185,30 +191,11 @@ class genobj:
 		os.chdir(self.not_orig_os_dir)
 		self.workdir_lock=None
 
-	def lockchdir(self):
-		if not self.chdir: return
-		if self.chdir_lock: return
-		self.chdir_lock=1
-		SConfFS=SCons.Node.FS.default_fs
-		self.old_fs_dir=SConfFS.getcwd()
-		self.old_os_dir=os.getcwd()
-		SConfFS.chdir( SConfFS.Dir('#/'+self.chdir), change_os_dir=1)
-
-	def unlockchdir(self):
-		if not self.chdir: return
-		if not self.chdir_lock: return
-		SCons.Node.FS.default_fs.chdir(self.old_fs_dir, change_os_dir=0)
-		os.chdir(self.old_os_dir)
-		self.chdir_lock=None
-
 	def execute(self):
 		if self.executed: return
 
-		self.lockchdir()
-
 		if self.orenv.has_key('DUMPCONFIG'):
-			print self.xml()
-			self.unlockchdir()
+			self.xml()
 			self.executed=1
 			return
 
@@ -237,7 +224,7 @@ class genobj:
 			sal=SCons.Util.splitext(l)
 			if len(sal)>1:
 				if sal[1] in lext: self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
-				elif sal[1] in sext: self.p_local_staticlibs.append(sal[0]+'.a')
+				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(l)
 
 		if len(self.p_global_shlibs)>0: self.env.AppendUnique(LIBS=self.p_global_shlibs)
@@ -267,7 +254,6 @@ class genobj:
 		if len(self.p_local_staticlibs)>0:
 			if ret: self.env.Depends( ret, self.p_local_staticlibs )
 
-		self.unlockchdir()
 		self.executed=1
 
 ## Copy function that honors symlinks
@@ -302,6 +288,17 @@ def join(lenv, s1, s2, s3=None, s4=None):
 def exists(env):
 	return true
 
+# record a dump of the environment
+bks_dump='<?xml version="1.0" encoding="UTF-8"?>\n<bksys version="1">\n'
+def add_dump(nenv, str):
+	global bks_dump
+	if str: bks_dump+=str
+def get_dump(nenv):
+	if not nenv.has_key('DUMPCONFIG'):
+		nenv.pprint('RED','WARNING: trying to get a dump while DUMPCONFIG is not set - this will not work')
+	global bks_dump
+	return bks_dump+"</bksys>\n"
+
 def generate(env):
 	## Bksys requires scons 0.96
 	env.EnsureSConsVersion(0, 96)
@@ -311,6 +308,8 @@ def generate(env):
 	SConsEnvironment.join = join
 	SConsEnvironment.dist = dist
 	SConsEnvironment.getreldir = getreldir
+	SConsEnvironment.add_dump = add_dump
+	SConsEnvironment.get_dump = get_dump
 
 	env['HELP']=0
 	if '--help' in sys.argv or '-h' in sys.argv or 'help' in sys.argv: env['HELP']=1
@@ -384,7 +383,8 @@ def generate(env):
 	opts = Options(cachefile)
 	opts.AddOptions(
 		( 'GENCCFLAGS', 'C flags' ),
-		( 'GENCXXFLAGS', 'debug level for the project : full or just anything' ),
+		( 'BKS_DEBUG', 'debug level: full, trace, or just something' ),
+                ( 'GENCXXFLAGS', 'additional cxx flags for the project' ),
 		( 'GENLINKFLAGS', 'additional link flags' ),
 		( 'PREFIX', 'prefix for installation' ),
 		( 'EXTRAINCLUDES', 'extra include paths for the project' ),
@@ -406,14 +406,12 @@ def generate(env):
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('ISCONFIGURED')):
 		# be paranoid, unset existing variables
-		for var in ['GENCXXFLAGS', 'GENCCFLAGS', 'GENLINKFLAGS', 'PREFIX', 'EXTRAINCLUDES', 'ISCONFIGURED', 'EXTRAINCLUDES']:
+		for var in ['BKS_DEBUG', 'GENCXXFLAGS', 'GENCCFLAGS', 'GENLINKFLAGS', 'PREFIX', 'EXTRAINCLUDES', 'ISCONFIGURED', 'EXTRAINCLUDES']:
 			if env.has_key(var): env.__delitem__(var)
 
 		if env['ARGS'].get('debug', None):
-			debuglevel = env['ARGS'].get('debug', None)
+			env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
 			env.pprint('CYAN','** Enabling debug for the project **')
-			if (debuglevel == "full"): env['GENCXXFLAGS'] = ['-DDEBUG', '-g3', '-Wall']
-			else: env['GENCXXFLAGS'] = ['-DDEBUG', '-g', '-Wall']
 		else:
 			if os.environ.has_key('CXXFLAGS'):
 				# user-defined flags (gentooers will be elighted)
@@ -625,6 +623,16 @@ def generate(env):
 	if env.has_key('GENCXXFLAGS'):  env.AppendUnique( CPPFLAGS = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):   env.AppendUnique( CCFLAGS = env['GENCCFLAGS'] )
 	if env.has_key('GENLINKFLAGS'): env.AppendUnique( LINKFLAGS = env['GENLINKFLAGS'] )
+
+        if env.has_key('BKS_DEBUG'):
+                if (env['BKS_DEBUG'] == "full"):
+                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g3', '-Wall'])
+                elif (env['BKS_DEBUG'] == "trace"):
+                        env.AppendUnique(
+                                LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),
+                                CXXFLAGS=env.Split("-DDEBUG -Wall -finstrument-functions -g3 -O0"))
+                else:
+                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g', '-Wall'])
 
 	if env.has_key('EXTRAINCLUDES'):
 		if env['EXTRAINCLUDES']:
