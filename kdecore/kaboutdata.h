@@ -24,8 +24,8 @@
 #include <qimage.h>
 #include <klocale.h>
 
-#ifndef _KABOUTDATA_H_
-#define _KABOUTDATA_H_
+#ifndef KABOUTDATA_H
+#define KABOUTDATA_H
 
 class KAboutPersonPrivate;
 class KAboutDataPrivate;

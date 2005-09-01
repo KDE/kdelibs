@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KPROCIO_H_
-#define KPROCIO_H_
+#ifndef KPROCIO_H
+#define KPROCIO_H
 
 #include <qstring.h>
 #include <kprocess.h>
@@ -213,5 +213,5 @@ private:
   KProcIOPrivate *d;
 };
 
-#endif // KPROCIO_H_
+#endif // KPROCIO_H
 

@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KRFCDATE_H_
-#define _KRFCDATE_H_
+#ifndef KRFCDATE_H
+#define KRFCDATE_H
 
 #include <qstring.h>
 #include <q3cstring.h>

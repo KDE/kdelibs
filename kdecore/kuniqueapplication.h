@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KUNIQUEAPP_H
-#define _KUNIQUEAPP_H
+#ifndef KUNIQUEAPP_H
+#define KUNIQUEAPP_H
 
 #include <kapplication.h>
 #include <dcopobject.h>

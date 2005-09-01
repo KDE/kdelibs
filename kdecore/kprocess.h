@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kprocess_h__
-#define __kprocess_h__
+#ifndef kprocess_h
+#define kprocess_h
 
 #include <sys/types.h> // for pid_t
 #include <sys/wait.h>
