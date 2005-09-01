@@ -5,10 +5,14 @@
 #include <kaction.h>
 
 #include <assert.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, "kactiontest" );
+    KAboutData aboutData( "kactiontest", "kactiontest", "1.0" );
+    KCmdLineArgs::init(argc, argv, &aboutData);
+    KApplication app;
 
     KActionCollection coll( static_cast<QObject *>( 0 ) );
 
@@ -19,7 +23,7 @@ int main( int argc, char **argv )
     QPointer<KAction> action5 = new KRadioAction("test",0, &coll);
     QPointer<KAction> action6 = new KRadioAction("test",0, &coll);
     QPointer<KAction> action7 = new KRadioAction("test",0, &coll);
-   
+
     coll.clear();
     assert( coll.isEmpty() );
 
@@ -30,7 +34,7 @@ int main( int argc, char **argv )
     assert( action5.isNull() );
     assert( action6.isNull() );
     assert( action7.isNull() );
-    
+
     return 0;
 }
 

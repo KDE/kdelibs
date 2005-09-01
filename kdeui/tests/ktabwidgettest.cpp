@@ -27,8 +27,11 @@ Test::Test( QWidget* parent, const char *name )
   mWidget->addTab( new QLabel( "Testlabel 2", mWidget ), "Two" );
   mWidget->addTab( new QWidget( mWidget), SmallIcon( "konsole" ), "Three" );
   mWidget->addTab( new QWidget( mWidget), "Four" );
+#warning setTabColor not in Qt-4.0
+#if 0
   mWidget->setTabColor( mWidget->page(0), Qt::red );
   mWidget->setTabColor( mWidget->page(1), Qt::blue );
+#endif
 
   connect( mWidget, SIGNAL( currentChanged( QWidget * ) ), SLOT( currentChanged( QWidget * ) ) );
   connect( mWidget, SIGNAL( contextMenu( QWidget *, const QPoint & )), SLOT(contextMenu( QWidget *, const QPoint & )));
@@ -95,7 +98,9 @@ Test::Test( QWidget* parent, const char *name )
 
 void Test::currentChanged(QWidget* w)
 {
+#if 0
   mWidget->setTabColor( w, Qt::black );
+#endif
 }
 
 void Test::addTab()
@@ -332,7 +337,9 @@ void Test::mouseDoubleClick(QWidget *w)
             mWidget->label( mWidget->indexOf( w ) ), &ok, this );
   if ( ok && !text.isEmpty() ) {
      mWidget->changeTab( w, text );
+#if 0
      mWidget->setTabColor( w, Qt::green );
+#endif
   }
 }
 

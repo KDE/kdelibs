@@ -23,12 +23,14 @@
 #include <qstring.h>
 #include <qlabel.h>
 #include <qtextcodec.h>
-//Added by qt3to4:
-#include <Q3CString>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv, "KSpellTest");
+    KAboutData aboutData( "kspelltest", "kspelltest", "1.0" );
+    KCmdLineArgs::init(argc, argv, &aboutData);
+    KApplication app;
 
     // test ASCII
     //QString text( "I have noo idee of how to wride englisch or englisch" );
@@ -37,10 +39,10 @@ int main(int argc, char **argv)
     //QCString ctext( "sed jen: e¶oþanø' æiu¼aýde; e¶uþunøo øiun fendredon - kaj dimanøon...");
     //QTextCodec *codec = QTextCodec::codecForName("ISO 8859-3");
 
-    // test UTF-8 (need dictionary "esperanto" and "UTF-8" in config)  
-   Q3CString ctext( "sed jen: e\304\245oÅanÄo Ä‰iuÄµaÅ­de e\304\245uÅunÄo Äiun fendredon kaj dimanÄon");
-   QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-    
+    // test UTF-8 (need dictionary "esperanto" and "UTF-8" in config)
+    QByteArray ctext( "sed jen: e\304\245oÅanÄo Ä‰iuÄµaÅ­de e\304\245uÅunÄo Äiun fendredon kaj dimanÄon");
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+
     QString text = codec->toUnicode(ctext.data());
 
     KSpell::modalCheck( text );
@@ -50,7 +52,7 @@ int main(int argc, char **argv)
     QLabel* l = new QLabel( text, (QWidget*)0 );
     l->show();
 
-    return(app->exec());
+    return app.exec();
 
 }
 
