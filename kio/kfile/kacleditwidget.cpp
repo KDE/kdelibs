@@ -522,9 +522,9 @@ KACLListView::KACLListView( QWidget* parent, const char* name )
     // Add the columns
     addColumn( i18n( "Type" ) );
     addColumn( i18n( "Name" ) );
-    addColumn( "r" );
-    addColumn( "w" );
-    addColumn( "x" );
+    addColumn( i18n( "read permission", "r" ) );
+    addColumn( i18n( "write permission", "w" ) );
+    addColumn( i18n( "execute permission", "x" ) );
     addColumn( i18n( "Effective" ) );
 
     header()->setClickEnabled( false );
