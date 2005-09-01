@@ -831,7 +831,7 @@ void KDialogBase::setButtonStyle( int style )
 }
 
 
-QPushButton *KDialogBase::actionButton( ButtonCode id )
+KPushButton *KDialogBase::actionButton( ButtonCode id )
 {
   return d->mButton.button(id);
 }

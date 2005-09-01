@@ -29,7 +29,7 @@
 #include <kstdguiitem.h>
 #include <q3ptrlist.h>
 
-class QPushButton;
+class KPushButton;
 class KSeparator;
 class KURLLabel;
 class QBoxLayout;
@@ -1199,9 +1199,8 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @param id Integer identifier of the button.
      * @return The action button or 0 if the button does not exists.
      *
-     * FIXME KDE 4: Return the actual KPushButton instead of QPushButton (Martijn)
      */
-    QPushButton *actionButton( ButtonCode id );
+    KPushButton *actionButton( ButtonCode id );
 
   public slots:
     /**

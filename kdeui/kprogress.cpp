@@ -26,7 +26,7 @@
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qstring.h>
 #include <qregexp.h>
 #include <qstyle.h>

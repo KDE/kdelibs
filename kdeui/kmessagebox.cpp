@@ -28,7 +28,7 @@
 #include <q3groupbox.h>
 #include <q3stylesheet.h>
 #include <q3simplerichtext.h>
-#include <qpushbutton.h>
+#include <kpushbutton.h>
 #include <qlayout.h>
 #include <qx11info_x11.h>
 
