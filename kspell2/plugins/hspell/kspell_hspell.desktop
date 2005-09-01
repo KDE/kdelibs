@@ -14,3 +14,4 @@ X-KDE-PluginInfo-License=LGPL
 X-KDE-PluginInfo-EnabledByDefault=true
 Name=HSpell
 Name[sv]=Hspell
+Name[xx]=xxHSpellxx
