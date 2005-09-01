@@ -95,7 +95,10 @@ class genobj:
 		self.env   = None
 		self.executed = 0
 
+		self.source=''
 		self.target=''
+
+		# either set self.src yourself, or use self.source
 		self.src=None
 
 		self.cxxflags=''
@@ -201,12 +204,17 @@ class genobj:
 
 		self.env = self.orenv.Copy()
 
+		# self.src is kinda private, so if the builder did forget to set self.src handle it now
+		if (self.source and not self.src):
+			self.src=self.env.make_list(self.source)
+
 		if not self.p_localtarget: self.p_localtarget = self.joinpath(self.target)
 		if not self.p_localsource: self.p_localsource = self.joinpath(self.src)
 
 		if (not self.src or len(self.src) == 0) and not self.p_localsource:
-			self.env.pprint('RED',"no source file given to object - self.src")
+			self.env.pprint('RED',"no source file given to object - self.src for "+self.target)
 			self.env.Exit(1)
+
 		if not self.target:
 			self.env.pprint('RED',"no target given to object - self.target")
 			self.env.Exit(1)
@@ -609,7 +617,7 @@ def generate(env):
 		lenv['_BUILDDIR_']=buildto
 		ldirs=lenv.make_list(dirs)
 		for dir in ldirs:
-			lenv.BuildDir(buildto+os.path.sep+dir, dir)
+			lenv.BuildDir(lenv.join(buildto, dir), dir)
 
 	#valid_targets = "program shlib kioslave staticlib".split()
         SConsEnvironment.bksys_install = bksys_install

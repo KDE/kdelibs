@@ -156,8 +156,7 @@ def detect_qt4(env):
 
 	## qt libs and includes
 	env['QTINCLUDEPATH']=qtincludes
-	if not qtlibs:
-		qtlibs=qtdir+"/lib"+libsuffix
+	if not qtlibs: qtlibs=env.join(qtdir, 'lib', libsuffix)
 	env['QTLIBPATH']=qtlibs
 
 def generate(env):
@@ -553,18 +552,15 @@ def generate(env):
                         if senv: generic.genobj.__init__(self, val, senv)
                         else: generic.genobj.__init__(self, val, env)
                         self.iskdelib=0
-                def it_is_a_kdelib(self): self.iskdelib=1
                 def execute(self):
-                        self.lockchdir()
                         if self.orenv.has_key('DUMPCONFIG'):
                                 print self.xml()
                                 return
                         self.src = QT4files(env, self.target, self.source)
                         generic.genobj.execute(self)
-                        self.unlockchdir()
 
                 def xml(self):
-                        ret= '<compile type="%s" chdir="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" iskdelib="%s" libprefix="%s">\n' % (self.type, self.chdir, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.iskdelib, self.libprefix)
+                        ret= '<compile type="%s" dirprefix="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" iskdelib="%s" libprefix="%s">\n' % (self.type, self.dirprefix, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.iskdelib, self.libprefix)
                         if self.source:
                                 for i in self.orenv.make_list(self.source):
                                         ret += '  <source file="%s"/>\n' % i
