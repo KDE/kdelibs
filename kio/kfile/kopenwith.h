@@ -175,35 +175,4 @@ protected:
     KOpenWithDlgPrivate *d;
 };
 
-/* ------------------------------------------------------------------------- */
-
-#ifndef KDE_NO_COMPAT
-/**
- * This class handles the displayOpenWithDialog call, made by KRun
- * when it has no idea what to do with a URL.
- * It displays the open-with dialog box.
- *
- * If you use KRun you _need_ to create an instance of KFileOpenWithHandler
- * (except if you can make sure you only use it for executables or
- *  Type=Application desktop files)
- *
- *
- */
-class KIO_EXPORT_DEPRECATED KFileOpenWithHandler : public KOpenWithHandler
-{
-public:
-  KFileOpenWithHandler() : KOpenWithHandler() {}
-  virtual ~KFileOpenWithHandler() {}
-
-  /**
-   * Opens an open-with dialog box for @p urls
-   * @returns true if the operation succeeded
-   */
-  virtual bool displayOpenWithDialog( const KURL::List& urls );
-};
-#endif
-
-
-/* ------------------------------------------------------------------------- */
-
 #endif

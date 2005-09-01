@@ -842,26 +842,6 @@ void KOpenWithDlg::accept()
     QDialog::accept();
 }
 
-
-///////////////
-
-#ifndef KDE_NO_COMPAT
-bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
-{
-    KOpenWithDlg l( urls, i18n("Open with:"), QString::null, 0L );
-    if ( l.exec() )
-    {
-      KService::Ptr service = l.service();
-      if ( !!service )
-        return KRun::run( *service, urls );
-
-      kdDebug(250) << "No service set, running " << l.text() << endl;
-      return KRun::run( l.text(), urls );
-    }
-    return false;
-}
-#endif
-
 #include "kopenwith.moc"
 #include "kopenwith_p.moc"
 
