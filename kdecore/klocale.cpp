@@ -506,7 +506,7 @@ void KLocale::splitLocale(const QString & aStr,
   QString str = aStr;
 
   // just in case, there is another language appended
-  int f = str.find(':');
+  int f = str.indexOf(':');
   if (f >= 0)
     str.truncate(f);
 
@@ -514,14 +514,14 @@ void KLocale::splitLocale(const QString & aStr,
   chrset = QString::null;
   language = QString::null;
 
-  f = str.find('.');
+  f = str.indexOf('.');
   if (f >= 0)
     {
       chrset = str.mid(f + 1);
       str.truncate(f);
     }
 
-  f = str.find('_');
+  f = str.indexOf('_');
   if (f >= 0)
     {
       country = str.mid(f + 1);
@@ -695,7 +695,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
 static QString put_n_in(const QString &orig, unsigned long n)
 {
   QString ret = orig;
-  int index = ret.find("%n");
+  int index = ret.indexOf("%n");
   if (index == -1)
     return ret;
   ret.replace(index, 2, QString::number(n));
@@ -730,7 +730,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 	} else {
 	  QString tmp = QString::fromUtf8( plural );
 #ifndef NDEBUG
-	  if (tmp.find("%n") == -1) {
+	  if (tmp.indexOf("%n") == -1) {
 			  kdDebug() << "the message for i18n should contain a '%n'! " << plural << endl;
 	  }
 #endif
@@ -1153,7 +1153,7 @@ static void _inc_by_one(QString &str, int position)
 // Cut off if more digits in fractional part than 'precision'
 static void _round(QString &str, int precision)
 {
-  int decimalSymbolPos = str.find('.');
+  int decimalSymbolPos = str.indexOf('.');
 
   if (decimalSymbolPos == -1)
     if (precision == 0)  return;
@@ -1188,7 +1188,7 @@ static void _round(QString &str, int precision)
       break;
     }
 
-  decimalSymbolPos = str.find('.');
+  decimalSymbolPos = str.indexOf('.');
   str.truncate(decimalSymbolPos + precision + 1);
   
   // if precision == 0 delete also '.'
@@ -1319,7 +1319,7 @@ void KLocale::setMainCatalogue(const char *catalog)
 double KLocale::readNumber(const QString &_str, bool * ok) const
 {
   QString str = _str.stripWhiteSpace();
-  bool neg = str.find(negativeSign()) == 0;
+  bool neg = str.indexOf(negativeSign()) == 0;
   if (neg)
     str.remove( 0, negativeSign().length() );
 
@@ -1329,7 +1329,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   QString exponentialPart;
   int EPos;
 
-  EPos = str.find('E', 0, false);
+  EPos = str.indexOf('E', 0, Qt::CaseInsensitive);
 
   if (EPos != -1)
   {
@@ -1337,7 +1337,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
     str = str.left(EPos);
   }
 
-  int pos = str.find(decimalSymbol());
+  int pos = str.indexOf(decimalSymbol());
   QString major;
   QString minor;
   if ( pos == -1 )
@@ -1351,7 +1351,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
   // Remove thousand separators
   int thlen = thousandsSeparator().length();
   int lastpos = 0;
-  while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
+  while ( ( pos = major.indexOf( thousandsSeparator() ) ) > 0 )
   {
     // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
     int fromEnd = major.length() - pos;
@@ -1387,7 +1387,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   bool neg = false;
   bool currencyFound = false;
   // First try removing currency symbol from either end
-  int pos = str.find(currencySymbol());
+  int pos = str.indexOf(currencySymbol());
   if ( pos == 0 || pos == (int) str.length()-1 )
     {
       str.remove(pos,currencySymbol().length());
@@ -1412,7 +1412,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
     }
   else
     {
-      int i1 = str.find(negativeSign());
+      int i1 = str.indexOf(negativeSign());
       if ( i1 == 0 || i1 == (int) str.length()-1 )
         {
 	  neg = true;
@@ -1425,7 +1425,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   // it already (because of the negative sign being in the way).
   if ( !currencyFound )
     {
-      pos = str.find(currencySymbol());
+      pos = str.indexOf(currencySymbol());
       if ( pos == 0 || pos == (int) str.length()-1 )
         {
 	  str.remove(pos,currencySymbol().length());
@@ -1434,7 +1434,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
     }
 
   // And parse the rest as a number
-  pos = str.find(monetaryDecimalSymbol());
+  pos = str.indexOf(monetaryDecimalSymbol());
   QString major;
   QString minior;
   if (pos == -1)
@@ -1448,7 +1448,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   // Remove thousand separators
   int thlen = monetaryThousandsSeparator().length();
   int lastpos = 0;
-  while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
+  while ( ( pos = major.indexOf( monetaryThousandsSeparator() ) ) > 0 )
   {
     // e.g. 12,,345,,678,,922 Acceptable positions (from the end) are 5, 10, 15... i.e. (3+thlen)*N
     int fromEnd = major.length() - pos;
@@ -2214,7 +2214,7 @@ QStringList KLocale::languagesTwoAlpha() const
          langLst = config.readListEntry( lang );
       else
       {
-         int i = lang.find('_');
+         int i = lang.indexOf('_');
          if (i >= 0)
             lang.truncate(i);
          langLst << lang;
@@ -2246,7 +2246,8 @@ QString KLocale::twoAlphaToLanguageName(const QString &code) const
     d->languages = new KConfig("all_languages", true, false, "locale");
 
   QString groupName = code;
-  const int i = groupName.find('_');
+  int i = groupName.indexOf('_');
+  if (i < 0) i = groupName.size();
   groupName.replace(0, i, groupName.left(i).lower());
 
   d->languages->setGroup(groupName);
