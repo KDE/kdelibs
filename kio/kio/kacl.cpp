@@ -24,67 +24,79 @@
 #include <sys/acl.h>
 #include <sys/stat.h>
 #include <acl/libacl.h>
+#include <qintdict.h>
 
 #include <kdebug.h>
 
 #include "kacl.h"
 
+static void printACL( acl_t acl, const QString &comment );
+
 class KACL::KACLPrivate {
-    public:
-        bool dummy;
+public:
+    KACLPrivate( acl_t acl ) 
+        : m_acl( acl ) { init(); }
+    KACLPrivate() : m_acl( 0 ) { init(); }
+    ~KACLPrivate() { if ( m_acl ) acl_free( m_acl ); }
+    void init() {
+        m_usercache.setAutoDelete( true );
+        m_groupcache.setAutoDelete( true );
+    }
+    // helpers
+    bool setMaskPermissions( unsigned short v );
+    QString getUserName( uid_t uid ) const;
+    QString getGroupName( gid_t gid ) const;
+    bool setAllUsersOrGroups( const QValueList< QPair<QString, unsigned short> > &list, acl_tag_t type );
+    bool setNamedUserOrGroupPermissions( const QString& name, unsigned short permissions, acl_tag_t type );
+
+    acl_t m_acl;
+    mutable QIntDict<QString> m_usercache;
+    mutable QIntDict<QString> m_groupcache;
 };
 
 KACL::KACL( const QString &aclString ) 
-    : m_acl( 0 ),
-      d(0)
+    : d( new KACLPrivate )
 {
     setACL( aclString );
-    init();
 }
 
 KACL::KACL( mode_t basePermissions ) 
-    : m_acl( acl_from_mode( basePermissions ) ),
-      d(0)
+    : d( new KACLPrivate( acl_from_mode( basePermissions ) ) )
 {
-    init();
 }
 
 KACL::KACL()
-    : m_acl( 0 ),
-      d(0)
+    : d( new KACLPrivate )
 {
 }
 
 KACL::KACL( const KACL& rhs )
-    : m_acl( 0 ),
-      d(0)
+    : d( new KACLPrivate )
 {
     setACL( rhs.asString() );
 }
 
-void KACL::init()
-{
-  m_usercache.setAutoDelete( true );
-  m_groupcache.setAutoDelete( true );
-}
-
 KACL::~KACL()
 {
-    if ( m_acl ) acl_free( m_acl );
+    delete d;
+}
+
+bool KACL::operator==( const KACL& rhs ) const {
+    return ( acl_cmp( d->m_acl, rhs.d->m_acl ) == 0 );
 }
 
 bool KACL::isValid() const
 {
     bool valid = false;
-    if ( m_acl ) {
-        valid = ( acl_valid( m_acl ) == 0 );
+    if ( d->m_acl ) {
+        valid = ( acl_valid( d->m_acl ) == 0 );
     }
     return valid;
 }
 
 bool KACL::isExtended() const
 {
-    return ( acl_equiv_mode( m_acl, NULL ) != 0 );
+    return ( acl_equiv_mode( d->m_acl, NULL ) != 0 );
 }
 
 static acl_entry_t entryForTag( acl_t acl, acl_tag_t tag )
@@ -150,34 +162,34 @@ static int getGidForName( const QString& name )
 
 unsigned short KACL::ownerPermissions() const
 {
-    return entryToPermissions( entryForTag( m_acl, ACL_USER_OBJ ) );
+    return entryToPermissions( entryForTag( d->m_acl, ACL_USER_OBJ ) );
 }
 
 bool KACL::setOwnerPermissions( unsigned short v )
 {
-    permissionsToEntry( entryForTag( m_acl, ACL_USER_OBJ ), v );
+    permissionsToEntry( entryForTag( d->m_acl, ACL_USER_OBJ ), v );
     return true;
 }
 
 unsigned short KACL::owningGroupPermissions() const
 {
-    return entryToPermissions( entryForTag( m_acl, ACL_GROUP_OBJ ) );
+    return entryToPermissions( entryForTag( d->m_acl, ACL_GROUP_OBJ ) );
 }
 
 bool KACL::setOwningGroupPermissions( unsigned short v )
 {
-    permissionsToEntry( entryForTag( m_acl, ACL_GROUP_OBJ ), v );
+    permissionsToEntry( entryForTag( d->m_acl, ACL_GROUP_OBJ ), v );
     return true;
 }
 
 unsigned short KACL::othersPermissions() const
 {
-    return entryToPermissions( entryForTag( m_acl, ACL_OTHER ) );
+    return entryToPermissions( entryForTag( d->m_acl, ACL_OTHER ) );
 }
 
 bool KACL::setOthersPermissions( unsigned short v )
 {
-    permissionsToEntry( entryForTag( m_acl, ACL_OTHER ), v );
+    permissionsToEntry( entryForTag( d->m_acl, ACL_OTHER ), v );
     return true;
 }
 
@@ -200,7 +212,7 @@ mode_t KACL::basePermissions() const
 unsigned short KACL::maskPermissions( bool &exists ) const
 {
     exists = true;
-    acl_entry_t entry = entryForTag( m_acl, ACL_MASK );
+    acl_entry_t entry = entryForTag( d->m_acl, ACL_MASK );
     if ( entry == 0 ) {
         exists = false;
         return 0;
@@ -208,12 +220,16 @@ unsigned short KACL::maskPermissions( bool &exists ) const
     return entryToPermissions( entry );
 }
 
-bool KACL::setMaskPermissions( unsigned short v )
+bool KACL::KACLPrivate::setMaskPermissions( unsigned short v )
 {
     permissionsToEntry( entryForTag( m_acl, ACL_MASK ), v );
     return true;
 }
 
+bool KACL::setMaskPermissions( unsigned short v )
+{
+    return d->setMaskPermissions( v );
+}
 
 /**************************
  * Deal with named users  *
@@ -223,23 +239,23 @@ unsigned short KACL::namedUserPermissions( const QString& name, bool *exists ) c
     acl_entry_t entry;
     uid_t id;
     *exists = false;
-    int ret = acl_get_entry( m_acl, ACL_FIRST_ENTRY, &entry );
+    int ret = acl_get_entry( d->m_acl, ACL_FIRST_ENTRY, &entry );
     while ( ret == 1 ) {
         acl_tag_t currentTag;
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  ACL_USER ) {
             id = *( (uid_t*) acl_get_qualifier( entry ) );
-            if ( getUserName( id ) == name ) {
+            if ( d->getUserName( id ) == name ) {
                 *exists = true;
                 return entryToPermissions( entry );
             }
         }
-        ret = acl_get_entry( m_acl, ACL_NEXT_ENTRY, &entry );
+        ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
     return 0;
 }
 
-bool KACL::setNamedUserOrGroupPermissions( const QString& name, unsigned short permissions, acl_tag_t type )
+bool KACL::KACLPrivate::setNamedUserOrGroupPermissions( const QString& name, unsigned short permissions, acl_tag_t type )
 {
     acl_t newACL = acl_dup( m_acl );
     acl_entry_t entry;
@@ -293,7 +309,7 @@ bool KACL::setNamedUserOrGroupPermissions( const QString& name, unsigned short p
 
 bool KACL::setNamedUserPermissions( const QString& name, unsigned short permissions )
 {
-    return setNamedUserOrGroupPermissions( name, permissions, ACL_USER );
+    return d->setNamedUserOrGroupPermissions( name, permissions, ACL_USER );
 }
 
 ACLUserPermissionsList KACL::allUserPermissions() const
@@ -301,23 +317,23 @@ ACLUserPermissionsList KACL::allUserPermissions() const
     ACLUserPermissionsList list;
     acl_entry_t entry;
     uid_t id;
-    int ret = acl_get_entry( m_acl, ACL_FIRST_ENTRY, &entry );
+    int ret = acl_get_entry( d->m_acl, ACL_FIRST_ENTRY, &entry );
     while ( ret == 1 ) {
         acl_tag_t currentTag;
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  ACL_USER ) {
             id = *( (uid_t*) acl_get_qualifier( entry ) );
-            QString name = getUserName( id );
+            QString name = d->getUserName( id );
             unsigned short permissions = entryToPermissions( entry );
             ACLUserPermissions pair = qMakePair( name, permissions );
             list.append( pair );
         }
-        ret = acl_get_entry( m_acl, ACL_NEXT_ENTRY, &entry );
+        ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
     return list;
 }
 
-bool KACL::setAllUsersOrGroups( const QValueList< QPair<QString, unsigned short> > &list, acl_tag_t type )
+bool KACL::KACLPrivate::setAllUsersOrGroups( const QValueList< QPair<QString, unsigned short> > &list, acl_tag_t type )
 {
     bool allIsWell = true; 
     bool atLeastOneUserOrGroup = false;
@@ -378,7 +394,7 @@ bool KACL::setAllUsersOrGroups( const QValueList< QPair<QString, unsigned short>
 
 bool KACL::setAllUserPermissions( const ACLUserPermissionsList &users )
 {
-    return setAllUsersOrGroups( users, ACL_USER );
+    return d->setAllUsersOrGroups( users, ACL_USER );
 }
 
 
@@ -391,18 +407,18 @@ unsigned short KACL::namedGroupPermissions( const QString& name, bool *exists ) 
     *exists = false;
     acl_entry_t entry;
     gid_t id;
-    int ret = acl_get_entry( m_acl, ACL_FIRST_ENTRY, &entry );
+    int ret = acl_get_entry( d->m_acl, ACL_FIRST_ENTRY, &entry );
     while ( ret == 1 ) {
         acl_tag_t currentTag;
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  ACL_GROUP ) {
             id = *( (gid_t*) acl_get_qualifier( entry ) );
-            if ( getGroupName( id ) == name ) {
+            if ( d->getGroupName( id ) == name ) {
                 *exists = true;
                 return entryToPermissions( entry );
             }
         }
-        ret = acl_get_entry( m_acl, ACL_NEXT_ENTRY, &entry );
+        ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
 
     return 0;
@@ -410,7 +426,7 @@ unsigned short KACL::namedGroupPermissions( const QString& name, bool *exists ) 
 
 bool KACL::setNamedGroupPermissions( const QString& name, unsigned short permissions )
 {
-    return setNamedUserOrGroupPermissions( name, permissions, ACL_GROUP );
+    return d->setNamedUserOrGroupPermissions( name, permissions, ACL_GROUP );
 }
 
 
@@ -419,25 +435,25 @@ ACLGroupPermissionsList KACL::allGroupPermissions() const
     ACLGroupPermissionsList list;
     acl_entry_t entry;
     gid_t id;
-    int ret = acl_get_entry( m_acl, ACL_FIRST_ENTRY, &entry );
+    int ret = acl_get_entry( d->m_acl, ACL_FIRST_ENTRY, &entry );
     while ( ret == 1 ) {
         acl_tag_t currentTag;
         acl_get_tag_type( entry, &currentTag );
         if ( currentTag ==  ACL_GROUP ) {
             id = *( (gid_t*) acl_get_qualifier( entry ) );
-            QString name = getGroupName( id ); 
+            QString name = d->getGroupName( id ); 
             unsigned short permissions = entryToPermissions( entry );
             ACLGroupPermissions pair = qMakePair( name, permissions );
             list.append( pair );
         }
-        ret = acl_get_entry( m_acl, ACL_NEXT_ENTRY, &entry );
+        ret = acl_get_entry( d->m_acl, ACL_NEXT_ENTRY, &entry );
     }
     return list;
 }
 
 bool KACL::setAllGroupPermissions( const ACLGroupPermissionsList &groups )
 {
-    return setAllUsersOrGroups( groups, ACL_GROUP );
+    return d->setAllUsersOrGroups( groups, ACL_GROUP );
 }
 
 /**************************
@@ -452,9 +468,9 @@ bool KACL::setACL( const QString &aclStr )
         // TODO errno is set, what to do with it here?
         acl_free( temp );
     } else {
-        if ( m_acl )
-            acl_free( m_acl );
-        m_acl = temp;
+        if ( d->m_acl )
+            acl_free( d->m_acl );
+        d->m_acl = temp;
         ret = true;
     }
     return ret;
@@ -462,14 +478,14 @@ bool KACL::setACL( const QString &aclStr )
 
 QString KACL::asString() const
 {
-    ssize_t size = acl_size( m_acl );
-    return QString::fromLatin1( acl_to_text( m_acl, &size ) );
+    ssize_t size = acl_size( d->m_acl );
+    return QString::fromLatin1( acl_to_text( d->m_acl, &size ) );
 }
 
 
 // helpers
 
-QString KACL::getUserName( uid_t uid ) const
+QString KACL::KACLPrivate::getUserName( uid_t uid ) const
 {
     QString *temp;
     temp = m_usercache.find( uid );
@@ -487,7 +503,7 @@ QString KACL::getUserName( uid_t uid ) const
 }
 
 
-QString KACL::getGroupName( gid_t gid ) const
+QString KACL::KACLPrivate::getGroupName( gid_t gid ) const
 {
     QString *temp;
     temp = m_groupcache.find( gid );

@@ -20,11 +20,8 @@
 #ifndef __kacl_h__
 #define __kacl_h__
 
-#include <sys/acl.h>
-#include <acl/libacl.h>
 
-#include <qintdict.h>
-
+#include <sys/types.h>
 #include <kio/global.h>
 
 
@@ -76,9 +73,7 @@ public:
     return *this;
   }
 
-  bool operator==( const KACL& rhs ) const {
-    return ( acl_cmp( m_acl, rhs.m_acl ) == 0 );
-  }
+  bool operator==( const KACL& rhs ) const;
 
   bool operator!=( const KACL& rhs ) const {
     return !operator==( rhs );
@@ -198,18 +193,9 @@ public:
   QString asString() const;
 
 protected:
-  // helpers
-  QString getUserName( uid_t uid ) const;
-  QString getGroupName( gid_t gid ) const;
-  bool setAllUsersOrGroups( const QValueList< QPair<QString, unsigned short> > &list, acl_tag_t type );
-  bool setNamedUserOrGroupPermissions( const QString& name, unsigned short permissions, acl_tag_t type );
   virtual void virtual_hook( int id, void* data );
 private:
-  void init();
-  acl_t m_acl;
-  mutable QIntDict<QString> m_usercache;
-  mutable QIntDict<QString> m_groupcache;
-  class KACLPrivate;
+  struct KACLPrivate;
   KACLPrivate * d;
   KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KACL & a );
   KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KACL & a );
