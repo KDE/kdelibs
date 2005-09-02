@@ -45,7 +45,7 @@ public:
      * Constructs a color drag with the color @p col.
      */
     KColorDrag( const QColor &col, QWidget *dragsource = 0, const char *name = 0 );
-    virtual ~KColorDrag() {};
+    virtual ~KColorDrag() {}
 
     virtual const char *format(int i) const;
     virtual QByteArray encodedData ( const char * m ) const;

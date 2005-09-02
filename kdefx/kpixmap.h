@@ -79,7 +79,7 @@ public:
 	/**
 	 * Constructs a null pixmap.
 	 */
-         KPixmap() : QPixmap() {};
+         KPixmap() : QPixmap() {}
 
 	/**
 	 * Destructs the pixmap.

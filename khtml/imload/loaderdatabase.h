@@ -35,7 +35,7 @@ class ImageLoader;
 class LoaderDatabase
 {
 public:
-    LoaderDatabase() {};
+    LoaderDatabase() {}
     
     unsigned int numLoaders()
     {

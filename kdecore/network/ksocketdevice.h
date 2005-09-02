@@ -389,8 +389,8 @@ private:
 class KSocketDeviceFactoryBase
 {
 public:
-  KSocketDeviceFactoryBase() {};
-  virtual ~KSocketDeviceFactoryBase() {};
+  KSocketDeviceFactoryBase() {}
+  virtual ~KSocketDeviceFactoryBase() {}
 
   virtual KSocketDevice* create(KSocketBase*) const = 0;
 };

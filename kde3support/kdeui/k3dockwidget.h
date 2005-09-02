@@ -115,23 +115,23 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetAbstractHeader(){};
+  virtual ~K3DockWidgetAbstractHeader(){}
 
   /**
    * Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class.
    */
-  virtual void setTopLevel( bool ){};
+  virtual void setTopLevel( bool ){}
 
 #ifndef NO_KDE2
   /**
    * Provides saving the current configuration. Must be overridden by an inheriting class.
    */
-  virtual void saveConfig( KConfig* ){};
+  virtual void saveConfig( KConfig* ){}
 
   /**
    * Provides loading the current configuration.  Must be overridden by an inheriting class
    */
-  virtual void loadConfig( KConfig* ){};
+  virtual void loadConfig( KConfig* ){}
 #endif
 
 protected:
@@ -166,7 +166,7 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetAbstractHeaderDrag(){};
+  virtual ~K3DockWidgetAbstractHeaderDrag(){}
 
   /**
    * @return the dockwidget where this belongs to
@@ -211,7 +211,7 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetHeaderDrag(){};
+  virtual ~K3DockWidgetHeaderDrag(){}
 
 protected:
 
@@ -250,7 +250,7 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetHeader(){};
+  virtual ~K3DockWidgetHeader(){}
 
   /**
    * Hides the close button and stay button when switching to toplevel or vice versa shows them.
@@ -367,12 +367,12 @@ public:
    * Constructs this. It just calls the method of the base class.
    */
   K3DockTabGroup( QWidget *parent = 0, const char *name = 0 )
-  :QTabWidget( parent, name ){};
+  :QTabWidget( parent, name ){}
 
   /**
    * Destructs a K3DockTabGroup.
    */
-  virtual ~K3DockTabGroup(){};
+  virtual ~K3DockTabGroup(){}
 
   QWidget *transientTo();
 protected:
@@ -1123,7 +1123,7 @@ private:
       dock = _dock;
       hide = _hide;
     };
-    ~MenuDockData(){};
+    ~MenuDockData(){}
 
     K3DockWidget* dock;
     bool hide;

@@ -450,7 +450,7 @@ protected slots:
     /**
     * @deprecated
     */
-    virtual void itemSelected( Q3ListBoxItem* ) {};
+    virtual void itemSelected( Q3ListBoxItem* ) {}
 
     /**
     * Completes text according to the completion mode.

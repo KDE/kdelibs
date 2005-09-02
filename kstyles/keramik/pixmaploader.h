@@ -119,8 +119,8 @@ namespace Keramik
 	class TilePainter
 	{
 	public:
-		TilePainter( int name ) : m_columns(1),m_rows(1),m_name( name ) {};
-		virtual ~TilePainter() {};
+		TilePainter( int name ) : m_columns(1),m_rows(1),m_name( name ) {}
+		virtual ~TilePainter() {}
 
 		enum PaintMode
 		{
@@ -212,7 +212,7 @@ namespace Keramik
 			rowMde[0] =  ( m_direction & Vertical ) ? Scaled : Tiled;
 		}
 
-		virtual ~ScaledPainter() {};
+		virtual ~ScaledPainter() {}
 
 	private:
 		Direction m_direction;
@@ -225,7 +225,7 @@ namespace Keramik
 			colMde[0] = colMde[1] = colMde[2] = colMde[3] =  Fixed;
 			rowMde[0] = rowMde[1] = rowMde[2] = rowMde[3] = Fixed;
 		};
-		virtual ~CenteredPainter() {};
+		virtual ~CenteredPainter() {}
 
 	protected:
 	};
@@ -237,7 +237,7 @@ namespace Keramik
 		                 bool scaleH = true, bool scaleV = true,
 		                 unsigned int columns = 3, unsigned int rows = 3 );
 
-		virtual ~RectTilePainter() {};
+		virtual ~RectTilePainter() {}
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
@@ -257,7 +257,7 @@ namespace Keramik
 			m_columns = 3;
 		}
 
-		virtual ~RowPainter() {};
+		virtual ~RowPainter() {}
 	protected:
 		virtual int tileName( unsigned int column, unsigned int /*row*/) const
 		{
@@ -286,7 +286,7 @@ namespace Keramik
 			m_columns = 2;
 		}
 
-		virtual ~ProgressBarPainter() {};
+		virtual ~ProgressBarPainter() {}
 	protected:
 		virtual int tileName( unsigned int column, unsigned int /*row*/ ) const
 		{
@@ -307,7 +307,7 @@ namespace Keramik
 	{
 	public:
 		ActiveTabPainter( bool bottom );
-		virtual ~ActiveTabPainter() {};
+		virtual ~ActiveTabPainter() {}
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
@@ -320,7 +320,7 @@ namespace Keramik
 	{
 	public:
 		InactiveTabPainter( QStyleOptionTab::TabPosition mode, bool bottom );
-		virtual ~InactiveTabPainter() {};
+		virtual ~InactiveTabPainter() {}
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;
@@ -334,7 +334,7 @@ namespace Keramik
 	{
 	public:
 		ScrollBarPainter( int type, int count, bool horizontal );
-		virtual ~ScrollBarPainter() {};
+		virtual ~ScrollBarPainter() {}
 
 		static int name( bool horizontal );
 
@@ -355,7 +355,7 @@ namespace Keramik
 			rowMde[0]=rowMde[1]=rowMde[2] = Scaled;
 			m_columns = 3;
 		};
-		virtual ~SpinBoxPainter() {};
+		virtual ~SpinBoxPainter() {}
 
 	protected:
 		virtual int tileName( unsigned int column, unsigned int row ) const;

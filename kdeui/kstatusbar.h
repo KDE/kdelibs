@@ -40,7 +40,7 @@ public:
 
 
   KStatusBarLabel( const QString& text, int _id, KStatusBar* parent = 0 );
-  ~KStatusBarLabel () {};
+  ~KStatusBarLabel () {}
 
 protected:
 

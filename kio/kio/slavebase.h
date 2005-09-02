@@ -718,7 +718,7 @@ public:
      * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      */
-    void setMultipleAuthCaching( bool ) {};
+    void setMultipleAuthCaching( bool ) {}
 
     /**
      * @obsolete as of 3.1. Use openPassDlg instead.

@@ -32,7 +32,7 @@
 template <class Item>
 class K3MdiNullIterator : public K3MdiIterator<Item> {
 public:
-   K3MdiNullIterator() {};
+   K3MdiNullIterator() {}
    virtual void first() {}
    virtual void last() {}
    virtual void next() {}

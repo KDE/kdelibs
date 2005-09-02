@@ -36,7 +36,7 @@ namespace KABC {
 class KABC_EXPORT SortMode
 {
   public:
-	virtual ~SortMode(){};
+	virtual ~SortMode(){}
     /**
       Reimplement this method and return whether the first contact is 'smaller'
       than the second.
@@ -60,7 +60,7 @@ class KABC_EXPORT NameSortMode : public SortMode
       Creates a NameSortMethod with FormattedName as name type set.
      */
     NameSortMode();
-	virtual ~NameSortMode(){};
+	virtual ~NameSortMode(){}
     /**
       Constructor.
 
@@ -94,7 +94,7 @@ class KABC_EXPORT FieldSortMode : public SortMode
       @param field The field.
      */
     FieldSortMode( KABC::Field *field, bool ascending = true );
-	virtual ~FieldSortMode(){};
+	virtual ~FieldSortMode(){}
     /**
       Returns whether the first contact is 'smaller' then the second.
      */

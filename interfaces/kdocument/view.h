@@ -9,7 +9,7 @@ namespace KDocument {
 		Q_OBJECT
 		public:
 			View(QWidget *parent):QWidget(parent),KXMLGUIClient() {}
-			virtual ~View() {};
+			virtual ~View() {}
 		signals:
 			void focusIn ( KDocument::View *view );
 			void focusOut ( KDocument::View *view );

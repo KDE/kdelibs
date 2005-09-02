@@ -25,7 +25,7 @@ public:
     virtual ASYNC FilesChanged( const KURL::List& fileList );
     virtual ASYNC FileRenamed( const KURL& src, const KURL& dst );
 protected:
-    KDirNotify_stub() : DCOPStub( never_use ) {};
+    KDirNotify_stub() : DCOPStub( never_use ) {}
 };
 
 

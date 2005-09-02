@@ -293,7 +293,7 @@ private:
 
 	/* private constructors, to prevent instantiation and copying */
 	PlayObject();
-	PlayObject( const PlayObject& ) : QObject() {};
+	PlayObject( const PlayObject& ) : QObject() {}
 	PlayObject(Arts::PlayObject playobject, bool isStream);
 	PlayObject( Arts::SoundServerV2 server, const KURL& url, bool isStream, bool createBUS );
 

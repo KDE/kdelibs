@@ -35,7 +35,7 @@ namespace khtmlImLoad {
 class ImageOwner
 {
 public:
-    virtual ~ImageOwner() {};
+    virtual ~ImageOwner() {}
     /**
      Called to notify the owner when the intrinic size is available
 

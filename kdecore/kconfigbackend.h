@@ -213,7 +213,7 @@ public:
   /**
    * Destructs the configuration backend.
    */
-  virtual ~KConfigINIBackEnd() {};
+  virtual ~KConfigINIBackEnd() {}
 
   /**
    * Parses all INI-style configuration files for a config object.

@@ -47,7 +47,7 @@ template<class T>
 class ManagerObserver
 {
   public:
-	virtual ~ManagerObserver(){};
+	virtual ~ManagerObserver(){}
     virtual void resourceAdded( T *resource ) = 0;
     virtual void resourceModified( T *resource ) = 0;
     virtual void resourceDeleted( T *resource ) = 0;
@@ -59,7 +59,7 @@ class ManagerObserver
 class ManagerNotifier
 {
   public:
-	virtual ~ManagerNotifier(){};
+	virtual ~ManagerNotifier(){}
     virtual void notifyResourceAdded( Resource *resource ) = 0;
     virtual void notifyResourceModified( Resource *resource ) = 0;
     virtual void notifyResourceDeleted( Resource *resource ) = 0;
@@ -88,7 +88,7 @@ class Manager : private ManagerNotifier
     {
         friend class Manager;
       public:
-        Iterator() {};
+        Iterator() {}
         Iterator( const Iterator &it ) { mIt = it.mIt; }
 
         T *operator*() { return static_cast<T *>( *mIt ); }
@@ -130,7 +130,7 @@ class Manager : private ManagerNotifier
     {
         friend class Manager;
       public:
-        ActiveIterator() : mList( 0 ) {};
+        ActiveIterator() : mList( 0 ) {}
         ActiveIterator( const ActiveIterator &it )
         {
           mIt = it.mIt;

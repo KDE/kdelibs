@@ -155,7 +155,7 @@ protected:
     */
     struct KDEFX_EXPORT Option
     {
-        virtual ~Option() {}; //So dynamic_cast works, and g++ shuts up
+        virtual ~Option() {} //So dynamic_cast works, and g++ shuts up
     };
 
     /**

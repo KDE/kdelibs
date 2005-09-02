@@ -362,7 +362,7 @@ public:
 class CounterActImpl : public CSSValueImpl {
     public:
         CounterActImpl(DOM::DOMString &c, short v) : m_counter(c), m_value(v) { }
-        virtual ~CounterActImpl() {};
+        virtual ~CounterActImpl() {}
 
         virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
         virtual DOM::DOMString cssText() const;

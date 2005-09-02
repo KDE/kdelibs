@@ -58,7 +58,7 @@ class RenderCounter : public RenderCounterBase
 {
 public:
     RenderCounter(DOM::NodeImpl* node, const DOM::CounterImpl* counter);
-    virtual ~RenderCounter() {};
+    virtual ~RenderCounter() {}
 
     virtual const char *renderName() const { return "RenderCounter"; }
 
@@ -76,7 +76,7 @@ class RenderQuote : public RenderCounterBase
 {
 public:
     RenderQuote(DOM::NodeImpl* node, EQuoteContent type);
-    virtual ~RenderQuote() {};
+    virtual ~RenderQuote() {}
 
     virtual const char *renderName() const { return "RenderQuote"; }
 
