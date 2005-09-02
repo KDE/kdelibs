@@ -18,6 +18,7 @@
 
 #include <q3dict.h>
 #include <qfile.h>
+#include <qstringlist.h>
 #include <qtextstream.h>
 
 #include <kdirwatch.h>

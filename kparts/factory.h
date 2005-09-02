@@ -22,6 +22,7 @@
 
 #include <klibloader.h>
 
+class Q3CString;
 class QWidget;
 
 namespace KParts
