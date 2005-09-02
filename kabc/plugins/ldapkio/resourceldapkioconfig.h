@@ -44,11 +44,11 @@ class KLineEdit;
 namespace KABC {
 
 class KABC_EXPORT ResourceLDAPKIOConfig : public KRES::ConfigWidget
-{ 
+{
   Q_OBJECT
 
   public:
-    ResourceLDAPKIOConfig( QWidget* parent = 0, const char* name = 0 );
+    ResourceLDAPKIOConfig( QWidget* parent = 0 );
 
   public slots:
     void loadSettings( KRES::Resource* );
@@ -97,7 +97,7 @@ class OfflineDialog : public KDialogBase
   Q_OBJECT
 
   public:
-    OfflineDialog( bool autoCache, int cachePolicy, const KURL &src, 
+    OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
       const QString &dst, QWidget *parent, const char *name = 0 );
     ~OfflineDialog();
 

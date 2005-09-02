@@ -63,7 +63,7 @@ public:
   /**
    * Constructs a hue/saturation selection widget.
    */
-  KHSSelector( QWidget *parent=0, const char *name=0 );
+  KHSSelector( QWidget *parent=0);
 
 protected:
   /**
@@ -107,11 +107,11 @@ public:
   /**
    * Constructs a widget for color selection.
    */
-  KValueSelector( QWidget *parent=0, const char *name=0 );
+  KValueSelector( QWidget *parent=0 );
   /**
    * Constructs a widget for color selection with a given orientation
    */
-  KValueSelector( Qt::Orientation o, QWidget *parent = 0, const char *name = 0 );
+  KValueSelector( Qt::Orientation o, QWidget *parent = 0 );
 
   int hue() const
         { return _hue; }

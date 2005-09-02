@@ -30,8 +30,8 @@ struct KMediaPlayer::View::Data
 	QWidget *videoWidget;
 };
 
-KMediaPlayer::View::View(QWidget *parent, const char *name)
-	: QWidget(parent, name)
+KMediaPlayer::View::View(QWidget *parent)
+	: QWidget(parent)
 	, currentButtons((int)All)
 	, d(new Data())
 {

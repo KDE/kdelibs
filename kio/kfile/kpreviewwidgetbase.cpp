@@ -1,7 +1,7 @@
 /*
  * This file is part of the KDE project.
  * Copyright (C) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
- *               
+ *
  * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.
  */
@@ -17,8 +17,8 @@ public:
 
 Q3PtrDict<KPreviewWidgetBase::KPreviewWidgetBasePrivate> * KPreviewWidgetBase::s_private;
 
-KPreviewWidgetBase::KPreviewWidgetBase( QWidget *parent, const char *name )
-    : QWidget( parent, name )
+KPreviewWidgetBase::KPreviewWidgetBase( QWidget *parent )
+    : QWidget( parent )
 {
     if ( !s_private )
         s_private = new Q3PtrDict<KPreviewWidgetBasePrivate>();

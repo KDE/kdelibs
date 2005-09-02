@@ -33,8 +33,8 @@
  * The contents of the selector are drawn by derived class.
  */
 
-KXYSelector::KXYSelector( QWidget *parent, const char *name )
-	: QWidget( parent, name )
+KXYSelector::KXYSelector( QWidget *parent )
+	: QWidget( parent )
 {
 	xPos = 0;
 	yPos = 0;
@@ -78,7 +78,7 @@ void KXYSelector::setValues( int _xPos, int _yPos )
 		xPos = maxX;
 	else if ( xPos < minX )
 		xPos = minX;
-	
+
 	if ( yPos > maxY )
 		yPos = maxY;
 	else if ( yPos < minY )
@@ -126,7 +126,7 @@ void KXYSelector::mouseMoveEvent( QMouseEvent *e )
 	int xVal, yVal;
 	valuesFromPosition( e->pos().x() - 2, e->pos().y() - 2, xVal, yVal );
 	setValues( xVal, yVal );
-	
+
 	emit valueChanged( xPos, yPos );
 }
 
@@ -134,9 +134,9 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
 {
 	if ( e->orientation() == Qt::Horizontal )
 		setValues( xValue() + e->delta()/120, yValue() );
-	else	
+	else
 		setValues( xValue(), yValue() + e->delta()/120 );
-	
+
 	emit valueChanged( xPos, yPos );
 }
 
@@ -144,12 +144,12 @@ void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 {
 	xVal = ( (maxX-minX) * (x-2) ) / ( width()-4 );
 	yVal = maxY - ( ( (maxY-minY) * (y-2) ) / ( height()-4 ) );
-	
+
 	if ( xVal > maxX )
 		xVal = maxX;
 	else if ( xVal < minX )
 		xVal = minX;
-	
+
 	if ( yVal > maxY )
 		yVal = maxY;
 	else if ( yVal < minY )
@@ -196,15 +196,15 @@ void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
  */
 
 
-KSelector::KSelector( QWidget *parent, const char *name )
-	: QWidget( parent, name ), Q3RangeControl()
+KSelector::KSelector( QWidget *parent )
+	: QWidget( parent ), Q3RangeControl()
 {
 	_orientation = Qt::Horizontal;
 	_indent = true;
 }
 
-KSelector::KSelector( Qt::Orientation o, QWidget *parent, const char *name )
-	: QWidget( parent, name ), Q3RangeControl()
+KSelector::KSelector( Qt::Orientation o, QWidget *parent )
+	: QWidget( parent ), Q3RangeControl()
 {
 	_orientation = o;
 	_indent = true;
@@ -244,7 +244,7 @@ void KSelector::paintEvent( QPaintEvent * )
 	}
 
 	QPoint pos = calcArrowPos( value() );
-	drawArrow( &painter, true, pos );   
+	drawArrow( &painter, true, pos );
 
 	painter.end();
 }
@@ -335,8 +335,8 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
     }
 
     painter->drawPolygon( array );
-  } 
-  else 
+  }
+  else
   {
     if ( orientation() == Qt::Vertical )
     {
@@ -351,16 +351,15 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 
 //----------------------------------------------------------------------------
 
-KGradientSelector::KGradientSelector( QWidget *parent, const char *name )
-    : KSelector( parent, name )
+KGradientSelector::KGradientSelector( QWidget *parent )
+    : KSelector( parent )
 {
     init();
 }
 
 
-KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent,
-		const char *name )
-	: KSelector( o, parent, name )
+KGradientSelector::KGradientSelector( Qt::Orientation o, QWidget *parent )
+    : KSelector( o, parent )
 {
     init();
 }
@@ -374,7 +373,7 @@ void KGradientSelector::init()
 {
     color1.setRgb( 0, 0, 0 );
     color2.setRgb( 255, 255, 255 );
-    
+
     text1 = text2 = "";
 }
 
@@ -446,7 +445,7 @@ void KGradientSelector::drawContents( QPainter *painter )
 		painter->drawText( xPos, yPos, text2 );
 
 		yPos = contentsRect().bottom() - painter->fontMetrics().descent() - 2;
-		xPos = contentsRect().left() + (contentsRect().width() - 
+		xPos = contentsRect().left() + (contentsRect().width() -
 			painter->fontMetrics().width( text1 )) / 2;
 		pen.setColor( color1 );
 		painter->setPen( pen );

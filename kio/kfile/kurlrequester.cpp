@@ -66,7 +66,8 @@ protected:
 	if ( m_urls.isEmpty() )
 	    return 0L;
 
-	Q3DragObject *drag = new KURLDrag( m_urls, this, "url drag" );
+	Q3DragObject *drag = new KURLDrag( m_urls, this );
+        drag->setObjectName( "url drag" );
 	return drag;
     }
 

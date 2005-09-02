@@ -25,8 +25,8 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-CupsdSplash::CupsdSplash(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdSplash::CupsdSplash(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setHeader(i18n("Welcome to the CUPS Server Configuration Tool"));
 	setPageLabel(i18n("Welcome"));

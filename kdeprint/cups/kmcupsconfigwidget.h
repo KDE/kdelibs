@@ -29,7 +29,7 @@ class KConfig;
 class KMCupsConfigWidget : public QWidget
 {
 public:
-	KMCupsConfigWidget(QWidget *parent = 0, const char *name = 0);
+	KMCupsConfigWidget(QWidget *parent = 0);
 
 	void load();
 	void save(bool sync = true);

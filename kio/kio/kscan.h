@@ -200,7 +200,7 @@ protected:
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
      */
-    KScanDialogFactory( QObject *parent=0, const char *name=0 );
+    KScanDialogFactory( QObject *parent=0 );
 
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
                                    const char* classname = "QObject",
@@ -244,12 +244,11 @@ public:
      * is available. Pass a suitable @p parent widget, if you like. If you
      * don't you have to 'delete' the returned pointer yourself.
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      * @return the KOCRDialog, or 0 if the function failed
      */
     static KOCRDialog * getOCRDialog( QWidget *parent=0L,
-					const char *name=0, bool modal=false );
+				      bool modal=false );
     ~KOCRDialog();
 
 protected:
@@ -265,7 +264,7 @@ protected:
      * @param modal if true the dialog is model
      */
     KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
-		 QWidget *parent=0L, const char *name=0, bool modal=false );
+		 QWidget *parent=0L, bool modal=false );
 
     /**
      * Returns the current id for an image. You can use that in your subclass
@@ -327,7 +326,7 @@ public:
      * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      */
-    virtual KOCRDialog * createDialog( QWidget *parent=0, const char *name=0,
+    virtual KOCRDialog * createDialog( QWidget *parent=0,
 					bool modal=false ) = 0;
 
 protected:
@@ -336,7 +335,7 @@ protected:
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
      */
-    KOCRDialogFactory( QObject *parent=0, const char *name=0 );
+    KOCRDialogFactory( QObject *parent=0 );
 
     virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
                                    const char* classname = "QObject",

@@ -502,17 +502,9 @@ void KPopupMenu::hideEvent(QHideEvent *e)
 void KPopupMenu::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-// BEGIN compat methods
-KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
-    : Q3PopupMenu(parent, name)
-    , d(new KPopupMenuPrivate())
-{
-    resetKeyboardVars();
-    connect(&(d->clearTimer), SIGNAL(timeout()), SLOT(resetKeyboardVars()));
-}
 
-KPopupMenu::KPopupMenu(const QString &title, QWidget *parent, const char *name)
-    : Q3PopupMenu(parent, name)
+KPopupMenu::KPopupMenu(const QString &title, QWidget *parent)
+    : Q3PopupMenu(parent)
     , d(new KPopupMenuPrivate())
 {
     resetKeyboardVars();

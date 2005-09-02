@@ -24,8 +24,9 @@
 #include <klocale.h>
 
 KMConfigProxy::KMConfigProxy(QWidget *parent)
-: KMConfigPage(parent,"Proxy")
+    : KMConfigPage(parent)
 {
+        setObjectName( "Proxy" );
 	setPageName(i18n("Proxy"));
 	setPageHeader(i18n("RLPR Proxy Server Settings"));
 	setPagePixmap("proxy");

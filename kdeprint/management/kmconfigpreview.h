@@ -28,7 +28,7 @@ class KURLRequester;
 class KMConfigPreview : public KMConfigPage
 {
 public:
-	KMConfigPreview(QWidget *parent = 0, const char *name = 0);
+	KMConfigPreview(QWidget *parent = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);

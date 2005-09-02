@@ -32,7 +32,7 @@ class EscpWidget : public QWidget
 	Q_OBJECT
 
 public:
-	EscpWidget(QWidget *parent = 0, const char *name = 0);
+	EscpWidget(QWidget *parent = 0);
 	void setDevice(const QString&);
 	void setPrinterName(const QString&);
 

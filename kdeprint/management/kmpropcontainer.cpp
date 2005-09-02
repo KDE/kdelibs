@@ -26,8 +26,8 @@
 #include <kseparator.h>
 #include <kguiitem.h>
 
-KMPropContainer::KMPropContainer(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMPropContainer::KMPropContainer(QWidget *parent)
+    : QWidget(parent)
 {
 	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	sep->setFixedHeight(5);

@@ -25,7 +25,7 @@
 class CupsdSplash : public CupsdPage
 {
 public:
-	CupsdSplash(QWidget *parent = 0, const char *name = 0);
+	CupsdSplash(QWidget *parent = 0);
 	~CupsdSplash();
 
 	bool loadConfig(CupsdConf *conf, QString& msg);

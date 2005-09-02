@@ -27,8 +27,8 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 
-QDirMultiLineEdit::QDirMultiLineEdit(QWidget *parent, const char *name)
-: QWidget(parent, name)
+QDirMultiLineEdit::QDirMultiLineEdit(QWidget *parent)
+    : QWidget(parent)
 {
 	m_view = new KListView(this);
 	m_view->header()->hide();

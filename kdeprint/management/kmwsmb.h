@@ -30,7 +30,7 @@ class KMWSmb : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWSmb(QWidget *parent = 0, const char *name = 0);
+	KMWSmb(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void updatePrinter(KMPrinter*);

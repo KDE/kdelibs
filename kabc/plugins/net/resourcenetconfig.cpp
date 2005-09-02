@@ -33,8 +33,8 @@
 
 using namespace KABC;
 
-ResourceNetConfig::ResourceNetConfig( QWidget* parent, const char* name )
-    : ConfigWidget( parent, name ), mInEditMode( false )
+ResourceNetConfig::ResourceNetConfig( QWidget* parent )
+    : ConfigWidget( parent ), mInEditMode( false )
 {
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0,
       KDialog::spacingHint() );

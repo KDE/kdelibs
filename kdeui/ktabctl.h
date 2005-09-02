@@ -32,7 +32,7 @@
 /**
  * Tabbed dialog with extended features.
  * KTabCtl is very similar to QTabDialog, with the following differences:
- * 
+ *
  * @li To avoid confusion, the API is almost identical with QTabDialog.
  * @li Does not create any buttons, therefore KTabCtl is not limited
  * to dialog boxes. You can use it whereever you want.
@@ -43,14 +43,13 @@
  * on page A depend on the contents of some other widgets on page B.
  *
  * @author Alexander Sanda (alex@darkstar.ping.at)
- * @version $Id$
 */
 class KDEUI_EXPORT KTabCtl : public QWidget
 {
     Q_OBJECT
 
 public:
-    KTabCtl(QWidget *parent = 0, const char *name = 0);
+    KTabCtl(QWidget *parent = 0);
    ~KTabCtl();
 
     void show();
@@ -70,7 +69,7 @@ protected:
 
 signals:
     void tabSelected(int);
-    
+
 protected slots:
     void showTab(int i);
 

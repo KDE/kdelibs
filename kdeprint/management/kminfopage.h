@@ -28,7 +28,7 @@ class QLabel;
 class KMInfoPage : public QWidget, public KMPrinterPage
 {
 public:
-	KMInfoPage(QWidget *parent = 0, const char *name = 0);
+	KMInfoPage(QWidget *parent = 0);
 	~KMInfoPage();
 
 	void setPrinter(KMPrinter *p);

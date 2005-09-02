@@ -26,8 +26,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMWDriver::KMWDriver(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWDriver::KMWDriver(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Driver;
 	m_title = i18n("Printer Model Selection");

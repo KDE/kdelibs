@@ -78,7 +78,7 @@ int kdeprint_management_add_printer_wizard( QWidget* parent )
 }
 
 KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *coll)
-: QWidget(parent, name)
+    : QWidget(parent)
 {
 	m_current = 0;
 	m_first = true;
@@ -89,7 +89,8 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_pop = new Q3PopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
-	m_plugin = new PluginComboBox(this, "Plugin");
+	m_plugin = new PluginComboBox(this );
+        m_plugin->setObjectName( "Plugin");
 	/*
 	m_menubar = new KMenuBar( this );
 	static_cast<KMenuBar*>( m_menubar )->setTopLevelMenu( false );

@@ -116,7 +116,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * This constructor doesn't start loading the url, setView will do it.
      */
     KDirOperator(const KURL& urlName = KURL(),
-		 QWidget *parent = 0, const char* name = 0);
+		 QWidget *parent = 0);
     /**
      * Destroys the KDirOperator.
      */

@@ -31,8 +31,8 @@
 #include <kiconloader.h>
 #include <kmessagebox.h>
 
-CupsdSecurityPage::CupsdSecurityPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdSecurityPage::CupsdSecurityPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Security"));
 	setHeader(i18n("Security Settings"));
@@ -136,7 +136,7 @@ void CupsdSecurityPage::slotAdd()
 					return;
 				}
 			}
-				
+
 		if (index == -1)
 			index = locs_.count();
 		locs_.insert(index, loc);

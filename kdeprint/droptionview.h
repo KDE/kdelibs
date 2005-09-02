@@ -39,7 +39,7 @@ class OptionBaseView : public QWidget
 {
 	Q_OBJECT
 public:
-	OptionBaseView(QWidget *parent = 0, const char *name = 0);
+	OptionBaseView(QWidget *parent = 0);
 	virtual void setOption(DrBase*);
 	virtual void setValue(const QString&);
 
@@ -54,7 +54,7 @@ class OptionNumericView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	OptionNumericView(QWidget *parent = 0, const char *name = 0);
+	OptionNumericView(QWidget *parent = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -72,7 +72,7 @@ private:
 class OptionStringView : public OptionBaseView
 {
 public:
-	OptionStringView(QWidget *parent = 0, const char *name = 0);
+	OptionStringView(QWidget *parent = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -84,7 +84,7 @@ class OptionListView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	OptionListView(QWidget *parent = 0, const char *name = 0);
+	OptionListView(QWidget *parent = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 
@@ -100,7 +100,7 @@ class OptionBooleanView : public OptionBaseView
 {
 	Q_OBJECT
 public:
-	OptionBooleanView(QWidget *parent = 0, const char *name = 0);
+	OptionBooleanView(QWidget *parent = 0);
 	void setOption(DrBase *opt);
 	void setValue(const QString& val);
 

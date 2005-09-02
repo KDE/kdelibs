@@ -42,12 +42,12 @@ public:
   /**
    * Constructs a date selection widget.
    */
-  KDateWidget( QWidget *parent=0, const char *name=0 );
+  KDateWidget( QWidget *parent=0 );
 
   /**
    * Constructs a date selection widget with the initial date set to @p date.
    */
-  KDateWidget( const QDate &date, QWidget *parent=0, const char *name=0 );
+  KDateWidget( const QDate &date, QWidget *parent=0 );
 
   /**
    * Destructs the date selection widget.

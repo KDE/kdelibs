@@ -32,8 +32,8 @@
 #include <kmessagebox.h>
 #include <kiconloader.h>
 
-KMWLocal::KMWLocal(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWLocal::KMWLocal(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_title = i18n("Local Port Selection");
 	m_ID = KMWizard::Local;

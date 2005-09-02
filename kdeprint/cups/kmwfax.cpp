@@ -30,8 +30,8 @@
 #include <kiconloader.h>
 #include <kurl.h>
 
-KMWFax::KMWFax(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWFax::KMWFax(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Custom+2;
 	m_title = i18n("Fax Serial Device");

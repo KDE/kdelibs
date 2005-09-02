@@ -23,8 +23,8 @@
 #include <qlineedit.h>
 #include <qlayout.h>
 
-KMWInfoBase::KMWInfoBase(int n, QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWInfoBase::KMWInfoBase(int n, QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_labels.setAutoDelete(false);
 	m_edits.setAutoDelete(false);

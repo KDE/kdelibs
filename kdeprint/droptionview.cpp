@@ -36,8 +36,8 @@
 #include <kdialog.h>
 #include <klocale.h>
 
-OptionBaseView::OptionBaseView(QWidget *parent, const char *name)
-: QWidget(parent,name)
+OptionBaseView::OptionBaseView(QWidget *parent)
+    : QWidget(parent)
 {
 	blockSS = false;
 }
@@ -52,8 +52,8 @@ void OptionBaseView::setValue(const QString&)
 
 //******************************************************************************************************
 
-OptionNumericView::OptionNumericView(QWidget *parent, const char *name)
-: OptionBaseView(parent,name)
+OptionNumericView::OptionNumericView(QWidget *parent)
+    : OptionBaseView(parent)
 {
 	m_edit = new QLineEdit(this);
 	m_slider = new QSlider(Qt::Horizontal,this);
@@ -160,8 +160,8 @@ void OptionNumericView::slotEditChanged(const QString& txt)
 
 //******************************************************************************************************
 
-OptionStringView::OptionStringView(QWidget *parent, const char *name)
-: OptionBaseView(parent,name)
+OptionStringView::OptionStringView(QWidget *parent)
+    : OptionBaseView(parent)
 {
 	m_edit = new QLineEdit(this);
 	QLabel	*lab = new QLabel(i18n("String value:"),this);
@@ -188,8 +188,8 @@ void OptionStringView::setValue(const QString& val)
 
 //******************************************************************************************************
 
-OptionListView::OptionListView(QWidget *parent, const char *name)
-: OptionBaseView(parent,name)
+OptionListView::OptionListView(QWidget *parent)
+    : OptionBaseView(parent)
 {
 	m_list = new KListBox(this);
 
@@ -232,8 +232,8 @@ void OptionListView::slotSelectionChanged()
 
 //******************************************************************************************************
 
-OptionBooleanView::OptionBooleanView(QWidget *parent, const char *name)
-: OptionBaseView(parent,name)
+OptionBooleanView::OptionBooleanView(QWidget *parent)
+    : OptionBaseView(parent)
 {
 	m_group = new Q3VButtonGroup(this);
 	//m_group->setFrameStyle(Q3Frame::NoFrame);

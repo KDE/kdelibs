@@ -45,7 +45,7 @@
 using namespace KABC;
 
 LdapConfigWidget::LdapConfigWidget( QWidget* parent,
-  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
+                                    Qt::WFlags fl ) : QWidget( parent, fl )
 {
   mProg = 0;
   mFlags = 0;
@@ -54,7 +54,7 @@ LdapConfigWidget::LdapConfigWidget( QWidget* parent,
 }
 
 LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
-  const char* name, Qt::WFlags fl ) : QWidget( parent, name, fl )
+                                    Qt::WFlags fl ) : QWidget( parent, fl )
 {
   mFlags = flags;
   mProg = 0;
@@ -78,7 +78,7 @@ void LdapConfigWidget::initWidget()
   mMech = 0;
   int row = 0;
   int col;
-  
+
   if ( mFlags & W_USER ) {
     label = new QLabel( i18n( "User:" ), this );
     mUser = new KLineEdit( this, "kcfg_ldapuser" );

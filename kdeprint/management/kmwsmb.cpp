@@ -29,14 +29,15 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 
-KMWSmb::KMWSmb(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWSmb::KMWSmb(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_title = i18n("SMB Printer Settings");
 	m_ID = KMWizard::SMB;
 	m_nextpage = KMWizard::Driver;
 
-	m_view = new SmbView(this,"SmbView");
+	m_view = new SmbView(this );
+        m_view->setObjectName("SmbView");
 	m_loginlabel = new QLabel( this );
 	QPushButton	*m_scan = new KPushButton(KGuiItem(i18n("Scan"), "viewmag"), this);
 	QPushButton	*m_abort = new KPushButton(KGuiItem(i18n("Abort"), "stop"), this);

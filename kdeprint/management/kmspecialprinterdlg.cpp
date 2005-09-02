@@ -63,8 +63,8 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
 	sep->setFixedHeight(10);
 	Q3GroupBox	*m_gb = new Q3GroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
-	m_command = new KXmlCommandSelector(true, m_gb, "CommandSelector", this);
-
+	m_command = new KXmlCommandSelector(true, m_gb, this);
+        m_command->setObjectName( "CommandSelector" );
 	Q3GroupBox *m_outfile_gb = new Q3GroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
 
 	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);

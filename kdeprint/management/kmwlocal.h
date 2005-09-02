@@ -32,7 +32,7 @@ class KMWLocal : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWLocal(QWidget *parent = 0, const char *name = 0);
+	KMWLocal(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void updatePrinter(KMPrinter*);

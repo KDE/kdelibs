@@ -33,7 +33,7 @@ class KDEPRINT_EXPORT KMPropertyPage : public CJanusWidget, public KMPrinterPage
 {
 	Q_OBJECT
 public:
-	KMPropertyPage(QWidget *parent = 0, const char *name = 0);
+	KMPropertyPage(QWidget *parent = 0);
 	~KMPropertyPage();
 
 	void addPropPage(KMPropWidget*);

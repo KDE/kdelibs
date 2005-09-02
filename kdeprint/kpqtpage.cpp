@@ -47,14 +47,14 @@
 
 //*****************************************************************************************************
 
-KPQtPage::KPQtPage(QWidget *parent, const char *name)
-: KPrintDialogPage(parent,name)
+KPQtPage::KPQtPage(QWidget *parent)
+    : KPrintDialogPage(parent)
 {
 	init();
 }
 
-KPQtPage::KPQtPage(DrMain *driver, QWidget *parent, const char *name)
-: KPrintDialogPage(0, (driver && driver->findOption("PageSize") ? driver : 0), parent, name)
+KPQtPage::KPQtPage(DrMain *driver, QWidget *parent)
+    : KPrintDialogPage(0, (driver && driver->findOption("PageSize") ? driver : 0), parent)
 {
 	init();
 }
@@ -107,7 +107,7 @@ void KPQtPage::init()
                         " <li> <b>Portrait.</b>.Portrait is the default setting. </li> "
                         " <li> <b>Landscape.</b> </li> "
                         " </ul> "
-                        " The icon changes according to your selection." 
+                        " The icon changes according to your selection."
 			" </qt>" );
 	setTitle(i18n("Print Format"));
 

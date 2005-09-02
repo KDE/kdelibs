@@ -44,7 +44,7 @@ class KXmlCommandAdvancedDlg : public QWidget
 {
 	Q_OBJECT
 public:
-	KXmlCommandAdvancedDlg(QWidget *parent = 0, const char *name = 0);
+	KXmlCommandAdvancedDlg(QWidget *parent = 0);
 	~KXmlCommandAdvancedDlg();
 
 	void setCommand(KXmlCommand*);

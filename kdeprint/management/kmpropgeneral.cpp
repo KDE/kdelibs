@@ -27,8 +27,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMPropGeneral::KMPropGeneral(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropGeneral::KMPropGeneral(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_name = new QLabel("",this);
 	m_location = new QLabel("",this);

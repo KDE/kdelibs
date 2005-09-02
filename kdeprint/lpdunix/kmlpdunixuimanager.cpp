@@ -41,5 +41,7 @@ int KMLpdUnixUiManager::pluginPageCap()
 
 void KMLpdUnixUiManager::setupPrinterPropertyDialog( KPrinterPropertyDialog *dlg )
 {
-	dlg->addPage( new KPQtPage( dlg, "QtPage" ) );
+    KPQtPage *qp = new KPQtPage( dlg );
+    qp->setObjectName( "QtPage" );
+    dlg->addPage( qp );
 }

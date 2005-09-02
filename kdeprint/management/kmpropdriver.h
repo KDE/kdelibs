@@ -29,7 +29,7 @@ class QLabel;
 class KDEPRINT_EXPORT KMPropDriver : public KMPropWidget
 {
 public:
-	KMPropDriver(QWidget *parent = 0, const char *name = 0);
+	KMPropDriver(QWidget *parent = 0);
 	~KMPropDriver();
 
 	void setPrinter(KMPrinter*);

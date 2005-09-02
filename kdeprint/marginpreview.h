@@ -27,7 +27,7 @@ class MarginPreview : public QWidget
 	Q_OBJECT
 
 public:
-	MarginPreview(QWidget *parent = 0, const char *name = 0);
+	MarginPreview(QWidget *parent = 0 );
 	~MarginPreview();
 	// note : unit -> points (1/72th in)
 	void setPageSize(float w, float h);

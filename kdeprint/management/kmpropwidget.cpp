@@ -26,8 +26,8 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
-KMPropWidget::KMPropWidget(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMPropWidget::KMPropWidget(QWidget *parent)
+    : QWidget(parent)
 {
 	m_pixmap = "folder";
 	m_title = m_header = "Title";

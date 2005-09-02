@@ -53,6 +53,7 @@ class KDEUI_EXPORT KAboutContainer : public Q3Frame
   Q_OBJECT
 
   public:
+  /// KDE4 remove name argument
     KAboutContainer( QWidget *parent=0, const char *name=0,
 		     int margin=0, int spacing=0,
 		     Qt::Alignment childAlignment = Qt::AlignCenter,
@@ -95,6 +96,7 @@ class KDEUI_EXPORT KAboutContributor : public Q3Frame
   Q_OBJECT
 
   public:
+  /// KDE4 remove name argument
     KAboutContributor( QWidget *parent=0, const char *name=0,
 		       const QString &username=QString::null,
 		       const QString &email=QString::null,
@@ -157,7 +159,7 @@ public:
   /**
    * The Qt constructor.
    */
-  KAboutWidget(QWidget* parent=0, const char* name=0 );
+  KAboutWidget(QWidget* parent=0 );
 
   /**
    * Adjust the minimum size (after setting the properties of the image and
@@ -312,6 +314,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
      * addContributor(), or setVersion().
      * The dialog will be laid out automatically.
      */
+    /// KDE4 remove name argument
     KAboutDialog( QWidget *parent=0, const char *name=0, bool modal=true );
 
    /**
@@ -339,6 +342,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
     * @param user3 User button3 text.
     *
     */
+    /// KDE4 remove name argument
     KAboutDialog( int dialogLayout, const QString &caption, int buttonMask,
 		  ButtonCode defaultButton, QWidget *parent=0,
 		  const char *name=0, bool modal=false, bool separator = false,
@@ -401,7 +405,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialogBase
   /**
    * (Constructor II only)
    * Define the program logo to be shown in the dialog.  Use this to override the
-   * default program logo. For example, use this function if the 
+   * default program logo. For example, use this function if the
    * KAboutDialog is for a panel applet and you want to override the
    * appletproxy logo with your own pixmap.
    *

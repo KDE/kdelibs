@@ -33,7 +33,7 @@ class KMWIppPrinter : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWIppPrinter(QWidget *parent = 0, const char *name = 0);
+	KMWIppPrinter(QWidget *parent = 0);
 	~KMWIppPrinter();
 
 	bool isValid(QString&);

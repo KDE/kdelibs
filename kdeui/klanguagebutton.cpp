@@ -87,16 +87,16 @@ public:
   bool staticText;
 };
 
-KLanguageButton::KLanguageButton( QWidget * parent, const char *name )
-  : QWidget( parent, name )
+KLanguageButton::KLanguageButton( QWidget * parent )
+  : QWidget( parent )
 {
-  init(name);
+  init();
 }
 
-KLanguageButton::KLanguageButton( const QString & text, QWidget * parent, const char *name )
-  : QWidget( parent, name )
+KLanguageButton::KLanguageButton( const QString & text, QWidget * parent )
+  : QWidget( parent)
 {
-  init(name);
+  init();
 
   setText(text);
 }
@@ -108,7 +108,7 @@ void KLanguageButton::setText(const QString & text)
   d->button->setIconSet(QIcon()); // remove the icon
 }
 
-void KLanguageButton::init(const char * name)
+void KLanguageButton::init()
 {
   m_current=QString();
   m_ids = new QStringList;
@@ -120,7 +120,8 @@ void KLanguageButton::init(const char * name)
 
   QHBoxLayout *layout = new QHBoxLayout(this, 0, 0);
   layout->setAutoAdd(true);
-  d->button = new QPushButton( this, name ); // HPB don't touch this!!
+#warning check if the name is used by some code using KLanguageButton
+  d->button = new QPushButton( this ); // HPB don't touch this!!
 
   clear();
 }

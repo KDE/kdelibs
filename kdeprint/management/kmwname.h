@@ -25,7 +25,7 @@
 class KMWName : public KMWInfoBase
 {
 public:
-	KMWName(QWidget *parent = 0, const char *name = 0);
+	KMWName(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void initPrinter(KMPrinter*);

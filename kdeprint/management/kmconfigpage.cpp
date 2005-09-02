@@ -19,8 +19,8 @@
 
 #include "kmconfigpage.h"
 
-KMConfigPage::KMConfigPage(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMConfigPage::KMConfigPage(QWidget *parent)
+    : QWidget(parent)
 {
 	m_name = "Name";
 	m_header = "Header";

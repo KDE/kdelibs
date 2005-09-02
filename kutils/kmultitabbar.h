@@ -67,7 +67,7 @@ public:
 	 */
 	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
 
-	KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0,const char *name=0);
+        KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0 );
 	virtual ~KMultiTabBar();
 
 	/**
@@ -80,7 +80,7 @@ public:
 	 * @param not_used_yet will be used for a popup text in the future
 	 */
  	int appendButton(const QPixmap &pic,int id=-1,Q3PopupMenu* popup=0,const QString& not_used_yet=QString::null);
-	/** 
+	/**
          * remove a button with the given ID
 	 */
 	void removeButton(int id);

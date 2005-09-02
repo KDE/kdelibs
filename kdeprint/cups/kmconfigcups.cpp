@@ -27,8 +27,9 @@
 #include <qlayout.h>
 
 KMConfigCups::KMConfigCups(QWidget *parent)
-: KMConfigPage(parent,"ConfigCups")
+    : KMConfigPage(parent )
 {
+        setObjectName( "ConfigCups" );
 	setPageName(i18n("CUPS Server"));
 	setPageHeader(i18n("CUPS Server Settings"));
 	setPagePixmap("gear");

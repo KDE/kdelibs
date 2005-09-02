@@ -291,9 +291,8 @@ void KAboutContributor::emailClickedSlot( const QString &e )
 //
 // Internal widget for the KAboutDialog class.
 //
-KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
-					  char *_name )
-  : QWidget( _parent, _name ),
+KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
+  : QWidget( _parent ),
     mImageLabel(0), mTitleLabel(0), mIconLabel(0),mVersionLabel(0),
     mAuthorLabel(0), mImageFrame(0),mPageTab(0),mPlainSpace(0),d(0)
 {
@@ -319,26 +318,26 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
 
   if( layoutType & AbtProduct )
   {
-    QWidget* const productArea = new  QWidget( this, "area" );
-    mTopLayout->addWidget( productArea, 0, QApplication::reverseLayout() ? Qt::AlignRight : Qt::AlignLeft );
+      QWidget* const productArea = new  QWidget( this );
+      mTopLayout->addWidget( productArea, 0, QApplication::reverseLayout() ? Qt::AlignRight : Qt::AlignLeft );
 
-    QHBoxLayout* const hbox = new QHBoxLayout(productArea,0,KDialog::spacingHint());
-    if( !hbox ) { return; }
+      QHBoxLayout* const hbox = new QHBoxLayout(productArea,0,KDialog::spacingHint());
+      if( !hbox ) { return; }
 
-    mIconLabel = new QLabel( productArea );
-    hbox->addWidget( mIconLabel, 0, Qt::AlignLeft|Qt::AlignHCenter );
+      mIconLabel = new QLabel( productArea );
+      hbox->addWidget( mIconLabel, 0, Qt::AlignLeft|Qt::AlignHCenter );
 
-    QVBoxLayout* const vbox = new QVBoxLayout();
-    if( !vbox ) { return; }
-    hbox->addLayout( vbox );
+      QVBoxLayout* const vbox = new QVBoxLayout();
+      if( !vbox ) { return; }
+      hbox->addLayout( vbox );
 
-    mVersionLabel = new QLabel( productArea, "version" );
-    mAuthorLabel  = new QLabel( productArea, "author" );
-    vbox->addWidget( mVersionLabel );
-    vbox->addWidget( mAuthorLabel );
-    hbox->activate();
+      mVersionLabel = new QLabel( productArea, "version" );
+      mAuthorLabel  = new QLabel( productArea, "author" );
+      vbox->addWidget( mVersionLabel );
+      vbox->addWidget( mAuthorLabel );
+      hbox->activate();
 
-    mTopLayout->addSpacing( KDialog::spacingHint() );
+      mTopLayout->addSpacing( KDialog::spacingHint() );
   }
 
   QHBoxLayout* const hbox = new QHBoxLayout();
@@ -1295,8 +1294,8 @@ void KAboutContributor::paintEvent( QPaintEvent *e )
 
 
 
-KAboutWidget::KAboutWidget(QWidget *_parent, const char *_name)
-  : QWidget(_parent, _name),
+KAboutWidget::KAboutWidget(QWidget *_parent)
+  : QWidget(_parent),
     version(new QLabel(this)),
     cont(new QLabel(this)),
     logo(new QLabel(this)),

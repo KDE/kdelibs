@@ -20,8 +20,8 @@
 #include "kmwizardpage.h"
 #include "kmwizard.h"
 
-KMWizardPage::KMWizardPage(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMWizardPage::KMWizardPage(QWidget *parent)
+    : QWidget(parent)
 {
 	m_ID = KMWizard::Error;
 	m_title = "KMWizardPage";

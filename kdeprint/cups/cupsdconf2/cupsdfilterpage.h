@@ -30,7 +30,7 @@ class KIntNumInput;
 class CupsdFilterPage : public CupsdPage
 {
 public:
-	CupsdFilterPage(QWidget *parent = 0, const char *name = 0);
+	CupsdFilterPage(QWidget *parent = 0);
 
 	bool loadConfig(CupsdConf*, QString&);
 	bool saveConfig(CupsdConf*, QString&);

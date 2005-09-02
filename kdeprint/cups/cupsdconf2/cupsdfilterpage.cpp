@@ -29,8 +29,8 @@
 #include <klocale.h>
 #include <knuminput.h>
 
-CupsdFilterPage::CupsdFilterPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdFilterPage::CupsdFilterPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Filter"));
 	setHeader(i18n("Filter Settings"));

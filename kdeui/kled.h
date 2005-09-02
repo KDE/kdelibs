@@ -16,9 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/*************************************************************************
- * $Id$
- *************************************************************************/
 
 #ifndef _KLED_H_
 #define _KLED_H_
@@ -92,7 +89,7 @@ public:
    * Constructs a green, round LED widget which will initially
    * be turned on.
    */
-  KLed(QWidget *parent=0, const char *name=0);
+  KLed( QWidget *parent=0 );
   /**
    * Constructor with the ledcolor, the parent widget, and the name.
    *
@@ -103,7 +100,7 @@ public:
    * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
-  KLed(const QColor &col, QWidget *parent=0, const char *name=0);
+  KLed(const QColor &col, QWidget *parent=0);
 
   /**
    * Constructor with the ledcolor, ledstate, ledlook,
@@ -120,7 +117,7 @@ public:
    * @short Constructor
    */
   KLed(const QColor& col, KLed::State state, KLed::Look look, KLed::Shape shape,
-       QWidget *parent=0, const char *name=0);
+       QWidget *parent=0);
 
 
   /**

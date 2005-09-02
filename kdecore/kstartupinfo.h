@@ -90,9 +90,9 @@ class KDECORE_EXPORT KStartupInfo
          * Sends explicit notification that the startup notification
          * with id startup_id should end.
          * @since 3.2
-         */ 
+         */
         static void appStarted( const QByteArray& startup_id );
-        
+
         /**
          * Use this function if the application got a request with startup
          * notification from outside (for example, when KUniqueApplication::newInstance()
@@ -129,7 +129,7 @@ class KDECORE_EXPORT KStartupInfo
 	    DisableKWinModule		= 1 << 1,
 	    AnnounceSilenceChanges	= 1 << 2
 	    };
-	
+
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 * The various flags passed may be
@@ -145,10 +145,9 @@ class KDECORE_EXPORT KStartupInfo
 	 *
 	 * @param flags OR-ed combination of flags
 	 * @param parent the parent of this QObject (can be 0 for no parent)
-	 * @param name the name of the QObject (can be 0 for no name)
 	 *
 	 */
-	KStartupInfo( int flags, QObject* parent = NULL, const char* name = NULL );
+	KStartupInfo( int flags, QObject* parent = NULL );
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 *
@@ -156,18 +155,17 @@ class KDECORE_EXPORT KStartupInfo
 	 *  removes all notification for applications that are not compliant
 	 *  with the app startup protocol
 	 * @param parent the parent of this QObject (can be 0 for no parent)
-	 * @param name the name of the QObject (can be 0 for no name)
 	 *
 	 * @obsolete
 	 */
-        KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
+        KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0 );
         virtual ~KStartupInfo();
 	/**
 	 * Sends given notification data about started application
 	 * with the given startup identification. If no notification for this identification
 	 * exists yet, it is created, otherwise it's updated. Note that the name field
          * in data is required.
-	 * 
+	 *
 	 * @param id the id of the application
 	 * @param data the application's data
 	 * @return true if successful, false otherwise
@@ -340,8 +338,8 @@ class KDECORE_EXPORT KStartupInfo
         void gotRemoveStartup( const KStartupInfoId& id, const KStartupInfoData& data );
     protected:
 	/**
-	 * 
-	 */ 
+	 *
+	 */
 	virtual void customEvent( QEvent* e_P );
     private slots:
         void startups_cleanup();
@@ -590,26 +588,26 @@ class KDECORE_EXPORT KStartupInfoData
 	 * @return the hostname
 	 */
         const QByteArray& hostname() const;
-	
+
 	/**
 	 *
 	 */
 	enum TriState { Yes, No, Unknown };
-	
+
 	/**
 	 * Sets whether the visual feedback for this startup notification
 	 * should be silenced (temporarily suspended).
 	 * @since 3.1.1
 	 */
 	void setSilent( TriState state );
-	
+
 	/**
 	 * Return the silence status for the startup notification.
 	 * @return KStartupInfoData::Yes if visual feedback is silenced
 	 * @since 3.1.1
 	 */
 	TriState silent() const;
-        
+
         /**
          * @obsolete Timestamp is already assigned in KStartupInfoId::initId().
          * Sets timestamp for the startup notification. The timestamp is expressed
@@ -619,19 +617,19 @@ class KDECORE_EXPORT KStartupInfoData
          * not be activated.
          */
         void setTimestamp( unsigned long time );
-        
+
         /**
          * @obsolete Use KStartupInfoId::timestamp().
          * Return the timestamp for the startup notification, or -1 if no timestamp
          * is set.
          */
         unsigned long timestamp() const;
-        
+
         /**
          * The X11 screen on which the startup notification is happening, -1 if unknown.
          */
         int screen() const;
-        
+
         /**
          * Sets the X11 screen on which the startup notification should happen.
          * This is usually not necessary to set, as it's set by default to QX11Info::screen().

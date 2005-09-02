@@ -43,8 +43,8 @@
 
 using namespace KABC;
 
-ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name )
-  : KRES::ConfigWidget( parent, name )
+ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent )
+    : KRES::ConfigWidget( parent )
 {
   QBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setAutoAdd( true );
@@ -63,7 +63,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name
 void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
 {
   ResourceLDAPKIO *resource = dynamic_cast<ResourceLDAPKIO*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceLDAPKIOConfig::loadSettings(): cast failed" << endl;
     return;
@@ -87,7 +87,7 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
   if ( resource->isAnonymous() ) cfg->setAuthAnon();
   else if ( resource->isSASL() ) cfg->setAuthSASL();
   else cfg->setAuthSimple();
-  
+
   mSubTree->setChecked( resource->isSubTree() );
   mAttributes = resource->attributes();
   mRDNPrefix = resource->RDNPrefix();
@@ -99,7 +99,7 @@ void ResourceLDAPKIOConfig::loadSettings( KRES::Resource *res )
 void ResourceLDAPKIOConfig::saveSettings( KRES::Resource *res )
 {
   ResourceLDAPKIO *resource = dynamic_cast<ResourceLDAPKIO*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceLDAPKIOConfig::saveSettings(): cast failed" << endl;
     return;
@@ -142,14 +142,14 @@ void ResourceLDAPKIOConfig::editCache()
 {
   LDAPUrl src;
   QStringList attr;
-  
+
   src = cfg->url();
   src.setScope( mSubTree->isChecked() ? LDAPUrl::Sub : LDAPUrl::One );
   if (!mAttributes.empty()) {
     QMap<QString,QString>::Iterator it;
     QStringList attr;
     for ( it = mAttributes.begin(); it != mAttributes.end(); ++it ) {
-      if ( !it.data().isEmpty() && it.key() != "objectClass" ) 
+      if ( !it.data().isEmpty() && it.key() != "objectClass" )
         attr.append( it.data() );
     }
     src.setAttributes( attr );
@@ -160,11 +160,11 @@ void ResourceLDAPKIOConfig::editCache()
     mCachePolicy = dlg.cachePolicy();
     mAutoCache = dlg.autoCache();
   }
-  
+
 }
 
 AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
-                                    int rdnprefix,                                    
+                                    int rdnprefix,
                                     QWidget *parent, const char *name )
   : KDialogBase( Plain, i18n( "Attributes Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
@@ -214,7 +214,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mDefaultMap.insert( "description", "description" );
   mDefaultMap.insert( "uid", "uid" );
   mDefaultMap.insert( "jpegPhoto", "jpegPhoto" );
-  
+
   // overwrite the default values here
   QMap<QString, QString> kolabMap, netscapeMap, evolutionMap, outlookMap;
 
@@ -259,7 +259,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   int i, j = 0;
   for ( i = 2, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
     if ( mNameDict[ it.key() ] == 0 ) {
-      i--;  
+      i--;
       continue;
     }
     if ( (uint)(i - 2) == ( mNameDict.count()  >> 1 ) ) {
@@ -275,7 +275,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
     layout->addWidget( label, i, j );
     layout->addWidget( lineedit, i, j+1 );
   }
-  
+
   for ( i = 1; i < mMapCombo->count(); i++ ) {
     Q3DictIterator<KLineEdit> it2( mLineEditDict );
     for ( ; it2.current(); ++it2 ) {
@@ -330,7 +330,7 @@ void AttributesDialog::mapChanged( int pos )
   }
 }
 
-OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src, 
+OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
   const QString &dst, QWidget *parent, const char *name )
   : KDialogBase( Plain, i18n( "Offline Configuration" ), Ok | Cancel,
                  Ok, parent, name, true, true )
@@ -340,14 +340,14 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
   layout->setAutoAdd( true );
 
   mSrc = src; mDst = dst;
-  mCacheGroup = new Q3ButtonGroup( 1, Qt::Horizontal, 
+  mCacheGroup = new Q3ButtonGroup( 1, Qt::Horizontal,
     i18n("Offline Cache Policy"), page );
-    
+
   QRadioButton *bt;
   new QRadioButton( i18n("Do not use offline cache"), mCacheGroup );
   bt = new QRadioButton( i18n("Use local copy if no connection"), mCacheGroup );
   new QRadioButton( i18n("Always use local copy"), mCacheGroup );
-  mCacheGroup->setButton( cachePolicy );  
+  mCacheGroup->setButton( cachePolicy );
 
   mAutoCache = new QCheckBox( i18n("Refresh offline cache automatically"),
     page );
@@ -355,7 +355,7 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KURL &src,
   mAutoCache->setEnabled( bt->isChecked() );
 
   connect( bt, SIGNAL(toggled(bool)), mAutoCache, SLOT(setEnabled(bool)) );
-  
+
   QPushButton *lcache = new QPushButton( i18n("Load into Cache"), page );
   connect( lcache, SIGNAL( clicked() ), SLOT( loadCache() ) );
 }
@@ -374,13 +374,13 @@ int OfflineDialog::cachePolicy() const
   return mCacheGroup->selectedId();
 }
 
-void OfflineDialog::loadCache() 
+void OfflineDialog::loadCache()
 {
   if ( KIO::NetAccess::download( mSrc, mDst, this ) ) {
-    KMessageBox::information( this, 
+    KMessageBox::information( this,
       i18n("Successfully downloaded directory server contents!") );
   } else {
-    KMessageBox::error( this, 
+    KMessageBox::error( this,
       i18n("An error occurred downloading directory server contents into file %1.").arg(mDst) );
   }
 }

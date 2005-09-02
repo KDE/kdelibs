@@ -12,15 +12,15 @@ public:
   Q3TimeEdit * timeWidget;
 };
 
-KTimeWidget::KTimeWidget(QWidget * parent, const char * name)
-  : QWidget(parent, name)
+KTimeWidget::KTimeWidget(QWidget * parent)
+  : QWidget(parent)
 {
   init();
 }
 
 KTimeWidget::KTimeWidget(const QTime & time,
-                         QWidget * parent, const char * name)
-  : QWidget(parent, name)
+                         QWidget * parent)
+  : QWidget(parent)
 {
   init();
 

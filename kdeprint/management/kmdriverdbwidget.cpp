@@ -39,8 +39,8 @@
 #include <kguiitem.h>
 #include <kio/netaccess.h>
 
-KMDriverDbWidget::KMDriverDbWidget(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
+    : QWidget(parent)
 {
 	m_external = QString::null;
 	m_valid = false;

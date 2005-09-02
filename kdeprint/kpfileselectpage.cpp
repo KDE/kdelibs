@@ -27,8 +27,8 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
-KPFileSelectPage::KPFileSelectPage(QWidget *parent, const char *name)
-: KPrintDialogPage(parent, name)
+KPFileSelectPage::KPFileSelectPage(QWidget *parent)
+: KPrintDialogPage(parent)
 {
 	setTitle(i18n("&Files"));
 	m_first = true;

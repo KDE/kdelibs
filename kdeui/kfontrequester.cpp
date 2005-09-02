@@ -28,7 +28,7 @@
 #include <klocale.h>
 
 KFontRequester::KFontRequester( QWidget *parent, const char *name,
-    bool onlyFixed ) : QWidget( parent, name ),
+    bool onlyFixed ) : QWidget( parent ),
     m_onlyFixed( onlyFixed )
 {
   QHBoxLayout *layout = new QHBoxLayout( this, 0, KDialog::spacingHint() );
@@ -111,7 +111,7 @@ void KFontRequester::setToolTip()
   }
   else
   {
-    QToolTip::add( m_sampleLabel, 
+    QToolTip::add( m_sampleLabel,
         i18n( "Preview of the \"%1\" font" ).arg( m_title ) );
     m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the \"%1\" font. You can change it"
         " by clicking the \"Choose...\" button." ).arg( m_title ) );

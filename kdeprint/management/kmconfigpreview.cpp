@@ -29,8 +29,8 @@
 #include <kconfig.h>
 #include <kdialog.h>
 
-KMConfigPreview::KMConfigPreview(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigPreview::KMConfigPreview(QWidget *parent)
+    : KMConfigPage(parent)
 {
 	setPageName(i18n("Preview"));
 	setPageHeader(i18n("Preview Settings"));

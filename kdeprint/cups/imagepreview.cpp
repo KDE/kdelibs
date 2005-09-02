@@ -26,7 +26,7 @@
 // forward definition
 QImage convertImage(const QImage& image, int hue, int saturation, int brightness, int gamma);
 
-ImagePreview::ImagePreview(QWidget *parent, const char *name ) : QWidget(parent,name) {
+ImagePreview::ImagePreview(QWidget *parent ) : QWidget(parent ) {
 	brightness_ = 100;
 	hue_ = 0;
 	saturation_ = 100;

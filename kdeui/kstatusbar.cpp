@@ -26,8 +26,8 @@
 #include <q3frame.h>
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
-                                 KStatusBar *parent, const char *name) :
-  QLabel( parent, name)
+                                 KStatusBar *parent) :
+  QLabel( parent )
 {
   id = _id;
 
@@ -59,8 +59,8 @@ void KStatusBarLabel::mouseReleaseEvent (QMouseEvent *)
   emit itemReleased (id);
 }
 
-KStatusBar::KStatusBar( QWidget *parent, const char *name )
-  : QStatusBar( parent, name )
+KStatusBar::KStatusBar( QWidget *parent )
+  : QStatusBar( parent )
 {
   // make the size grip stuff configurable
   // ...but off by default (sven)

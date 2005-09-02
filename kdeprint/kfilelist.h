@@ -32,7 +32,7 @@ class KFileList : public QWidget
 {
 	Q_OBJECT
 public:
-	KFileList(QWidget *parent = 0, const char *name = 0);
+	KFileList( QWidget *parent = 0 );
 	virtual ~KFileList();
 
 	void setFileList(const QStringList&);

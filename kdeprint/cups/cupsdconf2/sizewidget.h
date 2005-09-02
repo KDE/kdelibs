@@ -28,7 +28,7 @@ class QComboBox;
 class SizeWidget : public QWidget
 {
 public:
-	SizeWidget( QWidget *parent = 0, const char *name = 0 );
+	SizeWidget( QWidget *parent = 0 );
 
 	void setSizeString( const QString& sizeString );
 	QString sizeString() const;

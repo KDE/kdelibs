@@ -32,8 +32,8 @@
 
 #include "ktabctl.h"
 
-KTabCtl::KTabCtl(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+KTabCtl::KTabCtl(QWidget *parent)
+    : QWidget(parent)
 {
     tabs = new QTabBar(this);
     connect(tabs, SIGNAL(selected(int)), this, SLOT(showTab(int)));

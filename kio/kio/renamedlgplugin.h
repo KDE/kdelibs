@@ -26,9 +26,9 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-/** 
- * This is the base class for all RenameDlg plugins. 
- * @short Base class for RenameDlg plugins. 
+/**
+ * This is the base class for all RenameDlg plugins.
+ * @short Base class for RenameDlg plugins.
  * @since 3.1
  */
 class KIO_EXPORT RenameDlgPlugin : public QWidget
@@ -37,9 +37,9 @@ public:
   /**
    * This is the c'tor.
    */
-  RenameDlgPlugin(QDialog *dialog, const char *name, const QStringList &/*list*/ = QStringList() ): QWidget(dialog, name ) {};
+  RenameDlgPlugin(QDialog *dialog, const char *name, const QStringList &/*list*/ = QStringList() ): QWidget(dialog ) {}
 
-  /** 
+  /**
    * This function will be called by RenameDlg. The params are infos about the files.
    * @return If the plugin want's to display it return true, if not return false
    */

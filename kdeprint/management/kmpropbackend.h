@@ -29,7 +29,7 @@ class QLabel;
 class KDEPRINT_EXPORT KMPropBackend : public KMPropWidget
 {
 public:
-	KMPropBackend(QWidget *parent = 0, const char *name = 0);
+	KMPropBackend(QWidget *parent = 0);
 	~KMPropBackend();
 
 	void setPrinter(KMPrinter*);

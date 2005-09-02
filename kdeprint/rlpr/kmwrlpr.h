@@ -30,7 +30,7 @@ class KMWRlpr : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWRlpr(QWidget *parent = 0, const char *name = 0);
+	KMWRlpr(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void initPrinter(KMPrinter*);

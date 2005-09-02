@@ -115,8 +115,8 @@ static const char*	default_type[] = {
 
 //***************************************************************************************************
 
-KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const char *name)
-: KPrintDialogPage(pr,dr,parent,name)
+KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
+    : KPrintDialogPage(pr,dr,parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPrintPropertiesGeneralPage = i18n( " <qt> "
@@ -177,7 +177,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
                         " <li> <b>Reverse Landscape.</b> Reverse Landscape prints the images upside down. </li> "
                         " <li> <b>Reverse Portrait.</b> Reverse Portrait prints the image upside down.</li> "
                         " </ul> "
-                        " The icon changes according to your selection.</p>" 
+                        " The icon changes according to your selection.</p>"
                         " <br> "
                         " <hr> "
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches "
@@ -555,7 +555,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 					m_inputslot->setCurrentItem(index);
 				else
 					kdWarning() << "media option '" << value << "' not handled." << endl;
-			}		
+			}
 		}
 
 		// Try to find "sides" option

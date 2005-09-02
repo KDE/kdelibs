@@ -45,13 +45,13 @@ class KDEUI_EXPORT KXYSelector : public QWidget
   Q_OBJECT
   Q_PROPERTY( int xValue READ xValue WRITE setXValue )
   Q_PROPERTY( int yValue READ yValue WRITE setYValue )
-  
+
 public:
   /**
    * Constructs a two-dimensional selector widget which
    * has a value range of [0..100] in both directions.
    */
-  KXYSelector( QWidget *parent=0, const char *name=0 );
+  KXYSelector( QWidget *parent=0 );
   /**
    * Destructs the widget.
    */
@@ -64,19 +64,19 @@ public:
    * @param yPos the veritcal value
    */
   void setValues( int xPos, int yPos );
-  
+
   /**
    * Sets the current horizontal value
    * @param xPos the horizontal value
    */
   void setXValue( int xPos );
-  
+
   /**
    * Sets the current vertical value
    * @param yPos the veritcal value
    */
   void setYValue( int yPos );
-  
+
   /**
    * Sets the range of possible values.
    */
@@ -166,12 +166,12 @@ public:
   /**
    * Constructs a horizontal one-dimensional selection widget.
    */
-  KSelector( QWidget *parent=0, const char *name=0 );
+  KSelector( QWidget *parent=0 );
   /**
    * Constructs a one-dimensional selection widget with
    * a given orientation.
    */
-  KSelector( Qt::Orientation o, QWidget *parent = 0L, const char *name = 0L );
+  KSelector( Qt::Orientation o, QWidget *parent = 0 );
   /*
    * Destructs the widget.
    */
@@ -303,12 +303,12 @@ public:
    * Constructs a horizontal color selector which
    * contains a gradient between white and black.
    */
-  KGradientSelector( QWidget *parent=0, const char *name=0 );
+  KGradientSelector( QWidget *parent=0 );
   /**
    * Constructs a colors selector with orientation o which
    * contains a gradient between white and black.
    */
-  KGradientSelector( Qt::Orientation o, QWidget *parent=0, const char *name=0 );
+  KGradientSelector( Qt::Orientation o, QWidget *parent=0 );
   /**
    * Destructs the widget.
    */

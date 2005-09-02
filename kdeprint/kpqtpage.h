@@ -33,8 +33,8 @@ class KDEPRINT_EXPORT KPQtPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KPQtPage(QWidget *parent = 0, const char *name = 0);
-	KPQtPage(DrMain *driver, QWidget *parent = 0, const char *name = 0);
+	KPQtPage(QWidget *parent = 0);
+	KPQtPage(DrMain *driver, QWidget *parent = 0);
 	~KPQtPage();
 
 	void setOptions(const QMap<QString,QString>& opts);

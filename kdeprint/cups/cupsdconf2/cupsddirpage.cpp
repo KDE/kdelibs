@@ -27,8 +27,8 @@
 
 #include <klocale.h>
 
-CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdDirPage::CupsdDirPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Folders"));
 	setHeader(i18n("Folders Settings"));

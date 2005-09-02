@@ -27,7 +27,7 @@ class QLabel;
 class KMPropGeneral : public KMPropWidget
 {
 public:
-	KMPropGeneral(QWidget *parent = 0, const char *name = 0);
+	KMPropGeneral(QWidget *parent = 0);
 	~KMPropGeneral();
 
 	void setPrinter(KMPrinter*);

@@ -27,10 +27,10 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-DrListView::DrListView(QWidget *parent, const char *name)
-: KListView(parent,name)
+DrListView::DrListView( QWidget *parent )
+    : KListView(parent)
 {
-	addColumn("");
+        addColumn(QString::null);
 	header()->hide();
 	setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	setSorting(-1);
@@ -38,8 +38,8 @@ DrListView::DrListView(QWidget *parent, const char *name)
 
 //****************************************************************************************************
 
-DriverView::DriverView(QWidget *parent, const char *name)
-: QWidget(parent,name)
+DriverView::DriverView( QWidget *parent )
+    : QWidget( parent )
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPPDOptionsDriverPage = i18n( " <qt> "

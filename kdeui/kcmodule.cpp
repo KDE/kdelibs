@@ -60,7 +60,7 @@ public:
 };
 
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
-    : QWidget(parent, name)
+    : QWidget(parent)
 {
     init();
     if (name && strlen(name)) {
@@ -75,8 +75,10 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 }
 
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
-    : QWidget(parent, instance ? instance->instanceName().data() : 0)
+    : QWidget( parent )
 {
+    if ( instance )
+        setObjectName( instance->instanceName() );
     init();
     d->_instance = instance;
     KGlobal::locale()->insertCatalogue(instance->instanceName());

@@ -126,8 +126,8 @@ void CJanusWidget::CListBox::computeWidth()
 
 //***********************************************************************************
 
-CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
-: QWidget(parent,name)
+CJanusWidget::CJanusWidget(QWidget *parent)
+    : QWidget(parent)
 {
 	m_pages.setAutoDelete(true);
 
@@ -146,7 +146,8 @@ CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 	m_iconlist->setFont(f);
 	connect(m_iconlist,SIGNAL(selectionChanged(Q3ListBoxItem*)),SLOT(slotSelected(Q3ListBoxItem*)));
 
-	m_empty = new QWidget(this, "Empty");
+	m_empty = new QWidget( this );
+        m_empty->setObjectName( "Empty" );
 	m_stack->addWidget(m_empty,0);
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this, 0, 10);

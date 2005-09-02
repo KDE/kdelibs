@@ -31,7 +31,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        ConfigWidget( Broker *broker, QWidget *parent, const char *name =0 );
+        ConfigWidget( Broker *broker, QWidget *parent );
         ~ConfigWidget();
 
         bool backgroundCheckingButtonShown() const;

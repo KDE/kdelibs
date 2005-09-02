@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMPropDriver::KMPropDriver(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropDriver::KMPropDriver(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_manufacturer = new QLabel("",this);
 	m_model = new QLabel("",this);

@@ -29,7 +29,7 @@ class SmbView : public KListView
 {
 	Q_OBJECT
 public:
-	SmbView(QWidget *parent = 0, const char *name = 0);
+	SmbView(QWidget *parent = 0);
 	~SmbView();
 
 	void setLoginInfos(const QString& login, const QString& password);

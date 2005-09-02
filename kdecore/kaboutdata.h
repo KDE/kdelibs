@@ -38,7 +38,7 @@ class KAboutDataPrivate;
  * Normally you should at least define the person's name.
  *
  * Example Usage within a main():
- * 
+ *
  * KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
  *                   I18N_NOOP("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
@@ -318,7 +318,7 @@ class KDECORE_EXPORT KAboutData
      * @param emailAddress the email address of the translator
      * @see KAboutTranslator
      */
-    void setTranslator(const char* name, const char* emailAddress);
+    void setTranslator(const char *name, const char* emailAddress);
 
     /**
      * Defines a license text.
@@ -350,7 +350,7 @@ class KDECORE_EXPORT KAboutData
      * @param appName The application name. Example: "kate".
      */
     void setAppName( const char *appName );
-    
+
     /**
      * Defines the displayable program name string.
      *
@@ -362,7 +362,7 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Defines the program logo.
-     * Use this if you need to have application logo 
+     * Use this if you need to have application logo
      * in AboutData other than application icon.
      *
      * @param image logo image.
@@ -377,7 +377,7 @@ class KDECORE_EXPORT KAboutData
      * @param version The program version.
      */
     void setVersion( const char* version );
-    
+
     /**
      * Defines a short description of what the program does.
      *
@@ -386,14 +386,14 @@ class KDECORE_EXPORT KAboutData
      *        with syntax highlithing support.").
      */
     void setShortDescription( const char *shortDescription );
-    
+
     /**
      * Defines the license identifier.
      *
      * @param licenseKey The license identifier.
      */
     void setLicense( LicenseKey licenseKey);
-    
+
     /**
      * Defines the copyright statement to show when displaying the license.
      *
@@ -403,7 +403,7 @@ class KDECORE_EXPORT KAboutData
      *        is not used.
      */
     void setCopyrightStatement( const char *copyrightStatement );
-    
+
     /**
      * Defines the additional text to show in the about dialog.
      *
@@ -412,7 +412,7 @@ class KDECORE_EXPORT KAboutData
      *        should be marked for translation.
      */
     void setOtherText( const char *otherText );
-    
+
     /**
      * Defines the program homepage.
      *
@@ -421,7 +421,7 @@ class KDECORE_EXPORT KAboutData
      *        is correct, "kde.kde.org" is not.
      */
     void setHomepage( const char *homepage );
-    
+
     /**
      * Defines the address where bug reports should be sent.
      *
@@ -429,7 +429,7 @@ class KDECORE_EXPORT KAboutData
      *        This defaults to the kde.org bug system.
      */
     void setBugAddress( const char *bugAddress );
-    
+
     /**
      * Defines the product name wich will be used in the KBugReport dialog.
      * By default it's the appName, but you can overwrite it here to provide
@@ -450,7 +450,7 @@ class KDECORE_EXPORT KAboutData
      * Returns the application's product name, which will be used in KBugReport
      * dialog. By default it returns appName(), otherwise the one which is set
      * with setProductName()
-     * 
+     *
      * @return the product name.
      */
     const char *productName() const;
@@ -462,8 +462,8 @@ class KDECORE_EXPORT KAboutData
     QString programName() const;
 
     /**
-     * Returns the program logo image. 
-     * @return the program logo data or null image if there is 
+     * Returns the program logo image.
+     * @return the program logo data or null image if there is
      * no custom application logo defined.
      * @since 3.4
      */
@@ -566,7 +566,7 @@ class KDECORE_EXPORT KAboutData
      *         authors.
      */
     bool customAuthorTextEnabled() const;
-    
+
     /**
      * Sets the custom text displayed around the list of authors instead
      * of the default message telling users to send bug reports to bugAddress().
@@ -578,14 +578,14 @@ class KDECORE_EXPORT KAboutData
      * all.  Call unsetCustomAuthorText() to revert to the default mesage.
      */
     void setCustomAuthorText(const QString &plainText, const QString &richText);
-    
+
     /**
      * Clears any custom text displayed around the list of authors and falls
      * back to the default message telling users to send bug reports to
      * bugAddress().
      */
     void unsetCustomAuthorText();
-    
+
   private:
     const char *mAppName;
     const char *mProgramName;

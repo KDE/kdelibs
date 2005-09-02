@@ -37,7 +37,7 @@
 class EscpFactory : public KLibFactory
 {
 public:
-	EscpFactory(QObject *parent = 0, const char *name = 0) : KLibFactory(parent, name) {}
+	EscpFactory(QObject *parent = 0) : KLibFactory(parent) {}
 protected:
 	QObject* createObject(QObject *parent = 0, const char *name = 0, const char * /*classname*/ = "QObject", const QStringList& args = QStringList())
 	{
@@ -61,8 +61,8 @@ extern "C"
 	}
 }
 
-EscpWidget::EscpWidget(QWidget *parent, const char *name)
-: QWidget(parent, name)
+EscpWidget::EscpWidget(QWidget *parent)
+    : QWidget(parent)
 {
 	m_hasoutput = false;
 
@@ -195,7 +195,7 @@ void EscpWidget::startCommand(const QString& arg)
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
 	foreach ( QByteArray arg, m_proc.args() )
 		kdDebug() << "ARG: " << QString::fromLatin1(arg) << endl;
-		
+
 	if (m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
 		setEnabled(false);
 	else

@@ -481,7 +481,8 @@ Q3PopupMenu* KSelectAction::popupMenu() const
 	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
   {
-    d->m_menu = new KPopupMenu(0L, "KSelectAction::popupMenu()");
+      d->m_menu = new KPopupMenu();
+      d->m_menu->setObjectName( "KSelectAction::popupMenu()");
     setupMenu();
     if ( d->m_current >= 0 )
       d->m_menu->setItemChecked( d->m_current, true );
@@ -1683,7 +1684,8 @@ class KActionMenu::KActionMenuPrivate
 public:
   KActionMenuPrivate()
   {
-    m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
+      m_popup = new KPopupMenu();
+      m_popup->setObjectName( "KActionMenu::KActionMenuPrivate");
     m_delayed = true;
     m_stickyMenu = true;
   }

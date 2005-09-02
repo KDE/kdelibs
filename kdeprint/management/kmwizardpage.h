@@ -30,7 +30,7 @@ class KDEPRINT_EXPORT KMWizardPage : public QWidget
 {
 	Q_OBJECT
 public:
-	KMWizardPage(QWidget *parent = 0, const char *name = 0);
+	KMWizardPage(QWidget *parent = 0);
 	virtual ~KMWizardPage();
 
 	int id() const 			{ return m_ID; }

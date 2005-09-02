@@ -32,7 +32,7 @@ class CupsdBrowsingPage : public CupsdPage
 	Q_OBJECT
 
 public:
-	CupsdBrowsingPage(QWidget *parent = 0, const char *name = 0);
+	CupsdBrowsingPage(QWidget *parent = 0);
 
 	bool loadConfig(CupsdConf*, QString&);
 	bool saveConfig(CupsdConf*, QString&);

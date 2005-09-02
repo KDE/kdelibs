@@ -29,8 +29,9 @@
 #include <kcursor.h>
 
 KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
-: KMConfigPage(parent,"ConfigCupsDir")
+    : KMConfigPage(parent)
 {
+        setObjectName( "ConfigCupsDir" );
 	setPageName(i18n("Folder"));
 	setPageHeader(i18n("CUPS Folder Settings"));
 	setPagePixmap("folder");

@@ -795,7 +795,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->bookmarkHandler = 0;
     d->hasDefaultFilter = false;
     d->hasView = false;
-    d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
+    d->mainWidget = new QWidget( this );
+    d->mainWidget->setObjectName( "KFileDialog::mainWidget" );
     setMainWidget( d->mainWidget );
     d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
     d->okButton->setDefault( true );
@@ -867,7 +868,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
         }
     }
 
-    ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
+    ops = new KDirOperator(d->url, d->mainWidget );
+    ops->setObjectName( "KFileDialog::ops" );
     ops->setOnlyDoubleClickSelectsFiles( true );
     connect(ops, SIGNAL(urlEntered(const KURL&)),
             SLOT(urlEntered(const KURL&)));

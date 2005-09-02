@@ -29,8 +29,8 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 
-KMWIppSelect::KMWIppSelect(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWIppSelect::KMWIppSelect(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::IPPSelect;
 	m_title = i18n("Remote IPP Printer Selection");

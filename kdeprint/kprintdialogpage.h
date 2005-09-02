@@ -94,11 +94,11 @@ public:
 	/**
 	 * Standard constructor.
 	 */
-	KPrintDialogPage(QWidget *parent = 0, const char *name = 0);
+	KPrintDialogPage( QWidget *parent = 0 );
 	/**
 	 * Modified constructor. For internal use only.
 	 */
-	KPrintDialogPage(KMPrinter *pr, DrMain *dr = 0, QWidget *parent = 0, const char *name = 0);
+	KPrintDialogPage(KMPrinter *pr, DrMain *dr = 0, QWidget *parent = 0);
 	/**
 	 * Destructor
 	 */

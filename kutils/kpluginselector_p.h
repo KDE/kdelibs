@@ -60,9 +60,8 @@ class KPluginSelectionWidget : public QWidget
          * @internal
          */
         KPluginSelectionWidget( const Q3ValueList<KPluginInfo*> & plugininfos,
-                KPluginSelector * kps, QWidget * parent, const QString & catname,
-                const QString & category, KConfigGroup * config = 0,
-                const char * name = 0 );
+                                KPluginSelector * kps, QWidget * parent, const QString & catname,
+                                const QString & category, KConfigGroup * config = 0 );
 
         virtual ~KPluginSelectionWidget();
 

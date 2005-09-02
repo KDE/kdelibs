@@ -34,10 +34,10 @@
 
 using namespace KABC;
 
-ResourceDirConfig::ResourceDirConfig( QWidget* parent,  const char* name )
-    : KRES::ConfigWidget( parent, name )
+ResourceDirConfig::ResourceDirConfig( QWidget* parent )
+    : KRES::ConfigWidget( parent )
 {
-  QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0, 
+  QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0,
       KDialog::spacingHint() );
 
   QLabel *label = new QLabel( i18n( "Format:" ), this );
@@ -76,7 +76,7 @@ void ResourceDirConfig::setEditMode( bool value )
 void ResourceDirConfig::loadSettings( KRES::Resource *res )
 {
   ResourceDir *resource = dynamic_cast<ResourceDir*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceDirConfig::loadSettings(): cast failed" << endl;
     return;
@@ -92,7 +92,7 @@ void ResourceDirConfig::loadSettings( KRES::Resource *res )
 void ResourceDirConfig::saveSettings( KRES::Resource *res )
 {
   ResourceDir *resource = dynamic_cast<ResourceDir*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceDirConfig::loadSettings(): cast failed" << endl;
     return;

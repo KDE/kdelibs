@@ -34,8 +34,8 @@
 #include <kapplication.h>
 #include <kdialog.h>
 
-KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
-: KPrintDialogPage(parent,name)
+KPFilterPage::KPFilterPage(QWidget *parent)
+: KPrintDialogPage(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisAddFilterButton = i18n(  " <qt> <b>Add Filter button</b>"
@@ -95,7 +95,7 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 						" <p>The list shown in this field may be empty (default). </p> "
 						" <p>The pre-filters act on the printjob in the order they are listed (from top to bottom). "
 						" This is done by acting as a <em>filtering chain</em> where the output of one filter "
-						" acts as input to the next. By putting the filters into the wrong order, you can make " 
+						" acts as input to the next. By putting the filters into the wrong order, you can make "
 						" the filtering chain fail. For example: if your file is ASCII text, and you want the "
 						" output being processed by the 'Multipage per Sheet' filter, the first filter must be "
 						" one that processes ASCII into PostScript. </p> "

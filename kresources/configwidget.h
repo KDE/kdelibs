@@ -34,7 +34,7 @@ class KRESOURCES_EXPORT ConfigWidget : public QWidget
 {
     Q_OBJECT
   public:
-    ConfigWidget( QWidget *parent = 0, const char *name = 0 );
+    ConfigWidget( QWidget *parent = 0 );
 
     /**
       Sets the widget to 'edit' mode. Reimplement this method if you are

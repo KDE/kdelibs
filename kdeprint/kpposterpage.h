@@ -34,7 +34,7 @@ class KPPosterPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KPPosterPage( QWidget *parent = 0, const char *name = 0 );
+	KPPosterPage( QWidget *parent = 0 );
 	~KPPosterPage();
 
 	void setOptions( const QMap<QString,QString>& opts );

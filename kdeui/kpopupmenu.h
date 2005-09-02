@@ -123,12 +123,6 @@ public:
      */
     Qt::ButtonState state() const;
 
-    // BEGIN compat methods
-    /**
-     * Constructs a KPopupMenu.
-     */
-    KPopupMenu(QWidget *parent, const char *name) KDE_DEPRECATED;
-
     /**
      * Inserts a title item with no icon.
      */
@@ -163,7 +157,7 @@ public:
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
-    KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0) KDE_DEPRECATED;
+    KPopupMenu(const QString &title, QWidget *parent=0) KDE_DEPRECATED;
 
     /**
      * @deprecated

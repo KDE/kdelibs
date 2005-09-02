@@ -41,7 +41,7 @@ class KTimezoneWidgetPrivate;
  * \code
  *
  *  // This adds a timezone widget to a dialog.
- *  m_timezones =  new KTimezoneWidget(this, "Timezones");
+ *  m_timezones =  new KTimezoneWidget(this);
  *  ...
  * \endcode
  *
@@ -70,6 +70,7 @@ public:
      * @param db The timezone database to use. If 0, the system timezone
      *           database is used.
      */
+    /// KDE4 remove name argument
     KTimezoneWidget(QWidget *parent = 0, const char *name = 0, KTimezones *db = 0);
 
     /**

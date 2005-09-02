@@ -113,15 +113,15 @@ struct KStartupInfoPrivate
 	      flags( flags_P ) {}
     };
 
-KStartupInfo::KStartupInfo( int flags_P, QObject* parent_P, const char* name_P )
-    : QObject( parent_P, name_P ),
+KStartupInfo::KStartupInfo( int flags_P, QObject* parent_P )
+    : QObject( parent_P ),
         timeout( 60 ), d( NULL )
     {
     init( flags_P );
     }
 
-KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
-    : QObject( parent_P, name_P ),
+KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P )
+    : QObject( parent_P ),
         timeout( 60 ), d( NULL )
     {
     init( clean_on_cantdetect_P ? CleanOnCantDetect : 0 );

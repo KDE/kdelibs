@@ -32,7 +32,8 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
       KBookmarkOwner(),
       m_dialog( dialog )
 {
-    m_menu = new KPopupMenu( dialog, "bookmark menu" );
+    m_menu = new KPopupMenu( dialog );
+    m_menu->setObjectName( "bookmark menu" );
 
     QString file = locate( "data", "kfile/bookmarks.xml" );
     if ( file.isEmpty() )

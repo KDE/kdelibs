@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMPropBackend::KMPropBackend(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropBackend::KMPropBackend(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_uri = new QLabel("",this);
 	m_type = new QLabel("",this);

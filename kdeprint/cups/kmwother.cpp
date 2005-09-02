@@ -34,8 +34,8 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-KMWOther::KMWOther(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWOther::KMWOther(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Custom+5;
 	m_title = i18n("URI Selection");

@@ -26,8 +26,8 @@
 #include <klocale.h>
 #include <qlayout.h>
 
-KMWEnd::KMWEnd(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWEnd::KMWEnd(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::End;
 	m_title = i18n("Confirmation");

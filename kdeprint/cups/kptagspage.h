@@ -27,7 +27,7 @@ class Q3Table;
 class KPTagsPage : public KPrintDialogPage
 {
 public:
-	KPTagsPage(bool ro = false, QWidget *parent = 0, const char *name = 0);
+	KPTagsPage(bool ro = false, QWidget *parent = 0);
 	~KPTagsPage();
 
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);

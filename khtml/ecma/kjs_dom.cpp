@@ -1759,6 +1759,7 @@ Value DOMCharacterDataProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
     default:
       return Undefined();
   }
+  return Undefined();
 }
 
 // -------------------------------------------------------------------------
@@ -1796,4 +1797,5 @@ Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
     default:
       return Undefined();
   }
+  return Undefined();
 }

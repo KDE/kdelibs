@@ -39,14 +39,18 @@ KMRlprUiManager::~KMRlprUiManager()
 
 void KMRlprUiManager::setupPropertyPages(KMPropertyPage *pages)
 {
-	pages->addPropPage(new KMPropRlpr(pages,"RlprPage"));
+    KMPropRlpr *page = new KMPropRlpr(pages );
+    page->setObjectName( "RlprPage" );
+    pages->addPropPage(page );
 }
 
 void KMRlprUiManager::setupWizard(KMWizard *wizard)
 {
 	wizard->setNextPage(KMWizard::Start,KMWizard::Custom+1);
+        KMWRlpr *lpr = new KMWRlpr( wizard );
+        lpr->setObjectName( "Rlpr" );
 	// add page
-	wizard->addPage(new KMWRlpr(wizard,"Rlpr"));
+	wizard->addPage( lpr );
 }
 
 void KMRlprUiManager::setupConfigDialog(KMConfigDialog *dlg)

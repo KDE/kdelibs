@@ -731,7 +731,9 @@ void KHTMLPopupGUIClient::slotCopyImage()
   KMultipleDrag *drag = new KMultipleDrag(d->m_khtml->view(), "Image");
 
   drag->addDragObject( new Q3ImageDrag(d->m_pixmap.convertToImage()) );
-  drag->addDragObject( new KURLDrag(lst, d->m_khtml->view(), "Image URL") );
+  KURLDrag *tdrag = new KURLDrag(lst, d->m_khtml->view() );
+  tdrag->setObjectName( "Image URL" );
+  drag->addDragObject( tdrag  );
 
   // Set it in both the mouse selection and in the clipboard
   QApplication::clipboard()->setData( drag, QClipboard::Clipboard );

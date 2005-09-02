@@ -36,8 +36,8 @@
 #include <kseparator.h>
 #include <kstandarddirs.h>
 
-KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
-: KPrintDialogPage(parent, name)
+KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
+    : KPrintDialogPage(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisBrightnessImagePage = i18n( " <qt> "
@@ -59,7 +59,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 			" <p> The hue value is a number from -360 to 360 and represents the color hue rotation. "
 			" The following table summarizes the change you will see for the base colors: "
 			" <center> "
-			" <table border=\"1\" width=\"70%\"> " 
+			" <table border=\"1\" width=\"70%\"> "
 			" <tr><th><b>Original</b></th> <th><b>hue=-45</b></th> <th><b>hue=45</b></th>   </tr> "
 			" <tr><td>Red</td>             <td>Purple</td>         <td>Yellow-orange</td>   </tr> "
 			" <tr><td>Green</td>           <td>Yellow-green</td>   <td>Blue-green</td>      </tr> "

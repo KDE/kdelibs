@@ -32,8 +32,8 @@
 #include <kiconloader.h>
 #include <kseparator.h>
 
-KMWSocket::KMWSocket(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWSocket::KMWSocket(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_title = i18n("Network Printer Information");
 	m_ID = KMWizard::TCP;

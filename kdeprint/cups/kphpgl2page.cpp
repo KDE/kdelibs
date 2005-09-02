@@ -25,16 +25,16 @@
 #include <klocale.h>
 #include <knuminput.h>
 
-KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
-: KPrintDialogPage(parent, name)
+KPHpgl2Page::KPHpgl2Page(QWidget *parent)
+    : KPrintDialogPage(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisBlackplotHpgl2Page = i18n( " <qt> "
 			" <b>Print in Black Only (Blackplot)</b> "
-			" <p>The \'blackplot\' option specifies that all pens should plot in black-only:" 
+			" <p>The \'blackplot\' option specifies that all pens should plot in black-only:"
 			" The default is to use the colors defined in the plot file, or the standard "
 			" pen colors defined in the HP-GL/2 reference manual from Hewlett Packard. </p> "
-			" <br> " 
+			" <br> "
 			" <hr> "
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches "
 			" with the CUPS commandline job option parameter:</em> "
@@ -55,7 +55,7 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent, const char *name)
 			" <p><b>Note:</b>This feature depends upon an accurate plot size (PS) command in the "
 			" HP-GL/2 file. If no plot size is given in the file the filter converting the HP-GL "
 			" to PostScript assumes the plot is ANSI E size. </p> "
-			" <br> " 
+			" <br> "
 			" <hr> "
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches with the CUPS commandline job option parameter:</em> "
 			" <pre> "

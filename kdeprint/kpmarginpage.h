@@ -29,7 +29,7 @@ class KPrinter;
 class KPMarginPage : public KPrintDialogPage
 {
 public:
-	KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent = 0, const char *name = 0);
+	KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent = 0);
 	~KPMarginPage();
 
 	void setOptions(const QMap<QString,QString>& opts);

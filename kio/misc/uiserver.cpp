@@ -454,8 +454,8 @@ void ProgressItem::updateVisibility()
 
 
 //-----------------------------------------------------------------------------
-ListProgress::ListProgress (QWidget *parent, const char *name)
-: KListView (parent, name)
+ListProgress::ListProgress (QWidget *parent)
+    : KListView (parent)
 {
 
   // enable selection of more than one item
@@ -611,7 +611,8 @@ UIServer::UIServer()
   statusBar()->insertItem( i18n(" %1 kB/s ").arg("0"), ID_TOTAL_SPEED);
 
   // setup listview
-  listProgress = new ListProgress( this, "progresslist" );
+  listProgress = new ListProgress( this );
+  listProgress->setObjectName( "progresslist" );
 
   setCentralWidget( listProgress );
 

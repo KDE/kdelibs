@@ -136,6 +136,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @param face The kind of dialog, Use TreeList, Tabbed, Plain or
      * Swallow.
      */
+    /// KDE4 remove name argument
     KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
 
     /**
@@ -459,7 +460,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *                KJanusWidget, too. To be on the save side just don't keep
      *                the pointer to this widget.
      */
-    virtual void addWidgetBelowList( QWidget * widget ); 
+    virtual void addWidgetBelowList( QWidget * widget );
 
     /**
      * Add a button at the bottom of the TreeList/IconList.
@@ -472,7 +473,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @since 3.2
      */
     virtual void addButtonBelowList( const QString & text, QObject * recv,
-                    const char * slot ); 
+                    const char * slot );
 
     /**
      * The same as the above function, but with a KGuiItem providing the text
@@ -527,7 +528,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
   signals:
     /**
      * This signal is emitted whenever the current page changes.
-     * @param page the new page. 
+     * @param page the new page.
      * @since 3.4
      */
     void aboutToShowPage(QWidget *page);

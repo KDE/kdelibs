@@ -31,8 +31,8 @@
 #include <klocale.h>
 #include <knuminput.h>
 
-CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdNetworkPage::CupsdNetworkPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Network"));
 	setHeader(i18n("Network Settings"));

@@ -28,7 +28,7 @@ class KMWClass : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWClass(QWidget *parent = 0, const char *name = 0);
+	KMWClass(QWidget *parent = 0);
 	~KMWClass();
 
 	bool isValid(QString&);

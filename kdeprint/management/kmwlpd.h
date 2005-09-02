@@ -25,7 +25,7 @@
 class KMWLpd : public KMWInfoBase
 {
 public:
-	KMWLpd(QWidget *parent = 0, const char *name = 0);
+	KMWLpd(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void updatePrinter(KMPrinter*);

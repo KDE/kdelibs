@@ -37,7 +37,7 @@ Q_OBJECT
 
 public:
 	/** Your typical QWidget constructor. */
-	View(QWidget *parent, const char *name);
+	View(QWidget *parent);
 	virtual ~View(void);
 
 	/** The Possible buttons that can appear in the UI. */

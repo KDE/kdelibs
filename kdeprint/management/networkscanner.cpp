@@ -95,8 +95,8 @@ QString NetworkScanner::NetworkScannerPrivate::scanString()
 	return s;
 }
 
-NetworkScanner::NetworkScanner( int port, QWidget *parent, const char *name )
-	: QWidget( parent, name )
+NetworkScanner::NetworkScanner( int port, QWidget *parent )
+	: QWidget( parent )
 {
 	d = new NetworkScannerPrivate( port );
 	d->bar = new Q3ProgressBar( 256, this );

@@ -31,7 +31,7 @@ class QDirMultiLineEdit : public QWidget
 	Q_OBJECT
 
 public:
-	QDirMultiLineEdit(QWidget *parent = 0, const char *name = 0);
+	QDirMultiLineEdit(QWidget *parent = 0);
 	~QDirMultiLineEdit();
 
 	void setURLs(const QStringList&);

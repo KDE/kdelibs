@@ -35,8 +35,8 @@
 #include <klistview.h>
 #include <kdialog.h>
 
-KMConfigFonts::KMConfigFonts(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigFonts::KMConfigFonts(QWidget *parent)
+    : KMConfigPage(parent)
 {
 	setPageName(i18n("Fonts"));
 	setPageHeader(i18n("Font Settings"));

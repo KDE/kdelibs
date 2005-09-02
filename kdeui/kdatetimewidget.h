@@ -46,14 +46,14 @@ public:
   /**
    * Constructs a date and time selection widget.
    */
-  KDateTimeWidget(QWidget * parent = 0, const char * name = 0);
+  KDateTimeWidget(QWidget * parent = 0);
 
   /**
    * Constructs a date and time selection widget with the initial date and
    * time set to @p datetime.
    */
   KDateTimeWidget(const QDateTime & datetime,
-                  QWidget * parent = 0, const char * name = 0 );
+                  QWidget * parent = 0 );
 
   /**
    * Destructs the date and time selection widget.

@@ -98,8 +98,8 @@ public:
 };
 
 // This will construct a separator
-KToolBarButton::KToolBarButton( QWidget *_parent, const char *_name )
-  : QToolButton( _parent , _name)
+KToolBarButton::KToolBarButton( QWidget *_parent )
+  : QToolButton( _parent )
 {
   d = new KToolBarButtonPrivate;
 

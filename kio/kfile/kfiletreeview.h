@@ -54,7 +54,7 @@ class KIO_EXPORT KFileTreeView : public KListView
 {
     Q_OBJECT
 public:
-    KFileTreeView( QWidget *parent, const char *name = 0 );
+    KFileTreeView( QWidget *parent );
     virtual ~KFileTreeView();
 
     /**

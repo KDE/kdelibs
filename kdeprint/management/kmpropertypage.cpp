@@ -29,8 +29,8 @@
 #include <q3vbox.h>
 #include <kiconloader.h>
 
-KMPropertyPage::KMPropertyPage(QWidget *parent, const char *name)
-: CJanusWidget(parent,name)
+KMPropertyPage::KMPropertyPage(QWidget *parent)
+    : CJanusWidget(parent)
 {
 	m_widgets.setAutoDelete(false);
 
@@ -53,7 +53,8 @@ void KMPropertyPage::addPropPage(KMPropWidget *w)
 	if (w)
 	{
 		m_widgets.append(w);
-		KMPropContainer	*ctn = new KMPropContainer(this,"Container");
+		KMPropContainer	*ctn = new KMPropContainer(this);
+                ctn->setObjectName( "Container" );
 		ctn->setWidget(w);
 		connect(ctn,SIGNAL(enable(bool)),SLOT(slotEnable(bool)));
 
@@ -78,7 +79,9 @@ void KMPropertyPage::slotEnable(bool on)
 void KMPropertyPage::initialize()
 {
 	// add General page
-	addPropPage(new KMPropGeneral(this, "General"));
+        KMPropGeneral *mp = new KMPropGeneral( this );
+        mp->setObjectName( "General" );
+	addPropPage( mp );
 	// add plugin specific pages
 	KMFactory::self()->uiManager()->setupPropertyPages(this);
 }

@@ -27,8 +27,8 @@
 #include <kconfig.h>
 #include <kdialog.h>
 
-KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigJobs::KMConfigJobs(QWidget *parent)
+    : KMConfigPage(parent)
 {
 	setPageName(i18n("Jobs"));
 	setPageHeader(i18n("Print Job Settings"));

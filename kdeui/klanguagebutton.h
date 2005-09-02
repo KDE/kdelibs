@@ -54,22 +54,20 @@ public:
    * Constructs a combobox widget with parent parent called name.
    *
    * @param parent The parent of the combo box
-   * @param name The name of the combo box
    */
-  KLanguageButton(QWidget * parent = 0, const char * name = 0);
-  
+  KLanguageButton(QWidget * parent = 0);
+
   /**
    * Constructs a version with static text. The parent parent is called name.
    *
    * @param text The text of the button
    * @param parent The parent of the button
-   * @param name The name of the button
    */
-  KLanguageButton(const QString & text, QWidget * parent = 0, const char * name = 0);
-  
+  KLanguageButton(const QString & text, QWidget * parent = 0 );
+
   /**
    * Deconstructor
-   */ 
+   */
   virtual ~KLanguageButton();
 
   /**
@@ -169,7 +167,7 @@ private slots:
 
 private:
   void setCurrentItem( QAction* );
-  void init(const char * name);
+  void init();
 
   // work space for the new class
   QStringList *m_ids;

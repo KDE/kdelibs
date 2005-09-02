@@ -46,7 +46,7 @@ class KDECORE_EXPORT KUser {
 
 public:
 
-  enum UIDMode { 
+  enum UIDMode {
   	UseEffectiveUID, ///< Use the effective user id.
   	UseRealUserID    ///< Use the real user id.
   };
@@ -56,11 +56,11 @@ public:
    * (as returned by getuid(2) or geteuid(2), taking $LOGNAME/$USER into
    * account).
    * @param mode if #UseEffectiveUID is passed the effective
-   *             user is returned. 
+   *             user is returned.
    *        If #UseRealUserID is passed the real user will be
-   *        returned. 
+   *        returned.
    *        The real UID will be different than the effective UID in setuid
-   *        programs; in  
+   *        programs; in
    *        such a case use the effective UID for checking permissions, and
    *        the real UID for displaying information about the user.
    */
@@ -91,7 +91,7 @@ public:
    * @param name the name of the user
    */
   // XXX KDE4: Make this explicit
-  KUser(const char *name);
+  KUser(const char* name);
 
   /**
    * Creates an object from a passwd structure.
@@ -107,16 +107,16 @@ public:
    * @param user the user to create the new object from
    */
   KUser(const KUser & user);
-  
+
   /**
    * Copies a user
    * @param user the user to copy
    * @return this object
    */
   KUser& operator =(const KUser& user);
-  
+
   /**
-   * Two KUser objects are equal if isValid() is true 
+   * Two KUser objects are equal if isValid() is true
    * and the uid() are identical.
    */
   bool operator ==(const KUser& user) const;
@@ -128,7 +128,7 @@ public:
   bool operator !=(const KUser &user) const;
 
   /**
-   * Returns true if the user is valid. A KUser object can be invalid if 
+   * Returns true if the user is valid. A KUser object can be invalid if
    * you created it with an non-existing uid or name.
    * @return true if the user is valid
    */
@@ -157,7 +157,7 @@ public:
 
   /**
    * The login name of the user.
-   * @return the login name of the user or QString::null if user is invalid 
+   * @return the login name of the user or QString::null if user is invalid
    */
   QString loginName() const;
 
@@ -170,35 +170,35 @@ public:
   /**
    * The user's room number.
    * @return the room number of the user or QString::null if not set or the
-   *         user is invalid 
+   *         user is invalid
    */
   QString roomNumber() const;
 
   /**
    * The user's work phone.
    * @return the work phone of the user or QString::null if not set or the
-   *         user is invalid 
+   *         user is invalid
    */
   QString workPhone() const;
 
   /**
    * The user's home phone.
    * @return the home phone of the user or QString::null if not set or the
-   *         user is invalid 
+   *         user is invalid
    */
   QString homePhone() const;
 
   /**
    * The path to the user's home directory.
    * @return the home directory of the user or QString::null if the
-   *         user is invalid 
+   *         user is invalid
    */
   QString homeDir() const;
 
   /**
    * The path to the user's login shell.
    * @return the login shell of the user or QString::null if the
-   *         user is invalid 
+   *         user is invalid
    */
   QString shell() const;
 
@@ -207,26 +207,26 @@ public:
    * @return all groups of the user
    */
   QList<KUserGroup> groups() const;
-  
+
   /**
    * Returns all group names of the user
    * @return all group names of the user
    */
   QStringList groupNames() const;
-  
-  
+
+
   /**
    * Destructor.
    */
   ~KUser();
 
-  /** 
+  /**
    * Returns all users of the system.
    * @return all users of the system.
    */
   static QList<KUser> allUsers();
 
-  /** 
+  /**
    * Returns all user names of the system.
    * @return all user names of the system.
    */
@@ -235,7 +235,7 @@ public:
 private:
   KSharedPtr<KUserPrivate> d;
   void fillPasswd(struct passwd* p);
-  void fillName(const char* name);
+  void fillName(const char *name);
 };
 
 class KUserGroupPrivate;
@@ -261,14 +261,14 @@ public:
    * Create an object from the group of the current user.
    * @param mode if #KUser::UseEffectiveUID is passed the effective user
    *        will be used. If #KUser::UseRealUserID is passed the real user
-   *        will be used. 
+   *        will be used.
    *        The real UID will be different than the effective UID in setuid
    *        programs; in  such a case use the effective UID for checking
    *        permissions, and the real UID for displaying information about
    *        the group associated with the user.
    */
   explicit KUserGroup(KUser::UIDMode mode = KUser::UseEffectiveUID);
-  
+
   /**
    * Create an object from a group id.
    * If the group does not exist, isValid() will return false.
@@ -276,108 +276,108 @@ public:
    */
   // XXX KDE4: Give parameter as gid_t instead of "long"
   explicit KUserGroup(long gid);
-  
+
   /**
    * Create an object from a group name.
    * If the group does not exist, isValid() will return false.
    * @param name the name of the group
    */
   explicit KUserGroup(const QString& name);
-  
+
   /**
    * Create an object from a group name.
    * If the group does not exist, isValid() will return false.
    * @param name the name of the group
    */
   explicit KUserGroup(const char *name);
-  
+
   /**
    * Creates an object from a group structure.
    * If the pointer is null, isValid() will return false.
    * @param g the group structure to create the group from.
    */
   explicit KUserGroup(struct group *g);
-  
+
   /**
    * Creates a new KUserGroup instance from another KUserGroup object
    * @param group the KUserGroup to copy
    */
   KUserGroup(const KUserGroup & group);
-  
+
   /**
    * Copies a group
    * @param group the group that should be copied
    * @return this group
    */
   KUserGroup& operator =(const KUserGroup& group);
-  
+
   /**
    * Two KUserGroup objects are equal if isValid() is true
    * and gid() are identical
    * @return true if the groups are identical
    */
   bool operator ==(const KUserGroup& group) const;
-  
+
   /**
-   * Two KUserGroup objects are not equal if either 
+   * Two KUserGroup objects are not equal if either
    * isValid() is not true or gid() are not identical
    * @return true if the groups are not identical
    */
   bool operator !=(const KUserGroup& group) const;
-  
+
   /**
    * Returns wether the group is valid.
-   * A KUserGroup object can be invalid if it is 
+   * A KUserGroup object can be invalid if it is
    * created with a non-existing gid or name.
    * @return true if the group is valid
    */
   bool isValid() const;
-  
+
   /**
    * Returns the group id of the group.
    * @return the group id of the group or -1 if the group is invalid
    */
   // XXX KDE4: Return gid_t instead of "long"
   long gid() const;
-  
+
   /**
    * The name of the group.
    * @return the name of the group
    */
   QString name() const;
-  
+
   /**
    * Returns a list of all users of the group.
    * @return a list of all users of the group
    */
   const QList<KUser>& users() const;
-  
+
   /**
    * Returns a list of all user login names of the group.
    * @return a list of all user login names of the group
    */
   QStringList userNames() const;
-  
-  
+
+
   /**
    * Destructor.
    */
-  ~KUserGroup(); 
-  
+  ~KUserGroup();
+
   /**
    * Returns a list of all groups on this system
    */
   static QList<KUserGroup> allGroups();
-  
+
   /**
    * Returns a list of all group names on this system
    */
   static QStringList allGroupNames();
-  
+
 private:
   KSharedPtr<KUserGroupPrivate> d;
   void fillGroup(struct group* g);
-  void fillName(const char* name);
+  void fillName(const char *name);
 };
 
 

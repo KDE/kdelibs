@@ -27,7 +27,7 @@ class Q3TextView;
 class KMPropUsers : public KMPropWidget
 {
 public:
-	KMPropUsers(QWidget *parent = 0, const char *name = 0);
+	KMPropUsers(QWidget *parent = 0);
 	~KMPropUsers();
 
 	void setPrinter(KMPrinter*);

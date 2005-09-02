@@ -24,8 +24,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KPDriverPage::KPDriverPage(KMPrinter *p, DrMain *d, QWidget *parent, const char *name)
-: KPrintDialogPage(p,d,parent,name)
+KPDriverPage::KPDriverPage(KMPrinter *p, DrMain *d, QWidget *parent)
+    : KPrintDialogPage(p,d,parent)
 {
 	setTitle(i18n("Driver Settings"));
 

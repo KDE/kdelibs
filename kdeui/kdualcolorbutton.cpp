@@ -34,7 +34,7 @@ public:
 };
 
 KDualColorButton::KDualColorButton(QWidget *parent, const char *name, QWidget* dialogParent)
-  : QWidget(parent, name),
+  : QWidget( parent ),
     d (new KDualColorPrivate)
 {
     d->dialogParent = dialogParent;
@@ -55,7 +55,7 @@ KDualColorButton::KDualColorButton(QWidget *parent, const char *name, QWidget* d
 
 KDualColorButton::KDualColorButton(const QColor &fgColor, const QColor &bgColor,
                                    QWidget *parent, const char *name, QWidget* dialogParent)
-  : QWidget(parent, name),
+  : QWidget(parent),
     d (new KDualColorPrivate)
 {
     d->dialogParent = dialogParent;

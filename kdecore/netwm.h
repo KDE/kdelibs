@@ -88,15 +88,15 @@ public:
        [3]= NET::Property2, [4]= NET::Action.
        In future versions, the list may be extended. In case you pass less elements,
        the missing ones will be replaced with default values.
-       
+
        @param properties_size The number of elements in the properties array.
 
        @param screen For Window Managers that support multiple screen (ie.
        "multiheaded") displays, the screen number may be explicitly defined.  If
        this argument is omitted, the default screen will be used.
-       
+
        @param doActivate true to activate the window
-       
+
        @since 3.2
     **/
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
@@ -129,7 +129,7 @@ public:
        @param screen For Clients that support multiple screen (ie. "multiheaded")
        displays, the screen number may be explicitly defined. If this argument is
        omitted, the default screen will be used.
-       
+
        @param doActivate true to activate the window
 
        @since 3.2
@@ -148,7 +148,7 @@ public:
 
     /**
        Creates a shared copy of the specified NETRootInfo object.
-       
+
        @param rootinfo the NETRootInfo object to copy
     **/
     NETRootInfo(const NETRootInfo &rootinfo);
@@ -230,7 +230,7 @@ public:
        by the Window Manager. The elements of the array are the same
        as they would be passed to the Window Manager mode constructor,
        the size is the maximum array size the constructor accepts.
-       
+
        @since 3.2
     **/
     const unsigned long* supportedProperties() const;
@@ -246,15 +246,15 @@ public:
 
     /**
        @deprecated
-       
+
        Returns an OR'ed list of protocols passed to the constructor.
        For the constructor used by Window Managers, this is equivalent
        to the first element of the properties argument, for the constructor
        for Clients, it's the properties argument.
-       
+
        Clients willing to find out all properties and protocols supported
        by the WindowManager should use supportedProperties().
-       
+
        @return an OR'ed list of protocols
 
        @see NET::Property
@@ -284,7 +284,7 @@ public:
        stacking order.
 
        @return the array of Window id's in stacking order
-       
+
        @see clientListStackingCount()
     **/
     const Window *clientListStacking() const;
@@ -357,7 +357,7 @@ public:
 
     /**
        Returns an array of Window id's, which contain the virtual root windows.
-       
+
        @return the array of Window id's
 
        @see virtualRootsCount()
@@ -486,7 +486,7 @@ public:
        @param timestamp X server timestamp of the user action that
           caused the request
        @param active_window active window of the requesting application, if any
-          
+
        @since 3.2
     **/
     void setActiveWindow(Window window, NET::RequestSource src,
@@ -517,7 +517,7 @@ public:
        @param count The number of windows in the array.
     **/
     void setVirtualRoots(Window *windows, unsigned int count);
-    
+
     /**
      * Sets the _NET_SHOWING_DESKTOP status (whether desktop is being shown).
      * @since 3.5
@@ -574,7 +574,7 @@ public:
        @param y Requested Y position for the window
        @param width Requested width for the window
        @param height Requested height for the window
-       
+
        @since 3.2
     **/
     void moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height );
@@ -589,7 +589,7 @@ public:
        @since 3.2
     **/
     void restackRequest(Window window, Window above, int detail);
-    
+
     /**
        This function takes the passed XEvent and returns an OR'ed list of
        NETRootInfo properties that have changed in the properties argument.
@@ -598,7 +598,7 @@ public:
        to the constructor, if the array is not large enough,
        changed properties that don't fit in it won't be listed there
        (they'll be updated in the class though).
-       
+
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array
@@ -606,7 +606,7 @@ public:
 
     **/
     void event( XEvent* event, unsigned long* properties, int properties_size );
-    
+
     /**
        This function takes the passed XEvent and returns an OR'ed list of
        NETRootInfo properties that have changed.  The new information will be
@@ -625,7 +625,7 @@ protected:
     /**
        A Client should subclass NETRootInfo and reimplement this function when
        it wants to know when a window has been added.
-       
+
        @param window the id of the window to add
     **/
     virtual void addClient(Window window) { Q_UNUSED(window); }
@@ -651,7 +651,7 @@ protected:
        A Client should subclass NETRootInfo and reimplement this function when
        it wants to know when a system tray window has been removed.  This is a KDE 2.0
        extension.
-       
+
        @param window the id of the window to remove
     **/
     virtual void removeSystemTrayWin(Window window) { Q_UNUSED(window); }
@@ -893,7 +893,7 @@ protected:
        A Window Manager should subclass NETRootInfo2 and reimplement this function
        when it wants to know when a pager made a request to change showing the desktop.
        See _NET_SHOWING_DESKTOP for details.
-       
+
        @param showing whether to activate the showing desktop mode
     **/
     virtual void changeShowingDesktop(bool showing) { Q_UNUSED(showing); }
@@ -939,12 +939,12 @@ public:
        [1]= NET::Property2.
        In future versions, the list may be extended. In case you pass less elements,
        the missing ones will be replaced with default values.
-       
+
        @param properties_size The number of elements in the properties array.
 
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
-       
+
        @since 3.2
     **/
     NETWinInfo(Display *display, Window window, Window rootWindow,
@@ -1000,9 +1000,9 @@ public:
 
     /**
        @deprecated
-       
+
        Returns an OR'ed list of protocols passed to the constructor.
-       
+
        @return an OR'ed list of protocols
 
        @see NET::Property
@@ -1083,7 +1083,7 @@ public:
        representations of the window (taskbars etc.), that should be shown
        when the window is in iconic state. See description of _NET_WM_ICON_NAME
        for details.
-       
+
        @return the iconic name
     **/
     const char *iconName() const;
@@ -1144,7 +1144,7 @@ public:
        then the specified icon is added to a list of icons.
 
        @param icon the new icon
-       
+
        @param replace true to replace, false to append to the list of icons
     **/
     void setIcon(NETIcon icon, Bool replace = True);
@@ -1225,7 +1225,7 @@ public:
        Set which window the desktop is (should be) on.
 
        @param desktop the number of the new desktop
-       
+
        @see OnAllDesktops()
     **/
     void setDesktop(int desktop);
@@ -1253,7 +1253,7 @@ public:
 
     /**
        Set the frame decoration strut, i.e. the width of the decoration borders.
-       
+
        @param strut the new strut
        @since 3.5
     **/
@@ -1280,7 +1280,7 @@ public:
     **/
     NETIcon icon(int width = -1, int height = -1) const;
 
-    /*    
+    /*
      * Sets user timestamp @p time on the window (property _NET_WM_USER_TIME).
      * The timestamp is expressed as XServer time. If a window
      * is shown with user timestamp older than the time of the last
@@ -1289,19 +1289,19 @@ public:
      * @since 3.2
      */
     void setUserTime( Time time );
-    
+
     /**
      * Returns the time of last user action on the window, or -1 if not set.
      * @since 3.2
      */
     Time userTime() const;
 
-    /*    
+    /*
      * Sets the startup notification id @p id on the window.
      * @since 3.2
      */
     void setStartupId( const char* startup_id );
-    
+
     /**
      * Returns the startup notification id of the window.
      * @since 3.2
@@ -1330,9 +1330,9 @@ public:
     /**
      * Returns the leader window for the group the window is in, if any.
      * @since 3.2
-     */    
+     */
     Window groupLeader() const;
-    
+
     /**
      * Returns the class component of the window class for the window
      * (i.e. WM_CLASS property).
@@ -1377,7 +1377,7 @@ public:
        to the constructor, if the array is not large enough,
        changed properties that don't fit in it won't be listed there
        (they'll be updated in the class though).
-       
+
        @param event the event
        @param properties properties that changed
        @param properties_size size of the passed properties array

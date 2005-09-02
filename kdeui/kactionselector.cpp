@@ -44,8 +44,8 @@ class KActionSelectorPrivate {
 
 //BEGIN Constructor/destructor
 
-KActionSelector::KActionSelector( QWidget *parent, const char *name )
-  : QWidget( parent, name )
+KActionSelector::KActionSelector( QWidget *parent )
+  : QWidget( parent )
 {
   d = new KActionSelectorPrivate();
   d->moveOnDoubleClick = true;

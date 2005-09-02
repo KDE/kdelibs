@@ -38,8 +38,8 @@
 #include <kiconloader.h>
 #include <kseparator.h>
 
-KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
-: KPrintDialogPage(parent,name)
+KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
+    : KPrintDialogPage(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPageSelectionLabel = i18n(  " <qt><p><b>Page Selection</b></p> "

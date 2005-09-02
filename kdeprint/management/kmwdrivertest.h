@@ -30,7 +30,7 @@ class KMWDriverTest : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWDriverTest(QWidget *parent = 0, const char *name = 0);
+	KMWDriverTest(QWidget *parent = 0);
 	~KMWDriverTest();
 
 	void initPrinter(KMPrinter*);

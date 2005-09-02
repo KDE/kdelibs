@@ -33,8 +33,8 @@
 #include <kseparator.h>
 #include <kdebug.h>
 
-KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
-: KPrintDialogPage(0, driver, parent, name)
+KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
+    : KPrintDialogPage(0, driver, parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisCPITextPage = i18n( " <qt> "

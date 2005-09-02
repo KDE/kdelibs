@@ -94,9 +94,8 @@ public:
     QString configGroup;
 };
 
-KDirOperator::KDirOperator(const KURL& _url,
-                           QWidget *parent, const char* _name)
-    : QWidget(parent, _name),
+KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
+    : QWidget(parent),
       dir(0),
       m_fileView(0),
       progress(0)
@@ -906,7 +905,9 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
             new_view = combi;
     }
     else if ( KFile::isDetailView( view ) && !preview ) {
-        new_view = new KFileDetailView( parent, "detail view");
+        KFileDetailView *ndw = new KFileDetailView( parent );
+        ndw->setObjectName( "detail view" );
+        new_view = ndw;
         new_view->setViewName( i18n("Detailed View") );
     }
     else /* if ( KFile::isSimpleView( view ) && !preview ) */ {

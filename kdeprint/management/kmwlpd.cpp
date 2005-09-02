@@ -34,8 +34,8 @@ static bool checkLpdQueue(const char *host, const char *queue);
 
 //********************************************************************************************************
 
-KMWLpd::KMWLpd(QWidget *parent, const char *name)
-: KMWInfoBase(2,parent,name)
+KMWLpd::KMWLpd(QWidget *parent)
+    : KMWInfoBase(2,parent)
 {
 	m_ID = KMWizard::LPD;
 	m_title = i18n("LPD Queue Information");

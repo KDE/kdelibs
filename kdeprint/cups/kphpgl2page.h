@@ -28,7 +28,7 @@ class QCheckBox;
 class KPHpgl2Page : public KPrintDialogPage
 {
 public:
-	KPHpgl2Page(QWidget *parent = 0, const char *name = 0);
+	KPHpgl2Page(QWidget *parent = 0);
 	~KPHpgl2Page();
 
 	void setOptions(const QMap<QString,QString>& opts);

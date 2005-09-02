@@ -111,7 +111,7 @@ class KIO_EXPORT KFileDetailView : public KListView, public KFileView
     Q_OBJECT
 
 public:
-    KFileDetailView(QWidget *parent, const char *name);
+    KFileDetailView(QWidget *parent);
     virtual ~KFileDetailView();
 
     virtual QWidget *widget() { return this; }

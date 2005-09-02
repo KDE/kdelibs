@@ -33,8 +33,8 @@
 
 //*********************************************************************************************
 
-SmbView::SmbView(QWidget *parent, const char *name)
-: KListView(parent,name)
+SmbView::SmbView(QWidget *parent)
+    : KListView(parent)
 {
 	addColumn(i18n("Printer"));
 	addColumn(i18n("Comment"));
@@ -64,21 +64,21 @@ void SmbView::setLoginInfos(const QString& login, const QString& password)
 	m_login = login;
 	m_password = password;
 
-	// We can't pass the password via the command line or the environment 
+	// We can't pass the password via the command line or the environment
 	// because the command line is publically accessible on most OSes and
 	// the environment is publically accessible on some OSes.
-	// Therefor we write the password to a file and pass that file to 
+	// Therefor we write the password to a file and pass that file to
 	// smbclient with the -A option
 	delete m_passwdFile;
 	m_passwdFile = new KTempFile;
 	m_passwdFile->setAutoDelete(true);
-		
+
 	QTextStream *passwdFile = m_passwdFile->textStream();
 	if (!passwdFile) return; // Error
 	(*passwdFile) << "username = " << m_login << endl;
 	(*passwdFile) << "password = " << m_password << endl;
-	// (*passwdFile) << "domain = " << ???? << endl; 
-		
+	// (*passwdFile) << "domain = " << ???? << endl;
+
 	m_passwdFile->close();
 }
 

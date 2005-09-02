@@ -30,7 +30,7 @@ class CupsdJobsPage : public CupsdPage
 	Q_OBJECT
 
 public:
-	CupsdJobsPage(QWidget *parent = 0, const char *name = 0);
+	CupsdJobsPage(QWidget *parent = 0);
 
 	bool loadConfig(CupsdConf*, QString&);
 	bool saveConfig(CupsdConf*, QString&);

@@ -27,8 +27,8 @@
 #include <klocale.h>
 #include <knuminput.h>
 
-CupsdJobsPage::CupsdJobsPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdJobsPage::CupsdJobsPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Jobs"));
 	setHeader(i18n("Print Jobs Settings"));

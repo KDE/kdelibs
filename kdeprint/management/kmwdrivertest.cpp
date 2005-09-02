@@ -34,8 +34,8 @@
 #include <kguiitem.h>
 #include <kio/netaccess.h>
 
-KMWDriverTest::KMWDriverTest(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWDriverTest::KMWDriverTest(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::DriverTest;
 	m_title = i18n("Printer Test");

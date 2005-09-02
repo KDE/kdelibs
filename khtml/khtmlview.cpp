@@ -418,7 +418,7 @@ bool KHTMLView::event( QEvent* e )
     if ( e->type() == QEvent::ToolTip) {
         QHelpEvent *he = static_cast<QHelpEvent*>(e);
         QPoint     p   = he->pos();
-        
+
         DOM::NodeImpl *node = d->underMouseNonShared;
         QRect region;
         while ( node ) {
@@ -1160,7 +1160,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     if ( mailtoCursor && isVisible() && hasFocus() ) {
         if( !d->cursor_icon_widget ) {
             QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
-            d->cursor_icon_widget = new QWidget( NULL, NULL, Qt::WX11BypassWM );
+            d->cursor_icon_widget = new QWidget( 0, Qt::WX11BypassWM );
             XSetWindowAttributes attr;
             attr.save_under = True;
             XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
@@ -1762,7 +1762,7 @@ static void handleWidget(QWidget* w, KHTMLView* view)
 	w->setBackgroundMode( Qt::NoBackground );
     static_cast<HackWidget *>(w)->setNoErase();
     w->installEventFilter(view);
-    
+
     QObjectList children = w->children();
     foreach (QObject* object, children) {
 	QWidget *widget = qobject_cast<QWidget*>(object);
@@ -2262,7 +2262,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             guard = node;
 	}
         // Set focus node on the document
-#warning "port QFocusEvent::setReason( QFocusEvent::Shortcut ); to qt4" 
+#warning "port QFocusEvent::setReason( QFocusEvent::Shortcut ); to qt4"
         //QFocusEvent::setReason( QFocusEvent::Shortcut );
         m_part->xmlDocImpl()->setFocusNode(node);
 #warning "port QFocusEvent::resetReason(); to qt4"
@@ -2570,7 +2570,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             if( !url.isEmpty()) {
                 for( Q3ValueList< AccessKeyData >::Iterator it2 = data.begin();
                      it2 != data.end();
-                     ) {                   
+                     ) {
                     if( (*it2).url == url ) {
                         ret[ (*it2).element ] = key;
                         if( it == it2 )

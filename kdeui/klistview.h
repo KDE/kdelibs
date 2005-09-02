@@ -115,7 +115,7 @@ public:
    * The parameters @p parent and @p name are handled by
    * QListView, as usual.
    */
-  KListView (QWidget *parent = 0, const char *name = 0);
+  KListView ( QWidget *parent = 0 );
 
   /**
    * Destructor.

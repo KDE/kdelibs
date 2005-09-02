@@ -32,7 +32,7 @@ class KMInstancePage : public QWidget, public KMPrinterPage
 {
 	Q_OBJECT
 public:
-	KMInstancePage(QWidget *parent = 0, const char *name = 0);
+	KMInstancePage(QWidget *parent = 0);
 	~KMInstancePage();
 
 	void setPrinter(KMPrinter*);

@@ -31,7 +31,7 @@ class KMWSocket : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWSocket(QWidget *parent = 0, const char *name = 0);
+	KMWSocket(QWidget *parent = 0);
 	~KMWSocket();
 
 	bool isValid(QString&);

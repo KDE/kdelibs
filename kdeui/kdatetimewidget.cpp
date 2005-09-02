@@ -14,15 +14,15 @@ public:
   KTimeWidget * timeWidget;
 };
 
-KDateTimeWidget::KDateTimeWidget(QWidget * parent, const char * name)
-  : QWidget(parent, name)
+KDateTimeWidget::KDateTimeWidget(QWidget * parent)
+  : QWidget(parent)
 {
   init();
 }
 
 KDateTimeWidget::KDateTimeWidget(const QDateTime & datetime,
-			     QWidget * parent, const char * name)
-  : QWidget(parent, name)
+                                 QWidget * parent)
+  : QWidget(parent)
 {
   init();
 

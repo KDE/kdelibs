@@ -43,14 +43,13 @@ public:
   /**
    * Constructs a time selection widget.
    */
-  KTimeWidget(QWidget * parent = 0, const char * name = 0);
+  KTimeWidget(QWidget * parent = 0);
 
   /**
    * Constructs a time selection widget with the initial time set to
    * @p time.
    */
-  KTimeWidget(const QTime & time,
-              QWidget * parent = 0, const char * name = 0 );
+  KTimeWidget(const QTime & time, QWidget * parent = 0);
 
   /**
    * Destructs the time selection widget.

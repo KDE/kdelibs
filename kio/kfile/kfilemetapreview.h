@@ -20,7 +20,7 @@ class KIO_EXPORT KFileMetaPreview : public KPreviewWidgetBase
     Q_OBJECT
 
 public:
-    KFileMetaPreview(QWidget *parent, const char *name = 0);
+    KFileMetaPreview(QWidget *parent);
     ~KFileMetaPreview();
 
     virtual void addPreviewProvider( const QString& mimeType,
@@ -36,7 +36,7 @@ protected:
 
 protected:
     virtual void virtual_hook( int id, void* data );
-    
+
 private:
     void initPreviewProviders();
 

@@ -37,8 +37,8 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
-KMInstancePage::KMInstancePage(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMInstancePage::KMInstancePage(QWidget *parent)
+    : QWidget(parent)
 {
 	m_view = new KListBox(this);
 	m_printer = 0;

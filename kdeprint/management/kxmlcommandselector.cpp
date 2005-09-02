@@ -40,8 +40,8 @@
 #include <kdatetbl.h>
 #include <kdialogbase.h>
 
-KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, const char *name, KDialogBase *dlg)
-: QWidget(parent, name)
+KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialogBase *dlg)
+    : QWidget(parent)
 {
 	m_cmd = new QComboBox(this);
 	connect(m_cmd, SIGNAL(activated(int)), SLOT(slotCommandSelected(int)));

@@ -32,7 +32,7 @@ class Part;
 /**
  * A generic factory object to create a Part.
  *
- * Factory is an abstract class. Reimplement the 
+ * Factory is an abstract class. Reimplement the
  * createPartObject() method to give it functionality.
  *
  * @see KLibFactory.
@@ -41,7 +41,7 @@ class KPARTS_EXPORT Factory : public KLibFactory
 {
   Q_OBJECT
 public:
-  Factory( QObject *parent = 0, const char *name = 0 );
+  Factory( QObject *parent = 0 );
   virtual ~Factory();
 
     /**
@@ -115,7 +115,7 @@ protected:
      * @returns the newly created part.
      */
     virtual Part *createPartObject( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
-    
+
     /**
      * Reimplemented from KLibFactory. Calls createPart()
      */

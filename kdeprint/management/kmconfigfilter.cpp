@@ -34,8 +34,8 @@
 #include <klistbox.h>
 #include <kdialog.h>
 
-KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigFilter::KMConfigFilter(QWidget *parent)
+: KMConfigPage(parent)
 {
 	setPageName(i18n("Filter"));
 	setPageHeader(i18n("Printer Filtering Settings"));

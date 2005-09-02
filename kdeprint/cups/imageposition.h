@@ -37,7 +37,7 @@ public:
 			   Bottom,
 			   BottomRight};
 
-	ImagePosition(QWidget *parent = 0, const char *name = 0);
+	ImagePosition(QWidget *parent = 0);
 	~ImagePosition();
 
 	void setPosition(const char *type = "center");

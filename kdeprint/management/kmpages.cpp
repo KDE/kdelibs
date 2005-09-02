@@ -50,22 +50,26 @@ void KMPages::initialize()
 	setMargin(KDialog::marginHint());
 
 	// Info page
-	KMInfoPage	*infopage = new KMInfoPage(this, "InfoPage");
+	KMInfoPage	*infopage = new KMInfoPage(this );
+        infopage->setObjectName("InfoPage");
 	addTab(infopage, SmallIcon("help"), i18n("Information"));
 	m_pages.append(infopage);
 
 	// Job page
-	KMJobViewer	*jobviewer = new KMJobViewer(this, "JobViewer");
+	KMJobViewer	*jobviewer = new KMJobViewer(this );
+        jobviewer->setObjectName( "JobViewer" );
 	addTab(jobviewer, SmallIcon("folder"), i18n("Jobs"));
 	m_pages.append(jobviewer);
 
 	// Property page
-	KMPropertyPage	*proppage = new KMPropertyPage(this, "Property");
+	KMPropertyPage	*proppage = new KMPropertyPage(this );
+        proppage->setObjectName( "Property");
 	addTab(proppage, SmallIcon("configure"), i18n("Properties"));
 	m_pages.append(proppage);
 
 	// Instance page
-	KMInstancePage	*instpage = new KMInstancePage(this, "Instance");
+	KMInstancePage	*instpage = new KMInstancePage(this );
+        instpage->setObjectName( "Instance");
 	addTab(instpage, SmallIcon("fileprint"), i18n("Instances"));
 	m_pages.append(instpage);
 

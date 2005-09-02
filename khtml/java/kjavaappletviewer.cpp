@@ -180,8 +180,9 @@ protected:
 };
 
 inline CoverWidget::CoverWidget (QWidget * parent)
- : QWidget (parent, "KJavaAppletViewer Widget")
+ : QWidget (parent )
 {
+    setObjectName( "KJavaAppletViewer Widget");
     m_appletwidget = new KJavaAppletWidget (this);
     setFocusProxy (m_appletwidget);
 }

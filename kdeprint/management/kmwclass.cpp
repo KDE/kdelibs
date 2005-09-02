@@ -30,8 +30,8 @@
 #include <klocale.h>
 #include <kiconloader.h>
 
-KMWClass::KMWClass(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWClass::KMWClass(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Class;
 	m_title = i18n("Class Composition");

@@ -26,7 +26,7 @@
 class ImagePreview : public QWidget
 {
 public:
-	ImagePreview(QWidget *parent=0, const char *name=0);
+	ImagePreview(QWidget *parent=0);
 	~ImagePreview();
 
 	void setParameters(int brightness, int hue, int saturation, int gamma);

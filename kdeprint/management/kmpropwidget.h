@@ -31,7 +31,7 @@ class KDEPRINT_EXPORT KMPropWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	KMPropWidget(QWidget *parent = 0, const char *name = 0);
+	KMPropWidget(QWidget *parent = 0);
 	virtual ~KMPropWidget();
 
 	virtual void setPrinter(KMPrinter*);

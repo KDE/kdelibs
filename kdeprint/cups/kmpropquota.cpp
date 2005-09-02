@@ -29,8 +29,8 @@
 const char* unitKeyword(int);
 int findUnit(int&);
 
-KMPropQuota::KMPropQuota(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropQuota::KMPropQuota(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_period = new QLabel(this);
 	m_sizelimit = new QLabel(this);

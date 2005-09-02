@@ -38,8 +38,9 @@
 #include <kdialog.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
-: KMConfigPage(parent,"ConfigTimer")
+    : KMConfigPage(parent)
 {
+    setObjectName( "ConfigTimer" );
 	setPageName(i18n("General"));
 	setPageHeader(i18n("General Settings"));
 	setPagePixmap("fileprint");

@@ -26,17 +26,17 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
-:QWidget(parent, name)
+PluginComboBox::PluginComboBox(QWidget *parent)
+    :QWidget(parent)
 {
         QString whatsThisCurrentPrintsystem = i18n(" <qt><b>Print Subsystem Selection</b>"
 						" <p>This combo box shows (and lets you select)"
 						" a print subsystem to be used by KDEPrint. (This print"
 						" subsystem must, of course, be installed inside your"
-						" Operating System.) KDEPrint usually auto-detects the" 
+						" Operating System.) KDEPrint usually auto-detects the"
                                                 " correct print subsystem by itself upon first startup."
 						" Most Linux distributions have \"CUPS\", the <em>Common"
-						" UNIX Printing System</em>." 
+						" UNIX Printing System</em>."
                                                 " </qt>" );
 
 	m_combo = new QComboBox(this, "PluginCombo");
@@ -92,7 +92,7 @@ void PluginComboBox::configChanged()
 						" currently connected to for printing and retrieving"
 						" printer info. To switch to a different CUPS server,"
 						" click \"System Options\", then select \"Cups server\""
-						" and fill in the required info." 
+						" and fill in the required info."
                                                 " </qt>" );
 
 	m_plugininfo->setText(KMManager::self()->stateInformation());

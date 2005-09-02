@@ -26,8 +26,8 @@
 #include <kiconloader.h>
 #include <kguiitem.h>
 
-EditList::EditList(QWidget *parent, const char *name)
-	: QWidget(parent, name)
+EditList::EditList(QWidget *parent)
+	: QWidget(parent)
 {
 	list_ = new KListBox(this);
 	addbtn_ = new KPushButton(KGuiItem(i18n("Add..."), "filenew"), this);

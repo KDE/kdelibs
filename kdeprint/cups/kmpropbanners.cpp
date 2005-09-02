@@ -27,7 +27,7 @@
 #include <klocale.h>
 
 KMPropBanners::KMPropBanners(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+    : KMPropWidget(parent)
 {
 	m_startbanner = new QLabel(this);
 	m_stopbanner = new QLabel(this);

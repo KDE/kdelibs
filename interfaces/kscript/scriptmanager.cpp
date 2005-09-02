@@ -25,8 +25,8 @@ ScriptInfo::ScriptInfo()
 	scriptFile = "";
 	scriptMethod = "";
 }
-KScriptManager::KScriptManager(QObject *parent, const char *name) :
-	QObject(parent,name), KScriptClientInterface()
+KScriptManager::KScriptManager( QObject *parent ) :
+	QObject( parent ), KScriptClientInterface()
 {
 
 }
@@ -96,10 +96,10 @@ void KScriptManager::runScript( const QString &scriptName, QObject *context, con
 			// currently i am thinking a QTimer that will throw a signal in 10 minutes
 			// to remove m_scriptCache[m_currentScript]
                         KScriptInterface *ksif = KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( "KScriptRunner/KScriptRunner", scriptType, this );
-                        if ( ksif ) 
+                        if ( ksif )
                         {
                           m_scriptCache.insert( scriptName, ksif );
-			  
+
                         }
                         else
                         {

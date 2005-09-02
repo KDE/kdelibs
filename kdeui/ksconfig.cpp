@@ -68,7 +68,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 
 KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 			    KSpellConfig *_ksc, bool addHelpButton )
-  : QWidget (parent, name), nodialog(false)
+  : QWidget (parent), nodialog(false)
   , kc(0)
   , cb1(0)
   , cb2(0)
@@ -237,7 +237,7 @@ KSpellConfig::sChangeClient( int i )
       dictcombo->clear();
       dictcombo->insertItem( i18n("Turkish") );
       sChangeEncoding( KS_E_UTF8 );
-    } 
+    }
     else
       getAvailDictsAspell();
   }

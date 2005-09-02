@@ -28,7 +28,7 @@ class Q3ButtonGroup;
 class KMWPassword : public KMWizardPage
 {
 public:
-	KMWPassword(QWidget *parent = 0, const char *name = 0);
+	KMWPassword(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void initPrinter( KMPrinter* );

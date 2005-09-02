@@ -54,7 +54,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
   Q_OBJECT
 
   public:
-    ConfigPage( QWidget *parent = 0, const char *name = 0 );
+    ConfigPage( QWidget *parent = 0 );
     virtual ~ConfigPage();
 
     void load();

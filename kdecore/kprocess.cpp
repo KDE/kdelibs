@@ -118,8 +118,8 @@ public:
 // public member functions //
 /////////////////////////////
 
-KProcess::KProcess( QObject* parent, const char *name )
-  : QObject( parent, name ),
+KProcess::KProcess( QObject* parent )
+  : QObject( parent ),
     run_mode(NotifyOnExit),
     runs(false),
     pid_(0),

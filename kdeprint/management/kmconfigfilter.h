@@ -30,7 +30,7 @@ class KMConfigFilter : public KMConfigPage
 {
 	Q_OBJECT
 public:
-	KMConfigFilter(QWidget *parent = 0, const char *name = 0);
+	KMConfigFilter(QWidget *parent = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);

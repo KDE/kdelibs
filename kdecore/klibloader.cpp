@@ -69,8 +69,8 @@ KLibLoader* KLibLoader::s_self = 0;
 
 // -------------------------------------------------------------------------
 
-KLibFactory::KLibFactory( QObject* parent, const char* name )
-    : QObject( parent, name )
+KLibFactory::KLibFactory( QObject* parent )
+    : QObject( parent )
 {
 }
 
@@ -300,8 +300,8 @@ void KLibLoader::cleanUp()
   s_self = 0L;
 }
 
-KLibLoader::KLibLoader( QObject* parent, const char* name )
-    : QObject( parent, name )
+KLibLoader::KLibLoader( QObject* parent )
+    : QObject( parent )
 {
     s_self = this;
     d = new KLibLoaderPrivate;

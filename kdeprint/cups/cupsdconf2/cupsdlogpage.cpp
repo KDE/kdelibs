@@ -29,8 +29,8 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 
-CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdLogPage::CupsdLogPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Log"));
 	setHeader(i18n("Log Settings"));

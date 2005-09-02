@@ -35,15 +35,16 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
-KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent, const char *name)
-: KPrintDialogPage(0, driver, parent, name)
+KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent)
+    : KPrintDialogPage(0, driver, parent)
 {
 	m_printer = prt;
 	setTitle(i18n("Margins"));
 	m_usedriver = true;
 
 	Q3GroupBox	*box = new Q3GroupBox(1, Qt::Vertical, i18n("Margins"), this);
-	m_margin = new MarginWidget(box, "MarginWidget", (m_printer != 0));
+	m_margin = new MarginWidget(box, (m_printer != 0));
+        m_margin->setObjectName( "MarginWidget" );
 	//m_margin->setSymetricMargins(true);
 	//if (m_printer)
 	//	m_margin->setResolution(m_printer->resolution());

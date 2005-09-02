@@ -1,5 +1,5 @@
 /* the Configuration Database library, Version II
- 
+
    the KDE addressbook
 
    $ Author: Mirko Boehm $
@@ -10,7 +10,7 @@
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
 
-   $Id$	 
+   $Id$
 */
 
 #include "qconfigDB.h"
@@ -1808,8 +1808,8 @@ Section::noOfSections()
   // ###########################################################################
 }
 
-QConfigDB::QConfigDB(QWidget* parent, const char* name)
-  : QWidget(parent, name),
+QConfigDB::QConfigDB(QWidget* parent)
+  : QWidget(parent),
     timer(0),
     readonly(true),
     locked(false),

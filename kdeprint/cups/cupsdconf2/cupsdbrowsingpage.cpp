@@ -30,8 +30,8 @@
 #include <klocale.h>
 #include <knuminput.h>
 
-CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Browsing"));
 	setHeader(i18n("Browsing Settings"));
@@ -83,7 +83,7 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent, const char *name)
 	m1->addWidget(l3, 3, 0, Qt::AlignRight);
 	m1->addWidget(l4, 4, 0, Qt::AlignRight|Qt::AlignTop);
 	m1->addWidget(l5, 5, 0, Qt::AlignRight);
-	m1->addWidget(l6, 6, 0, Qt::AlignRight|Qt::AlignTop);	
+	m1->addWidget(l6, 6, 0, Qt::AlignRight|Qt::AlignTop);
 	m1->addWidget(browseport_, 1, 1);
 	m1->addWidget(browseinterval_, 2, 1);
 	m1->addWidget(browsetimeout_, 3, 1);

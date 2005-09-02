@@ -30,8 +30,8 @@
 
 Q3PtrDict<MessageWindow> MessageWindow::m_windows;
 
-MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent, const char *name )
-	: QWidget( parent, name, Qt::WStyle_Customize|Qt::WStyle_NoBorder|Qt::WShowModal|Qt::WType_Dialog|Qt::WDestructiveClose )
+MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
+	: QWidget( parent, Qt::WStyle_Customize|Qt::WStyle_NoBorder|Qt::WShowModal|Qt::WType_Dialog|Qt::WDestructiveClose )
 {
 	Q3HBox *box = new Q3HBox( this );
 	box->setFrameStyle( Q3Frame::Panel|Q3Frame::Raised );
@@ -88,8 +88,10 @@ void MessageWindow::add( QWidget *parent, const QString& txt, int delay )
 		MessageWindow *w = m_windows.find( parent );
 		if ( w )
 			w->setText( txt );
-		else
-			new MessageWindow( txt, delay, parent, "MessageWindow" );
+		else {
+                    MessageWindow *mw = new MessageWindow( txt, delay, parent );
+                    mw->setObjectName( "MessageWindow" );
+                }
 	}
 }
 

@@ -50,7 +50,7 @@ public:
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
     */
-   KPixmapRegionSelectorWidget( QWidget *parent = 0L, const char *name=0L);
+   KPixmapRegionSelectorWidget( QWidget *parent = 0 );
 
    /**
     * Destructor for a KPixmapRegionSelectorWidget
@@ -60,7 +60,7 @@ public:
    /**
     * Sets the pixmap which will be shown for the user to select a region from.
     * @param pixmap The pixmap.  Must be non-null.
-    * 
+    *
     */
    void setPixmap( const QPixmap &pixmap );
 
@@ -109,7 +109,7 @@ public:
     * @see setSelectionAspectRatio()
     */
    void setFreeSelectionAspectRatio();
- 
+
    /**
     * Sets the maximum size for the widget. If the image is larger than this
     * (either horizontally or vertically), it's scaled to adjust to the maximum
@@ -146,7 +146,7 @@ private:
 
    /**
     * Recalculates the pixmap that is shown based on the current selected area,
-    * the original image, etc. 
+    * the original image, etc.
     */
    void updatePixmap();
 

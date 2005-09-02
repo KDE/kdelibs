@@ -31,7 +31,7 @@ class EditList : public QWidget
 	Q_OBJECT
 
 public:
-	EditList(QWidget *parent = 0, const char *name = 0);
+	EditList(QWidget *parent = 0);
 
 	QString text(int);
 	void setText(int, const QString&);

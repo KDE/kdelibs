@@ -39,7 +39,7 @@ class KDEUI_EXPORT KStatusBarLabel : public QLabel
 public:
 
 
-  KStatusBarLabel( const QString& text, int _id, KStatusBar* parent = 0L, const char *name=0L );
+  KStatusBarLabel( const QString& text, int _id, KStatusBar* parent = 0 );
   ~KStatusBarLabel () {};
 
 protected:
@@ -92,7 +92,7 @@ public:
   /**
    *  Constructs a status bar. @p parent is usually KMainWindow.
    */
-  KStatusBar( QWidget* parent = 0L, const char* name = 0L );
+  KStatusBar( QWidget* parent = 0 );
 
   /**
    *  Destructor.

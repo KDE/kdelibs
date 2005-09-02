@@ -27,7 +27,7 @@ class QComboBox;
 class KMConfigLpr : public KMConfigPage
 {
 public:
-	KMConfigLpr(QWidget *parent = 0, const char *name = 0);
+	KMConfigLpr(QWidget *parent = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);

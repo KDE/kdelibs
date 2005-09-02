@@ -62,7 +62,7 @@ template class Q3PtrList<KDialogBaseButton>;
  */
 namespace
 {
-struct SButton 
+struct SButton
 {
   SButton()
   {

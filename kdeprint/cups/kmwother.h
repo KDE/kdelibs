@@ -30,7 +30,7 @@ class KMWOther : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWOther(QWidget *parent = 0, const char *name = 0);
+	KMWOther(QWidget *parent = 0);
 
 	void initPrinter(KMPrinter*);
 	void updatePrinter(KMPrinter*);

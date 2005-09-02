@@ -25,8 +25,8 @@
 #include <klocale.h>
 #include <kactivelabel.h>
 
-KMWInfoPage::KMWInfoPage(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWInfoPage::KMWInfoPage(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Start;
 	m_title = i18n("Introduction");

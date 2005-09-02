@@ -36,8 +36,8 @@ int findComboItem(QComboBox *cb, const QString& str)
 	return (-1);
 }
 
-CupsdServerPage::CupsdServerPage(QWidget *parent, const char *name)
-	: CupsdPage(parent, name)
+CupsdServerPage::CupsdServerPage(QWidget *parent)
+	: CupsdPage(parent)
 {
 	setPageLabel(i18n("Server"));
 	setHeader(i18n("Server Settings"));

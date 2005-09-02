@@ -70,12 +70,25 @@ KMCupsUiManager::~KMCupsUiManager()
 
 void KMCupsUiManager::setupPropertyPages(KMPropertyPage *p)
 {
-	p->addPropPage(new KMPropMembers(p, "Members"));
-	p->addPropPage(new KMPropBackend(p, "Backend"));
-	p->addPropPage(new KMPropDriver(p, "Driver"));
-	p->addPropPage(new KMPropBanners(p, "Banners"));
-	p->addPropPage(new KMPropQuota(p, "Quotas"));
-	p->addPropPage(new KMPropUsers(p, "Users"));
+    KMPropWidget *prop;
+    prop = new KMPropMembers(p);
+    prop->setObjectName( "Members" );
+    p->addPropPage(prop);
+    prop = new KMPropBackend( p );
+    prop->setObjectName( "Backend");
+    p->addPropPage(prop);
+    prop = new KMPropDriver( p );
+    prop->setObjectName("Driver");
+    p->addPropPage(prop);
+    prop = new KMPropBanners( p );
+    prop->setObjectName( "Banners" );
+    p->addPropPage(prop);
+    prop = new KMPropQuota( p );
+    prop->setObjectName("Quotas");
+    p->addPropPage(prop);
+    prop = new KMPropUsers(p);
+    prop->setObjectName("Users");
+    p->addPropPage(prop);
 }
 
 void KMCupsUiManager::setupWizard(KMWizard *wizard)
@@ -182,13 +195,22 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 
 void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
-	// add general page
-	dlg->addPage(new KPGeneralPage(dlg->printer(),dlg->driver(),dlg,"GeneralPage"));
+        // add general page
+        KPGeneralPage *gp = new KPGeneralPage(dlg->printer(),dlg->driver(),dlg );
+        gp->setObjectName( "GeneralPage");
+        dlg->addPage(gp );
 	if (KMFactory::self()->settings()->application != KPrinter::Dialog)
 	{
-		dlg->addPage(new KPImagePage(dlg->driver(), dlg, "ImagePage"));
-		dlg->addPage(new KPTextPage(dlg->driver(), dlg, "TextPage"));
-		dlg->addPage(new KPHpgl2Page(dlg, "Hpgl2Page"));
+            KPrintDialogPage *page;
+            page = new KPImagePage(dlg->driver(), dlg );
+            page->setObjectName("ImagePage");
+            dlg->addPage(page);
+            page = new KPTextPage(dlg->driver(), dlg );
+            page->setObjectName("TextPage");
+            dlg->addPage(page);
+            page = new KPHpgl2Page(dlg );
+            page->setObjectName("Hpgl2Page");
+            dlg->addPage(page);
 	}
 }
 

@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMPropUsers::KMPropUsers(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropUsers::KMPropUsers(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_text = new Q3TextView(this);
 	m_text->setPaper(colorGroup().background());

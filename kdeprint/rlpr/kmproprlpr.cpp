@@ -25,8 +25,8 @@
 #include <qlayout.h>
 #include <klocale.h>
 
-KMPropRlpr::KMPropRlpr(QWidget *parent, const char *name)
-: KMPropWidget(parent,name)
+KMPropRlpr::KMPropRlpr(QWidget *parent)
+    : KMPropWidget(parent)
 {
 	m_host = new QLabel("",this);
 	m_queue = new QLabel("",this);

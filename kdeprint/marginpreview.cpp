@@ -48,8 +48,8 @@ static void draw3DPage(QPainter *p, QRect r)
 	p->drawLine( QPoint( r.right()-1, r.bottom()-1 ), QPoint(r.right()-1, r.top()+1 ) );
 }
 
-MarginPreview::MarginPreview(QWidget *parent, const char *name)
-	: QWidget(parent,name)
+MarginPreview::MarginPreview(QWidget *parent)
+	: QWidget(parent)
 {
 	width_ = A4_WIDTH;
 	height_ = A4_HEIGHT;

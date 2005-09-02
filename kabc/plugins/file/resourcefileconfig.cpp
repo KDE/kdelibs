@@ -36,8 +36,8 @@
 
 using namespace KABC;
 
-ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
-    : ConfigWidget( parent, name )
+ResourceFileConfig::ResourceFileConfig( QWidget* parent )
+    : ConfigWidget( parent )
 {
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2, 0,
       KDialog::spacingHint() );
@@ -80,7 +80,7 @@ void ResourceFileConfig::setEditMode( bool value )
 void ResourceFileConfig::loadSettings( KRES::Resource *res  )
 {
   ResourceFile *resource = dynamic_cast<ResourceFile*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceFileConfig::loadSettings(): cast failed" << endl;
     return;
@@ -96,7 +96,7 @@ void ResourceFileConfig::loadSettings( KRES::Resource *res  )
 void ResourceFileConfig::saveSettings( KRES::Resource *res )
 {
   ResourceFile *resource = dynamic_cast<ResourceFile*>( res );
-  
+
   if ( !resource ) {
     kdDebug(5700) << "ResourceFileConfig::saveSettings(): cast failed" << endl;
     return;

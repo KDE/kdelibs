@@ -43,7 +43,7 @@ protected slots:
 	void slotTimer();
 
 protected:
-	MessageWindow( const QString& txt, int delay = 500, QWidget *parent = 0, const char *name = 0 );
+	MessageWindow( const QString& txt, int delay = 500, QWidget *parent = 0 );
 	void setText( const QString& txt );
 	QString text() const;
 

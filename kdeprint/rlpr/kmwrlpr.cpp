@@ -43,8 +43,8 @@ static Q3ListViewItem* findItem(Q3ListViewItem *c, const QString& txt)
 
 //*****************************************************************************************************
 
-KMWRlpr::KMWRlpr(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWRlpr::KMWRlpr(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Custom+1;
 	m_title = i18n("Remote LPD Queue Settings");

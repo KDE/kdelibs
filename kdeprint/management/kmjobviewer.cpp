@@ -62,14 +62,14 @@
 class KJobListView : public KListView
 {
 public:
-	KJobListView( QWidget *parent = 0, const char *name = 0 );
+	KJobListView( QWidget *parent = 0 );
 
 protected:
 	bool acceptDrag( QDropEvent* ) const;
 };
 
-KJobListView::KJobListView( QWidget *parent, const char *name )
-	: KListView( parent, name )
+KJobListView::KJobListView( QWidget *parent)
+	: KListView( parent )
 {
 	setAcceptDrops( true );
 	setDropVisualizer( false );

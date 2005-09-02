@@ -40,8 +40,8 @@ public:
     KSpell2ConfigUI *ui;
 };
 
-ConfigWidget::ConfigWidget( Broker *broker, QWidget *parent, const char *name )
-    : QWidget( parent, name )
+ConfigWidget::ConfigWidget( Broker *broker, QWidget *parent )
+    : QWidget( parent )
 {
     init( broker );
 }

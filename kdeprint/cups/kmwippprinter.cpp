@@ -39,8 +39,8 @@
 #include <kguiitem.h>
 #include <kurl.h>
 
-KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWIppPrinter::KMWIppPrinter(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_title = i18n("IPP Printer Information");
 	m_ID = KMWizard::Custom+1;

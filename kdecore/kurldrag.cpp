@@ -34,15 +34,16 @@ public:
     bool m_exportAsText;
 };
 
-KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
-    : Q3UriDrag(dragSource, name), m_metaData(), d( 0 )
+KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource )
+    : Q3UriDrag(dragSource), m_metaData(), d( 0 )
 {
     init(urls);
 }
 
-KURLDrag::KURLDrag( const KURL::List &urls, const QMap<QString,QString>& metaData,
-                    QWidget* dragSource, const char * name )
-    : Q3UriDrag(dragSource, name), m_metaData(metaData), d( 0 )
+KURLDrag::KURLDrag( const KURL::List &urls,
+                    const QMap<QString,QString>& metaData,
+                    QWidget* dragSource )
+    : Q3UriDrag(dragSource), m_metaData(metaData), d( 0 )
 {
     init(urls);
 }
@@ -73,15 +74,15 @@ void KURLDrag::setExportAsText( bool exp )
     d->m_exportAsText = exp;
 }
 
-KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
+KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource )
 {
-    return new KURLDrag( urls, QMap<QString, QString>(), dragSource, name );
+    return new KURLDrag( urls, QMap<QString, QString>(), dragSource );
 }
 
 KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-                              QWidget* dragSource, const char * name )
+                              QWidget* dragSource )
 {
-    return new KURLDrag( urls, metaData, dragSource, name );
+    return new KURLDrag( urls, metaData, dragSource );
 }
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
@@ -108,7 +109,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
             return !uris.isEmpty();
         }
     }
-    
+
     Q3StrList lst;
     Q3UriDrag::decode( e, lst );
     for (Q3StrListIterator it(lst); *it; ++it)
@@ -290,5 +291,5 @@ QString KURLDrag::urlToString(const KURL &url)
 
 // deprecated ctor
 KURLDrag::KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
-                    QWidget * dragSource, const char* name ) :
-Q3UriDrag( urls, dragSource, name ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}
+                    QWidget * dragSource ) :
+Q3UriDrag( urls, dragSource ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}

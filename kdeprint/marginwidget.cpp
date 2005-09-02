@@ -29,8 +29,8 @@
 #include <klocale.h>
 #include <kglobal.h>
 
-MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUnit)
-: QWidget(parent, name), m_default(4, 0), m_pagesize( 2 )
+MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
+    : QWidget(parent), m_default(4, 0), m_pagesize( 2 )
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisTopMarginWidget = i18n( " <qt> "
@@ -42,7 +42,7 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUn
 			" <p><b>Note:</b></p>This margin setting is not intended for KOffice or OpenOffice.org printing, "
 			" because these applications (or rather their users) are expected to do it by themselves. "
 			" It also does not work for PostScript or PDF file, which in most cases have their margins hardcoded "
-			" internally.</p> " 
+			" internally.</p> "
 			" <br> "
 			" <hr> "
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches "

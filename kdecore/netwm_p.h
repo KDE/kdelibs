@@ -33,7 +33,7 @@
    This resizable array is used to simplify the implementation.  The existence of
    this class is to keep the implementation from depending on a separate
    framework/library.
-   @internal  
+   @internal
 **/
 
 template <class Z> class NETRArray {
@@ -62,7 +62,7 @@ public:
      **/
 
     int size() const { return sz; }
-    
+
     /**
        Resets the array (size == 0).
      **/
@@ -77,7 +77,7 @@ private:
 
 /**
    Private data for the NETRootInfo class.
-   @internal  
+   @internal
 **/
 
 struct NETRootInfoPrivate {
@@ -113,7 +113,7 @@ struct NETRootInfoPrivate {
 
 /**
    Private data for the NETWinInfo class.
-   @internal  
+   @internal
 **/
 
 struct NETWinInfoPrivate {

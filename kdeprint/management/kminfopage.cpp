@@ -27,8 +27,8 @@
 #include <kiconloader.h>
 #include <kseparator.h>
 
-KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMInfoPage::KMInfoPage(QWidget *parent)
+    : QWidget(parent)
 {
 	m_title = new QLabel(this);
 	m_titlepixmap = new QLabel(this);

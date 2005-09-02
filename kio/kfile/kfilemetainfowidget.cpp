@@ -14,7 +14,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
     Boston, MA 02110-1301, USA.
-  
+
     $Id$
  */
 
@@ -49,8 +49,8 @@
 
 KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
                                          QValidator* val,
-                                         QWidget* parent, const char* name)
-    : QWidget(parent, name),
+                                         QWidget* parent )
+    : QWidget(parent),
       m_value(item.value()),
       m_item(item),
       m_validator(val)
@@ -61,8 +61,8 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
 KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
                                          Mode mode,
                                          QValidator* val,
-                                         QWidget* parent, const char* name)
-    : QWidget(parent, name),
+                                         QWidget* parent)
+    : QWidget(parent),
       m_value(item.value()),
       m_item(item),
       m_validator(val)

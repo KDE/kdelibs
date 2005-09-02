@@ -55,11 +55,11 @@ public:
    QTimer autoOpenTimer;
 };
 
-KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
-    : KListView(parent, name), KFileView(), d(new KFileDetailViewPrivate())
+KFileDetailView::KFileDetailView(QWidget *parent)
+    : KListView(parent), KFileView(), d(new KFileDetailViewPrivate())
 {
     // this is always the static section, not the index depending on column order
-    m_sortingCol = COL_NAME; 
+    m_sortingCol = COL_NAME;
     m_blockSortingSignal = false;
     setViewName( i18n("Detailed View") );
 
@@ -113,7 +113,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     else
 	connect( this, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
 		 SLOT( highlighted( Q3ListViewItem * ) ));
-		
+
     // DND
     connect( &(d->autoOpenTimer), SIGNAL( timeout() ),
              this, SLOT( slotAutoOpen() ));
@@ -352,7 +352,7 @@ void KFileDetailView::removeItem( const KFileItem *i )
 void KFileDetailView::slotSortingChanged( int col )
 {
     // col is the section here, not the index!
-    
+
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
     bool reversed = (col == m_sortingCol) && (sort & QDir::Reversed) == 0;

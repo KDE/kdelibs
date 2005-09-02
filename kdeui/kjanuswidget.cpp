@@ -85,7 +85,7 @@ template class Q3PtrList<Q3ListViewItem>;
 
 
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
-  : QWidget( parent, name, 0 ),
+  : QWidget( parent ),
     mValid(false), mPageList(0),
     mTitleList(0), mFace(face), mTitleLabel(0), mActivePageWidget(0),
     mShowIconsInTreeList(false), d(0)

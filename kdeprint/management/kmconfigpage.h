@@ -30,7 +30,7 @@ class KDEPRINT_EXPORT KMConfigPage : public QWidget
 {
 	Q_OBJECT
 public:
-	KMConfigPage(QWidget *parent = 0, const char *name = 0);
+	KMConfigPage(QWidget *parent = 0);
 
 	virtual void loadConfig(KConfig*);
 	virtual void saveConfig(KConfig*);

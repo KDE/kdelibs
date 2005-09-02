@@ -51,16 +51,15 @@ public:
 };
 
 
-KDateWidget::KDateWidget( QWidget *parent, const char *name )
-  : QWidget( parent, name )
+KDateWidget::KDateWidget( QWidget *parent )
+  : QWidget( parent )
 {
   init(QDate());
   setDate(QDate());
 }
 
-KDateWidget::KDateWidget( const QDate &date, QWidget *parent,
-			    const char *name )
-  : QWidget( parent, name )
+KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
+  : QWidget( parent )
 {
   init(date);
   setDate(date);

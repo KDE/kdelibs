@@ -34,7 +34,7 @@
 #define COLUMN_ZONE 3
 
 KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *db) :
-    KListView(parent, name),
+    KListView(parent),
     d(0)
 {
     // If the user did not provide a timezone database, we'll use the system default.

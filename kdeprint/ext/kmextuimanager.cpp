@@ -40,5 +40,7 @@ int KMExtUiManager::pluginPageCap()
 
 void KMExtUiManager::setupPrinterPropertyDialog( KPrinterPropertyDialog *dlg )
 {
-	dlg->addPage( new KPQtPage( dlg, "QtPage" ) );
+    KPQtPage *qp = new KPQtPage( dlg );
+    dlg->setObjectName( "QtPage" );
+    dlg->addPage( qp );
 }

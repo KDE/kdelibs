@@ -28,8 +28,8 @@
 
 #include <cups/http.h>
 
-KMWIpp::KMWIpp(QWidget *parent, const char *name)
-: KMWInfoBase(2,parent,name)
+KMWIpp::KMWIpp(QWidget *parent)
+    : KMWInfoBase(2,parent)
 {
 	m_ID = KMWizard::IPP;
 	m_title = i18n("Remote IPP server");

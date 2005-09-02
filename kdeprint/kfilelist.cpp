@@ -35,8 +35,8 @@
 #include <krun.h>
 #include <kmimetype.h>
 
-KFileList::KFileList(QWidget *parent, const char *name)
-: QWidget(parent, name)
+KFileList::KFileList(QWidget *parent)
+    : QWidget(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisAddFileButton = i18n(  " <qt> <b>Add File button</b>"

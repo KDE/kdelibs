@@ -37,12 +37,12 @@ public:
       ReadWrite = 0,  ///Permits user to edit the displayed meta-info
       Reserve = 0xff
     };
-  
+
     KFileMetaInfoWidget(KFileMetaInfoItem item, QValidator* val = 0,
-                        QWidget* parent = 0, const char* name = 0);
+                        QWidget* parent = 0);
 
     KFileMetaInfoWidget(KFileMetaInfoItem item, Mode mode, QValidator* val = 0,
-                        QWidget* parent = 0, const char* name = 0);
+                        QWidget* parent = 0 );
 
     virtual ~KFileMetaInfoWidget();
 

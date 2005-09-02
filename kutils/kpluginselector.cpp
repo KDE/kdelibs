@@ -130,19 +130,19 @@ bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
         KPluginInfoLVI *item = dynamic_cast<KPluginInfoLVI *>( d->listview->itemAt( he->pos() ) );
         if ( !item )
             return true;
-        
+
         QString toolTip = i18n( "<qt><table>"
             "<tr><td><b>Description:</b></td><td>%1</td></tr>"
             "<tr><td><b>Author:</b></td><td>%2</td></tr>"
             "<tr><td><b>Version:</b></td><td>%3</td></tr>"
             "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>" ).arg( item->pluginInfo()->comment(),
             item->pluginInfo()->author(), item->pluginInfo()->version(), item->pluginInfo()->license() );
-        
+
         //kdDebug( 702 ) << k_funcinfo << "Adding tooltip: itemRect: " << itemRect << ", tooltip:  " << toolTip << endl;
         QToolTip::showText( he->globalPos(), toolTip, d->listview->viewport() );
         return true;
     }
-    
+
     return QWidget::eventFilter( obj, ev );
 }
 
@@ -150,8 +150,8 @@ bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
 KPluginSelectionWidget::KPluginSelectionWidget(
         const Q3ValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
         QWidget * parent, const QString & catname, const QString & category,
-        KConfigGroup * config, const char * name )
-    : QWidget( parent, name )
+        KConfigGroup * config )
+    : QWidget( parent )
     , d( new KPluginSelectionWidgetPrivate( kps, catname, config ) )
 {
     init( plugininfos, category );
@@ -170,7 +170,7 @@ void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos
     KListView * listview = new KListView( this );
     listview->viewport()->installEventFilter( this ); //Listen for tooltip requests
     d->listview = listview;
-    
+
     connect( listview, SIGNAL( pressed( Q3ListViewItem * ) ), this,
             SLOT( executed( Q3ListViewItem * ) ) );
     connect( listview, SIGNAL( spacePressed( Q3ListViewItem * ) ), this,
@@ -502,9 +502,9 @@ class KPluginSelector::KPluginSelectorPrivate
         bool hideconfigpage;
 };
 
-KPluginSelector::KPluginSelector( QWidget * parent, const char * name )
-: QWidget( parent, name )
-, d( new KPluginSelectorPrivate )
+KPluginSelector::KPluginSelector( QWidget * parent )
+    : QWidget( parent )
+    , d( new KPluginSelectorPrivate )
 {
     QBoxLayout * hbox = new QHBoxLayout( this, 0, KDialog::spacingHint() );
     hbox->setAutoAdd( true );

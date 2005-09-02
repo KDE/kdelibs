@@ -25,8 +25,8 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 
-QDirLineEdit::QDirLineEdit(bool file, QWidget *parent, const char *name)
-	: QWidget(parent, name)
+QDirLineEdit::QDirLineEdit(bool file, QWidget *parent)
+	: QWidget(parent)
 {
 	edit_ = new QLineEdit(this);
 	button_ = new KPushButton(this);

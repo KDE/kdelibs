@@ -30,7 +30,7 @@ class KMWDriverSelect : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWDriverSelect(QWidget *parent = 0, const char *name = 0);
+	KMWDriverSelect(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void initPrinter(KMPrinter*);

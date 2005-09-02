@@ -47,8 +47,8 @@ class KLed::KLedPrivate
 
 
 
-KLed::KLed(QWidget *parent, const char *name)
-  : QWidget( parent, name),
+KLed::KLed(QWidget *parent)
+  : QWidget( parent ),
     led_state(On),
     led_look(Raised),
     led_shape(Circular)
@@ -64,8 +64,8 @@ KLed::KLed(QWidget *parent, const char *name)
 }
 
 
-KLed::KLed(const QColor& col, QWidget *parent, const char *name)
-  : QWidget( parent, name),
+KLed::KLed(const QColor& col, QWidget *parent)
+  : QWidget( parent ),
     led_state(On),
     led_look(Raised),
     led_shape(Circular)
@@ -81,8 +81,8 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
 }
 
 KLed::KLed(const QColor& col, KLed::State state,
-	   KLed::Look look, KLed::Shape shape, QWidget *parent, const char *name )
-  : QWidget(parent, name),
+	   KLed::Look look, KLed::Shape shape, QWidget *parent )
+  : QWidget(parent),
     led_state(state),
     led_look(look),
     led_shape(shape)

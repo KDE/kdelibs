@@ -30,7 +30,7 @@ class KMPropContainer : public QWidget
 {
 	Q_OBJECT
 public:
-	KMPropContainer(QWidget *parent = 0, const char *name = 0);
+	KMPropContainer(QWidget *parent = 0);
 	~KMPropContainer();
 
 	void setWidget(KMPropWidget*);

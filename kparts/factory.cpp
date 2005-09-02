@@ -30,8 +30,8 @@
 
 using namespace KParts;
 
-Factory::Factory( QObject *parent, const char *name )
-: KLibFactory( parent, name )
+Factory::Factory( QObject *parent )
+: KLibFactory( parent )
 {
 }
 

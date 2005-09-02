@@ -822,8 +822,12 @@ Q3DragObject * KURLBarListBox::dragObject()
         item = static_cast<KURLBarItem*>( item->next() );
     }
 
-    if ( !urls.isEmpty() ) // ### use custom drag-object with description etc.?
-        return new KURLDrag( urls, this, "urlbar drag" );
+    if ( !urls.isEmpty() ) {
+        // ### use custom drag-object with description etc.?
+        KURLDrag *drag = new KURLDrag( urls, this );
+        drag->setObjectName( "urlbar drag" );
+        return drag;
+    }
 
     return 0L;
 }
@@ -872,7 +876,7 @@ bool KURLBarListBox::event( QEvent* e )
             if ( !text.isEmpty() )
                 QToolTip::showText( itemRect( item ).topLeft(), text, this );
         }
-        
+
         return true;
     }
 

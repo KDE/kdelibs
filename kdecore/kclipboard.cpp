@@ -96,14 +96,16 @@ bool KClipboardSynchronizer::s_blocked = false;
 
 KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
-    if ( !s_self )
-        s_self = new KClipboardSynchronizer( kapp, "KDE Clipboard" );
+    if ( !s_self ) {
+        s_self = new KClipboardSynchronizer( kapp );
+        s_self->setObjectName( "KDE Clipboard" );
+    }
 
     return s_self;
 }
 
-KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent, const char *name )
-    : QObject( parent, name )
+KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
+    : QObject( parent )
 {
     s_self = this;
 

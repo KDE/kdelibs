@@ -90,6 +90,7 @@ public:
    * Make sure you have a QStringList argument in your
    * implementation.
    */
+    /// KDE4 remove name parameter
   KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=QStringList() );
 
   KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
@@ -110,11 +111,11 @@ public:
    * (most of the times from a config file) and update the user interface.
    * This happens when the user clicks the "Reset" button in the control
    * center, to undo all of his changes and restore the currently valid
-   * settings. 
+   * settings.
    *
-   * If you use KConfigXT, loading is taken care of automatically and 
+   * If you use KConfigXT, loading is taken care of automatically and
    * you do not need to do it manually. However, if you for some reason reimplement it and
-   * also are using KConfigXT, you must call this function otherwise the loading of KConfigXT 
+   * also are using KConfigXT, you must call this function otherwise the loading of KConfigXT
    * options will not work.
    *
    */
@@ -135,9 +136,9 @@ public:
    *
    * save is called when the user clicks "Apply" or "Ok".
    *
-   * If you use KConfigXT, saving is taken care off automatically and 
+   * If you use KConfigXT, saving is taken care off automatically and
    * you do not need to load manually. However, if you for some reason reimplement it and
-   * also are using KConfigXT, you must call this function, otherwise the saving of KConfigXT 
+   * also are using KConfigXT, you must call this function, otherwise the saving of KConfigXT
    * options will not work. Call it at the very end of your reimplementation, to avoid
    * changed() signals getting emitted when you modify widgets.
    */
@@ -150,8 +151,8 @@ public:
    * button. It should set the display to useful values.
    *
    * If you use KConfigXT, you do not have to reimplement this function since
-   * the fetching and settings of default values is done automatically. However, if you 
-   * reimplement and also are using KConfigXT, remember to call the base function at the 
+   * the fetching and settings of default values is done automatically. However, if you
+   * reimplement and also are using KConfigXT, remember to call the base function at the
    * very end of your reimplementation.
    */
   virtual void defaults();
@@ -186,7 +187,7 @@ public:
    * @returns the KAboutData for this module
    */
   virtual const KAboutData *aboutData() const;
-  
+
   /**
    * This sets the KAboutData returned by aboutData()
    * @since 3.3

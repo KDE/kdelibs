@@ -35,12 +35,12 @@ class KSpellConfigPrivate;
  * @brief Encoding for the spell checker
  * @note In the identifier names LATIN means ISO-8859, not ECMA Latin
  * @todo Should be replaced by the charset strings
- * because the config file would be more stable 
+ * because the config file would be more stable
  * when inserting entries in the list
  */
 enum Encoding {
   KS_E_ASCII=0,
-  KS_E_LATIN1=1, 
+  KS_E_LATIN1=1,
   KS_E_LATIN2=2,
   KS_E_LATIN3=3,
   KS_E_LATIN4=4,
@@ -100,6 +100,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
      * activateHelp for more information.
      *
      */
+  /// KDE4 remove name parameter
     KSpellConfig( QWidget *parent=0, const char *name=0,
 		  KSpellConfig *spellConfig=0, bool addHelpButton = true );
 
@@ -115,11 +116,11 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
 
     /**
      *
-     * @short Get the translated dictionary names and, optionally, the 
+     * @short Get the translated dictionary names and, optionally, the
      * corresponding internal dictionary names.
      *
      * Fills @p box with the human readable, translated dictionary names and
-     * selects the currently used dictionary (this will be the global 
+     * selects the currently used dictionary (this will be the global
      * dictionary if you call @ref fillDicts directly after the constructor).
      * If @p dictionaries isn't 0 then @p dictionaries will be filled with the
      * corresponding internal dictionary names that are necessary to set the
@@ -239,7 +240,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
   protected slots:
     /**
      * Invokes the help documentation for kspell
-     */ 
+     */
     void sHelp();
     //void sBrowseDict();
     //void sBrowsePDict();

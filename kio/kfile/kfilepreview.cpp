@@ -65,7 +65,8 @@ void KFilePreview::init( KFileView *view )
     left = 0L;
     setFileView( view );
 
-    preview = new QWidget((QSplitter*)this, "preview");
+    preview = new QWidget( this );
+    preview->setObjectName( "preview" );
     QString tmp = i18n("No preview available.");
     QLabel *l = new QLabel(tmp, preview);
     l->setMinimumSize(l->sizeHint());

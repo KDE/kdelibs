@@ -29,11 +29,11 @@
 namespace KABC {
 
 class KABC_EXPORT ResourceNetConfig : public KRES::ConfigWidget
-{ 
+{
   Q_OBJECT
 
   public:
-    ResourceNetConfig( QWidget* parent = 0, const char* name = 0 );
+    ResourceNetConfig( QWidget* parent = 0 );
 
     void setEditMode( bool value );
 

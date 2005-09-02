@@ -27,8 +27,8 @@
 #include <kmessagebox.h>
 #include <qregexp.h>
 
-KMWName::KMWName(QWidget *parent, const char *name)
-: KMWInfoBase(3,parent,name)
+KMWName::KMWName(QWidget *parent)
+    : KMWInfoBase(3,parent)
 {
 	m_ID = KMWizard::Name;
 	m_title = i18n("General Information");

@@ -112,10 +112,16 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 
 	// add standard dialog pages
 	int	stdpages = KMFactory::self()->settings()->standardDialogPages;
-	if (stdpages & KPrinter::CopiesPage)
-		m_printdialogpages.prepend(new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
-	if (stdpages & KPrinter::FilesPage)
-		m_printdialogpages.prepend(new KPFileSelectPage(0, "FileSelectPage"));
+	if (stdpages & KPrinter::CopiesPage) {
+            KPCopiesPage *cp = new KPCopiesPage(dlg->printer(), 0 );
+            cp->setObjectName( "CopiesPage");
+            m_printdialogpages.prepend(cp);
+        }
+	if (stdpages & KPrinter::FilesPage) {
+            KPFileSelectPage *fsp = new KPFileSelectPage( 0 );
+            fsp->setObjectName( "FileSelectPage" );
+            m_printdialogpages.prepend( fsp );
+        }
 
 	// add plugins pages
 	setupPrintDialogPages(&m_printdialogpages);
@@ -131,9 +137,11 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 		dlg->setDriver(driver);
 
 		if (dlg->printer()->isSpecial())
-		{ // special case
-			dlg->addPage(new KPQtPage(dlg,"QtPage"));
-			//dlg->enableSaveButton(false);
+		{  // special case
+                    KPQtPage *qp = new KPQtPage( dlg );
+                    qp->setObjectName( "QtPage" );
+                    dlg->addPage( qp );
+                    //dlg->enableSaveButton(false);
 		}
 		else
 		{
@@ -148,17 +156,29 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 		// add margin page
 		if ( ( prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog )
-					|| prt->applicationType() < 0 )
-			dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
+                     || prt->applicationType() < 0 )
+                {
+                    KPMarginPage *mp = new KPMarginPage(prt, driver, dlg );
+                    mp->setObjectName( "MarginPage");
+                    dlg->addPage(mp);
+                }
 
 		// add driver page
-		if (driver)
-			dlg->addPage(new KPDriverPage(dlg->printer(),driver,dlg,"DriverPage"));
+		if (driver) {
+                    KPDriverPage *dp = new KPDriverPage(dlg->printer(),driver,dlg );
+                    dp->setObjectName("DriverPage");
+                    dlg->addPage(dp);
+                }
 
 		dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
-		if ( KXmlCommandManager::self()->checkCommand( "poster", KXmlCommandManager::None, KXmlCommandManager::None ) )
-			dlg->addPage( new KPPosterPage( dlg, "PosterPage" ) );
-		dlg->addPage(new KPFilterPage(dlg,"FilterPage"));
+		if ( KXmlCommandManager::self()->checkCommand( "poster", KXmlCommandManager::None, KXmlCommandManager::None ) ) {
+                    KPPosterPage *pp = new KPPosterPage( dlg );
+                    pp->setObjectName( "PosterPage" );
+                    dlg->addPage( pp );
+                }
+                KPFilterPage *fp = new KPFilterPage( dlg );
+                fp->setObjectName( "FilterPage" );
+		dlg->addPage( fp );
 		dlg->resize(100,100);
 	}
 }
@@ -166,8 +186,12 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 void KMUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	if (KMFactory::self()->settings()->application == KPrinter::Dialog
-			|| KMFactory::self()->settings()->application < 0 )
-		dlg->addPage(new KPQtPage(dlg,"QtPage"));
+            || KMFactory::self()->settings()->application < 0 )
+        {
+            KPQtPage *qp = new KPQtPage( dlg );
+            qp->setObjectName( "QtPage" );
+            dlg->addPage(qp );
+        }
 }
 
 int KMUiManager::pageCap()

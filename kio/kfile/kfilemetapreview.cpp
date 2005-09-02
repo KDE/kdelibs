@@ -17,8 +17,8 @@
 
 bool KFileMetaPreview::s_tryAudioPreview = true;
 
-KFileMetaPreview::KFileMetaPreview( QWidget *parent, const char *name )
-    : KPreviewWidgetBase( parent, name ),
+KFileMetaPreview::KFileMetaPreview( QWidget *parent )
+    : KPreviewWidgetBase( parent ),
       haveAudioPreview( false )
 {
     QHBoxLayout *layout = new QHBoxLayout( this, 0, 0 );
@@ -59,7 +59,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
 //     qDebug("### looking for: %s", mimeType.latin1());
     // often the first highlighted item, where we can be sure, there is no plugin
     // (this "folders reflect icons" is a konq-specific thing, right?)
-    if ( mimeType == "inode/directory" ) 
+    if ( mimeType == "inode/directory" )
         return 0L;
 
     KPreviewWidgetBase *provider = m_previewProviders.find( mimeType );
@@ -68,7 +68,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
 
 //qDebug("#### didn't find anything for: %s", mimeType.latin1());
 
-    if ( s_tryAudioPreview && 
+    if ( s_tryAudioPreview &&
          !mimeType.startsWith("text/") && !mimeType.startsWith("image/") )
     {
         if ( !haveAudioPreview )

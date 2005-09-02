@@ -276,7 +276,7 @@ public:
     static QString findLibrary( const char * name, const KInstance * instance = KGlobal::instance() );
 
 protected:
-    KLibLoader( QObject* parent = 0, const char* name = 0 );
+    KLibLoader( QObject* parent = 0 );
 
 private slots:
     void slotLibraryDestroyed();
@@ -339,7 +339,7 @@ public:
      * @param parent the parent of the QObject, 0 for no parent
      * @param name the name of the QObject, 0 for no name
      */
-    KLibFactory( QObject* parent = 0, const char* name = 0 );
+    KLibFactory( QObject* parent = 0 );
     virtual ~KLibFactory();
 
     /**

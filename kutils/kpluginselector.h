@@ -66,7 +66,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
         /**
          * Create a new KPluginSelector.
          */
-        KPluginSelector( QWidget * parent, const char * name = 0 );
+        KPluginSelector( QWidget * parent );
         ~KPluginSelector();
 
         /**

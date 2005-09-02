@@ -32,8 +32,8 @@
 
 #include <time.h>
 
-KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
-: KPrintDialogPage(parent, name)
+KPSchedulePage::KPSchedulePage(QWidget *parent)
+    : KPrintDialogPage(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisBillingInfo = i18n(    " <qt> <p><b>Print Job Billing and Accounting</b></p> "

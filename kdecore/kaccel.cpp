@@ -114,8 +114,9 @@ KAccelEventHandler* KAccelEventHandler::g_pSelf = 0;
 bool KAccelEventHandler::g_bAccelActivated = false;
 
 KAccelEventHandler::KAccelEventHandler()
-    : QWidget( 0, "KAccelEventHandler" )
+    : QWidget( 0 )
 {
+    setObjectName( "KAccelEventHandler" );
 #	ifdef CATCH_X_EVENTS
 	if ( kapp )
 		kapp->installX11EventFilter( this );
@@ -176,7 +177,7 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent, QWidget* pWatch )
 	m_bAutoUpdate = true;
 	connect( (Q3Accel*)m_pAccel, SIGNAL(activated(int)), this, SLOT(slotKeyPressed(int)) );
 	connect( (Q3Accel*)m_pAccel, SIGNAL(activatedAmbiguously(int)), this, SLOT(slotKeyPressed(int)) );
-	
+
 #ifdef CATCH_X_EVENTS //only makes sense if KAccelEventHandler is working
 	if( m_pWatch )
 		m_pWatch->installEventFilter( this );
@@ -242,7 +243,7 @@ bool KAccelPrivate::connectKey( KAccelAction& action, const KKeyServer::Key& key
 	m_mapIDToKey[nID] = keyQt;
 
 	if( action.objSlotPtr() && action.methodSlotPtr() ) {
-#warning "Why check for these two pointers here, if they're not used anyway. At any rate, it's broken to connect this to the slot taking int"	
+#warning "Why check for these two pointers here, if they're not used anyway. At any rate, it's broken to connect this to the slot taking int"
 		//((Q3Accel*)m_pAccel)->connectItem( nID, this, SLOT(slotKeyPressed(int)));
 		if( !action.isEnabled() )
 			((Q3Accel*)m_pAccel)->setItemEnabled( nID, false );
@@ -309,7 +310,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 		KKey key = m_mapIDToKey[id];
 		KKeySequence seq( key );
 		Q3PopupMenu* pMenu = createPopupMenu( m_pWatch, seq );
-		
+
 		// If there was only one action mapped to this key,
 		//  and that action is not a multi-key shortcut,
 		//  then activated it without popping up the menu.

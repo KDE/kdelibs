@@ -77,8 +77,8 @@ Q3ListViewItem* findNext(Q3ListViewItem *item)
 		return 0;
 }
 
-KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name)
-: QWidget(parent, name)
+KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
+    : QWidget(parent)
 {
 	m_xmlcmd = 0;
 
@@ -831,8 +831,10 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;
 
-	QWidget	*dummy = new QWidget(this, "TopDetail");
-	QWidget	*topmain = new QWidget(this, "TopMain");
+	QWidget	*dummy = new QWidget( this );
+        dummy->setObjectName( "TopDetail");
+	QWidget	*topmain = new QWidget(this );
+        topmain->setObjectName( "TopMain");
 
 	Q3GroupBox	*m_gb1 = new Q3GroupBox(0, Qt::Horizontal, i18n("Supported &Input Formats"), dummy);
 	Q3GroupBox	*m_gb2 = new Q3GroupBox(0, Qt::Horizontal, i18n("Requirements"), topmain);

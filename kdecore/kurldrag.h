@@ -52,9 +52,8 @@ public:
    * @param urls the list of URLs
    * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
    * but should be 0 when copying to the clipboard
-   * @param name the name of the QObject
    */
-  KURLDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 );
+  KURLDrag( const KURL::List &urls, QWidget* dragSource = 0 );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
@@ -62,11 +61,10 @@ public:
    * @param metaData a map containing meta data
    * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
    * but should be 0 when copying to the clipboard
-   * @param name the name of the QObject
    * @see metaData()
    */
   KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-            QWidget* dragSource = 0, const char * name = 0 );
+            QWidget* dragSource = 0 );
 
   virtual ~KURLDrag();
 
@@ -82,13 +80,14 @@ public:
   /**
    * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
    */
-  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
+  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
   /**
    * @deprecated Is equivalent with "new KURLDrag(urls, metaData, dragSource, name)".
    */
-  static KURLDrag * newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
-                             QWidget* dragSource = 0, const char * name = 0 ) KDE_DEPRECATED;
+  static KURLDrag * newDrag( const KURL::List &urls,
+                             const QMap<QString, QString>& metaData,
+                             QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
   /**
    * Meta-data to associate with those URLs.
@@ -152,7 +151,7 @@ protected:
    * @deprecated Use a KURLDrag constructor with a KURL::List
    */
   KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
-            QWidget * dragSource, const char* name ) KDE_DEPRECATED;
+            QWidget * dragSource ) KDE_DEPRECATED;
 
 private:
   void init(const KURL::List &urls);

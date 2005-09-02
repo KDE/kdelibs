@@ -33,7 +33,7 @@ class CupsdSecurityPage : public CupsdPage
 	Q_OBJECT
 
 public:
-	CupsdSecurityPage(QWidget *parent = 0, const char *name = 0);
+	CupsdSecurityPage(QWidget *parent = 0);
 
 	bool loadConfig(CupsdConf*, QString&);
 	bool saveConfig(CupsdConf*, QString&);

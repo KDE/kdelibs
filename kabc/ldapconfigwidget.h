@@ -42,8 +42,8 @@ namespace KABC {
 
   /**
     @short LDAP Configuration widget
- 
-    This class can be used to query the user for LDAP connection parameters. 
+
+    This class can be used to query the user for LDAP connection parameters.
     It's KConfigXT compatible, using widget names starting with kcfg_
   */
 
@@ -70,9 +70,9 @@ namespace KABC {
     Q_PROPERTY( int sizeLimit READ sizeLimit WRITE setSizeLimit )
     Q_PROPERTY( int timeLimit READ timeLimit WRITE setTimeLimit )
     Q_SETS ( LCW_Flags )
-        
+
     public:
-    
+
       enum LCW_Flags {
         W_USER = 0x1,
         W_PASS = 0x2,
@@ -89,15 +89,14 @@ namespace KABC {
         W_SIZELIMIT = 0x2000,
         W_ALL = 0xFFFFFFF
       };
-      
+
       /** Constructs an empty configuration widget.
        * You need to call setFlags() after this.
        */
-      LdapConfigWidget( QWidget* parent = 0, 
-        const char* name = 0, Qt::WFlags fl = 0 );
+      LdapConfigWidget( QWidget* parent = 0, Qt::WFlags fl = 0 );
       /** Constructs a configuration widget */
       LdapConfigWidget( int flags, QWidget* parent = 0,
-        const char* name = 0, Qt::WFlags fl = 0 );
+                        Qt::WFlags fl = 0 );
       /** Destructs a configuration widget */
       virtual ~LdapConfigWidget();
 
@@ -260,7 +259,7 @@ namespace KABC {
       void mQueryDNClicked();
       void mQueryMechClicked();
       void loadData( KIO::Job*, const QByteArray& );
-      void loadResult( KIO::Job* );  
+      void loadResult( KIO::Job* );
     private:
 
       int mFlags;

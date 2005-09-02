@@ -207,8 +207,8 @@ static void createStandardPalette()
 }
 
 
-KHSSelector::KHSSelector( QWidget *parent, const char *name )
-	: KXYSelector( parent, name )
+KHSSelector::KHSSelector( QWidget *parent )
+	: KXYSelector( parent )
 {
 	setRange( 0, 0, 359, 255 );
 }
@@ -258,15 +258,14 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 
 //-----------------------------------------------------------------------------
 
-KValueSelector::KValueSelector( QWidget *parent, const char *name )
-	: KSelector( Qt::Vertical, parent, name ), _hue(0), _sat(0)
+KValueSelector::KValueSelector( QWidget *parent )
+	: KSelector( Qt::Vertical, parent ), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
 }
 
-KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent, const char *name
- )
-	: KSelector( o, parent, name), _hue(0), _sat(0)
+KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent )
+	: KSelector( o, parent ), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
 }

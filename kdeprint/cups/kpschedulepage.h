@@ -31,7 +31,7 @@ class KPSchedulePage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KPSchedulePage(QWidget *parent = 0, const char *name = 0);
+	KPSchedulePage(QWidget *parent = 0);
 	~KPSchedulePage();
 
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);

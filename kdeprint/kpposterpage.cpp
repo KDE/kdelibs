@@ -34,8 +34,8 @@
 #include <knuminput.h>
 #include <kiconloader.h>
 
-KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
-	: KPrintDialogPage( parent, name )
+KPPosterPage::KPPosterPage( QWidget *parent )
+	: KPrintDialogPage( parent )
 {
         //WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThis5_PosterPage = i18n( " <qt> "
@@ -214,7 +214,7 @@ KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	connect( m_selection, SIGNAL( textChanged( const QString& ) ), m_preview, SLOT( setSelectedPages( const QString& ) ) );
 	connect( m_preview, SIGNAL( selectionChanged( const QString& ) ), m_selection, SLOT( setText( const QString& ) ) );
 
-	if ( KMFactory::self()->settings()->application != KPrinter::Dialog 
+	if ( KMFactory::self()->settings()->application != KPrinter::Dialog
 			&& KMFactory::self()->settings()->application >= 0 )
 	{
 		m_printsize->hide();
@@ -272,7 +272,7 @@ void KPPosterPage::setOptions( const QMap<QString,QString>& opts )
 		if ( !ps.isEmpty() )
 		{
 			m_postersize->setCurrentItem( findIndex( pageNameToPageSize( ps ) ) );
-			m_lockbtn->setOn( !prtsize.isEmpty() && 
+			m_lockbtn->setOn( !prtsize.isEmpty() &&
 					page_sizes[ m_postersize->currentItem() ].ID == prtsize.toInt() );
 			if ( !m_lockbtn->isOn() )
 				m_printsize->setCurrentItem( findIndex( prtsize.toInt() ) );

@@ -28,7 +28,7 @@ class KHTMLPrintSettings : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KHTMLPrintSettings(QWidget *parent = 0, const char *name = 0);
+	KHTMLPrintSettings(QWidget *parent = 0);
 	~KHTMLPrintSettings();
 
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);

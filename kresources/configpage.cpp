@@ -95,8 +95,8 @@ class ConfigViewItem : public Q3CheckListItem
     bool mIsStandard;
 };
 
-ConfigPage::ConfigPage( QWidget *parent, const char *name )
-  : QWidget( parent, name ),
+ConfigPage::ConfigPage( QWidget *parent )
+  : QWidget( parent ),
     mCurrentManager( 0 ),
     mCurrentConfig( 0 )
 {

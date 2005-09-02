@@ -670,7 +670,7 @@ void KToolBar::setItemAutoSized (int id, bool yes )
 void KToolBar::clear ()
 {
     /* Delete any idle buttons, so QToolBar doesn't delete them itself, making a mess */
-    foreach(QWidget *w, d->idleButtons) 
+    foreach(QWidget *w, d->idleButtons)
        w->blockSignals(false);
 
     qDeleteAll( d->idleButtons );
@@ -1288,7 +1288,7 @@ void KToolBar::childEvent( QChildEvent *e )
             if ( !dynamic_cast<Q3PopupMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
-                if ( !widget2id.contains( w ) && 
+                if ( !widget2id.contains( w ) &&
 		     !d->idleButtons.contains( w ) )
                 {
                     int dummy = -1;
@@ -1322,7 +1322,7 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
              this, SLOT( widgetDestroyed() ) );
     if ( index == -1 || index > (int)widgets.count() ) {
         index = (int)widgets.count();
-        widgets.append( w );	
+        widgets.append( w );
     }
     else
         widgets.insert( index, w );
@@ -2052,10 +2052,12 @@ KPopupMenu *KToolBar::contextMenu()
     return context;
   // Construct our context popup menu. Name it qt_dockwidget_internal so it
   // won't be deleted by QToolBar::clear().
-  context = new KPopupMenu( this, "qt_dockwidget_internal" );
+  context = new KPopupMenu( this );
+  context->setObjectName( "qt_dockwidget_internal" );
   context->insertTitle(i18n("Toolbar Menu"));
 
-  KPopupMenu *orient = new KPopupMenu( context, "orient" );
+  KPopupMenu *orient = new KPopupMenu( context );
+  orient->setObjectName( "orient" );
   orient->insertItem( i18n("toolbar position string","Top"),  CONTEXT_TOP );
   orient->insertItem( i18n("toolbar position string","Left"), CONTEXT_LEFT );
   orient->insertItem( i18n("toolbar position string","Right"), CONTEXT_RIGHT );
@@ -2064,13 +2066,15 @@ KPopupMenu *KToolBar::contextMenu()
   orient->insertItem( i18n("toolbar position string","Floating"), CONTEXT_FLOAT );
   orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
 
-  KPopupMenu *mode = new KPopupMenu( context, "mode" );
+  KPopupMenu *mode = new KPopupMenu( context );
+  mode->setObjectName( "mode" );
   mode->insertItem( i18n("Icons Only"), CONTEXT_ICONS );
   mode->insertItem( i18n("Text Only"), CONTEXT_TEXT );
   mode->insertItem( i18n("Text Alongside Icons"), CONTEXT_TEXTRIGHT );
   mode->insertItem( i18n("Text Under Icons"), CONTEXT_TEXTUNDER );
 
-  KPopupMenu *size = new KPopupMenu( context, "size" );
+  KPopupMenu *size = new KPopupMenu( context );
+  size->setObjectName( "size" );
   size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();

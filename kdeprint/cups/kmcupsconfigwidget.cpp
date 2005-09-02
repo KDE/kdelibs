@@ -58,8 +58,8 @@ QValidator::State PortValidator::validate(QString& txt, int&) const
 
 //******************************************************************************************
 
-KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent, const char *name)
-: QWidget(parent,name)
+KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent)
+    : QWidget(parent)
 {
 	// widget creation
 	Q3GroupBox	*m_hostbox = new Q3GroupBox(0, Qt::Vertical, i18n("Server Information"), this);

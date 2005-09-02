@@ -27,8 +27,8 @@
 
 #include <klocale.h>
 
-KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
-: KPrintDialogPage(parent, name)
+KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
+: KPrintDialogPage(parent)
 {
 
 	//WhatsThis strings.... (added by pfeifle@kde.org)

@@ -40,8 +40,8 @@
 #include "kfiletreebranch.h"
 #include "kfiletreeviewitem.h"
 
-KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
-    : KListView( parent, name ),
+KFileTreeView::KFileTreeView( QWidget *parent )
+    : KListView( parent ),
       m_wantOpenFolderPixmaps( true )
 {
     setDragEnabled(true);
@@ -520,7 +520,7 @@ void KFileTreeView::slotAnimation()
          m_mapCurrentOpeningFolders.remove(item);
          continue;
       }
-         
+
       uint & iconNumber = it.data().iconNumber;
       QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
       // kdDebug(250) << "Loading icon " << icon << endl;

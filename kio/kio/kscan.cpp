@@ -31,7 +31,7 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent, const char *name,
     KTrader::OfferList offers = KTrader::self()->query("KScan/KScanDialog");
     if ( offers.isEmpty() )
 	return 0L;
-	
+
     KService::Ptr ptr = *(offers.begin());
     KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
 
@@ -68,13 +68,13 @@ bool KScanDialog::setup()
 
 
 // static factory method
-KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent, const char *name,
-					  bool modal )
+KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent,
+                                       bool modal )
 {
     KTrader::OfferList offers = KTrader::self()->query("KScan/KOCRDialog");
     if ( offers.isEmpty() )
 	return 0L;
-	
+
     KService::Ptr ptr = *(offers.begin());
     KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
 
@@ -84,16 +84,16 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent, const char *name,
     QStringList args;
     args << QString::number( (int)modal );
 
-    QObject *res = factory->create( parent, name, "KOCRDialog", args );
+    QObject *res = factory->create( parent, 0, "KOCRDialog", args );
 
     return dynamic_cast<KOCRDialog *>( res );
 }
 
 
 KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
-			  QWidget *parent, const char *name, bool modal )
+			  QWidget *parent, bool modal )
     : KDialogBase( dialogFace, i18n("OCR Image"), buttonMask, Close,
-		   parent, name, modal, true ),
+		   parent, 0, modal, true ),
       m_currentId( 1 )
 {
 
@@ -107,8 +107,8 @@ KOCRDialog::~KOCRDialog()
 ///////////////////////////////////////////////////////////////////
 
 
-KScanDialogFactory::KScanDialogFactory( QObject *parent, const char *name )
-    : KLibFactory( parent, name ),
+KScanDialogFactory::KScanDialogFactory( QObject *parent )
+    : KLibFactory( parent ),
       m_instance( 0L )
 {
 }
@@ -140,8 +140,8 @@ QObject *KScanDialogFactory::createObject( QObject *parent, const char *name,
 ///////////////////////////////////////////////////////////////////
 
 
-KOCRDialogFactory::KOCRDialogFactory( QObject *parent, const char *name )
-    : KLibFactory( parent, name ),
+KOCRDialogFactory::KOCRDialogFactory( QObject *parent )
+    : KLibFactory( parent ),
       m_instance( 0L )
 {
 }
@@ -166,7 +166,7 @@ QObject *KOCRDialogFactory::createObject( QObject *parent, const char *name,
     if ( args.count() == 1 )
         modal = (bool)args[ 0 ].toInt();
 
-    return createDialog( static_cast<QWidget *>( parent ), name, modal );
+    return createDialog( static_cast<QWidget *>( parent ), modal );
 }
 
 void KScanDialog::virtual_hook( int id, void* data )

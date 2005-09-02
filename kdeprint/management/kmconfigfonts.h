@@ -31,7 +31,7 @@ class KMConfigFonts : public KMConfigPage
 {
 	Q_OBJECT
 public:
-	KMConfigFonts(QWidget *parent = 0, const char *name = 0);
+	KMConfigFonts(QWidget *parent = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);

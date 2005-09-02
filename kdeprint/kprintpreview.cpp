@@ -80,7 +80,8 @@ class KPrintPreview::KPrintPreviewPrivate
 public:
 	KPrintPreviewPrivate(KPrintPreview *dlg) : gvpart_(0)
 	{
-		mainwidget_ = new QWidget(dlg, "MainWidget");
+                mainwidget_ = new QWidget( dlg );
+                mainwidget_->setObjectName( "MainWidget" );
 		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
 		actions_ = new KActionCollection(dlg);
 		accel_ = new KAccel(dlg);

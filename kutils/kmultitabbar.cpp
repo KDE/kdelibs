@@ -496,7 +496,7 @@ QSize KMultiTabBarButton::sizeHint() const
             h = QMAX(h, sz.height());
     }
 
-    
+
     QStyleOptionToolButton opt;
     opt.init(this);
     opt.rect = QRect(0, 0, w, h);
@@ -632,7 +632,7 @@ void KMultiTabBarTab::showActiveTabText(bool show)
 	m_showActiveTabText=show;
 }
 
-void KMultiTabBarTab::paintEvent(QPaintEvent *ev) {
+void KMultiTabBarTab::paintEvent(QPaintEvent *) {
 	QPainter painter(this);
 	drawButton(&painter);
 }
@@ -669,7 +669,7 @@ void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
 	st|=QStyle::State_Enabled;
 
 	if (isOn()) st|=QStyle::State_On;
-    
+
 	QStyleOptionButton options;
 	options.init(this);
 	options.state = st;
@@ -854,13 +854,8 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
 	}
 }
 
-
-
-
-
-
-
-KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent,const char *name):QWidget(parent,name)
+KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
+    : QWidget(parent)
 {
 	m_buttons.setAutoDelete(false);
 	if (bm==Vertical)

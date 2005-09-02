@@ -198,7 +198,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
 
     enum ButtonCode
     {
-      Help    = 0x00000001, ///< Show Help button. 
+      Help    = 0x00000001, ///< Show Help button.
       Default = 0x00000002, ///< Show Default button.
       Ok      = 0x00000004, ///< Show Ok button.
       Apply   = 0x00000008, ///< Show Apply button.

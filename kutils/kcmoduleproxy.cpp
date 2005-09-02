@@ -115,23 +115,23 @@ class KCModuleProxy::KCModuleProxyPrivate
  TODO:
 
  - How KCModuleProxy behaves wrt memory leaks and behavior, when exiting
- 	from root mode is not tested, because no code make use of it. It needs 
+ 	from root mode is not tested, because no code make use of it. It needs
 	work, if it should be used.
 
- - Should write a document which outlines test cases, to avoid 
+ - Should write a document which outlines test cases, to avoid
  	regressions. This class is a hazard.
 
  - Two Layout problems in runAsRoot:
  	* lblBusy doesn't show
- 	* d->kcm/d->rootInfo doesn't get it right when the user 
+ 	* d->kcm/d->rootInfo doesn't get it right when the user
 		presses cancel in the kdesu dialog
 
- - Resizing horizontally is contrained; minimum size is set somewhere. 
+ - Resizing horizontally is contrained; minimum size is set somewhere.
  	It appears to be somehow derived from the module's size.
 
  - Prettify: set icon in KCMultiDialog.
 
- - Perhaps it's possible to link against kdesu such that 
+ - Perhaps it's possible to link against kdesu such that
  	the dialog is in process?
 
  */
@@ -155,7 +155,7 @@ KCModule * KCModuleProxy::realModule() const
 		return 0;
 
 	QApplication::setOverrideCursor( Qt::WaitCursor );
-	
+
 	KCModuleProxy * that = const_cast<KCModuleProxy*>( this );
 
 	if( !d->isInitialized )
@@ -175,7 +175,7 @@ KCModule * KCModuleProxy::realModule() const
 	d->dcopClient->setAcceptCalls( true );
 
 	if( d->dcopClient->appId() == d->dcopName || d->bogusOccupier )
-	{ /* We got the name we requested, because no one was before us, 
+	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
 		kdDebug(711) << "Module not already loaded, loading module" << endl;
 
@@ -188,14 +188,14 @@ KCModule * KCModuleProxy::realModule() const
 				SLOT(moduleChanged(bool)) );
 		connect( d->kcm, SIGNAL( destroyed() ),
 				SLOT( moduleDestroyed() ) );
-		connect( d->kcm, SIGNAL(quickHelpChanged()), 
+		connect( d->kcm, SIGNAL(quickHelpChanged()),
 				SIGNAL(quickHelpChanged()));
 		that->setWhatsThis(d->kcm->quickHelp() );
 
 		d->topLayout->addWidget( d->kcm );
 
 		if ( !d->rootInfo && /* If it's already done */
-				moduleInfo().needsRootPrivileges() /* root, anyone? */ && 
+				moduleInfo().needsRootPrivileges() /* root, anyone? */ &&
 				!KUser().isSuperUser() ) /* Not necessary if we're root */
 		{
 
@@ -241,12 +241,12 @@ KCModule * KCModuleProxy::realModule() const
 		QString result;
 		QDataStream arg, stream( replyData );
 
-		if( d->dcopClient->call( d->dcopName, d->dcopName, DCOPCString("applicationName()"), 
+		if( d->dcopClient->call( d->dcopName, d->dcopName, DCOPCString("applicationName()"),
 					data, replyType, replyData ))
 		{
 			stream >> result;
 
-			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline, 
+			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18n( "Argument is application name", "This configuration section is "
 						"already opened in %1" ).arg( result ), " ", that );
 
@@ -270,7 +270,7 @@ void KCModuleProxy::applicationRemoved( const QByteArray & app )
 {
 	if( app == d->dcopName )
 	{
-		/* Violence: Get rid of KCMError & CO, so that 
+		/* Violence: Get rid of KCMError & CO, so that
 		 * realModule() attempts to reload the module */
 		delete d->kcm;
 		d->kcm = 0;
@@ -309,7 +309,7 @@ void KCModuleProxy::runAsRoot()
 	d->embedFrame->setFrameStyle( Q3Frame::Box | Q3Frame::Raised );
 
 	QPalette pal( Qt::red );
-	pal.setColor( QColorGroup::Background, 
+	pal.setColor( QColorGroup::Background,
 		colorGroup().background() );
 	d->embedFrame->setPalette( pal );
 	d->embedFrame->setLineWidth( 2 );
@@ -327,14 +327,14 @@ void KCModuleProxy::runAsRoot()
 	lblBusy->show();
 
 	deleteClient();
-	/* The DCOP registration is now gone, and it will occur again when kcmshell soon 
+	/* The DCOP registration is now gone, and it will occur again when kcmshell soon
 	 * registers. Here's a race condition in other words, but how likely is that?
 	 *
 	 * - It's a user initiated action, which means the user have to do weird stuff, very
 	 *   quick.
 	 * - If the user _do_ manage to fsck up, the code will recover gracefully, see realModule().
 	 *
-	 * So no worry. At the end of this function, communication with 
+	 * So no worry. At the end of this function, communication with
 	 * the DCOP object is established.
 	 */
 
@@ -418,7 +418,7 @@ void KCModuleProxy::rootExited()
 	d->topLayout->invalidate();
 
 	QShowEvent ev;
-	showEvent( &ev ); 
+	showEvent( &ev );
 
 	moduleChanged( false );
 	emit childClosed();
@@ -469,9 +469,9 @@ void KCModuleProxy::moduleDestroyed()
 	d->kcm = 0;
 }
 
-KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback, 
+KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback,
 		QWidget  * parent, const char * name, const QStringList & args)
-	: QWidget( parent, name )
+	: QWidget( parent )
 {
 	init( KCModuleInfo( service ));
 	d->args = args;
@@ -480,17 +480,17 @@ KCModuleProxy::KCModuleProxy( const KService::Ptr & service, bool withFallback,
 
 KCModuleProxy::KCModuleProxy( const KCModuleInfo & info, bool withFallback,
 		QWidget * parent, const char * name, const QStringList & args )
-	: QWidget( parent, name )
+	: QWidget( parent )
 {
 	init( info );
 	d->args = args;
 	d->withFallback = withFallback;
 }
 
-KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback, 
-		QWidget * parent, const char * name, 
+KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback,
+		QWidget * parent, const char * name,
 		const QStringList & args)
-	: QWidget( parent, name )
+	: QWidget( parent )
 {
 	init( KCModuleInfo( serviceName ));
 	d->args = args;
@@ -498,12 +498,12 @@ KCModuleProxy::KCModuleProxy( const QString& serviceName, bool withFallback,
 }
 
 void KCModuleProxy::init( const KCModuleInfo& info )
-{ 
+{
 	kdDebug(711) << k_funcinfo << endl;
 
 	d = new KCModuleProxyPrivate( info );
 
-	/* This is all we do for now; all the heavy work is 
+	/* This is all we do for now; all the heavy work is
 	 * done in realModule(). It's called when the module
 	 * _actually_ is needed, in for example showEvent().
 	 * The module is loaded "on demand" -- lazy loading.
@@ -539,7 +539,7 @@ void KCModuleProxy::callRootModule( const Q3CString& function )
 	QByteArray sendData, replyData;
 	DCOPCString replyType;
 
-	/* Note, we don't use d->dcopClient here, because it's used for 
+	/* Note, we don't use d->dcopClient here, because it's used for
 	 * the loaded module(and it's not "us" when this function is called) */
 	if( !kapp->dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
 			replyType, replyData, true, -1 ))
@@ -589,10 +589,10 @@ const KAboutData * KCModuleProxy::aboutData() const
 	if( !d->rootMode )
 		return realModule() ? realModule()->aboutData() : 0;
 	else
-	/* This needs fixing, perhaps cache a KAboutData copy 
+	/* This needs fixing, perhaps cache a KAboutData copy
 	 * while in root mode? */
 		return 0;
-		
+
 
 }
 

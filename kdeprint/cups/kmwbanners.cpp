@@ -79,8 +79,8 @@ QString mapBanner( const QString& ban )
 
 //**************************************************************************************************************
 
-KMWBanners::KMWBanners(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWBanners::KMWBanners(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Banners;
 	m_title = i18n("Banner Selection");

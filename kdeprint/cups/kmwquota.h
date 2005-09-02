@@ -29,7 +29,7 @@ class KMWQuota : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWQuota(QWidget *parent = 0, const char *name = 0);
+	KMWQuota(QWidget *parent = 0);
 	virtual ~KMWQuota();
 
 	bool isValid(QString&);

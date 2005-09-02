@@ -1,6 +1,4 @@
 /*
-    $Id$
-
     Requires the Qt widget libraries, available at no cost at
     http://www.troll.no
 
@@ -104,6 +102,7 @@ public:
    *        *sizeIsRelativeState, user choice may be retrieved by
    *        calling sizeIsRelative().
    */
+    /// KDE4: remove the name argument and copy to KDE3SUPPORT
   KFontChooser(QWidget *parent = 0L, const char *name = 0L,
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),

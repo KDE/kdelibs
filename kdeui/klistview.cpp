@@ -412,8 +412,8 @@ void KListViewLineEdit::slotSelectionChanged()
 }
 
 
-KListView::KListView( QWidget *parent, const char *name )
-  : Q3ListView( parent, name ),
+KListView::KListView( QWidget *parent )
+  : Q3ListView( parent ),
         d (new KListViewPrivate (this))
 {
   setDragAutoScroll(true);

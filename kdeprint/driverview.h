@@ -33,14 +33,14 @@ class DrMain;
 class KDEPRINT_EXPORT DrListView : public KListView
 {
 public:
-	DrListView(QWidget *parent = 0, const char *name = 0);
+	DrListView(QWidget *parent = 0);
 };
 
 class KDEPRINT_EXPORT DriverView : public QWidget
 {
 	Q_OBJECT
 public:
-	DriverView(QWidget *parent = 0, const char *name = 0);
+	DriverView(QWidget *parent = 0);
 	~DriverView();
 
 	void setDriver(DrMain*);

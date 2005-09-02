@@ -38,11 +38,11 @@
 #include <qapplication.h>
 #include <QMouseEvent>
 
-KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent, 
-      const char *name) : QWidget( parent, name)
+KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent)
+    : QWidget( parent )
 {
    QHBoxLayout * hboxLayout=new QHBoxLayout( this );
-   
+
    hboxLayout->addStretch();
    QVBoxLayout * vboxLayout=new QVBoxLayout( hboxLayout );
 
@@ -91,7 +91,7 @@ QRect KPixmapRegionSelectorWidget::selectedRegion() const
 void KPixmapRegionSelectorWidget::setSelectedRegion(const QRect &rect)
 {
    if (!rect.isValid()) resetSelection();
-   else 
+   else
    {
       m_selectedRegion=rect;
       updatePixmap();
@@ -119,7 +119,7 @@ void KPixmapRegionSelectorWidget::updatePixmap()
    QPixmap pixmap = m_linedPixmap;
 
    painter.begin(&pixmap);
-   painter.drawPixmap( m_selectedRegion.topLeft(), 
+   painter.drawPixmap( m_selectedRegion.topLeft(),
         m_originalPixmap, m_selectedRegion );
 
    if (m_selectedRegion == m_label->rect()) //### CHECK!
@@ -140,9 +140,10 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 
 KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
-   KPopupMenu *popup=new KPopupMenu(this, "PixmapRegionSelectorPopup");
+    KPopupMenu *popup=new KPopupMenu(this );
+    popup->setObjectName( "PixmapRegionSelectorPopup");
    popup->addTitle(i18n("Image Operations"));
-   
+
    KAction *action = new KAction(i18n("&Rotate Clockwise"), "rotate_cw",
                                 0, this, SLOT(rotateClockwise()),
                                 popup, "rotateclockwise");
@@ -152,7 +153,7 @@ KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
                                 0, this, SLOT(rotateCounterclockwise()),
                                 popup, "rotatecounterclockwise");
    action->plug(popup);
- 
+
 /*
    I wonder if it would be appropiate to have here an "Open with..." option to
    edit the image (antlarr)
@@ -174,7 +175,7 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
 
    m_linedPixmap=QPixmap();
 
-   if (m_forcedAspectRatio>0 && m_forcedAspectRatio!=1) 
+   if (m_forcedAspectRatio>0 && m_forcedAspectRatio!=1)
       resetSelection();
    else
    {
@@ -226,7 +227,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 
       QCursor cursor;
 
-      if ( m_selectedRegion.contains( mev->pos() ) 
+      if ( m_selectedRegion.contains( mev->pos() )
           && m_selectedRegion!=m_originalPixmap.rect() )
       {
          m_state=Moving;
@@ -240,7 +241,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       QApplication::setOverrideCursor(cursor);
 
       m_tempFirstClick=mev->pos();
-      
+
 
       return TRUE;
    }
@@ -250,10 +251,10 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       QMouseEvent *mev= (QMouseEvent *)(ev);
 
       //kdDebug() << QString("move to  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
-      
+
       if ( m_state == Resizing )
       {
-         setSelectedRegion ( 
+         setSelectedRegion (
               calcSelectionRectangle( m_tempFirstClick, mev->pos() ) );
       }
       else if (m_state == Moving )
@@ -261,7 +262,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          int mevx = mev->x();
          int mevy = mev->y();
          bool mouseOutside=false;
-         if ( mevx < 0 ) 
+         if ( mevx < 0 )
          {
            m_selectedRegion.moveBy(-m_selectedRegion.x(),0);
            mouseOutside=true;
@@ -271,7 +272,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
            m_selectedRegion.moveBy(m_originalPixmap.width()-m_selectedRegion.width()-m_selectedRegion.x(),0);
            mouseOutside=true;
          }
-         if ( mevy < 0 ) 
+         if ( mevy < 0 )
          {
            m_selectedRegion.moveBy(0,-m_selectedRegion.y());
            mouseOutside=true;
@@ -290,16 +291,16 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          if (m_selectedRegion.x() < 0)
             m_selectedRegion.moveBy(-m_selectedRegion.x(),0);
          else if (m_selectedRegion.right() > m_originalPixmap.width())
-            m_selectedRegion.moveBy(-(m_selectedRegion.right()-m_originalPixmap.width()),0); 
+            m_selectedRegion.moveBy(-(m_selectedRegion.right()-m_originalPixmap.width()),0);
 
-         if (m_selectedRegion.y() < 0) 
+         if (m_selectedRegion.y() < 0)
             m_selectedRegion.moveBy(0,-m_selectedRegion.y());
-         else if (m_selectedRegion.bottom() > m_originalPixmap.height()) 
+         else if (m_selectedRegion.bottom() > m_originalPixmap.height())
             m_selectedRegion.moveBy(0,-(m_selectedRegion.bottom()-m_originalPixmap.height()));
 
          m_tempFirstClick=mev->pos();
          updatePixmap();
-      } 
+      }
       return TRUE;
    }
 
@@ -311,7 +312,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          resetSelection();
 
       m_state=None;
-      QApplication::restoreOverrideCursor(); 
+      QApplication::restoreOverrideCursor();
 
       return TRUE;
    }
@@ -334,7 +335,7 @@ QRect KPixmapRegionSelectorWidget::calcSelectionRectangle( const QPoint & startP
    {
       double aspectRatio=w/double(h);
 
-      if (aspectRatio>m_forcedAspectRatio) 
+      if (aspectRatio>m_forcedAspectRatio)
          h=(int)(w/m_forcedAspectRatio);
       else
          w=(int)(h*m_forcedAspectRatio);
@@ -424,7 +425,7 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
 //   kdDebug() << QString(" unzoomed Pixmap : %1 x %2 ").arg(m_unzoomedPixmap.width()).arg(m_unzoomedPixmap.height()) << endl;
 
    if ( !m_originalPixmap.isNull() &&
-       ( m_originalPixmap.width() > m_maxWidth || 
+       ( m_originalPixmap.width() > m_maxWidth ||
          m_originalPixmap.height() > m_maxHeight ) )
    {
          /* We have to resize the pixmap to get it complete on the screen */
@@ -442,7 +443,7 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
                         (int)(m_selectedRegion.height()*m_zoomFactor/oldZoomFactor) );
          }
    }
-   
+
    if (!m_selectedRegion.isValid()) m_selectedRegion = m_originalPixmap.rect();
 
    m_linedPixmap=QPixmap();

@@ -28,8 +28,8 @@
 #include <klocale.h>
 #include <kfiledialog.h>
 
-KMWFile::KMWFile(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWFile::KMWFile(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::File;
 	m_title = i18n("File Selection");

@@ -42,19 +42,25 @@ KMLprUiManager::~KMLprUiManager()
 
 void KMLprUiManager::setupPropertyPages(KMPropertyPage *pages)
 {
-	pages->addPropPage(new KMPropBackend(pages, "Backend"));
-	pages->addPropPage(new KMPropDriver(pages, "Driver"));
+    KMPropBackend *pb = new KMPropBackend( pages );
+    pb->setObjectName( "Backend" );
+    pages->addPropPage( pb );
+    KMPropDriver *pd = new KMPropDriver( pages );
+    pd->setObjectName( "Driver" );
+    pages->addPropPage( pd );
 }
 
 void KMLprUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
-	dlg->addPage(new KPQtPage(dlg->driver(), dlg, "QtPage"));
+    KPQtPage *qp = new KPQtPage( dlg->driver(), dlg );
+    qp->setObjectName( "QtPage" );
+    dlg->addPage( qp );
 }
 
 void KMLprUiManager::setupWizard(KMWizard *wizard)
 {
 	KMWBackend	*backend = wizard->backendPage();
-	
+
 	backend->addBackend(KMWizard::Local, true);
 	backend->addBackend(KMWizard::LPD, true);
 	backend->addBackend(KMWizard::TCP, true);

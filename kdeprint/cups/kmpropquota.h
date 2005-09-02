@@ -27,7 +27,7 @@ class QLabel;
 class KMPropQuota : public KMPropWidget
 {
 public:
-	KMPropQuota(QWidget *parent = 0, const char *name = 0);
+	KMPropQuota(QWidget *parent = 0);
 	~KMPropQuota();
 
 	void setPrinter(KMPrinter*);

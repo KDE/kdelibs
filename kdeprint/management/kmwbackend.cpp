@@ -47,8 +47,8 @@ KRadioButton::KRadioButton(const QString& txt, QWidget *parent, const char *name
 
 //********************************************************************************************************
 
-KMWBackend::KMWBackend(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWBackend::KMWBackend(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Backend;
 	m_title = i18n("Backend Selection");

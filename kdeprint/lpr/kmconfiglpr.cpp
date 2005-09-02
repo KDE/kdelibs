@@ -27,8 +27,8 @@
 #include <klocale.h>
 #include <kconfig.h>
 
-KMConfigLpr::KMConfigLpr(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigLpr::KMConfigLpr(QWidget *parent)
+    : KMConfigPage(parent)
 {
 	setPageName(i18n("Spooler"));
 	setPageHeader(i18n("Spooler Settings"));

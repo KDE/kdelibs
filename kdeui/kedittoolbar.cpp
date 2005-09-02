@@ -179,8 +179,8 @@ public:
 class ToolbarListView : public KListView
 {
 public:
-  ToolbarListView(QWidget *parent=0, const char *name=0)
-    : KListView(parent, name)
+  ToolbarListView(QWidget *parent=0)
+    : KListView(parent)
   {
   }
 protected:
@@ -377,8 +377,8 @@ public:
 const char *KEditToolbar::s_defaultToolbar = 0L;
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
-                           bool global, QWidget* parent, const char* name)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
+                           bool global, QWidget* parent)
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
     m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), collection, file, global, this))
 {
     init();
@@ -389,8 +389,8 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
 
 KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
                            const QString& file, bool global,
-                           QWidget* parent, const char* name)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
+                           QWidget* parent)
+  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent ),
     m_widget(new KEditToolbarWidget(defaultToolbar, collection, file, global, this))
 {
     init();
@@ -399,8 +399,8 @@ KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *col
     d->m_file = file;
 }
 
-KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
+KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
       m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), factory, this))
 {
     init();
@@ -408,8 +408,8 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char*
 }
 
 KEditToolbar::KEditToolbar(const QString& defaultToolbar,KXMLGUIFactory* factory,
-                           QWidget* parent, const char* name)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent, name),
+                           QWidget* parent)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
       m_widget(new KEditToolbarWidget(defaultToolbar, factory, this))
 {
     init();

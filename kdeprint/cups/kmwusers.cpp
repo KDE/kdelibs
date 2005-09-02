@@ -29,8 +29,8 @@
 #include <klocale.h>
 #include <keditlistbox.h>
 
-KMWUsers::KMWUsers(QWidget *parent, const char *name)
-: KMWizardPage(parent, name)
+KMWUsers::KMWUsers(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::Custom+4;
 	m_title = i18n("Users Access Settings");

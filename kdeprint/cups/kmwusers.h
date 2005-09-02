@@ -29,7 +29,7 @@ class KMWUsers : public KMWizardPage
 {
 	Q_OBJECT
 public:
-	KMWUsers(QWidget *parent = 0, const char *name = 0);
+	KMWUsers(QWidget *parent = 0);
 	virtual ~KMWUsers();
 
 	void initPrinter(KMPrinter*);

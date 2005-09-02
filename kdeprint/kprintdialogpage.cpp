@@ -20,13 +20,13 @@
 
 #include "kprintdialogpage.h"
 
-KPrintDialogPage::KPrintDialogPage(QWidget *parent, const char *name)
-: QWidget(parent,name), m_printer(0), m_driver(0), m_ID(0), m_onlyreal(false)
+KPrintDialogPage::KPrintDialogPage(QWidget *parent)
+    : QWidget(parent), m_printer(0), m_driver(0), m_ID(0), m_onlyreal(false)
 {
 }
 
-KPrintDialogPage::KPrintDialogPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const char *name)
-: QWidget(parent,name), m_printer(pr), m_driver(dr), m_ID(0), m_onlyreal(false)
+KPrintDialogPage::KPrintDialogPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
+    : QWidget(parent), m_printer(pr), m_driver(dr), m_ID(0), m_onlyreal(false)
 {
 }
 

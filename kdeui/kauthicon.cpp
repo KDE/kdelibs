@@ -91,8 +91,8 @@ static const char * const openlock_xpm[] = {
 "                      ",
 "                      "};
 
-KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
-  : QWidget(parent, name),
+KAuthIcon::KAuthIcon(QWidget *parent)
+  : QWidget(parent),
    lockPM( const_cast< const char** >( lock_xpm)),
    openLockPM( const_cast< const char** >(openlock_xpm))
 {
@@ -140,8 +140,8 @@ QSize KAuthIcon::sizeHint() const
 
 /************************************************************************/
 
-KRootPermsIcon::KRootPermsIcon(QWidget *parent, const char *name)
-  : KAuthIcon(parent, name)
+KRootPermsIcon::KRootPermsIcon(QWidget *parent)
+  : KAuthIcon(parent)
 {
   updateStatus();
 }
@@ -165,9 +165,8 @@ void KRootPermsIcon::updateStatus()
 
 /************************************************************************/
 
-KWritePermsIcon::KWritePermsIcon(const QString & fileName,
-				 QWidget *parent, const char *name)
-  : KAuthIcon(parent, name)
+KWritePermsIcon::KWritePermsIcon(const QString & fileName, QWidget *parent)
+  : KAuthIcon(parent)
 {
   fi.setFile(fileName);
   updateStatus();

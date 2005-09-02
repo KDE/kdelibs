@@ -35,7 +35,7 @@ class KPFilterPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:
-	KPFilterPage(QWidget *parent = 0, const char *name = 0);
+	KPFilterPage(QWidget *parent = 0);
 	~KPFilterPage();
 
 	void setOptions(const QMap<QString,QString>& opts);

@@ -27,7 +27,7 @@ class KFileList;
 class KPFileSelectPage : public KPrintDialogPage
 {
 public:
-	KPFileSelectPage(QWidget *parent = 0, const char *name = 0);
+	KPFileSelectPage(QWidget *parent = 0);
 
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	void setOptions(const QMap<QString,QString>& opts);

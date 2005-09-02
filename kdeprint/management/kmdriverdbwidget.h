@@ -31,7 +31,7 @@ class KMDriverDbWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	KMDriverDbWidget(QWidget *parent = 0, const char *name = 0);
+	KMDriverDbWidget(QWidget *parent = 0);
 	~KMDriverDbWidget();
 
 	void init();

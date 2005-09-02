@@ -143,7 +143,7 @@ public:
    */
   KEditToolbar(KActionCollection *collection,
                const QString& xmlfile = QString::null, bool global = true,
-			   QWidget* parent = 0, const char* name = 0);
+               QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /* Constructor for apps that do not use components, which has an extra argument
@@ -159,7 +159,7 @@ public:
    */
   KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
                const QString& xmlfile = QString::null, bool global = true,
-               QWidget* parent = 0, const char* name = 0);
+               QWidget* parent = 0);
   /**
    * Constructor for KParts based apps.
    *
@@ -183,7 +183,7 @@ public:
    * This works, but only _if_ setting conserveMemory to false when calling
    * KMainWindow::createGUI()! If not, use the other KEditToolbar constructor.
    */
-  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
+  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /** Constructor for KParts based apps, which has an extra argument
@@ -192,11 +192,10 @@ public:
    * @param defaultToolbar The toolbar with this name will appear for editing.
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
-   * @param name An internal name.
    * @since 3.2
    */
   KEditToolbar(const QString& defaultToolbar, KXMLGUIFactory* factory,
-               QWidget* parent = 0, const char* name = 0);
+               QWidget* parent = 0);
 
   /// destructor
   ~KEditToolbar();

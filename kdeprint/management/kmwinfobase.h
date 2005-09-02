@@ -29,7 +29,7 @@ class QLineEdit;
 class KDEPRINT_EXPORT KMWInfoBase : public KMWizardPage
 {
 public:
-	KMWInfoBase(int n = 1, QWidget *parent = 0, const char *name = 0);
+	KMWInfoBase(int n = 1, QWidget *parent = 0);
 
 	void setInfo(const QString&);
 	void setLabel(int, const QString&);

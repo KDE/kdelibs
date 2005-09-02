@@ -32,7 +32,7 @@ class KDEPRINT_EXPORT PluginComboBox : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
-	PluginComboBox(QWidget *parent = 0, const char *name = 0);
+	PluginComboBox(QWidget *parent = 0);
 
 protected slots:
 	void slotActivated(int);

@@ -30,8 +30,8 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-KMWDriverSelect::KMWDriverSelect(QWidget *parent, const char *name)
-: KMWizardPage(parent,name)
+KMWDriverSelect::KMWDriverSelect(QWidget *parent)
+    : KMWizardPage(parent)
 {
 	m_ID = KMWizard::DriverSelect;
 	m_title = i18n("Driver Selection");

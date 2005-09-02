@@ -53,7 +53,7 @@
 #include <kdebug.h>
 #include <knuminput.h>
 #ifdef Q_WS_X11
-#include <X11/Xlib.h> 
+#include <X11/Xlib.h>
 		    // not needed any more...
 #endif
 
@@ -92,11 +92,12 @@ public:
     QPalette m_palette;
 };
 
+
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed, const QStringList &fontList,
 			   bool makeFrame, int visibleListSize, bool diff,
                            QCheckBox::ToggleState *sizeIsRelativeState )
-  : QWidget(parent, name), usingFixed(onlyFixed)
+  : QWidget(parent), usingFixed(onlyFixed)
 {
 
   QString mainWhatsThisText =

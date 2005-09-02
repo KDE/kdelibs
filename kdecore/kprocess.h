@@ -172,7 +172,7 @@ public:
    * Constructor
    * @since 3.2
    */
-  KProcess( QObject* parent=0L, const char *name = 0 );
+  KProcess( QObject* parent=0L );
 
   /**
    *Destructor:

@@ -30,7 +30,7 @@ class QVBoxLayout;
 class KDEPRINT_EXPORT KMWBackend : public KMWizardPage
 {
 public:
-	KMWBackend(QWidget *parent = 0, const char *name = 0);
+	KMWBackend(QWidget *parent = 0);
 
 	bool isValid(QString&);
 	void initPrinter(KMPrinter*);

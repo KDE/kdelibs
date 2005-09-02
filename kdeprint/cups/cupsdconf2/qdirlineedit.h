@@ -30,7 +30,7 @@ class QDirLineEdit : public QWidget
 {
 	Q_OBJECT
 public:
-	QDirLineEdit(bool file, QWidget *parent = 0, const char *name = 0);
+	QDirLineEdit(bool file, QWidget *parent = 0);
 	~QDirLineEdit();
 
 	void setURL(const QString& txt);

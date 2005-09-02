@@ -27,8 +27,8 @@
 #include <klocale.h>
 #include <kdialog.h>
 
-KMConfigCommand::KMConfigCommand(QWidget *parent, const char *name)
-: KMConfigPage(parent, name)
+KMConfigCommand::KMConfigCommand(QWidget *parent)
+    : KMConfigPage(parent)
 {
 	setPageName(i18n("Commands"));
 	setPageHeader(i18n("Command Settings"));

@@ -61,7 +61,7 @@ class KIO_EXPORT ListProgress : public KListView {
 
 public:
 
-  ListProgress (QWidget *parent = 0, const char *name = 0 );
+  ListProgress (QWidget *parent = 0 );
 
   virtual ~ListProgress();
 

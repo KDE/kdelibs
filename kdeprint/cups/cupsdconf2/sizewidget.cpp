@@ -25,8 +25,8 @@
 #include <qregexp.h>
 #include <klocale.h>
 
-SizeWidget::SizeWidget( QWidget *parent, const char *name )
-	: QWidget( parent, name )
+SizeWidget::SizeWidget( QWidget *parent )
+	: QWidget( parent )
 {
 	m_size = new QSpinBox( 0, 9999, 1, this );
 	m_unit = new QComboBox( this );
