@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import os
+
 """
 help       -> scons -h
 compile    -> scons
@@ -28,7 +30,16 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default', 'generic', 'qt4'], toolpath=['./', './bksys'])
+env = Environment( tools=['default', 'generic', 'pkgconfig', 'qt4'], toolpath=['./', './bksys'])
+
+#if os.environ.has_key('QTDIR'):
+#	addon = ':' + os.environ['QTDIR'] + '/lib'
+#	if os.environ.has_key('PKG_CONFIG_PATH'):
+#		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + addon
+#	else:
+#		os.environ['PKG_CONFIG_PATH'] = addon
+#
+#env.pkgConfig_findPackage(env, "QtCore", "4.0.1")
 
 #env.KDEuse("environ rpath")
 #env.KDEuse("environ rpath lang_qt thread nohelp")
@@ -72,7 +83,11 @@ env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib'
 import os
 if not os.path.exists('build/config.h'):
 	dest=open('build/config.h', 'w')
-	dest.write('#define kdemacros.h kdemacros.h.in\n')
+	dest.close()
+
+if not os.path.exists('build/kdemacros.h'):
+	dest = open('build/kdemacros.h', 'w')
+	dest.write('#include <kdemacros.h.in>\n')
 	dest.close()
 
 env.Append(CPPFLAGS = ['-Ibuild'])
