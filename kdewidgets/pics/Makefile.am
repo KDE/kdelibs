@@ -4,7 +4,7 @@ kdewidgetsdata_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewid
              kruler.png kcmodule.png kdoublespinbox.png kdoublenuminput.png \
              klistbox.png klistview.png kactivelabel.png kiconbutton.png \
              kcolorcombo.png khsselector.png kcolorbutton.png \
-             kgradientselector.png kdualcolorbutton.png ktimewidget.png \
+             kgradientselector.png kdualcolorbutton.png \
              kpushbutton.png kcharselect.png kdatepicker.png \
              kdialog.png keditlistbox.png kfontcombo.png khistorycombo.png \
              kintnuminput.png krestrictedline.png ktextedit.png \
