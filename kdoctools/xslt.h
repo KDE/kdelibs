@@ -3,8 +3,7 @@
 
 #include <libxml/parser.h>
 #include <q3valuevector.h>
-
-class Q3CString;
+#include <q3cstring.h>
 
 QString transform(const QString &file, const QString& stylesheet,
                   const Q3ValueVector<const char *> &params = Q3ValueVector<const char *>());
