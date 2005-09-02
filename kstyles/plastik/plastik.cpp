@@ -805,7 +805,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     bp.end();
 
-                    p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2);
+                    p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2));
 
                     return;
                 }
