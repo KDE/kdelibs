@@ -20,18 +20,18 @@ dcopobject.cpp
 dcopclient.cpp
 """
 
-libkdeice=[ env.join('KDE-ICE', 'libkICE.la') ]
-
+# libDCOP.so (description ?)
 obj          = env.qt4object('shlib', env)
 obj.target   = 'libDCOP'
 obj.source   = kdcop_sources
-obj.libs     = env['LIB_QT']+env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+libkdeice # list concatenation
+obj.libs     = env['LIB_QT']+env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+[env.join('KDE-ICE', 'libkICE.a')]
 obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
+obj.libpaths = ['/usr/lib','/usr/X11R6/lib/'] # TODO
 obj.vnum     = '6.0.2'
 obj.execute()
 
 # dcopserver.la (description ?)
-obj          = env.genobj('staticlib', env)
+obj          = env.qt4object('staticlib', env)
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.libs     = env.join('.', 'libDCOP.la')

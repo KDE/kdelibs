@@ -27,7 +27,7 @@ transport.c
 globals.c
 """
 
-obj          = env.genobj('staticlib', env)
+obj          = env.genobj('convenience', env)
 obj.target   = 'libkICE.a'
 obj.source   = ice_sources
 obj.includes = '#/ ./ ..'

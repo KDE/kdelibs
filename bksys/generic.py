@@ -86,7 +86,7 @@ def pprint(env, col, str, label=''):
 
 class genobj:
 	def __init__(self, val, env):
-		if not val in "program shlib kioslave staticlib".split():
+		if not val in "program shlib kioslave staticlib convenience".split():
 			print "unknown genobj given: "+val
 			env.Exit(1)
 
@@ -251,8 +251,11 @@ class genobj:
 			if not self.env.has_key('NOAUTOINSTALL'):
 				ins=self.env.bksys_install(self.instdir, ret)
 				if self.perms: self.env.AddPostAction(ins, self.env.Chmod(ins, self.perms))
-		elif self.type=='staticlib':
+		elif self.type=='staticlib' or self.type=='convenience':
 			ret=self.env.StaticLibrary(self.p_localtarget, self.p_localsource)
+
+		if self.type=='convenience':
+			self.env.AppendUnique(CXXFLAGS=['-fPIC']) # like this ? TODO ITA
 
 		# we link the program against a shared library made locally, add the dependency
 		if len(self.p_local_shlibs)>0:

@@ -327,6 +327,7 @@ def generate(env):
 				h_contents = h_file.get_contents()
 				if q_object_search.search(h_contents):
 					# we know now there is Q_OBJECT macro
+					print "moc found for "+bs
 					reg = '\n\s*#include\s*("|<)'+str(bs)+'.moc("|>)'
 					meta_object_search = re.compile(reg)
 					#cpp_contents = open(file_cpp, 'rb').read()

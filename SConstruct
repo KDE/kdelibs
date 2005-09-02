@@ -52,8 +52,18 @@ env['LIB_QTOPENGL']   = ['QtOpenGL_debug']
 env['LIB_QTSQL']      = ['QtSql_debug']
 env['LIB_QTXML']      = ['QtXml_debug']
 
+## ahem (ita)
+env.AppendUnique(CXXFLAGS=['-DQT3_SUPPORT'])
 
-env['KDELIBS_INCLUDES'] = ['#','#dcop','#kio','#kdeui','#kdecore','#libltdl','#kdefx']
+## ahem (ita)
+env.AppendUnique(LIBPATHS=['/usr/X11R6/lib/'])
+
+## not very portable but that's the best i have at the moment (ITA)
+includes=['.','dcop','kio','kio/kio','kio/kfile','kdeui','kdecore','libltdl','kdefx']
+env['KDELIBS_INCLUDES']=[]
+for dir in includes:
+	env['KDELIBS_INCLUDES'].append('#'+dir)
+	env['KDELIBS_INCLUDES'].append('#build/'+dir)
 
 # prefix/lib and prefix/lib/kde4 (ita)
 env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib', 'kde4')]
