@@ -24,10 +24,12 @@
 #include <q3cstring.h>
 #include <q3valuelist.h>
 #include "kdelibs_export.h"
+#include <qmap.h>
 
+class QMimeData;
 class Q3Url;
 class QStringList;
-template <typename K, typename V> class QMap;
+//template <typename K, typename V> class QMap;
 
 class KURLPrivate;
 
@@ -123,6 +125,10 @@ class KURLPrivate;
 class KDECORE_EXPORT KURL
 {
 public:
+
+  typedef QMap<QString, QString> MetaDataMap;
+  enum MimeDataFlags { None = 0, NoTextExport = 1 };
+
   enum AdjustementFlags
   {
     NoAdjustements = 0,
@@ -191,6 +197,40 @@ public:
        * @return the list of strings
        */
       QStringList toStringList() const;
+
+      /**
+       * Adds URLs data into the given QMimeData.
+       *
+       * By default, addToMimeData also exports the URLs as plain text, for e.g. dropping
+       * onto a text editor.
+       * But in some cases this might not be wanted, e.g. if adding other mime data
+       * which provides better plain text data.
+       *
+       * WARNING: do not call this method multiple times on the same mimedata object,
+       * you can add urls only once. But you can add other things, e.g. images, XML...
+       *
+       * @param mimeData the QMimeData instance used to drag or copy this URL
+       * @param metaData KIO metadata shipped in the mime data, which is used for instance to
+       * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
+       * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
+       * In such a case, setExportAsText( false ) should be called.
+       *
+       * @since 4.0
+       */
+      void addToMimeData( QMimeData* mimeData,
+                          const KURL::MetaDataMap& metaData = MetaDataMap(),
+                          MimeDataFlags flags = None );
+
+      /**
+       * Extract a list of KURLs from the contents of @p mimeData.
+       * Decoding will fail if @p mimeData does not contain any URLs, or if at
+       * least one extracted URL is not valid.
+       * @param mimeData the mime data to extract from; cannot be 0
+       * @param metaData optional pointer to a map holding the metadata
+       * @return the list of urls
+       */
+      static KURL::List fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData = 0 );
+
   };
   /**
    * Constructs an empty URL.
@@ -771,6 +811,13 @@ public:
    */
   QString htmlURL() const;
 
+  /**
+   * Returns the URL as a string, using the standard conventions for mime data
+   * (drag-n-drop or copy-n-paste).
+   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * @since 4.0
+   */
+  QString toMimeDataString() const;
 
   /**
    * Test to see if the KURL is empty.
@@ -888,7 +935,37 @@ public:
    */
   static KURL fromPathOrURL( const QString& text );
 
-/**
+  /**
+   * Creates a KURL from a string, using the standard conventions for mime data
+   * (drag-n-drop or copy-n-paste).
+   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * @since 4.0
+   */
+  static KURL fromMimeDataByteArray( const QByteArray& str );
+
+  /**
+   * Adds URL data into the given QMimeData.
+   *
+   * By default, addToMimeData also exports the URL as plain text, for e.g. dropping
+   * onto a text editor.
+   * But in some cases this might not be wanted, e.g. if adding other mime data
+   * which provides better plain text data.
+   *
+   * WARNING: do not call this method multiple times, use KURL::List::addToMimeData instead.
+   *
+   * @param mimeData the QMimeData instance used to drag or copy this URL
+   * @param metaData KIO metadata shipped in the mime data, which is used for instance to
+   * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
+   * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
+   * In such a case, setExportAsText( false ) should be called.
+   *
+   * @since 4.0
+   */
+  void addToMimeData( QMimeData* mimeData,
+                      const MetaDataMap& metaData = MetaDataMap(),
+                      MimeDataFlags flags = None );
+
+  /**
    * Convenience function.
    *
    * Convert unicoded string to local encoding and use %-style

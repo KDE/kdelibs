@@ -43,6 +43,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <q3stylesheet.h>
+#include <qmimedata.h>
 #include <qmap.h>
 #include <qtextcodec.h>
 #include <qmutex.h>
@@ -444,6 +445,106 @@ QStringList KURL::List::toStringList() const
    return lst;
 }
 
+void KURL::List::addToMimeData( QMimeData* mimeData,
+                                const KURL::MetaDataMap& metaData,
+                                MimeDataFlags flags )
+{
+    QList<QByteArray> urlStringList;
+    KURL::List::ConstIterator uit = begin();
+    const KURL::List::ConstIterator uEnd = end();
+    for ( ; uit != uEnd ; ++uit )
+    {
+        // Get each URL encoded in utf8 - and since we get it in escaped
+        // form on top of that, .latin1() is fine.
+        urlStringList.append( (*uit).toMimeDataString().latin1() );
+    }
+
+    QByteArray uriListData;
+    for ( QList<QByteArray>::const_iterator it = urlStringList.begin(), end = urlStringList.end()
+                                                 ; it != end ; ++it ) {
+        uriListData += (*it);
+        uriListData += "\r\n";
+    }
+    mimeData->setData( "text/uri-list", uriListData );
+
+    if ( ( flags & KURL::NoTextExport ) == 0 )
+    {
+        QStringList prettyURLsList;
+        for ( uit = begin(); uit != uEnd ; ++uit )
+            prettyURLsList.append( (*uit).prettyURL() );
+
+        QByteArray plainTextData = prettyURLsList.join( "\n" ).local8Bit();
+        if( count() > 1 ) // terminate last line, unless it's the only line
+            plainTextData.append( "\n" );
+        mimeData->setData( "text/plain", plainTextData );
+    }
+
+    if ( !metaData.isEmpty() )
+    {
+        QByteArray metaDataData; // :)
+        for( KURL::MetaDataMap::const_iterator it = metaData.begin(); it != metaData.end(); ++it )
+        {
+            metaDataData += it.key().toUtf8();
+            metaDataData += "$@@$";
+            metaDataData += it.data().toUtf8();
+            metaDataData += "$@@$";
+        }
+        mimeData->setData( "application/x-kio-metadata", metaDataData );
+    }
+}
+
+KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData )
+{
+    KURL::List uris;
+    // x-kde-urilist is the same format as text/uri-list, but contains
+    // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
+    // local files. So we look at it first for decoding, but we let apps set it when encoding.
+    QByteArray payload = mimeData->data( "application/x-kde-urilist" );
+    if ( payload.isEmpty() )
+        payload = mimeData->data( "text/uri-list" );
+    if ( !payload.isEmpty() ) {
+        int c = 0;
+        const char* d = payload.data();
+        while ( c < payload.size() && d[c] ) {
+            int f = c;
+            // Find line end
+            while (c < payload.size() && d[c] && d[c]!='\r'
+                   && d[c] != '\n')
+                c++;
+            QByteArray s( d+f, c-f );
+            if ( s[0] != '#' ) // non-comment?
+                uris.append( KURL::fromMimeDataByteArray( s ) );
+            // Skip junk
+            while ( c < payload.size() && d[c] &&
+                    ( d[c] == '\n' || d[c] == '\r' ) )
+                ++c;
+        }
+    }
+    if ( metaData )
+    {
+        const QByteArray metaDataPayload = mimeData->data( "application/x-kio-metadata" );
+        if ( !metaDataPayload.isEmpty() )
+        {
+            const QString str = QString::fromUtf8( metaDataPayload );
+            const QStringList lst = QStringList::split( "$@@$", str );
+            QStringList::ConstIterator it = lst.begin();
+            bool readingKey = true; // true, then false, then true, etc.
+            QString key;
+            for ( ; it != lst.end(); ++it ) {
+                if ( readingKey )
+                    key = *it;
+                else
+                    metaData->insert( key, *it );
+                readingKey = !readingKey;
+            }
+            Q_ASSERT( readingKey ); // an odd number of items would be, well, odd ;-)
+        }
+    }
+
+    return uris;
+}
+
+////
 
 KURL::KURL()
 {
@@ -1605,6 +1706,45 @@ QString KURL::htmlURL() const
   return Q3StyleSheet::escape(prettyURL());
 }
 
+QString KURL::toMimeDataString() const // don't fold this into addToMimeData, it's also needed by other code like konqdrag
+{
+  if ( isLocalFile() )
+  {
+#if 1
+//    return url(0, KGlobal::locale()->fileEncodingMib());
+      return url( 0, QTextCodec::codecForLocale()->mibEnum() );
+#else
+    // According to the XDND spec, file:/ URLs for DND must have
+    // the hostname part. But in really it just breaks many apps,
+    // so it's disabled for now.
+    const QString s = url( 0, KGlobal::locale()->fileEncodingMib() );
+    if( !s.startsWith( "file://" ))
+    {
+        char hostname[257];
+        if ( gethostname( hostname, 255 ) == 0 )
+        {
+            hostname[256] = '\0';
+            return QString( "file://" ) + hostname + s.mid( 5 );
+        }
+    }
+#endif
+  }
+
+  if ( protocol() == "mailto" ) {
+      return path();
+  }
+
+  return url(0, 106); // 106 is mib enum for utf8 codec
+}
+
+KURL KURL::fromMimeDataByteArray( const QByteArray& str )
+{
+  if ( strncmp( str.data(), "file:", 5 ) == 0 )
+    return KURL( str, QTextCodec::codecForLocale()->mibEnum() );
+
+  return KURL( str, 106 ); // 106 is mib enum for utf8 codec;
+}
+
 KURL::List KURL::split( const KURL& _url )
 {
   QString ref;
@@ -2345,4 +2485,12 @@ KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
     }
 #endif
     return mode;
+}
+
+void KURL::addToMimeData( QMimeData* mimeData,
+                       const MetaDataMap& metaData,
+                       MimeDataFlags flags )
+{
+    KURL::List lst( *this );
+    lst.addToMimeData( mimeData, metaData, flags );
 }

@@ -77,15 +77,19 @@ kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
-check_LTLIBRARIES = kunittest_kconfig.la kunittest_ktempfile.la
+LIBADD = $(LIB_KDECORE) $(LIB_KUNITTEST)
+check_LTLIBRARIES = kunittest_kconfig.la \
+		    kunittest_ktempfile.la \
+		    kunittest_kurlmimetest.la
 
 kunittest_kconfig_la_SOURCES = kconfigtest.cpp
-kunittest_kconfig_la_LIBADD = $(LIB_KUNITTEST)
 kunittest_kconfig_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
 
 kunittest_ktempfile_la_SOURCES = ktempfiletest.cpp
-kunittest_ktempfile_la_LIBADD = $(LIB_KUNITTEST)
 kunittest_ktempfile_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
+
+kunittest_kurlmimetest_la_SOURCES = kurlmimetest.cpp
+kunittest_kurlmimetest_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
 
 check-local:
 	kunittestmodrunner
