@@ -13,17 +13,18 @@
 #define __KIconLoader_h_Included__
 
 #include <qstring.h>
-#include <qpixmap.h>
-#include <qicon.h>
 
 #include <kglobal.h>
-#include <kinstance.h>
 #include <kicontheme.h>
 
+class QIcon;
+class QImage;
 class QMovie;
+class QPixmap;
 
 struct KIconGroup;
 class KIconThemeNode;
+class KInstance;
 class KConfig;
 struct KIconLoaderPrivate;
 class KStandardDirs;
