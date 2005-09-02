@@ -21,13 +21,13 @@
 // Derived gregorian kde calendar class
 // Just a schema.
 
+#include "kcalendarsystemgregorian.h"
+
+#include "kdebug.h"
+#include "klocale.h"
+
 #include <qdatetime.h>
 #include <qstring.h>
-
-#include <klocale.h>
-#include <kdebug.h>
-
-#include "kcalendarsystemgregorian.h"
 
 KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale * locale)
   : KCalendarSystem(locale)

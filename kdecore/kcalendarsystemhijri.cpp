@@ -20,13 +20,13 @@
 
 // Derived hijri kde calendar class
 
+#include "kcalendarsystemhijri.h"
+
+#include "kdebug.h"
+#include "klocale.h"
+
 #include <qdatetime.h>
 #include <qstring.h>
-
-#include <klocale.h>
-#include <kdebug.h>
-
-#include "kcalendarsystemhijri.h"
 
 /*
   The following C++ code is translated from the Lisp code

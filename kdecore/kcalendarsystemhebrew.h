@@ -23,9 +23,6 @@
 #ifndef KCALENDARSYSTEMHEBREW_H
 #define KCALENDARSYSTEMHEBREW_H
 
-#include <qdatetime.h>
-#include <qstring.h>
-
 #include "kcalendarsystem.h"
 
 class KCalendarSystemHebrewPrivate;

@@ -21,9 +21,6 @@
 #ifndef KCALENDARSYSTEMHIJRI_H
 #define KCALENDARSYSTEMHIJRI_H
 
-#include <qdatetime.h>
-#include <qstring.h>
-
 #include "kcalendarsystem.h"
 
 class KCalendarSystemHijriPrivate;

@@ -22,10 +22,14 @@
 // systems.
 // Also default gregorian and factory classes
 
-#include <kglobal.h>
-
 #include "kcalendarsystem.h"
+
+#include "kglobal.h"
 #include "klocale.h"
+
+#include <qdatetime.h>
+#include <qstring.h>
+
 
 class KCalendarSystemPrivate
 {

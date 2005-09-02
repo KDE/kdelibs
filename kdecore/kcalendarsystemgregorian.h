@@ -21,9 +21,6 @@
 #ifndef KCALENDARSYSTEMGREGORIAN_H
 #define KCALENDARSYSTEMGREGORIAN_H
 
-#include <qdatetime.h>
-#include <qstring.h>
-
 #include "kcalendarsystem.h"
 
 class KCalendarSystemGregorianPrivate;

@@ -22,14 +22,15 @@
 // calendar systems.
 // Also default gregorian and factory classes
 
-#include <kdebug.h>
-
 #include "kcalendarsystemfactory.h"
 
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemhijri.h"
 #include "kcalendarsystemhebrew.h"
 #include "kcalendarsystemjalali.h"
+#include "kdebug.h"
+
+#include <qstringlist.h>
 
 KCalendarSystemFactory::KCalendarSystemFactory()
 {

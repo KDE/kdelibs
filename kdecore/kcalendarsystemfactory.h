@@ -22,11 +22,12 @@
 #define KCALENDARSYSTEMFACTORY_H
 
 #include <qstring.h>
-#include <qstringlist.h>
 #include "kdelibs_export.h"
 
 class KCalendarSystem;
 class KLocale;
+
+class QStringList;
 
 /**
  * Factory class for calendar types

@@ -21,10 +21,13 @@
 
 // Derived hebrew kde calendar class
 
-#include <klocale.h>
-#include <kdebug.h>
-
 #include "kcalendarsystemhebrew.h"
+
+#include "kdebug.h"
+#include "klocale.h"
+
+#include <qdatetime.h>
+#include <qstring.h>
 
 static int hebrewDaysElapsed(int y);
 static QString num2heb(int num, bool includeMillenium);

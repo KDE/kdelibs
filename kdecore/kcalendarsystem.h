@@ -21,13 +21,15 @@
 #ifndef KCALENDARSYSTEM_H
 #define KCALENDARSYSTEM_H
 
-#include <qdatetime.h>
-#include <qstring.h>
 #include "kdelibs_export.h"
 
-class KLocale;
 
 class KCalendarSystemPrivate;
+class KLocale;
+
+class QDate;
+class QString;
+
 
 /**
  * CalendarSystem abstract class, default derived kde gregorian class and
