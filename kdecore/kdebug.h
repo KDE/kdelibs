@@ -49,7 +49,9 @@ class kndbgstream;
  * \addtogroup kdebug Debug message generators
  *  @{
  * KDE debug message streams let you and the user control just how many debug
- * messages you see.
+ * messages you see. Debug message printing is controlled by (un)defining
+ * NDEBUG when compiling your source. If NDEBUG is defined then no debug
+ * messages are printed.
  */
 
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
@@ -63,26 +65,35 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
 #define k_lineinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 
-class kdbgstreamprivate;
 /**
  * kdbgstream is a text stream that allows you to print debug messages.
  * Using the overloaded "<<" operator you can send messages. Usually
  * you do not create the kdbgstream yourself, but use kdDebug()
- * kdWarning(), kdError() or kdFatal to obtain one.
+ * kdWarning(), kdError() or kdFatal() to obtain one. 
  *
  * Example:
  * \code
  *    int i = 5;
  *    kdDebug() << "The value of i is " << i << endl;
  * \endcode
+ * @note
  * @see kndbgstream
  */
 class KDECORE_EXPORT kdbgstream {
- public:
-  /**
-   * @internal
+  /*
+   The API of kndbgstream must be kept in sync with kdbgstream. This means:
+     - every member function must be copied in kndbgstream doing nothing.
+     - every function that operates on a kdbgstream must have a corresponding
+       function that operates on kndbgstream that does nothing.
    */
+ public:
+    /**
+     * @internal
+     */
     kdbgstream(unsigned int _area, unsigned int _level, bool _print = true);
+    /**
+     * @internal
+     */
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true);
     /// Copy constructor
     kdbgstream(const kdbgstream &str);
@@ -378,7 +389,7 @@ kdbgstream &kdbgstream::operator<<( const QList<T> &list )
 
 /**
  * \relates KGlobal
- * Prints an "\n".
+ * Prints a newline to the stream.
  * @param s the debug stream to write to
  * @return the debug stream (@p s)
  */
@@ -402,121 +413,46 @@ inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
 KDECORE_EXPORT kdbgstream &perror( kdbgstream &s);
 
 /**
- * \relates KGlobal
- * kndbgstream is a dummy variant of kdbgstream. All functions do
- * nothing.
- * @see kndDebug()
+ * @internal
+ * kndbgstream is a dummy variant of kdbgstream, it is only here to allow
+ * compiling with/without debugging messages.
+ * All functions do nothing.
+ * @see kdbgstream
  */
 class KDECORE_EXPORT kndbgstream {
+ /*
+   The API of kndbgstream must be kept in sync with kdbgstream. This means:
+     - every member function must be copied from kdbgstream to do
+       nothing.
+     - every function that operates on a kdbgstream must have a corresponding
+       function that operates on kndbgstream that does nothing.
+  */
  public:
-    /// Default constructor.
+    // Do not add dummy API docs to all methods, just ensure the whole class is skipped by doxygen
+
     kndbgstream() {}
     ~kndbgstream() {}
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(short int )  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(unsigned short int )  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(char )  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(unsigned char )  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(int )  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(unsigned int )  { return *this; }
-    /**
-     * Does nothing.
-     */
     void flush() {}
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(QChar)  { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(const QString& ) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(const QByteArray& ) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &operator<<(const char *) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(const void *) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(void *) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(double) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(long) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(unsigned long) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(qlonglong) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(qulonglong) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream& operator << (const QWidget*) { return *this; }
-    /**
-     * Does nothing.
-     * @return this stream
-     */
     kndbgstream &form(const char *, ...) { return *this; }
-
     kndbgstream& operator<<( const QDateTime& ) { return *this; }
     kndbgstream& operator<<( const QDate&     ) { return *this; }
     kndbgstream& operator<<( const QTime&     ) { return *this; }
@@ -530,22 +466,11 @@ class KDECORE_EXPORT kndbgstream {
     kndbgstream& operator<<( const QPen & ) { return *this; }
     kndbgstream& operator<<( const QBrush & ) { return *this; }
     kndbgstream& operator<<( const QVariant & ) { return *this; }
-
     template <class T>
     kndbgstream& operator<<( const QList<T> & ) { return *this; }
 };
 
-/**
- * Does nothing.
- * @param s a stream
- * @return the given @p s
- */
 inline kndbgstream &endl( kndbgstream & s) { return s; }
-/**
- * Does nothing.
- * @param s a stream
- * @return the given @p s
- */
 inline kndbgstream &flush( kndbgstream & s) { return s; }
 inline kndbgstream &perror( kndbgstream & s) { return s; }
 
@@ -565,12 +490,7 @@ KDECORE_EXPORT kdbgstream kdDebug(int area = 0);
  * @param area an id to identify the output, 0 for default
  */
 KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
-/**
- * \relates KGlobal
- * Returns a backtrace.
- * @return a backtrace
- */
-//KDECORE_EXPORT QString kdBacktrace();
+
 /**
  * \relates KGlobal
  * Returns a backtrace.
@@ -579,11 +499,7 @@ KDECORE_EXPORT kdbgstream kdDebug(bool cond, int area = 0);
  * @since 3.1
  */
 KDECORE_EXPORT QString kdBacktrace(int levels=-1);
-/**
- * Returns a dummy debug stream. The stream does not print anything.
- * @param area an id to identify the output, 0 for default
- * @see kdDebug()
- */
+
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
 inline QString kndBacktrace(int = -1) { return QString(); }
