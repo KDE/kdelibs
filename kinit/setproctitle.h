@@ -72,7 +72,7 @@
 #endif
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-# if defined(__NetBSD__) && (NetBSD > 199307 || NetBSD0_9 > 1)
+# if defined(__NetBSD__)
 #  undef SPT_TYPE
 #  define SPT_TYPE      SPT_BUILTIN     /* setproctitle is in libc */
 # endif
