@@ -21,7 +21,6 @@
 #define _KTIMEZONES_H
 
 #include "kdelibs_export.h"
-#include <qdatetime.h>
 #include <qnamespace.h>
 #include <qmap.h>
 #include <qstring.h>
@@ -30,6 +29,8 @@ class KTimezoneDetails;
 class KTimezoneDetailsPrivate;
 class KTimezonePrivate;
 class KTimezonesPrivate;
+
+class QDateTime;
 
 /**
  * The KTimezoneSource class contains information source-dependent functions

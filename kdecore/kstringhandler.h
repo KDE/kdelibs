@@ -19,11 +19,13 @@
 #ifndef KSTRINGHANDLER_H
 #define KSTRINGHANDLER_H
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>            // for the word ranges
-#include <qfontmetrics.h>
 #include "kdelibs_export.h"
+
+class QChar;
+class QFontMetrics;
+class QRegExp;
+class QString;
+class QStringList;
 
 /**
  * This class contains utility functions for handling strings.

@@ -20,6 +20,11 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
+#include <qfontmetrics.h>
+#include <qregexp.h>            // for the word ranges
+#include <qstring.h>
+#include <qstringlist.h>
+
 static void parsePythonRange( const QByteArray &range, int &start, int &end )
 {
     const int colon = range.find( ':' );

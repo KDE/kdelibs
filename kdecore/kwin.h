@@ -21,14 +21,15 @@
 
 #include <sys/types.h>
 #include <qwindowdefs.h>
-#include <qstring.h>
-#include <qpixmap.h>
 #include "kdelibs_export.h"
 
 #ifdef Q_OS_UNIX
 
 #include <netwm_def.h>
 class NETWinInfo;
+
+class QPixmap;
+class QString;
 
 /**
  * Convenience access to certain properties and features of the

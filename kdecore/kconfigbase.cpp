@@ -34,6 +34,8 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qfont.h>
+#include <qpoint.h>
+#include <qrect.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 

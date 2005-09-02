@@ -18,19 +18,18 @@
 #ifndef _KINSTANCE_H
 #define _KINSTANCE_H
 
-class KStandardDirs;
+#include <qbytearray.h> // TODO: move data to Private class and use a forward declaration
+#include "kdelibs_export.h"
+
 class KAboutData;
 class KConfig;
 class KIconLoader;
-class KCharsets;
-class QFont;
 class KInstancePrivate;
 class KMimeSourceFactory;
 class KSharedConfig;
+class KStandardDirs;
 
-#include <qstring.h>
-#include <q3cstring.h>
-#include "kdelibs_export.h"
+class QString;
 
 
 /**

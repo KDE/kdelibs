@@ -26,16 +26,19 @@
 #include <sysent.h>
 #endif
 
+#include "kwin.h"
+
 #include <kuniqueapplication.h>
 #include <qbitmap.h>
 #include <qimage.h>
 #include <QWhatsThis>
 #include <q3cstring.h>
 #include <qdialog.h>
+#include <qpixmap.h>
+#include <qstring.h>
 #include <qx11info_x11.h>
 
 #include "config.h"
-#include "kwin.h"
 #include "kapplication.h"
 
 #include <kglobal.h>
