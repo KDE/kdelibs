@@ -617,50 +617,6 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     if (doActivate) activate();
 }
 
-NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
-			 unsigned long properties, int screen, bool doActivate)
-{
-
-#ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::NETRootInfo: using window manager constructor\n");
-#endif
-
-    p = new NETRootInfoPrivate;
-    p->ref = 1;
-
-    p->display = display;
-    p->name = nstrdup(wmName);
-
-    if (screen != -1) {
-	p->screen = screen;
-    } else {
-	p->screen = DefaultScreen(p->display);
-    }
-
-    p->root = RootWindow(p->display, p->screen);
-    p->supportwindow = supportWindow;
-    p->number_of_desktops = p->current_desktop = 0;
-    p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
-    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_system_tray_windows = 0;
-    p->kde_system_tray_windows_count = 0;
-    p->showing_desktop = false;
-    setDefaultProperties();
-    p->properties[ PROTOCOLS ] = properties;
-    // force support for Supported and SupportingWMCheck for window managers
-    p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
-			                | WMPing; // or they can reply to this
-    p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity;
-
-    role = WindowManager;
-
-    if (! netwm_atoms_created) create_atoms(p->display);
-
-    if (doActivate) activate();
-}
-
 
 NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
@@ -2551,11 +2507,6 @@ int NETRootInfo::screenNumber() const {
 }
 
 
-unsigned long NETRootInfo::supported() const {
-    return role == WindowManager
-        ? p->properties[ PROTOCOLS ]
-        : p->client_properties[ PROTOCOLS ];
-}
 
 const unsigned long* NETRootInfo::supportedProperties() const {
     return p->properties;
@@ -4301,10 +4252,6 @@ NET::WindowType NETWinInfo::windowType( unsigned long supported_types ) const {
     return Unknown;
 }
 
-NET::WindowType NETWinInfo::windowType() const {
-    return p->types[ 0 ];
-}
-
 
 const char *NETWinInfo::name() const {
     return p->name;
@@ -4385,10 +4332,6 @@ Window NETWinInfo::kdeSystemTrayWinFor() const {
 
 const unsigned long* NETWinInfo::passedProperties() const {
     return p->properties;
-}
-
-unsigned long NETWinInfo::properties() const {
-    return p->properties[ PROTOCOLS ];
 }
 
 

@@ -103,14 +103,6 @@ public:
 		const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
 
-    /**
-        @deprecated
-        This constructor differs from the above one only in the way it accepts
-        the list of supported properties. The properties argument is equivalent
-        to the first element of the properties array in the above constructor.
-    **/
-    NETRootInfo(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties, int screen = -1, bool doActivate = true) KDE_DEPRECATED;
 
     /**
        Clients should use this constructor to create a NETRootInfo object, which
@@ -243,23 +235,6 @@ public:
     **/
     // KDE4 better name?
     const unsigned long* passedProperties() const;
-
-    /**
-       @deprecated
-
-       Returns an OR'ed list of protocols passed to the constructor.
-       For the constructor used by Window Managers, this is equivalent
-       to the first element of the properties argument, for the constructor
-       for Clients, it's the properties argument.
-
-       Clients willing to find out all properties and protocols supported
-       by the WindowManager should use supportedProperties().
-
-       @return an OR'ed list of protocols
-
-       @see NET::Property
-    **/
-    unsigned long supported() const KDE_DEPRECATED;
 
     /**
        Returns an array of Window id's, which contain all managed windows.
@@ -999,17 +974,6 @@ public:
     const unsigned long* passedProperties() const;
 
     /**
-       @deprecated
-
-       Returns an OR'ed list of protocols passed to the constructor.
-
-       @return an OR'ed list of protocols
-
-       @see NET::Property
-    **/
-    unsigned long properties() const KDE_DEPRECATED;
-
-    /**
        Returns the icon geometry.
 
        @return the geometry of the icon
@@ -1053,15 +1017,6 @@ public:
        @since 3.2
     **/
     WindowType windowType( unsigned long supported_types ) const;
-
-    /**
-       @deprecated
-       Returns the window type for this client (see the NET base class
-       documentation for a description of the various window types).
-
-       @return the type of the window
-    **/
-    WindowType windowType() const KDE_DEPRECATED;
 
     /**
        Returns the name of the window in UTF-8 format.

@@ -1,0 +1,388 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+    Copyright (C) 1998, 1999, 2000 KDE Team
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+        */
+
+#include "config.h"
+#include "kauthorized.h"
+
+#include <qdir.h>
+#include <qregexp.h>
+#include <QList>
+
+#include <QString>
+#include <QApplication>
+#include <kglobal.h>
+#include <kconfig.h>
+#include <kprotocolinfo.h>
+#include <kstandarddirs.h>
+#include <stdlib.h> // getenv(), srand(), rand()
+#include <unistd.h>
+#include <netdb.h>
+
+#ifdef HAVE_PATHS_H
+//#include <paths.h>
+#endif
+
+
+extern bool kde_kiosk_exception;
+
+KAuthorized *KAuthorized::s_self=0;
+
+
+class KAuthorized::Private {
+public:
+  Private()
+    :   actionRestrictions( false )
+  {
+  }
+
+  ~Private()
+  {
+  }
+
+
+  bool actionRestrictions : 1;
+
+  class URLActionRule
+  {
+  public:
+#define checkExactMatch(s, b) \
+        if (s.isEmpty()) b = true; \
+        else if (s[s.length()-1] == '!') \
+        { b = false; s.truncate(s.length()-1); } \
+        else b = true;
+#define checkStartWildCard(s, b) \
+        if (s.isEmpty()) b = true; \
+        else if (s[0] == '*') \
+        { b = true; s = s.mid(1); } \
+        else b = false;
+#define checkEqual(s, b) \
+        b = (s == "=");
+
+     URLActionRule(const QString &act,
+                   const QString &bProt, const QString &bHost, const QString &bPath,
+                   const QString &dProt, const QString &dHost, const QString &dPath,
+                   bool perm)
+                   : action(act),
+                     baseProt(bProt), baseHost(bHost), basePath(bPath),
+                     destProt(dProt), destHost(dHost), destPath(dPath),
+                     permission(perm)
+                   {
+                      checkExactMatch(baseProt, baseProtWildCard);
+                      checkStartWildCard(baseHost, baseHostWildCard);
+                      checkExactMatch(basePath, basePathWildCard);
+                      checkExactMatch(destProt, destProtWildCard);
+                      checkStartWildCard(destHost, destHostWildCard);
+                      checkExactMatch(destPath, destPathWildCard);
+                      checkEqual(destProt, destProtEqual);
+                      checkEqual(destHost, destHostEqual);
+                   }
+
+     bool baseMatch(const KURL &url, const QString &protClass)
+     {
+        if (baseProtWildCard)
+        {
+           if ( !baseProt.isEmpty() && !url.protocol().startsWith(baseProt) &&
+                (protClass.isEmpty() || (protClass != baseProt)) )
+              return false;
+        }
+        else
+        {
+           if ( (url.protocol() != baseProt) &&
+                (protClass.isEmpty() || (protClass != baseProt)) )
+              return false;
+        }
+        if (baseHostWildCard)
+        {
+           if (!baseHost.isEmpty() && !url.host().endsWith(baseHost))
+              return false;
+        }
+        else
+        {
+           if (url.host() != baseHost)
+              return false;
+        }
+        if (basePathWildCard)
+        {
+           if (!basePath.isEmpty() && !url.path().startsWith(basePath))
+              return false;
+        }
+        else
+        {
+           if (url.path() != basePath)
+              return false;
+        }
+        return true;
+     }
+
+     bool destMatch(const KURL &url, const QString &protClass, const KURL &base, const QString &baseClass)
+     {
+        if (destProtEqual)
+        {
+           if ( (url.protocol() != base.protocol()) &&
+                (protClass.isEmpty() || baseClass.isEmpty() || protClass != baseClass) )
+              return false;
+        }
+        else if (destProtWildCard)
+        {
+           if ( !destProt.isEmpty() && !url.protocol().startsWith(destProt) &&
+                (protClass.isEmpty() || (protClass != destProt)) )
+              return false;
+        }
+        else
+        {
+           if ( (url.protocol() != destProt) &&
+                (protClass.isEmpty() || (protClass != destProt)) )
+              return false;
+        }
+        if (destHostWildCard)
+        {
+           if (!destHost.isEmpty() && !url.host().endsWith(destHost))
+              return false;
+        }
+        else if (destHostEqual)
+        {
+           if (url.host() != base.host())
+              return false;
+        }
+        else
+        {
+           if (url.host() != destHost)
+              return false;
+        }
+        if (destPathWildCard)
+        {
+           if (!destPath.isEmpty() && !url.path().startsWith(destPath))
+              return false;
+        }
+        else
+        {
+           if (url.path() != destPath)
+              return false;
+        }
+        return true;
+     }
+
+     QString action;
+     QString baseProt;
+     QString baseHost;
+     QString basePath;
+     QString destProt;
+     QString destHost;
+     QString destPath;
+     bool baseProtWildCard : 1;
+     bool baseHostWildCard : 1;
+     bool basePathWildCard : 1;
+     bool destProtWildCard : 1;
+     bool destHostWildCard : 1;
+     bool destPathWildCard : 1;
+     bool destProtEqual    : 1;
+     bool destHostEqual    : 1;
+     bool permission;
+  };
+    QList<URLActionRule> urlActionRestrictions;
+
+};
+
+
+KAuthorized  *KAuthorized::self() {
+  if (!s_self) { s_self=new KAuthorized();}
+  return s_self;
+}
+
+
+
+KAuthorized::KAuthorized():d(new KAuthorized::Private()) {
+  Q_ASSERT_X(qApp,"KAuthorized()","There has to be an existing qapp pointer");
+  Q_ASSERT_X(!qApp->applicationName().isEmpty(),"KAuthorized()","There has to be an application name set (See QApplication::setApplicationName)");
+  KConfig* config = KGlobal::config();
+  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
+  // For brain-dead configurations where the user's local config file is not writable.
+  // * We use kdialog to warn the user, so we better not generate warnings from
+  //   kdialog itself.
+  // * Don't warn if we run with a read-only $HOME
+  QByteArray readOnly = getenv("KDE_HOME_READONLY");
+  if (readOnly.isEmpty() && (qApp->applicationName().compare(QString("kdialog")) != 0))
+  {
+    KConfigGroupSaver saver(config, "KDE Action Restrictions");
+    if (config->readBoolEntry("warn_unwritable_config",true))
+       config->checkConfigFilesWritable(true);
+  }
+}
+
+bool KAuthorized::authorize(const QString &genericAction)
+{
+   if (!d->actionRestrictions)
+      return true;
+
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Action Restrictions" );
+   return config->readBoolEntry(genericAction, true);
+}
+
+bool KAuthorized::authorizeKAction(const char *action)
+{
+   if (!d->actionRestrictions || !action)
+      return true;
+
+   static const QString &action_prefix = KGlobal::staticQString( "action/" );
+
+   return authorize(action_prefix + action);
+}
+
+bool KAuthorized::authorizeControlModule(const QString &menuId)
+{
+   if (menuId.isEmpty() || kde_kiosk_exception)
+      return true;
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   return config->readBoolEntry(menuId, true);
+}
+
+QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
+{
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   QStringList result;
+   for(QStringList::ConstIterator it = menuIds.begin();
+       it != menuIds.end(); ++it)
+   {
+      if (config->readBoolEntry(*it, true))
+         result.append(*it);
+   }
+   return result;
+}
+
+void KAuthorized::initUrlActionRestrictions()
+{
+  d->urlActionRestrictions.clear();
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("open", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
+// TEST:
+//  d->urlActionRestrictions.append( new KAuthorized::Private::URLActionRule
+//  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, false));
+//  d->urlActionRestrictions.append( new KAuthorized::Private::URLActionRule
+//  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath(), true));
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("link", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
+
+  // We allow redirections to file: but not from internet protocols, redirecting to file:
+  // is very popular among io-slaves and we don't want to break them
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", ":internet", QString::null, QString::null, "file", QString::null, QString::null, false));
+
+  // local protocols may redirect everywhere
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", ":local", QString::null, QString::null, QString::null, QString::null, QString::null, true));
+
+  // Anyone may redirect to about:
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
+
+  // Anyone may redirect to itself, cq. within it's own group
+  d->urlActionRestrictions.append( KAuthorized::Private::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
+
+  KConfig *config = KGlobal::config();
+  KConfigGroupSaver saver( config, "KDE URL Restrictions" );
+  int count = config->readNumEntry("rule_count");
+  QString keyFormat = QString("rule_%1");
+  for(int i = 1; i <= count; i++)
+  {
+    QString key = keyFormat.arg(i);
+    QStringList rule = config->readListEntry(key);
+    if (rule.count() != 8)
+      continue;
+    QString action = rule[0];
+    QString refProt = rule[1];
+    QString refHost = rule[2];
+    QString refPath = rule[3];
+    QString urlProt = rule[4];
+    QString urlHost = rule[5];
+    QString urlPath = rule[6];
+    QString strEnabled = rule[7].toLower();
+
+    bool bEnabled = (strEnabled == "true");
+
+    if (refPath.startsWith("$HOME"))
+       refPath.replace(0, 5, QDir::homePath());
+    else if (refPath.startsWith("~"))
+       refPath.replace(0, 1, QDir::homePath());
+    if (urlPath.startsWith("$HOME"))
+       urlPath.replace(0, 5, QDir::homePath());
+    else if (urlPath.startsWith("~"))
+       urlPath.replace(0, 1, QDir::homePath());
+
+    if (refPath.startsWith("$TMP"))
+       refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+    if (urlPath.startsWith("$TMP"))
+       urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+
+    d->urlActionRestrictions.append(KAuthorized::Private::URLActionRule
+    	( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
+  }
+}
+
+void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
+{
+  if (authorizeURLAction(action, _baseURL, _destURL))
+     return;
+
+  d->urlActionRestrictions.append(KAuthorized::Private::URLActionRule
+        ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
+                  _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
+}
+
+bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
+{
+  if (_destURL.isEmpty())
+     return true;
+
+  bool result = false;
+  if (d->urlActionRestrictions.isEmpty())
+     initUrlActionRestrictions();
+
+  KURL baseURL(_baseURL);
+  baseURL.setPath(QDir::cleanPath(baseURL.path()));
+  QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
+  KURL destURL(_destURL);
+  destURL.setPath(QDir::cleanPath(destURL.path()));
+  QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
+
+  foreach(KAuthorized::Private::URLActionRule rule, d->urlActionRestrictions) {
+     if ((result != rule.permission) && // No need to check if it doesn't make a difference
+         (action == rule.action) &&
+         rule.baseMatch(baseURL, baseClass) &&
+         rule.destMatch(destURL, destClass, baseURL, baseClass))
+     {
+        result = rule.permission;
+     }
+  }
+  return result;
+}
+
+
+void KAuthorized::virtual_hook( int , void* )
+{}

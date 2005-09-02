@@ -39,7 +39,7 @@ lib_LIBRARIES = libkdefakes_nonpic.a
 include_HEADERS = kconfig.h kconfigskeleton.h \
 	kconfigdata.h ksimpleconfig.h kconfigdialogmanager.h \
 	kconfigbase.h kdesktopfile.h kurl.h kaboutdata.h \
-	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h \
+	kcmdlineargs.h kconfigbackend.h kapp.h kapplication.h kauthorized.h \
 	kuniqueapplication.h kcharsets.h kdeversion.h kpty.h kprocess.h \
 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
@@ -79,7 +79,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
 	kprotocolinfofactory.h kqiodevicegzip_p.h
 
-libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
+libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
 	kconfigbackend.cpp kmanagerselection.cpp kdesktopfile.cpp \
 	kstandarddirs.cpp kpty.cpp kprocess.cpp kprocctrl.cpp \

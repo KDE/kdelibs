@@ -55,6 +55,7 @@
 #define QT_NO_TRANSLATION
 #include "kaboutdata.h"
 #include "kaccel.h"
+#include "kauthorized.h"
 #include "kcheckaccelerators.h"
 #include "kclipboard.h"
 #include "kcmdlineargs.h"
@@ -769,6 +770,9 @@ void KApplication::init(bool GUIenabled)
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
+  Q_ASSERT( KGlobal::instance()->aboutData() );
+  setApplicationName( KGlobal::instance()->aboutData()->appName()); 
+
 
 
 #ifdef Q_WS_X11 //FIXME(E)
@@ -816,16 +820,11 @@ void KApplication::init(bool GUIenabled)
   (void) KGlobal::locale();
 
   KConfig* config = KGlobal::config();
-  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
-  // For brain-dead configurations where the user's local config file is not writable.
-  // * We use kdialog to warn the user, so we better not generate warnings from
-  //   kdialog itself.
-  // * Don't warn if we run with a read-only $HOME
+  KAuthorized *authorized=KAuthorized::self();
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
-    KConfigGroupSaver saver(config, "KDE Action Restrictions");
-    if (config->readBoolEntry("warn_unwritable_config",true))
+    if (authorized->authorize("warn_unwritable_config"))
        config->checkConfigFilesWritable(true);
   }
 
@@ -2836,164 +2835,6 @@ QString KApplication::randomString(int length)
    }
    return str;
 }
-
-bool KApplication::authorize(const QString &genericAction)
-{
-   if (!d->actionRestrictions)
-      return true;
-
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Action Restrictions" );
-   return config->readBoolEntry(genericAction, true);
-}
-
-bool KApplication::authorizeKAction(const char *action)
-{
-   if (!d->actionRestrictions || !action)
-      return true;
-
-   static const QString &action_prefix = KGlobal::staticQString( "action/" );
-
-   return authorize(action_prefix + action);
-}
-
-bool KApplication::authorizeControlModule(const QString &menuId)
-{
-   if (menuId.isEmpty() || kde_kiosk_exception)
-      return true;
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
-   return config->readBoolEntry(menuId, true);
-}
-
-QStringList KApplication::authorizeControlModules(const QStringList &menuIds)
-{
-   KConfig *config = KGlobal::config();
-   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
-   QStringList result;
-   for(QStringList::ConstIterator it = menuIds.begin();
-       it != menuIds.end(); ++it)
-   {
-      if (config->readBoolEntry(*it, true))
-         result.append(*it);
-   }
-   return result;
-}
-
-void KApplication::initUrlActionRestrictions()
-{
-  d->urlActionRestrictions.clear();
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("open", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, true));
-// TEST:
-//  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-//  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, false));
-//  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-//  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath(), true));
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
-
-  // We allow redirections to file: but not from internet protocols, redirecting to file:
-  // is very popular among io-slaves and we don't want to break them
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", ":internet", QString::null, QString::null, "file", QString::null, QString::null, false));
-
-  // local protocols may redirect everywhere
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", ":local", QString::null, QString::null, QString::null, QString::null, QString::null, true));
-
-  // Anyone may redirect to about:
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
-
-  // Anyone may redirect to itself, cq. within it's own group
-  d->urlActionRestrictions.append( KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
-
-  KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver( config, "KDE URL Restrictions" );
-  int count = config->readNumEntry("rule_count");
-  QString keyFormat = QString("rule_%1");
-  for(int i = 1; i <= count; i++)
-  {
-    QString key = keyFormat.arg(i);
-    QStringList rule = config->readListEntry(key);
-    if (rule.count() != 8)
-      continue;
-    QString action = rule[0];
-    QString refProt = rule[1];
-    QString refHost = rule[2];
-    QString refPath = rule[3];
-    QString urlProt = rule[4];
-    QString urlHost = rule[5];
-    QString urlPath = rule[6];
-    QString strEnabled = rule[7].toLower();
-
-    bool bEnabled = (strEnabled == "true");
-
-    if (refPath.startsWith("$HOME"))
-       refPath.replace(0, 5, QDir::homePath());
-    else if (refPath.startsWith("~"))
-       refPath.replace(0, 1, QDir::homePath());
-    if (urlPath.startsWith("$HOME"))
-       urlPath.replace(0, 5, QDir::homePath());
-    else if (urlPath.startsWith("~"))
-       urlPath.replace(0, 1, QDir::homePath());
-
-    if (refPath.startsWith("$TMP"))
-       refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
-    if (urlPath.startsWith("$TMP"))
-       urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
-
-    d->urlActionRestrictions.append(KApplicationPrivate::URLActionRule
-    	( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
-  }
-}
-
-void KApplication::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
-{
-  if (authorizeURLAction(action, _baseURL, _destURL))
-     return;
-
-  d->urlActionRestrictions.append(KApplicationPrivate::URLActionRule
-        ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
-                  _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
-}
-
-bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
-{
-  if (_destURL.isEmpty())
-     return true;
-
-  bool result = false;
-  if (d->urlActionRestrictions.isEmpty())
-     initUrlActionRestrictions();
-
-  KURL baseURL(_baseURL);
-  baseURL.setPath(QDir::cleanPath(baseURL.path()));
-  QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
-  KURL destURL(_destURL);
-  destURL.setPath(QDir::cleanPath(destURL.path()));
-  QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
-
-  foreach(KApplicationPrivate::URLActionRule rule, d->urlActionRestrictions) {
-     if ((result != rule.permission) && // No need to check if it doesn't make a difference
-         (action == rule.action) &&
-         rule.baseMatch(baseURL, baseClass) &&
-         rule.destMatch(destURL, destClass, baseURL, baseClass))
-     {
-        result = rule.permission;
-     }
-  }
-  return result;
-}
-
 
 
 Qt::ButtonState KApplication::keyboardMouseState()

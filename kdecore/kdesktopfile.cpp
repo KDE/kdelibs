@@ -32,6 +32,7 @@
 #include "kurl.h"
 #include "kconfigbackend.h"
 #include "kapplication.h"
+#include "kauthorized.h"
 #include "kstandarddirs.h"
 #include "kmountpoint.h"
 
@@ -122,7 +123,7 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 {
-  if (!kapp || kapp->authorize("run_desktop_files"))
+  if (!kapp || KAuthorized::self()->authorize("run_desktop_files"))
      return true;
 
   if (path.isEmpty())
@@ -283,7 +284,7 @@ bool KDesktopFile::tryExec() const
          it != list.end();
          ++it)
      {
-        if (!kapp->authorize((*it).stripWhiteSpace()))
+        if (!KAuthorized::self()->authorize((*it).stripWhiteSpace()))
            return false;
      }
   }
@@ -297,7 +298,7 @@ bool KDesktopFile::tryExec() const
         user = ::getenv("ADMIN_ACCOUNT");
       if (user.isEmpty())
         user = "root";
-      if (!kapp->authorize("user/"+user))
+      if (!KAuthorized::self()->authorize("user/"+user))
         return false;
   }
   
