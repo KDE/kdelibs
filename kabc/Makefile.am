@@ -1,7 +1,7 @@
-SUBDIRS = vcardparser . formats plugins scripts tests
+SUBDIRS = kab vcardparser . formats plugins scripts tests
 
 # Make sure $(all_includes) remains last!
-INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
+INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kabc/kab \
            -I$(srcdir)/vcardparser $(all_includes)
 
 field.cpp: addressee.h addressee.cpp
@@ -51,7 +51,7 @@ METASOURCES = AUTO
 bin_PROGRAMS = kab2kabc
 
 kab2kabc_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kab2kabc_LDADD = libkabc.la ../kab/libkab.la
+kab2kabc_LDADD = libkabc.la ./kab/libkab.la
 kab2kabc_SOURCES = kab2kabc.cpp
 
 autostart_DATA = kab2kabc.desktop
