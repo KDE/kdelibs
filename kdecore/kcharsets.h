@@ -19,15 +19,14 @@
 #ifndef KCHARSETS_H
 #define KCHARSETS_H
 
-#include <qstring.h>
-#include <qfont.h>
-#include <qstringlist.h>
-#include <q3ptrlist.h>
 #include "kdelibs_export.h"
 
 class KGlobal;
 class KCharsetsPrivate;
 
+class QChar;
+class QString;
+class QStringList;
 class QTextCodec;
 
 /**

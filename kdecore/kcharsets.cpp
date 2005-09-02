@@ -21,21 +21,18 @@
 #include "kqiodevicegzip_p.h"
 #include "kentities.c"
 
-#include <kapplication.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kconfig.h>
+#include "kconfig.h"
+#include "kdebug.h"
+#include "kglobal.h"
+#include "klocale.h"
 
-#include <qfontinfo.h>
-#include <q3strlist.h>
-#include <qfontdatabase.h>
-#include <kdebug.h>
-
-#include <qtextcodec.h>
-#include <qmap.h>
-#include <q3cstring.h>
 #include <qdir.h>
+#include <qfontdatabase.h>
+#include <qfontinfo.h>
 #include <qregexp.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qtextcodec.h>
 
 #include <assert.h>
 #include <QHash>
