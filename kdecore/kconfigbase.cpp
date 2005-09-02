@@ -20,24 +20,26 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <qfile.h>
-#include <qdir.h>
-#include <qtextstream.h>
-#include <q3valuelist.h>
-#include <qvariant.h>
-
-#include <kapplication.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kcharsets.h>
-
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
+#include "kconfigdata.h"
+
+#include <q3strlist.h>
+#include <qcolor.h>
+#include <qdatetime.h>
+#include <qdir.h>
+#include <qfile.h>
+#include <qfont.h>
+#include <qstringlist.h>
+#include <qtextstream.h>
+
 #include "kdebug.h"
-#include "kstandarddirs.h"
+#include "kglobal.h"
+#include "klocale.h"
 #include "kstringhandler.h"
 
 class KConfigBase::KConfigBasePrivate
@@ -1835,6 +1837,21 @@ KEntry KConfigGroup::lookupData(const KEntryKey &_key) const
 void KConfigGroup::sync()
 {
   mMaster->sync();
+}
+
+QStringList KConfigGroup::groupList() const
+{
+  return QStringList();
+}
+
+KEntryMap KConfigGroup::internalEntryMap( const QString&) const
+{
+  return KEntryMap();
+}
+
+KEntryMap KConfigGroup::internalEntryMap() const
+{
+  return KEntryMap();
 }
 
 void KConfigBase::virtual_hook( int, void* )

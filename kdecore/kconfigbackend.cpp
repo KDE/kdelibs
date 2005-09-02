@@ -40,15 +40,17 @@
 #include <qtextstream.h>
 
 #include "kconfigbackend.h"
+
+#include "kapplication.h"
 #include "kconfigbase.h"
-#include <kapplication.h>
-#include <kglobal.h>
-#include <kprocess.h>
-#include <klocale.h>
-#include <kstandarddirs.h>
-#include <ksavefile.h>
-#include <kurl.h>
-#include <kde_file.h>
+#include "kconfigdata.h"
+#include "kde_file.h"
+#include "kglobal.h"
+#include "klocale.h"
+#include "kprocess.h"
+#include "ksavefile.h"
+#include "kstandarddirs.h"
+#include "kurl.h"
 
 extern bool checkAccess(const QString& pathname, int mode);
 /* translate escaped escape sequences to their actual values. */

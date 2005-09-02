@@ -22,12 +22,8 @@
 #ifndef _KCONFIG_H
 #define _KCONFIG_H
 
-class QTimer;
-
-#include <q3valuelist.h>
-#include <q3cstring.h>
-
 #include "kconfigbase.h"
+#include "kconfigdata.h"
 #include "klockfile.h"
 
 class KConfigPrivate;
@@ -273,7 +269,6 @@ private:
  */
 class KDECORE_EXPORT KSharedConfig : public KConfig, public KShared
 {
-  friend class QList<KSharedConfig*>;
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;
 

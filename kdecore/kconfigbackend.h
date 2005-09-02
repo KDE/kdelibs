@@ -22,11 +22,10 @@
 #ifndef _KCONFIGBACKEND_H
 #define _KCONFIGBACKEND_H
 
-#include "kconfigdata.h"
 #include <kconfigbase.h>
 #include <klockfile.h>
 #include "kdelibs_export.h"
-#include <q3cstring.h>
+#include <qbytearray.h> // TODO: move data to Private class and use a forward declaration
 
 class QFile;
 class KConfigBackEndPrivate;

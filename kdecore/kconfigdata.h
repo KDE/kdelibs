@@ -22,8 +22,8 @@
 #ifndef _KCONFIGDATA_H
 #define _KCONFIGDATA_H
 
-#include <qmap.h> // generic red-black tree class
-#include <q3cstring.h>
+#include <qbytearray.h>
+#include <qmap.h>
 #include "kdelibs_export.h"
 
 /**

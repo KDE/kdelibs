@@ -23,23 +23,26 @@
 #ifndef _KCONFIGBASE_H
 #define _KCONFIGBASE_H
 
-#include <qobject.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qdatetime.h>
-#include <q3strlist.h>
-#include <qstringlist.h>
-#include <qvariant.h>
 #include <qmap.h>
-#include <q3cstring.h>
-#include <q3valuelist.h>
+#include <qobject.h>
+#include <qvariant.h>
 
-#include "kconfigdata.h"
 #include "kdelibs_export.h"
 
 class KConfigBackEnd;
 class KConfigBasePrivate;
 class KConfigGroup;
+struct KEntry;
+struct KEntryKey;
+typedef QMap<KEntryKey, KEntry> KEntryMap;
+
+class Q3StrList;
+class QByteArray;
+class QColor;
+class QDateTime;
+class QFont;
+class QString;
+class QStringList;
 
 /**
  * @short KDE Configuration Management abstract base class
@@ -2150,15 +2153,13 @@ private:
    void isDirty() { }
 
    // The following members are not used.
-   virtual QStringList groupList() const { return QStringList(); }
+   virtual QStringList groupList() const;
    virtual void rollback(bool) { }
    virtual void reparseConfiguration() { }
    virtual QMap<QString, QString> entryMap(const QString &) const
     { return QMap<QString,QString>(); }
-   virtual KEntryMap internalEntryMap( const QString&) const
-    { return KEntryMap(); }
-   virtual KEntryMap internalEntryMap() const
-    { return KEntryMap(); }
+   virtual KEntryMap internalEntryMap( const QString&) const;
+   virtual KEntryMap internalEntryMap() const;
    virtual bool internalHasGroup(const QByteArray &) const
     { return false; }
 

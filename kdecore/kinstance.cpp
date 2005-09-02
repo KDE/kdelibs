@@ -36,6 +36,7 @@
 #ifndef NDEBUG
   #include <assert.h>
   #include <q3ptrdict.h>
+  #include <q3ptrlist.h>
   static Q3PtrList<KInstance> *allInstances = 0;
   static Q3PtrDict<QByteArray> *allOldInstances = 0;
   #define DEBUG_ADD do { if (!allInstances) { allInstances = new Q3PtrList<KInstance>(); allOldInstances = new Q3PtrDict<QByteArray>(); } allInstances->append(this); allOldInstances->insert( this, new QByteArray( _name)); } while (false);
