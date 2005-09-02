@@ -1636,7 +1636,7 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
 
             bp.end();
 
-            p->drawTiledPixmap(r, buffer);
+            p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2) );
             break;
         }
 
