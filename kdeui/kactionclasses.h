@@ -1212,7 +1212,7 @@ public slots:
     virtual void setChecked( bool );
 
 private:
-    Q3CString               m_toolBarName;
+    QByteArray               m_toolBarName;
     QPointer<KToolBar>  m_toolBar;
 protected:
     virtual void virtual_hook( int id, void* data );
