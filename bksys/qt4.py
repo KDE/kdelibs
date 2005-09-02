@@ -208,7 +208,7 @@ def generate(env):
 		opts.Save(cachefile, env)
 
 	## set default variables, one can override them in sconscript files
-	env.Append(CXXFLAGS = ['-I'+env['QTINCLUDEPATH'], '-I'+env['QTINCLUDEPATH']+'/Qt'], LIBPATH = [env['QTLIBPATH'] ])
+	env.Append(CXXFLAGS = ['-I'+env['QTINCLUDEPATH'], '-I'+env['QTINCLUDEPATH']+'Qt'], LIBPATH = [env['QTLIBPATH'] ])
 	
 	env['QT_AUTOSCAN'] = 1
 	env['QT_DEBUG']    = 0
