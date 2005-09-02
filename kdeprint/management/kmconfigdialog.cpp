@@ -32,6 +32,7 @@
 #include <qlayout.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kinstance.h>
 #include <kconfig.h>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)

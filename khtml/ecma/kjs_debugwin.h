@@ -34,6 +34,7 @@
 #include <q3ptrstack.h>
 #include <qcheckbox.h>
 #include <kdialogbase.h>
+#include <kinstance.h>
 #include <kmainwindow.h>
 #include <q3scrollview.h>
 

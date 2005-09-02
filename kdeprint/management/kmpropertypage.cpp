@@ -28,6 +28,7 @@
 
 #include <q3vbox.h>
 #include <kiconloader.h>
+#include <kinstance.h>
 
 KMPropertyPage::KMPropertyPage(QWidget *parent)
     : CJanusWidget(parent)

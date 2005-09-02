@@ -22,6 +22,8 @@
 
 #include <kiconloader.h>
 
+#include <qpixmap.h>
+
 JobItem::JobItem(Q3ListView *parent, KMJob *job)
 : Q3ListViewItem(parent)
 {
