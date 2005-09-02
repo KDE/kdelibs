@@ -16,6 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktempfiletest.h"
 #include "ktempfile.h"
 #include "kcmdlineargs.h"
 #include "kaboutdata.h"
@@ -29,48 +30,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kunittest/tester.h>
 #include <kunittest/module.h>
-
-class KTempFileTest : public KUnitTest::Tester
-{
-public:
-    void allTests() {
-        basicTest();
-        fixedExtension();
-        homeDir();
-    }
-private:
-    void basicTest();
-    void fixedExtension();
-    void homeDir();
-};
-
 KUNITTEST_MODULE( kunittest_ktempfile, "KTempFileTest" );
 KUNITTEST_MODULE_REGISTER_TESTER( KTempFileTest );
 
-void KTempFileTest::basicTest()
+void KTempFileTest::testBasic()
 {
    printf("Making tempfile after KApplication constructor.\n");
    KTempFile f4;
+   f4.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f4.name()));
    bool exists = QFile::exists( f4.name() );
    CHECK( exists, true );
 }
 
-void KTempFileTest::fixedExtension()
+void KTempFileTest::testFixedExtension()
 {
    printf("Making tempfile with \".ps\" extension.\n");
    KTempFile f2(QString::null, ".ps");
+   f2.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f2.name()));
    CHECK( f2.name().right(3), QString::fromLatin1(".ps") );
 }
 
-void KTempFileTest::homeDir()
+void KTempFileTest::testHomeDir()
 {
    printf("Making tempfile in home directory.\n");
    const QString home = QDir::homeDirPath();
    KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
+   f3.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f3.name()));
    CHECK( f3.name().left( home.length() ), home );
    CHECK( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
