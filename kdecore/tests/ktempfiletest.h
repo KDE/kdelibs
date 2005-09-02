@@ -1,4 +1,4 @@
-#ifdef ktempfiletest_h
+#ifndef ktempfiletest_h
 #define ktempfiletest_h
 
 #include <kunittest/tester.h>
