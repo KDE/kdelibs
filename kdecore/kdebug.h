@@ -69,23 +69,15 @@ typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
  * kdbgstream is a text stream that allows you to print debug messages.
  * Using the overloaded "<<" operator you can send messages. Usually
  * you do not create the kdbgstream yourself, but use kdDebug()
- * kdWarning(), kdError() or kdFatal() to obtain one. 
+ * kdWarning(), kdError() or kdFatal() to obtain one.
  *
  * Example:
  * \code
  *    int i = 5;
  *    kdDebug() << "The value of i is " << i << endl;
  * \endcode
- * @note
- * @see kndbgstream
  */
 class KDECORE_EXPORT kdbgstream {
-  /*
-   The API of kndbgstream must be kept in sync with kdbgstream. This means:
-     - every member function must be copied in kndbgstream doing nothing.
-     - every function that operates on a kdbgstream must have a corresponding
-       function that operates on kndbgstream that does nothing.
-   */
  public:
     /**
      * @internal
@@ -420,13 +412,6 @@ KDECORE_EXPORT kdbgstream &perror( kdbgstream &s);
  * @see kdbgstream
  */
 class KDECORE_EXPORT kndbgstream {
- /*
-   The API of kndbgstream must be kept in sync with kdbgstream. This means:
-     - every member function must be copied from kdbgstream to do
-       nothing.
-     - every function that operates on a kdbgstream must have a corresponding
-       function that operates on kndbgstream that does nothing.
-  */
  public:
     // Do not add dummy API docs to all methods, just ensure the whole class is skipped by doxygen
 
