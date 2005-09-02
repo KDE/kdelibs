@@ -19,7 +19,6 @@
 
 #include "ksettings/dialog.h"
 
-
 #include <kcmultidialog.h>
 #include <klocale.h>
 #include <kservicegroup.h>
@@ -30,10 +29,13 @@
 #include "ksettings/componentsdialog.h"
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
+#include <kinstance.h>
 #include <kiconloader.h>
 #include <q3vbox.h>
 #include <qlabel.h>
 #include "kcmoduleinfo.h"
+
+#include "q3valuelist.h"
 
 namespace KSettings
 {
