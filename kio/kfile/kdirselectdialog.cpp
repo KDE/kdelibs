@@ -25,6 +25,7 @@
 
 #include <kactionclasses.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
@@ -72,10 +73,10 @@ static KURL rootUrl(const KURL &url)
     KURL root = url;
     root.setPath( "/" );
 
-    if (!kapp->authorizeURLAction("list", KURL(), root))
+    if (!KAuthorized::self()->authorizeURLAction("list", KURL(), root))
     {
         root = KURL::fromPathOrURL( QDir::homeDirPath() );
-        if (!kapp->authorizeURLAction("list", KURL(), root))
+        if (!KAuthorized::self()->authorizeURLAction("list", KURL(), root))
         {
             root = url;
         }

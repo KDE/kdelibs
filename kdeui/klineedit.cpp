@@ -42,6 +42,7 @@
 #include <kurldrag.h>
 #include <kiconloader.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -157,7 +158,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
 
-    if ( kapp && !kapp->authorize("lineedit_text_completion") )
+    if ( kapp && !KAuthorized::self()->authorize("lineedit_text_completion") )
         mode = KGlobalSettings::CompletionNone;
 
     if ( mode == KGlobalSettings::CompletionPopupAuto ||
@@ -852,7 +853,7 @@ void KLineEdit::contextMenuEvent(QContextMenuEvent *e)
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
-    if ( compObj() && !isReadOnly() && kapp->authorize("lineedit_text_completion") )
+    if ( compObj() && !isReadOnly() && KAuthorized::self()->authorize("lineedit_text_completion") )
     {
         QMenu *subMenu = new QMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),

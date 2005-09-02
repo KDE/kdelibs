@@ -40,6 +40,8 @@
 #include <qthread.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
+#include <kauthorized.h>
 #include <kdebug.h>
 #include <kcompletion.h>
 #include <kurl.h>
@@ -114,7 +116,7 @@ protected:
 	void done()
 	{
 		if ( !m_terminationRequested )
-			kapp->postEvent( m_receiver, new CompletionMatchEvent( this ) );
+			qApp->postEvent( m_receiver, new CompletionMatchEvent( this ) );
 		else
 			delete this;
 	}
@@ -1082,7 +1084,7 @@ QString KURLCompletion::listDirectories(
 		{
 			KURL url;
 			url.setPath(*it);
-			if ( kapp->authorizeURLAction( "list", KURL(), url ) )
+			if ( KAuthorized::self()->authorizeURLAction( "list", KURL(), url ) )
 				dirs.append( *it );
 		}
 

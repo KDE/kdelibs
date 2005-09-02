@@ -30,6 +30,7 @@
 
 #include <kaboutdata.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kcmdlineargs.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleloader.h>
@@ -80,7 +81,7 @@ static void listModules(const QString &baseGroup)
      if (p->isType(KST_KService))
      {
         KService *s = static_cast<KService*>(p);
-        if (!kapp->authorizeControlModule(s->menuId()))
+        if (!KAuthorized::self()->authorizeControlModule(s->menuId()))
            continue;
         m_modules.append(s);
      }

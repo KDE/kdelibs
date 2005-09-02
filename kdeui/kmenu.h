@@ -24,6 +24,7 @@
 #include <kpixmap.h>
 #include <kdelibs_export.h>
 
+
 /**
  * @short A menu with keyboard searching
  *
@@ -78,6 +79,7 @@ public:
 
     /**
      * Returns the context menu associated with this menu
+     * The data property of all actions inserted into the context menu is modified all the time to point to the action and menu it has been shown for
      */
     QMenu* contextMenu();
 
@@ -153,5 +155,23 @@ private:
     class KMenuPrivate;
     KMenuPrivate *d;
 };
+
+/**
+ * custom variant type for QAction::data of kmenu context menus
+ * @author Joseph Wenninger <jowenn@kde.org>
+ */
+class KDEUI_EXPORT KMenuContext {
+	public:
+		KMenuContext():m_menu(0),m_action(0){}
+		KMenuContext(const KMenuContext& o):m_menu(o.m_menu),m_action(o.m_action){}
+		KMenuContext(QPointer<KMenu> menu,QPointer<QAction> action):m_menu(menu),m_action(action){}
+		inline QPointer<KMenu> menu() const {return m_menu;}
+		inline QPointer<QAction> action() const {return m_action;}
+	private:
+		QPointer<KMenu> m_menu;
+		QPointer<QAction> m_action;
+};
+
+
 
 #endif

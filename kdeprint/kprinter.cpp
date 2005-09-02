@@ -34,6 +34,7 @@
 #include <qdir.h>
 #include <qpointer.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -218,7 +219,7 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
-	if (!kapp->authorize("print/dialog"))
+	if (!KAuthorized::self()->authorize("print/dialog"))
 	{
 		autoConfigure(QString::null, parent);
 		return true; // Just print it

@@ -59,6 +59,7 @@
 #include <qwidget.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
@@ -1005,7 +1006,7 @@ bool DocLoader::needReload(const KURL &fullURL)
     KURL fullURL (m_doc->completeURL( url.string() )); \
     if ( !fullURL.isValid() || \
          ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
-         doRedirectCheck && ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
+         doRedirectCheck && ( kapp && m_doc && !KAuthorized::self()->authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
          return 0L;
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)

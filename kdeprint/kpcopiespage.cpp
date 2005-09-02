@@ -34,6 +34,8 @@
 #include <qlayout.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
+
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kseparator.h>
@@ -251,7 +253,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	connect(m_collate,SIGNAL(clicked()),SLOT(slotCollateClicked()));
 	connect(m_order,SIGNAL(clicked()),SLOT(slotCollateClicked()));
 
-	if (!kapp->authorize("print/copies"))
+	if (!KAuthorized::self()->authorize("print/copies"))
 	{
 		setTitle(i18n("Pages"));
 		m_copybox->hide();

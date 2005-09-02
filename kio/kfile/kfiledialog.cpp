@@ -45,6 +45,7 @@
 #include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kcharsets.h>
 #include <kcmdlineargs.h>
 #include <kcompletionbox.h>
@@ -502,7 +503,7 @@ void KFileDialog::slotOk()
             return;
     }
 
-    if (!kapp->authorizeURLAction("open", KURL(), d->url))
+    if (!KAuthorized::self()->authorizeURLAction("open", KURL(), d->url))
     {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyURL());
         KMessageBox::error( d->mainWidget, msg);
@@ -520,7 +521,7 @@ void KFileDialog::slotOk()
         for ( KURL::List::ConstIterator it = list.begin();
               it != list.end(); ++it )
         {
-            if (!kapp->authorizeURLAction("open", KURL(), *it))
+            if (!KAuthorized::self()->authorizeURLAction("open", KURL(), *it))
             {
                 QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyURL());
                 KMessageBox::error( d->mainWidget, msg);

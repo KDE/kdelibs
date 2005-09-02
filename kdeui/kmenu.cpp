@@ -39,6 +39,8 @@ public:
         , lastHitAction(0L)
         , state(Qt::NoButton)
         , m_ctxMenu(0)
+	, continueCtxMenuShow(true)
+	, highlightedAction(0)
     {}
 
     ~KMenuPrivate ()
@@ -62,14 +64,9 @@ public:
 
     // support for RMB menus on menus
     QMenu* m_ctxMenu;
-    static bool s_continueCtxMenuShow;
-    static QPointer<QAction> s_highlightedAction;
-    static KMenu* s_contextedMenu;
+    bool continueCtxMenuShow;
+    QPointer<QAction> highlightedAction;
 };
-
-QPointer<QAction> KMenu::KMenuPrivate::s_highlightedAction(0L);
-bool KMenu::KMenuPrivate::s_continueCtxMenuShow(true);
-KMenu* KMenu::KMenuPrivate::s_contextedMenu(0);
 
 KMenu::KMenu(QWidget *parent)
     : QMenu(parent)
@@ -81,12 +78,6 @@ KMenu::KMenu(QWidget *parent)
 
 KMenu::~KMenu()
 {
-    if (KMenuPrivate::s_contextedMenu == this)
-    {
-        KMenuPrivate::s_contextedMenu = 0;
-        KMenuPrivate::s_highlightedAction = 0L;
-    }
-
     delete d;
 }
 
@@ -344,20 +335,8 @@ const QMenu* KMenu::contextMenu() const
 
 void KMenu::hideContextMenu()
 {
-    KMenuPrivate::s_continueCtxMenuShow = false;
+    d->continueCtxMenuShow = false;
 }
-
-#if 0
-QAction* KMenu::contextMenuFocusAction()
-{
-    return KMenuPrivate::s_highlightedAction;
-}
-
-KMenu* KMenu::contextMenuFocus()
-{
-    return KMenuPrivate::s_contextedMenu;
-}
-#endif
 
 void KMenu::actionHovered(QAction* action)
 {
@@ -370,35 +349,45 @@ void KMenu::actionHovered(QAction* action)
     showCtxMenu(actionGeometry(action).center());
 }
 
+
+static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contextedAction) {
+	QList<QAction*> actions=menu->actions();
+	QVariant v;
+	v.setValue(KMenuContext(contextedMenu,contextedAction));
+	for(int i=0;i<actions.count();i++) {
+		actions[i]->setData(v);
+	}
+}
+
 void KMenu::showCtxMenu(QPoint pos)
 {
-    if (KMenuPrivate::s_highlightedAction)
-        if (QMenu* subMenu = KMenuPrivate::s_highlightedAction->menu())
+    if (d->highlightedAction)
+        if (QMenu* subMenu = d->highlightedAction->menu())
             disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
 
-    KMenuPrivate::s_highlightedAction = activeAction();
+    d->highlightedAction = activeAction();
 
-    if (!KMenuPrivate::s_highlightedAction)
+    if (d->highlightedAction)
     {
-        KMenuPrivate::s_contextedMenu = 0;
+	KMenuSetActionData(this,0,0);
         return;
     }
 
-    emit aboutToShowContextMenu(this, KMenuPrivate::s_highlightedAction, d->m_ctxMenu);
+    emit aboutToShowContextMenu(this, d->highlightedAction, d->m_ctxMenu);
+    KMenuSetActionData(this,this,d->highlightedAction);
 
-    if (QMenu* subMenu = KMenuPrivate::s_highlightedAction->menu())
+    if (QMenu* subMenu = d->highlightedAction->menu())
     {
         connect(subMenu, SIGNAL(aboutToShow()), SLOT(ctxMenuHideShowingMenu()));
         QTimer::singleShot(100, subMenu, SLOT(hide()));
     }
 
-    if (!KMenuPrivate::s_continueCtxMenuShow)
+    if (!d->continueCtxMenuShow)
     {
-        KMenuPrivate::s_continueCtxMenuShow = true;
+        d->continueCtxMenuShow = true;
         return;
     }
 
-    KMenuPrivate::s_contextedMenu = this;
     d->m_ctxMenu->exec(this->mapToGlobal(pos));
     connect(this, SIGNAL(hovered(QAction*)), SLOT(actionHovered(QAction*)));
 }
@@ -409,19 +398,19 @@ void KMenu::showCtxMenu(QPoint pos)
  */
 void KMenu::ctxMenuHideShowingMenu()
 {
-    if (KMenuPrivate::s_highlightedAction)
-        if (QMenu* subMenu = KMenuPrivate::s_highlightedAction->menu())
+    if (d->highlightedAction)
+        if (QMenu* subMenu = d->highlightedAction->menu())
             QTimer::singleShot(0, subMenu, SLOT(hide()));
 }
 
 void KMenu::ctxMenuHiding()
 {
-    if (KMenuPrivate::s_highlightedAction)
-        if (QMenu* subMenu = KMenuPrivate::s_highlightedAction->menu())
+    if (d->highlightedAction)
+        if (QMenu* subMenu = d->highlightedAction->menu())
             disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
 
     connect(this, SIGNAL(hovered(QAction*)), this, SLOT(actionHovered(QAction*)));
-    KMenuPrivate::s_continueCtxMenuShow = true;
+    d->continueCtxMenuShow = true;
 }
 
 void KMenu::contextMenuEvent(QContextMenuEvent* e)
@@ -468,5 +457,8 @@ void KMenu::hideEvent(QHideEvent *e)
 
 void KMenu::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+
+Q_DECLARE_METATYPE(KMenuContext)
 
 #include "kmenu.moc"

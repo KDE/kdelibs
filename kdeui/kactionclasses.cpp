@@ -38,6 +38,7 @@
 #include <dcopref.h>
 #include <kaccel.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kfontcombo.h>
@@ -138,7 +139,7 @@ int KToggleAction::plug( QWidget* widget, int index )
     kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
   }
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
 
   int _index = KAction::plug( widget, index );
@@ -632,7 +633,7 @@ void KSelectAction::updateItems( int id )
 
 int KSelectAction::plug( QWidget *widget, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<Q3PopupMenu*>( widget) )
@@ -1287,7 +1288,7 @@ void KRecentFilesAction::menuAboutToShow()
 
 int KRecentFilesAction::plug( QWidget *widget, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   // This is very related to KActionMenu::plug.
   // In fact this class could be an interesting base class for KActionMenu
@@ -1505,7 +1506,7 @@ void KFontAction::setFont( const QString &family )
 
 int KFontAction::plug( QWidget *w, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   if ( qobject_cast<KToolBar*>( w ) )
   {
@@ -1776,7 +1777,7 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( qobject_cast<Q3PopupMenu*>( widget ) )
@@ -1922,7 +1923,7 @@ void KToolBarPopupAction::setStickyMenu(bool sticky) {
 
 int KToolBarPopupAction::plug( QWidget *widget, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   // This is very related to KActionMenu::plug.
   // In fact this class could be an interesting base class for KActionMenu
@@ -2001,7 +2002,7 @@ KToggleToolBarAction::~KToggleToolBarAction()
 
 int KToggleToolBarAction::plug( QWidget* w, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
       return -1;
 
   if ( !m_toolBar ) {
@@ -2133,7 +2134,7 @@ void KWidgetAction::setAutoSized( bool autoSized )
 
 int KWidgetAction::plug( QWidget* w, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
       return -1;
 
   if ( !qobject_cast<KToolBar*>( w ) ) {
@@ -2266,7 +2267,7 @@ void KPasteTextAction::setMixedMode(bool mode)
 
 int KPasteTextAction::plug( QWidget *widget, int index )
 {
-  if (kapp && !kapp->authorizeKAction(name()))
+  if (kapp && !KAuthorized::self()->authorizeKAction(name()))
     return -1;
   if ( qobject_cast<KToolBar*>( widget ) )
   {

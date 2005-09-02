@@ -41,7 +41,7 @@
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
- * FIXME KDE4 rename this file to kmenu.h
+ * FIXME KDE4 rename this file to k3popupmenu.h and move it to kde3support (if needed at all)
  */
 class KDEUI_EXPORT KPopupMenu : public Q3PopupMenu {
     Q_OBJECT

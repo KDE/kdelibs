@@ -31,6 +31,7 @@
 #include <kaboutkde.h>
 #include <kaction.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kbugreport.h>
 #include <kdialogbase.h>
 #include <khelpmenu.h>
@@ -120,7 +121,7 @@ KPopupMenu* KHelpMenu::menu()
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     bool need_separator = false;
-    if (kapp->authorizeKAction("help_contents"))
+    if (KAuthorized::self()->authorizeKAction("help_contents"))
     {
       mMenu->insertItem( BarIconSet( "contents", KIcon::SizeSmall),
                      i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
@@ -129,7 +130,7 @@ KPopupMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
-    if( mShowWhatsThis && kapp->authorizeKAction("help_whats_this") )
+    if( mShowWhatsThis && KAuthorized::self()->authorizeKAction("help_whats_this") )
     {
       QToolButton* wtb = Q3WhatsThis::whatsThisButton(0);
       mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
@@ -139,7 +140,7 @@ KPopupMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
-    if (kapp->authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
+    if (KAuthorized::self()->authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
     {
       if (need_separator)
         mMenu->insertSeparator();
@@ -151,14 +152,14 @@ KPopupMenu* KHelpMenu::menu()
     if (need_separator)
       mMenu->insertSeparator();
 
-    if (kapp->authorizeKAction("help_about_app"))
+    if (KAuthorized::self()->authorizeKAction("help_about_app"))
     {
       mMenu->insertItem( QIcon(kapp->miniIcon()),
         i18n( "&About %1" ).arg(appName), menuAboutApp );
       mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
     }
     
-    if (kapp->authorizeKAction("help_about_kde"))
+    if (KAuthorized::self()->authorizeKAction("help_about_kde"))
     {
       mMenu->insertItem( SmallIconSet("about_kde"), i18n( "About &KDE" ), menuAboutKDE );
       mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );

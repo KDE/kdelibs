@@ -96,13 +96,6 @@ public:
      */
     bool customPainting() const { return m_bCustomPaint; }
 
-#ifndef KDE_NO_COMPAT
-    /**
-     * Deprecated, use isAvailable() instead.
-     * @deprecated
-     */
-    KDE_DEPRECATED bool checkAvailable(bool) { return isAvailable(); }
-#endif
 
     /** @since 3.2
      * @return the fade color.

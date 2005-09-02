@@ -27,6 +27,7 @@
 #include "kbookmarkdrag.h"
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
@@ -480,7 +481,7 @@ void KBookmarkMenu::refill()
 
 void KBookmarkMenu::addAddBookmarksList()
 {
-  if (!kapp->authorizeKAction("bookmarks"))
+  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "Bookmark Tabs as Folder..." );
@@ -500,7 +501,7 @@ void KBookmarkMenu::addAddBookmarksList()
 
 void KBookmarkMenu::addAddBookmark()
 {
-  if (!kapp->authorizeKAction("bookmarks"))
+  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "Add Bookmark" );
@@ -520,7 +521,7 @@ void KBookmarkMenu::addAddBookmark()
 
 void KBookmarkMenu::addEditBookmarks()
 {
-  if (!kapp->authorizeKAction("bookmarks"))
+  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
      return;
 
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
@@ -532,7 +533,7 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
-  if (!kapp->authorizeKAction("bookmarks"))
+  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "&New Bookmark Folder..." );
@@ -555,7 +556,7 @@ void KBookmarkMenu::addNewFolder()
 
 void KBookmarkMenu::fillBookmarkMenu()
 {
-  if (!kapp->authorizeKAction("bookmarks"))
+  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
      return;
 
   if ( m_bIsRoot )

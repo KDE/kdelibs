@@ -42,6 +42,7 @@ extern "C" {
 #include <qfile.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
@@ -673,7 +674,7 @@ void MkdirJob::start(Slave *slave)
 void MkdirJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "MkdirJob::slotRedirection(" << url << ")" << endl;
-     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::self()->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "MkdirJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        m_error = ERR_ACCESS_DENIED;
@@ -808,7 +809,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "StatJob::slotRedirection(" << url << ")" << endl;
-     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::self()->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "StatJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        m_error = ERR_ACCESS_DENIED;
@@ -903,7 +904,7 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "TransferJob::slotRedirection(" << url << ")" << endl;
-     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::self()->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "TransferJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        return;
@@ -1310,7 +1311,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
       _url.setPath("/");
     }
 
-    if (!_error && !kapp->authorizeURLAction("open", KURL(), _url))
+    if (!_error && !KAuthorized::self()->authorizeURLAction("open", KURL(), _url))
         _error = KIO::ERR_ACCESS_DENIED;
 
     // if request is not valid, return an invalid transfer job
@@ -2046,7 +2047,7 @@ void ListJob::slotResult( KIO::Job * job )
 
 void ListJob::slotRedirection( const KURL & url )
 {
-     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::self()->authorizeURLAction("redirect", m_url, url))
      {
        kdWarning(7007) << "ListJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        return;
@@ -2119,7 +2120,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 
 void ListJob::start(Slave *slave)
 {
-    if (kapp && !kapp->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    if (kapp && !KAuthorized::self()->authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
         m_error = ERR_ACCESS_DENIED;
         m_errorText = m_url.url();
@@ -4334,7 +4335,7 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
-  if (kapp && !kapp->authorizeURLAction("redirect", m_url, url))
+  if (kapp && !KAuthorized::self()->authorizeURLAction("redirect", m_url, url))
   {
      kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url << " to " << url << " REJECTED!" << endl;
      return;

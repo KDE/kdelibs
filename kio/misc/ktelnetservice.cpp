@@ -22,6 +22,7 @@
 // $Id$
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
             return 2;
         }
         
-        if (!app.authorize("shell_access"))
+        if (!KAuthorized::self()->authorize("shell_access"))
         {
             KMessageBox::sorry(0, 
             	i18n("You do not have permission to access the %1 protocol.").arg(url.protocol()));

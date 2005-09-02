@@ -38,6 +38,7 @@
 
 #include <ksimpleconfig.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
@@ -707,7 +708,7 @@ bool KService::noDisplay() const {
         return true;
   }
   
-  if (!kapp->authorizeControlModule(d->menuId))
+  if (!KAuthorized::self()->authorizeControlModule(d->menuId))
      return true;
   
   return false;

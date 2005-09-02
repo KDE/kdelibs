@@ -19,6 +19,7 @@
 */
 
 #include "kapplication.h"
+#include "kauthorized.h"
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"
 #include "kpopupmenu.h"
@@ -151,7 +152,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     Q3CString name = element.attribute( d->attrName ).utf8();
 
-    if (!kapp->authorizeKAction(name))
+    if (!KAuthorized::self()->authorizeKAction(name))
        return 0;
 
     KPopupMenu *popup = new KPopupMenu(p);

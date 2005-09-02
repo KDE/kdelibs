@@ -34,6 +34,7 @@
 #include <qstyle.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kbuttonbox.h>
 #include <kcombobox.h>
 #include <kdesktopfile.h>
@@ -402,7 +403,7 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
 {
   d = new KOpenWithDlgPrivate;
-  bool bReadOnly = kapp && !kapp->authorize("shell_access");
+  bool bReadOnly = kapp && !KAuthorized::self()->authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;

@@ -61,6 +61,7 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kio/renamedlg.h>
 
 #include <time.h>
@@ -409,9 +410,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect( d->m_file, SIGNAL( openFileDialog( KURLRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
-	d->b_optionsEnabled = kapp->authorize("print/options") && kapp->authorize("print/selection");
-	d->b_propertiesEnabled = kapp->authorize("print/properties") && kapp->authorize("print/selection");
-	d->b_systemEnabled = kapp->authorize("print/system") && kapp->authorize("print/selection");
+	d->b_optionsEnabled = KAuthorized::self()->authorize("print/options") && KAuthorized::self()->authorize("print/selection");
+	d->b_propertiesEnabled = KAuthorized::self()->authorize("print/properties") && KAuthorized::self()->authorize("print/selection");
+	d->b_systemEnabled = KAuthorized::self()->authorize("print/system") && KAuthorized::self()->authorize("print/selection");
 	                
 	if (!d->b_systemEnabled)
 	{
@@ -429,7 +430,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 		d->m_wizard->hide();
 	}
 
-	if (!kapp->authorize("print/selection"))
+	if (!KAuthorized::self()->authorize("print/selection"))
 	{
 		d->m_extbtn->hide();
 		m_pbox->hide();

@@ -40,6 +40,7 @@
 #include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <khelpmenu.h>
@@ -257,7 +258,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     else
         d->m_interface = new KMainWindowInterface(this);
 
-    if (!kapp->authorize("movable_toolbars"))
+    if (!KAuthorized::self()->authorize("movable_toolbars"))
         setDockWindowsMovable(false);
 }
 

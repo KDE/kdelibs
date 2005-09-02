@@ -68,6 +68,7 @@ extern "C" {
 #include <q3progressbar.h>
 
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kdialog.h>
 #include <kdirsize.h>
 #include <kdirwatch.h>
@@ -476,7 +477,7 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-  if ( kapp->authorizeKAction("sharefile") &&
+  if ( KAuthorized::self()->authorizeKAction("sharefile") &&
        KFileSharePropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
@@ -921,7 +922,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
-    if (!kapp->authorizeKAction("editfiletype"))
+    if (!KAuthorized::self()->authorizeKAction("editfiletype"))
        button->hide();
 #endif
 
@@ -3385,7 +3386,7 @@ bool KDesktopPropsPlugin::supports( KFileItemList _items )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType() && kapp->authorize("run_desktop_files") && kapp->authorize("shell_access");
+  return config.hasApplicationType() && KAuthorized::self()->authorize("run_desktop_files") && KAuthorized::self()->authorize("shell_access");
 }
 
 void KPropertiesDialog::virtual_hook( int id, void* data )
@@ -3663,7 +3664,7 @@ bool KExecPropsPlugin::supports( KFileItemList _items )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType() && kapp->authorize("run_desktop_files") && kapp->authorize("shell_access");
+  return config.hasApplicationType() && KAuthorized::self()->authorize("run_desktop_files") && KAuthorized::self()->authorize("shell_access");
 }
 
 void KExecPropsPlugin::applyChanges()

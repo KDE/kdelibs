@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kaction.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 
 #include <assert.h>
 
@@ -292,7 +293,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     {
       QByteArray name =  e.attribute( attrName ).utf8(); // WABA
       if ( !actionCollection->action( name.data() ) ||
-           (kapp && !kapp->authorizeKAction(name)))
+           (kapp && !KAuthorized::self()->authorizeKAction(name)))
       {
         // remove this child as we aren't using it
         base.removeChild( e );

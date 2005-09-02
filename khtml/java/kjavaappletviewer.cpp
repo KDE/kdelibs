@@ -29,6 +29,7 @@
 #include <qpointer.h>
 #include <qlabel.h>
 
+#include <kauthorized.h>
 #include <klibloader.h>
 #include <kaboutdata.h>
 #include <kstaticdeleter.h>
@@ -304,7 +305,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     // check codebase first
     const KURL kbaseURL( baseurl );
     const KURL newURL(kbaseURL, codebase);
-    if (kapp->authorizeURLAction("redirect", KURL(baseurl), newURL))
+    if (KAuthorized::self()->authorizeURLAction("redirect", KURL(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);

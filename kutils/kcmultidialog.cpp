@@ -28,6 +28,7 @@
 
 #include <kaboutdata.h>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <klibloader.h>
@@ -240,7 +241,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     if( !moduleinfo.service() )
         return;
 
-    if ( !kapp->authorizeControlModule( moduleinfo.service()->menuId() ))
+    if ( !KAuthorized::self()->authorizeControlModule( moduleinfo.service()->menuId() ))
             return;
 
     if( !KCModuleLoader::testModule( moduleinfo ))

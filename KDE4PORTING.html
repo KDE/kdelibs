@@ -52,6 +52,18 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>KLibFactory</H4>
 
+<H4>NETRootInfo</H4>
+<ul>
+<li>NETRootInfo(Display *display, Window supportWindow, const char *wmName,unsigned long properties, int screen = -1, bool doActivate = true) -&gt;
+    NETRootInfo(Display *display, Window supportWindow, const char *wmName,
+                const unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);     old properties is the first element of the new array
+</li>
+<li>unsigned long supported() -&gt;   const unsigned long* supportedProperties() const;</li>
+<li>    unsigned long properties() const -&gt; gone</li>
+<li> WindowType windowType() -&gt;     WindowType windowType( unsigned long supported_types ) const;</li>
+</ul>
+
 <H4>KDesktopFile</H4>
 <p>QString filename() const -> QString fileName() const</p>
 
@@ -123,6 +135,10 @@ KURL::List::addToMimeData() and the static method KURL::List::fromMimeData() ins
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
 
+<H4>KRootPixmap</H4>
+<ul>
+<li>checkAvailable() -&gt; isAvailable()</li>
+</ul>
 <H4>KDialogBase><H4>
 <li>setButtonOKText -&gt; setButtonOk
 <li>setButtonApplyText -&gt; setButtonApply

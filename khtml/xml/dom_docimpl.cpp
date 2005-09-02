@@ -60,7 +60,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-
+#include <kauthorized.h>
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
 #include <krfcdate.h>
@@ -2227,7 +2227,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
         return false;
 
     // do we allow this suburl ?
-    if ( !kapp || (newURL.protocol() != "javascript" && !kapp->authorizeURLAction("redirect", thisPart->url(), newURL)) )
+    if ( !kapp || (newURL.protocol() != "javascript" && !KAuthorized::self()->authorizeURLAction("redirect", thisPart->url(), newURL)) )
         return false;
 
     // We allow one level of self-reference because some sites depend on that.

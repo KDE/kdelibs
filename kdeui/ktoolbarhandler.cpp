@@ -20,6 +20,7 @@
 
 #include <QMenu>
 #include <kapplication.h>
+#include <kauthorized.h>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 #include <klocale.h>
@@ -175,7 +176,7 @@ void ToolBarHandler::setupActions()
                  this, SLOT( setupActions() ) );
                  */
 
-    if (kapp && kapp->authorizeKAction("options_show_toolbar"))
+    if (kapp && KAuthorized::self()->authorizeKAction("options_show_toolbar"))
 	plugActionList( actionListName, m_actions );
 
     connectToActionContainers();
