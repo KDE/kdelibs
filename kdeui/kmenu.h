@@ -16,10 +16,12 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KPOPUP_H
-#define _KPOPUP_H
+#ifndef _KMENU_H
+#define _KMENU_H
 
 #include <QMenu>
+#include <QPointer>
+#include <QAction>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
 #include <kdelibs_export.h>
