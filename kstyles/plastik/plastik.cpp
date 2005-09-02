@@ -776,9 +776,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     // draw double buffered to avoid flickr...
                     QPixmap buffer;
                     if(hor) {
-                        buffer.resize(2, r.width() );
+                        buffer.resize(2, r.height() );
                     } else {
-                        buffer.resize(r.height(), 2 );
+                        buffer.resize(r.width(), 2 );
                     }
                     QRect br(buffer.rect() );
                     QPainter bp(&buffer);
@@ -805,7 +805,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     bp.end();
 
-                    p->drawTiledPixmap(r, buffer);
+                    p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2);
 
                     return;
                 }
