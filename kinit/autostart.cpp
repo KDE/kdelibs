@@ -27,6 +27,8 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
+#include <q3ptrlist.h>
+
 class AutoStartItem
 {
 public:
