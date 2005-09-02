@@ -18,13 +18,13 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qregexp.h>
 #include <qstring.h>
 #include <qicon.h>
 #include <qpixmap.h>
 
 #include <assert.h>
 #include <kiconloader.h>
+#include <kinstance.h>
 #include <kdebug.h>
 
 #include "kguiitem.h"
