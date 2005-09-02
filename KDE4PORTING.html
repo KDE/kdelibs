@@ -147,14 +147,16 @@ KURL::List::addToMimeData() and the static method KURL::List::fromMimeData() ins
 <li>getContentsRect -&gt; gone
 <li>getBorderWidths -&gt; gone
 
-
-
 <H4>KDatePicker</H4>
 
 <li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);
 <li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);
 <li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)
 <li>removed getData() method.  Use date() instead</li>
+
+<H4>KDockWindow<H4>
+<p>This class is obsolete, it is provided for compatibility only.
+Use KSystemTray instead.</p>
 
 <H4>KDateWidget</H4>
 <li>signal void changed(QDate); was changed by void changed(const QDate&amp;)
