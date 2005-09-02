@@ -432,42 +432,11 @@ class KDECORE_EXPORT kndbgstream {
 
     kndbgstream() {}
     ~kndbgstream() {}
-    kndbgstream &operator<<(short int )  { return *this; }
-    kndbgstream &operator<<(unsigned short int )  { return *this; }
-    kndbgstream &operator<<(char )  { return *this; }
-    kndbgstream &operator<<(unsigned char )  { return *this; }
-    kndbgstream &operator<<(int )  { return *this; }
-    kndbgstream &operator<<(unsigned int )  { return *this; }
-    void flush() {}
-    kndbgstream &operator<<(QChar)  { return *this; }
-    kndbgstream &operator<<(const QString& ) { return *this; }
-    kndbgstream &operator<<(const QByteArray& ) { return *this; }
-    kndbgstream &operator<<(const char *) { return *this; }
-    kndbgstream& operator<<(const void *) { return *this; }
-    kndbgstream& operator<<(void *) { return *this; }
-    kndbgstream& operator<<(double) { return *this; }
-    kndbgstream& operator<<(long) { return *this; }
-    kndbgstream& operator<<(unsigned long) { return *this; }
-    kndbgstream& operator<<(qlonglong) { return *this; }
-    kndbgstream& operator<<(qulonglong) { return *this; }
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
-    kndbgstream& operator << (const QWidget*) { return *this; }
+    template <typename T>
+    kndbgstream& operator<<(const T &) { return *this; }
+    void flush() {}
     kndbgstream &form(const char *, ...) { return *this; }
-    kndbgstream& operator<<( const QDateTime& ) { return *this; }
-    kndbgstream& operator<<( const QDate&     ) { return *this; }
-    kndbgstream& operator<<( const QTime&     ) { return *this; }
-    kndbgstream& operator<<( const QPoint & )  { return *this; }
-    kndbgstream& operator<<( const QSize & )  { return *this; }
-    kndbgstream& operator<<( const QRect & )  { return *this; }
-    kndbgstream& operator<<( const QRegion & ) { return *this; }
-    kndbgstream& operator<<( const KURL & )  { return *this; }
-    kndbgstream& operator<<( const QStringList & ) { return *this; }
-    kndbgstream& operator<<( const QColor & ) { return *this; }
-    kndbgstream& operator<<( const QPen & ) { return *this; }
-    kndbgstream& operator<<( const QBrush & ) { return *this; }
-    kndbgstream& operator<<( const QVariant & ) { return *this; }
-    template <class T>
-    kndbgstream& operator<<( const QList<T> & ) { return *this; }
 };
 
 inline kndbgstream &endl( kndbgstream & s) { return s; }
