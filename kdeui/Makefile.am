@@ -39,7 +39,7 @@ pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordlg.h \
 		kcolordialog.h kselect.h \
-		kdatepik.h kdatepicker.h kdatetbl.h kfontdialog.h kpopupmenu.h \
+		kdatepik.h kdatepicker.h kdatetbl.h kfontdialog.h kpopupmenu.h kmenu.h \
 		kfontrequester.h ktabctl.h kstatusbar.h \
 		kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
@@ -84,7 +84,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
 		ksharedpixmap.cpp kpixmapio.cpp \
-		kpopupmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp \
+		kpopupmenu.cpp kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp \
 		kactioncollection.cpp kactionclasses.cpp \
 		kurllabel.cpp kmenubar.cpp kinputdialog.cpp \
 		knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp \
