@@ -1,3 +1,7 @@
+// DO NOT BOTHER PORTING THIS, I'M DOING IT CURRENTLY (MiB)
+
+//*******************************************************************//
+
 /* This file is part of the KDE libraries
     Copyright (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
