@@ -206,7 +206,9 @@ KAuthorized  *KAuthorized::self() {
   return s_self;
 }
 
-
+KAuthorized::~KAuthorized ()
+{
+}
 
 KAuthorized::KAuthorized():d(new KAuthorized::Private()) {
   Q_ASSERT_X(qApp,"KAuthorized()","There has to be an existing qapp pointer");

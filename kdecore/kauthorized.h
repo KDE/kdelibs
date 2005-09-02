@@ -35,6 +35,7 @@ class KDECORE_EXPORT KAuthorized
 {
 public:
   static KAuthorized* self();
+  virtual ~KAuthorized ();
 
 private:
   KAuthorized();
