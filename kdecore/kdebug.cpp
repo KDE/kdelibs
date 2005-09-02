@@ -444,7 +444,7 @@ kdbgstream& kdbgstream::operator << (QChar ch)
 
 kdbgstream& kdbgstream::operator<<(const QString& string)
 {
-    if (!d->print)
+    if ( !d->print )
         return *this;
 
     d->output += string;
@@ -458,54 +458,62 @@ kdbgstream& kdbgstream::operator << (const QWidget* widget)
   if (!d->print)
       return *this;
 
-  QString string;
-  // -----
-  if(widget==0)
-    {
-      string = QString::fromAscii("[Null pointer]");
-    } else {
-      string = QString::fromAscii("[%1 pointer(0x%2)").arg(QString::fromUtf8(widget->className()))
-                    .arg(QString::number(ulong(widget), 16)
-		         .rightJustified(8, QLatin1Char('0')));
+  if(widget==0) {
+      d->output += QLatin1String("[Null pointer]");
+  } else {
+      d->output += QString::fromAscii("[%1 pointer(0x%2)")
+                         .arg(QString::fromUtf8(widget->className()))
+                         .arg(QString::number(ulong(widget), 16)
+		              .rightJustified(8, QLatin1Char('0')));
       if(widget->objectName().isEmpty()) {
-	  string += QString::fromAscii( " to unnamed widget, " );
+	  d->output += QLatin1String( " to unnamed widget, " );
       } else {
-	  string += QString::fromAscii(" to widget %1, ").arg(widget->objectName());
+	  d->output += QString::fromAscii(" to widget %1, ")
+	                    .arg(widget->objectName());
       }
-      string += QString::fromAscii("geometry=%1x%2+%3+%4]").arg(widget->width())
-                .arg(widget->height())
-                .arg(widget->x())
-                .arg(widget->y());
-    }
-  return *this << string;
+      d->output += QString::fromAscii("geometry=%1x%2+%3+%4]")
+                       .arg(widget->width()).arg(widget->height())
+                       .arg(widget->x()).arg(widget->y());
+  }
+  return *this;
 }
+
 /*
- * either use 'output' directly and do the flush if needed
- * or use the QString operator which calls the char* operator
- *
+ * When printing a string:
+ *  - if no newline can possibly be in the string, use d->output directly
+ *  - otherwise you have two choices:
+ *      a) use d->output and do the flush if needed
+ *      b) or use the QString operator which calls the char* operator
  */
 kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
-    *this << time.toString();
+    if ( d->print )
+        d->output += time.toString();
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QDate& date) {
-    *this << date.toString();
+    if ( d->print )
+        d->output += date.toString();
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QTime& time ) {
-    *this << time.toString();
+    if ( d->print )
+        d->output += time.toString();
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( KDBGFUNC f ) {
-    if (!d->print) return *this;
-    return (*f)(*this);
+    if ( d->print )
+        return (*f)(*this);
+    return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
-    *this << QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
+    if ( d->print )
+        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QSize& s ) {
-    *this << QString::fromAscii("[%1x%2]").arg(s.width()).arg(s.height());
+    if ( d->print )
+        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
+	                 .arg(s.height());
     return *this;
 }
 static QString s_rectString(const QRect& r)
@@ -514,21 +522,27 @@ static QString s_rectString(const QRect& r)
     return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
 }
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
-    *this << s_rectString( r );
+    if( d->print )
+        d->output += s_rectString( r );
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
-    *this<< "[ ";
+    if( !d->print )
+        return *this;
+
+    d->output += QLatin1String( "[ " );
 
     QVector<QRect>rs=reg.rects();
     for (int i=0;i<rs.size();++i)
-        *this << s_rectString( rs[i] ) + QLatin1Char( ' ' );
+        d->output += s_rectString( rs[i] ) + QLatin1Char( ' ' );
 
-    *this <<"]";
+    d->output += QLatin1String( "]" );
+
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const KURL& u ) {
-    *this << u.prettyURL();
+    if ( d->print )
+        d->output += u.prettyURL();
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
@@ -536,13 +550,15 @@ kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
     return *this << static_cast<QList<QString> >(l);
 }
 static QString s_makeColorName(const QColor& c) {
-    QString s = QString::fromAscii("(invalid/default)");
+    QString s = QLatin1String("(invalid/default)");
     if ( c.isValid() )
         s = c.name();
     return s;
 }
 kdbgstream& kdbgstream::operator<<( const QColor& c ) {
-    return *this << s_makeColorName( c );
+    if ( d->print )
+        d->output += s_makeColorName( c );
+    return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QPen& p ) {
     static const char* const s_penStyles[] = {
@@ -550,15 +566,21 @@ kdbgstream& kdbgstream::operator<<( const QPen& p ) {
         "DashDotDotLine" };
     static const char* const s_capStyles[] = {
         "FlatCap", "SquareCap", "RoundCap" };
-    *this << "[ style:" << s_penStyles[ p.style() ];
-    *this << " width:" << p.width();
-    *this << " color:" << s_makeColorName( p.color() );
+
+    if ( !d->print )
+        return *this;
+
+    d->output += QLatin1String("[ style:");
+    d->output += QLatin1String(s_penStyles[ p.style() ]);
+    d->output += QString::fromAscii(" width:%1").arg(p.width());
+    d->output += QLatin1String(" color:") + s_makeColorName( p.color() );
     if ( p.width() > 0 ) // cap style doesn't matter, otherwise
     {
-        *this << " capstyle:" << s_capStyles[ p.capStyle() >> 4 ];
+        d->output += QLatin1String(" capstyle:") +
+	             QLatin1String(s_capStyles[ p.capStyle() >> 4 ]);
         // join style omitted
     }
-    *this <<" ]";
+    d->output += QLatin1String(" ]");
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QBrush& b) {
@@ -570,21 +592,28 @@ kdbgstream& kdbgstream::operator<<( const QBrush& b) {
         "RadialGradientPattern", "TexturePattern"
     };
 
-    *this <<"[ style: " << s_brushStyles[ b.style() ];
-    *this <<" color: " << s_makeColorName( b.color() );
+    d->output += QLatin1String("[ style: ");
+    d->output += QLatin1String(s_brushStyles[ b.style() ]);
+    d->output += QLatin1String(" color: ");
+    d->output += s_makeColorName( b.color() );
     if ( b.pixmap() )
-        *this <<" has a pixmap";
-    *this <<" ]";
+        d->output += QLatin1String(" has a pixmap");
+    d->output += QLatin1String(" ]");
     return *this;
 }
 
 kdbgstream& kdbgstream::operator<<( const QVariant& v) {
-    *this << "[variant: " << v.typeName();
+    if ( !d->print )
+        return *this;
+
+    d->output += QLatin1String("[variant: ") +
+                 QLatin1String( v.typeName() );
+
     // For now we just attempt a conversion to string.
     // Feel free to switch(v.type()) and improve the output.
     if ( v.canConvert(QVariant::String) )
-        *this << " toString=" << v.toString();
-    *this << "]";
+        *this << QLatin1String(" toString=") + v.toString();
+    d->output += QLatin1Char(']');
     return *this;
 }
 
@@ -607,7 +636,7 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
             d->output += QLatin1String("...");
         d->output += QLatin1Char(']');
     } else {
-        d->output += QString::fromAscii( data ); // using ascii as advertised
+        d->output += QLatin1String( data ); // using ascii as advertised
     }
     return *this;
 }
@@ -628,8 +657,8 @@ QString kdBacktrace(int levels)
 
     for (int i = 0; i < n; ++i)
         s += QString::number(i) +
-             QString::fromAscii(": ") +
-             QString::fromLatin1(strings[i]) + QString::fromAscii("\n");
+             QLatin1String(": ") +
+             QString::fromLatin1(strings[i]) + QLatin1String("\n");
     s += QLatin1String("]\n");
     if (strings)
         free (strings);
