@@ -40,6 +40,7 @@
 #include <qfileinfo.h>
 #include <kglobal.h>
 #include <kiconloader.h>
+#include <kinstance.h>
 #include <qstringlist.h>
 #include <kio/passdlg.h>
 #include <kguiitem.h>

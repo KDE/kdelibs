@@ -25,6 +25,7 @@
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
 #include <klibloader.h>
+#include <q3cstring.h>
 #include <q3valuevector.h>
 
 #if !defined( SIMPLE_XSLT )

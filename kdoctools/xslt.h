@@ -4,6 +4,8 @@
 #include <libxml/parser.h>
 #include <q3valuevector.h>
 
+class Q3CString;
+
 QString transform(const QString &file, const QString& stylesheet,
                   const Q3ValueVector<const char *> &params = Q3ValueVector<const char *>());
 QString splitOut(const QString &parsed, int index);
