@@ -220,7 +220,6 @@ void Addressee::setNameFromString( const QString &str )
     QStringList inclusionList;
     for ( int n = 1; (rightOffset - n >= 0) && (n < 4); ++n ) {
       if ( helper->containsPrefix( parts[ rightOffset - n ].lower() ) ) {
-        qDebug( "add %s", parts[ rightOffset - n ].latin1()  );
         inclusionList.prepend( parts[ rightOffset - n ] );
       } else
         break;
