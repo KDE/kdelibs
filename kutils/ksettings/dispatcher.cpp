@@ -19,11 +19,13 @@
 
 #include "ksettings/dispatcher.h"
 
+#include <q3strlist.h>
 #include <q3signal.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kinstance.h>
 #include <assert.h>
 
 namespace KSettings
