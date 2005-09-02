@@ -1607,9 +1607,9 @@ void PlastikStyle::drawPrimitive(PrimitiveElement pe,
             // draw double buffered to avoid flicker...
             QPixmap buffer;
             if(flags & Style_Horizontal) {
-                buffer.resize(2, r.width() );
+                buffer.resize(2, r.height() );
             } else {
-                buffer.resize(r.height(), 2 );
+                buffer.resize(r.width(), 2 );
             }
             QRect br(buffer.rect() );
             QPainter bp(&buffer);
