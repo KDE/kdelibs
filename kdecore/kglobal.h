@@ -19,8 +19,8 @@
 #define _KGLOBAL_H
 
 #include "kdelibs_export.h"
-#include <kinstance.h> // KDE4: class KInstance is enough here
 
+class KInstance;
 class KCharsets;
 class KConfig;
 class KSharedConfig;
@@ -93,39 +93,39 @@ public:
      * Creates a static QString.
      *
      * To be used inside functions(!) like:
-     * \code
+     * @code
      * static const QString &myString = KGlobal::staticQString("myText");
-     * \endcode
+     * @endcode
      *
-     * !!! Do _NOT_ use: !!!
-     * \code
+     * @attention Do @b NOT use code such as:
+     * @code
      * static QString myString = KGlobal::staticQString("myText");
-     * \endcode
+     * @endcode
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
      * @param str the string to create
      * @return the static string
      */
-    static const QString        &staticQString(const char *str);
+    static const QString&        staticQString(const char *str);
 
     /**
      * Creates a static QString.
      *
      * To be used inside functions(!) like:
-     * \code
+     * @code
      * static const QString &myString = KGlobal::staticQString(i18n("My Text"));
-     * \endcode
+     * @endcode
      *
-     * !!! Do _NOT_ use: !!!
-     * \code
+     * @attention Do @b NOT use code such as:
+     * @code
      * static QString myString = KGlobal::staticQString(i18n("myText"));
-     * \endcode
+     * @endcode
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
      * @param str the string to create
      * @return the static string
      */
-    static const QString        &staticQString(const QString &str);
+    static const QString&        staticQString(const QString &str);
 
     /**
      * Registers a static deleter.
@@ -172,12 +172,12 @@ public:
 
 /**
  * \relates KGlobal
- * A typesafe function to find the minimum of the two arguments.
+ * A typesafe function to find the smaller of the two arguments.
  */
 #define KMIN(a,b)	kMin(a,b)
 /**
  * \relates KGlobal
- * A typesafe function to find the maximum of the two arguments.
+ * A typesafe function to find the larger of the two arguments.
  */
 #define KMAX(a,b)	kMax(a,b)
 /**
@@ -188,26 +188,25 @@ public:
 /**
  * \relates KGlobal
  * A typesafe function that returns x if it's between low and high values.
- * low if x is smaller than then low and high if x is bigger than high.
+ * low if x is smaller than low and high if x is bigger than high.
  */
 #define KCLAMP(x,low,high) kClamp(x,low,high)
 
-// XXX KDE4: Make kMin, kMax and kClamp return "T" instead of "const T &"!
 template<class T>
-inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
+inline T kMin (const T& a, const T& b) { return a < b ? a : b; }
 
 template<class T>
-inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
+inline T kMax (const T& a, const T& b) { return b < a ? a : b; }
 
 template<class T>
 inline T kAbs (const T& a) { return a < 0 ? -a : a; }
 
 template<class T>
-inline const T& kClamp( const T& x, const T& low, const T& high )
+inline T kClamp( const T& x, const T& low, const T& high )
 {
     if ( x < low )       return low;
     else if ( high < x ) return high;
-    else                 return x;
+                         return x;
 }
 
 /**
