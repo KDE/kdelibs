@@ -87,6 +87,9 @@ KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QStrin
 
 bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
+    // x-kde-urilist is the same format as text/uri-list, but contains
+    // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
+    // local files.
     if ( e->provides( "application/x-kde-urilist" ) ) {
         QByteArray payload = e->encodedData( "application/x-kde-urilist" );
         if ( payload.size() ) {

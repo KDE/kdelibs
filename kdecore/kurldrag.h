@@ -28,8 +28,8 @@ class QMimeSource;
 
 class KURLDragPrivate;
 /**
- * This class is to be used instead of QUriDrag when using KURL.
- * The reason is: QUriDrag (and the XDND/W3C standards) expect URLs to
+ * This class is to be used instead of Q3UriDrag when using KURL.
+ * The reason is: Q3UriDrag (and the XDND/W3C standards) expect URLs to
  * be encoded in UTF-8 (unicode), but KURL uses the current locale
  * by default.
  * The other reasons for using this class are:
@@ -39,16 +39,16 @@ class KURLDragPrivate;
  * require it for downloading e.g. an image).
  *
  * To create a drag object, use the KURLDrag constructor.
- * To handle drops, use QUriDrag::canDecode() and KURLDrag::decode()
+ * To handle drops, use Q3UriDrag::canDecode() and KURLDrag::decode()
  */
 class KDECORE_EXPORT KURLDrag : public Q3UriDrag
 {
 public:
   /**
    * Constructs an object to drag the list of URLs in @p urls.
-   * The @p dragSource and @p name arguments are passed on to QUriDrag,
+   * The @p dragSource and @p name arguments are passed on to Q3UriDrag,
    * and the list of urls is converted to UTF-8 before being passed
-   * to QUriDrag.
+   * to Q3UriDrag.
    * @param urls the list of URLs
    * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
    * but should be 0 when copying to the clipboard
