@@ -47,10 +47,12 @@ env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib'
 
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 import os
-if not os.path.exists('config.h'):
-	dest=open('config.h', 'w')
+if not os.path.exists('build/config.h'):
+	dest=open('build/config.h', 'w')
 	dest.write('#define foo bar\n')
 	dest.close()
+
+env.Append(CPPFLAGS = ['-Ibuild'])
 
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
