@@ -69,7 +69,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
 		ktextedit.h kpassivepopup.h \
-		kdatetimewidget.h ktimewidget.h ktimezonewidget.h kscrollview.h \
+		kdatetimewidget.h ktimezonewidget.h kscrollview.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
@@ -117,7 +117,7 @@ libkdeui_la_SOURCES = \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
 		kstringvalidator.cpp kactivelabel.cpp \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
-		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp ktimezonewidget.cpp \
+		ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp \
 		ksconfig.cpp kspelldlg.cpp \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
 		ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp \

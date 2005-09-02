@@ -3,15 +3,14 @@
 #include "kdatewidget.h"
 #include "kdebug.h"
 #include "kdialog.h"
-#include "ktimewidget.h"
-
+#include <QTimeEdit>
 #include "kdatetimewidget.h"
 
 class KDateTimeWidget::KDateTimeWidgetPrivate
 {
 public:
   KDateWidget * dateWidget;
-  KTimeWidget * timeWidget;
+  QTimeEdit * timeWidget;
 };
 
 KDateTimeWidget::KDateTimeWidget(QWidget * parent)
@@ -42,7 +41,7 @@ void KDateTimeWidget::init()
   layout->setAutoAdd(true);
 
   d->dateWidget = new KDateWidget(this);
-  d->timeWidget = new KTimeWidget(this);
+  d->timeWidget = new QTimeEdit(this);
 
   connect(d->dateWidget, SIGNAL(changed(QDate)),
           SLOT(slotValueChanged()));
