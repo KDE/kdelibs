@@ -3,7 +3,8 @@
 Import('env')
 
 #env.subdirs('KDE-ICE dcopidl dcopidlng dcopidl2cpp client tests')
-env.subdirs('KDE-ICE client')
+#env.subdirs('KDE-ICE client')
+env.subdirs('KDE-ICE')
 
 # the dcop_shutdown (description ?)
 obj=env.qt4object('program', env)
@@ -21,24 +22,25 @@ dcopclient.cpp
 
 libkdeice=[ env.join('KDE-ICE', 'libkICE.la') ]
 
-obj          = env.qt4object('staticlib', env)
-obj.target   = 'libDCOP.a'
+obj          = env.qt4object('shlib', env)
+obj.target   = 'libDCOP'
 obj.source   = kdcop_sources
 obj.libs     = env['LIB_QT']+env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+libkdeice # list concatenation
+obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
+obj.vnum     = '6.0.2'
 obj.execute()
 
 # dcopserver.la (description ?)
 obj          = env.genobj('staticlib', env)
 obj.target   = 'dcopserver'
-obj.src      = 'dcopserver.cpp dcopsignals.cpp'
+obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.libs     = env.join('.', 'libDCOP.la')
+obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
 obj.execute()
 
 """
 SUBDIRS = KDE-ICE . dcopidl dcopidlng dcopidl2cpp client tests
 KDE_OPTIONS = qtonly
-
-INCLUDES = $(all_includes)
 
 bin_PROGRAMS = dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc
@@ -52,8 +54,6 @@ libDCOP_la_NMCHECKWEAK = $(srcdir)/libDCOP_weak.nmcheck $(top_srcdir)/kdecore/li
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h testdcop.h dcopsignals.h dcop-path.h
-
-METASOURCES = AUTO
 
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp

@@ -11,6 +11,7 @@ for prog in progs1:
 	obj.source    = prog+'.cpp'
 	obj.libs      = env['LIB_QT']+DCOP_LIB
 	obj.linkflags = env['KDE_RPATH']
+	obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
 progs2='dcopclient dcopobject dcopref'.split()
@@ -18,6 +19,7 @@ for prog in progs2:
 	obj           = env.genobj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.c'
+	obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
 """

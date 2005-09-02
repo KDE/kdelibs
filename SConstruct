@@ -36,11 +36,24 @@ env = Environment( tools=['default', 'generic', 'qt4'], toolpath=['./', './bksys
 ## TODO this is to be moved to modules
 
 # warning: parameters are lists
-env['LIB_QT']='QtOpenGL_debug QtGui_debug png SM ICE Xi Xrender Xrandr Xcursor Xinerama freetype fontconfig Xext X11 m QtCore_debug z dl GLU GL pthread'.split()
 
-env['LIB_QT']         = []
-env['LIB_QTCORE']     = []
-env['LIB_QT3SUPPORT'] = []
+env['LIBZ']           = ['z']
+env['LIBPNG']         = ['png', 'z', 'm']
+env['LIB_X11']        = ['X11']
+env['LIBSM']          = ['SM', 'ICE']
+
+env['LIB_QT']         = ['QtGui_debug', 'pthread', 'Xext']+env['LIBZ']+env['LIBPNG']+env['LIB_X11']+env['LIBSM']
+env['LIB_QT3SUPPORT'] = ['Qt3Support_debug']
+env['LIB_QTCORE']     = ['QtCore_debug']
+env['LIB_QTDESIGNER'] = ['QtDesigner_debug']
+env['LIB_QTGUI']      = ['QtGui_debug']
+env['LIB_QTNETWORK']  = ['QtNetwork_debug']
+env['LIB_QTOPENGL']   = ['QtOpenGL_debug']
+env['LIB_QTSQL']      = ['QtSql_debug']
+env['LIB_QTXML']      = ['QtXml_debug']
+
+
+env['KDELIBS_INCLUDES'] = ['#','#dcop','#kio','#kdeui','#kdecore','#libltdl','#kdefx']
 
 # prefix/lib and prefix/lib/kde4 (ita)
 env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib', 'kde4')]
@@ -49,7 +62,7 @@ env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib'
 import os
 if not os.path.exists('build/config.h'):
 	dest=open('build/config.h', 'w')
-	dest.write('#define foo bar\n')
+	dest.write('#define kdemacros.h kdemacros.h.in\n')
 	dest.close()
 
 env.Append(CPPFLAGS = ['-Ibuild'])

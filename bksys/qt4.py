@@ -275,7 +275,7 @@ def generate(env):
 		if not kcfgfilename:
 			print 'invalid kcfgc file'
 			return 0
-		source.append(str(source[0].get_dir())+'/'+kcfgfilename)
+		source.append(  env.join(str(source[0].get_dir()), kcfgfilename)  )
 		return target, source
 
 	env['BUILDERS']['Kcfg']=Builder(action=env.Action(kcfg_buildit, kcfg_stringit),
@@ -408,14 +408,14 @@ def generate(env):
 		if not env['_INSTALL']:
 			return
 		dir = getInstDirForResType(lenv, restype)
-		install_list = lenv.bksys_install(dir+'/'+subdir, files, nodestdir=1)
+		install_list = lenv.bksys_install(lenv.join(dir,subdir), files, nodestdir=1)
 		return install_list
 
 	def QT4installas(lenv, restype, destfile, file):
 		if not env['_INSTALL']:
 			return
 		dir = getInstDirForResType(lenv, restype)
-		install_list = lenv.InstallAs(dir+'/'+destfile, file)
+		install_list = lenv.InstallAs(lenv.join(dir,destfile), file)
                 env.Alias('install', install_list)
 		return install_list
 
@@ -449,7 +449,7 @@ def generate(env):
 		for lang in transfiles:
 			result = lenv.Transfiles(lang)
 			country = SCons.Util.splitext(result[0].name)[0]
-			QT4installas(lenv, 'QT4LOCALE', country+'/LC_MESSAGES/'+appname+'.mo', result)
+			lenv.QT4installas('QT4LOCALE', lenv.join(country,'LC_MESSAGES',appname+'.mo'), result)
 
 	def QT4icon(lenv, icname='*', path='./', restype='QT4ICONS', subdir=''):
 		"""Contributed by: "Andrey Golovizin" <grooz()gorodok()net>
@@ -556,7 +556,14 @@ def generate(env):
                         if self.orenv.has_key('DUMPCONFIG'):
                                 print self.xml()
                                 return
-                        self.src = QT4files(env, self.target, self.source)
+			self.env=self.orenv.Copy()
+			# then add the includes for qt
+			inctypes="QtXml QtGui QtCore QtOpenGL Qt3Support".split()
+			qtincludes=[]
+			for dir in inctypes: qtincludes.append( env.join(env['QTINCLUDEPATH'], dir) )
+			self.env.AppendUnique(CPPPATH=qtincludes)
+
+                        self.setsource( QT4files(env, self.target, self.source) )
                         generic.genobj.execute(self)
 
                 def xml(self):

@@ -98,9 +98,6 @@ class genobj:
 		self.source=''
 		self.target=''
 
-		# either set self.src yourself, or use self.source
-		self.src=None
-
 		self.cxxflags=''
 		self.cflags=''
 		self.includes=''
@@ -142,6 +139,10 @@ class genobj:
 
 		if not env.has_key('USE_THE_FORCE_LUKE'): env['USE_THE_FORCE_LUKE']=[self]
 		else: env['USE_THE_FORCE_LUKE'].append(self)
+
+	def setsource(self, src):
+		self.p_localsource=self.orenv.make_list(src)
+		print self.p_localsource
 
 	def joinpath(self, val):
 		if len(self.dirprefix)<3: return val
@@ -202,17 +203,14 @@ class genobj:
 			self.executed=1
 			return
 
-		self.env = self.orenv.Copy()
-
-		# self.src is kinda private, so if the builder did forget to set self.src handle it now
-		if (self.source and not self.src):
-			self.src=self.env.make_list(self.source)
+		# copy the environment if a subclass has not already done it
+		if not self.env: self.env = self.orenv.Copy()
 
 		if not self.p_localtarget: self.p_localtarget = self.joinpath(self.target)
-		if not self.p_localsource: self.p_localsource = self.joinpath(self.src)
+		if not self.p_localsource: self.p_localsource = self.joinpath(self.env.make_list(self.source))
 
-		if (not self.src or len(self.src) == 0) and not self.p_localsource:
-			self.env.pprint('RED',"no source file given to object - self.src for "+self.target)
+		if (not self.source or len(self.source) == 0) and not self.p_localsource:
+			self.env.pprint('RED',"no source file given to object - self.source for "+self.target)
 			self.env.Exit(1)
 
 		if not self.target:
