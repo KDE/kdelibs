@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (c) 2003 Scott Wheeler <wheeler@kde.org>
+   Copyright (c) 2005 Rafal Rzepecki <divide@users.sourceforge.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -15,6 +16,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
+
 
 #include "klistviewsearchline.h"
 
@@ -40,16 +42,17 @@ class KListViewSearchLine::KListViewSearchLinePrivate
 {
 public:
     KListViewSearchLinePrivate() :
-        listView(0),
         caseSensitive(false),
         activeSearch(false),
         keepParentsVisible(true),
+        canChooseColumns(true),
         queuedSearches(0) {}
 
-    KListView *listView;
+    Q3ValueList<KListView *> listViews;
     bool caseSensitive;
     bool activeSearch;
     bool keepParentsVisible;
+    bool canChooseColumns;
     QString search;
     int queuedSearches;
     Q3ValueList<int> searchColumns;
@@ -64,28 +67,29 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView, c
 {
     d = new KListViewSearchLinePrivate;
 
-    d->listView = listView;
+    connect(this, SIGNAL(textChanged(const QString &)),
+            this, SLOT(queueSearch(const QString &)));
+
+    setListView( listView );
+}
+
+KListViewSearchLine::KListViewSearchLine(QWidget *parent,
+                                       const Q3ValueList<KListView *> &listViews,
+                                       const char *name) :
+     KLineEdit(parent, name)
+{
+    d = new KListViewSearchLinePrivate;
 
     connect(this, SIGNAL(textChanged(const QString &)),
             this, SLOT(queueSearch(const QString &)));
 
-    if(listView) {
-        connect(listView, SIGNAL(destroyed()),
-                this, SLOT(listViewDeleted()));
-
-        connect(listView, SIGNAL(itemAdded(Q3ListViewItem *)),
-                this, SLOT(itemAdded(Q3ListViewItem *)));
-    }
-    else
-        setEnabled(false);
+    setListViews( listViews );
 }
 
 KListViewSearchLine::KListViewSearchLine(QWidget *parent, const char *name) :
     KLineEdit(parent, name)
 {
     d = new KListViewSearchLinePrivate;
-
-    d->listView = 0;
 
     connect(this, SIGNAL(textChanged(const QString &)),
             this, SLOT(queueSearch(const QString &)));
@@ -105,7 +109,10 @@ bool KListViewSearchLine::caseSensitive() const
 
 Q3ValueList<int> KListViewSearchLine::searchColumns() const
 {
-    return d->searchColumns;
+    if (d->canChooseColumns)
+        return d->searchColumns;
+    else
+        return Q3ValueList<int>();
 }
 
 bool KListViewSearchLine::keepParentsVisible() const
@@ -115,52 +122,97 @@ bool KListViewSearchLine::keepParentsVisible() const
 
 KListView *KListViewSearchLine::listView() const
 {
-    return d->listView;
+    if ( d->listViews.count() == 1 )
+        return d->listViews.first();
+    else
+        return 0;
 }
+
+const Q3ValueList<KListView *> &KListViewSearchLine::listViews() const
+{
+    return d->listViews;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // public slots
 ////////////////////////////////////////////////////////////////////////////////
 
+void KListViewSearchLine::addListView(KListView *lv)
+{
+    if (lv) {
+        connectListView(lv);
+        
+        d->listViews.append(lv);
+        setEnabled(!d->listViews.isEmpty());
+        
+        checkColumns();
+    }
+}
+
+void KListViewSearchLine::removeListView(KListView *lv)
+{
+    if (lv) {
+        Q3ValueList<KListView *>::Iterator it = d->listViews.find(lv);
+        
+        if ( it != d->listViews.end() ) {
+            d->listViews.remove( it );
+            checkColumns();
+
+            disconnectListView(lv);
+            
+            setEnabled(!d->listViews.isEmpty());
+        }
+    }
+}
+
 void KListViewSearchLine::updateSearch(const QString &s)
 {
-    if(!d->listView)
+    d->search = s.isNull() ? text() : s;
+
+    for (Q3ValueList<KListView *>::Iterator it = d->listViews.begin();
+         it != d->listViews.end(); ++it)
+        updateSearch( *it );
+}
+
+void KListViewSearchLine::updateSearch(KListView *listView)
+{
+    if(!listView)
         return;
 
-    d->search = s.isNull() ? text() : s;
 
     // If there's a selected item that is visible, make sure that it's visible
     // when the search changes too (assuming that it still matches).
 
     Q3ListViewItem *currentItem = 0;
 
-    switch(d->listView->selectionMode())
+    switch(listView->selectionMode())
     {
     case KListView::NoSelection:
         break;
     case KListView::Single:
-        currentItem = d->listView->selectedItem();
+        currentItem = listView->selectedItem();
         break;
     default:
     {
         int flags = Q3ListViewItemIterator::Selected | Q3ListViewItemIterator::Visible;
-        for(Q3ListViewItemIterator it(d->listView, flags);
+        for(Q3ListViewItemIterator it(listView, flags);
             it.current() && !currentItem;
             ++it)
         {
-            if(d->listView->itemRect(it.current()).isValid())
+            if(listView->itemRect(it.current()).isValid())
                 currentItem = it.current();
         }
     }
     }
 
     if(d->keepParentsVisible)
-        checkItemParentsVisible(d->listView->firstChild());
+        checkItemParentsVisible(listView->firstChild());
     else
-        checkItemParentsNotVisible();
+        checkItemParentsNotVisible(listView);
 
     if(currentItem)
-        d->listView->ensureItemVisible(currentItem);
+        listView->ensureItemVisible(currentItem);
 }
 
 void KListViewSearchLine::setCaseSensitive(bool cs)
@@ -175,30 +227,30 @@ void KListViewSearchLine::setKeepParentsVisible(bool v)
 
 void KListViewSearchLine::setSearchColumns(const Q3ValueList<int> &columns)
 {
-    d->searchColumns = columns;
+    if (d->canChooseColumns)
+        d->searchColumns = columns;
 }
 
 void KListViewSearchLine::setListView(KListView *lv)
 {
-    if(d->listView) {
-        disconnect(d->listView, SIGNAL(destroyed()),
-                   this, SLOT(listViewDeleted()));
+    setListViews(Q3ValueList<KListView *>());
+    addListView(lv);
+}
 
-        disconnect(d->listView, SIGNAL(itemAdded(Q3ListViewItem *)),
-                   this, SLOT(itemAdded(Q3ListViewItem *)));
-    }
+void KListViewSearchLine::setListViews(const Q3ValueList<KListView *> &lv)
+{
+    for (Q3ValueList<KListView *>::Iterator it = d->listViews.begin();
+         it != d->listViews.end(); ++it)
+             disconnectListView(*it);
+    
+    d->listViews = lv;
 
-    d->listView = lv;
+    for (Q3ValueList<KListView *>::Iterator it = d->listViews.begin();
+         it != d->listViews.end(); ++it)
+        connectListView(*it);
 
-    if(lv) {
-        connect(d->listView, SIGNAL(destroyed()),
-                this, SLOT(listViewDeleted()));
-
-        connect(d->listView, SIGNAL(itemAdded(Q3ListViewItem *)),
-                this, SLOT(itemAdded(Q3ListViewItem *)));
-    }
-
-    setEnabled(bool(lv));
+    checkColumns();
+    setEnabled(!d->listViews.isEmpty());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +290,7 @@ void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 {
     QMenu *popup = KLineEdit::createStandardContextMenu();
 
-    if (d->listView->columns()>1) {
+    if (d->canChooseColumns) {
         Q3PopupMenu *subMenu = new Q3PopupMenu(popup);
         connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
 
@@ -250,15 +302,15 @@ void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     
         bool allColumnsAreSearchColumns = true;
 	// TODO Make the entry order match the actual column order
-	Q3Header* const header = d->listView->header();
+        Q3Header* const header = d->listViews.first()->header();
 	int visibleColumns = 0;
-	for(int i = 0; i < d->listView->columns(); i++) {
-	    if(d->listView->columnWidth(i)>0) {
-	        QString columnText = d->listView->columnText(i);
+	for(int i = 0; i < d->listViews.first()->columns(); i++) {
+	    if(d->listViews.first()->columnWidth(i)>0) {
+	        QString columnText = d->listViews.first()->columnText(i);
 	        if(columnText.isEmpty()) {
 		    int visiblePosition=1;
 		    for(int j = 0; j < header->mapToIndex(i); j++)
-		        if(d->listView->columnWidth(header->mapToSection(j))>0)
+		        if(d->listViews.first()->columnWidth(header->mapToSection(j))>0)
 		            visiblePosition++;
 		    columnText = i18n("Column number %1","Column No. %1").arg(visiblePosition);
 	        }
@@ -280,6 +332,60 @@ void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     popup->exec( e->globalPos() );
 	delete popup;
 }    
+
+void KListViewSearchLine::connectListView(KListView *lv)
+{
+    connect(lv, SIGNAL(destroyed( QObject * )),
+            this, SLOT(listViewDeleted( QObject *)));
+    connect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
+            this, SLOT(itemAdded(Q3ListViewItem *)));
+}
+
+void KListViewSearchLine::disconnectListView(KListView *lv)
+{
+    connect(lv, SIGNAL(destroyed( QObject * )),
+            this, SLOT(listViewDeleted( QObject *)));
+    connect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
+            this, SLOT(itemAdded(Q3ListViewItem *)));
+}
+
+bool KListViewSearchLine::canChooseColumnsCheck()
+{
+    // This is true if either of the following is true:
+
+    // there are no listviews connected
+    if (d->listViews.isEmpty())
+        return false;
+
+    const KListView *first = d->listViews.first();
+    
+    const unsigned int numcols = first->columns();
+    // the listviews have only one column,
+    if (numcols < 2)
+        return false;
+
+    QStringList headers;
+    for (unsigned int i = 0; i < numcols; ++i)
+        headers.append(first->columnText(i));
+
+    Q3ValueList<KListView *>::ConstIterator it = d->listViews.constBegin();
+    for (++it /* skip the first one */; it !=d->listViews.constEnd(); ++it) {
+        // the listviews have different numbers of columns,
+        if ((unsigned int) (*it)->columns() != numcols)
+            return false;
+
+        // the listviews differ in column labels.
+        QStringList::ConstIterator jt;
+        unsigned int i;
+        for (i = 0, jt = headers.constBegin(); i < numcols; ++i, ++jt) {
+                Q_ASSERT(jt != headers.constEnd());
+                if ((*it)->columnText(i) != *jt)
+                    return false;
+            }
+    }
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // protected slots
@@ -309,10 +415,17 @@ void KListViewSearchLine::itemAdded(Q3ListViewItem *item) const
     item->setVisible(itemMatches(item, text()));
 }
 
-void KListViewSearchLine::listViewDeleted()
+void KListViewSearchLine::listViewDeleted(QObject *o)
 {
-    d->listView = 0;
-    setEnabled(false);
+    KListView *lv = dynamic_cast<KListView *>(o);
+    if (!lv) {
+        kdWarning() << k_funcinfo << "an object other than KListView passed"
+                << endl;
+        return;
+    }
+    
+    d->listViews.remove(lv);
+    setEnabled(d->listViews.isEmpty());
 }
 
 void KListViewSearchLine::searchColumnsMenuActivated(int id)
@@ -328,7 +441,7 @@ void KListViewSearchLine::searchColumnsMenuActivated(int id)
             d->searchColumns.remove(id);
         else {
             if(d->searchColumns.isEmpty()) {
-                for(int i = 0; i < d->listView->columns(); i++) {
+                for(int i = 0; i < d->listViews.first()->columns(); i++) {
                     if(i != id)
                         d->searchColumns.append(i);
                 }
@@ -344,9 +457,14 @@ void KListViewSearchLine::searchColumnsMenuActivated(int id)
 // private methods
 ////////////////////////////////////////////////////////////////////////////////
 
-void KListViewSearchLine::checkItemParentsNotVisible()
+void KListViewSearchLine::checkColumns()
 {
-    Q3ListViewItemIterator it(d->listView);
+    d->canChooseColumns = canChooseColumnsCheck();
+}
+
+void KListViewSearchLine::checkItemParentsNotVisible(KListView *listView)
+{
+    Q3ListViewItemIterator it(listView);
     for(; it.current(); ++it)
     {
         Q3ListViewItem *item = it.current();

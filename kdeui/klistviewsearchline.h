@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (c) 2003 Scott Wheeler <wheeler@kde.org>
+   Copyright (c) 2005 Rafal Rzepecki <divide@users.sourceforge.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,17 +25,18 @@
 #include <QContextMenuEvent>
 //Added by qt3to4:
 #include <Q3ValueList>
+#include <q3valuelist.h>
 
 class KListView;
 class Q3ListViewItem;
 class QToolButton;
 
 /**
- * This class makes it easy to add a search line for filtering the items in a
- * listview based on a simple text search.
+ * This class makes it easy to add a search line for filtering the items in
+ * listviews based on a simple text search.
  *
- * No changes to the application other than instantiating this class with an
- * appropriate KListView should be needed.
+ * No changes to the application other than instantiating this class with
+ * appropriate KListViews should be needed.
  *
  * @since 3.3
  */
@@ -49,14 +51,29 @@ public:
      * Constructs a KListViewSearchLine with \a listView being the KListView to
      * be filtered.
      *
-     * If \a listView is null then the widget will be disabled until a listview
-     * is set with setListView().
+     * If \a listView is null then the widget will be disabled until listviews
+     * are set with setListView(), setListViews() or added with addListView().
      */
-    KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0, const char *name = 0);
+    KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0,
+                           const char *name = 0);
+
+    /**
+     * Constructs a KListViewSearchLine with \a listViews being the list of
+     * pointers to KListViews to be filtered.
+     *
+     * If \a listViews is empty then the widget will be disabled until listviews
+     * are set with setListView(), setListViews() or added with addListView().
+     *
+     * @since 4.0
+     */
+    KListViewSearchLine(QWidget *parent,
+                           const Q3ValueList<KListView *> &listViews,
+                           const char *name = 0);
 
     /**
      * Constructs a KListViewSearchLine without any KListView to filter. The
-     * KListView object has to be set later with setListView(). 
+     * KListView objects have to be set later with setListView(), setListViews()
+     * or added with addListView().
      */
     KListViewSearchLine(QWidget *parent, const char *name);
 
@@ -90,12 +107,41 @@ public:
 
     /**
      * Returns the listview that is currently filtered by the search.
+     * If there are multiple listviews filtered, it returns 0.
      *
-     * @see setListView()
+     * @see setListView(), listViews()
      */
     KListView *listView() const;
 
+    /**
+     * Returns the list of pointers to listviews that are currently filtered by
+     * the search.
+     *
+     * @see setListViews(), addListView(), listView()
+     * @since 4.0
+     */
+    const Q3ValueList<KListView *> &listViews() const;
+
 public slots:
+    /**
+     * Adds a KListView to the list of listviews filtered by this search line.
+     * If \a lv is null then the widget will be disabled.
+     *
+     * @see listView(), setListViews(), removeListView()
+     * @since 4.0
+     */
+    void addListView(KListView *lv);
+
+    /**
+     * Removes a KListView from the list of listviews filtered by this search
+     * line. Does nothing if \a lv is 0 or is not filtered by the quick search
+     * line.
+     *
+     * @see listVew(), setListViews(), addListView()
+     * @since 4.0
+     */
+    void removeListView(KListView *lv);
+
     /**
      * Updates search to only make visible the items that match \a s.  If
      * \a s is null then the line edit's text will be used.
@@ -125,20 +171,34 @@ public slots:
      * Sets the list of columns to be searched.  The default is to search all,
      * visible columns which can be restored by passing \a columns as an empty
      * list.
+     * If listviews to be filtered have different numbers or labels of columns
+     * this method has no effect.
      *
      * @see searchColumns
      */
     void setSearchColumns(const Q3ValueList<int> &columns);
 
     /**
-     * Sets the KListView that is filtered by this search line.  If \a lv is null
-     * then the widget will be disabled.
+     * Sets the KListView that is filtered by this search line, replacing any
+     * previously filtered listviews.  If \a lv is null then the widget will be
+     * disabled.
      *
-     * @see listView()
+     * @see listView(), setListViews()
      */
     void setListView(KListView *lv);
 
-protected:
+    /**
+     * Sets KListViews that are filtered by this search line, replacing any
+     * previously filtered listviews.  If \a lvs is empty then the widget will
+     * be disabled.
+     *
+     * @see listViews(), addListView(), setListView()
+     * @since 4.0
+     */
+    void setListViews(const Q3ValueList<KListView *> &lv);
+
+
+  protected:
 
     /**
      * Returns true if \a item matches the search \a s.  This will be evaluated
@@ -151,6 +211,43 @@ protected:
     * Re-implemented for internal reasons.  API not affected.
     */
     virtual void contextMenuEvent( QContextMenuEvent*e );
+
+    /**
+     * Updates search to only make visible appropriate items in \a listView.  If
+     * \a listView is null then nothing is done.
+     */
+    virtual void updateSearch(KListView *listView);
+
+    /**
+     * Connects signals of this listview to the appropriate slots of the search
+     * line.
+     *
+     * @since 4.0
+     */
+    virtual void connectListView(KListView *);
+    /**
+     * Disconnects signals of a listviews from the search line.
+     *
+     * @since 4.0
+     */
+    virtual void disconnectListView(KListView *);
+
+    /**
+     * Checks columns in all listviews and decides whether choosing columns to
+     * filter on makes any sense.
+     *
+     * Returns false if either of the following is true:
+     * * there are no listviews connected,
+     * * the listviews have different numbers of columns,
+     * * the listviews have only one column,
+     * * the listviews differ in column labels.
+     *
+     * Otherwise it returns true.
+     *
+     * @see setSearchColumns()
+     * @since 4.0
+     */
+    virtual bool canChooseColumnsCheck();
 
 protected slots:
     /**
@@ -181,10 +278,19 @@ protected slots:
 private:
 
     /**
+     * This is used after changing the list of listviews. If choosing columns
+     * doesn't make sense, it forces filtering over all columns.
+     *
+     * @see canChooseColumnsCheck()
+     * @since 4.0
+     */
+    void checkColumns();
+    
+    /**
      * This is used in case parent items of matching items shouldn't be
      * visible.  It hides all items that don't match the search string.
      */
-    void checkItemParentsNotVisible();
+    void checkItemParentsNotVisible(KListView *listView);
 
     /**
      * This is used in case parent items of matching items should be visible.
@@ -195,7 +301,7 @@ private:
 
 private slots:
     void itemAdded(Q3ListViewItem *item) const;
-    void listViewDeleted();
+    void listViewDeleted( QObject *listView );
     void searchColumnsMenuActivated(int);
 
 private:
