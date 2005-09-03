@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright (C) 2000 Alex Zepeda <zipzippy@sonic.net
  * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>

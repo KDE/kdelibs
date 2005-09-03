@@ -16,6 +16,7 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 #include "kmimemagic.h"
 #include <kdebug.h>
 #include <kapplication.h>
@@ -2030,7 +2031,7 @@ static int textmagic(struct config_rec* conf, unsigned char * buf, int nbytes)
  * Stolen (by author of file utility) from the public domain tar program: Public
  * Domain version written 26 Aug 1985 John Gilmore (ihnp4!hoptoad!gnu).
  *
- * @(#)list.c 1.18 9/23/86 Public Domain - gnu $Id: mod_mime_magic.c,v 1.7
+ * @(#)list.c 1.18 9/23/86 Public Domain - gnu Id: mod_mime_magic.c,v 1.7
  * 1997/06/24 00:41:02 ikluft Exp ikluft $
  *
  * Comments changed and some code/comments reformatted for file command by Ian

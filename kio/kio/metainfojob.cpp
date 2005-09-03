@@ -16,9 +16,7 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
     Boston, MA 02110-1301, USA.
-
-    $Id$
-*/
+ */
 
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kfileitem.h>

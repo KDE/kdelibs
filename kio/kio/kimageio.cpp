@@ -1,9 +1,6 @@
-
 /**
 * kimgio.h -- Implementation of interface to the KDE Image IO library.
 * Sirtaj Singh Kang <taj@kde.org>, 23 Sep 1998.
-*
-* $Id$
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */
