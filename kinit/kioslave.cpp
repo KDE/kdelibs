@@ -4,8 +4,6 @@
  *           (c) 1999 Mario Weilguni <mweilguni@sime.com>
  *           (c) 2001 Lubos Lunak <l.lunak@kde.org>
  *
- * $Id$
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License version 2 as published by the Free Software Foundation.
