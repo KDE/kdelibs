@@ -519,7 +519,7 @@ KAboutContainer *KAboutContainerBase::addContainerPage( const QString &title,
     return 0;
   }
 
-  KAboutContainer* const container = new KAboutContainer( mPageTab, "container",
+  KAboutContainer* const container = new KAboutContainer( 0, "container",
     KDialog::spacingHint(), KDialog::spacingHint(), childAlignment,
 						  innerAlignment );
   mPageTab->addTab( container, title );
@@ -572,7 +572,7 @@ Q3Frame *KAboutContainerBase::addEmptyPage( const QString &title )
     return 0;
   }
 
-  Q3Frame* const page = new Q3Frame( mPageTab, title.latin1() );
+  Q3Frame* const page = new Q3Frame( 0, title.latin1() );
   page->setFrameStyle( Q3Frame::NoFrame );
 
   mPageTab->addTab( page, title );
