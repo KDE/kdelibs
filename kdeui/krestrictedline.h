@@ -1,7 +1,4 @@
 /*
- *
- * $Id$
- *
  * Definition of KRestrictedLine
  *
  * Copyright (C) 1997 Michael Wiedmann, <mw@miwie.in-berlin.de>

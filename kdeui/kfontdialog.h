@@ -46,7 +46,6 @@ class KIntNumInput;
  * KFontDialog.
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
- * @version $Id$
  */
 class KDEUI_EXPORT KFontChooser : public QWidget
 {
@@ -331,7 +330,6 @@ private:
  * \image html kfontdialog.png "KDE Font Dialog"
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
- * @version $Id$
  */
 class KDEUI_EXPORT KFontDialog : public KDialogBase  {
     Q_OBJECT

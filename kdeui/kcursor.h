@@ -16,10 +16,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-/*
- * $Id$
- *
- */
+
 #ifndef _KCURSOR_H
 #define _KCURSOR_H
 

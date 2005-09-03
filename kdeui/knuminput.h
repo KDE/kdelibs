@@ -178,8 +178,6 @@ private:
  * between 2 and 36.
  *
  * \image html kintnuminput.png "KDE Int Number Input Spinbox"
- *
- * @version $Id$
  */
 
 class KDEUI_EXPORT KIntNumInput : public KNumInput
@@ -797,7 +795,6 @@ private:
    \endcode
 
    @author Marc Mutz <mutz@kde.org>
-   @version $Id$
    @since 3.1
 **/
 

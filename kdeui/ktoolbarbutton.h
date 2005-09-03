@@ -315,7 +315,6 @@ private:
 /**
 * List of KToolBarButton objects.
 * @internal
-* @version $Id$
 */
 class KDEUI_EXPORT KToolBarButtonList : public Q3IntDict<KToolBarButton>
 {

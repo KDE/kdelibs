@@ -16,8 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-// $Id$
-
 #ifndef _KFONTCOMBO_H_
 #define _KFONTCOMBO_H_
 

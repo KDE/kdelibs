@@ -28,8 +28,7 @@
  * Standard horizontal or vertical separator.
  *
  * @author Michael Roth <mroth@wirlweb.de>
- * @version $Id$
-*/
+ */
 class KDEUI_EXPORT KSeparator : public QFrame
 {
   Q_OBJECT

@@ -44,7 +44,6 @@ class KDateTable;
  *
  * \image html kdatepicker.png "KDE Date Widget"
  *
- *     @version $Id$
  *     @author Tim Gilman, Mirko Boehm
  *
  **/

@@ -1,7 +1,5 @@
 /**********************************************************************
 **
-** $Id$
-**
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
 ** Copyright (C) 2002 Marc Mutz <mutz@kde.org>
 **

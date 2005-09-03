@@ -24,7 +24,7 @@
 *****************************************************************************/
 
 #ifndef _KPROGRESS_H
-#define _KPROGRESS_H "$Id$"
+#define _KPROGRESS_H
 
 #include <q3progressbar.h>
 #include <kdialogbase.h>

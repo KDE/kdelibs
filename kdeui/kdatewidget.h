@@ -30,8 +30,6 @@
 * This widget can be used to display or allow user selection of a date.
 *
 * @see KDatePicker
-*
-* @version $Id$
 */
 class KDEUI_EXPORT KDateWidget : public QWidget
 {

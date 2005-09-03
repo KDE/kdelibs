@@ -1,7 +1,5 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
- *
  * This file is part of the KDE libraries.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -46,8 +44,6 @@ class KSharedPixmapPrivate;
  * \endcode
  *
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id$
- *
  */
 class KDEUI_EXPORT KSharedPixmap: 
     public QWidget,

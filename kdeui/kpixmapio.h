@@ -1,6 +1,5 @@
 /* vi: ts=8 sts=4 sw=4
  *
- *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
@@ -18,10 +17,10 @@ class QImage;
 class QPoint;
 class QRect;
 struct KPixmapIOPrivate;
+
 /**
  * @short Fast QImage to/from QPixmap conversion.
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id$
  *
  * KPixmapIO implements a fast path for QPixmap to/from QImage conversions.
  * It uses the MIT-SHM shared memory extension for this. If this extension is

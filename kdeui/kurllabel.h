@@ -60,8 +60,6 @@ class QPixmap;
  *
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
- * @version $Id$
- *
  */
 class KDEUI_EXPORT KURLLabel : public QLabel
 {

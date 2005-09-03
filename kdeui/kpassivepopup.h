@@ -60,7 +60,6 @@ class Q3VBox;
  *    pop->show();
  * \endcode
  *
- * @version $Id$
  * @since 3.1
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de

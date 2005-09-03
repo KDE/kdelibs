@@ -3,7 +3,6 @@
     Copyright (C) 1997, 1998, 1999, 2000 Matthias Ettrich (ettrich@kde.org)
     Copyright (C) 1999, 2000 Daniel "Mosfet" Duley (mosfet@kde.org)
 
-
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -20,8 +19,6 @@
     Boston, MA 02111-1307, USA.
 */
 
-//$Id$
-
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
 
@@ -36,8 +33,7 @@
  * QStyle.
  *
  * @author Daniel "Mosfet" Duley.
- * @version $Id$
-*/
+ */
 
 class KDEUI_EXPORT KMenuBar : public QMenuBar
 {

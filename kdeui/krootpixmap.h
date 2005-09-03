@@ -1,6 +1,5 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id$
  * This file is part of the KDE project, module kdesktop.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -45,7 +44,6 @@ class QPixmap;
  * you can take complete control of the behavior.
  *
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id$
  */
 class KDEUI_EXPORT KRootPixmap: public QObject
 {
