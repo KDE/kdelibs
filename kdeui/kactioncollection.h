@@ -25,35 +25,17 @@
 #ifndef __kactioncollection_h__
 #define __kactioncollection_h__
 
-#include <kaction.h>
-
-#include <qkeysequence.h>
 #include <qobject.h>
 #include <q3valuelist.h>
-#include <qpointer.h>
-#include <kguiitem.h>
-#include <kshortcut.h>
-#include <kstdaction.h>
-#include <kicontheme.h>
 
-class QMenuBar;
-class Q3PopupMenu;
-class QComboBox;
-class QPoint;
-class QIcon;
+#include <kdelibs_export.h>
+
 class QString;
-class KToolBar;
 
 class KAccel;
-class KAccelActions;
-class KConfig;
+class KAction;
 class KConfigBase;
-class KURL;
 class KInstance;
-class KToolBar;
-class KActionCollection;
-class KPopupMenu;
-class KMainWindow;
 class KXMLGUIClient;
 
 typedef Q3ValueList<KAction *> KActionPtrList;

@@ -24,10 +24,12 @@
 */
 
 #include "kactioncollection.h"
+
+#include "kaction.h"
 #include "kactionshortcutlist.h"
 #include "ktoolbar.h"
-#include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
+#include "kxmlguifactory.h"
 
 #include <kaccel.h>
 #include <kaccelbase.h>

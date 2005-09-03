@@ -25,32 +25,20 @@
 #ifndef __kaction_h__
 #define __kaction_h__
 
-#include <qkeysequence.h>
+#include <qicon.h> // remove if iconSet() is removed
 #include <qobject.h>
-#include <qpointer.h>
-#include <kguiitem.h>
-#include <kshortcut.h>
-#include <kstdaction.h>
-#include <kicontheme.h>
 
-class QMenuBar;
+#include <kicontheme.h>
+#include <kshortcut.h>
+
 class Q3PopupMenu;
-class QComboBox;
-class QPoint;
 class QIcon;
 class QString;
-class KToolBar;
 
 class KAccel;
-class KAccelActions;
-class KConfig;
-class KConfigBase;
-class KURL;
-class KInstance;
-class KToolBar;
 class KActionCollection;
-class KPopupMenu;
-class KMainWindow;
+class KGuiItem;
+class KToolBar;
 
 /**
  * @short Class to encapsulate user-driven action or event
