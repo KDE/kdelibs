@@ -241,7 +241,7 @@ void Job::kill( bool quietly )
   {
     if ( m_progressId ) // in both cases we want to hide the progress window
       Observer::self()->jobFinished( m_progressId );
-    delete this;
+    deleteLater();
   }
 }
 
