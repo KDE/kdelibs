@@ -19,8 +19,6 @@
   Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #include <config.h>
 
 #ifdef HAVE_SYS_STAT_H
