@@ -432,10 +432,10 @@ bool KLocale::setLanguage(const QStringList & languages)
   for( QStringList::Iterator it = languageList.fromLast();
     it != languageList.begin(); --it )
   {
-    // kdDebug() << "checking " << (*it) << endl;
+    // kdDebug(173) << "checking " << (*it) << endl;
     bool bIsTranslated = isApplicationTranslatedInto( *it );
     if ( languageList.count(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
-      // kdDebug() << "removing " << (*it) << endl;
+      // kdDebug(173) << "removing " << (*it) << endl;
       it = languageList.remove( it );
     }
   }
@@ -444,9 +444,9 @@ bool KLocale::setLanguage(const QStringList & languages)
   // Besides the list might have been empty all the way, so check that too.
   if ( languageList.begin() != languageList.end() ) {
      QStringList::Iterator it = languageList.begin(); // now pointing to the first element
-     // kdDebug() << "checking " << (*it) << endl;
+     // kdDebug(173) << "checking " << (*it) << endl;
      if( (*it).isEmpty() || !(isApplicationTranslatedInto( *it )) ) {
-        // kdDebug() << "removing " << (*it) << endl;
+        // kdDebug(173) << "removing " << (*it) << endl;
      	languageList.remove( it ); // that's what the iterator was for...
      }
   }
@@ -491,10 +491,10 @@ bool KLocale::isApplicationTranslatedInto( const QString & language)
   QString sFileName = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg( language )
     .arg( appName );
-  // kdDebug() << "isApplicationTranslatedInto: filename " << sFileName << endl;
+  // kdDebug(173) << "isApplicationTranslatedInto: filename " << sFileName << endl;
 
   QString sAbsFileName = locate( "locale", sFileName );
-  // kdDebug() << "isApplicationTranslatedInto: absname " << sAbsFileName << endl;
+  // kdDebug(173) << "isApplicationTranslatedInto: absname " << sAbsFileName << endl;
   return ! sAbsFileName.isEmpty();
 }
 
@@ -731,7 +731,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 	  QString tmp = QString::fromUtf8( plural );
 #ifndef NDEBUG
 	  if (tmp.indexOf("%n") == -1) {
-			  kdDebug() << "the message for i18n should contain a '%n'! " << plural << endl;
+			  kdDebug(173) << "the message for i18n should contain a '%n'! " << plural << endl;
 	  }
 #endif
       return put_n_in( tmp,  n );
@@ -1208,7 +1208,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   bool neg = (tmpString[0] == '-');
   if (neg  ||  tmpString[0] == '+') tmpString.remove(0, 1);
 
-  kdDebug()<<"tmpString:"<<tmpString<<endl;
+  kdDebug(173)<<"tmpString:"<<tmpString<<endl;
 
   // Split off exponential part (including 'e'-symbol)
   QString mantString = tmpString.section('e', 0, 0,
@@ -1218,8 +1218,8 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
 					QString::SectionIncludeLeadingSep);
   if (expString.length()==1) expString=QString();
 
-  kdDebug()<<"mantString:"<<mantString<<endl;
-  kdDebug()<<"expString:"<<expString<<endl;
+  kdDebug(173)<<"mantString:"<<mantString<<endl;
+  kdDebug(173)<<"expString:"<<expString<<endl;
 	
 
   if (round) _round(mantString, precision);
@@ -1510,7 +1510,7 @@ QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) co
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
-  //kdDebug() << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
+  //kdDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
   QString str = intstr.simplifyWhiteSpace().lower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
