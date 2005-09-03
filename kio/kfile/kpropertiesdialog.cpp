@@ -47,7 +47,7 @@ extern "C" {
 #include <grp.h>
 #include <time.h>
 #include <sys/types.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 }
 #include <unistd.h>
 #include <errno.h>
