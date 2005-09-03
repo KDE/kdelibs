@@ -22,6 +22,8 @@
 
 #include <kdialogbase.h>
 
+#include <q3valuelist.h>
+
 class QString;
 class KPluginInfo;
 
