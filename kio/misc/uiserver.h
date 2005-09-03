@@ -31,6 +31,7 @@
 #include <kdatastream.h>
 #include <klistview.h>
 #include <ksslcertdlg.h>
+#include <ktoolbar.h>
 
 class ListProgress;
 class KSqueezedTextLabel;
