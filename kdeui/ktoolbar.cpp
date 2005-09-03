@@ -32,36 +32,38 @@
 
 #include <string.h>
 
-#include <qpainter.h>
-#include <qtooltip.h>
-#include <qdrawutil.h>
-#include <qstring.h>
-#include <qrect.h>
-#include <qobject.h>
-#include <qtimer.h>
-#include <qstyle.h>
-#include <qlayout.h>
 #include <QMouseEvent>
+#include <q3mainwindow.h>
+#include <qdrawutil.h>
+#include <qicon.h>
+#include <qlayout.h>
+#include <qpainter.h>
+#include <qrect.h>
+#include <qstring.h>
+#include <qstyle.h>
+#include <qtimer.h>
+#include <qtooltip.h>
 
-#include <ktoolbar.h>
-#include <kmainwindow.h>
-#include <klineedit.h>
-#include <kseparator.h>
-#include <klocale.h>
-#include <kapplication.h>
 #include <kaction.h>
-#include <kstdaction.h>
-#include <kglobal.h>
-#include <kconfig.h>
-#include <kiconloader.h>
-#include <kcombobox.h>
-#include <kpopupmenu.h>
 #include <kanimwidget.h>
-#include <kedittoolbar.h>
-#include <kipc.h>
-#include <kwin.h>
+#include <kapplication.h>
+#include <kcombobox.h>
+#include <kconfig.h>
 #include <kdebug.h>
+#include <kedittoolbar.h>
+#include <kglobal.h>
+#include <kiconloader.h>
+#include <kipc.h>
+#include <klineedit.h>
+#include <klocale.h>
+#include <kmainwindow.h>
+#include <kpopupmenu.h>
+#include <kseparator.h>
+#include <kstdaction.h>
+#include <ktoolbar.h>
 #include <ktoolbarbutton.h>
+#include <kxmlguifactory.h>
+#include <kwin.h>
 
 enum {
     CONTEXT_TOP = 0,

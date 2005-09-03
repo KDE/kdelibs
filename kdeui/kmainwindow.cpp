@@ -27,15 +27,17 @@
 #include "kmainwindowiface.h"
 #include "ktoolbarhandler.h"
 #include "kwhatsthismanager_p.h"
-#include <qsessionmanager.h>
-#include <qobject.h>
-#include <qstyle.h>
-#include <qlayout.h>
-#include <qwidget.h>
-#include <qtimer.h>
-#include <qx11info_x11.h>
+#include "kxmlguifactory.h"
+
 #include <QCloseEvent>
 #include <QDesktopWidget>
+#include <qlayout.h>
+#include <qobject.h>
+#include <qsessionmanager.h>
+#include <qstyle.h>
+#include <qtimer.h>
+#include <qwidget.h>
+#include <qx11info_x11.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -43,16 +45,16 @@
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <khelpmenu.h>
-#include <kmenubar.h>
-#include <kstatusbar.h>
-#include <kwin.h>
 #include <kedittoolbar.h>
-#include <kmainwindow.h>
-
+#include <khelpmenu.h>
 #include <klocale.h>
+#include <kmenubar.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
+#include <kstatusbar.h>
+#include <ktoolbar.h>
+#include <kwin.h>
+
 #if defined Q_WS_X11
 #include <netwm.h>
 #endif

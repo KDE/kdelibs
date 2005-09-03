@@ -19,11 +19,13 @@
 #ifndef __kstdguiitem_h
 #define __kstdguiitem_h
 
-// Needed for the template below
-#include <kguiitem.h>
+#include <kdelibs_export.h>
 
-#include <qstring.h>
 #include <qpair.h>
+
+class KGuiItem;
+
+class QString;
 
 /**
  * @short Provides a set of standardized KGuiItems.

@@ -20,6 +20,7 @@
 #define KSTDACTION_H
 
 class QObject;
+class QStringList;
 class QWidget;
 class KAction;
 class KActionCollection;
@@ -27,8 +28,6 @@ class KRecentFilesAction;
 class KToggleAction;
 class KToggleToolBarAction;
 class KToggleFullScreenAction;
-
-#include <qstringlist.h>
 
 #include <kdelibs_export.h>
 

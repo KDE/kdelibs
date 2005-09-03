@@ -33,7 +33,9 @@
 #include <strings.h>
 #endif
 
-#include <qregexp.h>
+#include "kspell.h"
+
+#include <q3valuelist.h>
 #include <qtextcodec.h>
 #include <qtimer.h>
 
@@ -41,7 +43,6 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include "kspell.h"
 #include "kspelldlg.h"
 #include <kwin.h>
 #include <kprocio.h>

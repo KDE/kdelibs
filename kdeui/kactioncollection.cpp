@@ -40,6 +40,7 @@
 #include <qvariant.h>
 #include <QHash>
 
+#include <stdio.h>
 
 class KActionCollection::KActionCollectionPrivate
 {

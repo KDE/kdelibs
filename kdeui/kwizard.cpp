@@ -17,16 +17,16 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qstring.h>
-#include <qapplication.h>
+#include "kwizard.h"
+
 #include <qpushbutton.h>
+#include <qstring.h>
 
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
+#include <kguiitem.h>
 #include <kstdguiitem.h>
-
-#include "kwizard.h"
 
 KWizard::KWizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
             : Q3Wizard( parent, name, modal, f )

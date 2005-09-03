@@ -19,12 +19,15 @@
 #include "ktoolbarhandler.h"
 
 #include <QMenu>
+
+#include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>
-#include <ktoolbar.h>
-#include <kmainwindow.h>
 #include <klocale.h>
-#include <kaction.h>
+#include <kmainwindow.h>
+#include <ktoolbar.h>
+#include <kxmlguifactory.h>
+
 #include <assert.h>
 
 namespace

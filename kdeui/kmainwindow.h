@@ -21,12 +21,10 @@
 #ifndef KMAINWINDOW_H
 #define KMAINWINDOW_H
 
-#include "kxmlguifactory.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 #include <q3mainwindow.h>
 #include <qmetaobject.h>
-#include <ktoolbar.h>
 
 class KPopupMenu;
 class KXMLGUIFactory;
@@ -38,6 +36,7 @@ class KMenuBar;
 class KMWSessionManaged;
 class KMainWindowPrivate;
 class KAccel;
+class KToolBar;
 class KToolBarMenuAction;
 class DCOPObject;
 

@@ -24,23 +24,23 @@
 #ifndef KTOOLBAR_H
 #define KTOOLBAR_H
 
+#include <q3frame.h>
+#include <q3ptrlist.h>
 #include <q3toolbar.h>
-#include <q3mainwindow.h>
 #include <qcombobox.h>
 #include <qmap.h>
-#include <q3ptrlist.h>
 #include <qpointer.h>
-#include <q3frame.h>
-#include <qicon.h>
 
 #include <kglobal.h>
 
-class QDomElement;
-class QSize;
-class QPixmap;
+class Q3MainWindow;
 class Q3PopupMenu;
-class QStringList;
 class QDomDocument;
+class QDomElement;
+class QIcon;
+class QPixmap;
+class QSize;
+class QStringList;
 class QTimer;
 
 class KLineEdit;

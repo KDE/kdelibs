@@ -175,6 +175,15 @@ QIcon KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) con
         return QIcon();
 }
 
+#ifndef KDE_NO_COMPAT
+
+QIcon KGuiItem::iconSet() const
+{
+    return iconSet( KIcon::Small );
+}
+
+#endif
+
 QString KGuiItem::iconName() const
 {
     return d->m_iconName;

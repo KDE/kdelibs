@@ -18,6 +18,7 @@
 
 #include "kstdaction.h"
 
+#include <qstringlist.h>
 #include <qtoolbutton.h>
 
 #include <kaboutdata.h>

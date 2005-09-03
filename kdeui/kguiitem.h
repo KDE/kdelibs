@@ -23,11 +23,11 @@
 #define __kguiitem_h__
 
 #include <qstring.h>
-#include <qicon.h>
-#include <qpixmap.h>
-#include <q3valuelist.h>
-#include <kicontheme.h>
+
 #include <kglobal.h>
+#include <kicontheme.h>
+
+class QIcon;
 
 /**
  * @short An abstract class for GUI data such as ToolTip and Icon.
@@ -61,7 +61,7 @@ public:
     QString plainText() const;
 #ifndef KDE_NO_COMPAT
     QIcon iconSet( KIcon::Group, int size = 0, KInstance* instance = KGlobal::instance()) const;
-    QIcon iconSet() const { return iconSet( KIcon::Small ); }
+    QIcon iconSet() const;
 #else
     QIcon iconSet( KIcon::Group=KIcon::Small, int size = 0, KInstance* instance = KGlobal::instance()) const;
 #endif
