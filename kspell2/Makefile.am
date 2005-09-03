@@ -1,4 +1,6 @@
-SUBDIRS = . ui tests plugins kcmspellchecking
+SUBDIRS = . ui tests plugins
+# kcmspellchecking
+
 METASOURCES = AUTO
 
 noinst_LTLIBRARIES = libkspell2base.la
