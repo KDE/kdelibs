@@ -24,8 +24,8 @@
    or as general purpose allocator.  It does no compaction.  If the usage
    pattern is non-optimal it might waste some memory while running.  E.g.
    allocating many small things at once, and then deallocating only every
-   second one, there is a high chance, that actually no memory is freed.  */
-// $Id$
+   second one, there is a high chance, that actually no memory is freed.
+ */
 
 #include "kallocator.h"
 #include <kdebug.h>

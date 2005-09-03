@@ -15,12 +15,12 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
 /*
-* kglobal.cpp -- Implementation of class KGlobal.
-* Author:	Sirtaj Singh Kang
-* Version:	$Id$
-* Generated:	Sat May  1 02:08:43 EST 1999
-*/
+ * kglobal.cpp -- Implementation of class KGlobal.
+ * Author:	Sirtaj Singh Kang
+ * Generated:	Sat May  1 02:08:43 EST 1999
+ */
 
 #include <qglobal.h>
 #include <qlist.h>

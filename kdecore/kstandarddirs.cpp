@@ -20,7 +20,6 @@
 
 /*
  * Author: Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
- * Version:	$Id$
  * Generated:	Thu Mar  5 16:05:28 EST 1998
  */
 

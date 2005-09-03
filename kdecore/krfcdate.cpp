@@ -1,10 +1,7 @@
 /*
- *
  *  This file is part of the KDE libraries
  *  Copyright (c) 2000-2002 Waldo Bastian <bastian@kde.org>
  *                2002 Rik Hemsley <rik@kde.org>
- *
- * $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public

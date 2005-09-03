@@ -1,7 +1,5 @@
 /****************************************************************************
 
- $Id$
-
  Copyright (C) 2003 Lubos Lunak        <l.lunak@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
