@@ -489,12 +489,14 @@ public:
   /**
    * Sets the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).
    * @param info the new file type
+   * @since 3.5.0
 	*/
 	void setFileMode( mode_t m );
 
   /**
    * Sets new mimetype for item
    * @param info the new mimetype
+   * @since 3.5.0
 	*/
 	void setMimeType( QString mimetype );
 
