@@ -1,5 +1,3 @@
-# $Id$
-
 INCLUDES= -I$(srcdir)/.. $(all_includes) 
 
 ####### Files
