@@ -23,7 +23,6 @@
 */
 
 #include <qglobal.h>
-#include <qhash.h>
 #include <qlist.h>
 #include <qx11info_x11.h>
 #include <qwindowdefs.h>
@@ -134,20 +133,11 @@ KGlobal::staticQString(const char *str)
    return staticQString(QString::fromLatin1(str));
 }
 
-struct KStringDict : protected QHash<uint, QString>
+class KStringDict : public Q3Dict<QString>
 {
-   KStringDict() : QHash<uint, QString>() { };
-   const QString& add(const QString& str);
+public:
+   KStringDict() : Q3Dict<QString>(139) { };
 };
-
-const QString& KStringDict::add(const QString& str)
-{
-    uint hash = qHash(str);
-    KStringDict::iterator result = find(hash);
-    if (result == end())
-      result = insert(hash, str);
-    return *result;
-}
 
 /**
  * Create a static QString
@@ -160,47 +150,51 @@ KGlobal::staticQString(const QString &str)
 {
     if (!_stringDict) {
       _stringDict = new KStringDict;
+      _stringDict->setAutoDelete( true );
       kglobal_init();
     }
-   
-   return _stringDict->add(str);
+   QString *result = _stringDict->find(str);
+   if (!result)
+   {
+      result = new QString(str);
+      _stringDict->insert(str, result);
+   }
+   return *result;
 }
 
-struct KStaticDeleterList: protected QList<KStaticDeleterBase*>
+class KStaticDeleterList: public QList<KStaticDeleterBase*>
 {
+public:
    KStaticDeleterList() { }
-   ~KStaticDeleterList();
-   void add(KStaticDeleterBase *obj) { if (!contains(obj)) append(obj); }
-   void erase(KStaticDeleterBase *obj) { removeAll(obj); }
 };
-
-KStaticDeleterList::~KStaticDeleterList()
-{
-    while ( !isEmpty() ) {
-        KStaticDeleterBase *ksd = takeFirst();
-        ksd->destructObject();
-        delete ksd;
-    }
-}
 
 void
 KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
 {
    if (!_staticDeleters)
       kglobal_init();
-   _staticDeleters->add(obj);
+   if (_staticDeleters->indexOf(obj) == -1)
+      _staticDeleters->append(obj);
 }
 
 void
 KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
 {
    if (_staticDeleters)
-       _staticDeleters->erase(obj);
+      _staticDeleters->remove(obj);
 }
 
 void
 KGlobal::deleteStaticDeleters()
 {
+    if (!KGlobal::_staticDeleters)
+        return;
+
+    for(;_staticDeleters->count();)
+    {
+        _staticDeleters->takeFirst()->destructObject();
+    }
+
     delete KGlobal::_staticDeleters;
     KGlobal::_staticDeleters = 0;
 }
