@@ -134,6 +134,16 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void addEntry(Entry *entry);
 
     /**
+      Adds an additional entry to the current provider.
+      This is normally done internal.
+      This version takes into accounts the download variant.
+
+      @param entry a Hotstuff data entry to be added
+      @param variants all variants this entry is intended for
+    */
+    void addEntry(Entry *entry, const QStringList& variants);
+
+    /**
       Clears the entry list of the current provider.
       This is normally done internally.
     */

@@ -52,6 +52,9 @@ struct DownloadDialog::Private
     QWidget *m_page;
     KListView *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
     QPtrList<Entry> m_installlist;
+    QMap<KIO::Job*, Provider*> m_variantjobs;
+    QMap<KIO::Job*, QStringList> m_variants;
+    QMap<Provider*, Provider*> m_newproviders;
 };
 
 class NumSortListViewItem : public KListViewItem
@@ -275,9 +278,9 @@ void DownloadDialog::addProvider(Provider *p)
   d->m_lvtmp_l->addColumn(i18n("Release Date"));
   d->m_lvtmp_l->setSorting(2, false);
 
-  connect(d->m_lvtmp_r, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(d->m_lvtmp_d, SIGNAL(selectionChanged()), SLOT(slotSelected()));
-  connect(d->m_lvtmp_l, SIGNAL(selectionChanged()), SLOT(slotSelected()));
+  connect(d->m_lvtmp_r, SIGNAL(clicked(QListViewItem*)), SLOT(slotSelected()));
+  connect(d->m_lvtmp_d, SIGNAL(clicked(QListViewItem*)), SLOT(slotSelected()));
+  connect(d->m_lvtmp_l, SIGNAL(clicked(QListViewItem*)), SLOT(slotSelected()));
 
   rt = new QTextBrowser(frame);
   rt->setMinimumWidth(150);
@@ -349,13 +352,30 @@ void DownloadDialog::slotResult(KIO::Job *job)
         if((!m_filter.isEmpty()) && (entry->type() != m_filter)) continue;
       }
 
-      if((!m_filter.isEmpty()) && (m_jobs[job]))
+      /*if((!m_filter.isEmpty()) && (m_jobs[job]))
       {
         Provider *p = m_jobs[job];
-        addProvider(p);
-        slotPage(m_frame);
+        if(d->m_newproviders[p])
+        {
+          addProvider(p);
+          slotPage(m_frame);
+          d->m_newproviders[p] = 0;
+        }
+      }*/
+      if((!m_filter.isEmpty()) && (d->m_variantjobs[job]))
+      {
+        Provider *p = d->m_variantjobs[job];
+        if(d->m_newproviders[p])
+        {
+          addProvider(p);
+          slotPage(m_frame);
+          d->m_newproviders[p] = 0;
+        }
       }
-      addEntry(entry);
+
+      /*if(m_jobs[job]) addEntry(entry);
+      else*/
+      if(d->m_variantjobs[job]) addEntry(entry, d->m_variants[job]);
     }
   }
 }
@@ -380,41 +400,52 @@ int DownloadDialog::installStatus(Entry *entry)
   return installed;
 }
 
-void DownloadDialog::addEntry(Entry *entry)
+void DownloadDialog::addEntry(Entry *entry, const QStringList& variants)
 {
   QPixmap pix;
   int installed;
 
-  /*if(m_engine)
-  {
-    if(m_map.count() == 0)
-    {
-      m_frame = addPage(i18n("Welcome"), i18n("Welcome"), QPixmap(""));
-      Provider *p = new Provider();
-      p->setName(i18n("Generic"));
-      addProvider(p);
-      slotPage(m_frame);
-    }
-  }*/
   installed = installStatus(entry);
 
   if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
   else pix = QPixmap();
 
-  KListViewItem *tmp_r = new NumSortListViewItem(lv_r,
-    entry->name(), entry->version(), QString("%1").arg(entry->rating()));
-  KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
-    entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
-  KListViewItem *tmp_l = new DateSortListViewItem(lv_l,
-    entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
-
-  tmp_r->setPixmap(0, pix);
-  tmp_d->setPixmap(0, pix);
-  tmp_l->setPixmap(0, pix);
+  if(variants.contains("score"))
+  {
+    KListViewItem *tmp_r = new NumSortListViewItem(lv_r,
+      entry->name(), entry->version(), QString("%1").arg(entry->rating()));
+    tmp_r->setPixmap(0, pix);
+  }
+  if(variants.contains("downloads"))
+  {
+    KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
+      entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
+    tmp_d->setPixmap(0, pix);
+  }
+  if(variants.contains("latest"))
+  {
+    KListViewItem *tmp_l = new DateSortListViewItem(lv_l,
+      entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
+    tmp_l->setPixmap(0, pix);
+  }
 
   m_entries.append(entry);
 
+  kdDebug() << "added entry " << entry->name() << " for variants " << variants << endl;
+}
+
+void DownloadDialog::addEntry(Entry *entry)
+{
+  QStringList variants;
+
+  variants << "score";
+  variants << "downloads";
+  variants << "latest";
+
+  addEntry(entry, variants);
+
+  // not used anymore due to variants (but still used by engine)
   kdDebug() << "added entry " << entry->name() << endl;
 }
 
@@ -466,14 +497,11 @@ void DownloadDialog::slotDetails()
 
 QListViewItem *DownloadDialog::currentEntryItem()
 {
-  switch(m_curtab)
-  {
-    case 0: return lv_r->currentItem(); break;
-    case 1: return lv_d->currentItem(); break;
-    case 2: return lv_l->currentItem(); break;
-    default:
-      return 0;
-  }
+  if((m_curtab == 0) && (lv_r->selectedItem())) return lv_r->selectedItem();
+  if((m_curtab == 1) && (lv_d->selectedItem())) return lv_d->selectedItem();
+  if((m_curtab == 2) && (lv_l->selectedItem())) return lv_l->selectedItem();
+
+  return 0;
 }
 
 void DownloadDialog::slotInstall()
@@ -515,7 +543,17 @@ void DownloadDialog::install(Entry *e)
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
   
   if(m_entryitem)
+  {
     m_entryitem->setPixmap(0, pix);
+
+    QListViewItem *item;
+    item = lv_r->findItem(e->name(), 0);
+    if(item) item->setPixmap(0, pix);
+    item = lv_d->findItem(e->name(), 0);
+    if(item) item->setPixmap(0, pix);
+    item = lv_l->findItem(e->name(), 0);
+    if(item) item->setPixmap(0, pix);
+  }
  
   if(currentEntryItem() == m_entryitem)
   {
@@ -558,7 +596,28 @@ void DownloadDialog::slotInstalled(KIO::Job *job)
 void DownloadDialog::slotTab(int tab)
 {
   kdDebug() << "switch tab to: " << tab << endl;
+
+  Entry *eold = getEntry();
   m_curtab = tab;
+  Entry *e = getEntry();
+
+  if(e == eold) return;
+
+  if(e)
+  {
+    slotSelected();
+  }
+  else
+  {
+    QPushButton *de, *in;
+    in = *(m_buttons[d->m_page]->at(0));
+    de = *(m_buttons[d->m_page]->at(1));
+
+    if(in) in->setEnabled(false);
+    if(de) de->setEnabled(false);
+
+    m_rt->clear();
+  }
 }
 
 void DownloadDialog::slotSelected()
@@ -571,6 +630,26 @@ void DownloadDialog::slotSelected()
 
   if(e)
   {
+    QListViewItem *item;
+    if(m_curtab != 0)
+    {
+      lv_r->clearSelection();
+      item = lv_r->findItem(e->name(), 0);
+      if(item) lv_r->setSelected(item, true);
+    }
+    if(m_curtab != 1)
+    {
+      lv_d->clearSelection();
+      item = lv_d->findItem(e->name(), 0);
+      if(item) lv_d->setSelected(item, true);
+    }
+    if(m_curtab != 2)
+    {
+      lv_l->clearSelection();
+      item = lv_l->findItem(e->name(), 0);
+      if(item) lv_l->setSelected(item, true);
+    }
+
     if(!e->preview(lang).isValid())
     {
       ret = 0;
@@ -673,7 +752,7 @@ void DownloadDialog::loadProvider(Provider *p)
 {
   QMap<KIO::Job*, Provider*>::Iterator it;
 
-  for(it = m_jobs.begin(); it != m_jobs.end(); it++)
+  for(it = d->m_variantjobs.begin(); it != d->m_variantjobs.end(); it++)
   {
     if(it.data() == p)
     {
@@ -683,9 +762,57 @@ void DownloadDialog::loadProvider(Provider *p)
     }
   }
 
+  QStringList variants;
+  variants << "score";
+  variants << "downloads";
+  variants << "latest";
+
+  // Optimise URLs so each unique URL only gets fetched once
+
+  QMap<QString, QStringList> urls;
+
+  for(QStringList::Iterator it = variants.begin(); it != variants.end(); it++)
+  {
+    QString url = p->downloadUrlVariant((*it)).url();
+    if(!urls.contains(url))
+    {
+      urls[url] = QStringList();
+    }
+    urls[url] << (*it);
+
+    it = variants.remove(it);
+  }
+
+  // Now fetch the URLs while keeping the variant list for each attached
+
+  for(QMap<QString, QStringList>::Iterator it = urls.begin(); it != urls.end(); it++)
+  {
+    QString url = it.key();
+    QStringList urlvariants = it.data();
+
+    KIO::TransferJob *variantjob = KIO::get(url);
+    d->m_newproviders[p] = p;
+    d->m_variantjobs[variantjob] = p;
+    d->m_variants[variantjob] = urlvariants;
+    m_data[variantjob] = "";
+
+    connect(variantjob, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
+    connect(variantjob, SIGNAL(data(KIO::Job*, const QByteArray&)),
+      SLOT(slotData(KIO::Job*, const QByteArray&)));
+  }
+
+  if(variants.count() == 0) return;
+
+  // If not all variants are given, use default URL for those
+
+  kdDebug() << "-- reached old downloadurl section; variants left: " << variants.count() << endl;
+
   KIO::TransferJob *job = KIO::get(p->downloadUrl());
 
-  m_jobs[job] = p;
+  d->m_newproviders[p] = p;
+  d->m_variantjobs[job] = p;
+  d->m_variants[job] = variants;
+  //m_jobs[job] = p; // not used anymore due to variants
   m_data[job] = "";
 
   connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));

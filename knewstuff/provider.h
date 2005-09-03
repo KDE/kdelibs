@@ -88,6 +88,14 @@ class KDE_EXPORT Provider
     KURL downloadUrl() const;
 
     /**
+     * Variant to retrieve 'tagged' download URLs.
+     * Variant can be one of 'score', 'downloads', 'latest'.
+     *
+     * @return download specific URL
+     */
+    KURL downloadUrlVariant( QString variant ) const;
+
+    /**
      * Sets the upload URL.
      */
     void setUploadUrl( const KURL & );

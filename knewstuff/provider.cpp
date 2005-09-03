@@ -25,10 +25,62 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
+#include <qptrdict.h>
+#include <qwindowdefs.h>
+
 #include "provider.h"
 #include "provider.moc"
 
 using namespace KNS;
+
+// BCI for KDE 3.5 only
+
+class ProviderPrivate
+{
+  public:
+  ProviderPrivate(){}
+  KURL mDownloadUrlLatest;
+  KURL mDownloadUrlScore;
+  KURL mDownloadUrlDownloads;
+};
+
+static QPtrDict<ProviderPrivate> *d_ptr_prov = 0;
+
+static void cleanup_d_ptr_prov()
+{
+  delete d_ptr_prov;
+  d_ptr_prov = 0; // not in BIC guide - add there
+}
+
+static ProviderPrivate *d_prov(const Provider *p)
+{
+  if(!d_ptr_prov)
+  {
+    d_ptr_prov = new QPtrDict<ProviderPrivate>();
+    qAddPostRoutine(cleanup_d_ptr_prov);
+  }
+  ProviderPrivate *ret = d_ptr_prov->find((void*)p);
+  if(!ret)
+  {
+    ret = new ProviderPrivate();
+    d_ptr_prov->replace((void*)p, ret);
+  }
+  return ret;
+}
+
+KURL Provider::downloadUrlVariant( QString variant ) const
+{
+  if((variant == "latest") && (d_prov(this)->mDownloadUrlLatest.isValid()))
+	return d_prov(this)->mDownloadUrlLatest;
+  if((variant == "score") && (d_prov(this)->mDownloadUrlScore.isValid()))
+	return d_prov(this)->mDownloadUrlScore;
+  if((variant == "downloads") && (d_prov(this)->mDownloadUrlDownloads.isValid()))
+	return d_prov(this)->mDownloadUrlDownloads;
+
+  return mDownloadUrl;
+}
+
+// BCI part ends here
 
 Provider::Provider() : mNoUpload( false )
 {
@@ -117,6 +169,10 @@ void Provider::parseDomElement( const QDomElement &element )
   setDownloadUrl( KURL( element.attribute("downloadurl") ) );
   setUploadUrl( KURL( element.attribute("uploadurl") ) );
   setNoUploadUrl( KURL( element.attribute("nouploadurl") ) );
+
+  d_prov(this)->mDownloadUrlLatest = KURL( element.attribute("downloadurl-latest") );
+  d_prov(this)->mDownloadUrlScore = KURL( element.attribute("downloadurl-score") );
+  d_prov(this)->mDownloadUrlDownloads = KURL( element.attribute("downloadurl-downloads") );
 
   KURL iconurl( element.attribute("icon") );
   if(!iconurl.isValid()) iconurl.setPath( element.attribute("icon") );
