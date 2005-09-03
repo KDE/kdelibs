@@ -11,9 +11,8 @@
    $ License: GPL with the following explicit clarification:
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
-
-   $Id$
 */
+
 #ifndef KABAPI_H
 #define KABAPI_H
 
@@ -61,7 +60,6 @@ class KListBox;
   * long the kab API is not completely finished.</tt>
   * @short The class KabAPI defines the API to access user address databases.
   * @author Mirko Boehm <mirko@kde.org>
-  * @version $Id$
   * @see AddressBook #KDialogBase
   */
 

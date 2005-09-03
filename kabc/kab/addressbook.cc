@@ -11,8 +11,6 @@
    $ License: GPL with the following explicit clarification:
          This code may be linked against any version of the Qt toolkit
          from Troll Tech, Norway. $
-
-   $Id$	 
 */
 
 #include "addressbook.h"

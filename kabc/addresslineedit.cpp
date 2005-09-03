@@ -21,8 +21,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #include "addresslineedit.h"
 
 #include <qapplication.h>

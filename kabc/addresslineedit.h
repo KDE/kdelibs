@@ -21,7 +21,6 @@
 
 #ifndef KABC_ADDRESSLINEEDIT_H
 #define KABC_ADDRESSLINEEDIT_H
-// $Id$
 
 #include <qobject.h>
 #include <q3ptrlist.h>

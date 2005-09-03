@@ -1,5 +1,3 @@
-# $Id$
-
 INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
 
 include_HEADERS = kregexpeditorinterface.h
