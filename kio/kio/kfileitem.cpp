@@ -935,6 +935,16 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
   init( _determineMimeTypeOnDemand );
 }
 
+void KFileItem::setFileMode( mode_t m )
+{
+	m_fileMode = m;
+}
+
+void KFileItem::setMimetype( QString &mimeType )
+{
+    m_pMimeType = KMimeType::mimeType( mimeType );
+}
+
 void KFileItem::setExtraData( const void *key, void *value )
 {
     if ( !key )

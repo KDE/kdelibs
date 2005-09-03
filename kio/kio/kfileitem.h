@@ -487,6 +487,18 @@ public:
   void setMetaInfo( const KFileMetaInfo & info );
 
   /**
+   * Sets the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).
+   * @param info the new file type
+	*/
+	void setFileMode( mode_t m );
+
+  /**
+   * Sets new mimetype for item
+   * @param info the new mimetype
+	*/
+	void setMimetype( QString &mimeType );
+
+  /**
    * Returns the metainfo of this item.
    * @param autoget if true, the metainfo will automatically be created
    * @param what ignored
