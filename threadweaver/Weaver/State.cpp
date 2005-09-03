@@ -35,6 +35,10 @@ namespace ThreadWeaver {
     {
     }
 
+    State::~State()
+    {
+    }
+
     const QString& State::stateName () const
     {
         return StateNames[m_id];
