@@ -796,8 +796,10 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_hidden == item.m_hidden
              && size() == item.size()
              && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
-             && mimetype() == item.mimetype()
              && (!d || !item.d || d->iconName == item.d->iconName) );
+
+    // Don't compare the mimetypes here. They might not be known, and we don't want to
+    // do the slow operation of determining them here.
 }
 
 void KFileItem::assign( const KFileItem & item )
