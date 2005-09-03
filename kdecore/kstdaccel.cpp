@@ -23,12 +23,14 @@
 
 #include "kaccelaction.h"
 #include "kaccelbase.h"
-#include <kconfig.h>
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kshortcut.h>
-#include <kshortcutlist.h>
+#include "kconfig.h"
+#include "kdebug.h"
+#include "kglobal.h"
+#include "klocale.h"
+#include "kshortcut.h"
+#include "kshortcutlist.h"
+
+#include <qkeysequence.h>
 
 namespace KStdAccel
 {

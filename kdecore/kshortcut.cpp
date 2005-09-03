@@ -22,13 +22,15 @@
 #include "kkeyserver.h"
 
 #include <qevent.h>
+#include <qkeysequence.h>
+#include <qstring.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <ksimpleconfig.h>
+#include "kdebug.h"
+#include "kglobal.h"
+#include "klocale.h"
+#include "ksimpleconfig.h"
 
 //----------------------------------------------------
 

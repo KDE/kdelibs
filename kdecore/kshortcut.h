@@ -20,11 +20,14 @@
 #ifndef __KSHORTCUT_H
 #define __KSHORTCUT_H
 
-#include <qkeysequence.h>
-#include <qstring.h>
 #include "kdelibs_export.h"
 
+#include <qnamespace.h>
+
 class QKeyEvent;
+class QKeySequence;
+class QString;
+
 class KKeyNative;
 
 /**
