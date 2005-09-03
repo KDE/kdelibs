@@ -14,8 +14,6 @@
  * All modifications are placed under the license of libmcrypt.
  */
 
-/* $Id$ */
-
 #include <string.h>
 #include <kswap.h>
 #include "des.h"

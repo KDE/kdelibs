@@ -1,5 +1,3 @@
-// $Id$
-
 #include <sys/types.h>
 #include "main.h"
 #include <pwd.h>

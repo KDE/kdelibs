@@ -1,6 +1,5 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2001-2002 Michael Häckel <haeckel@kde.org>
-   $Id$
  
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -67,7 +66,6 @@ class Q3StrIList;
  * \endcode
  *
  * @author Michael Häckel <haeckel@kde.org>
- * @version $Id$
  */
 
 class KIO_EXPORT KDESasl

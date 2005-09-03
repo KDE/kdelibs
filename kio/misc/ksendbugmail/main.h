@@ -1,5 +1,5 @@
 #ifndef BUG_MAILER_H
-#define BUG_MAILER_H "$Id$"
+#define BUG_MAILER_H
 
 #include <qobject.h>
 

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <stdio.h>
