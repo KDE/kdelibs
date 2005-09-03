@@ -41,7 +41,6 @@
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
- * FIXME KDE4 rename this file to kmenu.h
  */
 class KDEUI_EXPORT KMenu : public QMenu {
     Q_OBJECT

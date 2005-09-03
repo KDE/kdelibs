@@ -349,6 +349,7 @@ void KMenu::actionHovered(QAction* action)
     showCtxMenu(actionGeometry(action).center());
 }
 
+Q_DECLARE_METATYPE(KMenuContext)
 
 static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contextedAction) {
 	QList<QAction*> actions=menu->actions();
@@ -457,8 +458,5 @@ void KMenu::hideEvent(QHideEvent *e)
 
 void KMenu::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-
-
-Q_DECLARE_METATYPE(KMenuContext)
 
 #include "kmenu.moc"
