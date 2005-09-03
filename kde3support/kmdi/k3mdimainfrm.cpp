@@ -49,6 +49,7 @@
 #include <kdeversion.h>
 #include <qtabwidget.h>
 #include <klocale.h>
+#include <kxmlguifactory.h>
 
 #include <kiconloader.h>
 #include <k3mdidockcontainer.h>

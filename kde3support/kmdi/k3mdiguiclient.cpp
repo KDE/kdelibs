@@ -27,6 +27,7 @@
 #include <kmainwindow.h>
 #include <klocale.h>
 #include <kaction.h>
+#include <kxmlguifactory.h>
 #include <qstring.h>
 #include <assert.h>
 #include <kdebug.h>

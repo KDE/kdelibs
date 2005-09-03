@@ -24,8 +24,9 @@
 #ifndef KDOCKWIDGET_PRIVATE_H
 #define KDOCKWIDGET_PRIVATE_H
 
-#include <qwidget.h>
+#include <qpointer.h>
 #include <qpushbutton.h>
+#include <qwidget.h>
 
 #ifndef NO_KDE2
 #include <netwm_def.h>
