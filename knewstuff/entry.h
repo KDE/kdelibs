@@ -61,11 +61,23 @@ class KDE_EXPORT Entry
     void setName( const QString & );
 
     /**
+     * Sets the (internationalised) name for this data object.
+     */
+    void setName( const QString &, const QString & );
+
+    /**
      * Retrieve the name of the data object.
      *
      * @return object name
      */
     QString name() const;
+
+    /**
+     * Retrieve the internationalised name of the data object.
+     *
+     * @return object name (potentially translated)
+     */
+    QString name( const QString &lang ) const;
 
     /**
      * Sets the application type, e.g. 'kdesktop/wallpaper'.

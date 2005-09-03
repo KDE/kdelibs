@@ -35,6 +35,7 @@ class EntryPrivate
   public:
   EntryPrivate(){}
   QString mEmail;
+  QMap<QString,QString> mNameMap;
 };
 
 static QPtrDict<EntryPrivate> *d_ptr = 0;
@@ -69,6 +70,27 @@ QString Entry::authorEmail() const
 void Entry::setAuthorEmail( const QString& email )
 {
   d(this)->mEmail = email;
+}
+
+QString Entry::name( const QString &lang ) const
+{
+  if ( d(this)->mNameMap.isEmpty() ) return QString::null;
+
+  if ( !d(this)->mNameMap[ lang ].isEmpty() ) return d(this)->mNameMap[ lang ];
+  else {
+    QStringList langs = KGlobal::locale()->languageList();
+    for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+      if( !d(this)->mNameMap[ *it ].isEmpty() ) return d(this)->mNameMap[ *it ];
+  }
+  if ( !d(this)->mNameMap[ QString::null ].isEmpty() ) return d(this)->mNameMap[ QString::null ];
+  else return *(mSummaryMap.begin());
+}
+
+void Entry::setName( const QString &name, const QString &lang )
+{
+  d(this)->mNameMap.insert( lang, name );
+
+  if ( mLangs.find( lang ) == mLangs.end() ) mLangs.append( lang );
 }
 
 // BCI part ends here
@@ -274,7 +296,12 @@ void Entry::parseDomElement( const QDomElement &element )
   QDomNode n;
   for( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
-    if ( e.tagName() == "name" ) setName( e.text().stripWhiteSpace() );
+    if ( e.tagName() == "name" )
+    {
+      QString lang = e.attribute( "lang" );
+      setName( e.text().stripWhiteSpace(), lang );
+      if(lang.isNull()) setName( e.text().stripWhiteSpace() ); /* primary key - no i18n */
+    }
     if ( e.tagName() == "author" ) {
       setAuthor( e.text().stripWhiteSpace() );
       QString email = e.attribute( "email" );

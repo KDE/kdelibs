@@ -386,8 +386,10 @@ int DownloadDialog::installStatus(Entry *entry)
   QString datestring;
   int installed;
 
+  QString lang = KGlobal::locale()->language();
+
   kapp->config()->setGroup("KNewStuffStatus");
-  datestring = kapp->config()->readEntry(entry->name());
+  datestring = kapp->config()->readEntry(entry->name(lang));
   if(datestring.isNull()) installed = 0;
   else
   {
@@ -411,22 +413,24 @@ void DownloadDialog::addEntry(Entry *entry, const QStringList& variants)
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
   else pix = QPixmap();
 
+  QString lang = KGlobal::locale()->language();
+
   if(variants.contains("score"))
   {
     KListViewItem *tmp_r = new NumSortListViewItem(lv_r,
-      entry->name(), entry->version(), QString("%1").arg(entry->rating()));
+      entry->name(lang), entry->version(), QString("%1").arg(entry->rating()));
     tmp_r->setPixmap(0, pix);
   }
   if(variants.contains("downloads"))
   {
     KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
-      entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
+      entry->name(lang), entry->version(), QString("%1").arg(entry->downloads()));
     tmp_d->setPixmap(0, pix);
   }
   if(variants.contains("latest"))
   {
     KListViewItem *tmp_l = new DateSortListViewItem(lv_l,
-      entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
+      entry->name(lang), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
     tmp_l->setPixmap(0, pix);
   }
 
@@ -473,7 +477,7 @@ void DownloadDialog::slotDetails()
     "Downloads: %7\n"
     "Release date: %8\n"
     "Summary: %9\n"
-    ).arg(e->name()
+    ).arg(e->name(lang)
     ).arg(e->author()
     ).arg(e->license()
     ).arg(e->version()
@@ -541,20 +545,22 @@ void DownloadDialog::install(Entry *e)
   kapp->config()->sync();
 
   QPixmap pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
+
+  QString lang = KGlobal::locale()->language();
   
   if(m_entryitem)
   {
     m_entryitem->setPixmap(0, pix);
 
     QListViewItem *item;
-    item = lv_r->findItem(e->name(), 0);
+    item = lv_r->findItem(e->name(lang), 0);
     if(item) item->setPixmap(0, pix);
-    item = lv_d->findItem(e->name(), 0);
+    item = lv_d->findItem(e->name(lang), 0);
     if(item) item->setPixmap(0, pix);
-    item = lv_l->findItem(e->name(), 0);
+    item = lv_l->findItem(e->name(lang), 0);
     if(item) item->setPixmap(0, pix);
   }
- 
+
   if(currentEntryItem() == m_entryitem)
   {
     QPushButton *in;
@@ -630,23 +636,25 @@ void DownloadDialog::slotSelected()
 
   if(e)
   {
+    QString lang = KGlobal::locale()->language();
+
     QListViewItem *item;
     if(m_curtab != 0)
     {
       lv_r->clearSelection();
-      item = lv_r->findItem(e->name(), 0);
+      item = lv_r->findItem(e->name(lang), 0);
       if(item) lv_r->setSelected(item, true);
     }
     if(m_curtab != 1)
     {
       lv_d->clearSelection();
-      item = lv_d->findItem(e->name(), 0);
+      item = lv_d->findItem(e->name(lang), 0);
       if(item) lv_d->setSelected(item, true);
     }
     if(m_curtab != 2)
     {
       lv_l->clearSelection();
-      item = lv_l->findItem(e->name(), 0);
+      item = lv_l->findItem(e->name(lang), 0);
       if(item) lv_l->setSelected(item, true);
     }
 
@@ -659,7 +667,7 @@ void DownloadDialog::slotSelected()
       ret = KIO::NetAccess::download(e->preview(lang), tmp, this);
     }
 
-    QString desc = QString("<b>%1</b><br>").arg(e->name());
+    QString desc = QString("<b>%1</b><br>").arg(e->name(lang));
     if(!e->authorEmail().isNull())
     {
       desc += QString("<a href='mailto:" + e->authorEmail() + "'>" + e->author() + "</a>");
@@ -710,8 +718,10 @@ Entry *DownloadDialog::getEntry()
 
   QString entryName = entryItem->text(0);
 
+  QString lang = KGlobal::locale()->language();
+
   for(Entry *e = m_entries.first(); e; e = m_entries.next())
-    if(e->name() == entryName)
+    if(e->name(lang) == entryName)
       return e;
 
   return 0;
