@@ -24,7 +24,7 @@
 
 #include <qglobal.h>
 #include <qlist.h>
-#include <qhash.h>
+#include <qset.h>
 #include <qx11info_x11.h>
 #include <qwindowdefs.h>
 #include "kglobal.h"
@@ -134,23 +134,11 @@ KGlobal::staticQString(const char *str)
    return staticQString(QString::fromLatin1(str));
 }
 
-class KStringDict : protected QHash<uint, QString>
+class KStringDict : public QSet<QString>
 {
-  public:
-  KStringDict() : QHash<uint, QString>() { }
-  const QString& add(const QString& str);
+public:
+   KStringDict() { }
 };
-
-const QString& KStringDict::add(const QString& str)
-{
-  uint hash = qHash(str);
-  KStringDict::iterator result = find(hash);
-  
-  if (result == end())
-    result = insert(hash, str);
-    
-  return *result;
-}
 
 /**
  * Create a static QString
@@ -166,7 +154,7 @@ KGlobal::staticQString(const QString &str)
       kglobal_init();
     }
     
-   return _stringDict->add(str);
+   return *_stringDict->insert(str);
 }
 
 class KStaticDeleterList: public QList<KStaticDeleterBase*>
