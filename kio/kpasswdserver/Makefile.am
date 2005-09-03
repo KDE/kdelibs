@@ -1,6 +1,3 @@
-# $Id$
-# Makefile.am of kdebase/kioslave/http
-
 INCLUDES= -I$(top_srcdir)/kwallet/client $(all_includes)
 
 ####### Files
