@@ -30,7 +30,7 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default', 'generic', 'pkgconfig', 'qt4'], toolpath=['./', './bksys'])
+env = Environment( tools=['generic', 'libxml', 'qt4'], toolpath=['./', './bksys'])
 
 #if os.environ.has_key('QTDIR'):
 #	addon = ':' + os.environ['QTDIR'] + '/lib'
@@ -82,6 +82,7 @@ env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib'
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 import os
 if not os.path.exists('build/config.h'):
+	os.mkdir('build')
 	dest=open('build/config.h', 'w')
 	dest.close()
 

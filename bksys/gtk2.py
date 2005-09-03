@@ -25,77 +25,26 @@ ie: """+BOLD+"""scons configure noalsa=1 nojack=1
 """+NORMAL
 		return
 
-	def Check_pkg_config(context, version):
-		context.Message('Checking for pkg-config ... ')
-		pkg_config_command = 'pkg-config'
-		if os.environ.has_key("PKG_CONFIG_PATH"):
-			pkg_config_command = "PKG_CONFIG_PATH="+os.environ["PKG_CONFIG_PATH"]+" pkg-config "
-		ret = context.TryAction(pkg_config_command+' --atleast-pkgconfig-version=%s' % version)[0]
-		context.Result(ret)
-		return ret
-
-	def Check_package(context, module, version):
-		context.Message('Checking for %s >= %s ... ' % (module, version))
-		pkg_config_command = 'pkg-config'
-		if os.environ.has_key("PKG_CONFIG_PATH"):
-			pkg_config_command = "PKG_CONFIG_PATH="+os.environ["PKG_CONFIG_PATH"]+" pkg-config "
-		ret = context.TryAction(pkg_config_command+' %s --atleast-version=%s' % (module, version))[0]
-		if ret:
-			env.ParseConfig(pkg_config_command+' %s --cflags --libs' % module);
-			env.AppendUnique( GTK_CCFLAGS = 
-				SCons.Util.CLVar( 
-					os.popen(pkg_config_command+" %s --cflags 2>/dev/null" % module).read().strip() ));
-			env.AppendUnique( GTK_LDFLAGS = 
-				SCons.Util.CLVar( 
-					os.popen(pkg_config_command+" %s --libs 2>/dev/null" % module).read().strip() ));
-		context.Result(ret)
-		return ret
-
 	# load the options
 	from SCons.Options import Options, PathOption
 	cachefile = env['CACHEDIR']+'/gtk2.cache.py'
 	opts = Options(cachefile)
 	opts.AddOptions(
-		( 'GCONFIGURED', '' ),
-		( 'GTK_CCFLAGS', 'additional compilation flags' ),
-		( 'GTK_LDFLAGS', 'additional link flags' ),
 		( 'DATA', 'data directory' ),
 		( 'LIBDIR', 'library directory' ),
-		( 'BINDIR', 'library directory' ),
+		( 'BINDIR', 'library directory' )
 		)
 	opts.Update(env)
 
 	import sys
-	if 'configure' in sys.argv or not env.has_key('GCONFIGURED'):
-		env['_CONFIGURE']=1
-		## Configure stuff    
-		conf = env.Configure(custom_tests = { 'Check_pkg_config' : Check_pkg_config, 'Check_package' : Check_package }) 
+	from SCons.Tool import Tool
 
-		if env.has_key('GTK_CCFLAGS'):
-			env.__delitem__('GTK_CCFLAGS')
-		if env.has_key('GTK_LDFLAGS'):
-			env.__delitem__('GTK_LDFLAGS')
-
-		if not conf.Check_pkg_config('0.15'):
-			print 'pkg-config >= 0.15 not found.' 
-			env.Exit(1) 
-
-		#import sys
-		#if 'noalsa' in sys.argv:
-		#	print "-> Alsa module disabled by user"
-		#	haveAlsa = 0
-		#else:
-		#	haveAlsa = conf.Check_package('alsa','1.0')
-
-		#haveLadspa  = conf.CheckHeader('ladspa.h')
-		#haveLiblrdf = conf.CheckLibWithHeader('lrdf', ['stdio.h', 'lrdf.h'], 'C', 'lrdf_init();')
-		haveglib  = conf.Check_package('glib-2.0', '2.6')
-		havegtk   = conf.Check_package('gtk+-2.0', '2.6')
-		haveglade = conf.Check_package('libglade-2.0', '2.0')
-
-		env = conf.Finish()
-
-		env['GCONFIGURED'] = 1
+	pkgs = Tool('pkgconfig', ['./bksys'])
+	pkgs.generate(env)
+	x
+		haveglib  = env.pkgConfig_findPackage('GLIB', 'glib-2.0', '2.6')
+		havegtk   = env.pkgConfig_findPackage('GTK', 'gtk+-2.0', '2.6')
+		haveglade = env.pkgConfig_findPackage('GLADE', 'libglade-2.0', '2.0')
 
 		env['DATA'] = env['PREFIX']+'/share'
 		env['LIBDIR'] = env['PREFIX']+'/lib'
@@ -129,12 +78,12 @@ ie: """+BOLD+"""scons configure noalsa=1 nojack=1
                 dest.close()
                 return 0
 
-        LA_BUILDER = env.Builder(
-                action     = la_file,
-                suffix     = '.la',
-                src_suffix = env['SHLIBSUFFIX'])
+		LA_BUILDER = env.Builder(
+			action     = la_file,
+			suffix     = '.la',
+			src_suffix = env['SHLIBSUFFIX'])
 
-        env['BUILDERS']['LaFile']    = LA_BUILDER
+		env['BUILDERS']['LaFile']    = LA_BUILDER
 	
 
 	if env.has_key('GTK_CCFLAGS'):

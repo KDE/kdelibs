@@ -309,6 +309,11 @@ def get_dump(nenv):
 	return bks_dump+"</bksys>\n"
 
 def generate(env):
+
+	from SCons.Tool import Tool;
+	deft = Tool('default')
+	deft.generate(env)
+	
 	## Bksys requires scons 0.96
 	env.EnsureSConsVersion(0, 96)
 
