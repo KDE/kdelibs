@@ -19,7 +19,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <q3dragobject.h>
 #include <q3popupmenu.h>
 #include <qtextstream.h>
 #include <qtimer.h>
@@ -32,7 +31,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstdaccel.h>
-#include <kurldrag.h>
 #include <QKeyEvent>
 
 #include "keditcl.h"
@@ -65,7 +63,6 @@ KEdit::KEdit(QWidget *_parent, const char *name)
     replace_dialog= NULL;
     gotodialog = NULL;
 
-    setAcceptDrops(true);
     KCursor::setAutoHideCursor( this, true );
 
     connect(this, SIGNAL(cursorPositionChanged(int,int)),
@@ -604,58 +601,6 @@ void KEdit::doGotoLine() {
    while(1+line+lineOfChar(parag,col) < target_line) col++;
    setCursorPosition( parag, col );
    setFocus();
-}
-
-
-void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
-
-  if(KURLDrag::canDecode(e))
-    e->accept();
-  else if(Q3TextDrag::canDecode(e))
-    Q3MultiLineEdit::dragMoveEvent(e);
-}
-
-void  KEdit::contentsDragMoveEvent(QDragMoveEvent* e) {
-
-  if(KURLDrag::canDecode(e))
-    e->accept();
-  else if(Q3TextDrag::canDecode(e))
-    Q3MultiLineEdit::contentsDragMoveEvent(e);
-}
-
-void  KEdit::dragEnterEvent(QDragEnterEvent* e) {
-
-  kdDebug() << "KEdit::dragEnterEvent()" << endl;
-  e->accept(KURLDrag::canDecode(e) || Q3TextDrag::canDecode(e));
-}
-
-void  KEdit::contentsDragEnterEvent(QDragEnterEvent* e) {
-
-  kdDebug() << "KEdit::contentsDragEnterEvent()" << endl;
-  e->accept(KURLDrag::canDecode(e) || Q3TextDrag::canDecode(e));
-}
-
-
-void  KEdit::dropEvent(QDropEvent* e) {
-
-  kdDebug() << "KEdit::dropEvent()" << endl;
-
-  if(KURLDrag::canDecode(e)) {
-   emit gotUrlDrop(e);
-  }
-  else if(Q3TextDrag::canDecode(e))
-    Q3MultiLineEdit::dropEvent(e);
-}
-
-void  KEdit::contentsDropEvent(QDropEvent* e) {
-
-  kdDebug() << "KEdit::contentsDropEvent()" << endl;
-
-  if(KURLDrag::canDecode(e)) {
-   emit gotUrlDrop(e);
-  }
-  else if(Q3TextDrag::canDecode(e))
-    Q3MultiLineEdit::contentsDropEvent(e);
 }
 
 void KEdit::setOverwriteEnabled(bool b)

@@ -39,7 +39,6 @@
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>
-#include <kurldrag.h>
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -945,24 +944,28 @@ void KLineEdit::completionMenuActivated( int id )
 void KLineEdit::dropEvent(QDropEvent *e)
 {
     KURL::List urlList;
-    if( d->handleURLDrops && KURLDrag::decode( e, urlList ) )
+    if( d->handleURLDrops )
     {
-        QString dropText = text();
-        KURL::List::ConstIterator it;
-        for( it = urlList.begin() ; it != urlList.end() ; ++it )
+        urlList = KURL::List::fromMimeData( e->mimeData() );
+        if ( !urlList.isEmpty() )
         {
-            if(!dropText.isEmpty())
-                dropText+=' ';
+            QString dropText = text();
+            KURL::List::ConstIterator it;
+            for( it = urlList.begin() ; it != urlList.end() ; ++it )
+            {
+                if(!dropText.isEmpty())
+                    dropText+=' ';
 
-            dropText += (*it).prettyURL();
+                dropText += (*it).prettyURL();
+            }
+
+            validateAndSet( dropText, dropText.length(), 0, 0);
+
+            e->accept();
+            return;
         }
-
-        validateAndSet( dropText, dropText.length(), 0, 0);
-
-        e->accept();
     }
-    else
-        QLineEdit::dropEvent(e);
+    QLineEdit::dropEvent(e);
 }
 
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )

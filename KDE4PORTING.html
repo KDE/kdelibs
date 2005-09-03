@@ -210,6 +210,10 @@ Use KSystemTray instead.</p>
 <H4>KEditListBox</H4>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
 
+<H4>KEdit</H4>
+<li>The signal gotUrlDrop was removed, nobody used it, and it's easy to do in the application
+if needed (see the KURLDrag section)</li>
+
 <H4>KTabBar</H4>
 <li>colors, close buttons on individual tabs not working at the moment</li>
 <li>The old insertTab and removeTab have been removed, use addTab / insertTab / removeTab from QTabBar instead (uses indices, not QTab*s)</li>

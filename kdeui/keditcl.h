@@ -289,14 +289,6 @@ public:
     void setAutoUpdate(bool b);
 
 signals:
-    /** This signal is emitted if the user dropped a URL over the text editor
-      * QMultiLineEdit widget.
-      *
-      *  Note that the user can drop also Text on it, but
-      * this is already handled internally by QMultiLineEdit.
-      */
-    void        gotUrlDrop(QDropEvent* e);
-
     /** This signal is emitted whenever the cursor position changes.
      *
      * Use this in conjunction with currentLine(), currentColumn()
@@ -391,14 +383,6 @@ protected:
 protected:
 
     void 	keyPressEvent 	 ( QKeyEvent *  );
-
-    // DnD interface
-    void        dragMoveEvent(QDragMoveEvent* e);
-    void        dragEnterEvent(QDragEnterEvent* e);
-    void        dropEvent(QDropEvent* e);
-    void        contentsDragMoveEvent(QDragMoveEvent* e);
-    void        contentsDragEnterEvent(QDragEnterEvent* e);
-    void        contentsDropEvent(QDropEvent* e);
 
 private:
     QTimer* repaintTimer;
