@@ -937,10 +937,10 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KURL& _url,
 
 void KFileItem::setFileMode( mode_t m )
 {
-	m_fileMode = m;
+  m_fileMode = m;
 }
 
-void KFileItem::setMimeType( QString mimetype )
+void KFileItem::setMimeType( const QString& mimetype )
 {
     m_pMimeType = KMimeType::mimeType( mimetype );
 }
