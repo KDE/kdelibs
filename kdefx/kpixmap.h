@@ -3,8 +3,6 @@
  *  Copyright (C) 1998	Mark Donohoe <donohoe@kde.org>
  * 			Stephan Kulow <coolo@kde.org>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -52,7 +50,6 @@ class KPixmapPrivate;
  * the desktop which are always present use no more than 40 colors.
 
  * @author Mark Donohoe (donohoe@kde.org)
- * @version $Id$
  */
 class KDEFX_EXPORT KPixmap : public QPixmap
 {

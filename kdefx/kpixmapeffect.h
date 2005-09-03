@@ -5,8 +5,6 @@
 
 */
 
-// $Id$
-
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 

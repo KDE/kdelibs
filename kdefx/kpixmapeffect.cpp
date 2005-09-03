@@ -5,8 +5,6 @@
 
 */
 
-// $Id$
-
 #include <qimage.h>
 #include <qpainter.h>
 
