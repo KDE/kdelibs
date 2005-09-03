@@ -5,6 +5,7 @@ MimeType=application/x-sqlite2
 Icon=empty
 Patterns=
 Comment=SQLite2 Database File
+Comment[cs]=Databázový soubor SQLite2
 Comment[el]=Αρχείο βάσης δεδομένων SQLite2
 Comment[ga]=Comhad Bunachair Shonraí SQLite2
 Comment[pa]=SQLite2 ਡਾਟਾਬੇਸ ਫਾਇਲ
