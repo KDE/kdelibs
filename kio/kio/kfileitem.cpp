@@ -940,9 +940,9 @@ void KFileItem::setFileMode( mode_t m )
 	m_fileMode = m;
 }
 
-void KFileItem::setMimetype( QString &mimeType )
+void KFileItem::setMimeType( QString mimetype )
 {
-    m_pMimeType = KMimeType::mimeType( mimeType );
+    m_pMimeType = KMimeType::mimeType( mimetype );
 }
 
 void KFileItem::setExtraData( const void *key, void *value )

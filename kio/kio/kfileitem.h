@@ -496,7 +496,7 @@ public:
    * Sets new mimetype for item
    * @param info the new mimetype
 	*/
-	void setMimetype( QString &mimeType );
+	void setMimeType( QString mimetype );
 
   /**
    * Returns the metainfo of this item.
