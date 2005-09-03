@@ -1,9 +1,6 @@
 /*
-    $Id$
-
     This file is part of the KDE libraries
     Copyright (C) 1999 Matthias Ettrich (ettrich@kde.org)
-
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

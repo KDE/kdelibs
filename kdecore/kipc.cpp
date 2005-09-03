@@ -19,12 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-
 /*
  * kipc.cpp: Send a message to one/all KDE apps.
- *
- * $Id$
  */
+
 #include "config.h"
 
 #include <qwindowdefs.h>

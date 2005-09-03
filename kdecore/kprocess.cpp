@@ -1,7 +1,4 @@
 /*
-
-   $Id$
-
    This file is part of the KDE libraries
    Copyright (C) 1997 Christian Czezatke (e9025461@student.tuwien.ac.at)
 
