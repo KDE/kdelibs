@@ -34,10 +34,6 @@
 #include <sys/types.h>
 
 /*
- * $Id$
- */
-
-/*
  * Copyright 1992, 1993, Geoff Kuenning, Granada Hills, CA
  * All rights reserved.
  *
