@@ -1,5 +1,3 @@
-// $Id$
-
 //
 // configtest.cpp: libKDEcore example
 //

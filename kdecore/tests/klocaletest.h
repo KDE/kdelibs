@@ -1,5 +1,3 @@
-// $Id$
-
 #ifndef KLOCALETEST_H
 #define KLOCALETEST_H
 

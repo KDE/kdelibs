@@ -1,7 +1,5 @@
 // klocaletest.cpp     -*- C++ -*-
 //
-// $Id$
-//
 // Author: Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
 //
 
