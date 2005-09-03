@@ -25,6 +25,7 @@
 #endif
 
 #include <klistview.h>
+#include <sys/acl.h>
 #include <kacl.h>
 #include <kfileitem.h>
 #include <kdialogbase.h>
