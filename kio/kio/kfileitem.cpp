@@ -861,8 +861,10 @@ bool KFileItem::cmp( const KFileItem & item )
 	     && hasSize1 == hasSize2
              && time(KIO::UDS_MODIFICATION_TIME, hasTime1) == item.time(KIO::UDS_MODIFICATION_TIME, hasTime2)
 	     && hasTime1 == hasTime2
-             && mimetype() == item.mimetype()
              && (!d || !item.d || d->iconName == item.d->iconName) );
+
+    // Don't compare the mimetypes here. They might not be known, and we don't want to
+    // do the slow operation of determining them here.
 }
 
 void KFileItem::assign( const KFileItem & item )
@@ -1015,7 +1017,7 @@ QString KFileItem::timeString( unsigned int which ) const
     bool hasTime;
     time_t time_ = time(which, hasTime);
     if(!hasTime) return QString::null;
-    
+
     QDateTime t;
     t.setTime_t( time_);
     return KGlobal::locale()->formatDateTime( t );
