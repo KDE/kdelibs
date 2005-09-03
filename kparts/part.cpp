@@ -25,22 +25,23 @@
 #include <kparts/partmanager.h>
 #include <kparts/browserextension.h>
 
+#include <q3pointarray.h>
 #include <qapplication.h>
 #include <qfile.h>
-#include <qpoint.h>
-#include <q3pointarray.h>
-#include <qpainter.h>
-#include <qtextstream.h>
 #include <qfileinfo.h>
+#include <qpainter.h>
+#include <qpoint.h>
+#include <qtextstream.h>
 
-#include <kinstance.h>
-#include <klocale.h>
-#include <ktempfile.h>
-#include <kmessagebox.h>
-#include <kio/job.h>
-#include <kstandarddirs.h>
-#include <kfiledialog.h>
 #include <kdirnotify_stub.h>
+#include <kfiledialog.h>
+#include <kinstance.h>
+#include <kio/job.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kstandarddirs.h>
+#include <ktempfile.h>
+#include <kxmlguifactory.h>
 
 #include <stdio.h>
 #include <unistd.h>
