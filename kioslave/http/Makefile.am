@@ -1,6 +1,3 @@
-# $Id$
-# Makefile.am of kdebase/kioslave/http
-
 SUBDIRS = kcookiejar
 
 INCLUDES= -I$(top_srcdir)/interfaces -I$(top_srcdir)/kdecore/network -I$(top_srcdir)/kio/httpfilter $(all_includes) $(GSSAPI_INCS)

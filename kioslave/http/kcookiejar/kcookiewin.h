@@ -22,7 +22,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE File Manager -- HTTP Cookie Dialogs
-// $Id$
 
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_

@@ -20,7 +20,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE Cookie Server
-// $Id$
 
 #ifndef KCOOKIESERVER_H
 #define KCOOKIESERVER_H

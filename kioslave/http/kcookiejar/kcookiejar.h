@@ -20,7 +20,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE File Manager -- HTTP Cookies
-// $Id$
 
 #ifndef KCOOKIEJAR_H
 #define KCOOKIEJAR_H

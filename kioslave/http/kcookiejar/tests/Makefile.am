@@ -1,6 +1,3 @@
-# $Id$
-# Makefile.am of kdebase/kioslave/http
-
 INCLUDES=	$(all_includes) 
 
 ####### Files

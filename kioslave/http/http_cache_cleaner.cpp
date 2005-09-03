@@ -23,7 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------
 //
 // KDE Http Cache cleanup tool
-// $Id$
 
 #include <time.h>
 #include <stdlib.h>

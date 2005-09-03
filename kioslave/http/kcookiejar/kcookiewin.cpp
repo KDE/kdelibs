@@ -24,7 +24,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------
 //
 // KDE File Manager -- HTTP Cookie Dialogs
-// $Id$
 
 // The purpose of the QT_NO_TOOLTIP and QT_NO_WHATSTHIS ifdefs is because
 // this file is also used in Konqueror/Embedded. One of the aims of

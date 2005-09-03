@@ -1,6 +1,3 @@
-## $Id$
-## Makefile.am of kdebase/kioslave/metainfo
-
 INCLUDES = $(all_includes)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 METASOURCES = AUTO

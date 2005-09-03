@@ -16,8 +16,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #include <kdatastream.h> // Do not remove, needed for correct bool serialization
 #include <kurl.h>
 #include <kaboutdata.h>

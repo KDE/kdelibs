@@ -23,7 +23,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //----------------------------------------------------------------------------
 //
 // KDE Cookie Server
-// $Id$
 
 #define SAVE_DELAY 3 // Save after 3 minutes
 

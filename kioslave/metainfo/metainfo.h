@@ -16,8 +16,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-//  $Id$
-
 #ifndef _METAINFO_H_
 #define _METAINFO_H_
 

@@ -20,8 +20,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #include <config.h>
 
 #include <qglobal.h> //for Q_OS_XXX

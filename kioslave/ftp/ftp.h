@@ -18,8 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #ifndef __ftp_h__
 #define __ftp_h__
 

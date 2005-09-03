@@ -21,7 +21,7 @@
 */
 
 #ifndef __file_h__
-#define __file_h__ "$Id$"
+#define __file_h__
 
 #include <sys/types.h>
 #include <sys/stat.h>
