@@ -67,3 +67,5 @@ void KTempFileTest::testHomeDir()
 //QString name = locateLocal("socket", "test");
 //printf("Socket Filename = %s\n", name.ascii());
 
+
+#include "ktempfiletest.moc"
