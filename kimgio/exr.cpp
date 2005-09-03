@@ -6,8 +6,6 @@
 * Copyright (c) 2003, Brad Hards <bradh@frogmouth.net>
 *
 * This library is distributed under the conditions of the GNU LGPL.
-*
-* $Id$
 */
 
 #include "config.h"

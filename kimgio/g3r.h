@@ -3,8 +3,6 @@
 * (c) 2000, Matthias Hölzer-Klüpfel
 *
 * This library is distributed under the conditions of the GNU LGPL.
-*
-* $Id$
 */
 
 #ifndef KIMG_G3R_H
