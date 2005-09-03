@@ -1,7 +1,3 @@
-/*
- * $Id$
- */
-
 #ifndef _KTABCTLTEST_H
 #define _KTABCTLTEST_H
 

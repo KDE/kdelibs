@@ -4,8 +4,6 @@
 * Copyright (c) 1999 by Dirk A. Mueller <dmuell@gmx.net>
 *
 * License: GPL, version 2
-* Version: $Id:
-*
 */
 
 #include <qlayout.h>

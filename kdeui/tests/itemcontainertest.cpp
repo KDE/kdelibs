@@ -4,8 +4,6 @@
 * Copyright (c) 2000 by Michael Reiher <michael.reiher@gmx.de>
 *
 * License: GPL, version 2
-* Version: $Id:
-*
 */
 
 #include <qlayout.h>
