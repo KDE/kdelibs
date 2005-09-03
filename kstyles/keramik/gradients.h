@@ -17,7 +17,6 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-// $Id$
 
 #ifndef KERAMIK_GRADIENTS_H
 #define KERAMIK_GRADIENTS_H

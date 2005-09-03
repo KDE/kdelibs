@@ -19,8 +19,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
-
 #ifndef __pixmaploader_h__
 #define __pixmaploader_h__
 

@@ -1,6 +1,4 @@
 /*
- $Id$
-
  Simple helper routines for style's use of KStandardDirs with QSettings, etc.
 
  This library is free software; you can redistribute it and/or

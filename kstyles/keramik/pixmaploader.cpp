@@ -18,7 +18,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-// $Id$
 #include <qapplication.h>
 #include <qbitmap.h>
 #include <qglobal.h>

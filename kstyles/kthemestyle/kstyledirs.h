@@ -1,6 +1,4 @@
 /*
- $Id$
-
  This file is part of the KDE libraries
  (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>,
 
@@ -31,7 +29,6 @@
 * @short Access to the standard KDE directories for the pixmap style
 * @author Maksim Orlovich<mo002j@mail.rochester.edu> is responsible for this file,
     but all the interesting work is done by KStandardDirs
-* @version $Id$
 *
 * This class provides a this wrapper for styles around KStandardDirs,
 * permitting integration with QSettings and easy loading of pixmaps
