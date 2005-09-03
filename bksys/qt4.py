@@ -160,7 +160,7 @@ def detect_qt4(env):
 	env['QTLIBPATH']=qtlibs
 
 def generate(env):
-	""""Set up the qt environment and builders - the moc part is difficult to understand """
+	"""Set up the qt environment and builders - the moc part is difficult to understand """
 	if env['HELP']:
                 p=env.pprint
                 p('BOLD','*** QT4 options ***')
