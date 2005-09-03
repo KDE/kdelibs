@@ -51,6 +51,7 @@ struct DownloadDialog::Private
     QString m_providerlist;
     QWidget *m_page;
     KListView *m_lvtmp_r, *m_lvtmp_d, *m_lvtmp_l;
+    QPtrList<Entry> m_installlist;
 };
 
 class NumSortListViewItem : public KListViewItem
@@ -293,6 +294,8 @@ void DownloadDialog::addProvider(Provider *p)
   vbox->add(de);
   vbox->add(in);
 
+  connect(rt, SIGNAL(linkClicked(const QString&)), SLOT(slotEmail(const QString&)));
+
   connect(in, SIGNAL(clicked()), SLOT(slotInstall()));
   connect(de, SIGNAL(clicked()), SLOT(slotDetails()));
 
@@ -351,13 +354,10 @@ void DownloadDialog::slotResult(KIO::Job *job)
         Provider *p = m_jobs[job];
         addProvider(p);
         slotPage(m_frame);
-        m_jobs[job] = 0;
       }
       addEntry(entry);
     }
   }
-
-  m_data[job] = "";
 }
 
 int DownloadDialog::installStatus(Entry *entry)
@@ -523,6 +523,8 @@ void DownloadDialog::install(Entry *e)
     in = *(m_buttons[d->m_page]->at(0));
     if(in) in->setEnabled(false);
   }
+
+  d->m_installlist.append(e);
 }
 
 void DownloadDialog::slotInstalled(KIO::Job *job)
@@ -565,20 +567,42 @@ void DownloadDialog::slotSelected()
   bool enabled;
   Entry *e = getEntry();
   QString lang = KGlobal::locale()->language();
+  bool ret;
 
   if(e)
   {
     if(!e->preview(lang).isValid())
     {
-      m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><i>%4</i><br>(%5)").arg(
-        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(e->summary(lang)).arg(e->license()));
+      ret = 0;
     }
     else
     {
-      KIO::NetAccess::download(e->preview(lang), tmp, this);
-      m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
-        e->name()).arg(e->author()).arg(KGlobal::locale()->formatDate(e->releaseDate())).arg(tmp).arg(e->summary(lang)).arg(e->license()));
+      ret = KIO::NetAccess::download(e->preview(lang), tmp, this);
     }
+
+    QString desc = QString("<b>%1</b><br>").arg(e->name());
+    if(!e->authorEmail().isNull())
+    {
+      desc += QString("<a href='mailto:" + e->authorEmail() + "'>" + e->author() + "</a>");
+    }
+    else
+    {
+      desc += QString("%1").arg(e->author());
+    }
+    desc += QString("<br>%1").arg(KGlobal::locale()->formatDate(e->releaseDate()));
+    desc += QString("<br><br>");
+    if(ret)
+    {
+      desc += QString("<img src='%1'>").arg(tmp);
+    }
+    else
+    {
+      desc += i18n("Preview not available.");
+    }
+    desc += QString("<br><i>%1</i>").arg(e->summary(lang));
+    desc += QString("<br>(%1)").arg(e->license());
+
+    m_rt->setText(desc);
 
     if(installStatus(e) == 1) enabled = false;
     else enabled = true;
@@ -589,6 +613,13 @@ void DownloadDialog::slotSelected()
     if(in) in->setEnabled(enabled);
     if(de) de->setEnabled(true);
   }
+}
+
+void DownloadDialog::slotEmail(const QString& link)
+{
+  kdDebug() << "EMAIL: " << link << endl;
+  kapp->invokeMailer(link);
+  slotSelected(); // QTextBrowser oddity workaround as it cannot handle mailto: URLs
 }
 
 Entry *DownloadDialog::getEntry()
@@ -640,9 +671,22 @@ void DownloadDialog::slotPage(QWidget *w)
 
 void DownloadDialog::loadProvider(Provider *p)
 {
+  QMap<KIO::Job*, Provider*>::Iterator it;
+
+  for(it = m_jobs.begin(); it != m_jobs.end(); it++)
+  {
+    if(it.data() == p)
+    {
+      kdDebug() << "-- found provider data in cache" << endl;
+      slotResult(it.key());
+      return;
+    }
+  }
+
   KIO::TransferJob *job = KIO::get(p->downloadUrl());
 
   m_jobs[job] = p;
+  m_data[job] = "";
 
   connect(job, SIGNAL(result(KIO::Job*)), SLOT(slotResult(KIO::Job*)));
   connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)),
@@ -681,3 +725,7 @@ void DownloadDialog::slotFinish()
   //updateBackground();
 }
 
+QPtrList<Entry> DownloadDialog::installedEntries()
+{
+  return d->m_installlist;
+}

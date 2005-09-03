@@ -180,6 +180,14 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     */
     static void open(QString type) KDE_DEPRECATED; // ### KDE 4.0: remove and make caption/parent argument optional
 
+    /**
+      Returns the list of installed data entries.
+
+      @return list of data entries which have been installed
+    */
+    QPtrList<Entry> installedEntries();
+    // ### KDE 4.0: the open() method should return this
+
   public slots:
     /**
       Availability of the provider list.
@@ -202,6 +210,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void slotSelected();
     void slotPage(QWidget *w);
     void slotFinish();
+    void slotEmail(const QString& link);
 
   private:
     void init(Engine *e);

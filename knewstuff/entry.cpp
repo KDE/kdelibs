@@ -20,10 +20,58 @@
 
 #include "entry.h"
 
+#include <qptrdict.h>
+#include <qwindowdefs.h>
+
 #include <kglobal.h>
 #include <klocale.h>
 
 using namespace KNS;
+
+// BCI for KDE 3.5 only
+
+class EntryPrivate
+{
+  public:
+  EntryPrivate(){}
+  QString mEmail;
+};
+
+static QPtrDict<EntryPrivate> *d_ptr = 0;
+
+static void cleanup_d_ptr()
+{
+  delete d_ptr;
+  d_ptr = 0; // not in BIC guide - add there
+}
+
+static EntryPrivate *d(const Entry *e)
+{
+  if(!d_ptr)
+  {
+    d_ptr = new QPtrDict<EntryPrivate>();
+    qAddPostRoutine(cleanup_d_ptr);
+  }
+  EntryPrivate *ret = d_ptr->find((void*)e);
+  if(!ret)
+  {
+    ret = new EntryPrivate();
+    d_ptr->replace((void*)e, ret);
+  }
+  return ret;
+}
+
+QString Entry::authorEmail() const
+{
+  return d(this)->mEmail;
+}
+
+void Entry::setAuthorEmail( const QString& email )
+{
+  d(this)->mEmail = email;
+}
+
+// BCI part ends here
 
 Entry::Entry() :
   mRelease( 0 ), mReleaseDate( QDate::currentDate() ), mRating( 0 ),
@@ -227,7 +275,12 @@ void Entry::parseDomElement( const QDomElement &element )
   for( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
     if ( e.tagName() == "name" ) setName( e.text().stripWhiteSpace() );
-    if ( e.tagName() == "author" ) setAuthor( e.text().stripWhiteSpace() );
+    if ( e.tagName() == "author" ) {
+      setAuthor( e.text().stripWhiteSpace() );
+      QString email = e.attribute( "email" );
+      setAuthorEmail( email );
+    }
+    if ( e.tagName() == "email" ) setAuthorEmail( e.text().stripWhiteSpace() ); /* kde-look; change on server! */
     if ( e.tagName() == "licence" ) setLicence( e.text().stripWhiteSpace() );
     if ( e.tagName() == "summary" ) {
       QString lang = e.attribute( "lang" );

@@ -92,6 +92,18 @@ class KDE_EXPORT Entry
     QString author() const;
 
     /**
+     * Sets the email address of the object's author.
+     */
+    void setAuthorEmail( const QString & );
+
+    /**
+     * Retrieve the author's email address of the object.
+     *
+     * @return object author email address
+     */
+    QString authorEmail() const;
+
+    /**
      * Sets the license (abbreviation) applicable to the object.
      */
     void setLicence( const QString & );

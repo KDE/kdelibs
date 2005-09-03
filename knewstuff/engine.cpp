@@ -106,7 +106,7 @@ void Engine::getMetaInformation( Provider::List *providers )
   for ( p = providers->first(); p; p = providers->next() ) {
     if ( p->downloadUrl().isEmpty() ) continue;
 
-    KIO::TransferJob *job = KIO::get( p->downloadUrl() );
+    KIO::TransferJob *job = KIO::get( p->downloadUrl(), false, false );
     connect( job, SIGNAL( result( KIO::Job * ) ),
              SLOT( slotNewStuffJobResult( KIO::Job * ) ) );
     connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
