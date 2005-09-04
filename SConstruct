@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import os
+import os, sys
 
 """
 help       -> scons -h
@@ -32,6 +32,9 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ## Load the builders in config
 env = Environment( tools=['generic', 'libxml', 'qt4'], toolpath=['./', './bksys'],
 		   ENV={'PATH' : os.environ['PATH']})
+
+if env['HELP']:
+	sys.exit(0)
 
 #env.KDEuse("environ rpath")
 #env.KDEuse("environ rpath lang_qt thread nohelp")

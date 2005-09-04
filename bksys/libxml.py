@@ -20,6 +20,9 @@ def generate(env):
 	import SCons.Util, os
 	from SCons.Tool import Tool
 
+	if env['HELP']: # nothing here
+		return
+	
 	pkgs = Tool('pkgconfig', ['./bksys'])
 	pkgs.generate(env)
 

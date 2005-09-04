@@ -14,13 +14,13 @@ def exists(env):
 def generate(env):
 	""" Detect the cg library (nvidia) """
 
-        from SCons.Options import Options
+	from SCons.Options import Options
 	cachefile = env['CACHEDIR']+'/libkdegames.cache.py'
-        opts = Options(cachefile)
-        opts.AddOptions(
-                ( 'HASCG', 'has the cg library' ),
+	opts = Options(cachefile)
+	opts.AddOptions(
+		( 'HASCG', 'has the cg library' )
         )
-        opts.Update(env)
+	opts.Update(env)
 
 	if 'configure' in env['TARGS'] or not env.has_key('HASCG'):
 		print "Checking for cg nvidia            : ",
