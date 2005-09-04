@@ -170,36 +170,38 @@ public:
     static  KInstance           *_activeInstance;
 };
 
+// TODO define those only if KDE3_SUPPORT
+
 /**
  * \relates KGlobal
  * A typesafe function to find the smaller of the two arguments.
+ * @deprecated, used qMin instead
  */
-#define KMIN(a,b)	kMin(a,b)
+#define KMIN(a,b)	qMin(a,b)
 /**
  * \relates KGlobal
  * A typesafe function to find the larger of the two arguments.
+ * @deprecated, used qMax instead
  */
-#define KMAX(a,b)	kMax(a,b)
+#define KMAX(a,b)	qMax(a,b)
 /**
  * \relates KGlobal
  * A typesafe function to determine the absolute value of the argument.
+ * @deprecated, used qAbs instead
  */
-#define KABS(a)	kAbs(a)
+#define KABS(a)	qAbs(a)
 /**
  * \relates KGlobal
  * A typesafe function that returns x if it's between low and high values.
  * low if x is smaller than low and high if x is bigger than high.
+ * @deprecated, used qBound instead. Warning, the argument order differs.
  */
-#define KCLAMP(x,low,high) kClamp(x,low,high)
+#define KCLAMP(x,low,high) qBound(low,x,high)
 
-template<class T>
-inline T kMin (const T& a, const T& b) { return a < b ? a : b; }
-
-template<class T>
-inline T kMax (const T& a, const T& b) { return b < a ? a : b; }
-
-template<class T>
-inline T kAbs (const T& a) { return a < 0 ? -a : a; }
+// TODO define those only if KDE3_SUPPORT
+#define kMin qMin
+#define kMax qMax
+#define kAbs qAbs
 
 template<class T>
 inline T kClamp( const T& x, const T& low, const T& high )
@@ -216,7 +218,7 @@ inline T kClamp( const T& x, const T& low, const T& high )
  * @since 3.4
  */
 int KDECORE_EXPORT kasciistricmp( const char *str1, const char *str2 );
- 
+
 
 /**
  * \mainpage The KDE Core Functionality Library
