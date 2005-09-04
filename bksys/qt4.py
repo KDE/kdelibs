@@ -6,8 +6,13 @@ Run scons -h to display the associated help, or look below ..
 """
 
 import os, re, types
-from xml.sax import make_parser
-from xml.sax.handler import ContentHandler
+try:
+   from xml.sax import make_parser
+   from xml.sax.handler import ContentHandler
+except ImportError:
+   import sys
+   print 'ERROR: bksys needs xml.sax - should be part of python >= 2.0 (possibly in package python-xml)'
+   sys.exit(1)
 
 class SconsHandler(ContentHandler):
 	def __init__ (self, envi):
