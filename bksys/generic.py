@@ -313,7 +313,7 @@ def generate(env):
 	from SCons.Tool import Tool;
 	deft = Tool('default')
 	deft.generate(env)
-	
+
 	## Bksys requires scons 0.96
 	env.EnsureSConsVersion(0, 96)
 
@@ -343,7 +343,7 @@ def generate(env):
 		p('BOLD','* scons configure debug=full prefix=/usr/local extraincludes=/tmp/include:/usr/local')
 		p('BOLD','* scons install prefix=/opt/local DESTDIR=/tmp/blah\n')
 		return
-	
+
 	## Global cache directory
 	# Put all project files in it so a rm -rf cache will clean up the config
 	if not env.has_key('CACHEDIR'): env['CACHEDIR'] = env.join(os.getcwd(),'/cache/')

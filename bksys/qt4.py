@@ -10,7 +10,7 @@ from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
 class SconsHandler(ContentHandler):
-        def __init__ (self, envi):
+	def __init__ (self, envi):
 		self.files=[]
 		self.mstr=''
 	def startElement(self, name, attrs):
@@ -42,83 +42,66 @@ def detect_qt4(env):
 		if v : v=os.path.abspath(v)
 		return v
 
-	prefix      = getpath('prefix')
-	execprefix  = getpath('execprefix')
-	datadir     = getpath('datadir')
-	libdir      = getpath('libdir')
-	qtincludes  = getpath('qtincludes')
-	qtlibs      = getpath('qtlibs')
-	libsuffix   = ''
+	prefix		= getpath('prefix')
+	execprefix	= getpath('execprefix')
+	datadir		= getpath('datadir')
+	libdir		= getpath('libdir')
+	qtincludes	= getpath('qtincludes')
+	qtlibs		= getpath('qtlibs')
+	libsuffix	= ''
 	if env.has_key('ARGS'): libsuffix=env['ARGS'].get('libsuffix', '')
 
 	p=env.pprint
 
-	if libdir: libdir = libdir+libsuffix
-
-	## Detect the qt library
-	print "Checking for the qt library       : ",
 	qtdir = os.getenv("QTDIR")
-	if qtdir:
-		p('GREEN',"qt is in "+qtdir)
-	else:
-		p('RED','qt was not found')
-		p('RED','Please set QTDIR first (/usr/lib/qt4?) or try scons -h for more options')
-		env.Exit(1)
 	env['QTDIR'] = qtdir.strip()
+	if qtdir:
+		if not qtlibs:
+			qtlibs = os.path.join(qtdir, 'lib' + libsuffix)
+		if not qtincludes:
+			qtincludes = os.path.join(qtdir, 'include')
+		os.putenv('PATH', os.path.join(qtdir , 'bin') +
+				  ":" + os.getenv("PATH"))
 
-	## Find the necessary programs uic and moc
-	print "Checking for uic                  : ",
-	uic = qtdir + "/bin/uic"
-	if os.path.isfile(uic):
-		p('GREEN',"uic was found as "+uic)
-	else:
-		uic = os.popen("which uic 2>/dev/null").read().strip()
-		if len(uic):
-			p('YELLOW',"uic was found as "+uic)
+	def find_qt_bin(prog):
+		## Find the necessary programs
+		print "Checking for %s: " % prog,
+		path = os.path.join(qtdir, 'bin', prog)
+		if os.path.isfile(path):
+			p('GREEN',"%s was found as %s" % (prog, path))
 		else:
-			uic = os.popen("which uic 2>/dev/null").read().strip()
-			if len(uic):
-				p('YELLOW',"uic was found as "+uic)
+			path = os.popen("which %s 2>/dev/null" % prog).read().strip()
+			if len(path):
+				p('YELLOW',"%s was found as %s" % (prog, path))
 			else:
-				p('RED',"uic was not found - set QTDIR put it in your PATH ?")
-				env.Exit(1)
-	env['QT_UIC'] = uic
+				path = os.popen("which %s 2>/dev/null" % prog).read().strip()
+				if len(path):
+					p('YELLOW',"%s was found as %s" % (prog, path))
+				else:
+					p('RED',"%s was not found - fix $QTDIR or $PATH" % prog)
+					env.Exit(1)
+		return path
+	
+	env['QT_UIC'] = find_qt_bin('uic')
+	print "Checking for UIC version                       :",
+	version = os.popen(env['QT_UIC'] + " -version 2>&1").read().strip()
+	if version.find(" 3.") != -1:
+		version = version.replace('Qt user interface compiler','')
+		version = version.replace('User Interface Compiler for Qt', '')
+		p('RED', version + " (too old)")
+		env.Exit(1)
+	print "fine - ", version
+	env['QT_MOC'] = find_qt_bin('moc')
+	env['QT_RCC'] = find_qt_bin('rcc')
 
-	print "Checking for moc                  : ",
-	moc = qtdir + "/bin/moc"
-	if os.path.isfile(moc):
-		p('GREEN',"moc was found as "+moc)
+	if os.environ.has_key('PKG_CONFIG_PATH'):
+		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] \
+										+ ':' + qtlibs
 	else:
-		moc = os.popen("which moc 2>/dev/null").read().strip()
-		if len(moc):
-			p('YELLOW',"moc was found as "+moc)
-		elif os.path.isfile("/usr/share/qt4/bin/moc"):
-			moc = "/usr/share/qt4/bin/moc"
-			p('YELLOW',"moc was found as "+moc)
-		else:
-			p('RED',"moc was not found - set QTDIR or put it in your PATH ?")
-			env.Exit(1)
-	env['QT_MOC'] = moc
-
-	print "Checking for rcc                  : ",
-	rcc = qtdir + "/bin/rcc"
-	if os.path.isfile(rcc):
-		p('GREEN',"rcc was found as "+rcc)
-	else:
-		rcc = os.popen("which rcc 2>/dev/null").read().strip()
-		if len(rcc):
-			p('YELLOW',"rcc was found as "+rcc)
-		elif os.path.isfile("/usr/share/qt4/bin/rcc"):
-			rcc = "/usr/share/qt4/bin/rcc"
-			p('YELLOW',"rcc was found as "+rcc)
-		else:
-			p('RED',"rcc was not found - set QTDIR or put it in your PATH ?")
-			env.Exit(1)
-	env['QT_RCC'] = rcc
-
+		os.environ['PKG_CONFIG_PATH'] = qtlibs
 
 	## check for the qt and kde includes
-	print "Checking for the qt includes      : ",
+	print "Checking for the qt includes		 : ",
 	if qtincludes and os.path.isfile(qtincludes + "/QtGui/QFont"):
 		# The user told where to look for and it looks valid
 		p('GREEN',"ok "+qtincludes)
@@ -145,8 +128,8 @@ def detect_qt4(env):
 			libdir=execprefix+"/lib"+libsuffix
 
 		subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
-			     .replace('${datadir}', datadir)\
-			     .replace('${libdir}', libdir)
+				 .replace('${datadir}', datadir)\
+				 .replace('${libdir}', libdir)
 		debian_fix = lambda x: x.replace('/usr/share', '${datadir}')
 		env['PREFIX'] = prefix
 	else:

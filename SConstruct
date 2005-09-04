@@ -32,15 +32,6 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ## Load the builders in config
 env = Environment( tools=['generic', 'libxml', 'qt4'], toolpath=['./', './bksys'])
 
-#if os.environ.has_key('QTDIR'):
-#	addon = ':' + os.environ['QTDIR'] + '/lib'
-#	if os.environ.has_key('PKG_CONFIG_PATH'):
-#		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + addon
-#	else:
-#		os.environ['PKG_CONFIG_PATH'] = addon
-#
-#env.pkgConfig_findPackage(env, "QtCore", "4.0.1")
-
 #env.KDEuse("environ rpath")
 #env.KDEuse("environ rpath lang_qt thread nohelp")
 
