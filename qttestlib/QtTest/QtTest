@@ -1,0 +1,9 @@
+#ifndef QTTEST_PCH_H
+#define QTTEST_PCH_H
+
+#include "QtTest/qttest.h"
+#include "QtTest/qsignalspy.h"
+#include "QtTest/qttestsystem.h"
+#include "QtTest/qttesteventloop.h"
+
+#endif

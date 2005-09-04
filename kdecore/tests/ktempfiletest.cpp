@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "QtTest/qttest_kde.h"
+
 #include "ktempfiletest.h"
 #include "ktempfile.h"
 #include "kcmdlineargs.h"
@@ -30,9 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kunittest/module.h>
-KUNITTEST_MODULE( kunittest_ktempfile, "KTempFileTest" );
-KUNITTEST_MODULE_REGISTER_TESTER( KTempFileTest );
+QTTEST_KDEMAIN( KTempFileTest, false )
 
 void KTempFileTest::testBasic()
 {
@@ -41,7 +41,7 @@ void KTempFileTest::testBasic()
    f4.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f4.name()));
    bool exists = QFile::exists( f4.name() );
-   CHECK( exists, true );
+   VERIFY( exists );
 }
 
 void KTempFileTest::testFixedExtension()
@@ -50,7 +50,7 @@ void KTempFileTest::testFixedExtension()
    KTempFile f2(QString::null, ".ps");
    f2.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f2.name()));
-   CHECK( f2.name().right(3), QString::fromLatin1(".ps") );
+   COMPARE( f2.name().right(3), QString::fromLatin1(".ps") );
 }
 
 void KTempFileTest::testHomeDir()
@@ -60,12 +60,11 @@ void KTempFileTest::testHomeDir()
    KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
    f3.setAutoDelete( true );
    qDebug("Filename = %s", qPrintable(f3.name()));
-   CHECK( f3.name().left( home.length() ), home );
-   CHECK( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
+   COMPARE( f3.name().left( home.length() ), home );
+   COMPARE( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
 }
 
 //QString name = locateLocal("socket", "test");
 //printf("Socket Filename = %s\n", name.ascii());
-
 
 #include "ktempfiletest.moc"

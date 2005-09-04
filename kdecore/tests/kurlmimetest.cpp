@@ -16,31 +16,21 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kunittest/tester.h>
-#include <kunittest/module.h>
+#include <QtTest/qttest_kde.h>
 #include <qmimedata.h>
 #include <kurl.h>
 #include <kdebug.h>
 
-class KURLMimeTest : public KUnitTest::Tester
-{
-public:
-    void allTests() {
-        testURLList();
-        testOneURL();
-    }
+#include "kurlmimetest.moc"
 
-    void testURLList();
-    void testOneURL();
-};
-
-KUNITTEST_MODULE( kunittest_kurlmimetest, "KURLMimeTest" );
-KUNITTEST_MODULE_REGISTER_TESTER( KURLMimeTest );
+QTTEST_KDEMAIN( KURLMimeTest, false )
 
 void KURLMimeTest::testURLList()
 {
     kdDebug() << k_funcinfo << endl;
     QMimeData* mimeData = new QMimeData;
+    VERIFY( !KURL::List::canDecode( mimeData ) );
+
     KURL::List urls;
     urls.append( KURL( "http://www.kde.org" ) );
     urls.append( KURL( "file:///home/dfaure/konqtests/Mat%C3%A9riel" ) );
@@ -50,13 +40,15 @@ void KURLMimeTest::testURLList()
 
     urls.addToMimeData( mimeData, metaData );
 
+    VERIFY( KURL::List::canDecode( mimeData ) );
+
     QMap<QString, QString> decodedMetaData;
     KURL::List decodedURLs = KURL::List::fromMimeData( mimeData, &decodedMetaData );
     VERIFY( !decodedURLs.isEmpty() );
-    CHECK( urls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
+    COMPARE( urls.toStringList().join(" "), decodedURLs.toStringList().join(" ") );
     VERIFY( !decodedMetaData.isEmpty() );
-    CHECK( decodedMetaData["key"], QString( "value" ) );
-    CHECK( decodedMetaData["key2"], QString( "value2" ) );
+    COMPARE( decodedMetaData["key"], QString( "value" ) );
+    COMPARE( decodedMetaData["key2"], QString( "value2" ) );
 
     delete mimeData;
 }
@@ -68,11 +60,12 @@ void KURLMimeTest::testOneURL()
 
     oneURL.addToMimeData( mimeData );
 
+    VERIFY( KURL::List::canDecode( mimeData ) );
     QMap<QString, QString> decodedMetaData;
     KURL::List decodedURLs = KURL::List::fromMimeData( mimeData, &decodedMetaData );
     VERIFY( !decodedURLs.isEmpty() );
-    CHECK( decodedURLs.count(), 1 );
-    CHECK( decodedURLs[0].url(), oneURL.url() );
+    COMPARE( decodedURLs.count(), 1 );
+    COMPARE( decodedURLs[0].url(), oneURL.url() );
     VERIFY( decodedMetaData.isEmpty() );
     delete mimeData;
 }

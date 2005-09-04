@@ -1,9 +1,9 @@
 #ifndef ktempfiletest_h
 #define ktempfiletest_h
 
-#include <kunittest/tester.h>
+#include <qobject.h>
 
-class KTempFileTest : public KUnitTest::SlotTester
+class KTempFileTest : public QObject
 {
     Q_OBJECT
 public slots:
