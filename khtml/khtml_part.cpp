@@ -90,13 +90,9 @@ using namespace DOM;
 #include <kdatastream.h>
 #include <ktempfile.h>
 #include <kglobalsettings.h>
-#include <kurldrag.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
-#if !defined(QT_NO_DRAGANDDROP)
-#include <kmultipledrag.h>
-#endif
 #include "../kutils/kfinddialog.h"
 #include "../kutils/kfind.h"
 
@@ -6354,7 +6350,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     QPixmap pix;
     HTMLImageElementImpl *img = 0L;
-    Q3DragObject *drag = 0;
     KURL u;
 
     // qDebug("****************** Event URL: %s", url.string().latin1());
@@ -6376,25 +6371,21 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     u.setPass(QString::null);
 
-    KURLDrag* urlDrag = new KURLDrag( u, img ? 0 : d->m_view->viewport() );
+    QDrag *drag = new QDrag( d->m_view->viewport() );
+    QMimeData* mimeData = new QMimeData;
+    QMap<QString, QString> metaDataMap;
     if ( !d->m_referrer.isEmpty() )
-      urlDrag->metaData()["referrer"] = d->m_referrer;
+      metaDataMap.insert( "referrer", d->m_referrer );
+    u.addToMimeData( mimeData, metaDataMap );
 
-    if( img && img->complete()) {
-      KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
-      mdrag->addDragObject( new Q3ImageDrag( img->currentImage(), 0L ) );
-      mdrag->addDragObject( urlDrag );
-      drag = mdrag;
-    }
-    else
-      drag = urlDrag;
+    if( img && img->complete() )
+      mimeData->setImageData( img->currentImage() );
 
     if ( !pix.isNull() )
       drag->setPixmap( pix );
 
     stopAutoScroll();
-    if(drag)
-      drag->drag();
+    drag->start();
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;

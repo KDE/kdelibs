@@ -74,7 +74,6 @@
 #include <kstandarddirs.h>
 #include <kstdaccel.h>
 #include <kstringhandler.h>
-#include <kurldrag.h>
 
 #include <qbitmap.h>
 #include <qlabel.h>
