@@ -49,7 +49,6 @@
 #include <ktoolbarbutton.h>
 #include <ktoolbar.h>
 #include <ksavefile.h>
-#include <kurldrag.h>
 #include <kstringhandler.h>
 #include <kapplication.h>
 #include <kmessagebox.h>
@@ -706,10 +705,14 @@ void KHTMLPopupGUIClient::slotCopyLinkLocation()
   safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
-  KURL::List lst;
-  lst.append( safeURL );
-  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Clipboard );
-  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Selection );
+  QMimeData* mimeData = new QMimeData;
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
+
+  mimeData = new QMimeData;
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
+
 #else
   QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
@@ -726,18 +729,16 @@ void KHTMLPopupGUIClient::slotCopyImage()
   KURL safeURL(d->m_imageURL);
   safeURL.setPass(QString::null);
 
-  KURL::List lst;
-  lst.append( safeURL );
-  KMultipleDrag *drag = new KMultipleDrag(d->m_khtml->view(), "Image");
-
-  drag->addDragObject( new Q3ImageDrag(d->m_pixmap.convertToImage()) );
-  KURLDrag *tdrag = new KURLDrag(lst, d->m_khtml->view() );
-  tdrag->setObjectName( "Image URL" );
-  drag->addDragObject( tdrag  );
-
   // Set it in both the mouse selection and in the clipboard
-  QApplication::clipboard()->setData( drag, QClipboard::Clipboard );
-  QApplication::clipboard()->setData( new KURLDrag(lst), QClipboard::Selection );
+  QMimeData* mimeData = new QMimeData;
+  mimeData->setImageData( d->m_pixmap );
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
+
+  mimeData = new QMimeData;
+  mimeData->setImageData( d->m_pixmap );
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
   kdDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
 #endif
@@ -749,10 +750,12 @@ void KHTMLPopupGUIClient::slotCopyImageLocation()
   safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
-  KURL::List lst;
-  lst.append( safeURL );
-  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Clipboard );
-  QApplication::clipboard()->setData( new KURLDrag( lst ), QClipboard::Selection );
+  QMimeData* mimeData = new QMimeData;
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
+  mimeData = new QMimeData;
+  safeURL.addToMimeData( mimeData );
+  QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
   QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
