@@ -71,7 +71,7 @@ void Test::createFields()
   QString string;
 
   string+="Selected languages: ";
-  string+=KGlobal::locale()->languages()+"\n";
+  string+=KGlobal::locale()->languageList().join(":")+"\n";
 
   // This will show nothing, as there is no klocaletest.mo
   // but you can copy other *.mo file
