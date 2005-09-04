@@ -17,24 +17,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kunittest/tester.h>
-#include <kunittest/module.h>
-
+#include <QtTest/qttest_kde.h>
+#include "kconfigtest.h"
+#include "kconfigtest.moc"
 #include <qrect.h>
 
 #include <kconfig.h>
+#include <kdebug.h>
 
-class KConfigTest : public KUnitTest::Tester
-{
-public:
-    void allTests();
-private:
-    void writeConfigFile();
-    void revertEntries();
-};
-
-KUNITTEST_MODULE( kunittest_kconfig, "KConfigTest" );
-KUNITTEST_MODULE_REGISTER_TESTER( KConfigTest );
+QTTEST_KDEMAIN( KConfigTest, NoGUI )
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
@@ -106,8 +97,9 @@ void KConfigTest::revertEntries()
   sc.sync();
 }
 
-void KConfigTest::allTests()
+void KConfigTest::testAll()
 {
+  kdDebug() << k_funcinfo << endl;
   writeConfigFile();
 
   KConfig sc2( "kconfigtest" );
@@ -115,31 +107,31 @@ void KConfigTest::allTests()
   KConfigGroup sc3( &sc2, "AAA");
   bool bImmutable = sc3.entryIsImmutable("stringEntry1");
 
-  CHECK( bImmutable, false );
+  VERIFY( !bImmutable );
   //qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
   sc2.setGroup("AAA");
-  CHECK( sc2.hasKey( "stringEntry1" ), true );
-  CHECK( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  CHECK( sc2.entryIsImmutable("stringEntry1"), bImmutable );
-  CHECK( sc2.hasKey( "stringEntry2" ), false );
-  CHECK( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
+  VERIFY( sc2.hasKey( "stringEntry1" ) );
+  COMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  COMPARE( sc2.entryIsImmutable("stringEntry1"), bImmutable );
+  VERIFY( !sc2.hasKey( "stringEntry2" ) );
+  COMPARE( sc2.readEntry( "stringEntry2", "bla" ), QString( "bla" ) );
 
-  CHECK( sc2.hasDefault( "stringEntry1" ), false );
+  VERIFY( !sc2.hasDefault( "stringEntry1" ) );
 
   sc2.setGroup("Hello");
-  CHECK( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
-  CHECK( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
-  CHECK( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  CHECK( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
-  CHECK( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
-  CHECK( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
-  CHECK( sc2.hasKey( "stringEntry5" ), false);
-  CHECK( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
-  CHECK( sc2.hasKey( "stringEntry6" ), false);
-  CHECK( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
-  CHECK( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
-  CHECK( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
+  COMPARE( sc2.readEntry( "Test" ), QString::fromLocal8Bit( LOCAL8BITENTRY ) );
+  COMPARE( sc2.readEntry("Test2", "Fietsbel").isEmpty(), true );
+  COMPARE( sc2.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
+  COMPARE( sc2.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
+  COMPARE( sc2.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
+  COMPARE( sc2.readEntry( "stringEntry4" ), QString( STRINGENTRY4 ) );
+  VERIFY( !sc2.hasKey( "stringEntry5" ) );
+  COMPARE( sc2.readEntry( "stringEntry5", "test" ), QString( "test" ) );
+  VERIFY( !sc2.hasKey( "stringEntry6" ) );
+  COMPARE( sc2.readEntry( "stringEntry6", "foo" ), QString( "foo" ) );
+  COMPARE( sc2.readBoolEntry( "boolEntry1" ), BOOLENTRY1 );
+  COMPARE( sc2.readBoolEntry( "boolEntry2" ), BOOLENTRY2 );
 
 #if 0
   QString s;
@@ -155,9 +147,9 @@ void KConfigTest::allTests()
 
   sc2.setGroup("Bye");
 
-  CHECK( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
-  CHECK( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
-  CHECK( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
-  CHECK( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
-  CHECK( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
+  COMPARE( sc2.readPointEntry( "pointEntry" ), POINTENTRY );
+  COMPARE( sc2.readSizeEntry( "sizeEntry" ), SIZEENTRY);
+  COMPARE( sc2.readRectEntry( "rectEntry" ), RECTENTRY );
+  COMPARE( sc2.readDateTimeEntry( "dateTimeEntry" ).toString(), DATETIMEENTRY.toString() );
+  COMPARE( sc2.readListEntry( "stringListEntry").join( "," ), STRINGLISTENTRY.join( "," ) );
 }

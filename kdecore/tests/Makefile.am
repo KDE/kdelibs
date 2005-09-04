@@ -17,7 +17,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES = -I$(top_srcdir)/kdecore $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/qttestlib $(all_includes)
 
 AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
@@ -28,9 +28,10 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	cplusplustest kiconloadertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
-	kxerrorhandlertest startserviceby kstdacceltest kglobaltest ktimezonestest
+	kxerrorhandlertest startserviceby kstdacceltest kglobaltest ktimezonestest \
+	kconfigtest ktempfiletest kurlmimetest
 
-TESTS = kurltest kstdacceltest
+TESTS = kurltest kstdacceltest ktempfiletest
 
 noinst_HEADERS = klocaletest.h kprocesstest.h KIDLTest.h \
 		kipctest.h kprociotest.h
@@ -77,19 +78,9 @@ kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
-LIBADD = $(LIB_KDECORE) $(LIB_KUNITTEST)
-check_LTLIBRARIES = kunittest_kconfig.la \
-		    kunittest_ktempfile.la \
-		    kunittest_kurlmimetest.la
-
-kunittest_kconfig_la_SOURCES = kconfigtest.cpp
-kunittest_kconfig_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
-
-kunittest_ktempfile_la_SOURCES = ktempfiletest.cpp
-kunittest_ktempfile_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
-
-kunittest_kurlmimetest_la_SOURCES = kurlmimetest.cpp
-kunittest_kurlmimetest_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN)
-
-check-local:
-	kunittestmodrunner
+ktempfiletest_SOURCES = ktempfiletest.cpp
+ktempfiletest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kurlmimetest_SOURCES = kurlmimetest.cpp
+kurlmimetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kconfigtest_SOURCES = kconfigtest.cpp
+kconfigtest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
