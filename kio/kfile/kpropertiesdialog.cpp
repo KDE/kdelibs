@@ -47,9 +47,6 @@ extern "C" {
 #include <grp.h>
 #include <time.h>
 #include <sys/types.h>
-#ifndef Q_OS_FREEBSD
-#  include <sys/xattr.h>
-#endif
 }
 #include <unistd.h>
 #include <errno.h>
@@ -75,6 +72,12 @@ extern "C" {
 #include <qprogressbar.h>
 #include <qvbox.h>
 #include <qvaluevector.h>
+
+#ifndef Q_OS_FREEBSD
+extern "C" {
+#  include <sys/xattr.h>
+}
+#endif
 
 #include <kapplication.h>
 #include <kdialog.h>
