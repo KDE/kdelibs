@@ -410,21 +410,6 @@ private:
   KRunPrivate *d;
 };
 
-#ifndef KDE_NO_COMPAT
-/**
- * @deprecated. Kept for source compatibility, does nothing nowadays.
- * Do not use in new source.
- * KRun can open the openwith dialog directly now.
- * Use KRun::displayOpenWithDialog() if you were using KOpenWithHandler directly.
- */
-class KIO_EXPORT_DEPRECATED KOpenWithHandler
-{
-public:
-  KOpenWithHandler() {}
-  static bool exists() { return true; }
-};
-#endif
-
 /**
  * @internal
  * This class watches a process launched by KRun.

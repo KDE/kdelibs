@@ -493,7 +493,7 @@ public:
    * Tries to give a local URL for this file item if possible.
    * The given boolean indicates if the returned url is local or not.
    */
-  KURL mostLocalURL(bool &local) const;
+  KURL mostLocalURL(bool &local) const; // KDE4 TODO: bool* local = 0
 
   /////////////
 
