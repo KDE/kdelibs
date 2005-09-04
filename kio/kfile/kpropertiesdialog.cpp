@@ -47,7 +47,9 @@ extern "C" {
 #include <grp.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/xattr.h>
+#ifndef Q_OS_FREEBSD
+#  include <sys/xattr.h>
+#endif
 }
 #include <unistd.h>
 #include <errno.h>
