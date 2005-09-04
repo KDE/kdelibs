@@ -479,7 +479,7 @@ static KCmdLineOptions options[] =
 };
 
 int main(int argc, char **argv) {
-  KCmdLineArgs::init( argc, argv, "kioslavetest", description, version );
+  KCmdLineArgs::init( argc, argv, "kioslavetest", "KIOSlave test", description, version );
   KCmdLineArgs::addCmdLineOptions( options );
   KApplication app;
 

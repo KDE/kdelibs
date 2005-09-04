@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/qttestlib $(all_includes)
 LDADD = $(LIB_KIO)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
@@ -27,7 +27,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest netaccesstest jobtest \
-		 kurlcompletiontest kmimetypetest
+		 kurlcompletiontest kmimetypetest kcomponentfactorytest
 
 # Unfortunately some tests depend on the network settings, it seems
 #check: kurifiltertest
@@ -35,7 +35,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 check-local: kziptest
 	./kziptest list $(srcdir)/wronglocalsizes.zip
 
-TESTS = kmimetypetest
+TESTS = kmimetypetest kcomponentfactorytest
 
 bin_PROGRAMS = ktradertest
 
@@ -71,7 +71,6 @@ ksycocaupdatetest_SOURCES = ksycocaupdatetest.cpp
 netaccesstest_SOURCES = netaccesstest.cpp
 jobtest_SOURCES = jobtest.cpp
 kurlcompletiontest_SOURCES = kurlcompletiontest.cpp
-kmimetypetest_SOURCES = kmimetypetest.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
 # metadata plugin test and "make install".
@@ -82,3 +81,10 @@ kmimetypetest_SOURCES = kmimetypetest.cpp
 
 #services_DATA = dummymeta.desktop
 #servicesdir = $(kde_servicesdir)
+
+kmimetypetest_SOURCES = kmimetypetest.cpp
+kmimetypetest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+
+kcomponentfactorytest_SOURCES = kcomponentfactorytest.cpp
+kcomponentfactorytest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+

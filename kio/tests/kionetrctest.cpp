@@ -44,7 +44,7 @@ int main(int argc, char **argv)
         KCmdLineLastOption
     };
 
-    KCmdLineArgs::init( argc, argv, "kionetrctest", description, version );
+    KCmdLineArgs::init( argc, argv, "kionetrctest", "KIO-netrc-test", description, version );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();

@@ -16,32 +16,31 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "kmimetypetest.h"
+#include "kmimetypetest.moc"
 #include <kmimetype.h>
-#include <kinstance.h>
+#include <QtTest/qttest_kde.h>
 #include <assert.h>
 #include <stdlib.h>
 
 static void checkIcon( const KURL& url, const QString& expectedIcon )
 {
-  QString icon = KMimeType::iconForURL( url );
-  if ( icon == expectedIcon )
-    qDebug( "icon for %s is %s, OK", url.prettyURL().latin1(), icon.latin1() );
-  else {
-    qDebug( "ERROR: icon for %s is %s, expected %s!", url.prettyURL().latin1(), icon.latin1(), expectedIcon.latin1() );
-    exit(1);
-  }
+    QString icon = KMimeType::iconForURL( url );
+    COMPARE( icon, expectedIcon );
 }
 
-int main( int argc, char** argv )
+QTTEST_KDEMAIN( KMimeTypeTest, NoGUI )
+
+void KMimeTypeTest::testIcons()
 {
-  KInstance blah("kmimetypetest");
+    // Obviously those tests will need to be fixed if we ever change the name of the icons
+    // but at least they unit-test KMimeType::iconForURL.
 
-  // Obviously those tests will need to be fixed if we ever change the name of the icons
-  // but at least they unit-test KMimeType::iconForURL.
-  checkIcon( "file:/tmp/", "folder" );
-  checkIcon( "file:/root/", "folder_locked" );
-  checkIcon( "trash:/", "trashcan_full" ); // #100321
-  checkIcon( "trash:/foo/", "folder" );
+    // TODO test data-driven testing :)
 
-  return 0;
+    checkIcon( "file:/tmp/", "folder" );
+    checkIcon( "file:/root/", "folder_locked" );
+    checkIcon( "trash:/", "trashcan_full" ); // #100321
+    checkIcon( "trash:/foo/", "folder" );
+
 }

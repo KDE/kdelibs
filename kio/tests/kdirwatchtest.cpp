@@ -25,7 +25,7 @@ static const KCmdLineOptions options[] =
 
 int main (int argc, char **argv)
 {
-  KCmdLineArgs::init(argc, argv, "KDirWatchTest",
+  KCmdLineArgs::init(argc, argv, "kdirwatchtest", "KDirWatchTest",
 		     "Test for KDirWatch", "1.0");
   KCmdLineArgs::addCmdLineOptions( options );
   KApplication::addCmdLineOptions();

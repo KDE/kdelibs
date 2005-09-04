@@ -19,6 +19,7 @@
 #include "ktar.h"
 #include <stdio.h>
 #include <kinstance.h>
+#include <kdebug.h>
 #include <qfile.h>
 
 #include <assert.h>
@@ -165,7 +166,7 @@ int main( int argc, char** argv )
     {
         QIODevice *dev = static_cast<const KTarFile *>(entry)->device();
         QByteArray contents = dev->readAll();
-        printf("contents='%s'\n", Q3CString(contents, contents.size()+1 ).data());
+        kdDebug() << "contents=" << contents << endl;
     } else
         printf("entry=%p - not found if 0, otherwise not a file\n", (void*)entry);
     return 0;

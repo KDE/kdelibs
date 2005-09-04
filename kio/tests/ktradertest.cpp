@@ -20,6 +20,7 @@
 #include <ktrader.h>
 #include <kmimetype.h>
 #include <kapplication.h>
+#include <klocale.h>
 #include <stdio.h>
 
 static KCmdLineOptions options[] =
@@ -33,7 +34,7 @@ static KCmdLineOptions options[] =
 
 int main( int argc, char **argv )
 {
-  KCmdLineArgs::init( argc, argv, "ktradertest", "KTradertest", "A KTrader testing tool", "0.0" );
+  KCmdLineArgs::init( argc, argv, "ktradertest", I18N_NOOP("KTradertest"), I18N_NOOP("A testing tool for the KDE trader system"), "0.0" );
 
   KCmdLineArgs::addCmdLineOptions( options );
 

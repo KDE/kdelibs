@@ -181,7 +181,7 @@ void removeGroup(KFileMetaInfo& info, QString group)
 int main( int argc, char **argv )
 {
     // Initialize command line args
-    KCmdLineArgs::init(argc, argv, "kfilemetatest", "testing kfilmetainfo", "X");
+    KCmdLineArgs::init(argc, argv, "kfilemetatest", "KFileMetaInfo-test", "testing kfilemetainfo", "X");
 
     // Tell which options are supported
     KCmdLineArgs::addCmdLineOptions( options );

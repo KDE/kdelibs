@@ -65,7 +65,7 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char **argv) {
 
-    KCmdLineArgs::init( argc, argv, "speedapp", "A KIO::listRecursive testing tool", "0.0" );
+    KCmdLineArgs::init( argc, argv, "speedapp", "SpeedApp", "A KIO::listRecursive testing tool", "0.0" );
 
     KCmdLineArgs::addCmdLineOptions( options );
 

@@ -31,7 +31,7 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-  KCmdLineArgs::init( argc, argv, "kmimefromext", "A mimetype testing tool, gives the mimetype for a given filename", "0.0" );
+  KCmdLineArgs::init( argc, argv, "kmimefromext", "KMimeFromExt", "A mimetype testing tool, gives the mimetype for a given filename", "0.0" );
 
   KCmdLineArgs::addCmdLineOptions( options );
 
