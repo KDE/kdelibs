@@ -314,7 +314,6 @@ def generate(env):
 				h_contents = h_file.get_contents()
 				if q_object_search.search(h_contents):
 					# we know now there is Q_OBJECT macro
-					print "moc found for "+bs
 					reg = '\n\s*#include\s*("|<)'+str(bs)+'.moc("|>)'
 					meta_object_search = re.compile(reg)
 					#cpp_contents = open(file_cpp, 'rb').read()
@@ -535,7 +534,7 @@ def generate(env):
 		## it is done in admin/generic.py automatically when you do scons configure debug=1
 
         import generic
-        class qt4object(generic.genobj):
+        class qt4obj(generic.genobj):
                 def __init__(self, val, senv=None):
                         if senv: generic.genobj.__init__(self, val, senv)
                         else: generic.genobj.__init__(self, val, env)
@@ -545,6 +544,8 @@ def generate(env):
                                 print self.xml()
                                 return
 			self.env=self.orenv.Copy()
+			self.env.AppendUnique(LIBPATH=env['LIBPATH_KDE4'])
+
 			# then add the includes for qt
 			inctypes="QtXml QtGui QtCore QtOpenGL Qt3Support".split()
 			qtincludes=[]
@@ -577,5 +578,5 @@ def generate(env):
 	SConsEnvironment.QT4addpaths_libs = QT4addpaths_libs
 
 	SConsEnvironment.QT4use = QT4use
-	SConsEnvironment.qt4object=qt4object
+	SConsEnvironment.qt4obj=qt4obj
 

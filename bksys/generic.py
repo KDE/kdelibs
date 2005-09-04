@@ -87,7 +87,7 @@ def pprint(env, col, str, label=''):
 class genobj:
 	def __init__(self, val, env):
 		if not val in "program shlib kioslave staticlib convenience".split():
-			print "unknown genobj given: "+val
+			print "unknown object type given to genobj: "+val
 			env.Exit(1)
 
 		self.type = val
@@ -113,7 +113,7 @@ class genobj:
 		# a directory where to install the targets (optional)
 		self.instdir=''
 
-		# change the working directory before reading the targets
+		# change the working directory before reading the targets (do not use)
 		self.chdir=''
 
 		# unix permissions
@@ -137,13 +137,15 @@ class genobj:
 		self.not_orig_fs_dir=''
 		self.not_orig_os_dir=''
 
+		# with this it is not mandatory to call execute() on objects created like genobj
 		if not env.has_key('USE_THE_FORCE_LUKE'): env['USE_THE_FORCE_LUKE']=[self]
 		else: env['USE_THE_FORCE_LUKE'].append(self)
 
+	# called by subclasses to set the sources to compile
 	def setsource(self, src):
 		self.p_localsource=self.orenv.make_list(src)
-		print self.p_localsource
 
+	# join the builddir to a path
 	def joinpath(self, val):
 		if len(self.dirprefix)<3: return val
 		dir=self.dirprefix
@@ -154,7 +156,7 @@ class genobj:
 		for v in thing: files.append( self.orenv.join(bdir, dir, v) )
 		return files
 
-	# a list of paths, with absolute and relative ones
+	# a list of paths, with absolute and relative ones, useful when giving include dirs
 	def fixpath(self, val):
 		def reldir(dir):
 			ndir    = SCons.Node.FS.default_fs.Dir(dir).srcnode().abspath
@@ -195,9 +197,12 @@ class genobj:
 		os.chdir(self.not_orig_os_dir)
 		self.workdir_lock=None
 
+	# when an object is created and the sources, targets, etc are given
+	# the execute command calls the SCons functions like Program, Library, etc
 	def execute(self):
 		if self.executed: return
 
+		# dump the configuration to xml when asked to
 		if self.orenv.has_key('DUMPCONFIG'):
 			self.xml()
 			self.executed=1
@@ -223,6 +228,9 @@ class genobj:
 		if len(self.cxxflags)>0: self.env.AppendUnique(CXXFLAGS=self.env.make_list(self.cxxflags))
 		if len(self.cflags)>0: self.env.AppendUnique(CCFLAGS=self.env.make_list(self.cflags))
 
+		if self.type=='convenience':
+			self.env.AppendUnique(CCFLAGS=self.env['CONVENIENCE'],CXXFLAGS=self.env['CONVENIENCE'])
+
 		llist=self.env.make_list(self.libs)
 		lext=['.so', '.la']
 		sext='.a'.split()
@@ -233,15 +241,20 @@ class genobj:
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(l)
 
-		if len(self.p_global_shlibs)>0: self.env.AppendUnique(LIBS=self.p_global_shlibs)
-		if len(self.libpaths)>0:   self.env.PrependUnique(LIBPATH=self.fixpath(self.libpaths))
-		if len(self.linkflags)>0:  self.env.PrependUnique(LINKFLAGS=self.env.make_list(self.linkflags))
-		if len(self.p_local_shlibs)>0:
-			self.env.link_local_shlib(self.p_local_shlibs)
-		if len(self.p_local_staticlibs)>0:
-			self.env.link_local_staticlib(self.p_local_staticlibs)
+		# settings for static and shared libraries
+		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
+		if len(self.libpaths)>0:           self.env.PrependUnique(LIBPATH=self.fixpath(self.libpaths))
+		if len(self.linkflags)>0:          self.env.PrependUnique(LINKFLAGS=self.env.make_list(self.linkflags))
 
-		# the target to return - no more self.env modification is allowed after this part
+		# DEBUG
+		#print self.target
+		#print self.env['LIBPATH']
+		#print self.env['LINKFLAGS']
+
+		if len(self.p_local_shlibs)>0:     self.env.link_local_shlib(self.p_local_shlibs)
+		if len(self.p_local_staticlibs)>0: self.env.link_local_staticlib(self.p_local_staticlibs)
+
+		# the target to return - IMPORTANT no more self.env modification is allowed after this part
 		ret=None
 		if self.type=='shlib' or self.type=='kioslave':
 			ret=self.env.bksys_shlib(self.p_localtarget, self.p_localsource, self.instdir, 
@@ -253,9 +266,6 @@ class genobj:
 				if self.perms: self.env.AddPostAction(ins, self.env.Chmod(ins, self.perms))
 		elif self.type=='staticlib' or self.type=='convenience':
 			ret=self.env.StaticLibrary(self.p_localtarget, self.p_localsource)
-
-		if self.type=='convenience':
-			self.env.AppendUnique(CXXFLAGS=['-fPIC']) # like this ? TODO ITA
 
 		# we link the program against a shared library made locally, add the dependency
 		if len(self.p_local_shlibs)>0:
@@ -278,7 +288,7 @@ def copy_bksys(dest, source, env):
 		os.chmod(dest, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
 	return 0
 
-## Return a list of things
+## Expands strings given and make sure to return a list type
 def make_list(env, s):
 	if type(s) is types.ListType: return s
 	else:
@@ -291,7 +301,7 @@ def join(lenv, s1, s2, s3=None, s4=None):
 	elif not s2: return s1
 	# having s1, s2
 	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,string.lstrip(s2,'/'))
-	if not s1: s1="/"
+	if not s1: s1="/" # TODO on win32 this will not work
 	return os.path.join(s1,string.lstrip(s2,'/'))
 
 def exists(env):
@@ -308,8 +318,10 @@ def get_dump(nenv):
 	global bks_dump
 	return bks_dump+"</bksys>\n"
 
+## entry point of the module generic
 def generate(env):
 
+	## i cannot remember having added this (ITA) - can someone explain ?
 	from SCons.Tool import Tool;
 	deft = Tool('default')
 	deft.generate(env)
@@ -317,6 +329,7 @@ def generate(env):
 	## Bksys requires scons 0.96
 	env.EnsureSConsVersion(0, 96)
 
+	## attach functions to "env"
 	SConsEnvironment.pprint = pprint
 	SConsEnvironment.make_list = make_list
 	SConsEnvironment.join = join
@@ -389,7 +402,7 @@ def generate(env):
 	## Use the same extension .o for all object files
 	env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
 
-	## no colors
+	## no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 
 	## load the options

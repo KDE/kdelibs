@@ -14,7 +14,7 @@ Run from a subdirectory -> scons -u
 The variables are saved automatically after the first run (look at cache/kde.cache.py, ..)
 """
 
-# how to do ?
+# How to do ?
 
 # tar xjvf bksys/scons-mini.tar.bz2
 # ./scons
@@ -58,6 +58,13 @@ env['LIB_QTOPENGL']   = ['QtOpenGL_debug']
 env['LIB_QTSQL']      = ['QtSql_debug']
 env['LIB_QTXML']      = ['QtXml_debug']
 
+env['CONVENIENCE']    = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
+
+## these paths are added for linking kde4, qt4 or x11 objects
+env['LIBPATH_X11'] = ['/usr/X11R6/lib/']
+env['LIBPATH_QT4'] = env['LIBPATH_X11']+[env['QTLIBPATH']]
+env['LIBPATH_KDE4'] = env['LIBPATH_QT4']
+
 ## ahem (ita)
 env.AppendUnique(CXXFLAGS=['-DQT3_SUPPORT'])
 
@@ -72,7 +79,7 @@ for dir in includes:
 	env['KDELIBS_INCLUDES'].append('#build/'+dir)
 
 # prefix/lib and prefix/lib/kde4 (ita)
-env['KDE_RPATH']= [env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib', 'kde4')]
+env['KDE_RPATH']= ['-Wl,--rpath='+env.join(env['PREFIX'], 'lib'), '-Wl,--rpath='+env.join(env['PREFIX'], 'lib', 'kde4')]
 
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 import os

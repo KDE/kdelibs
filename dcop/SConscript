@@ -4,15 +4,9 @@ Import('env')
 
 #env.subdirs('KDE-ICE dcopidl dcopidlng dcopidl2cpp client tests')
 #env.subdirs('KDE-ICE client')
-env.subdirs('KDE-ICE')
+env.subdirs('KDE-ICE client dcopidl dcopidl2cpp')
 
-# the dcop_shutdown (description ?)
-obj=env.qt4object('program', env)
-obj.target='dcopserver_shutdown'
-obj.source='dcopserver_shutdown.c'
-obj.execute()
-
-# the kdcop library (description ?)
+# libDCOP.so (description ?)
 kdcop_sources="""
 dcopstub.cpp
 dcopref.cpp
@@ -20,8 +14,7 @@ dcopobject.cpp
 dcopclient.cpp
 """
 
-# libDCOP.so (description ?)
-obj          = env.qt4object('shlib', env)
+obj          = env.qt4obj('shlib', env)
 obj.target   = 'libDCOP'
 obj.source   = kdcop_sources
 obj.libs     = env['LIB_QT']+env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+[env.join('KDE-ICE', 'libkICE.a')]
@@ -31,11 +24,17 @@ obj.vnum     = '6.0.2'
 obj.execute()
 
 # dcopserver.la (description ?)
-obj          = env.qt4object('staticlib', env)
+obj          = env.qt4obj('staticlib', env)
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.libs     = env.join('.', 'libDCOP.la')
 obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
+obj.execute()
+
+# dcop_shutdown (description ?)
+obj=env.genobj('program', env)
+obj.target='dcopserver_shutdown'
+obj.source='dcopserver_shutdown.c'
 obj.execute()
 
 """
