@@ -117,7 +117,7 @@ public:
 #ifdef Q_WS_X11
   /**
    * Constructor. Parses command-line arguments. Use this constructor when you
-   * you need to use a non-default visual or colormap. 
+   * you need to use a non-default visual or colormap.
    *
    * @param display Will be passed to Qt as the X display. The display must be
    * valid and already opened.
@@ -856,7 +856,7 @@ public:
   /**
    * @internal
    * Sets a new value for the application startup notification window property for newly
-   * created toplevel windows. 
+   * created toplevel windows.
    * @param startup_id the startup notification identifier
    * @see KStartupInfo::setNewStartupId
    */
@@ -869,7 +869,7 @@ public:
    * @since 3.2
    */
   void updateUserTimestamp( quint32 time = 0 );
-  
+
   /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
    * @since 3.2.3
@@ -886,7 +886,7 @@ public:
    * @since 3.3
    */
   void updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time = 0 );
-  
+
     /**
     * Returns the argument to --geometry if any, so the geometry can be set
     * wherever necessary
@@ -900,20 +900,17 @@ public:
    */
   void installKDEPropertyMap();
 
+#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
   /**
    * Returns the state of the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * and mouse buttons, similarly to QKeyEvent::state() and QMouseEvent::state().
-   * You usually should simply use the information provided by QKeyEvent and QMouseEvent,
-   * but it can be useful to query for the status of the modifiers at another moment
-   * (e.g. some KDE apps do that upon a drop event).
-   * @return the keyboard modifiers and mouse buttons state
-   * @since 3.4
+   * @deprecated use QApplication::keyboardModifiers() and QApplication::mouseButtons() instead.
    */
-  static Qt::ButtonState keyboardMouseState();
+  static Qt::ButtonState keyboardMouseState() KDE_DEPRECATED;
+#endif
 
 
-
-  // Same values as ShiftMask etc. in X.h
+  /// @deprecated Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,
          LockModifier = 1<<1,
          ControlModifier = 1<<2,
@@ -1104,7 +1101,7 @@ public:
 
   /**
    * @internal
-   * Whether widgets can be used. 
+   * Whether widgets can be used.
    *
    * @since 3.2
    */
@@ -1189,14 +1186,14 @@ signals:
       Session management asks you to save the state of your application.
 
      This signal is provided for compatibility only. For new
-     applications, simply use KMainWindow. By reimplementing 
+     applications, simply use KMainWindow. By reimplementing
      KMainWindow::queryClose(), KMainWindow::saveProperties() and
  KMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
 
      For purposes without KMainWindow, create an instance of
-     KSessionManaged and reimplement the functions 
-     KSessionManaged::commitData() and/or 
+     KSessionManaged and reimplement the functions
+     KSessionManaged::commitData() and/or
      KSessionManaged::saveState()
 
      If you still want to use this signal, here is what you should do:

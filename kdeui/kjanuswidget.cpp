@@ -102,7 +102,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     {
       d->mSplitter = new QSplitter( this );
       topLayout->addWidget( d->mSplitter, 10 );
-      mTreeListResizeMode = QSplitter::KeepSize;
+      mTreeListResizeMode = KeepSize;
 
       d->mListFrame = new QWidget( d->mSplitter );
       QVBoxLayout *dummy = new QVBoxLayout( d->mListFrame, 0, 0 );
@@ -810,10 +810,10 @@ void KJanusWidget::setTreeListAutoResize( bool state )
 {
   if( mFace == TreeList )
   {
-    mTreeListResizeMode = !state ?
-      QSplitter::KeepSize : QSplitter::Stretch;
-    if( d->mSplitter )
-      d->mSplitter->setResizeMode( d->mListFrame, mTreeListResizeMode );
+    mTreeListResizeMode = !state ? KeepSize : Stretch;
+    // the splitter's first widget is d->mListFrame
+    if( d->mSplitter && d->mSplitter->count() > 0 )
+        d->mSplitter->setStretchFactor( 0, mTreeListResizeMode == KeepSize ? 0 : 1 );
   }
 }
 
@@ -882,8 +882,8 @@ void KJanusWidget::showEvent( QShowEvent * )
 {
   if( mFace == TreeList )
   {
-    if( d->mSplitter )
-      d->mSplitter->setResizeMode( d->mListFrame, mTreeListResizeMode );
+    if( d->mSplitter && d->mSplitter->count() > 0 )
+        d->mSplitter->setStretchFactor( 0, mTreeListResizeMode == KeepSize ? 0 : 1 );
   }
 }
 

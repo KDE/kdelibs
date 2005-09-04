@@ -22,6 +22,8 @@
  * Generated:	Sat May  1 02:08:43 EST 1999
  */
 
+#undef QT3_SUPPORT
+
 #include <qglobal.h>
 #include <qlist.h>
 #include <qset.h>
@@ -45,6 +47,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <qcolormap.h>
+#include <qwidget.h>
 
 #ifndef NDEBUG
 #define MYASSERT(x) if (!x) \
@@ -153,7 +157,7 @@ KGlobal::staticQString(const QString &str)
       _stringDict = new KStringDict;
       kglobal_init();
     }
-    
+
    return *_stringDict->insert(str);
 }
 
@@ -176,7 +180,7 @@ void
 KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
 {
    if (_staticDeleters)
-      _staticDeleters->remove(obj);
+      _staticDeleters->removeAll(obj);
 }
 
 void
@@ -249,9 +253,9 @@ int kasciistricmp( const char *str1, const char *str2 )
     return *s1 ? res : (*s2 ? -1 : 0);
 }
 
-static GC*	app_gc_ro	= 0;		// read-only GC
+//static GC*	app_gc_ro	= 0;		// read-only GC
 static GC*	app_gc_tmp	= 0;		// temporary GC
-static GC*	app_gc_ro_m	= 0;		// read-only GC (monochrome)
+//static GC*	app_gc_ro_m	= 0;		// read-only GC (monochrome)
 static GC*	app_gc_tmp_m	= 0;		// temporary GC (monochrome)
 
 static GC create_gc( int scrn, bool monochrome )
@@ -267,8 +271,9 @@ static GC create_gc( int scrn, bool monochrome )
 	} else {
 	    Window w;
 	    XSetWindowAttributes a;
-	    a.background_pixel = QColor(Qt::black).pixel( scrn );
-	    a.border_pixel = QColor(Qt::black).pixel( scrn );
+            QColormap colormap = QColormap::instance( scrn );
+	    a.background_pixel = colormap.pixel( Qt::black );
+	    a.border_pixel = a.background_pixel;
 	    a.colormap = QX11Info::appColormap( scrn );
 	    w = XCreateWindow( QX11Info::display(), RootWindow( QX11Info::display(), scrn ), 0, 0, 100, 100,
 			       0, QX11Info::appDepth( scrn ), InputOutput,
@@ -290,9 +295,7 @@ GC kde_xget_temp_gc( int scrn, bool monochrome )		// get temporary GC
     // #####
     int screenCount = ScreenCount(QX11Info::display());
     if ( scrn < 0 || scrn >= screenCount ) {
-	qDebug("invalid screen (tmp) %d %d", scrn, screenCount );
-	QWidget* bla = 0;
-	bla->setName("hello");
+	qFatal("invalid screen (tmp) %d %d", scrn, screenCount );
     }
     GC gc;
     if ( monochrome ) {

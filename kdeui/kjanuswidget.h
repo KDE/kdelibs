@@ -587,7 +587,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;
-    QSplitter::ResizeMode mTreeListResizeMode;
+    enum { KeepSize, Stretch } mTreeListResizeMode;
     bool         mShowIconsInTreeList;
     QMap<Q3ListViewItem *, QWidget *> mTreeListToPageStack;
     QMap<Q3ListBoxItem *, QWidget *> mIconListToPageStack;

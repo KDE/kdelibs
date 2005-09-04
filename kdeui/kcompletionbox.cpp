@@ -189,7 +189,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                 }
             }
             else if ( type == QEvent::ShortcutOverride ) {
-                // Override any acceleartors that match
+                // Override any accelerators that match
                 // the key sequences we use here...
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
