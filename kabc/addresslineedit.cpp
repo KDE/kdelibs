@@ -36,7 +36,6 @@
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kstdaccel.h>
-#include <kurldrag.h>
 
 #include <kabc/stdaddressbook.h>
 #include <kabc/distributionlist.h>
@@ -112,7 +111,7 @@ void AddressLineEdit::init()
       setCompletionObject( s_completion, false ); // we handle it ourself
       connect( this, SIGNAL( completion(const QString&)),
                this, SLOT(slotCompletion() ));
-      
+
       KCompletionBox *box = completionBox();
       connect( box, SIGNAL( highlighted( const QString& )),
                this, SLOT( slotPopupCompletion( const QString& ) ));
@@ -162,7 +161,7 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
     else if (KStdAccel::shortcut(KStdAccel::TextCompletion).contains(KKey(e)))
     {
         int len = text().length();
-        
+
         if (len == cursorPosition()) // at End?
         {
             doCompletion(true);
@@ -288,21 +287,21 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( !m_useCompletion )
         return;
 
-    QString prevAddr;    
-    
-    QString s(text());    
+    QString prevAddr;
+
+    QString s(text());
     int n = s.findRev(',');
-        
+
     if (n >= 0)
     {
         n++; // Go past the ","
-        
+
         int len = s.length();
-        
+
         // Increment past any whitespace...
         while( n < len && s[n].isSpace() )
           n++;
-                  
+
         prevAddr = s.left(n);
         s = s.mid(n,255).stripWhiteSpace();
     }
@@ -323,9 +322,9 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         cursorAtEnd();
         return;
     }
-    
+
     KGlobalSettings::Completion  mode = completionMode();
-    
+
     switch ( mode )
     {
         case KGlobalSettings::CompletionPopupAuto:
@@ -333,7 +332,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             if (s.isEmpty())
                 break;
         }
-        case KGlobalSettings::CompletionPopup:        
+        case KGlobalSettings::CompletionPopup:
         {
             m_previousAddresses = prevAddr;
             QStringList items = s_completion->allMatches( s );
@@ -348,11 +347,11 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             {
                 if ( items.count() > beforeDollarCompletionCount )
                 {
-                    // remove the '$$whatever$' part                    
+                    // remove the '$$whatever$' part
                     for( QStringList::Iterator it = items.begin();
                          it != items.end();
                          ++it )
-                    { 
+                    {
                         int pos = (*it).find( '$', 2 );
                         if( pos < 0 ) // ???
                             continue;
@@ -361,14 +360,14 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                 }
 
                 items = removeMailDupes( items );
-                
+
                 // We do not want KLineEdit::setCompletedItems to perform text
                 // completion (suggestion) since it does not know how to deal
-                // with providing proper completions for different items on the 
+                // with providing proper completions for different items on the
                 // same line, e.g. comma-separated list of email addresses.
-                bool autoSuggest = (mode != KGlobalSettings::CompletionPopupAuto);                                
+                bool autoSuggest = (mode != KGlobalSettings::CompletionPopupAuto);
                 setCompletedItems( items, autoSuggest );
-                
+
                 if (!autoSuggest)
                 {
                     int index = items.first().find( s );
@@ -398,7 +397,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         case KGlobalSettings::CompletionAuto:
         {
             if (!s.isEmpty())
-            {              
+            {
                 QString match = s_completion->makeCompletion( s );
                 if ( !match.isNull() && match != s )
                 {
@@ -407,9 +406,9 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                 }
                 break;
             }
-        }        
+        }
         case KGlobalSettings::CompletionNone:
-        default: // fall through        
+        default: // fall through
             break;
     }
 }
@@ -471,7 +470,7 @@ void AddressLineEdit::startLoadingLDAPEntries()
     }
     if( s.length() == 0 )
         return;
-    
+
     loadAddresses(); // TODO reuse these?
     s_LDAPSearch->startSearch( s );
 }
@@ -491,7 +490,7 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
         }
         addAddress( name );
     }
-    
+
     if( hasFocus() || completionBox()->hasFocus())
     {
         if( completionMode() != KGlobalSettings::CompletionNone )
@@ -521,8 +520,8 @@ QStringList AddressLineEdit::removeMailDupes( const QStringList& adrs )
 //-----------------------------------------------------------------------------
 void AddressLineEdit::dropEvent(QDropEvent *e)
 {
-  KURL::List uriList;
-  if(KURLDrag::canDecode(e) && KURLDrag::decode( e, uriList ))
+  KURL::List uriList = KURL::List::fromMimeData( e->mimeData() );
+  if (!uriList.isEmpty())
   {
     QString ct = text();
     KURL::List::Iterator it = uriList.begin();
@@ -561,13 +560,13 @@ QStringList AddressLineEdit::addresses()
   KABC::AddressBook::Iterator it;
   for( it = addressBook->begin(); it != addressBook->end(); ++it ) {
     QStringList emails = (*it).emails();
-    
+
     QString n = (*it).prefix() + space +
                 (*it).givenName() + space +
                 (*it).additionalName() + space +
                 (*it).familyName() + space +
                 (*it).suffix();
-    
+
     n = n.simplifyWhiteSpace();
 
     QStringList::ConstIterator mit;
@@ -595,7 +594,7 @@ QStringList AddressLineEdit::addresses()
       }
     }
   }
-  
+
   KABC::DistributionListManager manager( addressBook );
   manager.load();
   result += manager.listNames();

@@ -493,6 +493,11 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
     }
 }
 
+bool KURL::List::canDecode( const QMimeData *mimeData )
+{
+    return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-kde-urilist" );
+}
+
 KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData )
 {
     KURL::List uris;

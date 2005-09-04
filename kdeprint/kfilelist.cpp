@@ -27,7 +27,6 @@
 #include <QDragEnterEvent>
 
 #include <kio/netaccess.h>
-#include <kurldrag.h>
 #include <kfiledialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -168,13 +167,13 @@ KFileList::~KFileList()
 
 void KFileList::dragEnterEvent(QDragEnterEvent *e)
 {
-	e->accept(KURLDrag::canDecode(e));
+    e->accept( KURL::List::canDecode( e->mimeData() ) );
 }
 
 void KFileList::dropEvent(QDropEvent *e)
 {
-	KURL::List	files;
-	if (KURLDrag::decode(e, files))
+	KURL::List	files = KURL::List::fromMimeData( e->mimeData() );
+	if (!files.isEmpty())
 	{
 		addFiles(files);
 	}

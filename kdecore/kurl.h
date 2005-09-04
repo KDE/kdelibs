@@ -222,12 +222,19 @@ public:
                           MimeDataFlags flags = None );
 
       /**
+       * Return true if @p mimeData contains URI data
+       * @since 4.0
+       */
+      static bool canDecode( const QMimeData *mimeData );
+
+      /**
        * Extract a list of KURLs from the contents of @p mimeData.
        * Decoding will fail if @p mimeData does not contain any URLs, or if at
        * least one extracted URL is not valid.
        * @param mimeData the mime data to extract from; cannot be 0
        * @param metaData optional pointer to a map holding the metadata
        * @return the list of urls
+       * @since 4.0
        */
       static KURL::List fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData = 0 );
 

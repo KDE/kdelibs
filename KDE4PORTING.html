@@ -93,8 +93,10 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>isMalformed -&gt; !isValid()
 
 <H4>KURLDrag</H4>
-<li>This class has been moved to kde3support. Use KURL::addToMimeData(), 
-KURL::List::addToMimeData() and the static method KURL::List::fromMimeData() instead.</li>
+<li>This class has been moved to kde3support. Use KURL::addToMimeData() and
+KURL::List::addToMimeData() in the drag/copy side,
+and the static methods KURL::List::canDecode() and KURL::List::fromMimeData()
+in the drop/paste side.</li>
 
 <H4>KMD5</H4>
 

@@ -51,7 +51,6 @@
 #include <qlineedit.h>
 #include <kdialogbase.h>
 #include <qcheckbox.h>
-#include <kurldrag.h>
 #include <kconfig.h>
 #include <QDropEvent>
 #include <QMenuItem>
@@ -77,7 +76,7 @@ KJobListView::KJobListView( QWidget *parent)
 
 bool KJobListView::acceptDrag( QDropEvent *e ) const
 {
-	if ( KURLDrag::canDecode( e ) )
+	if ( KURL::List::canDecode( e->mimeData() ) )
 		return true;
 	else
 		return KListView::acceptDrag( e );
@@ -724,8 +723,7 @@ void KMJobViewer::slotDropped( QDropEvent *e, Q3ListViewItem* )
 	QStringList files;
 	QString target;
 
-        KURL::List uris;
-	KURLDrag::decode( e, uris );
+        KURL::List uris = KURL::List::fromMimeData( e->mimeData() );
 	for ( KURL::List::ConstIterator it = uris.begin();
 	      it != uris.end(); ++it)
 	{
