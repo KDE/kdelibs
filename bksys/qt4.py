@@ -230,14 +230,18 @@ def generate(env):
 		return env.Execute(comp)
 	def qrc_stringit(target, source, env):
 		print "processing %s to get %s" % (source[0].name, target[0].name)
-	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit),
-                        suffix='_qrc.cpp', src_suffix='.qrc')
+		
+	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit,
+													 qrc_stringit),
+								   suffix='_qrc.cpp', src_suffix='.qrc')
 
 	def kcfg_buildit(target, source, env):
 		comp='kconfig_compiler -d%s %s %s' % (str(source[0].get_dir()), source[1].path, source[0].path)
 		return env.Execute(comp)
+	
 	def kcfg_stringit(target, source, env):
 		print "processing %s to get %s and %s" % (source[0].name, target[0].name, target[1].name)
+		
 	def kcfgEmitter(target, source, env):
 		adjustixes = SCons.Util.adjustixes
 		bs = SCons.Util.splitext(str(source[0].name))[0]
