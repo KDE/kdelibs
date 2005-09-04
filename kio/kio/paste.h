@@ -38,11 +38,12 @@ namespace KIO {
    * to choose a filename and the preferred data format)
    *
    * @param destURL the URL to receive the data
+   * @param widget parent widget to use for dialogs
    * @param move true to move the data, false to copy
    * @return the job that handles the operation
    * @see pasteData()
    */
-  KIO_EXPORT Job *pasteClipboard( const KURL& destURL, bool move = false );
+  KIO_EXPORT Job *pasteClipboard( const KURL& destURL, QWidget* widget, bool move = false );
 
   /**
    * Pastes the given @p data to the given destination URL.
@@ -52,9 +53,10 @@ namespace KIO {
    * @param destURL the URL of the directory where the data will be pasted.
    * The filename to use in that directory is prompted by this method.
    * @param data the data to copy
+   * @param widget parent widget to use for dialogs
    * @see pasteClipboard()
    */
-  KIO_EXPORT void pasteData( const KURL& destURL, const QByteArray& data );
+  KIO_EXPORT void pasteData( const KURL& destURL, const QByteArray& data, QWidget* widget );
 
 
   /**
@@ -68,7 +70,7 @@ namespace KIO {
    * @param dialogText the text to show in the dialog
    * @see pasteClipboard()
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data, const QString& dialogText= QString::null );
+  KIO_EXPORT CopyJob *pasteDataAsync( const KURL& destURL, const QByteArray& data, const QString& dialogText = QString::null );
 
 
   /**
@@ -77,7 +79,7 @@ namespace KIO {
    * This is the method used when handling drops (of anything else than URLs)
    * onto kdesktop and konqueror.
    *
-   * @param data the QMimeSource (e.g. a QDropEvent)
+   * @param data the QMimeData (from a QDropEvent or from the clipboard when pasting)
    * @param destURL the URL of the directory where the data will be pasted.
    * The filename to use in that directory is prompted by this method.
    * @param dialogText the text to show in the dialog
@@ -89,7 +91,7 @@ namespace KIO {
    *
    * @since 3.5
    */
-  KIO_EXPORT CopyJob* pasteMimeSource( QMimeSource* data, const KURL& destURL,
+  KIO_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KURL& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 

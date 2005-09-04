@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#undef QT3_SUPPORT
+
 #include "paste.h"
 #include "pastedialog.h"
 
@@ -37,9 +39,7 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
-#include <q3dragobject.h>
 #include <qtextstream.h>
-#include <q3valuevector.h>
 
 static KURL getNewFileName( const KURL &u, const QString& text )
 {
@@ -80,21 +80,21 @@ static KURL getNewFileName( const KURL &u, const QString& text )
   return myurl;
 }
 
-// The finaly step: write _data to tempfile and move it to neW_url
-static KIO::CopyJob* pasteDataAsyncTo( const KURL& new_url, const QByteArray& _data )
+// The finaly step: write _data to tempfile and move it to newUrl
+static KIO::CopyJob* pasteDataAsyncTo( const KURL& newUrl, const QByteArray& _data )
 {
      KTempFile tempFile;
-     tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
+     tempFile.dataStream()->writeRawData( _data.data(), _data.size() );
      tempFile.close();
 
-     KURL orig_url;
-     orig_url.setPath(tempFile.name());
+     KURL origUrl;
+     origUrl.setPath(tempFile.name());
 
-     return KIO::move( orig_url, new_url );
+     return KIO::move( origUrl, newUrl );
 }
 
 #ifndef QT_NO_MIMECLIPBOARD
-static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
+static KIO::CopyJob* chooseAndPaste( const KURL& u, const QMimeData* mimeData,
                                      const QStringList& formats,
                                      const QString& text,
                                      QWidget* widget,
@@ -130,22 +130,23 @@ static KIO::CopyJob* chooseAndPaste( const KURL& u, QMimeSource* data,
     const QString chosenFormat = formats[ dlg.comboItem() ];
 
     kdDebug() << " result=" << result << " chosenFormat=" << chosenFormat << endl;
-    KURL new_url( u );
-    new_url.addPath( result );
+    KURL newUrl( u );
+    newUrl.addPath( result );
     // if "data" came from QClipboard, then it was deleted already - by a nice 0-seconds timer
     // In that case, get it again. Let's hope the user didn't copy something else meanwhile :/
+    // #### QT4/KDE4 TODO: check that this is still the case
     if ( clipboard ) {
-        data = QApplication::clipboard()->data();
+        mimeData = QApplication::clipboard()->mimeData();
     }
-    const QByteArray ba = data->encodedData( chosenFormat.latin1() );
-    return pasteDataAsyncTo( new_url, ba );
+    const QByteArray ba = mimeData->data( chosenFormat );
+    return pasteDataAsyncTo( newUrl, ba );
 }
 #endif
 
 
 #ifndef QT_NO_MIMECLIPBOARD
 // The main method for dropping
-KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
+KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KURL& destUrl,
                                     const QString& dialogText, QWidget* widget, bool clipboard )
 {
   QByteArray ba;
@@ -153,71 +154,66 @@ KIO::CopyJob* KIO::pasteMimeSource( QMimeSource* data, const KURL& dest_url,
   // Now check for plain text
   // We don't want to display a mimetype choice for a QTextDrag, those mimetypes look ugly.
   QString text;
-  if ( Q3TextDrag::canDecode( data ) && Q3TextDrag::decode( data, text ) )
+  if ( mimeData->hasText() )
   {
-      QTextStream txtStream( ba, QIODevice::WriteOnly );
-      txtStream << text;
+      ba = mimeData->text().toLocal8Bit(); // encoding OK?
   }
   else
   {
       QStringList formats;
-      const char* fmt;
-      for ( int i = 0; ( fmt = data->format( i ) ); ++i ) {
-          if ( qstrcmp( fmt, "application/x-qiconlist" ) == 0 ) // see QIconDrag
+      const QStringList allFormats = mimeData->formats();
+      for ( QStringList::const_iterator it = formats.begin(), end = formats.end() ;
+            it != end ; ++it ) {
+          if ( (*it) == QLatin1String( "application/x-qiconlist" ) ) // see QIconDrag
               continue;
-          if ( qstrcmp( fmt, "application/x-kde-cutselection" ) == 0 ) // see KonqDrag
+          if ( (*it) == QLatin1String( "application/x-kde-cutselection" ) ) // see KonqDrag
               continue;
-           if ( strchr( fmt, '/' ) == 0 ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
+           if ( !(*it).contains( QLatin1Char( '/' ) ) ) // e.g. TARGETS, MULTIPLE, TIMESTAMP
               continue;
-          formats.append( fmt );
+          formats.append( (*it) );
       }
 
       if ( formats.size() > 1 ) {
-          return chooseAndPaste( dest_url, data, formats, dialogText, widget, clipboard );
+          return chooseAndPaste( destUrl, mimeData, formats, dialogText, widget, clipboard );
       }
-      ba = data->encodedData( formats.first().latin1() );
+      ba = mimeData->data( formats.first() );
   }
-  if ( ba.size() == 0 )
+  if ( ba.isEmpty() )
   {
-    KMessageBox::sorry(0, i18n("The clipboard is empty"));
+    KMessageBox::sorry( widget, i18n("The clipboard is empty") );
     return 0;
   }
 
-  return pasteDataAsync( dest_url, ba, dialogText );
+  return pasteDataAsync( destUrl, ba, dialogText );
 }
 #endif
 
 // The main method for pasting
-KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
+KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& destUrl, QWidget* widget, bool move )
 {
-  if ( !dest_url.isValid() ) {
-    KMessageBox::error( 0L, i18n( "Malformed URL\n%1" ).arg( dest_url.url() ) );
+  if ( !destUrl.isValid() ) {
+    KMessageBox::error( widget, i18n( "Malformed URL\n%1" ).arg( destUrl.url() ) );
     return 0;
   }
 
 #ifndef QT_NO_MIMECLIPBOARD
-  QMimeSource *data = QApplication::clipboard()->data();
+  const QMimeData *mimeData = QApplication::clipboard()->mimeData();
 
   // First check for URLs.
-  KURL::List urls;
-  if ( KURLDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
-    if ( urls.count() == 0 ) {
-      KMessageBox::error( 0L, i18n("The clipboard is empty"));
-      return 0;
-    }
-
+  const KURL::List urls = KURL::List::fromMimeData( mimeData );
+  if ( !urls.isEmpty() ) {
     KIO::Job *res = 0;
     if ( move )
-      res = KIO::move( urls, dest_url );
+      res = KIO::move( urls, destUrl );
     else
-      res = KIO::copy( urls, dest_url );
+      res = KIO::copy( urls, destUrl );
 
     // If moving, erase the clipboard contents, the original files don't exist anymore
     if ( move )
       QApplication::clipboard()->clear();
     return res;
   }
-  return pasteMimeSource( data, dest_url, QString::null, 0 /*TODO parent widget*/, true /*clipboard*/ );
+  return pasteMimeSource( mimeData, destUrl, QString::null, widget, true /*clipboard*/ );
 #else
   QByteArray ba;
   QTextStream txtStream( ba, QIODevice::WriteOnly );
@@ -232,50 +228,48 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
     KMessageBox::sorry(0, i18n("The clipboard is empty"));
     return 0;
   }
-  return pasteDataAsync( dest_url, ba );
+  return pasteDataAsync( destUrl, ba );
 #endif
 }
 
 
-KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data )
+KIO_EXPORT void KIO::pasteData( const KURL& u, const QByteArray& _data, QWidget* widget )
 {
-    KURL new_url = getNewFileName( u, QString::null );
+    const KURL newUrl = getNewFileName( u, QString::null );
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAccess, we can do a synchronous call.
 
-    if (new_url.isEmpty())
+    if (newUrl.isEmpty())
        return;
 
     KTempFile tempFile;
     tempFile.setAutoDelete( true );
-    tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
+    tempFile.dataStream()->writeRawData( _data.data(), _data.size() );
     tempFile.close();
 
-    (void) KIO::NetAccess::upload( tempFile.name(), new_url, 0 );
+    (void) KIO::NetAccess::upload( tempFile.name(), newUrl, widget );
 }
 
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data, const QString& text )
 {
-    KURL new_url = getNewFileName( u, text );
+    KURL newUrl = getNewFileName( u, text );
 
-    if (new_url.isEmpty())
+    if (newUrl.isEmpty())
        return 0;
 
-    return pasteDataAsyncTo( new_url, _data );
+    return pasteDataAsyncTo( newUrl, _data );
 }
 
 KIO_EXPORT QString KIO::pasteActionText()
 {
-    QMimeSource *data = QApplication::clipboard()->data();
-    KURL::List urls;
-    if ( KURLDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
-        if ( urls.isEmpty() )
-            return QString::null; // nothing to paste
-        else if ( urls.first().isLocalFile() )
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    KURL::List urls = KURL::List::fromMimeData( mimeData );
+    if ( !urls.isEmpty() ) {
+        if ( urls.first().isLocalFile() )
             return i18n( "&Paste File", "&Paste %n Files", urls.count() );
         else
             return i18n( "&Paste URL", "&Paste %n URLs", urls.count() );
-    } else if ( data->format(0) != 0 ) {
+    } else if ( !mimeData->formats().isEmpty() ) {
         return i18n( "&Paste Clipboard Contents" );
     } else {
         return QString::null;
