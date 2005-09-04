@@ -118,7 +118,9 @@ extern "C" {
 #include "kpropertiesdesktopbase.h"
 #include "kpropertiesdesktopadvbase.h"
 #include "kpropertiesmimetypebase.h"
+#ifdef USE_POSIX_ACL
 #include "kacleditwidget.h"
+#endif
 
 #include "kpropertiesdialog.h"
 
@@ -2038,6 +2040,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
   gl->setColStretch(6, 10);
 
+#ifdef USE_POSIX_ACL
   KACLEditWidget *extendedACLs = 0;
   bool fileSystemSupportsACLs = false;
 
@@ -2060,6 +2063,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
   if (dlg.exec() != KDialogBase::Accepted)
     return;
+#endif
 
   mode_t andPermissions = mode_t(~0);
   mode_t orPermissions = 0;
@@ -2091,6 +2095,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   permissions = orPermissions;
   d->partialPermissions = andPermissions;
 
+#ifdef USE_POSIX_ACL
   // override with the acls, if present
   if ( extendedACLs ) {
     d->extendedACL = extendedACLs->getACL();
@@ -2099,6 +2104,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     permissions = d->extendedACL.basePermissions();
     permissions |= ( andPermissions | orPermissions ) & ( S_ISUID|S_ISGID|S_ISVTX );
   }
+#endif
 
   emit changed();
   updateAccessControls();

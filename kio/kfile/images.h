@@ -1,3 +1,4 @@
+#ifdef USE_POSIX_ACL
 #ifndef _QEMBED_1804289383
 #define _QEMBED_1804289383
 #include <qimage.h>
@@ -272,4 +273,5 @@ static const QImage& qembed_findImage( const QString& name )
     return *img;
 }
 
+#endif
 #endif

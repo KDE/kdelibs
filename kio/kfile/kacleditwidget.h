@@ -17,6 +17,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifdef USE_POSIX_ACL
 #ifndef KACLEDITWIDGET_H
 #define KACLEDITWIDGET_H
 
@@ -52,4 +53,5 @@ private:
 };
 
 
+#endif
 #endif
