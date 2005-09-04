@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import os
+
 Import('env')
 
 #env.subdirs('KDE-ICE dcopidl dcopidlng dcopidl2cpp client tests')
@@ -14,22 +16,30 @@ dcopobject.cpp
 dcopclient.cpp
 """
 
+deplibs = env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+[env.join('KDE-ICE', 'libkICE.a')]
+
 obj          = env.qt4obj('shlib', env)
 obj.target   = 'libDCOP'
 obj.source   = kdcop_sources
-obj.libs     = env['LIB_QT']+env['LIB_QTCORE']+env['LIB_QT3SUPPORT']+[env.join('KDE-ICE', 'libkICE.a')]
+obj.libs     = deplibs
 obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
 obj.libpaths = ['/usr/lib','/usr/X11R6/lib/'] # TODO
 obj.vnum     = '6.0.2'
 obj.execute()
 
-# dcopserver.la (description ?)
-obj          = env.qt4obj('staticlib', env)
+# dcopserver
+obj          = env.qt4obj('program', env) # TODO kdeinit support
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
-obj.libs     = env.join('.', 'libDCOP.la')
+obj.libs     = deplibs + [env.join('.', 'libDCOP.la')]
 obj.includes = env['KDELIBS_INCLUDES'] # ". .. #"
 obj.execute()
+
+# generate dcop-path.h every time, in case PREFIX changed.
+dest = open('dcop-path.h', 'w')
+dest.write('#define DCOP_PATH "' + env['PREFIX'] + '/bin' + '"\n')
+dest.close()
+
 
 # dcop_shutdown (description ?)
 obj=env.genobj('program', env)

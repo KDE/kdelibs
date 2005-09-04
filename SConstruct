@@ -8,7 +8,7 @@ compile    -> scons
 clean      -> scons -c
 install    -> scons install
 uninstall  -> scons -c install
-configure  -> scons configure prefix=/tmp/ita debug=full extraincludes=/usr/local/include:/tmp/include prefix=/usr/local
+configure  -> scons configure debug=full extraincludes=/usr/local/include:/tmp/include prefix=/usr/local
 
 Run from a subdirectory -> scons -u
 The variables are saved automatically after the first run (look at cache/kde.cache.py, ..)

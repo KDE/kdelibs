@@ -2,7 +2,7 @@
 
 Import('env')
 
-DCOP_LIB=['../libDCOP.so']
+DCOP_LIB=['../libDCOP.la']
 #DCOP_LIB=['DCOP']
 
 """
