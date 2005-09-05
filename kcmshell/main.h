@@ -19,8 +19,8 @@
 
 */
 
-#ifndef __kcmshell_h__
-#define __kcmshell_h__
+#ifndef kcmshell_h
+#define kcmshell_h
 
 #include <dcopobject.h>
 
@@ -99,6 +99,6 @@ k_dcop:
 
 };
 
-
 // vim: sw=4 et sts=4
-#endif //__kcmshell_h__
+#endif //kcmshell_h
+
