@@ -84,7 +84,7 @@ class KToolBarPrivate
 public:
     KToolBarPrivate() {
         m_iconSize     = 0;
-        m_iconText     = KToolBar::IconOnly;
+        m_iconText     = KToolBar::IconTextBottom;
         m_highlight    = true;
         m_transparent  = true;
         m_honorStyle   = false;
@@ -97,8 +97,8 @@ public:
 
         modified = m_isHorizontal = positioned = false;
 
-        IconSizeDefault = 0;
-        IconTextDefault = "IconOnly";
+        IconSizeDefault = 32;
+        IconTextDefault = "IconTextBottom";
 
         NewLineDefault = false;
         OffsetDefault = 0;
@@ -1517,7 +1517,7 @@ KToolBar::IconText KToolBar::iconTextSetting()
 {
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
     KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    QString icontext = KGlobal::config()->readEntry(QString::fromLatin1("IconText"),QString::fromLatin1("IconOnly"));
+    QString icontext = KGlobal::config()->readEntry(QString::fromLatin1("IconText"),QString::fromLatin1("IconTextBottom"));
     if ( icontext == "IconTextRight" )
         return IconTextRight;
     else if ( icontext == "IconTextBottom" )
@@ -1572,7 +1572,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         if (d->m_honorStyle)
             d->IconTextDefault = gconfig->readEntry(attrIconText, d->IconTextDefault);
         else
-            d->IconTextDefault = "IconOnly";
+            d->IconTextDefault = "IconTextBottom";
 
         // Use the default icon size for toolbar icons.
         d->IconSizeDefault = gconfig->readNumEntry(attrIconSize, d->IconSizeDefault);
