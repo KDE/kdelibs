@@ -37,7 +37,9 @@
 #include <kwinmodule.h> // schroder
 #endif
 
+#ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
+#endif
 #include <kglobalsettings.h>
 #include <assert.h>
 #include <qstyle.h>
@@ -110,8 +112,8 @@ namespace KJS {
 #ifdef Q_WS_QWS
   class KonquerorFunc : public DOMFunction {
   public:
-    KonquerorFunc(const Konqueror* k, const char* name)
-      : DOMFunction(), konqueror(k), m_name(name) { }
+    KonquerorFunc(ExecState *exec, const Konqueror* k, const char* name)
+      : DOMFunction(exec), konqueror(k), m_name(name) { }
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args);
 
   private:
@@ -631,7 +633,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     }
 #ifdef Q_WS_QWS
     case _Konqueror: {
-      Value k( new Konqueror(exec, part) );
+      Value k( new Konqueror(part) );
       const_cast<Window *>(this)->put(exec, "konqueror", k, DontDelete|ReadOnly|Internal);
       return k;
     }
@@ -641,11 +643,16 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     case OuterHeight:
     case OuterWidth:
     {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return Number(0);
       KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId());
       return Number(entry->value == OuterHeight ?
                     inf.geometry().height() : inf.geometry().width());
+#else
+      return Number(entry->value == OuterHeight ?  
+		    part->view()->height() : part->view()->width());
+#endif
     }
     case PageXOffset:
       return Number(part->view()->contentsX());
@@ -1556,6 +1563,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), caption,
                                                 KStdGuiItem::ok(), KStdGuiItem::cancel()) == KMessageBox::Yes));
   case Window::Prompt:
+#ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
       return Undefined();
     if ( part && part->xmlDocImpl() )
@@ -1575,6 +1583,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         return String(str2);
     else
         return Null();
+#else
+    return Undefined();
+#endif
   case Window::Open:
     return window->openWindow(exec, args);
   case Window::Close: {
@@ -2351,6 +2362,7 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case External::AddFavorite:
   {
+#ifndef KONQ_EMBEDDED
     if (!widget->dialogsAllowed())
       return Undefined();
     part->xmlDocImpl()->updateRendering();
@@ -2388,6 +2400,9 @@ Value ExternalFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
       mgr->addBookmarkDialog(url,title);
     }
+#else
+    return Undefined();
+#endif
     break;
   }
   default:
@@ -2522,14 +2537,14 @@ Value Konqueror::get(ExecState *exec, const Identifier &p) const
     }
   }
 
-  return Value( new KonquerorFunc(this, p.qstring().latin1() ) );
+  return Value( new KonquerorFunc(exec, this, p.qstring().latin1() ) );
 }
 
 Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
 {
   KParts::BrowserExtension *ext = konqueror->part->browserExtension();
 
-  if(!ext)
+  if (!ext)
     return Undefined();
 
   KParts::BrowserInterface *iface = ext->browserInterface();
