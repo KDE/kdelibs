@@ -1679,7 +1679,7 @@ const char* const ABOUT =
 "Copyright (C) 1999-2001, The KDE Developers <http://www.kde.org>\n"
 ;
 
-extern "C" DCOP_EXPORT int kdemain( int argc, char* argv[] )
+extern "C" DCOP_EXPORT int main( int argc, char* argv[] )
 {
     bool serverid = false;
     bool nofork = false;
