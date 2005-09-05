@@ -818,12 +818,15 @@ public:
    */
   static int random();
 
+#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.
    * @return the random string
+   * @deprecated use KStringHandler::randomString() instead.
    */
-  static QString randomString(int length);
+  static QString randomString(int length) KDE_DEPRECATED;
+#endif
 
   /**
    * Adds a message type to the KIPC event mask. You can only add "system

@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <stdlib.h>		// random()
+
 #include "kstringhandler.h"
 #include "kglobal.h"
 
@@ -550,7 +552,25 @@ QString KStringHandler::obscure( const QString &str )
   return result;
 }
 
-bool KStringHandler::isUtf8(const char *buf)
+QString KStringHandler::randomString( int length )
+{
+   if (length <=0 ) return QString::null;
+
+   QString str; str.resize( length );
+   int i = 0;
+   while (length--)
+   {
+      int r=random() % 62;
+      r+=48;
+      if (r>57) r+=7;
+      if (r>90) r+=6;
+      str[i++] =  char(r);
+      // so what if I work backwards?
+   }
+   return str;
+}
+
+bool KStringHandler::isUtf8( const char *buf )
 {
   int i, n;
   register unsigned char c;
