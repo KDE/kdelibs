@@ -17,8 +17,8 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
 */
 
 #include <string.h>
@@ -34,11 +34,11 @@
 
 QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode )
 {
+  //watch for buffer overflows
   Q_UINT32 offset;
   Q_UINT16 len;
   offset = KFromToLittleEndian((Q_UINT32)secbuf.offset);
   len = KFromToLittleEndian(secbuf.len);
-  //watch for buffer overflows
   if ( offset > buf.size() ||
        offset + len > buf.size() ) return QString::null;
 
@@ -144,19 +144,20 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (KFromToLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
-    if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
-      if ( targetInfo.isEmpty() ) return false;
-      response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
-      addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
-    } else {
-      if ( !forceNTLM ) {
-        response = getLMv2Response( dom, user, password, ch->challengeData );
-        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
-      } else 
-        return false;
-    }
-  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
+//  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (KFromToLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+//    if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
+//      if ( targetInfo.isEmpty() ) return false;
+//      response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
+//      addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
+//    } else {
+//      if ( !forceNTLM ) {
+//        response = getLMv2Response( dom, user, password, ch->challengeData );
+//        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
+//      } else 
+//        return false;
+//    }
+//  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
+
     if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
       response = getNTLMResponse( password, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
@@ -167,7 +168,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
       } else
         return false;
     }
-  }
+//  }
   if ( !dom.isEmpty() )
     addString( rbuf, ((Auth*) rbuf.data())->domain, dom, unicode );
   addString( rbuf, ((Auth*) rbuf.data())->user, user, unicode );
