@@ -2,10 +2,7 @@
 
 Import('env')
 
-# ### Doesn't seem to work
 ice_flags="-DICE_t -DTRANS_SERVER -DTRANS_CLIENT -DUNIXCONN -DANSICPP"
-# This neither
-#ice_flags=["-DICE_t"]
 
 ice_sources="""
 accept.c
@@ -34,6 +31,6 @@ obj          = env.genobj('convenience', env)
 obj.target   = 'libkICE.a'
 obj.source   = ice_sources
 obj.includes = '#/ ./ ..'
-obj.cxxflags = ice_flags
+obj.cflags = ice_flags
 obj.execute()
 
