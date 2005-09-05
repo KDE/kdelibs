@@ -812,13 +812,14 @@ public:
    */
   void removeX11EventFilter( const QWidget* filter );
 
+#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
+   * @deprecated Use KMath::random();
    */
-  static int random();
+  static int random() KDE_DEPRECATED;
 
-#ifdef QT3_SUPPORT // TODO KDE3_SUPPORT
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.

@@ -170,8 +170,7 @@ public:
     static  KInstance           *_activeInstance;
 };
 
-// TODO define those only if KDE3_SUPPORT
-
+#ifdef QT3_SUPPORT
 /**
  * \relates KGlobal
  * A typesafe function to find the smaller of the two arguments.
@@ -198,18 +197,25 @@ public:
  */
 #define KCLAMP(x,low,high) qBound(low,x,high)
 
-// TODO define those only if KDE3_SUPPORT
 #define kMin qMin
 #define kMax qMax
 #define kAbs qAbs
 
+/**
+ * \relates KGlobal
+ * A typesafe function that returns x if it's between low and high values.
+ * low if x is smaller than low and high if x is bigger than high.
+ * @deprecated, used qBound instead. Warning, the argument order differs.
+ */
+
 template<class T>
-inline T kClamp( const T& x, const T& low, const T& high )
+inline T kClamp( const T& x, const T& low, const T& high ) KDE_DEPRECATED
 {
     if ( x < low )       return low;
     else if ( high < x ) return high;
                          return x;
 }
+#endif
 
 /**
  * Locale-independent qstricmp. Use this for comparing ascii keywords
