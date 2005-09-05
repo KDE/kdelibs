@@ -18,6 +18,10 @@
 */
 // $Id: kacl.cpp 424977 2005-06-13 15:13:22Z tilladam $
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
@@ -273,6 +277,7 @@ unsigned short KACL::maskPermissions( bool &exists ) const
 bool KACL::KACLPrivate::setMaskPermissions( unsigned short v )
 {
     permissionsToEntry( entryForTag( m_acl, ACL_MASK ), v );
+    return true;
 }
 #endif
 
