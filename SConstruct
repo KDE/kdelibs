@@ -30,56 +30,70 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['generic', 'libxml', 'qt4'], toolpath=['./', './bksys'],
+env = Environment( tools=['default','generic', 'pkgconfig', 'libxml', 'qt4'], toolpath=['./', './bksys'],
 		   ENV={'PATH' : os.environ['PATH']})
 
 if env['HELP']:
 	sys.exit(0)
 
-#env.KDEuse("environ rpath")
-#env.KDEuse("environ rpath lang_qt thread nohelp")
+## Add the builddir as an include path for everyone
+env.Append(CPPFLAGS = ['-Ibuild'])
 
 ## TODO this is to be moved to modules
+##############  -- IMPORTANT --
+## warning: the naming matters, see genobj -> uselib in generic.py
+## warning: parameters are lists
+## obj.uselib='Z PNG KDE4' will add all the flags
+##   and paths from zlib, libpng and kde4 vars defined below
 
-# warning: parameters are lists
+########## zlib
+env['LIB_Z']               = ['z']
 
-env['LIBZ']           = ['z']
-env['LIBPNG']         = ['png', 'z', 'm']
-env['LIB_X11']        = ['X11']
-env['LIBSM']          = ['SM', 'ICE']
+########## png
+env['LIB_PNG']             = ['png', 'z', 'm']
 
-env['LIB_QT']         = ['QtGui_debug', 'pthread', 'Xext']+env['LIBZ']+env['LIBPNG']+env['LIB_X11']+env['LIBSM']
-env['LIB_QT3SUPPORT'] = ['Qt3Support_debug']
-env['LIB_QTCORE']     = ['QtCore_debug']
-env['LIB_QTDESIGNER'] = ['QtDesigner_debug']
-env['LIB_QTGUI']      = ['QtGui_debug']
-env['LIB_QTNETWORK']  = ['QtNetwork_debug']
-env['LIB_QTOPENGL']   = ['QtOpenGL_debug']
-env['LIB_QTSQL']      = ['QtSql_debug']
-env['LIB_QTXML']      = ['QtXml_debug']
+########## sm
+env['LIB_SM']              = ['SM', 'ICE']
 
-env['CONVENIENCE']    = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
+########## X11
+env['LIB_X11']             = ['X11']
+env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
 
-## these paths are added for linking kde4, qt4 or x11 objects
-env['LIBPATH_X11'] = ['/usr/X11R6/lib/']
-env['LIBPATH_QT4'] = env['LIBPATH_X11']+[env['QTLIBPATH']]
-env['LIBPATH_KDE4'] = env['LIBPATH_QT4']
+########## QT
+# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+env['LIBPATH_QT']          = env['LIBPATH_X11']+[env['QTLIBPATH']]
+env['LIB_QT']              = ['QtGui_debug', 'pthread', 'Xext']+env['LIB_Z']+env['LIB_PNG']+env['LIB_X11']+env['LIB_SM']
 
-## ahem (ita)
-env.AppendUnique(CXXFLAGS=['-DQT3_SUPPORT'])
+## QT3SUPPORT
+env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
+env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
 
-## ahem (ita)
-env.AppendUnique(LIBPATHS=['/usr/X11R6/lib/'])
+env['LIB_QTCORE']          = ['QtCore_debug']
+env['LIB_QTDESIGNER']      = ['QtDesigner_debug']
+env['LIB_QTGUI']           = ['QtGui_debug']
+env['LIB_QTNETWORK']       = ['QtNetwork_debug']
+env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
+env['LIB_QTSQL']           = ['QtSql_debug']
+env['LIB_QTXML']           = ['QtXml_debug']
+
+########### KDE4
+env['LIBPATH_KDE4']        = env['LIBPATH_QT']
 
 ## not very portable but that's the best i have at the moment (ITA)
 includes=['.','dcop','kio','kio/kio','kio/kfile','kdeui','kdecore','libltdl','kdefx']
-env['KDELIBS_INCLUDES']=[]
+env['INCLUDES_KDE4']=[]
 for dir in includes:
-	env['KDELIBS_INCLUDES'].append('#'+dir)
-	env['KDELIBS_INCLUDES'].append('#build/'+dir)
+	env['INCLUDES_KDE4'].append('#'+dir)
+	env['INCLUDES_KDE4'].append('#build/'+dir)
 
 # prefix/lib and prefix/lib/kde4 (ita)
-env['KDE_RPATH']= ['-Wl,--rpath='+env.join(env['PREFIX'], 'lib'), '-Wl,--rpath='+env.join(env['PREFIX'], 'lib', 'kde4')]
+env['RPATH_KDE4']= [
+	env['QTLIBPATH'], env.join(env['PREFIX'], 'lib'), env.join(env['PREFIX'], 'lib', 'kde4')
+]
+
+#######################################
+## other stuff
+env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 import os
@@ -92,8 +106,6 @@ if not os.path.exists('build/kdemacros.h'):
 	dest = open('build/kdemacros.h', 'w')
 	dest.write('#include <kdemacros.h.in>\n')
 	dest.close()
-
-env.Append(CPPFLAGS = ['-Ibuild'])
 
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS

@@ -106,6 +106,10 @@ class genobj:
 		self.libpaths=''
 		self.libs=''
 
+		# this should be uber-cool
+		# self.uselib='KIO XML' and all linkflags, etc are added
+		self.uselib=''
+
 		# vars used by shlibs
 		self.vnum=''
 		self.libprefix=''
@@ -231,6 +235,7 @@ class genobj:
 		if self.type=='convenience':
 			self.env.AppendUnique(CCFLAGS=self.env['CONVENIENCE'],CXXFLAGS=self.env['CONVENIENCE'])
 
+		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
 		lext=['.so', '.la']
 		sext='.a'.split()
@@ -240,6 +245,25 @@ class genobj:
 				if sal[1] in lext: self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
 				else: self.p_global_shlibs.append(l)
+
+		# and now add the libraries from uselib
+		if self.uselib:
+			libs=self.env.make_list(self.uselib)
+			for lib in libs:
+				if self.env.has_key('LIB_'+lib):
+					self.env.AppendUnique(LIBS=self.env['LIB_'+lib])
+				if self.env.has_key('LIBPATH_'+lib):
+					self.env.AppendUnique(LIBPATH=self.env['LIBPATH_'+lib])
+				if self.env.has_key('LINKFLAGS_'+lib):
+					self.env.AppendUnique(LIBPATH=self.env['LINKFLAGS_'+lib])
+				if self.env.has_key('INCLUDES_'+lib):
+					self.env.AppendUnique(CPPPATH=self.env['INCLUDES_'+lib])
+				if self.env.has_key('CXXFLAGS_'+lib):
+					self.env.AppendUnique(CXXFLAGS=self.env['CXXFLAGS_'+lib])
+				if self.env.has_key('CCFLAGS_'+lib):
+					self.env.AppendUnique(CCFLAGS=self.env['CCFLAGS_'+lib])
+				if self.env.has_key('RPATH_'+lib):
+					self.env.AppendUnique(RPATH=self.env['RPATH_'+lib])
 
 		# settings for static and shared libraries
 		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
@@ -322,9 +346,9 @@ def get_dump(nenv):
 def generate(env):
 
 	## i cannot remember having added this (ITA) - can someone explain ?
-	from SCons.Tool import Tool;
-	deft = Tool('default')
-	deft.generate(env)
+	#from SCons.Tool import Tool;
+	#deft = Tool('default')
+	#deft.generate(env)
 
 	## Bksys requires scons 0.96
 	env.EnsureSConsVersion(0, 96)

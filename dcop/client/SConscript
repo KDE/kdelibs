@@ -2,27 +2,25 @@
 
 Import('env')
 
-DCOP_LIB=['../libDCOP.la']
-#DCOP_LIB=['DCOP']
-
-"""
 progs1='dcop dcopstart dcopquit dcopfind'.split()
 for prog in progs1:
-	obj           = env.qt4object('program', env)
+	obj=env.qt4obj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.cpp'
-	obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
-	obj.linkflags = env['KDE_RPATH']
-	obj.includes  = env['KDELIBS_INCLUDES']
+	obj.libs      = '../libDCOP.la'
+	obj.uselib    = 'QT QT3SUPPORT KDELIBS'
+	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
+	#obj.linkflags = env['KDE_RPATH']
+	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
-"""
 
 progs2='dcopclient dcopobject dcopref'.split()
 for prog in progs2:
-	obj           = env.genobj('program', env)
+	obj=env.genobj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.c'
-	obj.includes  = env['KDELIBS_INCLUDES']
+	obj.uselib    = 'KDELIBS'
+	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
 """

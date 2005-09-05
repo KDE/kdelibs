@@ -7,6 +7,7 @@ def generate(env):
 	import SCons.Util, os
 
 	# This funtion detects pkg-config
+	from SCons.Script.SConscript import SConsEnvironment
 	def Check_pkg_config(context, version):
 
 		from SCons.Options import Options
@@ -33,7 +34,7 @@ def generate(env):
 		return ret
 
 	# This function detects a package using pkg-config
-	def Check_package(context, variablePrefix, module, version):
+	def Check_package(context, pkgname, module, version):
 		context.Message('Checking for %s >= %s ... ' % (module, version))
 		pkg_config_command = 'pkg-config'
 		if os.environ.has_key("PKG_CONFIG_PATH"):
@@ -41,45 +42,42 @@ def generate(env):
 		ret = context.TryAction(pkg_config_command+' %s --atleast-version=%s' % (module, version))[0]
 		if ret:
 			env.ParseConfig(pkg_config_command+' %s --cflags --libs' % module);
-			env[variablePrefix + '_CFLAGS'] = SCons.Util.CLVar( 
+			env['CXXFLAGS_'+pkgname] = SCons.Util.CLVar( 
 				os.popen(pkg_config_command+" %s --cflags 2>/dev/null" % module).read().strip() );
-			env[variablePrefix + '_LDFLAGS'] = SCons.Util.CLVar( 
+			env['LINKFLAGS_'+pkgname] = SCons.Util.CLVar( 
 					os.popen(pkg_config_command+" %s --libs 2>/dev/null" % module).read().strip() );
 		context.Result(ret)
 		return ret
 
-	def findPkg(variablePrefix, module, version, env=env):
+	def pkgConfig_findPackage(env, pkgname, module, version):
 		from SCons.Options import Options
 
-		optionFile = env['CACHEDIR'] + variablePrefix + '.cache.py'
+		optionFile = env['CACHEDIR'] + pkgname + '.cache.py'
 		opts = Options(optionFile)
 		opts.AddOptions(
-				(variablePrefix +'_ISCONFIGURED', 'whether it is necessary to run configure or not'),
-				(variablePrefix + '_CFLAGS', 'additional compilation flags'),
-				(variablePrefix + '_LDFLAGS', 'link flags')
+				(pkgname +'_ISCONFIGURED', 'whether it is necessary to run configure or not'),
+				('CXXFLAGS_'+pkgname, 'additional compilation flags'),
+				('LINKFLAGS_'+pkgname, 'link flags')
 				)
 		opts.Update(env)
 
-		if not env.has_key(variablePrefix + '_ISCONFIGURED'):
+		if not env.has_key(pkgname+'_ISCONFIGURED'):
 			conf = env.Configure(custom_tests =
 								 { 'Check_pkg_config' : Check_pkg_config,
 								   'Check_package' : Check_package }
 								 )
 
-			if env.has_key(variablePrefix + '_CFLAGS'):
-				env.__delitem__(variablePrefix + '_CFLAGS')
-			if env.has_key(variablePrefix + '_LDFLAGS'):
-				env.__delitem__(variablePrefix + '_LDFLAGS')
+			if env.has_key('CXXFLAGS_'+pkgname):  env.__delitem__('CXXFLAGS_'+pkgname)
+			if env.has_key('LINKFLAGS_'+pkgname): env.__delitem__('LINKFLAGS_'+pkgname)
 
 			if not conf.Check_pkg_config('0.15'):
 				print 'pkg-config >= 0.15 not found.'
 				env.Exit(1)
 
-			haveModule = conf.Check_package(variablePrefix, module, version)
+			haveModule = conf.Check_package(pkgname, module, version)
 			env = conf.Finish()
 
-			if haveModule:
-				env[variablePrefix + '_ISCONFIGURED'] = 1
+			if haveModule: env[pkgname+'_ISCONFIGURED']=1
 
 			opts.Save(optionFile, env)
 		else:
@@ -88,4 +86,4 @@ def generate(env):
 			
 		return haveModule
 
-	env.pkgConfig_findPackage = findPkg;
+	SConsEnvironment.pkgConfig_findPackage = pkgConfig_findPackage

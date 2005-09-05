@@ -7,7 +7,7 @@ myenv=env.Copy()
 obj=myenv.qt4obj('program', myenv)
 obj.source    = 'main.cpp yacc.yy scanner.ll'
 obj.target    = 'dcopidlold'
-obj.libs      = env['LIB_QT']
+obj.uselib    = 'QT'
 obj.execute()
 
 
