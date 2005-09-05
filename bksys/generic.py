@@ -629,7 +629,8 @@ def generate(env):
 				print "Unknown archive file given "+file
 				continue
 			f=SCons.Node.FS.default_fs.File(file)
-			lenv.Append(LINKFLAGS=[f.path])
+			lenv.Append(LIBPATH=[f.dir])
+			lenv.Append(LIBS=[f.name])
 
 	def set_build_dir(lenv, dirs, buildto):
 		lenv.SetOption('duplicate', 'soft-copy')
