@@ -1,10 +1,12 @@
 [Desktop Entry]
 Comment=HTML Help Document
+Comment[br]=Teul skoazell HTML
 Comment[cs]=Dokument HTML nápovědy
 Comment[de]=HTML-Hilfe-Dokument
 Comment[el]=Έγγραφο Βοήθειας HTML
 Comment[ga]=Cáipéis Chabhrach HTML
 Comment[pa]=HTML ਸਹਾਇਤਾ ਦਸਤਾਵੇਜ਼
+Comment[sv]=HTML-hjälpdokument
 Comment[xx]=xxHTML Help Documentxx
 Hidden=false
 Icon=help
