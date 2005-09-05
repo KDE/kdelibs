@@ -302,13 +302,13 @@ GC kde_xget_temp_gc( int scrn, bool monochrome )		// get temporary GC
 	if ( !app_gc_tmp_m )			// create GC for bitmap
 	    memset( (app_gc_tmp_m = new GC[screenCount]), 0, screenCount * sizeof( GC ) );
 	if ( !app_gc_tmp_m[scrn] )
-	    app_gc_tmp_m[scrn] = create_gc( scrn, TRUE );
+	    app_gc_tmp_m[scrn] = create_gc( scrn, true );
 	gc = app_gc_tmp_m[scrn];
     } else {					// create standard GC
 	if ( !app_gc_tmp )
 	    memset( (app_gc_tmp = new GC[screenCount]), 0, screenCount * sizeof( GC ) );
 	if ( !app_gc_tmp[scrn] )
-	    app_gc_tmp[scrn] = create_gc( scrn, FALSE );
+	    app_gc_tmp[scrn] = create_gc( scrn, false );
 	gc = app_gc_tmp[scrn];
     }
     return gc;

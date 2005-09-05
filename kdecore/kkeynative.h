@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KKEYNATIVE_H
-#define __KKEYNATIVE_H
+#ifndef KKEYNATIVE_H
+#define KKEYNATIVE_H
 
 #include <kshortcut.h>
 
@@ -255,4 +255,4 @@ class KDECORE_EXPORT KKeyNative
 	KKeyNativePrivate* d;
 };
 
-#endif // !__KKEYNATIVE_H
+#endif // KKEYNATIVE_H

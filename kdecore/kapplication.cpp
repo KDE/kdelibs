@@ -2029,7 +2029,7 @@ void KApplication::kdisplaySetPalette()
     {
         KConfig *config = KGlobal::config();
         KConfigGroupSaver saver( config, "General" );
-        bool do_not_set_palette = FALSE;
+        bool do_not_set_palette = false;
         if(config->readBoolEntry("nopaletteChange", &do_not_set_palette))
             return;
     }

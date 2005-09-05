@@ -10,7 +10,7 @@ using namespace std;
 #include "serversockettest.h"
 
 int timeout = 0;
-Test::Test(QString host, QString service, bool blocking)
+Test::Test(const QString &host, const QString &service, bool blocking)
   : socket(host, service)
 {
   QObject::connect(&socket, SIGNAL(gotError(int)), this, SLOT(gotErrorSlot(int)));

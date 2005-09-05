@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KPROCCTRL_H__
-#define __KPROCCTRL_H__
+#ifndef KPROCCTRL_H
+#define KPROCCTRL_H
 
 #include <q3valuelist.h>
 
@@ -143,8 +143,6 @@ private:
   KProcessController( const KProcessController& );
   KProcessController& operator= ( const KProcessController& );
 };
-
-
 
 #endif
 

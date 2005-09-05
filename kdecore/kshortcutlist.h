@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KSHORTCUTLIST_H
-#define __KSHORTCUTLIST_H
+#ifndef KSHORTCUTLIST_H
+#define KSHORTCUTLIST_H
 
 #include <qglobal.h>	// For uint
 #include <qstring.h>
@@ -290,4 +290,4 @@ class KDECORE_EXPORT ShortcutList : public KShortcutList
 };
 }
 
-#endif // __KSHORTCUTLIST_H
+#endif // KSHORTCUTLIST_H

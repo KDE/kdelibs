@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KLOCKFILE_H_
-#define _KLOCKFILE_H_
+#ifndef KLOCKFILE_H
+#define KLOCKFILE_H
 
 #include <qstring.h>
 #include <qdatetime.h>

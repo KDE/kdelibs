@@ -12,7 +12,7 @@ class Test : public QObject
 public:
   KServerSocket socket;
 
-  Test(QString host, QString service, bool blocking);
+  Test(const QString &host, const QString &service, bool blocking);
 
 public slots:
   void gotErrorSlot(int errorcode);

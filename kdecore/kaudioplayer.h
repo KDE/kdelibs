@@ -20,8 +20,8 @@
 
     */
 
-#ifndef __KAUDIOPLAYER_H__
-#define __KAUDIOPLAYER_H__
+#ifndef KAUDIOPLAYER_H
+#define KAUDIOPLAYER_H
 
 #include <qobject.h>
 #include "kdelibs_export.h"
@@ -89,4 +89,5 @@ private:
 	KAudioPlayerPrivate *d;
 };
 
-#endif // __KAUDIOPLAYER_H__
+#endif // KAUDIOPLAYER_H
+

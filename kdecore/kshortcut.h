@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KSHORTCUT_H
-#define __KSHORTCUT_H
+#ifndef KSHORTCUT_H
+#define KSHORTCUT_H
 
 #include "kdelibs_export.h"
 
@@ -850,4 +850,5 @@ class KDECORE_EXPORT KShortcut
 #endif
 };
 
-#endif // __KSHORTCUT_H
+#endif // KSHORTCUT_H
+

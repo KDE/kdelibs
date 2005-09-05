@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KURLDRAG_H
-#define __KURLDRAG_H
+#ifndef KURLDRAG_H
+#define KURLDRAG_H
 
 #include <qstringlist.h>
 #include <q3dragobject.h>
@@ -162,3 +162,4 @@ private:
 };
 
 #endif
+

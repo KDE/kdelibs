@@ -16,8 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __ksycoca_h__
-#define __ksycoca_h__
+#ifndef ksycoca_h
+#define ksycoca_h
 
 #include <dcopobject.h>
 #include <qobject.h>
@@ -184,3 +184,4 @@ private:
 };
 
 #endif
+

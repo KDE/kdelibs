@@ -16,8 +16,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef __kgenericfactory_h__
-#define __kgenericfactory_h__
+#ifndef kgenericfactory_h
+#define kgenericfactory_h
 
 #include <klibloader.h>
 #include <ktypelist.h>

@@ -22,8 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#ifndef __KSTARTUPINFO_H
-#define __KSTARTUPINFO_H
+#ifndef KSTARTUPINFO_H
+#define KSTARTUPINFO_H
 
 #include <sys/types.h>
 #include <qobject.h>
@@ -666,3 +666,4 @@ class KDECORE_EXPORT KStartupInfoData
 #endif //Q_WS_X11
 
 #endif
+
