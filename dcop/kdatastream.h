@@ -1,5 +1,5 @@
-#ifndef __kdatastream__h
-#define __kdatastream__h
+#ifndef kdatastream__h
+#define kdatastream__h
 
 #include <QSysInfo>
 #include <qdatastream.h>

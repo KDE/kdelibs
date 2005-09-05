@@ -5,8 +5,8 @@
  * (C) 2000 Simon Hausmann <hausmann@kde.org>
  */
 
-#ifndef __dcopc_h__
-#define __dcopc_h__
+#ifndef dcopc_h
+#define dcopc_h
 
 #ifdef __cplusplus
 extern "C" {
@@ -131,4 +131,4 @@ Bool dcop_call(
 }
 #endif
 
-#endif /* __dcopc_h__ */
+#endif /* dcopc_h */

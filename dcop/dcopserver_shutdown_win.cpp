@@ -118,7 +118,7 @@ static void killDCOPWin(pid_t pid)
 {
 	char	sz[256];
 	sprintf(sz,"dcopserver%i",pid);
-	HANDLE hEvent = CreateEventA(NULL,TRUE,FALSE,(LPCSTR)sz);
+	HANDLE hEvent = CreateEventA(NULL,true,false,(LPCSTR)sz);
 	DWORD dwError = GetLastError();
 	printf("Signal event %s %p, %i\n",sz,hEvent,dwError);
 	if(hEvent != NULL)
@@ -180,7 +180,7 @@ static void cleanupDCOP(int dont_kill_dcop, int wait_for_exit)
 #ifdef Q_OS_WIN
 	if(wait_for_exit)
 	{
-		HANDLE hProcess = OpenProcess(SYNCHRONIZE,FALSE,(DWORD)pid);
+		HANDLE hProcess = OpenProcess(SYNCHRONIZE,false,(DWORD)pid);
 		if(hProcess)
 		{
 			WaitForSingleObject(hProcess,INFINITE);

@@ -1070,7 +1070,7 @@ DCOPServer::DCOPServer(bool _suicide)
 #ifdef Q_OS_WIN
 	char szEventName[256];
 	sprintf(szEventName,"dcopserver%i",GetCurrentProcessId());
-	m_evTerminate = CreateEventA(NULL,TRUE,FALSE,(LPCSTR)szEventName);
+	m_evTerminate = CreateEventA(NULL,true,false,(LPCSTR)szEventName);
 	ResetEvent(m_evTerminate);
 	m_hTerminateThread = CreateThread(NULL,0,TerminatorThread,this,0,&m_dwTerminateThreadId);
 	if(m_hTerminateThread)
@@ -1793,7 +1793,7 @@ extern "C" DCOP_EXPORT int main( int argc, char* argv[] )
     DCOPServer *server = new DCOPServer(suicide); // this sets the_server
 
 #ifdef Q_OS_WIN
-	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,TRUE);
+	SetConsoleCtrlHandler(DCOPServer::dcopServerConsoleProc,true);
 #else
 	QSocketNotifier DEATH(pipeOfDeath[0], QSocketNotifier::Read, 0, 0);
 		server->connect(&DEATH, SIGNAL(activated(int)), SLOT(slotShutdown()));
