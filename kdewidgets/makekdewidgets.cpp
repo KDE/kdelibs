@@ -127,7 +127,7 @@ int main( int argc, char **argv ) {
 void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName, const QString& iconPath ) {
     KConfig input( fileName, true, false );
     input.setGroup( "Global" );
-    QMap<QString, QString> MainMap;
+    QHash<QString, QString> MainMap;
     MainMap.insert( "PluginName", input.readEntry( "PluginName", pluginName ) );
     MainMap.insert( "PluginNameLower", input.readEntry( "PluginName", pluginName ).lower() );
     MainMap.insert( "Init", input.readEntry( "Init", "" ) );
@@ -162,7 +162,7 @@ QString denamespace ( const QString &str ) {
 
 QString buildCollClass( KConfig &input, const QStringList& classes ) {
     input.setGroup( "Global" );
-    QMap<QString, QString> defMap;
+    QHash<QString, QString> defMap;
     defMap.insert( "CollName", input.readEntry( "PluginName" ) );
     QString genCode;
 
@@ -180,7 +180,7 @@ QString buildCollClass( KConfig &input, const QStringList& classes ) {
 
 QString buildWidgetClass( const QString &name, KConfig &input, const QString &group ) {
     input.setGroup( name );
-    QMap<QString, QString> defMap;
+    QHash<QString, QString> defMap;
 
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
     defMap.insert( "IconSet", input.readEntry( "IconSet", name.lower() + ".png" ).replace( ":", "_" ) );

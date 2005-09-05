@@ -74,7 +74,7 @@ bool KLpdUnixPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	}
 	else
 	{
-		QMap<QString,QString> map;
+		QHash<QString,QString> map;
 		map.insert( "printer", printer->printerName() );
 		map.insert( "copies", QString::number( printer->numCopies() ) );
 		cmd = KMacroExpander::expandMacrosShellQuote( exe, map );

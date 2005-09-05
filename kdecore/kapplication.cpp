@@ -2376,7 +2376,7 @@ void KApplication::invokeMailer(const QString &_to, const QString &_cc, const QS
    if ( ! (to.isEmpty() && qry.isEmpty()) )
       url.setProtocol("mailto");
 
-   QMap<QChar, QString> keyMap;
+   QHash<QChar, QString> keyMap;
    keyMap.insert('t', to);
    keyMap.insert('s', subject);
    keyMap.insert('c', cc);

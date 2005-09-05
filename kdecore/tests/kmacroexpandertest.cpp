@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   KApplication app(false,false);
   QString s, s2;
 
-  QMap<QChar,QStringList> map1;
+  QHash<QChar,QStringList> map1;
   map1.insert('n', QStringList(QString("Restaurant \"Chew It\"")));
   QStringList li;
   li << "element1" << "'element2'";
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   s = "text \"%l %n\" text";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map1), "text \"element1 'element2' Restaurant \\\"Chew It\\\"\" text");
 
-  QMap<QChar,QString> map;
+  QHash<QChar,QString> map;
   map.insert('a', "%n");
   map.insert('f', "filename.txt");
   map.insert('u', "http://www.kde.org/index.html");
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   s = "kedit --caption \"`echo %n`\" %f";
   check( "KMacroExpander::expandMacrosShellQuote", s, KMacroExpander::expandMacrosShellQuote(s, map), "kedit --caption \"$( echo 'Restaurant `echo hello`')\" 'filename.txt'");
 
-  QMap<QString,QString> smap;
+  QHash<QString,QString> smap;
   smap.insert("foo", "%n");
   smap.insert("file", "filename.txt");
   smap.insert("url", "http://www.kde.org/index.html");

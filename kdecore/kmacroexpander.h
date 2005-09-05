@@ -24,7 +24,7 @@
 
 #include <qstringlist.h>
 #include <qstring.h>
-#include <qmap.h>
+#include <qhash.h>
 #include "kdelibs_export.h"
 
 /**
@@ -262,7 +262,7 @@ namespace KMacroExpander {
      *
      * \code
      * // Code example
-     * QMap<QChar,QString> map;
+     * QHash<QChar,QString> map;
      * map.insert('u', "/tmp/myfile.txt");
      * map.insert('n', "My File");
      * QString s = "%% Title: %u:%n";
@@ -270,7 +270,7 @@ namespace KMacroExpander {
      * // s is now "% Title: /tmp/myfile.txt:My File";
      * \endcode
      */
-    KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QChar,QString> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QString> &map, QChar c = '%' );
 
     /**
      * Perform safe macro expansion (substitution) on a string for use
@@ -286,7 +286,7 @@ namespace KMacroExpander {
      *
      * \code
      * // Code example
-     * QMap<QChar,QString> map;
+     * QHash<QChar,QString> map;
      * map.insert('u', "/tmp/myfile.txt");
      * map.insert('n', "My File");
      * QString s = "kedit --caption %n %u";
@@ -295,7 +295,7 @@ namespace KMacroExpander {
      * system(QFile::encodeName(s));
      * \endcode
      */
-    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QChar,QString> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QString> &map, QChar c = '%' );
 
     /**
      * Perform safe macro expansion (substitution) on a string.
@@ -312,7 +312,7 @@ namespace KMacroExpander {
      *
      * \code
      * // Code example
-     * QMap<QString,QString> map;
+     * QHash<QString,QString> map;
      * map.insert("url", "/tmp/myfile.txt");
      * map.insert("name", "My File");
      * QString s = "Title: %{url}-%name";
@@ -320,7 +320,7 @@ namespace KMacroExpander {
      * // s is now "Title: /tmp/myfile.txt-My File";
      * \endcode
      */
-    KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QString,QString> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QString,QString> &map, QChar c = '%' );
 
     /**
      * Perform safe macro expansion (substitution) on a string for use
@@ -339,7 +339,7 @@ namespace KMacroExpander {
      *
      * \code
      * // Code example
-     * QMap<QString,QString> map;
+     * QHash<QString,QString> map;
      * map.insert("url", "/tmp/myfile.txt");
      * map.insert("name", "My File");
      * QString s = "kedit --caption %name %{url}";
@@ -348,14 +348,14 @@ namespace KMacroExpander {
      * system(QFile::encodeName(s));
      * \endcode
      */
-    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QString,QString> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QString> &map, QChar c = '%' );
 
     /**
      * Same as above, except that the macros expand to string lists that
      * are simply join(" ")ed together.
      */
-    KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
-    KDECORE_EXPORT QString expandMacros( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QStringList> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacros( const QString &str, const QHash<QString,QStringList> &map, QChar c = '%' );
 
     /*
      * Same as above, except that the macros expand to string lists.
@@ -363,8 +363,8 @@ namespace KMacroExpander {
      * join(" ")ed together; otherwise every element expands to a separate
      * quoted string.
      */
-    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QChar,QStringList> &map, QChar c = '%' );
-    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QMap<QString,QStringList> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QStringList> &map, QChar c = '%' );
+    KDECORE_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QStringList> &map, QChar c = '%' );
 }
 
 #endif /* _KMACROEXPANDER_H */

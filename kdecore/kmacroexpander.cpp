@@ -298,7 +298,7 @@ template<class KT,class VT>
 class KMacroMapExpander : public KMacroExpanderBase {
 
 public:
-    KMacroMapExpander( const QMap<KT,VT> &map, QChar c = '%' ) :
+    KMacroMapExpander( const QHash<KT,VT> &map, QChar c = '%' ) :
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
@@ -306,7 +306,7 @@ protected:
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
-    QMap<KT,VT> macromap;
+    QHash<KT,VT> macromap;
 };
 
 static QStringList &operator+=( QStringList &s, const QString &n) { s << n; return s; }
@@ -328,7 +328,7 @@ template<class VT>
 class KMacroMapExpander<QChar,VT> : public KMacroExpanderBase {
 
 public:
-    KMacroMapExpander( const QMap<QChar,VT> &map, QChar c = '%' ) :
+    KMacroMapExpander( const QHash<QChar,VT> &map, QChar c = '%' ) :
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
@@ -336,7 +336,7 @@ protected:
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
-    QMap<QChar,VT> macromap;
+    QHash<QChar,VT> macromap;
 };
 
 template<class VT>
@@ -344,9 +344,9 @@ int
 KMacroMapExpander<QChar,VT>::expandPlainMacro( const QString &str, int pos, QStringList &ret )
 {
     const KMacroMapExpander<QChar,VT> *const_this = this;
-    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
+    typename QHash<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos]);
     if (it != macromap.end()) {
-       ret += it.data();
+       ret += it.value();
        return 1;
     }
     return 0;
@@ -361,7 +361,7 @@ KMacroMapExpander<QChar,VT>::expandEscapedMacro( const QString &str, int pos, QS
         return 2;
     }
     const KMacroMapExpander<QChar,VT> *const_this = this;
-    typename QMap<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos+1]);
+    typename QHash<QChar,VT>::const_iterator it = const_this->macromap.find(str[pos+1]);
     if (it != const_this->macromap.end()) {
        ret += it.value();
        return 2;
@@ -374,7 +374,7 @@ template<class VT>
 class KMacroMapExpander<QString,VT> : public KMacroExpanderBase {
 
 public:
-    KMacroMapExpander( const QMap<QString,VT> &map, QChar c = '%' ) :
+    KMacroMapExpander( const QHash<QString,VT> &map, QChar c = '%' ) :
         KMacroExpanderBase( c ), macromap( map ) {}
 
 protected:
@@ -382,7 +382,7 @@ protected:
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
-    QMap<QString,VT> macromap;
+    QHash<QString,VT> macromap;
 };
 
 template<class VT>
@@ -396,10 +396,10 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QS
     if (!sl)
         return 0;
     const KMacroMapExpander<QString,VT> *const_this = this;
-    typename QMap<QString,VT>::const_iterator it = 
+    typename QHash<QString,VT>::const_iterator it = 
         const_this->macromap.find( QConstString( str.unicode() + pos, sl ).string() );
     if (it != macromap.end()) {
-        ret += it.data();
+        ret += it.value();
         return sl;
     }
     return 0;
@@ -433,10 +433,10 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
     if (!sl)
         return 0;
     const KMacroMapExpander<QString,VT> *const_this = this;
-    typename QMap<QString,VT>::const_iterator it =
+    typename QHash<QString,VT>::const_iterator it =
         const_this->macromap.find( QConstString( str.unicode() + rpos, sl ).string() );
     if (it != macromap.end()) {
-        ret += it.data();
+        ret += it.value();
         return rsl;
     }
     return 0;
@@ -508,7 +508,7 @@ KWordMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList
 
 template<class KT,class VT>
 inline QString
-TexpandMacros( const QString &ostr, const QMap<KT,VT> &map, QChar c )
+TexpandMacros( const QString &ostr, const QHash<KT,VT> &map, QChar c )
 {
     QString str( ostr );
     KMacroMapExpander<KT,VT> kmx( map, c );
@@ -518,7 +518,7 @@ TexpandMacros( const QString &ostr, const QMap<KT,VT> &map, QChar c )
 
 template<class KT,class VT>
 inline QString
-TexpandMacrosShellQuote( const QString &ostr, const QMap<KT,VT> &map, QChar c )
+TexpandMacrosShellQuote( const QString &ostr, const QHash<KT,VT> &map, QChar c )
 {
     QString str( ostr );
     KMacroMapExpander<KT,VT> kmx( map, c );
@@ -530,13 +530,13 @@ TexpandMacrosShellQuote( const QString &ostr, const QMap<KT,VT> &map, QChar c )
 // public API
 namespace KMacroExpander {
 
-  QString expandMacros( const QString &ostr, const QMap<QChar,QString> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
-  QString expandMacrosShellQuote( const QString &ostr, const QMap<QChar,QString> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
-  QString expandMacros( const QString &ostr, const QMap<QString,QString> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
-  QString expandMacrosShellQuote( const QString &ostr, const QMap<QString,QString> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
-  QString expandMacros( const QString &ostr, const QMap<QChar,QStringList> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
-  QString expandMacrosShellQuote( const QString &ostr, const QMap<QChar,QStringList> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
-  QString expandMacros( const QString &ostr, const QMap<QString,QStringList> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
-  QString expandMacrosShellQuote( const QString &ostr, const QMap<QString,QStringList> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
+  QString expandMacros( const QString &ostr, const QHash<QChar,QString> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
+  QString expandMacrosShellQuote( const QString &ostr, const QHash<QChar,QString> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
+  QString expandMacros( const QString &ostr, const QHash<QString,QString> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
+  QString expandMacrosShellQuote( const QString &ostr, const QHash<QString,QString> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
+  QString expandMacros( const QString &ostr, const QHash<QChar,QStringList> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
+  QString expandMacrosShellQuote( const QString &ostr, const QHash<QChar,QStringList> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
+  QString expandMacros( const QString &ostr, const QHash<QString,QStringList> &map, QChar c ) { return TexpandMacros( ostr, map, c ); }
+  QString expandMacrosShellQuote( const QString &ostr, const QHash<QString,QStringList> &map, QChar c ) { return TexpandMacrosShellQuote( ostr, map, c ); }
 
 } // namespace
