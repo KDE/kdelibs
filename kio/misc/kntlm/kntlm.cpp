@@ -144,19 +144,20 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
   ((Auth*) rbuf.data())->flags = ch->flags;
   QByteArray targetInfo = getBuf( challenge, ch->targetInfo );
 
-  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (KFromToLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
-    if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
-      if ( targetInfo.isEmpty() ) return false;
-      response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
-      addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
-    } else {
-      if ( !forceNTLM ) {
-        response = getLMv2Response( dom, user, password, ch->challengeData );
-        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
-      } else 
-        return false;
-    }
-  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
+//  if ( forceNTLMv2 || (!targetInfo.isEmpty() && (KFromToLittleEndian(ch->flags) & Negotiate_Target_Info)) /* may support NTLMv2 */ ) {
+//    if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
+//      if ( targetInfo.isEmpty() ) return false;
+//      response = getNTLMv2Response( dom, user, password, targetInfo, ch->challengeData );
+//      addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
+//    } else {
+//      if ( !forceNTLM ) {
+//        response = getLMv2Response( dom, user, password, ch->challengeData );
+//        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
+//      } else 
+//        return false;
+//    }
+//  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
+
     if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
       response = getNTLMResponse( password, ch->challengeData );
       addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
@@ -167,7 +168,7 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
       } else
         return false;
     }
-  }
+//  }
   if ( !dom.isEmpty() )
     addString( rbuf, ((Auth*) rbuf.data())->domain, dom, unicode );
   addString( rbuf, ((Auth*) rbuf.data())->user, user, unicode );
