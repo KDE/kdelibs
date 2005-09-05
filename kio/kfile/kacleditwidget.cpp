@@ -17,10 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifdef USE_POSIX_ACL
+
 
 #include "kacleditwidget.h"
 #include "kacleditwidget_p.h"
+
+#ifdef USE_POSIX_ACL
 
 #include <qpainter.h>
 #include <qptrlist.h>
