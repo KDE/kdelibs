@@ -288,7 +288,7 @@ signals:
     /**
      * Emitted when the popup is clicked.
      */
-    void clicked( QPoint pos );
+    void clicked( const QPoint &pos );
 
 protected:
     /**
@@ -305,7 +305,7 @@ protected:
     /**
      * Moves the popup to be adjacent to the icon of the specified rectangle.
      */
-    void moveNear( QRect target );
+    void moveNear( const QRect &target );
 
     /**
      * Reimplemented to detect mouse clicks.

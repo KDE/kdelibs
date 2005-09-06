@@ -986,9 +986,8 @@ KSpellConfig::operator= (const KSpellConfig &ksc)
   fillInDialog();
 }
 
-// KDE 4: Make it const QStringList &
 void
-KSpellConfig::setIgnoreList (QStringList _ignorelist)
+KSpellConfig::setIgnoreList (const QStringList &_ignorelist)
 {
   ignorelist=_ignorelist;
 }
@@ -999,9 +998,8 @@ KSpellConfig::ignoreList () const
   return ignorelist;
 }
 
-// KDE 4: Make it const QStringList &
 void
-KSpellConfig::setReplaceAllList (QStringList _replacelist)
+KSpellConfig::setReplaceAllList (const QStringList &_replacelist)
 {
   d->replacelist=_replacelist;
 }

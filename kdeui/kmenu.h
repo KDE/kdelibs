@@ -148,7 +148,7 @@ protected slots:
     /// @since 3.1
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
-    void showCtxMenu(QPoint pos);
+    void showCtxMenu(const QPoint &pos);
     void ctxMenuHiding();
     void ctxMenuHideShowingMenu();
 

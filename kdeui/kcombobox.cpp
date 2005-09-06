@@ -386,29 +386,30 @@ KHistoryCombo::~KHistoryCombo()
     delete myPixProvider;
 }
 
-void KHistoryCombo::setHistoryItems( QStringList items,
+void KHistoryCombo::setHistoryItems( const QStringList &items,
                                      bool setCompletionList )
 {
+    QStringList insertingItems = items;
     KComboBox::clear();
 
     // limit to maxCount()
-    const int itemCount = items.count(); 
+    const int itemCount = insertingItems.count(); 
     const int toRemove = itemCount - maxCount();
 
     if (toRemove >= itemCount) {
-        items.clear();
+        insertingItems.clear();
     } else {
         for (int i = 0; i < toRemove; ++i) 
-            items.pop_front();
+            insertingItems.pop_front();
     }
 
-    insertItems( items );
+    insertItems( insertingItems );
 
     if ( setCompletionList && useCompletion() ) {
         // we don't have any weighting information here ;(
         KCompletion *comp = completionObject();
         comp->setOrder( KCompletion::Insertion );
-        comp->setItems( items );
+        comp->setItems( insertingItems );
         comp->setOrder( KCompletion::Weighted );
     }
 

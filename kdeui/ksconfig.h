@@ -148,14 +148,14 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
      * It may be useful to save this list with the document being
      * edited to facilitate quicker future spellchecking.
      */
-    void setIgnoreList( QStringList _ignorelist );
+    void setIgnoreList( const QStringList &_ignorelist );
 
     /**
      * The @p _replaceAllList contains word you like that replace
      * word. Be careful that this list contains word which is replaced
      * and new word.
      */
-    void setReplaceAllList( QStringList _replaceAllList );
+    void setReplaceAllList( const QStringList &_replaceAllList );
 
     /**
      * Set an ISpell option.

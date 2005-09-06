@@ -770,8 +770,7 @@ QString KEdFind::getText() const
 }
 
 
-/* antlarr: KDE 4: make it const QString & */
-void KEdFind::setText(QString string)
+void KEdFind::setText(const QString &string)
 {
   d->combo->setEditText(string);
   d->combo->lineEdit()->selectAll();

@@ -68,7 +68,7 @@ public:
     ~KEdFind();
 
     QString getText() const;
-    void setText(QString string);
+    void setText(const QString &string);
     void setCaseSensitive( bool b );
     bool case_sensitive() const;
     void setDirection( bool b );

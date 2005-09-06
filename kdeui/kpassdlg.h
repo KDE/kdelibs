@@ -18,8 +18,8 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __KPassDlg_h_included__
-#define __KPassDlg_h_included__
+#ifndef KPASSDLG_H
+#define KPASSDLG_H
 
 #include <qstring.h>
 #include <q3cstring.h>
@@ -358,7 +358,7 @@ public:
      * information. The text is word broken to fit nicely in the dialog.
      * @return Result code: Accepted or Rejected.
      */
-    static int getNewPassword(QWidget *parent,Q3CString &password, QString prompt);
+    static int getNewPassword(QWidget *parent,Q3CString &password, const QString &prompt);
 
     /**
      * Static helper function that disables core dumps.
@@ -399,5 +399,5 @@ private:
     KPasswordDialogPrivate* const d;
 };
 
+#endif // KPASSDLG_H
 
-#endif // __KPassDlg_h_included__

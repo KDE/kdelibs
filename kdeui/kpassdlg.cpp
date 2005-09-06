@@ -550,7 +550,7 @@ int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, QString pr
 
 
 // static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, QString prompt)
+int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, const QString &prompt)
 {
     KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);
     dlg->setPrompt(prompt);

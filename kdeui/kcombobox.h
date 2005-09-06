@@ -19,8 +19,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KCOMBOBOX_H
-#define _KCOMBOBOX_H
+#ifndef KCOMBOBOX_H
+#define KCOMBOBOX_H
 
 #include <qlineedit.h>
 #include <qcombobox.h>
@@ -569,7 +569,7 @@ public:
      *
      * @see historyItems
      */
-    inline void setHistoryItems( QStringList items ) {
+    inline void setHistoryItems( const QStringList &items ) {
         setHistoryItems(items, false);
     }
 
@@ -614,7 +614,7 @@ public:
      * @see KCompletion::setItems
      * @see KCompletion::items
      */
-    void setHistoryItems( QStringList items, bool setCompletionList );
+    void setHistoryItems( const QStringList &items, bool setCompletionList );
 
     /**
      * Returns the list of history items. Empty, when this is not a read-write

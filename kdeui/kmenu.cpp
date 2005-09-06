@@ -360,7 +360,7 @@ static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contex
 	}
 }
 
-void KMenu::showCtxMenu(QPoint pos)
+void KMenu::showCtxMenu(const QPoint &pos)
 {
     if (d->highlightedAction)
         if (QMenu* subMenu = d->highlightedAction->menu())

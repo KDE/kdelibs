@@ -297,7 +297,7 @@ void KPassivePopup::positionSelf()
     moveNear( target );
 }
 
-void KPassivePopup::moveNear( QRect target )
+void KPassivePopup::moveNear( const QRect &target )
 {
     QPoint pos = target.topLeft();
     int x = pos.x();
