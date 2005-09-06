@@ -1,4 +1,4 @@
-vi /* This file is part of the KDE libraries
+/* This file is part of the KDE libraries
 
    Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
