@@ -1,0 +1,15 @@
+#! /usr/bin/env python
+
+import os, string, fnmatch
+Import('env')
+
+for root, dirs, files in os.walk('.'):
+	insttar = os.path.join(env['KDEMIME'], root)
+	files = fnmatch.filter( files, "*.desktop")
+	toinst = []
+	for file in files: 
+		toinst.append(os.path.join(root, file))
+
+	if toinst:
+		env.bksys_install(insttar, toinst)
+

@@ -122,6 +122,7 @@ kdefx
 kdecore
 kunittest
 kdeui
+mimetypes
 """
 
 env['_BUILDDIR_']='build'
@@ -131,6 +132,8 @@ for dir in subdirs.split():
 	#env.SConscript( env.join('dir', 'SConscript') )
 
 env.subdirs('build/dcop/')
+#env['KDEMIME'] = '/tmp/mime'
+#env.subdirs('build/mimetypes')
 
 #env.SConscript( [env.join('build', 'dcop', 'SConscript')] )
 
