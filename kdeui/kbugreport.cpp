@@ -148,7 +148,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel( i18n("Application: "), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
   tmpLabel->setWhatsThis(qwtstr );
-  d->appcombo = new KComboBox( false, parent, "app");
+  d->appcombo = new KComboBox( false, parent );
   d->appcombo->setWhatsThis(qwtstr );
   QStringList packageList;
   for (int c = 0; packages[c]; ++c)

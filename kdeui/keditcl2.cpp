@@ -685,7 +685,7 @@ class KEdFind::KEdFindPrivate
 {
 public:
     KEdFindPrivate( QWidget *parent ) {
-	combo = new KHistoryCombo( parent, "value" );
+	combo = new KHistoryCombo( parent );
 	combo->setMaxCount( 20 ); // just some default
     }
     ~KEdFindPrivate() {
@@ -812,8 +812,8 @@ class KEdReplace::KEdReplacePrivate
 {
 public:
     KEdReplacePrivate( QWidget *parent ) {
-	searchCombo = new KHistoryCombo( parent, "value" );
-	replaceCombo = new KHistoryCombo( parent, "replace_value" );
+	searchCombo = new KHistoryCombo( parent );
+	replaceCombo = new KHistoryCombo( parent );
 
 	searchCombo->setMaxCount( 20 ); // just some defaults
 	replaceCombo->setMaxCount( 20 );

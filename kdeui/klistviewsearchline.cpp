@@ -62,8 +62,8 @@ public:
 // public methods
 ////////////////////////////////////////////////////////////////////////////////
 
-KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView, const char *name) :
-    KLineEdit(parent, name)
+KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView) :
+    KLineEdit(parent)
 {
     d = new KListViewSearchLinePrivate;
 
@@ -74,9 +74,8 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView, c
 }
 
 KListViewSearchLine::KListViewSearchLine(QWidget *parent,
-                                       const Q3ValueList<KListView *> &listViews,
-                                       const char *name) :
-     KLineEdit(parent, name)
+                                       const Q3ValueList<KListView *> &listViews) :
+     KLineEdit(parent)
 {
     d = new KListViewSearchLinePrivate;
 
@@ -86,8 +85,8 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent,
     setListViews( listViews );
 }
 
-KListViewSearchLine::KListViewSearchLine(QWidget *parent, const char *name) :
-    KLineEdit(parent, name)
+KListViewSearchLine::KListViewSearchLine(QWidget *parent) :
+    KLineEdit(parent)
 {
     d = new KListViewSearchLinePrivate;
 
@@ -538,9 +537,8 @@ public:
 };
 
 KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
-                                                     QWidget *parent,
-                                                     const char *name) :
-    Q3HBox(parent, name)
+                                                     QWidget *parent) :
+    Q3HBox(parent)
 {
     d = new KListViewSearchLineWidgetPrivate;
     d->listView = listView;

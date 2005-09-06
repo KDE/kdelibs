@@ -119,8 +119,8 @@ struct KFontComboPrivate
     QString defaultFamily;
 };
 
-KFontCombo::KFontCombo(QWidget *parent, const char *name)
-    : KComboBox(true, parent, name)
+KFontCombo::KFontCombo(QWidget *parent)
+    : KComboBox(true, parent)
 {
     init();
     QStringList families;
@@ -128,8 +128,8 @@ KFontCombo::KFontCombo(QWidget *parent, const char *name)
     setFonts(families);
 }
 
-KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent, const char *name)
-    : KComboBox(true, parent, name)
+KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent)
+    : KComboBox(true, parent)
 {
     init();
     setFonts(fonts);

@@ -54,8 +54,7 @@ public:
      * If \a listView is null then the widget will be disabled until listviews
      * are set with setListView(), setListViews() or added with addListView().
      */
-    KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0,
-                           const char *name = 0);
+    KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0);
 
     /**
      * Constructs a KListViewSearchLine with \a listViews being the list of
@@ -67,15 +66,14 @@ public:
      * @since 4.0
      */
     KListViewSearchLine(QWidget *parent,
-                           const Q3ValueList<KListView *> &listViews,
-                           const char *name = 0);
+                        const Q3ValueList<KListView *> &listViews);
 
     /**
      * Constructs a KListViewSearchLine without any KListView to filter. The
      * KListView objects have to be set later with setListView(), setListViews()
      * or added with addListView().
      */
-    KListViewSearchLine(QWidget *parent, const char *name);
+    KListViewSearchLine(QWidget *parent);
 
     /**
      * Destroys the KListViewSearchLine.
@@ -324,8 +322,7 @@ public:
      * Creates a KListViewSearchLineWidget for \a listView with \a parent as the
      * parent with and \a name.
      */
-    KListViewSearchLineWidget(KListView *listView = 0, QWidget *parent = 0,
-                              const char *name = 0);
+    KListViewSearchLineWidget(KListView *listView = 0, QWidget *parent = 0);
 
     /**
      * Destroys the KListViewSearchLineWidget

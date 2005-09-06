@@ -257,7 +257,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         // As some KComboBox features rely on the KLineEdit, we reject
         // this order here.
         delete edit;
-        edit = new KLineEdit( this, "combo edit" );
+        edit = new KLineEdit( this );
+        edit->setObjectName( "combo edit" );
     }
 
     QComboBox::setLineEdit( edit );

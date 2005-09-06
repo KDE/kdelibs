@@ -52,8 +52,7 @@ public:
    *  @param name     pointer to the name of this widget
    *  @param valid    pointer to set of valid characters
    */
-  KRestrictedLine( QWidget *parent=0, const char *name=0,
-		   const QString& valid = QString::null);
+  KRestrictedLine( const QString& valid, QWidget* parent );
 
   /**
    * Destructs the restricted line editor.

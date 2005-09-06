@@ -348,7 +348,7 @@ int KToolBar::insertLined (const QString& text, int id,
                             const QString& toolTipText,
                             int size, int index )
 {
-    KLineEdit *lined = new KLineEdit ( this, 0 );
+    KLineEdit *lined = new KLineEdit ( this );
     if ( !toolTipText.isEmpty() )
         QToolTip::add( lined, toolTipText );
     if ( size > 0 )

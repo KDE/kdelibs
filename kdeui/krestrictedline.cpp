@@ -26,17 +26,14 @@
 
 #include "krestrictedline.h"
 
-KRestrictedLine::KRestrictedLine( QWidget *parent,
-				  const char *name,
-				  const QString& valid )
-  : KLineEdit( parent, name )
+KRestrictedLine::KRestrictedLine( const QString& valid, QWidget *parent )
+  : KLineEdit( parent )
 {
     qsValidChars = valid;
 }
 
 KRestrictedLine::~KRestrictedLine()
 {
-  ;
 }
 
 
