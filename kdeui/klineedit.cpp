@@ -101,14 +101,14 @@ bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
 bool KLineEdit::KLineEditPrivate::initialized = false;
 
 
-KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name )
-          :QLineEdit( string, parent, name )
+KLineEdit::KLineEdit( const QString &string, QWidget *parent )
+          :QLineEdit( string, parent )
 {
     init();
 }
 
-KLineEdit::KLineEdit( QWidget *parent, const char *name )
-          :QLineEdit( parent, name )
+KLineEdit::KLineEdit( QWidget *parent )
+          :QLineEdit( parent )
 {
     init();
 }

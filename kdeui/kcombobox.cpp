@@ -58,21 +58,22 @@ public:
     KLineEdit *klineEdit;
 };
 
-KComboBox::KComboBox( QWidget *parent, const char *name )
-    : QComboBox( parent, name ), d(new KComboBoxPrivate)
+KComboBox::KComboBox( QWidget *parent )
+    : QComboBox( parent ), d(new KComboBoxPrivate)
 {
     init();
 }
 
-KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
-    : QComboBox( rw, parent, name ), d(new KComboBoxPrivate)
+KComboBox::KComboBox( bool rw, QWidget *parent )
+    : QComboBox( rw, parent ), d(new KComboBoxPrivate)
 {
     init();
 
     if ( rw )
     {
-      KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
-      setLineEdit( edit );
+        KLineEdit *edit = new KLineEdit( this );
+        edit->setObjectName( "combo lineedit" );
+        setLineEdit( edit );
     }
 }
 
@@ -345,16 +346,16 @@ void KComboBox::lineEditDeleted()
 
 
 // we are always read-write
-KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
-    : KComboBox( true, parent, name ), d(0)
+KHistoryCombo::KHistoryCombo( QWidget *parent )
+    : KComboBox( true, parent ), d(0)
 {
     init( true ); // using completion
 }
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( bool useCompletion,
-                              QWidget *parent, const char *name )
-    : KComboBox( true, parent, name ), d(0)
+                              QWidget *parent )
+    : KComboBox( true, parent ), d(0)
 {
     init( useCompletion );
 }
@@ -393,13 +394,13 @@ void KHistoryCombo::setHistoryItems( const QStringList &items,
     KComboBox::clear();
 
     // limit to maxCount()
-    const int itemCount = insertingItems.count(); 
+    const int itemCount = insertingItems.count();
     const int toRemove = itemCount - maxCount();
 
     if (toRemove >= itemCount) {
         insertingItems.clear();
     } else {
-        for (int i = 0; i < toRemove; ++i) 
+        for (int i = 0; i < toRemove; ++i)
             insertingItems.pop_front();
     }
 
@@ -678,7 +679,7 @@ void KHistoryCombo::slotClear()
 
 void KHistoryCombo::slotSimulateActivated( const QString& text )
 {
-    /* With the insertion policy NoInsertion, which we use by default, 
+    /* With the insertion policy NoInsertion, which we use by default,
        Qt doesn't emit activated on typed text if the item is not already there,
        which is perhaps reasonable. Generate the signal ourselves if that's the case
     */

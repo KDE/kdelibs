@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+vi /* This file is part of the KDE libraries
 
    Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
@@ -85,7 +85,7 @@ class KURL;
  * words do not do the following:
  *
  * \code
- * KComboBox* combo = new KCompletionBox(true, this, "mywidget");
+ * KComboBox* combo = new KCompletionBox(true, this);
  * KCompletion* comp = combo->completionObject();
  * combo->setEditable( false );
  * comp->clear(); // CRASH: completion object does not exist anymore.
@@ -103,7 +103,7 @@ class KURL;
  * To enable the basic completion feature:
  *
  * \code
- * KComboBox *combo = new KComboBox( true, this, "mywidget" );
+ * KComboBox *combo = new KComboBox( true, this );
  * KCompletion *comp = combo->completionObject();
  * // Connect to the return pressed signal - optional
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
@@ -116,7 +116,7 @@ class KURL;
  * To use your own completion object:
  *
  * \code
- * KComboBox *combo = new KComboBox( this,"mywidget" );
+ * KComboBox *combo = new KComboBox( this );
  * KURLCompletion *comp = new KURLCompletion();
  * combo->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
@@ -154,9 +154,8 @@ public:
     * parent object and a name.
     *
     * @param parent The parent object of this widget
-    * @param name The name of this widget
     */
-    KComboBox( QWidget *parent=0, const char *name=0 );
+    KComboBox( QWidget *parent=0 );
 
     /**
     * Constructs a "read-write" or "read-only" combo box depending on
@@ -165,9 +164,8 @@ public:
     *
     * @param rw When @p true, widget will be editable.
     * @param parent The parent object of this widget.
-    * @param name The name of this widget.
     */
-    KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
+    KComboBox( bool rw, QWidget *parent=0 );
 
     /**
     * Destructor.
@@ -544,9 +542,8 @@ public:
      * Use QComboBox::setMaxCount() to limit the history.
      *
      * @p parent the parent object of this widget.
-     * @p name the name of this widget.
      */
-    KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
+    KHistoryCombo( QWidget *parent = 0 );
 
     // ### merge these two constructors
     /**
@@ -555,8 +552,7 @@ public:
      * or not. If set to @p true, KHistoryCombo will sync the completion to the
      * contents of the combobox.
      */
-    KHistoryCombo( bool useCompletion,
-		   QWidget *parent = 0L, const char *name = 0L );
+    KHistoryCombo( bool useCompletion, QWidget *parent = 0 );
 
     /**
      * Destructs the combo, the completion-object and the pixmap-provider
