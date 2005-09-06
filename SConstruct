@@ -30,7 +30,7 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default','generic', 'pkgconfig', 'libxml', 'qt4'], toolpath=['./', './bksys'],
+env = Environment( tools=['generic', 'libxml', 'qt4'], toolpath=['./bksys'],
 		   ENV={'PATH' : os.environ['PATH']})
 
 if env['HELP']:

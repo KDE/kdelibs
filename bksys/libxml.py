@@ -18,11 +18,11 @@ def exists(env):
 
 def generate(env):
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('XML_ISCONFIGURED')):
-		#import SCons.Util, os
-		#from SCons.Tool import Tool
+		import SCons.Util, os
+		from SCons.Tool import Tool
 
-		#pkgs = Tool('pkgconfig', ['./bksys'])
-		#pkgs.generate(env)
+		pkgs = Tool('pkgconfig', ['./bksys'])
+		pkgs.generate(env)
 
 		have_xml  = env.pkgConfig_findPackage('XML', 'libxml-2.0', '2.6.0')
 		have_xslt = env.pkgConfig_findPackage('XSLT', 'libxslt', '1.1.0')
