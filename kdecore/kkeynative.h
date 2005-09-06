@@ -206,12 +206,14 @@ class KDECORE_EXPORT KKeyNative
 	static bool keyboardHasWinKey();
 
 #ifdef Q_WS_X11
+#ifdef KDE3_SUPPORT
 	/**
 	 * Returns the equivalent X modifier mask of the given modifier flag.
 	 * @param modFlag the mod flags to test
 	 * @return the equivalent native flags of the window system
 	 */
 	static uint modX( KKey::ModFlag modFlag );
+#endif
 
 	/**
 	 * Returns bitwise OR'ed mask containing Shift, Ctrl, Alt, and
@@ -247,7 +249,15 @@ class KDECORE_EXPORT KKeyNative
 	 * @see accelModMaskX() 
 	 * @since 3.5
 	 */ 
-	static uint modXModeSwitch(); 
+	static uint modXModeSwitch();
+
+	static uint modXShift();
+	static uint modXCtrl();
+	static uint modXAlt();
+	static uint modXMeta(); 
+	// KDE 3 compatibility
+	static uint modXWin();
+
 #endif
 
  private:

@@ -188,7 +188,17 @@ int KKeyNative::keyCodeQt() const
 bool KKeyNative::keyboardHasWinKey()           { return KKeyServer::keyboardHasWinKey(); }
 
 #ifdef Q_WS_X11
+
+uint KKeyNative::modXShift()      { return KKeyServer::modXShift(); }
+uint KKeyNative::modXCtrl()       { return KKeyServer::modXCtrl(); }
+uint KKeyNative::modXAlt()        { return KKeyServer::modXAlt(); }
+uint KKeyNative::modXMeta()       { return KKeyServer::modXMeta(); }
+// KDE 3 compatibility
+uint KKeyNative::modXWin()        { return modXMeta(); }
+
+#ifdef KDE3_SUPPORT
 uint KKeyNative::modX( KKey::ModFlag modFlag ) { return KKeyServer::modX( modFlag ); }
+#endif KDE3_SUPPORT
 uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMaskX(); }
 uint KKeyNative::modXNumLock()                 { return KKeyServer::modXNumLock(); }
 uint KKeyNative::modXLock()                    { return KKeyServer::modXLock(); }

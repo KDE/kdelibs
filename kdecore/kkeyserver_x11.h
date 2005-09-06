@@ -259,12 +259,14 @@ namespace KKeyServer
 	/// TODO: please document
 	KDECORE_EXPORT bool initializeMods();
 
+#ifdef KDE3_SUPPORT
 	/**
 	 * Returns the equivalent X modifier mask of the given modifier flag.
 	 * @param modFlag the generic flags to check
 	 * @return the window system specific flags
 	 */
 	KDECORE_EXPORT uint modX( KKey::ModFlag modFlag );
+#endif
 
 	/**
 	 * Returns true if the current keyboard layout supports the Win key.
@@ -316,6 +318,7 @@ namespace KKeyServer
 	 * @see accelModMaskX()
 	 */
 	KDECORE_EXPORT uint modXWin();
+	KDECORE_EXPORT uint modXMeta();
 
 	/**
 	 * Returns the X11 ScrollLock modifier mask/flag.

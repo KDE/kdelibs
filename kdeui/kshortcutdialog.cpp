@@ -319,10 +319,10 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 static uint getModsFromModX( uint keyModX )
 {
 	uint mod = 0;
-	if( keyModX & KKeyServer::modX(KKey::SHIFT) ) mod += KKey::SHIFT;
-	if( keyModX & KKeyServer::modX(KKey::CTRL) )  mod += KKey::CTRL;
-	if( keyModX & KKeyServer::modX(KKey::ALT) )   mod += KKey::ALT;
-	if( keyModX & KKeyServer::modX(KKey::WIN) )   mod += KKey::WIN;
+	if( keyModX & KKeyNative::modXShift() ) mod += KKey::SHIFT;
+	if( keyModX & KKeyNative::modXCtrl() )  mod += KKey::CTRL;
+	if( keyModX & KKeyNative::modXAlt() )   mod += KKey::ALT;
+	if( keyModX & KKeyNative::modXWin() )   mod += KKey::WIN;
 	return mod;
 }
 

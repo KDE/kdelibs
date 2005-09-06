@@ -2230,9 +2230,9 @@ Qt::ButtonState KApplication::keyboardMouseState()
         ret |= Qt::ShiftModifier;
     if( state & ControlMask )
         ret |= Qt::ControlModifier;
-    if( state & KKeyServer::modX( KKey::ALT ))
+    if( state & KKeyNative::modXAlt() )
         ret |= Qt::AltModifier;
-    if( state & KKeyServer::modX( KKey::WIN ))
+    if( state & KKeyNative::modXWin() )
         ret |= Qt::MetaModifier;
 #elif defined(Q_WS_WIN)
     const bool mousebtn_swapped = GetSystemMetrics(SM_SWAPBUTTON);
