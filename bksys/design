@@ -1,0 +1,24 @@
+## author: Thomas Nagy (aka ita on freenode)
+
+For building objects, one will use the 'obj' builders.
+These are python classes that accept 5 types when initialized:
+program      : 
+shlib        : shared library
+staticlib    : static library
+convenience  : static library made of objects compiled with pic (position-independent code)
+kioslave     : same as shlib, but without 'lib' as a prefix
+
+The existing classes are the following:
+* genobj: build generic c++ or c applications, depending on the sources given to build
+* qt4obj: build a qt4 object, scanning for moc files and adding the dependencies on .rcc files
+
+Targets are then specified like this:
+obj = env.qt4obj('shlib',env)
+obj.vnum     = '6.0.2'
+obj.target   = 'libDCOP'
+obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
+obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.libs     = env.join('KDE-ICE', 'libkICE.a')
+obj.execute()
+
+
