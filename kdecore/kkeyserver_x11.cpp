@@ -605,7 +605,6 @@ uint modX( KKey::ModFlag mod )
 	return 0;
 }
 
-bool keyboardHasWinKey() { if( !g_bInitializedMods ) { initializeMods(); } return g_rgModInfo[3].modX != 0; }
 uint modXShift()      { return ShiftMask; }
 uint modXLock()       { return LockMask; }
 uint modXCtrl()       { return ControlMask; }
@@ -614,6 +613,8 @@ uint modXNumLock()    { if( !g_bInitializedMods ) { initializeMods(); } return g
 uint modXWin()        { if( !g_bInitializedMods ) { initializeMods(); } return g_rgModInfo[3].modX; }
 uint modXScrollLock() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXScrollLock; }
 uint modXModeSwitch() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXModeSwitch; } 
+
+bool keyboardHasWinKey() { return modXWin() != 0; }
 
 uint accelModMaskX()
 {
