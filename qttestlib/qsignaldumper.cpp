@@ -13,8 +13,8 @@
 #include <QtCore/qlist.h>
 #include <QtCore/qmetaobject.h>
 #include <QtCore/qmetatype.h>
+#include <QtCore/qobject.h>
 #include <QtCore/qvariant.h>
-#include <QtCore/private/qobject_p.h>
 
 #include "QtTest/private/qtestlog_p.h"
 namespace QtTest
@@ -83,7 +83,8 @@ static void qSignalDumperCallbackSlot(QObject *caller, int method_index, void **
     const QMetaObject *mo = caller->metaObject();
     Q_ASSERT(mo);
     QMetaMethod member = mo->method(method_index);
-    Q_ASSERT(member.signature());
+    if (!member.signature())
+        return;
 
     if (QtTest::ignoreLevel || QtTest::ignoreClasses()->contains(mo->className()))
         return;
@@ -112,6 +113,17 @@ static void qSignalDumperCallbackEndSignal(QObject *caller, int /*method_index*/
 }
 
 }
+
+struct QSignalSpyCallbackSet
+{
+    typedef void (*BeginCallback)(QObject *caller, int method_index, void **argv);
+    typedef void (*EndCallback)(QObject *caller, int method_index);
+    BeginCallback signal_begin_callback,
+                  slot_begin_callback;
+    EndCallback signal_end_callback,
+                slot_end_callback;
+};
+extern void Q_CORE_EXPORT qt_register_signal_spy_callbacks(const QSignalSpyCallbackSet &);
 
 void QSignalDumper::startDump()
 {
