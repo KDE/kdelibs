@@ -23,8 +23,8 @@
 
 */
 
-#ifndef   __netwm_def_h
-#define   __netwm_def_h
+#ifndef   netwm_def_h
+#define   netwm_def_h
 
 #include <kdelibs_export.h>
 
@@ -428,8 +428,8 @@ public:
        @li Withdrawn indicates that neither the client window nor its icon is visible.
 
        @li Iconic indicates that the client window is not visible, but its icon is.
-           This can be when the window is minimized or when it's on a different
-           virtual desktop. See also NET::Hidden.
+           This can be when the window is minimized or when it's on a
+           different virtual desktop. See also NET::Hidden.
     **/
 
     // KDE4 aaarghl, this doesn't map correctly to Xlib #defines
@@ -605,4 +605,4 @@ public:
 };
 
 
-#endif // __netwm_def_h
+#endif // netwm_def_h
