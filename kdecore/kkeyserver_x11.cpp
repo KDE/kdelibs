@@ -24,6 +24,7 @@
 
 #include <qnamespace.h>
 #include <qwindowdefs.h>
+#include <QFlags>
 
 #if defined(Q_WS_X11) || defined(Q_WS_WIN) || defined(Q_WS_MACX) // Only compile this module if we're compiling for X11, mac or win32
 #include <QX11Info>
@@ -406,12 +407,15 @@ bool Sym::initQt( int keyQt )
 {
 	int symQt = keyQt & ~Qt::KeyboardModifierMask; 
 
-	if( (keyQt & Qt::UNICODE_ACCEL) || symQt < 0x1000 ) {
+	if( symQt < 0x1000 ) {
 		m_sym = QChar(symQt).toLower().unicode();
 		return true;
 	}
 
 #ifdef Q_WS_WIN
+	m_sym = symQt;
+	return true;
+#elif defined(Q_WS_MACX)
 	m_sym = symQt;
 	return true;
 #elif defined(Q_WS_X11)
@@ -427,9 +431,7 @@ bool Sym::initQt( int keyQt )
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
 		kdDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
-#elif defined(Q_WS_MACX)
-        m_sym = symQt;
-        return true;
+
 #endif
 }
 
@@ -485,7 +487,7 @@ int Sym::qt() const
 		return m_sym;
 #elif defined(Q_WS_X11)
 	if( m_sym < 0x3000 )
-		return m_sym | Qt::UNICODE_ACCEL;
+		return m_sym;
 
 	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ )
 		if( g_rgQtToSymX[i].keySymX == m_sym )
