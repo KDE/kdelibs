@@ -59,33 +59,6 @@ class KIO_EXPORT KRun : public QObject
   Q_OBJECT
 public:
   /**
-   * Create a KRun object to run the preferred application for a file/URL.
-   * KRun will first determine the type of the file, and will then
-   * run the associated application.
-   *
-   * @param url the URL of the file or directory to 'run'
-   *
-   * @param mode The @p st_mode field of <tt>struct stat</tt>. If
-   *        you don't know this set it to 0.
-   *
-   * @param isLocalFile
-   *        If this parameter is set to @p false then @p url is
-   *        examined to find out whether it is a local URL or
-   *        not. This flag is just used to improve speed, since the
-   *        function KURL::isLocalFile is a bit slow.
-   *
-   * @param showProgressInfo
-   *        Whether to show progress information when determining the
-   *        type of the file (i.e. when using KIO::stat and KIO::mimetype)
-   *        Before you set this to false to avoid a dialog box, think about
-   *        a very slow FTP server...
-   *        It is always better to provide progress info in such cases.
-   */
-  KRun( const KURL& url, mode_t mode = 0,
-	bool isLocalFile = false, bool showProgressInfo = true );
-
-  /**
-   * BIC: Combine with the above ctor for KDE 4.0.
    * @param window
    *        The top-level widget of the app that invoked this object.
    *        It is used to make sure private information like passwords

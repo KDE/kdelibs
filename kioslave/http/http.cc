@@ -54,6 +54,7 @@
 #include <dcopclient.h>
 #include <kdatastream.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kstreamsocket.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
@@ -4848,7 +4849,7 @@ void HTTPProtocol::cleanCache()
    {
       // Touch file.
       utime(QFile::encodeName(cleanFile), 0);
-      KApplication::startServiceByDesktopPath("http_cache_cleaner.desktop");
+      KToolInvokation::startServiceByDesktopPath("http_cache_cleaner.desktop");
    }
 }
 

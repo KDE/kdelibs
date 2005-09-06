@@ -31,6 +31,7 @@
 #include <qfile.h>
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kprocess.h>
@@ -451,11 +452,11 @@ Q3ScrollView *KSSLInfoDlg::buildCertInfo(const QString &certName) {
 }
 
 void KSSLInfoDlg::urlClicked(const QString &url) {
-    kapp->invokeBrowser(url);
+    KToolInvokation::invokeBrowser(url);
 }
 
 void KSSLInfoDlg::mailClicked(const QString &url) {
-    kapp->invokeMailer(url, QString::null);
+    KToolInvokation::invokeMailer(url, QString::null);
 }
 
 #include "ksslinfodlg.moc"

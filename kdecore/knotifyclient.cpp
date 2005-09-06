@@ -19,6 +19,7 @@
 */
 
 #include "knotifyclient.h"
+#include "ktoolinvokation.h"
 
 #include <qdatastream.h>
 #include <q3ptrstack.h>
@@ -224,7 +225,7 @@ bool KNotifyClient::startDaemon()
   if (!kapp->dcopClient()->isApplicationRegistered(daemonName)) {
     if( firstTry ) {
       firstTry = false;
-      return KApplication::startServiceByDesktopName(daemonName) == 0;
+      return KToolInvokation::startServiceByDesktopName(daemonName) == 0;
     }
     return false;
   }

@@ -203,7 +203,7 @@ void KCMultiDialog::slotHelp()
         process.start(KProcess::DontCare);
 		process.detach();
     } else {
-        new KRun(url);
+        new KRun(url,this);
     }
 }
 

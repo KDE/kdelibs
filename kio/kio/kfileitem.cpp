@@ -780,7 +780,7 @@ void KFileItem::run()
   // It might be faster to pass skip that when we know the mimetype,
   // and just call KRun::runURL. But then we need to use mostLocalURL()
   // for application/x-desktop files, to be able to execute them.
-  (void) new KRun( url, m_fileMode, m_bIsLocalURL );
+  (void) new KRun( url, (QWidget*)0, m_fileMode, m_bIsLocalURL );
 }
 
 bool KFileItem::cmp( const KFileItem & item )

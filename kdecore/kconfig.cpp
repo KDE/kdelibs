@@ -37,8 +37,9 @@
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kstaticdeleter.h"
-#include <qtimer.h>
+#include "ktoolinvokation.h"
 
+#include <qtimer.h>
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
   : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
@@ -286,7 +287,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   {
      QStringList args;
      args << "--check" << updateFile;
-     KApplication::kdeinitExecWait("kconf_update", args);
+     KToolInvokation::kdeinitExecWait("kconf_update", args);
      reparseConfiguration();
   }
   setGroup(oldGroup);

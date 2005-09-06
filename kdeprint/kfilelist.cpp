@@ -264,7 +264,7 @@ void KFileList::slotOpenFile()
 	if (item)
 	{
 		KURL url( item->text( 2 ) );
-		new KRun(url);
+		new KRun(url,window());
 	}
 }
 

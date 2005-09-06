@@ -23,6 +23,7 @@
 #include <q3textedit.h>
 #include <klocale.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 
 KWhatsThisManager *KWhatsThisManager::s_instance = 0;
 
@@ -84,7 +85,7 @@ bool KWhatsThisUndefined::clicked (const QString& href)
         body . append ("\nPlease type in your what's this help between these lines: "
                 "\n--%-----------------------------------------------------------------------\n"
                 "\n--%-----------------------------------------------------------------------");
-        kapp -> invokeMailer ("quality-whatsthis@kde.org", "", "", subj, body);
+        KToolInvokation::invokeMailer ("quality-whatsthis@kde.org", "", "", subj, body);
     }
     return true;
 }

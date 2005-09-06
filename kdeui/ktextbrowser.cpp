@@ -21,6 +21,7 @@
 #include <q3popupmenu.h>
 #include <qevent.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <kcursor.h>
@@ -65,7 +66,7 @@ void KTextBrowser::setSource( const QString& name )
   {
     if( !mNotifyClick )
     {
-      kapp->invokeMailer( KURL( name ) );
+      KToolInvokation::invokeMailer( KURL( name ) );
     }
     else
     {
@@ -76,7 +77,7 @@ void KTextBrowser::setSource( const QString& name )
   {
     if( !mNotifyClick )
     {
-      kapp->invokeBrowser( name );
+      KToolInvokation::invokeBrowser( name );
     }
     else
     {

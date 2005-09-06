@@ -1,0 +1,567 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+    Copyright (C) 1998, 1999, 2000 KDE Team
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+        */
+
+#include "config.h"
+
+#include "ktoolinvokation.h"
+#include "kcmdlineargs.h"
+#include "kconfig.h"
+#include "kcodecs.h"
+#include "kglobal.h"
+#include "kshell.h"
+#include "kmacroexpander.h"
+#include "klocale.h"
+#include <qmessagebox.h>
+#include <qapplication.h>
+
+#if defined Q_WS_X11
+#include <QtGui/qx11info_x11.h>
+#include <kstartupinfo.h>
+#endif
+
+#include <dcopclient.h>
+#include <dcopref.h>
+
+#include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#include <sys/wait.h>
+
+#ifndef Q_WS_WIN
+#include "kwin.h"
+#endif
+
+#include <fcntl.h>
+#include <stdlib.h> // getenv(), srand(), rand()
+#include <signal.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+
+#include "kprocctrl.h"
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#include <X11/SM/SMlib.h>
+#include <fixx11h.h>
+#endif
+
+
+KToolInvokation* KToolInvokation::s_self = 0L;
+
+KToolInvokation::KToolInvokation(QObject *parent):QObject(parent) {
+	m_dcopClient=new DCOPClient();
+	KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+	if (args && args->isSet("dcopserver")) {
+		m_dcopClient->setServerAddress( args->getOption("dcopserver"));
+	}
+}
+
+KToolInvokation *KToolInvokation::self() {
+	if (s_self==0) {
+		if (qApp && (!qApp->closingDown))
+			s_self=new KToolInvokation(qApp);
+		else
+			s_self=new KToolInvokation(0);
+	}
+	return s_self;
+}
+
+KToolInvokation::~KToolInvokation() {
+	s_self=0;
+	delete m_dcopClient;
+}
+
+DCOPClient *KToolInvokation::dcopClient() {
+	KToolInvokation *kti=self();
+	if (!kti->m_dcopClient->isAttached())
+		if (!kti->m_dcopClient->attach()) return 0;
+	return kti->m_dcopClient;
+}
+
+
+void KToolInvokation::invokeHelp( const QString& anchor,
+                               const QString& _appname,
+                               const QByteArray& startup_id )
+{
+   QString url;
+   QString appname;
+   if (_appname.isEmpty()) {
+     if (qApp==0) return;     
+     appname = qApp->applicationName();
+   } else
+     appname = _appname;
+
+   if (!anchor.isEmpty())
+     url = QString("help:/%1?anchor=%2").arg(appname).arg(anchor);
+   else
+     url = QString("help:/%1/index.html").arg(appname);
+
+   DCOPClient *dcopClient=KToolInvokation::dcopClient();
+   if (!dcopClient) return;
+   QString error;
+   if ( !dcopClient->isApplicationRegistered("khelpcenter") )
+   {
+       if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
+       {
+#warning fixme once there is a kcoreapp and kapp class
+#if 0
+           if (Tty != kapp->type())
+               QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Help Center"),
+               i18n("Could not launch the KDE Help Center:\n\n%1").arg(error), i18n("&OK"));
+           else
+               kdWarning() << "Could not launch help:\n" << error << endl;
+	   return;
+#endif
+       }
+   }
+   else {
+       DCOPRef ref( "khelpcenter", "KHelpCenterIface" );
+       ref.setDCOPClient(dcopClient);
+       ref.send( "openUrl", url, (const char*)startup_id );
+   }
+}
+
+
+
+
+void KToolInvokation::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
+{
+   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
+   QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+   QStringList attachURLs;
+   for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+   {
+     QString q = (*it).toLower();
+     if (q.startsWith("subject="))
+       subject = KURL::decode_string((*it).mid(8));
+     else
+     if (q.startsWith("cc="))
+       cc = cc.isEmpty()? KURL::decode_string((*it).mid(3)): cc + ',' + KURL::decode_string((*it).mid(3));
+     else
+     if (q.startsWith("bcc="))
+       bcc = bcc.isEmpty()? KURL::decode_string((*it).mid(4)): bcc + ',' + KURL::decode_string((*it).mid(4));
+     else
+     if (q.startsWith("body="))
+       body = KURL::decode_string((*it).mid(5));
+     else
+     if (allowAttachments && q.startsWith("attach="))
+       attachURLs.push_back(KURL::decode_string((*it).mid(7)));
+     else
+     if (allowAttachments && q.startsWith("attachment="))
+       attachURLs.push_back(KURL::decode_string((*it).mid(11)));
+     else
+     if (q.startsWith("to="))
+       address = address.isEmpty()? KURL::decode_string((*it).mid(3)): address + ',' + KURL::decode_string((*it).mid(3));
+   }
+
+   invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
+}
+
+
+static QStringList splitEmailAddressList( const QString & aStr )
+{
+  // This is a copy of KPIM::splitEmailAddrList().
+  // Features:
+  // - always ignores quoted characters
+  // - ignores everything (including parentheses and commas)
+  //   inside quoted strings
+  // - supports nested comments
+  // - ignores everything (including double quotes and commas)
+  //   inside comments
+
+  QStringList list;
+
+  if (aStr.isEmpty())
+    return list;
+
+  QString addr;
+  uint addrstart = 0;
+  int commentlevel = 0;
+  bool insidequote = false;
+
+  for (int index=0; index<aStr.length(); index++) {
+    // the following conversion to latin1 is o.k. because
+    // we can safely ignore all non-latin1 characters
+    switch (aStr[index].latin1()) {
+    case '"' : // start or end of quoted string
+      if (commentlevel == 0)
+        insidequote = !insidequote;
+      break;
+    case '(' : // start of comment
+      if (!insidequote)
+        commentlevel++;
+      break;
+    case ')' : // end of comment
+      if (!insidequote) {
+        if (commentlevel > 0)
+          commentlevel--;
+        else {
+          //kdDebug() << "Error in address splitting: Unmatched ')'"
+          //          << endl;
+          return list;
+        }
+      }
+      break;
+    case '\\' : // quoted character
+      index++; // ignore the quoted character
+      break;
+    case ',' :
+      if (!insidequote && (commentlevel == 0)) {
+        addr = aStr.mid(addrstart, index-addrstart);
+        if (!addr.isEmpty())
+          list += addr.simplifyWhiteSpace();
+        addrstart = index+1;
+      }
+      break;
+    }
+  }
+  // append the last address to the list
+  if (!insidequote && (commentlevel == 0)) {
+    addr = aStr.mid(addrstart, aStr.length()-addrstart);
+    if (!addr.isEmpty())
+      list += addr.simplifyWhiteSpace();
+  }
+  //else
+  //  kdDebug() << "Error in address splitting: "
+  //            << "Unexpected end of address list"
+  //            << endl;
+
+  return list;
+}
+
+void KToolInvokation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
+{
+   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
+       QStringList(), startup_id );
+}
+
+void KToolInvokation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
+                                const QString &subject, const QString &body,
+                                const QString & /*messageFile TODO*/, const QStringList &attachURLs,
+                                const QByteArray& startup_id )
+{
+   KConfig config("emaildefaults");
+
+   config.setGroup("Defaults");
+   QString group = config.readEntry("Profile","Default");
+
+   config.setGroup( QString("PROFILE_%1").arg(group) );
+   QString command = config.readPathEntry("EmailClient");
+
+   QString to, cc, bcc;
+   if (command.isEmpty() || command == QString::fromLatin1("kmail")
+       || command.endsWith("/kmail"))
+   {
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
+     if ( !_to.isEmpty() )
+     {
+       // put the whole address lists into RFC2047 encoded blobs; technically
+       // this isn't correct, but KMail understands it nonetheless
+       to = QString( "=?utf8?b?%1?=" )
+            .arg( (const char*)KCodecs::base64Encode( _to.utf8(), false ) );
+     }
+     if ( !_cc.isEmpty() )
+       cc = QString( "=?utf8?b?%1?=" )
+            .arg( (const char*)KCodecs::base64Encode( _cc.utf8(), false ) );
+     if ( !_bcc.isEmpty() )
+       bcc = QString( "=?utf8?b?%1?=" )
+             .arg( (const char*)KCodecs::base64Encode( _bcc.utf8(), false ) );
+   } else {
+     to = _to;
+     cc = _cc;
+     bcc = _bcc;
+   }
+
+   if (config.readBoolEntry("TerminalClient", false))
+   {
+     KConfigGroup confGroup( KGlobal::config(), "General" );
+     QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", "konsole");
+     command = preferredTerminal + " -e " + command;
+   }
+
+   QStringList cmdTokens = KShell::splitArgs(command);
+   QString cmd = cmdTokens[0];
+   cmdTokens.remove(cmdTokens.begin());
+
+   KURL url;
+   QStringList qry;
+   if (!to.isEmpty())
+   {
+     QStringList tos = splitEmailAddressList( to );
+     url.setPath( tos.first() );
+     tos.remove( tos.begin() );
+     for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it)
+       qry.append( "to=" + KURL::encode_string( *it ) );
+   }
+   const QStringList ccs = splitEmailAddressList( cc );
+   for (QStringList::ConstIterator it = ccs.begin(); it != ccs.end(); ++it)
+      qry.append( "cc=" + KURL::encode_string( *it ) );
+   const QStringList bccs = splitEmailAddressList( bcc );
+   for (QStringList::ConstIterator it = bccs.begin(); it != bccs.end(); ++it)
+      qry.append( "bcc=" + KURL::encode_string( *it ) );
+   for (QStringList::ConstIterator it = attachURLs.begin(); it != attachURLs.end(); ++it)
+      qry.append( "attach=" + KURL::encode_string( *it ) );
+   if (!subject.isEmpty())
+      qry.append( "subject=" + KURL::encode_string( subject ) );
+   if (!body.isEmpty())
+      qry.append( "body=" + KURL::encode_string( body ) );
+   url.setQuery( qry.join( "&" ) );
+   if ( ! (to.isEmpty() && qry.isEmpty()) )
+      url.setProtocol("mailto");
+
+   QHash<QChar, QString> keyMap;
+   keyMap.insert('t', to);
+   keyMap.insert('s', subject);
+   keyMap.insert('c', cc);
+   keyMap.insert('b', bcc);
+   keyMap.insert('B', body);
+   keyMap.insert('u', url.url());
+
+   for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); )
+   {
+     if (*it == "%A")
+     {
+         if (it == cmdTokens.begin()) // better safe than sorry ...
+             continue;
+         QStringList::ConstIterator urlit = attachURLs.begin();
+         QStringList::ConstIterator urlend = attachURLs.end();
+         if ( urlit != urlend )
+         {
+             QStringList::Iterator previt = it;
+             --previt;
+             *it = *urlit;
+             ++it;
+             while ( ++urlit != urlend )
+             {
+                 cmdTokens.insert( it, *previt );
+                 cmdTokens.insert( it, *urlit );
+             }
+         } else {
+             --it;
+             it = cmdTokens.remove( cmdTokens.remove( it ) );
+         }
+     } else {
+         *it = KMacroExpander::expandMacros(*it, keyMap);
+         ++it;
+     }
+   }
+
+   QString error;
+   // TODO this should check if cmd has a .desktop file, and use data from it, together
+   // with sending more ASN data
+   if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
+{}
+#warning fixme once there is kcoreapp and kapp
+#if 0
+     if (Tty != kapp->type())
+       QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
+             i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
+     else
+       kdWarning() << "Could not launch mail client:\n" << error << endl;
+#endif
+}
+
+void KToolInvokation::invokeBrowser( const QString &url, const QByteArray& startup_id )
+{
+   QString error;
+
+   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
+   {
+#warning fixme once there is kcoreapp and kapp
+#if 0
+      if (Tty != kapp->type())
+          QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
+               i18n("Could not launch the browser:\n\n%1").arg(error), i18n("&OK"));
+      else
+          kdWarning() << "Could not launch browser:\n" << error << endl;
+      return;
+#endif
+   }
+}
+
+QByteArray
+KToolInvokation::launcher()
+{
+   return "klauncher";
+}
+
+static int
+startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
+              const QString& _name, const QStringList &URLs,
+              QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   struct serviceResult
+   {
+      int result;
+      DCOPCString dcopName;
+      QString error;
+      pid_t pid;
+   };
+
+   // Register app as able to send DCOP messages
+   if (!dcopClient) {
+         if (error)
+            *error = i18n("Could not register with DCOP.\n");
+         return -1;
+   }
+   QByteArray params;
+   QDataStream stream(&params, QIODevice::WriteOnly);
+   stream.setVersion(QDataStream::Qt_3_1);
+   stream << _name << URLs;
+   DCOPCString replyType;
+   QByteArray  replyData;
+   QByteArray _launcher = KToolInvokation::launcher();
+   QList<DCOPCString> envs;
+#ifdef Q_WS_X11
+   if (QX11Info::display()) {
+       QByteArray dpystring(XDisplayString(QX11Info::display()));
+       envs.append( QByteArray("DISPLAY=") + dpystring );
+   } else if( getenv( "DISPLAY" )) {
+       QByteArray dpystring( getenv( "DISPLAY" ));
+       envs.append( QByteArray("DISPLAY=") + dpystring );
+   }
+#endif
+   stream << envs;
+#if defined Q_WS_X11
+   // make sure there is id, so that user timestamp exists
+   stream << ( startup_id.isEmpty() ? DCOPCString(KStartupInfo::createNewStartupId()) :
+                                      DCOPCString(startup_id) );
+#endif
+   if( function.left( 12 ) != "kdeinit_exec" )
+       stream << noWait;
+
+   if (!dcopClient->call(_launcher, _launcher,
+        function, params, replyType, replyData))
+   {
+        if (error)
+           *error = i18n("KLauncher could not be reached via DCOP.\n");
+        return -1;
+   }
+
+   if (noWait)
+      return 0;
+
+   QDataStream stream2(&replyData, QIODevice::ReadOnly);
+   stream2.setVersion(QDataStream::Qt_3_1);
+   serviceResult result;
+   stream2 >> result.result >> result.dcopName >> result.error >> result.pid;
+   if (dcopService)
+      *dcopService = result.dcopName;
+   if (error)
+      *error = result.error;
+   if (pid)
+      *pid = result.pid;
+   return result.result;
+}
+
+int
+KToolInvokation::startServiceByName( const QString& _name, const QString &URL,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   QStringList URLs;
+   if (!URL.isEmpty())
+      URLs.append(URL);
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+int
+KToolInvokation::startServiceByName( const QString& _name, const QStringList &URLs,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+int
+KToolInvokation::startServiceByDesktopPath( const QString& _name, const QString &URL,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   QStringList URLs;
+   if (!URL.isEmpty())
+      URLs.append(URL);
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+int
+KToolInvokation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+int
+KToolInvokation::startServiceByDesktopName( const QString& _name, const QString &URL,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   QStringList URLs;
+   if (!URL.isEmpty())
+      URLs.append(URL);
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+int
+KToolInvokation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
+                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+{
+   return startServiceInternal(dcopClient(),
+                      "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
+                      _name, URLs, error, dcopService, pid, startup_id, noWait);
+}
+
+
+int
+KToolInvokation::kdeinitExec( const QString& name, const QStringList &args,
+                           QString *error, int *pid, const QByteArray& startup_id )
+{
+   return startServiceInternal(dcopClient(),"kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
+        name, args, error, 0, pid, startup_id, false);
+}
+
+
+int
+KToolInvokation::kdeinitExecWait( const QString& name, const QStringList &args,
+                           QString *error, int *pid, const QByteArray& startup_id )
+{
+   return startServiceInternal(dcopClient(),"kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
+        name, args, error, 0, pid, startup_id, false);
+}
+
+
+#include "ktoolinvokation.moc"

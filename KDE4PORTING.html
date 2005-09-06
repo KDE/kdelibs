@@ -120,6 +120,12 @@ in the drop/paste side.</li>
 <H4>KCmdLineArgs</H4>
 <li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
 
+<H4>KApplication</H>
+<ul>
+<li>For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized now</li>
+<li>invoke* has been mobed to ktoolinvokation. there are static methods invoke*, if you want to use slots as before connect to the innvoke* slots of KToolInvokation::self()</li>
+<li>startService*, kdeinitExec* -&gt; KToolInvokation</li>
+</ul>
 
 <H4>KCharsets</H4>
 <p>KCharsets::codecForName cannot use glibc's i18n data anymore currently</p>
@@ -246,6 +252,12 @@ if needed (see the KURLDrag section)</li>
 
 
 <H3><A NAME="kio">Changes in kio</A></H3>
+
+<H4>KRun</H4>
+<ul>
+<li><the constructor needs a second parameter (a widget) now/li>
+</ul>
+
 <H4>RenameDlg</H4>
 <li>void b0Pressed() renamed to void cancelPressed()
 <li>void b1Pressed() renamed to void renamePressed()

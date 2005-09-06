@@ -42,6 +42,7 @@
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -712,7 +713,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   QString error;
   int pid = 0;
 
-  int i = KApplication::startServiceByDesktopPath(
+  int i = KToolInvokation::startServiceByDesktopPath(
         _service.desktopEntryPath(), urls.toStringList(), &error, 0L, &pid
         );
 
@@ -749,12 +750,6 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   *proc << cmd;
   KService::Ptr service = KService::serviceByDesktopName( binaryName( execName, true ) );
   return runCommandInternal( proc, service.data(), binaryName( execName, false ), execName, iconName );
-}
-
-KRun::KRun( const KURL& url, mode_t mode, bool isLocalFile, bool showProgressInfo )
-     :m_timer(0,"KRun::timer")
-{
-  init (url, 0, mode, isLocalFile, showProgressInfo);
 }
 
 KRun::KRun( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,

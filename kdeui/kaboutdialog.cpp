@@ -20,6 +20,7 @@
  *
  */
 
+
 #include <qclipboard.h>
 #include <qimage.h>
 #include <qlabel.h>
@@ -32,6 +33,8 @@
 #include <qtabbar.h>
 
 #include <kapplication.h>
+#include "ktoolinvokation.h"
+
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
@@ -1598,8 +1601,7 @@ void KAboutDialog::setVersion(const QString &_name)
 
 void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 {
-  if ( kapp )
-      kapp->invokeMailer( email, QString::null );
+  KToolInvokation::invokeMailer( email, QString::null );
   /*
   kdDebug() << "KAboutDialog::sendEmailSlot: request to send an email to "
 	<< name << ", " << email << endl;
@@ -1609,8 +1611,7 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
 
 void KAboutDialog::openURLSlot(const QString& url)
 {
-  if ( kapp )
-      kapp->invokeBrowser( url );
+  KToolInvokation::invokeBrowser( url );
   //kdDebug() << "KAboutDialog::openURLSlot: request to open URL " << url << endl;
   //emit(openURL(url));
 }

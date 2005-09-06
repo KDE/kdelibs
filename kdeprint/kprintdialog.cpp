@@ -61,6 +61,7 @@
 #include <kguiitem.h>
 #include <kstdguiitem.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kauthorized.h>
 #include <kio/renamedlg.h>
 
@@ -914,7 +915,7 @@ void KPrintDialog::slotToggleFilter(bool on)
 
 void KPrintDialog::slotHelp()
 {
-	kapp->invokeHelp(QString::null, "kdeprint");
+	KToolInvokation::invokeHelp(QString::null, "kdeprint");
 }
 
 void KPrintDialog::slotOutputFileSelected(const QString& txt)

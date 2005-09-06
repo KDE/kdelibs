@@ -20,6 +20,7 @@
 */
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kauthorized.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
 		cmd << QString::number(url.port());
 	}
 
-	app.kdeinitExec("konsole", cmd);
+	KToolInvokation::kdeinitExec("konsole", cmd);
 
 	return 0;
 }

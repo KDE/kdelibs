@@ -46,6 +46,7 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kprocess.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -881,7 +882,7 @@ pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
   }
 
   KURL url ( u );
-  KRun* run = new KRun(url);
+  KRun* run = new KRun(url,(QWidget*)0);
 
   // X-KDE-LastOpenedWith holds the service desktop entry name that
   // was should be preferred for opening this URL if possible.
@@ -903,7 +904,7 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   args << url.path();
 
   int pid;
-  if ( !KApplication::kdeinitExec("kfmclient", args, 0, &pid) )
+  if ( !KToolInvokation::kdeinitExec("kfmclient", args, 0, &pid) )
       return pid;
 
   KProcess p;

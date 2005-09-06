@@ -17,6 +17,7 @@
 */
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 
@@ -39,7 +40,7 @@ int main( int argc, char **argv )
     if ( args->count() != 1 )
         return 1;
 
-    a.invokeMailer(KURL(args->arg(0)), a.startupId(), true);
+    KToolInvokation::invokeMailer(KURL(args->arg(0)), a.startupId(), true);
 
     return 0;
 }

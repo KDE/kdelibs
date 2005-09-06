@@ -24,7 +24,6 @@
 #include <knotifyclient.h>
 #include <kglobal.h>
 
-#include <q3ptrvector.h>
 
 #include "kcompletion.h"
 #include "kcompletion_private.h"

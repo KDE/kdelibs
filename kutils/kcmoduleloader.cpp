@@ -26,6 +26,7 @@
 #include <qlayout.h>
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -162,7 +163,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
    */
   if(withfallback)
   {
-    KApplication::startServiceByDesktopPath(mod.fileName(), QString::null);
+    KToolInvokation::startServiceByDesktopPath(mod.fileName(), QString::null);
   }
   else
   {

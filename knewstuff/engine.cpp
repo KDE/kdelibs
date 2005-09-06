@@ -24,6 +24,7 @@
 #include <qtextstream.h>
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kdebug.h>
 #include <kio/job.h>
 #include <klocale.h>
@@ -315,7 +316,7 @@ void Engine::upload( Entry *entry )
                                                i18n("Upload Info"),
                                                KStdGuiItem::close() );
       if ( result == KMessageBox::Yes ) {
-        kapp->invokeBrowser( noUploadUrl.url() );
+        KToolInvokation::invokeBrowser( noUploadUrl.url() );
       }
     }
   } else {

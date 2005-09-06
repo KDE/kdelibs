@@ -24,6 +24,7 @@
 #include <qlayout.h>
 
 #include <kapplication.h>
+#include <ktoolinvokation.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -955,7 +956,7 @@ void KSpellConfig::activateHelp( void )
 
 void KSpellConfig::sHelp( void )
 {
-  kapp->invokeHelp("configuration", "kspell");
+  KToolInvokation::invokeHelp("configuration", "kspell");
 }
 
 /*
