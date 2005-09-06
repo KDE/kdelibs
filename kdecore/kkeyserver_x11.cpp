@@ -326,7 +326,7 @@ static const TransKey g_rgQtToSymX[] =
 static bool g_bInitializedMods, g_bInitializedVariations, g_bInitializedKKeyLabels;
 static bool g_bMacLabels;
 #ifdef Q_WS_X11
-static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch; 
+static uint g_modXNumLock, g_modXScrollLock, g_modXModeSwitch, g_alt_mask, g_meta_mask;
 
 bool initializeMods()
 {
@@ -334,12 +334,17 @@ bool initializeMods()
 
 	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
 
-        int min_keycode, max_keycode;
-        int keysyms_per_keycode = 0;
-        XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
-        XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
-	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
-	for( int i = Mod2MapIndex; i < 8; i++ ) {
+	int min_keycode, max_keycode;	
+	int keysyms_per_keycode = 0;
+	
+	XDisplayKeycodes( QX11Info::display(), &min_keycode, &max_keycode );
+	XFree( XGetKeyboardMapping( QX11Info::display(), min_keycode, 1, &keysyms_per_keycode ));
+	
+	// Defaults
+	g_alt_mask = Mod1Mask;
+	g_meta_mask = Mod4Mask;
+
+	for( int i = Mod1MapIndex; i < 8; i++ ) {
 		uint mask = (1 << i);
 		uint keySymX = NoSymbol;
                 // This used to be only XKeycodeToKeysym( ... , 0 ), but that fails with XFree4.3.99
@@ -350,15 +355,23 @@ bool initializeMods()
                     for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )
                         keySymX = XKeycodeToKeysym( QX11Info::display(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
 		switch( keySymX ) {
-			case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
+			case XK_Alt_L:
+			case XK_Alt_R:     g_alt_mask = mask; break; // Alt key, Normally Mod1Mask
+
 			case XK_Super_L:
-			case XK_Super_R:     g_rgModInfo[3].modX = mask; break; // Win key, Normally Mod4Mask
+			case XK_Super_R:     g_meta_mask = mask; break; // Win key, Normally Mod4Mask
+
 			case XK_Meta_L:
-			case XK_Meta_R:      if( !g_rgModInfo[3].modX ) g_rgModInfo[3].modX = mask; break; // Win alternate
+			case XK_Meta_R:      if( !g_meta_mask ) g_meta_mask = mask; break; // Win alternate
+
+			case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
 			case XK_Scroll_Lock: g_modXScrollLock = mask; break;  // Normally Mod5Mask
 			case XK_Mode_switch: g_modXModeSwitch = mask; break; 
 		}
 	}
+
+	g_rgModInfo[3].modX = g_meta_mask;
+	g_rgModInfo[2].modX = g_alt_mask;
 
 	XFreeModifiermap( xmk );
 
@@ -606,11 +619,15 @@ uint modX( KKey::ModFlag mod )
 }
 
 uint modXShift()      { return ShiftMask; }
-uint modXLock()       { return LockMask; }
 uint modXCtrl()       { return ControlMask; }
-uint modXAlt()        { return Mod1Mask; }
+uint modXAlt()        { return g_alt_mask; }
+uint modXMeta()       { if( !g_bInitializedMods ) { initializeMods(); } return g_meta_mask; }
+// KDE 3 compatibility
+uint modXWin()        { return modXMeta(); }
+
+
 uint modXNumLock()    { if( !g_bInitializedMods ) { initializeMods(); } return g_modXNumLock; }
-uint modXWin()        { if( !g_bInitializedMods ) { initializeMods(); } return g_rgModInfo[3].modX; }
+uint modXLock()       { return LockMask; }
 uint modXScrollLock() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXScrollLock; }
 uint modXModeSwitch() { if( !g_bInitializedMods ) { initializeMods(); } return g_modXModeSwitch; } 
 
@@ -620,7 +637,7 @@ uint accelModMaskX()
 {
 	if( !g_bInitializedMods )
 		initializeMods();
-	return ShiftMask | ControlMask | Mod1Mask | g_rgModInfo[3].modX;
+	return modXShift() | modXCtrl() | modXAlt() | modXMeta();
 }
 #endif //Q_WS_X11
 
