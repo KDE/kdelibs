@@ -48,12 +48,14 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
 by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 
-
 <H4>KCodecs</H4>
 <li>All methods using a Q(3)CString removed. The methods use QByteArray (and thus Q3CStrings) now. </li>
 <li><b>TODO:</b> Rename header to match classname.</li>
 
 <H4>KLibFactory</H4>
+
+<H4>KMacroExpander</H4>
+KMacroExpander now takes a QHash and not a QMap
 
 <H4>NETRootInfo</H4>
 <ul>
@@ -199,6 +201,9 @@ Use KSystemTray instead.</p>
 
 <H4>KPasswdEdit</H4>
 <li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated
+
+<H4>KPassivePopup</H4>
+<li>clicked single now emits a const QPoint refernce</li>
 
 <H4>KPopupMenu</H4>
 <li>Renamed to KMenu to reflect change in Qt</li>
