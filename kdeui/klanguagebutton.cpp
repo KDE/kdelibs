@@ -1,5 +1,5 @@
 /*
- * klanguagebutton.cpp - Adds some methods for inserting languages.
+ * Adds some methods for inserting languages.
  *
  * Copyright (c) 1999-2003 Hans Petter Bieker <bieker@kde.org>
  *

@@ -24,7 +24,7 @@
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, "ktextedittest" );
+    KApplication app( argc, argv, __FILE__ );
     KTextEdit *edit = new KTextEdit();
 
     QFile file( "ktextedittest.cpp" );

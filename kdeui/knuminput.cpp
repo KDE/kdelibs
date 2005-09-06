@@ -1,7 +1,5 @@
 // -*- c-basic-offset: 4 -*-
 /*
- * knuminput.cpp
- *
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  * Rewritten and maintained by:

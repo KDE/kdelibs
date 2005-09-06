@@ -540,7 +540,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   else if ( key == Qt::Key_Insert ) {
     if (d->overwriteEnabled)
     {
-      this->setOverwriteMode(!this->isOverwriteMode());
+      setOverwriteMode(!isOverwriteMode());
       emit toggle_overwrite_signal();
     }
   }
@@ -553,11 +553,9 @@ void KEdit::installRBPopup(Q3PopupMenu *p) {
 }
 
 void KEdit::selectFont(){
-
-  QFont font = this->font();
-  KFontDialog::getFont(font);
-  this->setFont(font);
-
+  QFont newFont = font();
+  KFontDialog::getFont(newFont);
+  setFont(newFont);
 }
 
 void KEdit::doGotoLine() {
@@ -565,7 +563,7 @@ void KEdit::doGotoLine() {
    if( !gotodialog )
       gotodialog = new KEdGotoLine( parent, "gotodialog" );
 
-   this->clearFocus();
+   clearFocus();
 
    gotodialog->exec();
    // this seems to be not necessary

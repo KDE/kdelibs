@@ -1,5 +1,3 @@
-// kurllabel.cpp
-
 // Copyright (C) 2000 Peter Putzer
 
 // This library is free software; you can redistribute it and/or

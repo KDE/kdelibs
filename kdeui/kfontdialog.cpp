@@ -103,7 +103,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   QString mainWhatsThisText =
     i18n( "Here you can choose the font to be used." );
-  this->setWhatsThis(mainWhatsThisText );
+  setWhatsThis(mainWhatsThisText );
 
   d = new KFontChooserPrivate;
   QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );

@@ -100,7 +100,7 @@ void KPassivePopup::init( int popupStyle )
     else if( popupStyle == Balloon )
     {
         setPalette(QToolTip::palette());
-        //XXX dead ? setAutoMask(TRUE);
+        //XXX dead ? setAutoMask(true);
     }
     connect( hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
     connect( this, SIGNAL( clicked() ), SLOT( hide() ) );

@@ -1,6 +1,4 @@
 /*
-    kstringvalidator.cpp
-
     Copyright (c) 2001 Marc Mutz <mutz@kde.org>
 
     This library is free software; you can redistribute it and/or

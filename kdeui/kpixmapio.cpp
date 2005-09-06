@@ -1,13 +1,12 @@
 /* vi: ts=8 sts=4 sw=4
  *
- *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>.
  *
  * You can Freely distribute this program under the GNU Library General
  * Public License. See the file "COPYING.LIB" for the exact licensing terms.
  *
- * kpixmapio.cpp: Fast pixmap <-> image conversion.
+ * Fast pixmap <-> image conversion.
  */
 
 #include "kpixmapio.h"

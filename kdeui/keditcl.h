@@ -18,8 +18,9 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __KEDITCL_H__
-#define __KEDITCL_H__
+
+#ifndef KEDITCL_H
+#define KEDITCL_H
 
 #include <q3multilineedit.h>
 #include <qstring.h>

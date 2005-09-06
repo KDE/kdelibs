@@ -1,6 +1,4 @@
 /*
- ksyntaxhighlighter.cpp
-
  Copyright (c) 2003 Trolltech AS
  Copyright (c) 2003 Scott Wheeler <wheeler@kde.org>
 

@@ -86,7 +86,7 @@ bool KWhatsThisUndefined::clicked (const QString& href)
                 "\n--%-----------------------------------------------------------------------");
         kapp -> invokeMailer ("quality-whatsthis@kde.org", "", "", subj, body);
     }
-    return TRUE;
+    return true;
 }
 
 void KWhatsThisManager::init ()

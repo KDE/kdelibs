@@ -434,7 +434,7 @@ KRuler::setLength(int length)
     tmp = length;
   }
   else {
-    tmp = this->width() - length;
+    tmp = width() - length;
   }
   if (tmp != d->endOffset_length) {
     d->endOffset_length = tmp;
@@ -448,7 +448,7 @@ KRuler::length() const
   if (d->lengthFix) {
     return d->endOffset_length;
   }
-  return (this->width() - d->endOffset_length);
+  return (width() - d->endOffset_length);
 }
 
 
@@ -477,7 +477,7 @@ int
 KRuler::endOffset() const
 {
   if (d->lengthFix) {
-    return (this->width() - d->endOffset_length);
+    return (width() - d->endOffset_length);
   }
   return d->endOffset_length;
 }
@@ -544,7 +544,7 @@ KRuler::slotEndOffset(int offset)
 {
   int tmp;
   if (d->lengthFix) {
-    tmp = this->width() - offset;
+    tmp = width() - offset;
   }
   else {
     tmp = offset;

@@ -222,7 +222,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          KPopupMenu *popup = createPopupMenu( );
          popup->exec( mev->globalPos() );
          delete popup;
-         return TRUE;
+         return true;
       }
 
       QCursor cursor;
@@ -243,7 +243,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       m_tempFirstClick=mev->pos();
 
 
-      return TRUE;
+      return true;
    }
 
    if ( ev->type() == QEvent::MouseMove )
@@ -282,7 +282,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
            m_selectedRegion.moveBy(0,m_originalPixmap.height()-m_selectedRegion.height()-m_selectedRegion.y());
            mouseOutside=true;
          }
-         if (mouseOutside) { updatePixmap(); return TRUE; };
+         if (mouseOutside) { updatePixmap(); return true; };
 
          m_selectedRegion.moveBy( mev->x()-m_tempFirstClick.x(),
                                   mev->y()-m_tempFirstClick.y() );
@@ -301,7 +301,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          m_tempFirstClick=mev->pos();
          updatePixmap();
       }
-      return TRUE;
+      return true;
    }
 
    if ( ev->type() == QEvent::MouseButtonRelease )
@@ -314,11 +314,11 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       m_state=None;
       QApplication::restoreOverrideCursor();
 
-      return TRUE;
+      return true;
    }
 
    QWidget::eventFilter(obj, ev);
-   return FALSE;
+   return false;
 }
 
 QRect KPixmapRegionSelectorWidget::calcSelectionRectangle( const QPoint & startPoint, const QPoint & _endPoint )

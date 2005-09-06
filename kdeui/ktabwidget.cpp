@@ -105,8 +105,8 @@ void KTabWidget::insertTab( QWidget *child, QTab *tab, int index )
 
 void KTabWidget::setTabBarHidden( bool hide )
 {
-    QWidget *rightcorner = this->cornerWidget( Qt::TopRightCorner );
-    QWidget *leftcorner = this->cornerWidget( Qt::TopLeftCorner );
+    QWidget *rightcorner = cornerWidget( Qt::TopRightCorner );
+    QWidget *leftcorner = cornerWidget( Qt::TopLeftCorner );
 
     if ( hide ) {
         if ( leftcorner ) leftcorner->hide();

@@ -287,7 +287,7 @@ void KEdit::replace_slot(){
   QString string = replace_dialog->getReplaceText();
   length = string.length();
 
-  this->cut();
+  cut();
 
   getCursorPosition(&line,&col);
 

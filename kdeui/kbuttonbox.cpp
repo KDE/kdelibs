@@ -104,7 +104,7 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   data->buttons.append(item);
   item->button->adjustSize();
 
-  this->updateGeometry();
+  updateGeometry();
 
   return item->button;
 }
@@ -116,7 +116,7 @@ QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
   data->buttons.append(item);
   item->button->adjustSize();
 
-  this->updateGeometry();
+  updateGeometry();
 
   return item->button;
 }
