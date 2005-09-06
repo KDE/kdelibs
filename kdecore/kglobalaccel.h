@@ -76,7 +76,7 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * insert( "Do Something", i18n("Do Something"),
 	 *   i18n("This action allows you to do something really great with this program to "
 	 *        "the currently open document."),
-	 *   ALT+CTRL+Key_Q, KKey::QtWIN+CTRL+Key_Q, this, SLOT(slotDoSomething()) );
+	 *   ALT+CTRL+Key_Q, WIN+CTRL+Key_Q, this, SLOT(slotDoSomething()) );
 	 *\endcode
 	 *
 	 * @param sAction The internal name of the action.

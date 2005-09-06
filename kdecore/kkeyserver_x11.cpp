@@ -112,7 +112,7 @@ static ModInfo g_rgModInfo[KKey::MOD_FLAG_COUNT] =
 	{ KKey::SHIFT, Qt::SHIFT,   X11_ONLY(ShiftMask)   I18N_NOOP("Shift"), QString() },
 	{ KKey::CTRL,  Qt::CTRL,    X11_ONLY(ControlMask) I18N_NOOP("Ctrl"), QString() },
 	{ KKey::ALT,   Qt::ALT,     X11_ONLY(Mod1Mask)    I18N_NOOP("Alt"), QString() },
-	{ KKey::WIN,   KKey::QtWIN, X11_ONLY(Mod4Mask)    I18N_NOOP("Win"), QString() }
+	{ KKey::WIN,   Qt::META,    X11_ONLY(Mod4Mask)    I18N_NOOP("Win"), QString() }
 };
 
 // Special Names List
