@@ -16,13 +16,11 @@
 #include <qfile.h>
 #include <qstring.h>
 #include <kdebug.h>
-#include <kunittest/module.h>
+#include <QtTest/qttest_kde.h>
 #include "kconfigcompiler_test.h"
+#include "kconfigcompiler_test.moc"
 
-using namespace KUnitTest;
-
-KUNITTEST_MODULE( kunittest_kconfigcompiler_test, "KConfigXT");
-KUNITTEST_MODULE_REGISTER_TESTER( KConfigCompiler_Test );
+QTTEST_KDEMAIN( KConfigCompiler_Test, NoGUI );
 
 typedef const char * CompilerTestSet[];
 
@@ -37,8 +35,8 @@ static CompilerTestSet testCases =
 	"test7.cpp", "test7.h",
 	"test8a.cpp", "test8a.h",
 	"test8b.cpp", "test8b.h",
-	"test9.h", "test9.cpp", 
-	"test_dpointer.cpp", "test_dpointer.h",	 
+	"test9.h", "test9.cpp",
+	"test_dpointer.cpp", "test_dpointer.h",
 	NULL
 };
 
@@ -49,11 +47,6 @@ static CompilerTestSet willFailCases =
 	NULL
 };
 
-
-void KConfigCompiler_Test::allTests()
-{
-	testExpectedOutput();
-}
 
 void KConfigCompiler_Test::testExpectedOutput()
 {
@@ -78,19 +71,20 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 {
 	QFile file(fileName);
 	QFile fileRef(QString::fromLatin1(SRCDIR) + QString::fromLatin1("/") + fileName + QString::fromLatin1(".ref"));
-	
+
 	if ( file.open(IO_ReadOnly) && fileRef.open(IO_ReadOnly) )
 	{
 		QString content = file.readAll();
 		QString contentRef = fileRef.readAll();
-		
+
 		if (!fail)
-			CHECK( content, contentRef);
+			COMPARE( content, contentRef );
 		else
-			XFAIL( content, contentRef);
+                    FAIL( "not implemented" ); // missing in qttestlib?
+                // wrong? EXPECT_FAIL( "", content, contentRef );
 	}
 	else
 	{
-		SKIP("Can't open file for comparision");
+		SKIP("Can't open file for comparison", SkipSingle);
 	}
 }

@@ -32,36 +32,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-QTTEST_KDEMAIN( KTempFileTest, false )
+QTTEST_KDEMAIN( KTempFileTest, NoGUI )
 
 void KTempFileTest::testBasic()
 {
-   printf("Making tempfile after KApplication constructor.\n");
-   KTempFile f4;
-   f4.setAutoDelete( true );
-   qDebug("Filename = %s", qPrintable(f4.name()));
-   bool exists = QFile::exists( f4.name() );
-   VERIFY( exists );
+    printf("Making tempfile after KApplication constructor.\n");
+    KTempFile f4;
+    f4.setAutoDelete( true );
+    qDebug("Filename = %s", qPrintable(f4.name()));
+    bool exists = QFile::exists( f4.name() );
+    VERIFY( exists );
 }
 
 void KTempFileTest::testFixedExtension()
 {
-   printf("Making tempfile with \".ps\" extension.\n");
-   KTempFile f2(QString::null, ".ps");
-   f2.setAutoDelete( true );
-   qDebug("Filename = %s", qPrintable(f2.name()));
-   COMPARE( f2.name().right(3), QString::fromLatin1(".ps") );
+    printf("Making tempfile with \".ps\" extension.\n");
+    KTempFile f2(QString::null, ".ps");
+    f2.setAutoDelete( true );
+    qDebug("Filename = %s", qPrintable(f2.name()));
+    COMPARE( f2.name().right(3), QString::fromLatin1(".ps") );
 }
 
 void KTempFileTest::testHomeDir()
 {
-   printf("Making tempfile in home directory.\n");
-   const QString home = QDir::homeDirPath();
-   KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
-   f3.setAutoDelete( true );
-   qDebug("Filename = %s", qPrintable(f3.name()));
-   COMPARE( f3.name().left( home.length() ), home );
-   COMPARE( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
+    printf("Making tempfile in home directory.\n");
+    const QString home = QDir::homeDirPath();
+    KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
+    f3.setAutoDelete( true );
+    qDebug("Filename = %s", qPrintable(f3.name()));
+    COMPARE( f3.name().left( home.length() ), home );
+    COMPARE( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
 }
 
 //QString name = locateLocal("socket", "test");

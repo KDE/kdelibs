@@ -1,5 +1,6 @@
 
 #include <kcharsets.h>
+#include <QString>
 
 #include <assert.h>
 

@@ -38,13 +38,11 @@ int main(int argc, char *argv[])
   KURL::List lst;
 
   KURL emptyURL;
-  check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
   check( "prettyURL()", emptyURL.prettyURL(), "");
 
   emptyURL = "";
-  check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
 

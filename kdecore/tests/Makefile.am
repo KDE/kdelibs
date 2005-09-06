@@ -28,13 +28,13 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	cplusplustest kiconloadertest kmdcodectest knotifytest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
-	kxerrorhandlertest startserviceby kstdacceltest kglobaltest ktimezonestest \
-	kconfigtest ktempfiletest kurlmimetest
+	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
+	kconfigtest ktempfiletest kurlmimetest kstdacceltest
 
-TESTS = kurltest kstdacceltest ktempfiletest
+# TODO kurltest4 when it works
 
-noinst_HEADERS = klocaletest.h kprocesstest.h KIDLTest.h \
-		kipctest.h kprociotest.h
+TESTS = kurltest \
+	kconfigtest ktempfiletest kurlmimetest kstdacceltest
 
 METASOURCES = AUTO
 
@@ -46,7 +46,6 @@ klocaletest_SOURCES = klocaletest.cpp
 #kcatalogue_SOURCES = kcatalogue.cpp libintl.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kurltest_SOURCES = kurltest.cpp
-kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
 kstddirstest_SOURCES = kstddirstest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kuniqueapptest_SOURCES = kuniqueapptest.cpp
@@ -74,7 +73,6 @@ kmacroexpandertest_SOURCES = kmacroexpandertest.cpp
 kshelltest_SOURCES = kshelltest.cpp
 kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
 startserviceby_SOURCES = startserviceby.cpp
-kstdacceltest_SOURCES = kstdacceltest.cpp
 kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
@@ -84,3 +82,7 @@ kurlmimetest_SOURCES = kurlmimetest.cpp
 kurlmimetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kstdacceltest_SOURCES = kstdacceltest.cpp
+kstdacceltest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
+kurltest4_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la

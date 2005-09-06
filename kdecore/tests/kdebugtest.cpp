@@ -16,7 +16,7 @@ public:
     kdDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kdDebug(150) << test << endl;
-    Q3CString cstr = test.latin1();
+    QByteArray cstr = test.latin1();
     kdDebug(150) << test << endl;
     QChar ch = 'a';
     kdDebug() << "QChar a: " << ch << endl;

@@ -1,6 +1,10 @@
-AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kunittest $(all_includes) -DQT_NO_CAST_ASCII -DSRCDIR=\"$(srcdir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/kdecore -I$(top_srcdir)/qttestlib $(all_includes) -DQT_NO_CAST_ASCII -DSRCDIR=\"$(srcdir)\"
 
-check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9 test_dpointer
+METASOURCES = AUTO
+
+LDADD = $(LIB_KDECORE)
+
+check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8 test9 test_dpointer kconfigcompiler_test
 
 CLEANFILES = test1.cpp test1.h \
              test2.cpp test2.h \
@@ -15,51 +19,40 @@ CLEANFILES = test1.cpp test1.h \
              md5sums
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test1_LDADD = $(LIB_KDECORE)
 test1_SOURCES = test1main.cpp test1.cpp
 
 test2_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test2_LDADD = $(LIB_KDECORE)
 test2_SOURCES = test2main.cpp test2.cpp
 
 test3_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test3_LDADD = $(LIB_KDECORE)
 test3_SOURCES = test3main.cpp test3.cpp
 
 test4_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test4_LDADD = $(LIB_KDECORE)
 test4_SOURCES = test4main.cpp test4.cpp
 
 test5_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test5_LDADD = $(LIB_KDECORE)
 test5_SOURCES = test5main.cpp test5.cpp
 
 test6_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test6_LDADD = $(LIB_KDECORE)
 test6_SOURCES = test6main.cpp test6.cpp
 
 test7_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test7_LDADD = $(LIB_KDECORE)
 test7_SOURCES = test7main.cpp test7.cpp
 
 test8_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test8_LDADD = $(LIB_KDECORE)
 test8_SOURCES = test8main.cpp test8a.cpp test8b.cpp
 
 test9_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test9_LDADD = $(LIB_KDECORE)
 test9_SOURCES = test9main.cpp test9.cpp
 
 test_dpointer_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-test_dpointer_LDADD = $(LIB_KDECORE)
 test_dpointer_SOURCES = test_dpointer_main.cpp test_dpointer.cpp
 
-check_LTLIBRARIES = kunittest_kconfigcompiler_test.la
+kconfigcompiler_test_SOURCES = kconfigcompiler_test.cpp
+kconfigcompiler_test_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kconfigcompiler_test_LDFLAGS = $(all_libraries)
 
-kunittest_kconfigcompiler_test_la_SOURCES = kconfigcompiler_test.cpp
-kunittest_kconfigcompiler_test_la_LIBADD = -lkunittest
-kunittest_kconfigcompiler_test_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
-
+TESTS = kconfigcompiler_test
 
 test1main.o test1.o: test1.h
 # avoid running the below command in parallel

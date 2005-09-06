@@ -22,7 +22,7 @@ class Dummy : public QObject
  public slots:
    void printMessage(KProcess *proc)
    {
-     printf("Process %d exited!\n", (int)proc->getPid()); 
+     printf("Process %d exited!\n", (int)proc->pid()); 
    } 
  
    void gotOutput(KProcIO*proc)

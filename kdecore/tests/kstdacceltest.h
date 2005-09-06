@@ -16,17 +16,20 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLMIMETEST_H
-#define KURLMIMETEST_H
+#ifndef KSTDACCELTEST_H
+#define KSTDACCELTEST_H
 
-#include <qobject.h>
+#include <QObject>
 
-class KURLMimeTest : public QObject
+class KStdAccelTest : public QObject
 {
     Q_OBJECT
 private slots:
-    void testURLList();
-    void testOneURL();
+    void testShortcutDefault();
+    void testName();
+    void testLabel();
+    void testShortcut();
+    void testFindStdAccel();
 };
 
 

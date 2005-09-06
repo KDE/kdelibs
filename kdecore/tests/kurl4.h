@@ -23,8 +23,10 @@
 
 #include <qurl.h>
 #include "kdelibs_export.h"
+#include <qmap.h>
 
 class QStringList;
+class QMimeData;
 
 class KURLPrivate;
 #define KURL KURL4
@@ -34,9 +36,13 @@ class KURLPrivate;
 // and this way hacks like setPath() would be less ugly, and we could avoid
 // half KDE code using setScheme() and the other half using setProtocol(), etc.
 // (DF)
+// TODO: fromPath(), since we using QUrl::fromLocalFile would then make a QUrl->KURL copy.
 class KDECORE_EXPORT KURL : public QUrl
 {
 public:
+  typedef QMap<QString, QString> MetaDataMap;
+  enum MimeDataFlags { DefaultMimeDataFlags = 0, NoTextExport = 1 };
+
   /**
    * KURL::List is a QList that contains KURLs with a few
    * convenience methods.
@@ -67,6 +73,47 @@ public:
        * @return the list of strings
        */
       QStringList toStringList() const;
+
+      /**
+       * Adds URLs data into the given QMimeData.
+       *
+       * By default, addToMimeData also exports the URLs as plain text, for e.g. dropping
+       * onto a text editor.
+       * But in some cases this might not be wanted, e.g. if adding other mime data
+       * which provides better plain text data.
+       *
+       * WARNING: do not call this method multiple times on the same mimedata object,
+       * you can add urls only once. But you can add other things, e.g. images, XML...
+       *
+       * @param mimeData the QMimeData instance used to drag or copy this URL
+       * @param metaData KIO metadata shipped in the mime data, which is used for instance to
+       * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
+       * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
+       * In such a case, setExportAsText( false ) should be called.
+       *
+       * @since 4.0
+       */
+      void addToMimeData( QMimeData* mimeData,
+                          const KURL::MetaDataMap& metaData = MetaDataMap(),
+                          MimeDataFlags flags = DefaultMimeDataFlags );
+
+      /**
+       * Return true if @p mimeData contains URI data
+       * @since 4.0
+       */
+      static bool canDecode( const QMimeData *mimeData );
+
+      /**
+       * Extract a list of KURLs from the contents of @p mimeData.
+       * Decoding will fail if @p mimeData does not contain any URLs, or if at
+       * least one extracted URL is not valid.
+       * @param mimeData the mime data to extract from; cannot be 0
+       * @param metaData optional pointer to a map holding the metadata
+       * @return the list of urls
+       * @since 4.0
+       */
+      static KURL::List fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData = 0 );
+
   };
   /**
    * Constructs an empty URL.
@@ -297,13 +344,13 @@ public:
    * The reference is @em never decoded automatically.
    * @return the undecoded reference, or QString::null if there is none
    */
-  QString ref() const { return fragment(); }
+  QString ref() const { return QUrl::toPercentEncoding( fragment() ); }
 
   /**
    * Sets the reference part (everything after '#').
    * @param fragment the encoded reference (or QString::null to remove it).
    */
-  void setRef( const QString& fragment ) { setFragment( fragment ); }
+  void setRef( const QString& fragment ) { setFragment( QUrl::fromPercentEncoding( fragment.latin1() ) ); }
 
   /**
    * Checks whether the URL has a reference part.
@@ -533,6 +580,14 @@ public:
   QString htmlURL() const;
 
   /**
+   * Returns the URL as a string, using the standard conventions for mime data
+   * (drag-n-drop or copy-n-paste).
+   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * @since 4.0
+   */
+  QString toMimeDataString() const;
+
+  /**
    * This function is useful to implement the "Up" button in a file manager for example.
    * cd() never strips a sub-protocol. That means that if you are in
    * file:///home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
@@ -643,6 +698,36 @@ public:
    * @since 3.1
    */
   static KURL fromPathOrURL( const QString& text );
+
+  /**
+   * Creates a KURL from a string, using the standard conventions for mime data
+   * (drag-n-drop or copy-n-paste).
+   * Internally used by KURL::List::fromMimeData, which is probably what you want to use instead.
+   * @since 4.0
+   */
+  static KURL fromMimeDataByteArray( const QByteArray& str );
+
+  /**
+   * Adds URL data into the given QMimeData.
+   *
+   * By default, addToMimeData also exports the URL as plain text, for e.g. dropping
+   * onto a text editor.
+   * But in some cases this might not be wanted, e.g. if adding other mime data
+   * which provides better plain text data.
+   *
+   * WARNING: do not call this method multiple times, use KURL::List::addToMimeData instead.
+   *
+   * @param mimeData the QMimeData instance used to drag or copy this URL
+   * @param metaData KIO metadata shipped in the mime data, which is used for instance to
+   * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
+   * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
+   * In such a case, setExportAsText( false ) should be called.
+   *
+   * @since 4.0
+   */
+  void addToMimeData( QMimeData* mimeData,
+                      const MetaDataMap& metaData = MetaDataMap(),
+                      MimeDataFlags flags = DefaultMimeDataFlags );
 
   /**
    * Convenience function.

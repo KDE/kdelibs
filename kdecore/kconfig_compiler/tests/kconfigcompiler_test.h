@@ -16,16 +16,14 @@
 #ifndef KCONFIGCOMPILER_TEST_H
 #define KCONFIGCOMPILER_TEST_H
 
-#include <kunittest/tester.h>
+#include <QObject>
 
 class QString;
 
-// change to SlotTester when it works
-class KConfigCompiler_Test : public KUnitTest::Tester
+class KConfigCompiler_Test : public QObject
 {
-public:
-	void allTests();
-public slots:
+	Q_OBJECT
+private slots:
 	void testExpectedOutput();
 private:
 	void performCompare(const QString &fileName, bool fail=false);

@@ -1,5 +1,7 @@
 #include "ktimezones.h"
 #include <kapplication.h>
+#include <qdatetime.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -23,7 +23,7 @@
 
 #include "kurlmimetest.moc"
 
-QTTEST_KDEMAIN( KURLMimeTest, false )
+QTTEST_KDEMAIN( KURLMimeTest, NoGUI )
 
 void KURLMimeTest::testURLList()
 {

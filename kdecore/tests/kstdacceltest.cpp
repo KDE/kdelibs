@@ -1,45 +1,56 @@
-#include <config.h>
+/* This file is part of the KDE libraries
+    Copyright (c) 2005 David Faure <faure@kde.org>
 
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#include <QtTest/qttest_kde.h>
+#include "kstdacceltest.h"
+#include "kstdacceltest.moc"
+
+QTTEST_KDEMAIN( KStdAccelTest, NoGUI )
+
 #include <kdebug.h>
 #include <kstdaccel.h>
-#include <stdlib.h> // for exit
 
-static bool check(QString txt, QString a, QString b)
+void KStdAccelTest::testShortcutDefault()
 {
-  if (a.isEmpty())
-     a = QString::null;
-  if (b.isEmpty())
-     b = QString::null;
-  if (a == b) {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
-  }
-  else {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
-    exit(1);
-  }
-  return true;
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QString::fromLatin1( "Ctrl+Shift+F" ) );
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QString::fromLatin1( "Home" ) );
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QString::fromLatin1( "End" ) );
 }
 
-int main(int argc, char *argv[])
+void KStdAccelTest::testName()
 {
-  KApplication::disableAutoDcopRegistration();
-  KAboutData about("kstdacceltest", "kstdacceltest", "version");
-  KCmdLineArgs::init(argc, argv, &about);
+    COMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QString::fromLatin1( "BeginningOfLine" ) );
+    COMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QString::fromLatin1( "EndOfLine" ) );
+}
 
-  KApplication app;
+void KStdAccelTest::testLabel()
+{
+    // Tests run in English, right?
+    COMPARE( KStdAccel::label( KStdAccel::FindNext ), QString::fromLatin1( "Find Next" ) );
+}
 
+void KStdAccelTest::testShortcut()
+{
+    COMPARE( KStdAccel::shortcut( KStdAccel::ZoomIn ).toString(), KStdAccel::zoomIn().toString() );
+}
 
-  check( "shortcutDefault FullScreen", KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), "Ctrl+Shift+F" );
-  check( "shortcutDefault BeginningOfLine", KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), "Home" );
-  check( "shortcutDefault EndOfLine", KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), "End" );
-
-  check( "name BeginningOfLine", KStdAccel::name( KStdAccel::BeginningOfLine ), "BeginningOfLine" );
-  check( "name EndOfLine", KStdAccel::name( KStdAccel::EndOfLine ), "EndOfLine" );
-
-  check( "shortcut method", KStdAccel::shortcut( KStdAccel::ZoomIn ).toString(), KStdAccel::zoomIn().toString() );
-
-  return 0;
+void KStdAccelTest::testFindStdAccel()
+{
+    COMPARE( KStdAccel::findStdAccel( QString( "Ctrl+F" ) ), KStdAccel::Find );
+    COMPARE( KStdAccel::findStdAccel( QString( "Ctrl+Shift+Alt+G" ) ), KStdAccel::AccelNone );
 }

@@ -1,4 +1,5 @@
 #include "kstringhandler.h"
+#include <QString>
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
   QString test = "The quick brown fox jumped over the lazy bridge. ";
 
   check("word(test, 3)", 
-	KStringHandler::word(test, 2), 
+	KStringHandler::word(test, "2"),
 	"brown");
   check("word(test, \"3:5\")", 
 	KStringHandler::word(test, "2:4"), 
@@ -49,26 +50,7 @@ int main(int argc, char *argv[])
   check("reverse(test)", 
 	KStringHandler::reverse(test),
        " bridge. lazy the over jumped fox brown quick The"); 
-  QString result;
-  result = KStringHandler::ljust(test, 70);
-  if (result.length() != 70)
-  {
-     printf("Length = %d, expected 70.\n", result.length());
-     exit(1);
-  }
-  check("ljust(test, 70)", 
-	result,
-        "The quick brown fox jumped over the lazy bridge.                      ");
-  result = KStringHandler::rjust(test, 70);
-  if (result.length() != 70)
-  {
-     printf("Length = %d, expected 70.\n", result.length());
-     exit(1);
-  }
-  check("rjust(test, 70)", 
-	result,
-        "                      The quick brown fox jumped over the lazy bridge.");
-  result = KStringHandler::center(test, 70);
+  QString result = KStringHandler::center(test, 70);
   if (result.length() != 70)
   {
      printf("Length = %d, expected 70.\n", result.length());

@@ -6,6 +6,7 @@
 #include "kcalendarsystem.h"
 
 #include <qstringlist.h>
+#include <qdatetime.h>
 
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -44,6 +45,7 @@ int main(int argc, char **argv) {
 
         KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
+        KApplication::disableAutoDcopRegistration();
 	KApplication app(false, false);
 
         QStringList lst = KCalendarSystemFactory::calendarSystems();

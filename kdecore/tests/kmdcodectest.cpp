@@ -332,11 +332,12 @@ int main (int argc, char *argv[])
         KCmdLineLastOption
     };
 
-    KCmdLineArgs::init( argc, argv, "kmdcodectest", description, version );
+    KCmdLineArgs::init( argc, argv, "kmdcodectest", "KMDCodecTest", description, version );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
 
+    KApplication::disableAutoDcopRegistration();
     KApplication app;
 
     if (!count)

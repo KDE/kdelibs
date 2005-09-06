@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/*
     Copyright (c) 2005 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -16,18 +16,43 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KURLMIMETEST_H
-#define KURLMIMETEST_H
+#ifndef ktempfiletest_h
+#define ktempfiletest_h
 
 #include <qobject.h>
 
-class KURLMimeTest : public QObject
+class KURLTest : public QObject
 {
     Q_OBJECT
 private slots:
-    void testURLList();
-    void testOneURL();
+    void testQUrl();
+    void testEmptyURL();
+    void testIsValid();
+    void testSetQuery();
+    void testSetRef();
+    void testDirectory();
+    void testUtf8();
+    void testSimpleMethods();
+    void testSetFileName();
+    void testPrettyURL();
+    void testIsRelative();
+    void testIPV6();
+    void testBaseURL();
+    void testSubURL();
+    void testComparisons();
+    void testStreaming();
+    void testBrokenStuff();
+    void testMailto();
+    void testSmb();
+    void testOtherProtocols();
+    void testOtherEncodings();
+    void testPathOrURL();
+    void testQueryItem();
+    void testEncodeString();
+    void testIdn();
+    void testUriMode();
+    void testOther();
 };
 
-
 #endif
+
