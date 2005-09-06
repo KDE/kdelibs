@@ -78,9 +78,9 @@ KACLEditWidget::KACLEditWidget( QWidget *parent, const char *name )
             this, SLOT( slotUpdateButtons() ) );
     QVBox *vbox = new QVBox( hbox );
     vbox->setSpacing(  KDialog::spacingHint() );
-    m_AddBtn = new QPushButton( i18n( "Add Entry" ), vbox, "add_entry_button" );
+    m_AddBtn = new QPushButton( i18n( "Add Entry..." ), vbox, "add_entry_button" );
     connect( m_AddBtn, SIGNAL( clicked() ), m_listView, SLOT( slotAddEntry() ) );
-    m_EditBtn = new QPushButton( i18n( "Edit Entry" ), vbox, "edit_entry_button" );
+    m_EditBtn = new QPushButton( i18n( "Edit Entry..." ), vbox, "edit_entry_button" );
     connect( m_EditBtn, SIGNAL( clicked() ), m_listView, SLOT( slotEditEntry() ) );
     m_DelBtn = new QPushButton( i18n( "Delete Entry" ), vbox, "delete_entry_button" );
     connect( m_DelBtn, SIGNAL( clicked() ), m_listView, SLOT( slotRemoveEntry() ) );
@@ -358,7 +358,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
                                         int allowedTypes, int allowedDefaultTypes,
                                         bool allowDefaults )
       : KDialogBase( listView, "edit_entry_dialog", true,
-              i18n( "Edit ACL entry" ), KDialogBase::Ok|KDialogBase::Cancel,
+              i18n( "Edit ACL Entry" ), KDialogBase::Ok|KDialogBase::Cancel,
               KDialogBase::Ok, false ), 
         m_listView( listView ), m_item( item ), m_users( users ), m_groups( groups ),
         m_defaultUsers( defaultUsers ), m_defaultGroups( defaultGroups ),
@@ -368,7 +368,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     QWidget *page = new QWidget(  this );
     setMainWidget( page );
     QVBoxLayout *mainLayout = new QVBoxLayout( page, 0, spacingHint(), "mainLayout" );
-    m_buttonGroup = new QVButtonGroup( i18n("Entry type"), page, "bg" );
+    m_buttonGroup = new QVButtonGroup( i18n("Entry Type"), page, "bg" );
 
     if ( allowDefaults ) {
         m_defaultCB = new QCheckBox( i18n("Default for new files in this directory"), page, "defaultCB" );
