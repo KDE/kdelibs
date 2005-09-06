@@ -48,7 +48,6 @@ class KDECORE_EXPORT KKey
 	 * @see ModFlag
 	 */
 	enum { MOD_FLAG_COUNT = 4 };
-	enum { QtWIN = (Qt::META) };
 	/**
 	 * Flags to represent the modifiers. You can combine modifiers
 	 * by ORing them.
