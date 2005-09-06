@@ -43,7 +43,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
 	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalogue.h \
 	kcompletion.h kstringhandler.h \
-	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
+	kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
