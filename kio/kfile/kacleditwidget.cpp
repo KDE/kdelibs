@@ -371,7 +371,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_buttonGroup = new QVButtonGroup( i18n("Entry Type"), page, "bg" );
 
     if ( allowDefaults ) {
-        m_defaultCB = new QCheckBox( i18n("Default for new files in this directory"), page, "defaultCB" );
+        m_defaultCB = new QCheckBox( i18n("Default for new files in this folder"), page, "defaultCB" );
         mainLayout->addWidget( m_defaultCB );
         connect( m_defaultCB, SIGNAL( toggled( bool ) ),
                  this, SLOT( slotUpdateAllowedUsersAndGroups() ) );
