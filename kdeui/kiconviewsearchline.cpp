@@ -55,16 +55,15 @@ public:
  * Public Methods                                                             *
  *****************************************************************************/
 KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
-					  Q3IconView *iconView,
-					  const char *name ) :
-  KLineEdit( parent, name )
+					  Q3IconView *iconView ) :
+  KLineEdit( parent )
 {
   d = NULL;
   init( iconView );
 }
 
-KIconViewSearchLine::KIconViewSearchLine( QWidget *parent, const char *name ) :
-  KLineEdit( parent, name )
+KIconViewSearchLine::KIconViewSearchLine( QWidget *parent ) :
+  KLineEdit( parent )
 {
   d = NULL;
   init( NULL );

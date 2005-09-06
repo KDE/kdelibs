@@ -49,14 +49,13 @@ public:
    * is set with setIconView().
    */
   KIconViewSearchLine( QWidget *parent = 0,
-		       Q3IconView *iconView = 0,
-		       const char *name = 0 );
+		       Q3IconView *iconView = 0 );
 
   /**
    * Constructs a KIconViewSearchLine without any QIconView to filter. The
    * QIconView object has to be set later with setIconView().
    */
-  KIconViewSearchLine( QWidget *parent, const char *name );
+  KIconViewSearchLine( QWidget *parent );
 
   /**
    * Destroys the KIconViewSearchLine.
