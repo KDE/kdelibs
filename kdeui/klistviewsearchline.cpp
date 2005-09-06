@@ -71,6 +71,8 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView) :
             this, SLOT(queueSearch(const QString &)));
 
     setListView( listView );
+	if( !listView)
+			setEnabled(false);
 }
 
 KListViewSearchLine::KListViewSearchLine(QWidget *parent,
@@ -85,16 +87,6 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent,
     setListViews( listViews );
 }
 
-KListViewSearchLine::KListViewSearchLine(QWidget *parent) :
-    KLineEdit(parent)
-{
-    d = new KListViewSearchLinePrivate;
-
-    connect(this, SIGNAL(textChanged(const QString &)),
-            this, SLOT(queueSearch(const QString &)));
-
-    setEnabled(false);
-}
 
 KListViewSearchLine::~KListViewSearchLine()
 {
