@@ -32,10 +32,10 @@
 #include <q3popupmenu.h>
 #include <QMenuItem>
 #include <QStyleOptionToolButton>
+#include <qapplication.h>
 
 #include "kdatepicker.h"
 #include <kglobal.h>
-#include <kapplication.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>

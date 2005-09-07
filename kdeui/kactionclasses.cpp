@@ -1198,7 +1198,7 @@ void KRecentFilesAction::clearURLList()
     d->m_urls.clear();
 }
 
-void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
+void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
 {
     QString     key;
     QString     value;
@@ -1212,8 +1212,9 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     oldGroup = config->group();
 
     if (groupname.isEmpty())
-      groupname = "RecentFiles";
-    config->setGroup( groupname );
+      config->setGroup("RecentFiles");
+    else
+      config->setGroup( groupname );
 
     // read file list
     for( int i = 1 ; i <= d->m_maxItems ; i++ )
@@ -1238,7 +1239,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, QString groupname)
     config->setGroup( oldGroup );
 }
 
-void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
+void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname )
 {
     QString     key;
     QString     value;
@@ -1247,10 +1248,11 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
 
     oldGroup = config->group();
 
+    QString group = groupname;
     if (groupname.isEmpty())
-      groupname = "RecentFiles";
-    config->deleteGroup( groupname, true );
-    config->setGroup( groupname );
+      group = "RecentFiles";
+    config->deleteGroup( group, true );
+    config->setGroup( group );
 
     // write file list
     for( int i = 1 ; i <= lst.count() ; i++ )

@@ -24,7 +24,7 @@
 #include "kshortcut.h"
 #include "ksystemtray.h"
 #include "kpopupmenu.h"
-#include "kapplication.h"
+#include <kapplication.h>
 #include "klocale.h"
 #include "kaboutdata.h"
 

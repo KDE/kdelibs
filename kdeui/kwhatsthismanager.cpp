@@ -22,7 +22,6 @@
 #include <kdebug.h>
 #include <q3textedit.h>
 #include <klocale.h>
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 
 KWhatsThisManager *KWhatsThisManager::s_instance = 0;

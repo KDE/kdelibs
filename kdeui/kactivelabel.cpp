@@ -19,7 +19,6 @@
 
 #include "kactivelabel.h"
 
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <qregexp.h>
 #include <q3simplerichtext.h>

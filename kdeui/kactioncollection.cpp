@@ -33,7 +33,6 @@
 
 #include <kaccel.h>
 #include <kaccelbase.h>
-#include <kapplication.h>
 #include <kdebug.h>
 
 #include <q3popupmenu.h>
@@ -718,7 +717,7 @@ const KInstance* KActionShortcutList::instance() const
 	{ return m_actions.instance(); }
 QVariant KActionShortcutList::getOther( Other, uint ) const
 	{ return QVariant(); }
-bool KActionShortcutList::setOther( Other, uint, QVariant )
+bool KActionShortcutList::setOther( Other, uint, const QVariant &)
 	{ return false; }
 const KAction *KActionShortcutList::action( uint i) const
 	{ return m_actions.action(i); }
@@ -801,7 +800,7 @@ bool KActionPtrShortcutList::setShortcut( uint i, const KShortcut& cut )
 	{ return m_actions[i]->setShortcut( cut ); }
 QVariant KActionPtrShortcutList::getOther( Other, uint ) const
 	{ return QVariant(); }
-bool KActionPtrShortcutList::setOther( Other, uint, QVariant )
+bool KActionPtrShortcutList::setOther( Other, uint, const QVariant &)
 	{ return false; }
 bool KActionPtrShortcutList::save() const
 	{ return false; }

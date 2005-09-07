@@ -27,7 +27,7 @@ class KDEUI_EXPORT KActionShortcutList : public KShortcutList
 	virtual const KInstance* instance() const;
 
 	virtual QVariant getOther( Other, uint index ) const;
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, uint index, const QVariant &);
 
 	virtual bool save() const;
 
@@ -63,7 +63,7 @@ class KDEUI_EXPORT KActionPtrShortcutList : public KShortcutList
 	virtual bool setShortcut( uint, const KShortcut& );
 
 	virtual QVariant getOther( Other, uint index ) const;
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, uint index, const QVariant &);
 
 	virtual bool save() const;
 

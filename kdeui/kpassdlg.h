@@ -225,7 +225,7 @@ public:
     /**
      * Sets the password prompt.
      */
-    void setPrompt(QString prompt);
+    void setPrompt(const QString &prompt);
 
     /**
      * Returns the password prompt.
@@ -235,7 +235,7 @@ public:
     /**
      * Adds a line of information to the dialog.
      */
-    void addLine(QString key, QString value);
+    void addLine(const QString &key, const QString &value);
 
     /**
      * Allow empty passwords? - Default: false
@@ -345,7 +345,7 @@ public:
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
-    static int getPassword(QWidget *parent,Q3CString &password, QString prompt, int *keep=0L);
+    static int getPassword(QWidget *parent,Q3CString &password, const QString &prompt, int *keep=0L);
 
     /**
      * Pops up the dialog, asks the user for a password and returns it. The

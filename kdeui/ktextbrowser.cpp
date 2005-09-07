@@ -20,7 +20,6 @@
 
 #include <q3popupmenu.h>
 #include <qevent.h>
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>

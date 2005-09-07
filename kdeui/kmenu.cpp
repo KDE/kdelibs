@@ -27,7 +27,6 @@
 #include "kmenu.h"
 
 #include <kdebug.h>
-#include <kapplication.h>
 
 class KMenu::KMenuPrivate
 {

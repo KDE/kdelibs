@@ -29,7 +29,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kspell.h>
-#include <kapplication.h>
 #include <q3dict.h>
 #include <QKeyEvent>
 

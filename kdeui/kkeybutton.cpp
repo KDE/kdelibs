@@ -27,7 +27,6 @@
 #include <QPolygon>
 #include <QStyle>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kglobalaccel.h>
 #include <klocale.h>

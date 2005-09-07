@@ -34,8 +34,8 @@
 #include <QHideEvent>
 #include <QDesktopWidget>
 #include <QWhatsThis>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <klocale.h>
 #include <kconfig.h>

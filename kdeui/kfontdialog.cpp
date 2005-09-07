@@ -41,7 +41,6 @@
 #include <qfontdatabase.h>
 #include <qtooltip.h>
 
-#include <kapplication.h>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>

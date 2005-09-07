@@ -26,8 +26,8 @@
 #include <Q3HButtonGroup>
 
 #include <kaboutdata.h>
-#include <kapplication.h>
 #include "ktoolinvocation.h"
+#include <qapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <klineedit.h>
@@ -36,6 +36,7 @@
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
+#include <kinstance.h>
 #include <kurl.h>
 #include <kurllabel.h>
 

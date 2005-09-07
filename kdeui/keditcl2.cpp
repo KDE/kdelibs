@@ -31,7 +31,6 @@
 #include <q3popupmenu.h>
 #include <Q3VButtonGroup>
 
-#include <kapplication.h>
 #include <kcombobox.h>
 #include <knuminput.h>
 #include <kmessagebox.h>

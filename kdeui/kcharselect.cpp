@@ -37,8 +37,8 @@
 #include <qtooltip.h>
 #include <qvalidator.h>
 #include <q3valuelist.h>
+#include <qapplication.h>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>

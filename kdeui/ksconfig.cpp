@@ -23,7 +23,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kdebug.h>

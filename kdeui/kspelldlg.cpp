@@ -24,7 +24,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 
-#include <kapplication.h>
 #include <klocale.h>
 #include <klistbox.h>
 #include <kcombobox.h>

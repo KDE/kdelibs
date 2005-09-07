@@ -1405,7 +1405,7 @@ KSpell::modalCheck( QString& text, KSpellConfig* _kcs )
                               0, _kcs, true, true );
 
   while (spell->status()!=Finished)
-    kapp->processEvents();
+    qApp->processEvents();
 
   text = modaltext;
 

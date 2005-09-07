@@ -23,8 +23,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kactionclasses_h__
-#define __kactionclasses_h__
+#ifndef kactionclasses_h
+#define kactionclasses_h
 
 #include <kaction.h>
 
@@ -816,7 +816,7 @@ public slots:
    *
    *  This method does not effect the active group of KConfig.
    */
-  void loadEntries( KConfig* config, QString groupname=QString::null );
+  void loadEntries( KConfig* config, const QString &groupname=QString::null );
 
   /**
    *  Saves the current recent files entries to a given KConfig object.
@@ -825,7 +825,7 @@ public slots:
    *
    *  This method does not effect the active group of KConfig.
    */
-  void saveEntries( KConfig* config, QString groupname=QString::null );
+  void saveEntries( KConfig* config, const QString &groupname=QString::null );
 
   /**
    *  Add URL to recent files list.

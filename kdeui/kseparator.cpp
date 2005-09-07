@@ -20,7 +20,6 @@
 #include <qstyle.h>
 
 #include <kdebug.h>
-#include <kapplication.h>
 #include <QStyleOption>
 #include <QPainter>
 

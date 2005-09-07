@@ -35,7 +35,6 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kapplication.h>
 #include <kaccel.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -53,6 +52,7 @@
 #include <qdialog.h>
 #include <q3dict.h>
 #include <qevent.h>
+#include <qapplication.h>
 #include <assert.h>
 
 
@@ -114,23 +114,25 @@ KDateValidator::fixup( QString& ) const
 
 }
 
-KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, Qt::WFlags f)
+KDateTable::KDateTable(QWidget *parent, const QDate &date_, const char* name, Qt::WFlags f)
   : Q3GridView(parent, name, f)
 {
   d = new KDateTablePrivate;
   setFontSize(10);
-  if(!date_.isValid())
-    {
-      kdDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
-      date_=QDate::currentDate();
-    }
   setFocusPolicy( Qt::StrongFocus );
   setNumRows(7); // 6 weeks max + headline
   setNumCols(7); // 7 days a week
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
   viewport()->setEraseColor(KGlobalSettings::baseColor());
-  setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
+  
+  if(!date_.isValid())
+  {
+    kdDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
+    setDate(QDate::currentDate()); // this initializes firstday, numdays, numDaysPrevMonth
+  }
+  else
+    setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
   initAccels();
 }
 

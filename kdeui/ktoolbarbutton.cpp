@@ -38,9 +38,10 @@
 #include <qcursor.h>
 #include <qpainter.h>
 #include <qlayout.h>
+#include <qapplication.h>
 
-#include <kapplication.h>
 #include <kdebug.h>
+#include <kinstance.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconeffect.h>
@@ -675,7 +676,7 @@ void KToolBarButton::slotClicked()
 
   // emit buttonClicked when the button was clicked while being in an extension popupmenu
   if ( d->m_parent && !d->m_parent->rect().contains( geometry().center() ) ) {
-    Qt::ButtonState state = KApplication::keyboardMouseState();
+    Qt::ButtonState state = QApplication::mouseButtons();
     if ( ( state & Qt::MouseButtonMask ) == Qt::NoButton )
       state = Qt::ButtonState( Qt::LeftButton | state );
     emit buttonClicked( d->m_id, state ); // Doesn't work with MidButton

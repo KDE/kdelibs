@@ -349,7 +349,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
            const int oneDay = 24*60*60;
            QDateTime lastShown = configGroup.readDateTimeEntry("TipLastShown");
            // Show tip roughly once a week
-           if (lastShown.secsTo(QDateTime::currentDateTime()) < (oneDay + (kapp->random() % (10*oneDay))))
+           if (lastShown.secsTo(QDateTime::currentDateTime()) < (oneDay + (KMath::random() % (10*oneDay))))
                return;
         }
         configGroup.writeEntry("TipLastShown", QDateTime::currentDateTime());

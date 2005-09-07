@@ -27,7 +27,6 @@
 #include "kpopupmenu.h"
 
 #include <kdebug.h>
-#include <kapplication.h>
 
 class KPopupMenu::KPopupMenuPrivate
 {
@@ -401,7 +400,7 @@ void KPopupMenu::actionHovered(QAction* action)
     showCtxMenu(actionGeometry(action).center());
 }
 
-void KPopupMenu::showCtxMenu(QPoint pos)
+void KPopupMenu::showCtxMenu(const QPoint &pos)
 {
     if (KPopupMenuPrivate::s_highlightedAction)
         if (QMenu* subMenu = KPopupMenuPrivate::s_highlightedAction->menu())

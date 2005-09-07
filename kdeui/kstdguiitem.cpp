@@ -18,9 +18,9 @@
 
 #include "kstdguiitem.h"
 
+#include <qapplication.h>
 #include <kguiitem.h>
 #include <klocale.h>
-#include <kapplication.h>
 
 KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
 {

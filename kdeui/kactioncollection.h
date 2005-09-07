@@ -22,8 +22,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef __kactioncollection_h__
-#define __kactioncollection_h__
+#ifndef kactioncollection_h
+#define kactioncollection_h
 
 #include <qobject.h>
 #include <q3valuelist.h>

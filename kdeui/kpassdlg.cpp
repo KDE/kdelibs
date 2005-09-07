@@ -31,10 +31,10 @@
 #include <qregexp.h>
 #include <q3hbox.h>
 #include <q3ptrdict.h>
+#include <qapplication.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kapplication.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -445,8 +445,7 @@ void KPasswordDialog::clearPassword()
     m_pEdit->erase();
 }
 
-/* KDE 4: Make it const QString & */
-void KPasswordDialog::setPrompt(QString prompt)
+void KPasswordDialog::setPrompt(const QString &prompt)
 {
     m_pHelpLbl->setText(prompt);
     m_pHelpLbl->setFixedSize(275, m_pHelpLbl->heightForWidth(275));
@@ -460,8 +459,7 @@ QString KPasswordDialog::prompt() const
 }
 
 
-/* KDE 4: Make them const QString & */
-void KPasswordDialog::addLine(QString key, QString value)
+void KPasswordDialog::addLine(const QString &key, const QString &value)
 {
     if (m_Row > 3)
 	return;
@@ -531,8 +529,7 @@ void KPasswordDialog::slotKeep(bool keep)
 }
 
 
-// static . antlarr: KDE 4: Make it const QString & prompt
-int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, QString prompt,
+int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, const QString &prompt,
 	int *keep)
 {
     const bool enableKeep = (keep && *keep);
@@ -549,7 +546,6 @@ int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, QString pr
 }
 
 
-// static . antlarr: KDE 4: Make it const QString & prompt
 int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, const QString &prompt)
 {
     KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);

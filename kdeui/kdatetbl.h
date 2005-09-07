@@ -256,7 +256,7 @@ public:
     /**
      * The constructor.
      */
-    KDateTable(QWidget *parent=0, QDate date=QDate::currentDate(),
+    KDateTable(QWidget *parent=0, const QDate &date=QDate::currentDate(),
 	       const char* name=0, Qt::WFlags f=0);
 
     /**
