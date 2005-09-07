@@ -36,7 +36,7 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   addItem( itemColor[2], QString::fromLatin1( "Color2" ) );
   itemColor[3] = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #3" ), mColor[3], defaultColor[3] );
   addItem( itemColor[3], QString::fromLatin1( "Color3" ) );
-  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QString::fromLatin1( "Encrypt" );

@@ -16,7 +16,7 @@ Test1::Test1(  const QString & transport, const QString & folder )
   KConfigSkeleton::ItemInt  *itemAnotherOption;
   itemAnotherOption = new KConfigSkeleton::ItemInt( currentGroup(), QString::fromLatin1( "Another Option" ), mAnotherOption, 5 );
   addItem( itemAnotherOption, QString::fromLatin1( "AnotherOption" ) );
-  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesListOption;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesListOption;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QString::fromLatin1( "One" );

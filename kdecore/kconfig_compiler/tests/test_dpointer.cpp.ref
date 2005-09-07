@@ -79,7 +79,7 @@ TestDPointer::TestDPointer(  )
   d->archiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "Archive File" ), d->archiveFile );
   d->archiveFileItem->setLabel( i18n("Archive File") );
   addItem( d->archiveFileItem, QString::fromLatin1( "ArchiveFile" ) );
-  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QString::fromLatin1( "standardDestination" );

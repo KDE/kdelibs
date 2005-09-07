@@ -23,7 +23,7 @@ Test2::Test2(  )
   mArchiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "Archive File" ), mArchiveFile );
   mArchiveFileItem->setLabel( i18n("Archive File") );
   addItem( mArchiveFileItem, QString::fromLatin1( "ArchiveFile" ) );
-  QValueList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QString::fromLatin1( "standardDestination" );
