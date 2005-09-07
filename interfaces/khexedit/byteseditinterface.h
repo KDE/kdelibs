@@ -77,7 +77,7 @@ class BytesEditInterface
 {
   public:
     //static const char Name[] = "KHE::BytesEditInterface";
-
+	virtual ~BytesEditInterface(){}
   public: // set methods
     /** hands over to the editor a new byte array.
       * If there exists an old one and autodelete is set the old one gets deleted.

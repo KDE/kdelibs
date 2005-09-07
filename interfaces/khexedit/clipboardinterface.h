@@ -46,6 +46,7 @@ namespace KHE
 class ClipboardInterface
 {
   public: // slots
+	virtual ~ClipboardInterface(){}
     /** tries to copy. If there is nothing to copy this call is a noop. */
     virtual void copy() = 0;
     /** tries to cut. If there is nothing to cut this call is a noop. */

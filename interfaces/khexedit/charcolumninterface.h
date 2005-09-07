@@ -33,6 +33,7 @@ namespace KHE
 class CharColumnInterface
 {
   public:
+	virtual ~CharColumnInterface(){}
     /** encoding used to display the symbols in the text column */
     enum KEncoding
     {

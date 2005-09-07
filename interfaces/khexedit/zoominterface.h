@@ -35,6 +35,7 @@ namespace KHE
 class ZoomInterface
 {
   public:
+	virtual ~ZoomInterface(){}
     /** enlarges the display
       * @param PointInc increment to the display size (in font point size)
       */

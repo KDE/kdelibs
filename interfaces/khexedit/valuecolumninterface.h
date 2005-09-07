@@ -32,6 +32,7 @@ namespace KHE
 class ValueColumnInterface
 {
   public:
+	virtual ~ValueColumnInterface(){}
     /** collection of ids for the different numeric codings of a byte */
     enum KCoding
     {
