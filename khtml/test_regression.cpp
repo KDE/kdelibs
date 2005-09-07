@@ -1279,6 +1279,9 @@ void RegressionTest::testStaticFile(const QString & filename)
                 description = comp2.value().toString( exec ).qstring();
         }
         reportResult( success,  description );
+
+        if (!success && !m_known_failures)
+            doFailureReport( filename, JSFailure );
         return;
     }
 
