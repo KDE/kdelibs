@@ -1,4 +1,4 @@
-SUBDIRS=kdeui kparts kmdi .
+SUBDIRS=kdeui kparts kmdi kunittest .
 lib_LTLIBRARIES=libkde3support.la
 
 libkde3support_la_SOURCES = dummy.cpp
