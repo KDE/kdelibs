@@ -31,8 +31,6 @@
 #include <qwindowdefs.h>
 #include "kglobal.h"
 
-#include <kapplication.h>
-
 #include <kdebug.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -40,6 +38,7 @@
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kinstance.h>
+#include <qapplication.h>
 #include "kstaticdeleter.h"
 
 #include <qfont.h>

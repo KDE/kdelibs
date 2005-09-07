@@ -19,7 +19,6 @@
 
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <ksycoca.h>
 #include <ksycocadict.h>

@@ -18,16 +18,14 @@
 */
 
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <knotifyclient.h>
 #include <kglobal.h>
-
+#include <qvector.h>
 
 #include "kcompletion.h"
 #include "kcompletion_private.h"
-
 
 class KCompletionPrivate
 {

@@ -30,7 +30,6 @@
 
 #include <qfileinfo.h>
 
-#include <kapplication.h>
 #include "kconfigbackend.h"
 
 #include "kconfig.h"

@@ -27,7 +27,6 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "kcharsets.h"
-#include "kapplication.h"
 #include <qtextstream.h>
 #include <QX11Info>
 
