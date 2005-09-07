@@ -3,7 +3,7 @@ SUBDIRS = . test
 INCLUDES = -I$(top_srcdir)/kde3support/kmdi/res -I$(top_srcdir)/kde3support/kdeui -I$(top_srcdir)/kde3support/kparts -I$(top_srcdir)/kutils -I$(top_srcdir) -I$(top_srcdir)/kde3support -I$(top_srcdir)/kde3supprt/kmdi $(all_includes)
 
 noinst_LTLIBRARIES = libk3mdi.la
-libk3mdi_la_LDFLAGS = $(all_libraries) -version-info 1:0
+libk3mdi_la_LDFLAGS = $(all_libraries)
 libk3mdi_la_LIBADD  = $(LIB_KPARTS) $(top_builddir)/kutils/libkutils.la
 
 libk3mdi_la_SOURCES = k3mdichildarea.cpp k3mdichildfrm.cpp k3mdichildfrmcaption.cpp \

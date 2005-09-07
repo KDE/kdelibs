@@ -3,7 +3,7 @@ SUBDIRS = .
 INCLUDES = -I$(top_srcdir)/kutils -I$(top_srcdir) -I$(top_srcdir)/kde3support/kdeui -I$(top_srcdir)/kde3support/kparts $(all_includes)
 
 noinst_LTLIBRARIES = libkde3ui.la
-libkde3ui_la_LDFLAGS = $(all_libraries) -version-info 1:0
+libkde3ui_la_LDFLAGS = $(all_libraries)
 libkde3ui_la_LIBADD  = $(LIB_KPARTS)
 
 libkde3ui_la_SOURCES = k3dockwidget.cpp k3dockwidget_private.cpp
