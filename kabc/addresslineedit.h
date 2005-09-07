@@ -50,8 +50,7 @@ class KABC_EXPORT AddressLineEdit : public KLineEdit
 {
   Q_OBJECT
 public:
-  AddressLineEdit(QWidget* parent, bool useCompletion = true,
-		const char *name = 0L);
+  AddressLineEdit(QWidget* parent, bool useCompletion = true);
   virtual ~AddressLineEdit();
 
   /**

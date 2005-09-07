@@ -76,8 +76,8 @@ void LdapObject::assign( const LdapObject& that )
   }
 }
 
-LdapClient::LdapClient( QObject* parent, const char* name )
-  : QObject( parent, name ), mJob( 0 ), mActive( false )
+LdapClient::LdapClient( QObject* parent)
+  : QObject( parent), mJob( 0 ), mActive( false )
 {
   d = new LdapClientPrivate;
 }

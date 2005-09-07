@@ -67,9 +67,8 @@ static KStaticDeleter<QString> ldapTextDeleter;
 static KStaticDeleter<KConfig> configDeleter;
 
 AddressLineEdit::AddressLineEdit(QWidget* parent,
-		bool useCompletion,
-		const char *name)
-    : KLineEdit(parent,name)
+		bool useCompletion)
+    : KLineEdit(parent)
 {
   m_useCompletion = useCompletion;
   m_completionInitialized = false;

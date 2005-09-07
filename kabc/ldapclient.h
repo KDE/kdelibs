@@ -87,7 +87,7 @@ class KABC_EXPORT LdapClient : public QObject
   Q_OBJECT
 
   public:
-    LdapClient( QObject* parent = 0, const char* name = 0 );
+    LdapClient( QObject* parent = 0);
     virtual ~LdapClient();
 
     /*! returns true if there is a query running */

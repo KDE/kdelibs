@@ -81,7 +81,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_USER ) {
     label = new QLabel( i18n( "User:" ), this );
-    mUser = new KLineEdit( this, "kcfg_ldapuser" );
+    mUser = new KLineEdit( this);
+    mUser->setObjectName("kcfg_ldapuser" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mUser, row, row, 1, 3 );
@@ -90,7 +91,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_BINDDN ) {
     label = new QLabel( i18n( "Bind DN:" ), this );
-    mBindDN = new KLineEdit( this, "kcfg_ldapbinddn" );
+    mBindDN = new KLineEdit( this);
+    mBindDN->setObjectName( "kcfg_ldapbinddn" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mBindDN, row, row, 1, 3 );
@@ -99,7 +101,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_REALM ) {
     label = new QLabel( i18n( "Realm:" ), this );
-    mRealm = new KLineEdit( this, "kcfg_ldaprealm" );
+    mRealm = new KLineEdit( this);
+    mRealm->setObjectName("kcfg_ldaprealm" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mRealm, row, row, 1, 3 );
@@ -108,7 +111,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_PASS ) {
     label = new QLabel( i18n( "Password:" ), this );
-    mPassword = new KLineEdit( this, "kcfg_ldappassword" );
+    mPassword = new KLineEdit( this);
+    mPassword->setObjectName( "kcfg_ldappassword" );
     mPassword->setEchoMode( KLineEdit::Password );
 
     mainLayout->addWidget( label, row, 0 );
@@ -118,7 +122,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_HOST ) {
     label = new QLabel( i18n( "Host:" ), this );
-    mHost = new KLineEdit( this, "kcfg_ldaphost" );
+    mHost = new KLineEdit( this);
+    mHost->setObjectName( "kcfg_ldaphost" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mHost, row, row, 1, 3 );
@@ -128,7 +133,8 @@ void LdapConfigWidget::initWidget()
   col = 0;
   if ( mFlags & W_PORT ) {
     label = new QLabel( i18n( "Port:" ), this );
-    mPort = new QSpinBox( 0, 65535, 1, this, "kcfg_ldapport" );
+    mPort = new QSpinBox( 0, 65535, 1, this);
+    mPort->setObjectName("kcfg_ldapport" );
     mPort->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mPort->setValue( 389 );
 
@@ -139,7 +145,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_VER ) {
     label = new QLabel( i18n( "LDAP version:" ), this );
-    mVer = new QSpinBox( 2, 3, 1, this, "kcfg_ldapver" );
+    mVer = new QSpinBox( 2, 3, 1, this);
+    mVer->setObjectName( "kcfg_ldapver" );
     mVer->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mVer->setValue( 3 );
     mainLayout->addWidget( label, row, col );
@@ -150,7 +157,8 @@ void LdapConfigWidget::initWidget()
   col = 0;
   if ( mFlags & W_SIZELIMIT ) {
     label = new QLabel( i18n( "Size limit:" ), this );
-    mSizeLimit = new QSpinBox( 0, 9999999, 1, this, "kcfg_ldapsizelimit" );
+    mSizeLimit = new QSpinBox( 0, 9999999, 1, this);
+    mSizeLimit->setObjectName("kcfg_ldapsizelimit" );
     mSizeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mSizeLimit->setValue( 0 );
     mSizeLimit->setSpecialValueText( i18n("Default") );
@@ -161,7 +169,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_TIMELIMIT ) {
     label = new QLabel( i18n( "Time limit:" ), this );
-    mTimeLimit = new QSpinBox( 0, 9999999, 1, this, "kcfg_ldaptimelimit" );
+    mTimeLimit = new QSpinBox( 0, 9999999, 1, this);
+    mTimeLimit->setObjectName("kcfg_ldaptimelimit" );
     mTimeLimit->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mTimeLimit->setValue( 0 );
     mTimeLimit->setSuffix( i18n(" sec") );
@@ -173,7 +182,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_DN ) {
     label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
-    mDn = new KLineEdit( this, "kcfg_ldapdn" );
+    mDn = new KLineEdit( this);
+    mDn->setObjectName("kcfg_ldapdn" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mDn, row, row, 1, 1 );
@@ -188,7 +198,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_FILTER ) {
     label = new QLabel( i18n( "Filter:" ), this );
-    mFilter = new KLineEdit( this, "kcfg_ldapfilter" );
+    mFilter = new KLineEdit( this);
+    mFilter->setObjectName("kcfg_ldapfilter" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mFilter, row, row, 1, 3 );
@@ -197,9 +208,12 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_SECBOX ) {
     Q3HButtonGroup *btgroup = new Q3HButtonGroup( i18n( "Security" ), this );
-    mSecNO = new QRadioButton( i18n( "No" ), btgroup, "kcfg_ldapnosec" );
-    mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup, "kcfg_ldaptls" );
-    mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup, "kcfg_ldapssl" );
+    mSecNO = new QRadioButton( i18n( "No" ), btgroup);
+    mSecNO->setObjectName( "kcfg_ldapnosec" );
+    mSecTLS = new QRadioButton( i18n( "TLS" ), btgroup);
+    mSecTLS->setObjectName( "kcfg_ldaptls" );
+    mSecSSL = new QRadioButton( i18n( "SSL" ), btgroup);
+    mSecSSL->setObjectName("kcfg_ldapssl" );
     mainLayout->addMultiCellWidget( btgroup, row, row, 0, 3 );
 
     connect( mSecNO, SIGNAL( clicked() ), SLOT( setLDAPPort() ) );
@@ -215,12 +229,16 @@ void LdapConfigWidget::initWidget()
     Q3ButtonGroup *authbox =
       new Q3ButtonGroup( 3, Qt::Horizontal, i18n( "Authentication" ), this );
 
-    mAnonymous = new QRadioButton( i18n( "Anonymous" ), authbox, "kcfg_ldapanon" );
-    mSimple = new QRadioButton( i18n( "Simple" ), authbox, "kcfg_ldapsimple" );
-    mSASL = new QRadioButton( i18n( "SASL" ), authbox, "kcfg_ldapsasl" );
+    mAnonymous = new QRadioButton( i18n( "Anonymous" ), authbox);
+    mAnonymous->setObjectName("kcfg_ldapanon" );
+    mSimple = new QRadioButton( i18n( "Simple" ), authbox);
+    mSimple->setObjectName( "kcfg_ldapsimple" );
+    mSASL = new QRadioButton( i18n( "SASL" ), authbox);
+    mSASL->setObjectName("kcfg_ldapsasl" );
 
     label = new QLabel( i18n( "SASL mechanism:" ), authbox );
-    mMech = new KComboBox( false, authbox, "kcfg_ldapsaslmech" );
+    mMech = new KComboBox( false, authbox);
+    mMech->setObjectName("kcfg_ldapsaslmech");
     mMech->setEditable( true );
     mMech->insertItem( "DIGEST-MD5" );
     mMech->insertItem( "GSSAPI" );
