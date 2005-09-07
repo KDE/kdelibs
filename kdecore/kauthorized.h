@@ -18,35 +18,32 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KAUTHORIZED_H
-#define _KAUTHORIZED_H
+#ifndef KAUTHORIZED_H
+#define KAUTHORIZED_H
 
-// Version macros. Never put this further down.
-#include "kdeversion.h"
 #include "kdelibs_export.h"
 
-#include <kurl.h>
-#include <QString>
+class KURL;
+class QString;
+class QStringList;
 
 /**
 * Extracted from kapplication (3.x). Kiosk authorization framework
 */
 class KDECORE_EXPORT KAuthorized
 {
+  KAuthorized();
 public:
   static KAuthorized* self();
   virtual ~KAuthorized ();
 
-private:
-  KAuthorized();
-
-public:
   /**
    * Returns whether a certain action is authorized
    * @param genericAction The name of a generic  action
    * @return true if the action is authorized
+   * @todo what are the generic actions?
    */
-  bool authorize(const QString &genericAction);
+  bool authorize(const QString& genericAction);
 
   /**
    * Returns whether a certain KAction is authorized.
@@ -55,33 +52,33 @@ public:
    * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
-  bool authorizeKAction(const char *action);
+  bool authorizeKAction(const char* action);
 
   /**
    * Returns whether a certain URL related action is authorized.
    *
    * @param action The name of the action. Known actions are
-   * list (may be listed (e.g. in file selection dialog)),
-   * link (may be linked to),
-   * open (may open) and
-   * redirect (may be redirected to)
+   *  - list (may be listed (e.g. in file selection dialog)),
+   *  - link (may be linked to),
+   *  - open (may open) and
+   *  - redirect (may be redirected to)
    * @param baseURL The url where the action originates from
    * @param destURL The object of the action
    * @return true when the action is authorized, false otherwise.
    * @since 3.1
    */
-  bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
+  bool authorizeURLAction(const QString& action, const KURL& baseURL, const KURL& destURL);
 
   /**
    * Allow a certain URL action. This can be useful if your application
-   * needs to ensure access to an application specific directory that may 
+   * needs to ensure access to an application specific directory that may
    * otherwise be subject to KIOSK restrictions.
    * @param action The name of the action.
-   * @param _baseURL The url where the action originates from
-   * @param _destURL The object of the action
+   * @param baseURL The url where the action originates from
+   * @param destURL The object of the action
    * @since 3.2
    */
-  void allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL);
+  void allowURLAction(const QString& action, const KURL& baseURL, const KURL&  _destURL);
 
   /**
    * Returns whether access to a certain control module is authorized.
@@ -90,29 +87,23 @@ public:
    * @return true if access to the module is authorized, false otherwise.
    * @since 3.2
    */
-  bool authorizeControlModule(const QString &menuId);
-  
+  bool authorizeControlModule(const QString& menuId);
+
   /**
    * Returns whether access to a certain control modules is authorized.
    *
-   * @param menuIds list of menu-ids of control module, 
+   * @param menuIds list of menu-ids of control module,
    * an example of a menu-id is kde-mouse.desktop.
    * @return Those control modules for which access has been authorized.
    * @since 3.2
    */
-  QStringList authorizeControlModules(const QStringList &menuIds);
+  QStringList authorizeControlModules(const QStringList& menuIds);
 
 private:
   void initUrlActionRestrictions();
 
-
-private:
-  virtual void virtual_hook( int id, void* data );
-private:
   class Private;
   Private* d;
-  static KAuthorized* s_self;
 };
 
 #endif
-
