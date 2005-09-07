@@ -2065,8 +2065,7 @@ public:
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */
-  KConfigGroupSaver( KConfigBase* config, QString group )
-      /* KDE 4 : make the second parameter const QString & */
+  KConfigGroupSaver( KConfigBase* config, const QString &group )
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 

@@ -63,7 +63,7 @@ QVariant KShortcutList::getOther( Other, uint ) const
 	return QVariant();
 }
 
-bool KShortcutList::setOther( Other, uint, QVariant )
+bool KShortcutList::setOther( Other, uint, const QVariant &)
 {
 	return false;
 }
@@ -204,7 +204,7 @@ QVariant KAccelShortcutList::getOther( Other, uint ) const
 	{ return QVariant(); }
 bool KAccelShortcutList::isGlobal( uint ) const
 	{ return m_bGlobal; }
-bool KAccelShortcutList::setOther( Other, uint, QVariant )
+bool KAccelShortcutList::setOther( Other, uint, const QVariant &)
 	{ return false; }
 bool KAccelShortcutList::save() const
 	{ return writeSettings( d->m_configGroup ); }

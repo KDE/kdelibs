@@ -151,7 +151,7 @@ public:
      * @param widget The widget on which the effect should be painted
      * @param rect This rectangle defines the effect's borders
      */
-    static void visualActivate(QWidget *widget, QRect rect);
+    static void visualActivate(QWidget *widget, const QRect &rect);
 
     /**
      * Tints an image gray.

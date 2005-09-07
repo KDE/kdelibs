@@ -370,7 +370,7 @@ bool ShortcutList::setShortcut( uint i, const KShortcut& cut )
 QVariant ShortcutList::getOther( Other, uint ) const
 	{ return QVariant(); }
 
-bool ShortcutList::setOther( Other, uint, QVariant )
+bool ShortcutList::setOther( Other, uint, const QVariant &)
 	{ return false; }
 
 bool ShortcutList::save() const

@@ -147,7 +147,7 @@ class KDECORE_EXPORT KShortcutList
 	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const = 0;
 	/** \internal */
-	virtual bool setOther( Other, uint index, QVariant ) = 0;
+	virtual bool setOther( Other, uint index, const QVariant &) = 0;
 
 	/**
 	 * Save the shortcut list.
@@ -235,7 +235,7 @@ class KDECORE_EXPORT KAccelShortcutList : public KShortcutList
 	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const;
 	/** \internal */
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, uint index, const QVariant &);
 
 	virtual bool save() const;
 
@@ -279,7 +279,7 @@ class KDECORE_EXPORT ShortcutList : public KShortcutList
 	/** \internal */
 	virtual QVariant getOther( Other, uint index ) const;
 	/** \internal */
-	virtual bool setOther( Other, uint index, QVariant );
+	virtual bool setOther( Other, uint index, const QVariant &);
 
 	virtual bool save() const;
 
