@@ -1618,8 +1618,6 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
 }
 
 // ---------------------------------------------------------------------------
-
-
 NodeImpl *NodeListImpl::item( unsigned long index ) const
 {
     unsigned long requestIndex = index;
@@ -1627,11 +1625,24 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
     m_cache->updateNodeListInfo(m_refNode->getDocument());
 
     NodeImpl* n;
-    if (m_cache->current.node && index >= m_cache->position) {
-        unsigned long relIndex = index - m_cache->position;
-        n = recursiveItem(m_refNode, m_cache->current.node, relIndex);
+    bool      usedCache = false;
+    if (m_cache->current.node) {
+        //Compute distance from the requested index to the cache node
+        long cacheDist = QABS(long(index) - long(m_cache->position));
+
+        if (cacheDist < index) { //Closer to the cached position
+            usedCache = true;
+            if (index >= m_cache->position) { //Go ahead
+                unsigned long relIndex = index - m_cache->position;
+                n = recursiveItem(m_refNode, m_cache->current.node, relIndex);
+            } else { //Go backwards
+                unsigned long relIndex = m_cache->position - index;
+                n = recursiveItemBack(m_refNode, m_cache->current.node, relIndex);
+            }
+        }
     }
-    else
+
+    if (!usedCache)
         n = recursiveItem(m_refNode, m_refNode->firstChild(), index);
 
     //We always update the cache state, to make starting iteration
@@ -1703,16 +1714,54 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl* absStart, NodeImpl *start, uns
     for(NodeImpl *n = start; n != 0; n = helperNext(n, absStart)) {
         bool recurse = true;
         if (nodeMatches(n, recurse))
-                if (!offset--)
-                    return n;
+            if (!offset--)
+                return n;
 
         NodeImpl *depthSearch = recurse ? recursiveItem(n, n->firstChild(), offset) : 0;
-            if (depthSearch)
-                return depthSearch;
-        }
+        if (depthSearch)
+            return depthSearch;
+    }
 
     return 0; // no matching node in this subtree
 }
+
+
+NodeImpl *NodeListImpl::recursiveItemBack ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const
+{
+    //### it might be cleaner/faster to split nodeMatches and recursion
+    //filtering.
+    bool dummy   = true;
+    NodeImpl* n  = start;
+
+    do {
+        bool recurse = true;
+
+        //Check whether the current node matches.
+        if (nodeMatches(n, dummy))
+            if (!offset--)
+                return n;
+
+        if (n->previousSibling()) {
+            //Move to the last node of this whole subtree that we should recurse into
+            n       = n->previousSibling();
+            recurse = true;
+
+            while (n->lastChild()) {
+                (void)nodeMatches(n, recurse);
+                if (!recurse)
+                   break; //Don't go there
+                n = n->lastChild();
+            }
+        } else {
+            //We're done with this whole subtree, so move up
+            n = n->parentNode();
+        }
+    }
+    while (n && n != absStart);
+
+    return 0;
+}
+
 
 NodeListImpl::Cache::~Cache()
 {}

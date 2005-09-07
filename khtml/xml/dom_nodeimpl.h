@@ -567,7 +567,8 @@ public:
 protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
-    NodeImpl *recursiveItem ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
+    NodeImpl *recursiveItem    ( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
+    NodeImpl *recursiveItemBack( NodeImpl* absStart, NodeImpl *start, unsigned long &offset ) const;
 
     // Override this to determine what nodes to return. Set doRecurse to 
     // false if the children of this node do not need to be entered.
