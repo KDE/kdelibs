@@ -44,7 +44,7 @@
 #include <qdir.h>
 
 #include "kglobal.h"
-#include "kapplication.h"
+#include "kmath.h"
 #include "kinstance.h"
 #include "ktempdir.h"
 #include "kstandarddirs.h"
@@ -67,7 +67,7 @@ bool
 KTempDir::create(const QString &directoryPrefix, int mode)
 {
    // make sure the random seed is randomized
-   (void) KApplication::random();
+   (void) KMath::random();
 
    QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
    char *realName;
@@ -140,5 +140,4 @@ KTempDir::unlink()
    bExisting=false;
    mError=0;
 }
-
 

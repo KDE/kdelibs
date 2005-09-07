@@ -46,7 +46,7 @@
 #include <qtextstream.h>
 
 #include "kglobal.h"
-#include "kapplication.h"
+#include "kmath.h"
 #include "kinstance.h"
 #include "ktempfile.h"
 #include "kstandarddirs.h"
@@ -90,7 +90,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
    // make sure the random seed is randomized
-   (void) KApplication::random();
+   (void) KMath::random();
 
    QByteArray ext = QFile::encodeName(fileExtension);
    QByteArray nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
