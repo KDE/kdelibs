@@ -46,22 +46,8 @@ extern bool kde_kiosk_exception;
 static KAuthorized *s_self=0;
 
 
-class KAuthorized::Private {
-public:
-  Private()
-    :   actionRestrictions( false )
-  {
-  }
-
-  ~Private()
-  {
-  }
-
-
-  bool actionRestrictions : 1;
-
-  class URLActionRule
-  {
+class URLActionRule
+{
   public:
 #define checkExactMatch(s, b) \
         if (s.isEmpty()) b = true; \
@@ -196,12 +182,22 @@ public:
      bool destProtEqual    : 1;
      bool destHostEqual    : 1;
      bool permission;
-  };
-    QList<URLActionRule> urlActionRestrictions;
-
 };
 
-typedef KAuthorized::Private::URLActionRule ActionRule;
+class KAuthorized::Private {
+public:
+  Private()
+    :   actionRestrictions( false )
+  {
+  }
+
+  ~Private()
+  {
+  }
+
+  bool actionRestrictions : 1;
+  QList<URLActionRule> urlActionRestrictions;
+};
 
 KAuthorized* KAuthorized::self() {
   if ( !s_self ) s_self=new KAuthorized;
@@ -280,37 +276,37 @@ void KAuthorized::initUrlActionRestrictions()
 
   d->urlActionRestrictions.clear();
   d->urlActionRestrictions.append(
-	ActionRule("open", Any, Any, Any, Any, Any, Any, true));
+	URLActionRule("open", Any, Any, Any, Any, Any, Any, true));
   d->urlActionRestrictions.append(
-	ActionRule("list", Any, Any, Any, Any, Any, Any, true));
+	URLActionRule("list", Any, Any, Any, Any, Any, Any, true));
 // TEST:
 //  d->urlActionRestrictions.append(
-//	ActionRule("list", Any, Any, Any, Any, Any, Any, false));
+//	URLActionRule("list", Any, Any, Any, Any, Any, Any, false));
 //  d->urlActionRestrictions.append(
-//	ActionRule("list", Any, Any, Any, "file", Any, QDir::homeDirPath(), true));
+//	URLActionRule("list", Any, Any, Any, "file", Any, QDir::homeDirPath(), true));
   d->urlActionRestrictions.append(
-	ActionRule("link", Any, Any, Any, ":internet", Any, Any, true));
+	URLActionRule("link", Any, Any, Any, ":internet", Any, Any, true));
   d->urlActionRestrictions.append(
-	ActionRule("redirect", Any, Any, Any, ":internet", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, ":internet", Any, Any, true));
 
   // We allow redirections to file: but not from internet protocols, redirecting to file:
   // is very popular among io-slaves and we don't want to break them
   d->urlActionRestrictions.append(
-	ActionRule("redirect", Any, Any, Any, "file", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, "file", Any, Any, true));
   d->urlActionRestrictions.append(
-	ActionRule("redirect", ":internet", Any, Any, "file", Any, Any, false));
+	URLActionRule("redirect", ":internet", Any, Any, "file", Any, Any, false));
 
   // local protocols may redirect everywhere
   d->urlActionRestrictions.append(
-	ActionRule("redirect", ":local", Any, Any, Any, Any, Any, true));
+	URLActionRule("redirect", ":local", Any, Any, Any, Any, Any, true));
 
   // Anyone may redirect to about:
   d->urlActionRestrictions.append(
-	ActionRule("redirect", Any, Any, Any, "about", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, "about", Any, Any, true));
 
   // Anyone may redirect to itself, cq. within it's own group
   d->urlActionRestrictions.append(
-	ActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
+	URLActionRule("redirect", Any, Any, Any, "=", Any, Any, true));
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, "KDE URL Restrictions" );
@@ -348,7 +344,7 @@ void KAuthorized::initUrlActionRestrictions()
        urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
 
     d->urlActionRestrictions.append(
-	ActionRule( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
+	URLActionRule( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
   }
 }
 
@@ -357,7 +353,7 @@ void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, co
   if (authorizeURLAction(action, _baseURL, _destURL))
      return;
 
-  d->urlActionRestrictions.append( ActionRule
+  d->urlActionRestrictions.append( URLActionRule
         ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
                   _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
 }
@@ -378,7 +374,7 @@ bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL
   destURL.setPath(QDir::cleanPath(destURL.path()));
   QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 
-  foreach(ActionRule rule, d->urlActionRestrictions) {
+  foreach(URLActionRule rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
          (action == rule.action) &&
          rule.baseMatch(baseURL, baseClass) &&
