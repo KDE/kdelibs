@@ -32,6 +32,13 @@
 
 class DCOPClient;
 
+/**
+ *The static memberst (exception is the self() member, have to b called from the QApplication main thread.
+ *Calles to members are only allowed if there is a Q(Core)Application object created
+ *If you call the members with signal/slot connections across threads, you can't use the return values
+ *If a function is called from the wrong thread and it has a return value -1 is returned
+ *Investigate if this is really needed or if DCOP/DBUS is threadsafe anyway
+ */
 class KDECORE_EXPORT KToolInvocation : public QObject
 {
 

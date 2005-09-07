@@ -40,11 +40,17 @@
 //#include <paths.h>
 #endif
 
+#include <QMutex>
+#include <QMutexLocker>
+#include <qglobal.h>
+#warning used non public api for now
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive));
+
+
 
 extern bool kde_kiosk_exception;
 
 static KAuthorized *s_self=0;
-
 
 class URLActionRule
 {
@@ -200,6 +206,7 @@ public:
 };
 
 KAuthorized* KAuthorized::self() {
+  QMutexLocker locker(mutex());
   if ( !s_self ) s_self=new KAuthorized;
   return s_self;
 }
@@ -350,6 +357,7 @@ void KAuthorized::initUrlActionRestrictions()
 
 void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
+  QMutexLocker locker(mutex());
   if (authorizeURLAction(action, _baseURL, _destURL))
      return;
 
@@ -360,6 +368,7 @@ void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, co
 
 bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
+  QMutexLocker locker(mutex());
   if (_destURL.isEmpty())
      return true;
 

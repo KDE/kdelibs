@@ -73,11 +73,25 @@
 #include <fixx11h.h>
 #endif
 
+#include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
+#include <qglobal.h>
+#warning used non public api for now
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive));
+
+
+#define THREADGUARD  do { if (!qApp) return -1; Q_ASSERT(qApp->thread()==QThread::currentThread()); \
+			if (qApp->thread()!=QThread::currentThread()) return -1; } while(0)
+#define THREADGUARD_VOID  do { if(!qApp) return; Q_ASSERT(qApp->thread()==QThread::currentThread()); \
+			if (qApp->thread()!=QThread::currentThread()) return;} while(0)
+
 
 KToolInvocation* KToolInvocation::s_self = 0L;
 
 KToolInvocation::KToolInvocation(QObject *parent):QObject(parent) {
 	m_dcopClient=new DCOPClient();
+        if (qApp->thread()!=QThread::currentThread()) m_dcopClient->moveToThread(qApp->thread());
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 	if (args && args->isSet("dcopserver")) {
 		m_dcopClient->setServerAddress( args->getOption("dcopserver"));
@@ -85,16 +99,17 @@ KToolInvocation::KToolInvocation(QObject *parent):QObject(parent) {
 }
 
 KToolInvocation *KToolInvocation::self() {
+	QMutexLocker locker(mutex());
 	if (s_self==0) {
-		if (qApp && (!qApp->closingDown))
-			s_self=new KToolInvocation(qApp);
-		else
-			s_self=new KToolInvocation(0);
+		Q_ASSERT(qApp);
+		if (!qApp) qFatal("KToolInvocation::self():No application object");
+		s_self=new KToolInvocation(qApp);
 	}
 	return s_self;
 }
 
 KToolInvocation::~KToolInvocation() {
+	QMutexLocker locker(mutex());
 	s_self=0;
 	delete m_dcopClient;
 }
@@ -111,10 +126,10 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                const QString& _appname,
                                const QByteArray& startup_id )
 {
+   THREADGUARD_VOID;
    QString url;
    QString appname;
    if (_appname.isEmpty()) {
-     if (qApp==0) return;     
      appname = qApp->applicationName();
    } else
      appname = _appname;
@@ -154,6 +169,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
 void KToolInvocation::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
+   THREADGUARD_VOID;
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
    QStringList attachURLs;
@@ -259,6 +275,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
 {
+   THREADGUARD_VOID;
    invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
        QStringList(), startup_id );
 }
@@ -268,6 +285,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
 {
+   THREADGUARD_VOID;
    KConfig config("emaildefaults");
 
    config.setGroup("Defaults");
@@ -391,6 +409,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
+   THREADGUARD_VOID;
    QString error;
 
    if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
@@ -486,6 +505,7 @@ int
 KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
@@ -498,6 +518,7 @@ int
 KToolInvocation::startServiceByName( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
@@ -507,6 +528,7 @@ int
 KToolInvocation::startServiceByDesktopPath( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
@@ -519,6 +541,7 @@ int
 KToolInvocation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
@@ -528,6 +551,7 @@ int
 KToolInvocation::startServiceByDesktopName( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
       URLs.append(URL);
@@ -540,6 +564,7 @@ int
 KToolInvocation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
+   THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
@@ -550,6 +575,7 @@ int
 KToolInvocation::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
+   THREADGUARD;
    return startServiceInternal(dcopClient(),"kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
 }
@@ -559,6 +585,7 @@ int
 KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
+   THREADGUARD;
    return startServiceInternal(dcopClient(),"kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
 }
