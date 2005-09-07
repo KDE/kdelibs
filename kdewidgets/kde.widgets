@@ -112,7 +112,7 @@ Group=Input (KDE)
 [KListViewSearchLine]
 ToolTip=ListView Search Line (KDE)
 Group=Input (KDE)
-ConstructorArgs=(parent, 0, 0)
+ConstructorArgs=(parent, 0)
 
 [KPasswordEdit]
 IncludeFile=kpassdlg.h
@@ -139,6 +139,7 @@ Group=Buttons (KDE)
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
+ConstructorArgs=(QString(),parent)
 
 [KIconButton]
 IncludeFile=kicondialog.h
