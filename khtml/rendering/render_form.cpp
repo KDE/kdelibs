@@ -141,7 +141,8 @@ short RenderButton::baselinePosition( bool f ) const
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
+    QCheckBox* b = new QCheckBox(view()->viewport());
+    b->setObjectName( "__khtml" );
     //b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -188,7 +189,8 @@ void RenderCheckBox::slotStateChanged(int state)
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
+    QRadioButton* b = new QRadioButton(view()->viewport());
+    b->setObjectName( "__khtml" );
     b->setMouseTracking(true);
     b->setAutoExclusive(false);
     setQWidget(b);
@@ -234,7 +236,8 @@ void RenderRadioButton::slotToggled(bool activated)
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
+    QPushButton* p = new QPushButton(view()->viewport());
+    p->setObjectName( "__khtml" );
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -332,8 +335,9 @@ QString RenderPushButton::defaultLabel()
 // -------------------------------------------------------------------------------
 
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
-    : KLineEdit(parent, "__khtml"), m_input(input), m_view(view), m_spell(0)
+    : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
+    setObjectName( "__khtml" );
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
     m_spellAction = KStdAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
@@ -757,7 +761,8 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
+    KURLRequester* w = new KURLRequester( view()->viewport() );
+    w->setObjectName( "__khtml" );
 
     w->setMode(KFile::File | KFile::ExistingOnly);
     w->completionObject()->setDir(KGlobalSettings::documentPath());
@@ -855,8 +860,9 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 // -------------------------------------------------------------------------------
 
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
-    : KComboBox(false, parent, "__khtml")
+    : KComboBox(false, parent)
 {
+    setObjectName( "__khtml" );
     //setAutoMask(true);
     if (view()) view()->installEventFilter(this);
     setMouseTracking(true);
@@ -1205,7 +1211,8 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new KListBox(view()->viewport(), "__khtml");
+    KListBox *lb = new KListBox(view()->viewport());
+    lb->setObjectName( "__khtml" );
     lb->setSelectionMode(m_multiple ? Q3ListBox::Extended : Q3ListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
@@ -1260,8 +1267,9 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
+    setObjectName( "__khtml" );
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(Q3TextEdit::WidgetWidth);
         setHScrollBarMode( AlwaysOff );
