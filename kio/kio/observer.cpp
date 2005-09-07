@@ -21,7 +21,7 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <dcopclient.h>
 #include <kurl.h>
 
@@ -60,7 +60,7 @@ Observer::Observer() : DCOPObject("KIO::Observer")
     {
         kdDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
-        int ret = KToolInvokation::startServiceByDesktopPath( "kio_uiserver.desktop",
+        int ret = KToolInvocation::startServiceByDesktopPath( "kio_uiserver.desktop",
                                                              QStringList(), &error );
         if ( ret > 0 )
         {

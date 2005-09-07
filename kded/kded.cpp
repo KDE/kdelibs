@@ -48,7 +48,7 @@
 #include <kdatastream.h>
 #include <kio/global.h>
 #include <kservicetype.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -81,13 +81,13 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    }
    else
    {
-      KToolInvokation::kdeinitExecWait( "kbuildsycoca", args );
+      KToolInvocation::kdeinitExecWait( "kbuildsycoca", args );
    }
 }
 
 static void runKonfUpdate()
 {
-   KToolInvokation::kdeinitExecWait( "kconf_update", QStringList(), 0, 0, "0" /*no startup notification*/ );
+   KToolInvocation::kdeinitExecWait( "kconf_update", QStringList(), 0, 0, "0" /*no startup notification*/ );
 }
 
 static void runDontChangeHostname(const DCOPCString &oldName, const DCOPCString &newName)
@@ -95,7 +95,7 @@ static void runDontChangeHostname(const DCOPCString &oldName, const DCOPCString 
    QStringList args;
    args.append(QFile::decodeName(oldName));
    args.append(QFile::decodeName(newName));
-   KToolInvokation::kdeinitExecWait( "kdontchangethehostname", args );
+   KToolInvocation::kdeinitExecWait( "kdontchangethehostname", args );
 }
 
 Kded::Kded(bool checkUpdates)

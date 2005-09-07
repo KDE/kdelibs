@@ -65,13 +65,13 @@ public:
     /**
      * Constructs a KURLRequester widget.
      */
-    KURLRequester( QWidget *parent=0, const char *name=0 );
+    KURLRequester( QWidget *parent=0);
 
     /**
      * Constructs a KURLRequester widget with the initial URL @p url.
      * // TODO KDE4: Use KURL instead
      */
-    KURLRequester( const QString& url, QWidget *parent=0, const char *name=0 );
+    KURLRequester( const QString& url, QWidget *parent=0);
 
     /**
      * Special constructor, which creates a KURLRequester widget with a custom
@@ -79,7 +79,7 @@ public:
      * (or inherited thereof). Note: for geometry management reasons, the
      * edit-widget is reparented to have the KURLRequester as parent.
      */
-    KURLRequester( QWidget *editWidget, QWidget *parent, const char *name=0 );
+    KURLRequester( QWidget *editWidget, QWidget *parent);
     /**
      * Destructs the KURLRequester.
      */
@@ -290,7 +290,7 @@ public:
     /**
      * Constructs a KURLRequester widget with a combobox.
      */
-    KURLComboRequester( QWidget *parent=0, const char *name=0 );
+    KURLComboRequester( QWidget *parent=0);
 };
 
 

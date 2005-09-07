@@ -296,7 +296,7 @@ void KIconDialog::init()
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
     searchLayout->addWidget(searchLabel);
 
-    d->searchLine = new KIconViewSearchLine(main, "searchLine");
+    d->searchLine = new KIconViewSearchLine(main);
     searchLayout->addWidget(d->searchLine);
     searchLabel->setBuddy(d->searchLine);
 

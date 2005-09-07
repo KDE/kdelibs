@@ -52,7 +52,7 @@
 #include <qdatastream.h>
 
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 
 #include <kprotocolmanager.h>
 #include <kde_file.h>
@@ -633,7 +633,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
         d->dcc = new DCOPClient;
         d->dcc->attach();
         if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-           KToolInvokation::startServiceByDesktopPath("kio_uiserver.desktop",
+           KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                    QStringList() );
         }
     }
@@ -881,7 +881,7 @@ int TCPSlaveBase::verifyCertificate()
                       d->dcc = new DCOPClient;
                       d->dcc->attach();
                       if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                         KToolInvokation::startServiceByDesktopPath("kio_uiserver.desktop",
+                         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                          QStringList() );
                       }
 
@@ -1006,7 +1006,7 @@ int TCPSlaveBase::verifyCertificate()
                       d->dcc = new DCOPClient;
                       d->dcc->attach();
                       if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                         KToolInvokation::startServiceByDesktopPath("kio_uiserver.desktop",
+                         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                          QStringList() );
                       }
                    }
@@ -1088,7 +1088,7 @@ int TCPSlaveBase::verifyCertificate()
              d->dcc = new DCOPClient;
              d->dcc->attach();
              if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                KToolInvokation::startServiceByDesktopPath("kio_uiserver.desktop",
+                KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                 QStringList() );
              }
           }

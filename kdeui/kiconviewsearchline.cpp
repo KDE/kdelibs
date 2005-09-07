@@ -62,13 +62,6 @@ KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
   init( iconView );
 }
 
-KIconViewSearchLine::KIconViewSearchLine( QWidget *parent ) :
-  KLineEdit( parent )
-{
-  d = NULL;
-  init( NULL );
-}
-
 KIconViewSearchLine::~KIconViewSearchLine()
 {
   clear(); // empty hiddenItems, returning items back to iconView

@@ -50,7 +50,7 @@
 #include <ktoolbar.h>
 #include <ksavefile.h>
 #include <kstringhandler.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <krun.h>
@@ -650,7 +650,7 @@ void KHTMLPopupGUIClient::slotSendImage()
     QStringList urls;
     urls.append( d->m_imageURL.url());
     QString subject = d->m_imageURL.url();
-    KToolInvokation::invokeMailer(QString::null, QString::null, QString::null, subject,
+    KToolInvocation::invokeMailer(QString::null, QString::null, QString::null, subject,
                        QString::null, //body
                        QString::null,
                        urls); // attachments

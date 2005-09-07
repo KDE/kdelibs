@@ -32,18 +32,18 @@
 
 class DCOPClient;
 
-class KDECORE_EXPORT KToolInvokation : public QObject
+class KDECORE_EXPORT KToolInvocation : public QObject
 {
 
   Q_OBJECT
 private:
-	KToolInvokation(QObject *parent);
-	~KToolInvokation();
-	static KToolInvokation *s_self;
+	KToolInvocation(QObject *parent);
+	~KToolInvocation();
+	static KToolInvocation *s_self;
 	DCOPClient *m_dcopClient;
 	static DCOPClient *dcopClient();
 public:
-	static KToolInvokation *self();
+	static KToolInvocation *self();
 public slots:
   /**
    * Invokes the KHelpCenter HTML help viewer from docbook sources.

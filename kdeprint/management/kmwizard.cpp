@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <kseparator.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kstdguiitem.h>
 
 #include "kmwinfopage.h"
@@ -245,7 +245,7 @@ void KMWizard::slotNext()
 
 void KMWizard::slotHelp()
 {
-	KToolInvokation::invokeHelp(QString::null, "kdeprint");
+	KToolInvocation::invokeHelp(QString::null, "kdeprint");
 }
 
 void KMWizard::enableWizard()

@@ -110,7 +110,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     m_treeView->setColumnWidthMode( 0, Q3ListView::Maximum );
     m_treeView->setResizeMode( Q3ListView::AllColumns );
 
-    d->urlCombo = new KHistoryCombo( page, "url combo" );
+    d->urlCombo = new KHistoryCombo( page);
     d->urlCombo->setTrapReturnKey( true );
     d->urlCombo->setPixmapProvider( new KURLPixmapProvider() );
     KURLCompletion *comp = new KURLCompletion();

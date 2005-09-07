@@ -33,7 +33,7 @@
 #include <q3tl.h>
 #include <qdir.h>
 #include <qpointer.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -418,7 +418,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag, bool startviewer)
 					args << "-d";
 					args << printerName();
 					args << "--noshow";
-					KToolInvokation::kdeinitExec("kjobviewer", args);
+					KToolInvocation::kdeinitExec("kjobviewer", args);
 				}
 			}
 		}

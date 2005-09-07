@@ -21,7 +21,7 @@
 
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kdebug.h>
 
 int
@@ -35,7 +35,7 @@ main(int argc, char *argv[])
    QString error;
    Q3CString dcopService;
    int pid;
-   KToolInvokation::startServiceByDesktopName( "kaddressbook", QString::null, &error, &dcopService, &pid );
+   KToolInvocation::startServiceByDesktopName( "kaddressbook", QString::null, &error, &dcopService, &pid );
    kdDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;
    a.exec();
 }

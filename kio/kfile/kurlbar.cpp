@@ -932,7 +932,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
     label = new QLabel( i18n("&Description:"), grid );
-    m_edit = new KLineEdit( grid, "description edit" );
+    m_edit = new KLineEdit( grid);
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
     label->setWhatsThis(whatsThisText );

@@ -2409,7 +2409,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
   l->setText( i18n("URL:") );
   layout->addWidget(l);
 
-  URLEdit = new KURLRequester( d->m_frame, "URL Requester" );
+  URLEdit = new KURLRequester( d->m_frame);
   layout->addWidget(URLEdit);
 
   QString path = properties->kurl().path();
@@ -2507,9 +2507,9 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDl
 {
   d = new KBindingPropsPluginPrivate;
   d->m_frame = properties->addPage(i18n("A&ssociation"));
-  patternEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
-  commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
-  mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
+  patternEdit = new KLineEdit( d->m_frame);
+  commentEdit = new KLineEdit( d->m_frame);
+  mimeEdit = new KLineEdit( d->m_frame);
 
   QBoxLayout *mainlayout = new QVBoxLayout(d->m_frame, 0, KDialog::spacingHint());
   QLabel* tmpQLabel;
@@ -3769,23 +3769,23 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   }
   else
   {
-      l = new QLabel(i18n("Name:"), d->m_frame, "Label_4" );
+      l = new QLabel(i18n("Name:"), d->m_frame);
       grid->addWidget(l, 0, 0);
 
-      nameEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
+      nameEdit = new KLineEdit( d->m_frame);
       grid->addWidget(nameEdit, 0, 1);
   }
 
-  l = new QLabel(i18n("Description:"),  d->m_frame, "Label_5" );
+  l = new QLabel(i18n("Description:"),  d->m_frame);
   grid->addWidget(l, 1, 0);
 
-  genNameEdit = new KLineEdit( d->m_frame, "LineEdit_4" );
+  genNameEdit = new KLineEdit( d->m_frame);
   grid->addWidget(genNameEdit, 1, 1);
 
-  l = new QLabel(i18n("Comment:"),  d->m_frame, "Label_3" );
+  l = new QLabel(i18n("Comment:"),  d->m_frame);
   grid->addWidget(l, 2, 0);
 
-  commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
+  commentEdit = new KLineEdit( d->m_frame);
   grid->addWidget(commentEdit, 2, 1);
 
   l = new QLabel(i18n("File types:"), d->m_frame);

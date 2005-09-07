@@ -20,7 +20,7 @@
 
 #include "config.h"
 
-#include "ktoolinvokation.h"
+#include "ktoolinvocation.h"
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kcodecs.h"
@@ -74,9 +74,9 @@
 #endif
 
 
-KToolInvokation* KToolInvokation::s_self = 0L;
+KToolInvocation* KToolInvocation::s_self = 0L;
 
-KToolInvokation::KToolInvokation(QObject *parent):QObject(parent) {
+KToolInvocation::KToolInvocation(QObject *parent):QObject(parent) {
 	m_dcopClient=new DCOPClient();
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 	if (args && args->isSet("dcopserver")) {
@@ -84,30 +84,30 @@ KToolInvokation::KToolInvokation(QObject *parent):QObject(parent) {
 	}
 }
 
-KToolInvokation *KToolInvokation::self() {
+KToolInvocation *KToolInvocation::self() {
 	if (s_self==0) {
 		if (qApp && (!qApp->closingDown))
-			s_self=new KToolInvokation(qApp);
+			s_self=new KToolInvocation(qApp);
 		else
-			s_self=new KToolInvokation(0);
+			s_self=new KToolInvocation(0);
 	}
 	return s_self;
 }
 
-KToolInvokation::~KToolInvokation() {
+KToolInvocation::~KToolInvocation() {
 	s_self=0;
 	delete m_dcopClient;
 }
 
-DCOPClient *KToolInvokation::dcopClient() {
-	KToolInvokation *kti=self();
+DCOPClient *KToolInvocation::dcopClient() {
+	KToolInvocation *kti=self();
 	if (!kti->m_dcopClient->isAttached())
 		if (!kti->m_dcopClient->attach()) return 0;
 	return kti->m_dcopClient;
 }
 
 
-void KToolInvokation::invokeHelp( const QString& anchor,
+void KToolInvocation::invokeHelp( const QString& anchor,
                                const QString& _appname,
                                const QByteArray& startup_id )
 {
@@ -124,7 +124,7 @@ void KToolInvokation::invokeHelp( const QString& anchor,
    else
      url = QString("help:/%1/index.html").arg(appname);
 
-   DCOPClient *dcopClient=KToolInvokation::dcopClient();
+   DCOPClient *dcopClient=KToolInvocation::dcopClient();
    if (!dcopClient) return;
    QString error;
    if ( !dcopClient->isApplicationRegistered("khelpcenter") )
@@ -152,7 +152,7 @@ void KToolInvokation::invokeHelp( const QString& anchor,
 
 
 
-void KToolInvokation::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
+void KToolInvocation::invokeMailer(const KURL &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
@@ -257,13 +257,13 @@ static QStringList splitEmailAddressList( const QString & aStr )
   return list;
 }
 
-void KToolInvokation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
+void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
 {
    invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
        QStringList(), startup_id );
 }
 
-void KToolInvokation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
+void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
@@ -389,7 +389,7 @@ void KToolInvokation::invokeMailer(const QString &_to, const QString &_cc, const
 #endif
 }
 
-void KToolInvokation::invokeBrowser( const QString &url, const QByteArray& startup_id )
+void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
    QString error;
 
@@ -408,7 +408,7 @@ void KToolInvokation::invokeBrowser( const QString &url, const QByteArray& start
 }
 
 QByteArray
-KToolInvokation::launcher()
+KToolInvocation::launcher()
 {
    return "klauncher";
 }
@@ -438,7 +438,7 @@ startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
    stream << _name << URLs;
    DCOPCString replyType;
    QByteArray  replyData;
-   QByteArray _launcher = KToolInvokation::launcher();
+   QByteArray _launcher = KToolInvocation::launcher();
    QList<DCOPCString> envs;
 #ifdef Q_WS_X11
    if (QX11Info::display()) {
@@ -483,7 +483,7 @@ startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
 }
 
 int
-KToolInvokation::startServiceByName( const QString& _name, const QString &URL,
+KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
@@ -495,7 +495,7 @@ KToolInvokation::startServiceByName( const QString& _name, const QString &URL,
 }
 
 int
-KToolInvokation::startServiceByName( const QString& _name, const QStringList &URLs,
+KToolInvocation::startServiceByName( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(dcopClient(),
@@ -504,7 +504,7 @@ KToolInvokation::startServiceByName( const QString& _name, const QStringList &UR
 }
 
 int
-KToolInvokation::startServiceByDesktopPath( const QString& _name, const QString &URL,
+KToolInvocation::startServiceByDesktopPath( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
@@ -516,7 +516,7 @@ KToolInvokation::startServiceByDesktopPath( const QString& _name, const QString 
 }
 
 int
-KToolInvokation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
+KToolInvocation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(dcopClient(),
@@ -525,7 +525,7 @@ KToolInvokation::startServiceByDesktopPath( const QString& _name, const QStringL
 }
 
 int
-KToolInvokation::startServiceByDesktopName( const QString& _name, const QString &URL,
+KToolInvocation::startServiceByDesktopName( const QString& _name, const QString &URL,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    QStringList URLs;
@@ -537,7 +537,7 @@ KToolInvokation::startServiceByDesktopName( const QString& _name, const QString 
 }
 
 int
-KToolInvokation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
+KToolInvocation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
                   QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
 {
    return startServiceInternal(dcopClient(),
@@ -547,7 +547,7 @@ KToolInvokation::startServiceByDesktopName( const QString& _name, const QStringL
 
 
 int
-KToolInvokation::kdeinitExec( const QString& name, const QStringList &args,
+KToolInvocation::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
    return startServiceInternal(dcopClient(),"kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
@@ -556,7 +556,7 @@ KToolInvokation::kdeinitExec( const QString& name, const QStringList &args,
 
 
 int
-KToolInvokation::kdeinitExecWait( const QString& name, const QStringList &args,
+KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
    return startServiceInternal(dcopClient(),"kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
@@ -564,4 +564,4 @@ KToolInvokation::kdeinitExecWait( const QString& name, const QStringList &args,
 }
 
 
-#include "ktoolinvokation.moc"
+#include "ktoolinvocation.moc"

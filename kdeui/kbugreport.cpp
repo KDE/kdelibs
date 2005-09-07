@@ -27,7 +27,7 @@
 
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include "ktoolinvokation.h"
+#include "ktoolinvocation.h"
 #include <kconfig.h>
 #include <kdebug.h>
 #include <klineedit.h>
@@ -355,7 +355,7 @@ void KBugReport::slotSetFrom()
 
 void KBugReport::slotUrlClicked(const QString &urlText)
 {
-    KToolInvokation::invokeBrowser( urlText );
+    KToolInvocation::invokeBrowser( urlText );
 
   // When using the web form, a click can also close the window, as there's
   // not much to do. It also gives the user a direct response to his click:
@@ -367,7 +367,7 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 void KBugReport::slotOk( void )
 {
     if ( d->submitBugButton ) {
-            KToolInvokation::invokeBrowser( d->url.url() );
+            KToolInvocation::invokeBrowser( d->url.url() );
         return;
     }
 

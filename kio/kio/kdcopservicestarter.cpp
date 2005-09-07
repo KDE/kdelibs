@@ -24,7 +24,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <dcopclient.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 
 static KStaticDeleter<KDCOPServiceStarter> dss_sd;
 KDCOPServiceStarter* KDCOPServiceStarter::s_self;
@@ -94,5 +94,5 @@ int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
         return -1;
     KService::Ptr ptr = offers.first();
     kdDebug() << "KDCOPServiceStarter: starting " << ptr->desktopEntryPath() << endl;
-    return KToolInvokation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dcopService );
+    return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dcopService );
 }

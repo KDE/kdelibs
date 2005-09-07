@@ -66,7 +66,7 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     QLabel * label = new QLabel( text , plainPage() );
     topLayout->addWidget( label );
 
-    urlRequester_ = new KURLRequester( urlName, plainPage(), "urlRequester" );
+    urlRequester_ = new KURLRequester( urlName, plainPage());
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();

@@ -52,12 +52,6 @@ public:
 		       Q3IconView *iconView = 0 );
 
   /**
-   * Constructs a KIconViewSearchLine without any QIconView to filter. The
-   * QIconView object has to be set later with setIconView().
-   */
-  KIconViewSearchLine( QWidget *parent );
-
-  /**
    * Destroys the KIconViewSearchLine.
    */
   virtual ~KIconViewSearchLine();

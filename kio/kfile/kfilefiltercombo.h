@@ -33,7 +33,7 @@ class KIO_EXPORT KFileFilterCombo : public KComboBox
     Q_OBJECT
 
  public:
-    KFileFilterCombo(QWidget *parent= 0, const char *name= 0);
+    KFileFilterCombo(QWidget *parent=0);
     ~KFileFilterCombo();
 
     void setFilter(const QString& filter);

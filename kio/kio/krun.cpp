@@ -42,7 +42,7 @@
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -713,7 +713,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls, bool tempFil
   QString error;
   int pid = 0;
 
-  int i = KToolInvokation::startServiceByDesktopPath(
+  int i = KToolInvocation::startServiceByDesktopPath(
         _service.desktopEntryPath(), urls.toStringList(), &error, 0L, &pid
         );
 

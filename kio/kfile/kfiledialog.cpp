@@ -815,7 +815,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     qInstallMsgHandler( oldHandler );
 
     d->pathCombo = new KURLComboBox( KURLComboBox::Directories, true,
-                                     toolbar, "path combo" );
+                                     toolbar);
     QToolTip::add( d->pathCombo, i18n("Current location") );
     d->pathCombo->setWhatsThis("<qt>" + i18n("This is the currently listed location. "
                                                  "The drop-down list also lists commonly used locations. "
@@ -970,7 +970,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), d->mainWidget);
     locationEdit = new KURLComboBox(KURLComboBox::Files, true,
-                                    d->mainWidget, "LocationEdit");
+                                    d->mainWidget);
     connect( locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
 
@@ -1001,8 +1001,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                          "Wildcards such as * and ? are allowed.</qt>");
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
     d->filterLabel->setWhatsThis(whatsThisText);
-    filterWidget = new KFileFilterCombo(d->mainWidget,
-                                        "KFileDialog::filterwidget");
+    filterWidget = new KFileFilterCombo(d->mainWidget);
     filterWidget->setWhatsThis(whatsThisText);
     setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);

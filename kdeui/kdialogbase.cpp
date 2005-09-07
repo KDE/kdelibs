@@ -36,7 +36,7 @@
 #include <QWhatsThis>
 
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -1033,7 +1033,7 @@ void KDialogBase::setIconListAllVisible( bool state )
 void KDialogBase::slotHelp()
 {
   emit helpClicked();
-  KToolInvokation::invokeHelp( mAnchor, mHelpApp );
+  KToolInvocation::invokeHelp( mAnchor, mHelpApp );
 }
 
 

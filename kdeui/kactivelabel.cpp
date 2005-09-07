@@ -20,7 +20,7 @@
 #include "kactivelabel.h"
 
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <qregexp.h>
 #include <q3simplerichtext.h>
 #include <kdebug.h>
@@ -86,7 +86,7 @@ void KActiveLabel::openLink(const QString & link)
 
    QStringList args;
    args << "exec" << link;
-   KToolInvokation::kdeinitExec("kfmclient", args);
+   KToolInvocation::kdeinitExec("kfmclient", args);
 }
 
 void KActiveLabel::virtual_hook( int, void* )

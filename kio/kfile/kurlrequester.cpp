@@ -43,8 +43,8 @@
 class KURLDragPushButton : public KPushButton
 {
 public:
-    KURLDragPushButton( QWidget *parent, const char *name=0 )
-	: KPushButton( parent, name ) {
+    KURLDragPushButton( QWidget *parent)
+	: KPushButton( parent) {
     	setDragEnabled( true );
     }
     ~KURLDragPushButton() {}
@@ -156,9 +156,8 @@ public:
 
 
 
-KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
-			      const char *name )
-  : Q3HBox( parent, name )
+KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent)
+  : Q3HBox( parent)
 {
     d = new KURLRequesterPrivate;
 
@@ -171,17 +170,16 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
 }
 
 
-KURLRequester::KURLRequester( QWidget *parent, const char *name )
-  : Q3HBox( parent, name )
+KURLRequester::KURLRequester( QWidget *parent)
+  : Q3HBox( parent)
 {
     d = new KURLRequesterPrivate;
     init();
 }
 
 
-KURLRequester::KURLRequester( const QString& url, QWidget *parent,
-			      const char *name )
-  : Q3HBox( parent, name )
+KURLRequester::KURLRequester( const QString& url, QWidget *parent)
+  : Q3HBox( parent)
 {
     d = new KURLRequesterPrivate;
     init();
@@ -203,9 +201,9 @@ void KURLRequester::init()
     myShowLocalProt = false;
 
     if ( !d->combo && !d->edit )
-	d->edit = new KLineEdit( this, "line edit" );
+	d->edit = new KLineEdit( this);
 
-    myButton = new KURLDragPushButton( this, "kfile button");
+    myButton = new KURLDragPushButton( this);
     QIcon iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
     QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     myButton->setIconSet( iconSet );
@@ -409,9 +407,8 @@ KEditListBox::CustomEditor KURLRequester::customEditor()
 void KURLRequester::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-KURLComboRequester::KURLComboRequester( QWidget *parent,
-			      const char *name )
-  : KURLRequester( new KComboBox(false), parent, name)
+KURLComboRequester::KURLComboRequester( QWidget *parent)
+  : KURLRequester( new KComboBox(false), parent)
 {
 }
 

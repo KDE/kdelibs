@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kde_file.h>
 
 #include "client.h"
@@ -423,7 +423,7 @@ int KDEsuClient::startServer()
     // connections.
     // We start it via kdeinit to make sure that it doesn't inherit
     // any fd's from the parent process.
-    int ret = KToolInvokation::kdeinitExecWait(d->daemon);
+    int ret = KToolInvocation::kdeinitExecWait(d->daemon);
     connect();
     return ret;
 }

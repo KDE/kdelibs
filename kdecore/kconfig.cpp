@@ -37,7 +37,7 @@
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kstaticdeleter.h"
-#include "ktoolinvokation.h"
+#include "ktoolinvocation.h"
 
 #include <qtimer.h>
 KConfig::KConfig( const QString& fileName,
@@ -287,7 +287,7 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   {
      QStringList args;
      args << "--check" << updateFile;
-     KToolInvokation::kdeinitExecWait("kconf_update", args);
+     KToolInvocation::kdeinitExecWait("kconf_update", args);
      reparseConfiguration();
   }
   setGroup(oldGroup);

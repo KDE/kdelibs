@@ -45,8 +45,8 @@ public:
     QString defaultFilter;
 };
 
-KFileFilterCombo::KFileFilterCombo( QWidget *parent, const char *name)
-    : KComboBox(true, parent, name), d( new KFileFilterComboPrivate )
+KFileFilterCombo::KFileFilterCombo( QWidget *parent)
+    : KComboBox(true, parent), d( new KFileFilterComboPrivate )
 {
     setTrapReturnKey( true );
     setInsertionPolicy(NoInsertion);

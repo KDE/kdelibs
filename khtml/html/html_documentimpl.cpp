@@ -50,7 +50,7 @@
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <kglobalsettings.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
@@ -152,7 +152,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
                                   "addCookies(QString,QCString,long int)", params))
     {
          // Maybe it wasn't running (e.g. we're opening local html files)
-         KToolInvokation::startServiceByDesktopName( "kcookiejar");
+         KToolInvocation::startServiceByDesktopName( "kcookiejar");
          if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
                                        "addCookies(QString,QCString,long int)", params))
              kdWarning(6010) << "Can't communicate with cookiejar!" << endl;

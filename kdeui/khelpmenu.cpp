@@ -31,7 +31,7 @@
 #include <kaboutkde.h>
 #include <kaction.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kbugreport.h>
 #include <kdialogbase.h>
@@ -174,7 +174,7 @@ KPopupMenu* KHelpMenu::menu()
 
 void KHelpMenu::appHelpActivated()
 {
-  KToolInvokation::invokeHelp();
+  KToolInvocation::invokeHelp();
 }
 
 

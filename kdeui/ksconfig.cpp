@@ -24,7 +24,7 @@
 #include <qlayout.h>
 
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -956,7 +956,7 @@ void KSpellConfig::activateHelp( void )
 
 void KSpellConfig::sHelp( void )
 {
-  KToolInvokation::invokeHelp("configuration", "kspell");
+  KToolInvocation::invokeHelp("configuration", "kspell");
 }
 
 /*

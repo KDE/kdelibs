@@ -55,7 +55,7 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()
@@ -896,12 +896,12 @@ void KMMainView::slotHelp()
 {
 	QString s = sender()->name();
 	if ( s == "invoke_help" )
-		KToolInvokation::invokeHelp( QString::null, "kdeprint" );
+		KToolInvocation::invokeHelp( QString::null, "kdeprint" );
 	else if ( s == "invoke_web" )
 	{
 		QStringList args;
 		args << "exec" << "http://printing.kde.org";
-		KToolInvokation::kdeinitExec( "kfmclient", args );
+		KToolInvocation::kdeinitExec( "kfmclient", args );
 	}
 	else
 		kdDebug( 500 ) << "Unknown help invokator: " << s << endl;

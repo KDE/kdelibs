@@ -235,7 +235,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
 {
     if (m_validator && m_validator->inherits("KStringListValidator"))
     {
-        KComboBox* b = new KComboBox(true, this, "metainfo combobox");
+        KComboBox* b = new KComboBox(true, this);
         KStringListValidator* val = static_cast<KStringListValidator*>
                                                     (m_validator);
         b->insertStringList(val->stringList());

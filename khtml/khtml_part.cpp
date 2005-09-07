@@ -91,7 +91,7 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
 #include "../kutils/kfinddialog.h"
@@ -1134,7 +1134,7 @@ void KHTMLPart::launchJSErrorDialog() {
 void KHTMLPart::launchJSConfigDialog() {
   QStringList args;
   args << "khtml_java_js";
-  KToolInvokation::kdeinitExec( "kcmshell", args );
+  KToolInvocation::kdeinitExec( "kcmshell", args );
 }
 
 QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const DOM::Node& n, const QString& script)
@@ -7235,7 +7235,7 @@ void KHTMLPart::launchWalletManager()
 {
 #ifndef KHTML_NO_WALLET
   if (!DCOPClient::mainClient()->isApplicationRegistered("kwalletmanager")) {
-    KToolInvokation::startServiceByDesktopName("kwalletmanager_show");
+    KToolInvocation::startServiceByDesktopName("kwalletmanager_show");
   } else {
     DCOPRef r("kwalletmanager", "kwalletmanager-mainwindow#1");
     r.send("show");

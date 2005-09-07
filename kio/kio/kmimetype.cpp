@@ -46,7 +46,7 @@
 #include <dcopclient.h>
 #include <dcopref.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kprocess.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -904,7 +904,7 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   args << url.path();
 
   int pid;
-  if ( !KToolInvokation::kdeinitExec("kfmclient", args, 0, &pid) )
+  if ( !KToolInvocation::kdeinitExec("kfmclient", args, 0, &pid) )
       return pid;
 
   KProcess p;

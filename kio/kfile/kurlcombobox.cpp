@@ -38,16 +38,15 @@ public:
 };
 
 
-KURLComboBox::KURLComboBox( Mode mode, QWidget *parent, const char *name )
-    : KComboBox( parent, name )
+KURLComboBox::KURLComboBox( Mode mode, QWidget *parent)
+    : KComboBox( parent)
 {
     init( mode );
 }
 
 
-KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent,
-                            const char *name )
-    : KComboBox( rw, parent, name )
+KURLComboBox::KURLComboBox( Mode mode, bool rw, QWidget *parent)
+    : KComboBox( rw, parent)
 {
     init( mode );
 }

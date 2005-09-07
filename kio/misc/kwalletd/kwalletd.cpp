@@ -29,7 +29,7 @@
 #include <dcopref.h>
 #include <kactivelabel.h>
 #include <kapplication.h>
-#include <ktoolinvokation.h>
+#include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -476,7 +476,7 @@ int KWalletD::internalOpen(const QByteArray& appid, const QString& wallet, bool 
 		}
 		emitDCOPSignal("walletOpened(QString)", data);
 		if (_wallets.count() == 1 && _launchManager) {
-			KToolInvokation::startServiceByDesktopName("kwalletmanager-kwalletd");
+			KToolInvocation::startServiceByDesktopName("kwalletmanager-kwalletd");
 		}
 	} else {
 		if (!_handles[appid].contains(rc) && _openPrompt && !isAuthorizedApp(appid, wallet, w)) {
