@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-COMPILE_FIRST = dcop libltdl kdefx kdecore kunittest kdeui kdesu kjs kwallet kio
+COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kwallet kio
 COMPILE_BEFORE_doc = kdoctools
 COMPILE_AFTER_kparts = kspell2 kde3support kdeprint kinit kate interfaces kcert khtml
 COMPILE_AFTER_kdeprint = kate khtml
