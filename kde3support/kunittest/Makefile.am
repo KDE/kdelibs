@@ -24,4 +24,4 @@ kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
 check-local:
 	./kunittestmodrunner
 
-include ../admin/Doxyfile.am
+include $(top_srcdir)/admin/Doxyfile.am
