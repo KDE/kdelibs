@@ -34,7 +34,8 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 # TODO kurltest4 when it works
 
 TESTS = kurltest \
-	kconfigtest ktempfiletest kurlmimetest kstdacceltest
+	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
+	kstringhandlertest
 
 METASOURCES = AUTO
 
