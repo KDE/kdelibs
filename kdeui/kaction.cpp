@@ -114,7 +114,7 @@ public:
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const char* name )
-: QObject( parent, name ), d(new KActionPrivate)
+: QObject( parent ), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 }
@@ -122,7 +122,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name ), d(new KActionPrivate)
+: QObject( parent ), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 	d->setIconName( sIconName );
@@ -131,7 +131,7 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name ), d(new KActionPrivate)
+: QObject( parent), d(new KActionPrivate)
 {
 	initPrivate( text, cut, receiver, slot );
 	d->setIconSet( pix );
@@ -140,7 +140,7 @@ KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	const QObject* receiver, const char* slot,
 	KActionCollection* parent, const char* name )
-: QObject( parent, name ), d(new KActionPrivate)
+: QObject( parent ), d(new KActionPrivate)
 {
 	initPrivate( item.text(), cut, receiver, slot );
 	if( item.hasIcon() )
@@ -152,7 +152,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 #ifndef KDE_NO_COMPAT // KDE 4: remove
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
- : QObject( parent, name ), d(new KActionPrivate)
+ : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
 }
@@ -160,7 +160,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const KShortcut& cut,
                   const QObject* receiver,
                   const char* slot, QObject* parent, const char* name )
- : QObject( parent, name ), d(new KActionPrivate)
+ : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
 }
@@ -168,7 +168,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
 KAction::KAction( const QString& text, const QIcon& pix,
                   const KShortcut& cut,
                   QObject* parent, const char* name )
- : QObject( parent, name ), d(new KActionPrivate)
+ : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
     setIconSet( pix );
@@ -177,7 +177,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
 KAction::KAction( const QString& text, const QString& pix,
                   const KShortcut& cut,
                   QObject* parent, const char* name )
-: QObject( parent, name ), d(new KActionPrivate)
+: QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0 );
     d->setIconName( pix );
@@ -187,7 +187,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
                   const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
- : QObject( parent, name ), d(new KActionPrivate)
+ : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
     setIconSet( pix );
@@ -197,14 +197,14 @@ KAction::KAction( const QString& text, const QString& pix,
                   const KShortcut& cut,
                   const QObject* receiver, const char* slot, QObject* parent,
                   const char* name )
-  : QObject( parent, name ), d(new KActionPrivate)
+  : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot );
     d->setIconName(pix);
 }
 
 KAction::KAction( QObject* parent, const char* name )
- : QObject( parent, name ), d(new KActionPrivate)
+ : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
 }
@@ -1159,7 +1159,7 @@ int KAction::findContainer( const QWidget* widget ) const
 {
   for(int pos = 0; pos < d->m_containers.size(); ++pos)
   {
-    if ( d->m_containers.at(pos).m_representative == widget || 
+    if ( d->m_containers.at(pos).m_representative == widget ||
          d->m_containers.at(pos).m_container == widget )
       return pos;
   }

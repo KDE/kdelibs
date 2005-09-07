@@ -99,7 +99,7 @@ public:
 private slots:
     void widgetDestroyed();
 private:
-    KContextMenuManager( QObject* parent = 0, const char* name  = 0);
+    KContextMenuManager( QObject* parent = 0);
     ~KContextMenuManager();
     bool eventFilter( QObject *, QEvent * );
     Q3PtrDict<Q3PopupMenu> menus;

@@ -1309,15 +1309,13 @@ bool KDirWatch::exists()
   return s_pSelf != 0;
 }
 
-KDirWatch::KDirWatch (QObject* parent, const char* name)
-  : QObject(parent,name)
+KDirWatch::KDirWatch (QObject* parent)
+  : QObject(parent)
 {
-  if (!name) {
-    static int nameCounter = 0;
+  static int nameCounter = 0;
 
-    nameCounter++;
-    setName(QString("KDirWatch-%1").arg(nameCounter).ascii());
-  }
+  nameCounter++;
+  setObjectName(QString("KDirWatch-%1").arg(nameCounter) );
 
   if (!dwp_self)
     dwp_self = new KDirWatchPrivate;

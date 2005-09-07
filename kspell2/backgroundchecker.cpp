@@ -37,9 +37,8 @@ public:
     QString currentText;
 };
 
-BackgroundChecker::BackgroundChecker( const Broker::Ptr& broker, QObject* parent,
-                                      const char *name )
-    : QObject( parent, name )
+BackgroundChecker::BackgroundChecker( const Broker::Ptr& broker, QObject* parent )
+    : QObject( parent )
 {
     d = new Private;
     //d->thread.setReceiver( this );

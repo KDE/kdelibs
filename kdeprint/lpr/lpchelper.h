@@ -30,7 +30,7 @@ class KMJob;
 class LpcHelper : public QObject
 {
 public:
-	LpcHelper(QObject *parent = 0, const char *name = 0);
+	LpcHelper(QObject *parent = 0);
 	~LpcHelper();
 
 	KMPrinter::PrinterState state(const QString&) const;

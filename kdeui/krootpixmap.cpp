@@ -43,15 +43,17 @@ public:
 };
 
 
-KRootPixmap::KRootPixmap( QWidget *widget, const char *name )
-    : QObject(widget, name ? name : "KRootPixmap" ), m_Desk(0), m_pWidget(widget)
+KRootPixmap::KRootPixmap( QWidget *widget )
+    : QObject( widget ), m_Desk(0), m_pWidget(widget)
 {
+    setObjectName( "KRootPixmap" );
     init();
 }
 
-KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent, const char *name )
-    : QObject( parent, name ? name : "KRootPixmap" ), m_Desk(0), m_pWidget(widget)
+KRootPixmap::KRootPixmap( QWidget *widget, QObject *parent )
+    : QObject( parent ), m_Desk(0), m_pWidget(widget)
 {
+    setObjectName( "KRootPixmap" );
     init();
 }
 

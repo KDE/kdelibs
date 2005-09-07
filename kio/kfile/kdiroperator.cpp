@@ -1244,7 +1244,8 @@ void KDirOperator::slotCompletionMatch(const QString& match)
 
 void KDirOperator::setupActions()
 {
-    myActionCollection = new KActionCollection( this, "KDirOperator::myActionCollection" );
+    myActionCollection = new KActionCollection( this );
+    myActionCollection->setObjectName( "KDirOperator::myActionCollection" );
     actionMenu = new KActionMenu( i18n("Menu"), myActionCollection, "popupMenu" );
     upAction = KStdAction::up( this, SLOT( cdUp() ), myActionCollection, "up" );
     upAction->setText( i18n("Parent Folder") );

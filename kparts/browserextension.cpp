@@ -354,9 +354,8 @@ static KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
 BrowserExtension::ActionNumberMap * BrowserExtension::s_actionNumberMap = 0L;
 static KStaticDeleter<BrowserExtension::ActionNumberMap> actionNumberMapsd;
 
-BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
-                                    const char *name )
-: QObject( parent, name), m_part( parent )
+BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
+: QObject( parent), m_part( parent )
 {
   //kdDebug() << "BrowserExtension::BrowserExtension() " << this << endl;
   d = new BrowserExtensionPrivate;
@@ -368,15 +367,15 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent,
 
   // Build list with this extension's slot names.
   Q3StrList slotNames;
-  int methodCount = metaObject()->methodCount(); 
-  int methodOffset = metaObject()->methodOffset(); 
+  int methodCount = metaObject()->methodCount();
+  int methodOffset = metaObject()->methodOffset();
   for ( int i=0 ; i < methodCount; ++i )
   {
       QMetaMethod method = metaObject()->method( methodOffset + i );
       if ( method.methodType() == QMetaMethod::Slot )
           slotNames.append( method.signature() );
   }
-  
+
   // Set the initial status of the actions depending on whether
   // they're supported or not
   ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
@@ -489,8 +488,8 @@ void BrowserExtension::pasteRequest()
 		break;
 	}
     }
-    else if ( KURIFilter::self()->filterURI( filterData, 
-                    QStringList( QLatin1String( "kuriikwsfilter" ) ) ) && 
+    else if ( KURIFilter::self()->filterURI( filterData,
+                    QStringList( QLatin1String( "kuriikwsfilter" ) ) ) &&
               url.length() < 250 )
     {
         if ( KMessageBox::questionYesNo( m_part->widget(),
@@ -638,8 +637,8 @@ public:
 
 }
 
-BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent, const char *name )
- : QObject( parent, name )
+BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent )
+ : QObject( parent )
 {
   d = new BrowserHostExtensionPrivate;
   d->m_part = parent;
@@ -696,7 +695,7 @@ BrowserHostExtension::findFrameParent(KParts::ReadOnlyPart *callingPart, const Q
 void BrowserHostExtension::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name ) : QObject( parent, name) {}
+LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent ) : QObject( parent) {}
 
 bool LiveConnectExtension::get( const unsigned long, const QString &, Type &, unsigned long &, QString & ) {
     return false;

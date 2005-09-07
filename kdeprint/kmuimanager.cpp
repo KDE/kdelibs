@@ -39,8 +39,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-KMUiManager::KMUiManager(QObject *parent, const char *name)
-: QObject(parent,name)
+KMUiManager::KMUiManager(QObject *parent)
+: QObject(parent)
 {
 	m_printdialogflags = KMUiManager::PrintDialogAll;
 	m_printdialogpages.setAutoDelete(false);

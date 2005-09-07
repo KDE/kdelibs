@@ -23,7 +23,7 @@
 #include <klocale.h>
 
 KMExtManager::KMExtManager(QObject *parent, const char *name, const QStringList & /*args*/)
-: KMManager(parent,name)
+    : KMManager(parent)
 {
 	setHasManagement(false);
 	m_psprinter = 0;

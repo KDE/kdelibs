@@ -44,7 +44,7 @@ class KHTMLPartBrowserExtension : public KParts::BrowserExtension
   friend class KHTMLPart;
   friend class KHTMLView;
 public:
-  KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name = 0L );
+  KHTMLPartBrowserExtension( KHTMLPart *parent );
 
   virtual int xOffset();
   virtual int yOffset();

@@ -25,8 +25,8 @@
 #include <kglobal.h>
 #include <kdebug.h>
 
-PrinterFilter::PrinterFilter(QObject *parent, const char *name)
-: QObject(parent, name)
+PrinterFilter::PrinterFilter(QObject *parent)
+: QObject(parent)
 {
 	m_locationRe.setWildcard(true);
 	update();

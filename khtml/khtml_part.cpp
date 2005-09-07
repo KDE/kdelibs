@@ -114,6 +114,7 @@ using namespace DOM;
 #include "kpassivepopup.h"
 #include "kpopupmenu.h"
 #include "rendering/render_form.h"
+#include "misc/loader.h"
 #include <kwin.h>
 
 #define HINT_UTF8	106
@@ -201,7 +202,7 @@ KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 }
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name, GUIProfile prof )
-: KParts::ReadOnlyPart( parent, name )
+: KParts::ReadOnlyPart( parent )
 {
     d = 0;
     KHTMLFactory::registerPart( this );
@@ -212,7 +213,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 }
 
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
-: KParts::ReadOnlyPart( parent, name )
+: KParts::ReadOnlyPart( parent )
 {
     d = 0;
     KHTMLFactory::registerPart( this );
@@ -236,7 +237,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   setWidget( d->m_view );
 
   d->m_guiProfile = prof;
-  d->m_extension = new KHTMLPartBrowserExtension( this, "KHTMLBrowserExtension" );
+  d->m_extension = new KHTMLPartBrowserExtension( this );
+  d->m_extension->setObjectName( "KHTMLBrowserExtension" );
   d->m_hostExtension = new KHTMLPartBrowserHostExtension( this );
   d->m_statusBarExtension = new KParts::StatusBarExtension( this );
   d->m_statusBarIconLabel = 0L;
@@ -4658,7 +4660,8 @@ KParts::PartManager *KHTMLPart::partManager()
 {
   if ( !d->m_manager && d->m_view )
   {
-    d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget(), this, "khtml part manager" );
+    d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget(), this );
+    d->m_manager->setObjectName( "khtml part manager" );
     d->m_manager->setAllowNestedParts( true );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
              this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );

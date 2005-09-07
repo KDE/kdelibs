@@ -44,8 +44,8 @@ static QString execute(const QString& cmd)
 	return output;
 }
 
-LpcHelper::LpcHelper(QObject *parent, const char *name)
-: QObject(parent, name)
+LpcHelper::LpcHelper(QObject *parent)
+    : QObject(parent)
 {
 	// look for the "lpc" executable. Use the PATH variable and
 	// add some specific dirs.

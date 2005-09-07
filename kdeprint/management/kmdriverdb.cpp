@@ -43,10 +43,11 @@ KMDriverDB* KMDriverDB::self()
 	return m_self;
 }
 
-KMDriverDB::KMDriverDB(QObject *parent, const char *name)
-: QObject(parent,name)
+KMDriverDB::KMDriverDB(QObject *parent)
+: QObject(parent)
 {
-	m_creator = new KMDBCreator(this,"db-creator");
+        m_creator = new KMDBCreator(this );
+        m_creator->setObjectName( "db-creator" );
 	connect(m_creator,SIGNAL(dbCreated()),SLOT(slotDbCreated()));
 
 	m_entries.setAutoDelete(true);

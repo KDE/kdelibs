@@ -62,7 +62,8 @@ Form1::Form1( QWidget* parent,  const char* name )
     TextLabel1->setText(  "Completion"  );
     Layout1->addWidget( TextLabel1 );
 
-    edit = new KLineEdit( GroupBox1, "edit" );
+    edit = new KLineEdit( GroupBox1 );
+    edit->setObjectName( "edit" );
     Layout1->addWidget( edit );
     Layout9->addLayout( Layout1 );
     edit->completionObject()->setItems( defaultItems() );
@@ -74,7 +75,8 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout2->setSpacing( 6 );
     Layout2->setMargin( 0 );
 
-    combo = new KHistoryCombo( GroupBox1, "history combo" );
+    combo = new KHistoryCombo( GroupBox1 );
+    combo->setObjectName( "history combo" );
     combo->setCompletionObject( edit->completionObject() );
     // combo->setMaxCount( 5 );
     combo->setHistoryItems( defaultItems(), true );
@@ -83,10 +85,12 @@ Form1::Form1( QWidget* parent,  const char* name )
     QToolTip::add( combo, "KHistoryCombo" );
     Layout2->addWidget( combo );
 
-    LineEdit1 = new KLineEdit( GroupBox1, "LineEdit1" );
+    LineEdit1 = new KLineEdit( GroupBox1 );
+    LineEdit1->setObjectName( "LineEdit1" );
     Layout2->addWidget( LineEdit1 );
 
-    PushButton1 = new QPushButton( GroupBox1, "PushButton1" );
+    PushButton1 = new QPushButton( GroupBox1 );
+    PushButton1->setObjectName( "PushButton1" );
     PushButton1->setText( "Add" );
     connect( PushButton1, SIGNAL( clicked() ), SLOT( slotAdd() ));
     Layout2->addWidget( PushButton1 );
@@ -148,7 +152,7 @@ void Form1::slotAdd()
 {
     qDebug("** adding: %s", LineEdit1->text().latin1() );
     edit->completionObject()->addItem( LineEdit1->text() );
-    
+
     QStringList matches = edit->completionObject()->allMatches("S");
     QStringList::ConstIterator it = matches.begin();
     for ( ; it != matches.end(); ++it )

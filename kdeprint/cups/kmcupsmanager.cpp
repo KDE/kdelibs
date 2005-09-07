@@ -67,8 +67,8 @@ static int trials = 5;
 
 //*****************************************************************************************************
 
-	KMCupsManager::KMCupsManager(QObject *parent, const char *name, const QStringList & /*args*/)
-: KMManager(parent,name)
+KMCupsManager::KMCupsManager(QObject *parent, const char *name, const QStringList & /*args*/)
+: KMManager(parent)
 {
 	// be sure to create the CupsInfos object -> password
 	// management is handled correctly.
@@ -894,7 +894,7 @@ void KMCupsManager::slotConnectionSuccess()
 void KMCupsManager::slotAsyncConnect()
 {
 	kdDebug(500) << "Starting async connect" << endl;
-	m_socket.connect( CupsInfos::self()->host(), 
+	m_socket.connect( CupsInfos::self()->host(),
 			  QString::number( CupsInfos::self()->port() ) );
 }
 

@@ -213,7 +213,7 @@ protected:
 
 KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                  QObject * parent, const char * name, const QStringList & args)
- : KParts::ReadOnlyPart (parent, name),
+ : KParts::ReadOnlyPart (parent),
    m_browserextension (new KJavaAppletViewerBrowserExtension (this)),
    m_liveconnect (new KJavaAppletViewerLiveConnectExtension (this)),
    m_statusbar (new KParts::StatusBarExtension (this)),
@@ -456,7 +456,9 @@ KAboutData* KJavaAppletViewer::createAboutData () {
 //---------------------------------------------------------------------
 
 KJavaAppletViewerBrowserExtension::KJavaAppletViewerBrowserExtension (KJavaAppletViewer * parent)
-  : KParts::BrowserExtension (parent, "KJavaAppletViewer Browser Extension") {
+  : KParts::BrowserExtension (parent )
+{
+    setObjectName( "KJavaAppletViewer Browser Extension" );
 }
 
 void KJavaAppletViewerBrowserExtension::urlChanged (const QString & url) {
@@ -518,7 +520,9 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
 //-----------------------------------------------------------------------------
 
 KJavaAppletViewerLiveConnectExtension::KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent)
-    : KParts::LiveConnectExtension (parent, "KJavaAppletViewer LiveConnect Extension"), m_viewer (parent) {
+    : KParts::LiveConnectExtension (parent ), m_viewer (parent)
+{
+    setObjectName( "KJavaAppletViewer LiveConnect Extension" );
 }
 
 bool KJavaAppletViewerLiveConnectExtension::get (

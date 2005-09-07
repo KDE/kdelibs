@@ -29,7 +29,7 @@ class KMJobManager;
 class KMThreadJob : public QObject
 {
 public:
-	KMThreadJob(QObject *parent = 0, const char *name = 0);
+	KMThreadJob(QObject *parent = 0);
 	~KMThreadJob();
 
 	KMJob* findJob(int ID);

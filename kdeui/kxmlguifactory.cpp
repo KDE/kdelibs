@@ -203,8 +203,8 @@ void KXMLGUIFactory::removeDOMComments( QDomNode &node )
     }
 }
 
-KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent, const char *name )
-    : QObject( parent, name )
+KXMLGUIFactory::KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent )
+    : QObject( parent )
 {
     d = new KXMLGUIFactoryPrivate;
     d->builder = builder;

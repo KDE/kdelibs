@@ -48,7 +48,7 @@ public:
     /**
      * Creates a KHistoryProvider with an optional parent and name
      */
-    HistoryProvider( QObject *parent = 0L, const char *name = 0 );
+    HistoryProvider( QObject *parent = 0 );
 
     /**
      * Destroys the provider.

@@ -35,7 +35,7 @@ class KMDriverDB : public QObject
 public:
 	static KMDriverDB* self();
 
-	KMDriverDB(QObject *parent = 0, const char *name = 0);
+	KMDriverDB(QObject *parent = 0);
 	~KMDriverDB();
 
 	void init(QWidget *parent = 0);

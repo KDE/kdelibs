@@ -102,7 +102,7 @@ class KHTMLImageBrowserExtension : public KParts::BrowserExtension
 {
     Q_OBJECT
 public:
-    KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name = 0 );
+    KHTMLImageBrowserExtension( KHTMLImage *parent );
 
     virtual int xOffset();
     virtual int yOffset();

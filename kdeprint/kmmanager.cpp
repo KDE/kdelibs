@@ -37,8 +37,8 @@
 #include <klibloader.h>
 #include <unistd.h>
 
-KMManager::KMManager(QObject *parent, const char *name)
-: QObject(parent,name)
+KMManager::KMManager(QObject *parent)
+: QObject(parent)
 {
 	m_printers.setAutoDelete(true);
 	m_fprinters.setAutoDelete(false);

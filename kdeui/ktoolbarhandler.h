@@ -36,8 +36,8 @@ class ToolBarHandler : public QObject,
 {
     Q_OBJECT
 public:
-    ToolBarHandler( KMainWindow *mainWindow, const char *name = 0 );
-    ToolBarHandler( KMainWindow *mainWindow, QObject *parent, const char *name = 0 );
+    ToolBarHandler( KMainWindow *mainWindow );
+    ToolBarHandler( KMainWindow *mainWindow, QObject *parent );
     virtual ~ToolBarHandler();
 
     KAction *toolBarMenuAction();

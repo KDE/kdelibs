@@ -47,8 +47,8 @@ Dispatcher * Dispatcher::self()
     return m_self;
 }
 
-Dispatcher::Dispatcher( QObject * parent, const char * name )
-    : QObject( parent, name )
+Dispatcher::Dispatcher( QObject * parent )
+    : QObject( parent )
     //, d( 0 )
 {
     kdDebug( 701 ) << k_funcinfo << endl;

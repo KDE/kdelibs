@@ -54,7 +54,7 @@ public:
   /**
    * Constructor. Parent must be KToolBar .
    */
-  KToolBarRadioGroup (KToolBar *_parent, const char *_name=0);
+  KToolBarRadioGroup (KToolBar *_parent);
   /**
    * Destructor.
    */

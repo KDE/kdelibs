@@ -42,7 +42,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        Client( QObject *parent = 0, const char *name=0 );
+        Client( QObject *parent = 0 );
 
         virtual int reliability() const = 0;
 

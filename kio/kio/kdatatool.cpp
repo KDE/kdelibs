@@ -266,8 +266,8 @@ Q3PtrList<KAction> KDataToolAction::dataToolActionList( const Q3ValueList<KDataT
  *
  *************************************************/
 
-KDataTool::KDataTool( QObject* parent, const char* name )
-    : QObject( parent, name ), m_instance( 0L )
+KDataTool::KDataTool( QObject* parent )
+    : QObject( parent ), m_instance( 0L )
 {
 }
 

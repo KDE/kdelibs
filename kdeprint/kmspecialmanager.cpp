@@ -35,8 +35,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)
-: QObject(parent,name), m_mgr(parent), m_loaded(false)
+KMSpecialManager::KMSpecialManager(KMManager *parent)
+: QObject(parent), m_mgr(parent), m_loaded(false)
 {
 }
 

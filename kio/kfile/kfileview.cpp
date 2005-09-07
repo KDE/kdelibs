@@ -364,8 +364,10 @@ void KFileView::listingCompleted()
 
 KActionCollection * KFileView::actionCollection() const
 {
-    if ( !d->actions )
-        d->actions = new KActionCollection( widget(), "KFileView::d->actions" );
+    if ( !d->actions ) {
+        d->actions = new KActionCollection( widget() );
+        d->actions->setObjectName( "KFileView::d->actions" );
+    }
     return d->actions;
 }
 
@@ -415,9 +417,9 @@ int KFileView::autoOpenDelay()
 }
 
 void KFileView::virtual_hook( int id, void* data)
-{ 
+{
     switch(id) {
-      case VIRTUAL_SET_DROP_OPTIONS: 
+      case VIRTUAL_SET_DROP_OPTIONS:
          setDropOptions_impl(*(int *)data);
          break;
       default:

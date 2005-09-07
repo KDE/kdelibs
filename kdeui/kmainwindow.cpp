@@ -424,8 +424,10 @@ bool KMainWindow::restore( int number, bool show )
 
 KXMLGUIFactory *KMainWindow::guiFactory()
 {
-    if ( !factory_ )
-        factory_ = new KXMLGUIFactory( this, this, "guifactory" );
+    if ( !factory_ ) {
+        factory_ = new KXMLGUIFactory( this, this );
+        factory_->setObjectName( "guifactory" );
+    }
     return factory_;
 }
 

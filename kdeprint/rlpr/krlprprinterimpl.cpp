@@ -29,7 +29,7 @@
 #include <klocale.h>
 
 KRlprPrinterImpl::KRlprPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
-: KPrinterImpl(parent,name)
+    : KPrinterImpl(parent)
 {
 }
 

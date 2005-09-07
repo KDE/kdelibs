@@ -61,7 +61,7 @@ public:
     /**
      * Construct a new KParts plugin.
      */
-    Plugin( QObject* parent = 0, const char* name = 0 );
+    Plugin( QObject* parent = 0 );
     /**
      * Destructor.
      */

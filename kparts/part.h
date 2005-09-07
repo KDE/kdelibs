@@ -189,9 +189,8 @@ public:
      *  Constructor.
      *
      *  @param parent Parent object of the part.
-     *  @param name   QT-internal name of the part.
      */
-    Part( QObject *parent = 0, const char* name = 0 );
+    Part( QObject *parent = 0 );
 
     /**
      *  Destructor.
@@ -345,7 +344,7 @@ public:
    * Constructor
    * See also Part for the setXXX methods to call.
    */
-  ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
+  ReadOnlyPart( QObject *parent = 0 );
 
   /**
    * Destructor
@@ -556,7 +555,7 @@ public:
    * Constructor
    * See parent constructor for instructions.
    */
-  ReadWritePart( QObject *parent = 0, const char *name = 0 );
+  ReadWritePart( QObject *parent = 0 );
   /**
    * Destructor
    * Applications using a ReadWritePart should make sure, before

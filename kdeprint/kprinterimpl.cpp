@@ -58,8 +58,8 @@ void initEditPrinter(KMPrinter *p)
 
 //****************************************************************************************
 
-KPrinterImpl::KPrinterImpl(QObject *parent, const char *name)
-: QObject(parent,name)
+KPrinterImpl::KPrinterImpl(QObject *parent)
+: QObject(parent)
 {
 	loadAppOptions();
 }

@@ -74,7 +74,7 @@ public:
    *               events
    * @param name   The object's name, if any.
    */
-  PartManager( QWidget * parent, const char * name = 0L );
+  PartManager( QWidget * parent );
   /**
    * Constructs a part manager.
    *
@@ -84,7 +84,7 @@ public:
    * @param parent   The parent QObject.
    * @param name     The object's name, if any.
    */
-  PartManager( QWidget * topLevel, QObject *parent, const char *name = 0 );
+  PartManager( QWidget * topLevel, QObject *parent );
   virtual ~PartManager();
 
   /**

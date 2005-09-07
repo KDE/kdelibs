@@ -20,7 +20,7 @@ driver_LDADD = ../libDCOP.la
 driver_LDFLAGS = $(KDE_RPATH)
 
 CLEANFILES = batch.generated definitions.generated driver.generated shell.generated
-test.lo: batch.generated definitions.generated driver.generated shell.generated
+test.o: batch.generated definitions.generated driver.generated shell.generated
 
 test-clean:
 	rm batch.returns driver.returns shell.returns batch.stdout driver.stdout shell.stdout

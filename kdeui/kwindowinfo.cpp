@@ -17,8 +17,8 @@
 static const int UNSPECIFIED_TIMEOUT = -1;
 static const int DEFAULT_MESSAGE_TIMEOUT = 3000;
 
-KWindowInfo::KWindowInfo( QWidget *parent, const char *name )
-    : QObject( parent, name ), win( parent ), autoDel( false )
+KWindowInfo::KWindowInfo( QWidget *parent )
+    : QObject( parent ), win( parent ), autoDel( false )
 {
 }
 

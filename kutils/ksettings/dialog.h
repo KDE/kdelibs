@@ -98,9 +98,8 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param name         name
          */
-        Dialog( QWidget * parent = 0, const char * name = 0 );
+        Dialog( QWidget * parent = 0);
 
         /**
          * Construct a new Preferences Dialog for the application. It uses all
@@ -111,10 +110,8 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param name         name
          */
-        Dialog( ContentInListView content = Static, QWidget * parent = 0,
-                const char * name = 0 );
+        Dialog( ContentInListView content = Static, QWidget * parent = 0 );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -127,10 +124,8 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param name         name
          */
-        Dialog( const QStringList & components, QWidget * parent = 0,
-                const char * name = 0 );
+         Dialog( const QStringList & components, QWidget * parent = 0 );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -148,7 +143,7 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param name         name
          */
         Dialog( const QStringList & components, ContentInListView
-                content, QWidget * parent = 0, const char * name = 0 );
+                content, QWidget * parent = 0 );
 
         ~Dialog();
 

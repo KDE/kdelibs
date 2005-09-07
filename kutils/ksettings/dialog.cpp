@@ -357,8 +357,8 @@ class Dialog::DialogPrivate
 		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
-Dialog::Dialog( QWidget * parent, const char * name )
-	: QObject( parent, name )
+Dialog::Dialog( QWidget * parent )
+	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
@@ -367,8 +367,8 @@ Dialog::Dialog( QWidget * parent, const char * name )
 }
 
 Dialog::Dialog( ContentInListView content,
-		QWidget * parent, const char * name )
-	: QObject( parent, name )
+		QWidget * parent )
+	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
@@ -377,8 +377,8 @@ Dialog::Dialog( ContentInListView content,
 }
 
 Dialog::Dialog( const QStringList & components,
-		QWidget * parent, const char * name )
-	: QObject( parent, name )
+		QWidget * parent )
+	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
@@ -387,8 +387,8 @@ Dialog::Dialog( const QStringList & components,
 }
 
 Dialog::Dialog( const QStringList & components,
-		ContentInListView content, QWidget * parent, const char * name )
-	: QObject( parent, name )
+		ContentInListView content, QWidget * parent )
+	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;

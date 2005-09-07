@@ -41,7 +41,7 @@ class KProcess;
 class KIO_EXPORT KDiskFreeSp : public QObject
 {  Q_OBJECT
 public:
-   KDiskFreeSp( QObject *parent=0, const char *name=0 );
+   KDiskFreeSp( QObject *parent=0);
    /**
     * Destructor - this object autodeletes itself when it's done
     */

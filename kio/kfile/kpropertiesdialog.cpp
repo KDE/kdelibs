@@ -583,7 +583,7 @@ public:
 };
 
 KPropsDlgPlugin::KPropsDlgPlugin( KPropertiesDialog *_props )
-: QObject( _props, 0L )
+: QObject( _props )
 {
   d = new KPropsDlgPluginPrivate;
   properties = _props;

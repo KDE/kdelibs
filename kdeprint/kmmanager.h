@@ -69,7 +69,7 @@ public:
 		ServerAll        = 0xF
 	};
 
-	KMManager(QObject *parent = 0, const char *name = 0);
+	KMManager(QObject *parent = 0);
 	virtual ~KMManager();
 
     static KMManager* self();

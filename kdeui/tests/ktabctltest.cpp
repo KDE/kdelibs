@@ -43,23 +43,27 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
     /*
      * add a tabctrl widget
      */
-    
-    test = new KTabCtl(this, "test");
+
+    test = new KTabCtl(this);
+    test->setObjectName( "test" );
     connect(test, SIGNAL(tabSelected(int)), this, SLOT(tabChanged(int)));
     QWidget *w = new QWidget(test, "_page1");
-    QPushButton *bt = new QPushButton("Click me to quit", w, "_bt1");
+    QPushButton *bt = new QPushButton("Click me to quit", w);
+    bt->setObjectName( "_bt1" );
     connect(bt, SIGNAL(clicked()), this, SLOT(okPressed()));
     bt->adjustSize();
     bt->move(20, 20);
     test->addTab(w, "Seite 1");
     pages[0] = w;
-    w = new QWidget(test, "_page2");
+    w = new QWidget(test );
+    w->setObjectName( "_page2" );
     e = new Q3MultiLineEdit(w, "_editor");
     e->setText("Write some usesless stuff here :-)");
     w->resize(width(), height());
     test->addTab(w, "Seite 2");
     pages[1] = w;
-    w = new QWidget(test, "_page3");
+    w = new QWidget(test );
+    w->setObjectName( "_page3" );
     bt = new QPushButton("This button does absolutely nothing", w, "_bt3");
     bt->adjustSize();
     bt->move(20, 20);

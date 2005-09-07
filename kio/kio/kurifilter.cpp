@@ -32,10 +32,9 @@
 
 template class Q3PtrList<KURIFilterPlugin>;
 
-KURIFilterPlugin::KURIFilterPlugin( QObject *parent, const char *name, double pri )
-                 :QObject( parent, name )
+KURIFilterPlugin::KURIFilterPlugin( const QString & name, QObject *parent, double pri )
+                 :QObject( parent ), m_strName( name )
 {
-    m_strName = QString::fromLatin1( name );
     m_dblPriority = pri;
 }
 

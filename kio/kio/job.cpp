@@ -98,9 +98,10 @@ public:
     KIO::filesize_t m_processedSize;
 };
 
-Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
+Job::Job(bool showProgressInfo) : QObject(0), m_error(0), m_percent(0)
    , m_progressId(0), m_speedTimer(0), d( new JobPrivate )
 {
+    setObjectName( "job" );
     // All jobs delete themselves after emiting 'result'.
 
     // Notify the UI Server and get a progress id

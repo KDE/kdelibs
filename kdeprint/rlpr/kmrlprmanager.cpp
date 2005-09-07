@@ -29,7 +29,7 @@
 #include <klocale.h>
 
 KMRlprManager::KMRlprManager(QObject *parent, const char *name, const QStringList & /*args*/)
-: KMManager(parent,name)
+    : KMManager(parent)
 {
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterCreation|KMManager::PrinterRemoval|KMManager::PrinterTesting);

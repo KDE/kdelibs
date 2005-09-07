@@ -33,8 +33,8 @@ template class Q3PtrDict<Q3PopupMenu>;
 
 KContextMenuManager* KContextMenuManager::manager = 0;
 
-KContextMenuManager::KContextMenuManager( QObject* parent, const char* name )
-    : QObject( parent, name)
+KContextMenuManager::KContextMenuManager( QObject* parent )
+    : QObject( parent )
 {
     KConfigGroupSaver saver ( KGlobal::config(), QString::fromLatin1("Shortcuts") ) ;
     menuKey = KShortcut( saver.config()->readEntry(QString::fromLatin1("PopupContextMenu"), QString::fromLatin1("Menu") ) ).keyCodeQt();
@@ -59,7 +59,7 @@ void KContextMenuManager::insert( QWidget* widget, Q3PopupMenu* popup )
 {
     if ( !manager )
 	manager = new KContextMenuManager;
-    
+
     manager->connect( widget, SIGNAL( destroyed() ), manager, SLOT( widgetDestroyed() ) );
     manager->menus.insert( widget, popup );
     widget->installEventFilter( manager );
@@ -81,7 +81,7 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
     case QEvent::MouseButtonRelease:
 	if ( showOnPress  || ((QMouseEvent*) e )->button() != Qt::RightButton )
 	    break;
-	popup = menus[o];	
+	popup = menus[o];
 	pos = ((QMouseEvent*) e )->globalPos();
 	break;
     case QEvent::KeyPress:
@@ -101,23 +101,23 @@ bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 	    popup = menus[o];
 	    if ( popup ) {
 		QWidget* w = (QWidget*) o ;
-	    
+
 		// ### workaround
 		pos = w->mapToGlobal( w->rect().center() );
-		// with later Qt snapshot 
+		// with later Qt snapshot
 		// pos = w->mapToGlobal( w->microFocusHint().center() );
 	    }
 	}
 	break;
-    default: 
+    default:
 	break;
     }
-    
+
     if ( popup ) {
 	popup->popup( pos );
 	return true;
     }
-	
+
     return false;
 }
 

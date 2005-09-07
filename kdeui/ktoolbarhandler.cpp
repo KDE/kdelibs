@@ -122,14 +122,14 @@ namespace
 
 using namespace KDEPrivate;
 
-ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, const char *name )
-    : QObject( mainWindow, name ), KXMLGUIClient( mainWindow )
+ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow )
+    : QObject( mainWindow ), KXMLGUIClient( mainWindow )
 {
     init( mainWindow );
 }
 
-ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent, const char *name )
-    : QObject( parent, name ), KXMLGUIClient( mainWindow )
+ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent )
+    : QObject( parent ), KXMLGUIClient( mainWindow )
 {
     init( mainWindow );
 }

@@ -30,14 +30,15 @@
 
 #include <qmessagebox.h>
 
-KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const Q3CString& name, 
+KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const Q3CString& name,
 		KCModuleProxy* const client )
-	: DCOPObject( name ), QObject( 0, name ),
+	: DCOPObject( name ), QObject( 0 ),
 		p( const_cast<KCModuleProxy *>( client ))
-{ 
-	connect( p, SIGNAL( changed(bool)), 
+{
+    setObjectName( name );
+	connect( p, SIGNAL( changed(bool)),
 			SLOT( changedRelay(bool)));
-	connect( p, SIGNAL( quickHelpChanged()), 
+	connect( p, SIGNAL( quickHelpChanged()),
 			SLOT( quickHelpRelay()));
 }
 
@@ -96,20 +97,21 @@ void KCModuleProxyIfaceImpl::quickHelpRelay()
 /***************************************************************/
 KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
 		( const Q3CString& name, KCModuleProxy* const client )
-	: DCOPObject( name ), QObject( 0, name ), 
+	: DCOPObject( name ), QObject( 0 ),
 		p( const_cast<KCModuleProxy *>( client ))
-{ 
+{
+    setObjectName( name );
 	/*
-	 * Connect kcmshell's KCModuleProxy's change signal 
-	 * to us, such that we act as a proxy for 
+	 * Connect kcmshell's KCModuleProxy's change signal
+	 * to us, such that we act as a proxy for
 	 * KCModuleProxy's API.
 	 */
 
 	/* Note, we don't use KCModuleProxy::d->dcopClient */
-	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(), 
+	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(),
 			"changed(bool)", objId(), "changed(bool)", false );
 
-	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(), 
+	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(),
 			"quickHelpChanged()", objId(), "quickHelpChanged()", false );
 }
 

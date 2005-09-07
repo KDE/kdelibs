@@ -48,8 +48,8 @@ public:
   bool insideGroupBox;
 };
 
-KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf, const char *name)
- : QObject(parent, name), m_conf(conf), m_dialog(parent)
+KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf)
+ : QObject(parent), m_conf(conf), m_dialog(parent)
 {
   d = new Private();
 
@@ -184,9 +184,9 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
         if (changedIt == changedMap.end())
         {
-		   // If the class name of the widget wasn't in the monitored widgets map, then look for 
-		   // it again using the super class name. This fixes a problem with using QtRuby/Korundum 
-		   // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even 
+		   // If the class name of the widget wasn't in the monitored widgets map, then look for
+		   // it again using the super class name. This fixes a problem with using QtRuby/Korundum
+		   // widgets with KConfigXT where 'Qt::Widget' wasn't being seen a the real deal, even
 		   // though it was a 'QWidget'.
           changedIt = changedMap.find(childWidget->metaObject()->superClassName());
         }
@@ -238,10 +238,10 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       QMap<QString, QByteArray>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
       {
-        if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) && 
+        if ((!d->insideGroupBox || !childWidget->inherits("QRadioButton")) &&
             !childWidget->inherits("QGroupBox"))
           kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
-      }        
+      }
     }
 #endif
 

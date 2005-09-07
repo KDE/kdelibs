@@ -88,8 +88,8 @@ private:
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
-                            QObject *parent, const char *name )
-    : QObject( parent, name ), m_pOwner(_owner), m_toolBar(_toolBar),
+                            QObject *parent )
+    : QObject( parent ), m_pOwner(_owner), m_toolBar(_toolBar),
       m_actionCollection( coll ), m_pManager(mgr)
 {
     m_lstSubMenus.setAutoDelete( true );

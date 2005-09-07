@@ -1691,16 +1691,16 @@ void KDialogBase::saveDialogSize( KConfig& config, const QString& groupName,
 
 
 KDialogBaseButton::KDialogBaseButton( const KGuiItem &item, int key,
-				      QWidget *parent,  const char *name )
-  : KPushButton( item, parent, name ), mKey(key)
+				      QWidget *parent )
+  : KPushButton( item, parent ), mKey(key)
 {
 }
 
 
 
 
-KDialogBaseTile::KDialogBaseTile( QObject *parent, const char *name )
-  : QObject( parent, name ), mPixmap(0)
+KDialogBaseTile::KDialogBaseTile( QObject *parent )
+  : QObject( parent ), mPixmap(0)
 {
 }
 

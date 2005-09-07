@@ -27,8 +27,8 @@
 #include <kdebug.h>
 #include <qtextstream.h>
 
-LpqHelper::LpqHelper(QObject *parent, const char *name)
-: QObject(parent, name)
+LpqHelper::LpqHelper(QObject *parent)
+: QObject(parent)
 {
 	m_exepath = KStandardDirs::findExe("lpq");
 }

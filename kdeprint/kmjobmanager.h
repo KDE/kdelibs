@@ -56,7 +56,7 @@ public:
 		bool m_isspecial;
 	};
 
-	KMJobManager(QObject *parent = 0, const char *name = 0);
+	KMJobManager(QObject *parent = 0);
 	virtual ~KMJobManager();
 
 	static KMJobManager* self();

@@ -59,7 +59,7 @@ public:
     KBookmarkBar( KBookmarkManager* manager,
                   KBookmarkOwner *owner, KToolBar *toolBar,
                   KActionCollection *,
-                  QObject *parent = 0L, const char *name = 0L);
+                  QObject *parent = 0);
 
     virtual ~KBookmarkBar();
 

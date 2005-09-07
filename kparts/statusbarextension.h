@@ -55,7 +55,7 @@ namespace KParts
     Q_OBJECT
 
     public:
-      StatusBarExtension( KParts::ReadOnlyPart *parent, const char *name=0L );
+      StatusBarExtension( KParts::ReadOnlyPart *parent );
       ~StatusBarExtension();
 
       /**

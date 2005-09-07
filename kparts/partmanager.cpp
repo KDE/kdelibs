@@ -92,8 +92,8 @@ public:
 
 }
 
-PartManager::PartManager( QWidget * parent, const char * name )
- : QObject( parent, name )
+PartManager::PartManager( QWidget * parent )
+ : QObject( parent )
 {
   d = new PartManagerPrivate;
 
@@ -104,8 +104,8 @@ PartManager::PartManager( QWidget * parent, const char * name )
   addManagedTopLevelWidget( parent );
 }
 
-PartManager::PartManager( QWidget *topLevel, QObject *parent, const char *name )
- : QObject( parent, name )
+PartManager::PartManager( QWidget *topLevel, QObject *parent )
+ : QObject( parent )
 {
   d = new PartManagerPrivate;
 

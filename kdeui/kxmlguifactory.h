@@ -71,7 +71,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * Note that the ownership of the given KXMLGUIBuilder object won't be transferred to this
    * KXMLGUIFactory, so you have to take care of deleting it properly.
    */
-  KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0, const char *name = 0 );
+  KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0 );
 
   /**
    * Destructor

@@ -60,7 +60,7 @@ KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget, const 
 
 KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
-    : KParts::ReadOnlyPart( parent, name ), m_image( 0 )
+    : KParts::ReadOnlyPart( parent ), m_image( 0 )
 {
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
@@ -77,7 +77,8 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     // VBox can't take focus, so pass it on to sub-widget
     box->setFocusProxy( m_khtml->widget() );
 
-    m_ext = new KHTMLImageBrowserExtension( this, "be" );
+    m_ext = new KHTMLImageBrowserExtension( this );
+    m_ext->setObjectName( "be" );
 
     // Remove unnecessary actions.
     KAction *encodingAction = actionCollection()->action( "setEncoding" );
@@ -315,8 +316,8 @@ bool KHTMLImage::eventFilter(QObject *, QEvent *e) {
     return false;
 }
 
-KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
-    : KParts::BrowserExtension( parent, name )
+KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent )
+    : KParts::BrowserExtension( parent )
 {
     m_imgPart = parent;
 }

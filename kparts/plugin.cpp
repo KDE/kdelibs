@@ -49,8 +49,8 @@ public:
     QString m_library; // filename of the library
 };
 
-Plugin::Plugin( QObject* parent, const char* name )
-    : QObject( parent, name )
+Plugin::Plugin( QObject* parent )
+    : QObject( parent )
 {
   //kdDebug() << className() << endl;
   d = new PluginPrivate();
@@ -203,7 +203,7 @@ Q3PtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 bool Plugin::hasPlugin( QObject* parent, const QString& library )
 {
   const QObjectList plugins = parent->queryList( "KParts::Plugin", 0, false, false );
-  
+
   QObjectList::ConstIterator it = plugins.begin();
   for ( ; it != plugins.end() ; ++it )
   {
@@ -266,7 +266,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
 
         // search through already present plugins
         QObjectList pluginList = parent->queryList( "KParts::Plugin", 0, false, false );
-         
+
         bool pluginFound = false;
         for ( QObjectList::ConstIterator it = pluginList.begin(); it != pluginList.end() ; ++it )
         {

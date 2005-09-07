@@ -110,7 +110,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
         void unregisterInstance( QObject * );
 
     private:
-        Dispatcher( QObject * parent = 0, const char * name = 0 );
+        Dispatcher( QObject * parent = 0 );
         ~Dispatcher();
         static Dispatcher * m_self;
 

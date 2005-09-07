@@ -46,7 +46,7 @@ class Resource::ResourcePrivate
 };
 
 Resource::Resource( const KConfig* config )
-  : QObject( 0, "" ), d( new ResourcePrivate )
+  : QObject( 0 ), d( new ResourcePrivate )
 {
   d->mOpenCount = 0;
   d->mIsOpen = false;

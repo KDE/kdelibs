@@ -36,7 +36,7 @@ namespace DNSSD
 
 /**
 This class should not be used directly.
- 
+
 @author Jakub Stachowski
 @short Internal class wrapping dns_sd.h interface
  */
@@ -45,12 +45,12 @@ class Responder : public QObject
 	Q_OBJECT
 
 public:
-	Responder(DNSServiceRef ref=0,QObject *parent = 0, const char *name = 0);
+	Responder(DNSServiceRef ref=0,QObject *parent = 0);
 
 	~Responder();
 
 	/**
-	Returns true if it is possible to use mDNS service publishing and discovery. 
+	Returns true if it is possible to use mDNS service publishing and discovery.
 	It needs mDNSResponder running.
 	 */
 	bool isRunning() const;
@@ -67,7 +67,7 @@ protected:
 /* Utils functions */
 
 bool domainIsLocal(const QString& domain);
-// Encodes domain name using utf8() or IDN 
+// Encodes domain name using utf8() or IDN
 QByteArray domainToDNS(const QString &domain);
 QString DNSToDomain(const char* domain);
 

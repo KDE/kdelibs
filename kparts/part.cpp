@@ -132,8 +132,8 @@ void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )
     d->m_pluginLoadingMode = loadingMode;
 }
 
-Part::Part( QObject *parent, const char* name )
- : QObject( parent, name )
+Part::Part( QObject *parent )
+ : QObject( parent )
 {
   d = new PartPrivate;
   m_widget = 0L;
@@ -302,8 +302,8 @@ public:
 
 }
 
-ReadOnlyPart::ReadOnlyPart( QObject *parent, const char *name )
- : Part( parent, name ), m_bTemp( false )
+ReadOnlyPart::ReadOnlyPart( QObject *parent )
+ : Part( parent ), m_bTemp( false )
 {
   d = new ReadOnlyPartPrivate;
 }
@@ -450,8 +450,8 @@ BrowserExtension* ReadOnlyPart::browserExtension() const
 
 //////////////////////////////////////////////////
 
-ReadWritePart::ReadWritePart( QObject *parent, const char *name )
- : ReadOnlyPart( parent, name ), m_bModified( false ), m_bClosing( false )
+ReadWritePart::ReadWritePart( QObject *parent )
+ : ReadOnlyPart( parent ), m_bModified( false ), m_bClosing( false )
 {
   m_bReadWrite = true;
 }

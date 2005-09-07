@@ -29,7 +29,7 @@ class KMPrinter;
 class PrinterFilter : QObject
 {
 public:
-	PrinterFilter(QObject *parent = 0, const char *name = 0);
+	PrinterFilter(QObject *parent = 0);
 	~PrinterFilter();
 
 	bool filter(KMPrinter*);

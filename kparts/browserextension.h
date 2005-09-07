@@ -314,10 +314,8 @@ public:
    * Constructor
    *
    * @param parent The KParts::ReadOnlyPart that this extension ... "extends" :)
-   * @param name An optional name for the extension.
    */
-  BrowserExtension( KParts::ReadOnlyPart *parent,
-                    const char *name = 0L );
+  BrowserExtension( KParts::ReadOnlyPart *parent );
 
 
   virtual ~BrowserExtension();
@@ -724,8 +722,7 @@ class KPARTS_EXPORT BrowserHostExtension : public QObject
 {
   Q_OBJECT
 public:
-  BrowserHostExtension( KParts::ReadOnlyPart *parent,
-                        const char *name = 0L );
+  BrowserHostExtension( KParts::ReadOnlyPart *parent );
 
   virtual ~BrowserHostExtension();
 
@@ -797,7 +794,7 @@ public:
   };
   typedef Q3ValueList<QPair<Type, QString> > ArgList;
 
-  LiveConnectExtension( KParts::ReadOnlyPart *parent, const char *name = 0L );
+  LiveConnectExtension( KParts::ReadOnlyPart *parent );
 
   virtual ~LiveConnectExtension() {}
   /**

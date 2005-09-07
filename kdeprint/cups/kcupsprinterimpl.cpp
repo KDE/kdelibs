@@ -54,7 +54,7 @@ QSize rangeToSize(const QString& s)
 //******************************************************************************************************
 
 KCupsPrinterImpl::KCupsPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
-: KPrinterImpl(parent,name)
+: KPrinterImpl(parent)
 {
 }
 

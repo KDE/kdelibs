@@ -28,7 +28,7 @@ class KMJob;
 class LpqHelper : public QObject
 {
 public:
-	LpqHelper(QObject *parent = 0, const char *name = 0);
+	LpqHelper(QObject *parent = 0);
 	~LpqHelper();
 
 	void listJobs(Q3PtrList<KMJob>& jobs, const QString& prname, int limit = 0);

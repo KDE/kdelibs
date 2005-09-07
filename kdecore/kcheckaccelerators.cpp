@@ -76,8 +76,9 @@
 */
 
 KCheckAccelerators::KCheckAccelerators( QObject* parent )
-    : QObject( parent, "kapp_accel_filter" ), key(0), block( false ), drklash(0)
+    : QObject( parent ), key(0), block( false ), drklash(0)
 {
+    setObjectName( "kapp_accel_filter" );
     parent->installEventFilter( this );
     KConfigGroupSaver saver( KGlobal::config(), "Development" );
     QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).stripWhiteSpace();

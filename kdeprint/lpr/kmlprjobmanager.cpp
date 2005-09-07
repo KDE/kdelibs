@@ -28,9 +28,10 @@
 #include <klocale.h>
 
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
-: KMJobManager(parent, name)
+    : KMJobManager(parent)
 {
-	m_lpqhelper = new LpqHelper(this, "LpqHelper");
+    m_lpqhelper = new LpqHelper(this );
+    m_lpqhelper->setObjectName( "LpqHelper" );
 }
 
 bool KMLprJobManager::listJobs(const QString& prname, JobType, int limit)

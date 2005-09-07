@@ -8,8 +8,8 @@
 
 using namespace KParts;
 
-BrowserInterface::BrowserInterface( QObject *parent, const char *name )
-    : QObject( parent, name )
+BrowserInterface::BrowserInterface( QObject *parent )
+    : QObject( parent )
 {
 }
 
@@ -27,29 +27,29 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
         case QVariant::Invalid:
             break;
         case QVariant::String:
-            QMetaObject::invokeMethod( this, name, 
+            QMetaObject::invokeMethod( this, name,
                                        Q_ARG( QString, argument.toString() ) );
             break;
         case QVariant::StringList:
         {
 	    QStringList strLst = argument.toStringList();
-            QMetaObject::invokeMethod( this, name, 
+            QMetaObject::invokeMethod( this, name,
                                        Q_ARG( QStringList *, &strLst ) );
             break;
         }
         case QVariant::Int:
-            QMetaObject::invokeMethod( this, name, 
+            QMetaObject::invokeMethod( this, name,
                                        Q_ARG( int, argument.toInt() ) );
             break;
         case QVariant::UInt:
         {
 	    unsigned int i = argument.toUInt();
-            QMetaObject::invokeMethod( this, name, 
+            QMetaObject::invokeMethod( this, name,
                                        Q_ARG( unsigned int *, &i ) );
             break;
         }
         case QVariant::Bool:
-            QMetaObject::invokeMethod( this, name, 
+            QMetaObject::invokeMethod( this, name,
                                        Q_ARG( bool, argument.toBool() ) );
             break;
         default:

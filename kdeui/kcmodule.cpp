@@ -94,7 +94,8 @@ void KCModule::init()
 
 KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
 {
-    KConfigDialogManager* manager = new KConfigDialogManager( widget, config, name() );
+    KConfigDialogManager* manager = new KConfigDialogManager( widget, config );
+    manager->setObjectName( name() );
     connect( manager, SIGNAL( widgetModified() ), SLOT( widgetChanged() ));
     d->managers.append( manager );
     return manager;

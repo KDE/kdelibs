@@ -113,7 +113,7 @@ public:
      * Returns a list of strings that you can put in a QPopupMenu item, for example to
      * offer the DataTools services to the user. The returned value
      * is usually something like "Spell checking", "Shrink Image", "Rotate Image"
-     * or something like that.     
+     * or something like that.
      * This list comes from the Comment field of the tool's desktop file
      * (so that it can be translated).
      *
@@ -131,7 +131,7 @@ public:
      *
      * Each of the strings returned corresponds to a string in the list returned by
      * userCommands.
-     * @return the list of commands the DataTool can execute, suitable for 
+     * @return the list of commands the DataTool can execute, suitable for
      *         the KDataTool::run method.
      */
     QStringList commands() const;
@@ -258,9 +258,8 @@ public:
      * Constructor
      * The data-tool is only created when a menu-item, that relates to it, is activated.
      * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
-     * @param name the name of the QObject, can be 0
      */
-    KDataTool( QObject* parent = 0, const char* name = 0 );
+    KDataTool( QObject* parent = 0 );
 
     /**
      * @internal. Do not use under any circumstance (including bad weather).

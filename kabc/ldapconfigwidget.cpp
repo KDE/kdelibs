@@ -81,8 +81,8 @@ void LdapConfigWidget::initWidget()
 
   if ( mFlags & W_USER ) {
     label = new QLabel( i18n( "User:" ), this );
-    mUser = new KLineEdit( this);
-    mUser->setObjectName("kcfg_ldapuser" );
+    mUser = new KLineEdit( this );
+    mUser->setObjectName( "kcfg_ldapuser" );
 
     mainLayout->addWidget( label, row, 0 );
     mainLayout->addMultiCellWidget( mUser, row, row, 1, 3 );

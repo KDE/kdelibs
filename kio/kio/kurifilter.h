@@ -355,7 +355,11 @@ public:
      * @param name the name of the plugin, or 0 for no name
      * @param pri the priority of the plugin.
      */
+#ifdef KDE3_SUPPORT
     KURIFilterPlugin( QObject *parent = 0, const char *name = 0, double pri = 1.0 );
+#else
+    KURIFilterPlugin( const QString &name, QObject *parent = 0, double pri = 1.0 );
+#endif
 
     /**
      * Returns the filter's name.

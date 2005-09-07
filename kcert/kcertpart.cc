@@ -92,7 +92,7 @@ void KX509Item::setup(KSSLCertificate *x) {
 }
 
 
-KX509Item::~KX509Item() 
+KX509Item::~KX509Item()
 {
 	delete cert;
 }
@@ -115,7 +115,7 @@ KPKCS12Item::KPKCS12Item(KListViewItem *parent, KSSLPKCS12 *x) :
 }
 
 
-KPKCS12Item::~KPKCS12Item() 
+KPKCS12Item::~KPKCS12Item()
 {
 	delete cert;
 }
@@ -129,8 +129,8 @@ class KCertPartPrivate {
 
 KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
                      QObject *parent, const char *name,
-		     const QStringList & /*args*/ ) 
-          : KParts::ReadWritePart(parent, name) {
+		     const QStringList & /*args*/ )
+          : KParts::ReadWritePart(parent) {
 KInstance *instance = new KInstance("KCertPart");
 QGridLayout *grid;
 setInstance(instance);
@@ -509,7 +509,7 @@ if (whatType == "application/x-pkcs12") {
 	/////////////////////////////////////////////////////////////////////////////
 } else if (whatType == "application/x-x509-ca-cert" ||
 		whatType == "application/binary-certificate") {
-	FILE *fp; 
+	FILE *fp;
 	bool isPEM = false;
 
 	_ca_filenameLabel->setText(m_file);
@@ -552,7 +552,7 @@ if (whatType == "application/x-pkcs12") {
 				return true;
 			}
 			KOSSL::self()->X509_free(dx);
-		} 
+		}
 		return false;
 	}
 
@@ -746,7 +746,7 @@ void KCertPart::slotImport() {
 			if (rc == KMessageBox::Cancel) {
 				return;
 			}
-		} 
+		}
 		_signers->addCA(_ca->toString(),
 				_ca->x509V3Extensions().certTypeSSLCA(),
 				_ca->x509V3Extensions().certTypeEmailCA(),
@@ -842,8 +842,8 @@ _p12 = NULL;
 _ca = NULL;
 _silentImport = true;
 
-for (KPKCS12Item *t = dynamic_cast<KPKCS12Item*>(_parentP12->firstChild()); 
-		t; 
+for (KPKCS12Item *t = dynamic_cast<KPKCS12Item*>(_parentP12->firstChild());
+		t;
 		t = dynamic_cast<KPKCS12Item*>(t->nextSibling())) {
 	if (t) {
 		_p12 = t->cert;
@@ -853,8 +853,8 @@ for (KPKCS12Item *t = dynamic_cast<KPKCS12Item*>(_parentP12->firstChild());
 }
 _p12 = NULL;
 
-for (KX509Item *t = dynamic_cast<KX509Item*>(_parentCA->firstChild()); 
-		t; 
+for (KX509Item *t = dynamic_cast<KX509Item*>(_parentCA->firstChild());
+		t;
 		t = dynamic_cast<KX509Item*>(t->nextSibling())) {
 	if (t) {
 		_ca = t->cert;

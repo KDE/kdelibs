@@ -113,9 +113,8 @@ public:
    * Constructor.
    * @param parent  Dialog widget to manage
    * @param conf Object that contains settings
-   * @param name - Object name.
    */
-   KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf, const char *name=0);
+   KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf);
 
   /**
    * Destructor.

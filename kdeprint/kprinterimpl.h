@@ -35,7 +35,7 @@ class KDEPRINT_EXPORT KPrinterImpl : public QObject
 {
 	Q_OBJECT
 public:
-	KPrinterImpl(QObject *parent = 0, const char *name = 0);
+	KPrinterImpl(QObject *parent = 0);
 	virtual ~KPrinterImpl();
 
 	virtual bool setupCommand(QString& cmd, KPrinter*);

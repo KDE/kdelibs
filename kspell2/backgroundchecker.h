@@ -50,8 +50,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        BackgroundChecker( const Broker::Ptr& broker, QObject *parent =0,
-                           const char *name =0 );
+        BackgroundChecker( const Broker::Ptr& broker, QObject *parent =0 );
         ~BackgroundChecker();
 
         /**

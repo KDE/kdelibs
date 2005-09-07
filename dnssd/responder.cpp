@@ -29,15 +29,15 @@
 namespace DNSSD
 {
 
-Responder::Responder(DNSServiceRef ref,QObject *parent, const char *name)
-		: QObject(parent, name), m_ref(0), m_socket(0)
+Responder::Responder(DNSServiceRef ref,QObject *parent)
+		: QObject(parent), m_ref(0), m_socket(0)
 {
 	setRef(ref);
 }
- 
+
 void Responder::setRef(DNSServiceRef ref)
 {
-	if (m_socket || m_ref) stop();	
+	if (m_socket || m_ref) stop();
 	m_running = false;
 	m_ref = ref;
 	if (m_ref == 0 ) return;
@@ -63,7 +63,7 @@ void Responder::stop()
 #endif
 	m_ref = 0;
 	m_running = false;
-}	
+}
 
 
 void Responder::process()
@@ -89,7 +89,7 @@ QByteArray domainToDNS(const QString &domain)
 	if (domainIsLocal(domain)) return domain.utf8();
 		else return KIDNA::toAsciiCString(domain);
 #else
-	return domain.utf8();       
+	return domain.utf8();
 #endif
 }
 

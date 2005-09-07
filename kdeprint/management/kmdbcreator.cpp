@@ -29,8 +29,8 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
-KMDBCreator::KMDBCreator(QObject *parent, const char *name)
-: QObject(parent,name)
+KMDBCreator::KMDBCreator(QObject *parent)
+    : QObject(parent)
 {
 	m_dlg = 0;
 	m_status = true;

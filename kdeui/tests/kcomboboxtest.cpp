@@ -29,32 +29,33 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
               :QWidget(widget, name)
 {
   QVBoxLayout *vbox = new QVBoxLayout (this, KDialog::marginHint(), KDialog::spacingHint());
-  
+
   // Test for KCombo's KLineEdit destruction
   KComboBox *testCombo = new KComboBox( true, this ); // rw, with KLineEdit
   testCombo->setEditable( false ); // destroys our KLineEdit
   assert( testCombo->delegate() == 0L );
-  delete testCombo; // not needed anymore  
-  
+  delete testCombo; // not needed anymore
+
   // Qt combobox
   Q3HBox* hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   QLabel* lbl = new QLabel("&QCombobox:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
-  
+
   m_qc = new QComboBox(hbox, "QtReadOnlyCombo" );
-  lbl->setBuddy (m_qc);  
+  lbl->setBuddy (m_qc);
   QObject::connect (m_qc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_qc, SIGNAL(activated(const QString&)), SLOT (slotActivated(const QString&)));
   vbox->addWidget (hbox);
-  
+
   // Read-only combobox
   hbox = new Q3HBox(this);
   hbox->setSpacing (KDialog::spacingHint());
   lbl = new QLabel("&Read-Only Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_ro = new KComboBox(hbox, "ReadOnlyCombo" );
+  m_ro = new KComboBox(hbox );
+  m_ro->setObjectName( "ReadOnlyCombo" );
   lbl->setBuddy (m_ro);
   m_ro->setCompletionMode( KGlobalSettings::CompletionAuto );
   QObject::connect (m_ro, SIGNAL(activated(int)), SLOT(slotActivated(int)));
@@ -67,7 +68,8 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   lbl = new QLabel("&Editable Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_rw = new KComboBox( true, hbox, "ReadWriteCombo" );
+  m_rw = new KComboBox( true, hbox );
+  m_rw->setObjectName( "ReadWriteCombo" );
   lbl->setBuddy (m_rw);
   m_rw->setDuplicatesEnabled( true );
   m_rw->setInsertionPolicy( QComboBox::NoInsert );
@@ -90,7 +92,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   m_hc->setInsertionPolicy( QComboBox::NoInsert );
   QObject::connect (m_hc, SIGNAL(activated(int)), SLOT(slotActivated(int)));
   QObject::connect (m_hc, SIGNAL(activated(const QString&)), SLOT(slotActivated(const QString&)));
-  QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));  
+  QObject::connect (m_hc, SIGNAL(returnPressed()), SLOT(slotReturnPressed()));
   vbox->addWidget (hbox);
   m_hc->setTrapReturnKey(true);
 
@@ -124,10 +126,10 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips"
        << "Computer" << "Mankind";
   list.sort();
-  
+
   // Setup the qcombobox
   m_qc->insertStringList (list);
-  
+
   // Setup read-only combo
   m_ro->insertStringList( list );
   m_ro->completionObject()->setItems( list );
@@ -184,8 +186,8 @@ void KComboBoxTest::slotTimeout ()
     m_btnEnable->setText ("Ena&ble");
   else
     m_btnEnable->setText ("Disa&ble");
-  
-  m_qc->setEnabled (!enabled);  
+
+  m_qc->setEnabled (!enabled);
   m_ro->setEnabled (!enabled);
   m_rw->setEnabled (!enabled);
   m_hc->setEnabled (!enabled);

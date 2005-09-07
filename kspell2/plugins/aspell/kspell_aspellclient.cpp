@@ -31,7 +31,7 @@ K_EXPORT_COMPONENT_FACTORY( kspell_aspell, ASpellClientFactory( "kspell_aspell" 
 using namespace KSpell2;
 
 ASpellClient::ASpellClient( QObject *parent, const char *name, const QStringList& /* args */  )
-    : Client( parent, name )
+    : Client( parent )
 {
     m_config = new_aspell_config();
 }

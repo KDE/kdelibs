@@ -1208,10 +1208,9 @@ public:
     /**
      * Creates a new KFilePlugin instance.
      * @param parent the parent of the QObject, can be 0
-     * @param name the name of the QObject, can be 0
      * @param args currently ignored
      */
-    KFilePlugin( QObject *parent, const char *name,
+    KFilePlugin( QObject *parent,
                  const QStringList& args );
 
     virtual ~KFilePlugin();

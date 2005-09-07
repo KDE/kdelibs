@@ -19,8 +19,9 @@
 #include <klocale.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
- : KParts::ReadOnlyPart( parent, "Part1" )
+ : KParts::ReadOnlyPart( parent )
 {
+    setObjectName( "Part1" );
   m_instance = new KInstance( "kpartstestpart" );
   setInstance( m_instance );
   m_edit = new Q3MultiLineEdit( parentWidget );
@@ -57,11 +58,13 @@ bool Part1::openFile()
 }
 
 Part2::Part2( QObject *parent, QWidget * parentWidget )
- : KParts::Part( parent, "Part2" )
+ : KParts::Part( parent )
 {
+  setObjectName( "Part2" );
   m_instance = new KInstance( "part2" );
   setInstance( m_instance );
-  QWidget * w = new QWidget( parentWidget, "Part2Widget" );
+  QWidget * w = new QWidget( parentWidget );
+  w->setObjectName( "Part2Widget" );
   setWidget( w );
 
   QCheckBox * cb = new QCheckBox( "something", w );

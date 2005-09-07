@@ -35,7 +35,7 @@ class QWidget;
 class KDEPRINT_EXPORT KMVirtualManager : public QObject, public KPReloadObject
 {
 public:
-	KMVirtualManager(KMManager *parent = 0, const char *name = 0);
+	KMVirtualManager(KMManager *parent = 0);
 	~KMVirtualManager();
 
         void refresh();

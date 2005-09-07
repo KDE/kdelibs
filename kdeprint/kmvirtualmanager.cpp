@@ -44,8 +44,8 @@ static QString instanceName(const QString& prname, const QString& instname)
 	return str;
 }
 
-KMVirtualManager::KMVirtualManager(KMManager *parent, const char *name)
-: QObject(parent,name), m_manager(parent)
+KMVirtualManager::KMVirtualManager(KMManager *parent)
+: QObject(parent), m_manager(parent)
 {
 }
 

@@ -78,7 +78,8 @@ namespace khtml
   public:
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() : QObject (0L, "khtml_child_frame") {
+      ChildFrame() : QObject (0) {
+          setObjectName( "khtml_child_frame" );
           m_jscript = 0L;
           m_kjs_lib = 0;
           m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;

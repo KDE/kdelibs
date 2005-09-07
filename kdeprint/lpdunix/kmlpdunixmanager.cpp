@@ -343,7 +343,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 {
 	QDir	d("/usr/spool/interfaces/lp");
 	const QFileInfoList&	prlist = d.entryInfoList(QDir::Files);
-	
+
 	foreach(const QFileInfo& itFile, prlist)
 	{
 		QFile	f(itFile.absFilePath());
@@ -379,7 +379,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 //*********************************************************************************************************
 
 KMLpdUnixManager::KMLpdUnixManager(QObject *parent, const char *name, const QStringList & /*args*/)
-: KMManager(parent,name)
+: KMManager(parent)
 {
 	m_loaded = false;
 }

@@ -59,7 +59,7 @@ public:
 		NoAutoCollate = 0x100
 	};
 
-	KMUiManager(QObject *parent = 0, const char *name = 0);
+	KMUiManager(QObject *parent = 0);
 	virtual ~KMUiManager();
 
 	// print management

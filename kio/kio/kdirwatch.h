@@ -63,7 +63,7 @@ class KDirWatchPrivate;
 class KIO_EXPORT KDirWatch : public QObject
 {
   Q_OBJECT
-    
+
   public:
    /**
     * Constructor.
@@ -71,9 +71,8 @@ class KIO_EXPORT KDirWatch : public QObject
     * Scanning begins immediately when a dir/file watch
     * is added.
     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
-    * @param name the name of the QObject, can be 0
     */
-   KDirWatch (QObject* parent = 0, const char* name = 0);
+   KDirWatch (QObject* parent = 0);
 
    /**
     * Destructor.
@@ -96,7 +95,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * @param watchFiles if true, the KDirWatch will also watch files - NOT IMPLEMENTED YET
     * @param recursive if true, all sub directories are also watched - NOT IMPLEMENTED YET
     */
-   void addDir(const QString& path, 
+   void addDir(const QString& path,
 	       bool watchFiles = false, bool recursive = false);
 
    /**
@@ -149,7 +148,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * the change (by emitted a signal), since the ctime value is reset.
     *
     * Call it when you are finished with big operations on that path,
-    * @em and when @em you have refreshed that path. 
+    * @em and when @em you have refreshed that path.
     *
     * @param path the path to restart scanning
     * @return true if the @p path is being watched, otherwise false
@@ -160,14 +159,14 @@ class KIO_EXPORT KDirWatch : public QObject
    /**
     * Starts scanning of all dirs in list.
     *
-    * @param notify If true, all changed directories (since 
+    * @param notify If true, all changed directories (since
     * stopScan() call) will be notified for refresh. If notify is
     * false, all ctimes will be reset (except those who are stopped,
     * but only if @p skippedToo is false) and changed dirs won't be
     * notified. You can start scanning even if the list is
-    * empty. First call should be called with @p false or else all 
-    * directories 
-    * in list will be notified.  
+    * empty. First call should be called with @p false or else all
+    * directories
+    * in list will be notified.
     * @param skippedToo if true, the skipped directoris (scanning of which was
     * stopped with stopDirScan() ) will be reset and notified
     * for change. Otherwise, stopped directories will continue to be
@@ -202,17 +201,17 @@ class KIO_EXPORT KDirWatch : public QObject
     */
    static void statistics();
 
-   /** 
+   /**
     * Emits created().
     * @param path the path of the file or directory
     */
    void setCreated( const QString &path );
-   /** 
+   /**
     * Emits dirty().
     * @param path the path of the file or directory
     */
    void setDirty( const QString &path );
-   /** 
+   /**
     * Emits deleted().
     * @param path the path of the file or directory
     */
@@ -235,7 +234,7 @@ class KIO_EXPORT KDirWatch : public QObject
     *
     * This function returns an instance of KDirWatch. If there is none, it
     * will be created.
-    * 
+    *
     * @return a KDirWatch instance
     */
    static KDirWatch* self();
@@ -269,7 +268,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * @param path the path of the file or directory
     */
    void created (const QString &path );
-     
+
    /**
     * Emitted when a file or directory is deleted.
     *
@@ -277,10 +276,10 @@ class KIO_EXPORT KDirWatch : public QObject
     * @param path the path of the file or directory
     */
    void deleted (const QString &path );
-     
+
  private:
    bool _isStopped;
-   
+
    KDirWatchPrivate *d;
    static KDirWatch* s_pSelf;
 };

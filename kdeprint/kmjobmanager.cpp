@@ -26,11 +26,12 @@
 #include <kdebug.h>
 #include <kconfig.h>
 
-KMJobManager::KMJobManager(QObject *parent, const char *name)
-: QObject(parent,name)
+KMJobManager::KMJobManager(QObject *parent)
+: QObject(parent)
 {
 	m_jobs.setAutoDelete(true);
-	m_threadjob = new KMThreadJob(this, "ThreadJob");
+	m_threadjob = new KMThreadJob(this );
+        m_threadjob->setObjectName( "ThreadJob" );
 	m_filter.setAutoDelete(true);
 }
 

@@ -96,7 +96,7 @@ Data for the second and last object.
 
 KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, const QStringList& )
-    : KParts::ReadOnlyPart( parent, name )
+    : KParts::ReadOnlyPart( parent )
 {
     m_filter = 0L;
 

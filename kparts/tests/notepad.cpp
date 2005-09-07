@@ -19,7 +19,7 @@
 NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
                           QObject* parent, const char* name,
                           const QStringList& )
- : KParts::ReadWritePart( parent, name )
+ : KParts::ReadWritePart( parent )
 {
   setInstance( NotepadFactory::instance() );
 

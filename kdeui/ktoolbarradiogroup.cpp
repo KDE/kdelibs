@@ -31,8 +31,8 @@
  *************************************************************************/
 
 
-KToolBarRadioGroup::KToolBarRadioGroup (KToolBar *_parent, const char *_name)
-: QObject(_parent, _name)
+KToolBarRadioGroup::KToolBarRadioGroup (KToolBar *_parent)
+: QObject(_parent)
 {
   buttons = new KToolBarButtonList();
   tb = _parent;

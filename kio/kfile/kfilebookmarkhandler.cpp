@@ -28,10 +28,11 @@
 #include "kfilebookmarkhandler.h"
 
 KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
-    : QObject( dialog, "KFileBookmarkHandler" ),
+    : QObject( dialog ),
       KBookmarkOwner(),
       m_dialog( dialog )
 {
+    setObjectName( "KFileBookmarkHandler" );
     m_menu = new KPopupMenu( dialog );
     m_menu->setObjectName( "bookmark menu" );
 

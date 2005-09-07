@@ -26,7 +26,7 @@
 #include <klocale.h>
 
 KExtPrinterImpl::KExtPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
-: KPrinterImpl(parent,name)
+: KPrinterImpl(parent)
 {
 }
 

@@ -758,9 +758,9 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-KFilePlugin::KFilePlugin( QObject *parent, const char *name,
+KFilePlugin::KFilePlugin( QObject *parent,
                           const QStringList& /*args*/)
-    : QObject( parent, name )
+    : QObject( parent )
 {
 //    kdDebug(7033) << "loaded a plugin for " << name << endl;
 }

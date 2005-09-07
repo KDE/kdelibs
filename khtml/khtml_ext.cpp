@@ -67,8 +67,8 @@
 
 #include "khtmlpart_p.h"
 
-KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
-: KParts::BrowserExtension( parent, name )
+KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent )
+: KParts::BrowserExtension( parent )
 {
     m_part = parent;
     setURLDropHandlingEnabled( true );

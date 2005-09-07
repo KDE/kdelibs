@@ -4,13 +4,13 @@ METASOURCES = AUTO
 check_PROGRAMS = kwalletasync kwalletsync kwalletboth
 
 kwalletasync_SOURCES = kwalletasync.cpp kwallettest.cpp
-kwalletasync_LDFLAGS = -no-undefined $(all_libraries) $(KDE_RPATH)
-kwalletasync_LDADD = $(LIB_QT) $(LIB_KDECORE) -L../client -lkwalletclient
+kwalletasync_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kwalletasync_LDADD = ../client/libkwalletclient.la $(LIB_KDECORE)
 
 kwalletsync_SOURCES = kwalletsync.cpp
-kwalletsync_LDFLAGS = -no-undefined $(all_libraries) $(KDE_RPATH)
-kwalletsync_LDADD = $(LIB_QT) $(LIB_KDECORE) -L../client -lkwalletclient
+kwalletsync_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kwalletsync_LDADD = ../client/libkwalletclient.la $(LIB_KDECORE)
 
 kwalletboth_SOURCES = kwalletboth.cpp kwallettest.cpp
-kwalletboth_LDFLAGS = -no-undefined $(all_libraries) $(KDE_RPATH)
-kwalletboth_LDADD = $(LIB_QT) $(LIB_KDECORE) -L../client -lkwalletclient
+kwalletboth_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kwalletboth_LDADD = ../client/libkwalletclient.la $(LIB_KDECORE)

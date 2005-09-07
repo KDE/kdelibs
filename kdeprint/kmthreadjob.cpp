@@ -32,8 +32,8 @@
 
 #define CHARSEP	'$'
 
-KMThreadJob::KMThreadJob(QObject *parent, const char *name)
-: QObject(parent,name)
+KMThreadJob::KMThreadJob(QObject *parent)
+: QObject(parent)
 {
 	m_jobs.setAutoDelete(true);
 }

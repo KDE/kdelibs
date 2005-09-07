@@ -99,7 +99,7 @@ QStringList DistributionList::emails() const
       emails.append( email );
     }
   }
-  
+
   return emails;
 }
 
@@ -209,15 +209,15 @@ bool DistributionListManager::load()
       QString id = *entryIt++;
       QString email = *entryIt;
 
-      kdDebug(5700) << "----- Entry " << id << endl; 
-      
+      kdDebug(5700) << "----- Entry " << id << endl;
+
       Addressee a = d->mAddressBook->findByUid( id );
       if ( !a.isEmpty() ) {
         list->insertEntry( a, email );
       } else {
         missingEntries.append( qMakePair( id, email ) );
       }
-      
+
       if ( entryIt == value.end() )
         break;
       ++entryIt;
@@ -225,7 +225,7 @@ bool DistributionListManager::load()
 
     d->mMissingEntries.insert( name, missingEntries );
   }
-  
+
   return true;
 }
 
@@ -237,7 +237,7 @@ bool DistributionListManager::save()
 
   cfg.deleteGroup( "DistributionLists" );
   cfg.setGroup( "DistributionLists" );
-  
+
   DistributionList *list;
   for( list = mLists.first(); list; list = mLists.next() ) {
     kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
@@ -263,18 +263,19 @@ bool DistributionListManager::save()
   }
 
   cfg.sync();
-  
+
   return true;
 }
 
 DistributionListWatcher* DistributionListWatcher::mSelf = 0;
 
 DistributionListWatcher::DistributionListWatcher()
- : QObject( qApp, "DistributionListWatcher" )
+ : QObject( qApp )
 {
+    setObjectName( "DistributionListWatcher" );
   mDirWatch = new KDirWatch;
   mDirWatch->addFile( locateLocal( "data", "kabc/distlists" ) );
-  
+
   connect( mDirWatch, SIGNAL( dirty( const QString& ) ), SIGNAL( changed() ) );
   mDirWatch->startScan();
 }

@@ -39,13 +39,15 @@ public:
 
 HistoryProvider * HistoryProvider::self()
 {
-    if ( !s_self )
-	s_self = new HistoryProvider( kapp, "history provider" );
+    if ( !s_self ) {
+	s_self = new HistoryProvider( kapp );
+        s_self->setObjectName( "history provider" );
+    }
     return s_self;
 }
 
-HistoryProvider::HistoryProvider( QObject *parent, const char *name )
-    : QObject( parent, name )
+HistoryProvider::HistoryProvider( QObject *parent )
+    : QObject( parent )
 {
     if ( !s_self )
 	s_self = this;
@@ -81,7 +83,7 @@ void HistoryProvider::clear()
 {
     d->dict.clear();
     emit cleared();
-}	
+}
 
 void HistoryProvider::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

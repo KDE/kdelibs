@@ -46,7 +46,7 @@ public:
     /**
      * Creates a KWindowInfo with the specified parent.
      */
-    KWindowInfo( QWidget *parent, const char *name=0 );
+    KWindowInfo( QWidget *parent );
 
     /**
      * Cleans up.

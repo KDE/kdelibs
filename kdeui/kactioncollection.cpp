@@ -78,11 +78,11 @@ public:
   const KXMLGUIClient *m_parentGUIClient;
 };
 
-KActionCollection::KActionCollection( QWidget *parent, const char *name,
+KActionCollection::KActionCollection( QWidget *parent,
                                       KInstance *instance )
-  : QObject( parent, name )
+  : QObject( parent )
 {
-  kdDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << name << " ): this = " << this << endl; // ellis
+  kdDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << " ): this = " << this << endl; // ellis
   d = new KActionCollectionPrivate;
   if( parent )
     setWidget( parent );
@@ -91,11 +91,11 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
 }
 
 
-KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const char *name,
+KActionCollection::KActionCollection( QWidget *watch, QObject* parent,
                                       KInstance *instance )
-  : QObject( parent, name )
+  : QObject( parent )
 {
-  kdDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << ", " << name << " ): this = " << this << endl; //ellis
+  kdDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << " ): this = " << this << endl; //ellis
   d = new KActionCollectionPrivate;
   if( watch )
     setWidget( watch );
@@ -105,11 +105,11 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
 
 #ifndef KDE_NO_COMPAT
 // KDE 4: remove
-KActionCollection::KActionCollection( QObject *parent, const char *name,
+KActionCollection::KActionCollection( QObject *parent,
                                       KInstance *instance )
-  : QObject( parent, name )
+  : QObject( parent )
 {
-  kdWarning(129) << "KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )" << endl; //ellis
+  kdWarning(129) << "KActionCollection::KActionCollection( QObject *parent, KInstance *instance )" << endl; //ellis
   kdDebug(129) << kdBacktrace() << endl;
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
@@ -129,7 +129,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 #endif // KDE 4: remove end
 
 KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *parent )
-    : QObject( 0L, name )
+    : QObject( 0 )
 {
   d = new KActionCollectionPrivate;
   d->m_parentGUIClient=parent;

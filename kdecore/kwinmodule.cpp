@@ -45,7 +45,7 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
 				     NET::KDESystemTrayWindows,
                                      NET::WM2ShowingDesktop };
 
-static unsigned long desktop_properties[ 2 ] = { 
+static unsigned long desktop_properties[ 2 ] = {
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
 				     NET::CurrentDesktop |
@@ -109,14 +109,16 @@ public:
 
 
 KWinModule::KWinModule( QObject* parent )
-    : QObject( parent, "kwin_module" )
+    : QObject( parent )
 {
+    setObjectName( "kwin_module" );
     init(INFO_ALL);
 }
 
 KWinModule::KWinModule( QObject* parent, int what )
-    : QObject( parent, "kwin_module" )
+    : QObject( parent )
 {
+    setObjectName( "kwin_module" );
     init(what);
 }
 
@@ -140,7 +142,7 @@ void KWinModule::init(int what)
         foreach(KWinModule *m, modules)
             m->d = static_d;
     }
-    
+
     d = static_d;
     d->modules.append( this );
 }
@@ -357,7 +359,7 @@ QRect KWinModule::workArea( const QList<WId>& exclude, int desktop ) const
     for( it1 = d->windows.begin(); it1 != d->windows.end(); ++it1 ) {
 
 	if(exclude.findIndex(*it1) != -1) continue;
-        
+
 // Kicker (very) extensively calls this function, causing hundreds of roundtrips just
 // to repeatedly find out struts of all windows. Therefore strut values for strut
 // windows are cached here.

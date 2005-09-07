@@ -75,8 +75,8 @@ class KParts::StatusBarItem {
 ///////////////////////////////////////////////////////////////////
 
 
-StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent, const char* name)
-  : QObject(parent, name), m_statusBar(0), d(0)
+StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent)
+  : QObject(parent), m_statusBar(0), d(0)
 {
   parent->installEventFilter(this);
 }

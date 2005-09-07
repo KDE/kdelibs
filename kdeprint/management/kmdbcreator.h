@@ -32,7 +32,7 @@ class KMDBCreator : public QObject
 {
 	Q_OBJECT
 public:
-	KMDBCreator(QObject *parent = 0, const char *name = 0);
+	KMDBCreator(QObject *parent = 0);
 	~KMDBCreator();
 
 	bool checkDriverDB(const QString& dirname, const QDateTime& d);

@@ -36,8 +36,8 @@
 
 //----------------------------------------------------
 
-KGlobalAccel::KGlobalAccel( QObject* pParent, const char* psName )
-: QObject( pParent, psName )
+KGlobalAccel::KGlobalAccel( QObject* pParent )
+: QObject( pParent )
 {
 	kdDebug(125) << "KGlobalAccel(): this = " << this << endl;
 	d = new KGlobalAccelPrivate();

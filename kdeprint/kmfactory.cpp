@@ -79,8 +79,9 @@ void KMFactory::release()
 }
 
 KMFactory::KMFactory()
-	: QObject(NULL, "Factory")
+	: QObject(0)
 {
+    setObjectName( "Factory" );
 	m_settings = new Settings;
 	m_settings->application = KPrinter::Dialog;
 	m_settings->pageSelection = KPrinter::SystemSide;
@@ -172,28 +173,41 @@ void KMFactory::createManager()
 {
 	loadFactory();
 	if (m_factory) m_manager = (KMManager*)m_factory->create(this,"Manager","KMManager");
-	if (!m_manager) m_manager = new KMManager(this,"Manager");
+	if (!m_manager) {
+            m_manager = new KMManager(this );
+            m_manager->setObjectName( "Manager" );
+        }
 }
 
 void KMFactory::createJobManager()
 {
 	loadFactory();
 	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(this,"JobManager","KMJobManager");
-	if (!m_jobmanager) m_jobmanager = new KMJobManager(this,"JobManager");
+	if (!m_jobmanager) {
+            m_jobmanager = new KMJobManager( this );
+            m_jobmanager->setObjectName( "JobManager" );
+        }
+
 }
 
 void KMFactory::createUiManager()
 {
 	loadFactory();
 	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(this,"UiManager","KMUiManager");
-	if (!m_uimanager) m_uimanager = new KMUiManager(this,"UiManager");
+	if (!m_uimanager) {
+            m_uimanager = new KMUiManager(this );
+            m_uimanager->setObjectName( "UiManager" );
+}
 }
 
 void KMFactory::createPrinterImpl()
 {
 	loadFactory();
 	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(this,"PrinterImpl","KPrinterImpl");
-	if (!m_implementation) m_implementation = new KPrinterImpl(this,"PrinterImpl");
+	if (!m_implementation) {
+            m_implementation = new KPrinterImpl( this );
+            m_implementation->setObjectName( "PrinterImpl" );
+        }
 }
 
 void KMFactory::loadFactory(const QString& syst)

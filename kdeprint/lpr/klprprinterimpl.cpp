@@ -26,7 +26,7 @@
 #include <stdlib.h>
 
 KLprPrinterImpl::KLprPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
-: KPrinterImpl(parent,name)
+    : KPrinterImpl(parent)
 {
 	m_exepath = KStandardDirs::findExe("lpr");
 }

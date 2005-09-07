@@ -33,7 +33,7 @@ class KGlobalAccelPrivate;
 
 /**
 * KGlobalAccel allows you to have global accelerators that are independent of
-* the focused window. Unlike KAccel it does not matter which window is 
+* the focused window. Unlike KAccel it does not matter which window is
 * currently active.
 *
 * @see KAccel
@@ -50,9 +50,8 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * Creates a new KGlobalAccel object with the given pParent and
 	 * psName.
 	 * @param pParent the parent of the QObject
-	 * @param psName the name of the QObject
 	 */
-	KGlobalAccel( QObject* pParent, const char* psName = 0 );
+	KGlobalAccel( QObject* pParent );
 	virtual ~KGlobalAccel();
 
 	/**
@@ -60,7 +59,7 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * @return true if the KGlobalAccel is enabled
 	 */
 	bool isEnabled();
-	
+
 	/**
 	 * Enables or disables the KGlobalAccel
 	 * @param bEnabled true if the KGlobalAccel should be enabled, false if it
@@ -113,7 +112,7 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
 	/**
-	 * Updates the connections of the accelerations after changing them. 
+	 * Updates the connections of the accelerations after changing them.
 	 * @return true if successful, false otherwise
 	 */
 	bool updateConnections();
@@ -144,7 +143,7 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
         /**
          * Enables or disables action @p sAction.
          * @since 3.4
-         */ 
+         */
 	bool setActionEnabled( const QString& sAction, bool bEnable );
 	/**
 	 * Return the label (i18n'ized short description) associated with the action named by @p sAction.
@@ -206,7 +205,7 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * KAccelActions::useFourModifierKeys().
 	 */
 	static bool useFourModifierKeys();
-        
+
         /**
          * @internal
          */
