@@ -564,9 +564,9 @@
 
 # TIFF and friends
 #					TIFF file, big-endian
-0	string		MM		image/tiff
+0	string		MM\x00\x2a		image/tiff
 #					TIFF file, little-endian
-0	string		II		image/tiff
+0	string		II\x2a\x00		image/tiff
 
 # GIF
 0	string		GIF		image/gif
