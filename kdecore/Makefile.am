@@ -48,7 +48,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
-	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
+	netwm_def.h kpixmapprovider.h kstaticdeleter.h \
 	kprocio.h kasyncio.h \
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
