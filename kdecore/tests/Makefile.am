@@ -35,7 +35,7 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 
 TESTS = kurltest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
-	kstringhandlertest
+	kstringhandlertest krfcdatetest
 
 METASOURCES = AUTO
 
@@ -64,7 +64,6 @@ kiconloadertest_SOURCES = kiconloadertest.cpp
 kmdcodectest_SOURCES = kmdcodectest.cpp 
 knotifytest_SOURCES = knotifytest.cpp
 ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
-krfcdatetest_SOURCES = krfcdatetest.cpp
 testqtargs_SOURCES = testqtargs.cpp
 kprociotest_SOURCES = kprociotest.cpp
 kcharsetstest_SOURCES = kcharsetstest.cpp
@@ -82,6 +81,8 @@ kurlmimetest_SOURCES = kurlmimetest.cpp
 kurlmimetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kconfigtest_SOURCES = kconfigtest.cpp
 kconfigtest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+krfcdatetest_SOURCES = krfcdatetest.cpp
+krfcdatetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kstdacceltest_SOURCES = kstdacceltest.cpp
 kstdacceltest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kstringhandlertest_SOURCES = kstringhandlertest.cpp

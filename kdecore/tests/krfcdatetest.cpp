@@ -1,69 +1,28 @@
-#include <stdio.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-#include <stdlib.h>
-#include <kdebug.h>
-#include <kglobal.h>
-#include <kcharsets.h>
-#include <qtextcodec.h>
-#include <krfcdate.h>
+#include "QtTest/qttest_kde.h"
+#include "krfcdatetest.h"
+#include "krfcdatetest.moc"
 
-bool check(QString txt, time_t a, time_t b)
+QTTEST_KDEMAIN(KRFCDateTest, NoGUI)
+
+#include "krfcdate.h"
+
+void KRFCDateTest::test()
 {
-  if (a == b) {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
-  }
-  else {
-    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
-    exit(1);
-  }
-  return true;
-}
-
-int main(int argc, char *argv[])
-{
-  KAboutData about("krfcdatetest", "krfcdatetest", "version");
-  KCmdLineArgs::init(argc, argv, &about);
-
-  KApplication app(false,false);
-
-  time_t a;
-  time_t b;
-  
   // From http://www.w3.org/TR/NOTE-datetime
-  b = KRFCDate::parseDateISO8601("1994-11-05T13:15:30Z");
-  a = KRFCDate::parseDateISO8601("1994-11-05T08:15:30-05:00");
-  check( "1994-11-05T08:15:30-05:00", a, b);
-
-  a = KRFCDate::parseDateISO8601("1994-11-05T18:15:30+05:00");
-  check( "1994-11-05T18:15:30+05:00", a, b);
-
-  a = KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+0500");
-  check( "Thu Nov 5 1994 18:15:30 GMT+0500", a, b);
-
-  a = KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+05:00");
-  check( "Thu Nov 5 1994 18:15:30 GMT+05:00", a, b);
-
-  a = KRFCDate::parseDate("Wednesday, 05-Nov-94 13:15:30 GMT");
-  check( "Wednesday, 05-Nov-94 13:15:30 GMT", a, b);
-
-  a = KRFCDate::parseDate("Wed, 05-Nov-1994 13:15:30 GMT");
-  check( "Wed, 05-Nov-1994 13:15:30 GMT", a, b);
-
-  a = KRFCDate::parseDate("Wed, 05-November-1994 13:15:30 GMT");
-  check( "Wed, 05-November-1994 13:15:30 GMT", a, b);
-
-  b = KRFCDate::parseDateISO8601("1994-01-01T12:00:00");
-  a = KRFCDate::parseDateISO8601("1994");
-  check( "1994", a, b );
-
-  a = KRFCDate::parseDateISO8601("1994-01");
-  check( "1994-01", a, b );
-
-  a = KRFCDate::parseDateISO8601("1994-01-01");
-  check( "1994-01-01", a, b );
-
-  printf("\nTest OK !\n");
+  time_t ref = KRFCDate::parseDateISO8601("1994-11-05T13:15:30Z");
+  
+  COMPARE(KRFCDate::parseDateISO8601("1994-11-05T08:15:30-05:00"),   ref);
+  COMPARE(KRFCDate::parseDateISO8601("1994-11-05T18:15:30+05:00"),   ref);
+  COMPARE(KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+0500"),   ref);
+  COMPARE(KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+05:00"),  ref);
+  COMPARE(KRFCDate::parseDate("Wednesday, 05-Nov-94 13:15:30 GMT"),  ref);
+  COMPARE(KRFCDate::parseDate("Wed, 05-Nov-1994 13:15:30 GMT"),      ref);
+  COMPARE(KRFCDate::parseDate("Wed, 05-November-1994 13:15:30 GMT"), ref);
+  
+  ref = KRFCDate::parseDateISO8601("1994-01-01T12:00:00");
+  
+  COMPARE(KRFCDate::parseDateISO8601("1994"),       ref);
+  COMPARE(KRFCDate::parseDateISO8601("1994-01"),    ref);
+  COMPARE(KRFCDate::parseDateISO8601("1994-01-01"), ref);
 }
 
