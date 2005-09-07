@@ -844,7 +844,7 @@ void HTMLTableSectionElement::setVAlign( const DOMString &value )
 HTMLCollection HTMLTableSectionElement::rows() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::TABLE_ROWS);
+    return HTMLCollection(impl, HTMLCollectionImpl::TSECTION_ROWS);
 }
 
 HTMLElement HTMLTableSectionElement::insertRow( long index )
