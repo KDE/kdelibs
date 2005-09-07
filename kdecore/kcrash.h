@@ -36,11 +36,6 @@
  */
 class KDECORE_EXPORT KCrash
 {
- private: // ;o)
-  static const char *appName;
-  static const char *appPath;
-  static bool safer;
-
  public:
   /**
    * The default crash handler.
@@ -71,7 +66,7 @@ class KDECORE_EXPORT KCrash
    * Returns the installed crash handler.
    * @return the crash handler
    */
-  static HandlerType crashHandler() { return _crashHandler; }
+  static HandlerType crashHandler();
 
   /**
    * Installs a function which should try to save the applications data.
@@ -80,41 +75,32 @@ class KDECORE_EXPORT KCrash
    * is installed to ensure the save function is called.
    * @param saveFunction the handler to install
    */
-  static void setEmergencySaveFunction (HandlerType saveFunction = (HandlerType)0);
+  static void setEmergencySaveFunction (HandlerType saveFunction = 0);
+
   /**
    * Return the currently set emergency save function.
    * @return the emergency save function
    */
-  static HandlerType emergencySaveFunction() { return _emergencySaveFunction; }
+  static HandlerType emergencySaveFunction();
 
   /**
    * Set whether to start drkonqi without arbitrary disk access
    */
-  static void setSafer( bool on ) { safer = on; }
+  static void setSafer( bool on );
 
   /**
    * Sets the application @p path which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param path the application path.
    */
-  static void setApplicationPath (const QString &path) { appPath = qstrdup(path.local8Bit().data()); }
+  static void setApplicationPath (const QString &path);
 
   /**
    * Sets the application name @p name which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param name the name of the application, as shown in Dr. Konqi
    */
-  static void setApplicationName (const QString &name) { appName = qstrdup(name.local8Bit().data()); }
-
- protected:
-  /**
-   * Pointer to the crash handler.
-   */
-  static HandlerType _crashHandler;
-  /**
-   * Pointer to the emergency save function.
-   */
-  static HandlerType _emergencySaveFunction;
+  static void setApplicationName (const QString &name);
 };
 
 #endif

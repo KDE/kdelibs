@@ -52,11 +52,11 @@
 #include <X11/Xlib.h>
 #endif
 
-KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
-KCrash::HandlerType KCrash::_crashHandler = 0;
-const char *KCrash::appName = 0;
-const char *KCrash::appPath = 0;
-bool KCrash::safer = false;
+static KCrash::HandlerType s_emergencySaveFunction = 0;
+static KCrash::HandlerType s_crashHandler = 0;
+static char *s_appName = 0;
+static char *s_appPath = 0;
+static bool s_safer = false;
 
 // This function sets the function which should be called when the
 // application crashes and the
@@ -64,16 +64,39 @@ bool KCrash::safer = false;
 void
 KCrash::setEmergencySaveFunction (HandlerType saveFunction)
 {
-  _emergencySaveFunction = saveFunction;
+  s_emergencySaveFunction = saveFunction;
 
   /*
    * We need at least the default crash handler for
    * emergencySaveFunction to be called
    */
-  if (_emergencySaveFunction && !_crashHandler)
-    _crashHandler = defaultCrashHandler;
+  if (s_emergencySaveFunction && !s_crashHandler)
+    s_crashHandler = defaultCrashHandler;
 }
 
+KCrash::HandlerType
+KCrash::emergencySaveFunction()
+{
+	return s_emergencySaveFunction;
+}
+
+void
+KCrash::setSafer( bool on )
+{
+	s_safer = on;
+}
+
+void
+KCrash::setApplicationPath(const QString& path)
+{
+	s_appPath = qstrdup(path.toLatin1().data());
+}
+
+void
+KCrash::setApplicationName(const QString& name)
+{
+	s_appName = qstrdup(name.toLatin1().data());
+}
 
 // This function sets the function which should be responsible for
 // the application crash handling.
@@ -107,7 +130,13 @@ KCrash::setCrashHandler (HandlerType handler)
   sigprocmask(SIG_UNBLOCK, &mask, 0);
 #endif //Q_OS_UNIX
 
-  _crashHandler = handler;
+  s_crashHandler = handler;
+}
+
+KCrash::HandlerType
+KCrash::crashHandler()
+{
+	return s_crashHandler;
 }
 
 void
@@ -123,8 +152,8 @@ KCrash::defaultCrashHandler (int sig)
   alarm(3); // Kill me... (in case we deadlock in malloc)
 
   if (crashRecursionCounter < 2) {
-    if (_emergencySaveFunction) {
-      _emergencySaveFunction (sig);
+    if (s_emergencySaveFunction) {
+      s_emergencySaveFunction (sig);
     }
     crashRecursionCounter++; //
   }
@@ -144,13 +173,17 @@ KCrash::defaultCrashHandler (int sig)
   {
     if (crashRecursionCounter < 3)
     {
-      if (appName)
+      if (s_appName)
       {
 #ifndef NDEBUG
-        fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n", crashRecursionCounter);
-        fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n", appName ? appName : "<unknown>" , appPath ? appPath : "<unknown>", getpid());
+        fprintf(stderr, "KCrash: crashing... crashRecursionCounter = %d\n",
+		crashRecursionCounter);
+        fprintf(stderr, "KCrash: Application Name = %s path = %s pid = %d\n",
+		s_appName ? s_appName : "<unknown>" ,
+		s_appPath ? s_appPath : "<unknown>", getpid());
 #else
-        fprintf(stderr, "KCrash: Application '%s' crashing...\n", appName ? appName : "<unknown>");
+        fprintf(stderr, "KCrash: Application '%s' crashing...\n",
+		s_appName ? s_appName : "<unknown>");
 #endif
 
         pid_t pid = fork();
@@ -179,46 +212,43 @@ KCrash::defaultCrashHandler (int sig)
 
           // we have already tested this
           argv[i++] = qstrdup("--appname");
-          argv[i++] = qstrdup(appName);
+          argv[i++] = qstrdup(s_appName);
           if (KApplication::loadedByKdeinit)
             argv[i++] = qstrdup("--kdeinit");
 
           // only add apppath if it's not NULL
-          if (appPath) {
+          if (s_appPath && *s_appPath) {
             argv[i++] = qstrdup("--apppath");
-            argv[i++] = qstrdup(appPath);
+            argv[i++] = qstrdup(s_appPath);
           }
 
           // signal number -- will never be NULL
-          QByteArray tmp;
-          tmp.setNum(sig);
           argv[i++] = qstrdup("--signal");
-          argv[i++] = qstrdup(tmp.data());
+          argv[i++] = qstrdup(QByteArray::number(sig).data());
 
           // pid number -- only include if this is the child
-          // the debug stuff will be disabled if we was not able to fork
+          // the debug stuff will be disabled if we were not able to fork
           if (pid == 0) {
-            tmp.setNum(getppid());
             argv[i++] = qstrdup("--pid");
-            argv[i++] = qstrdup(tmp.data());
+            argv[i++] = qstrdup(QByteArray::number(getppid()).data());
           }
 
-          const KInstance *instance = KGlobal::_instance;
+          const KInstance *instance = KGlobal::instance();
           const KAboutData *about = instance ? instance->aboutData() : 0;
           if (about) {
             if (!about->version().isNull()) {
               argv[i++] = qstrdup("--appversion");
-              argv[i++] = qstrdup(about->version().utf8());
+              argv[i++] = qstrdup(about->version().toLatin1());
             }
 
             if (!about->programName().isNull()) {
               argv[i++] = qstrdup("--programname");
-              argv[i++] = qstrdup(about->programName().utf8());
+              argv[i++] = qstrdup(about->programName().toLatin1());
             }
 
             if (!about->bugAddress().isNull()) {
               argv[i++] = qstrdup("--bugaddress");
-              argv[i++] = qstrdup(about->bugAddress().utf8());
+              argv[i++] = qstrdup(about->bugAddress().toLatin1());
             }
           }
 
@@ -227,7 +257,7 @@ KCrash::defaultCrashHandler (int sig)
             argv[i++] = qstrdup(kapp->startupId());
           }
 
-          if ( safer )
+          if ( s_safer )
             argv[i++] = qstrdup("--safer");
 
           // NULL terminated list
