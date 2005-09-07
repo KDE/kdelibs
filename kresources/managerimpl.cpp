@@ -25,6 +25,7 @@
 
 #include <kaboutdata.h>
 #include <kapplication.h>
+#include <kstringhandler.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
@@ -45,7 +46,7 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
 {
   kdDebug(5650) << "ManagerImpl::ManagerImpl()" << endl;
 
-  mId = KApplication::randomString( 8 );
+  mId = KStringHandler::randomString( 8 );
 
   // Register with DCOP
   if ( !kapp->dcopClient()->isRegistered() ) {

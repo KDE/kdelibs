@@ -23,6 +23,7 @@
 
 #include <kdebug.h>
 #include <kapplication.h>
+#include <kstringhandler.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include "resource.h"
@@ -61,7 +62,7 @@ Resource::Resource( const KConfig* config )
     d->mName = i18n("resource");
     d->mReadOnly = false;
     d->mActive = true;
-    d->mIdentifier = KApplication::randomString( 10 );
+    d->mIdentifier = KStringHandler::randomString( 10 );
   }
 }
 

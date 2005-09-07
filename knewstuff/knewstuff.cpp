@@ -20,6 +20,7 @@
 
 #include <kaction.h>
 #include <kapplication.h>
+#include <kstringhandler.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -72,7 +73,7 @@ void KNewStuff::download()
 QString KNewStuff::downloadDestination( Entry * )
 {
   return KGlobal::dirs()->saveLocation( "tmp" ) +
-         KApplication::randomString( 10 );
+         KStringHandler::randomString( 10 );
 }
 
 void KNewStuff::upload()
