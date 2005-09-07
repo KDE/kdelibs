@@ -1,72 +1,79 @@
+#include "QtTest/qttest_kde.h"
+#include "kstringhandlertest.h"
+#include "kstringhandlertest.moc"
+
+QTTEST_KDEMAIN(KStringHandlerTest, NoGUI)
+
 #include "kstringhandler.h"
 #include <QString>
-#include <iostream>
-using std::cout;
-using std::endl;
 
-bool check(const QString &txt, const QString &a, const QString &b)
+QString KStringHandlerTest::test = "The quick brown fox jumped over the lazy bridge. ";
+
+void KStringHandlerTest::word()
 {
-    if ( a != b ) {
-        cout << "ERROR: Tested " << txt.latin1() << ", expected" << endl;
-        cout << "'" << b.latin1() << "' (" << b.length() << " chars)" << endl;
-        cout << "but got" << endl;
-        cout << "'" << a.latin1() << "' (" << a.length() << " chars)" << endl;
-        exit( 1 );
-    }
-  return true; 
+    COMPARE(KStringHandler::word(test, "2"), 
+            QString("brown"));
+    COMPARE(KStringHandler::word(test, "2:4"), 
+            QString("brown fox jumped"));   
 }
 
-int main(int argc, char *argv[]) 
+void KStringHandlerTest::insword()
 {
-  QString test = "The quick brown fox jumped over the lazy bridge. ";
+    COMPARE(KStringHandler::insword(test, "very", 1),
+            QString("The very quick brown fox jumped over the lazy bridge. "));
+}
+    
+void KStringHandlerTest::setword()
+{
+    COMPARE(KStringHandler::setword(test, "very", 1),
+            QString("The very brown fox jumped over the lazy bridge. "));
+}
 
-  check("word(test, 3)", 
-	KStringHandler::word(test, "2"),
-	"brown");
-  check("word(test, \"3:5\")", 
-	KStringHandler::word(test, "2:4"), 
-	"brown fox jumped");
-  check("insword(test, \"very\", 1)", 
-	KStringHandler::insword(test, "very", 1),
-       "The very quick brown fox jumped over the lazy bridge. ");
-  check("setword(test, \"very\", 1)", 
-	KStringHandler::setword(test, "very", 1),
-       "The very brown fox jumped over the lazy bridge. ");
-  check("remrange(test, \"4:6\")", 
-	KStringHandler::remrange(test, "4:6"),
-       "The quick brown fox lazy bridge. " );
-  check("remrange(test, \"4:8\")", 
-	KStringHandler::remrange(test, "4:8"),
-       "The quick brown fox ");
-  check("remword(test, 4)", 
-	KStringHandler::remword(test, 4),
-       "The quick brown fox over the lazy bridge. "); 
-  check("remword(test, \"lazy\")", 
-	KStringHandler::remword(test, "lazy"),
-       "The quick brown fox jumped over the bridge. "); 
-  check("capwords(test)", 
-	KStringHandler::capwords(test),
-       "The Quick Brown Fox Jumped Over The Lazy Bridge. "); 
-  check("reverse(test)", 
-	KStringHandler::reverse(test),
-       " bridge. lazy the over jumped fox brown quick The"); 
-  QString result = KStringHandler::center(test, 70);
-  if (result.length() != 70)
-  {
-     printf("Length = %d, expected 70.\n", result.length());
-     exit(1);
-  }
-  check("center(test, 70)", 
-	result,
-        "           The quick brown fox jumped over the lazy bridge.           ");
+void KStringHandlerTest::remrange()
+{
+    COMPARE(KStringHandler::remrange(test, "4:6"),
+            QString("The quick brown fox lazy bridge. " ));
+    COMPARE(KStringHandler::remrange(test, "4:8"),
+            QString("The quick brown fox "));
+}
+  
+void KStringHandlerTest::remword()
+{
+    COMPARE(KStringHandler::remword(test, 4),
+            QString("The quick brown fox over the lazy bridge. "));
+    COMPARE(KStringHandler::remword(test, "lazy"),
+            QString("The quick brown fox jumped over the bridge. "));
+}
 
-  test = "Click on http://foo@bar:www.kde.org/yoyo/dyne.html#a1 for info.";
-  check( "tagURLs()", KStringHandler::tagURLs( test ),
-	"Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info." );
+void KStringHandlerTest::capwords()
+{
+    COMPARE(KStringHandler::capwords(test),
+            QString("The Quick Brown Fox Jumped Over The Lazy Bridge. "));
+}
+  
+void KStringHandlerTest::reverse()
+{
+    COMPARE(KStringHandler::reverse(test),
+            QString(" bridge. lazy the over jumped fox brown quick The"));
+}
 
-  test = "http://www.foo.org/story$806";
-  check( "tagURLs()", KStringHandler::tagURLs( test ),
-	 "<a href=\"http://www.foo.org/story$806\">http://www.foo.org/story$806</a>" );
+void KStringHandlerTest::center()
+{
+    QString result = KStringHandler::center(test, 70);
+    COMPARE(result.length(), 70);
+    COMPARE(result,
+            QString("           The quick brown fox jumped over the lazy bridge.           "));
+}
+
+void KStringHandlerTest::tagURLs()
+{
+    QString test = "Click on http://foo@bar:www.kde.org/yoyo/dyne.html#a1 for info.";
+    COMPARE(KStringHandler::tagURLs(test),
+	    QString("Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info."));
+
+    test = "http://www.foo.org/story$806";
+    COMPARE(KStringHandler::tagURLs(test),
+	    QString("<a href=\"http://www.foo.org/story$806\">http://www.foo.org/story$806</a>"));
 
 #if 0
   // XFAIL - i.e. this needs to be fixed, but has never been
@@ -74,6 +81,4 @@ int main(int argc, char *argv[])
   check( "tagURLs()", KStringHandler::tagURLs( test ),
 	 "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
 #endif
-
-  cout << "All OK!" << endl;
 }
