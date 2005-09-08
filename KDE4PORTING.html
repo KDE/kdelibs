@@ -55,6 +55,8 @@ by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 <li>invoke* has been mobed to ktoolinvocation. there are static methods invoke*, if you want to use slots as before connect to the innvoke* slots of KToolInvocation::self()</li>
 <li>startService*, kdeinitExec* -&gt; KToolInvocation</li>
 <li> static void addCmdLineOptions(); moveto KCmdLineArgs::addStdCmdLineOptions </li>
+<li>kapp-&gt;getDisplay() has been removed, its functionality is now provided
+by QX11Info::display()</li>
 </ul>
 
 
@@ -87,7 +89,7 @@ KMacroExpander now takes a QHash and not a QMap
 
 <H4>KKeySequence</H4>
 <p>Is being phased out.  It was originally created to hold multiple key sequence before
-   QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.  
+   QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.
    A K3KeySequence convenience class is also available.
 </p>
 

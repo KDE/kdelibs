@@ -36,20 +36,18 @@ typedef void Display;
 #endif
 
 #include <qapplication.h>
-#include <qpixmap.h>
-#include <q3cstring.h>
 #include <kinstance.h>
 
+#ifdef Q_WS_X11
+#include <QX11Info>
 struct _IceConn;
-class Q3PopupMenu;
-class Q3StrList;
+#endif
+class QPixmap;
 class KSessionManaged;
 class KStyle;
 class KURL;
 
 #define kapp KApplication::kApplication()
-
-class KApplicationPrivate;
 
 /**
 * Controls and provides information to all KDE applications.
@@ -211,9 +209,9 @@ public:
   void disableSessionManagement();
 
   /**
-   * Enables again session management for this application, formerly
+   * Enables session management for this application, formerly
    * disabled by calling disableSessionManagement(). You usually
-   * shouldn't call this function, as the session management is enabled
+   * shouldn't call this function, as session management is enabled
    * by default.
    */
   void enableSessionManagement();
@@ -319,14 +317,14 @@ public:
    */
     void propagateSessionManager();
 
-    /*
+    /**
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with KSessionManaged.
      * @internal
      */
   void commitData( QSessionManager& sm );
 
-    /*
+    /**
      * Reimplemented for internal purposes, mainly the highlevel
      *  handling of session management with KSessionManaged.
      * @internal
@@ -522,8 +520,9 @@ public:
   /**
    * Get the X11 display
    * @return the X11 Display
+   * @deprecated use QX11Info::display()
    */
-  Display *getDisplay() { return display; }
+  Display *getDisplay() KDE_DEPRECATED { return QX11Info::display(); }
 #endif
 
   /**
@@ -565,7 +564,7 @@ public:
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
-   * @deprecated Use KMath::random();
+   * @deprecated Use KMath::random()
    */
   static int random() KDE_DEPRECATED;
 
@@ -712,9 +711,8 @@ protected:
    * Used to catch X11 events
    */
   bool x11EventFilter( XEvent * );
-
-  Display *display;
 #endif
+
   Atom kipcCommAtom;
   int kipcEventMask;
 
@@ -764,17 +762,10 @@ private slots:
 private:
   QString sessionConfigName() const;
   KConfig* pSessionConfig; //instance specific application config object
-  static DCOPClient *s_DCOPClient; // app specific application communication client
-  static bool s_dcopClientNeedsPostInit;
   QString aCaption; // the name for the window title
   bool bSessionManagement;
-  struct oldPixmapType { QPixmap a, b; };
-  mutable union {
-    struct {
-      QPixmap *icon, *miniIcon;
-    } pm;
-    char unused[sizeof(oldPixmapType)];
-  } aIconPixmap; // KDE4: remove me
+  mutable QPixmap *pIcon;
+  mutable QPixmap *pMiniIcon;
   QString aIconName;
   QString aMiniIconName;
   bool useStyles;
@@ -987,10 +978,9 @@ private:
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
-  KApplicationPrivate* d;
+  class Private;
+  Private* d;
 };
 
 
@@ -1012,8 +1002,6 @@ private:
  * @return Whether the access is allowed, true = Access allowed
  */
 KDECORE_EXPORT bool checkAccess(const QString& pathname, int mode);
-
-class KSessionManagedPrivate;
 
 /**
    Provides highlevel access to session management on a per-object
@@ -1058,10 +1046,9 @@ public:
      */
   virtual bool commitData( QSessionManager& sm );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
-  KSessionManagedPrivate *d;
+  class Private;
+  Private *d;
 };
 
 

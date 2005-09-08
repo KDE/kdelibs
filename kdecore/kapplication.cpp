@@ -23,13 +23,8 @@
 #undef QT_NO_TRANSLATION
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
-#include <q3memarray.h>
-#include <q3ptrcollection.h>
-#include <q3ptrdict.h>
-#include <q3ptrlist.h>
-#include <q3strlist.h>
-#include <q3stylesheet.h>
-#include <q3textedit.h>
+#include <q3stylesheet.h> // no equivilant in Qt4
+#include <qtextedit.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qicon.h>
@@ -45,7 +40,7 @@
 #include <qtooltip.h>
 #include <qwidget.h>
 #ifndef QT_NO_SQL
-#include <q3sqlpropertymap.h>
+#include <q3sqlpropertymap.h> // no equivilant in Qt4
 #endif
 
 #include <QList>
@@ -167,8 +162,8 @@ bool kde_kiosk_admin = false;
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
-DCOPClient *KApplication::s_DCOPClient = 0L;
-bool KApplication::s_dcopClientNeedsPostInit = false;
+static DCOPClient* s_DCOPClient = 0L;
+static bool s_dcopClientNeedsPostInit = false;
 
 #ifdef Q_WS_X11
 static Atom atom_DesktopWindow;
@@ -215,10 +210,10 @@ class QAssistantClient;
 /*
   Private data to make keeping binary compatibility easier
  */
-class KApplicationPrivate
+class KApplication::Private
 {
 public:
-  KApplicationPrivate()
+  Private()
     :   refCount( 1 ),
 	oldIceIOErrorHandler( 0 ),
 	checkAccelerators( 0 ),
@@ -236,7 +231,7 @@ public:
   {
   }
 
-  ~KApplicationPrivate()
+  ~Private()
   {
 #ifdef Q_WS_WIN
      delete qassistantclient;
@@ -364,7 +359,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
           }
        }
-       Q3TextEdit *medit = ::qobject_cast<Q3TextEdit *>(receiver);
+       QTextEdit *medit = ::qobject_cast<QTextEdit *>(receiver);
        if (medit)
        {
           // We have a keypress for a multilineedit...
@@ -460,14 +455,10 @@ static QTime* smModificationTime = 0;
 KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
-  KInstance( KCmdLineArgs::about),
-#ifdef Q_WS_X11
-  display(0L),
-#endif
-  d (new KApplicationPrivate)
+  KInstance( KCmdLineArgs::about), d (new Private)
 {
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
+    pIcon = 0L;
+    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -485,10 +476,10 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 		            bool allowStyles ) :
   QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 visual, colormap ),
-  KInstance( KCmdLineArgs::about), display(0L), d (new KApplicationPrivate)
+  KInstance( KCmdLineArgs::about), d (new Private)
 {
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
+    pIcon = 0L;
+    pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setName( instanceName() );
@@ -502,10 +493,10 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 		            bool allowStyles, KInstance * _instance ) :
   QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 visual, colormap ),
-  KInstance( _instance ), display(0L), d (new KApplicationPrivate)
+  KInstance( _instance ), d (new Private)
 {
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
+    pIcon = 0L;
+    pMiniIcon = 0L;
     read_app_startup_id();
     useStyles = allowStyles;
     setName( instanceName() );
@@ -519,14 +510,10 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),
-  KInstance( _instance ),
-#ifdef Q_WS_X11
-  display(0L),
-#endif
-  d (new KApplicationPrivate)
+  KInstance( _instance ), d (new Private)
 {
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
+    pIcon = 0L;
+    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -542,12 +529,10 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
                            bool allowStyles, bool GUIenabled ) :
-  QApplication( display ), KInstance(rAppName),
-  display(0L),
-  d (new KApplicationPrivate())
+  QApplication( display ), KInstance(rAppName), d (new Private)
 {
-    aIconPixmap.pm.icon = 0L;
-    aIconPixmap.pm.miniIcon = 0L;
+    pIcon = 0L;
+    pMiniIcon = 0L;
     read_app_startup_id();
     if (!GUIenabled)
        allowStyles = false;
@@ -633,7 +618,7 @@ void KApplication::init(bool GUIenabled)
 
   KApp = this;
   Q_ASSERT( KGlobal::instance()->aboutData() );
-  setApplicationName( KGlobal::instance()->aboutData()->appName()); 
+  setApplicationName( KGlobal::instance()->aboutData()->appName());
 
 
 
@@ -702,10 +687,6 @@ void KApplication::init(bool GUIenabled)
 
     connect( this, SIGNAL( aboutToQuit() ), this, SIGNAL( shutDown() ) );
 
-#ifdef Q_WS_X11 //FIXME(E)
-    display = desktop()->x11Display();
-#endif
-
     {
         QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
         QStringList::Iterator it = plugins.begin();
@@ -713,11 +694,9 @@ void KApplication::init(bool GUIenabled)
             addLibraryPath( *it );
             ++it;
         }
-
     }
     kdisplaySetStyle();
     kdisplaySetFont();
-//    kdisplaySetPalette(); done by kdisplaySetStyle
     propagateSettings(SETTINGS_QT);
 
     // Set default mime-source factory
@@ -766,6 +745,7 @@ void KApplication::init(bool GUIenabled)
 
   // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,
   // which makes it impossible to use the -reverse cmdline switch with KDE apps
+  // FIXME is this still needed? it looks like QApplication takes care of this
   bool rtl = reverseLayout();
   installTranslator(new KDETranslator(this));
   setReverseLayout( rtl );
@@ -825,7 +805,7 @@ DCOPClient *KApplication::dcopClient()
   if (s_DCOPClient)
     return s_DCOPClient;
 
-  s_DCOPClient = new DCOPClient();
+  s_DCOPClient = new DCOPClient;
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
   if (args && args->isSet("dcopserver"))
   {
@@ -872,11 +852,8 @@ void KApplication::disableAutoDcopRegistration()
 
 KConfig* KApplication::sessionConfig()
 {
-    if (pSessionConfig)
-        return pSessionConfig;
-
-    // create an instance specific config object
-    pSessionConfig = new KConfig( sessionConfigName(), false, false);
+    if (!pSessionConfig) // create an instance specific config object
+        pSessionConfig = new KConfig( sessionConfigName(), false, false);
     return pSessionConfig;
 }
 
@@ -1272,27 +1249,27 @@ void KApplication::parseCommandLine( )
     if (args->isSet("miniicon"))
     {
        const char *tmp = args->getOption("miniicon");
-       if (!aIconPixmap.pm.miniIcon) {
-         aIconPixmap.pm.miniIcon = new QPixmap;
+       if (!pMiniIcon) {
+         pMiniIcon = new QPixmap;
        }
-       *aIconPixmap.pm.miniIcon = SmallIcon(tmp);
+       *pMiniIcon = SmallIcon(tmp);
        aMiniIconName = tmp;
     }
 
     if (args->isSet("icon"))
     {
        const char *tmp = args->getOption("icon");
-       if (!aIconPixmap.pm.icon) {
-          aIconPixmap.pm.icon = new QPixmap;
+       if (!pIcon) {
+          pIcon = new QPixmap;
        }
-       *aIconPixmap.pm.icon = DesktopIcon( tmp );
+       *pIcon = DesktopIcon( tmp );
        aIconName = tmp;
-       if (!aIconPixmap.pm.miniIcon) {
-         aIconPixmap.pm.miniIcon = new QPixmap;
+       if (!pMiniIcon) {
+         pMiniIcon = new QPixmap;
        }
-       if (aIconPixmap.pm.miniIcon->isNull())
+       if (pMiniIcon->isNull())
        {
-          *aIconPixmap.pm.miniIcon = SmallIcon( tmp );
+          *pMiniIcon = SmallIcon( tmp );
           aMiniIconName = tmp;
        }
     }
@@ -1348,13 +1325,13 @@ QString KApplication::geometryArgument() const
 
 QPixmap KApplication::icon() const
 {
-  if( !aIconPixmap.pm.icon) {
-      aIconPixmap.pm.icon = new QPixmap;
+  if( !pIcon) {
+      pIcon = new QPixmap;
   }
-  if( aIconPixmap.pm.icon->isNull()) {
-      *aIconPixmap.pm.icon = DesktopIcon( instanceName() );
+  if( pIcon->isNull()) {
+      *pIcon = DesktopIcon( instanceName() );
   }
-  return *aIconPixmap.pm.icon;
+  return *pIcon;
 }
 
 QString KApplication::iconName() const
@@ -1364,13 +1341,13 @@ QString KApplication::iconName() const
 
 QPixmap KApplication::miniIcon() const
 {
-  if (!aIconPixmap.pm.miniIcon) {
-      aIconPixmap.pm.miniIcon = new QPixmap;
+  if (!pMiniIcon) {
+      pMiniIcon = new QPixmap;
   }
-  if (aIconPixmap.pm.miniIcon->isNull()) {
-      *aIconPixmap.pm.miniIcon = SmallIcon( instanceName() );
+  if (pMiniIcon->isNull()) {
+      *pMiniIcon = SmallIcon( instanceName() );
   }
-  return *aIconPixmap.pm.miniIcon;
+  return *pMiniIcon;
 }
 
 QString KApplication::miniIconName() const
@@ -1382,10 +1359,10 @@ extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
-  delete aIconPixmap.pm.miniIcon;
-  aIconPixmap.pm.miniIcon = 0L;
-  delete aIconPixmap.pm.icon;
-  aIconPixmap.pm.icon = 0L;
+  delete pMiniIcon;
+  pMiniIcon = 0L;
+  delete pIcon;
+  pIcon = 0L;
   delete d->m_KAppDCOPInterface;
 
   // First call the static deleters and then call KLibLoader::cleanup()
@@ -1900,7 +1877,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
     QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
     b = config->readBoolEntry("EffectFadeTooltip", false);
     QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
-    b = !config->readBoolEntry("EffectNoTooltip", false);
+    //b = !config->readBoolEntry("EffectNoTooltip", false);
     //QToolTip::setGloballyEnabled( b ); ###
 
     emit settingsChanged(arg);
@@ -2140,14 +2117,13 @@ void KApplication::read_app_startup_id()
 
 int KApplication::random()
 {
-   return KRandom::random(); 
+   return KRandom::random();
 }
 
 QString KApplication::randomString(int length)
 {
    return KRandom::randomString(length);
 }
-
 
 Qt::ButtonState KApplication::keyboardMouseState()
 {
@@ -2225,11 +2201,5 @@ bool KApplication::guiEnabled()
 {
     return kapp && kapp->d->guiEnabled;
 }
-
-void KApplication::virtual_hook( int id, void* data )
-{ KInstance::virtual_hook( id, data ); }
-
-void KSessionManaged::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kapplication.moc"
