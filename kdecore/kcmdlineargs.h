@@ -227,6 +227,15 @@ class KDECORE_EXPORT KCmdLineArgs
 public:
   // Static functions:
 
+  Q_FLAGS(StdCmdLineArgs)
+  enum StdCmdLineArg {
+    CmdLineArgQt = 0x01,
+    CmdLineArgKDE = 0x02,
+    CmdLineArgsMask=0x03,
+    CmdLineArgNone = 0x00,
+    Reserved =0xff
+  };
+  Q_DECLARE_FLAGS(StdCmdLineArgs, StdCmdLineArg)
   /**
    * Initialize class.
    *
@@ -241,14 +250,13 @@ public:
    *        translation. Example: I18N_NOOP("KEdit")
    * @param _description A short description of what your application is about.
    * @param _version A version.
-   * @param noKApp Set this true to not add commandline options for
-   *        QApplication / KApplication
+   * @param stdargs KDE/Qt or no default parameters
    *
    * @since 3.2
    */
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
-                    const char *_version, bool noKApp = false);
+                    const char *_version, StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
 
   /**
    * Initialize class.
@@ -260,12 +268,10 @@ public:
    * @param _argc As passed to @p main(...).
    * @param _argv As passed to @p main(...).
    * @param about A KAboutData object describing your program.
-   * @param noKApp Set this true to not add commandline options for
-   *        QApplication / KApplication
+   * @param stdargs KDE/Qt or no default parameters
    */
   static void init(int _argc, char **_argv,
-                   const KAboutData *about, bool noKApp = false);
-
+                   const KAboutData *about, StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
   /**
    * Initialize Class
    *
@@ -280,6 +286,11 @@ public:
    * \see KAboutData
    */
   static void init(const KAboutData *about);
+
+  /**
+   * add standard Qt/KDE command linee args
+   */
+  static void addStdCmdLineOptions(StdCmdLineArgs stdargs);
 
   /**
    * Add options to your application.

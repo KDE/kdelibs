@@ -34,6 +34,7 @@
 #include <qfile.h>
 #include <q3asciidict.h>
 #include <q3strlist.h>
+#include <qglobal.h>
 
 #include "kcmdlineargs.h"
 #include <kaboutdata.h>
@@ -52,6 +53,62 @@
 #ifdef Q_WS_WIN
 #include <win32_utils.h>
 #endif
+
+static const KCmdLineOptions qt_options[] =
+{
+  //FIXME: Check if other options are specific to Qt/X11
+#ifdef Q_WS_X11
+   { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
+#else
+   { "display <displayname>", I18N_NOOP("Use the QWS display 'displayname'"), 0},
+#endif
+   { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'"), 0},
+   { "cmap", I18N_NOOP("Causes the application to install a private color\nmap on an 8-bit display"), 0},
+   { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification"), 0},
+   { "nograb", I18N_NOOP("tells Qt to never grab the mouse or the keyboard"), 0},
+   { "dograb", I18N_NOOP("running under a debugger can cause an implicit\n-nograb, use -dograb to override"), 0},
+   { "sync", I18N_NOOP("switches to synchronous mode for debugging"), 0},
+   { "fn", 0, 0},
+   { "font <fontname>", I18N_NOOP("defines the application font"), 0},
+   { "bg", 0, 0},
+   { "background <color>", I18N_NOOP("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)"), 0},
+   { "fg", 0, 0},
+   { "foreground <color>", I18N_NOOP("sets the default foreground color"), 0},
+   { "btn", 0, 0},
+   { "button <color>", I18N_NOOP("sets the default button color"), 0},
+   { "name <name>", I18N_NOOP("sets the application name"), 0},
+   { "title <title>", I18N_NOOP("sets the application title (caption)"), 0},
+#ifdef Q_WS_X11
+   { "visual TrueColor", I18N_NOOP("forces the application to use a TrueColor visual on\nan 8-bit display"), 0},
+   { "inputstyle <inputstyle>", I18N_NOOP("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"), 0 },
+   { "im <XIM server>", I18N_NOOP("set XIM server"),0},
+   { "noxim", I18N_NOOP("disable XIM"), 0 },
+#endif
+#ifdef Q_WS_QWS
+   { "qws", I18N_NOOP("forces the application to run as QWS Server"), 0},
+#endif
+   { "reverse", I18N_NOOP("mirrors the whole layout of widgets"), 0},
+   KCmdLineLastOption
+};
+
+static const KCmdLineOptions kde_options[] =
+{
+   { "caption <caption>",       I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
+   { "icon <icon>",             I18N_NOOP("Use 'icon' as the application icon"), 0},
+   { "miniicon <icon>",         I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
+   { "config <filename>",       I18N_NOOP("Use alternative configuration file"), 0},
+   { "dcopserver <server>",     I18N_NOOP("Use the DCOP Server specified by 'server'"), 0},
+   { "nocrashhandler",          I18N_NOOP("Disable crash handler, to get core dumps"), 0},
+   { "waitforwm",          I18N_NOOP("Waits for a WM_NET compatible windowmanager"), 0},
+   { "style <style>", I18N_NOOP("sets the application GUI style"), 0},
+   { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget - see man X for the argument format"), 0},
+   { "smkey <sessionKey>", 0, 0}, // this option is obsolete and exists only to allow smooth upgrades from sessions
+                                  // saved under Qt 3.0.x -- Qt 3.1.x includes the session key now automatically in
+                                  // the session id (Simon)
+   KCmdLineLastOption
+};
+
+
 
 template class Q3AsciiDict<QByteArray>;
 template class Q3PtrList<KCmdLineArgs>;
@@ -125,18 +182,18 @@ bool KCmdLineArgs::ignoreUnknown = false;
 
 void
 KCmdLineArgs::init(int _argc, char **_argv, const char *_appname, const char* programName,
-                   const char *_description, const char *_version, bool noKApp)
+                   const char *_description, const char *_version, StdCmdLineArgs stdargs)
 {
    init(_argc, _argv,
         new KAboutData(_appname, programName, _version, _description),
-        noKApp);
+        stdargs);
 }
 
 void
 KCmdLineArgs::initIgnore(int _argc, char **_argv, const char *_appname )
 {
    init(_argc, _argv,
-        new KAboutData(_appname, _appname, "unknown", "KDE Application", false));
+        new KAboutData(_appname, _appname, "unknown", "KDE Application"),CmdLineArgNone);
    ignoreUnknown = true;
 }
 
@@ -145,12 +202,12 @@ KCmdLineArgs::init(const KAboutData* ab)
 {
    char **_argv = (char **) malloc(sizeof(char *));
    _argv[0] = (char *) ab->appName();
-   init(1,_argv,ab, true);
+   init(1,_argv,ab, CmdLineArgNone);
 }
 
 
 void
-KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKApp)
+KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLineArgs stdargs)
 {
    argc = _argc;
    argv = _argv;
@@ -178,8 +235,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 #ifdef Q_WS_WIN
    win32_slashify(mCwd, PATH_MAX);
 #endif
-   if (!noKApp)
-      KApplication::addCmdLineOptions();
+   addStdCmdLineOptions(stdargs);
 }
 
 QString KCmdLineArgs::cwd()
@@ -191,6 +247,14 @@ const char * KCmdLineArgs::appName()
 {
    if (!argc) return 0;
    return argv[0];
+}
+
+/**
+  * Add Qt and KDE command line options to KCmdLineArgs.
+  */
+void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
+   if (stdargs & KCmdLineArgs::CmdLineArgQt) KCmdLineArgs::addCmdLineOptions(qt_options, "Qt", "qt");
+   if (stdargs & KCmdLineArgs::CmdLineArgKDE)  KCmdLineArgs::addCmdLineOptions(kde_options, "KDE", "kde");
 }
 
 void
@@ -665,8 +729,9 @@ KCmdLineArgs::parseAllArgs()
 int *
 KCmdLineArgs::qt_argc()
 {
+   //Q_ASSERT(argsList)
    if (!argsList)
-      KApplication::addCmdLineOptions(); // Lazy bastards!
+      addStdCmdLineOptions(KCmdLineArgs::StdCmdLineArgs(CmdLineArgKDE|CmdLineArgQt)); // Lazy bastards!
 
    static int qt_argc = -1;
    if( qt_argc != -1 )
@@ -696,8 +761,9 @@ KCmdLineArgs::qt_argc()
 char ***
 KCmdLineArgs::qt_argv()
 {
+   //Q_ASSERT(argsList)
    if (!argsList)
-      KApplication::addCmdLineOptions(); // Lazy bastards!
+      addStdCmdLineOptions(StdCmdLineArgs(CmdLineArgKDE|CmdLineArgQt)); // Lazy bastards!
 
    static char** qt_argv;
    if( qt_argv != NULL )

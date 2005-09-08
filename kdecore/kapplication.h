@@ -169,11 +169,6 @@ public:
                bool allowStyles=true, bool GUIenabled=true);
 #endif
 
-  /**
-    * Add Qt and KDE command line options to KCmdLineArgs.
-    */
-  static void addCmdLineOptions();
-
   virtual ~KApplication();
 
   /**

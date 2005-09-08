@@ -59,7 +59,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    KCmdLineArgs::init(argc, argv, name, "KLauncher", "A service launcher.",
                        "v1.0");
 
-   KLauncher::addCmdLineOptions();
+   //KLauncher::addCmdLineOptions(); already done by kcmdlineargs
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));

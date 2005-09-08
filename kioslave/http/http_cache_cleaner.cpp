@@ -188,7 +188,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KLocale::setMainCatalogue("kdelibs");
    KCmdLineArgs::init( argc, argv, appName,
 		       I18N_NOOP("KDE HTTP cache maintenance tool"),
-		       description, version, true);
+		       description, version, KCmdLineArgs::CmdLineArgNone);
 
    KCmdLineArgs::addCmdLineOptions( options );
 
