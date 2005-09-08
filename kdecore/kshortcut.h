@@ -518,6 +518,7 @@ class KDECORE_EXPORT KKeySequence
  private:
 	class KKeySequencePrivate* d;
 	friend class KKeyNative;
+	friend class KShortcut;
 };
 
 /**
@@ -550,7 +551,7 @@ class KDECORE_EXPORT KShortcut
 	 * The maximum number of key sequences that can be contained in
 	 * a KShortcut.
          */
-	enum { MAX_SEQUENCES = 2 };
+	enum { MAX_SEQUENCES = 4 };
 
 	/**
 	 * Creates a new null shortcut.
@@ -683,7 +684,7 @@ class KDECORE_EXPORT KShortcut
 	 *         there are less than @p i key sequences
 	 * MAX_SEQUENCES
 	 */
-	const KKeySequence& seq( uint i ) const;
+	const KKeySequence seq( uint i ) const;
 
 	/**
 	 * Returns the key code of the first key sequence, or
@@ -791,25 +792,6 @@ class KDECORE_EXPORT KShortcut
 	void remove( const KKeySequence& keySeq );
 
 	/**
-	 * Appends the given key
-	 * @param spec the key to add
-	 * @return true if successful, false otherwise
-	 * @see setSeq()
-	 * @see MAX_SEQUENCES
-	 * @since 3.2
-	*/
-	bool append( const KKey& spec );
-
-	/**
-	 * Appends the sequences from the given shortcut.
-	 * @param cut the shortcut to append
-	 * @return true if successful, false otherwise
-	 * @see MAX_SEQUENCES
-	 * @since 3.2
-	*/
-	bool append( const KShortcut& cut );
-
-	/**
 	 * Converts this shortcut to a key sequence. The first key sequence
 	 * will be taken.
 	 */
@@ -840,6 +822,7 @@ class KDECORE_EXPORT KShortcut
  protected:
 	uint m_nSeqs;
 	KKeySequence m_rgseq[MAX_SEQUENCES];
+	QKeySequence m_seq;
 
  private:
 	class KShortcutPrivate* d;
