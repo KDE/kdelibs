@@ -311,77 +311,8 @@ class KDECORE_EXPORT KAccel : public Q3Accel
 	 */
 	void keycodeChanged();
 
-#ifndef KDE_NO_COMPAT
- public:
-	// Source compatibility to KDE 2.x
-	/**
-	 * @deprecated use insert
-	 */
-	bool insertItem( const QString& sLabel, const QString& sAction,
-	                 const char* psKey,
-	                 int nIDMenu = 0, Q3PopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
-	/**
-	 * @deprecated use insert
-	 */
-	bool insertItem( const QString& sLabel, const QString& sAction,
-	                 int key,
-	                 int nIDMenu = 0, Q3PopupMenu* pMenu = 0, bool bConfigurable = true ) KDE_DEPRECATED;
-	/**
-	 * @deprecated use insert
-	 */
-	bool insertStdItem( KStdAccel::StdAccel id, const QString& descr = QString::null ) KDE_DEPRECATED;
-	/**
-	 * @deprecated use insert
-	 */
-	bool connectItem( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot, bool bActivate = true ) KDE_DEPRECATED;
-	/**
-	 * @deprecated use insert( accel, pObjSlot, psMethodSlot );
-	 *
-	 */
-	KDE_DEPRECATED bool connectItem( KStdAccel::StdAccel accel, const QObject* pObjSlot, const char* psMethodSlot )
-		{ return insert( accel, pObjSlot, psMethodSlot ); }
-	/**
-	 * @deprecated use remove
-	 */
-	bool removeItem( const QString& sAction ) KDE_DEPRECATED;
-	/**
-	 * @deprecated
-	 */
-	bool setItemEnabled( const QString& sAction, bool bEnable ) KDE_DEPRECATED;
-	/**
-	 * @deprecated see KDE3PORTING.html
-	 */
-	void changeMenuAccel( Q3PopupMenu *menu, int id, const QString& action ) KDE_DEPRECATED;
-	/**
-	 * @deprecated see KDE3PORTING.html
-	 */
-	void changeMenuAccel( Q3PopupMenu *menu, int id, KStdAccel::StdAccel accel ) KDE_DEPRECATED;
-	/**
-	 * @deprecated
-	 */
-	static int stringToKey( const QString& ) KDE_DEPRECATED;
-
-	/**
-	 * @deprecated  Use shortcut().
-	 *
-	 * Retrieve the key code of the accelerator item with the action name
-	 * @p action, or zero if either the action name cannot be
-	 * found or the current key is set to no key.
-	 */
-	int currentKey( const QString& action ) const KDE_DEPRECATED;
-
-	/**
-	 * @deprecated  Use actions().actionPtr().
-	 *
-	 * Return the name of the accelerator item with the keycode @p key,
-	 * or QString::null if the item cannot be found.
-	 */
-	QString findKey( int key ) const KDE_DEPRECATED;
-#endif // !KDE_NO_COMPAT
-
  protected:
-        /** \internal */
-	virtual void virtual_hook( int id, void* data );
+
  private:
 	class KAccelPrivate* d;
 	friend class KAccelPrivate;

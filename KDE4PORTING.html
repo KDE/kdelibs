@@ -47,6 +47,9 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
   klargefile.h => kde_file.h
 </UL>
 
+<H4>KAccel</H4>
+<li>Removed methods that were marked deprecated from KDE2</li>
+
 <H4>KApplication</H4>
 <ul>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
@@ -85,13 +88,13 @@ KMacroExpander now takes a QHash and not a QMap
 <p>QString filename() const -> QString fileName() const</p>
 
 <H4>KKey</H4>
-<p>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</p>
+<li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
 
 <H4>KKeySequence</H4>
-<p>Is being phased out.  It was originally created to hold multiple key sequence before
+<li>Is being phased out.  It was originally created to hold multiple key sequence before
    QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.
    A K3KeySequence convenience class is also available.
-</p>
+</li>
 
 <H4>KKeyNative</H4>
 <p>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -> modXWin()</p>
