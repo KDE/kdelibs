@@ -131,19 +131,16 @@ dcop
 libltdl
 kdefx
 kdecore
-kunittest
-kdeui
 mimetypes
 """
+# kunittest kdeui
 
+dirs=[] # the dirs to process are appended to this var in the loop below
 env['_BUILDDIR_']='build'
 for dir in subdirs.split():
 	env.BuildDir( env.join('#build', dir), dir, duplicate=0)
-	# TODO: one dir at a time but later the following line will be uncommented
-	#env.SConscript( env.join('dir', 'SConscript') )
-
-env.subdirs('build/dcop/ build/mimetypes build/libltdl build/kdefx')
-#env.SConscript( [env.join('build', 'dcop', 'SConscript')] )
+	dirs.append( env.join('#build', dir) )
+env.subdirs(dirs)
 
 ###################################################################
 # CONVENIENCE FUNCTIONS TO EMULATE 'make dist' and 'make distclean'

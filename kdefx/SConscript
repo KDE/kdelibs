@@ -6,7 +6,8 @@ obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdefx'
 obj.source   = 'kpixmap.cpp kpixmapsplitter.cpp kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp kcpuinfo.cpp'
-obj.uselib   = 'QTCORE QT XRENDER KDE4'
+obj.uselib   = 'QTCORE QT QT3SUPPORT XRENDER KDE4'
+#obj.cxxflags = '-DHAVE_CONFIG_H -fno-exceptions -fno-check-new -fno-common -fvisibility=hidden -fvisibility-inlines-hidden -DQT_CLEAN_NAMESPACE -DQT_NO_CAST_TO_ASCII -DQT_NO_STL -DQT_NO_COMPAT -DQT_NO_TRANSLATION -DQT3_SUPPORT'
 obj.execute()
 
 
