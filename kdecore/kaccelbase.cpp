@@ -60,20 +60,10 @@ KAccelBase::~KAccelBase()
 	kdDebug(125) << "~KAccelBase(): this = " << this << endl;
 }
 
-uint KAccelBase::actionCount() const { return m_rgActions.count(); }
-KAccelActions& KAccelBase::actions() { return m_rgActions; }
-bool KAccelBase::isEnabled() const { return m_bEnabled; }
 // see KGlobalAccel::blockShortcuts() stuff - it's to temporarily block
 // all global shortcuts, so that the key grabs are released, but from the app's
 // point of view the KGlobalAccel is still enabled, so KGlobalAccel needs
 // to disable key grabbing even if enabled
-bool KAccelBase::isEnabledInternal() const { return isEnabled(); }
-
-KAccelAction* KAccelBase::actionPtr( const QString& sAction )
-	{ return m_rgActions.actionPtr( sAction ); }
-
-const KAccelAction* KAccelBase::actionPtr( const QString& sAction ) const
-	{ return m_rgActions.actionPtr( sAction ); }
 
 KAccelAction* KAccelBase::actionPtr( const KKeyServer::Key& key )
 {
@@ -89,12 +79,6 @@ KAccelAction* KAccelBase::actionPtr( const KKey& key )
 	k2.init( key, !m_bNativeKeys );
 	return actionPtr( k2 );
 }
-
-void KAccelBase::setConfigGroup( const QString& sConfigGroup )
-	{ m_sConfigGroup = sConfigGroup; }
-
-void KAccelBase::setConfigGlobal( bool global )
-	{ m_bConfigIsGlobal = global; }
 
 bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 {

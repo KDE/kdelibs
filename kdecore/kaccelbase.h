@@ -127,18 +127,25 @@ class KDECORE_EXPORT KAccelBase
 	KAccelBase( int fInitCode );
 	virtual ~KAccelBase();
 
-	uint actionCount() const;
-	KAccelActions& actions();
-	bool isEnabled() const;
+	uint actionCount() const { return m_rgActions.count(); }
+	KAccelActions& actions() { return m_rgActions; }
+	bool isEnabled() const { return m_bEnabled; }
 
-	KAccelAction* actionPtr( const QString& sAction );
-	const KAccelAction* actionPtr( const QString& sAction ) const;
+	KAccelAction* actionPtr( const QString& sAction )
+		{ return m_rgActions.actionPtr( sAction ); }
+	const KAccelAction* actionPtr( const QString& sAction ) const
+		{ return m_rgActions.actionPtr( sAction ); }
+
 	KAccelAction* actionPtr( const KKey& key );
 	KAccelAction* actionPtr( const KKeyServer::Key& key );
 
 	const QString& configGroup() const { return m_sConfigGroup; }
-	void setConfigGroup( const QString& group );
-	void setConfigGlobal( bool global );
+
+	void setConfigGroup( const QString& group )
+		{ m_sConfigGroup = group; }
+	void setConfigGlobal( bool global )
+		{ m_bConfigIsGlobal = global; }
+
 	virtual void setEnabled( bool bEnabled ) = 0;
 	bool getAutoUpdate() { return m_bAutoUpdate; }
 	// return value of AutoUpdate flag before this call.
@@ -198,7 +205,7 @@ class KDECORE_EXPORT KAccelBase
 	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
 
  protected:
-        virtual bool isEnabledInternal() const;
+	virtual bool isEnabledInternal() const { return isEnabled(); }
 	struct ActionInfo
 	{
 		KAccelAction* pAction;
