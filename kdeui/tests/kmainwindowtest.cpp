@@ -2,6 +2,7 @@
 #include <qlabel.h>
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kstatusbar.h>
 #include <kmenubar.h>
 
@@ -24,7 +25,8 @@ void MainWindow::showMessage()
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, "kmainwindowtest" );
+    KCmdLineArgs::init( argc, argv, "kmainwindowtest", "KMainWindowTest", "kmainwindow test app", "1.0" );
+    KApplication app;
 
     MainWindow mw;
 

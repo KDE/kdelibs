@@ -2,6 +2,7 @@
 #include "kmainwindowrestoretest.h"
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 
 #include <qlabel.h>
 
@@ -14,7 +15,8 @@
 
 int main( int argc, char * argv[] ) {
 
-  KApplication app( argc, argv, "kmainwindowrestoretest" );
+  KCmdLineArgs::init( argc, argv, "kmainwindowrestoretest", "kmainwindowrestoretest", "kmainwindow test app", "1.0" );
+  KApplication app;
 
   if ( kapp->isRestored() ) {
     kRestoreMainWindows< MainWin1, MainWin2, MainWin3 >();

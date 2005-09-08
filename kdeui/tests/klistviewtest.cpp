@@ -1,12 +1,13 @@
 #include <klistview.h>
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kdialogbase.h>
 #include <q3vbox.h>
 
-
 int main( int argc, char **argv )
 {
-	KApplication app( argc, argv, "klistviewtest" );
+	KCmdLineArgs::init( argc, argv, "klistviewtest", "KListViewTest", "klistview test app", "1.0" );
+	KApplication app;
 	KDialogBase dialog;
 	KListView *view = new KListView( dialog.makeVBoxMainWidget() );
 	view->setSelectionModeExt( KListView::FileManager );

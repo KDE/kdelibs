@@ -86,7 +86,8 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   lbl = new QLabel("&History Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_hc = new KHistoryCombo( true, hbox, "HistoryCombo" );
+  m_hc = new KHistoryCombo( true, hbox );
+  m_hc->setObjectName( "HistoryCombo" );
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
   m_hc->setInsertionPolicy( QComboBox::NoInsert );
@@ -102,7 +103,8 @@ KComboBoxTest::KComboBoxTest(QWidget* widget, const char* name )
   lbl = new QLabel( "&Konq's Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_konqc = new KComboBox( true, hbox, "KonqyCombo" );
+  m_konqc = new KComboBox( true, hbox );
+  m_konqc->setObjectName( "KonqyCombo" );
   lbl->setBuddy (m_konqc);
   m_konqc->setMaxCount( 10 );
   QObject::connect (m_konqc, SIGNAL(activated(int)), SLOT(slotActivated(int)));

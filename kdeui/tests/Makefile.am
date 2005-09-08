@@ -25,7 +25,6 @@ AM_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \
 	kdatepicktest kdatewidgettest kdialogbasetest \
-	kdockwidgetdemo kdockwidgettest \
 	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
 	kledtest klineedittest \
@@ -39,7 +38,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	ktextedittest kmainwindowtest kmainwindowrestoretest \
 	kactiontest kdatetimewidgettest ktimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
-	kdocktest qxembedtest ksqueezedtextlabeltest \
+	qxembedtest ksqueezedtextlabeltest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
 	khboxtest
 
@@ -83,8 +82,6 @@ kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
 itemcontainertest_SOURCES = itemcontainertest.cpp
-kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
-kdockwidgettest_SOURCES = kdockwidgettest.cpp
 kxmlguitest_SOURCES = kxmlguitest.cpp
 kaccelgentest_SOURCES = kaccelgentest.cpp
 ksystemtraytest_SOURCES = ksystemtraytest.cpp
@@ -97,7 +94,6 @@ kspelltest_SOURCES = kspelltest.cpp
 kinputdialogtest_SOURCES = kinputdialogtest.cpp
 ktabwidgettest_SOURCES = ktabwidgettest.cpp
 kwordwraptest_SOURCES = kwordwraptest.cpp
-kdocktest_SOURCES=kdocktest.cpp
 qxembedtest_SOURCES=qxembedtest.cpp
 ksqueezedtextlabeltest_SOURCES = ksqueezedtextlabeltest.cpp
 kjanuswidgettest_SOURCES = kjanuswidgettest.cpp

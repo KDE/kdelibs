@@ -18,13 +18,15 @@
 */
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <ktextedit.h>
 
 #include <qfile.h>
 
 int main( int argc, char **argv )
 {
-    KApplication app( argc, argv, __FILE__ );
+    KCmdLineArgs::init( argc, argv, "ktextedittest", "KTextEditTest", "ktextedit test app", "1.0" );
+    KApplication app;
     KTextEdit *edit = new KTextEdit();
 
     QFile file( "ktextedittest.cpp" );
