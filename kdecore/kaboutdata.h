@@ -36,18 +36,25 @@ class KAboutDataPrivate;
  * link to a home page. This class is intended for use in the
  * KAboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
+ * Creating a KAboutPerson object by yourself is relatively useless,
+ * but the KAboutData methods KAboutData::authors() and KAboutData::credits()
+ * return lists of KAboutPerson data objects which you can examine.
  *
- * Example Usage within a main():
+ * Example usage within a main(), retrieving the list of people involved
+ * with a program and re-using data from one of them:
  *
+ * @code
  * KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
  *                   I18N_NOOP("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
  *                   I18N_NOOP("Copyright (c) 2003 Developer"));
  *
- *   about.addAuthor("Joe Developer", I18N_NOOP("developer"), "joe@host.com", 0);
- *   about.addCredit("Joe User", I18N_NOOP("A lot of bug reports"),
- *                   "joe.user@host.org", 0);
- *   KCmdLineArgs::init(argc, argv, &about);
+ * about.addAuthor("Joe Developer", I18N_NOOP("developer"), "joe@host.com", 0);
+ * QList<KAboutPerson> people = about.authors();
+ * about.addCredit(people[0].name(), people[0].task());
+ * @endcode
+ *
+ * @bc KDE4
  */
 class KDECORE_EXPORT KAboutPerson
 {
@@ -58,8 +65,8 @@ public:
      * @param name The name of the person.
      *
      * @param task The task of this person. This string should be
-     *              marked for translation, e.g.
-     *              I18N_NOOP("Task description....")
+     *              marked for translation, e.g. use
+     *              I18N_NOOP() on it.
      *
      * @param emailAddress The email address of the person.
      *
