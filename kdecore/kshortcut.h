@@ -53,10 +53,10 @@ class KDECORE_EXPORT KKey
 	 * by ORing them.
 	 */
 	enum ModFlag {
-		SHIFT = 0x01,
-		CTRL = 0x02,
-		ALT = 0x04,
-		WIN = 0x08
+		SHIFT = Qt::SHIFT,
+		CTRL = Qt::CTRL,
+		ALT = Qt::ALT,
+		WIN = Qt::META
 	};
 
 	/**
