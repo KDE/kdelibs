@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KSHORTCUTMENU_H
-#define __KSHORTCUTMENU_H
+#ifndef __K3SHORTCUTMENU_H
+#define __K3SHORTCUTMENU_H
 
 #include <qmap.h>
 #include <q3popupmenu.h>
@@ -30,11 +30,11 @@ class KAccelActions;
 /**
  * @internal
  */
-class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
+class KDECORE_EXPORT K3ShortcutMenu : public Q3PopupMenu
 {
 	Q_OBJECT
  public:
-	KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq );
+	K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq );
 
 	bool insertAction( uint iAction, KKeySequence seq );
 
@@ -55,4 +55,4 @@ class KDECORE_EXPORT KShortcutMenu : public Q3PopupMenu
 	IndexToKKeySequence m_seqs;
 };
 
-#endif // __KSHORTCUTMENU_H
+#endif // __K3ShortcutMenu_H

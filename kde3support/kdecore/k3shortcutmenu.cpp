@@ -26,10 +26,10 @@
 #include "kaccelaction.h"
 #include <kdebug.h>
 #include <kglobalsettings.h>
-#include "kshortcutmenu.h"
+#include "k3shortcutmenu.h"
 //#include <kkeynative.h>
 
-KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
+K3ShortcutMenu::K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
 :	Q3PopupMenu( pParent ),
 	m_pActions( pActions ),
 	m_seq( seq )
@@ -37,7 +37,7 @@ KShortcutMenu::KShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySeq
 	kdDebug() << seq.toStringInternal() << endl;
 }
 
-bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
+bool K3ShortcutMenu::insertAction( uint iAction, KKeySequence seq )
 {
 	KAccelAction* pAction = m_pActions->actionPtr( iAction );
 	
@@ -50,7 +50,7 @@ bool KShortcutMenu::insertAction( uint iAction, KKeySequence seq )
 }
 
 
-void KShortcutMenu::updateShortcuts()
+void K3ShortcutMenu::updateShortcuts()
 {
 	setTitle( m_seq.toString() + ",..." );
 	
@@ -71,7 +71,7 @@ void KShortcutMenu::updateShortcuts()
 	}
 }
 
-void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
+void K3ShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 {
 	kdDebug() << "keypress; " << pEvent->key() << endl;
 	KKey key( pEvent );
@@ -110,7 +110,7 @@ void KShortcutMenu::keyPressEvent( QKeyEvent* pEvent )
 	}
 }
 
-int KShortcutMenu::searchForKey( KKey key )
+int K3ShortcutMenu::searchForKey( KKey key )
 {
 	int iItemFound = -1; // -1 indicates no match
 	uint iKey = m_seq.count();
@@ -131,7 +131,7 @@ int KShortcutMenu::searchForKey( KKey key )
 	return iItemFound;
 }
 
-void KShortcutMenu::keepItemsMatching( KKey key )
+void K3ShortcutMenu::keepItemsMatching( KKey key )
 {
 	kdDebug(125) << "MyAccel::keepItemsMatching( " << key.toStringInternal() << " )" << endl;
 	
@@ -150,5 +150,3 @@ void KShortcutMenu::keepItemsMatching( KKey key )
 	
 	updateShortcuts();
 }
-
-#include "kshortcutmenu.moc"
