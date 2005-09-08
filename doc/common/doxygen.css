@@ -407,3 +407,7 @@ font-size: large;
 color: #418ADE;
 }
 
+div.bic {
+border: 2px solid #CE0000;
+background: #CE999A;
+}
