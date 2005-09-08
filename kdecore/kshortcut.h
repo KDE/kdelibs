@@ -23,6 +23,7 @@
 #include "kdelibs_export.h"
 
 #include <qnamespace.h>
+#include <qkeysequence.h>
 
 class QKeyEvent;
 class QKeySequence;
@@ -404,7 +405,7 @@ class KDECORE_EXPORT KKeySequence
 	 *         than i keys
 	 * @see MAX_KEYS
 	 */
-	const KKey& key( uint i ) const;
+	const KKey key( uint i ) const;
 
 	/**
 	 * @internal
@@ -509,9 +510,10 @@ class KDECORE_EXPORT KKeySequence
 	static KKeySequence& null();
 
  protected:
-	uchar m_nKeys;
+	//uchar m_nKeys;
 	uchar m_bTriggerOnRelease;
-	KKey m_rgkey[MAX_KEYS];
+	//KKey m_rgkey[MAX_KEYS];
+	QKeySequence m_seq;
 
  private:
 	class KKeySequencePrivate* d;

@@ -85,6 +85,12 @@ KMacroExpander now takes a QHash and not a QMap
 <H4>KKey</H4>
 <p>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</p>
 
+<H4>KKeySequence</H4>
+<p>Is being phased out.  It was originally created to hold multiple key sequence before
+   QKeySequence could support it (Qt 3.0). You should use QKeySequence instead.  
+   A K3KeySequence convenience class is also available.
+</p>
+
 <H4>KKeyNative</H4>
 <p>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -> modXWin()</p>
 
