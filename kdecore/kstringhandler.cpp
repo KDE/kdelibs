@@ -552,23 +552,6 @@ QString KStringHandler::obscure( const QString &str )
   return result;
 }
 
-QString KStringHandler::randomString( int length )
-{
-   if (length <=0 ) return QString::null;
-
-   QString str; str.resize( length );
-   int i = 0;
-   while (length--)
-   {
-      int r=random() % 62;
-      r+=48;
-      if (r>57) r+=7;
-      if (r>90) r+=6;
-      str[i++] =  char(r);
-      // so what if I work backwards?
-   }
-   return str;
-}
 
 bool KStringHandler::isUtf8( const char *buf )
 {

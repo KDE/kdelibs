@@ -37,7 +37,7 @@
 #include <qtextstream.h>
 
 #include <kde_file.h>
-#include <kmath.h>
+#include <krandom.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <ktempfile.h>
@@ -336,7 +336,7 @@ KLockFile::LockResult KLockFile::lock(int options)
      
      struct timeval tv;
      tv.tv_sec = 0;
-     tv.tv_usec = n*((KMath::random() % 200)+100);
+     tv.tv_usec = n*((KRandom::random() % 200)+100);
      if (n < 2000)
         n = n * 2;
      

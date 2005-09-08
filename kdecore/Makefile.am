@@ -49,7 +49,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
 	netwm_def.h kpixmapprovider.h kstaticdeleter.h \
-	kprocio.h kasyncio.h \
+	kprocio.h kasyncio.h krandom.h\
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
@@ -93,7 +93,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
-	netsupp.cpp kprocio.cpp \
+	netsupp.cpp kprocio.cpp krandom.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
 	kcodecs.cpp ksocks.cpp fakes.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \

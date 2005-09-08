@@ -30,13 +30,6 @@
 class KDECORE_EXPORT KMath
 {
 public:
-
-    /**
-     * Generates a uniform random number.
-     * @return A truly unpredictable number in the range [0, RAND_MAX)
-     */
-    static int random();
-
 private:
 
     class KMathPrivate;

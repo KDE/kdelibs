@@ -24,7 +24,7 @@
 #include <qdatastream.h>
 #include <q3ptrstack.h>
 
-#include <kmath.h>
+#include <krandom.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -82,7 +82,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   if( canAvoidStartupEvent( message, appname, present ))
       return -1; // done "successfully" - there will be no event presentation
 
-  int uniqueId = kMax( 1, KMath::random() ); // must not be 0 -- means failure!
+  int uniqueId = kMax( 1, KRandom::random() ); // must not be 0 -- means failure!
 
   // knotify daemon needs toplevel window
   QWidget* widget = QWidget::find( (WId)winId );

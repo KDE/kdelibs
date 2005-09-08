@@ -21,7 +21,7 @@
 #include <q3ptrlist.h>
 
 #include "krandomsequence.h"
-#include "kmath.h"
+#include "krandom.h"
 #include <string.h>
 
 const int    KRandomSequence::m_nShuffleTableSize = 32;
@@ -79,7 +79,7 @@ void KRandomSequence::setSeed( long lngSeed1 )
   }
   else if (lngSeed1 == 0)
   {
-    m_lngSeed1 = -((KMath::random() & ~1)+1);
+    m_lngSeed1 = -((KRandom::random() & ~1)+1);
   }
   else
   {

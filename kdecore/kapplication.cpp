@@ -80,6 +80,7 @@
 #include "kstandarddirs.h"
 #include "kstdaccel.h"
 #include "kstringhandler.h"
+#include "krandom.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -2139,12 +2140,12 @@ void KApplication::read_app_startup_id()
 
 int KApplication::random()
 {
-   return KMath::random(); 
+   return KRandom::random(); 
 }
 
 QString KApplication::randomString(int length)
 {
-   return KStringHandler::randomString(length);
+   return KRandom::randomString(length);
 }
 
 
