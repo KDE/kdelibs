@@ -29,7 +29,7 @@
 #include "k3shortcutmenu.h"
 //#include <kkeynative.h>
 
-K3ShortcutMenu::K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq )
+K3ShortcutMenu::K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, K3KeySequence seq )
 :	Q3PopupMenu( pParent ),
 	m_pActions( pActions ),
 	m_seq( seq )
@@ -37,7 +37,7 @@ K3ShortcutMenu::K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeyS
 	kdDebug() << seq.toStringInternal() << endl;
 }
 
-bool K3ShortcutMenu::insertAction( uint iAction, KKeySequence seq )
+bool K3ShortcutMenu::insertAction( uint iAction, K3KeySequence seq )
 {
 	KAccelAction* pAction = m_pActions->actionPtr( iAction );
 	
@@ -59,7 +59,7 @@ void K3ShortcutMenu::updateShortcuts()
 		if( iAction >= 0 ) {
 			KAccelAction* pAction = m_pActions->actionPtr( iAction );
 			if( pAction ) {
-				KKeySequence seq = m_seqs[iItem];
+				K3KeySequence seq = m_seqs[iItem];
 				QString sSeq = seq.key(m_seq.count()).toString();
 				for( uint iKey = m_seq.count() + 1; iKey < seq.count(); iKey++ )
 					sSeq += QString(",") + seq.key(iKey).toString();

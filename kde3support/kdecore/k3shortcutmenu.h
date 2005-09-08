@@ -23,7 +23,7 @@
 #include <qmap.h>
 #include <q3popupmenu.h>
 
-#include "kshortcut.h"
+#include "k3keysequence.h"
 
 class KAccelActions;
 
@@ -34,9 +34,9 @@ class KDECORE_EXPORT K3ShortcutMenu : public Q3PopupMenu
 {
 	Q_OBJECT
  public:
-	K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, KKeySequence seq );
+	K3ShortcutMenu( QWidget* pParent, KAccelActions* pActions, K3KeySequence seq );
 
-	bool insertAction( uint iAction, KKeySequence seq );
+	bool insertAction( uint iAction, K3KeySequence seq );
 
 	void updateShortcuts();
  
@@ -48,11 +48,11 @@ class KDECORE_EXPORT K3ShortcutMenu : public Q3PopupMenu
 	void keepItemsMatching( KKey key );
  
  private:
-	typedef QMap<uint, KKeySequence> IndexToKKeySequence;
+	typedef QMap<uint, K3KeySequence> IndexToK3KeySequence;
 	
 	KAccelActions* m_pActions;
-	KKeySequence m_seq;
-	IndexToKKeySequence m_seqs;
+	K3KeySequence m_seq;
+	IndexToK3KeySequence m_seqs;
 };
 
 #endif // __K3ShortcutMenu_H
