@@ -109,7 +109,8 @@ env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libr
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 # look at dcop/SConscript for how to build a .h from a python function cleanly
 if not os.path.exists('build/config.h'):
-	os.mkdir('build')
+	if not os.path.exists('build'):
+		os.mkdir('build')
 	dest=open('build/config.h', 'w')
 	dest.close()
 
