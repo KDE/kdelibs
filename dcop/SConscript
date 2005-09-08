@@ -3,9 +3,11 @@
 import os
 Import('env')
 
-env.subdirs('KDE-ICE dcopidl dcopidl2cpp dcopidlng client') # tests ?
+# TODO tests directory is incomplete (ita)
 
-# libDCOP.so (description ?)
+env.subdirs('KDE-ICE dcopidl dcopidl2cpp dcopidlng client tests')
+
+# libDCOP.so - library for ?
 obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libDCOP'
@@ -14,15 +16,15 @@ obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
 obj.libs     = env.join('KDE-ICE', 'libkICE.a')
 obj.execute()
 
-# dcopserver
-#obj          = env.qt4obj('program', env) # TODO kdeinit support
-#obj.target   = 'dcopserver'
-#obj.source   = 'dcopserver.cpp dcopsignals.cpp'
-#obj.libs     = [env.join('.', 'libDCOP.la')]
-#obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
-#obj.execute()
+# dcopserver - library for ?
+obj = env.qt4obj('shlib', env) # TODO kdeinit support ?
+obj.target   = 'dcopserver'
+obj.source   = 'dcopserver.cpp dcopsignals.cpp'
+obj.libs     = [env.join('.', 'libDCOP.la')]
+obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.execute()
 
-# generate dcop-path.h, depending on PREFIX (rebuild if PREFIX changes)
+# generate dcop-path.h, depends on PREFIX (rebuild if the variable PREFIX changes)
 def build_dcopfile(target = None, source = None, env = None):
 	dest = open(str(target[0]), 'w')
 	dest.write('#define DCOP_PATH "%s"\n' % env.join(env['PREFIX'], 'bin'))
@@ -30,7 +32,7 @@ def build_dcopfile(target = None, source = None, env = None):
 act=env.Action(build_dcopfile, varlist=['PREFIX'])
 env.Command('dcop-path.h', '', act) # no source needed
 
-# dcop_shutdown (description ?)
+# dcop_shutdown - program for ?
 obj=env.genobj('program', env)
 obj.target='dcopserver_shutdown'
 obj.source='dcopserver_shutdown.c'
