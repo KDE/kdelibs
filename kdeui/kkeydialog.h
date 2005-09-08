@@ -372,26 +372,6 @@ public:
 	 **/
 	static int configure( KGlobalAccel* keys, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
 
-	/**
-	 * @deprecated Obsolete.
-	 * Please use KKeyDialog::configure instead
-	 */
-	static KDE_DEPRECATED int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
-		{ return configure( keys, parent, save_settings ); }
-	/**
-	 * @deprecated Obsolete.
-	 * Please use KKeyDialog::configure instead
-	 */
-	static KDE_DEPRECATED int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
-		{ return configure( keys, parent, save_settings ); }
-	/**
-	 * @deprecated Obsolete.
-	 * Please use KKeyDialog::configure instead
-	 */
-	static KDE_DEPRECATED int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
-		bool save_settings = true, QWidget* parent = 0 )
-		{ return configure( coll, parent, save_settings ); }
-
 private:
 	KKeyDialog( KKeyChooser::ActionType, bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
 
