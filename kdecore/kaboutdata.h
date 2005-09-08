@@ -79,12 +79,13 @@ public:
       mTask = task;
       mEmailAddress = emailAddress;
       mWebAddress = webAddress;
+      d = 0;
     }
     /**
      * @internal
      * Don't use. Required by QValueList
      */
-    KAboutPerson() {}
+    KAboutPerson() : mName(0), mTask(0), mEmailAddress(0), mWebAddress(0), d(0) {}
 
     /**
      * The person's name
