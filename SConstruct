@@ -16,6 +16,7 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 
 # How to do ?
 
+# cd kdelibs
 # tar xjvf bksys/scons-mini.tar.bz2
 # ./scons
 
@@ -81,7 +82,7 @@ env['LIBPATH_KDE4']        = env['LIBPATH_QT']
 
 ## not very portable but that's the best i have at the moment (ITA)
 includes=['.','dcop','kio','kio/kio','kio/kfile','kdeui','kdecore','libltdl','kdefx']
-env['INCLUDES_KDE4']=[]
+env['INCLUDES_KDE4']=['#build']
 for dir in includes:
 	env['INCLUDES_KDE4'].append('#'+dir)
 	env['INCLUDES_KDE4'].append('#build/'+dir)
@@ -102,6 +103,7 @@ env['KDEMIME']='/usr/share/mimelnk'
 env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
+# look at dcop/SConscript for how to build a .h from a python function cleanly
 import os
 if not os.path.exists('build/config.h'):
 	os.mkdir('build')
@@ -138,9 +140,6 @@ for dir in subdirs.split():
 	#env.SConscript( env.join('dir', 'SConscript') )
 
 env.subdirs('build/dcop/ build/mimetypes')
-#env['KDEMIME'] = '/tmp/mime'
-#env.subdirs('build/mimetypes')
-
 #env.SConscript( [env.join('build', 'dcop', 'SConscript')] )
 
 ###################################################################

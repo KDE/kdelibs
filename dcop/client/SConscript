@@ -8,7 +8,7 @@ for prog in progs1:
 	obj.target    = prog
 	obj.source    = prog+'.cpp'
 	obj.libs      = '../libDCOP.la'
-	obj.uselib    = 'QT QT3SUPPORT KDELIBS'
+	obj.uselib    = 'QT QT3SUPPORT KDE4'
 	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
 	#obj.linkflags = env['KDE_RPATH']
 	#obj.includes  = env['KDELIBS_INCLUDES']
@@ -19,7 +19,7 @@ for prog in progs2:
 	obj=env.genobj('program', env)
 	obj.target    = prog
 	obj.source    = prog+'.c'
-	obj.uselib    = 'KDELIBS'
+	obj.uselib    = 'KDE4'
 	#obj.includes  = env['KDELIBS_INCLUDES']
 	obj.execute()
 
