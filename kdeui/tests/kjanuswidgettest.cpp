@@ -1,3 +1,4 @@
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kjanuswidget.h>
 
@@ -7,7 +8,8 @@
 
 int main(int argc, char** argv)
 {
-  KApplication app(argc, argv, "JanusWidgetTest");
+  KCmdLineArgs::init( argc, argv, "januswidgettest", "JanusWidgetTest", "description", "version" );
+  KApplication app;
   // -----
   KJanusWidget* janus = new KJanusWidget( 0, 0, KJanusWidget::IconList );
 

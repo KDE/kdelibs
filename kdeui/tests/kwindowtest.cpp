@@ -19,10 +19,11 @@
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
-#include <q3multilineedit.h>
 #include "kwindowtest.h"
 
 #include <kglobal.h>
+
+#include <qtextedit.h>
 
 
 //#include <dclock.h>
@@ -210,7 +211,7 @@ setAutoSaveSettings();
     tb1->setTitle ("Toolbar 2");
 
     // Set main widget. In this example it is Qt's multiline editor.
-    widget = new Q3MultiLineEdit (this);
+    widget = new QTextEdit (this);
 
     // Setup is now complete
 
@@ -504,12 +505,13 @@ void testWindow::slotMakeItem3Current()
 int main( int argc, char *argv[] )
 {
     int i;
-    KCmdLineArgs::init(argc, argv, "KWindowTest", "description", "version");
+    KCmdLineArgs::init(argc, argv, "kwindowtest", "KWindowTest", "description", "version");
 
-    KApplication *myApp = new KApplication();
+    KApplication myApp;
     testWindow *test = new testWindow;
 
-    myApp->setMainWidget(test);
+    myApp.setMainWidget(test);
+    myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
 
     i = QMessageBox::information(0, "Select", "Select type of mainwidget",
                              "Fixed", "Y-fixed", "Resizable");
@@ -520,7 +522,8 @@ int main( int argc, char *argv[] )
 
     test->show();
     test->resize(400, 500);
-    int ret = myApp->exec();
+    myApp.setQuitOnLastWindowClosed( true );
+    int ret = myApp.exec();
 
     //delete test;
     return ret;

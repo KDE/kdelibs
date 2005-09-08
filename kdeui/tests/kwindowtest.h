@@ -9,7 +9,7 @@
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 
-class Q3MultiLineEdit;
+class QTextEdit;
 class KToolBarRadioGroup;
 class KHelpMenu;
 
@@ -62,7 +62,7 @@ protected:
     bool exitB;
     bool greenF;
     bool ena;
-    Q3MultiLineEdit *widget;
+    QTextEdit *widget;
     QTimer *timer;
     Q3ProgressBar *pr;
     KToolBarRadioGroup *rg;
