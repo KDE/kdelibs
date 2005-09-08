@@ -517,6 +517,12 @@ def generate(env):
 		env.Alias('install', install_list)
 		return install_list
 
+	def bksys_insttype(lenv, type, subdir, files, perms=None):
+		if not lenv.has_key(type):
+			lenv.pprint('RED', 'unknown file type to install '+type)
+			lenv.Exit(1)
+		lenv.bksys_install( lenv.join(lenv[type],subdir), files, destfile=None, perms=perms)
+
 	def build_la_file(target, source, env):
 		""" Writes a .la file, used by libtool """
 		dest=open(target[0].path, 'w')
@@ -665,6 +671,7 @@ def generate(env):
 
 	#valid_targets = "program shlib kioslave staticlib".split()
         SConsEnvironment.bksys_install = bksys_install
+	SConsEnvironment.bksys_insttype = bksys_insttype
 	SConsEnvironment.bksys_shlib   = bksys_shlib
 	SConsEnvironment.subdirs       = subdirs
 	SConsEnvironment.link_local_shlib = link_local_shlib

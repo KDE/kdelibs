@@ -92,6 +92,12 @@ env['RPATH_KDE4']= [
 ]
 
 #######################################
+## install paths
+env['KDEBIN']='/usr/bin'
+env['KDEDATA']='/usr/share'
+env['KDEMIME']='/usr/share/mimelnk'
+
+#######################################
 ## other stuff
 env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
@@ -131,7 +137,7 @@ for dir in subdirs.split():
 	# TODO: one dir at a time but later the following line will be uncommented
 	#env.SConscript( env.join('dir', 'SConscript') )
 
-env.subdirs('build/dcop/')
+env.subdirs('build/dcop/ build/mimetypes')
 #env['KDEMIME'] = '/tmp/mime'
 #env.subdirs('build/mimetypes')
 

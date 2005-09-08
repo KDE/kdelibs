@@ -1,0 +1,19 @@
+#! /usr/bin/env python
+
+Import("env")
+
+env.bksys_insttype('KDEBIN', subdir='', files='dcopidl', perms=0755)
+
+pmfiles="Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm"
+env.bksys_insttype('KDEDATA', subdir='dcopidl', files=pmfiles, perms=0755)
+
+"""
+bin_SCRIPTS = dcopidl
+
+dcopidllib_DATA = Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm
+dcopidllib_SCRIPTS = kalyptus
+dcopidllibdir = $(kde_datadir)/dcopidl
+
+check-local:
+	$(srcdir)/run_test.sh $(srcdir)
+"""

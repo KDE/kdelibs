@@ -1,15 +1,30 @@
 #! /usr/bin/env python
 
-import os, string, fnmatch
 Import('env')
 
-for root, dirs, files in os.walk('.'):
-	insttar = os.path.join(env['KDEMIME'], root)
-	files = fnmatch.filter( files, "*.desktop")
-	toinst = []
-	for file in files: 
-		toinst.append(os.path.join(root, file))
+# test if install is really wanted
+if env['_INSTALL']:
+	# ahem .. a real glob function needed somewhere (ita)
+	import glob
+	import SCons.Util
 
-	if toinst:
-		env.bksys_install(insttar, toinst)
+	# get the path to the sources
+	path=SCons.Node.FS.default_fs.Dir('.').srcnode().abspath
+
+	dirs="uri model audio multipart image application message text video inode"
+	# process each subfolder
+	for dir in dirs.split():
+		files=glob.glob( env.join(path, dir, '*.desktop') )
+		env.bksys_insttype('KDEMIME', 'dir', files, 0644)
+	
+#	import os, string, fnmatch
+#	for root, dirs, files in os.walk('.'):
+#		insttar = os.path.join(env['KDEMIME'], root)
+#		files = fnmatch.filter( files, "*.desktop")
+#		toinst = []
+#		for file in files: 
+#			toinst.append(os.path.join(root, file))
+#
+#		if toinst:
+#			env.bksys_install(insttar, toinst)
 

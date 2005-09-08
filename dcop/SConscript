@@ -4,8 +4,8 @@ import os
 Import('env')
 
 #env.subdirs('KDE-ICE dcopidl dcopidlng dcopidl2cpp client tests')
-env.subdirs('KDE-ICE')
-#env.subdirs('KDE-ICE client dcopidl dcopidl2cpp')
+#env.subdirs('KDE-ICE client dcopidl dcopidl2cpp dcopidlng')
+env.subdirs('KDE-ICE dcopidl dcopidl2cpp dcopidlng')
 
 # libDCOP.so (description ?)
 obj = env.qt4obj('shlib',env)
