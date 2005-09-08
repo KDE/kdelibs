@@ -21,7 +21,7 @@
 #include "address.h"
 
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
@@ -39,13 +39,13 @@ static KStaticDeleter< QMap<QString, QString> > isoMapDeleter;
 Address::Address() :
   mEmpty( true ), mType( 0 )
 {
-  mId = KStringHandler::randomString( 10 );
+  mId = KRandom::randomString( 10 );
 }
 
 Address::Address( int type ) :
   mEmpty( true ), mType( type )
 {
-  mId = KStringHandler::randomString( 10 );
+  mId = KRandom::randomString( 10 );
 }
 
 bool Address::operator==( const Address &a ) const

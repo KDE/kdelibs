@@ -19,7 +19,7 @@
 */
 
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <klocale.h>
 
 #include "phonenumber.h"
@@ -46,7 +46,7 @@ PhoneNumber::~PhoneNumber()
 
 void PhoneNumber::init()
 {
-  mId = KStringHandler::randomString( 8 );
+  mId = KRandom::randomString( 8 );
 }
 
 void PhoneNumber::validateNumber( const QString &number )

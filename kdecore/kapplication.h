@@ -572,7 +572,7 @@ public:
    * Generates a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.
    * @return the random string
-   * @deprecated use KStringHandler::randomString() instead.
+   * @deprecated use KRandom::randomString() instead.
    */
   static QString randomString(int length) KDE_DEPRECATED;
 #endif

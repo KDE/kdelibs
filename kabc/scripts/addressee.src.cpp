@@ -21,7 +21,7 @@
 */
 
 #include <qregexp.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <ksharedptr.h>
 #include <kdebug.h>
 #include <kapplication.h>
@@ -103,7 +103,7 @@ void Addressee::detach()
     mData->empty = true;
     mData->changed = false;
     mData->resource = 0;
-    mData->uid = KStringHandler::randomString( 10 );
+    mData->uid = KRandom::randomString( 10 );
     return;
   } else if ( mData.count() == 1 ) return;
 

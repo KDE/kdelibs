@@ -54,7 +54,7 @@
 #include <dcopclient.h>
 #include <kdatastream.h>
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <ktoolinvocation.h>
 #include <kstreamsocket.h>
 #include <kstandarddirs.h>
@@ -5619,7 +5619,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   info.qop = "";
 
   // cnonce is recommended to contain about 64 bits of entropy
-  info.cnonce = KStringHandler::randomString(16).latin1();
+  info.cnonce = KRandom::randomString(16).latin1();
 
   // HACK: Should be fixed according to RFC 2617 section 3.2.2
   info.nc = "00000001";

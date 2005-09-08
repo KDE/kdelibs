@@ -33,7 +33,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <klibloader.h>
 #include <unistd.h>
 
@@ -363,7 +363,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 		if ((uchar)(buf[0]) == 037 && (uchar)(buf[1]) == 0213)
 		{
 			f.close();
-			destname = locateLocal("tmp","kdeprint_") + KStringHandler::randomString(8);
+			destname = locateLocal("tmp","kdeprint_") + KRandom::randomString(8);
 			f.setName(destname);
 
 			if (f.open(QIODevice::WriteOnly))

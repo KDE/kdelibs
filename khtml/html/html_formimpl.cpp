@@ -50,7 +50,7 @@
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <klocale.h>
 #ifndef KHTML_NO_WALLET
 #include <kwallet.h>
@@ -81,7 +81,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     m_doingsubmit = false;
     m_inreset = false;
     m_enctype = "application/x-www-form-urlencoded";
-    m_boundary = "----------" + KStringHandler::randomString( 42 + 13 );
+    m_boundary = "----------" + KRandom::randomString( 42 + 13 );
     m_acceptcharset = "UNKNOWN";
     m_malformed = false;
 }

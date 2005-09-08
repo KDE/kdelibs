@@ -27,7 +27,7 @@
 
 #include <QString>
 
-KDE_EXPORT class KRandom {
+class KDECORE_EXPORT KRandom {
 public:
   /**
    * Generates a uniform random number.

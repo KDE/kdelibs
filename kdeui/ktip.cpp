@@ -36,7 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <kmath.h>
+#include <krandom.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -66,7 +66,7 @@ KTipDatabase::KTipDatabase(const QString &_tipFile)
     loadTips(tipFile);
 
     if (!mTips.isEmpty())
-	mCurrent = KMath::random() % mTips.count();
+	mCurrent = KRandom::random() % mTips.count();
 }
 
 
@@ -82,7 +82,7 @@ KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
            addTips( *it );
    }
     if (!mTips.isEmpty())
-	mCurrent = KMath::random() % mTips.count();
+	mCurrent = KRandom::random() % mTips.count();
 
 }
 
@@ -349,7 +349,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
            const int oneDay = 24*60*60;
            QDateTime lastShown = configGroup.readDateTimeEntry("TipLastShown");
            // Show tip roughly once a week
-           if (lastShown.secsTo(QDateTime::currentDateTime()) < (oneDay + (KMath::random() % (10*oneDay))))
+           if (lastShown.secsTo(QDateTime::currentDateTime()) < (oneDay + (KRandom::random() % (10*oneDay))))
                return;
         }
         configGroup.writeEntry("TipLastShown", QDateTime::currentDateTime());

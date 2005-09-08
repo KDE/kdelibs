@@ -20,7 +20,7 @@
 
 #include <kapplication.h>
 #include <klocale.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include "key.h"
 
 using namespace KABC;
@@ -28,7 +28,7 @@ using namespace KABC;
 Key::Key( const QString &text, int type )
   : mTextData( text ), mIsBinary( false ), mType( type )
 {
-  mId = KStringHandler::randomString(8);
+  mId = KRandom::randomString(8);
 }
 
 Key::~Key()

@@ -35,7 +35,7 @@
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <kstandarddirs.h>
 #include <kdatastream.h>
 #include <kdebug.h>
@@ -297,7 +297,7 @@ QString KPrinterImpl::tempFile()
 {
 	QString	f;
 	// be sure the file doesn't exist
-	do f = locateLocal("tmp","kdeprint_") + KStringHandler::randomString(8); while (QFile::exists(f));
+	do f = locateLocal("tmp","kdeprint_") + KRandom::randomString(8); while (QFile::exists(f));
 	return f;
 }
 

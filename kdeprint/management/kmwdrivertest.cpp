@@ -30,7 +30,7 @@
 #include <qlayout.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include <kstringhandler.h>
+#include <krandom.h>
 #include <kmessagebox.h>
 #include <kguiitem.h>
 #include <kio/netaccess.h>
@@ -133,7 +133,7 @@ void KMWDriverTest::slotTest()
 {
 	if (!m_printer) return;
 
-	QString	name = "tmpprinter_"+KStringHandler::randomString(8);
+	QString	name = "tmpprinter_"+KRandom::randomString(8);
 	// save printer name (can be non empty when modifying a printer)
 	QString	oldname = m_printer->name();
 
