@@ -290,7 +290,7 @@ public:
   /**
    * add standard Qt/KDE command linee args
    */
-  static void addStdCmdLineOptions(StdCmdLineArgs stdargs);
+  static void addStdCmdLineOptions(StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
 
   /**
    * Add options to your application.

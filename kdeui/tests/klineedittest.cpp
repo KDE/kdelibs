@@ -123,7 +123,7 @@ int main ( int argc, char **argv)
 {
     KAboutData aboutData( "klineedittest", "klineedittest", "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication::addCmdLineOptions();
+    KCmdLineArgs::addStdCmdLineOptions();
 
     KApplication a;
     KLineEditTest *t = new KLineEditTest();
