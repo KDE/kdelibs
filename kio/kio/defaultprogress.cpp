@@ -222,7 +222,9 @@ void DefaultProgress::showTotals()
     QString tmps;
     if ( m_iTotalDirs > 1 )
       // that we have a singular to translate looks weired but is only logical
+      // xgettext: no-c-format
       tmps = i18n("%n folder", "%n folders", m_iTotalDirs) + "   ";
+    // xgettext: no-c-format
     tmps += i18n("%n file", "%n files", m_iTotalFiles);
     progressLabel->setText( tmps );
   }
