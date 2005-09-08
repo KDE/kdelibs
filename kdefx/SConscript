@@ -1,0 +1,35 @@
+#! /usr/bin/env python
+
+Import('env')
+
+obj = env.qt4obj('shlib',env)
+obj.vnum     = '6.0.2'
+obj.target   = 'libkdefx'
+obj.source   = 'kpixmap.cpp kpixmapsplitter.cpp kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp kcpuinfo.cpp'
+obj.uselib   = 'QTCORE QT XRENDER KDE4'
+obj.execute()
+
+
+"""INCLUDES= $(all_includes)
+
+lib_LTLIBRARIES = libkdefx.la
+libkdefx_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 6:0:2
+libkdefx_la_LIBADD = $(LIB_QT) $(LIB_XRENDER)
+libkdefx_la_NMCHECK = $(srcdir)/libkdefx.nmcheck
+libkdefx_la_NMCHECKWEAK = $(srcdir)/libkdefx_weak.nmcheck $(top_srcdir)/kdecore/libqt-mt_weak.nmcheck \
+	$(top_srcdir)/kdecore/standard_weak.nmcheck
+
+include_HEADERS = kpixmap.h kpixmapsplitter.h \
+	kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h
+
+libkdefx_la_SOURCES = kpixmap.cpp kpixmapsplitter.cpp \
+		kpixmapeffect.cpp kimageeffect.cpp kdrawutil.cpp kstyle.cpp \
+		kcpuinfo.cpp
+
+METASOURCES = AUTO
+
+EXTRA_DIST = Mainpage.dox
+
+DOXYGEN_REFERENCES = kdecore
+include ../admin/Doxyfile.am
+"""

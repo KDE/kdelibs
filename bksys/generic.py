@@ -99,7 +99,7 @@ class genobj:
 		self.target=''
 
 		self.cxxflags=''
-		self.cflags=''
+		self.ccflags=''
 		self.includes=''
 
 		self.linkflags=''
@@ -230,7 +230,7 @@ class genobj:
 
 		if len(self.includes)>0: self.env.AppendUnique(CPPPATH=self.fixpath(self.includes))
 		if len(self.cxxflags)>0: self.env.AppendUnique(CXXFLAGS=self.env.make_list(self.cxxflags))
-		if len(self.cflags)>0: self.env.AppendUnique(CCFLAGS=self.env.make_list(self.cflags))
+		if len(self.ccflags)>0: self.env.AppendUnique(CCFLAGS=self.env.make_list(self.ccflags))
 
 		if self.type=='convenience':
 			self.env.AppendUnique(CCFLAGS=self.env['CONVENIENCE'],CXXFLAGS=self.env['CONVENIENCE'])

@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-import os, sys
-
 """
 help       -> scons -h
 compile    -> scons
@@ -10,12 +8,12 @@ install    -> scons install
 uninstall  -> scons -c install
 configure  -> scons configure debug=full extraincludes=/usr/local/include:/tmp/include prefix=/usr/local
 
-Run from a subdirectory -> scons -u
-The variables are saved automatically after the first run (look at cache/kde.cache.py, ..)
+Run from a subdirectory -> scons -u (or export SCONSFLAGS="-u" in your ~/.bashrc)
+
+Documentation is in bksys/design
 """
 
-# How to do ?
-
+# QUICKSTART (or look in bksys/design)
 # cd kdelibs
 # tar xjvf bksys/scons-mini.tar.bz2
 # ./scons
@@ -31,7 +29,7 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-
+import os
 env = Environment( tools=['generic', 'libxml', 'qt4'],
 	toolpath=['./bksys'], ENV=os.environ )
 #ENV={'PATH' : os.environ['PATH']})
@@ -39,6 +37,7 @@ env = Environment( tools=['generic', 'libxml', 'qt4'],
 if env['HELP']:
 	sys.exit(0)
 
+## TODO the following part is a temporary hack - the framework is not ready yet
 ## Add the builddir as an include path for everyone
 env.Append(CPPFLAGS = ['-Ibuild'])
 
@@ -58,9 +57,12 @@ env['LIB_PNG']             = ['png', 'z', 'm']
 ########## sm
 env['LIB_SM']              = ['SM', 'ICE']
 
+env['LINKFLAGS_DL']        = ['-ldl']
+
 ########## X11
 env['LIB_X11']             = ['X11']
 env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
+env['LIB_XRENDER']         = ['Xrender']
 
 ########## QT
 # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
@@ -106,7 +108,6 @@ env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libr
 
 # TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
 # look at dcop/SConscript for how to build a .h from a python function cleanly
-import os
 if not os.path.exists('build/config.h'):
 	os.mkdir('build')
 	dest=open('build/config.h', 'w')
@@ -141,7 +142,7 @@ for dir in subdirs.split():
 	# TODO: one dir at a time but later the following line will be uncommented
 	#env.SConscript( env.join('dir', 'SConscript') )
 
-env.subdirs('build/dcop/ build/mimetypes')
+env.subdirs('build/dcop/ build/mimetypes build/libltdl build/kdefx')
 #env.SConscript( [env.join('build', 'dcop', 'SConscript')] )
 
 ###################################################################

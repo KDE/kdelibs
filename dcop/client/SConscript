@@ -9,6 +9,7 @@ for prog in progs1:
 	obj.source    = prog+'.cpp'
 	obj.libs      = '../libDCOP.la'
 	obj.uselib    = 'QT QT3SUPPORT KDE4'
+	obj.linkflags = '-Wl,--no-undefined -Wl,--allow-shlib-undefined'
 	#obj.libs      = env['LIB_QT']+env['LIB_QT3SUPPORT']+DCOP_LIB
 	#obj.linkflags = env['KDE_RPATH']
 	#obj.includes  = env['KDELIBS_INCLUDES']

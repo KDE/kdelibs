@@ -1,8 +1,31 @@
 ## author: Thomas Nagy (aka ita on freenode)
 
+HOW TO RUN:
+-----------
+
+* without scons installed:
+cd kdelibs
+tar xjvf bksys/scons-mini.tar.bz2
+./scons
+
+* with scons installed:
+cd kdelibs && scons
+add this to your .bashrc to run scons anywhere in the tree
+export SCONSFLAGS="-u"
+
+Miniscons is based on scons-0.96.1, but the version 0.96.91
+is about 30% faster at computing the dependencies
+
+To make scons run faster you may use these flags:
+export SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
+but in this case Miniscons and 0.96.91 are about as fast
+
+THE API:
+--------
+
 For building objects, one will use the 'obj' builders.
 These are python classes that accept 5 types when initialized:
-program      : 
+program      : compiled program
 shlib        : shared library
 staticlib    : static library
 convenience  : static library made of objects compiled with pic (position-independent code)
