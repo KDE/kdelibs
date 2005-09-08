@@ -6,41 +6,11 @@ Run scons -h to display the associated help, or look below ..
 """
 
 import os, re, types
-try:
-   from xml.sax import make_parser
-   from xml.sax.handler import ContentHandler
-except ImportError:
-   import sys
-   print 'ERROR: bksys needs xml.sax - should be part of python >= 2.0 (possibly in package python-xml)'
-   sys.exit(1)
-
-class SconsHandler(ContentHandler):
-	def __init__ (self, envi):
-		self.files=[]
-		self.mstr=''
-	def startElement(self, name, attrs):
-		if name =='file':
-			self.mstr=''
-	def endElement(self, name):
-		if name =='file':
-			self.files.append(self.mstr)
-			self.mstr=''
-	def characters(self, chars):
-		self.mstr+=chars
-
-# Returns the name of the shared object (i.e. libkdeui.so.4)
-# referenced by a libtool archive (like libkdeui.la)
-def getSOfromLA(lafile):
-	contents = open(lafile, 'r').read()
-	match = re.search("^dlname='([^']*)'$", contents, re.M)
-	if match: return match.group(1)
-	return None
 
 def exists(env):
 	return True
 
 def detect_qt4(env):
-	""" Detect the qt environment """
 	def getpath(varname):
 		if not env.has_key('ARGS'): return None
 		v=env['ARGS'].get(varname, None)
@@ -148,7 +118,7 @@ def detect_qt4(env):
 	env['QTLIBPATH']=qtlibs
 
 def generate(env):
-	"""Set up the qt environment and builders - the moc part is difficult to understand """
+	"""Set up the qt environment and builders - the moc part can be difficult to understand """
 	if env['HELP']:
                 p=env.pprint
                 p('BOLD','*** QT4 options ***')
@@ -192,6 +162,7 @@ def generate(env):
 
 	# reconfigure when things are missing
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('QTDIR')):
+		#from qt4_config import detect_qt4
 		detect_qt4(env)
 		opts.Save(cachefile, env)
 
@@ -235,10 +206,8 @@ def generate(env):
 		return env.Execute(comp)
 	def qrc_stringit(target, source, env):
 		print "processing %s to get %s" % (source[0].name, target[0].name)
-		
-	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit,
-													 qrc_stringit),
-								   suffix='_qrc.cpp', src_suffix='.qrc')
+
+	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	def kcfg_buildit(target, source, env):
 		comp='kconfig_compiler -d%s %s %s' % (str(source[0].get_dir()), source[1].path, source[0].path)
@@ -411,30 +380,6 @@ def generate(env):
                 env.Alias('install', install_list)
 		return install_list
 
-	def QT4addflags_cxx(lenv, fl):
-		""" Compilation flags for C++ programs """
-		lenv.AppendUnique(CXXFLAGS = make_list(fl))
-	
-	def QT4addflags_c(lenv, fl):
-		""" Compilation flags for C programs """
-		lenv.AppendUnique(CFLAGS = make_list(fl))
-
-	def QT4addflags_link(lenv, fl):
-		""" Add link flags - Use this if QT4addlibs below is not enough """
-		lenv.PrependUnique(LINKFLAGS = make_list(fl))
-
-	def QT4addlibs(lenv, libs):
-		""" Helper function """
-		lenv.AppendUnique(LIBS = make_list(libs))
-
-	def QT4addpaths_includes(lenv, paths):
-		""" Add new include paths """
-		lenv.AppendUnique(CPPPATH = make_list(paths))
-
-	def QT4addpaths_libs(lenv, paths):
-		""" Add paths to libraries """
-		lenv.PrependUnique(LIBPATH = make_list(paths))
-
 	def QT4lang(lenv, folder, appname):
 		""" Process translations (.po files) in a po/ dir """
 		transfiles = glob.glob(folder+'/*.po')
@@ -505,39 +450,6 @@ def generate(env):
 			## Do not use QT4installas here, as parsing from an ide will be necessary
 			if env['_INSTALL']: env.Alias('install', env.InstallAs( destfile, iconfile ) )
 
-	def QT4use(lenv, flags):
-		_flags=make_list(flags)
-		if 'environ' in _flags:
-			## The scons developers advise against using this but it is mostly innocuous :)
-			lenv.AppendUnique( ENV = os.environ )
-		if not 'lang_qt' in _flags:
-			## Use this define if you are using the kde translation scheme (.po files)
-			lenv.Append( CPPFLAGS = '-DQT_NO_TRANSLATION' )
-		if 'rpath' in _flags:
-			## Use this to set rpath - this may cause trouble if folders are moved (chrpath)
-			lenv.Append( RPATH = [env['QTLIBPATH']] )
-		if 'thread' in _flags:
-			## Uncomment the following if you need threading support
-			lenv.QT4addflags_cxx( ['-DQT_THREAD_SUPPORT', '-D_REENTRANT'] )
-		if 'fastmoc' in _flags:
-			lenv['BKSYS_FASTMOC']=1
-		if not 'nohelp' in _flags:
-			if lenv['_CONFIGURE'] or lenv['HELP']:
-				env.Exit(0)
-		if not 'nosmart' or not lenv.has_key('nosmart_includes'):
-			lenv.AppendUnique(CPPPATH=['#/'])
-			lst=[]
-			if lenv.has_key('USE_THE_FORCE_LUKE'):
-				lst=lenv['USE_THE_FORCE_LUKE']
-				lenv.__delitem__('USE_THE_FORCE_LUKE')
-			for v in lst:
-				v.execute()
-		else:
-			lenv['nosmart_includes']=1
-
-		## To use kdDebug(intvalue)<<"some trace"<<endl; you need to define -DDEBUG
-		## it is done in admin/generic.py automatically when you do scons configure debug=1
-
         import generic
         class qt4obj(generic.genobj):
                 def __init__(self, val, senv=None):
@@ -574,14 +486,5 @@ def generate(env):
 	SConsEnvironment.QT4installas = QT4installas
 	SConsEnvironment.QT4lang = QT4lang
 	SConsEnvironment.QT4icon = QT4icon
-
-	SConsEnvironment.QT4addflags_cxx = QT4addflags_cxx
-	SConsEnvironment.QT4addflags_c = QT4addflags_c
-	SConsEnvironment.QT4addflags_link = QT4addflags_link
-	SConsEnvironment.QT4addlibs = QT4addlibs
-	SConsEnvironment.QT4addpaths_includes = QT4addpaths_includes
-	SConsEnvironment.QT4addpaths_libs = QT4addpaths_libs
-
-	SConsEnvironment.QT4use = QT4use
 	SConsEnvironment.qt4obj=qt4obj
 

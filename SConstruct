@@ -112,6 +112,7 @@ if not os.path.exists('build/config.h'):
 	if not os.path.exists('build'):
 		os.mkdir('build')
 	dest=open('build/config.h', 'w')
+	dest.write('#define LTDL_OBJDIR \".libs/\"\n')
 	dest.close()
 
 if not os.path.exists('build/kdemacros.h'):
