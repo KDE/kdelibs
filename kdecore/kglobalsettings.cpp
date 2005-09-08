@@ -517,7 +517,7 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
       s_autostartPath->append(QLatin1Char('/'));
 
     // Document Path
-    *s_documentPath = g.readPathEntry( "Documents", 
+    *s_documentPath = g.readPathEntry( "Documents",
 #ifdef Q_WS_WIN
         getWin32ShellFoldersPath("Personal")
 #else
@@ -596,7 +596,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             // Keep in sync !
             s.handed = KMouseSettings::RightHanded;
             unsigned char map[20];
-            int num_buttons = XGetPointerMapping(kapp->getDisplay(), map, 20);
+            int num_buttons = XGetPointerMapping(QX11Info::display(), map, 20);
             if( num_buttons == 2 )
             {
                 if ( (int)map[0] == 1 && (int)map[1] == 2 )

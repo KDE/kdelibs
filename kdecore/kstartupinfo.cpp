@@ -130,7 +130,7 @@ void KStartupInfo::init( int flags_P )
     // d == NULL means "disabled"
     if( !KApplication::kApplication())
         return;
-    if( !KApplication::kApplication()->getDisplay())
+    if( !QX11Info::display())
         return;
 
     d = new KStartupInfoPrivate( flags_P );
