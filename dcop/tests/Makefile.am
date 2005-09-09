@@ -26,6 +26,9 @@ test-clean:
 	rm batch.returns driver.returns shell.returns batch.stdout driver.stdout shell.stdout
 
 test.h: shell.generated
+batch.generated: shell.generated
+definitions.generated: shell.generated
+driver.generated: shell.generated
 
 shell.generated: $(srcdir)/testcases $(srcdir)/generate.pl
 	perl $(srcdir)/generate.pl < $(srcdir)/testcases
