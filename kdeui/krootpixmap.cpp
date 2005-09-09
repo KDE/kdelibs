@@ -278,10 +278,10 @@ void KRootPixmap::enableExports()
     QDataStream args( &data, QIODevice::WriteOnly );
     args << 1;
 
-    Q3CString appname( "kdesktop" );
+    DCOPCString appname( "kdesktop" );
     int screen_number = DefaultScreen(QX11Info::display());
     if ( screen_number )
-        appname.sprintf("kdesktop-screen-%d", screen_number );
+        appname = DCOPCString("kdesktop-screen-") + QByteArray::number( screen_number );
 
     client->send( appname, "KBackgroundIface", "setExport(int)", data );
 #endif

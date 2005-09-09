@@ -44,8 +44,8 @@ KDETrayProxy::KDETrayProxy()
 
 Atom KDETrayProxy::makeSelectionAtom()
     {
-	QX11Info inf;
-    return XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_S" + Q3CString().setNum( inf.screen()), False );
+    QX11Info inf;
+    return XInternAtom( QX11Info::display(), "_NET_SYSTEM_TRAY_S" + QByteArray::number( inf.screen() ), False );
     }
 
 extern Time qt_x_time;
