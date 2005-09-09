@@ -303,7 +303,6 @@ void KTabCtl::showTab(int i)
 		if( pages.size() >= 2 ) {
 			pages[i]->raise();
 		}
-		tabs->setCurrentTab(i);
         pages[i]->setGeometry(getChildRect());
         pages[i]->show();
     }
