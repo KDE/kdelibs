@@ -651,14 +651,14 @@ int KMimeMagic::apprentice( const QString& magicfile )
 	int errs = 0;
 	int lineno;
 	int rule = 0;
-	Q3CString fname;
+	QByteArray fname;
 
 	if (magicfile.isEmpty())
 		return -1;
 	fname = QFile::encodeName(magicfile);
-	f = fopen(fname, "r");
+	f = fopen(fname.constData(), "r");
 	if (f == NULL) {
-		kdError(7018) << "can't read magic file " << fname.data() << ": " << strerror(errno) << endl;
+		kdError(7018) << "can't read magic file " << fname.constData() << ": " << strerror(errno) << endl;
 		return -1;
 	}
 
@@ -1356,16 +1356,16 @@ void process(struct config_rec* conf, const QString & fn)
 	KDE_struct_stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
         int tagbytes = 0;       /* size of prefixed tag */
-        Q3CString fileName = QFile::encodeName( fn );
+        QByteArray fileName = QFile::encodeName( fn );
 
 	/*
 	 * first try judging the file based on its filesystem status
 	 */
-	if (fsmagic(conf, fileName, &sb) != 0) {
+	if (fsmagic(conf, fileName.constData(), &sb) != 0) {
 		//resultBuf += "\n";
 		return;
 	}
-	if ((fd = KDE_open(fileName, O_RDONLY)) < 0) {
+	if ((fd = KDE_open(fileName.constData(), O_RDONLY)) < 0) {
 		/* We can't open it, but we were able to stat it. */
 		/*
 		 * if (sb.st_mode & 0002) addResult("writable, ");
@@ -1409,7 +1409,7 @@ void process(struct config_rec* conf, const QString & fn)
             struct utimbuf utbuf;
             utbuf.actime = sb.st_atime;
             utbuf.modtime = sb.st_mtime;
-            (void) utime(fileName, &utbuf);
+            (void) utime(fileName.constData(), &utbuf);
         }
 	(void) close(fd);
 }
