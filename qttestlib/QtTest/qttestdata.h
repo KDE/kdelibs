@@ -12,6 +12,7 @@
 #define QTESTDATA_H
 
 #include <QtCore/qmetatype.h>
+#include <QtCore/qstring.h>
 
 #include "QtTest/qttest_global.h"
 

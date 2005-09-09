@@ -325,7 +325,7 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
 
     QtTestLog::stopLogging();
     currentTestObject = 0;
-    return 0;
+    return QtTestResult::failCount();
 }
 
 void QtTest::fail(const char *statementStr, const char *file, int line)
