@@ -50,6 +50,11 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KAccel</H4>
 <li>Removed methods that were marked deprecated from KDE2</li>
 
+<H4>KAccelAction</H4>
+<li>KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
+    support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of 
+    shortcut3 and shortcut4 have been reduced just to "shortcut".</li>
+
 <H4>KApplication</H4>
 <ul>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
@@ -97,6 +102,9 @@ Desktop Entry Spec</a>
  </ul>
 </li>
 </ul>
+
+<H4>KGlobalAccel</H4>
+<li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
 
 <H4>KKey</H4>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>

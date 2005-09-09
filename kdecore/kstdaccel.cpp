@@ -203,8 +203,9 @@ StdAccel findStdAccel( const KKeySequence& seq )
 
 KShortcut shortcutDefault( StdAccel id )
 {
-	return (KAccelAction::useFourModifierKeys())
-		? shortcutDefault4(id) : shortcutDefault3(id);
+	//return (KAccelAction::useFourModifierKeys())
+	//	? shortcutDefault4(id) : shortcutDefault3(id);
+	return shortcutDefault4(id);
 }
 
 KShortcut shortcutDefault3( StdAccel id )

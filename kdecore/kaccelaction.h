@@ -315,19 +315,6 @@ class KDECORE_EXPORT KAccelAction
 	 */
 	QString toStringInternal() const;
 
-	/**
-	 * Returns true if four modifier keys will be used.
-	 * @return true if four modifier keys will be used.
-	 */
-	static bool useFourModifierKeys();
-
-	/**
-	 * Selects 3 or 4 modifier default shortcuts.
-	 * @param use true to use 4 modifier shortcuts, false to use
-	 *            3 modifier shortcuts
-	 */
-	static void useFourModifierKeys( bool use );
-
  protected:
 	QString m_sName /**< Name of accel. @sa setName() */,
 	        m_sLabel /**< Label of accel. User-visible. */,
@@ -347,7 +334,7 @@ class KDECORE_EXPORT KAccelAction
 	void decConnections();
 
  private:
-	static int g_bUseFourModifierKeys;
+	//static int g_bModifierKeys;
 	class KAccelActionPrivate* d;
 
 	friend class KAccelActions;

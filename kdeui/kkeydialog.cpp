@@ -296,7 +296,8 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   m_type = type;
   d->bAllowLetterShortcuts = bAllowLetterShortcuts;
 
-  d->bPreferFourModifierKeys = KGlobalAccel::useFourModifierKeys();
+  //d->bPreferFourModifierKeys = KGlobalAccel::useFourModifierKeys();
+  d->bPreferFourModifierKeys = true;
 
   //
   // TOP LAYOUT MANAGER

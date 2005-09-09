@@ -200,12 +200,6 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 */
 	bool writeSettings( KConfigBase* pConfig, bool bGlobal ) const;
 
-	/**
-	 * @internal -- this a wrapper function to
-	 * KAccelActions::useFourModifierKeys().
-	 */
-	static bool useFourModifierKeys();
-
         /**
          * @internal
          */

@@ -188,7 +188,7 @@ bool KAccelAction::contains( const KKeySequence& seq )
 }
 
 const KShortcut& KAccelAction::shortcutDefault() const
-	{ return (useFourModifierKeys()) ? m_cutDefault4 : m_cutDefault3; }
+	{ return m_cutDefault4; }
 bool KAccelAction::isConnected() const
 	{ return d->m_nConnections; }
 void KAccelAction::incConnections()
@@ -196,34 +196,7 @@ void KAccelAction::incConnections()
 void KAccelAction::decConnections()
 	{ if( d->m_nConnections > 0 ) d->m_nConnections--; }
 
-// Indicate whether to default to the 3- or 4- modifier keyboard schemes
-int KAccelAction::g_bUseFourModifierKeys = -1;
 
-bool KAccelAction::useFourModifierKeys()
-{
-	if( KAccelAction::g_bUseFourModifierKeys == -1 ) {
-		// Read in whether to use 4 modifier keys
-		KConfigGroupSaver cgs( KGlobal::config(), "Keyboard" );
-		bool b = KGlobal::config()->readBoolEntry( "Use Four Modifier Keys",  false );
-		KAccelAction::g_bUseFourModifierKeys = b && KKeyNative::keyboardHasWinKey();
-	}
-	return KAccelAction::g_bUseFourModifierKeys == 1;
-}
-
-void KAccelAction::useFourModifierKeys( bool b )
-{
-	if( KAccelAction::g_bUseFourModifierKeys != (int)b ) {
-		KAccelAction::g_bUseFourModifierKeys = b && KKeyNative::keyboardHasWinKey();
-		// If we're 'turning off' the meta key or, if we're turning it on,
-		//  the keyboard must actually have a meta key.
-		if( b && !KKeyNative::keyboardHasWinKey() )
-			kdDebug(125) << "Tried to use four modifier keys on a keyboard layout without a Meta key.\n";
-	}
-	KConfigGroupSaver cgs( KGlobal::config(), "Keyboard" );
-	KGlobal::config()->writeEntry( "Use Four Modifier Keys", KAccelAction::g_bUseFourModifierKeys, true, true);
-
-	kdDebug(125) << "bUseFourModifierKeys = " << KAccelAction::g_bUseFourModifierKeys << endl;
-}
 
 //---------------------------------------------------------------------
 // KAccelActions
