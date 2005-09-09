@@ -24,6 +24,7 @@
 
 #include <kdelibs_export.h>
 
+class QIODevice;
 class DrBase;
 class DrMain;
 
