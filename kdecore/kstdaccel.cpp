@@ -40,10 +40,15 @@ struct KStdAccelInfo
 	StdAccel id;
 	const char* psName;
 	const char* psDesc;
-	int cutDefault, cutDefault4, cutDefault3B, cutDefault4B;
+	int cutDefault, cutDefault2;
 	KShortcut cut;
 	bool bInitialized;
 };
+
+#define CTRL(x) Qt::CTRL+Qt::Key_##x
+#define SHIFT(x) Qt::SHIFT+Qt::Key_##x
+#define CTRLSHIFT(x) Qt::CTRL+Qt::SHIFT+Qt::Key_##x
+#define ALT(x) Qt::ALT+Qt::Key_##x
 
 /** Array of predefined KStdAccelInfo objects, which cover all
     the "standard" accelerators. Each enum value from StdAccel
@@ -51,61 +56,71 @@ struct KStdAccelInfo
 */
 static KStdAccelInfo g_infoStdAccel[] =
 {
-	{AccelNone,            "Group:File", I18N_NOOP("File"), 0, 0, 0, 0, KShortcut(), false },
-	{ Open,                I18N_NOOP("Open"), 0,     Qt::CTRL+Qt::Key_O, 0, 0, 0, KShortcut(), false },
-	{ New,                 I18N_NOOP("New"), 0,      Qt::CTRL+Qt::Key_N, 0, 0, 0, KShortcut(), false },
-	{ Close,               I18N_NOOP("Close"), 0,    Qt::CTRL+Qt::Key_W, Qt::CTRL+Qt::Key_Escape, 0, Qt::CTRL+Qt::Key_W, KShortcut(), false },
-	{ Save,                I18N_NOOP("Save"), 0,     Qt::CTRL+Qt::Key_S, 0, 0, 0, KShortcut(), false },
-	{ Print,               I18N_NOOP("Print"), 0,    Qt::CTRL+Qt::Key_P, 0, 0, 0, KShortcut(), false },
-	{ Quit,                I18N_NOOP("Quit"), 0,     Qt::CTRL+Qt::Key_Q, 0, 0, 0, KShortcut(), false },
-	{AccelNone,            "Group:Edit", I18N_NOOP("Edit"), 0, 0, 0, 0, KShortcut(), false },
-	{ Undo,                I18N_NOOP("Undo"), 0,     Qt::CTRL+Qt::Key_Z, 0, 0, 0, KShortcut(), false },
-	{ Redo,                I18N_NOOP("Redo"), 0,     Qt::CTRL+Qt::SHIFT+Qt::Key_Z, 0, 0, 0, KShortcut(), false },
-	{ Cut,                 I18N_NOOP("Cut"), 0,      Qt::CTRL+Qt::Key_X, 0, Qt::SHIFT+Qt::Key_Delete, 0, KShortcut(), false },
-	{ Copy,                I18N_NOOP("Copy"), 0,     Qt::CTRL+Qt::Key_C, 0, Qt::CTRL+Qt::Key_Insert, 0, KShortcut(), false },
-	{ Paste,               I18N_NOOP("Paste"), 0,    Qt::CTRL+Qt::Key_V, 0, Qt::SHIFT+Qt::Key_Insert, 0, KShortcut(), false },
-	{ PasteSelection,      I18N_NOOP("Paste Selection"), 0, 0, 0, Qt::CTRL+Qt::SHIFT+Qt::Key_Insert, 0, KShortcut(), false },
-	{ SelectAll,           "SelectAll", I18N_NOOP("Select All"), Qt::CTRL+Qt::Key_A, 0, 0, 0, KShortcut(), false },
-	{ Deselect,            I18N_NOOP("Deselect"), 0, Qt::CTRL+Qt::SHIFT+Qt::Key_A, 0, 0, 0, KShortcut(), false },
-	{ DeleteWordBack,      "DeleteWordBack", I18N_NOOP("Delete Word Backwards"), Qt::CTRL+Qt::Key_Backspace, 0, 0, 0, KShortcut(), false },
-	{ DeleteWordForward,   "DeleteWordForward", I18N_NOOP("Delete Word Forward"), Qt::CTRL+Qt::Key_Delete, 0,  0, 0, KShortcut(), false },
-	{ Find,                I18N_NOOP("Find"), 0,     Qt::CTRL+Qt::Key_F, 0, 0, 0, KShortcut(), false },
-	{ FindNext,            "FindNext", I18N_NOOP("Find Next"), Qt::Key_F3, 0, 0, 0, KShortcut(), false },
-	{ FindPrev,            "FindPrev", I18N_NOOP("Find Prev"), Qt::SHIFT+Qt::Key_F3, 0, 0, 0, KShortcut(), false },
-	{ Replace,             I18N_NOOP("Replace"), 0,  Qt::CTRL+Qt::Key_R, 0, 0, 0, KShortcut(), false },
-	{AccelNone,            "Group:Navigation", I18N_NOOP("Navigation"), 0, 0, 0, 0, KShortcut(), false },
-	{ Home,                I18N_NOOP2("Opposite to End","Home"), 0,     Qt::CTRL+Qt::Key_Home, 0, Qt::Key_HomePage, 0, KShortcut(), false },
-	{ End,                 I18N_NOOP("End"), 0,      Qt::CTRL+Qt::Key_End, 0, 0, 0, KShortcut(), false },
-	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP("Beginning of Line"), Qt::Key_Home, 0, 0, 0, KShortcut(), false},
-	{ EndOfLine,           "EndOfLine", I18N_NOOP("End of Line"), Qt::Key_End, 0, 0, 0, KShortcut(), false},
-	{ Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_PageUp, 0, 0, 0, KShortcut(), false },
-	{ Next,                I18N_NOOP2("Opposite to Prior","Next"), 0,     Qt::Key_PageDown, 0, 0, 0, KShortcut(), false },
-	{ GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), Qt::CTRL+Qt::Key_G, 0, 0, 0, KShortcut(), false },
-	{ AddBookmark,         "AddBookmark", I18N_NOOP("Add Bookmark"), Qt::CTRL+Qt::Key_B, 0, 0, 0, KShortcut(), false },
-	{ ZoomIn,              "ZoomIn", I18N_NOOP("Zoom In"), Qt::CTRL+Qt::Key_Plus, 0, 0, 0, KShortcut(), false },
-	{ ZoomOut,             "ZoomOut", I18N_NOOP("Zoom Out"), Qt::CTRL+Qt::Key_Minus, 0, 0, 0, KShortcut(), false },
-	{ Up,                  I18N_NOOP("Up"), 0,       Qt::ALT+Qt::Key_Up, 0, 0, 0, KShortcut(), false },
-	{ Back,                I18N_NOOP("Back"), 0,     Qt::ALT+Qt::Key_Left, 0, Qt::Key_Back, 0, KShortcut(), false },
-	{ Forward,             I18N_NOOP("Forward"), 0,  Qt::ALT+Qt::Key_Right, 0, Qt::Key_Forward, 0, KShortcut(), false },
-	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, 0, Qt::Key_Refresh, 0, KShortcut(), false },
-	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, 0, 0, KShortcut(), false },
-	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M, 0, 0, 0, KShortcut(), false },
-	{ BackwardWord,        "BackwardWord", I18N_NOOP("Backward Word"), Qt::CTRL+Qt::Key_Left, 0, 0, 0, KShortcut(), false },
-	{ ForwardWord,         "ForwardWord", I18N_NOOP("Forward Word"), Qt::CTRL+Qt::Key_Right, 0, 0, 0, KShortcut(), false },
-	{ TabNext,             I18N_NOOP("Activate Next Tab"), 0,  Qt::CTRL+Qt::Key_Period, 0, Qt::CTRL+Qt::Key_BracketRight, 0, KShortcut(), false },
-	{ TabPrev,             I18N_NOOP("Activate Previous Tab"), 0,   Qt::CTRL+Qt::Key_Comma, 0, Qt::CTRL+Qt::Key_BracketLeft, 0, KShortcut(), false },
-	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), Qt::CTRL+Qt::SHIFT+Qt::Key_F, 0, 0, 0, KShortcut(), false },
-	{AccelNone,            "Group:Help", I18N_NOOP("Help"), 0, 0, 0, 0, KShortcut(), false },
-	{ Help,                I18N_NOOP("Help"), 0,     Qt::Key_F1, 0, 0, 0, KShortcut(), false },
-	{ WhatsThis,           "WhatsThis", I18N_NOOP("What's This"), Qt::SHIFT+Qt::Key_F1, 0, 0, 0, KShortcut(), false },
-	{AccelNone,            "Group:TextCompletion", I18N_NOOP("Text Completion"), 0, 0, 0, 0, KShortcut(), false },
-	{ TextCompletion,      "TextCompletion", I18N_NOOP("Text Completion"), Qt::CTRL+Qt::Key_E, 0, 0, 0, KShortcut(), false },
-	{ PrevCompletion,      "PrevCompletion", I18N_NOOP("Previous Completion Match"), Qt::CTRL+Qt::Key_Up, 0, 0, 0, KShortcut(), false },
-	{ NextCompletion,      "NextCompletion", I18N_NOOP("Next Completion Match"), Qt::CTRL+Qt::Key_Down, 0, 0, 0, KShortcut(), false },
-	{ SubstringCompletion, "SubstringCompletion", I18N_NOOP("Substring Completion"), Qt::CTRL+Qt::Key_T, 0, 0, 0, KShortcut(), false },
-	{ RotateUp,            "RotateUp", I18N_NOOP("Previous Item in List"), Qt::Key_Up, 0, 0, 0, KShortcut(), false },
-	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"), Qt::Key_Down, 0, 0, 0, KShortcut(), false },
-	{ AccelNone,           0, 0, 0, 0, 0, 0, KShortcut(), false }
+	{AccelNone,            "Group:File", I18N_NOOP("File"), 0, 0, KShortcut(), false },
+	{ Open,                I18N_NOOP("Open"),  0,    CTRL(O), 0, KShortcut(), false },
+	{ New,                 I18N_NOOP("New"),   0,    CTRL(N), 0, KShortcut(), false },
+	{ Close,               I18N_NOOP("Close"), 0,    CTRL(W), CTRL(Escape), KShortcut(), false },
+	{ Save,                I18N_NOOP("Save"),  0,    CTRL(S), 0, KShortcut(), false },
+	{ Print,               I18N_NOOP("Print"), 0,    CTRL(P), 0, KShortcut(), false },
+	{ Quit,                I18N_NOOP("Quit"),  0,    CTRL(Q), 0, KShortcut(), false },
+
+	{AccelNone,            "Group:Edit", I18N_NOOP("Edit"), 0, 0, KShortcut(), false },
+	{ Undo,                I18N_NOOP("Undo"),  0,           CTRL(Z), 0, KShortcut(), false },
+	{ Redo,                I18N_NOOP("Redo"),  0,           CTRLSHIFT(Z), 0, KShortcut(), false },
+	{ Cut,                 I18N_NOOP("Cut"),   0,           CTRL(X), SHIFT(Delete), KShortcut(), false },
+	{ Copy,                I18N_NOOP("Copy"),  0,           CTRL(C), CTRL(Insert), KShortcut(), false },
+	{ Paste,               I18N_NOOP("Paste"), 0,           CTRL(V), SHIFT(Insert), KShortcut(), false },
+	{ PasteSelection,      I18N_NOOP("Paste Selection"),    0, CTRLSHIFT(Insert), KShortcut(), false },
+
+	{ SelectAll,           "SelectAll", I18N_NOOP("Select All"), CTRL(A), 0, KShortcut(), false },
+	{ Deselect,            I18N_NOOP("Deselect"), 0, CTRLSHIFT(A), 0, KShortcut(), false },
+	{ DeleteWordBack,      "DeleteWordBack", I18N_NOOP("Delete Word Backwards"), CTRL(Backspace), 0, KShortcut(), false },
+	{ DeleteWordForward,   "DeleteWordForward", I18N_NOOP("Delete Word Forward"),CTRL(Delete), 0,  KShortcut(), false },
+
+	{ Find,                I18N_NOOP("Find"),  0,     CTRL(F), 0, KShortcut(), false },
+	{ FindNext,            "FindNext", I18N_NOOP("Find Next"), Qt::Key_F3, 0, KShortcut(), false },
+	{ FindPrev,            "FindPrev", I18N_NOOP("Find Prev"), SHIFT(F3), 0, KShortcut(), false },
+	{ Replace,             I18N_NOOP("Replace"), 0,  CTRL(R), 0, KShortcut(), false },
+	
+	{AccelNone,            "Group:Navigation", I18N_NOOP("Navigation"), 0, 0, KShortcut(), false },
+	{ Home,                I18N_NOOP2("Opposite to End","Home"), 0, CTRL(Home), Qt::Key_HomePage, KShortcut(), false },
+	{ End,                 I18N_NOOP("End"), 0,      CTRL(End), 0, KShortcut(), false },
+	{ BeginningOfLine,     "BeginningOfLine", I18N_NOOP("Beginning of Line"), Qt::Key_Home, 0, KShortcut(), false},
+	{ EndOfLine,           "EndOfLine", I18N_NOOP("End of Line"), Qt::Key_End, 0, KShortcut(), false},
+	{ Prior,               I18N_NOOP("Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
+	{ Next,                I18N_NOOP2("Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
+
+	{ GotoLine,            "GotoLine", I18N_NOOP("Go to Line"), CTRL(G), 0, KShortcut(), false },
+	{ AddBookmark,         "AddBookmark", I18N_NOOP("Add Bookmark"), CTRL(B), 0, KShortcut(), false },
+	{ ZoomIn,              "ZoomIn", I18N_NOOP("Zoom In"), CTRL(Plus), 0, KShortcut(), false },
+	{ ZoomOut,             "ZoomOut", I18N_NOOP("Zoom Out"), CTRL(Minus), 0, KShortcut(), false },
+
+	{ Up,                  I18N_NOOP("Up"), 0,       ALT(Up), 0, KShortcut(), false },
+	{ Back,                I18N_NOOP("Back"), 0,     ALT(Left), Qt::Key_Back, KShortcut(), false },
+	{ Forward,             I18N_NOOP("Forward"), 0,  ALT(Right), Qt::Key_Forward, KShortcut(), false },
+	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, Qt::Key_Refresh, KShortcut(), false },
+	
+	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, KShortcut(), false },
+	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"),CTRL(M), 0, KShortcut(), false },
+	{ BackwardWord,        "BackwardWord", I18N_NOOP("Backward Word"), CTRL(Left), 0, KShortcut(), false },
+	{ ForwardWord,         "ForwardWord", I18N_NOOP("Forward Word"), CTRL(Right), 0, KShortcut(), false },
+	{ TabNext,             I18N_NOOP("Activate Next Tab"), 0, CTRL(Period), CTRL(BracketRight), KShortcut(), false },
+	{ TabPrev,             I18N_NOOP("Activate Previous Tab"), 0, CTRL(Comma), CTRL(BracketLeft), KShortcut(), false },
+	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), CTRLSHIFT(F), 0, KShortcut(), false },
+
+	{AccelNone,            "Group:Help",      I18N_NOOP("Help"),        0,          0, KShortcut(), false },
+	{ Help,                I18N_NOOP("Help"), 0,                        Qt::Key_F1, 0, KShortcut(), false },
+	{ WhatsThis,           "WhatsThis",       I18N_NOOP("What's This"), SHIFT(F1),  0, KShortcut(), false },
+
+	{AccelNone,            "Group:TextCompletion", I18N_NOOP("Text Completion"),           0,          0, KShortcut(), false },
+	{ TextCompletion,      "TextCompletion",       I18N_NOOP("Text Completion"),           CTRL(E),    0, KShortcut(), false },
+	{ PrevCompletion,      "PrevCompletion",       I18N_NOOP("Previous Completion Match"), CTRL(Up),   0, KShortcut(), false },
+	{ NextCompletion,      "NextCompletion",       I18N_NOOP("Next Completion Match"),     CTRL(Down), 0, KShortcut(), false },
+	{ SubstringCompletion, "SubstringCompletion",  I18N_NOOP("Substring Completion"),      CTRL(T),    0, KShortcut(), false },
+	
+	{ RotateUp,            "RotateUp",   I18N_NOOP("Previous Item in List"), Qt::Key_Up,   0, KShortcut(), false },
+	{ RotateDown,          "RotateDown", I18N_NOOP("Next Item in List"),     Qt::Key_Down, 0, KShortcut(), false },
+	{ AccelNone,           0, 0, 0, 0, KShortcut(), false }
 };
 
 /** Search for the KStdAccelInfo object associated with the given @p id. */
@@ -210,13 +225,10 @@ KShortcut shortcutDefault( StdAccel id )
 		KStdAccelInfo& info = *pInfo;
 		KKeySequence key2;
 
-		cut.init( (info.cutDefault4) ?
-			QKeySequence(info.cutDefault) : QKeySequence(info.cutDefault4) );
+		cut.init( (info.cutDefault) ) ;
 
-		if( info.cutDefault4B )
-			key2.init( QKeySequence(info.cutDefault4B) );
-		else if( info.cutDefault3B )
-			key2.init( QKeySequence(info.cutDefault3B) );
+		if( info.cutDefault2 )
+			key2.init( QKeySequence(info.cutDefault2) );
 
 		if( key2.count() )
 			cut.append( key2 );
