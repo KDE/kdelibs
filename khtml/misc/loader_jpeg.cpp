@@ -350,7 +350,6 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         cinfo.do_fancy_upsampling = true;
         cinfo.do_block_smoothing = false;
         cinfo.quantize_colors = false;
-        cinfo.dct_method = JDCT_FASTEST;
 
         // false: IO suspension
         if(jpeg_start_decompress(&cinfo)) {
