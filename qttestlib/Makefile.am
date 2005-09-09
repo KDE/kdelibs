@@ -26,5 +26,5 @@ libqttestlib_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-un
 AM_CPPFLAGS = $(all_includes) -DQT_NO_CAST_TO_ASCII -DQT_NO_CAST_FROM_ASCII -DQT_NO_DATASTREAM -DQTESTLIB_MAKEDLL
 
 qttestlibdir = $(includedir)/QtTest
-qttestlib_HEADERS = QtTest/qttest_global.h QtTest/qttestcase.h QtTest/qttesttable.h QtTest/qttestdata.h QtTest/QtTest
+qttestlib_HEADERS = QtTest/qttest_global.h QtTest/qttestcase.h QtTest/qttesttable.h QtTest/qttestdata.h QtTest/QtTest QtTest/qttest.h QtTest/qsignalspy.h QtTest/qttestsystem.h QtTest/qttesteventloop.h QtTest/qttest_gui.h QtTest/qttestassert.h QtTest/qttestevent.h QtTest/qttestmouse.h QtTest/qttestkeyboard.h
 
