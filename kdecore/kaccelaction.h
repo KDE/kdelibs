@@ -543,18 +543,17 @@ class KDECORE_EXPORT KAccelActions
 	 * Returns the number of actions in the collection.
 	 * @return the number of actions
 	 */
-	uint count() const;
+	int count() const;
 
  protected:
 	KAccelBase* m_pKAccelBase;
-	KAccelAction** m_prgActions;
-	uint m_nSizeAllocated, m_nSize;
+
+	QList<KAccelAction *> m_actions;
 
 	void resize( uint );
 	void insertPtr( KAccelAction* );
 
  private:
-	class KAccelActionsPrivate* d;
 
 	KAccelActions( KAccelBase* );
 	void initPrivate( KAccelBase* );
