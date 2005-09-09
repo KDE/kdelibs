@@ -21,6 +21,7 @@
 namespace QtTest
 {
     static QtTestData *currentTestData = 0;
+    static QtTestData *currentGlobalTestData = 0;
     static const char *currentTestFunc = 0;
     static const char *currentTestObjectName = 0;
     static bool failed = false;
@@ -45,9 +46,19 @@ bool QtTestResult::currentTestFailed()
     return QtTest::dataFailed;
 }
 
+QtTestData *QtTestResult::currentGlobalTestData()
+{
+    return QtTest::currentGlobalTestData;
+}
+
 QtTestData *QtTestResult::currentTestData()
 {
     return QtTest::currentTestData;
+}
+
+void QtTestResult::setCurrentGlobalTestData(QtTestData *data)
+{
+    QtTest::currentGlobalTestData = data;
 }
 
 void QtTestResult::setCurrentTestData(QtTestData *data)
@@ -100,7 +111,14 @@ const char *QtTestResult::currentTestFunction()
 
 const char *QtTestResult::currentDataTag()
 {
-    return QtTest::currentTestData ? QtTest::currentTestData->dataTag() : 0;
+    return QtTest::currentTestData ? QtTest::currentTestData->dataTag()
+                                   : static_cast<const char *>(0);
+}
+
+const char *QtTestResult::currentGlobalDataTag()
+{
+    return QtTest::currentGlobalTestData ? QtTest::currentGlobalTestData->dataTag()
+                                         : static_cast<const char *>(0);
 }
 
 static bool isExpectFailData(const char *dataIndex)

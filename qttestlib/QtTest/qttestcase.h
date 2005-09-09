@@ -60,6 +60,9 @@ do {\
 #define FETCH(type, name)\
     type name = *static_cast<type *>(QtTest::data(#name, #type))
 
+#define FETCH_GLOBAL(type, name)\
+    type name = *static_cast<type *>(QtTest::globalData(#name, #type))
+
 #define DEPENDS_ON(funcName)
 
 #define TEST(actual, testElement)\
@@ -98,7 +101,9 @@ namespace QtTest
     Q_TESTLIB_EXPORT void ignoreMessage(QtMsgType type, const char *message);
 
     Q_TESTLIB_EXPORT void *data(const char *tagName, const char *typeName);
+    Q_TESTLIB_EXPORT void *globalData(const char *tagName, const char *typeName);
     Q_TESTLIB_EXPORT void *elementData(const char *elementName, int metaTypeId);
+    Q_TESTLIB_EXPORT QObject *testObject();
 
     Q_TESTLIB_EXPORT const char *currentTestFunction();
     Q_TESTLIB_EXPORT const char *currentDataTag();
@@ -115,6 +120,7 @@ namespace QtTest
                                          const char *file, int line);
     Q_TESTLIB_EXPORT bool compare_helper(bool success, const char *msg, char *val1, char *val2,
                                          const char *file, int line);
+    Q_TESTLIB_EXPORT void sleep(int ms);
 
     template <typename T>
     inline bool compare(T const &t1, T const &t2, const char *file, int line)
@@ -141,7 +147,10 @@ namespace QtTest
     COMPARE_DECL(bool)
 #endif
 
-#ifndef Q_CC_MSVC
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
+    template <typename T1, typename T2>
+    bool compare(T1 const &, T2 const &, const char *, int);
+
     template <typename T>
     inline bool compare(const T *t1, const T *t2, const char *file, int line)
     {
@@ -152,15 +161,26 @@ namespace QtTest
     {
         return compare_ptr_helper(t1, t2, file, line);
     }
+
+    template <typename T1, typename T2>
+    inline bool compare(const T1 *t1, const T2 *t2, const char *file, int line)
+    {
+        return compare_ptr_helper(t1, static_cast<const T1 *>(t2), file, line);
+    }
+    template <typename T1, typename T2>
+    inline bool compare(T1 *t1, T2 *t2, const char *file, int line)
+    {
+        return compare_ptr_helper(t1, static_cast<T1 *>(t2), file, line);
+    }
 #endif
-#ifndef Q_CC_MSVC
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
     template<>
 #endif
     inline bool compare(const char *t1, const char *t2, const char *file, int line)
     {
         return compare_string_helper(t1, t2, file, line);
     }
-#ifndef Q_CC_MSVC
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
     template<>
 #endif
     inline bool compare(char *t1, char *t2, const char *file, int line)

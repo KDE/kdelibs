@@ -24,8 +24,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(Q_CC_MSVC)
-#include <windows.h>
+#ifdef Q_OS_WIN32
+#include <windows.h> // for Sleep
+#endif
+#ifdef Q_OS_UNIX
+#include <time.h>
 #endif
 
 namespace QtTest
@@ -117,6 +120,9 @@ static bool isValidSlot(const QMetaMethod &sl)
         return false;
     if (sig[len - 2] != '(' || sig[len - 1] != ')')
         return false;
+    if (strcmp(sig, "initTestCase()") == 0 || strcmp(sig, "cleanupTestCase()") == 0
+        || strcmp(sig, "cleanup()") == 0 || strcmp(sig, "init()") == 0)
+        return false;
     return true;
 }
 
@@ -133,11 +139,13 @@ static void qParseArgs(int argc, char *argv[])
 {
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "-help") == 0) {
+            const char *eHelp = "";
             printf(" Usage: %s [options] [testfunctions[:testdata]]...\n"
                    "    By default, all testfunction will be run.\n\n"
                    " options:\n"
                    " -functions : Returns a list of current testfunctions\n"
                    " -xml       : Outputs results in XML\n"
+                   " -o filename: Writes all output into a file\n"
                    " -v1        : Print enter messages for each testfunction\n"
                    " -v2        : Also print out each VERIFY/COMPARE/TEST\n"
                    " -vs        : Print every signal emitted\n"
@@ -145,7 +153,8 @@ static void qParseArgs(int argc, char *argv[])
                    " -keydelay ms      : Set default delay for keyboard simulation to ms milliseconds\n"
                    " -mousedelay ms    : Set default delay for mouse simulation to ms milliseconds\n"
                    " -keyevent-verbose : Turn on verbose messages for keyboard simulation\n"
-                   " -help      : This help\n", argv[0]);
+                   "%s"
+                   " -help      : This help\n", argv[0], eHelp);
             exit(0);
         } else if (strcmp(argv[i], "-functions") == 0) {
             qPrintTestSlots();
@@ -158,6 +167,13 @@ static void qParseArgs(int argc, char *argv[])
             QtTestLog::setVerboseLevel(2);
         } else if (strcmp(argv[i], "-vs") == 0) {
             QSignalDumper::startDump();
+        } else if (strcmp(argv[i], "-o") == 0) {
+            if (i + 1 >= argc) {
+                printf("-o needs an extra parameter specifying the filename\n");
+                exit(1);
+            } else {
+                QtTestLog::redirectOutput(argv[++i]);
+            }
         } else if (strcmp(argv[i], "-eventdelay") == 0) {
             if (i + 1 >= argc) {
                 printf("-eventdelay needs an extra parameter to indicate the delay(ms)\n");
@@ -181,11 +197,11 @@ static void qParseArgs(int argc, char *argv[])
             }
         } else if (strcmp(argv[i], "-keyevent-verbose") == 0) {
             QtTest::keyVerbose = 1;
+        } else if (strcmp(argv[i], "-qws") == 0) {
+            // do nothing
         } else if (argv[i][0] == '-') {
-            if (strcmp(argv[i], "-qws") != 0) {
-                printf("Unknown option: '%s'\n", argv[i]);
-                exit(1);
-            }
+            printf("Unknown option: '%s'\n", argv[i]);
+            exit(1);
         } else {
             int colon = -1;
             char buf[512], *data=0;
@@ -215,6 +231,7 @@ static void qParseArgs(int argc, char *argv[])
     }
 }
 
+
 static bool qInvokeTestMethod(const char *slotName, const char *data=0)
 {
     QTEST_ASSERT(slotName);
@@ -226,58 +243,87 @@ static bool qInvokeTestMethod(const char *slotName, const char *data=0)
     sl[strlen(sl) - 2] = '\0';
     QtTestResult::setCurrentTestFunction(sl);
 
-    QtTestResult::setCurrentTestLocation(QtTestResult::DataFunc);
-    QtTest::qt_snprintf(cur, 512, "%s_data", sl);
-    QMetaObject::invokeMethod(QtTest::currentTestObject, cur, Qt::DirectConnection,
-                      QGenericArgument("QtTestTable&", &table));
+    const QtTestTable *gTable = QtTestTable::globalTestTable();
+    const int globalDataCount = gTable->dataCount();
+    int curGlobalDataIndex = 0;
+    do {
+        if (!gTable->isEmpty())
+            QtTestResult::setCurrentGlobalTestData(gTable->testData(curGlobalDataIndex));
 
-    bool foundFunction = false;
-    if (!QtTest::skipCurrentTest) {
-        int curDataIndex = 0;
-        int dataCount = table.dataCount();
-        do {
-            if(!data || !qstrcmp(data, table.testData(curDataIndex)->dataTag())) {
-                foundFunction = true;
-                if (!table.isEmpty())
-                    QtTestResult::setCurrentTestData(table.testData(curDataIndex));
-                QtTestResult::setCurrentTestLocation(QtTestResult::InitFunc);
-                QMetaObject::invokeMethod(QtTest::currentTestObject, "init");
-                if (QtTest::skipCurrentTest)
-                    break;
+        QtTestResult::setCurrentTestLocation(QtTestResult::DataFunc);
+        QtTest::qt_snprintf(cur, 512, "%s_data", sl);
+        QMetaObject::invokeMethod(QtTest::currentTestObject, cur, Qt::DirectConnection,
+                QGenericArgument("QtTestTable&", &table));
 
-                QtTestResult::setCurrentTestLocation(QtTestResult::Func);
-                if (!QMetaObject::invokeMethod(QtTest::currentTestObject, sl, Qt::DirectConnection)) {
-                    QtTestResult::addFailure("Unable to execute slot", __FILE__, __LINE__);
-                    break;
+        bool foundFunction = false;
+        if (!QtTest::skipCurrentTest) {
+            int curDataIndex = 0;
+            const int dataCount = table.dataCount();
+            do {
+                if (!data || !qstrcmp(data, table.testData(curDataIndex)->dataTag())) {
+                    foundFunction = true;
+                    if (!table.isEmpty())
+                        QtTestResult::setCurrentTestData(table.testData(curDataIndex));
+                    QtTestResult::setCurrentTestLocation(QtTestResult::InitFunc);
+                    QMetaObject::invokeMethod(QtTest::currentTestObject, "init");
+                    if (QtTest::skipCurrentTest)
+                        break;
+
+                    QtTestResult::setCurrentTestLocation(QtTestResult::Func);
+                    if (!QMetaObject::invokeMethod(QtTest::currentTestObject, sl,
+                                Qt::DirectConnection)) {
+                        QtTestResult::addFailure("Unable to execute slot", __FILE__, __LINE__);
+                        break;
+                    }
+
+                    QtTestResult::setCurrentTestLocation(QtTestResult::CleanupFunc);
+                    QMetaObject::invokeMethod(QtTest::currentTestObject, "cleanup");
+                    QtTestResult::setCurrentTestLocation(QtTestResult::NoWhere);
+                    QtTestResult::setCurrentTestData(0);
+
+                    if (QtTest::skipCurrentTest)
+                        // check whether SkipAll was requested
+                        break;
+                    if (data)
+                        break;
                 }
+                ++curDataIndex;
+            } while (curDataIndex < dataCount);
+        }
+        QtTest::skipCurrentTest = false;
 
-                QtTestResult::setCurrentTestLocation(QtTestResult::CleanupFunc);
-                QMetaObject::invokeMethod(QtTest::currentTestObject, "cleanup");
-                QtTestResult::setCurrentTestLocation(QtTestResult::NoWhere);
-                QtTestResult::setCurrentTestData(0);
+        if (data && !foundFunction) {
+            printf("Unknown testdata for function %s: '%s'\n", slotName, data);
+            printf("Available testdata:\n");
+            for(int i = 0; i < table.dataCount(); ++i)
+                printf("%s\n", table.testData(i)->dataTag());
+            return false;
+        }
 
-                if (QtTest::skipCurrentTest)
-                    // check whether SkipAll was requested
-                    break;
-                if(data)
-                    break;
-            }
-            ++curDataIndex;
-        } while (curDataIndex < dataCount);
-    }
-    QtTest::skipCurrentTest = false;
+        QtTestResult::setCurrentGlobalTestData(0);
+        ++curGlobalDataIndex;
+    } while (curGlobalDataIndex < globalDataCount);
 
     QtTestResult::finishedCurrentTestFunction();
     delete[] sl;
 
-    if(data && !foundFunction) {
-        printf("Unknown testdata for function %s: '%s'\n", slotName, data);
-        printf("Available testdata:\n");
-        for(int i = 0; i < table.dataCount(); ++i)
-            printf("%s\n", table.testData(i)->dataTag());
-        return false;
-    }
     return true;
+}
+
+void *fetchData(QtTestData *data, const char *tagName, const char *typeName)
+{
+    QTEST_ASSERT(typeName);
+    QTEST_ASSERT_X(data, "QtTest::fetchData()", "Test data requested, but no testdata available .");
+    QTEST_ASSERT(data->parent());
+
+    int idx = data->parent()->indexOf(tagName);
+
+    if (qstrcmp(typeName, data->parent()->elementType(idx)) != 0) {
+        qFatal("Requested type '%s' does not match available type '%s'.", typeName,
+               data->parent()->elementType(idx));
+    }
+
+    return data->data(idx);
 }
 
 } // namespace
@@ -301,6 +347,12 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
     QtTestLog::startLogging();
 
     QtTestResult::setCurrentTestFunction("initTestCase");
+    QtTestResult::setCurrentTestLocation(QtTestResult::DataFunc);
+    QtTestTable *gTable = QtTestTable::globalTestTable();
+    QMetaObject::invokeMethod(testObject, "initTestCase_data", Qt::DirectConnection,
+                      QGenericArgument("QtTestTable&", gTable));
+
+    QtTestResult::setCurrentTestLocation(QtTestResult::Func);
     QMetaObject::invokeMethod(testObject, "initTestCase");
     QtTestResult::finishedCurrentTestFunction();
 
@@ -322,6 +374,7 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
     QMetaObject::invokeMethod(testObject, "cleanupTestCase");
     QtTestResult::finishedCurrentTestFunction();
     QtTestResult::setCurrentTestFunction(0);
+    delete gTable; gTable = 0;
 
     QtTestLog::stopLogging();
     currentTestObject = 0;
@@ -365,19 +418,12 @@ void QtTest::ignoreMessage(QtMsgType type, const char *message)
 
 void *QtTest::data(const char *tagName, const char *typeName)
 {
-    QTEST_ASSERT(typeName);
-    QtTestData *data = QtTestResult::currentTestData();
-    QTEST_ASSERT(data);
-    QTEST_ASSERT(data->parent());
+    return fetchData(QtTestResult::currentTestData(), tagName, typeName);
+}
 
-    int idx = data->parent()->indexOf(tagName);
-
-    if (qstrcmp(typeName, data->parent()->elementType(idx)) != 0) {
-        qFatal("Requested type '%s' does not match available type '%s'.", typeName,
-               data->parent()->elementType(idx));
-    }
-
-    return data->data(idx);
+void *QtTest::globalData(const char *tagName, const char *typeName)
+{
+    return fetchData(QtTestResult::currentGlobalTestData(), tagName, typeName);
 }
 
 void *QtTest::elementData(const char *tagName, int metaTypeId)
@@ -407,6 +453,23 @@ const char *QtTest::currentDataTag()
 bool QtTest::currentTestFailed()
 {
     return QtTestResult::currentTestFailed();
+}
+
+void QtTest::sleep(int ms)
+{
+#ifdef Q_OS_WIN32
+    Sleep(uint(ms));
+#else
+    struct timespec ts = { 0, 0 };
+    // a nanosecond is 1/1000 of a microsecond, a microsecond is 1/1000 of a millisecond
+    ts.tv_nsec = ms * 1000 * 1000;
+    nanosleep(&ts, NULL);
+#endif
+}
+
+QObject *QtTest::testObject()
+{
+    return currentTestObject;
 }
 
 namespace QtTest

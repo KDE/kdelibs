@@ -35,6 +35,8 @@ public:
     bool isEmpty() const;
     QtTestData *testData(int index) const;
 
+    static QtTestTable *globalTestTable();
+
 private:
     Q_DISABLE_COPY(QtTestTable)
 

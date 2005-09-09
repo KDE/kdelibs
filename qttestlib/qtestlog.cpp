@@ -16,6 +16,8 @@
 #include "QtTest/private/qplaintestlogger_p.h"
 #include "QtTest/private/qxmltestlogger_p.h"
 
+#include "qatomic.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -49,6 +51,7 @@ namespace QtTest {
     static int verbosity = 0;
 
     static QAbstractTestLogger *testLogger = 0;
+    static const char *outFile = 0;
 
     static QtMsgHandler oldMessageHandler;
 
@@ -78,6 +81,8 @@ namespace QtTest {
 
     static void messageHandler(QtMsgType type, const char *msg)
     {
+        static volatile int counter = 2002;
+
         if (!msg || !QtTest::testLogger) {
             // if this goes wrong, something is seriously broken.
             qInstallMsgHandler(oldMessageHandler);
@@ -88,6 +93,17 @@ namespace QtTest {
         if (handleIgnoredMessage(type, msg))
             // the message is expected, so just swallow it.
             return;
+
+        if (type != QtFatalMsg) {
+            if (counter <= 0)
+                return;
+
+            if (!q_atomic_decrement(&counter)) {
+                QtTest::testLogger->addMessage(QAbstractTestLogger::QSystem,
+                        "Maximum amount of warnings exceeded.");
+                return;
+            }
+        }
 
         switch (type) {
         case QtDebugMsg:
@@ -275,5 +291,17 @@ void QtTestLog::addIgnoreMessage(QtMsgType type, const char *msg)
     while (list->next)
         list = list->next;
     list->next = item;
+}
+
+void QtTestLog::redirectOutput(const char *fileName)
+{
+    QTEST_ASSERT(fileName);
+
+    QtTest::outFile = fileName;
+}
+
+const char *QtTestLog::outputFileName()
+{
+    return QtTest::outFile;
 }
 

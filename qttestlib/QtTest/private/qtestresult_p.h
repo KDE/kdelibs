@@ -25,9 +25,11 @@ public:
     static bool currentTestFailed();
     static bool allDataPassed();
     static QtTestData *currentTestData();
+    static QtTestData *currentGlobalTestData();
     static const char *currentTestFunction();
     static TestLocation currentTestLocation();
     static const char *currentDataTag();
+    static const char *currentGlobalDataTag();
     static void finishedCurrentTestFunction();
 
     static int passCount();
@@ -41,7 +43,7 @@ public:
     static bool compare(bool success, const char *msg, char *val1, char *val2,
                         const char *file, int line);
 
-    // internal
+    static void setCurrentGlobalTestData(QtTestData *data);
     static void setCurrentTestData(QtTestData *data);
     static void setCurrentTestFunction(const char *func);
     static void setCurrentTestLocation(TestLocation loc);

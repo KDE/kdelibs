@@ -26,23 +26,47 @@ Q_DECLARE_METATYPE(QStringList)
 
 namespace QtTest
 {
+inline bool compare_strs(QString const &t1, QString const &t2, const char *file, int line)
+{
+     char msg[1024];
+     msg[0] = '\0';
+     bool isOk = true;
+     if (t1 != t2) {
+         qt_snprintf(msg, 1024, "Compared values of type QString are not the same.\n"
+                                "   Actual  : '%s'\n"
+                                "   Expected: '%s'", t1.toLatin1().constData(), t2.toLatin1().constData());
+         isOk = false;
+     } else {
+         qt_snprintf(msg, 1024, "COMPARE('%s', type QString)", t1.toLatin1().constData());
+     }
+     return compare_helper(isOk, msg, file, line);;
+}
 template<>
 inline bool compare(QString const &t1, QString const &t2, const char *file, int line)
 {
-    char msg[1024];
-    msg[0] = '\0';
-    bool isOk = true;
-    if (t1 != t2) {
-        qt_snprintf(msg, 1024, "Compared values of type QString are not the same.\n"
-                    "   Actual  : '%s'\n"
-                    "   Expected: '%s'", t1.toLatin1().constData(), t2.toLatin1().constData());
-        isOk = false;
-    } else {
-        qt_snprintf(msg, 1024, "COMPARE('%s', type QString)", t1.toLatin1().constData());
-    }
-    return compare_helper(isOk, msg, file, line);
+    return compare_strs(t1, t2, file, line);
 }
-
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
+template<>
+#endif
+inline bool compare(QLatin1String const &t1, QLatin1String const &t2, const char *file, int line)
+{
+    return compare_strs(t1, t2, file, line);
+}
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
+template<>
+#endif
+inline bool compare(QString const &t1, QLatin1String const &t2, const char *file, int line)
+{
+    return compare_strs(t1, t2, file, line);
+}
+#ifndef QTEST_NO_PARTIAL_SPECIALIZATIONS
+template<>
+#endif
+inline bool compare(QLatin1String const &t1, QString const &t2, const char *file, int line)
+{
+    return compare_strs(t1, t2, file, line);
+}
 template<>
 inline bool compare(QStringList const &t1, QStringList const &t2, const char *file, int line)
 {

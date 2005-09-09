@@ -30,8 +30,12 @@
 
 #endif
 
-#define QTTEST_VERSION     0x020000
-#define QTTEST_VERSION_STR "2.0.0"
+#if defined (Q_CC_MSVC) || defined (Q_CC_SUN) || defined (Q_CC_XLC) || (defined (Q_CC_GNU) && (__GNUC__ - 0 < 3))
+# define QTEST_NO_PARTIAL_SPECIALIZATIONS
+#endif
+
+#define QTTEST_VERSION     0x020001
+#define QTTEST_VERSION_STR "2.0.1-kde"
 
 namespace QtTest
 {

@@ -11,29 +11,12 @@
 #ifndef QTTESTSYSTEM_H
 #define QTTESTSYSTEM_H
 
+#include <QtTest/qttestcase.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qdatetime.h>
-#ifdef Q_OS_UNIX
-#include <time.h>
-#endif
-#ifdef Q_OS_WIN32
-#include <windows.h> //for Sleep
-#endif
 
 namespace QtTest
 {
-    inline static void sleep(int ms)
-    {
-#ifdef Q_OS_WIN32
-        Sleep(uint(ms));
-#else
-        struct timespec ts = { 0, 0 };
-        // a nanosecond is 1/1000 of a microsecond, a microsecond is 1/1000 of a millisecond
-        ts.tv_nsec = ms * 1000 * 1000;
-        nanosleep(&ts, NULL);
-#endif
-    }
-
     inline static void wait(int ms)
     {
         Q_ASSERT(QCoreApplication::instance());

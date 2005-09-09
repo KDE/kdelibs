@@ -104,12 +104,10 @@ namespace QtTest {
 #ifdef Q_OS_WIN
         EnterCriticalSection(&outputCriticalSection);
         // OutputDebugString is not threadsafe
-        char buf[1025];
-        QtTest::qt_snprintf(buf, sizeof(buf), "%s\n", str);
-        OutputDebugStringA(buf);
+        OutputDebugStringA(str);
         LeaveCriticalSection(&outputCriticalSection);
 #endif
-        puts(str);
+        QAbstractTestLogger::outputString(str);
     }
 
     static void printMessage(const char *type, const char *msg, const char *file = 0, int line = 0)
@@ -122,18 +120,23 @@ namespace QtTest {
         const char *fn = QtTestResult::currentTestFunction() ? QtTestResult::currentTestFunction()
             : "UnknownTestFunc";
         const char *tag = QtTestResult::currentDataTag() ? QtTestResult::currentDataTag() : "";
+        const char *gtag = QtTestResult::currentGlobalDataTag()
+                         ? QtTestResult::currentGlobalDataTag()
+                         : "";
+        const char *filler = (tag[0] && gtag[0]) ? ":" : "";
         if (file) {
-            QtTest::qt_snprintf(buf, sizeof(buf), "%s: %s::%s(%s)%s%s\n"
+            QtTest::qt_snprintf(buf, sizeof(buf), "%s: %s::%s(%s%s%s)%s%s\n"
 #ifdef Q_OS_WIN
                           "%s(%d) : failure location\n"
 #else
-                          "    Loc: [%s(%d)]"
+                          "    Loc: [%s(%d)]\n"
 #endif
-                          , type, QtTestResult::currentTestObjectName(), fn, tag,
+                          , type, QtTestResult::currentTestObjectName(), fn, gtag, filler, tag,
                           msg[0] ? " " : "", msg, file, line);
         } else {
-            QtTest::qt_snprintf(buf, sizeof(buf), "%s: %s::%s(%s)%s%s",
-                    type, QtTestResult::currentTestObjectName(), fn, tag, msg[0] ? " " : "", msg);
+            QtTest::qt_snprintf(buf, sizeof(buf), "%s: %s::%s(%s%s%s)%s%s\n",
+                    type, QtTestResult::currentTestObjectName(), fn, gtag, filler, tag,
+                    msg[0] ? " " : "", msg);
         }
         memcpy(buf, type, strlen(type));
         outputMessage(buf);
@@ -165,12 +168,14 @@ QPlainTestLogger::~QPlainTestLogger()
 
 void QPlainTestLogger::startLogging()
 {
+    QAbstractTestLogger::startLogging();
+
     char buf[1024];
     QtTest::qt_snprintf(buf, sizeof(buf),
                          "********* Start testing of %s *********\n"
                          "Config: Using QtTest library " QTTEST_VERSION_STR
-                         ", Qt %s", QtTestResult::currentTestObjectName(), qVersion());
-    puts(buf);
+                         ", Qt %s\n", QtTestResult::currentTestObjectName(), qVersion());
+    QtTest::outputMessage(buf);
 }
 
 void QPlainTestLogger::stopLogging()
@@ -178,10 +183,12 @@ void QPlainTestLogger::stopLogging()
     char buf[1024];
     QtTest::qt_snprintf(buf, sizeof(buf),
                          "Totals: %d passed, %d failed, %d skipped\n"
-                         "********* Finished testing of %s *********",
+                         "********* Finished testing of %s *********\n",
                          QtTestResult::passCount(), QtTestResult::failCount(),
                          QtTestResult::skipCount(), QtTestResult::currentTestObjectName());
-    puts(buf);
+    QtTest::outputMessage(buf);
+
+    QAbstractTestLogger::stopLogging();
 }
 
 

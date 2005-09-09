@@ -27,10 +27,11 @@ template<>
 inline bool compare(QIcon const &t1, QIcon const &t2, const char *file, int line)
 {
     QTEST_ASSERT(sizeof(QIcon) == sizeof(void *));
-    return compare<const void *>(*reinterpret_cast<void * const *>(&t1),
+    return compare<void *>(*reinterpret_cast<void * const *>(&t1),
                    *reinterpret_cast<void * const *>(&t2), file, line);
 }
 
+template<>
 inline bool compare(QPixmap const &t1, QPixmap const &t2, const char *file, int line)
 {
     return compare(t1.toImage(), t2.toImage(), file, line);

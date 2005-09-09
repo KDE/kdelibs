@@ -19,9 +19,9 @@
 
 lib_LTLIBRARIES = libqttestlib.la
 
-libqttestlib_la_SOURCES = qtestcase.cpp qtestlog.cpp qtesttable.cpp qtestdata.cpp qtestresult.cpp qasciikey.cpp qplaintestlogger.cpp qxmltestlogger.cpp qsignaldumper.cpp
+libqttestlib_la_SOURCES = qtestcase.cpp qtestlog.cpp qtesttable.cpp qtestdata.cpp qtestresult.cpp qasciikey.cpp qplaintestlogger.cpp qxmltestlogger.cpp qsignaldumper.cpp qabstracttestlogger.cpp
 libqttestlib_la_LIBADD = $(LIB_QTCORE)
-libqttestlib_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 6:0:2
+libqttestlib_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 6:1:2
 
 AM_CPPFLAGS = $(all_includes) -DQT_NO_CAST_TO_ASCII -DQT_NO_CAST_FROM_ASCII -DQT_NO_DATASTREAM -DQTESTLIB_MAKEDLL
 

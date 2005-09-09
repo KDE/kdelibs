@@ -114,6 +114,8 @@ static void qSignalDumperCallbackEndSignal(QObject *caller, int /*method_index*/
 
 }
 
+// this struct is copied from qobject_p.h to prevent us
+// from including private Qt headers.
 struct QSignalSpyCallbackSet
 {
     typedef void (*BeginCallback)(QObject *caller, int method_index, void **argv);

@@ -43,6 +43,9 @@ public:
     static void setVerboseLevel(int level);
     static int verboseLevel();
 
+    static void redirectOutput(const char *fileName);
+    static const char *outputFileName();
+
 private:
     QtTestLog();
     ~QtTestLog();

@@ -69,28 +69,31 @@ QXmlTestLogger::~QXmlTestLogger()
 
 void QXmlTestLogger::startLogging()
 {
+    QAbstractTestLogger::startLogging();
+
     char buf[1024];
     QtTest::qt_snprintf(buf, sizeof(buf),
             "<Environment>\n"
             "    <QtVersion>%s</QtVersion>\n"
             "</Environment>\n", qVersion());
-    puts(buf);
+    outputString(buf);
 }
 
 void QXmlTestLogger::stopLogging()
 {
+    QAbstractTestLogger::stopLogging();
 }
 
 void QXmlTestLogger::enterTestFunction(const char *function)
 {
     char buf[1024];
     QtTest::qt_snprintf(buf, sizeof(buf), "<TestFunction name=\"%s\">", function);
-    puts(buf);
+    outputString(buf);
 }
 
 void QXmlTestLogger::leaveTestFunction()
 {
-    puts("</TestFunction>\n");
+    outputString("</TestFunction>\n");
 }
 
 namespace QtTest
@@ -105,21 +108,21 @@ static const char *incidentFormatString(bool noDescription, bool noTag)
 {
     if (noDescription) {
         if (noTag)
-            return "<Incident type=\"%s\" file=\"%s\" line=\"%d\" />";
+            return "<Incident type=\"%s\" file=\"%s\" line=\"%d\" />\n";
         else
             return "<Incident type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <DataTag><![CDATA[%s%s]]></DataTag>\n"
-                   "</Incident>";
+                   "    <DataTag><![CDATA[%s%s%s%s]]></DataTag>\n"
+                   "</Incident>\n";
     } else {
         if (noTag)
             return "<Incident type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <Description><![CDATA[%s%s]]></Description>\n"
-                   "</Incident>";
+                   "    <Description><![CDATA[%s%s%s%s]]></Description>\n"
+                   "</Incident>\n";
         else
             return "<Incident type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <DataTag><![CDATA[%s]]></DataTag>\n"
+                   "    <DataTag><![CDATA[%s%s%s]]></DataTag>\n"
                    "    <Description><![CDATA[%s]]></Description>\n"
-                   "</Incident>";
+                   "</Incident>\n";
     }
 }
 
@@ -127,21 +130,21 @@ static const char *messageFormatString(bool noDescription, bool noTag)
 {
     if (noDescription) {
         if (noTag)
-            return "<Message type=\"%s\" file=\"%s\" line=\"%d\" />";
+            return "<Message type=\"%s\" file=\"%s\" line=\"%d\" />\n";
         else
             return "<Message type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <DataTag><![CDATA[%s%s]]></DataTag>\n"
-                   "</Message>";
+                   "    <DataTag><![CDATA[%s%s%s%s]]></DataTag>\n"
+                   "</Message>\n";
     } else {
         if (noTag)
             return "<Message type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <Description><![CDATA[%s%s]]></Description>\n"
-                   "</Message>";
+                   "    <Description><![CDATA[%s%s%s%s]]></Description>\n"
+                   "</Message>\n";
         else
             return "<Message type=\"%s\" file=\"%s\" line=\"%d\">\n"
-                   "    <DataTag><![CDATA[%s]]></DataTag>\n"
+                   "    <DataTag><![CDATA[%s%s%s]]></DataTag>\n"
                    "    <Description><![CDATA[%s]]></Description>\n"
-                   "</Message>";
+                   "</Message>\n";
     }
 }
 
@@ -150,32 +153,46 @@ static const char *messageFormatString(bool noDescription, bool noTag)
 void QXmlTestLogger::addIncident(IncidentTypes type, const char *description,
                                  const char *file, int line)
 {
-    char buf[1024];
+    char buf[1536];
     const char *tag = QtTestResult::currentDataTag();
+    const char *gtag = QtTestResult::currentGlobalDataTag();
+    const char *filler = (tag && gtag) ? ":" : "";
+    const bool notag = QtTest::isEmpty(tag) && QtTest::isEmpty(gtag);
 
     QtTest::qt_snprintf(buf, sizeof(buf),
-            QtTest::incidentFormatString(!QtTest::isEmpty(description), !QtTest::isEmpty(tag)),
+            QtTest::incidentFormatString(QtTest::isEmpty(description), notag),
             QtTest::xmlIncidentType2String(type),
             file ? file : "", line,
+            gtag ? gtag : "",
+            filler,
             tag ? tag : "",
             description ? description : "");
 
-    puts(buf);
+    outputString(buf);
 }
 
 void QXmlTestLogger::addMessage(MessageTypes type, const char *message,
                                 const char *file, int line)
 {
-    char buf[1024];
+    char buf[1536];
+    char msgbuf[1024];
     const char *tag = QtTestResult::currentDataTag();
+    const char *gtag = QtTestResult::currentGlobalDataTag();
+    const char *filler = (tag && gtag) ? ":" : "";
+    const bool notag = QtTest::isEmpty(tag) && QtTest::isEmpty(gtag);
+
+    QtTest::qt_snprintf(msgbuf, sizeof(msgbuf), "%s",
+                        message ? message : "");
 
     QtTest::qt_snprintf(buf, sizeof(buf),
-            QtTest::messageFormatString(!QtTest::isEmpty(message), !QtTest::isEmpty(tag)),
+            QtTest::messageFormatString(QtTest::isEmpty(message), notag),
             QtTest::xmlMessageType2String(type),
             file ? file : "", line,
+            gtag ? gtag : "",
+            filler,
             tag ? tag : "",
-            message ? message : "");
+            msgbuf);
 
-    puts(buf);
+    outputString(buf);
 }
 

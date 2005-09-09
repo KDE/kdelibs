@@ -212,3 +212,9 @@ int QtTestTable::indexOf(const char *elementName) const
     return -1;
 }
 
+QtTestTable *QtTestTable::globalTestTable()
+{
+    static QtTestTable *gTable = new QtTestTable;
+    return gTable;
+}
+
