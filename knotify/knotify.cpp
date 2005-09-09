@@ -30,6 +30,7 @@
 // QT headers
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qpixmap.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
 
