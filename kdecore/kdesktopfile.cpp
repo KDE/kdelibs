@@ -109,14 +109,8 @@ QString KDesktopFile::locateLocal(const QString &path)
 
 bool KDesktopFile::isDesktopFile(const QString& path)
 {
-  int len = path.length();
-
-  if(len > 8 && path.right(8) == QString::fromLatin1(".desktop"))
-    return true;
-  else if(len > 7 && path.right(7) == QString::fromLatin1(".kdelnk"))
-    return true;
-  else
-    return false;
+  return (path.length() > 8
+	   && path.right(8) == QString::fromLatin1(".desktop"))
 }
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
@@ -242,8 +236,7 @@ bool KDesktopFile::hasMimeTypeType() const
 
 bool KDesktopFile::hasDeviceType() const
 {
-  return readEntry("Type") == QString::fromLatin1("FSDev") ||
-         readEntry("Type") == QString::fromLatin1("FSDevice");
+  return readEntry("Type") == QString::fromLatin1("FSDevice");
 }
 
 bool KDesktopFile::tryExec() const
@@ -326,11 +319,8 @@ void KDesktopFile::virtual_hook( int id, void* data )
 
 QString KDesktopFile::readDocPath() const
 {
-  // Depreciated, remove in KDE4 or 5?
-  // See: http://www.freedesktop.org/Standards/desktop-entry-spec
   if(hasKey( "DocPath" ))
     return readPathEntry( "DocPath" );
-
   return readPathEntry( "X-DocPath" );
 }
 

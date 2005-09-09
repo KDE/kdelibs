@@ -541,10 +541,6 @@ qWarning("SIGBUS while reading %s", rFile.fileName().latin1());
          aCurrentGroup = decodeGroup(startLine + 1, e - startLine);
          //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
-         // Backwards compatibility
-         if (aCurrentGroup == "KDE Desktop Entry")
-            aCurrentGroup = "Desktop Entry";
-
          groupOptionImmutable = fileOptionImmutable;
 
          e++;

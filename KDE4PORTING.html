@@ -85,7 +85,18 @@ KMacroExpander now takes a QHash and not a QMap
 </ul>
 
 <H4>KDesktopFile</H4>
-<p>QString filename() const -> QString fileName() const</p>
+<ul>
+<li>QString filename() const -> QString fileName() const</li>
+<li>more standards compliant. See
+<a href="http://www.freedesktop.org/Standards/desktop-entry-spec/latest">
+Desktop Entry Spec</a>
+ <ul>
+  <li>.kdelnk files are no longer supported, rename to .desktop.</li>
+  <li>deprecated header [KDE Desktop Entry], change to [Desktop Entry]</li>
+  <li>type FSDev is no longer supported, change to FSDevice</li>
+ </ul>
+</li>
+</ul>
 
 <H4>KKey</H4>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
