@@ -22,8 +22,6 @@
 #include "kconfig.h"
 #include "kdelibs_export.h"
 
-class KDesktopFilePrivate;
-
 /** 
  * KDE Desktop File Management.
  *
@@ -232,12 +230,9 @@ private:
   KDesktopFile( const KDesktopFile& );
   KDesktopFile& operator= ( const KDesktopFile& );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
-  KDesktopFilePrivate *d;
+  class Private;
+  Private *const d;
 };
 
-
 #endif
-

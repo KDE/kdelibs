@@ -37,9 +37,12 @@
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
 
+class KDesktopFile::Private {
+};
+
 KDesktopFile::KDesktopFile(const QString &fileName, bool bReadOnly,
 			   const char * resType)
-  : KConfig(QString::fromLatin1(""), bReadOnly, false)
+  : KConfig(QString(), bReadOnly, false), d(0)
 {
   // KConfigBackEnd will try to locate the filename that is provided
   // based on the resource type specified, _only_ if the filename
@@ -52,7 +55,7 @@ KDesktopFile::KDesktopFile(const QString &fileName, bool bReadOnly,
 
 KDesktopFile::~KDesktopFile()
 {
-  // no need to do anything
+  delete d;
 }
 
 QString KDesktopFile::locateLocal(const QString &path)
@@ -110,7 +113,7 @@ QString KDesktopFile::locateLocal(const QString &path)
 bool KDesktopFile::isDesktopFile(const QString& path)
 {
   return (path.length() > 8
-	   && path.right(8) == QString::fromLatin1(".desktop"))
+	   && path.right(8) == QString::fromLatin1(".desktop"));
 }
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
@@ -190,7 +193,7 @@ QString KDesktopFile::readURL() const
                 return u.url();
             }
         }
-        return QString::null;
+        return QString();
     } else {
 	QString url = readPathEntry("URL");
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
@@ -252,7 +255,8 @@ bool KDesktopFile::tryExec() const
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale cpecified
       // encoding (Like a filenames).
-      QStringList dirs = QStringList::split(':', QFile::decodeName(::getenv("PATH")));
+      QStringList dirs = QFile::decodeName(::getenv("PATH"))
+	      .split(':',QString::SkipEmptyParts);
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
@@ -275,7 +279,7 @@ bool KDesktopFile::tryExec() const
          it != list.end();
          ++it)
      {
-        if (!KAuthorized::self()->authorize((*it).stripWhiteSpace()))
+        if (!KAuthorized::self()->authorize((*it).trimmed()))
            return false;
      }
   }
@@ -314,9 +318,6 @@ KDesktopFile::sortOrder() const
   return readListEntry("SortOrder");
 }
 
-void KDesktopFile::virtual_hook( int id, void* data )
-{ KConfig::virtual_hook( id, data ); }
-
 QString KDesktopFile::readDocPath() const
 {
   if(hasKey( "DocPath" ))
@@ -326,10 +327,8 @@ QString KDesktopFile::readDocPath() const
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const
 {
-  KDesktopFile *config = new KDesktopFile(QString::null, false);
+  KDesktopFile *config = new KDesktopFile(QString(), false);
   KConfig::copyTo(file, config);
   config->setDesktopGroup();
   return config;
 }
-
-
