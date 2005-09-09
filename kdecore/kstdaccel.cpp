@@ -248,27 +248,6 @@ KShortcut shortcutDefault4( StdAccel id )
 	return cut;
 }
 
-#if 0 // unused
-void createAccelActions( KAccelActions& actions )
-{
-	actions.clear();
-
-	for( uint i = 0; g_infoStdAccel[i].psName != 0; i++ ) {
-		StdAccel id = g_infoStdAccel[i].id;
-		KStdAccelInfo* pInfo = &g_infoStdAccel[i];
-
-		if( id != AccelNone ) {
-			actions.insert( pInfo->psName,
-				i18n((pInfo->psDesc) ? pInfo->psDesc : pInfo->psName),
-				QString::null, // pInfo->psWhatsThis,
-				shortcutDefault3(id),
-				shortcutDefault4(id) );
-		} else
-			actions.insert( pInfo->psName, i18n(pInfo->psDesc) );
-	}
-}
-#endif
-
 const KShortcut& open()                  { return shortcut( Open ); }
 const KShortcut& openNew()               { return shortcut( New ); }
 const KShortcut& close()                 { return shortcut( Close ); }
@@ -376,21 +355,6 @@ bool ShortcutList::setOther( Other, uint, const QVariant &)
 bool ShortcutList::save() const
 {
 	return writeSettings( QString::null, 0, false, true );
-}
-
-KDECORE_EXPORT QString action(StdAccel id)
-	{ return name(id); }
-KDECORE_EXPORT QString description(StdAccel id)
-	{ return label(id); }
-KDECORE_EXPORT int key(StdAccel id)
-	{ return shortcut(id).keyCodeQt(); }
-KDECORE_EXPORT int defaultKey(StdAccel id)
-	{ return shortcutDefault(id).keyCodeQt(); }
-
-KDECORE_EXPORT bool isEqual(const QKeyEvent* ev, int keyQt)
-{
-	KKey key1( ev ), key2( keyQt );
-	return key1 == key2;
 }
 
 }
