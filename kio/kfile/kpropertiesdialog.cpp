@@ -73,7 +73,7 @@ extern "C" {
 #include <qvbox.h>
 #include <qvaluevector.h>
 
-#ifndef Q_OS_FREEBSD
+#ifdef USE_POSIX_ACL
 extern "C" {
 #  include <sys/xattr.h>
 }
