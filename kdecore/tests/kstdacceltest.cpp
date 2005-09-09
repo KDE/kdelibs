@@ -20,7 +20,7 @@
 #include "kstdacceltest.h"
 #include "kstdacceltest.moc"
 
-QTTEST_KDEMAIN( KStdAccelTest, NoGUI )
+QTTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
 
 #include <kdebug.h>
 #include <kstdaccel.h>

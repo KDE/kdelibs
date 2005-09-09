@@ -1,11 +1,14 @@
 #include <kiconloader.h>
-#include <qdatetime.h>
-#include <stdio.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <stdlib.h>
 #include <kdebug.h>
+
+#include <qdatetime.h>
+#include <qpixmap.h>
+
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
@@ -22,16 +25,16 @@ int main(int argc, char *argv[])
   for ( int mGroup = 0; mGroup < KIcon::LastGroup ; ++mGroup )
   {
       kdDebug() << "queryIcons " << mGroup << "," << mContext << endl;
-      QStringList filelist=mpLoader->queryIcons(mGroup, mContext);
+      const QStringList filelist = mpLoader->queryIcons(mGroup, mContext);
       kdDebug() << " -> found " << filelist.count() << " icons." << endl;
       int i=0;
-      for(QStringList::Iterator it = filelist.begin();
+      for(QStringList::ConstIterator it = filelist.begin();
           it != filelist.end() /*&& i<10*/;
           ++it, ++i )
       {
           //kdDebug() << ( i==9 ? "..." : (*it) ) << endl;
           mpLoader->loadIcon( (*it), (KIcon::Group)mGroup );
-	  ++count;
+          ++count;
       }
   }
   kdDebug() << "Loading " << count << " icons took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
