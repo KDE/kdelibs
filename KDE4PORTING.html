@@ -50,10 +50,15 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <H4>KAccel</H4>
 <li>Removed methods that were marked deprecated from KDE2</li>
 
+<H4>KAccelBase</H4>
+<li>insert() only takes one KShortcut "default" argument now instead of two</li>
+
 <H4>KAccelAction</H4>
 <li>KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
     support a META modifier/WIN key.  This is changed, so now all shortcuts can be 4 modifier key.  All instances of 
     shortcut3 and shortcut4 have been reduced just to "shortcut".</li>
+<li>The constructor, init(), and insert() functions now only take only KShortcut "default" argument instead of two</li>
+<li>Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
 
 <H4>KApplication</H4>
 <ul>
@@ -105,6 +110,7 @@ Desktop Entry Spec</a>
 
 <H4>KGlobalAccel</H4>
 <li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
+<li>The constructor only takes one KShortcut "default" argument now instead of two.</li>
 
 <H4>KKey</H4>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
@@ -144,6 +150,7 @@ Desktop Entry Spec</a>
 
 <H4>KStdAccel</H4>
 <li>Removed deprecated methods</li>
+<li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
 
 <H4>KStyle</H4>
 

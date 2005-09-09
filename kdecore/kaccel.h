@@ -176,14 +176,7 @@ class KDECORE_EXPORT KAccel : public Q3Accel
 	                 const KShortcut& cutDef,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	/**
-	 * Same as first insert(), but with separate shortcuts defined for
-	 * 3- and 4- modifier defaults.
-	 */
-	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
-	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 bool bConfigurable = true, bool bEnabled = true );
+
 	/**
 	 * This is an overloaded function provided for convenience.
 	 * The advantage of this is when you want to use the same text for the name

@@ -203,30 +203,6 @@ StdAccel findStdAccel( const KKeySequence& seq )
 
 KShortcut shortcutDefault( StdAccel id )
 {
-	//return (KAccelAction::useFourModifierKeys())
-	//	? shortcutDefault4(id) : shortcutDefault3(id);
-	return shortcutDefault4(id);
-}
-
-KShortcut shortcutDefault3( StdAccel id )
-{
-	KShortcut cut;
-
-	KStdAccelInfo* pInfo = infoPtr( id );
-	if( pInfo ) {
-		if( pInfo->cutDefault )
-			cut.init( pInfo->cutDefault );
-		// FIXME: if there is no cutDefault, then this we be made the primary
-		//  instead of alternate shortcut.
-		if( pInfo->cutDefault3B )
-			cut.append( KKey(pInfo->cutDefault3B) );
-	}
-
-	return cut;
-}
-
-KShortcut shortcutDefault4( StdAccel id )
-{
 	KShortcut cut;
 
 	KStdAccelInfo* pInfo = infoPtr( id );

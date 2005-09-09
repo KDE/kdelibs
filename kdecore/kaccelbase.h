@@ -157,7 +157,8 @@ class KDECORE_EXPORT KAccelBase
 	KAccelAction* insert( const QString& sName, const QString& sDesc );
 	KAccelAction* insert(
 	                 const QString& sAction, const QString& sDesc, const QString& sHelp,
-	                 const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+	                 //const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+							const KShortcut& rgCutDefaults,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 			 bool bConfigurable = true, bool bEnabled = true );
 	bool remove( const QString& sAction );

@@ -72,12 +72,12 @@ void KGlobalAccel::disableBlocking( bool disable )
         { d->disableBlocking( disable ); }
 
 KAccelAction* KGlobalAccel::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const KShortcut& cutDef3, const KShortcut& cutDef4,
+		const KShortcut & cutDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
 	return d->insert( sAction, sDesc, sHelp,
-		cutDef3, cutDef4,
+		cutDef,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 }

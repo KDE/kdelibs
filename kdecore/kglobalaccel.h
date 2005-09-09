@@ -82,18 +82,17 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
 	 * @param sLabel An i18n'ized short description of the action displayed when
 	 *  using KKeyChooser to reconfigure the shortcuts.
 	 * @param sWhatsThis An extended description of the action.
-	 * @param cutDef3 The default 3 modifier scheme shortcut.
-	 * @param cutDef4 The default 4 modifier scheme shortcut.
+	 * @param cutDef The default 3 modifier scheme shortcut.
 	 * @param pObjSlot Pointer to the slot object.
 	 * @param psMethodSlot Pointer to the slot method.
 	 * @param bConfigurable Allow the user to change this shortcut if set to 'true'.
 	 * @param bEnabled The action will be activated by the shortcut if set to 'true'.
 	 */
+
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
+	                 const KShortcut& cutDef,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-
 	/**
 	 * Removes the accelerator action identified by the name.
 	 * Remember to also call updateConnections().

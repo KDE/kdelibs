@@ -432,20 +432,7 @@ KAccelAction* KAccel::insert( const QString& sAction, const QString& sLabel, con
 		bool bConfigurable, bool bEnabled )
 {
 	return d->insert( sAction, sLabel, sWhatsThis,
-		cutDef, cutDef,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
-}
-
-KAccelAction* KAccel::insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-		const KShortcut& cutDef3, const KShortcut& cutDef4,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		bool bConfigurable, bool bEnabled )
-{
-	return d->insert( sAction, sLabel, sWhatsThis,
-		cutDef3, cutDef4,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
+		cutDef, pObjSlot, psMethodSlot, bConfigurable, bEnabled );
 }
 
 KAccelAction* KAccel::insert( const char* psAction, const KShortcut& cutDef,
@@ -453,9 +440,7 @@ KAccelAction* KAccel::insert( const char* psAction, const KShortcut& cutDef,
 		bool bConfigurable, bool bEnabled )
 {
 	return d->insert( psAction, i18n(psAction), QString::null,
-		cutDef, cutDef,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
+		cutDef, pObjSlot, psMethodSlot, bConfigurable, bEnabled );
 }
 
 KAccelAction* KAccel::insert( KStdAccel::StdAccel id,
@@ -467,9 +452,8 @@ KAccelAction* KAccel::insert( KStdAccel::StdAccel id,
 		return 0;
 
 	KAccelAction* pAction = d->insert( sAction, KStdAccel::label( id ), KStdAccel::whatsThis( id ),
-		KStdAccel::shortcutDefault3( id ), KStdAccel::shortcutDefault4( id ),
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
+		KStdAccel::shortcutDefault( id ), pObjSlot, psMethodSlot, bConfigurable, bEnabled );
+
 	if( pAction )
 		pAction->setShortcut( KStdAccel::shortcut( id ) );
 

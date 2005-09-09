@@ -111,14 +111,16 @@ bool KAccelBase::setAutoUpdate( bool bAuto )
 }
 
 KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+//			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+			const KShortcut &rgCutDefaults,
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelBase::insert() begin" << endl;
 	KAccelAction* pAction = m_rgActions.insert(
 		sAction, sDesc, sHelp,
-		rgCutDefaults3, rgCutDefaults4,
+//		rgCutDefaults3, rgCutDefaults4,
+		rgCutDefaults,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 

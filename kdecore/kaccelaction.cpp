@@ -63,17 +63,14 @@ KAccelAction::KAccelAction( const KAccelAction& action )
 }
 
 KAccelAction::KAccelAction( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
-			const KShortcut& cutDef3, const KShortcut& cutDef4,
-			const QObject* pObjSlot, const char* psMethodSlot,
+			const KShortcut& cutDef, const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelAction( \"" << sName << "\" ): this = " << this << endl;
 	d = new KAccelActionPrivate;
-	init( sName, sLabel, sWhatsThis,
-		cutDef3, cutDef4,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
+	init( sName, sLabel, sWhatsThis,	cutDef, pObjSlot, psMethodSlot, bConfigurable, bEnabled );
 }
+
 
 KAccelAction::~KAccelAction()
 {
@@ -93,15 +90,13 @@ void KAccelAction::clear()
 }
 
 bool KAccelAction::init( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
-			const QObject* pObjSlot, const char* psMethodSlot,
+			const KShortcut& rgCutDefaults, const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
 	m_sName = sName;
 	m_sLabel = sLabel;
 	m_sWhatsThis = sWhatsThis;
-	m_cutDefault3 = rgCutDefaults3;
-	m_cutDefault4 = rgCutDefaults4;
+	m_cutDefault = rgCutDefaults;
 	m_pObjSlot = pObjSlot;
 	m_psMethodSlot = psMethodSlot;
 	m_bConfigurable = bConfigurable;
@@ -119,8 +114,9 @@ KAccelAction& KAccelAction::operator =( const KAccelAction& action )
 	m_sName          = action.m_sName;
 	m_sLabel         = action.m_sLabel;
 	m_sWhatsThis     = action.m_sWhatsThis;
-	m_cutDefault3    = action.m_cutDefault3;
-	m_cutDefault4    = action.m_cutDefault4;
+	//m_cutDefault3    = action.m_cutDefault3;
+	//m_cutDefault4    = action.m_cutDefault4;
+	m_cutDefault     = action.m_cutDefault;
 	m_pObjSlot       = action.m_pObjSlot;
 	m_psMethodSlot   = action.m_psMethodSlot;
 	m_bConfigurable  = action.m_bConfigurable;
@@ -187,16 +183,12 @@ bool KAccelAction::contains( const KKeySequence& seq )
 	return false;
 }
 
-const KShortcut& KAccelAction::shortcutDefault() const
-	{ return m_cutDefault4; }
 bool KAccelAction::isConnected() const
 	{ return d->m_nConnections; }
 void KAccelAction::incConnections()
 	{ d->m_nConnections++; }
 void KAccelAction::decConnections()
 	{ if( d->m_nConnections > 0 ) d->m_nConnections--; }
-
-
 
 //---------------------------------------------------------------------
 // KAccelActions
@@ -274,7 +266,8 @@ bool KAccelActions::init( KConfigBase& config, const QString& sGroup )
 			cuts.init( sShortcuts );
 
 		m_actions[i] = new KAccelAction( it.key(), it.key(), it.key(),
-			cuts, cuts,
+//			cuts, cuts,
+			cuts,
 			0, 0,          // pObjSlot, psMethodSlot,
 			true, false ); // bConfigurable, bEnabled
 	}
@@ -409,8 +402,7 @@ KAccelAction* KAccelActions::insert( const QString& sName, const QString& sLabel
 }
 
 KAccelAction* KAccelActions::insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
-			const QObject* pObjSlot, const char* psMethodSlot,
+			const KShortcut& rgCutDefaults, const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelActions::insert()2 begin" << endl;
@@ -421,7 +413,7 @@ KAccelAction* KAccelActions::insert( const QString& sAction, const QString& sLab
 
 	KAccelAction* pAction = new KAccelAction(
 		sAction, sLabel, sWhatsThis,
-		rgCutDefaults3, rgCutDefaults4,
+		rgCutDefaults,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 	insertPtr( pAction );

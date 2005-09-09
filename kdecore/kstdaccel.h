@@ -119,6 +119,7 @@ namespace KStdAccel
    */
   KDECORE_EXPORT StdAccel findStdAccel( const KKeySequence &keySeq );
 
+
   /**
    * Returns the hardcoded default shortcut for @p id.
    * This does not take into account the user's configuration.
@@ -126,20 +127,6 @@ namespace KStdAccel
    * @return the default shortcut of the accelerator
    */
   KDECORE_EXPORT KShortcut shortcutDefault(StdAccel id);
-  /**
-   * Returns the hardcoded default 3 modifier shortcut for @p id.
-   * This does not take into account the user's configuration.
-   * @param id the id of the accelerator
-   * @return the default 3 modifier shortcut
-   */
-  KDECORE_EXPORT KShortcut shortcutDefault3(StdAccel id);
-  /**
-   * Returns the hardcoded default 4 modifier shortcut for @p id.
-   * This does not take into account the user's configuration.
-   * @param id the id of the accelerator
-   * @return the default 4 modifier shortcut
-   */
-  KDECORE_EXPORT KShortcut shortcutDefault4(StdAccel id);
 
   /**
    * Open file. Default: Ctrl-o

@@ -97,10 +97,15 @@ class KDECORE_EXPORT KAccelAction
 	 * @param bConfigurable if true the user can configure the shortcut
 	 * @param bEnabled true if the accelerator should be enabled
 	 */
-	KAccelAction( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+/*	KAccelAction( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
 			const KShortcut& cutDef3, const KShortcut& cutDef4,
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled );
+*/
+	KAccelAction( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+			const KShortcut& cutDef, const QObject* pObjSlot, const char* psMethodSlot,
+			bool bConfigurable, bool bEnabled );
+
 	~KAccelAction();
 
 	/**
@@ -123,9 +128,13 @@ class KDECORE_EXPORT KAccelAction
 	 * @param bEnabled true if the accelerator should be enabled
 	 * @return true if successful, false otherwise
 	 */
-	bool init( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+/*	bool init( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
 			const KShortcut& cutDef3, const KShortcut& cutDef4,
 			const QObject* pObjSlot, const char* psMethodSlot,
+			bool bConfigurable, bool bEnabled );
+*/
+	bool init( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+			const KShortcut& cutDef, const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled );
 
 	/**
@@ -168,7 +177,7 @@ class KDECORE_EXPORT KAccelAction
 	 * @see shortcutDefault3()
 	 * @see shortcutDefault4()
 	 */
-	const KShortcut& shortcutDefault() const;
+	const KShortcut& shortcutDefault() const { return m_cutDefault; }
 
 	/**
 	 * The default shortcut for 3 modifier systems.
@@ -178,7 +187,7 @@ class KDECORE_EXPORT KAccelAction
 	 * @see shortcutDefault4()
 	 * @see useFourModifierKeys()
 	 */
-	const KShortcut& shortcutDefault3() const  { return m_cutDefault3; }
+	//const KShortcut& shortcutDefault3() const  { return m_cutDefault3; }
 
 	/**
 	 * The default shortcut for 4 modifier systems.
@@ -188,7 +197,7 @@ class KDECORE_EXPORT KAccelAction
 	 * @see shortcutDefault3()
 	 * @see useFourModifierKeys()
 	 */
-	const KShortcut& shortcutDefault4() const  { return m_cutDefault4; }
+	//const KShortcut& shortcutDefault4() const  { return m_cutDefault4; }
 
 	/**
 	 * Returns the receiver of signals.
@@ -320,7 +329,8 @@ class KDECORE_EXPORT KAccelAction
 	        m_sLabel /**< Label of accel. User-visible. */,
 	        m_sWhatsThis /**< WhatsThis help for accel. User-visible. */;
 	KShortcut m_cut;
-	KShortcut m_cutDefault3, m_cutDefault4;
+	//KShortcut m_cutDefault3, m_cutDefault4;
+	KShortcut m_cutDefault;
 	const QObject* m_pObjSlot;
 	const char* m_psMethodSlot;
 	bool m_bConfigurable,
@@ -470,8 +480,7 @@ class KDECORE_EXPORT KAccelActions
 	 * @param sAction        the name of the accelerator
 	 * @param sLabel         the label of the accelerator (i18n!)
 	 * @param sWhatsThis     the What's This text (18n!)
-	 * @param rgCutDefaults3 the default shortcut for 3 modifier systems
-	 * @param rgCutDefaults4 the default shortcut for 4 modifier systems
+	 * @param rgCutDefaults  the default shortcut 
 	 * @param pObjSlot       the receiver of a signal when the key has been 
 	 *                       pressed
 	 * @param psMethodSlot   the slot to connect for key presses. Receives
@@ -480,9 +489,9 @@ class KDECORE_EXPORT KAccelActions
 	 * @param bEnabled       if true the accelerator should be enabled
 	 * @return the new action
 	 */
+	
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
-			const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
+			const KShortcut& rgCutDefaults, const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
 			bool bConfigurable = true, bool bEnabled = true );
 
 	/**

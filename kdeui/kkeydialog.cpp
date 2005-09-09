@@ -910,7 +910,7 @@ void KKeyChooser::removeGlobalShortcut( const QString& name, KKeyChooser* choose
         KAccelActions actions;
         KShortcut newCut = origCut;
         removeFromShortcut(newCut, cut);
-        actions.insert( name, "", "", newCut, newCut);
+			actions.insert(name, "", "", newCut);
 	actions.writeActions( "Global Shortcuts", 0, true, true );
     }
 }
