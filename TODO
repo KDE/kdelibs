@@ -320,3 +320,5 @@ that we would like to make for the next binary incompatible release.
 - Remove kdecore/kde_file.h -> Qt now has largefile support and defines similar macros in
   qplatformdefs.h (Simon)
 
+- Caleb KGuiItem be replaced by QAction?  They seem to encompass the exact same data.
+
