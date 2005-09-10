@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2002 KDE Team
+    Copyright (c) 2002-2005 KDE Team
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,10 +22,10 @@
 
 #include "kdelibs_export.h"
 
-#define KDE_VERSION_STRING "3.4.90 (alpha1, >= 20050806)"
+#define KDE_VERSION_STRING "3.4.91 (beta1, >= 20050910)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 4
-#define KDE_VERSION_RELEASE 90
+#define KDE_VERSION_RELEASE 91
 #define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
 #define KDE_VERSION \
