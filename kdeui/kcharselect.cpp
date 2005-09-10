@@ -353,7 +353,17 @@ void KCharSelectTable::setToolTips()
 	    const ushort uni = vTableNum * 256 + numCols()*i + j;
 	    QString s;
 	    s.sprintf( "%04X", uint( uni ) );
-	    QToolTip::add(this, r, i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( QChar( uni ) ).arg( s ).arg( uni ).arg( QChar( uni ) ) );
+	    QString character; // Character (which sometimes need to be escaped)
+            switch ( uni )
+	    {
+                case 0x3c: character = "&lt;"; break;
+                case 0x3e: character = "&gt;"; break;
+                case 0x26: character = "&amp;"; break;
+                case 0x27: character = "&apos;"; break;
+                case 0x22: character = "&quot;"; break;
+                default: character = QChar( uni ); break;
+	    }
+	    QToolTip::add(this, r, i18n( "Character","<qt><font size=\"+4\" face=\"%1\">%2</font><br>Unicode code point: U+%3<br>(In decimal: %4)<br>(Character: %5)</qt>" ).arg( vFont ).arg( character ).arg( s ).arg( uni ).arg( character ) );
 	}
     }
 }
