@@ -125,17 +125,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
             return QString::null;
     }
 
-#if QT_VERSION <= 0x030302
-    // Work around bug in QString::fromUtf8 (which calls strlen).
-    QByteArray buffer(file.size() + 1);
-    buffer = file.readAll();
-    if(!buffer.isEmpty())
-        buffer[ buffer.size() - 1 ] = '\0';
-    else
-        return QString::null;
-#else
     QByteArray buffer(file.readAll());
-#endif
     return QString::fromUtf8(buffer.data(), buffer.size());
 }
 

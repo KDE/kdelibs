@@ -721,11 +721,7 @@ int main(int argc, char *argv[])
   check("host",ulong.host(),"swww.gad.de");
   check("path",ulong.path(),"/servlet/CookieAccepted");
 
-#if QT_VERSION < 300
-  qt_set_locale_codec( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
-#else
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
-#endif
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("url",uloc.url().latin1(),"file:///home/dfaure/konqtests/Mat%E9riel");

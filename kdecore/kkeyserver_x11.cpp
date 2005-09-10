@@ -236,7 +236,6 @@ static const TransKey g_rgQtToSymX[] =
 	{ '-',                XK_KP_Subtract },
 	{ '+',                XK_KP_Add },
 	{ Qt::Key_Return,     XK_KP_Enter }
-#if QT_VERSION >= 0x030100
 
 // the next lines are taken from XFree > 4.0 (X11/XF86keysyms.h), defining some special
 // multimedia keys. They are included here as not every system has them.
@@ -316,7 +315,6 @@ static const TransKey g_rgQtToSymX[] =
 	{ Qt::Key_LaunchD,    XF86XK_LaunchB },
 	{ Qt::Key_LaunchE,    XF86XK_LaunchC },
 	{ Qt::Key_LaunchF,    XF86XK_LaunchD },
-#endif
 };
 #endif //Q_WS_X11
 
@@ -619,7 +617,7 @@ uint modX( KKey::ModFlag mod )
 	}
 	return 0;
 }
-#endif KDE3_SUPPORT
+#endif //KDE3_SUPPORT
 
 uint modXShift()      { return ShiftMask; }
 uint modXCtrl()       { return ControlMask; }
