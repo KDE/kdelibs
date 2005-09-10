@@ -35,6 +35,7 @@ env = Environment( tools=['generic', 'libxml', 'qt4'],
 #ENV={'PATH' : os.environ['PATH']})
 
 if env['HELP']:
+	import sys
 	sys.exit(0)
 
 ## TODO the following part is a temporary hack - the framework is not ready yet
