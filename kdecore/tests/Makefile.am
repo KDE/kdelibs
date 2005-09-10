@@ -35,11 +35,12 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 
 TESTS = kurltest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
-	kstringhandlertest krfcdatetest
+	kstringhandlertest krfcdatetest kcalendartest
 
 METASOURCES = AUTO
 
-LDADD = ../libkdecore.la
+LDADD = ../libkdecore.la $(top_builddir)/qttestlib/libqttestlib.la
+
 kconfigtestgui_SOURCES = kconfigtestgui.cpp
 kdebugtest_SOURCES = kdebugtest.cpp
 klocaletest_SOURCES = klocaletest.cpp
@@ -67,7 +68,6 @@ ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
 testqtargs_SOURCES = testqtargs.cpp
 kprociotest_SOURCES = kprociotest.cpp
 kcharsetstest_SOURCES = kcharsetstest.cpp
-kcalendartest_SOURCES = kcalendartest.cpp
 kmacroexpandertest_SOURCES = kmacroexpandertest.cpp
 kshelltest_SOURCES = kshelltest.cpp
 kxerrorhandlertest_SOURCES = kxerrorhandlertest.cpp
@@ -76,16 +76,10 @@ kglobaltest_SOURCES = kglobaltest.cpp
 ktimezonestest_SOURCES = ktimezonestest.cpp
 
 ktempfiletest_SOURCES = ktempfiletest.cpp
-ktempfiletest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kurlmimetest_SOURCES = kurlmimetest.cpp
-kurlmimetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kconfigtest_SOURCES = kconfigtest.cpp
-kconfigtest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 krfcdatetest_SOURCES = krfcdatetest.cpp
-krfcdatetest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kstdacceltest_SOURCES = kstdacceltest.cpp
-kstdacceltest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
-kstringhandlertest_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
 kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
-kurltest4_LDADD = $(LIB_KDECORE) $(top_builddir)/qttestlib/libqttestlib.la
+kcalendartest_SOURCES = kcalendartest.cpp

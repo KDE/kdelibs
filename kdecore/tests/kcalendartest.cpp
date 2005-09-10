@@ -1,154 +1,175 @@
-// Simplest example using two kde calendar systems (gregorian and hijri)
-// Carlos Moro <cfmoro@correo.uniovi.es>
-// GNU-GPL v.2
+#include "QtTest/qttest_kde.h"
 
 #include "kcalendarsystemfactory.h"
 #include "kcalendarsystem.h"
+#include "kglobal.h"
 
-#include <qstringlist.h>
-#include <qdatetime.h>
+#include "kcalendartest.h"
+#include "kcalendartest.moc"
 
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kcmdlineargs.h>
+QTTEST_KDEMAIN(KCalendarTest, NoGUI)
 
-class KLocale;
-
-void test(QDate & date);
-
-static const char description[] = "KCalendarTest";
-
-static KCmdLineOptions options[] =
+void KCalendarTest::listTypes()
 {
-  { "help", I18N_NOOP("Prints this help"), 0 },
-  { "type hijri|gregorian|jalali|hebrew", I18N_NOOP("Supported calendar types"), 0 },
-  { "date <date>", I18N_NOOP("Show day info"), 0 },
-};
-
-int main(int argc, char **argv) {
-
-	QDate date;
-	QString calType, option;
-	
-        KAboutData aboutData( "kcalendartest", "KCalendarTest" ,
-                        "0.1", description, KAboutData::License_GPL,
-                        "(c) 2002, Carlos Moro", 0, 0,
-                        "cfmoro@correo.uniovi.es");
-  	aboutData.addAuthor("Carlos Moro",0, "cfmoro@correo.uniovi.es");
-	
-
-        KCmdLineArgs::init( argc, argv, &aboutData );
-        KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
-
-        KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-        KApplication::disableAutoDcopRegistration();
-	KApplication app(false, false);
-
-        QStringList lst = KCalendarSystemFactory::calendarSystems();
-	kdDebug() << "Supported calendar types: " << endl;
-	for (QStringList::Iterator it = lst.begin(); it != lst.end(); ++it)
-            kdDebug() << *it << endl;
-        kdDebug() << endl;
-
-	
-        if ( args->isSet("type") )
-		calType = args->getOption("type");
-	
-	
-	KGlobal::locale()->setCalendar(calType);
-
-  /*
-   *  If we like to see some date
-   *
-   */
-      	if ( args->isSet("date") ) {
-    		option = args->getOption("date");
-                date = KGlobal::locale()->readDate(option);
-  	} else 
-    		date = QDate::currentDate();
-
-	args->clear(); // Free up some memory.
-	
-	test(date);
-
-	return 0;	
-  
-	
-
+    QStringList lst = KCalendarSystemFactory::calendarSystems();
+    VERIFY( lst.contains("hijri") );
+    VERIFY( lst.contains("jalali") );
+    VERIFY( lst.contains("hebrew") );
+    VERIFY( lst.contains("gregorian") );
 }
 
-void test(QDate & date) {
+void KCalendarTest::testGregorian()
+{
+    KGlobal::locale()->setCalendar("gregorian");
+    const KCalendarSystem *calendar = KGlobal::locale()->calendar();
+    QDate testDate( 2005, 9, 10 );
 
-        kdDebug() << "(KLocale) readDate" << endl;
+    COMPARE( calendar->year(testDate), 2005 );
+    COMPARE( calendar->yearString(testDate, true), QString("05") );
+    COMPARE( calendar->yearString(testDate, false), QString("2005") );
+    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->month(testDate), 9 );
+    COMPARE( calendar->monthString(testDate, true), QString("9") );
+    COMPARE( calendar->monthString(testDate, false), QString("09") );
+    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->day(testDate), 10 );
+    COMPARE( calendar->dayString(testDate, true), QString("10") );
+    COMPARE( calendar->dayString(testDate, false), QString("10") );
+    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->monthsInYear(testDate), 12 );
+    COMPARE( calendar->daysInYear(testDate), 365 );
+    COMPARE( calendar->daysInMonth(testDate), 30 );
+    COMPARE( calendar->weeksInYear(testDate.year()), 52 );
+    COMPARE( calendar->weekNumber(testDate), 36 );
+    COMPARE( calendar->dayOfWeek(testDate), 6 );
+    COMPARE( calendar->dayOfYear(testDate), 253 );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year(), true),
+	     QString("Sep") );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year(), false),
+	     QString("September") );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year()),
+	     QString("September") );
+    COMPARE( calendar->monthName(testDate, true), QString("Sep") );
+    COMPARE( calendar->monthName(testDate, false), QString("September") );
+    COMPARE( calendar->monthName(testDate), QString("September") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year(), true),
+	     QString("of Sep") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year(), false),
+	     QString("of September") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year()),
+	     QString("of September") );
+    COMPARE( calendar->monthNamePossessive(testDate, true), QString("of Sep") );
+    COMPARE( calendar->monthNamePossessive(testDate, false), QString("of September") );
+    COMPARE( calendar->monthNamePossessive(testDate), QString("of September") );
+    COMPARE( calendar->weekDayName(6, false), QString("Saturday") );
+    COMPARE( calendar->weekDayName(6, true), QString("Sat") );
+    COMPARE( calendar->weekDayName(6), QString("Saturday") );
+    COMPARE( calendar->weekDayName(testDate), QString("Saturday") );
+    COMPARE( calendar->weekDayName(testDate, false), QString("Saturday") );
+    COMPARE( calendar->weekDayName(testDate, true), QString("Sat") );
 
-        kdDebug() << "Created calendar: " << KGlobal::locale()->calendar()->calendarName() << endl;
+    VERIFY( calendar->setYMD( testDate, 2000, 3, 1 ) );
+    COMPARE( calendar->year(testDate), 2000 );
+    COMPARE( calendar->month(testDate), 3 );
+    COMPARE( calendar->day(testDate), 1 );
+    COMPARE( calendar->daysInYear(testDate), 366 );
 
-	kdDebug() << "Day name for first day of week is " << KGlobal::locale()->calendar()->weekDayName(1) << endl;
-	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->weekDayName(1, true) << endl;
+    QDate newDate = calendar->addYears(testDate, 4);
+    COMPARE( newDate.year(), 2004 );
+    COMPARE( calendar->daysInYear(newDate), 366 );
 
-	kdDebug() << "Month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date)) << endl;
-	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date), true) << endl;
-	kdDebug() << "Month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date)) << endl;
-	kdDebug() << "Short month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date), true) << endl;
-	kdDebug() << "Month name for fifth month is " << KGlobal::locale()->calendar()->monthName(5, KGlobal::locale()->calendar()->year(date)) << endl;
-	kdDebug() << "Short month name for fifth month is " << KGlobal::locale()->calendar()->monthName(5, KGlobal::locale()->calendar()->year(date), true) << endl;
-	kdDebug() << "Month name possessive for fifth month is " << KGlobal::locale()->calendar()->monthNamePossessive(5, KGlobal::locale()->calendar()->year(date)) << endl;
-	kdDebug() << "Short month name possessive for fifth month is " << KGlobal::locale()->calendar()->monthNamePossessive(5, KGlobal::locale()->calendar()->year(date), true) << endl;
+    newDate = calendar->addMonths( testDate, -4 );
+    COMPARE( newDate.year(), 1999 );
+    COMPARE( newDate.month(), 11 );
+    COMPARE( newDate.day(), 1 );
 
-	kdDebug() << "Day for date " << date.toString() << " is " << KGlobal::locale()->calendar()->day(date) << endl;
-	kdDebug() << "Month for date " << date.toString() << " is " << KGlobal::locale()->calendar()->month(date) << endl;
-	kdDebug() << "Year for date " << date.toString() << " is " << KGlobal::locale()->calendar()->year(date) << endl;
+    newDate = calendar->addDays( newDate, 20 );
+    COMPARE( newDate.year(), 1999 );
+    COMPARE( newDate.month(), 11 );
+    COMPARE( newDate.day(), 21 );
 
-	kdDebug() << "Day for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->dayString(date, true) << endl;
-	kdDebug() << "Month for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->monthString(date, true) << endl;
-	kdDebug() << "Year for date " << date.toString() << " as a string is " << KGlobal::locale()->calendar()->yearString(date, true) << endl;
-
-	kdDebug() << "Day of week for date " << date.toString() << " is number " << KGlobal::locale()->calendar()->dayOfWeek(date) << endl;
-	kdDebug() << "Week name for date " << date.toString() << " is " << KGlobal::locale()->calendar()->weekDayName(date) << endl;
-	kdDebug() << "Short week name for date " << date.toString() << " is " << KGlobal::locale()->calendar()->weekDayName(date, true) << endl;
-
-	kdDebug() << "Month name for date " << date.toString() <<  " is "  << KGlobal::locale()->calendar()->monthName(date) << endl;
-	kdDebug() << "Short month name for date " << date.toString() << " is "  << KGlobal::locale()->calendar()->monthName(date, true) << endl;
-	kdDebug() << "Month name possessive for date " << date.toString() <<  " is "  << KGlobal::locale()->calendar()->monthNamePossessive(date) << endl;
-	kdDebug() << "Short month name possessive for date " << date.toString() << " is "  << KGlobal::locale()->calendar()->monthNamePossessive(date, true) << endl;
-
- 	kdDebug() << "It's week number " << KGlobal::locale()->calendar()->weekNumber(date) << endl;
-
-
-	kdDebug() << "(KLocale) Formatted date: " << KGlobal::locale()->formatDate(date) << endl;
-	kdDebug() << "(KLocale) Short formatted date: " << KGlobal::locale()->formatDate(date, true) << endl;
-
-	kdDebug() << "That month have : " << KGlobal::locale()->calendar()->daysInMonth(date) << " days" << endl;
-
-	kdDebug() << "That year has " << KGlobal::locale()->calendar()->monthsInYear(date) << " months" << endl;
-	kdDebug() << "There are " << KGlobal::locale()->calendar()->weeksInYear(KGlobal::locale()->calendar()->year(date)) << " weeks that year" << endl;
-	kdDebug() << "There are " << KGlobal::locale()->calendar()->daysInYear(date) << " days that year" << endl;
-	
-	kdDebug() << "The day of pray is number " << KGlobal::locale()->calendar()->weekDayOfPray() << endl;
-	
-	kdDebug() << "Max valid year supported is " << KGlobal::locale()->calendar()->maxValidYear() << endl;
-	kdDebug() << "Min valid year supported is " << KGlobal::locale()->calendar()->minValidYear() << endl;
-	
-	kdDebug() << "It's the day number " << KGlobal::locale()->calendar()->dayOfYear(date) << " of year" << endl;
-	
-	kdDebug() << "Add 3 days" << endl;
-	date = KGlobal::locale()->calendar()->addDays(date, 3);
-	kdDebug() << "It's " << KGlobal::locale()->formatDate(date) << endl;
-
-	kdDebug() << "Then add 3 months" << endl;
-	date = KGlobal::locale()->calendar()->addMonths(date, 3);
-	kdDebug() << "It's " << KGlobal::locale()->formatDate(date) << endl;
-
-	kdDebug() << "And last, add -3 years" << endl;
-	date = KGlobal::locale()->calendar()->addYears(date, -3);
-	kdDebug() << "It's " << KGlobal::locale()->formatDate(date) << endl;
-	
-	kdDebug() << "Is lunar based: " << KGlobal::locale()->calendar()->isLunar() << endl;
-	kdDebug() << "Is lunisolar based: " << KGlobal::locale()->calendar()->isLunisolar() << endl;
-	kdDebug() << "Is solar based: " << KGlobal::locale()->calendar()->isSolar() << endl;
-
+    COMPARE( calendar->calendarName(), QString("gregorian") );
+    COMPARE( calendar->minValidYear(), 1753 );
+    COMPARE( calendar->maxValidYear(), 8000 );
+    COMPARE( calendar->isLunar(), false );
+    COMPARE( calendar->isLunisolar(), false );
+    COMPARE( calendar->isSolar(), true );
 }
+
+void KCalendarTest::testHijri()
+{
+    KGlobal::locale()->setCalendar("hijri");
+    const KCalendarSystem *calendar = KGlobal::locale()->calendar();
+    QDate testDate( 2005, 9, 10 );
+
+    COMPARE( calendar->year(testDate), 1426 );
+    COMPARE( calendar->yearString(testDate, true), QString("26") );
+    COMPARE( calendar->yearString(testDate, false), QString("1426") );
+    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->month(testDate), 8 );
+    COMPARE( calendar->monthString(testDate, true), QString("8") );
+    COMPARE( calendar->monthString(testDate, false), QString("08") );
+    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->day(testDate), 6 );
+    COMPARE( calendar->dayString(testDate, true), QString("6") );
+    COMPARE( calendar->dayString(testDate, false), QString("06") );
+    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const 
+    COMPARE( calendar->monthsInYear(testDate), 12 );
+    COMPARE( calendar->daysInYear(testDate), 355 );
+    COMPARE( calendar->daysInMonth(testDate), 29 );
+    COMPARE( calendar->weeksInYear(testDate.year()), 50 );
+    COMPARE( calendar->weekNumber(testDate), 31 );
+    COMPARE( calendar->dayOfWeek(testDate), 6 );
+    COMPARE( calendar->dayOfYear(testDate), 213 );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year(), true),
+	     QString("Ramadan") );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year(), false),
+	     QString("Ramadan") );
+    COMPARE( calendar->monthName(testDate.month(), testDate.year()),
+	     QString("Ramadan") );
+    COMPARE( calendar->monthName(testDate, true), QString("Sha`ban") );
+    COMPARE( calendar->monthName(testDate, false), QString("Sha`ban") );
+    COMPARE( calendar->monthName(testDate), QString("Sha`ban") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year(), true),
+	     QString("of Ramadan") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year(), false),
+	     QString("of Ramadan") );
+    COMPARE( calendar->monthNamePossessive(testDate.month(), testDate.year()),
+	     QString("of Ramadan") );
+    COMPARE( calendar->monthNamePossessive(testDate, true), QString("of Sha`ban") );
+    COMPARE( calendar->monthNamePossessive(testDate, false), QString("of Sha`ban") );
+    COMPARE( calendar->monthNamePossessive(testDate), QString("of Sha`ban") );
+    COMPARE( calendar->weekDayName(6, false), QString("Yaum al-Sabt") );
+    COMPARE( calendar->weekDayName(6, true), QString("Sab") );
+    COMPARE( calendar->weekDayName(6), QString("Yaum al-Sabt") );
+    COMPARE( calendar->weekDayName(testDate), QString("Yaum al-Sabt") );
+    COMPARE( calendar->weekDayName(testDate, false), QString("Yaum al-Sabt") );
+    COMPARE( calendar->weekDayName(testDate, true), QString("Sab") );
+
+    VERIFY( calendar->setYMD( testDate, 2000, 3, 1 ) );
+    COMPARE( calendar->year(testDate), 2000 );
+    COMPARE( calendar->month(testDate), 3 );
+    COMPARE( calendar->day(testDate), 1 );
+
+    QDate newDate = calendar->addYears(testDate, 4);
+    COMPARE( newDate.year(), 2566 );
+    COMPARE( calendar->daysInYear(newDate), 355 );
+
+    newDate = calendar->addMonths( testDate, -4 );
+    COMPARE( newDate.year(), 2561 );
+    COMPARE( newDate.month(), 11 );
+    COMPARE( newDate.day(), 10 );
+
+    newDate = calendar->addDays( newDate, 20 );
+    COMPARE( newDate.year(), 2561 );
+    COMPARE( newDate.month(), 11 );
+    COMPARE( newDate.day(), 30 );
+
+    COMPARE( calendar->calendarName(), QString("hijri") );
+    COMPARE( calendar->minValidYear(), 1166 );
+    COMPARE( calendar->maxValidYear(), 7604 );
+    COMPARE( calendar->isLunar(), true );
+    COMPARE( calendar->isLunisolar(), false );
+    COMPARE( calendar->isSolar(), false );
+}
+
