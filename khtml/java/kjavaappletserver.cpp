@@ -532,19 +532,19 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     switch( cmd_code )
     {
         case KJAS_SHOW_DOCUMENT:
-            cmd = QString::fromLatin1( "showdocument" );
+            cmd = QLatin1String( "showdocument" );
             break;
 
         case KJAS_SHOW_URLINFRAME:
-            cmd = QString::fromLatin1( "showurlinframe" );
+            cmd = QLatin1String( "showurlinframe" );
             break;
 
         case KJAS_SHOW_STATUS:
-            cmd = QString::fromLatin1( "showstatus" );
+            cmd = QLatin1String( "showstatus" );
             break;
 
         case KJAS_RESIZE_APPLET:
-            cmd = QString::fromLatin1( "resizeapplet" );
+            cmd = QLatin1String( "resizeapplet" );
             break;
 
         case KJAS_GET_URLDATA:
@@ -574,7 +574,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 kdError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_JAVASCRIPT_EVENT:
-            cmd = QString::fromLatin1( "JS_Event" );
+            cmd = QLatin1String( "JS_Event" );
             kdDebug(6100) << "Javascript request: "<< contextID
                           << " code: " << args[0] << endl;
             break;
@@ -594,24 +594,24 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             return;
         }
         case KJAS_AUDIOCLIP_PLAY:
-            cmd = QString::fromLatin1( "audioclip_play" );
+            cmd = QLatin1String( "audioclip_play" );
             kdDebug(6100) << "Audio Play: url=" << args[0] << endl;
             break;
         case KJAS_AUDIOCLIP_LOOP:
-            cmd = QString::fromLatin1( "audioclip_loop" );
+            cmd = QLatin1String( "audioclip_loop" );
             kdDebug(6100) << "Audio Loop: url=" << args[0] << endl;
             break;
         case KJAS_AUDIOCLIP_STOP:
-            cmd = QString::fromLatin1( "audioclip_stop" );
+            cmd = QLatin1String( "audioclip_stop" );
             kdDebug(6100) << "Audio Stop: url=" << args[0] << endl;
             break;
         case KJAS_APPLET_STATE:
             kdDebug(6100) << "Applet State Notification for Applet " << args[0] << ". New state=" << args[1] << endl;
-            cmd = QString::fromLatin1( "AppletStateNotification" );
+            cmd = QLatin1String( "AppletStateNotification" );
             break;
         case KJAS_APPLET_FAILED:
             kdDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
-            cmd = QString::fromLatin1( "AppletFailed" );
+            cmd = QLatin1String( "AppletFailed" );
             break;
         case KJAS_SECURITY_CONFIRM: {
             if (KSSL::doesSSLWork() && !d->kssl)

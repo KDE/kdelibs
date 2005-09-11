@@ -1269,7 +1269,7 @@ QString HTMLInputElementImpl::state( )
 {
     switch (m_type) {
     case PASSWORD:
-        return QString::fromLatin1("."); // empty string, avoid restoring
+        return QLatin1String("."); // empty string, avoid restoring
     case CHECKBOX:
     case RADIO:
         return QString::fromLatin1(m_checked ? "on" : "off");
@@ -1287,7 +1287,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
     switch (m_type) {
     case CHECKBOX:
     case RADIO:
-        setChecked((state == QString::fromLatin1("on")));
+        setChecked((state == QLatin1String("on")));
         break;
     case FILE:
         m_value = DOMString(state.left(state.length()-1));

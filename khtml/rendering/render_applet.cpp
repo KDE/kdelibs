@@ -123,22 +123,22 @@ void RenderApplet::processArguments(const QMap<QString, QString> &args)
     KJavaApplet* applet = w ? w->applet() : 0;
 
     if ( applet ) {
-        applet->setBaseURL( args[QString::fromLatin1("baseURL") ] );
-        applet->setAppletClass( args[QString::fromLatin1("code") ] );
+        applet->setBaseURL( args[QLatin1String("baseURL") ] );
+        applet->setAppletClass( args[QLatin1String("code") ] );
 
-	QString str = args[QString::fromLatin1("codeBase") ];
+	QString str = args[QLatin1String("codeBase") ];
         if( !str.isEmpty() )
             applet->setCodeBase( str );
 
-	str = args[QString::fromLatin1("name") ];
+	str = args[QLatin1String("name") ];
         if( !str.isNull() )
             applet->setAppletName( str );
         else
-            applet->setAppletName( args[QString::fromLatin1("code") ] );
+            applet->setAppletName( args[QLatin1String("code") ] );
 
-	str = args[QString::fromLatin1("archive") ];
+	str = args[QLatin1String("archive") ];
         if( !str.isEmpty() )
-            applet->setArchives( args[QString::fromLatin1("archive") ] );
+            applet->setArchives( args[QLatin1String("archive") ] );
     }
 }
 

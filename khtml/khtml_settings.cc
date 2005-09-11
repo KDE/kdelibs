@@ -138,9 +138,9 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
   if (_str.isNull())
         ret = KJavaScriptDunno;
 
-  if (_str.lower() == QString::fromLatin1("accept"))
+  if (_str.lower() == QLatin1String("accept"))
         ret = KJavaScriptAccept;
-  else if (_str.lower() == QString::fromLatin1("reject"))
+  else if (_str.lower() == QLatin1String("reject"))
         ret = KJavaScriptReject;
 
   return ret;
@@ -196,56 +196,56 @@ void KHTMLSettings::readDomainSettings(KConfig *config, bool reset,
   				: QString::fromLatin1("plugins.");
 
   // The setting for Java
-  QString key = javaPrefix + QString::fromLatin1("EnableJava");
+  QString key = javaPrefix + QLatin1String("EnableJava");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_bEnableJava = config->readBoolEntry( key, false );
   else if ( !global )
     pd_settings.m_bEnableJava = d->global.m_bEnableJava;
 
   // The setting for Plugins
-  key = pluginsPrefix + QString::fromLatin1("EnablePlugins");
+  key = pluginsPrefix + QLatin1String("EnablePlugins");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_bEnablePlugins = config->readBoolEntry( key, true );
   else if ( !global )
     pd_settings.m_bEnablePlugins = d->global.m_bEnablePlugins;
 
   // The setting for JavaScript
-  key = jsPrefix + QString::fromLatin1("EnableJavaScript");
+  key = jsPrefix + QLatin1String("EnableJavaScript");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_bEnableJavaScript = config->readBoolEntry( key, true );
   else if ( !global )
     pd_settings.m_bEnableJavaScript = d->global.m_bEnableJavaScript;
 
   // window property policies
-  key = jsPrefix + QString::fromLatin1("WindowOpenPolicy");
+  key = jsPrefix + QLatin1String("WindowOpenPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowOpenPolicy = (KJSWindowOpenPolicy)
     		config->readUnsignedNumEntry( key, KJSWindowOpenSmart );
   else if ( !global )
     pd_settings.m_windowOpenPolicy = d->global.m_windowOpenPolicy;
 
-  key = jsPrefix + QString::fromLatin1("WindowMovePolicy");
+  key = jsPrefix + QLatin1String("WindowMovePolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowMovePolicy = (KJSWindowMovePolicy)
     		config->readUnsignedNumEntry( key, KJSWindowMoveAllow );
   else if ( !global )
     pd_settings.m_windowMovePolicy = d->global.m_windowMovePolicy;
 
-  key = jsPrefix + QString::fromLatin1("WindowResizePolicy");
+  key = jsPrefix + QLatin1String("WindowResizePolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowResizePolicy = (KJSWindowResizePolicy)
     		config->readUnsignedNumEntry( key, KJSWindowResizeAllow );
   else if ( !global )
     pd_settings.m_windowResizePolicy = d->global.m_windowResizePolicy;
 
-  key = jsPrefix + QString::fromLatin1("WindowStatusPolicy");
+  key = jsPrefix + QLatin1String("WindowStatusPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowStatusPolicy = (KJSWindowStatusPolicy)
     		config->readUnsignedNumEntry( key, KJSWindowStatusAllow );
   else if ( !global )
     pd_settings.m_windowStatusPolicy = d->global.m_windowStatusPolicy;
 
-  key = jsPrefix + QString::fromLatin1("WindowFocusPolicy");
+  key = jsPrefix + QLatin1String("WindowFocusPolicy");
   if ( (global && reset) || config->hasKey( key ) )
     pd_settings.m_windowFocusPolicy = (KJSWindowFocusPolicy)
     		config->readUnsignedNumEntry( key, KJSWindowFocusAllow );

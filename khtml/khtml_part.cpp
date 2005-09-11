@@ -1714,11 +1714,11 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
                            .arg(QApplication::reverseLayout() ? "rtl" : "ltr");
   errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
-  errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
+  errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
   errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
-  errText += QString::fromLatin1( "</P>" );
+  errText += QLatin1String( "</P>" );
   errText += Q3StyleSheet::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
-  errText += QString::fromLatin1( "</BODY></HTML>" );
+  errText += QLatin1String( "</BODY></HTML>" );
   write(errText);
   end();
 
@@ -1749,53 +1749,53 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 false );
 
-  QString doc = QString::fromLatin1( "<html><head><title>" );
+  QString doc = QLatin1String( "<html><head><title>" );
   doc += i18n( "Error: " );
   doc += errorName;
   doc += QString::fromLatin1( " - %1</title></head><body><h1>" ).arg( url );
   doc += i18n( "The requested operation could not be completed" );
-  doc += QString::fromLatin1( "</h1><h2>" );
+  doc += QLatin1String( "</h1><h2>" );
   doc += errorName;
-  doc += QString::fromLatin1( "</h2>" );
+  doc += QLatin1String( "</h2>" );
   if ( !techName.isNull() ) {
-    doc += QString::fromLatin1( "<h2>" );
+    doc += QLatin1String( "<h2>" );
     doc += i18n( "Technical Reason: " );
     doc += techName;
-    doc += QString::fromLatin1( "</h2>" );
+    doc += QLatin1String( "</h2>" );
   }
-  doc += QString::fromLatin1( "<h3>" );
+  doc += QLatin1String( "<h3>" );
   doc += i18n( "Details of the Request:" );
-  doc += QString::fromLatin1( "</h3><ul><li>" );
+  doc += QLatin1String( "</h3><ul><li>" );
   doc += i18n( "URL: %1" ).arg( url );
-  doc += QString::fromLatin1( "</li><li>" );
+  doc += QLatin1String( "</li><li>" );
   if ( !protocol.isNull() ) {
     // uncomment for 3.1... i18n change
     // doc += i18n( "Protocol: %1" ).arg( protocol ).arg( protocol );
-    doc += QString::fromLatin1( "</li><li>" );
+    doc += QLatin1String( "</li><li>" );
   }
   doc += i18n( "Date and Time: %1" ).arg( datetime );
-  doc += QString::fromLatin1( "</li><li>" );
+  doc += QLatin1String( "</li><li>" );
   doc += i18n( "Additional Information: %1" ).arg( text );
-  doc += QString::fromLatin1( "</li></ul><h3>" );
+  doc += QLatin1String( "</li></ul><h3>" );
   doc += i18n( "Description:" );
-  doc += QString::fromLatin1( "</h3><p>" );
+  doc += QLatin1String( "</h3><p>" );
   doc += description;
-  doc += QString::fromLatin1( "</p>" );
+  doc += QLatin1String( "</p>" );
   if ( causes.count() ) {
-    doc += QString::fromLatin1( "<h3>" );
+    doc += QLatin1String( "<h3>" );
     doc += i18n( "Possible Causes:" );
-    doc += QString::fromLatin1( "</h3><ul><li>" );
+    doc += QLatin1String( "</h3><ul><li>" );
     doc += causes.join( "</li><li>" );
-    doc += QString::fromLatin1( "</li></ul>" );
+    doc += QLatin1String( "</li></ul>" );
   }
   if ( solutions.count() ) {
-    doc += QString::fromLatin1( "<h3>" );
+    doc += QLatin1String( "<h3>" );
     doc += i18n( "Possible Solutions:" );
-    doc += QString::fromLatin1( "</h3><ul><li>" );
+    doc += QLatin1String( "</h3><ul><li>" );
     doc += solutions.join( "</li><li>" );
-    doc += QString::fromLatin1( "</li></ul>" );
+    doc += QLatin1String( "</li></ul>" );
   }
-  doc += QString::fromLatin1( "</body></html>" );
+  doc += QLatin1String( "</body></html>" );
 
   write( doc );
   end();
@@ -2381,7 +2381,7 @@ void KHTMLPart::slotRedirect()
   d->m_redirectURL = QString::null;
 
   // SYNC check with ecma/kjs_window.cpp::goURL !
-  if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  if ( u.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
   {
     QString script = KURL::decode_string( u.right( u.length() - 11 ) );
     kdDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
@@ -3698,7 +3698,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     return;
   }
 
-  if (url.find( QString::fromLatin1( "javascript:" ),0, false ) == 0 ) {
+  if (url.find( QLatin1String( "javascript:" ),0, false ) == 0 ) {
     QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
@@ -3805,18 +3805,18 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
         extra = i18n(" (In other frame)");
     }
 
-    if (u.protocol() == QString::fromLatin1("mailto")) {
+    if (u.protocol() == QLatin1String("mailto")) {
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
       mailtoMsg += i18n("Email to: ") + KURL::decode_string(u.path());
       QStringList queries = QStringList::split('&', u.query().mid(1));
       QStringList::Iterator it = queries.begin();
       const QStringList::Iterator itEnd = queries.end();
       for (; it != itEnd; ++it)
-        if ((*it).startsWith(QString::fromLatin1("subject=")))
+        if ((*it).startsWith(QLatin1String("subject=")))
           mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
-        else if ((*it).startsWith(QString::fromLatin1("cc=")))
+        else if ((*it).startsWith(QLatin1String("cc=")))
           mailtoMsg += i18n(" - CC: ") + KURL::decode_string((*it).mid(3));
-        else if ((*it).startsWith(QString::fromLatin1("bcc=")))
+        else if ((*it).startsWith(QLatin1String("bcc=")))
           mailtoMsg += i18n(" - BCC: ") + KURL::decode_string((*it).mid(4));
       mailtoMsg = Q3StyleSheet::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString::null);
@@ -3825,9 +3825,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     }
    // Is this check necessary at all? (Frerich)
 #if 0
-    else if (u.protocol() == QString::fromLatin1("http")) {
+    else if (u.protocol() == QLatin1String("http")) {
         DOM::Node hrefNode = nodeUnderMouse().parentNode();
-        while (hrefNode.nodeName().string() != QString::fromLatin1("A") && !hrefNode.isNull())
+        while (hrefNode.nodeName().string() != QLatin1String("A") && !hrefNode.isNull())
           hrefNode = hrefNode.parentNode();
 
         if (!hrefNode.isNull()) {
@@ -3835,12 +3835,12 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
           if (!hreflangNode.isNull()) {
             QString countryCode = hreflangNode.nodeValue().string().lower();
             // Map the language code to an appropriate country code.
-            if (countryCode == QString::fromLatin1("en"))
-              countryCode = QString::fromLatin1("gb");
-            QString flagImg = QString::fromLatin1("<img src=%1>").arg(
-                locate("locale", QString::fromLatin1("l10n/")
+            if (countryCode == QLatin1String("en"))
+              countryCode = QLatin1String("gb");
+            QString flagImg = QLatin1String("<img src=%1>").arg(
+                locate("locale", QLatin1String("l10n/")
                 + countryCode
-                + QString::fromLatin1("/flag.png")));
+                + QLatin1String("/flag.png")));
             emit setStatusBarText(flagImg + u.prettyURL() + extra);
           }
         }
@@ -3873,7 +3873,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   if ( !target.isEmpty() )
       hasTarget = true;
 
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  if ( url.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
   {
     crossFrameExecuteScript( target, KURL::decode_string( url.mid( 11 ) ) );
     return false;
@@ -3993,7 +3993,7 @@ void KHTMLPart::slotViewDocumentSource()
      }
   }
 
-  (void) KRun::runURL( url, QString::fromLatin1("text/plain"), isTempFile );
+  (void) KRun::runURL( url, QLatin1String("text/plain"), isTempFile );
 }
 
 void KHTMLPart::slotViewPageInfo()
@@ -4074,7 +4074,7 @@ void KHTMLPart::slotViewFrameSource()
      }
   }
 
-  (void) KRun::runURL( url, QString::fromLatin1("text/plain"), isTempFile );
+  (void) KRun::runURL( url, QLatin1String("text/plain"), isTempFile );
 }
 
 KURL KHTMLPart::backgroundURL() const
@@ -4285,7 +4285,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it)->m_params = params;
 
   // Support for <frame src="javascript:string">
-  if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  if ( url.find( QLatin1String( "javascript:" ), 0, false ) == 0 )
   {
       QVariant res = executeScript( DOM::Node(frame->element()), KURL::decode_string( url.right( url.length() - 11) ) );
       KURL myurl;
@@ -4367,7 +4367,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 
   // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
   if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
-    args.serviceType = QString::fromLatin1( "text/html" );
+    args.serviceType = QLatin1String( "text/html" );
 
   if ( args.serviceType.isEmpty() ) {
     kdDebug(6050) << "Running new KHTMLRun for " << this << " and child=" << child << endl;
@@ -4737,7 +4737,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                                                       "WarnOnUnencryptedForm");
           // Move this setting into KSSL instead
           KConfig *config = kapp->config();
-          QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+          QString grpNotifMsgs = QLatin1String("Notification Messages");
           KConfigGroupSaver saver( config, grpNotifMsgs );
 
           if (!config->readBoolEntry("WarnOnUnencryptedForm", true)) {
@@ -4771,7 +4771,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   QString urlstring = u.url();
 
-  if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+  if ( urlstring.find( QLatin1String( "javascript:" ), 0, false ) == 0 ) {
     urlstring = KURL::decode_string(urlstring);
     crossFrameExecuteScript( _target, urlstring.right( urlstring.length() - 11) );
     return;
@@ -4935,7 +4935,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKURL );
   QPointer<QObject> guard( client );
 
-  QString mimetype = QString::fromLatin1( "text/html" );
+  QString mimetype = QLatin1String( "text/html" );
   args.metaData()["referrer"] = referrer;
 
   if (!linkUrl.isEmpty())				// over a link
@@ -5055,7 +5055,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   QString urlStr = url.url();
-  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+  if ( urlStr.find( QLatin1String( "javascript:" ), 0, false ) == 0 ) {
       QString script = KURL::decode_string( urlStr.right( urlStr.length() - 11 ) );
       executeScript( DOM::Node(), script );
       return;
@@ -5063,17 +5063,17 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
 
   QString frameName = args.frameName.lower();
   if ( !frameName.isEmpty() ) {
-    if ( frameName == QString::fromLatin1( "_top" ) )
+    if ( frameName == QLatin1String( "_top" ) )
     {
       emit d->m_extension->openURLRequest( url, args );
       return;
     }
-    else if ( frameName == QString::fromLatin1( "_blank" ) )
+    else if ( frameName == QLatin1String( "_blank" ) )
     {
       emit d->m_extension->createNewWindow( url, args );
       return;
     }
-    else if ( frameName == QString::fromLatin1( "_parent" ) )
+    else if ( frameName == QLatin1String( "_parent" ) )
     {
       KParts::URLArgs newArgs( args );
       newArgs.frameName = QString::null;
@@ -5081,7 +5081,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
       emit d->m_extension->openURLRequest( url, newArgs );
       return;
     }
-    else if ( frameName != QString::fromLatin1( "_self" ) )
+    else if ( frameName != QLatin1String( "_self" ) )
     {
       khtml::ChildFrame *_frame = recursiveFrameRequest( callingHtmlPart, url, args );
 

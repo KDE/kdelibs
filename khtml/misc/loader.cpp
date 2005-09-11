@@ -297,7 +297,7 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     // It's javascript we want.
     // But some websites think their scripts are <some wrong mimetype here>
     // and refuse to serve them if we only accept application/x-javascript.
-    setAccept( QString::fromLatin1("*/*") );
+    setAccept( QLatin1String("*/*") );
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;

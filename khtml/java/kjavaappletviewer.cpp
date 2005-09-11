@@ -247,27 +247,27 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                     baseurl = KURL (KURL (value), QString (".")).url ();
                 } else if (name == "__KHTML__CODEBASE")
                     khtml_codebase = value;
-                else if (name_lower == QString::fromLatin1("codebase") ||
-                         name_lower == QString::fromLatin1("java_codebase")) {
+                else if (name_lower == QLatin1String("codebase") ||
+                         name_lower == QLatin1String("java_codebase")) {
                     if (!value.isEmpty ())
                         codebase = value;
                 } else if (name == "__KHTML__CLASSID")
                 //else if (name.lower()==QString::fromLatin1("classid"))
                     classid = value;
-                else if (name_lower == QString::fromLatin1("code") ||
-                         name_lower == QString::fromLatin1("java_code"))
+                else if (name_lower == QLatin1String("code") ||
+                         name_lower == QLatin1String("java_code"))
                     classname = value;
-                else if (name_lower == QString::fromLatin1("src"))
+                else if (name_lower == QLatin1String("src"))
                     src_param = value;
-                else if (name_lower == QString::fromLatin1("archive") ||
-                         name_lower == QString::fromLatin1("java_archive") ||
+                else if (name_lower == QLatin1String("archive") ||
+                         name_lower == QLatin1String("java_archive") ||
                          name_lower.startsWith ("cache_archive"))
                     applet->setArchives (value);
-                else if (name_lower == QString::fromLatin1("name"))
+                else if (name_lower == QLatin1String("name"))
                     applet->setAppletName (value);
-                else if (name_lower == QString::fromLatin1("width"))
+                else if (name_lower == QLatin1String("width"))
                     width = value.toInt();
-                else if (name_lower == QString::fromLatin1("height"))
+                else if (name_lower == QLatin1String("height"))
                     height = value.toInt();
                 if (!name.startsWith ("__KHTML__")) {
                     applet->setParameter (name, value);

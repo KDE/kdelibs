@@ -807,7 +807,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
                                    const QString &filter, long cacheId,
                                    const QString & suggestedFilename )
 {
-  QString name = QString::fromLatin1( "index.html" );
+  QString name = QLatin1String( "index.html" );
   if ( !suggestedFilename.isEmpty() )
     name = suggestedFilename;
   else if ( !url.fileName().isEmpty() )

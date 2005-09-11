@@ -1221,7 +1221,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
       // check if we're allowed to inject javascript
       // SYNC check with khtml_part.cpp::slotRedirect!
       if ( isSafeScript(exec) ||
-            dstUrl.find(QString::fromLatin1("javascript:"), 0, false) != 0 )
+            dstUrl.find(QLatin1String("javascript:"), 0, false) != 0 )
         part->scheduleRedirection(-1,
                                   dstUrl,
                                   lockHistory);

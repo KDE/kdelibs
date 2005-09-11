@@ -1299,7 +1299,7 @@ void DocumentImpl::write( const QString &text )
         if (m_view)
             m_view->part()->resetFromScript();
         m_tokenizer->setAutoClose();
-        write(QString::fromLatin1("<html>"));
+        write(QLatin1String("<html>"));
     }
     m_tokenizer->write(text, false);
 }

@@ -267,7 +267,7 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     bool empty = raw.isEmpty();
     if ( empty )
-        raw = QString::fromLatin1("X");
+        raw = QLatin1Char('X');
     QFontMetrics fm = pb->fontMetrics();
     QSize ts = fm.size( Qt::TextShowMnemonic, raw);
     //Oh boy.
@@ -1007,7 +1007,7 @@ void RenderSelect::updateFromElement()
                     DOMString label = optElem->getAttribute(ATTR_LABEL);
                     if (!label.isEmpty())
                         text = label.string();
-                    text = QString::fromLatin1("    ")+text;
+                    text = QLatin1String("    ")+text;
                 }
 
                 if(m_useListBox) {
@@ -1756,13 +1756,13 @@ QString RenderTextArea::text()
             QString paragraphText = w->text(p);
             for (int l = 0; l < pl; ++l) {
                 if (lindex != w->lineOfChar(p, l)) {
-                    paragraphText.insert(l+ll++, QString::fromLatin1("\n"));
+                    paragraphText.insert(l+ll++, QLatin1String("\n"));
                     lindex = w->lineOfChar(p, l);
                 }
             }
             txt += paragraphText;
             if (p < w->paragraphs() - 1)
-                txt += QString::fromLatin1("\n");
+                txt += QLatin1String("\n");
         }
     }
     else

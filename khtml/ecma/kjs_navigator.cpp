@@ -178,14 +178,14 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String("Mozilla");
   case AppName:
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
-    if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
-        userAgent.find(QString::fromLatin1("compatible")) == -1)
+    if (userAgent.find(QLatin1String("Mozilla")) >= 0 &&
+        userAgent.find(QLatin1String("compatible")) == -1)
     {
       //kdDebug() << "appName -> Mozilla" << endl;
       return String("Netscape");
     }
-    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
-        userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+    if (userAgent.find(QLatin1String("Microsoft")) >= 0 ||
+        userAgent.find(QLatin1String("MSIE")) >= 0)
     {
       //kdDebug() << "appName -> IE" << endl;
       return String("Microsoft Internet Explorer");
@@ -197,14 +197,14 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String(userAgent.mid(userAgent.find('/') + 1));
   case Product:
     // We are pretending to be Mozilla or Safari
-    if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
-        userAgent.find(QString::fromLatin1("compatible")) == -1)
+    if (userAgent.find(QLatin1String("Mozilla")) >= 0 &&
+        userAgent.find(QLatin1String("compatible")) == -1)
     {
         return String("Gecko");
     }
     // When spoofing as IE, we use Undefined().
-    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
-        userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+    if (userAgent.find(QLatin1String("Microsoft")) >= 0 ||
+        userAgent.find(QLatin1String("MSIE")) >= 0)
     {
         return Undefined();
     }
@@ -235,11 +235,11 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String(userAgent);
   case Platform:
     // yet another evil hack, but necessary to spoof some sites...
-    if ( (userAgent.find(QString::fromLatin1("Win"),0,false)>=0) )
-      return String(QString::fromLatin1("Win32"));
-    else if ( (userAgent.find(QString::fromLatin1("Macintosh"),0,false)>=0) ||
-              (userAgent.find(QString::fromLatin1("Mac_PowerPC"),0,false)>=0) )
-      return String(QString::fromLatin1("MacPPC"));
+    if ( (userAgent.find(QLatin1String("Win"),0,false)>=0) )
+      return String("Win32");
+    else if ( (userAgent.find(QLatin1String("Macintosh"),0,false)>=0) ||
+              (userAgent.find(QLatin1String("Mac_PowerPC"),0,false)>=0) )
+      return String("MacPPC");
     else
     {
         struct utsname name;
@@ -247,7 +247,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
         if ( ret >= 0 )
             return String(QString::fromLatin1("%1 %1 X11").arg(name.sysname).arg(name.machine));
         else // can't happen
-            return String(QString::fromLatin1("Unix X11"));
+            return String("Unix X11");
     }
   case CpuClass:
   {

@@ -138,7 +138,7 @@ QString toHebrew( int number ) {
     QString letter;
     if (number < 1) return QString::number(number);
     if (number>999) {
-  	letter = toHebrew(number/1000) + QString::fromLatin1("'");
+  	letter = toHebrew(number/1000) + QLatin1Char('\'');
    	number = number%1000;
     }
 

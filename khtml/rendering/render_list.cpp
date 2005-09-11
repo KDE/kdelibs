@@ -364,7 +364,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
             	if( style()->direction() == LTR) {
                     p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                     p->drawText(_tx + fm.width(m_item), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip,
-                                QString::fromLatin1(". "));
+                                QLatin1String(". "));
                 }
             	else {
                     const QString& punct(QString::fromLatin1(" ."));
@@ -571,7 +571,7 @@ void RenderListMarker::calcMinMaxWidth()
     default:
         KHTMLAssert(false);
     }
-    m_markerWidth = fm.width(m_item) + fm.width(QString::fromLatin1(". "));
+    m_markerWidth = fm.width(m_item) + fm.width(QLatin1String(". "));
     }
 
 end:
