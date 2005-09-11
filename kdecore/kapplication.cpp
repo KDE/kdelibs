@@ -270,6 +270,13 @@ public:
 static QList<const QWidget*> *x11Filter = 0;
 static bool autoDcopRegistration = true;
 
+
+#ifdef Q_WS_X11
+  Display *KApplication::getDisplay() { return QX11Info::display(); }
+#endif
+
+
+
 void KApplication::installX11EventFilter( QWidget* filter )
 {
     if ( !filter )

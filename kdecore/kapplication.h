@@ -522,7 +522,7 @@ public:
    * @return the X11 Display
    * @deprecated use QX11Info::display()
    */
-  Display *getDisplay() KDE_DEPRECATED { return QX11Info::display(); }
+  Display *getDisplay() KDE_DEPRECATED;
 #endif
 
   /**
