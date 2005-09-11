@@ -74,8 +74,13 @@ namespace ThreadWeaver {
 	    Thread* th=m_inventory.takeFirst();
 	    if ( !th->isFinished() )
 	    {
-		m_jobAvailable.wakeAll();
-		th->wait();
+                for ( ;; )
+                {
+                    m_jobAvailable.wakeAll();
+                    if ( th->wait( 100 ) ) break;
+                    debug ( 1,  "WeaverImpl::~WeaverImpl: thread %i did not exit as expected, "
+                            "retrying.\n", th->id() );
+                }
 	    }
             emit ( threadExited ( th ) );
             delete th;

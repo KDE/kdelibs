@@ -66,6 +66,7 @@ Jobs::Jobs ( QWidget *parent )
     connect ( ui.cbLog, SIGNAL (stateChanged ( int )),
 	      SLOT (slotLogStateChanged ( int )));
     setState (Initial);
+    ui.threadGrid->attach ( weaver );
 }
 
 Jobs::~Jobs()

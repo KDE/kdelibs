@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -20,23 +20,56 @@
   </property>
   <layout class="QGridLayout" >
    <property name="margin" >
-    <number>9</number>
+    <number>8</number>
    </property>
    <property name="spacing" >
     <number>6</number>
    </property>
-   <item row="4" column="1" >
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
+   <item row="3" column="0" colspan="5" >
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
      </property>
-     <property name="sizeHint" >
-      <size>
-       <width>75</width>
-       <height>31</height>
-      </size>
+     <property name="spacing" >
+      <number>6</number>
      </property>
-    </spacer>
+     <item>
+      <widget class="QCheckBox" name="cbLog" >
+       <property name="toolTip" >
+        <string>Check to see logging information about thread activity. Watch the console output to see the log information.</string>
+       </property>
+       <property name="text" >
+        <string>Log Thread Activity</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>31</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="ThreadWeaver::WeaverThreadGrid" name="threadGrid" >
+       <property name="toolTip" >
+        <string>Displays Thread Activity</string>
+       </property>
+       <property name="frameShape" >
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item row="6" column="0" >
     <widget class="QPushButton" name="pbStart" >
@@ -111,16 +144,6 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0" colspan="5" >
-    <widget class="QCheckBox" name="cbLog" >
-     <property name="toolTip" >
-      <string>Check to see logging information about thread activity. Watch the console output to see the information.</string>
-     </property>
-     <property name="text" >
-      <string>Log Thread Activity</string>
-     </property>
-    </widget>
-   </item>
    <item row="5" column="0" colspan="5" >
     <widget class="QFrame" name="horizontalLine" >
      <property name="frameShape" >
@@ -153,7 +176,7 @@
       <enum>QFrame::Panel</enum>
      </property>
      <property name="frameShadow" >
-      <enum>QFrame::Plain</enum>
+      <enum>QFrame::Sunken</enum>
      </property>
      <property name="lineWidth" >
       <number>2</number>
@@ -186,15 +209,36 @@
      </property>
     </widget>
    </item>
+   <item row="4" column="1" >
+    <spacer>
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" >
+      <size>
+       <width>85</width>
+       <height>101</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
  <pixmapfunction></pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>ThreadWeaver::WeaverThreadGrid</class>
+   <extends>QFrame</extends>
+   <header>WeaverThreadGrid.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>pbStart</tabstop>
   <tabstop>pbStop</tabstop>
   <tabstop>pbQuit</tabstop>
  </tabstops>
- <includes/>
  <resources/>
  <connections/>
 </ui>
