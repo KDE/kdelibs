@@ -50,6 +50,7 @@
 #include <krfcdate.h>
 #include <kcodecs.h>
 #include <kinstance.h>
+#include <kresolver.h>
 #include <kmimemagic.h>
 #include <dcopclient.h>
 #include <kdatastream.h>
@@ -5463,7 +5464,8 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     // create a response
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
-    KNTLM::getAuth( buf, challenge, user, passwd, domain, QString::null, false, false );
+    KNTLM::getAuth( buf, challenge, user, passwd, domain, 
+		    KNetwork::KResolver::localHostName(), false, false );
   }
   else
   {
