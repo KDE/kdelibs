@@ -2,6 +2,7 @@
 Type=PSD
 Header=^8BPS
 Name=Adobe Photoshop Image
+Name[bg]=Изображение на Adobe Photoshop
 Name[br]=Skeudenn Adobe Photoshop
 Name[cs]=Obrázek Adobe Photoshop
 Name[cy]=Delwedd Adobe Photoshop
@@ -10,6 +11,7 @@ Name[de]=Adobe-Photoshop-Bild
 Name[el]=Εικόνα Adobe Photoshop
 Name[fi]=Adobe Photoshop -kuva
 Name[ga]=Íomhá Adobe Photoshop
+Name[it]=Immagine Adobe Photoshop
 Name[pa]=Adobe Photoshop ਚਿੱਤਰ
 Name[sv]=Adobe Photoshop-bild
 Name[xx]=xxAdobe Photoshop Imagexx
