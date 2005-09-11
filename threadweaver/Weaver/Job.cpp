@@ -71,46 +71,6 @@ namespace ThreadWeaver {
 	debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
     }
 
-/*
-    void Job::triggerSPR ()
-    {
-        m_mutex->lock(); // protect creation of m_wc
-        QMutex mutex;
-        m_wc = new QWaitCondition ();
-        m_mutex->unlock();
-
-
-        // thread()->post (ThreadWeaver::Event::JobSPR, this);
-	mutex.lock();
-        m_wc->wait( &mutex );
-	mutex.unlock();
-        delete m_wc;
-        m_mutex->unlock();
-    }
-
-    void Job::triggerAPR ()
-    {
-	m_mutex->lock ();
-        m_wcmutex = new QMutex;
-	m_wc = new QWaitCondition;
-	m_mutex->unlock ();
-
-	// thread()->post (ThreadWeaver::Event::JobAPR, this);
-	m_wc->wait ( m_wcmutex );
-    }
-
-    void Job::wakeAPR ()
-    {
-	QMutexLocker l(m_mutex);
-	if ( m_wc!=0 )
-	{
-	    m_wc->wakeOne ();
-	    delete m_wc;
-            delete m_wcmutex;
-	    m_wc = 0;
-	}
-    }
-*/
     void Job::addDependancy (Job *dep)
     {   // if *this* depends on dep, *this* will be the key and dep the value:
 	QMutexLocker l(sm_mutex);

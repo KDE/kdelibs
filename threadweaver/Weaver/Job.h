@@ -83,9 +83,6 @@ namespace ThreadWeaver {
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }
 
-	/** Wake the thread after an APR has been processed. */
-	void wakeAPR ();
-
 	/** Process events related to this job (created by the processing
 	    thread or the weaver or whoever). */
 	// virtual void processEvent ( Event* );
