@@ -131,14 +131,20 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
   QVariant minValue = item->minValue();
   if (minValue.isValid())
   {
+    // Only q3datetimeedit is using this property we can remove it if we stop supporting Qt3Support
     if (widget->metaObject()->indexOfProperty("minValue") != -1)
        widget->setProperty("minValue", minValue);
+    if (widget->metaObject()->indexOfProperty("minimum") != -1)
+       widget->setProperty("minimum", minValue);
   }
   QVariant maxValue = item->maxValue();
   if (maxValue.isValid())
   {
+    // Only q3datetimeedit is using that property we can remove it if we stop supporting Qt3Support
     if (widget->metaObject()->indexOfProperty("maxValue") != -1)
        widget->setProperty("maxValue", maxValue);
+    if (widget->metaObject()->indexOfProperty("maximum") != -1)
+       widget->setProperty("maximum", maxValue);
   }
 
   if (widget->whatsThis().isEmpty())
