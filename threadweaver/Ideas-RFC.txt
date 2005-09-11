@@ -4,13 +4,27 @@ removing a star in front of the text after the bullet like this:
 - *** job priorities
 =============================>--------------------<==========================
 
-- * job priorities
-- * job categories
-- thread scheduling priorities on the OS scheduler level (may actually not
-  work on Linux)
+Generic items on job handling:
+------------------------------
+- * job priorities (with Queue merge performed at queueing time)
+- * job categories (can currently be done by using different Weaver objects)
 - cancellation of dependant jobs if a dependancy raises an error
   (all-or-nothing)
 - JobSequence objects (a queue of Jobs that will be executed in order,
   automatically sets up deps)
 - * virtual aboutToBeQueued method for jobs (allows jobs to queue subjobs
   before themselves)
+
+Items to provide performance improvements:
+------------------------------------------
+- thread scheduling priorities on the OS scheduler level (may actually not
+  work on Linux, has to be researched first)
+
+GUI elements: 
+-------------
+- GUI dependant Weaver implementation along with GUI dependant Job classes
+  with automatic feedback on Job processing progress
+  (probably needs it's own library, to keep the library dependancies local,
+  e.g. ThreadWeaver only relies on QtCore, ThreadWeaverGUI relies on QtCore +
+  QtGui)
+

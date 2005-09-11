@@ -103,8 +103,8 @@ namespace ThreadWeaver {
     void Job::resolveDependancies ()
     {
         QMutexLocker l(sm_mutex);
-//        debug ( 5, "Job::resolveDependancies: entered.\n" );
         QMutableMapIterator<Job*, Job*> it(sm_dep);
+        // there has to be a better way to do this: (?)
         while ( it.hasNext() )
         {   // we remove all entries where jobs depend on *this* :
             it.next();
@@ -113,7 +113,6 @@ namespace ThreadWeaver {
                 it.remove();
             }
         }
-//        debug ( 5, "Job::resolveDependancies: left.\n" );
     }
 
 }
