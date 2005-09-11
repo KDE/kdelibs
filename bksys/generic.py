@@ -669,6 +669,37 @@ def generate(env):
 		for dir in ldirs:
 			lenv.BuildDir(lenv.join(buildto, dir), dir)
 
+	def postconfig(lenv):
+		## TODO this block be called from a postconfig() function (move to generic.py)
+		if env['_CONFIGURE']:
+			env.BuildDir('build', '.', duplicate='soft-copy')
+			# generate config.h
+			if not os.path.exists('build'): os.mkdir('build')
+			dest=open(lenv.join('build','config.h'), 'w')
+			dest.write('/* defines are added below */\n')
+			dest.write('#include "config-qt4.py"\n')
+			dest.write('#include "config-xml.py"\n')
+			dest.close()
+
+			dest = open(lenv.join('build','kdemacros.h'), 'w')
+			dest.write('#include <kdemacros.h.in>\n')
+			dest.close()
+
+			#env['BK_CONFIG_FILES']='BK_CONFIG_FILES'+'files'
+			#def build_config(target = None, source = None, env = None):
+			#	dest = open(str(target[0]), 'w')
+			#	dest.write('/* defines are added below */\n')
+			#	dest.close()
+			#act=env.Action(build_config, varlist=['BK_CONFIG_FILES'])
+			#env.Command('config.h', '', act) # no source needed
+
+			#def build_kdemacros(target = None, source = None, env = None):
+		        #        dest = open(str(target[0]), 'w')
+		        #        dest.write('#include <kdemacros.h.in>\n')
+		        #        dest.close()
+		        #act=env.Action(build_kdemacros, varlist=['PREFIX'])
+		        #env.Command('kdemacros.h', '', act) # no source needed
+
 	#valid_targets = "program shlib kioslave staticlib".split()
         SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
@@ -678,6 +709,7 @@ def generate(env):
 	SConsEnvironment.link_local_staticlib = link_local_staticlib
 	SConsEnvironment.genobj=genobj
 	SConsEnvironment.set_build_dir=set_build_dir
+	SConsEnvironment.postconfig=postconfig
 
 	if env.has_key('GENCXXFLAGS'):  env.AppendUnique( CPPFLAGS = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):   env.AppendUnique( CCFLAGS = env['GENCCFLAGS'] )

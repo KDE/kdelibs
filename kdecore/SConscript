@@ -2,6 +2,8 @@
 
 Import('env')
 
+env.subdirs('kconfig_compiler')
+
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp

@@ -35,8 +35,9 @@ env = Environment( tools=['generic', 'libxml', 'qt4'],
 #ENV={'PATH' : os.environ['PATH']})
 
 if env['HELP']:
-	import sys
-	sys.exit(0)
+	#import sys
+	#sys.exit(0)
+	env.Exit(0)
 
 ## TODO the following part is a temporary hack - the framework is not ready yet
 ## Add the builddir as an include path for everyone
@@ -107,19 +108,9 @@ env['KDEMIME']='/usr/share/mimelnk'
 ## other stuff
 env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
-# TODO: we need a config.h and i don't have time to use the one from elsewhere (i know some project does it)
-# look at dcop/SConscript for how to build a .h from a python function cleanly
-if not os.path.exists('build/config.h'):
-	if not os.path.exists('build'):
-		os.mkdir('build')
-	dest=open('build/config.h', 'w')
-	dest.write('#define LTDL_OBJDIR \".libs/\"\n')
-	dest.close()
 
-if not os.path.exists('build/kdemacros.h'):
-	dest = open('build/kdemacros.h', 'w')
-	dest.write('#include <kdemacros.h.in>\n')
-	dest.close()
+## post-configuration
+env.postconfig()
 
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
@@ -127,8 +118,6 @@ if not os.path.exists('build/kdemacros.h'):
 
 ## BuilDir example - try to have all sources to process in only one top-level folder
 SetOption('duplicate', 'soft-copy')
-#env.BuildDir('build', '.', duplicate=0)
-
 subdirs="""
 dcop
 libltdl
