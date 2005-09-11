@@ -57,6 +57,7 @@
 #include <krfcdate.h>
 #include <kmdcodec.h>
 #include <kinstance.h>
+#include <kresolver.h>
 #include <kmimemagic.h>
 #include <dcopclient.h>
 #include <kdatastream.h>
@@ -5460,12 +5461,10 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
   if ( len > 4 )
   {
     // create a response
-    char name[512];
-    QString ws;
-    if ( gethostname( name, sizeof(name) ) == 0 ) ws = QString::fromLatin1( name );
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
-    KNTLM::getAuth( buf, challenge, user, passwd, domain, ws, false, false );
+    KNTLM::getAuth( buf, challenge, user, passwd, domain, 
+		    KNetwork::KResolver::localHostName(), false, false );
   }
   else
   {
