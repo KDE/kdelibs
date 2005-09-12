@@ -411,11 +411,11 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     QHBox *groupsBox = new QHBox( m_widgetStack );
     m_widgetStack->addWidget( groupsBox, KACLListView::NamedGroup );
 
-    QLabel *usersLabel = new QLabel( i18n( "User " ), usersBox );
+    QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
     m_usersCombo = new QComboBox( false, usersBox, "users" );
     usersLabel->setBuddy( m_usersCombo );
 
-    QLabel *groupsLabel = new QLabel( i18n( "Group " ), groupsBox );
+    QLabel *groupsLabel = new QLabel( i18n( "Group: " ), groupsBox );
     m_groupsCombo = new QComboBox( false, groupsBox, "groups" );
     groupsLabel->setBuddy( m_groupsCombo );
 
