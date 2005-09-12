@@ -49,9 +49,9 @@ namespace ThreadWeaver {
 	*/
         void run();
 
-	/* Provide the msleep() method (protected in QThread) to be
-	   available  for executed jobs.
-	   @param msec: amount of milliseconds
+	/** Provide the msleep() method (protected in QThread) to be
+	    available  for executed jobs.
+	    @param msec: amount of milliseconds
         */
 	void msleep(unsigned long msec);
 
