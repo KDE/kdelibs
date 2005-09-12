@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  KLocale::setMainCatalogue("kdelibs");
+  KLocale::setMainCatalog("kdelibs");
   KCmdLineArgs::init(argc, argv, "test", "Test" ,"test app" ,"1.0");
   KApplication app;
   KDateTimeWidget dateTimeWidget;

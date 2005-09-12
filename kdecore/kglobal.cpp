@@ -122,7 +122,7 @@ void KGlobal::setActiveInstance(KInstance *i)
 {
     _activeInstance = i;
     if (i && _locale)
-	_locale->setActiveCatalogue(QString::fromUtf8(i->instanceName()));
+	_locale->setActiveCatalog(QString::fromUtf8(i->instanceName()));
 }
 
 /**

@@ -209,7 +209,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     aboutData.addAuthor("Matthias Ettrich",0, "ettrich@kde.org");
     aboutData.addAuthor("Waldo Bastian",0, "bastian@kde.org");
     
-    KGlobal::locale()->setMainCatalogue("kcmshell");
+    KGlobal::locale()->setMainCatalog("kcmshell");
 
     KCmdLineArgs::init(_argc, _argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.

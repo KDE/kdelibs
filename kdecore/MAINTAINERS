@@ -14,7 +14,7 @@ kallocator.cpp		Waldo Bastian <bastian@kde.org>
 kappdcopiface.cpp
 kapplication.cpp	Waldo Bastian <bastian@kde.org>
 kaudioplayer.cpp
-kcatalogue.cpp		Hans Petter Bieker <bieker@kde.org>
+kcatalog.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp		Lars Knoll <knoll@kde.org>
 kckey.cpp
 kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>

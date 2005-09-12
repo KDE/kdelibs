@@ -68,7 +68,7 @@
   accordingly)
 - CSS: position graphics centered or let text flow around them
 - reorganize DTDs such that independent parts are really independent
-  and have their own catalogues.  That should make versioning easier.
+  and have their own catalogs.  That should make versioning easier.
   Versioning should happen with subdirectories that contain the files
   of a given version, until that one is used no longer in the
   documentation.  (write script to check that)

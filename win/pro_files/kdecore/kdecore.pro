@@ -29,7 +29,7 @@ kcompletion.cpp \
 kmimesourcefactory.cpp \
 ksimpleconfig.cpp \
 libintl.cpp \
-kcatalogue.cpp \
+kcatalog.cpp \
 kcalendarsystem.cpp \
 kcalendarsystemfactory.cpp \
 kcalendarsystemgregorian.cpp \

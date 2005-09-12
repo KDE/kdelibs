@@ -217,7 +217,7 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
 
 void Plugin::setInstance( KInstance *instance )
 {
-    KGlobal::locale()->insertCatalogue( instance->instanceName() );
+    KGlobal::locale()->insertCatalog( instance->instanceName() );
     KXMLGUIClient::setInstance( instance );
 }
 

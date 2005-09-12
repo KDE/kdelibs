@@ -17,15 +17,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCATALOGUE_H
-#define KCATALOGUE_H
+#ifndef KCATALOG_H
+#define KCATALOG_H
 
 #include <qstring.h>
 #include "kdelibs_export.h"
 
 struct kde_loaded_l10nfile;
 
-class KCataloguePrivate;
+class KCatalogPrivate;
 
 /**
  * This class abstracts a gettext message catalog. It will take care of
@@ -34,7 +34,7 @@ class KCataloguePrivate;
  * @see KLocale
  */
 //REVISED: hausmann
-class KDECORE_EXPORT KCatalogue
+class KDECORE_EXPORT KCatalog
 {
 public:
   /**
@@ -43,22 +43,22 @@ public:
    * @param name The name of the catalog
    * @param language The language of this catalog
    */
-  explicit KCatalogue(const QString & name = QString::null, const QString & language = QString::null);
+  explicit KCatalog(const QString & name = QString::null, const QString & language = QString::null);
 
   /**
    * Copy constructor.
    */
-  KCatalogue(const KCatalogue & rhs);
+  KCatalog(const KCatalog & rhs);
 
   /**
    * Assignment operator.
    */
-  KCatalogue & operator = ( const KCatalogue & rhs);
+  KCatalog & operator = ( const KCatalog & rhs);
 
   /**
    * Destructor.
    */
-  virtual ~KCatalogue();
+  virtual ~KCatalog();
 
   /**
    * Returns the name of the catalog.
@@ -123,7 +123,7 @@ private:
   void doUnload();
 
 private:
-  KCataloguePrivate * d;
+  KCatalogPrivate * d;
 };
 
 #endif

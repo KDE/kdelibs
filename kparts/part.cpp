@@ -112,7 +112,7 @@ void PartBase::setInstance( KInstance *inst )
 void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
 {
   KXMLGUIClient::setInstance( inst );
-  KGlobal::locale()->insertCatalogue( inst->instanceName() );
+  KGlobal::locale()->insertCatalog( inst->instanceName() );
   // install 'instancename'data resource type
   KGlobal::dirs()->addResourceType( inst->instanceName() + "data",
                                     KStandardDirs::kde_default( "data" )

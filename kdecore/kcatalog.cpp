@@ -23,7 +23,7 @@
 
 #include <kdebug.h>
 
-#include "kcatalogue.h"
+#include "kcatalog.h"
 #include "kstandarddirs.h"
 
 char *k_nl_find_msg(struct kde_loaded_l10nfile *domain_file,
@@ -42,7 +42,7 @@ struct kde_loaded_l10nfile
 };
 #endif
 
-class KCataloguePrivate
+class KCatalogPrivate
 {
 public:
   QString name;
@@ -52,8 +52,8 @@ public:
   kde_loaded_l10nfile domain;
 };
 
-KCatalogue::KCatalogue(const QString & name, const QString & language )
-  : d( new KCataloguePrivate )
+KCatalog::KCatalog(const QString & name, const QString & language )
+  : d( new KCatalogPrivate )
 {
   d->name = name;
   d->language = language;
@@ -70,13 +70,13 @@ KCatalogue::KCatalogue(const QString & name, const QString & language )
     
 }
 
-KCatalogue::KCatalogue(const KCatalogue & rhs)
-  : d( new KCataloguePrivate )
+KCatalog::KCatalog(const KCatalog & rhs)
+  : d( new KCatalogPrivate )
 {
   *this = rhs;
 }
 
-KCatalogue & KCatalogue::operator=(const KCatalogue & rhs)
+KCatalog & KCatalog::operator=(const KCatalog & rhs)
 {
   d->name       = rhs.d->name;
   d->language   = rhs.d->language;
@@ -86,35 +86,35 @@ KCatalogue & KCatalogue::operator=(const KCatalogue & rhs)
   return *this;
 }
 
-KCatalogue::~KCatalogue()
+KCatalog::~KCatalog()
 {
   doUnload();
 
   delete d;
 }
 
-QString KCatalogue::name() const
+QString KCatalog::name() const
 {
   return d->name;
 }
 
-QString KCatalogue::language() const
+QString KCatalog::language() const
 {
   return d->language;
 }	  
 
-void KCatalogue::setPluralType( int pluralType) 
+void KCatalog::setPluralType( int pluralType) 
 {
   d->pluralType = pluralType;
 }
 
-int KCatalogue::pluralType() const
+int KCatalog::pluralType() const
 {
   return d->pluralType;
 }
 
   
-void KCatalogue::setFileName( const QString & fileName )
+void KCatalog::setFileName( const QString & fileName )
 {
   // nothing to do if the file name is already the same
   if ( this->fileName() == fileName ) return;
@@ -132,17 +132,17 @@ void KCatalogue::setFileName( const QString & fileName )
     }
 }
 
-QString KCatalogue::fileName() const
+QString KCatalog::fileName() const
 {
   return QFile::decodeName( d->domain.filename );
 }
 
-const char * KCatalogue::translate(const char * msgid) const
+const char * KCatalog::translate(const char * msgid) const
 {
   return ::k_nl_find_msg( &d->domain, msgid );
 }
 
-void KCatalogue::doUnload()
+void KCatalog::doUnload()
 {
   // use gettext's unloader
   if ( d->domain.data )

@@ -37,19 +37,19 @@ public:
     {
         m_aboutData=0L;
         s_self = this;
-        m_catalogueInitialized = false;
+        m_catalogInitialized = false;
     }
     KGenericFactoryBase( const KAboutData *data )
         : m_aboutData(data)
     {
         s_self = this;
-        m_catalogueInitialized = false;
+        m_catalogInitialized = false;
     }
 
     virtual ~KGenericFactoryBase()
     {
         if ( s_instance )
-            KGlobal::locale()->removeCatalogue( QString::fromAscii( s_instance->instanceName() ) );
+            KGlobal::locale()->removeCatalog( QString::fromAscii( s_instance->instanceName() ) );
         delete s_instance;
         s_instance = 0;
         s_self = 0;
@@ -72,14 +72,14 @@ protected:
     virtual void setupTranslations( void )
     {
         if ( instance() )
-            KGlobal::locale()->insertCatalogue( QString::fromAscii( instance()->instanceName() ) );
+            KGlobal::locale()->insertCatalog( QString::fromAscii( instance()->instanceName() ) );
     }
 
-    void initializeMessageCatalogue()
+    void initializeMessageCatalog()
     {
-        if ( !m_catalogueInitialized )
+        if ( !m_catalogInitialized )
         {
-            m_catalogueInitialized = true;
+            m_catalogInitialized = true;
             setupTranslations();
         }
     }
@@ -87,7 +87,7 @@ protected:
 private:
     QByteArray m_instanceName;
     const KAboutData *m_aboutData;
-    bool m_catalogueInitialized;
+    bool m_catalogInitialized;
 
     static KInstance *s_instance;
     static KGenericFactoryBase<T> *s_self;
@@ -189,7 +189,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                   const char *className, const QStringList &args )
     {
-        KGenericFactoryBase<Product>::initializeMessageCatalogue();
+        KGenericFactoryBase<Product>::initializeMessageCatalog();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
             ::create( 0, 0, parent, name, className, args );
     }
@@ -284,7 +284,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                    const char *className, const QStringList &args )
     {
-        this->initializeMessageCatalogue();
+        this->initializeMessageCatalog();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail > >
             ::create( 0, 0, parent, name, className, args );
     }
@@ -380,7 +380,7 @@ protected:
     virtual QObject *createObject( QObject *parent, const char *name,
                                    const char *className, const QStringList &args )
     {
-        this->initializeMessageCatalogue();
+        this->initializeMessageCatalogs();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail >,
                                          KTypeList< ParentType, ParentTypeListTail > >
                                        ::create( 0, 0, parent, name,

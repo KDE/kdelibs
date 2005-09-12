@@ -45,6 +45,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <UL>
   kuniqueapp.h =&gt; kuniqueapplication.h
   klargefile.h =&gt; kde_file.h
+  kcatalogue.h => kcatalog.h
 </UL>
 
 <H4>KAccel</H4>
@@ -72,6 +73,8 @@ by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 by QX11Info::display()</li>
 </ul>
 
+<H4>KCatalogue</H4>
+<li>Has been renamed to KCatalog. Method name parts with "catalogue" have been also renamed to contain "catalog".
 
 <H4>KCodecs</H4>
 <li>All methods using a Q(3)CString removed. The methods use QByteArray (and thus Q3CStrings) now. </li>

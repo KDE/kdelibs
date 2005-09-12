@@ -44,7 +44,7 @@ HighContrastStyleConfig::HighContrastStyleConfig(
 {
     // Should have no margins here, the dialog provides them
     QVBoxLayout* layout = new QVBoxLayout(this, 0, 0);
-    KGlobal::locale()->insertCatalogue("kstyle_highcontrast_config");
+    KGlobal::locale()->insertCatalog("kstyle_highcontrast_config");
 
     wideLinesBox = new QCheckBox(i18n("Use wider lines"), this);
 
@@ -62,7 +62,7 @@ HighContrastStyleConfig::HighContrastStyleConfig(
 
 HighContrastStyleConfig::~HighContrastStyleConfig()
 {
-    KGlobal::locale()->removeCatalogue("kstyle_keramik_config");
+    KGlobal::locale()->removeCatalog("kstyle_keramik_config");
 }
 
 

@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  KLocale::setMainCatalogue("kdelibs");
+  KLocale::setMainCatalog("kdelibs");
   KApplication app;
   KCustomMenuEditor editor(0);
   KConfig *cfg = new KConfig("kdesktop_custom_menu2");

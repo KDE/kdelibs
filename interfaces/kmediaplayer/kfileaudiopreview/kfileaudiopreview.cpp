@@ -54,7 +54,7 @@ public:
 KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
     : KPreviewWidgetBase( parent, name )
 {
-    KGlobal::locale()->insertCatalogue("kfileaudiopreview");    
+    KGlobal::locale()->insertCatalog("kfileaudiopreview");    
 
     QStringList formats = KDE::PlayObjectFactory::mimeTypes();
     // ###

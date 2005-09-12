@@ -106,7 +106,7 @@ KMFactory::KMFactory()
 		settings.writeEntry( "/qt/embedFonts", true );
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
-        KGlobal::locale()->insertCatalogue("kdeprint");
+        KGlobal::locale()->insertCatalog("kdeprint");
 
 	// create DCOP signal connection
 	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "slot_pluginChanged(pid_t)", false);

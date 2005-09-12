@@ -806,7 +806,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KCmdLineArgs::addCmdLineOptions( options );
 
      // this program is in kdelibs so it uses kdelibs as catalog
-     KLocale::setMainCatalogue("kdelibs");
+     KLocale::setMainCatalog("kdelibs");
 
      // WABA: Make sure not to enable session management.
      putenv(strdup("SESSION_MANAGER="));

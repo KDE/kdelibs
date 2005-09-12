@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-  KLocale::setMainCatalogue("kdelibs");
+  KLocale::setMainCatalog("kdelibs");
   KAboutData about("KDatePickertest", "KDatePickertest", "version");
   KCmdLineArgs::init(argc, argv, &about);
 

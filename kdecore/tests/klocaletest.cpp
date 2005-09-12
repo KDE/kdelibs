@@ -100,7 +100,7 @@ void Test::createFields()
 
 int main( int argc, char ** argv )
 {
-  KLocale::setMainCatalogue("kdelibs");
+  KLocale::setMainCatalog("kdelibs");
   KAboutData about("klocaletest", "klocaletest", "version");
   KCmdLineArgs::init(argc, argv, &about);
 

@@ -32,7 +32,7 @@
 #include <qfileinfo.h>
 #include <qregexp.h>
 
-#include "kcatalogue.h"
+#include "kcatalog.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "ksimpleconfig.h"
@@ -49,7 +49,7 @@
 
 static const char * const SYSTEM_MESSAGES = "kdelibs";
 
-static const char *maincatalogue = 0;
+static const char *maincatalog = 0;
 
 class KLocalePrivate
 {
@@ -59,7 +59,7 @@ public:
   bool dateMonthNamePossessive;
   QStringList languageList;
   QStringList catalogNames; // list of all catalogs (regardless of language)
-  QList<KCatalogue> catalogues; // list of all loaded catalogs, contains one instance per catalog name and language
+  QList<KCatalog> catalogs; // list of all loaded catalogs, contains one instance per catalog name and language
   QString encoding;
   QTextCodec * codecForEncoding;
   KConfig * config;
@@ -99,7 +99,7 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
 
   d->appName = catalog;
   initLanguageList( cfg, config == 0);
-  initMainCatalogues(catalog);
+  initMainCatalogs(catalog);
 }
 
 QString KLocale::_initLanguage(KConfigBase *config)
@@ -114,24 +114,24 @@ QString KLocale::_initLanguage(KConfigBase *config)
   return QString::null;
 }
 
-void KLocale::initMainCatalogues(const QString & catalog)
+void KLocale::initMainCatalogs(const QString & catalog)
 {
   // Use the first non-null string.
-  QString mainCatalogue = catalog;
-  if (maincatalogue)
-    mainCatalogue = QString::fromLatin1(maincatalogue);
+  QString mainCatalog = catalog;
+  if (maincatalog)
+    mainCatalog = QString::fromLatin1(maincatalog);
 
-  if (mainCatalogue.isEmpty()) {
+  if (mainCatalog.isEmpty()) {
     kdDebug(173) << "KLocale instance created called without valid "
-                 << "catalog! Give an argument or call setMainCatalogue "
+                 << "catalog! Give an argument or call setMainCatalog "
                  << "before init" << endl;
   }
   else {
-    // do not use insertCatalogue here, that would already trigger updateCatalogs
-    d->catalogNames.append( mainCatalogue );   // application catalog
+    // do not use insertCatalog here, that would already trigger updateCatalogs
+    d->catalogNames.append( mainCatalog );   // application catalog
     d->catalogNames.append( SYSTEM_MESSAGES ); // always include kdelibs.mo
     d->catalogNames.append( "kio" );            // always include kio.mo
-    updateCatalogues(); // evaluate this for all languages
+    updateCatalogs(); // evaluate this for all languages
   }
 }
 
@@ -182,8 +182,8 @@ void KLocale::initLanguageList(KConfig * config, bool useEnv)
 
 void KLocale::initPluralTypes()
 {
-  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
-    it != d->catalogues.end();
+  for ( QList<KCatalog>::Iterator it = d->catalogs.begin();
+    it != d->catalogs.end();
     ++it )
   {
     QString language = (*it).language();
@@ -195,8 +195,8 @@ void KLocale::initPluralTypes()
 
 int KLocale::pluralType( const QString & language )
 {
-  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
-    it != d->catalogues.end();
+  for ( QList<KCatalog>::ConstIterator it = d->catalogs.begin();
+    it != d->catalogs.end();
     ++it )
   {
     if ( ((*it).name() == SYSTEM_MESSAGES ) && ((*it).language() == language )) {
@@ -207,7 +207,7 @@ int KLocale::pluralType( const QString & language )
   return -1;
 }
 
-int KLocale::pluralType( const KCatalogue& catalog )
+int KLocale::pluralType( const KCatalog& catalog )
 {
     const char* pluralFormString =
     I18N_NOOP("_: Dear translator, please do not translate this string "
@@ -388,8 +388,8 @@ bool KLocale::setCountry(const QString & country)
   return true;
 }
 
-QString KLocale::catalogueFileName(const QString & language,
-				   const KCatalogue & catalog)
+QString KLocale::catalogFileName(const QString & language,
+				   const KCatalog & catalog)
 {
   QString path = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg( language )
@@ -409,7 +409,7 @@ bool KLocale::setLanguage(const QString & language)
 
   // important when called from the outside and harmless when called before populating the
   // catalog name list
-  updateCatalogues();
+  updateCatalogs();
 
   d->formatInited = false;
 
@@ -462,7 +462,7 @@ bool KLocale::setLanguage(const QStringList & languages)
 
   // important when called from the outside and harmless when called before populating the
   // catalog name list
-  updateCatalogues();
+  updateCatalogs();
 
   return true; // we found something. Maybe it's only English, but we found something
 }
@@ -479,11 +479,11 @@ bool KLocale::isApplicationTranslatedInto( const QString & language)
   }
 
   QString appName = d->appName;
-  if (maincatalogue) {
-    appName = QString::fromLatin1(maincatalogue);
+  if (maincatalog) {
+    appName = QString::fromLatin1(maincatalog);
   }
-  // sorry, catalogueFileName requires catalog object,k which we do not have here
-  // path finding was supposed to be moved completely to KCatalogue. The interface cannot
+  // sorry, catalogFileName requires catalog object,k which we do not have here
+  // path finding was supposed to be moved completely to KCatalog. The interface cannot
   // be changed that far during deep freeze. So in order to fix the bug now, we have
   // duplicated code for file path evaluation. Cleanup will follow later. We could have e.g.
   // a static method in KCataloge that can translate between these file names.
@@ -542,20 +542,20 @@ QString KLocale::country() const
 }
 
 
-void KLocale::insertCatalogue( const QString & catalog )
+void KLocale::insertCatalog( const QString & catalog )
 {
   if ( !d->catalogNames.contains( catalog) ) {
     d->catalogNames.append( catalog );
   }
-  updateCatalogues( ); // evaluate the changed list and generate the neccessary KCatalog objects
+  updateCatalogs( ); // evaluate the changed list and generate the neccessary KCatalog objects
 }
 
-void KLocale::updateCatalogues( )
+void KLocale::updateCatalogs( )
 {
   // some changes have occured. Maybe we have learned or forgotten some languages.
   // Maybe the language precedence has changed.
   // Maybe we have learned or forgotten some catalog names.
-  // Now examine the list of KCatalogue objects and change it according to the new circumstances.
+  // Now examine the list of KCatalog objects and change it according to the new circumstances.
 
   // this could be optimized: try to reuse old KCatalog objects, but remember that the order of
   // catalogs might have changed: e.g. in this fashion
@@ -565,10 +565,10 @@ void KLocale::updateCatalogues( )
   // 3.2) else create a new catalog.
   // but we will do this later.
 
-  for ( QList<KCatalogue>::Iterator it = d->catalogues.begin();
-	it != d->catalogues.end(); )
+  for ( QList<KCatalog>::Iterator it = d->catalogs.begin();
+	it != d->catalogs.end(); )
   {
-     it = d->catalogues.remove(it);
+     it = d->catalogs.remove(it);
   }
 
   // now iterate over all languages and all wanted catalog names and append or create them in the right order
@@ -581,31 +581,31 @@ void KLocale::updateCatalogues( )
     for ( QStringList::ConstIterator itNames =  d->catalogNames.begin();
 	itNames != d->catalogNames.end(); ++itNames)
     {
-      KCatalogue cat( *itNames, *itLangs ); // create Catalog for this name and this language
-      d->catalogues.append( cat );
+      KCatalog cat( *itNames, *itLangs ); // create Catalog for this name and this language
+      d->catalogs.append( cat );
 	}
   }
-  initPluralTypes();  // evaluate the plural type for all languages and remember this in each KCatalogue
+  initPluralTypes();  // evaluate the plural type for all languages and remember this in each KCatalog
 }
 
 
 
 
-void KLocale::removeCatalogue(const QString &catalog)
+void KLocale::removeCatalog(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog )) {
     d->catalogNames.remove( catalog );
     if (KGlobal::_instance)
-      updateCatalogues();  // walk through the KCatalogue instances and weed out everything we no longer need
+      updateCatalogs();  // walk through the KCatalog instances and weed out everything we no longer need
   }
 }
 
-void KLocale::setActiveCatalogue(const QString &catalog)
+void KLocale::setActiveCatalog(const QString &catalog)
 {
   if ( d->catalogNames.contains( catalog ) ) {
     d->catalogNames.remove( catalog );
 	d->catalogNames.prepend( catalog );
-	updateCatalogues();  // walk through the KCatalogue instances and adapt to the new order
+	updateCatalogs();  // walk through the KCatalog instances and adapt to the new order
   }
 }
 
@@ -636,8 +636,8 @@ QString KLocale::translate_priv(const char *msgid,
     return QString::fromUtf8( fallback );
   }
 
-  for ( QList<KCatalogue>::ConstIterator it = d->catalogues.begin();
-	it != d->catalogues.end();
+  for ( QList<KCatalog>::ConstIterator it = d->catalogs.begin();
+	it != d->catalogs.end();
 	++it )
     {
 	  // shortcut evaluation: once we have arrived at en_US (default language) we cannot consult
@@ -1311,9 +1311,9 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
   return buffer;
 }
 
-void KLocale::setMainCatalogue(const char *catalog)
+void KLocale::setMainCatalog(const char *catalog)
 {
-  maincatalogue = catalog;
+  maincatalog = catalog;
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const

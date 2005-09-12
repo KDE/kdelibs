@@ -634,7 +634,7 @@ KPaletteTable::readNamedColor( void )
     return; // Strings already present
   }
 
-  KGlobal::locale()->insertCatalogue("kdelibs_colors");
+  KGlobal::locale()->insertCatalog("kdelibs_colors");
 
   //
   // Code somewhat inspired by KPalette.

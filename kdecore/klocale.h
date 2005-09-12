@@ -36,7 +36,7 @@ class KGlobal;
 class KConfig;
 class KConfigBase;
 class KLocalePrivate;
-class KCatalogue;
+class KCatalog;
 class KCalendarSystem;
 
 /**
@@ -944,20 +944,20 @@ public:
    *
    * @param catalog The catalog to add.
    */
-  void insertCatalogue(const QString& catalog);
+  void insertCatalog(const QString& catalog);
 
   /**
    * Removes a catalog for translation lookup.
    * @param catalog The catalog to remove.
-   * @see insertCatalogue()
+   * @see insertCatalog()
    */
-  void removeCatalogue(const QString &catalog);
+  void removeCatalog(const QString &catalog);
 
   /**
    * Sets the active catalog for translation lookup.
    * @param catalog The catalog to activate.
    */
-  void setActiveCatalogue(const QString &catalog);
+  void setActiveCatalog(const QString &catalog);
 
   /**
    * Translates a message as a QTranslator is supposed to.
@@ -1019,9 +1019,9 @@ public:
    * in your program's main function as it only has an effect before the
    * first KLocale object is created.
    *
-   * @param catalog Catalogue to override all other main catalogues.
+   * @param catalog Catalog to override all other main Catalogs.
    */
-  static void setMainCatalogue(const char *catalog);
+  static void setMainCatalog(const char *catalog);
 
   /**
    * Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
@@ -1074,7 +1074,7 @@ private:
    * @param config The configuration object used for init
    * @param useEnv True if we should use environment variables
    */
-  void initMainCatalogues(const QString & catalog);
+  void initMainCatalogs(const QString & catalog);
 
   /**
    * @internal Initializes the list of valid languages from the user's point of view. This is the list of
@@ -1113,7 +1113,7 @@ private:
    * @internal Changes the file name of the catalog to the correct
    * one.
    */
-  void initCatalogue( KCatalogue & catalog );
+  void initCatalog( KCatalog & catalog );
 
   /**
    * @internal Ensures that the format configuration is read.
@@ -1147,7 +1147,7 @@ private:
    * @internal evaluate the list of catalogs and check that all instances for all languages are loaded
    * and that they are sorted according to the catalog names
    */
-  void updateCatalogues( );
+  void updateCatalogs( );
 
   /**
    * @internal Find the plural type for all loaded catalogs
@@ -1166,22 +1166,22 @@ private:
    *
    * @param language The language to examine
    */
-  int pluralType( const KCatalogue& catalog );
+  int pluralType( const KCatalog& catalog );
   /**
    * @internal Find catalog for given language and given catalog name.
    *
    * @param language language of the catalog
    * @param name name of the catalog
    */
-  // const KCatalogue * catalog( const QString & language, const QString & name );
+  // const KCatalog * catalog( const QString & language, const QString & name );
 
 
   /**
    * @internal Retrieves the file name of the catalog, or QString::null
    *           if not found.
    */
-  static QString catalogueFileName(const QString & language,
-				   const KCatalogue & catalog);
+  static QString catalogFileName(const QString & language,
+				   const KCatalog & catalog);
 
   /**
    * @internal Checks whether or not theFind catalog for given language and given catalog name.

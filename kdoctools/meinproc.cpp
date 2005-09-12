@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KLocale::setMainCatalogue("kio_help");
+    KLocale::setMainCatalog("kio_help");
     KInstance ins("meinproc");
     KGlobal::locale();
 

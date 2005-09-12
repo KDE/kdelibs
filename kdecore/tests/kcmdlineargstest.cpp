@@ -24,7 +24,7 @@ static KCmdLineOptions options[] =
 int
 main(int argc, char *argv[])
 {
-   KLocale::setMainCatalogue("kdelibs");
+   KLocale::setMainCatalog("kdelibs");
    KCmdLineArgs::init( argc, argv, "testapp", "TestApp", description, version);
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.

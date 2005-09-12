@@ -83,7 +83,7 @@ protected:
    * Set the instance ( KInstance) for this part.
    *
    * Call this *first* in the inherited class constructor,
-   * because it loads the i18n catalogues.
+   * because it loads the i18n catalogs.
    */
   virtual void setInstance( KInstance *instance );
 
@@ -91,7 +91,7 @@ protected:
    * Set the instance ( KInstance) for this part.
    *
    * Call this *first* in the inherited class constructor,
-   * because it loads the i18n catalogues.
+   * because it loads the i18n catalogs.
    */
   virtual void setInstance( KInstance *instance, bool loadPlugins );
 

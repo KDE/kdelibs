@@ -95,7 +95,7 @@ typedef WId Window;
 
 KDE_EXPORT int main(int argc, char *argv[])
 {
-    KLocale::setMainCatalogue("libkscreensaver");
+    KLocale::setMainCatalog("libkscreensaver");
     KCmdLineArgs::init(argc, argv, kss_applicationName, kss_applicationName, kss_description, kss_version);
 
     KCmdLineArgs::addCmdLineOptions(options);
@@ -103,8 +103,8 @@ KDE_EXPORT int main(int argc, char *argv[])
     KApplication app;
 
     KCrash::setCrashHandler( crashHandler );
-    KGlobal::locale()->insertCatalogue("klock");
-    KGlobal::locale()->insertCatalogue("kscreensaver");
+    KGlobal::locale()->insertCatalog("klock");
+    KGlobal::locale()->insertCatalog("kscreensaver");
 
     DemoWindow *demoWidget = 0;
     Window saveWin = 0;

@@ -32,7 +32,7 @@
       <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
                      "customization/dtd/kdex.dtd">
 
-    and use catalog as the catalogue file.
+    and use catalog as the catalog file.
     Note: the system identifier is interpreted relative to the place
     where it is defined, unless otherwise defined by the application you use.
     If you have permanent internet access, you can use any URLs (and

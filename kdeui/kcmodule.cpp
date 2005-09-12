@@ -65,7 +65,7 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
     init();
     if (name && strlen(name)) {
         d->_instance = new KInstance(name);
-        KGlobal::locale()->insertCatalogue(name);
+        KGlobal::locale()->insertCatalog(name);
     } else
         d->_instance = new KInstance("kcmunnamed");
     KGlobal::setActiveInstance(this->instance());
@@ -81,7 +81,7 @@ KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
         setObjectName( instance->instanceName() );
     init();
     d->_instance = instance;
-    KGlobal::locale()->insertCatalogue(instance->instanceName());
+    KGlobal::locale()->insertCatalog(instance->instanceName());
     d->_hasOwnInstance = false;
     KGlobal::setActiveInstance(this->instance());
 }

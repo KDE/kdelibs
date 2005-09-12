@@ -134,7 +134,7 @@ extern "C" { KDE_EXPORT int kdemain(int argc, char **argv); }
 
 int kdemain( int argc, char **argv )
 {
-  KLocale::setMainCatalogue("kdelibs");
+  KLocale::setMainCatalog("kdelibs");
   KInstance instance( "kio_ftp" );
   ( void ) KGlobal::locale();
 
@@ -557,7 +557,7 @@ bool Ftp::ftpLogin()
   infoMessage( i18n("Login OK") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
-  // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
+  // Thanks to jk@soegaard.net (Jens Kristian Sgaard) for this hint
   if( ftpSendCmd("syst") && (m_iRespType == 2) )
   {
     if( !strncmp( ftpResponse(0), "215 Windows_NT", 14 ) ) // should do for any version

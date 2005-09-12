@@ -41,7 +41,7 @@ extern "C"
 {
 	KDE_EXPORT QWidget* allocate_kstyle_config(QWidget* parent)
 	{
-		KGlobal::locale()->insertCatalogue("kstyle_plastik_config");
+		KGlobal::locale()->insertCatalog("kstyle_plastik_config");
 		return new PlastikStyleConfig(parent);
 	}
 }
@@ -50,7 +50,7 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
 {
 	//Should have no margins here, the dialog provides them
 	QVBoxLayout* layout = new QVBoxLayout(this, 0, 0);
-	KGlobal::locale()->insertCatalogue("kstyle_plastik_config");
+	KGlobal::locale()->insertCatalog("kstyle_plastik_config");
 
 // 	scrollBarLines = new QCheckBox(i18n("Scrollbar handle lines"), this);
 	animateProgressBar = new QCheckBox(i18n("Animate progress bars"), this);

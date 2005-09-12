@@ -137,7 +137,7 @@ debian/tmp/usr/include/kde/kbugreport.h
 debian/tmp/usr/include/kde/kbuttonbox.h
 debian/tmp/usr/include/kde/kcalendarsystem.h
 debian/tmp/usr/include/kde/kcalendarsystemfactory.h
-debian/tmp/usr/include/kde/kcatalogue.h
+debian/tmp/usr/include/kde/kcatalog.h
 debian/tmp/usr/include/kde/kcharselect.h
 debian/tmp/usr/include/kde/kcharsets.h
 debian/tmp/usr/include/kde/kclientsocketbase.h

@@ -97,9 +97,9 @@ public:
     /**
      * Format a timezone name in a standardised manner. The returned value is
      * transformed via an i18n lookup, so the caller should previously have
-     * set the timezone catalogue:
+     * set the timezone catalog:
      * \code
-     * KGlobal::locale()->insertCatalogue("timezones");
+     * KGlobal::locale()->insertCatalog("timezones");
      * \endcode
      *
      * @return formatted timezone name.

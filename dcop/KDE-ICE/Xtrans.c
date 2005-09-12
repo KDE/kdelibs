@@ -315,7 +315,7 @@ TRANS(ParseAddress) (char *address, char **protocol, char **host, char **port)
     /*
      * The rest, if any, is the (currently unused) catalog list.
      *
-     * _catalogue = mybuf;
+     * _catalog = mybuf;
      */
 #endif
 

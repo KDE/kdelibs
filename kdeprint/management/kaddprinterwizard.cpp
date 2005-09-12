@@ -19,7 +19,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 			"0.1");
 	KCmdLineArgs::addCmdLineOptions(options);
 	
-	KGlobal::locale()->setMainCatalogue("kdelibs");
+	KGlobal::locale()->setMainCatalog("kdelibs");
 
 	KApplication app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();

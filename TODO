@@ -195,7 +195,7 @@ that we would like to make for the next binary incompatible release.
   the about information seems to be duplicated.
   (Scott)
 
-- Make API use US English, (eg. KCatalogue -> KCatalog)
+- Make API use US English, (eg. KCatalogue -> KCatalog [done])
   (Stephan Binner)
 
 - It would be nice if some insan^H^H^H brave soul had a look at the KAccel/KShortcut/KKeyWhatever
