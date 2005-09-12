@@ -330,8 +330,6 @@ KDatePicker::yearBackwardClicked()
     setDate( temp );
 }
 
-void KDatePicker::selectWeekClicked() {}  // ### in 3.2 obsolete; kept for binary compatibility
-
 void
 KDatePicker::weekSelected(int week)
 {

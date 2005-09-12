@@ -461,16 +461,6 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
     /**
-     * @deprecated.  Will be removed in the next major release!
-     */
-    void slotAboutToShow() {}
-
-    /**
-     * @deprecated.  Will be removed in the next major release!
-     */
-    void slotCancelled() {}
-
-    /**
      * Resets the current displayed text.
      * Call this function to revert a text completion if the user
      * cancels the request. Mostly applies to popup completions.

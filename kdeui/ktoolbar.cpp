@@ -760,12 +760,6 @@ bool KToolBar::fullSize() const
 }
 
 
-void KToolBar::enableMoving(bool flag )
-{
-    setMovingEnabled(flag);
-}
-
-
 void KToolBar::setBarPos (BarPosition bpos)
 {
     if ( !mainWindow() )
@@ -789,51 +783,9 @@ KToolBar::BarPosition KToolBar::barPos() const
     return (BarPosition)dock;
 }
 
-
-bool KToolBar::enable(BarStatus stat)
-{
-    bool mystat = isVisible();
-
-    if ( (stat == Toggle && mystat) || stat == Hide )
-        hide();
-    else
-        show();
-
-    return isVisible() == mystat;
-}
-
-
-void KToolBar::setMaxHeight ( int h )
-{
-    setMaximumHeight( h );
-}
-
-int KToolBar::maxHeight()
-{
-    return maximumHeight();
-}
-
-
-void KToolBar::setMaxWidth (int dw)
-{
-    setMaximumWidth( dw );
-}
-
-
-int KToolBar::maxWidth()
-{
-    return maximumWidth();
-}
-
-
 void KToolBar::setTitle (const QString& _title)
 {
     setLabel( _title );
-}
-
-
-void KToolBar::enableFloating (bool )
-{
 }
 
 

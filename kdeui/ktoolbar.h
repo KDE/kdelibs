@@ -113,13 +113,8 @@ class KDEUI_EXPORT KToolBar : public Q3ToolBar
 public:
     enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
     /**
-     * The state of the status bar.
-     * @deprecated
+     * Possible bar positions.
      */
-    enum BarStatus{Toggle, Show, Hide};
-    /**
-   * Possible bar positions.
-   */
     enum BarPosition{ Unmanaged, Floating, Top, Bottom, Right, Left, Flat};
 
   /**
@@ -728,12 +723,6 @@ public:
     bool fullSize() const;
 
     /**
-   * Enable or disable moving of toolbar.
-   * @deprecated use setMovingEnabled(bool) instead.
-   */
-    void enableMoving(bool flag = true) KDE_DEPRECATED;
-
-    /**
    * Set position of toolbar.
    * @see BarPosition()
    */
@@ -745,46 +734,7 @@ public:
    */
     BarPosition barPos() const;
 
-  /**
-   * Show, hide, or toggle toolbar.
-   *
-   * This method is provided for compatibility only,
-   * please use show() and/or hide() instead.
-   * @see BarStatus
-   * @deprecated
-   */
-    bool enable(BarStatus stat) KDE_DEPRECATED;
-
-  /**
-   * Use setMaximumHeight() instead.
-   * @deprecated
-   */
-    void setMaxHeight (int h) KDE_DEPRECATED;  // Set max height for vertical toolbars
-
-  /**
-   * Returns the value set with setMaxHeight().
-   * @deprecated
-   * Use maximumHeight() instead.
-   * @return the value set with setMaxHeight().
-   */
-    int maxHeight() KDE_DEPRECATED;
-
-  /**
-   * Use setMaximumWidth() instead.
-   * Set maximal width of horizontal (top or bottom) toolbar.
-   * @deprecated
-   */
-    void setMaxWidth (int dw) KDE_DEPRECATED;
-
-  /**
-   * Returns the value set with setMaxWidth().
-   * Use maximumWidth() instead.
-   * @return the value set with setMaxWidth().
-   * @deprecated
-   */
-    int maxWidth() KDE_DEPRECATED;
-
-  /**
+   /**
    * Set title for toolbar when it floats.
    *
    * Titles are however not (yet)
@@ -792,13 +742,7 @@ public:
    */
     void setTitle (const QString& _title);
 
-  /**
-   * Use setMovingEnabled(bool) instead.
-   * @deprecated
-   */
-    void enableFloating (bool flag) KDE_DEPRECATED;
-
-  /**
+   /**
    * Set the kind of painting for buttons.
    *
    * Choose from:

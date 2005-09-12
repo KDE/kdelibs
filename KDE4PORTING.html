@@ -207,7 +207,8 @@ in the drop/paste side.</li>
 <ul>
 <li>checkAvailable() -&gt; isAvailable()</li>
 </ul>
-<H4>KDialogBase><H4>
+
+<H4>KDialogBase<H4>
 <li>setButtonOKText -&gt; setButtonOk
 <li>setButtonApplyText -&gt; setButtonApply
 <li>setButtonCancelText -&gt; setButtonCancel
@@ -216,11 +217,11 @@ in the drop/paste side.</li>
 <li>getBorderWidths -&gt; gone
 
 <H4>KDatePicker</H4>
-
 <li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);
 <li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);
 <li>signal void dateEntered(QDate) was replaced by void dateEntered( const QDate&amp;)
 <li>removed getData() method.  Use date() instead</li>
+<li>removed protected slot <tt>void selectWeekClicked()</tt>
 
 <H4>KDockWindow<H4>
 <p>This class is obsolete, it is provided for compatibility only.
@@ -267,7 +268,7 @@ Use KSystemTray instead.</p>
 <li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated
 
 <H4>KPassivePopup</H4>
-<li>clicked single now emits a const QPoint refernce</li>
+<li>clicked single now emits a const QPoint reference</li>
 
 <H4>KPopupMenu</H4>
 <li>Renamed to KMenu to reflect change in Qt</li>
@@ -304,6 +305,20 @@ if needed (see the KURLDrag section)</li>
 
 <H4>KInputDialog</H4>
 <li>static QString KInputDialog::text( const QString &caption,...) was replaced by QString KInputDialog::getText( const QString &caption,...)
+
+<h4>KToolBar</h4>
+<li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
+removed
+<li><tt>void enableMoving(bool flag)</tt> and <tt>void enableFloating (bool
+flag)</tt> have been removed in favor of <tt>setMovingEnabled(bool)</tt>
+<li><tt>int maxHeight()/int maxWidth()</tt> removed in favor of
+<tt>maximumHeight()/maximumWidth()</tt>
+<li><tt>void setMaxHeight (int h)</tt> and <tt>void setMaxWidth (int dw)</tt>
+removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
+
+<h4>KLineEdit</h4>
+<li>void cursorAtEnd() removed, use QLineEdit::end(false) instead
+<li>unused protected slots removed: void slotAboutToShow() and void slotCancelled()
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 

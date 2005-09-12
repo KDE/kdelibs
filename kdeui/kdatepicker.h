@@ -180,11 +180,6 @@ protected slots:
   void yearBackwardClicked();
   /**
    * @since 3.1
-   * @deprecated in 3.2
-   */
-  void selectWeekClicked();
-  /**
-   * @since 3.1
    */
   void selectMonthClicked();
   /**
