@@ -23,20 +23,3 @@ libthreadweaver_la_SOURCES = \
 	ThreadWeaver.cpp \
 	Thread.cpp \
 	SuspendingState.cpp
-
-libthreadweaver_la_HEADERS = \
-	InConstructionState.h \
-	Job.h \
-	DestructedState.h \
-	SuspendedState.h \
-	Thread.h \
-	DebuggingAids.h \
-	WeaverInterface.h \
-	WeaverImpl.h \
-	ShuttingDownState.h \
-	State.h \
-	WeaverObserver.h \
-	WorkingHardState.h \
-	SuspendingState.h \
-	ThreadWeaver.h
-
