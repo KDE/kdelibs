@@ -9,7 +9,7 @@ class QComboBox;
 class RichPage : public KPrintDialogPage
 {
 public:
-	RichPage(QWidget *parent = 0, const char *name = 0);
+	RichPage(QWidget *parent = 0);
 	~RichPage();
 
 	void setOptions(const QMap<QString,QString>& options);

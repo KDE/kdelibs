@@ -6,8 +6,8 @@
 #include <qfontdatabase.h>
 #include <qlayout.h>
 
-RichPage::RichPage(QWidget *parent, const char *name)
-: KPrintDialogPage(parent,name)
+RichPage::RichPage(QWidget *parent)
+: KPrintDialogPage(parent)
 {
 	m_title = "Rich Text Options";
 
