@@ -36,9 +36,9 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	itemcontainertest kedittest \
 	kxmlguitest kaccelgentest ksystemtraytest klistviewtest \
 	ktextedittest kmainwindowtest kmainwindowrestoretest \
-	kactiontest kdatetimewidgettest ktimewidgettest \
+	kactiontest kdatetimewidgettest \
 	kspelltest kinputdialogtest ktabwidgettest kwordwraptest \
-	qxembedtest ksqueezedtextlabeltest \
+	ksqueezedtextlabeltest \
 	kpixmapregionselectordialogtest kjanuswidgettest ktoolbarlabelactiontest \
 	khboxtest
 
@@ -77,7 +77,6 @@ krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
-ktimewidgettest_SOURCES = ktimewidgettest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
