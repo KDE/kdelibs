@@ -182,18 +182,7 @@ public:
      */
     void setURL( const KURL& url );
 
-    /**
-     * Puts the text cursor at the end of the string.
-     *
-     * This method is deprecated.  Use QLineEdit::end()
-     * instead.
-     *
-     * @deprecated
-     * QLineEdit::end()
-     */
-    void cursorAtEnd() { end( false ); }
-
-    /**
+     /**
      * Re-implemented from KCompletionBase for internal reasons.
      *
      * This function is re-implemented in order to make sure that
