@@ -1084,7 +1084,7 @@ QString KURLCompletion::listDirectories(
 		{
 			KURL url;
 			url.setPath(*it);
-			if ( KAuthorized::self()->authorizeURLAction( "list", KURL(), url ) )
+			if ( KAuthorized::authorizeURLAction( "list", KURL(), url ) )
 				dirs.append( *it );
 		}
 

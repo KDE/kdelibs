@@ -305,7 +305,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     // check codebase first
     const KURL kbaseURL( baseurl );
     const KURL newURL(kbaseURL, codebase);
-    if (KAuthorized::self()->authorizeURLAction("redirect", KURL(baseurl), newURL))
+    if (KAuthorized::authorizeURLAction("redirect", KURL(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);

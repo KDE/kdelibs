@@ -73,10 +73,10 @@ static KURL rootUrl(const KURL &url)
     KURL root = url;
     root.setPath( "/" );
 
-    if (!KAuthorized::self()->authorizeURLAction("list", KURL(), root))
+    if (!KAuthorized::authorizeURLAction("list", KURL(), root))
     {
         root = KURL::fromPathOrURL( QDir::homeDirPath() );
-        if (!KAuthorized::self()->authorizeURLAction("list", KURL(), root))
+        if (!KAuthorized::authorizeURLAction("list", KURL(), root))
         {
             root = url;
         }

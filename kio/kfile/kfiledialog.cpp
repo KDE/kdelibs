@@ -503,7 +503,7 @@ void KFileDialog::slotOk()
             return;
     }
 
-    if (!KAuthorized::self()->authorizeURLAction("open", KURL(), d->url))
+    if (!KAuthorized::authorizeURLAction("open", KURL(), d->url))
     {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyURL());
         KMessageBox::error( d->mainWidget, msg);
@@ -521,7 +521,7 @@ void KFileDialog::slotOk()
         for ( KURL::List::ConstIterator it = list.begin();
               it != list.end(); ++it )
         {
-            if (!KAuthorized::self()->authorizeURLAction("open", KURL(), *it))
+            if (!KAuthorized::authorizeURLAction("open", KURL(), *it))
             {
                 QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyURL());
                 KMessageBox::error( d->mainWidget, msg);

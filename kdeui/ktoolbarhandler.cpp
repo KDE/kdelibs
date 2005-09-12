@@ -179,7 +179,7 @@ void ToolBarHandler::setupActions()
                  this, SLOT( setupActions() ) );
                  */
 
-    if (kapp && KAuthorized::self()->authorizeKAction("options_show_toolbar"))
+    if (kapp && KAuthorized::authorizeKAction("options_show_toolbar"))
 	plugActionList( actionListName, m_actions );
 
     connectToActionContainers();

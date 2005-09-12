@@ -219,7 +219,7 @@ void KPrinter::saveSettings()
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
 {
-	if (!KAuthorized::self()->authorize("print/dialog"))
+	if (!KAuthorized::authorize("print/dialog"))
 	{
 		autoConfigure(QString::null, parent);
 		return true; // Just print it

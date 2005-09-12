@@ -260,7 +260,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     else
         d->m_interface = new KMainWindowInterface(this);
 
-    if (!KAuthorized::self()->authorize("movable_toolbars"))
+    if (!KAuthorized::authorize("movable_toolbars"))
         setDockWindowsMovable(false);
 }
 

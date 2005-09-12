@@ -241,7 +241,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
     if( !moduleinfo.service() )
         return;
 
-    if ( !KAuthorized::self()->authorizeControlModule( moduleinfo.service()->menuId() ))
+    if ( !KAuthorized::authorizeControlModule( moduleinfo.service()->menuId() ))
             return;
 
     if( !KCModuleLoader::testModule( moduleinfo ))

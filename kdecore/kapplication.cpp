@@ -681,11 +681,10 @@ void KApplication::init(bool GUIenabled)
   (void) KGlobal::locale();
 
   KConfig* config = KGlobal::config();
-  KAuthorized *authorized=KAuthorized::self();
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && (qstrcmp(name(), "kdialog") != 0))
   {
-    if (authorized->authorize("warn_unwritable_config"))
+    if (KAuthorized::authorize("warn_unwritable_config"))
        config->checkConfigFilesWritable(true);
   }
 

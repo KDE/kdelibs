@@ -477,7 +477,7 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-  if ( KAuthorized::self()->authorizeKAction("sharefile") &&
+  if ( KAuthorized::authorizeKAction("sharefile") &&
        KFileSharePropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
@@ -922,7 +922,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
-    if (!KAuthorized::self()->authorizeKAction("editfiletype"))
+    if (!KAuthorized::authorizeKAction("editfiletype"))
        button->hide();
 #endif
 
@@ -3386,7 +3386,7 @@ bool KDesktopPropsPlugin::supports( KFileItemList _items )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType() && KAuthorized::self()->authorize("run_desktop_files") && KAuthorized::self()->authorize("shell_access");
+  return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
 
 void KPropertiesDialog::virtual_hook( int id, void* data )
@@ -3664,7 +3664,7 @@ bool KExecPropsPlugin::supports( KFileItemList _items )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
-  return config.hasApplicationType() && KAuthorized::self()->authorize("run_desktop_files") && KAuthorized::self()->authorize("shell_access");
+  return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
 
 void KExecPropsPlugin::applyChanges()

@@ -118,7 +118,7 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 {
-  if (!kapp || KAuthorized::self()->authorize("run_desktop_files"))
+  if (!kapp || KAuthorized::authorize("run_desktop_files"))
      return true;
 
   if (path.isEmpty())
@@ -279,7 +279,7 @@ bool KDesktopFile::tryExec() const
          it != list.end();
          ++it)
      {
-        if (!KAuthorized::self()->authorize((*it).trimmed()))
+        if (!KAuthorized::authorize((*it).trimmed()))
            return false;
      }
   }
@@ -293,7 +293,7 @@ bool KDesktopFile::tryExec() const
         user = ::getenv("ADMIN_ACCOUNT");
       if (user.isEmpty())
         user = "root";
-      if (!KAuthorized::self()->authorize("user/"+user))
+      if (!KAuthorized::authorize("user/"+user))
         return false;
   }
   

@@ -124,7 +124,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
   {
     if ( u.isLocalFile() && runExecutables)
     {
-      if (KAuthorized::self()->authorize("shell_access"))
+      if (KAuthorized::authorize("shell_access"))
       {
         QString path = u.path();
         shellQuote( path );
@@ -144,7 +144,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
     if (!runExecutables)
       noRun = true;
 
-    if (!KAuthorized::self()->authorize("shell_access"))
+    if (!KAuthorized::authorize("shell_access"))
       noAuth = true;
   }
 
@@ -187,7 +187,7 @@ bool KRun::displayOpenWithDialog( const KURL::List& lst )
 
 bool KRun::displayOpenWithDialog( const KURL::List& lst, bool tempFiles )
 {
-    if (kapp && !KAuthorized::self()->authorizeKAction("openwith"))
+    if (kapp && !KAuthorized::authorizeKAction("openwith"))
     {
        // TODO: Better message, i18n freeze :-(
        KMessageBox::sorry(0L, i18n("You are not authorized to open this file."));
@@ -801,7 +801,7 @@ void KRun::init()
     m_timer.start( 0, true );
     return;
   }
-  if ( !KAuthorized::self()->authorizeURLAction( "open", KURL(), m_strURL))
+  if ( !KAuthorized::authorizeURLAction( "open", KURL(), m_strURL))
   {
     QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyURL());
     d->m_showingError = true;

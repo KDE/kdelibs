@@ -44,13 +44,9 @@
 #include <QMutexLocker>
 #include <qglobal.h>
 #warning used non public api for now
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive));
-
-
 
 extern bool kde_kiosk_exception;
 
-static KAuthorized *s_self=0;
 
 class URLActionRule
 {
@@ -190,52 +186,43 @@ class URLActionRule
      bool permission;
 };
 
-class KAuthorized::Private {
+class KAuthorizedPrivate {
 public:
-  Private()
-    :   actionRestrictions( false )
+  KAuthorizedPrivate()
+    :   actionRestrictions( false ), blockEverything(false),mutex(QMutex::Recursive)
   {
+    Q_ASSERT_X(qApp,"KAuthorizedPrivate()","There has to be an existing qapp pointer");
+    Q_ASSERT_X(!qApp->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QApplication::setApplicationName)");
+    
+    KConfig* config = KGlobal::config();
+
+    Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KGlobal::config() pointer");
+    if (config==0) {
+      blockEverything=true;
+      return;
+    }
+    actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
   }
 
-  ~Private()
+  ~KAuthorizedPrivate()
   {
   }
 
   bool actionRestrictions : 1;
+  bool blockEverything : 1;
   QList<URLActionRule> urlActionRestrictions;
+  QMutex mutex;
 };
 
-KAuthorized* KAuthorized::self() {
-  QMutexLocker locker(mutex());
-  if ( !s_self ) s_self=new KAuthorized;
-  return s_self;
-}
+Q_GLOBAL_STATIC(KAuthorizedPrivate,authPrivate);
+#define MY_D KAuthorizedPrivate *d=authPrivate();
 
-KAuthorized::~KAuthorized ()
-{
-}
-
-KAuthorized::KAuthorized() : d( new Private )
-{
-  Q_ASSERT_X(qApp,"KAuthorized()","There has to be an existing qapp pointer");
-  Q_ASSERT_X(!qApp->applicationName().isEmpty(),"KAuthorized()","There has to be an application name set (See QApplication::setApplicationName)");
-  KConfig* config = KGlobal::config();
-  d->actionRestrictions = config->hasGroup("KDE Action Restrictions" ) && !kde_kiosk_exception;
-  // For brain-dead configurations where the user's local config file is not writable.
-  // * We use kdialog to warn the user, so we better not generate warnings from
-  //   kdialog itself.
-  // * Don't warn if we run with a read-only $HOME
-  QByteArray readOnly = getenv("KDE_HOME_READONLY");
-  if (readOnly.isEmpty() && (qApp->applicationName().compare(QString("kdialog")) != 0))
-  {
-    KConfigGroupSaver saver(config, "KDE Action Restrictions");
-    if (config->readBoolEntry("warn_unwritable_config",true))
-       config->checkConfigFilesWritable(true);
-  }
-}
 
 bool KAuthorized::authorize(const QString &genericAction)
 {
+   MY_D
+   if (d->blockEverything) return false;
+
    if (!d->actionRestrictions)
       return true;
 
@@ -246,6 +233,8 @@ bool KAuthorized::authorize(const QString &genericAction)
 
 bool KAuthorized::authorizeKAction(const char *action)
 {
+   MY_D
+   if (d->blockEverything) return false;
    if (!d->actionRestrictions || !action)
       return true;
 
@@ -277,8 +266,9 @@ QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
    return result;
 }
 
-void KAuthorized::initUrlActionRestrictions()
+static void initUrlActionRestrictions()
 {
+  MY_D
   const QString Any;
 
   d->urlActionRestrictions.clear();
@@ -357,7 +347,8 @@ void KAuthorized::initUrlActionRestrictions()
 
 void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
-  QMutexLocker locker(mutex());
+  MY_D
+  QMutexLocker locker((&d->mutex));
   if (authorizeURLAction(action, _baseURL, _destURL))
      return;
 
@@ -368,7 +359,10 @@ void KAuthorized::allowURLAction(const QString &action, const KURL &_baseURL, co
 
 bool KAuthorized::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
-  QMutexLocker locker(mutex());
+  MY_D
+  QMutexLocker locker(&(d->mutex));
+  if (d->blockEverything) return false;
+
   if (_destURL.isEmpty())
      return true;
 

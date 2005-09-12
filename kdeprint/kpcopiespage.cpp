@@ -253,7 +253,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	connect(m_collate,SIGNAL(clicked()),SLOT(slotCollateClicked()));
 	connect(m_order,SIGNAL(clicked()),SLOT(slotCollateClicked()));
 
-	if (!KAuthorized::self()->authorize("print/copies"))
+	if (!KAuthorized::authorize("print/copies"))
 	{
 		setTitle(i18n("Pages"));
 		m_copybox->hide();

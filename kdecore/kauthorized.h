@@ -32,10 +32,7 @@ class QStringList;
 */
 class KDECORE_EXPORT KAuthorized
 {
-  KAuthorized();
 public:
-  static KAuthorized* self();
-  virtual ~KAuthorized ();
 
   /**
    * Returns whether a certain action is authorized
@@ -43,7 +40,7 @@ public:
    * @return true if the action is authorized
    * @todo what are the generic actions?
    */
-  bool authorize(const QString& genericAction);
+  static bool authorize(const QString& genericAction);
 
   /**
    * Returns whether a certain KAction is authorized.
@@ -52,7 +49,7 @@ public:
    * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
-  bool authorizeKAction(const char* action);
+  static bool authorizeKAction(const char* action);
 
   /**
    * Returns whether a certain URL related action is authorized.
@@ -67,7 +64,7 @@ public:
    * @return true when the action is authorized, false otherwise.
    * @since 3.1
    */
-  bool authorizeURLAction(const QString& action, const KURL& baseURL, const KURL& destURL);
+  static bool authorizeURLAction(const QString& action, const KURL& baseURL, const KURL& destURL);
 
   /**
    * Allow a certain URL action. This can be useful if your application
@@ -78,7 +75,7 @@ public:
    * @param destURL The object of the action
    * @since 3.2
    */
-  void allowURLAction(const QString& action, const KURL& baseURL, const KURL&  _destURL);
+  static void allowURLAction(const QString& action, const KURL& baseURL, const KURL&  _destURL);
 
   /**
    * Returns whether access to a certain control module is authorized.
@@ -87,7 +84,7 @@ public:
    * @return true if access to the module is authorized, false otherwise.
    * @since 3.2
    */
-  bool authorizeControlModule(const QString& menuId);
+  static bool authorizeControlModule(const QString& menuId);
 
   /**
    * Returns whether access to a certain control modules is authorized.
@@ -97,13 +94,8 @@ public:
    * @return Those control modules for which access has been authorized.
    * @since 3.2
    */
-  QStringList authorizeControlModules(const QStringList& menuIds);
+  static QStringList authorizeControlModules(const QStringList& menuIds);
 
-private:
-  void initUrlActionRestrictions();
-
-  class Private;
-  Private* d;
 };
 
 #endif

@@ -481,7 +481,7 @@ void KBookmarkMenu::refill()
 
 void KBookmarkMenu::addAddBookmarksList()
 {
-  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
+  if (!KAuthorized::authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "Bookmark Tabs as Folder..." );
@@ -501,7 +501,7 @@ void KBookmarkMenu::addAddBookmarksList()
 
 void KBookmarkMenu::addAddBookmark()
 {
-  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
+  if (!KAuthorized::authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "Add Bookmark" );
@@ -521,7 +521,7 @@ void KBookmarkMenu::addAddBookmark()
 
 void KBookmarkMenu::addEditBookmarks()
 {
-  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
+  if (!KAuthorized::authorizeKAction("bookmarks"))
      return;
 
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
@@ -533,7 +533,7 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
-  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
+  if (!KAuthorized::authorizeKAction("bookmarks"))
      return;
 
   QString title = i18n( "&New Bookmark Folder..." );
@@ -556,7 +556,7 @@ void KBookmarkMenu::addNewFolder()
 
 void KBookmarkMenu::fillBookmarkMenu()
 {
-  if (!KAuthorized::self()->authorizeKAction("bookmarks"))
+  if (!KAuthorized::authorizeKAction("bookmarks"))
      return;
 
   if ( m_bIsRoot )

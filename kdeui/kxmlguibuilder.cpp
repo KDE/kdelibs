@@ -151,7 +151,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     Q3CString name = element.attribute( d->attrName ).utf8();
 
-    if (!KAuthorized::self()->authorizeKAction(name))
+    if (!KAuthorized::authorizeKAction(name))
        return 0;
 
     KPopupMenu *popup = new KPopupMenu(p);

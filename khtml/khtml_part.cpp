@@ -2402,7 +2402,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  if (!kapp || !KAuthorized::self()->authorizeURLAction("redirect", cUrl, url))
+  if (!kapp || !KAuthorized::authorizeURLAction("redirect", cUrl, url))
   {
     kdWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!" << endl;
     emit completed();
@@ -6753,7 +6753,7 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
   bool linkAllowed = true;
 
   if ( d->m_doc )
-    linkAllowed = kapp && KAuthorized::self()->authorizeURLAction("redirect", url(), linkURL);
+    linkAllowed = kapp && KAuthorized::authorizeURLAction("redirect", url(), linkURL);
 
   if ( !linkAllowed ) {
     khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();

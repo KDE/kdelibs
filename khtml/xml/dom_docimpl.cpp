@@ -2227,7 +2227,7 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
         return false;
 
     // do we allow this suburl ?
-    if ( !kapp || (newURL.protocol() != "javascript" && !KAuthorized::self()->authorizeURLAction("redirect", thisPart->url(), newURL)) )
+    if ( !kapp || (newURL.protocol() != "javascript" && !KAuthorized::authorizeURLAction("redirect", thisPart->url(), newURL)) )
         return false;
 
     // We allow one level of self-reference because some sites depend on that.
