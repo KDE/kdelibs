@@ -38,8 +38,8 @@ TestDialog::TestDialog()
 void TestDialog::check( const QString& buffer )
 {
     KSpell2::Dialog *dlg = new KSpell2::Dialog(
-        new BackgroundChecker( Broker::openBroker(), this, "checker" ),
-        0, "my dialog" );
+        new BackgroundChecker( Broker::openBroker(), this ),
+        0 );
     connect( dlg, SIGNAL(done(const QString&)),
              SLOT(doneChecking(const QString&)) );
     dlg->setBuffer( buffer );
