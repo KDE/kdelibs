@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kaccelmanager.h"
+#include "kacceleratormanager.h"
 
 #include <qapplication.h>
 #include <qcheckbox.h>
@@ -46,7 +46,7 @@
 #include <kdebug.h>
 
 
-#include "kaccelmanager_private.h"
+#include "kacceleratormanager_private.h"
 #include "../kdeui/kstdaction_p.h"
 
 
@@ -867,4 +867,4 @@ void KAcceleratorManager::setNoAccel( QWidget *widget )
     KAcceleratorManagerPrivate::ignored_widgets[widget] = 1;
 }
 
-#include "kaccelmanager_private.moc"
+#include "kacceleratormanager_private.moc"
