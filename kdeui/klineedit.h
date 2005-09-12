@@ -545,13 +545,6 @@ protected:
                          bool destroyOldWindow = true );
 
     /**
-    * Re-implemented for internal reasons.  API not affected.
-    *
-    * See QLineEdit::focusInEvent().
-    */
-    virtual void focusInEvent( QFocusEvent* );
-
-    /**
      * Whether in current state text should be auto-suggested
      * @since 3.4
     */

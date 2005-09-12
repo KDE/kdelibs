@@ -1302,15 +1302,6 @@ QString KLineEdit::originalText() const
     return text();
 }
 
-void KLineEdit::focusInEvent( QFocusEvent* ev)
-{
-    // Don't selectAll() in QLineEdit::focusInEvent if selection exists
-    if ( ev->reason() == Qt::TabFocusReason && inputMask().isNull() && hasSelectedText() )
-        return;
-    
-    QLineEdit::focusInEvent(ev);
-}
-
 bool KLineEdit::autoSuggest() const
 {
     return d->autoSuggest;
