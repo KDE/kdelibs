@@ -211,36 +211,39 @@ void KConfigDialog::settingsChangedSlot()
   emit settingsChanged(name());
 }
 
-void KConfigDialog::show()
+void KConfigDialog::showEvent(QShowEvent *e)
 {
-  QMap<QWidget *, KConfigDialogManager *>::iterator it;
-
-  updateWidgets();
-  d->manager->updateWidgets();
-  for (it = d->managerForPage.begin(); it != d->managerForPage.end(); ++it)
-    (*it)->updateWidgets();
-
-  bool has_changed = d->manager->hasChanged() || hasChanged();
-  for (it = d->managerForPage.begin();
-          it != d->managerForPage.end() && !has_changed;
-          ++it)
+  if (!d->shown)
   {
-    has_changed |= (*it)->hasChanged();
+    QMap<QWidget *, KConfigDialogManager *>::iterator it;
+
+    updateWidgets();
+    d->manager->updateWidgets();
+    for (it = d->managerForPage.begin(); it != d->managerForPage.end(); ++it)
+      (*it)->updateWidgets();
+
+    bool has_changed = d->manager->hasChanged() || hasChanged();
+    for (it = d->managerForPage.begin();
+            it != d->managerForPage.end() && !has_changed;
+            ++it)
+    {
+      has_changed |= (*it)->hasChanged();
+    }
+
+    enableButton(Apply, has_changed);
+
+    bool is_default = d->manager->isDefault() && isDefault();
+    for (it = d->managerForPage.begin();
+            it != d->managerForPage.end() && is_default;
+            ++it)
+    {
+      is_default &= (*it)->isDefault();
+    }
+
+    enableButton(Default, !is_default);
+    d->shown = true;
   }
-
-  enableButton(Apply, has_changed);
-
-  bool is_default = d->manager->isDefault() && isDefault();
-  for (it = d->managerForPage.begin();
-          it != d->managerForPage.end() && is_default;
-          ++it)
-  {
-    is_default &= (*it)->isDefault();
-  }
-
-  enableButton(Default, !is_default);
-  d->shown = true;
-  KDialogBase::show();
+  KDialogBase::showEvent(e);
 }
 
 void KConfigDialog::updateSettings()

@@ -192,11 +192,6 @@ public:
    */
   static bool showDialog( const char* name );
 
-  /**
-   * Show the dialog.
-   */
-  virtual void show();
-
 protected slots:
   /**
    * Update the settings from the dialog.
@@ -237,6 +232,11 @@ protected:
    * the same as the default configuration.
    */
   virtual bool isDefault() { return true; }
+  
+  /**
+   * TODO Add a comment
+   */ 
+  virtual void showEvent(QShowEvent *e);
 
 protected slots:
   /**
