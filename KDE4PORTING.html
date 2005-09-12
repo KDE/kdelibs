@@ -66,7 +66,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
 by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 <li>For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized now</li>
-<li>invoke* has been mobed to ktoolinvocation. there are static methods invoke*, if you want to use slots as before connect to the innvoke* slots of KToolInvocation::self()</li>
+<li>invoke* has been moved to ktoolinvocation. there are static methods invoke*, if you want to use slots as before connect to the innvoke* slots of KToolInvocation::self()</li>
 <li>startService*, kdeinitExec* -&gt; KToolInvocation</li>
 <li> static void addCmdLineOptions(); moveto KCmdLineArgs::addStdCmdLineOptions </li>
 <li>kapp-&gt;getDisplay() has been removed, its functionality is now provided
