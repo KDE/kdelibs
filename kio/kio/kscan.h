@@ -24,6 +24,7 @@
 #include <kinstance.h>
 #include <klibloader.h>
 
+class QByteArray;
 class QImage;
 
 /**
@@ -211,7 +212,7 @@ protected:
      * Creates a new instance with the given name.
      * @param instanceName the name of the instance
      */
-    void setName( const Q3CString& instanceName ) {
+    void setName( const QByteArray& instanceName ) {
 	delete m_instance;
 	m_instance = new KInstance( instanceName );
     }
@@ -346,7 +347,7 @@ protected:
      * Creates a new instance with the given name.
      * @param instanceName the name of the instance
      */
-    void setName( const Q3CString& instanceName ) {
+    void setName( const QByteArray& instanceName ) {
 	delete m_instance;
 	m_instance = new KInstance( instanceName );
     }

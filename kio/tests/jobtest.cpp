@@ -23,7 +23,7 @@
 
 #include <kurl.h>
 #include <kapplication.h>
-#include <klargefile.h>
+#include <kde_file.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>

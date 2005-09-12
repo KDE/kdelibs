@@ -101,7 +101,7 @@ static const char description[] = "This is a test shell for the kghostview part.
 
 int main( int argc, char **argv )
 {
-  KCmdLineArgs::init(argc, argv, "ghostviewtest", description, version);
+  KCmdLineArgs::init(argc, argv, "ghostviewtest","ghostviewtest", description, version);
   KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
   KApplication app;
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

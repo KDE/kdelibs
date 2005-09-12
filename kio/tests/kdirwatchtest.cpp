@@ -28,7 +28,7 @@ int main (int argc, char **argv)
   KCmdLineArgs::init(argc, argv, "kdirwatchtest", "KDirWatchTest",
 		     "Test for KDirWatch", "1.0");
   KCmdLineArgs::addCmdLineOptions( options );
-  KApplication::addCmdLineOptions();
+  KCmdLineArgs::addStdCmdLineOptions();
 
   KApplication a;
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

@@ -81,7 +81,7 @@ void Receiver::slotStart()
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     kdDebug() << "creating testKRun " << i << endl;
-    myArray[i] = new testKRun( KURL("file:/tmp"), 0, true, false /* no autodelete */ );
+    myArray[i] = new testKRun( KURL("file:/tmp"), window(),0, true, false /* no autodelete */ );
   }
   start->setEnabled(false);
   stop->setEnabled(true);

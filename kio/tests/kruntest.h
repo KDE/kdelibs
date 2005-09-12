@@ -28,9 +28,9 @@ class testKRun : public KRun
   Q_OBJECT
 public:
 
-  testKRun( const KURL& _url, mode_t _mode = 0,
+  testKRun( const KURL& _url, QWidget *_topLevel, mode_t _mode = 0,
             bool _is_local_file = false, bool _auto_delete = true )
-    : KRun( _url, _mode, _is_local_file, _auto_delete ) {}
+    : KRun( _url, _topLevel, _mode, _is_local_file, _auto_delete ) {}
 
   virtual ~testKRun() {}
 

@@ -29,6 +29,7 @@
 #include <kcmdlineargs.h>
 #include <kaction.h>
 #include "domtreeview.h"
+#include "kxmlguifactory.h"
 
 static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , KCmdLineLastOption };
 

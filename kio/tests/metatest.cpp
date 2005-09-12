@@ -6,6 +6,7 @@
 #include <kdebug.h>
 #include <qlabel.h>
 #include <qvalidator.h>
+#include <qpixmap.h>
 
 #define I18N_NOOP
 
@@ -187,7 +188,7 @@ int main( int argc, char **argv )
     KCmdLineArgs::addCmdLineOptions( options );
 
     // Add options from other components
-    KApplication::addCmdLineOptions();
+    //KApplication::addCmdLineOptions();
     
     KApplication app;
 
