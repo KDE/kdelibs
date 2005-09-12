@@ -43,6 +43,7 @@ public:
   KACL getDefaultACL() const;
   void setACL( const KACL & );
   void setDefaultACL( const KACL & );
+  void setAllowDefaults( bool value );
 private slots:
   void slotUpdateButtons();
 

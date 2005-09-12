@@ -122,6 +122,10 @@ void KACLEditWidget::setDefaultACL( const KACL &acl )
   return m_listView->setDefaultACL( acl );
 }
 
+void KACLEditWidget::setAllowDefaults( bool value )
+{
+    m_listView->setAllowDefaults( value );
+}
 
 KACLListViewItem::KACLListViewItem( QListView* parent,
                                     KACLListView::EntryType _type,

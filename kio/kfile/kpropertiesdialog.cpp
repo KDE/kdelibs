@@ -2065,6 +2065,9 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
     if ( d->defaultACL.isValid() )
       extendedACLs->setDefaultACL( d->defaultACL );
+
+    if ( properties->items().first()->isDir() )
+      extendedACLs->setAllowDefaults( true );
   }
   if (dlg.exec() != KDialogBase::Accepted)
     return;
