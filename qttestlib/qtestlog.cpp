@@ -81,7 +81,7 @@ namespace QtTest {
 
     static void messageHandler(QtMsgType type, const char *msg)
     {
-        static volatile int counter = 2002;
+        static QBasicAtomic counter = Q_ATOMIC_INIT(2002);
 
         if (!msg || !QtTest::testLogger) {
             // if this goes wrong, something is seriously broken.
@@ -98,7 +98,7 @@ namespace QtTest {
             if (counter <= 0)
                 return;
 
-            if (!q_atomic_decrement(&counter)) {
+            if (!counter.deref()) {
                 QtTest::testLogger->addMessage(QAbstractTestLogger::QSystem,
                         "Maximum amount of warnings exceeded.");
                 return;
