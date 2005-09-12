@@ -249,7 +249,7 @@ public:
    * @return True if one of the specified languages were used.
    */
   bool setLanguage(const QStringList & languages);
- 
+
   /**
    * Changes the current country. The current country will be left
    * unchanged if failed. It will force a reload of the country specific
@@ -608,7 +608,7 @@ public:
   /**
    * Converts a localized time string to a QTime.
    * This method will try to parse it with seconds, then without seconds.
-   * The bool pointed to by @p ok will be set to false if the time entered was 
+   * The bool pointed to by @p ok will be set to false if the time entered was
    * not valid.
    *
    * @param str the string we want to convert.
@@ -933,7 +933,7 @@ public:
    * @return value The preferred measuring system
    */
   void setMeasureSystem(MeasureSystem value);
-  
+
   /**
    * Adds another catalog to search for translation lookup.
    * This function is useful for extern libraries and/or code,
@@ -1067,7 +1067,7 @@ private:
    * @param config The configuration object used for init.
    */
   void initFormat(KConfig *config);
-  
+
   /**
    * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
    *
@@ -1075,7 +1075,7 @@ private:
    * @param useEnv True if we should use environment variables
    */
   void initMainCatalogues(const QString & catalog);
-  
+
   /**
    * @internal Initializes the list of valid languages from the user's point of view. This is the list of
    * languages that the user picks in kcontrol. The config object should be valid and contain the global
@@ -1142,13 +1142,13 @@ private:
    * @internal Checks if the specified language is installed
    */
   bool isLanguageInstalled(const QString & language) const;
-  
+
   /**
-   * @internal evaluate the list of catalogs and check that all instances for all languages are loaded 
+   * @internal evaluate the list of catalogs and check that all instances for all languages are loaded
    * and that they are sorted according to the catalog names
    */
   void updateCatalogues( );
-  
+
   /**
    * @internal Find the plural type for all loaded catalogs
    */
@@ -1159,7 +1159,7 @@ private:
    * @param language The language to examine
    */
   int pluralType( const QString & language );
-  
+
   /**
    * @internal Find the plural type information for a given catalog. This catalog will be a kdelibs.mo. Method
    * just exists to make code more readable.
@@ -1174,7 +1174,7 @@ private:
    * @param name name of the catalog
    */
   // const KCatalogue * catalog( const QString & language, const QString & name );
-  
+
 
   /**
    * @internal Retrieves the file name of the catalog, or QString::null
@@ -1189,7 +1189,7 @@ private:
    * @param language language to check
    */
    bool isApplicationTranslatedInto( const QString & language);
-   
+
 private:
   // Numbers and money
   QString m_decimalSymbol;
@@ -1211,7 +1211,6 @@ private:
   QString m_language;
   QString m_country;
 
-  bool m_weekStartsMonday; //### remove for KDE 4.0
   bool m_positivePrefixCurrencySymbol;
   bool m_negativePrefixCurrencySymbol;
 
