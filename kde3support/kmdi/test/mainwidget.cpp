@@ -32,7 +32,7 @@ MainWidget::MainWidget(QDomElement& dockConfig,K3Mdi::MdiMode mode)
 {
    setIDEAlModeStyle(1); // KDEV3
 
-   dockManager->setReadDockConfigMode(KDockManager::RestoreAllDockwidgets);
+   dockManager->setReadDockConfigMode(K3DockManager::RestoreAllDockwidgets);
    initMenu();
 
    if (m_dockConfig.hasChildNodes()) {
@@ -41,20 +41,20 @@ MainWidget::MainWidget(QDomElement& dockConfig,K3Mdi::MdiMode mode)
 
    Q3MultiLineEdit* mle = new Q3MultiLineEdit(0L,"theMultiLineEditWidget");
    mle->setText("This is a QMultiLineEdit widget.");
-   addToolWindow( mle, KDockWidget::DockBottom, m_pMdi, 70);
+   addToolWindow( mle, K3DockWidget::DockBottom, m_pMdi, 70);
 
    Q3MultiLineEdit* mle2 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget2");
-   addToolWindow( mle2, KDockWidget::DockCenter, mle, 70);
+   addToolWindow( mle2, K3DockWidget::DockCenter, mle, 70);
 
    Q3MultiLineEdit* mle3 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget3");
-   addToolWindow( mle3, KDockWidget::DockCenter, mle, 70);
+   addToolWindow( mle3, K3DockWidget::DockCenter, mle, 70);
 
    Q3MultiLineEdit* mle4 = new Q3MultiLineEdit(0L,"theMultiLineEditWidget4");
-   addToolWindow( mle4, KDockWidget::DockCenter, mle, 70);
+   addToolWindow( mle4, K3DockWidget::DockCenter, mle, 70);
 
    K3MdiToolViewAccessor *tva=createToolWindow();
    tva->setWidgetToWrap(new Q3MultiLineEdit(tva->wrapperWidget(),"theMultiLineEditWidget5"));
-   tva->placeAndShow(KDockWidget::DockCenter,mle,70);   
+   tva->placeAndShow(K3DockWidget::DockCenter,mle,70);   
 
    Q3ListView* lv = new Q3ListView(0L,"theListViewWidget");
 #include "../res/filenew.xpm"
@@ -62,21 +62,21 @@ MainWidget::MainWidget(QDomElement& dockConfig,K3Mdi::MdiMode mode)
    lv->addColumn("Test", 50);
    lv->addColumn("K3MDI", 70);
    new Q3ListViewItem(lv,QString("test"),QString("test"));
-   addToolWindow( lv, KDockWidget::DockLeft, m_pMdi, 35, "1");
+   addToolWindow( lv, K3DockWidget::DockLeft, m_pMdi, 35, "1");
 
    Q3ListView* lv2 = new Q3ListView(0L,"theListViewWidget2");
    lv2->setIcon(filenew);
    lv2->addColumn("Test2", 50);
    lv2->addColumn("K3MDI2", 70);
    new Q3ListViewItem(lv,QString("test2"),QString("test2"));
-   addToolWindow( lv2, KDockWidget::DockCenter, lv, 35, "2");
+   addToolWindow( lv2, K3DockWidget::DockCenter, lv, 35, "2");
    
    Q3ListView* lv3 = new Q3ListView(0L,"theListViewWidget3");
    lv3->setIcon(filenew);
    lv3->addColumn("Test3", 50);
    lv3->addColumn("K3MDI3", 70);
    new Q3ListViewItem(lv,QString("test3"),QString("test3"));
-   addToolWindow( lv3, KDockWidget::DockCenter, lv, 35, "3");
+   addToolWindow( lv3, K3DockWidget::DockCenter, lv, 35, "3");
 
    dockManager->finishReadDockConfig();
 
