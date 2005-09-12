@@ -1,7 +1,7 @@
 
 INCLUDES = $(all_includes)
 
-lib_LTLIBRARIES = libthreadweaver.la
+lib_LTLIBRARIES = libThreadWeaver.la
 
 libthreadweaver_la_LDFLAGS = -no-undefined $(all_libraries) -version-info 4:0
 libthreadweaver_la_LIBADD = $(LIB_QTCORE)
