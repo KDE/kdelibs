@@ -249,7 +249,7 @@ void Test::rightPopupActivated(int item)
 
 void Test::toggleTabPosition(bool state)
 {
-  mWidget->setTabPosition(state ? Qt::DockBottom : Qt::DockTop);
+  mWidget->setTabPosition(state ? QTabWidget::North : QTabWidget::South );
 }
 
 void Test::toggleTabShape(bool state)
@@ -310,7 +310,7 @@ void Test::tabbarContextMenu(const QPoint &p)
   mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
   mTabbarContextPopup->insertSeparator();
-  mTabbarContextPopup->insertItem(mWidget->tabPosition()==Qt::DockTop ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
+  mTabbarContextPopup->insertItem(mWidget->tabPosition()==QTabWidget::North ? "Put Tabbar to Bottom" : "Put Tabbar to Top", 2);
   connect(mTabbarContextPopup, SIGNAL(activated(int)), SLOT(tabbarContextMenuActivated(int)));
 
   mTabbarContextPopup->popup(p);
@@ -367,7 +367,7 @@ void Test::toggleLabels(bool state)
 
 int main(int argc, char** argv )
 {
-    KCmdLineArgs::init(argc, argv, "ktabwidgettest", "ktabwidget test app", "1.0");
+    KCmdLineArgs::init(argc, argv, "ktabwidgettest", "KTabWidgetTest", "ktabwidget test app", "1.0");
     KApplication app;
     Test *t = new Test();
 

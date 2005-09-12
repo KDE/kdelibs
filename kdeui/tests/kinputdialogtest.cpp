@@ -9,10 +9,12 @@
 
 #include <qstring.h>
 #include <qvalidator.h>
+#include <kcmdlineargs.h>
 
 int main( int argc, char *argv[] )
 {
-  KApplication app( argc, argv, "kinputdialogtest" );
+  KCmdLineArgs::init(argc, argv, "test", "Test" ,"test app" ,"1.0");
+  KApplication app;
 
   bool ok;
   QString svalue;
@@ -22,8 +24,9 @@ int main( int argc, char *argv[] )
   svalue = KInputDialog::getText( "_caption", "_label:", "_value", &ok );
   kdDebug() << "value1: " << svalue << ", ok: " << ok << endl;
 
+  QRegExpValidator validator( QRegExp( "[0-9]{3}\\-[0-9]{3}\\-[0-9]{4}" ), 0 );
   svalue = KInputDialog::getText( "_caption", "_label:", "_value", &ok, 0L, 0L,
-    &QRegExpValidator( QRegExp( "[0-9]{3}\\-[0-9]{3}\\-[0-9]{4}" ), 0L ) );
+    &validator );
   kdDebug() << "value2: " << svalue << ", ok: " << ok << endl;
 
   svalue = KInputDialog::getText( "_caption", "_label:", "_value", &ok, 0L, 0L,
