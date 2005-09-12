@@ -22,13 +22,13 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <stdio.h>
-#include <q3valuelist.h>
 #include <kservice.h>
+#include <ktoolinvocation.h>
 #include <kcmdlineargs.h>
 
 int main(int argc, char *argv[])
 {
-   KApplication::kdeinitExec("konsole");
+   KToolInvocation::kdeinitExec("konsole");
    KCmdLineArgs::init( argc, argv, "klaunchertest", 0, 0, 0, 0);
    KApplication k;
 
