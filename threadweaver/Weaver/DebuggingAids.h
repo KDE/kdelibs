@@ -73,13 +73,14 @@ namespace ThreadWeaver {
 #ifdef PROTECT
 #undef PROTECT
 #endif
-#define PROTECT(x) { QMutexLocker l(&ThreadWeaver::GlobalMutex); (x); }
+#define PROTECT(x) do { QMutexLocker l(&ThreadWeaver::GlobalMutex); (x); } while (0)
 
 /** P_ASSERT ensures that error messages occur in the correct order. */
 #ifdef P_ASSERT
 #undef P_ASSERT
 #endif
-#define P_ASSERT(x) ( PROTECT ( assert ((x)) ) )
+
+#define P_ASSERT(x) do { QMutexLocker l(&ThreadWeaver::GlobalMutex); Q_ASSERT(x); } while (0)
 
     inline void setDebugLevel (bool debug, int level)
     {
