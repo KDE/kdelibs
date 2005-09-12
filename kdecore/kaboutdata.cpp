@@ -55,7 +55,7 @@ KAboutPerson::webAddress() const
 
 
 KAboutTranslator::KAboutTranslator(const QString & name,
-                const QString & emailAddress)
+                const QString & emailAddress):d(0)
 {
     mName=name;
     mEmail=emailAddress;
@@ -71,17 +71,17 @@ QString KAboutTranslator::emailAddress() const
     return mEmail;
 }
 
-class KAboutDataPrivate
+class KAboutData::Private
 {
 public:
-    KAboutDataPrivate()
+    Private()
         : translatorName("_: NAME OF TRANSLATORS\nYour names")
         , translatorEmail("_: EMAIL OF TRANSLATORS\nYour emails")
         , productName(0)
         , programLogo(0)
         , customAuthorTextEnabled(false)
         {}
-    ~KAboutDataPrivate()
+    ~Private()
         {
              delete programLogo;
         }
@@ -113,9 +113,8 @@ KAboutData::KAboutData( const char *appName,
   mOtherText( text ),
   mHomepageAddress( homePageAddress ),
   mBugEmailAddress( bugsEmailAddress ),
-  mLicenseText (0)
+  mLicenseText (0), d(new Private)
 {
-   d = new KAboutDataPrivate;
 
    if( appName ) {
      const char *p = strrchr(appName, '/');

@@ -857,7 +857,7 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
     config->writeEntry("ReportJavaScriptErrors",QVariant(false,0));
     config->sync();
     QByteArray data;
-    kapp->dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
+    KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
   }
 
   return (m_mode != Stop);

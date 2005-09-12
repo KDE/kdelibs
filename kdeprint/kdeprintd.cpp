@@ -33,7 +33,7 @@
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kwin.h>
-#include <kapplication.h>
+#include <krandom.h>
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qregexp.h>
@@ -124,7 +124,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 		KURL url( re.cap( 1 ) );
 		if ( !url.isLocalFile() )
 		{
-			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + kapp->randomString( 8 ) );
+			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );
 			command.replace( re, KProcess::quote( tmpFilename ) );
 			proc->setOutput( re.cap( 1 ) );
 			proc->setTempOutput( tmpFilename );

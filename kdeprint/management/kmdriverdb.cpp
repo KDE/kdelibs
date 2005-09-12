@@ -178,7 +178,7 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	}
 
 	// don't block GUI
-	kapp->processEvents();
+	qApp->processEvents();
 }
 
 /*

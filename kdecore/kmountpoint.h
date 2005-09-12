@@ -108,8 +108,8 @@ private:
    QString m_mountType;
    QStringList m_mountOptions;
 
-   class KMountPointPrivate;
-   KMountPointPrivate *d;
+   class Private;
+   Private * const d;
 };
 
 #endif // _KMOUNTPOINT_H_

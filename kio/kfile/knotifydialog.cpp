@@ -814,8 +814,8 @@ void KNotifyWidget::save()
 
     if ( kapp )
     {
-        if ( !kapp->dcopClient()->isAttached() )
-            kapp->dcopClient()->attach();
+        if ( !KApplication::dcopClient()->isAttached() )
+            KApplication::dcopClient()->attach();
         DCOPRef("knotify", "").send("reconfigure()");
     }
 

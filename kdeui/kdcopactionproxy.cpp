@@ -94,7 +94,7 @@ QMap<DCOPCString,DCOPRef> KDCOPActionProxy::actionMap( const DCOPCString &appId 
 
   Q3CString id = appId;
   if ( id.isEmpty() )
-    id = kapp->dcopClient()->appId();
+    id = KApplication::dcopClient()->appId();
 
   QList<KAction *> lst = actions();
   foreach ( KAction*it, lst ) {

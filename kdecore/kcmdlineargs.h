@@ -688,5 +688,7 @@ private:
   KCmdLineArgsPrivate *d;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KCmdLineArgs::StdCmdLineArgs)
+
 #endif
 

@@ -32,7 +32,7 @@
 #include <qregexp.h>
 #include <knumvalidator.h>
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kresolver.h>
@@ -181,7 +181,7 @@ bool KMWSocketUtil::scanNetwork(Q3ProgressBar *bar)
 		if (bar)
 		{
 			bar->setProgress(i);
-			kapp->flushX();
+			qApp->flushX();
 		}
 	}
 	return true;

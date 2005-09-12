@@ -346,6 +346,8 @@ public:
    * Returns a pointer to a DCOPClient for the application.
    * If a client does not exist yet, it is created when this
    * function is called.
+   * Never use this client in a function registered with qAddPostRoutine,
+   * the result may be 0
    * @return the DCOPClient for the application
    */
   static DCOPClient *dcopClient();
@@ -980,7 +982,7 @@ private:
   KApplication& operator=(const KApplication&);
 private:
   class Private;
-  Private* d;
+  Private* const d;
 };
 
 

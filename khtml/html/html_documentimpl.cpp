@@ -148,12 +148,12 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     fake_header.append(value.string().latin1());
     fake_header.append("\n");
     stream << URL().url() << fake_header << windowId;
-    if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
+    if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",
                                   "addCookies(QString,QCString,long int)", params))
     {
          // Maybe it wasn't running (e.g. we're opening local html files)
          KToolInvocation::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->send("kcookiejar", "kcookiejar",
+         if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",
                                        "addCookies(QString,QCString,long int)", params))
              kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
     }

@@ -49,9 +49,9 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
   mId = KRandom::randomString( 8 );
 
   // Register with DCOP
-  if ( !kapp->dcopClient()->isRegistered() ) {
-    kapp->dcopClient()->registerAs( "KResourcesManager" );
-    kapp->dcopClient()->setDefaultObject( objId() );
+  if ( !KApplication::dcopClient()->isRegistered() ) {
+    KApplication::dcopClient()->registerAs( "KResourcesManager" );
+    KApplication::dcopClient()->setDefaultObject( objId() );
   }
 
   kdDebug(5650) << "Connecting DCOP signals..." << endl;
@@ -70,7 +70,7 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
                            "dcopKResourceDeleted( QString, QString )", false ) )
     kdWarning(5650) << "Could not connect ResourceDeleted signal!" << endl;
 
-  kapp->dcopClient()->setNotifications( true );
+  KApplication::dcopClient()->setNotifications( true );
 }
 
 ManagerImpl::~ManagerImpl()

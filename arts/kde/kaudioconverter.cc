@@ -74,7 +74,7 @@ bool KAudioConverter::setup(int samplingRate)
 void KAudioConverter::slotMimeType(const QString &mimeType)
 {
 	m_mimeType = mimeType;
-	kapp->exit_loop();
+	qApp->exit_loop();
 }
 
 void KAudioConverter::requestPlayObject(const KURL &url)
@@ -94,7 +94,7 @@ void KAudioConverter::requestPlayObject(const KURL &url)
 		inputStream.streamStart();
 
 		// ugly hacks.. :/
-		kapp->enter_loop();
+		qApp->enter_loop();
 
 		queryInterface = "Arts::StreamPlayObject";		
 	}

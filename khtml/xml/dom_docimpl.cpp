@@ -2284,7 +2284,7 @@ void DocumentImpl::abort()
 {
     if (m_inSyncLoad) {
 	m_inSyncLoad = false;
-	kapp->exit_loop();
+	qApp->exit_loop();
     }
 
     if (m_loadingXMLDoc)
@@ -2296,7 +2296,7 @@ void DocumentImpl::load(const DOMString &uri)
 {
     if (m_inSyncLoad) {
 	m_inSyncLoad = false;
-	kapp->exit_loop();
+	qApp->exit_loop();
     }
 
     m_hadLoadError = false;
@@ -2322,7 +2322,7 @@ void DocumentImpl::load(const DOMString &uri)
 
     if (!m_async && m_docLoading) {
 	m_inSyncLoad = true;
-	kapp->enter_loop();
+	qApp->enter_loop();
     }
 }
 
@@ -2345,7 +2345,7 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
     m_docLoading = false;
     if (m_inSyncLoad) {
 	m_inSyncLoad = false;
-	kapp->exit_loop();
+	qApp->exit_loop();
     }
 
     assert(m_loadingXMLDoc != 0);
@@ -2358,7 +2358,7 @@ void DocumentImpl::error(int err, const QString &text)
     m_docLoading = false;
     if (m_inSyncLoad) {
 	m_inSyncLoad = false;
-	kapp->exit_loop();
+	qApp->exit_loop();
     }
 
     m_hadLoadError = true;

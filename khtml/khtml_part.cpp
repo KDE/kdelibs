@@ -1479,7 +1479,7 @@ void KHTMLPart::clear()
   d->m_startOffset = 0;
   d->m_endOffset = 0;
 #ifndef QT_NO_CLIPBOARD
-  connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+  connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
 #endif
 
   d->m_jobPercent = 0;
@@ -2980,7 +2980,7 @@ void KHTMLPart::findText()
 
   // The lineedit of the dialog would make khtml lose its selection, otherwise
 #ifndef QT_NO_CLIPBOARD
-  disconnect( kapp->clipboard(), SIGNAL(selectionChanged()), this, SLOT(slotClearSelection()) );
+  disconnect( qApp->clipboard(), SIGNAL(selectionChanged()), this, SLOT(slotClearSelection()) );
 #endif
 
   // Now show the dialog in which the user can choose options.
@@ -3011,7 +3011,7 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
     return;
 
 #ifndef QT_NO_CLIPBOARD
-  connect( kapp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
+  connect( qApp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()) );
 #endif
 
   // Create the KFind object
@@ -6564,9 +6564,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifndef QT_NO_CLIPBOARD
     QString text = selectedText();
     text.replace(QChar(0xa0), ' ');
-    disconnect( kapp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
-    kapp->clipboard()->setText(text,QClipboard::Selection);
-    connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+    disconnect( qApp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
+    qApp->clipboard()->setText(text,QClipboard::Selection);
+    connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();

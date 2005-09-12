@@ -69,7 +69,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
 {
   if (!kapp) return 0;
 
-  DCOPClient *client=kapp->dcopClient();
+  DCOPClient *client=KApplication::dcopClient();
   if (!client->isAttached())
   {
     client->attach();
@@ -222,7 +222,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 bool KNotifyClient::startDaemon()
 {
   static bool firstTry = true;
-  if (!kapp->dcopClient()->isApplicationRegistered(daemonName)) {
+  if (!KApplication::dcopClient()->isApplicationRegistered(daemonName)) {
     if( firstTry ) {
       firstTry = false;
       return KToolInvocation::startServiceByDesktopName(daemonName) == 0;
@@ -240,7 +240,7 @@ void KNotifyClient::beep(const QString& reason)
     return;
   }
 
-  DCOPClient *client=kapp->dcopClient();
+  DCOPClient *client=KApplication::dcopClient();
   if (!client->isAttached())
   {
     client->attach();

@@ -54,7 +54,7 @@
 #include "kdebug.h"
 
 /* antlarr: KDE 4: make the parameters const QString & */
-KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
+KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode):d(0)
 {
    bAutoDelete = false;
    mFd = -1;
@@ -73,7 +73,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
    (void) create(filePrefix, fileExtension, mode);
 }
 
-KTempFile::KTempFile(bool)
+KTempFile::KTempFile(bool):d(0)
 {
    bAutoDelete = false;
    mFd = -1;

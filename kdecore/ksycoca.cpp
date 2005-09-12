@@ -85,9 +85,9 @@ KSycoca::KSycoca()
 {
    d = new KSycocaPrivate;
    // Register app as able to receive DCOP messages
-   if (kapp && !kapp->dcopClient()->isAttached())
+   if (kapp && !KApplication::dcopClient()->isAttached())
    {
-      kapp->dcopClient()->attach();
+      KApplication::dcopClient()->attach();
    }
    // We register with DCOP _before_ we try to open the database.
    // This way we can be relative sure that the KDE framework is

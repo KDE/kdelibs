@@ -77,13 +77,13 @@ protected:
     {
         if (e->ascii() == 'q')
         {
-            kapp->quit();
+            qApp->quit();
         }
     }
 
     virtual void closeEvent( QCloseEvent * )
     {
-        kapp->quit();
+        qApp->quit();
     }
 };
 

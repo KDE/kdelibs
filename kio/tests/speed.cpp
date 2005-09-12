@@ -54,7 +54,7 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
 
 void SpeedTest::finished(Job*) {
     kdDebug() << "job finished" << endl;
-    kapp->quit();
+    qApp->quit();
 }
 
 static KCmdLineOptions options[] =

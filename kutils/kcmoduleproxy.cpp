@@ -375,7 +375,7 @@ void KCModuleProxy::runAsRoot()
 		else
 		{
 			d->rootMode = true;
-			kapp->dcopClient();
+			KApplication::dcopClient();
 			d->rootCommunicator = new KCModuleProxyRootCommunicatorImpl( d->dcopName + "-RootCommunicator", this );
 		}
 
@@ -541,7 +541,7 @@ void KCModuleProxy::callRootModule( const Q3CString& function )
 
 	/* Note, we don't use d->dcopClient here, because it's used for
 	 * the loaded module(and it's not "us" when this function is called) */
-	if( !kapp->dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
+	if( !KApplication::dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
 			replyType, replyData, true, -1 ))
 		kdDebug(711) << "Calling function '" << function << "' failed." << endl;
 
@@ -565,7 +565,7 @@ QString KCModuleProxy::quickHelp() const
 		QByteArray data, replyData;
 		DCOPCString replyType;
 
-		if (kapp->dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
+		if (KApplication::dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
 				  data, replyType, replyData))
 			kdDebug(711) << "Calling DCOP function bool changed() failed." << endl;
 		else

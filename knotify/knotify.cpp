@@ -560,12 +560,12 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
 {
     if ( senderWinId == 0 )
     {
-        DCOPCString senderId = kapp->dcopClient()->senderId();
+        DCOPCString senderId = KApplication::dcopClient()->senderId();
         DCOPCString compare = (appName + "-mainwindow").latin1();
         int len = compare.length();
 //         kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
 
-        DCOPCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
+        DCOPCStringList objs = KApplication::dcopClient()->remoteObjects( senderId );
         for (DCOPCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
             DCOPCString obj( *it );
             if ( obj.left(len) == compare) {
@@ -573,7 +573,7 @@ WId KNotify::checkWinId( const QString &appName, WId senderWinId )
                 DCOPCString replyType;
                 QByteArray data, replyData;
 
-                if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
+                if ( KApplication::dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
                     QDataStream answer(&replyData, IO_ReadOnly);
                     if (replyType == "int") {
                         answer >> senderWinId;

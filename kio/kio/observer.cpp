@@ -51,12 +51,12 @@ const int KDEBUG_OBSERVER = 7007; // Should be 7028
 Observer::Observer() : DCOPObject("KIO::Observer")
 {
     // Register app as able to receive DCOP messages
-    if (kapp && !kapp->dcopClient()->isAttached())
+    if (kapp && !KApplication::dcopClient()->isAttached())
     {
-        kapp->dcopClient()->attach();
+        KApplication::dcopClient()->attach();
     }
 
-    if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+    if ( !KApplication::dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
     {
         kdDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
@@ -69,7 +69,7 @@ Observer::Observer() : DCOPObject("KIO::Observer")
             kdDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+    if ( !KApplication::dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
         kdDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
     else
         kdDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
@@ -81,7 +81,7 @@ int Observer::newJob( KIO::Job * job, bool showProgress )
 {
     // Tell the UI Server about this new job, and give it the application id
     // at the same time
-    int progressId = m_uiserver->newJob( kapp->dcopClient()->appId(), showProgress );
+    int progressId = m_uiserver->newJob( KApplication::dcopClient()->appId(), showProgress );
 
     // Keep the result in a dict
     m_dctJobs.insert( progressId, job );
@@ -352,7 +352,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     arg << caption;
     arg << buttonYes;
     arg << buttonNo;
-    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
+    if ( KApplication::dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
         && replyType == "int" )
     {
         int result;

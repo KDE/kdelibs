@@ -198,7 +198,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	kdDebug(500) << "kdeprint: print command: " << cmd << endl;
 
 	int result = 0;
-	DCOPClient	*dclient = kapp->dcopClient();
+	DCOPClient	*dclient = KApplication::dcopClient();
 	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
 	{
 		return result;
@@ -233,7 +233,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	if (printer && !msg.isEmpty())
 		message.prepend(i18n("Printing document: %1").arg(printer->docName())+"\n");
 
-	DCOPClient	*dclient = kapp->dcopClient();
+	DCOPClient	*dclient = KApplication::dcopClient();
 	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
 	{
 		return;

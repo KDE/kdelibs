@@ -104,7 +104,7 @@ void TestLDAPClient::testIntevation()
   connect( mClient, SIGNAL( error( const QString& ) ),
            this, SLOT( slotLDAPError( const QString& ) ) );
   mClient->startQuery( filter );
-  kapp->eventLoop()->enterLoop();
+  qApp->eventLoop()->enterLoop();
   delete mClient; mClient = 0;
 }
 
@@ -155,7 +155,7 @@ void TestLDAPClient::slotLDAPError( const QString& err )
 void TestLDAPClient::slotLDAPDone()
 {
   kdDebug() << k_funcinfo << endl;
-  kapp->eventLoop()->exitLoop();
+  qApp->eventLoop()->exitLoop();
 }
 
 #include "testldapclient.moc"

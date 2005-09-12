@@ -290,7 +290,7 @@ void PartMonitor::waitForCompletion()
 
 	sm_highestMonitor = this;
 
-        kapp->enter_loop();
+        qApp->enter_loop();
 
         //connect(m_timeout_timer, SIGNAL(timeout()), this, SLOT( timeout() ) );
         //m_timeout_timer->stop();
@@ -298,12 +298,12 @@ void PartMonitor::waitForCompletion()
     }
 
     QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
-    kapp->enter_loop();
+    qApp->enter_loop();
 }
 
 void PartMonitor::timeout()
 {
-    kapp->exit_loop();
+    qApp->exit_loop();
 }
 
 void PartMonitor::finishTimers()
@@ -315,7 +315,7 @@ void PartMonitor::finishTimers()
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
     }
-    kapp->exit_loop();
+    qApp->exit_loop();
 }
 
 void PartMonitor::partCompleted()

@@ -230,7 +230,7 @@ void KWin::activateWindow( WId win, long time )
     if( time == 0 )
         time = QX11Info::appUserTime();
     info.setActiveWindow( win, NET::FromApplication, time,
-        kapp->activeWindow() ? kapp->activeWindow()->winId() : 0 );
+        qApp->activeWindow() ? qApp->activeWindow()->winId() : 0 );
 #endif // Q_WS_X11 ...
     KUniqueApplication::setHandleAutoStarted();
 }
@@ -301,9 +301,9 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
         */
         if( qobject_cast< QDialog* >( subwindow ) != NULL
             && subwindow->parentWidget() == NULL
-            && kapp->mainWidget() != NULL )
+            && qApp->mainWidget() != NULL )
         {
-            kdWarning() << "KWin::setMainWindow(): There either mustn't be kapp->mainWidget(),"
+            kdWarning() << "KWin::setMainWindow(): There either mustn't be qApp->mainWidget(),"
                 " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;
         }
         XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );

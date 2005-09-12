@@ -94,7 +94,7 @@ extern "C" void endvfsent( );
 
 
 
-KMountPoint::KMountPoint()
+KMountPoint::KMountPoint():d(0)
 {
 }
 

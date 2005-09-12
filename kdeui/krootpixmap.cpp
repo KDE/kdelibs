@@ -271,7 +271,7 @@ void KRootPixmap::enableExports()
 {
 #ifdef Q_WS_X11
     kdDebug(270) << k_lineinfo << "activating background exports.\n";
-    DCOPClient *client = kapp->dcopClient();
+    DCOPClient *client = KApplication::dcopClient();
     if (!client->isAttached())
 	client->attach();
     QByteArray data;

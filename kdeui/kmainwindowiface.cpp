@@ -125,7 +125,7 @@ DCOPCString KMainWindowInterface::actionToolTip( const DCOPCString& action)
 
 DCOPRef KMainWindowInterface::action( const DCOPCString& name )
 {
-	return DCOPRef( kapp->dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
+	return DCOPRef( KApplication::dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
 }
 
 QMap<DCOPCString,DCOPRef> KMainWindowInterface::actionMap()

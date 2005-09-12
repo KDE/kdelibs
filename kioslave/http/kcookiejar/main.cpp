@@ -54,14 +54,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
    KInstance a("kcookiejar");
    
-   kapp->dcopClient()->attach();
+   KApplication::dcopClient()->attach();
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    DCOPCString replyType;
    QByteArray replyData;
    if (args->isSet("remove-all"))
    {
-      kapp->dcopClient()->call( "kded", "kcookiejar", "deleteAllCookies()", QByteArray(), replyType, replyData);
+      KApplication::dcopClient()->call( "kded", "kcookiejar", "deleteAllCookies()", QByteArray(), replyType, replyData);
    }
    if (args->isSet("remove"))
    {
@@ -69,7 +69,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
       DCOPCString params;
       QDataStream stream(&params, QIODevice::WriteOnly);
       stream << domain;
-      kapp->dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain(QString)", params, replyType, replyData);
+      KApplication::dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain(QString)", params, replyType, replyData);
    }
    if (args->isSet("shutdown"))
    {
@@ -77,11 +77,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
       QByteArray params;
       QDataStream stream(&params, QIODevice::WriteOnly);
       stream << module;
-      kapp->dcopClient()->call( "kded", "kded", "unloadModule(QCString)", params, replyType, replyData);
+      KApplication::dcopClient()->call( "kded", "kded", "unloadModule(QCString)", params, replyType, replyData);
    }
    else if(args->isSet("reload-config"))
    {
-      kapp->dcopClient()->call( "kded", "kcookiejar", "reloadPolicy()", QByteArray(), replyType, replyData);
+      KApplication::dcopClient()->call( "kded", "kcookiejar", "reloadPolicy()", QByteArray(), replyType, replyData);
    }
    else
    {
@@ -89,7 +89,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
       QByteArray params;
       QDataStream stream(&params, QIODevice::WriteOnly);
       stream << module;
-      kapp->dcopClient()->call( "kded", "kded", "loadModule(QCString)", params, replyType, replyData);
+      KApplication::dcopClient()->call( "kded", "kded", "loadModule(QCString)", params, replyType, replyData);
    }
 
    return 0;

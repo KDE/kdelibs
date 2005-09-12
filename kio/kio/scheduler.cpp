@@ -879,7 +879,7 @@ Scheduler::_registerWindow(QWidget *wid)
       QByteArray params;
       QDataStream stream(&params, QIODevice::WriteOnly);
       stream << windowId;
-      if( !kapp->dcopClient()->send( "kded", "kded",
+      if( !KApplication::dcopClient()->send( "kded", "kded",
                     "registerWindowId(long int)", params ) )
       kdDebug(7006) << "Could not register window with kded!" << endl;
    }
@@ -903,7 +903,7 @@ Scheduler::slotUnregisterWindow(QObject *obj)
       QByteArray params;
       QDataStream stream(&params, QIODevice::WriteOnly);
       stream << windowId;
-      kapp->dcopClient()->send( "kded", "kded",
+      KApplication::dcopClient()->send( "kded", "kded",
                     "unregisterWindowId(long int)", params );
    }
 }

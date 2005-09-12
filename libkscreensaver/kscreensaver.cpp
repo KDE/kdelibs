@@ -21,7 +21,8 @@
 #include <qpainter.h>
 #include <qtimer.h>
 #include <qx11info_x11.h>
-#include <kapplication.h>
+#include <qapplication.h>
+#include <krandom.h>
 #include "kscreensaver.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -66,7 +67,7 @@ KScreenSaver::KScreenSaver( WId id ) : QWidget()
     if ( w == 0 ) w = 600;
     if ( h == 0 ) h = 420;
     resize( w, h );
-    KApplication::sendPostedEvents();
+    QApplication::sendPostedEvents();
     show();
 }
 
@@ -78,12 +79,12 @@ KScreenSaver::~KScreenSaver()
 
 void KScreenSaver::embed( QWidget *w )
 {
-    KApplication::sendPostedEvents();
+    QApplication::sendPostedEvents();
 #ifdef Q_WS_X11 //FIXME
     XReparentWindow(QX11Info::display(), w->winId(), winId(), 0, 0);
 #endif
     w->setGeometry( 0, 0, width(), height() );
-    KApplication::sendPostedEvents();
+    QApplication::sendPostedEvents();
 }
 
 bool KScreenSaver::eventFilter( QObject *o, QEvent *e )
@@ -146,7 +147,7 @@ void KBlankEffect::blank( QWidget *w, Effect effect )
     }
 
     if ( effect == Random )
-        effect = (Effect)(kapp->random() % MaximumEffects);
+        effect = (Effect)(KRandom::random() % MaximumEffects);
 
     d->effectProgress = 0;
     d->widget = w;
@@ -171,7 +172,7 @@ void KBlankEffect::blankSweepRight()
 {
     QPainter p( d->widget );
     p.fillRect( d->effectProgress, 0, 50, d->widget->height(), Qt::black );
-    kapp->flushX();
+    qApp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->width() )
         finished();
@@ -182,7 +183,7 @@ void KBlankEffect::blankSweepDown()
 {
     QPainter p( d->widget );
     p.fillRect( 0, d->effectProgress, d->widget->width(), 50, Qt::black );
-    kapp->flushX();
+    qApp->flushX();
     d->effectProgress += 50;
     if ( d->effectProgress >= d->widget->height() )
         finished();
@@ -202,7 +203,7 @@ void KBlankEffect::blankBlocks()
         for ( int i = 0; i < bx*by; i++ )
             block[i] = i;
         for ( int i = 0; i < bx*by; i++ ) {
-            int swap = kapp->random()%(bx*by);
+            int swap = KRandom::random()%(bx*by);
             int tmp = block[i];
             block[i] = block[swap];
             block[swap] = tmp;
@@ -219,7 +220,7 @@ void KBlankEffect::blankBlocks()
         d->effectProgress++;
     }
 
-    kapp->flushX();
+    qApp->flushX();
 
     if ( d->effectProgress >= bx*by ) {
         delete block;

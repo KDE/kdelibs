@@ -60,9 +60,9 @@ void KSpellCheckingConfig::save()
 {
     spellConfig->writeGlobalSettings();
     QByteArray data;
-    if ( !kapp->dcopClient()->isAttached() )
-        kapp->dcopClient()->attach();
-    kapp->dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
+    if ( !KApplication::dcopClient()->isAttached() )
+        KApplication::dcopClient()->attach();
+    KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
 }
 
 void KSpellCheckingConfig::defaults()

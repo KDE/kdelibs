@@ -73,7 +73,7 @@ public:
    * object id.
    *
    * You can construct a global DCOP object referenence using DCOPRef. For example like
-   * DCOPRef( kapp->dcopClient()->appId, actionProxy->actionObjectId( actionName ) );
+   * DCOPRef( KApplication::dcopClient()->appId, actionProxy->actionObjectId( actionName ) );
    *
    * The action with the given name has to be available through the #action method.
    */
@@ -83,7 +83,7 @@ public:
    * Returns a map of all exported actions, with the action name as keys and a global DCOP reference
    * as data entries.
    * The appId argument is used to specify the appid component of the DCOP reference. By default the
-   * global application id is used ( kapp->dcopClient()->appId() ) .
+   * global application id is used ( KApplication::dcopClient()->appId() ) .
    */
   virtual QMap<DCOPCString,DCOPRef> actionMap( const DCOPCString &appId = DCOPCString() ) const;
 

@@ -77,7 +77,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
       dataStream << QString("kbuildsycoca") << args;
       DCOPCString _launcher = KApplication::launcher();
 
-      kapp->dcopClient()->callAsync(_launcher, _launcher, "kdeinit_exec_wait(QString,QStringList)", data, callBackObj, callBackSlot);
+      KApplication::dcopClient()->callAsync(_launcher, _launcher, "kdeinit_exec_wait(QString,QStringList)", data, callBackObj, callBackSlot);
    }
    else
    {
@@ -144,7 +144,7 @@ bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
   if (!module)
      return false;
 
-  module->setCallingDcopClient(kapp->dcopClient());
+  module->setCallingDcopClient(KApplication::dcopClient());
   return module->process(fun, data, replyType, replyData);
 }
 
@@ -437,7 +437,7 @@ void Kded::recreateDone()
       QByteArray replyData;
       DCOPClientTransaction *transaction = m_recreateRequests.first();
       if (transaction)
-         kapp->dcopClient()->endTransaction(transaction, replyType, replyData);
+         KApplication::dcopClient()->endTransaction(transaction, replyType, replyData);
       m_recreateRequests.remove(m_recreateRequests.begin());
    }
    m_recreateBusy = false;
@@ -480,7 +480,7 @@ bool Kded::process(const DCOPCString &fun, const QByteArray &data,
        }
        m_recreateCount++;
     }
-    m_recreateRequests.append(kapp->dcopClient()->beginTransaction());
+    m_recreateRequests.append(KApplication::dcopClient()->beginTransaction());
     replyType = "void";
     return true;
   } else {
@@ -587,7 +587,7 @@ void Kded::unregisterWindowId(long windowId)
 static void sighandler(int /*sig*/)
 {
     if (kapp)
-       kapp->quit();
+       qApp->quit();
 }
 
 KUpdateD::KUpdateD()
@@ -679,7 +679,7 @@ public:
     {
       if ( kapp && (fun == "quit()") )
       {
-        kapp->quit();
+        qApp->quit();
         replyType = "void";
         return true;
       }
@@ -874,7 +874,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckHostname)
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
-     DCOPClient *client = kapp->dcopClient();
+     DCOPClient *client = KApplication::dcopClient();
      QObject::connect(client, SIGNAL(applicationRemoved(const QByteArray&)),
              kded, SLOT(slotApplicationRemoved(const QByteArray&)));
      client->setNotifications(true);

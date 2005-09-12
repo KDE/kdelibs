@@ -24,7 +24,6 @@
 #include <kapplication.h>
 #include <dcopobject.h>
 
-class KUniqueApplicationPrivate;
 
 /**
  * Maintains only a single
@@ -218,7 +217,8 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KUniqueApplicationPrivate *d;
+  class Private;
+  Private * const d;
 };
 
 #endif

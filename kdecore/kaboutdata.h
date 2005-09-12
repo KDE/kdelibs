@@ -27,8 +27,6 @@
 #ifndef KABOUTDATA_H
 #define KABOUTDATA_H
 
-class KAboutPersonPrivate;
-class KAboutDataPrivate;
 
 /**
  * This structure is used to store information about a person or developer.
@@ -73,13 +71,12 @@ public:
      * @param webAddress Home page of the person.
      */
     KAboutPerson( const char *name, const char *task,
-                  const char *emailAddress, const char *webAddress )
+                  const char *emailAddress, const char *webAddress ):d(0)
     {
       mName = name;
       mTask = task;
       mEmailAddress = emailAddress;
       mWebAddress = webAddress;
-      d = 0;
     }
     /**
      * @internal
@@ -120,11 +117,10 @@ private:
     const char *mTask;
     const char *mEmailAddress;
     const char *mWebAddress;
-
-    KAboutPersonPrivate *d;
+    class Private;
+    Private * d;
 };
 
-class KAboutTranslatorPrivate;
 /**
  * This structure is used to store information about a translator.
  * It can store the translator's name and an email address.
@@ -167,7 +163,8 @@ public:
 private:
     QString mName;
     QString mEmail;
-    KAboutTranslatorPrivate* d;
+    class Private;
+    Private* d;
 };
 
 
@@ -608,7 +605,8 @@ class KDECORE_EXPORT KAboutData
     QList<KAboutPerson> mCreditList;
     const char *mLicenseText;
 
-    KAboutDataPrivate *d;
+    class Private;
+    Private *const d;
 };
 
 #endif

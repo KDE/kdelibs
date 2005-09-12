@@ -239,7 +239,7 @@ void Slave::hold(const KURL &url)
    deref();
    // Call KLauncher::waitForSlave(pid);
    {
-      DCOPClient *client = kapp->dcopClient();
+      DCOPClient *client = KApplication::dcopClient();
       if (!client->isAttached())
          client->attach();
 
@@ -363,7 +363,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
     if (protocol == "data")
         return new DataProtocol();
 
-    DCOPClient *client = kapp->dcopClient();
+    DCOPClient *client = KApplication::dcopClient();
     if (!client->isAttached())
 	client->attach();
 
@@ -473,7 +473,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     if (protocol == "data")
         return 0;
 
-    DCOPClient *client = kapp->dcopClient();
+    DCOPClient *client = KApplication::dcopClient();
     if (!client->isAttached())
 	client->attach();
 

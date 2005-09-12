@@ -56,7 +56,7 @@ bool KPreviewProc::startPreview()
 {
 	if (start())
 	{
-		kapp->enter_loop();
+		qApp->enter_loop();
 		return m_bOk;
 	}
 	else
@@ -65,7 +65,7 @@ bool KPreviewProc::startPreview()
 
 void KPreviewProc::slotProcessExited(KProcess* proc)
 {
-	kapp->exit_loop();
+	qApp->exit_loop();
 	if ( proc->normalExit() && proc->exitStatus() == 0 )
 		m_bOk = true;
 	else

@@ -108,10 +108,10 @@ KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
 	 */
 
 	/* Note, we don't use KCModuleProxy::d->dcopClient */
-	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(),
+	KApplication::dcopClient()->connectDCOPSignal( 0, p->dcopName(),
 			"changed(bool)", objId(), "changed(bool)", false );
 
-	kapp->dcopClient()->connectDCOPSignal( 0, p->dcopName(),
+	KApplication::dcopClient()->connectDCOPSignal( 0, p->dcopName(),
 			"quickHelpChanged()", objId(), "quickHelpChanged()", false );
 }
 

@@ -2306,7 +2306,7 @@ void KPasteTextAction::menuAboutToShow()
 {
     m_popup->clear();
     QStringList list;
-    DCOPClient *client = kapp->dcopClient();
+    DCOPClient *client = KApplication::dcopClient();
     if (client->isAttached() && client->isApplicationRegistered("klipper")) {
       DCOPRef klipper("klipper","klipper");
       DCOPReply reply = klipper.call("getClipboardHistoryMenu");
@@ -2332,7 +2332,7 @@ void KPasteTextAction::menuAboutToShow()
 
 void KPasteTextAction::menuItemActivated( int id)
 {
-    DCOPClient *client = kapp->dcopClient();
+    DCOPClient *client = KApplication::dcopClient();
     if (client->isAttached() && client->isApplicationRegistered("klipper")) {
       DCOPRef klipper("klipper","klipper");
       DCOPReply reply = klipper.call("getClipboardHistoryItem(int)", m_popup->indexOf(id));

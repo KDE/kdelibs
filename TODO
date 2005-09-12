@@ -53,7 +53,7 @@ that we would like to make for the next binary incompatible release.
   create the main window on demand.
   (Martijn)
 
-- Make KSystemTray's Quit option in the context menu call kapp->quit() instead of
+- Make KSystemTray's Quit option in the context menu call qApp->quit() instead of
   closing all windows, so apps that save their window state on exit don't need
   workarounds to detect a window close caused by the tray rather than the user.
   (Martijn)

@@ -29,7 +29,6 @@
 #include <q3valuelist.h>
 #include "kdelibs_export.h"
 
-class KZoneAllocatorPrivate;
 
 
 /**
@@ -124,7 +123,8 @@ protected:
     unsigned int hashSize;
     bool hashDirty;
 private:
-    KZoneAllocatorPrivate *d;
+    class Private;
+    Private * const d;
 };
 
 #endif

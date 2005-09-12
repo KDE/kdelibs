@@ -1039,7 +1039,7 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
 void UIServer::slotQuit()
 {
   m_shuttingDown = true;
-  kapp->quit();
+  qApp->quit();
 }
 
 void UIServer::slotUpdate() {

@@ -189,7 +189,7 @@ void KioslaveTest::slotQuit(){
   }
   if (slave)
     KIO::Scheduler::disconnectSlave(slave);
-  kapp->quit();
+  qApp->quit();
 }
 
 

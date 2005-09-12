@@ -13,8 +13,8 @@ int main( int argc, char** argv )
     KApplication app(false,false);
 
 
-    kapp->dcopClient()->attach();
-    // kapp->dcopClient()->registerAs( "kidlclienttest" );
+    KApplication::dcopClient()->attach();
+    // KApplication::dcopClient()->registerAs( "kidlclienttest" );
 
     KIDLTest_stub* t = new KIDLTest_stub( "kidlservertest", "Hello" );
 

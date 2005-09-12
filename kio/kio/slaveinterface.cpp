@@ -504,7 +504,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     QString caption( _caption );
     if ( type == KIO::SlaveBase::SSLMessageBox )
-        caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see observer.cpp
+        caption = QString::fromUtf8(KApplication::dcopClient()->appId()); // hack, see observer.cpp
 
     emit needProgressId();
     kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;

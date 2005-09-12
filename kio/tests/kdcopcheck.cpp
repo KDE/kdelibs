@@ -40,9 +40,9 @@ TestService::TestService(const QString &exec)
 
    proc.start();
 
-   connect(kapp->dcopClient(), SIGNAL( applicationRegistered(const QByteArray&)),
+   connect(KApplication::dcopClient(), SIGNAL( applicationRegistered(const QByteArray&)),
            this, SLOT(newApp(const QByteArray&)));
-   connect(kapp->dcopClient(), SIGNAL( applicationRemoved(const QByteArray&)),
+   connect(KApplication::dcopClient(), SIGNAL( applicationRemoved(const QByteArray&)),
            this, SLOT(endApp(const QByteArray&)));
    connect(&proc, SIGNAL(processExited(KProcess *)),
            this, SLOT(appExit()));
@@ -79,12 +79,12 @@ void TestService::appExit()
 
 void TestService::stop()
 {
-   kapp->exit_loop();
+   qApp->exit_loop();
 }
 
 int TestService::exec()
 {
-   kapp->enter_loop();
+   qApp->enter_loop();
    return result;
 }
 

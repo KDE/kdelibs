@@ -69,7 +69,7 @@ public:
           what( _what )
     {
 	kapp->installX11EventFilter( this );
-	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
+	(void ) qApp->desktop(); //trigger desktop widget creation to select root window events
         activate();
 	updateStackingOrder();
     }
@@ -424,8 +424,8 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
 
 void KWinModule::doNotManage( const QString& title )
 {
-    if ( !kapp->dcopClient()->isAttached() )
-	kapp->dcopClient()->attach();
+    if ( !KApplication::dcopClient()->isAttached() )
+	KApplication::dcopClient()->attach();
 
     DCOPRef("kwin", "").call("doNotManage", title);
 }

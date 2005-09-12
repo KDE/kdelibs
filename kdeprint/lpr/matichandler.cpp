@@ -31,7 +31,7 @@
 
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
+#include <krandom.h>
 #include <kdebug.h>
 #include <kprocess.h>
 #include <qfile.h>
@@ -224,7 +224,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 	// is not self-contained. If the printer is removed (when
 	// changing printer name), the template would be also removed
 	QString	origfilename = maticFile(entry);
-	QString	filename = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	QString	filename = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
 	::system(QFile::encodeName("cp " + KProcess::quote(origfilename) + " " + KProcess::quote(filename)));
 	DrMain	*driver = Foomatic2Loader::loadDriver(filename);
 	if (driver)
@@ -246,7 +246,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 		return NULL;
 	}
 
-	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	QString	tmpFile = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
 	QString	PATH = QString( getenv("PATH") ) + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
@@ -291,7 +291,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 
 bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain *driver, bool*)
 {
-	QFile	tmpFile(locateLocal("tmp", "foomatic_" + kapp->randomString(8)));
+	QFile	tmpFile(locateLocal("tmp", "foomatic_" + KRandom::randomString(8)));
 	QFile	inFile(driver->get("template"));
 	QString	outFile = maticFile(entry);
 	bool	result(false);

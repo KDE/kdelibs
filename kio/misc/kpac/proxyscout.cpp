@@ -34,7 +34,7 @@
 namespace KPAC
 {
     ProxyScout::QueuedRequest::QueuedRequest( const KURL& u )
-        : transaction( kapp->dcopClient()->beginTransaction() ),
+        : transaction( KApplication::dcopClient()->beginTransaction() ),
           url( u )
     {
     }
@@ -135,7 +135,7 @@ namespace KPAC
             QDataStream ds( &data, QIODevice::WriteOnly );
             if ( success ) ds << handleRequest( ( *it ).url );
             else ds << QString( "DIRECT" );
-            kapp->dcopClient()->endTransaction( ( *it ).transaction, type, data );
+            KApplication::dcopClient()->endTransaction( ( *it ).transaction, type, data );
         }
         m_requestQueue.clear();
         m_downloader->deleteLater();

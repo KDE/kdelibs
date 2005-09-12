@@ -164,6 +164,7 @@ KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 static DCOPClient* s_DCOPClient = 0L;
 static bool s_dcopClientNeedsPostInit = false;
+static bool s_dcopClientHasBeenClosedDown = false;
 
 #ifdef Q_WS_X11
 static Atom atom_DesktopWindow;
@@ -275,6 +276,12 @@ static bool autoDcopRegistration = true;
   Display *KApplication::getDisplay() { return QX11Info::display(); }
 #endif
 
+static void cleanupAppClient() {
+  // close down IPC
+  s_dcopClientHasBeenClosedDown=true;
+  delete s_DCOPClient;
+  s_DCOPClient = 0L;
+}
 
 
 void KApplication::installX11EventFilter( QWidget* filter )
@@ -809,6 +816,10 @@ static int my_system (const char *command) {
 
 DCOPClient *KApplication::dcopClient()
 {
+  //Q_ASSERT_X(qApp,"KApplication::dcopClient","valid qApp needed");
+  Q_ASSERT_X(s_dcopClientHasBeenClosedDown==false,"KApplication::dcopClient()", "dcopClient must not be accessed from a qapp post routine");
+  if (s_dcopClientHasBeenClosedDown) return 0;
+
   if (s_DCOPClient)
     return s_DCOPClient;
 
@@ -823,9 +834,12 @@ DCOPClient *KApplication::dcopClient()
             kapp, SLOT(dcopFailure(const QString &)));
     connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
             kapp, SLOT(dcopBlockUserInput(bool)) );
+    qAddPostRoutine(cleanupAppClient);
   }
   else
     s_dcopClientNeedsPostInit = true;
+
+  //qAddPostRoutine(cleanupAppClient);
 
   DCOPClient::setMainClient( s_DCOPClient );
   return s_DCOPClient;
@@ -839,6 +853,7 @@ void KApplication::dcopClientPostInit()
     connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
             SLOT(dcopBlockUserInput(bool)) );
     s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
+    qAddPostRoutine(cleanupAppClient);
     }
 }
 
@@ -1379,10 +1394,6 @@ KApplication::~KApplication()
   KLibLoader::cleanUp();
 
   delete smw;
-
-  // close down IPC
-  delete s_DCOPClient;
-  s_DCOPClient = 0L;
 
   KProcessController::deref();
 

@@ -404,9 +404,9 @@ void RMB::slotRMBActionCopyLocation( int val )
 
   if ( !bookmark.isGroup() )
   {
-    kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
+    qApp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
                                 QClipboard::Selection );
-    kapp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
+    qApp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
                                 QClipboard::Clipboard );
   }
 }

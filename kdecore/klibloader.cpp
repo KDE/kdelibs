@@ -25,13 +25,13 @@
 #include <qtimer.h>
 #include <q3objectdict.h>
 #include <q3cstring.h>
+#include <QApplication>
 
-#include "kapplication.h"
 #include "klibloader.h"
+#include "kapplication.h"
 #include "kstandarddirs.h"
 #include "kdebug.h"
 #include "klocale.h"
-
 #include "ltdl.h"
 
 template class Q3AsciiDict<KLibrary>;
@@ -550,17 +550,17 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
          We need to make sure to clear the clipboard before unloading a DSO
          because the DSO could have defined an object derived from QMimeSource
          and placed that on the clipboard. */
-      /*kapp->clipboard()->clear();*/
+      /*qApp->clipboard()->clear();*/
 
       /* Well.. let's do something more subtle... convert the clipboard context
          to text. That should be safe as it only uses objects defined by Qt. */
-      if( kapp->clipboard()->ownsSelection()) {
-	kapp->clipboard()->setText(
-            kapp->clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
+      if( qApp->clipboard()->ownsSelection()) {
+	qApp->clipboard()->setText(
+            qApp->clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
       }
-      if( kapp->clipboard()->ownsClipboard()) {
-	kapp->clipboard()->setText(
-            kapp->clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
+      if( qApp->clipboard()->ownsClipboard()) {
+	qApp->clipboard()->setText(
+            qApp->clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
       }
     }
 

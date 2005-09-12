@@ -97,7 +97,7 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 {
     QMap<QString, bool> activeLogs;
 
-    DCOPClient* dcop = kapp->dcopClient();
+    DCOPClient* dcop = KApplication::dcopClient();
 
     DCOPCStringList apps = dcop->registeredApplications();
     foreach ( DCOPCString clientId, apps )

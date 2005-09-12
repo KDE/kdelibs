@@ -40,7 +40,7 @@
 #include <qdatetime.h>
 
 #include <kdebug.h>
-#include <kapplication.h>
+#include <krandom.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
@@ -513,7 +513,7 @@ DrMain* KMCupsManager::loadFileDriver(const QString& filename)
 DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 {
 	QStringList	comps = QStringList::split('/', drname, false);
-	QString	tmpFile = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
+	QString	tmpFile = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
 	QString	PATH = QLatin1String(getenv("PATH"));
 	PATH += QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
@@ -674,7 +674,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 
 bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 {
-	QString	tmpfilename = locateLocal("tmp","print_") + kapp->randomString(8);
+	QString	tmpfilename = locateLocal("tmp","print_") + KRandom::randomString(8);
 
 	// first save the driver in a temporary file
 	saveDriverFile(d,tmpfilename);

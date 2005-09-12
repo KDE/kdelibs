@@ -416,7 +416,7 @@ AddressBook::AddressBook(QWidget* parent, const char* name, bool loadit)
       KMessageBox::error(this,
 	 i18n("Cannot initialize local variables."),
 	 i18n("Out of Memory"));
-      kapp->quit(); // It is critical, but will possibly never happen.
+      qApp->quit(); // It is critical, but will possibly never happen.
     }
   connect(data, SIGNAL(fileChanged()), SLOT(dataFileChanged()));
   connect(data, SIGNAL(changed(QConfigDB*)),
@@ -1064,7 +1064,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
       KMessageBox::error(this,
 	 i18n("Cannot initialize local variables."),
 	 i18n("Out of Memory"));
-      kapp->quit(); // It is critical, but will possibly never happen.
+      qApp->quit(); // It is critical, but will possibly never happen.
       return InternError; // shut the compiler up...
     }
   // ----- lock the file:

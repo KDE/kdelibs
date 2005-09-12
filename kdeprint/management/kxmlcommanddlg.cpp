@@ -44,7 +44,7 @@
 #include <klistbox.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
-#include <kapplication.h>
+#include <krandom.h>
 #include <kdebug.h>
 #include <kguiitem.h>
 
@@ -401,7 +401,7 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, Q3ListViewItem *parent
 		QString	namestr = git.current()->name();
 		if (namestr.isEmpty())
 		{
-			namestr = "group_"+kapp->randomString(4);
+			namestr = "group_"+KRandom::randomString(4);
 		}
 		git.current()->setName(namestr);
 		item = new Q3ListViewItem(parent, item, git.current()->get("text"), git.current()->name());
@@ -418,7 +418,7 @@ void KXmlCommandAdvancedDlg::parseGroupItem(DrGroup *grp, Q3ListViewItem *parent
 		QString	namestr = oit.current()->name().mid(m_xmlcmd->name().length()+6);
 		if (namestr.isEmpty())
 		{
-			namestr = "option_"+kapp->randomString(4);
+			namestr = "option_"+KRandom::randomString(4);
 		}
 		oit.current()->setName(namestr);
 		item = new Q3ListViewItem(parent, item, oit.current()->get("text"), namestr);

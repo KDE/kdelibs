@@ -307,7 +307,7 @@
  *
    @verbatim
      // Register DCOP client.
-     DCOPClient *client = kapp->dcopClient();
+     DCOPClient *client = KApplication::dcopClient();
      if (!client->isRegistered())
      {
          client->attach();

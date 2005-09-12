@@ -74,7 +74,7 @@ struct DCOPRequest {
    DCOPClientTransaction *transaction;
 };
 
-class KUniqueApplicationPrivate {
+class KUniqueApplication::Private {
 public:
    QList <DCOPRequest *> requestList;
    bool processingRequest;
@@ -315,9 +315,8 @@ KUniqueApplication::start()
 
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool configUnique)
   : KApplication( allowStyles, GUIenabled, initHack( configUnique )),
-    DCOPObject(KCmdLineArgs::about->appName())
+    DCOPObject(KCmdLineArgs::about->appName()),d(new KUniqueApplication::Private)
 {
-  d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
   d->firstInstance = true;
 
@@ -331,9 +330,8 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
 KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
 		Qt::HANDLE colormap, bool allowStyles, bool configUnique)
   : KApplication( display, visual, colormap, allowStyles, initHack( configUnique )),
-    DCOPObject(KCmdLineArgs::about->appName())
+    DCOPObject(KCmdLineArgs::about->appName()),d(new KUniqueApplication::Private)
 {
-  d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
   d->firstInstance = true;
 

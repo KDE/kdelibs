@@ -738,7 +738,7 @@ static const char appVersion[] = "1.1";
 class WaitForSignal : public QObject
 {
 public:
-   ~WaitForSignal() { kapp->exit_loop (); }
+   ~WaitForSignal() { qApp->exit_loop (); }
 };
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
@@ -818,7 +818,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
        WaitForSignal *obj = new WaitForSignal;
        obj->connect(dcopClient, SIGNAL(applicationRemoved(const QByteArray &)),
                SLOT(deleteLater()));
-       kapp->enter_loop();
+       qApp->enter_loop();
      }
      dcopClient->setNotifications( false );
    }

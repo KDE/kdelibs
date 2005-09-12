@@ -1012,7 +1012,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
     if(!function.endsWith("(KURL::List)")) {
       kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
     } else {
-      if(kapp->dcopClient()->call( app, object,
+      if(KApplication::dcopClient()->call( app, object,
                    function,
                    dataToSend, replyType, replyData, true, 100)
 	    && replyType == "QStringList" ) {

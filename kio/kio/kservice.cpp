@@ -830,7 +830,7 @@ void KService::rebuildKSycoca(QWidget *parent)
                       i18n("Updating system configuration."));
 
   QByteArray data;
-  DCOPClient *client = kapp->dcopClient();
+  DCOPClient *client = KApplication::dcopClient();
 
   int result = client->callAsync("kded", "kbuildsycoca", "recreate()",
                data, &dlg, SLOT(slotFinished()));

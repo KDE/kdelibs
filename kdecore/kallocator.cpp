@@ -47,7 +47,7 @@ class KZoneAllocator::MemBlock
 
 KZoneAllocator::KZoneAllocator(unsigned long _blockSize)
 : currentBlock(0), blockSize(1), blockOffset(0), log2(0), num_blocks(0), 
-  hashList(0), hashSize(0), hashDirty(true)
+  hashList(0), hashSize(0), hashDirty(true),d(0)
 {
   while (blockSize < _blockSize)
     blockSize <<= 1, log2++;

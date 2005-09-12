@@ -51,7 +51,7 @@ KMDBCreator::~KMDBCreator()
 bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
 {
 	// don't block GUI
-	kapp->processEvents();
+	qApp->processEvents();
 
 	// first check current directory
 	QFileInfo	dfi(dirname);

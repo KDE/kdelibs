@@ -112,7 +112,7 @@ KUniqueApplication automatically registers itself to DCOP. If you
 are using KUniqueApplication you should not attach or register
 yourself, this is already done. The appId is by definition
 equal to kapp->name(). You can retrieve the registered DCOP client
-by calling kapp->dcopClient().
+by calling KApplication::dcopClient().
 
 Sending Data to a Remote Application:
 -------------------------------------
@@ -247,7 +247,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
     QString result = self->doIt(i);
 
     DCOPClientTransaction *myTransaction;
-    myTransaction = kapp->dcopClient()->beginTransaction();
+    myTransaction = KApplication::dcopClient()->beginTransaction();
 
     // start processing...
     // Calls slotProcessingDone when finished.
@@ -266,7 +266,7 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
     QByteArray replyData;
     QDataStream reply(replyData, IO_WriteOnly);
     reply << result;
-    kapp->dcopClient()->endTransaction( myTransaction, replyType, replyData );
+    KApplication::dcopClient()->endTransaction( myTransaction, replyType, replyData );
 }
 
 DCOP Signals
@@ -315,7 +315,7 @@ that an application that was started via KLauncher terminates.
    QByteArray params;
    QDataStream stream(params, IO_WriteOnly);
    stream << pid;
-   kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
+   KApplication::dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
 
 The task manager of the KDE panel connects to this signal. It uses an 
 anonymous connection (it doesn't require that the signal is being emitted
