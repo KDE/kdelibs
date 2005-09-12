@@ -43,8 +43,8 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 
 <H4>Header file names</H4>
 <UL>
-  kuniqueapp.h => kuniqueapplication.h
-  klargefile.h => kde_file.h
+  kuniqueapp.h =&gt; kuniqueapplication.h
+  klargefile.h =&gt; kde_file.h
 </UL>
 
 <H4>KAccel</H4>
@@ -96,7 +96,7 @@ KMacroExpander now takes a QHash and not a QMap
 
 <H4>KDesktopFile</H4>
 <ul>
-<li>QString filename() const -> QString fileName() const</li>
+<li>QString filename() const -&gt; QString fileName() const</li>
 <li>more standards compliant. See
 <a href="http://www.freedesktop.org/Standards/desktop-entry-spec/latest">
 Desktop Entry Spec</a>
@@ -122,13 +122,13 @@ Desktop Entry Spec</a>
 </li>
 
 <H4>KKeyNative</H4>
-<p>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -> modXWin()</p>
+<p>modX(ModFlags) is now a direct function call.  IE, modX(KKey::WIN) -&gt; modXWin()</p>
 
 <H4>KPalette</H4>
 <p>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</p>
 
 <H4>KProcess</h4>
-<li>setExecutable() was removed in favor of using operator << </li>
+<li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
 <li>getPid() was removed for just pid()</li>
 
 <H4>KPixmapSplitter</H4>
@@ -142,10 +142,10 @@ Desktop Entry Spec</a>
 </p>
 
 <H4>KStringHandler</H4>
-<li>static QString ljust( const QString &text , int width ) -&gt; QString::leftJustified</li>
-<li>static QString rjust( const QString &text , int width ) -&gt; QString::righttJustified</li>
+<li>static QString ljust( const QString &amp;text , int width ) -&gt; QString::leftJustified</li>
+<li>static QString rjust( const QString &amp;text , int width ) -&gt; QString::righttJustified</li>
 <li>matchFilename -&gt; matchFileName</li>
-<li>static QString word( const QString &text , int pos ) -&gt; QString::section </li>
+<li>static QString word( const QString &amp;text , int pos ) -&gt; QString::section </li>
 <li>::randomString() has been moved to KRandom::randomString()</li>
 
 <H4>KStdAccel</H4>
@@ -167,16 +167,16 @@ in the drop/paste side.</li>
 <H4>KMD5</H4>
 
 <H4>KLocale</H4>
-<li> QString formatNumber(const QString &numStr) const -&gt;   QString formatNumber(const QString &numStr, bool round=true, int precision=2) const;
+<li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;
 <li> bool weekStartsMonday() const -&gt; int weekStartDay() const
-<li> QString monthName(int i, bool shortName = false) const -&gt QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate & date, bool shortName = false ) const = 0;
+<li> QString monthName(int i, bool shortName = false) const -&gt; QString KCalendarSystem::monthName (int month, int year, bool shortName = false) const = 0; or QString KCalendarSystem::monthName (const QDate &amp; date, bool shortName = false ) const = 0;
 <li> QString weekDayName(int i, bool shortName = false) const -&gt; calendar()-&gt;weekDayName
 <li> QString monthNamePossessive(int i, bool shortName = false) const -&gt; calendar()-&gt;monthNamePossessive()
 <li> void setWeekStartsMonday(bool start) -&gt; setWeekStartDay
 <li> languages() -&gt; languageList()
-<li> formatMoney(const QString &numStr) -&gt   QString formatMoney(double num, const QString & currency = QString::null, int digits = -1) const;
-<li> charset() -&gt gone
-<li> setCharset() -&gt gone
+<li> formatMoney(const QString &amp;numStr) -&gt;   QString formatMoney(double num, const QString &amp; currency = QString::null, int digits = -1) const;
+<li> charset() -&gt; gone
+<li> setCharset() -&gt; gone
 
 <H4>KCmdLineArgs</H4>
 <li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
@@ -304,7 +304,7 @@ if needed (see the KURLDrag section)</li>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 
 <H4>KInputDialog</H4>
-<li>static QString KInputDialog::text( const QString &caption,...) was replaced by QString KInputDialog::getText( const QString &caption,...)
+<li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)
 
 <h4>KToolBar</h4>
 <li><tt>enum BarStatus</tt> and <tt>bool enable(BarStatus stat)</tt> have been
@@ -389,9 +389,9 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 <p>
 
 
-<p>KDockWidgets -> kde3support K3DockWidget<br>
-KParts::DockWindow -> kde3support KParts::DockWindow3<br>
-KMDI* --> kdeSupport K3MDI*</p>
+<p>KDockWidgets -&gt; kde3support K3DockWidget<br>
+KParts::DockWindow -&gt; kde3support KParts::DockWindow3<br>
+KMDI* --&gt; kdeSupport K3MDI*</p>
 
 <H3>libkmid</H3>
 <p>Moved to kdemultimedia, where atm it is only used by kmid.</p>
