@@ -212,7 +212,13 @@ in the drop/paste side.</li>
 <li>checkAvailable() -&gt; isAvailable()</li>
 </ul>
 
-<H4>KDialogBase<H4>
+<H4>KConfigDialog</H4>
+<ul>
+    <li>The dialog name is now a QString instead of a const char*</li>
+    <li>signal void settingsChanged(const char *dialogName); -&gt; void settingsChanged(const QString&amp; dialogName);</li>
+</ui>
+
+<H4>KDialogBase</H4>
 <li>setButtonOKText -&gt; setButtonOk
 <li>setButtonApplyText -&gt; setButtonApply
 <li>setButtonCancelText -&gt; setButtonCancel
@@ -227,7 +233,7 @@ in the drop/paste side.</li>
 <li>removed getData() method.  Use date() instead</li>
 <li>removed protected slot <tt>void selectWeekClicked()</tt>
 
-<H4>KDockWindow<H4>
+<H4>KDockWindow</H4>
 <p>This class is obsolete, it is provided for compatibility only.
 Use KSystemTray instead.</p>
 
