@@ -900,11 +900,6 @@ protected slots:
      */
     void toggleBookmarks(bool show);
 
-    /**
-     * @deprecated
-     */
-    virtual void updateStatusLine(int dirs, int files);
-
     virtual void slotOk();
     virtual void accept();
     virtual void slotCancel();

@@ -1262,11 +1262,6 @@ void KFileDialog::slotLocationChanged( const QString& text )
         ops->view()->clearSelection();
 }
 
-void KFileDialog::updateStatusLine(int /* dirs */, int /* files */)
-{
-    kdWarning() << "KFileDialog::updateStatusLine is deprecated! The status line no longer exists. Do not try and use it!" << endl;
-}
-
 QString KFileDialog::getOpenFileName(const QString& startDir,
                                      const QString& filter,
                                      QWidget *parent, const QString& caption)
