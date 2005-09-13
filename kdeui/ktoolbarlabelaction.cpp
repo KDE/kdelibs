@@ -68,7 +68,7 @@ KToolBarLabelAction::KToolBarLabelAction(QLabel* label,
   : KWidgetAction(label, label->text(), cut, receiver, slot, parent, name),
     d(new KToolBarLabelActionPrivate)
 {
-  Q_ASSERT(QString::fromLatin1("kde toolbar widget") == label->name());
+  Q_ASSERT(QLatin1String("kde toolbar widget") == label->name());
   init();
 }
 

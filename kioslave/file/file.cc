@@ -290,7 +290,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
     kdDebug(7101) << "put(): " << dest_orig << ", mode=" << _mode << endl;
 
     QString dest_part( dest_orig );
-    dest_part += QString::fromLatin1(".part");
+    dest_part += QLatin1String(".part");
     Q3CString _dest_part( QFile::encodeName(dest_part));
 
     KDE_struct_stat buff_orig;
@@ -712,7 +712,7 @@ void FileProtocol::rename( const KURL &src, const KURL &dest,
             error( KIO::ERR_ACCESS_DENIED, dest.path() );
         }
         else if (errno == EXDEV) {
-           error( KIO::ERR_UNSUPPORTED_ACTION, QString::fromLatin1("rename"));
+           error( KIO::ERR_UNSUPPORTED_ACTION, QLatin1String("rename"));
         }
         else if (errno == EROFS) { // The file is on a read-only filesystem
            error( KIO::ERR_CANNOT_DELETE, src.path() );
@@ -892,7 +892,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
     if ( !temp ) {
         struct passwd *user = getpwuid( uid );
         if ( user ) {
-            usercache.insert( uid, new QString(QString::fromLatin1(user->pw_name)) );
+            usercache.insert( uid, new QString(QLatin1String(user->pw_name)) );
             atom.m_str = user->pw_name;
         }
         else
@@ -908,7 +908,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const Q3CString & p
     if ( !temp ) {
         struct group *grp = getgrgid( gid );
         if ( grp ) {
-            groupcache.insert( gid, new QString(QString::fromLatin1(grp->gr_name)) );
+            groupcache.insert( gid, new QString(QLatin1String(grp->gr_name)) );
             atom.m_str = grp->gr_name;
         }
         else
@@ -949,7 +949,7 @@ void FileProtocol::stat( const KURL & url )
      */
     Q3CString _path( QFile::encodeName(url.path(-1)));
 
-    QString sDetails = metaData(QString::fromLatin1("details"));
+    QString sDetails = metaData(QLatin1String("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
     kdDebug(7101) << "FileProtocol::stat details=" << details << endl;
 
@@ -1220,10 +1220,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     bool fstype_empty = !_fstype || !*_fstype;
     Q3CString fstype = KProcess::quote(_fstype).latin1(); // good guess
     Q3CString readonly = _ro ? "-r" : "";
-    QString epath = QString::fromLatin1(getenv("PATH"));
-    QString path = QString::fromLatin1("/sbin:/bin");
+    QString epath = QLatin1String(getenv("PATH"));
+    QString path = QLatin1String("/sbin:/bin");
     if(!epath.isEmpty())
-        path += QString::fromLatin1(":") + epath;
+        path += QLatin1String(":") + epath;
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
     if (mountProg.isEmpty())
         mountProg = "mount";
@@ -1403,7 +1403,7 @@ void FileProtocol::unmount( const QString& _point )
 	}
 #else
     QString epath = getenv("PATH");
-    QString path = QString::fromLatin1("/sbin:/bin");
+    QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
        path += ":" + epath;
     QString umountProg = KGlobal::dirs()->findExe("umount", path);
@@ -1430,7 +1430,7 @@ void FileProtocol::unmount( const QString& _point )
 bool FileProtocol::pmount(const QString &dev)
 {
     QString epath = getenv("PATH");
-    QString path = QString::fromLatin1("/sbin:/bin");
+    QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
         path += ":" + epath;
     QString pmountProg = KGlobal::dirs()->findExe("pmount", path);
@@ -1471,7 +1471,7 @@ bool FileProtocol::pumount(const QString &point)
     if (dev.isEmpty()) return false;
 
     QString epath = getenv("PATH");
-    QString path = QString::fromLatin1("/sbin:/bin");
+    QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
         path += ":" + epath;
     QString pumountProg = KGlobal::dirs()->findExe("pumount", path);

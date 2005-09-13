@@ -1151,7 +1151,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   d->htmlName = new QLineEdit( page );
   d->htmlName->setMaxLength( 13 ); // Qt's QColor allows 12 hexa-digits
   d->htmlName->setText("#FFFFFF"); // But HTML uses only 6, so do not worry about the size
-  w = d->htmlName->fontMetrics().width(QString::fromLatin1("#DDDDDDD"));
+  w = d->htmlName->fontMetrics().width(QLatin1String("#DDDDDDD"));
   d->htmlName->setFixedWidth(w);
   l_grid->addWidget(d->htmlName, 1, 2, Qt::AlignLeft);
 

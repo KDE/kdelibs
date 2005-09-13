@@ -265,7 +265,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
       {
           // Assume inode/directory, if the protocol supports listing.
           if ( KProtocolInfo::supportsListing( _url ) )
-              return mimeType( QString::fromLatin1("inode/directory") );
+              return mimeType( QLatin1String("inode/directory") );
           else
               return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
       }
@@ -384,15 +384,15 @@ void KMimeType::init( KDesktopFile * config )
   m_lstPatterns = config->readListEntry( "Patterns", ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
-  QString XKDEAutoEmbed = QString::fromLatin1("X-KDE-AutoEmbed");
+  QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
   if ( config->hasKey( XKDEAutoEmbed ) )
     m_mapProps.insert( XKDEAutoEmbed, QVariant( config->readBoolEntry( XKDEAutoEmbed ), 0 ) );
 
-  QString XKDEText = QString::fromLatin1("X-KDE-text");
+  QString XKDEText = QLatin1String("X-KDE-text");
   if ( config->hasKey( XKDEText ) )
     m_mapProps.insert( XKDEText, config->readBoolEntry( XKDEText ) );
 
-  QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
+  QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) ) {
     QString inherits = config->readEntry( XKDEIsAlso );
     if ( inherits != name() )
@@ -401,7 +401,7 @@ void KMimeType::init( KDesktopFile * config )
         kdWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
   }
 
-  QString XKDEPatternsAccuracy = QString::fromLatin1("X-KDE-PatternsAccuracy");
+  QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
   if ( config->hasKey( XKDEPatternsAccuracy ) )
     m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy ) );
 
@@ -842,7 +842,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
     KURL mpURL;
     mpURL.setPath( mp );
     // Open a new window
-    retval = KRun::runURL( mpURL, QString::fromLatin1("inode/directory") );
+    retval = KRun::runURL( mpURL, QLatin1String("inode/directory") );
   }
   else
   {

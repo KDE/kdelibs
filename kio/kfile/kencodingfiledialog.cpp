@@ -54,7 +54,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
   d->encoding->clear ();
   QString sEncoding = encoding;
   if (sEncoding.isEmpty())
-     sEncoding = QString::fromLatin1(KGlobal::locale()->encoding());
+     sEncoding = QLatin1String(KGlobal::locale()->encoding());
   
   QStringList encodings (KGlobal::charsets()->availableEncodingNames());
   int insert = 0;

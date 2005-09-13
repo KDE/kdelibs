@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     dlg->slotTotalDirs( 0L, 1 );
 
     dlg->slotSpeed( 0L, 55 );
-    dlg->slotInfoMessage( 0L, QString::fromLatin1( "Starting..." ) );
+    dlg->slotInfoMessage( 0L, QLatin1String( "Starting..." ) );
 
     int files = 0;
     for ( int size = 0 ; size < 12000 ; size += 1 )
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
         }
         kapp->processEvents();
     }
-    dlg->slotInfoMessage( 0L, QString::fromLatin1( "Done." ) );
+    dlg->slotInfoMessage( 0L, QLatin1String( "Done." ) );
 
     delete dlg;
     return 0;

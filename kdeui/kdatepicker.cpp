@@ -178,17 +178,17 @@ void KDatePicker::init( const QDate &dt )
   line->installEventFilter( this );
   if (  QApplication::reverseLayout() )
   {
-      yearForward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
-      yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
-      monthForward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
-      monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
+      yearForward->setIconSet(BarIconSet(QLatin1String("2leftarrow")));
+      yearBackward->setIconSet(BarIconSet(QLatin1String("2rightarrow")));
+      monthForward->setIconSet(BarIconSet(QLatin1String("1leftarrow")));
+      monthBackward->setIconSet(BarIconSet(QLatin1String("1rightarrow")));
   }
   else
   {
-      yearForward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
-      yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
-      monthForward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
-      monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
+      yearForward->setIconSet(BarIconSet(QLatin1String("2rightarrow")));
+      yearBackward->setIconSet(BarIconSet(QLatin1String("2leftarrow")));
+      monthForward->setIconSet(BarIconSet(QLatin1String("1rightarrow")));
+      monthBackward->setIconSet(BarIconSet(QLatin1String("1leftarrow")));
   }
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));

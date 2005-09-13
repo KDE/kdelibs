@@ -445,7 +445,7 @@ public:
    */
   K3DockWidget( K3DockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString::null,
-               const QString& strTabPageLabel = QString::fromLatin1( " " ), Qt::WFlags f = 0);
+               const QString& strTabPageLabel = QLatin1String( " " ), Qt::WFlags f = 0);
 
   /**
    * Destructs a dockwidget.
@@ -1364,7 +1364,7 @@ public:
    * @return    a pointer to the new created dockwidget
    */
   K3DockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
-    const QString& strCaption = QString::null, const QString& strTabPageLabel = QString::fromLatin1( " " ) );
+    const QString& strCaption = QString::null, const QString& strTabPageLabel = QLatin1String( " " ) );
 
   /**
    * Saves the current dock window layout into a DOM tree below the given element.
@@ -1489,7 +1489,7 @@ public:
   K3DockWidget* getMainDockWidget(){ return mainDockWidget; }
 
   K3DockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
-    const QString& strCaption = QString::null, const QString& strTabPageLabel = QString::fromLatin1( " " ) );
+    const QString& strCaption = QString::null, const QString& strTabPageLabel = QLatin1String( " " ) );
 
   void writeDockConfig(QDomElement &base);
   void readDockConfig(QDomElement &base);

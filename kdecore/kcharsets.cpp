@@ -475,7 +475,7 @@ QStringList KCharsets::availableEncodingNames()
 #endif
             if( true ) {
                 //kdDebug(0) << *charsets << " available" << endl;
-                available.append( QString::fromLatin1( *pos ));
+                available.append( QLatin1String( *pos ));
                 break;
             }
         }
@@ -587,7 +587,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     QString dir;
     {
     KConfigGroupSaver cfgsav( KGlobal::config(), "i18n" );
-    dir = KGlobal::config()->readPathEntry("i18ndir", QString::fromLatin1("/usr/share/i18n/charmaps"));
+    dir = KGlobal::config()->readPathEntry("i18ndir", QLatin1String("/usr/share/i18n/charmaps"));
     }
 
     // these are codecs not included in Qt. They can be build up if the corresponding charmap
@@ -598,7 +598,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         cname = name;
     cname = cname.upper();
 
-    const QString basicName = QString::fromLatin1(cname);
+    const QString basicName = QLatin1String(cname);
     kdDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir << endl;
     
     QString charMapFileName;

@@ -244,7 +244,7 @@ void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
     filterWidget->setMimeFilter( mimeTypes, defaultType );
 
     QStringList types = QStringList::split(" ", filterWidget->currentFilter());
-    types.append( QString::fromLatin1( "inode/directory" ));
+    types.append( QLatin1String( "inode/directory" ));
     ops->clearFilter();
     ops->setMimeFilter( types );
     d->hasDefaultFilter = !defaultType.isEmpty();
@@ -337,7 +337,7 @@ void KFileDialog::slotOk()
 
                 bool multi = (mode() & KFile::Files) != 0;
                 KFileItemListIterator it( *items );
-                QString endQuote = QString::fromLatin1("\" ");
+                QString endQuote = QLatin1String("\" ");
                 QString name, files;
                 while ( it.current() ) {
                     name = (*it)->name();
@@ -2193,7 +2193,7 @@ void KFileDialog::toggleBookmarks(bool show)
         connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
                     SLOT( enterURL( const QString& )));
 
-        toolbar->insertButton(QString::fromLatin1("bookmark"),
+        toolbar->insertButton(QLatin1String("bookmark"),
                               (int)HOTLIST_BUTTON, true,
                               i18n("Bookmarks"), 5);
         toolbar->getButton(HOTLIST_BUTTON)->setPopup(d->bookmarkHandler->menu(),

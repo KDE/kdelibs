@@ -148,7 +148,7 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 	// other attributes
 	req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", keys);
 	if (type == KMJobManager::CompletedJobs)
-		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QString::fromLatin1("completed"));
+		req.addKeyword(IPP_TAG_OPERATION,"which-jobs",QLatin1String("completed"));
 	if (limit > 0)
 		req.addInteger(IPP_TAG_OPERATION,"limit",limit);
 

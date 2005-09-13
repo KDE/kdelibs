@@ -2186,7 +2186,7 @@ Value Location::get(ExecState *exec, const Identifier &p) const
     case Pathname:
       return String( url.path().isEmpty() ? QString("/") : url.path() );
     case Port:
-      return String( url.port() ? QString::number((int)url.port()) : QString::fromLatin1("") );
+      return String( url.port() ? QString::number((int)url.port()) : QLatin1String("") );
     case Protocol:
       return String( url.protocol()+":" );
     case Search:

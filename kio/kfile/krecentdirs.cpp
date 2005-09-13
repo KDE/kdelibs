@@ -52,13 +52,13 @@ static KConfig *recentdirs_readList(QString &key, QStringList &result, bool read
    if (key[1] == ':') 
    {
       key = key.mid(2);
-      config = new KSimpleConfig(QString::fromLatin1("krecentdirsrc"), readOnly);
+      config = new KSimpleConfig(QLatin1String("krecentdirsrc"), readOnly);
    }
    else
    {
       key = key.mid(1);
       config = KGlobal::config();
-      config->setGroup(QString::fromLatin1("Recent Dirs"));
+      config->setGroup(QLatin1String("Recent Dirs"));
    }
 
    result=config->readPathListEntry(key);

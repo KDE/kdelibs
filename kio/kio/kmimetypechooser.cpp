@@ -194,7 +194,7 @@ void KMimeTypeChooser::editMimeType()
   // thanks to libkonq/konq_operations.cc
   connect( KSycoca::self(), SIGNAL(databaseChanged()),
            this, SLOT(slotSycocaDatabaseChanged()) );
-  QString keditfiletype = QString::fromLatin1("keditfiletype");
+  QString keditfiletype = QLatin1String("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)topLevelWidget()->winId())
                     + " " + KProcess::quote(mt),

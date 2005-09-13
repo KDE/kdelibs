@@ -101,8 +101,8 @@ bool KdeprintChecker::checkConfig(const KURL& url)
 		const char* const *p = config_stddirs;
 		while (*p)
 		{
-			// kdDebug( 500 ) << "checkConfig() with " << QString::fromLatin1( *p ) + f << endl;
-			if ( QFile::exists( QString::fromLatin1( *p ) + f ) )
+			// kdDebug( 500 ) << "checkConfig() with " << QLatin1String( *p ) + f << endl;
+			if ( QFile::exists( QLatin1String( *p ) + f ) )
 			{
 				state = true;
 				break;

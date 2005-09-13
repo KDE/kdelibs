@@ -231,7 +231,7 @@ DrMain* KMLprManager::loadPrinterDriver(KMPrinter *prt, bool config)
 DrMain* KMLprManager::loadFileDriver(const QString& filename)
 {
 	int	p = filename.find('/');
-	QString	handler_str = (p != -1 ? filename.left(p) : QString::fromLatin1("default"));
+	QString	handler_str = (p != -1 ? filename.left(p) : QLatin1String("default"));
 	LprHandler	*handler = m_handlers.find(handler_str);
 	if (handler)
 	{
@@ -422,7 +422,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 
 QString KMLprManager::driverDbCreationProgram()
 {
-	return QString::fromLatin1("make_driver_db_lpr");
+	return QLatin1String("make_driver_db_lpr");
 }
 
 QString KMLprManager::driverDirectory()

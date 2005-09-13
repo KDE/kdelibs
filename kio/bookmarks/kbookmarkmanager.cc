@@ -327,7 +327,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 
     // Save the bookmark toolbar folder for quick loading
     // but only when it will actually make things quicker
-    const QString cacheFilename = filename + QString::fromLatin1(".tbcache");
+    const QString cacheFilename = filename + QLatin1String(".tbcache");
     if(toolbarCache && !root().isToolbarGroup())
     {
         KSaveFile cacheFile( cacheFilename );
@@ -385,7 +385,7 @@ KBookmarkGroup KBookmarkManager::toolbar()
     if(!m_docIsLoaded)
     {
         kdDebug(7043) << "KBookmarkManager::toolbar trying cache" << endl;
-        const QString cacheFilename = m_bookmarksFile + QString::fromLatin1(".tbcache");
+        const QString cacheFilename = m_bookmarksFile + QLatin1String(".tbcache");
         QFileInfo bmInfo(m_bookmarksFile);
         QFileInfo cacheInfo(cacheFilename);
         if (m_toolbarDoc.isNull() &&
@@ -611,11 +611,11 @@ void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
 void KBookmarkManager::slotEditBookmarks()
 {
     KProcess proc;
-    proc << QString::fromLatin1("keditbookmarks");
+    proc << QLatin1String("keditbookmarks");
     if (!dptr()->m_editorCaption.isNull())
-       proc << QString::fromLatin1("--customcaption") << dptr()->m_editorCaption;
+       proc << QLatin1String("--customcaption") << dptr()->m_editorCaption;
     if (!dptr()->m_browserEditor)
-       proc << QString::fromLatin1("--nobrowser");
+       proc << QLatin1String("--nobrowser");
     proc << m_bookmarksFile;
     proc.start(KProcess::DontCare);
 }
@@ -623,8 +623,8 @@ void KBookmarkManager::slotEditBookmarks()
 void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 {
     KProcess proc;
-    proc << QString::fromLatin1("keditbookmarks")
-         << QString::fromLatin1("--address") << address
+    proc << QLatin1String("keditbookmarks")
+         << QLatin1String("--address") << address
          << m_bookmarksFile;
     proc.start(KProcess::DontCare);
 }
@@ -687,7 +687,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 
 KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
-   QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
+   QString bookmarksFile = locateLocal("data", QLatin1String("konqueror/bookmarks.xml"));
    return KBookmarkManager::managerForFile( bookmarksFile );
 }
 

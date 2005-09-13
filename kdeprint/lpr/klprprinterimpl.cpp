@@ -53,7 +53,7 @@ void KLprPrinterImpl::broadcastOption(const QString& key, const QString& value)
 	KPrinterImpl::broadcastOption(key,value);
 	if (key == "kde-pagesize")
 	{
-		QString	pagename = QString::fromLatin1(pageSizeToPageName((KPrinter::PageSize)value.toInt()));
+		QString	pagename = QLatin1String(pageSizeToPageName((KPrinter::PageSize)value.toInt()));
 		KPrinterImpl::broadcastOption("PageSize",pagename);
 	}
 }

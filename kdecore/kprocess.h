@@ -561,7 +561,7 @@ signals:
    * data structures before returning from the slot.
    * Example:
    * \code
-   *     QString myBuf = QString::fromLatin1(buffer, buflen);
+   *     QString myBuf = QLatin1String(buffer, buflen);
    * \endcode
    **/
   void receivedStdout(KProcess *proc, char *buffer, int buflen);

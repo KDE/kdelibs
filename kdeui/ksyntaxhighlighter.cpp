@@ -147,14 +147,14 @@ int KSyntaxHighlighter::highlightParagraph( const QString &text, int )
     }
 
     QString simplified = text;
-    simplified = simplified.replace( QRegExp( "\\s" ), QString::null ).replace( '|', QString::fromLatin1(">") );
-    while ( simplified.startsWith( QString::fromLatin1(">>>>") ) )
+    simplified = simplified.replace( QRegExp( "\\s" ), QString::null ).replace( '|', QLatin1String(">") );
+    while ( simplified.startsWith( QLatin1String(">>>>") ) )
 	simplified = simplified.mid(3);
-    if	( simplified.startsWith( QString::fromLatin1(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
+    if	( simplified.startsWith( QLatin1String(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
 	setFormat( 0, text.length(), d->col2 );
-    else if	( simplified.startsWith( QString::fromLatin1(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
+    else if	( simplified.startsWith( QLatin1String(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
 	setFormat( 0, text.length(), d->col3 );
-    else if	( simplified.startsWith( QString::fromLatin1(">") ) )
+    else if	( simplified.startsWith( QLatin1String(">") ) )
 	setFormat( 0, text.length(), d->col4 );
     else
 	setFormat( 0, text.length(), d->col5 );

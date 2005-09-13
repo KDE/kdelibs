@@ -257,7 +257,7 @@ void KIconDialog::init()
     mGroupOrSize = KIcon::Desktop;
     mContext = KIcon::Any;
     mType = 0;
-    mFileList = KGlobal::dirs()->findAllResources("appicon", QString::fromLatin1("*.png"));
+    mFileList = KGlobal::dirs()->findAllResources("appicon", QLatin1String("*.png"));
 
     QWidget *main = new QWidget( this );
     setMainWidget(main);

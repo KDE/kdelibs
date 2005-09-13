@@ -165,7 +165,7 @@ bool KIpAddress::setAddress(const QString& address)
 
 bool KIpAddress::setAddress(const char* address)
 {
-  return setAddress(QString::fromLatin1(address));
+  return setAddress(QLatin1String(address));
 }
 
 // set from binary data
@@ -194,13 +194,13 @@ QString KIpAddress::toString() const
     {
     case 4:
       inet_ntop(AF_INET, m_data, buf, sizeof(buf) - 1);
-      return QString::fromLatin1(buf);
+      return QLatin1String(buf);
 
     case 6:
 #ifdef AF_INET6
       inet_ntop(AF_INET6, m_data, buf, sizeof(buf) - 1);
 #endif
-      return QString::fromLatin1(buf);
+      return QLatin1String(buf);
     }
 
   return QString();

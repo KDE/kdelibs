@@ -112,8 +112,8 @@ HTMLDocument DOMImplementation::createHTMLDocument( const DOMString& title )
 
     r->open();
 
-    r->write(QString::fromLatin1("<HTML><HEAD><TITLE>") + title.string() +
-             QString::fromLatin1("</TITLE></HEAD>"));
+    r->write(QLatin1String("<HTML><HEAD><TITLE>") + title.string() +
+             QLatin1String("</TITLE></HEAD>"));
 
     return r;
 }

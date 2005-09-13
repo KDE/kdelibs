@@ -83,7 +83,7 @@ HTTPFilterMD5::HTTPFilterMD5()
 QString 
 HTTPFilterMD5::md5()
 {
-   return QString::fromLatin1(context.base64Digest());
+   return QLatin1String(context.base64Digest());
 }
 
 void 

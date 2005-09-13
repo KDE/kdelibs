@@ -1272,7 +1272,7 @@ QString HTMLInputElementImpl::state( )
         return QLatin1String("."); // empty string, avoid restoring
     case CHECKBOX:
     case RADIO:
-        return QString::fromLatin1(m_checked ? "on" : "off");
+        return QLatin1String(m_checked ? "on" : "off");
     case TEXT:
         if (autoComplete() && value() != getAttribute(ATTR_VALUE) && getDocument()->view())
             getDocument()->view()->addFormCompletionItem(name().string(), value().string());
@@ -1505,12 +1505,12 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             if(m_clicked)
             {
                 m_clicked = false;
-                QString astr(nme.isEmpty() ? QString::fromLatin1("x") : nme + ".x");
+                QString astr(nme.isEmpty() ? QLatin1String("x") : nme + ".x");
 
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(KMAX( clickX(), 0 ));
                 encoding += fixUpfromUnicode(codec, astr);
-                astr = nme.isEmpty() ? QString::fromLatin1("y") : nme + ".y";
+                astr = nme.isEmpty() ? QLatin1String("y") : nme + ".y";
                 encoding += fixUpfromUnicode(codec, astr);
                 astr.setNum(KMAX( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);

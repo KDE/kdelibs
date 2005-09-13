@@ -313,13 +313,13 @@ KURL::KURL( const QString &url )
 }
 
 KURL::KURL( const char * url )
-    // : QUrl( QString::fromLatin1(url) )
+    // : QUrl( QLatin1String(url) )
 {
     *this = QUrl::fromEncoded( url );
 }
 
 KURL::KURL( const QByteArray& url )
-    // : QUrl( QString::fromLatin1(url) )
+    // : QUrl( QLatin1String(url) )
 {
     *this = QUrl::fromEncoded( url );
 }
@@ -619,7 +619,7 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
         tmp = encode( tmp, 1 );
      }
 #endif
-     tmp = QString::fromLatin1( QUrl::toPercentEncoding( tmp ) );
+     tmp = QLatin1String( QUrl::toPercentEncoding( tmp ) );
   }
 
   if (!fragment().isNull())
@@ -767,9 +767,9 @@ QString KURL::url( int _trailing ) const
       // Let's hope this is fast, or not called often...
       QUrl newUrl( *this );
       newUrl.setPath( path() + QLatin1Char('/') );
-      return QString::fromLatin1( newUrl.toEncoded() ); // ### check
+      return QLatin1String( newUrl.toEncoded() ); // ### check
   }
-  return QString::fromLatin1( toEncoded( _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
+  return QLatin1String( toEncoded( _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
 QString KURL::prettyURL( int _trailing ) const
@@ -1305,7 +1305,7 @@ QMap< QString, QString > KURL::queryItems( int options ) const {
 	name = name.toLower();
       QString value = (*it).mid( equal_pos + 1 );
       if ( value.isEmpty() )
-	result.insert( name, QString::fromLatin1("") );
+	result.insert( name, QLatin1String("") );
       else {
 	// ### why is decoding name not necessary?
 	value.replace( '+', ' ' ); // + in queries means space

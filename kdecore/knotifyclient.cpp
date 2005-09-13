@@ -123,20 +123,20 @@ int KNotifyClient::event( int winId, StandardEvent type, const QString& text )
     QString message;
     switch ( type ) {
     case cannotOpenFile:
-	message = QString::fromLatin1("cannotopenfile");
+	message = QLatin1String("cannotopenfile");
 	break;
     case warning:
-	message = QString::fromLatin1("warning");
+	message = QLatin1String("warning");
 	break;
     case fatalError:
-	message = QString::fromLatin1("fatalerror");
+	message = QLatin1String("fatalerror");
 	break;
     case catastrophe:
-	message = QString::fromLatin1("catastrophe");
+	message = QLatin1String("catastrophe");
 	break;
     case notification: // fall through
     default:
-	message = QString::fromLatin1("notification");
+	message = QLatin1String("notification");
 	break;
     }
 

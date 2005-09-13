@@ -110,13 +110,13 @@ KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
         QString strPath = QDir::currentDirPath();
         strPath.append(QChar('/'));
         currUrl = KURL();
-        currUrl.setProtocol(QString::fromLatin1("file"));
+        currUrl.setProtocol(QLatin1String("file"));
         currUrl.setPath(strPath);
     }
     else {
         currUrl = _url;
         if ( currUrl.protocol().isEmpty() )
-            currUrl.setProtocol(QString::fromLatin1("file"));
+            currUrl.setProtocol(QLatin1String("file"));
 
         currUrl.addPath("/"); // make sure we have a trailing slash!
     }
@@ -650,7 +650,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 
     if ( !isReadable( newurl ) ) {
         // maybe newurl is a file? check its parent directory
-        newurl.cd(QString::fromLatin1(".."));
+        newurl.cd(QLatin1String(".."));
         if ( !isReadable( newurl ) ) {
             resetCursor();
             KMessageBox::error(viewWidget(),
@@ -766,7 +766,7 @@ KURL KDirOperator::url() const
 void KDirOperator::cdUp()
 {
     KURL tmp(currUrl);
-    tmp.cd(QString::fromLatin1(".."));
+    tmp.cd(QLatin1String(".."));
     setURL(tmp, true);
 }
 
@@ -1264,7 +1264,7 @@ void KDirOperator::setupActions()
 	     this, SLOT( trashSelected( KAction::ActivationReason, Qt::ButtonState ) ) );
     new KAction( i18n( "Delete" ), "editdelete", Qt::SHIFT+Qt::Key_Delete, this,
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
-    mkdirAction->setIcon( QString::fromLatin1("folder_new") );
+    mkdirAction->setIcon( QLatin1String("folder_new") );
     reloadAction->setText( i18n("Reload") );
     reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
@@ -1284,7 +1284,7 @@ void KDirOperator::setupActions()
                                        this, SLOT( slotSortReversed() ),
                                        myActionCollection, "reversed" );
 
-    QString sortGroup = QString::fromLatin1("sort");
+    QString sortGroup = QLatin1String("sort");
     byNameAction->setExclusiveGroup( sortGroup );
     byDateAction->setExclusiveGroup( sortGroup );
     bySizeAction->setExclusiveGroup( sortGroup );
@@ -1328,7 +1328,7 @@ void KDirOperator::setupActions()
              SLOT( togglePreview( bool )));
 
 
-    QString viewGroup = QString::fromLatin1("view");
+    QString viewGroup = QLatin1String("view");
     shortAction->setExclusiveGroup( viewGroup );
     detailedAction->setExclusiveGroup( viewGroup );
 
@@ -1377,7 +1377,7 @@ void KDirOperator::setupMenu(int whichActions)
         if (currUrl.isLocalFile() && !(KApplication::keyboardMouseState() & Qt::ShiftModifier))
             actionMenu->insert( myActionCollection->action( "trash" ) );
         KConfig *globalconfig = KGlobal::config();
-        KConfigGroupSaver cs( globalconfig, QString::fromLatin1("KDE") );
+        KConfigGroupSaver cs( globalconfig, QLatin1String("KDE") );
         if (!currUrl.isLocalFile() || (KApplication::keyboardMouseState() & Qt::ShiftModifier) ||
             globalconfig->readBoolEntry("ShowDeleteCommand", false))
             actionMenu->insert( myActionCollection->action( "delete" ) );
@@ -1441,45 +1441,45 @@ void KDirOperator::readConfig( KConfig *kc, const QString& group )
     defaultView = 0;
     int sorting = 0;
 
-    QString viewStyle = kc->readEntry( QString::fromLatin1("View Style"),
-                                       QString::fromLatin1("Simple") );
-    if ( viewStyle == QString::fromLatin1("Detail") )
+    QString viewStyle = kc->readEntry( QLatin1String("View Style"),
+                                       QLatin1String("Simple") );
+    if ( viewStyle == QLatin1String("Detail") )
         defaultView |= KFile::Detail;
     else
         defaultView |= KFile::Simple;
-    if ( kc->readBoolEntry( QString::fromLatin1("Separate Directories"),
+    if ( kc->readBoolEntry( QLatin1String("Separate Directories"),
                             DefaultMixDirsAndFiles ) )
         defaultView |= KFile::SeparateDirs;
-    if ( kc->readBoolEntry(QString::fromLatin1("Show Preview"), false))
+    if ( kc->readBoolEntry(QLatin1String("Show Preview"), false))
         defaultView |= KFile::PreviewContents;
 
-    if ( kc->readBoolEntry( QString::fromLatin1("Sort case insensitively"),
+    if ( kc->readBoolEntry( QLatin1String("Sort case insensitively"),
                             DefaultCaseInsensitive ) )
         sorting |= QDir::IgnoreCase;
-    if ( kc->readBoolEntry( QString::fromLatin1("Sort directories first"),
+    if ( kc->readBoolEntry( QLatin1String("Sort directories first"),
                             DefaultDirsFirst ) )
         sorting |= QDir::DirsFirst;
 
 
-    QString name = QString::fromLatin1("Name");
-    QString sortBy = kc->readEntry( QString::fromLatin1("Sort by"), name );
+    QString name = QLatin1String("Name");
+    QString sortBy = kc->readEntry( QLatin1String("Sort by"), name );
     if ( sortBy == name )
         sorting |= QDir::Name;
-    else if ( sortBy == QString::fromLatin1("Size") )
+    else if ( sortBy == QLatin1String("Size") )
         sorting |= QDir::Size;
-    else if ( sortBy == QString::fromLatin1("Date") )
+    else if ( sortBy == QLatin1String("Date") )
         sorting |= QDir::Time;
 
     mySorting = static_cast<QDir::SortSpec>( sorting );
     setSorting( mySorting );
 
 
-    if ( kc->readBoolEntry( QString::fromLatin1("Show hidden files"),
+    if ( kc->readBoolEntry( QLatin1String("Show hidden files"),
                             DefaultShowHidden ) ) {
          showHiddenAction->setChecked( true );
          dir->setShowingDotFiles( true );
     }
-    if ( kc->readBoolEntry( QString::fromLatin1("Sort reversed"),
+    if ( kc->readBoolEntry( QLatin1String("Sort reversed"),
                             DefaultSortReversed ) )
         reverseAction->setChecked( true );
 
@@ -1496,18 +1496,18 @@ void KDirOperator::writeConfig( KConfig *kc, const QString& group )
     if ( !group.isEmpty() )
         kc->setGroup( group );
 
-    QString sortBy = QString::fromLatin1("Name");
+    QString sortBy = QLatin1String("Name");
     if ( KFile::isSortBySize( mySorting ) )
-        sortBy = QString::fromLatin1("Size");
+        sortBy = QLatin1String("Size");
     else if ( KFile::isSortByDate( mySorting ) )
-        sortBy = QString::fromLatin1("Date");
-    kc->writeEntry( QString::fromLatin1("Sort by"), sortBy );
+        sortBy = QLatin1String("Date");
+    kc->writeEntry( QLatin1String("Sort by"), sortBy );
 
-    kc->writeEntry( QString::fromLatin1("Sort reversed"),
+    kc->writeEntry( QLatin1String("Sort reversed"),
                     reverseAction->isChecked() );
-    kc->writeEntry( QString::fromLatin1("Sort case insensitively"),
+    kc->writeEntry( QLatin1String("Sort case insensitively"),
                     caseInsensitiveAction->isChecked() );
-    kc->writeEntry( QString::fromLatin1("Sort directories first"),
+    kc->writeEntry( QLatin1String("Sort directories first"),
                     dirsFirstAction->isChecked() );
 
     // don't save the separate dirs or preview when an application specific
@@ -1521,26 +1521,26 @@ void KDirOperator::writeConfig( KConfig *kc, const QString& group )
 
     if ( !appSpecificPreview ) {
         if ( separateDirsAction->isEnabled() )
-            kc->writeEntry( QString::fromLatin1("Separate Directories"),
+            kc->writeEntry( QLatin1String("Separate Directories"),
                             separateDirsAction->isChecked() );
 
         KToggleAction *previewAction = static_cast<KToggleAction*>(myActionCollection->action("preview"));
         if ( previewAction->isEnabled() ) {
             bool hasPreview = previewAction->isChecked();
-            kc->writeEntry( QString::fromLatin1("Show Preview"), hasPreview );
+            kc->writeEntry( QLatin1String("Show Preview"), hasPreview );
         }
     }
 
-    kc->writeEntry( QString::fromLatin1("Show hidden files"),
+    kc->writeEntry( QLatin1String("Show hidden files"),
                     showHiddenAction->isChecked() );
 
     KFile::FileView fv = static_cast<KFile::FileView>( m_viewKind );
     QString style;
     if ( KFile::isDetailView( fv ) )
-        style = QString::fromLatin1("Detail");
+        style = QLatin1String("Detail");
     else if ( KFile::isSimpleView( fv ) )
-        style = QString::fromLatin1("Simple");
-    kc->writeEntry( QString::fromLatin1("View Style"), style );
+        style = QLatin1String("Simple");
+    kc->writeEntry( QLatin1String("View Style"), style );
 
     kc->setGroup( oldGroup );
 }

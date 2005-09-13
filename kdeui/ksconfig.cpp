@@ -361,8 +361,8 @@ KSpellConfig::interpret( QString &fname, QString &lname,
   }
 
   //We have explicitly chosen English as the default here.
-  if ( ( KGlobal::locale()->language() == QString::fromLatin1("C") &&
-         lname==QString::fromLatin1("en") ) ||
+  if ( ( KGlobal::locale()->language() == QLatin1String("C") &&
+         lname==QLatin1String("en") ) ||
        KGlobal::locale()->language() == lname )
     return true;
 

@@ -425,7 +425,7 @@ KDateTable::setFontSize(int size)
       maxCell.setHeight(QMAX(maxCell.height(), rect.height()));
     }
   // ----- compare with a real wide number and add some space:
-  rect=metrics.boundingRect(QString::fromLatin1("88"));
+  rect=metrics.boundingRect(QLatin1String("88"));
   maxCell.setWidth(QMAX(maxCell.width()+2, rect.width()));
   maxCell.setHeight(QMAX(maxCell.height()+4, rect.height()));
 }

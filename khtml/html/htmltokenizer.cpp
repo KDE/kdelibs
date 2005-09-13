@@ -899,7 +899,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
                         if ( !a )
-                            attrName = QString::fromLatin1(Q3CString(cBuffer, cBufferPos+1).data());
+                            attrName = QLatin1String(Q3CString(cBuffer, cBufferPos+1).data());
 
                         dest = buffer;
                         *dest++ = a;
@@ -923,7 +923,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             }
             if ( cBufferPos == CBUFLEN ) {
                 cBuffer[cBufferPos] = '\0';
-                attrName = QString::fromLatin1(Q3CString(cBuffer, cBufferPos+1).data());
+                attrName = QLatin1String(Q3CString(cBuffer, cBufferPos+1).data());
                 dest = buffer;
                 *dest++ = 0;
                 tag = SearchEqual;

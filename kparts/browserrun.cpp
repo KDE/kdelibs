@@ -205,7 +205,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
          !m_strURL.isLocalFile() )
     {
         if ( isTextExecutable(mimeType) )
-            mimeType = QString::fromLatin1("text/plain"); // view, don't execute
+            mimeType = QLatin1String("text/plain"); // view, don't execute
         kdDebug(1000) << "BrowserRun: ask for saving" << endl;
         KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "Application");
         // ... -> ask whether to save
@@ -309,7 +309,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, url.host(),
         KStdGuiItem::saveAs(), openText,
-        QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
+        QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
 
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
@@ -346,7 +346,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QS
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, url.host(),
         KStdGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "fileopen"),
-        QString::fromLatin1("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
+        QLatin1String("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
 }

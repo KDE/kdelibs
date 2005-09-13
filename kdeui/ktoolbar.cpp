@@ -204,7 +204,7 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 }
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool readConfig )
-    : Q3ToolBar( QString::fromLatin1( name ),
+    : Q3ToolBar( QLatin1String( name ),
       dynamic_cast<Q3MainWindow*>(parent),
       parent, false,
       name ? name : "mainToolBar")
@@ -215,7 +215,7 @@ KToolBar::KToolBar( QWidget *parent, const char *name, bool honorStyle, bool rea
 }
 
 KToolBar::KToolBar( Q3MainWindow *parentWindow, Qt::ToolBarDock dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
-    : Q3ToolBar( QString::fromLatin1( name ),
+    : Q3ToolBar( QLatin1String( name ),
       parentWindow, dock, newLine,
       name ? name : "mainToolBar")
 {
@@ -223,7 +223,7 @@ KToolBar::KToolBar( Q3MainWindow *parentWindow, Qt::ToolBarDock dock, bool newLi
 }
 
 KToolBar::KToolBar( Q3MainWindow *parentWindow, QWidget *dock, bool newLine, const char *name, bool honorStyle, bool readConfig )
-    : Q3ToolBar( QString::fromLatin1( name ),
+    : Q3ToolBar( QLatin1String( name ),
       parentWindow, dock, newLine,
       name ? name : "mainToolBar")
 {
@@ -1451,25 +1451,25 @@ void KToolBar::slotAppearanceChanged()
 //static
 bool KToolBar::highlightSetting()
 {
-    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    return KGlobal::config()->readBoolEntry(QString::fromLatin1("Highlighting"),true);
+    return KGlobal::config()->readBoolEntry(QLatin1String("Highlighting"),true);
 }
 
 //static
 bool KToolBar::transparentSetting()
 {
-    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    return KGlobal::config()->readBoolEntry(QString::fromLatin1("TransparentMoving"),true);
+    return KGlobal::config()->readBoolEntry(QLatin1String("TransparentMoving"),true);
 }
 
 //static
 KToolBar::IconText KToolBar::iconTextSetting()
 {
-    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    QString grpToolbar(QLatin1String("Toolbar style"));
     KConfigGroupSaver saver(KGlobal::config(), grpToolbar);
-    QString icontext = KGlobal::config()->readEntry(QString::fromLatin1("IconText"),QString::fromLatin1("IconTextBottom"));
+    QString icontext = KGlobal::config()->readEntry(QLatin1String("IconText"),QString::fromLatin1("IconTextBottom"));
     if ( icontext == "IconTextRight" )
         return IconTextRight;
     else if ( icontext == "IconTextBottom" )
@@ -1511,7 +1511,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     QString iconText = d->IconTextDefault;
 
     // this is the first iteration
-    QString grpToolbar(QString::fromLatin1("Toolbar style"));
+    QString grpToolbar(QLatin1String("Toolbar style"));
     { // start block for KConfigGroupSaver
         KConfigGroupSaver saver(gconfig, grpToolbar);
 

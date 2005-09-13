@@ -624,19 +624,19 @@ void KCompletion::doBeep( BeepMode mode ) const
 
     switch ( mode ) {
         case Rotation:
-            event = QString::fromLatin1("Textcompletion: rotation");
+            event = QLatin1String("Textcompletion: rotation");
             text = i18n("You reached the end of the list\nof matching items.\n");
             break;
         case PartialMatch:
             if ( myCompletionMode == KGlobalSettings::CompletionShell ||
                  myCompletionMode == KGlobalSettings::CompletionMan ) {
-                event = QString::fromLatin1("Textcompletion: partial match");
+                event = QLatin1String("Textcompletion: partial match");
                 text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
             }
             break;
         case NoMatch:
             if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
-                event = QString::fromLatin1("Textcompletion: no match");
+                event = QLatin1String("Textcompletion: no match");
                 text = i18n("There is no matching item available.\n");
             }
             break;

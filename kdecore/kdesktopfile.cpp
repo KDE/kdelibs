@@ -113,7 +113,7 @@ QString KDesktopFile::locateLocal(const QString &path)
 bool KDesktopFile::isDesktopFile(const QString& path)
 {
   return (path.length() > 8
-	   && path.right(8) == QString::fromLatin1(".desktop"));
+	   && path.right(8) == QLatin1String(".desktop"));
 }
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
@@ -214,32 +214,32 @@ QStringList KDesktopFile::readActions() const
 
 void KDesktopFile::setActionGroup(const QString &group)
 {
-    setGroup(QString::fromLatin1("Desktop Action ") + group);
+    setGroup(QLatin1String("Desktop Action ") + group);
 }
 
 bool KDesktopFile::hasActionGroup(const QString &group) const
 {
-  return hasGroup(QString::fromLatin1("Desktop Action ") + group);
+  return hasGroup(QLatin1String("Desktop Action ") + group);
 }
 
 bool KDesktopFile::hasLinkType() const
 {
-  return readEntry("Type") == QString::fromLatin1("Link");
+  return readEntry("Type") == QLatin1String("Link");
 }
 
 bool KDesktopFile::hasApplicationType() const
 {
-  return readEntry("Type") == QString::fromLatin1("Application");
+  return readEntry("Type") == QLatin1String("Application");
 }
 
 bool KDesktopFile::hasMimeTypeType() const
 {
-  return readEntry("Type") == QString::fromLatin1("MimeType");
+  return readEntry("Type") == QLatin1String("MimeType");
 }
 
 bool KDesktopFile::hasDeviceType() const
 {
-  return readEntry("Type") == QString::fromLatin1("FSDevice");
+  return readEntry("Type") == QLatin1String("FSDevice");
 }
 
 bool KDesktopFile::tryExec() const

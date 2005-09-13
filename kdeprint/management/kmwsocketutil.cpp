@@ -57,7 +57,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
 	QLabel	*portlabel = new QLabel(i18n("&Port:"),dummy);
 	QLabel	*toutlabel = new QLabel(i18n("&Timeout (ms):"),dummy);
 	QLineEdit	*mm = new QLineEdit(dummy);
-	mm->setText(QString::fromLatin1(".[0-255]"));
+	mm->setText(QLatin1String(".[0-255]"));
 	mm->setReadOnly(true);
 	mm->setFixedWidth(fontMetrics().width(mm->text())+10);
 

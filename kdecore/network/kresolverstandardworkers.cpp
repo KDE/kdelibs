@@ -141,7 +141,7 @@ bool KBlacklistWorker::isBlacklisted(const QString& host)
     return false;
 
   // KDE4: QLatin1String
-  QString ascii = QString::fromLatin1(KResolver::domainToAscii(host));
+  QString ascii = QLatin1String(KResolver::domainToAscii(host));
 
   QMutexLocker locker(&blacklistMutex);
 
@@ -252,7 +252,7 @@ namespace
 
 	// check blacklist
 	if (m_af != AF_INET &&
-	    KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_hostname)))
+	    KBlacklistWorker::isBlacklisted(QLatin1String(m_hostname)))
 	  break;
 
 # ifdef USE_GETHOSTBYNAME2_R
@@ -359,7 +359,7 @@ namespace
     if (socktype == 0)
       socktype = SOCK_STREAM;	// default
 
-    QString canon = KResolver::domainToUnicode(QString::fromLatin1(he->h_name));
+    QString canon = KResolver::domainToUnicode(QLatin1String(he->h_name));
     KInetSocketAddress sa;
     sa.setPort(m_port);
     if (he->h_addrtype != AF_INET)
@@ -405,7 +405,7 @@ namespace
   {
     // check blacklist
     if ((m_af != AF_INET && m_af != AF_UNSPEC) &&
-	KBlacklistWorker::isBlacklisted(QString::fromLatin1(m_node)))
+	KBlacklistWorker::isBlacklisted(QLatin1String(m_node)))
       {
 	results.setError(KResolver::NoName);
 	finished();
@@ -556,8 +556,8 @@ bool KStandardWorker::sanityCheck()
       if (node.indexOf('%') != -1)
 	node.truncate(node.indexOf('%'));
 
-      if (node.isEmpty() || node == QString::fromLatin1("*") ||
-	  node == QString::fromLatin1("localhost"))
+      if (node.isEmpty() || node == QLatin1String("*") ||
+	  node == QLatin1String("localhost"))
 	m_encodedName.truncate(0);
       else
 	{
@@ -622,7 +622,7 @@ bool KStandardWorker::resolveService()
       // service name does not contain a port number
       // must be a name
 
-      if (serviceName().isEmpty() || serviceName().compare(QString::fromLatin1("*")) == 0)
+      if (serviceName().isEmpty() || serviceName().compare(QLatin1String("*")) == 0)
 	port = 0;
       else
 	{

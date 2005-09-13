@@ -270,7 +270,7 @@ KAboutData::setProgramLogo(const QImage& image)
 QString
 KAboutData::version() const
 {
-   return QString::fromLatin1(mVersion);
+   return QLatin1String(mVersion);
 }
 
 QString
@@ -285,13 +285,13 @@ KAboutData::shortDescription() const
 QString
 KAboutData::homepage() const
 {
-   return QString::fromLatin1(mHomepageAddress);
+   return QLatin1String(mHomepageAddress);
 }
 
 QString
 KAboutData::bugAddress() const
 {
-   return QString::fromLatin1(mBugEmailAddress);
+   return QLatin1String(mBugEmailAddress);
 }
 
 const QList<KAboutPerson>

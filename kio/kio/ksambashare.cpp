@@ -63,7 +63,7 @@ bool KSambaSharePrivate::load() {
  * @return wether a smb.conf was found.
  **/
 bool KSambaSharePrivate::findSmbConf() {
-  KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
+  KSimpleConfig config(QLatin1String(FILESHARECONF),true);
   smbConf = config.readEntry("SMBCONF");
 
   if ( QFile::exists(smbConf) )

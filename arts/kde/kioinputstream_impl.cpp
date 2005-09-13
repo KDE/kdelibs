@@ -78,7 +78,7 @@ void KIOInputStream_impl::streamStart()
 	m_job = KIO::get(m_url, false, false);
 
 	m_job->addMetaData("accept", "audio/x-mp3, video/mpeg, application/ogg");
-	m_job->addMetaData("UserAgent", QString::fromLatin1("aRts/") + QString::fromLatin1(ARTS_VERSION));
+	m_job->addMetaData("UserAgent", QLatin1String("aRts/") + QString::fromLatin1(ARTS_VERSION));
 
 	QObject::connect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 			 this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     

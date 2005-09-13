@@ -107,7 +107,7 @@ void DriverItem::paintCell(QPainter *p, const QColorGroup& cg, int, int width, i
 		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
 		w += w1;
 		p->setPen(cg.text());
-		s = QString::fromLatin1(">");
+		s = QLatin1String(">");
 		w1 = p->fontMetrics().width(s);
 		p->drawText(w,0,w1,height(),Qt::AlignLeft|Qt::AlignVCenter,s);
 	}

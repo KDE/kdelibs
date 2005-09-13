@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     {
        for( int i = 1; i < argc; i++ )
        {
-	  argv1 = QString::fromLatin1(argv[i]);
+	  argv1 = QLatin1String(argv[i]);
 	  kdDebug() << "Opening " << argv1 << endl;
 	  if( argv1 == "-d" )
 	     tf->setDirOnly();

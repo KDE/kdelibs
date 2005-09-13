@@ -116,7 +116,7 @@ void PartBase::setInstance( KInstance *inst, bool bLoadPlugins )
   // install 'instancename'data resource type
   KGlobal::dirs()->addResourceType( inst->instanceName() + "data",
                                     KStandardDirs::kde_default( "data" )
-                                    + QString::fromLatin1( inst->instanceName() ) + '/' );
+                                    + QLatin1String( inst->instanceName() ) + '/' );
   if ( bLoadPlugins )
     loadPlugins( m_obj, this, instance() );
 }

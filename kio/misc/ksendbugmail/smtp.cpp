@@ -279,7 +279,7 @@ void SMTP::processLine(QString *line)
             break;
         case SENTFROM:
             state = SENTTO;
-            writeString = QString::fromLatin1("data\r\n");
+            writeString = QLatin1String("data\r\n");
              kdDebug() << "out: " << writeString << endl;
             sock->write(writeString.ascii(), writeString.length());
             break;
@@ -303,7 +303,7 @@ void SMTP::processLine(QString *line)
         writeString += messageHeader;
         writeString += "\r\n";
         writeString += messageBody;
-        writeString += QString::fromLatin1(".\r\n");
+        writeString += QLatin1String(".\r\n");
         kdDebug() << "out: " << writeString;
         sock->write(writeString.ascii(), writeString.length());
         break;

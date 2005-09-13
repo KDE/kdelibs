@@ -274,7 +274,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           break;
   }
 
-  return (proxy.isEmpty() ? QString::fromLatin1("DIRECT") : proxy);
+  return (proxy.isEmpty() ? QLatin1String("DIRECT") : proxy);
 }
 
 void KProtocolManager::badProxy( const QString &proxy )
@@ -458,7 +458,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     }
     if( modifiers.contains('p') )
     {
-      supp += QString::fromLatin1("; X11");  // TODO: determine this valye instead of hardcoding...
+      supp += QLatin1String("; X11");  // TODO: determine this valye instead of hardcoding...
     }
     if( modifiers.contains('m') )
     {
@@ -467,13 +467,13 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     if( modifiers.contains('l') )
     {
       QStringList languageList = KGlobal::locale()->languageList();
-      QStringList::Iterator it = languageList.find( QString::fromLatin1("C") );
+      QStringList::Iterator it = languageList.find( QLatin1String("C") );
       if( it != languageList.end() )
       {
-        if( languageList.contains( QString::fromLatin1("en") ) > 0 )
+        if( languageList.contains( QLatin1String("en") ) > 0 )
           languageList.remove( it );
         else
-          (*it) = QString::fromLatin1("en");
+          (*it) = QLatin1String("en");
       }
       if( languageList.count() )
         supp += QString("; %1").arg(languageList.join(", "));

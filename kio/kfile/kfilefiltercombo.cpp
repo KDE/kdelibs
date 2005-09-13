@@ -120,7 +120,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
 {
     clear();
     filters.clear();
-    QString delim = QString::fromLatin1(", ");
+    QString delim = QLatin1String(", ");
     d->hasAllSupportedFiles = false;
 
     m_allTypes = defaultType.isEmpty() && (types.count() > 1);

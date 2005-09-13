@@ -100,7 +100,7 @@ void KDiskFreeSp::dfDone()
 
   QTextStream t (dfStringErrOut, QIODevice::ReadOnly);
   QString s=t.readLine();
-  if ( (s.isEmpty()) || ( s.left(10) != QString::fromLatin1("Filesystem") ) )
+  if ( (s.isEmpty()) || ( s.left(10) != QLatin1String("Filesystem") ) )
     kdError() << "Error running df command... got [" << s << "]" << endl;
   while ( !t.atEnd() ) {
     QString u,v;

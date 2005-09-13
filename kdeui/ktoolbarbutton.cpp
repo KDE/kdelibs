@@ -280,7 +280,7 @@ void KToolBarButton::setTextLabel( const QString& text, bool tipToo)
     return;
 
   QString txt(text);
-  if (txt.endsWith(QString::fromLatin1("...")))
+  if (txt.endsWith(QLatin1String("...")))
     txt.truncate(txt.length() - 3);
 
   QToolButton::setTextLabel(txt, tipToo);

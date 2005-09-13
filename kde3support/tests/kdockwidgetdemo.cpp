@@ -87,7 +87,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 :QDialog(0L,name,true)
 {
   KConfig* config = kapp->config();
-  config->setGroup( QString::fromLatin1("SFileDialogData:") + name );
+  config->setGroup( QLatin1String("SFileDialogData:") + name );
   if ( initially.isNull() ){
     initially = config->readPathEntry( "InitiallyDir", QDir::currentDirPath() );
   }
@@ -780,8 +780,8 @@ int main(int argc, char* argv[]) {
 #endif
 
 #if 0
-  qDebug ( SFileDialog::getOpenFileName( QString::null, QString::fromLatin1("All (*)"),
-                                         QString::fromLatin1("DockWidget Demo"), "dialog1" ) );
+  qDebug ( SFileDialog::getOpenFileName( QString::null, QLatin1String("All (*)"),
+                                         QLatin1String("DockWidget Demo"), "dialog1" ) );
 #endif
 
 #if 1

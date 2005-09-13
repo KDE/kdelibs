@@ -132,9 +132,9 @@ bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
     if (!totalSteps)
         return false;
     QString newString(mFormat);
-    newString.replace(QString::fromLatin1("%v"),
+    newString.replace(QLatin1String("%v"),
                       QString::number(progress));
-    newString.replace(QString::fromLatin1("%m"),
+    newString.replace(QLatin1String("%m"),
                       QString::number(totalSteps));
 
     if (totalSteps > INT_MAX / 1000) {
@@ -142,7 +142,7 @@ bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
         totalSteps /= 1000;
     }
 
-    newString.replace(QString::fromLatin1("%p"),
+    newString.replace(QLatin1String("%p"),
                       QString::number((progress * 100) / totalSteps)); 
 
     if (newString != indicator)

@@ -577,7 +577,7 @@ QDate KCalendarSystemHijri::addYears( const QDate & date, int nyears ) const
 
 QString KCalendarSystemHijri::calendarName() const
 {
-  return QString::fromLatin1("hijri");
+  return QLatin1String("hijri");
 }
 
 bool KCalendarSystemHijri::isLunar() const

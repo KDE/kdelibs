@@ -25,9 +25,9 @@ static QString writeType( QTextStream& str, const QDomElement& r )
 inline QString remapType( const QString& type )
 {
     if ( type == "DCOPCString" )
-	return QString::fromLatin1("QCString");
+	return QLatin1String("QCString");
     else if ( type == "DCOPCStringList" )
-	return QString::fromLatin1("QCStringList");
+	return QLatin1String("QCStringList");
     else
 	return type;
 }

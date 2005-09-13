@@ -247,7 +247,7 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 	}
 
 	QString	tmpFile = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
-	QString	PATH = QString( getenv("PATH") ) + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	PATH = QString( getenv("PATH") ) + QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{
@@ -351,7 +351,7 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 	if (mdriver.isEmpty() || mprinter.isEmpty())
 		return true;
 
-	QString	PATH = QString( getenv("PATH") ) + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	PATH = QString( getenv("PATH") ) + QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
 	if (exe.isEmpty())
 	{

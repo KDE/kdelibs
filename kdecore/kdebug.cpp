@@ -383,7 +383,7 @@ kdbgstream::kdbgstream(unsigned int _area, unsigned int _level, bool _print)
 
 kdbgstream::kdbgstream(const char * initialString, unsigned int _a,
                        unsigned int _lvl, bool _p)
-    : d(new Private(QString::fromLatin1(initialString), _a, _lvl, _p))
+    : d(new Private(QLatin1String(initialString), _a, _lvl, _p))
 {
 }
 
@@ -658,7 +658,7 @@ QString kdBacktrace(int levels)
     for (int i = 0; i < n; ++i)
         s += QString::number(i) +
              QLatin1String(": ") +
-             QString::fromLatin1(strings[i]) + QLatin1String("\n");
+             QLatin1String(strings[i]) + QLatin1String("\n");
     s += QLatin1String("]\n");
     if (strings)
         free (strings);

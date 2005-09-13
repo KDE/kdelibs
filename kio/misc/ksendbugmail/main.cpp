@@ -99,11 +99,11 @@ int main(int argc, char **argv) {
     if (!fromaddr.isEmpty()) {
         QString name = emailConfig.getSetting(KEMailSettings::RealName);
         if (!name.isEmpty())
-            fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
+            fromaddr = name + QLatin1String(" <") + fromaddr + QString::fromLatin1(">");
     } else {
         struct passwd *p;
         p = getpwuid(getuid());
-        fromaddr = QString::fromLatin1(p->pw_name);
+        fromaddr = QLatin1String(p->pw_name);
         fromaddr += "@";
         char buffer[256];
 	buffer[0] = '\0';
@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
 
     QString  server = emailConfig.getSetting(KEMailSettings::OutServer);
     if (server.isEmpty())
-        server=QString::fromLatin1("bugs.kde.org");
+        server=QLatin1String("bugs.kde.org");
 
     SMTP *sm = new SMTP;
     BugMailer bm(sm);

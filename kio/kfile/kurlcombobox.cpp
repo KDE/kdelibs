@@ -31,7 +31,7 @@ class KURLComboBox::KURLComboBoxPrivate
 {
 public:
     KURLComboBoxPrivate() {
-	dirpix = SmallIcon(QString::fromLatin1("folder"));
+	dirpix = SmallIcon(QLatin1String("folder"));
     }
 
     QPixmap dirpix;
@@ -71,7 +71,7 @@ void KURLComboBox::init( Mode mode )
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
 
-    opendirPix = SmallIcon(QString::fromLatin1("folder_open"));
+    opendirPix = SmallIcon(QLatin1String("folder_open"));
 
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
 }

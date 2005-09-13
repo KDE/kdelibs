@@ -390,7 +390,7 @@ QString KProtocolInfo::icon( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return QString::fromLatin1("unknown");
+    return QLatin1String("unknown");
 
   return prot->m_icon;
 }

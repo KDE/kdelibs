@@ -10,7 +10,7 @@ int main( int argc, char **argv )
     KURL u = KDirSelectDialog::selectDirectory( (argc >= 1) ? argv[1] : QString());
     if ( u.isValid() )
         KMessageBox::information( 0L,
-                                QString::fromLatin1("You selected the url: %1")
+                                QLatin1String("You selected the url: %1")
                                 .arg( u.prettyURL() ), "Selected URL" );
 
     return 0;

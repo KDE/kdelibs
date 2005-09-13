@@ -158,7 +158,7 @@ QStringList KStandardDirs::allTypes() const
 {
     QStringList list;
     for (int i = 0; types[i] != 0; ++i)
-        list.append(QString::fromLatin1(types[i]));
+        list.append(QLatin1String(types[i]));
     return list;
 }
 
@@ -758,9 +758,9 @@ void KStandardDirs::createSpecialResource(const char *type)
 #else //UNIX
    if (relink)
    {
-      QString srv = findExe(QString::fromLatin1("lnusertemp"), kfsstnd_defaultbindir());
+      QString srv = findExe(QLatin1String("lnusertemp"), kfsstnd_defaultbindir());
       if (srv.isEmpty())
-         srv = findExe(QString::fromLatin1("lnusertemp"));
+         srv = findExe(QLatin1String("lnusertemp"));
       if (!srv.isEmpty())
       {
          system(QFile::encodeName(srv)+" "+type);
@@ -1254,11 +1254,11 @@ QString KStandardDirs::kfsstnd_defaultbindir()
    if (!s->defaultbindir.isEmpty())
       return s->defaultbindir;
 #ifdef Q_WS_WIN
-   s->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+   s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
 #else //UNIX
    s->defaultbindir = __KDE_BINDIR;
    if (s->defaultbindir.isEmpty())
-      s->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+      s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
 #endif
    if (s->defaultbindir.isEmpty())
       kdWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
@@ -1536,7 +1536,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         addedCustoms = true;
 
         // reading the prefixes in
-        QString group = QString::fromLatin1("Directories");
+        QString group = QLatin1String("Directories");
         config->setGroup(group);
 
         QString kioskAdmin = config->readEntry("kioskAdmin");

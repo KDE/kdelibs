@@ -1222,9 +1222,9 @@ void KSpell::dialog( const QString & word, QStringList & sugg, const char *_slot
   QString marker( "_MARKER_" );
   tmpBuf.replace( lastpos, word.length(), marker );
   QString context = tmpBuf.mid(QMAX(lastpos-18,0), 2*18+marker.length());
-  context.replace( '\n',QString::fromLatin1(" "));
-  context.replace( '<', QString::fromLatin1("&lt;") );
-  context.replace( '>', QString::fromLatin1("&gt;") );
+  context.replace( '\n',QLatin1String(" "));
+  context.replace( '<', QLatin1String("&lt;") );
+  context.replace( '>', QLatin1String("&gt;") );
   context.replace( marker, QString::fromLatin1("<b>%1</b>").arg( word ) );
   context = "<qt>" + context + "</qt>";
 

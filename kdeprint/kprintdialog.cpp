@@ -569,7 +569,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 			if (!sep && it.current()->isSpecial())
 			{
 				sep = true;
-				d->m_printers->insertItem(QPixmap(), QString::fromLatin1("--------"));
+				d->m_printers->insertItem(QPixmap(), QLatin1String("--------"));
 			}
 			d->m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name(),false/*sep*/);
 			if (it.current()->isSoftDefault())

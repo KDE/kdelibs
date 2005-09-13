@@ -204,7 +204,7 @@ void KURLRequester::init()
 	d->edit = new KLineEdit( this);
 
     myButton = new KURLDragPushButton( this);
-    QIcon iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
+    QIcon iconSet = SmallIconSet(QLatin1String("fileopen"));
     QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     myButton->setIconSet( iconSet );
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );

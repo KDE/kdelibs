@@ -110,7 +110,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
         xml_file = filename;
     else
     {
-        xml_file = locate("data", QString::fromLatin1(instance->instanceName() + '/' ) + filename);
+        xml_file = locate("data", QLatin1String(instance->instanceName() + '/' ) + filename);
         if ( !QFile::exists( xml_file ) )
           xml_file = locate( "data", filename );
     }
@@ -120,7 +120,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     {
         kdError(240) << "No such XML file " << filename << endl;
         if ( never_null )
-            return QString::fromLatin1( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
+            return QLatin1String( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
         else
             return QString::null;
     }
@@ -136,7 +136,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))
-        xml_file = locateLocal("data", QString::fromLatin1( instance->instanceName() + '/' )
+        xml_file = locateLocal("data", QLatin1String( instance->instanceName() + '/' )
                                + filename);
 
     QFile file( xml_file );
@@ -560,7 +560,7 @@ int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSe
 
 QDomElement KXMLGUIFactory::actionPropertiesElement( QDomDocument& doc )
 {
-	const QString tagActionProp = QString::fromLatin1("ActionProperties");
+	const QString tagActionProp = QLatin1String("ActionProperties");
 	// first, lets see if we have existing properties
 	QDomElement elem;
 	QDomNode it = doc.documentElement().firstChild();

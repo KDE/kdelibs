@@ -33,7 +33,7 @@ static DCOPClient* dcop = 0;
 void startApp(const char *_app, int argc, const char **args)
 {
     const char *function = 0;
-    QString app = QString::fromLatin1(_app);
+    QString app = QLatin1String(_app);
     if (app.endsWith(".desktop"))
        function = "start_service_by_desktop_path(QString,QStringList)";
     else

@@ -368,7 +368,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 	client->attach();
 
     QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
-    KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
+    KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
     if ( socketfile.status() != 0 )
     {
 	error_text = i18n("Unable to create io-slave: %1").arg(strerror(errno));
@@ -478,7 +478,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 	client->attach();
 
     QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
-    KTempFile socketfile(prefix, QString::fromLatin1(".slave-socket"));
+    KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
     if ( socketfile.status() != 0 )
 	return 0;
 

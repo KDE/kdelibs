@@ -541,7 +541,7 @@ int KCalendarSystemJalali::weekDayOfPray() const
 }
 QString KCalendarSystemJalali::calendarName() const
 {
-  return QString::fromLatin1("jalali");
+  return QLatin1String("jalali");
 }
 
 bool KCalendarSystemJalali::isLunar() const

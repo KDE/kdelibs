@@ -121,7 +121,7 @@ void KMWPassword::updatePrinter(KMPrinter *p)
 			p->setOption( "kde-password", QString::null );
 			break;
 		case 1:
-			p->setOption( "kde-login", QString::fromLatin1( "guest" ) );
+			p->setOption( "kde-login", QLatin1String( "guest" ) );
 			p->setOption( "kde-password", QString::null );
 			break;
 		case 2:

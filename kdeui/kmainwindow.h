@@ -442,7 +442,7 @@ public:
      *   "virtual QSize sizeHint() const;" to specify a default size rather
      *   than letting QWidget::adjust use the default size of 0x0.
      */
-    void setAutoSaveSettings( const QString & groupName = QString::fromLatin1("MainWindow"),
+    void setAutoSaveSettings( const QString & groupName = QLatin1String("MainWindow"),
                               bool saveWindowSize = true );
 
     /**
@@ -1008,7 +1008,7 @@ template <typename T>
 inline void kRestoreMainWindows() {
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == QString::fromLatin1( T::staticMetaObject.className() ) )
+    if ( className == QLatin1String( T::staticMetaObject.className() ) )
       (new T)->restore( n );
   }
 }
@@ -1020,9 +1020,9 @@ inline void kRestoreMainWindows() {
   classNames[1] = T1::staticMetaObject.className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == QString::fromLatin1( classNames[0] ) )
+    if ( className == QLatin1String( classNames[0] ) )
       (new T0)->restore( n );
-    else if ( className == QString::fromLatin1( classNames[1] ) )
+    else if ( className == QLatin1String( classNames[1] ) )
       (new T1)->restore( n );
   }
 }
@@ -1035,11 +1035,11 @@ inline void kRestoreMainWindows() {
   classNames[2] = T2::staticMetaObject.className();
   for ( int n = 1 ; KMainWindow::canBeRestored( n ) ; ++n ) {
     const QString className = KMainWindow::classNameOfToplevel( n );
-    if ( className == QString::fromLatin1( classNames[0] ) )
+    if ( className == QLatin1String( classNames[0] ) )
       (new T0)->restore( n );
-    else if ( className == QString::fromLatin1( classNames[1] ) )
+    else if ( className == QLatin1String( classNames[1] ) )
       (new T1)->restore( n );
-    else if ( className == QString::fromLatin1( classNames[2] ) )
+    else if ( className == QLatin1String( classNames[2] ) )
       (new T2)->restore( n );
   }
 }

@@ -252,7 +252,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                     if (!value.isEmpty ())
                         codebase = value;
                 } else if (name == "__KHTML__CLASSID")
-                //else if (name.lower()==QString::fromLatin1("classid"))
+                //else if (name.lower()==QLatin1String("classid"))
                     classid = value;
                 else if (name_lower == QLatin1String("code") ||
                          name_lower == QLatin1String("java_code"))

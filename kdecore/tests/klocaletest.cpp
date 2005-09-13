@@ -78,7 +78,7 @@ void Test::createFields()
   string+="Used language: ";
   string+=KGlobal::locale()->language()+"\n";
   string+="Locale encoding: ";
-  string+=QString::fromLatin1(KGlobal::locale()->encoding())+"\n";
+  string+=QLatin1String(KGlobal::locale()->encoding())+"\n";
 
   string+="Localized date and time: ";
   string+=KGlobal::locale()->formatDateTime(QDateTime::currentDateTime());
@@ -87,10 +87,10 @@ void Test::createFields()
   // This will not work
   // but you can copy other *.mo file
   string+="\nSome localized strings:\n";
-  string+=QString::fromLatin1("Yes = ")+i18n("Yes")+"\n";
-  string+=QString::fromLatin1("No = ")+i18n("No")+"\n";
-  string+=QString::fromLatin1("Help = ")+i18n("Help")+"\n";
-  string+=QString::fromLatin1("Cancel = ")+i18n("Cancel")+"\n";
+  string+=QLatin1String("Yes = ")+i18n("Yes")+"\n";
+  string+=QLatin1String("No = ")+i18n("No")+"\n";
+  string+=QLatin1String("Help = ")+i18n("Help")+"\n";
+  string+=QLatin1String("Cancel = ")+i18n("Cancel")+"\n";
 
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
@@ -106,9 +106,9 @@ int main( int argc, char ** argv )
 
   KApplication a;
 
-  KGlobal::locale()->setLanguage(QString::fromLatin1("en_US"));
-  KGlobal::locale()->setCountry(QString::fromLatin1("C"));
-  KGlobal::locale()->setThousandsSeparator(QString::fromLatin1(","));
+  KGlobal::locale()->setLanguage(QLatin1String("en_US"));
+  KGlobal::locale()->setCountry(QLatin1String("C"));
+  KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
 
   QString formatted;
   formatted = KGlobal::locale()->formatNumber( 70 ); check("formatNumber(70)",formatted,"70.00");
@@ -178,11 +178,11 @@ int main( int argc, char ** argv )
   check("formatTime(\"0:22\", as duration)", timeStr, "00:22" );
 
   kdDebug() << "setLanguage C\n";
-  KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
+  KGlobal::locale()->setLanguage(QLatin1String("C"));
   kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
 
   kdDebug() << "setLanguage de\n";
-  KGlobal::locale()->setLanguage(QString::fromLatin1("de"));
+  KGlobal::locale()->setLanguage(QLatin1String("de"));
   kdDebug() << "de: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
 
 

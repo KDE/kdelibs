@@ -45,7 +45,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
 
     if( abs_path )
     {
-        m_filterData->setAbsolutePath( QString::fromLatin1( abs_path ) );
+        m_filterData->setAbsolutePath( QLatin1String( abs_path ) );
         kdDebug() << "Filtering: " << a << " with abs_path=" << abs_path << endl;
     }
     else
@@ -98,7 +98,7 @@ void filter( const char* u, const char * expectedResult = 0, int expectedUriType
         {
             // Hack for other locales than english, normalize google hosts to google.com
             cmd = cmd.replace( QRegExp( "www\\.google\\.[^/]*/" ), "www.google.com/" );
-            if ( cmd != QString::fromLatin1( expectedResult ) )
+            if ( cmd != QLatin1String( expectedResult ) )
             {
                 kdError() << " Got " << cmd << " expected " << expectedResult << endl;
                 ::exit(1);

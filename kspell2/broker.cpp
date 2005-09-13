@@ -189,7 +189,7 @@ void Broker::loadPlugin( const QString& pluginId )
     kdDebug()<<"Loading plugin " << pluginId << endl;
 
     Client *client = KParts::ComponentFactory::createInstanceFromQuery<Client>(
-        QString::fromLatin1( "KSpell/Client" ),
+        QLatin1String( "KSpell/Client" ),
         QString::fromLatin1( "[X-KDE-PluginInfo-Name]=='%1'" ).arg( pluginId ),
         this, 0, QStringList(), &error );
 

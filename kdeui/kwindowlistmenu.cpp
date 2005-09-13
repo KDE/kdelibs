@@ -179,7 +179,7 @@ void KWindowListMenu::init()
                 }
 
                 // Avoid creating unwanted accelerators.
-                itemText.replace('&', QString::fromLatin1("&&"));
+                itemText.replace('&', QLatin1String("&&"));
                 QAction* a = addAction(pm, itemText, this, SLOT(slotForceActiveWindow()));
                 a->setData((int)info->win());
                 if (info->win() == active_window)

@@ -936,7 +936,7 @@ QString KFileItem::parsePermissions(mode_t perm) const
     if (perm & QFile::ExeOther)
 	p[9]='x';
 
-    return QString::fromLatin1(p);
+    return QLatin1String(p);
 }
 
 // check if we need to cache this

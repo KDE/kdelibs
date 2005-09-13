@@ -1075,7 +1075,7 @@ QString RegressionTest::getPartOutput( OutputType type)
         getPartDOMOutput( outputStream, m_part, 0 );
     }
 
-    dump.replace( m_baseDir + "/tests", QString::fromLatin1( "REGRESSION_SRCDIR" ) );
+    dump.replace( m_baseDir + "/tests", QLatin1String( "REGRESSION_SRCDIR" ) );
     return dump;
 }
 
@@ -1272,7 +1272,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render %3/%2-render" )
+        FILE *pipe = popen( QLatin1String( "diff -u baseline/%1-render %3/%2-render" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {
@@ -1288,7 +1288,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     if ( failures & DomFailure ) {
         domDiff += "<pre>";
-        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom %3/%2-dom" )
+        FILE *pipe = popen( QLatin1String( "diff -u baseline/%1-dom %3/%2-dom" )
                             .arg ( test, test, relOutputDir ).latin1(), "r" );
         QTextIStream *is = new QTextIStream( pipe );
         for ( int line = 0; line < 100 && !is->atEnd(); ++line ) {

@@ -55,7 +55,7 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
       return;
    }
 
-   if (mTempFile.create(real_filename, QString::fromLatin1(".new"), mode))
+   if (mTempFile.create(real_filename, QLatin1String(".new"), mode))
    {
       mFileName = real_filename; // Set filename upon success
 

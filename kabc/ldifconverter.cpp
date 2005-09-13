@@ -229,7 +229,7 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
                                   Address &workAddr,
                                   QString &fieldname, QString &value )
 {
-  if ( fieldname == QString::fromLatin1( "dn" ) ) // ignore & return false!
+  if ( fieldname == QLatin1String( "dn" ) ) // ignore & return false!
     return false;
 
   if ( fieldname.startsWith("#") ) {
@@ -243,56 +243,56 @@ bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "givenname" ) ) {
+  if ( fieldname == QLatin1String( "givenname" ) ) {
     a.setGivenName( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "xmozillanickname") ||
-       fieldname == QString::fromLatin1( "nickname") ) {
+  if ( fieldname == QLatin1String( "xmozillanickname") ||
+       fieldname == QLatin1String( "nickname") ) {
     a.setNickName( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "sn" ) ) {
+  if ( fieldname == QLatin1String( "sn" ) ) {
     a.setFamilyName( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "uid" ) ) {
+  if ( fieldname == QLatin1String( "uid" ) ) {
     a.setUid( value );
     return true;
   }
-  if ( fieldname == QString::fromLatin1( "mail" ) ||
-       fieldname == QString::fromLatin1( "mozillasecondemail" ) ) { // mozilla
+  if ( fieldname == QLatin1String( "mail" ) ||
+       fieldname == QLatin1String( "mozillasecondemail" ) ) { // mozilla
     if ( a.emails().findIndex( value ) == -1 )
       a.insertEmail( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "title" ) ) {
+  if ( fieldname == QLatin1String( "title" ) ) {
     a.setTitle( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "vocation" ) ) {
+  if ( fieldname == QLatin1String( "vocation" ) ) {
     a.setPrefix( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "cn" ) ) {
+  if ( fieldname == QLatin1String( "cn" ) ) {
     a.setFormattedName( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "o" ) ||
-       fieldname == QString::fromLatin1( "organization" ) ||      // Exchange
-       fieldname == QString::fromLatin1( "organizationname" ) ) { // Exchange
+  if ( fieldname == QLatin1String( "o" ) ||
+       fieldname == QLatin1String( "organization" ) ||      // Exchange
+       fieldname == QLatin1String( "organizationname" ) ) { // Exchange
     a.setOrganization( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "description" ) ) {
+  if ( fieldname == QLatin1String( "description" ) ) {
 addComment:
     if ( !a.note().isEmpty() )
       a.setNote( a.note() + "\n" );
@@ -300,15 +300,15 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "custom1" ) ||
-       fieldname == QString::fromLatin1( "custom2" ) ||
-       fieldname == QString::fromLatin1( "custom3" ) ||
-       fieldname == QString::fromLatin1( "custom4" ) ) {
+  if ( fieldname == QLatin1String( "custom1" ) ||
+       fieldname == QLatin1String( "custom2" ) ||
+       fieldname == QLatin1String( "custom3" ) ||
+       fieldname == QLatin1String( "custom4" ) ) {
     goto addComment;
   }
 
-  if ( fieldname == QString::fromLatin1( "homeurl" ) ||
-       fieldname == QString::fromLatin1( "workurl" ) ) {
+  if ( fieldname == QLatin1String( "homeurl" ) ||
+       fieldname == QLatin1String( "workurl" ) ) {
     if (a.url().isEmpty()) {
       a.setUrl( KURL( value ) );
       return true;
@@ -319,139 +319,139 @@ addComment:
     // TODO: change this with KDE 4
   }
 
-  if ( fieldname == QString::fromLatin1( "homephone" ) ) {
+  if ( fieldname == QLatin1String( "homephone" ) ) {
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Home ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "telephonenumber" ) ) {
+  if ( fieldname == QLatin1String( "telephonenumber" ) ) {
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Work ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mobile" ) ) { 	// mozilla/Netscape 7
+  if ( fieldname == QLatin1String( "mobile" ) ) { 	// mozilla/Netscape 7
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Cell ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "cellphone" ) ) {
+  if ( fieldname == QLatin1String( "cellphone" ) ) {
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Cell ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "pager" )  ||       // mozilla
-       fieldname == QString::fromLatin1( "pagerphone" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "pager" )  ||       // mozilla
+       fieldname == QLatin1String( "pagerphone" ) ) {  // mozilla
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Pager ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "facsimiletelephonenumber" ) ) {
+  if ( fieldname == QLatin1String( "facsimiletelephonenumber" ) ) {
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Fax ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "xmozillaanyphone" ) ) { // mozilla
+  if ( fieldname == QLatin1String( "xmozillaanyphone" ) ) { // mozilla
     a.insertPhoneNumber( PhoneNumber( value, PhoneNumber::Work ) );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "street" ) ||
-       fieldname == QString::fromLatin1( "streethomeaddress" ) ) {
+  if ( fieldname == QLatin1String( "street" ) ||
+       fieldname == QLatin1String( "streethomeaddress" ) ) {
     homeAddr.setStreet( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "postaladdress" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "postaladdress" ) ) {  // mozilla
     workAddr.setStreet( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillapostaladdress2" ) ) {  // mozilla
-    workAddr.setStreet( workAddr.street() + QString::fromLatin1( "\n" ) + value );
+  if ( fieldname == QLatin1String( "mozillapostaladdress2" ) ) {  // mozilla
+    workAddr.setStreet( workAddr.street() + QLatin1String( "\n" ) + value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "postalcode" ) ) {
+  if ( fieldname == QLatin1String( "postalcode" ) ) {
     workAddr.setPostalCode( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "postofficebox" ) ) {
+  if ( fieldname == QLatin1String( "postofficebox" ) ) {
     workAddr.setPostOfficeBox( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "homepostaladdress" ) ) {  // Netscape 7
+  if ( fieldname == QLatin1String( "homepostaladdress" ) ) {  // Netscape 7
     homeAddr.setStreet( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillahomepostaladdress2" ) ) {  // mozilla
-    homeAddr.setStreet( homeAddr.street() + QString::fromLatin1( "\n" ) + value );
+  if ( fieldname == QLatin1String( "mozillahomepostaladdress2" ) ) {  // mozilla
+    homeAddr.setStreet( homeAddr.street() + QLatin1String( "\n" ) + value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillahomelocalityname" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "mozillahomelocalityname" ) ) {  // mozilla
     homeAddr.setLocality( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillahomestate" )	) { // mozilla
+  if ( fieldname == QLatin1String( "mozillahomestate" )	) { // mozilla
     homeAddr.setRegion( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillahomepostalcode" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "mozillahomepostalcode" ) ) {  // mozilla
     homeAddr.setPostalCode( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "mozillahomecountryname" ) ) { // mozilla
+  if ( fieldname == QLatin1String( "mozillahomecountryname" ) ) { // mozilla
     if ( value.length() <= 2 )
       value = Address::ISOtoCountry(value);
     homeAddr.setCountry( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "locality" ) ) {
+  if ( fieldname == QLatin1String( "locality" ) ) {
     workAddr.setLocality( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "streetaddress" ) ) { // Netscape 4.x
+  if ( fieldname == QLatin1String( "streetaddress" ) ) { // Netscape 4.x
     workAddr.setStreet( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "countryname" ) ||
-       fieldname == QString::fromLatin1( "c" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "countryname" ) ||
+       fieldname == QLatin1String( "c" ) ) {  // mozilla
     if ( value.length() <= 2 )
       value = Address::ISOtoCountry(value);
     workAddr.setCountry( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "l" ) ) {  // mozilla
+  if ( fieldname == QLatin1String( "l" ) ) {  // mozilla
     workAddr.setLocality( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "st" ) ) {
+  if ( fieldname == QLatin1String( "st" ) ) {
     workAddr.setRegion( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "ou" ) ) {
+  if ( fieldname == QLatin1String( "ou" ) ) {
     a.setRole( value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "department" ) ) {
+  if ( fieldname == QLatin1String( "department" ) ) {
     a.insertCustom( "KADDRESSBOOK", "X-Department", value );
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "member" ) ) {
+  if ( fieldname == QLatin1String( "member" ) ) {
     // this is a mozilla list member (cn=xxx, mail=yyy)
     QStringList list( QStringList::split( ',', value ) );
     QString name, email;
@@ -470,8 +470,8 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "modifytimestamp" ) ) {
-    if (value == QString::fromLatin1("0Z")) // ignore
+  if ( fieldname == QLatin1String( "modifytimestamp" ) ) {
+    if (value == QLatin1String("0Z")) // ignore
       return true;
     QDateTime dt = VCardStringToDate( value );
     if ( dt.isValid() ) {
@@ -480,7 +480,7 @@ addComment:
     }
   }
 
-  if ( fieldname == QString::fromLatin1( "objectclass" ) ) // ignore
+  if ( fieldname == QLatin1String( "objectclass" ) ) // ignore
     return true;
 
   kdWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")

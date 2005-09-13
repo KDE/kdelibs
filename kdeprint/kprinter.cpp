@@ -855,7 +855,7 @@ int KPrinter::toPage() const
 { return (option("kde-topage").isEmpty() ? 0 : option("kde-topage").toInt()); }
 
 void KPrinter::setFromTo(int m, int M)
-{ setOption("kde-frompage",QString::number(m)); setOption("kde-topage",QString::number(M)); setOption("kde-range",(m>0 && M>0 ? QString("%1-%2").arg(m).arg(M) : QString::fromLatin1(""))); }
+{ setOption("kde-frompage",QString::number(m)); setOption("kde-topage",QString::number(M)); setOption("kde-range",(m>0 && M>0 ? QString("%1-%2").arg(m).arg(M) : QLatin1String(""))); }
 
 // if no page size defined, use the localized one
 KPrinter::PageSize KPrinter::pageSize() const
@@ -898,7 +898,7 @@ void KPrinter::setPrintProgram(const QString& prg)
 }
 
 QString KPrinter::printerSelectionOption() const
-{ return QString::fromLatin1(""); }
+{ return QLatin1String(""); }
 
 void KPrinter::setPrinterSelectionOption(const QString&)
 {}

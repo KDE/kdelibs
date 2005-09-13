@@ -71,24 +71,24 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d = new KXMLGUIBuilderPrivate;
   d->m_widget = widget;
 
-  d->tagMainWindow = QString::fromLatin1( "mainwindow" );
-  d->tagMenuBar = QString::fromLatin1( "menubar" );
-  d->tagMenu = QString::fromLatin1( "menu" );
-  d->tagToolBar = QString::fromLatin1( "toolbar" );
-  d->tagStatusBar = QString::fromLatin1( "statusbar" );
+  d->tagMainWindow = QLatin1String( "mainwindow" );
+  d->tagMenuBar = QLatin1String( "menubar" );
+  d->tagMenu = QLatin1String( "menu" );
+  d->tagToolBar = QLatin1String( "toolbar" );
+  d->tagStatusBar = QLatin1String( "statusbar" );
 
-  d->tagSeparator = QString::fromLatin1( "separator" );
-  d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
-  d->tagMenuTitle = QString::fromLatin1( "title" );
+  d->tagSeparator = QLatin1String( "separator" );
+  d->tagTearOffHandle = QLatin1String( "tearoffhandle" );
+  d->tagMenuTitle = QLatin1String( "title" );
 
-  d->attrName = QString::fromLatin1( "name" );
-  d->attrLineSeparator = QString::fromLatin1( "lineseparator" );
+  d->attrName = QLatin1String( "name" );
+  d->attrLineSeparator = QLatin1String( "lineseparator" );
 
-  d->attrText1 = QString::fromLatin1( "text" );
-  d->attrText2 = QString::fromLatin1( "Text" );
-  d->attrContext = QString::fromLatin1( "context" );
+  d->attrText1 = QLatin1String( "text" );
+  d->attrText2 = QLatin1String( "Text" );
+  d->attrContext = QLatin1String( "context" );
 
-  d->attrIcon = QString::fromLatin1( "icon" );
+  d->attrIcon = QLatin1String( "icon" );
 
   d->m_instance = 0;
   d->m_client = 0;
@@ -334,7 +334,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         QDomAttr attr = attributes.item( i ).toAttr();
 
         if ( attr.name().lower() == d->attrLineSeparator &&
-             attr.value().lower() == QString::fromLatin1("false") )
+             attr.value().lower() == QLatin1String("false") )
         {
           isLineSep = false;
           break;

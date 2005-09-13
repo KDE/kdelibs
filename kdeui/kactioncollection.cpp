@@ -731,8 +731,8 @@ bool KActionShortcutList::save() const
 	if( m_actions.xmlFile().isEmpty() )
 		return writeSettings();
 
-	QString attrShortcut  = QString::fromLatin1("shortcut");
-	QString attrAccel     = QString::fromLatin1("accel"); // Depricated attribute
+	QString attrShortcut  = QLatin1String("shortcut");
+	QString attrAccel     = QLatin1String("accel"); // Depricated attribute
 
 	// Read XML file
 	QString sXml( KXMLGUIFactory::readConfigFile( xmlFile, false, instance() ) );

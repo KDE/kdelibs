@@ -127,7 +127,7 @@ void KCupsPrinterImpl::broadcastOption(const QString& key, const QString& value)
 		KPrinterImpl::broadcastOption("orientation-requested",(value == "Landscape" ? "4" : "3"));
 	else if (key == "kde-pagesize")
 	{
-		QString	pagename = QString::fromLatin1(pageSizeToPageName((KPrinter::PageSize)value.toInt()));
+		QString	pagename = QLatin1String(pageSizeToPageName((KPrinter::PageSize)value.toInt()));
 		KPrinterImpl::broadcastOption("PageSize",pagename);
 		// simple hack for classes
 		KPrinterImpl::broadcastOption("media",pagename);

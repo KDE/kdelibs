@@ -43,12 +43,12 @@ QString KIDNA::toAscii(const QString &idna)
 {
   if (idna.length() && (idna[0] == QLatin1Char('.')))
   {
-     QString host = QString::fromLatin1(toAsciiCString(idna.mid(1)));
+     QString host = QLatin1String(toAsciiCString(idna.mid(1)));
      if (host.isEmpty())
         return QString::null; // Error
      return idna[0] + host;
   }
-  return QString::fromLatin1(toAsciiCString(idna));
+  return QLatin1String(toAsciiCString(idna));
 }
 
 QString KIDNA::toUnicode(const QString &idna)

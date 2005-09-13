@@ -32,7 +32,7 @@ bool _expandvars = false;
 
 QString expandvars(const char *_input)
 {
-    QString result = QString::fromLatin1(_input);
+    QString result = QLatin1String(_input);
     if (!_expandvars)
         return result;
 

@@ -102,7 +102,7 @@ void KMWBackend::updatePrinter(KMPrinter *p)
 	else p->setType(KMPrinter::Printer);
 	p->setOption("kde-backend",QString::number(ID));
 	QString	s = m_buttons->selected()->text();
-	s.replace(QRegExp("&(?=\\w)"), QString::fromLatin1(""));
+	s.replace(QRegExp("&(?=\\w)"), QLatin1String(""));
 	p->setOption("kde-backend-description",s);
 	setNextPage((m_map.contains(ID) ? m_map[ID] : KMWizard::Error));
 }

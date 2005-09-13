@@ -373,7 +373,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, QString::fromLatin1("KParts/ReadOnlyPart"), constraint, QString::null );
+            KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString::null );
             if ( offers.isEmpty() )
             {
                 if ( error )

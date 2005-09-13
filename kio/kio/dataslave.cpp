@@ -137,7 +137,7 @@ void DataSlave::send(int cmd, const QByteArray &arr) {
       break;
     default:
       error(ERR_UNSUPPORTED_ACTION,
-		unsupportedActionErrorString(QString::fromLatin1("data"),cmd));
+		unsupportedActionErrorString(QLatin1String("data"),cmd));
   }/*end switch*/
 }
 

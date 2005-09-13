@@ -367,20 +367,20 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
                                 QLatin1String(". "));
                 }
             	else {
-                    const QString& punct(QString::fromLatin1(" ."));
+                    const QString& punct(QLatin1String(" ."));
                     p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
             	    p->drawText(_tx + fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             } else {
                 if (style()->direction() == LTR) {
-                    const QString& punct(QString::fromLatin1(". "));
+                    const QString& punct(QLatin1String(". "));
                     int itemWidth = fm.width(m_item);
                     int punctWidth = fm.width(punct);
                     p->drawText(_tx-offset/2-punctWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
                     p->drawText(_tx-offset/2-punctWidth-itemWidth, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }
             	else {
-                    const QString& punct(QString::fromLatin1(" ."));
+                    const QString& punct(QLatin1String(" ."));
             	    p->drawText(_tx+offset/2, _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, punct);
                     p->drawText(_tx+offset/2+fm.width(punct), _ty, 0, 0, Qt::AlignLeft|Qt::TextDontClip, m_item);
                 }

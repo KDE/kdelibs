@@ -92,7 +92,7 @@ KMCupsManager::~KMCupsManager()
 
 QString KMCupsManager::driverDbCreationProgram()
 {
-	return QString::fromLatin1("make_driver_db_cups");
+	return QLatin1String("make_driver_db_cups");
 }
 
 QString KMCupsManager::driverDirectory()
@@ -169,7 +169,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		else if (!p->option("requesting-user-name-allowed").isEmpty())
 			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QStringList::split(",",p->option("requesting-user-name-allowed"),false));
 		else
-			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QString::fromLatin1("all"));
+			req.addName(IPP_TAG_PRINTER,"requesting-user-name-allowed",QLatin1String("all"));
 	}
 	req.addText(IPP_TAG_PRINTER,"printer-info",p->description());
 	req.addText(IPP_TAG_PRINTER,"printer-location",p->location());
@@ -316,8 +316,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		// banners
 		req.name("job-sheets-default",values);
 		while (values.count() < 2) values.append("none");
-		p->setOption("kde-banners",values.join(QString::fromLatin1(",")));
-		if (req.name("job-sheets-supported",values)) p->setOption("kde-banners-supported",values.join(QString::fromLatin1(",")));
+		p->setOption("kde-banners",values.join(QLatin1String(",")));
+		if (req.name("job-sheets-supported",values)) p->setOption("kde-banners-supported",values.join(QLatin1String(",")));
 
 		// quotas
 		int	ival;
@@ -363,7 +363,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 	   req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	   req.addMime(IPP_TAG_OPERATION,"document-format","application/postscript");
 	   if (!CupsInfos::self()->login().isEmpty()) req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->login());
-	   req.addName(IPP_TAG_OPERATION,"job-name",QString::fromLatin1("KDE Print Test"));
+	   req.addName(IPP_TAG_OPERATION,"job-name",QLatin1String("KDE Print Test"));
 	   if (req.doFileRequest("/printers/",testpage))
 	   return true;
 	   reportIppError(&req);
@@ -408,7 +408,7 @@ void KMCupsManager::loadServerPrinters()
 			// load default
 			req.init();
 			req.setOperation(CUPS_GET_DEFAULT);
-			req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QString::fromLatin1("printer-name"));
+			req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QLatin1String("printer-name"));
 			if (req.doRequest("/printers/"))
 			{
 				QString	s = QString::null;
@@ -630,7 +630,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 				keyword = line.mid(8,p-8);
 				DrBase *bopt = 0;
 				if ( keyword == "PageRegion" || keyword == "ImageableArea" || keyword == "PaperDimension" )
-					bopt = driver->findOption( QString::fromLatin1( "PageSize" ) );
+					bopt = driver->findOption( QLatin1String( "PageSize" ) );
 				else
 					bopt = driver->findOption( keyword );
 				if (bopt)
@@ -871,7 +871,7 @@ void KMCupsManager::slotConnectionSuccess()
 
 	IppRequest req;
 	req.setOperation( CUPS_GET_PRINTERS );
-	req.addKeyword( IPP_TAG_OPERATION, "requested-attributes", QString::fromLatin1( "printer-name" ) );
+	req.addKeyword( IPP_TAG_OPERATION, "requested-attributes", QLatin1String( "printer-name" ) );
 	if ( req.doRequest( "/printers/" ) )
 		setUpdatePossible( true );
 	else

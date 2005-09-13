@@ -134,7 +134,7 @@ void KGlobal::setActiveInstance(KInstance *i)
 const QString &
 KGlobal::staticQString(const char *str)
 {
-   return staticQString(QString::fromLatin1(str));
+   return staticQString(QLatin1String(str));
 }
 
 class KStringDict : public QSet<QString>

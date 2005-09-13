@@ -43,7 +43,7 @@ namespace KUnitTest
     * @code KUNITTEST_MODULE(kunittest_samplemodule,"TestSuite") @endcode
     */
     #define KUNITTEST_MODULE(library,suite)                                                 \
-    static const QString s_kunittest_suite  = QString::fromLatin1(suite);                   \
+    static const QString s_kunittest_suite  = QLatin1String(suite);                   \
     class library##Module : public QObject                                                  \
     {                                                                                       \
     public:                                                                                 \
@@ -88,7 +88,7 @@ namespace KUnitTest
         tester##ModuleAutoregister()                                                            \
         {                                                                                       \
             KUnitTest::Tester *test = new tester();                                             \
-            QString name = s_kunittest_suite + QString::fromLatin1("::") + QString::fromLocal8Bit(#tester); \
+            QString name = s_kunittest_suite + QLatin1String("::") + QString::fromLocal8Bit(#tester); \
             test->setName(name.local8Bit());                                                    \
             kunittest_registerModuleTester(name.local8Bit(), test );                            \
         }                                                                                       \

@@ -523,7 +523,7 @@ class KMimeMagicUtimeConf
 public:
     KMimeMagicUtimeConf()
     {
-        tmpDirs << QString::fromLatin1("/tmp"); // default value
+        tmpDirs << QLatin1String("/tmp"); // default value
 
         // The trick is that we also don't want the user to override globally set
         // directories. So we have to misuse KStandardDirs :}

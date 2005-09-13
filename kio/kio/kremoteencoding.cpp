@@ -37,13 +37,13 @@ QString KRemoteEncoding::decode(const QByteArray& name) const
 {
 #ifdef CHECK_UTF8
   if (codec->mibEnum() == 106 && !KStringHandler::isUtf8(name))
-    return QString::fromLatin1(name);
+    return QLatin1String(name);
 #endif
 
   QString result = codec->toUnicode(name);
   if (codec->fromUnicode(result) != name)
     // fallback in case of decoding failure
-    return QString::fromLatin1(name);
+    return QLatin1String(name);
 
   return result;
 }

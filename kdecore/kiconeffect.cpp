@@ -146,8 +146,8 @@ QString KIconEffect::fingerprint(int group, int state) const
         cached += ':';
         cached += tmp.setNum(mValue[group][state]);
         cached += ':';
-        cached += mTrans[group][state] ? QString::fromLatin1("trans")
-            : QString::fromLatin1("notrans");
+        cached += mTrans[group][state] ? QLatin1String("trans")
+            : QLatin1String("notrans");
         if (mEffect[group][state] == Colorize || mEffect[group][state] == ToMonochrome)
         {
             cached += ':';

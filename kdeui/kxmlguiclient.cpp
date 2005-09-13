@@ -144,7 +144,7 @@ QString KXMLGUIClient::localXMLFile() const
   if ( !QDir::isRelativePath(d->m_xmlFile) )
       return QString::null; // can't save anything here
 
-  return locateLocal( "data", QString::fromLatin1( instance()->instanceName() + '/' ) + d->m_xmlFile );
+  return locateLocal( "data", QLatin1String( instance()->instanceName() + '/' ) + d->m_xmlFile );
 }
 
 
@@ -179,7 +179,7 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   {
     QString doc;
 
-    QString filter = QString::fromLatin1( instance()->instanceName() + '/' ) + _file;
+    QString filter = QLatin1String( instance()->instanceName() + '/' ) + _file;
 
     QStringList allFiles = instance()->dirs()->findAllResources( "data", filter ) + instance()->dirs()->findAllResources( "data", _file );
 
@@ -700,7 +700,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
       else
       {
         QString f = (*local).file;
-        QString backup = f + QString::fromLatin1( ".backup" );
+        QString backup = f + QLatin1String( ".backup" );
         QDir dir;
         dir.rename( f, backup );
       }

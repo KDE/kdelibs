@@ -1409,7 +1409,7 @@ void KThemeBase::readResourceGroup( int i, QString *pixnames, QString *brdnames,
     // Blend intensity
     tmpStr = prop[ "Blend" ];
     if ( tmpStr.isEmpty() )
-        tmpStr = QString::fromLatin1( "0.0" );
+        tmpStr = QLatin1String( "0.0" );
     blends[ i ] = tmpStr.toFloat();
 
     // Bevel contrast

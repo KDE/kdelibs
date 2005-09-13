@@ -111,8 +111,8 @@ public:
             n++;
             it.current()->savePropertiesInternal(config, n);
         }
-        config->setGroup(QString::fromLatin1("Number"));
-        config->writeEntry(QString::fromLatin1("NumberOfWindows"), n );
+        config->setGroup(QLatin1String("Number"));
+        config->writeEntry(QLatin1String("NumberOfWindows"), n );
         return true;
     }
 
@@ -359,8 +359,8 @@ bool KMainWindow::canBeRestored( int number )
     KConfig *config = kapp->sessionConfig();
     if ( !config )
         return false;
-    config->setGroup( QString::fromLatin1("Number") );
-    int n = config->readNumEntry( QString::fromLatin1("NumberOfWindows") , 1 );
+    config->setGroup( QLatin1String("Number") );
+    int n = config->readNumEntry( QLatin1String("NumberOfWindows") , 1 );
     return number >= 1 && number <= n;
 }
 
@@ -373,12 +373,12 @@ const QString KMainWindow::classNameOfToplevel( int number )
         return QString::null;
     QString s;
     s.setNum( number );
-    s.prepend( QString::fromLatin1("WindowProperties") );
+    s.prepend( QLatin1String("WindowProperties") );
     config->setGroup( s );
-    if ( !config->hasKey( QString::fromLatin1("ClassName") ) )
+    if ( !config->hasKey( QLatin1String("ClassName") ) )
         return QString::null;
     else
-        return config->readEntry( QString::fromLatin1("ClassName") );
+        return config->readEntry( QLatin1String("ClassName") );
 }
 
 void KMainWindow::show()
@@ -699,13 +699,13 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
     QString s;
     s.setNum(number);
-    s.prepend(QString::fromLatin1("WindowProperties"));
+    s.prepend(QLatin1String("WindowProperties"));
     config->setGroup(s);
 
     // store objectName, className, Width and Height  for later restoring
     // (Only useful for session management)
-    config->writeEntry(QString::fromLatin1("ObjectName"), name());
-    config->writeEntry(QString::fromLatin1("ClassName"), className());
+    config->writeEntry(QLatin1String("ObjectName"), name());
+    config->writeEntry(QLatin1String("ClassName"), className());
 
     saveMainWindowSettings(config); // Menubar, statusbar and Toolbar settings.
 
@@ -741,7 +741,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
 
     QMenuBar* mb = internalMenuBar();
     if (mb) {
-       QString MenuBar = QString::fromLatin1("MenuBar");
+       QString MenuBar = QLatin1String("MenuBar");
        if(!config->hasDefault("MenuBar") && !mb->isHidden() )
            config->revertToDefault("MenuBar");
        else
@@ -810,13 +810,13 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     // in order they are in toolbar list
     QString s;
     s.setNum(number);
-    s.prepend(QString::fromLatin1("WindowProperties"));
+    s.prepend(QLatin1String("WindowProperties"));
 
     config->setGroup(s);
 
     // restore the object name (window role)
-    if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
-        setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
+    if ( config->hasKey(QLatin1String("ObjectName" )) )
+        setName( config->readEntry(QLatin1String("ObjectName")).latin1()); // latin1 is right here
 
     applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
 
@@ -940,12 +940,12 @@ void KMainWindow::restoreWindowSize( KConfig * config )
                     config->readNumEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
         if (size.isEmpty()) {
             // try the KDE 2.0 way
-            size = QSize( config->readNumEntry( QString::fromLatin1("Width"), 0 ),
-                          config->readNumEntry( QString::fromLatin1("Height"), 0 ) );
+            size = QSize( config->readNumEntry( QLatin1String("Width"), 0 ),
+                          config->readNumEntry( QLatin1String("Height"), 0 ) );
             if (!size.isEmpty()) {
                 // make sure the other resolutions don't get old settings
-                config->writeEntry( QString::fromLatin1("Width"), 0 );
-                config->writeEntry( QString::fromLatin1("Height"), 0 );
+                config->writeEntry( QLatin1String("Width"), 0 );
+                config->writeEntry( QLatin1String("Height"), 0 );
             }
         }
         if ( !size.isEmpty() ) {

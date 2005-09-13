@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 	break;
 
       case 't':
-	timeout = QString::fromLatin1(optarg).toInt();
+	timeout = QLatin1String(optarg).toInt();
 	break;
       }
 

@@ -27,21 +27,21 @@ QTTEST_KDEMAIN( KStdAccelTest, GUI ) // GUI needed by KAccel
 
 void KStdAccelTest::testShortcutDefault()
 {
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QString::fromLatin1( "Ctrl+Shift+F" ) );
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QString::fromLatin1( "Home" ) );
-    COMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QString::fromLatin1( "End" ) );
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
+    COMPARE( KStdAccel::shortcutDefault( KStdAccel::EndOfLine ).toString(), QLatin1String( "End" ) );
 }
 
 void KStdAccelTest::testName()
 {
-    COMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QString::fromLatin1( "BeginningOfLine" ) );
-    COMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QString::fromLatin1( "EndOfLine" ) );
+    COMPARE( KStdAccel::name( KStdAccel::BeginningOfLine ), QLatin1String( "BeginningOfLine" ) );
+    COMPARE( KStdAccel::name( KStdAccel::EndOfLine ), QLatin1String( "EndOfLine" ) );
 }
 
 void KStdAccelTest::testLabel()
 {
     // Tests run in English, right?
-    COMPARE( KStdAccel::label( KStdAccel::FindNext ), QString::fromLatin1( "Find Next" ) );
+    COMPARE( KStdAccel::label( KStdAccel::FindNext ), QLatin1String( "Find Next" ) );
 }
 
 void KStdAccelTest::testShortcut()

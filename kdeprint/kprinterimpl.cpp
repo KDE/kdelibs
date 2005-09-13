@@ -509,7 +509,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 					       QString::null,
 					       i18n("Convert"),
 					       i18n("Keep"),
-					       QString::fromLatin1("kdeprintAutoConvert"))) == KMessageBox::Yes)
+					       QLatin1String("kdeprintAutoConvert"))) == KMessageBox::Yes)
 			{
 				// find the filter chain
 				QStringList	flist = KXmlCommandManager::self()->autoConvert(mime, primaryMimeType);

@@ -276,7 +276,7 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
     pixS = size;
-    ahem = QString::fromLatin1(name).contains("ahem");
+    ahem = QLatin1String(name).contains("ahem");
     this->name = QLatin1String(name);
 
     MetricsInfo* metrics = grabMetrics(name);

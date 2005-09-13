@@ -617,7 +617,7 @@ QDate KCalendarSystemHebrew::addYears( const QDate & date, int nyears ) const
 // Ok
 QString KCalendarSystemHebrew::calendarName() const
 {
-  return QString::fromLatin1("hebrew");
+  return QLatin1String("hebrew");
 }
 
 // Ok
@@ -643,7 +643,7 @@ QString KCalendarSystemHebrew::dayString(const QDate & pDate, bool bShort) const
   QString sResult;
 
   // Only use hebrew numbers if the hebrew setting is selected
-  if (locale()->language() == QString::fromLatin1("he"))
+  if (locale()->language() == QLatin1String("he"))
     sResult = num2heb(day(pDate), false);
   else
     sResult = KCalendarSystem::dayString(pDate, bShort);
@@ -656,7 +656,7 @@ QString KCalendarSystemHebrew::yearString(const QDate & pDate, bool bShort) cons
   QString sResult;
 
   // Only use hebrew numbers if the hebrew setting is selected
-  if (locale()->language() == QString::fromLatin1("he"))
+  if (locale()->language() == QLatin1String("he"))
     sResult = num2heb(year(pDate), !bShort);
   else
     sResult = KCalendarSystem::yearString(pDate, bShort);

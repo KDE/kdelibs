@@ -170,8 +170,8 @@ void KShortcutDialog::updateShortcutDisplay()
 		this->setFocus();
 	}
 	
-	s[0].replace('&', QString::fromLatin1("&&"));
-	s[1].replace('&', QString::fromLatin1("&&"));
+	s[0].replace('&', QLatin1String("&&"));
+	s[1].replace('&', QLatin1String("&&"));
 
 	m_simple->m_txtShortcut->setText( s[0] );
 	m_adv->m_txtPrimary->setText( s[0] );

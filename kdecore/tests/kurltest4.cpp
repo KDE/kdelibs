@@ -1007,7 +1007,7 @@ void KURLTest::testUtf8()
 
   QUrl utest;
   utest.setScheme( "file" );
-  utest.setPath( QString::fromLatin1( "/home/dfaure/Matériel" ) );
+  utest.setPath( QLatin1String( "/home/dfaure/Matériel" ) );
   printf( "utest.toString()=%s\n", utest.toString().toLatin1().constData() );
   printf( "utest.path()=%s\n", utest.path().toLatin1().constData() );
   printf( "utest.toEncoded()=%s\n", utest.toEncoded().data() );
@@ -1149,16 +1149,16 @@ void KURLTest::testOther()
   check("com2.url()", com2.url(), "http://server.com/dir/blubb/blah/");
 
   KURL utf8_1("audiocd:/By%20Name/15%20Geantra%C3%AE.wav"/*, 106*/);
-  check("utf8_1.fileName()", utf8_1.fileName(), QString::fromLatin1("15 Geantraî.wav"));
+  check("utf8_1.fileName()", utf8_1.fileName(), QLatin1String("15 Geantraî.wav"));
 
   KURL utf8_2("audiocd:/By%20Name/15%2fGeantra%C3%AE.wav"/*, 106*/);
-  check("utf8_2.fileName()", utf8_2.fileName(), QString::fromLatin1("15/Geantraî.wav"));
+  check("utf8_2.fileName()", utf8_2.fileName(), QLatin1String("15/Geantraî.wav"));
 
   KURL url_newline_1("http://www.foo.bar/foo/bar\ngnork");
-  check("url_newline_1.url()", url_newline_1.url(), QString::fromLatin1("http://www.foo.bar/foo/bar%0Agnork"));
+  check("url_newline_1.url()", url_newline_1.url(), QLatin1String("http://www.foo.bar/foo/bar%0Agnork"));
 
   KURL url_newline_2("http://www.foo.bar/foo?bar\ngnork");
-  check("url_newline_2.url()", url_newline_2.url(), QString::fromLatin1("http://www.foo.bar/foo?bar%0Agnork"));
+  check("url_newline_2.url()", url_newline_2.url(), QLatin1String("http://www.foo.bar/foo?bar%0Agnork"));
 
   KURL local_file_1("file://localhost/my/file");
   check("local_file_1.isLocalFile()", local_file_1.isLocalFile() ? "true" : "false", "true");

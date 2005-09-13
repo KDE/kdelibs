@@ -75,7 +75,7 @@ QString KMJob::pixmap()
 {
 	// special case
 	if (m_type == KMJob::Threaded)
-		return QString::fromLatin1("exec");
+		return QLatin1String("exec");
 
 	// normal case
 	QString	str("kdeprint_job");

@@ -181,7 +181,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
                                     objId(), "terminateKDE()", false );
 
    QString prefix = locateLocal("socket", "klauncher");
-   KTempFile domainname(prefix, QString::fromLatin1(".slave-socket"));
+   KTempFile domainname(prefix, QLatin1String(".slave-socket"));
    if (domainname.status() != 0)
    {
       // Sever error!

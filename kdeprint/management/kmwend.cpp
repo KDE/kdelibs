@@ -42,7 +42,7 @@ KMWEnd::KMWEnd(QWidget *parent)
 void KMWEnd::initPrinter(KMPrinter *p)
 {
 	QString	txt;
-	QString	s(QString::fromLatin1("<li><u>%1</u>: %2</li>"));
+	QString	s(QLatin1String("<li><u>%1</u>: %2</li>"));
 	int	ID = p->option("kde-backend").toInt();
 
 	// general information
@@ -58,7 +58,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 		// class members
 		txt.append(QString::fromLatin1("<b>%1</b><ul type=circle>").arg(i18n("Members")));
 		QStringList	m(p->members());
-		QString		s1(QString::fromLatin1("<li>%1</li>"));
+		QString		s1(QLatin1String("<li>%1</li>"));
 		for (QStringList::ConstIterator it=m.begin(); it!=m.end(); ++it)
 			txt.append(s1.arg(*it));
 		txt.append("</ul><br>");

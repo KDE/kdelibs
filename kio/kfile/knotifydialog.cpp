@@ -145,7 +145,7 @@ KNotifyDialog::~KNotifyDialog()
 void KNotifyDialog::addApplicationEvents( const char *appName )
 {
     addApplicationEvents( QString::fromUtf8( appName ) +
-                          QString::fromLatin1( "/eventsrc" ) );
+                          QLatin1String( "/eventsrc" ) );
 }
 
 void KNotifyDialog::addApplicationEvents( const QString& path )
@@ -999,10 +999,10 @@ Application::Application( const QString &path )
     m_events = 0L;
     config = new KConfig(config_file, false, false);
     kc = new KConfig(path, true, false, "data");
-    kc->setGroup( QString::fromLatin1("!Global!") );
-    m_icon = kc->readEntry(QString::fromLatin1("IconName"),
-                           QString::fromLatin1("misc"));
-    m_description = kc->readEntry( QString::fromLatin1("Comment"),
+    kc->setGroup( QLatin1String("!Global!") );
+    m_icon = kc->readEntry(QLatin1String("IconName"),
+                           QLatin1String("misc"));
+    m_description = kc->readEntry( QLatin1String("Comment"),
                                    i18n("No description available") );
 
     int index = path.find( '/' );
@@ -1064,10 +1064,10 @@ void Application::reloadEvents( bool revertToDefaults )
 
     Event *e = 0L;
 
-    QString global = QString::fromLatin1("!Global!");
-    QString default_group = QString::fromLatin1("<default>");
-    QString name = QString::fromLatin1("Name");
-    QString comment = QString::fromLatin1("Comment");
+    QString global = QLatin1String("!Global!");
+    QString default_group = QLatin1String("<default>");
+    QString name = QLatin1String("Name");
+    QString comment = QLatin1String("Comment");
 
     QStringList conflist = kc->groupList();
     QStringList::ConstIterator it = conflist.begin();

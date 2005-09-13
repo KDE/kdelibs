@@ -966,7 +966,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
         if ( KGlobal::instance()->aboutData() )
             appName = KGlobal::instance()->aboutData()->programName();
         if ( appName.isEmpty() )
-            appName = QString::fromLatin1( KGlobal::instance()->instanceName() );
+            appName = QLatin1String( KGlobal::instance()->instanceName() );
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)").arg( appName ), box );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(                         i18n("<qt>Select this setting if you want this "

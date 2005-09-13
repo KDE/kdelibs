@@ -65,7 +65,7 @@ void KPlayObject::halt()
 
 QString KPlayObject::description()
 {
-	return QString::fromLatin1(object().description().c_str());
+	return QLatin1String(object().description().c_str());
 }
 
 Arts::poTime KPlayObject::currentTime()
@@ -85,7 +85,7 @@ Arts::poCapabilities KPlayObject::capabilities()
 
 QString KPlayObject::mediaName()
 {
-	return QString::fromLatin1(object().mediaName().c_str());
+	return QLatin1String(object().mediaName().c_str());
 }
 
 Arts::poState KPlayObject::state()
@@ -243,7 +243,7 @@ QString KDE::PlayObject::description()
 {
 	if ( object().isNull() )
 		return QString();
-	return QString::fromLatin1(object().description().c_str());
+	return QLatin1String(object().description().c_str());
 }
 
 Arts::poTime KDE::PlayObject::currentTime()
@@ -271,7 +271,7 @@ QString KDE::PlayObject::mediaName()
 {
 	if ( object().isNull() )
 		return QString();
-	return QString::fromLatin1(object().mediaName().c_str());
+	return QLatin1String(object().mediaName().c_str());
 }
 
 Arts::poState KDE::PlayObject::state()

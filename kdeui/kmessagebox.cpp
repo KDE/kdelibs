@@ -344,7 +344,7 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
                                 ButtonCode &result)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+    QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     QString dontAsk = config->readEntry(dontShowAgainName).lower();
@@ -363,7 +363,7 @@ bool
 KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+    QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     return config->readBoolEntry(dontShowAgainName,  true);
@@ -374,7 +374,7 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                     ButtonCode result)
 {
     if ( dontShowAgainName.isEmpty() ) return;
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+    QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, result==Yes ? "yes" : "no", true, (dontShowAgainName[0] == ':'));
@@ -385,7 +385,7 @@ void
 KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
 {
     if ( dontShowAgainName.isEmpty() ) return;
-    QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+    QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
     config->writeEntry( dontShowAgainName, false, true, (dontShowAgainName[0] == ':'));
@@ -938,7 +938,7 @@ void
 KMessageBox::enableAllMessages()
 {
    KConfig *config = againConfig ? againConfig : KGlobal::config();
-   QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+   QString grpNotifMsgs = QLatin1String("Notification Messages");
    if (!config->hasGroup(grpNotifMsgs))
       return;
 
@@ -958,7 +958,7 @@ void
 KMessageBox::enableMessage(const QString &dontShowAgainName)
 {
    KConfig *config = againConfig ? againConfig : KGlobal::config();
-   QString grpNotifMsgs = QString::fromLatin1("Notification Messages");
+   QString grpNotifMsgs = QLatin1String("Notification Messages");
    if (!config->hasGroup(grpNotifMsgs))
       return;
 

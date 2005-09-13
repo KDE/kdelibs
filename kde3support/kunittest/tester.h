@@ -356,7 +356,7 @@ using namespace std;
  *
  * @code SKIP("Test skipped because of lack of foo support."); @endcode
  */
-#define SKIP( x ) skip( __FILE__, __LINE__, QString::fromLatin1(#x))
+#define SKIP( x ) skip( __FILE__, __LINE__, QLatin1String(#x))
 
 /*!
  * An macro testing that @p expression throws an exception that is catched

@@ -19,7 +19,7 @@
 # 2. First you put shell like argument:
 # "string with spaces" 4 string_without_spaces
 # Then you should put c++ style arguments: 
-# QString::fromLatin1("string with spaces"),4,"string_with_spaces"
+# QLatin1String("string with spaces"),4,"string_with_spaces"
 #
 # Note that the first argument has type QString and the last type const char*
 # (adapt accordingly)
@@ -29,7 +29,7 @@ QString
 url
 ()
 {
-return QString::fromLatin1( "http://www.kde.org/");
+return QLatin1String( "http://www.kde.org/");
 }
 -
 
@@ -63,7 +63,7 @@ identity
 {
 	return x;
 }
-"test";QString::fromLatin1("test")
+"test";QLatin1String("test")
 
 // 2.3 unsigned long int
 unsigned long int

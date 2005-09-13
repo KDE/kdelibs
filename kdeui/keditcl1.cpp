@@ -161,7 +161,7 @@ KEdit::cleanWhiteSpace()
       if (line.isEmpty())
       {
          if (addSpace)
-            newText += QString::fromLatin1("\n\n");
+            newText += QLatin1String("\n\n");
          if (firstLine)
          {
             if (firstChar.isSpace())

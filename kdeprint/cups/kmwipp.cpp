@@ -41,7 +41,7 @@ KMWIpp::KMWIpp(QWidget *parent)
 		     "before continuing.</p>"));
 	setLabel(0,i18n("Host:"));
 	setLabel(1,i18n("Port:"));
-	setText( 1, QString::fromLatin1( "631" ) );
+	setText( 1, QLatin1String( "631" ) );
 }
 
 bool KMWIpp::isValid(QString& msg)

@@ -105,7 +105,7 @@ void KMDriverDbWidget::setDriver(const QString& manu, const QString& model)
 			// try by stripping the manufacturer name from
 			// the beginning of the model string. This is
 			// often the case with PPD files
-			item = m_model->findItem(model_.replace(0,manu.length()+1,QString::fromLatin1("")));
+			item = m_model->findItem(model_.replace(0,manu.length()+1,QLatin1String("")));
 		if (item)
 			m_model->setCurrentItem(item);
 	}

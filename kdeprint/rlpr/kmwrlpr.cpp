@@ -53,7 +53,7 @@ KMWRlpr::KMWRlpr(QWidget *parent)
 	m_view = new KListView(this);
 	m_view->setFrameStyle(Q3Frame::WinPanel|Q3Frame::Sunken);
 	m_view->setLineWidth(1);
-	m_view->addColumn(QString::fromLatin1(""));
+	m_view->addColumn(QLatin1String(""));
 	m_view->header()->hide();
 	m_view->setRootIsDecorated(true);
 	m_view->setSorting(0);

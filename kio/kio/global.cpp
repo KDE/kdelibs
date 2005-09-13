@@ -89,7 +89,7 @@ KIO_EXPORT QString KIO::number( KIO::filesize_t size )
 {
     char charbuf[256];
     sprintf(charbuf, "%lld", size);
-    return QString::fromLatin1(charbuf);
+    return QLatin1String(charbuf);
 }
 
 KIO_EXPORT unsigned int KIO::calculateRemainingSeconds( KIO::filesize_t totalSize,
@@ -276,7 +276,7 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
       result = i18n( "Could not create socket for accessing %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_CONNECT:
-      result = i18n( "Could not connect to host %1." ).arg( errorText.isEmpty() ? QString::fromLatin1("localhost") : errorText );
+      result = i18n( "Could not connect to host %1." ).arg( errorText.isEmpty() ? QLatin1String("localhost") : errorText );
       break;
     case  KIO::ERR_CONNECTION_BROKEN:
       result = i18n( "Connection to host %1 is broken." ).arg( errorText );
@@ -470,12 +470,12 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
                                                 false );
 
   ret << errorName;
-  ret << QString::fromLatin1( "<qt><p><b>" ) + errorName +
-         QString::fromLatin1( "</b></p><p>" ) + description +
-         QString::fromLatin1( "</p>" );
-  ret2 = QString::fromLatin1( "<qt><p>" );
+  ret << QLatin1String( "<qt><p><b>" ) + errorName +
+         QLatin1String( "</b></p><p>" ) + description +
+         QLatin1String( "</p>" );
+  ret2 = QLatin1String( "<qt><p>" );
   if ( !techName.isEmpty() )
-    ret2 += i18n( "<b>Technical reason</b>: " ) + techName + QString::fromLatin1( "</p>" );
+    ret2 += i18n( "<b>Technical reason</b>: " ) + techName + QLatin1String( "</p>" );
   ret2 += i18n( "</p><p><b>Details of the request</b>:" );
   ret2 += i18n( "</p><ul><li>URL: %1</li>" ).arg( url );
   if ( !protocol.isEmpty() ) {
@@ -486,12 +486,12 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KURL *reqUrl /*= 0L
   if ( !causes.isEmpty() ) {
     ret2 += i18n( "<p><b>Possible causes</b>:</p><ul><li>" );
     ret2 += causes.join( "</li><li>" );
-    ret2 += QString::fromLatin1( "</li></ul>" );
+    ret2 += QLatin1String( "</li></ul>" );
   }
   if ( !solutions.isEmpty() ) {
     ret2 += i18n( "<p><b>Possible solutions</b>:</p><ul><li>" );
     ret2 += solutions.join( "</li><li>" );
-    ret2 += QString::fromLatin1( "</li></ul>" );
+    ret2 += QLatin1String( "</li></ul>" );
   }
   ret << ret2;
   return ret;
@@ -1718,7 +1718,7 @@ static QString get_mount_info(const QString& filename,
         if ( is_my_mountpoint( mounted[i].f_mntonname, realname, max ) )
         {
             mountPoint = QFile::decodeName(mounted[i].f_mntonname);
-            fstype = QString::fromLatin1(mounttype);
+            fstype = QLatin1String(mounttype);
             check_mount_point( mounttype, mounted[i].f_mntfromname,
                                isautofs, isslow );
             // keep going, looking for a potentially better one
@@ -1785,7 +1785,7 @@ static QString get_mount_info(const QString& filename,
             if ( is_my_mountpoint( mountedto, realname, max ) )
             {
                 mountPoint = QFile::decodeName(mountedto);
-                fstype = QString::fromLatin1(ent->vfsent_name);
+                fstype = QLatin1String(ent->vfsent_name);
                 check_mount_point(ent->vfsent_name, device_name, isautofs, isslow);
 
                 if (ismanual == Unseen)

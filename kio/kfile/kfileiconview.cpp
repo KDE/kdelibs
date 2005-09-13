@@ -71,8 +71,8 @@ public:
 				      parent->actionCollection(),
 				      "large rows" );
 
-	smallColumns->setExclusiveGroup(QString::fromLatin1("IconView mode"));
-	largeRows->setExclusiveGroup(QString::fromLatin1("IconView mode"));
+	smallColumns->setExclusiveGroup(QLatin1String("IconView mode"));
+	largeRows->setExclusiveGroup(QLatin1String("IconView mode"));
 
         previews = new KToggleAction( i18n("Thumbnail Previews"), 0,
                                       parent->actionCollection(),
@@ -192,7 +192,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 {
     QString gr = group.isEmpty() ? QString("KFileIconView") : group;
     KConfigGroupSaver cs( kc, gr );
-    QString small = QString::fromLatin1("SmallColumns");
+    QString small = QLatin1String("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", DEFAULT_PREVIEW_SIZE );
     d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
 
@@ -215,8 +215,8 @@ void KFileIconView::writeConfig( KConfig *kc, const QString& group )
     KConfigGroupSaver cs( kc, gr );
 
     QString viewMode =  d->smallColumns->isChecked() ?
-        QString::fromLatin1("SmallColumns") :
-        QString::fromLatin1("LargeRows");
+        QLatin1String("SmallColumns") :
+        QLatin1String("LargeRows");
     if(!kc->hasDefault( "ViewMode" ) && viewMode == DEFAULT_VIEW_MODE )
         kc->revertToDefault( "ViewMode" );
     else

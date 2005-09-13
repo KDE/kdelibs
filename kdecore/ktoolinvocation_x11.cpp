@@ -295,10 +295,10 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
    QString command = config.readPathEntry("EmailClient");
 
    QString to, cc, bcc;
-   if (command.isEmpty() || command == QString::fromLatin1("kmail")
+   if (command.isEmpty() || command == QLatin1String("kmail")
        || command.endsWith("/kmail"))
    {
-     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
+     command = QLatin1String("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
      if ( !_to.isEmpty() )
      {
        // put the whole address lists into RFC2047 encoded blobs; technically

@@ -53,7 +53,7 @@ void GsChecker::loadDriverList()
 				else
 					buffer.append(line).append(" ");
 			}
-			else if (line.startsWith(QString::fromLatin1("Available devices:")))
+			else if (line.startsWith(QLatin1String("Available devices:")))
 				ok = true;
 		}
 		m_driverlist = QStringList::split(' ',buffer,false);

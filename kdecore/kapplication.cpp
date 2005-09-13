@@ -769,7 +769,7 @@ void KApplication::init(bool GUIenabled)
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
-                                   + QString::fromLatin1(name()) + '/');
+                                   + QLatin1String(name()) + '/');
   pSessionConfig = 0L;
   bSessionManagement = true;
 
@@ -1179,9 +1179,9 @@ void KApplication::startKdeinit()
 {
 #ifndef Q_WS_WIN //TODO
   // Try to launch kdeinit.
-  QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit"));
   if (srv.isEmpty())
-     srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
+     srv = KStandardDirs::findExe(QLatin1String("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
   if (srv.isEmpty())
      return;
   if (kapp && (Tty != kapp->type()))

@@ -336,8 +336,8 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     setSizeIsRelative( *sizeIsRelativeState );
 
   KConfig *config = KGlobal::config();
-  KConfigGroupSaver saver(config, QString::fromLatin1("General"));
-  showXLFDArea(config->readBoolEntry(QString::fromLatin1("fontSelectorShowXLFD"), false));
+  KConfigGroupSaver saver(config, QLatin1String("General"));
+  showXLFDArea(config->readBoolEntry(QLatin1String("fontSelectorShowXLFD"), false));
 }
 
 KFontChooser::~KFontChooser()
@@ -686,13 +686,13 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
   if ( !ptr )
     return;
 
-  QString font = QString::fromLatin1(ptr + 1);
+  QString font = QLatin1String(ptr + 1);
 
   int pos;
   if ( ( pos = font.find( '-' ) ) > 0 ) {
     font.truncate( pos );
 
-    if ( font.find( QString::fromLatin1("open look"), 0, false ) >= 0 )
+    if ( font.find( QLatin1String("open look"), 0, false ) >= 0 )
       return;
 
     QStringList::Iterator it = list.begin();

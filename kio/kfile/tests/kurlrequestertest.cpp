@@ -10,7 +10,7 @@ int main( int argc, char **argv )
     qDebug( "Selected url: %s", url.url().latin1());
 
     KURLRequester *req = new KURLRequester();
-    KEditListBox *el = new KEditListBox( QString::fromLatin1("Test"), req->customEditor() );
+    KEditListBox *el = new KEditListBox( QLatin1String("Test"), req->customEditor() );
     el->show();
     return app.exec();
 }

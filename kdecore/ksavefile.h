@@ -140,7 +140,7 @@ public:
      */
    static bool backupFile( const QString& filename,
                            const QString& backupDir = QString::null,
-                           const QString& backupExtension = QString::fromLatin1( "~" ) );
+                           const QString& backupExtension = QLatin1String( "~" ) );
 
 private:
    QString mFileName;

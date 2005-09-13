@@ -109,7 +109,7 @@ static KLibFactory* componentFactory()
 {
 	kdDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
-	KTrader::OfferList	offers = KTrader::self()->query(QString::fromLatin1("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString::null, QString::null);
+	KTrader::OfferList	offers = KTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString::null, QString::null);
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;

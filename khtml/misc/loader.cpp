@@ -214,7 +214,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     : CachedObject(url, CSSStyleSheet, _cachePolicy, 0)
 {
     // Set the type we want (probably css or xml)
-    QString ah = QString::fromLatin1( accept );
+    QString ah = QLatin1String( accept );
     if ( !ah.isEmpty() )
         ah += ",";
     ah += "*/*;q=0.1";

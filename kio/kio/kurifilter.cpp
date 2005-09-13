@@ -160,30 +160,30 @@ QString KURIFilterData::iconName()
                 QString exeName = m_pURI.url();
                 exeName = exeName.mid( exeName.findRev( '/' ) + 1 ); // strip path if given
                 KService::Ptr service = KService::serviceByDesktopName( exeName );
-                if (service && service->icon() != QString::fromLatin1( "unknown" ))
+                if (service && service->icon() != QLatin1String( "unknown" ))
                     m_strIconName = service->icon();
                 // Try to find an icon with the same name as the binary (useful for non-kde apps)
                 else if ( !KGlobal::iconLoader()->loadIcon( exeName, KIcon::NoGroup, 16, KIcon::DefaultState, 0, true ).isNull() )
                     m_strIconName = exeName;
                 else
                     // not found, use default
-                    m_strIconName = QString::fromLatin1("exec");
+                    m_strIconName = QLatin1String("exec");
                 break;
             }
             case KURIFilterData::HELP:
             {
-                m_strIconName = QString::fromLatin1("khelpcenter");
+                m_strIconName = QLatin1String("khelpcenter");
                 break;
             }
             case KURIFilterData::SHELL:
             {
-                m_strIconName = QString::fromLatin1("konsole");
+                m_strIconName = QLatin1String("konsole");
                 break;
             }
             case KURIFilterData::ERROR:
             case KURIFilterData::BLOCKED:
             {
-                m_strIconName = QString::fromLatin1("error");
+                m_strIconName = QLatin1String("error");
                 break;
             }
             default:

@@ -368,7 +368,7 @@ QString KMFactory::autoDetect()
 			currentPrecedence = plugins[i].detectPrecedence;
 		}
 	}
-	return (pluginIndex == -1 ? QString::fromLatin1("lpdunix") : plugins[pluginIndex].name);
+	return (pluginIndex == -1 ? QLatin1String("lpdunix") : plugins[pluginIndex].name);
 }
 
 void KMFactory::slot_pluginChanged(pid_t pid)

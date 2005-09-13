@@ -238,7 +238,7 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
 
    if (useKDEGlobals)
       mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
-	      QString::fromLatin1("kdeglobals");
+	      QLatin1String("kdeglobals");
    else
       mGlobalFileName = QString::null;
 
@@ -329,19 +329,19 @@ bool KConfigINIBackEnd::parseConfigFiles()
   // Parse the general config files
   if (useKDEGlobals) {
     QStringList kdercs = KGlobal::dirs()->
-      findAllResources("config", QString::fromLatin1("kdeglobals"));
+      findAllResources("config", QLatin1String("kdeglobals"));
 
 #ifdef Q_WS_WIN
     QString etc_kderc = QFile::decodeName( QByteArray(getenv("WINDIR")) + "\\kderc" );
 #else
-    QString etc_kderc = QString::fromLatin1("/etc/kderc");
+    QString etc_kderc = QLatin1String("/etc/kderc");
 #endif
 
     if (checkAccess(etc_kderc, R_OK))
       kdercs += etc_kderc;
 
     kdercs += KGlobal::dirs()->
-      findAllResources("config", QString::fromLatin1("system.kdeglobals"));
+      findAllResources("config", QLatin1String("system.kdeglobals"));
 
     QListIterator<QString> it( kdercs );
     it.toBack();

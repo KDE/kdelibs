@@ -779,7 +779,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
                                                       DCOPAuthCount,
                                                       const_cast<char **>(DCOPAuthNames),
                                                       DCOPClientAuthProcs, 0L)) < 0) {
-        emit attachFailed(QString::fromLatin1( "Communications could not be established." ));
+        emit attachFailed(QLatin1String( "Communications could not be established." ));
         return false;
     }
 
@@ -794,7 +794,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             QString fName = dcopServerFile();
             QFile f(fName);
             if (!f.open(QIODevice::ReadOnly)) {
-                emit attachFailed(QString::fromLatin1( "Could not read network connection list.\n" )+fName);
+                emit attachFailed(QLatin1String( "Could not read network connection list.\n" )+fName);
                 return false;
             }
             int size = qMin( qint64(1024), f.size() ); // protection against a huge file
@@ -809,13 +809,13 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             if ( pos == -1 ) // Shouldn't happen
             {
                 qDebug("Only one line in dcopserver file !: %s", contents.data());
-                dcopSrv = QString::fromLatin1(contents);
+                dcopSrv = QLatin1String(contents);
             }
             else
             {
 				if(contents[pos - 1] == '\r')	// check for windows end of line
 					pos--;
-                dcopSrv = QString::fromLatin1(contents.left( pos ));
+                dcopSrv = QLatin1String(contents.left( pos ));
 //#ifndef NDEBUG
 //                qDebug("dcopserver address: %s", dcopSrv.latin1());
 //#endif
@@ -834,7 +834,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
            delete [] d->serverAddr;
            d->serverAddr = 0;
         }
-        emit attachFailed(QString::fromLatin1( errBuf ));
+        emit attachFailed(QLatin1String( errBuf ));
         return false;
     }
 
@@ -859,7 +859,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             delete [] d->serverAddr;
             d->serverAddr = 0;
         }
-        emit attachFailed(QString::fromLatin1( errBuf ));
+        emit attachFailed(QLatin1String( errBuf ));
         return false;
     } else if (setupstat == IceProtocolAlreadyActive) {
         if (bClearServerAddr) {
@@ -867,7 +867,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             d->serverAddr = 0;
         }
         /* should not happen because 3rd arg to IceOpenConnection was 0. */
-        emit attachFailed(QString::fromLatin1( "internal error in IceOpenConnection" ));
+        emit attachFailed(QLatin1String( "internal error in IceOpenConnection" ));
         return false;
     }
 
@@ -877,7 +877,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
             delete [] d->serverAddr;
             d->serverAddr = 0;
         }
-        emit attachFailed(QString::fromLatin1( "DCOP server did not accept the connection." ));
+        emit attachFailed(QLatin1String( "DCOP server did not accept the connection." ));
         return false;
     }
 

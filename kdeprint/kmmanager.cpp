@@ -269,7 +269,7 @@ Q3PtrList<KMPrinter>* KMManager::printerList(bool reload)
 		//   - use the PRINTER variable
 		if (!softDefault())
 		{
-			KMPrinter	*defprinter = findPrinter(QString::fromLatin1(getenv("PRINTER")));
+			KMPrinter	*defprinter = findPrinter(QLatin1String(getenv("PRINTER")));
 			if (defprinter)
 				setSoftDefault(defprinter);
 		}

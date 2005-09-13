@@ -27,7 +27,7 @@
 
 
 KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
-  :KAboutDialog( KAboutDialog::AbtKDEStandard, QString::fromLatin1("KDE"),
+  :KAboutDialog( KAboutDialog::AbtKDEStandard, QLatin1String("KDE"),
 		 KDialogBase::Help|KDialogBase::Close, KDialogBase::Close,
 		 parent, name, modal )
 {
@@ -77,13 +77,13 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "donation, using one of the ways described at "
     "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
     "<br><br>Thank you very much in advance for your support.");
-  setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
+  setHelp( QLatin1String("khelpcenter/main.html"), QString::null );
   setTitle(i18n("K Desktop Environment. Release %1").
-	   arg(QString::fromLatin1(KDE_VERSION_STRING)) );
+	   arg(QLatin1String(KDE_VERSION_STRING)) );
   addTextPage( i18n("About KDE","&About"), text1, true );
   addTextPage( i18n("&Report Bugs or Wishes"), text2, true );
   addTextPage( i18n("&Join the KDE Team"), text3, true );
   addTextPage( i18n("&Support KDE"), text4, true );
-  setImage( locate( "data", QString::fromLatin1("kdeui/pics/aboutkde.png")) );
+  setImage( locate( "data", QLatin1String("kdeui/pics/aboutkde.png")) );
   setImageBackgroundColor( Qt::white );
 }

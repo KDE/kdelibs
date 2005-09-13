@@ -138,12 +138,12 @@ KLanguageButton::~KLanguageButton()
 void KLanguageButton::insertLanguage( const QString& path, const QString& name,
                         const QString&, const QString &submenu, int index )
 {
-  QString output = name + QString::fromLatin1( " (" ) + path +
-                   QString::fromLatin1( ")" );
+  QString output = name + QLatin1String( " (" ) + path +
+                   QLatin1String( ")" );
 #if 0
   // Nooooo ! Country != language
   QPixmap flag( locate( "locale", sub + path +
-                QString::fromLatin1( "/flag.png" ) ) );
+                QLatin1String( "/flag.png" ) ) );
 #endif
   insertItem( output, path, submenu, index );
 }

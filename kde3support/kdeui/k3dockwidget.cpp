@@ -2101,7 +2101,7 @@ static QDomElement createStringEntry(QDomDocument &doc, const QString &tagName, 
 
 static QDomElement createBoolEntry(QDomDocument &doc, const QString &tagName, bool b)
 {
-    return createStringEntry(doc, tagName, QString::fromLatin1(b? "true" : "false"));
+    return createStringEntry(doc, tagName, QLatin1String(b? "true" : "false"));
 }
 
 
@@ -2210,7 +2210,7 @@ void K3DockManager::writeConfig(QDomElement &base)
     {
         K3DockWidget* dw = (K3DockWidget*) o;
         if ( dw->parent() == main )
-            mainWidgetStr = QString::fromLatin1(dw->name());
+            mainWidgetStr = QLatin1String(dw->name());
         nList.append(dw->name());
     }
 
@@ -2274,7 +2274,7 @@ void K3DockManager::writeConfig(QDomElement &base)
             }
         }
 
-        groupEl.appendChild(createStringEntry(doc, "name", QString::fromLatin1(obj->name())));
+        groupEl.appendChild(createStringEntry(doc, "name", QLatin1String(obj->name())));
         groupEl.appendChild(createBoolEntry(doc, "hasParent", obj->parent()));
         if ( !obj->parent() ) {
             groupEl.appendChild(createRectEntry(doc, "geometry", QRect(main->frameGeometry().topLeft(), main->size())));

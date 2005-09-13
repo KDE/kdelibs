@@ -68,7 +68,7 @@ QString Plugin::xmlFile() const
     if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = locate( "data", QString::fromLatin1( d->m_parentInstance->instanceName() ) + '/' + path );
+    QString absPath = locate( "data", QLatin1String( d->m_parentInstance->instanceName() ) + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -80,7 +80,7 @@ QString Plugin::localXMLFile() const
     if ( !d->m_parentInstance || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = locateLocal( "data", QString::fromLatin1( d->m_parentInstance->instanceName() ) + '/' + path );
+    QString absPath = locateLocal( "data", QLatin1String( d->m_parentInstance->instanceName() ) + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -104,7 +104,7 @@ Q3ValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance 
   for (; pIt != pEnd; ++pIt )
   {
       QFileInfo fInfo( *pIt );
-      if ( fInfo.extension() == QString::fromLatin1( "desktop" ) )
+      if ( fInfo.extension() == QLatin1String( "desktop" ) )
           continue;
 
       QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );

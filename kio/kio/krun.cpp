@@ -332,7 +332,7 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
          subst( option, *it, ret );
       break;
    case '%':
-      ret = QStringList(QString::fromLatin1("%"));
+      ret = QStringList(QLatin1String("%"));
       break;
    default:
       return -2; // subst with same and skip

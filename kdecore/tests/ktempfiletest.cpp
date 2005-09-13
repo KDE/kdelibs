@@ -50,7 +50,7 @@ void KTempFileTest::testFixedExtension()
     KTempFile f2(QString::null, ".ps");
     f2.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f2.name()));
-    COMPARE( f2.name().right(3), QString::fromLatin1(".ps") );
+    COMPARE( f2.name().right(3), QLatin1String(".ps") );
 }
 
 void KTempFileTest::testHomeDir()
@@ -61,7 +61,7 @@ void KTempFileTest::testHomeDir()
     f3.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f3.name()));
     COMPARE( f3.name().left( home.length() ), home );
-    COMPARE( f3.name().right(6), QString::fromLatin1( ".myEXT" ) );
+    COMPARE( f3.name().right(6), QLatin1String( ".myEXT" ) );
 }
 
 //QString name = locateLocal("socket", "test");

@@ -87,7 +87,7 @@ void KFileShare::readConfig() // static
 {    
     // Create KFileSharePrivate instance
     KFileSharePrivate::self();
-    KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
+    KSimpleConfig config(QLatin1String(FILESHARECONF),true);
     
     s_sharingEnabled = config.readEntry("FILESHARING", "yes") == "yes";
     s_restricted = config.readEntry("RESTRICT", "yes") == "yes";
@@ -222,7 +222,7 @@ KFileShare::Authorization KFileShare::authorization()
 QString KFileShare::findExe( const char* exeName )
 {
    // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
-   QString path = QString::fromLocal8Bit(getenv("PATH")) + QString::fromLatin1(":/usr/sbin");
+   QString path = QString::fromLocal8Bit(getenv("PATH")) + QLatin1String(":/usr/sbin");
    QString exe = KStandardDirs::findExe( exeName, path );
    if (exe.isEmpty())
        kdError() << exeName << " not found in " << path << endl;

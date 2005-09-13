@@ -368,7 +368,7 @@ bool NetAccess::mkdirInternal( const KURL & url, int permissions,
 QString NetAccess::mimetypeInternal( const KURL & url, QWidget* window )
 {
   bJobOK = true; // success unless further error occurs
-  m_mimetype = QString::fromLatin1("unknown");
+  m_mimetype = QLatin1String("unknown");
   KIO::Job * job = KIO::mimetype( url );
   job->setWindow (window);
   connect( job, SIGNAL( result (KIO::Job *) ),

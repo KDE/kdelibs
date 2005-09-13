@@ -374,7 +374,7 @@ KArchiveDirectory * KArchive::rootDir()
         QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
         QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
 
-        d->rootDir = new KArchiveDirectory( this, QString::fromLatin1("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
+        d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString::null );
     }
     return d->rootDir;
 }

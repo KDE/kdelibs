@@ -37,7 +37,7 @@
 #include "ksimpleconfig.h"
 
 KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly)
-  : KConfig(QString::fromLatin1(""), bReadOnly, false)
+  : KConfig(QLatin1String(""), bReadOnly, false)
 {
   // the difference between KConfig and KSimpleConfig is just that
   // for KSimpleConfig an absolute filename is guaranteed

@@ -13,14 +13,14 @@ int main( int argc, char **argv )
 
 
     KEditListBox::CustomEditor editor( new KComboBox( true, 0 ) );
-    KEditListBox *box = new KEditListBox( QString::fromLatin1("KEditListBox"),
+    KEditListBox *box = new KEditListBox( QLatin1String("KEditListBox"),
                                           editor );
 
-    box->insertItem( QString::fromLatin1("Test") );
-    box->insertItem( QString::fromLatin1("for") );
-    box->insertItem( QString::fromLatin1("this") );
-    box->insertItem( QString::fromLatin1("KEditListBox") );
-    box->insertItem( QString::fromLatin1("Widget") );
+    box->insertItem( QLatin1String("Test") );
+    box->insertItem( QLatin1String("for") );
+    box->insertItem( QLatin1String("this") );
+    box->insertItem( QLatin1String("KEditListBox") );
+    box->insertItem( QLatin1String("Widget") );
     box->show();
 
     return app.exec();

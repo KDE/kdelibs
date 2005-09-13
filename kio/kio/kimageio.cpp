@@ -232,7 +232,7 @@ KImageIOFactory::createPattern( KImageIO::Mode _mode)
   patterns.sort();
   patterns.prepend(allPatterns);
 
-  QString pattern = patterns.join(QString::fromLatin1("\n"));
+  QString pattern = patterns.join(QLatin1String("\n"));
   return pattern;
 }
 

@@ -738,7 +738,7 @@ public:
    * @return the encoded string
    */
   static KDE_DEPRECATED QString encode_string(const QString &str) {
-      return QString::fromLatin1( QUrl::toPercentEncoding( str ) );
+      return QLatin1String( QUrl::toPercentEncoding( str ) );
   }
 
   /**
@@ -750,7 +750,7 @@ public:
    * @param str String to encode
    */
   static KDE_DEPRECATED QString encode_string_no_slash(const QString &str) {
-      return QString::fromLatin1( QUrl::toPercentEncoding( str, "/" ) );
+      return QLatin1String( QUrl::toPercentEncoding( str, "/" ) );
   }
 
   /**

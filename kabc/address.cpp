@@ -523,7 +523,7 @@ QString Address::countryToISO( const QString &cname )
     return it.data();
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
-          QString::fromLatin1( "kabc/countrytransl.map" ) );
+          QLatin1String( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
   if ( file.open( QIODevice::ReadOnly ) ) {
@@ -553,7 +553,7 @@ QString Address::ISOtoCountry( const QString &ISOname )
     return QString::null;
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
-          QString::fromLatin1( "kabc/countrytransl.map" ) );
+          QLatin1String( "kabc/countrytransl.map" ) );
 
   QFile file( mapfile );
   if ( file.open( QIODevice::ReadOnly ) ) {

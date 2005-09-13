@@ -1128,15 +1128,15 @@ QString RenderObject::information() const
        << " mB: " << marginBottom() << " qB: " << isBottomMarginQuirk()
        << "}"
         << (isTableCell() ?
-            ( QString::fromLatin1(" [r=") +
+            ( QLatin1String(" [r=") +
               QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
-              QString::fromLatin1(" c=") +
+              QLatin1String(" c=") +
               QString::number( static_cast<const RenderTableCell *>(this)->col() ) +
-              QString::fromLatin1(" rs=") +
+              QLatin1String(" rs=") +
               QString::number( static_cast<const RenderTableCell *>(this)->rowSpan() ) +
-              QString::fromLatin1(" cs=") +
+              QLatin1String(" cs=") +
               QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) +
-              QString::fromLatin1("]") ) : QString::null );
+              QLatin1String("]") ) : QString::null );
     if ( layer() )
         ts << " layer=" << layer();
     if ( continuation() )
