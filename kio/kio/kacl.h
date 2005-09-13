@@ -149,7 +149,7 @@ public:
    * of a name/permissions pair. This is a QPair, therefor access is provided 
    * via the .first and .next members.
    * @return the list of all group permission entries. */
-  ACLUserPermissionsList KACL::allUserPermissions() const;
+  ACLUserPermissionsList allUserPermissions() const;
 
   /** Replace the list of all user permissions with @p list. If one
    * of the entries in the list does not exists, or setting of the ACL
@@ -174,7 +174,7 @@ public:
    * via the .first and .next members.
    * @return the list of all group permission entries. */
 
-  ACLGroupPermissionsList KACL::allGroupPermissions() const;
+  ACLGroupPermissionsList allGroupPermissions() const;
   /** Replace the list of all user permissions with @p list. If one
    * of the entries in the list does not exists, or setting of the ACL
    * entry fails for any reason, the ACL will be left unchanged.
