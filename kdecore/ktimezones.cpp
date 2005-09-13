@@ -436,8 +436,8 @@ const KTimezones::ZoneMap KTimezones::allZones()
             continue;
         }
 
-        float latitude = convertCoordinate(ordinates[1]);
-        float longitude = convertCoordinate(ordinates[2]);
+        float latitude = convertCoordinate(ordinates[0]);
+        float longitude = convertCoordinate(ordinates[1]);
 
         // Add entry to list.
         if (tokens[0] == "??")
