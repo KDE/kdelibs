@@ -442,7 +442,8 @@ const KTimezones::ZoneMap KTimezones::allZones()
         // Add entry to list.
         if (tokens[0] == "??")
             tokens[0] = "";
-        KTimezone *timezone = new KTimezone(db, tokens[2], tokens[0], latitude, longitude, tokens[3]);
+        QString comment = tokens.count() == 4 ? tokens[3] : "";
+        KTimezone *timezone = new KTimezone(db, tokens[2], tokens[0], latitude, longitude, comment);
         add(timezone);
     }
     f.close();
