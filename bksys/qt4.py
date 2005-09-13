@@ -162,7 +162,8 @@ def generate(env):
 
 	# reconfigure when things are missing
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('QTDIR')):
-		#from qt4_config import detect_qt4
+		for opt in opts.options:
+			if env.has_key(opt.key): env.__delitem__(opt.key)
 		detect_qt4(env)
 		opts.Save(cachefile, env)
 
@@ -254,13 +255,6 @@ def generate(env):
 	## Handy helpers for building kde programs
 	## You should not have to modify them ..
 
-	## Return a list of things
-	def make_list(e):
-		if type(e) is types.ListType:
-			return e
-		else:
-			return e.split()
-
 	ui_ext = [".ui"]
 	header_ext = [".h", ".hxx", ".hpp", ".hh"]
 	cpp_ext = [".cpp", ".cxx", ".cc"]
@@ -305,7 +299,7 @@ def generate(env):
 		ui_files=[]
 		other_files=[]
 
-		source_=make_list(source)
+		source_=lenv.make_list(source)
 
 		# For each file, check wether it is a dcop file or not, and create the complete list of sources
 		for file in source_:

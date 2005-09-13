@@ -28,16 +28,18 @@ Documentation is in bksys/design
 # LOAD THE ENVIRONMENT AND SET UP THE TOOLS
 ###################################################################
 
-## Load the builders in config
-import os
-env = Environment( tools=['generic', 'libxml', 'qt4'],
-	toolpath=['./bksys'], ENV=os.environ )
-#ENV={'PATH' : os.environ['PATH']})
+## We assume that 'bksys' is our admin directory
+import sys
+sys.path.append('bksys')
 
-if env['HELP']:
-	#import sys
-	#sys.exit(0)
-	env.Exit(0)
+## Import the main configuration tool
+from generic import configure
+config = {
+	'modules'  : 'generic libxml qt4',
+	'config.h' : '1',
+	'builddir' : 'build',
+}
+env=configure(config)
 
 ## TODO the following part is a temporary hack - the framework is not ready yet
 ## Add the builddir as an include path for everyone
@@ -109,15 +111,11 @@ env['KDEMIME']='/usr/share/mimelnk'
 env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 
-## post-configuration
-env.postconfig()
-
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################
 
 ## BuilDir example - try to have all sources to process in only one top-level folder
-SetOption('duplicate', 'soft-copy')
 subdirs="""
 dcop
 libltdl

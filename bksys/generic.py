@@ -8,10 +8,69 @@ import SCons.Util
 from SCons.Script.SConscript import SConsEnvironment
 from SCons.Options import Options, PathOption
 
-def getreldir(lenv):
-	cwd=os.getcwd()
-	root=SCons.Node.FS.default_fs.Dir('#').abspath
-	return cwd.replace(root,'').lstrip('/')
+## CONFIGURATION: write the config.h files
+def write_config_h(lenv):
+	# first remove all config-*.h from the top-level in build/
+	import glob
+	files = glob.glob( lenv.join('build', 'config-*.h') )
+	for file in files: os.path.remove(file)
+
+	# let us use the dictionary contained in env['BKSYS_CONFIG_H']
+	# each module fills its hash entry and we write here the list of config.h
+	if not os.path.exists('build'): os.mkdir('build')
+	dest=open(lenv.join('build','config.h'), 'w')
+	dest.write('/* defines are added below */\n')
+	for key in lenv['BKSYS_CONFIG_H'].keys():
+		if not key or not lenv['BKSYS_CONFIG_H'][key]: continue
+		dest.write('#include "config-%s.h"' % key)
+		header=open(lenv.join('build','config-%s.h'%key), 'w')
+		header.write(env['BKSYS_CONFIG_H'][key])
+		header.close()
+	dest.close()
+
+	dest = open(lenv.join('build','kdemacros.h'), 'w')
+	dest.write('#include <kdemacros.h.in>\n')
+	dest.close()
+
+	lenv.pprint('GREEN','configuration done')
+	lenv.Exit(0)
+
+## CONFIGURATION: configure the project
+def configure(dict):
+	from SCons import Environment
+	import os
+
+	cp_method='soft-copy'
+	tool_path=['bksys']
+	build_dir='.'
+	config_h=0
+	## process the options
+	for key in dict.keys():
+		if   key == 'modules': mytools=dict[key].split()
+		elif key == 'builddir': build_dir=dict[key]
+		elif key == 'config.h': config_h=1
+		elif key == 'cp_method': cp_method=dict[key]
+		else: print 'unknown key: '+key
+
+	## now build the environment
+	env = Environment.Environment( tools=mytools, toolpath=tool_path, ENV=os.environ )
+
+	## at this point the help was displayed if asked to, then quit
+	if env['HELP']: env.Exit(0)
+
+	## build dir
+	env['_BUILDDIR_']=build_dir
+
+	## we want symlinks by default
+	env.SetOption('duplicate', cp_method)
+
+	## now the post-configuration
+	if env['_CONFIGURE']:
+		# write the config.h if we were asked to, then quit
+		if config_h: write_config_h(env)
+		env.Exit(0)
+
+	return env
 
 def dist(env, appname, version=None):
 	### To make a tarball of your masterpiece, use 'scons dist'
@@ -28,33 +87,33 @@ def dist(env, appname, version=None):
 
 		## create a temporary directory
 		startdir = os.getcwd()
-	
+
 		os.popen("mkdir -p "+TMPFOLD)	
 		os.popen("cp -R * "+TMPFOLD)
 		os.popen("mv "+TMPFOLD+" "+FOLDER)
 
 		## remove scons-local if it is unpacked
-		os.popen("rm -rf "+FOLDER+"/scons "+FOLDER+"/sconsign "+FOLDER+"/scons-local-0.96.1")
+		os.popen("rm -rf %s/scons %s/sconsign %s/scons-local-0.96.1" % (FOLDER, FOLDER, FOLDER))
 
 		## remove our object files first
-		os.popen("find "+FOLDER+" -name \"cache\" | xargs rm -rf")
-		os.popen("find "+FOLDER+" -name \"build\" | xargs rm -rf")
-		os.popen("find "+FOLDER+" -name \"*.pyc\" | xargs rm -f")
+		os.popen("find %s -name \"cache\" | xargs rm -rf" % FOLDER)
+		os.popen("find %s -name \"build\" | xargs rm -rf" % FOLDER)
+		os.popen("find %s -name \"*.pyc\" | xargs rm -f " % FOLDER)
 
 		## CVS cleanup
-		os.popen("find "+FOLDER+" -name \"CVS\" | xargs rm -rf")
-		os.popen("find "+FOLDER+" -name \".cvsignore\" | xargs rm -rf")
+		os.popen("find %s -name \"CVS\" | xargs rm -rf" % FOLDER)
+		os.popen("find %s -name \".cvsignore\" | xargs rm -rf" % FOLDER)
 
 		## Subversion cleanup
 		os.popen("find %s -name .svn -type d | xargs rm -rf" % FOLDER)
 
 		## GNU Arch cleanup
-		os.popen("find "+FOLDER+" -name \"{arch}\" | xargs rm -rf")
-		os.popen("find "+FOLDER+" -name \".arch-i*\" | xargs rm -rf")
+		os.popen("find %s -name \"{arch}\" | xargs rm -rf" % FOLDER)
+		os.popen("find %s -name \".arch-i*\" | xargs rm -rf" % FOLDER)
 
 		## Create the tarball (coloured output)
-		print "\033[92m"+"Writing archive "+ARCHIVE+"\033[0m"
-		os.popen("tar cjf "+ARCHIVE+" "+FOLDER)
+		env.pprint('GREEN', 'Writing archive '+ARCHIVE)
+		os.popen("tar cjf %s %s " % (ARCHIVE, FOLDER))
 
 		## Remove the temporary directory
 		os.popen('rm -rf '+FOLDER)
@@ -67,30 +126,29 @@ def dist(env, appname, version=None):
 		os.popen("find . -name \"*.pyc\" | xargs rm -rf")
 		env.Exit(0)
 
-colors= {
-'BOLD'  :"\033[1m",
-'RED'   :"\033[91m",
-'GREEN' :"\033[92m",
-'YELLOW':"\033[1m", #"\033[93m" # unreadable on white backgrounds
-'CYAN'  :"\033[96m",
-'NORMAL':"\033[0m",
-}
-
 def pprint(env, col, str, label=''):
 	if env.has_key('NOCOLORS'):
 		print "%s %s" % (str, label)
 		return
+	colors= {
+	'BOLD'  :"\033[1m",
+	'RED'   :"\033[91m",
+	'GREEN' :"\033[92m",
+	'YELLOW':"\033[1m", #"\033[93m" # unreadable on white backgrounds
+	'CYAN'  :"\033[96m",
+	'NORMAL':"\033[0m", }
+
 	try: mycol=colors[col]
 	except: mycol=''
 	print "%s%s%s %s" % (mycol, str, colors['NORMAL'], label)
 
 class genobj:
 	def __init__(self, val, env):
-		if not val in "program shlib kioslave staticlib convenience".split():
-			print "unknown object type given to genobj: "+val
+		if not val in ["program", "shlib", "kioslave", "staticlib", "convenience"]:
+			env.pprint('RED', 'unknown object type given to genobj: '+val)
 			env.Exit(1)
 
-		self.type = val
+		self.type  = val
 		self.orenv = env
 		self.env   = None
 		self.executed = 0
@@ -98,15 +156,15 @@ class genobj:
 		self.source=''
 		self.target=''
 
-		self.cxxflags=''
-		self.ccflags=''
-		self.includes=''
+		self.cxxflags  =''
+		self.ccflags   =''
+		self.includes  =''
 
-		self.linkflags=''
-		self.libpaths=''
-		self.libs=''
+		self.linkflags =''
+		self.libpaths  =''
+		self.libs      =''
 
-		# this should be uber-cool
+		# warning: uber-cool feature
 		# self.uselib='KIO XML' and all linkflags, etc are added
 		self.uselib=''
 
@@ -151,11 +209,11 @@ class genobj:
 
 	# join the builddir to a path
 	def joinpath(self, val):
-		if len(self.dirprefix)<3: return val
+		if len(self.dirprefix)<3: return val # TODO - there can be a bug here ..
 		dir=self.dirprefix
 		thing=self.orenv.make_list(val)
 		files=[]
-		bdir="./"
+		bdir='./'
 		if self.orenv.has_key('_BUILDDIR_'): bdir=self.orenv['_BUILDDIR_']
 		for v in thing: files.append( self.orenv.join(bdir, dir, v) )
 		return files
@@ -238,9 +296,9 @@ class genobj:
 		# add the libraries given directly
 		llist=self.env.make_list(self.libs)
 		lext=['.so', '.la']
-		sext='.a'.split()
-		for l in llist:
-			sal=SCons.Util.splitext(l)
+		sext=['.a']
+		for lib in llist:
+			sal=SCons.Util.splitext(lib)
 			if len(sal)>1:
 				if sal[1] in lext: self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
@@ -299,12 +357,11 @@ class genobj:
 
 		self.executed=1
 
-## Copy function that honors symlinks
+## HELPER Copy function that honors symlinks
 def copy_bksys(dest, source, env):
         if os.path.islink(source):
 		#print "symlinking "+source+" "+dest
-		if os.path.islink(dest):
-			os.unlink(dest)
+		if os.path.islink(dest): os.unlink(dest)
 		os.symlink(os.readlink(source), dest)
 	else:
 		shutil.copy2(source, dest)
@@ -312,26 +369,24 @@ def copy_bksys(dest, source, env):
 		os.chmod(dest, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
 	return 0
 
-## Expands strings given and make sure to return a list type
+## HELPER Expands strings given and make sure to return a list type
 def make_list(env, s):
 	if type(s) is types.ListType: return s
 	else:
 		try: return s.split()
 		except AttributeError: return s
 
+## HELPER 
 def join(lenv, s1, s2, s3=None, s4=None):
 	if s4 and s3: return lenv.join(s1, s2, lenv.join(s3, s4))
 	if s3 and s2: return lenv.join(s1, lenv.join(s2, s3))
 	elif not s2: return s1
 	# having s1, s2
 	#print "path1 is "+s1+" path2 is "+s2+" "+os.path.join(s1,string.lstrip(s2,'/'))
-	if not s1: s1="/" # TODO on win32 this will not work
+	if not s1: s1='/' # TODO on win32 this will not work (for js)
 	return os.path.join(s1,string.lstrip(s2,'/'))
 
-def exists(env):
-	return true
-
-# record a dump of the environment
+## HELPER export the data to xml
 bks_dump='<?xml version="1.0" encoding="UTF-8"?>\n<bksys version="1">\n'
 def add_dump(nenv, str):
 	global bks_dump
@@ -342,18 +397,29 @@ def get_dump(nenv):
 	global bks_dump
 	return bks_dump+"</bksys>\n"
 
-## entry point of the module generic
+## HELPER - is used by the xml stuff in pmanager (ignore for now)
+def getreldir(lenv):
+	cwd=os.getcwd()
+	root=SCons.Node.FS.default_fs.Dir('#').abspath
+	return cwd.replace(root,'').lstrip('/')
+
+## Scons-specific function, do not remove
+def exists(env):
+	return true
+
+## Entry point of the module generic
 def generate(env):
 
-	## i cannot remember having added this (ITA) - can someone explain ?
+	## (added by Coolo apparently)
+	## i see what it does now - however importing default tools causes performance issues (TODO ita)
 	from SCons.Tool import Tool;
 	deft = Tool('default')
 	deft.generate(env)
 
-	## Bksys requires scons 0.96
+	## Bksys requires scons >= 0.96
 	env.EnsureSConsVersion(0, 96)
 
-	## attach functions to "env"
+	## attach the helper functions to "env"
 	SConsEnvironment.pprint = pprint
 	SConsEnvironment.make_list = make_list
 	SConsEnvironment.join = join
@@ -383,17 +449,19 @@ def generate(env):
 
 	## Global cache directory
 	# Put all project files in it so a rm -rf cache will clean up the config
-	if not env.has_key('CACHEDIR'): env['CACHEDIR'] = env.join(os.getcwd(),'/cache/')
+	if not env.has_key('CACHEDIR'): env['CACHEDIR'] = env.join(os.getcwd(),'cache')+os.sep
 	if not os.path.isdir(env['CACHEDIR']): os.mkdir(env['CACHEDIR'])
 	
 	## SCons cache directory
 	# This avoids recompiling the same files over and over again: 
 	# very handy when working with cvs
-	if os.getuid() != 0: env.CacheDir(os.getcwd()+'/cache/objects')
+	# TODO: not portable so add a win32 ifdef
+	if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
 
 	#  Avoid spreading .sconsign files everywhere - keep this line
-	env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+	env.SConsignFile( env['CACHEDIR']+'scons_signatures' )
 	
+	# TODO: this parser is silly, fix scons command-line handling
 	def makeHashTable(args):
 		table = { }
 		for arg in args:
@@ -407,6 +475,7 @@ def generate(env):
 
 	env['ARGS']=makeHashTable(sys.argv)
 
+	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
 
 	## Special trick for installing rpms ...
@@ -457,8 +526,8 @@ def generate(env):
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('ISCONFIGURED')):
 		# be paranoid, unset existing variables
-		for var in ['BKS_DEBUG', 'GENCXXFLAGS', 'GENCCFLAGS', 'GENLINKFLAGS', 'PREFIX', 'EXTRAINCLUDES', 'ISCONFIGURED', 'EXTRAINCLUDES']:
-			if env.has_key(var): env.__delitem__(var)
+		for opt in opts.options:
+			if env.has_key(opt.key): env.__delitem__(opt.key)
 
 		if env['ARGS'].get('debug', None):
 			env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
@@ -466,10 +535,9 @@ def generate(env):
 		else:
 			if os.environ.has_key('CXXFLAGS'):
 				# user-defined flags (gentooers will be elighted)
-				env['GENCXXFLAGS'] = SCons.Util.CLVar( os.environ['CXXFLAGS'] )
-				env.Append( GENCXXFLAGS = ['-DNDEBUG', '-DNO_DEBUG'] )
+				env['GENCXXFLAGS'] = SCons.Util.CLVar( os.environ['CXXFLAGS'] )+['-DNDEBUG', '-DNO_DEBUG']
 			else:
-				env.Append(GENCXXFLAGS = ['-O2', '-DNDEBUG', '-DNO_DEBUG'])
+				env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
 
 		if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
 
@@ -672,51 +740,6 @@ def generate(env):
 		for dir in ldirs:
 			lenv.BuildDir(lenv.join(buildto, dir), dir)
 
-	def postconfig(lenv):
-		## TODO this block be called from a postconfig() function (move to generic.py)
-		if env['_CONFIGURE']:
-			#lenv.BuildDir('build', '.', duplicate='soft-copy')
-			# generate config.h
-
-			# first remove all config-*.h from the top-level in build/
-			import glob
-			files = glob.glob( lenv.join('build', 'config-*.h') )
-			for file in files: os.path.remove(file)
-
-			# let us use the dictionary contained in env['BKSYS_CONFIG_H']
-			# each module fills its hash entry and we write here the list of config.h
-			if not os.path.exists('build'): os.mkdir('build')
-			dest=open(lenv.join('build','config.h'), 'w')
-			dest.write('/* defines are added below */\n')
-			for key in env['BKSYS_CONFIG_H'].keys():
-				if not key or not env['BKSYS_CONFIG_H'][key]: continue
-				dest.write('#include "config-%s.h"' % key)
-				header=open(lenv.join('build','config-%s.h'%key), 'w')
-				header.write(env['BKSYS_CONFIG_H'][key])
-				header.close()
-			dest.close()
-
-			dest = open(lenv.join('build','kdemacros.h'), 'w')
-			dest.write('#include <kdemacros.h.in>\n')
-			dest.close()
-
-			lenv.pprint('GREEN',"configuration done")
-			env.Exit(0)
-			#env['BK_CONFIG_FILES']='BK_CONFIG_FILES'+'files'
-			#def build_config(target = None, source = None, env = None):
-			#	dest = open(str(target[0]), 'w')
-			#	dest.write('/* defines are added below */\n')
-			#	dest.close()
-			#act=env.Action(build_config, varlist=['BK_CONFIG_FILES'])
-			#env.Command('config.h', '', act) # no source needed
-
-			#def build_kdemacros(target = None, source = None, env = None):
-		        #        dest = open(str(target[0]), 'w')
-		        #        dest.write('#include <kdemacros.h.in>\n')
-		        #        dest.close()
-		        #act=env.Action(build_kdemacros, varlist=['PREFIX'])
-		        #env.Command('kdemacros.h', '', act) # no source needed
-
 	#valid_targets = "program shlib kioslave staticlib".split()
         SConsEnvironment.bksys_install = bksys_install
 	SConsEnvironment.bksys_insttype = bksys_insttype
@@ -726,7 +749,6 @@ def generate(env):
 	SConsEnvironment.link_local_staticlib = link_local_staticlib
 	SConsEnvironment.genobj=genobj
 	SConsEnvironment.set_build_dir=set_build_dir
-	SConsEnvironment.postconfig=postconfig
 
 	if env.has_key('GENCXXFLAGS'):  env.AppendUnique( CPPFLAGS = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):   env.AppendUnique( CCFLAGS = env['GENCCFLAGS'] )

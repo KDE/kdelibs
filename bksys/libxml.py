@@ -1,13 +1,6 @@
 # Copyright Thomas Nagy 2005
 # BSD license (see COPYING)
 
-BOLD   ="\033[1m"
-RED    ="\033[91m"
-GREEN  ="\033[92m"
-YELLOW ="\033[93m"
-CYAN   ="\033[96m"
-NORMAL ="\033[0m"
-
 """
 This tool is used to find and load the libxml2 and libxslt
 neceessary compilation and link flags
@@ -18,9 +11,7 @@ def exists(env):
 
 def generate(env):
 	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('XML_ISCONFIGURED')):
-		import SCons.Util, os
 		from SCons.Tool import Tool
-
 		pkgs = Tool('pkgconfig', ['./bksys'])
 		pkgs.generate(env)
 
@@ -29,7 +20,7 @@ def generate(env):
 
 		# if the config worked, read the necessary variables and cache them
 		if not have_xml:
-			print RED+'libxml-2.0 >= 2.6.0 was not found (mandatory).'+NORMAL
+			env.pprint('RED', 'libxml-2.0 >= 2.6.0 was not found (mandatory).')
 			env.Exit(1)
 		
 		if not have_xslt:
@@ -37,5 +28,5 @@ def generate(env):
 			env.Exit(1)
 
 		# mark the config as done - libxml2 and libxslt are found
-		env['ISCONFIGURED'] = 1
+		env['XML_ISCONFIGURED'] = 1
 
