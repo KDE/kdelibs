@@ -40,7 +40,7 @@ def detect_qt4(env):
 
 	def find_qt_bin(prog):
 		## Find the necessary programs
-		print "Checking for %s: " % prog,
+		print "Checking for %s               :" % prog,
 		path = os.path.join(qtdir, 'bin', prog)
 		if os.path.isfile(path):
 			p('GREEN',"%s was found as %s" % (prog, path))
@@ -58,14 +58,14 @@ def detect_qt4(env):
 		return path
 	
 	env['QT_UIC'] = find_qt_bin('uic')
-	print "Checking for UIC version                       :",
+	print "Checking for uic version       :",
 	version = os.popen(env['QT_UIC'] + " -version 2>&1").read().strip()
 	if version.find(" 3.") != -1:
 		version = version.replace('Qt user interface compiler','')
 		version = version.replace('User Interface Compiler for Qt', '')
 		p('RED', version + " (too old)")
 		env.Exit(1)
-	print "fine - ", version
+	p('GREEN', "fine - %s" % version)
 	env['QT_MOC'] = find_qt_bin('moc')
 	env['QT_RCC'] = find_qt_bin('rcc')
 
@@ -76,14 +76,14 @@ def detect_qt4(env):
 		os.environ['PKG_CONFIG_PATH'] = qtlibs
 
 	## check for the qt and kde includes
-	print "Checking for the qt includes		 : ",
+	print "Checking for the qt includes   :",
 	if qtincludes and os.path.isfile(qtincludes + "/QtGui/QFont"):
 		# The user told where to look for and it looks valid
-		p('GREEN',"ok "+qtincludes)
+		p('GREEN','ok '+qtincludes)
 	else:
-		if os.path.isfile(qtdir + "/include/QtGui/QFont"):
+		if os.path.isfile(qtdir+'/include/QtGui/QFont'):
 			# Automatic detection
-			p('GREEN',"ok "+qtdir+"/include/")
+			p('GREEN','ok '+qtdir+"/include/")
 			qtincludes = qtdir + "/include/"
 		elif os.path.isfile("/usr/include/qt4/QtGui/QFont"):
 			# Debian probably

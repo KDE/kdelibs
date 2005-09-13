@@ -500,6 +500,9 @@ def generate(env):
 		if env['EXTRAINCLUDES']:
 			env.pprint('CYAN','** extra include paths for the project set to:',env['EXTRAINCLUDES'])
 
+		# This dictionnary will contain the config.h variables - used at configuration time only
+		env['BKSYS_CONFIG_H']={'generic':''}
+
 		env['ISCONFIGURED']=1
 
 		# And finally save the options in the cache
@@ -672,19 +675,33 @@ def generate(env):
 	def postconfig(lenv):
 		## TODO this block be called from a postconfig() function (move to generic.py)
 		if env['_CONFIGURE']:
-			env.BuildDir('build', '.', duplicate='soft-copy')
+			#lenv.BuildDir('build', '.', duplicate='soft-copy')
 			# generate config.h
+
+			# first remove all config-*.h from the top-level in build/
+			import glob
+			files = glob.glob( lenv.join('build', 'config-*.h') )
+			for file in files: os.path.remove(file)
+
+			# let us use the dictionary contained in env['BKSYS_CONFIG_H']
+			# each module fills its hash entry and we write here the list of config.h
 			if not os.path.exists('build'): os.mkdir('build')
 			dest=open(lenv.join('build','config.h'), 'w')
 			dest.write('/* defines are added below */\n')
-			dest.write('#include "config-qt4.py"\n')
-			dest.write('#include "config-xml.py"\n')
+			for key in env['BKSYS_CONFIG_H'].keys():
+				if not key or not env['BKSYS_CONFIG_H'][key]: continue
+				dest.write('#include "config-%s.h"' % key)
+				header=open(lenv.join('build','config-%s.h'%key), 'w')
+				header.write(env['BKSYS_CONFIG_H'][key])
+				header.close()
 			dest.close()
 
 			dest = open(lenv.join('build','kdemacros.h'), 'w')
 			dest.write('#include <kdemacros.h.in>\n')
 			dest.close()
 
+			lenv.pprint('GREEN',"configuration done")
+			env.Exit(0)
 			#env['BK_CONFIG_FILES']='BK_CONFIG_FILES'+'files'
 			#def build_config(target = None, source = None, env = None):
 			#	dest = open(str(target[0]), 'w')
