@@ -23,7 +23,6 @@
 #define _KLOCALE_H
 
 #include <qstring.h>
-#include <q3cstring.h>
 #include <kdelibs_export.h>
 
 class QStringList;
