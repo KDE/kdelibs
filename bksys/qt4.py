@@ -58,6 +58,7 @@ def detect_qt4(env):
 		return path
 	
 	env['QT_UIC'] = find_qt_bin('uic')
+	env['QT_UIC3'] = find_qt_bin('uic3')
 	print "Checking for uic version       :",
 	version = os.popen(env['QT_UIC'] + " -version 2>&1").read().strip()
 	if version.find(" 3.") != -1:
@@ -154,6 +155,7 @@ def generate(env):
 		('QTLIBPATH', 'path to the qt libraries'),
 		('QTINCLUDEPATH', 'path to the qt includes'),
 		('QT_UIC', 'uic command'),
+		('QT_UIC3', 'uic3 command'),
 		('QT_MOC', 'moc command'),
 		('QT_RCC', 'rcc command'),
 		('QTPLUGINS', 'uic executable command'),
@@ -173,16 +175,26 @@ def generate(env):
 	env['QT_AUTOSCAN'] = 1
 	env['QT_DEBUG']    = 0
 
+	env['MSGFMT']   = 'msgfmt' #TODO whether this should be checked?
+
 	## ui file processing
 	def uic_processing(target, source, env):
+		comp_h   ='$QT_UIC -o %s %s' % (target[0].path, source[0].path)
+		return env.Execute(comp_h)
+	def uicEmitter(target, source, env):
+		adjustixes = SCons.Util.adjustixes
+		bs = SCons.Util.splitext(str(source[0].name))[0]
+		bs = os.path.join(str(target[0].get_dir()),bs)
+		return target, source
+	def uic3_processing(target, source, env):
 		inc_moc  ='#include "%s"\n' % target[2].name
-		comp_h   ='$QT_UIC -L $QTPLUGINS -nounload -o %s %s' % (target[0].path, source[0].path)
-		comp_c   ='$QT_UIC -L $QTPLUGINS -nounload -tr tr2i18n -impl %s %s' % (target[0].path, source[0].path)
+		comp_h   ='$QT_UIC3 -L $QTPLUGINS -nounload -o %s %s' % (target[0].path, source[0].path)
+		comp_c   ='$QT_UIC3 -L $QTPLUGINS -nounload -tr tr2i18n -impl %s %s' % (target[0].path, source[0].path)
 		comp_moc ='$QT_MOC -o %s %s' % (target[2].path, target[0].path)
 		if env.Execute(comp_h):
 			return ret
 		dest = open( target[1].path, "w" )
-		dest.write(inc_kde)
+		#dest.write(inc_kde)
 		dest.close()
 		if env.Execute( comp_c+" >> "+target[1].path ):
 			return ret
@@ -191,14 +203,15 @@ def generate(env):
 		dest.close()
 		ret = env.Execute( comp_moc )
 		return ret
-	def uicEmitter(target, source, env):
+	def uic3Emitter(target, source, env):
 		adjustixes = SCons.Util.adjustixes
 		bs = SCons.Util.splitext(str(source[0].name))[0]
 		bs = os.path.join(str(target[0].get_dir()),bs)
 		target.append(bs+'.cpp')
 		target.append(bs+'.moc')
 		return target, source
-	env['BUILDERS']['Uic']=Builder(action=uic_processing,emitter=uicEmitter,suffix='.h',src_suffix='.ui3')
+	env['BUILDERS']['Uic']=Builder(action=uic3_processing,emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
+	env['BUILDERS']['Uic3']=Builder(action=uic_processing,emitter=uicEmitter,suffix='.h',src_suffix='.ui3')
 
 	def qrc_buildit(target, source, env):
 		dir=str(source[0].get_dir())
@@ -256,6 +269,7 @@ def generate(env):
 	## You should not have to modify them ..
 
 	ui_ext = [".ui"]
+	ui3_ext = [".ui3"]
 	header_ext = [".h", ".hxx", ".hpp", ".hh"]
 	cpp_ext = [".cpp", ".cxx", ".cc"]
 
@@ -346,6 +360,8 @@ def generate(env):
 					if ret: src.append( ret )
 			elif ext in ui_ext:
 				lenv.Uic(file)
+			elif ext in ui3_ext:
+				lenv.Uic3(file)
 				src.append(bs+'.cpp')
 			else:
 				src.append(file)
