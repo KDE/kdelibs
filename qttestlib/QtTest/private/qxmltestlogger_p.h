@@ -16,7 +16,9 @@
 class QXmlTestLogger : public QAbstractTestLogger
 {
 public:
-    QXmlTestLogger();
+    enum XmlMode { Complete = 0, Light };
+
+    QXmlTestLogger(XmlMode mode = Complete);
     ~QXmlTestLogger();
 
     void startLogging();
@@ -30,6 +32,9 @@ public:
 
     void addMessage(MessageTypes type, const char *message,
                     const char *file = 0, int line = 0);
+
+private:
+    XmlMode xmlmode;
 };
 
 #endif

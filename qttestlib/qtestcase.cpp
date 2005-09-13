@@ -144,7 +144,8 @@ static void qParseArgs(int argc, char *argv[])
                    "    By default, all testfunction will be run.\n\n"
                    " options:\n"
                    " -functions : Returns a list of current testfunctions\n"
-                   " -xml       : Outputs results in XML\n"
+                   " -xml       : Outputs results as XML document\n"
+                   " -lightxml  : Outputs results as stream of XML tags\n"
                    " -o filename: Writes all output into a file\n"
                    " -v1        : Print enter messages for each testfunction\n"
                    " -v2        : Also print out each VERIFY/COMPARE/TEST\n"
@@ -161,6 +162,8 @@ static void qParseArgs(int argc, char *argv[])
             exit(0);
         } else if (strcmp(argv[i], "-xml") == 0) {
             QtTestLog::setLogMode(QtTestLog::XML);
+        } else if (strcmp(argv[i], "-lightxml") == 0) {
+            QtTestLog::setLogMode(QtTestLog::LightXML);
         } else if (strcmp(argv[i], "-v1") == 0) {
             QtTestLog::setVerboseLevel(1);
         } else if (strcmp(argv[i], "-v2") == 0) {
@@ -271,7 +274,7 @@ static bool qInvokeTestMethod(const char *slotName, const char *data=0)
 
                     QtTestResult::setCurrentTestLocation(QtTestResult::Func);
                     if (!QMetaObject::invokeMethod(QtTest::currentTestObject, sl,
-                                Qt::DirectConnection)) {
+                                                  Qt::DirectConnection)) {
                         QtTestResult::addFailure("Unable to execute slot", __FILE__, __LINE__);
                         break;
                     }
@@ -330,6 +333,10 @@ void *fetchData(QtTestData *data, const char *tagName, const char *typeName)
 
 int QtTest::exec(QObject *testObject, int argc, char **argv)
 {
+#ifndef QT_NO_EXCEPTION
+    try {
+#endif
+
 #if defined(Q_CC_MSVC)
     SetErrorMode(SetErrorMode(0) | SEM_NOGPFAULTERRORBOX);
 #endif
@@ -350,7 +357,7 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
     QtTestResult::setCurrentTestLocation(QtTestResult::DataFunc);
     QtTestTable *gTable = QtTestTable::globalTestTable();
     QMetaObject::invokeMethod(testObject, "initTestCase_data", Qt::DirectConnection,
-                      QGenericArgument("QtTestTable&", gTable));
+                              QGenericArgument("QtTestTable&", gTable));
 
     QtTestResult::setCurrentTestLocation(QtTestResult::Func);
     QMetaObject::invokeMethod(testObject, "initTestCase");
@@ -376,9 +383,21 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
     QtTestResult::setCurrentTestFunction(0);
     delete gTable; gTable = 0;
 
+#ifndef QT_NO_EXCEPTION
+    } catch (...) {
+        QtTestResult::addFailure("Caught unhandled exception", __FILE__, __LINE__);
+        QtTestLog::stopLogging();
+        return -1;
+    }
+#endif
+
     QtTestLog::stopLogging();
     currentTestObject = 0;
+#ifdef QTEST_NOEXITCODE
+    return 0;
+#else
     return QtTestResult::failCount();
+#endif
 }
 
 void QtTest::fail(const char *statementStr, const char *file, int line)

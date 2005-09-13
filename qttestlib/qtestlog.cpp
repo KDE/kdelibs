@@ -225,8 +225,10 @@ void QtTestLog::startLogging()
         QtTest::testLogger = new QPlainTestLogger();
         break;
     case QtTestLog::XML:
-        QtTest::testLogger = new QXmlTestLogger();
+        QtTest::testLogger = new QXmlTestLogger(QXmlTestLogger::Complete);
         break;
+    case QtTestLog::LightXML:
+        QtTest::testLogger = new QXmlTestLogger(QXmlTestLogger::Light);
     }
 
     QtTest::testLogger->startLogging();

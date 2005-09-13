@@ -16,7 +16,7 @@
 class QtTestLog
 {
 public:
-    enum LogMode { Plain = 0, XML };
+    enum LogMode { Plain = 0, XML, LightXML };
 
     static void enterTestFunction(const char* function);
     static void leaveTestFunction();

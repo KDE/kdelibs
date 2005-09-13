@@ -56,7 +56,8 @@ namespace QtTest {
 }
 
 
-QXmlTestLogger::QXmlTestLogger()
+QXmlTestLogger::QXmlTestLogger(XmlMode mode ):
+    xmlmode(mode)
 {
 
 }
@@ -70,17 +71,29 @@ QXmlTestLogger::~QXmlTestLogger()
 void QXmlTestLogger::startLogging()
 {
     QAbstractTestLogger::startLogging();
-
     char buf[1024];
+
+    if (xmlmode == QXmlTestLogger::Complete) {
+        QtTest::qt_snprintf(buf, sizeof(buf),
+                "<?xml version=\"1.0\" encoding=\"ISO8859-1\"?>\n"
+                "<TestCase name=\"%s\">\n", QtTestResult::currentTestObjectName());
+        outputString(buf);
+    }
+
     QtTest::qt_snprintf(buf, sizeof(buf),
             "<Environment>\n"
             "    <QtVersion>%s</QtVersion>\n"
+            "    <QtTestVersion>"QTTEST_VERSION_STR"</QtTestVersion>\n"
             "</Environment>\n", qVersion());
     outputString(buf);
 }
 
 void QXmlTestLogger::stopLogging()
 {
+    if (xmlmode == QXmlTestLogger::Complete) {
+        outputString("</TestCase>\n");
+    }
+
     QAbstractTestLogger::stopLogging();
 }
 
