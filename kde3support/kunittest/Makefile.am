@@ -15,11 +15,11 @@ kunittestmodrunner_LDADD = libkunittest.la $(LIB_KDECORE)
 kunittestmodrunner_SOURCES = modrunner.cpp
 
 # The check_ target makes sure we don't install the modules,
-# $(KDE_CHECK_PLUGIN) assures a shared library is created.
+# -rpath $(libdir) assures a shared library is created (used to be done by $(KDE_CHECK_PLUGIN)).
 check_LTLIBRARIES = kunittest_samplemodule.la
 kunittest_samplemodule_la_SOURCES = samplemodule.cpp
 kunittest_samplemodule_la_LIBADD = libkunittest.la
-kunittest_samplemodule_la_LDFLAGS = -module $(KDE_CHECK_PLUGIN) $(all_libraries)
+kunittest_samplemodule_la_LDFLAGS = -module $(KDE_PLUGIN) -rpath $(libdir) $(all_libraries)
 
 check-local:
 	./kunittestmodrunner
