@@ -312,6 +312,23 @@ def generate(env):
 			elif ext == ".qrc":
 				src.append(bs+'_qrc.cpp')
 				lenv.Qrc(file)
+				
+				from xml.sax import make_parser
+				from xml.sax.handler import ContentHandler
+
+				class SconsHandler(ContentHandler):
+				        def __init__ (self, envi):
+						self.files=[]
+						self.mstr=''
+					def startElement(self, name, attrs):
+						if name =='file':
+							self.mstr=''
+					def endElement(self, name):
+						if name =='file':
+							self.files.append(self.mstr)
+							self.mstr=''
+					def characters(self, chars):
+						self.mstr+=chars
 
 				parser = make_parser()
 				curHandler = SconsHandler(lenv)
