@@ -333,7 +333,7 @@ void *fetchData(QtTestData *data, const char *tagName, const char *typeName)
 
 int QtTest::exec(QObject *testObject, int argc, char **argv)
 {
-#ifndef QT_NO_EXCEPTION
+#ifndef QT_NO_EXCEPTIONS
     try {
 #endif
 
@@ -383,7 +383,7 @@ int QtTest::exec(QObject *testObject, int argc, char **argv)
     QtTestResult::setCurrentTestFunction(0);
     delete gTable; gTable = 0;
 
-#ifndef QT_NO_EXCEPTION
+#ifndef QT_NO_EXCEPTIONS
     } catch (...) {
         QtTestResult::addFailure("Caught unhandled exception", __FILE__, __LINE__);
         QtTestLog::stopLogging();
