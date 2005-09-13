@@ -25,7 +25,7 @@ class KConfig;
 class KConfigSkeleton;
 class KConfigDialogManager;
 #include <kdialogbase.h>
-#include <q3asciidict.h>
+#include <qhash.h>
 
 /**
  * \short Standard %KDE configuration dialog class
@@ -92,7 +92,7 @@ signals:
    * item in the list was actually changed.
    * @param dialogName the name of the dialog.
    */
-  void settingsChanged(const char *dialogName);
+  void settingsChanged(const QString& dialogName);
 
 public:
   /**
@@ -119,8 +119,8 @@ public:
    * a new KConfigDialog object.
    */
   // KDE4: Add the "separator" parameter as in KDialogBase
-  //       Make "dialogType" an int
-  KConfigDialog( QWidget *parent, const char *name,
+  //       Make "dialogType" an int - or a real qt4 enum
+  KConfigDialog( QWidget *parent, const QString& name,
                  KConfigSkeleton *config,
                  DialogType dialogType = IconList,
                  int dialogButtons = Default|Ok|Apply|Cancel|Help,
@@ -182,7 +182,7 @@ public:
    * @param name - Dialog name to look for.
    * @return Pointer to widget or NULL if it does not exist.
    */
-  static KConfigDialog* exists( const char* name );
+  static KConfigDialog* exists( const QString& name );
 
   /**
    * Attempts to show the dialog with the name 'name'.
@@ -190,7 +190,7 @@ public:
    * @param name - The name of the dialog to show.
    * @return True if the dialog 'name' exists and was shown.
    */
-  static bool showDialog( const char* name );
+  static bool showDialog( const QString& name );
 
 protected slots:
   /**
@@ -266,7 +266,7 @@ private:
   /**
    * The list of existing dialogs.
    */
-  static Q3AsciiDict<KConfigDialog> openDialogs;
+  static QHash<QString,KConfigDialog *> openDialogs;
 
   class KConfigDialogPrivate;
   /**

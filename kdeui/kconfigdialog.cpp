@@ -31,9 +31,9 @@
 #include <q3vbox.h>
 #include <qmap.h>
 
-Q3AsciiDict<KConfigDialog> KConfigDialog::openDialogs;
+QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;
 
-// This class is here purly so we don't break binary compatibility down the road.
+// This class is here purely so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
@@ -46,23 +46,24 @@ public:
   QMap<QWidget *, KConfigDialogManager *> managerForPage;
 };
 
-KConfigDialog::KConfigDialog( QWidget *parent, const char *name,
+KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config,
           DialogType dialogType,
           int dialogButtons,
           ButtonCode defaultButton,
           bool modal ) :
     KDialogBase( dialogType, Qt::WStyle_DialogBorder,
-          parent, name, modal, i18n("Configure"), dialogButtons, defaultButton ),
+          parent, 0 /*name*/, modal, i18n("Configure"), dialogButtons, defaultButton ),
     d(new KConfigDialogPrivate(dialogType))
 {
-  if ( name ) {
+  setObjectName( name );
+  if ( !name.isEmpty() ) {
     openDialogs.insert(name, this);
   } else {
-    Q3CString genericName;
+    QString genericName;
     genericName.sprintf("SettingsDialog-%p", this);
     openDialogs.insert(genericName, this);
-    setName(genericName);
+    setObjectName(genericName);
   }
 
   connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
@@ -158,12 +159,15 @@ void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
   connect(this, SIGNAL(defaultClicked()), manager, SLOT(updateWidgetsDefault()));
 }
 
-KConfigDialog* KConfigDialog::exists(const char* name)
+KConfigDialog* KConfigDialog::exists(const QString& name)
 {
-  return openDialogs.find(name);
+  QHash<QString,KConfigDialog *>::const_iterator it = openDialogs.find( name );
+  if ( it != openDialogs.end() )
+      return *it;
+  return 0;
 }
 
-bool KConfigDialog::showDialog(const char* name)
+bool KConfigDialog::showDialog(const QString& name)
 {
   KConfigDialog *dialog = exists(name);
   if(dialog)
