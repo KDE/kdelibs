@@ -32,6 +32,11 @@ namespace ThreadWeaver {
         notice, for example, on thread activity.
 
         To unregister, simply delete the observer.
+
+        When using WeaverObservers, it is recommended to create and delete
+        Jobs only in the controlling (usually the main) thread. Also, it is
+        better to use deleteLater(..), as Job pointers are passed around in
+        signals.
     */
     class WeaverObserver : public QObject
     {
