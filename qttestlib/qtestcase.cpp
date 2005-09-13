@@ -331,6 +331,8 @@ void *fetchData(QtTestData *data, const char *tagName, const char *typeName)
 
 } // namespace
 
+#define QT_NO_EXCEPTIONS // TODO - figure out how kdelibs was compiled
+
 int QtTest::exec(QObject *testObject, int argc, char **argv)
 {
 #ifndef QT_NO_EXCEPTIONS
