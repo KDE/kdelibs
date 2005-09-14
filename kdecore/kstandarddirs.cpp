@@ -1445,8 +1445,8 @@ void KStandardDirs::addKDEDefaults()
 
 void KStandardDirs::checkConfig() const
 {
-    if (!addedCustoms && KGlobal::_instance && KGlobal::_instance->_config)
-        const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->_config);
+    if (!addedCustoms && KGlobal::_instance && KGlobal::_instance->privateConfig())
+        const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->privateConfig());
 }
 
 static QStringList lookupProfiles(const QString &mapFile)
