@@ -148,7 +148,7 @@ bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieL
   return cookieList->isEmpty();
 }
 
-void KCookieServer::addCookies( const QString &url, const Q3CString &cookieHeader,
+void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHeader,
                                long windowId, bool useDOMFormat )
 {
     KHttpCookieList cookieList;

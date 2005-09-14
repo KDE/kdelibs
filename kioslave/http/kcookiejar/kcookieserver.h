@@ -70,7 +70,7 @@ k_dcop:
 
 public:
   bool cookiesPending(const QString &url, KHttpCookieList *cookieList=0);
-  void addCookies(const QString &url, const Q3CString &cookieHeader,
+  void addCookies(const QString &url, const QByteArray &cookieHeader,
                   long windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
 
