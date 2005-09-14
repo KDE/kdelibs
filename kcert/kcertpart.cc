@@ -482,7 +482,7 @@ emit completed();
 //       x-pkcs12 loading
 /////////////////////////////////////////////////////////////////////////////
 if (whatType == "application/x-pkcs12") {
-	Q3CString pass;
+	QByteArray pass;
 	_p12 = KSSLPKCS12::loadCertFile(m_file);
 
 	while (!_p12) {
