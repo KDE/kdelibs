@@ -138,7 +138,7 @@ void PublicService::publishAsync()
 	TXTRecordCreate(&txt,0,0);
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
-		Q3CString value = it.data().utf8();
+		QByteArray value = it.data().utf8();
 		if (TXTRecordSetValue(&txt,it.key().utf8(),value.length(),value)!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);
