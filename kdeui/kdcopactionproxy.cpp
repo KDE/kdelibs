@@ -92,7 +92,7 @@ QMap<DCOPCString,DCOPRef> KDCOPActionProxy::actionMap( const DCOPCString &appId 
 {
   QMap<DCOPCString,DCOPRef> res;
 
-  Q3CString id = appId;
+  QByteArray id = appId;
   if ( id.isEmpty() )
     id = KApplication::dcopClient()->appId();
 

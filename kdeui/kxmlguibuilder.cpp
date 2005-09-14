@@ -149,7 +149,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     while ( p && !qobject_cast<KMainWindow*>( p ) )
         p = p->parentWidget();
 
-    Q3CString name = element.attribute( d->attrName ).utf8();
+    QByteArray name = element.attribute( d->attrName ).utf8();
 
     if (!KAuthorized::authorizeKAction(name))
        return 0;
@@ -161,8 +161,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
     if ( textElem.isNull() ) // try with capital T
       textElem = element.namedItem( d->attrText2 ).toElement();
-    Q3CString text = textElem.text().utf8();
-    Q3CString context = textElem.attribute(d->attrContext).utf8();
+    QByteArray text = textElem.text().utf8();
+    QByteArray context = textElem.attribute(d->attrContext).utf8();
 
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text!" );
@@ -205,7 +205,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
-    Q3CString name = element.attribute( d->attrName ).utf8();
+    QByteArray name = element.attribute( d->attrName ).utf8();
 
     KToolBar *bar = static_cast<KToolBar*>(d->m_widget->child( name, "KToolBar" ));
     if( !bar )
@@ -361,7 +361,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
     if ( qobject_cast<KPopupMenu*>( parent ) )
     {
       QString i18nText;
-      Q3CString text = element.text().utf8();
+      QByteArray text = element.text().utf8();
 
       if ( text.isEmpty() )
         i18nText = i18n( "No text!" );

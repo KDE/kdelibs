@@ -692,7 +692,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
           QFile f( (*local).file );
           if ( f.open( QIODevice::WriteOnly ) )
           {
-            Q3CString utf8data = (*local).data.utf8();
+            QByteArray utf8data = (*local).data.utf8();
             f.writeBlock( utf8data.data(), utf8data.length() );
             f.close();
           }

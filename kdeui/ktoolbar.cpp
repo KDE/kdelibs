@@ -1749,7 +1749,7 @@ void KToolBar::loadState( const QDomElement &element )
         return;
 
     {
-        Q3CString text = element.namedItem( "text" ).toElement().text().utf8();
+        QByteArray text = element.namedItem( "text" ).toElement().text().utf8();
         if ( text.isEmpty() )
             text = element.namedItem( "Text" ).toElement().text().utf8();
         if ( !text.isEmpty() )
@@ -1757,7 +1757,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     {
-        Q3CString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
+        QByteArray attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
         if ( !attrFullWidth.isEmpty() )
             setFullSize( attrFullWidth == "true" );
     }
@@ -1795,7 +1795,7 @@ void KToolBar::loadState( const QDomElement &element )
     Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).lower() );
 
     {
-        Q3CString attrIconText = element.attribute( "iconText" ).lower().latin1();
+        QByteArray attrIconText = element.attribute( "iconText" ).lower().latin1();
         if ( !attrIconText.isEmpty() ) {
             //kdDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
             if ( attrIconText == "icontextright" )

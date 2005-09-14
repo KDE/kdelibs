@@ -196,8 +196,8 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
     // set a unique object name. Required by session management.
-    Q3CString objname;
-    Q3CString s;
+    QByteArray objname;
+    QByteArray s;
     int unusedNumber;
     if ( !name )
         { // no name given
