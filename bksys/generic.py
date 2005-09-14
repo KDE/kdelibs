@@ -423,8 +423,7 @@ def generate(env):
 	## (added by Coolo apparently)
 	## i see what it does now - however importing default tools causes performance issues (TODO ita)
 	from SCons.Tool import Tool;
-	deft = Tool('default')
-	deft.generate(env)
+	Tool('default').generate(env)
 
 	## Bksys requires scons >= 0.96
 	env.EnsureSConsVersion(0, 96)

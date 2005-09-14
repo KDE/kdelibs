@@ -29,6 +29,9 @@ def detect_qt4(env):
 	p=env.pprint
 
 	qtdir = os.getenv("QTDIR")
+	if not qtdir:
+		p('RED', 'QTDIR not set - please set it')
+		env.Exit(1)
 	env['QTDIR'] = qtdir.strip()
 	if qtdir:
 		if not qtlibs:
