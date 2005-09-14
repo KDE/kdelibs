@@ -10,7 +10,7 @@ def exists(env):
 	return true
 
 def generate(env):
-	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('XML_ISCONFIGURED')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('XML_ISCONFIGURED')):
 		from SCons.Tool import Tool
 		pkgs = Tool('pkgconfig', ['./bksys'])
 		pkgs.generate(env)

@@ -163,14 +163,38 @@ def generate(env):
 	opts.Update(env)
 
 	# reconfigure when things are missing
-	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('QTDIR')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('QTDIR')):
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
 		detect_qt4(env)
 		opts.Save(cachefile, env)
 
+	# TODO cleanup and move to the configuration part
+	########## X11
+	env['LIB_X11']             = ['X11']
+	env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
+	env['LIB_XRENDER']         = ['Xrender']
+
+	########## QT
+	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+	env['LIBPATH_QT']          = env['LIBPATH_X11']+[env['QTLIBPATH']]
+	env['LIB_QT']              = ['QtGui_debug', 'pthread', 'Xext']+env['LIB_Z']+env['LIB_PNG']+env['LIB_X11']+env['LIB_SM']
+
+	## QT3SUPPORT
+	env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
+	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
+
+	env['LIB_QTCORE']          = ['QtCore_debug']
+	env['LIB_QTDESIGNER']      = ['QtDesigner_debug']
+	env['LIB_QTGUI']           = ['QtGui_debug']
+	env['LIB_QTNETWORK']       = ['QtNetwork_debug']
+	env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
+	env['LIB_QTSQL']           = ['QtSql_debug']
+	env['LIB_QTXML']           = ['QtXml_debug']
+
 	## set default variables, one can override them in sconscript files
-	env.Append(CXXFLAGS = ['-I'+env['QTINCLUDEPATH'], '-I'+env['QTINCLUDEPATH']+'Qt'], LIBPATH = [env['QTLIBPATH'] ])
+	# TODO wth (ita)
+	#env.Append(CXXFLAGS = ['-I'+env['QTINCLUDEPATH'], '-I'+env['QTINCLUDEPATH']+'Qt'], LIBPATH = [env['QTLIBPATH'] ])
 	
 	env['QT_AUTOSCAN'] = 1
 	env['QT_DEBUG']    = 0
@@ -224,7 +248,7 @@ def generate(env):
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	def kcfg_buildit(target, source, env):
-		comp='kconfig_compiler -d%s %s %s' % (str(source[0].get_dir()), source[1].path, source[0].path)
+		comp='kconfig_compiler -d%s %s %s' % (str(target[0].get_dir()), source[1].path, source[0].path)
 		return env.Execute(comp)
 	
 	def kcfg_stringit(target, source, env):
@@ -492,7 +516,7 @@ def generate(env):
 
 			# then add the includes for qt
 			inctypes="QtXml QtGui QtCore QtOpenGL Qt3Support".split()
-			qtincludes=[]
+			qtincludes=[env['QTINCLUDEPATH']]
 			for dir in inctypes: qtincludes.append( env.join(env['QTINCLUDEPATH'], dir) )
 			self.env.AppendUnique(CPPPATH=qtincludes)
 

@@ -50,6 +50,9 @@ obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
 obj.libs     = env.join('KDE-ICE', 'libkICE.a')
 obj.execute()
 
+More to come:
+obj.findfile = '. gui algos' # scan for source files automatically
+
 STRUCTURE OF THE MODULES:
 -------------------------
 
@@ -59,28 +62,16 @@ A scons module must contain the following functions:
 * generate(env) 
 	attach to the env the necessary builders and detect the configuration
 
+* Suggested layout for the modules:
+bksys/
+bksys/unix
+bksys/win32
+bksys/osx
+
+* There will be one config.h in build which will include all other configuration files
+
 DISCUSSION:
 -----------
 
--> Since the detection will be carried out on several platforms like win32, osx, unix platforms,
-and that config.h files will need to be processed, an idea is to put the detection in
-separate python files which will be only imported at configuration time.
-We will thus avoid really huge python files, and loading a lot of functions in memory.
-
-   YES/NO ? (ita)
-
--> The current config.h produced is fairly big and complicated, it would be nice to have it
-split into several unrelated config-module.h to be included by the config.h at the top-level
-(well, in the build dir)
-
-   YES/NO ? (ita)
-
--> Giving all sources is cumbersome, and in many cases it will be easier to let the tool find the files
-by itself, each builder class like qt4obj, genobj being able to find the files it knows about (.ui for qt4..)
-The problems is the level of intelligence the tool:
-1 let it scan for source files in the current directory only
-2 let it scan in given directories
-3 let it scan recursively
-
-   1 or 2 or 3 ?
+No more question for the moment :)
 

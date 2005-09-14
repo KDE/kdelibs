@@ -40,16 +40,18 @@ def configure(dict):
 	from SCons import Environment
 	import os
 
-	cp_method='soft-copy'
-	tool_path=['bksys']
-	build_dir='.'
-	config_h=0
+	cp_method  = 'soft-copy'
+	tool_path  = ['bksys']
+	build_dir  = '.'
+	config_h   = 0
+	want_rpath = 1
 	## process the options
 	for key in dict.keys():
 		if   key == 'modules': mytools=dict[key].split()
 		elif key == 'builddir': build_dir=dict[key]
 		elif key == 'config.h': config_h=1
 		elif key == 'cp_method': cp_method=dict[key]
+		elif key == 'rpath': want_rpath=dict[key]
 		else: print 'unknown key: '+key
 
 	## now build the environment
@@ -58,14 +60,18 @@ def configure(dict):
 	## at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
 
-	## build dir
+	## disable the rpath in scripts if asked to
+	env['_WANT_RPATH_']=want_rpath
+
+	## set the build dir
 	env['_BUILDDIR_']=build_dir
+	#env.Append(CPPPATH = [build_dir])
 
 	## we want symlinks by default
 	env.SetOption('duplicate', cp_method)
 
 	## now the post-configuration
-	if env['_CONFIGURE']:
+	if env['_CONFIGURE_']:
 		# write the config.h if we were asked to, then quit
 		if config_h: write_config_h(env)
 		env.Exit(0)
@@ -283,7 +289,8 @@ class genobj:
 		if not self.target:
 			self.env.pprint('RED',"no target given to object - self.target")
 			self.env.Exit(1)
-		if not self.env.has_key('nosmart_includes'): self.env.AppendUnique(CPPPATH=['./'])
+		if not self.env.has_key('nosmart_includes'):
+			self.env.AppendUnique(CPPPATH=['.', self.env.join('#',self.env['_BUILDDIR_']) ])
 		if self.type == "kioslave": self.libprefix=''
 
 		if len(self.includes)>0: self.env.AppendUnique(CPPPATH=self.fixpath(self.includes))
@@ -320,7 +327,7 @@ class genobj:
 					self.env.AppendUnique(CXXFLAGS=self.env['CXXFLAGS_'+lib])
 				if self.env.has_key('CCFLAGS_'+lib):
 					self.env.AppendUnique(CCFLAGS=self.env['CCFLAGS_'+lib])
-				if self.env.has_key('RPATH_'+lib):
+				if self.env.has_key('RPATH_'+lib) and self.env['_WANT_RPATH_']:
 					self.env.AppendUnique(RPATH=self.env['RPATH_'+lib])
 
 		# settings for static and shared libraries
@@ -508,7 +515,7 @@ def generate(env):
 		( 'GENLINKFLAGS', 'additional link flags' ),
 		( 'PREFIX', 'prefix for installation' ),
 		( 'EXTRAINCLUDES', 'extra include paths for the project' ),
-		( 'ISCONFIGURED', 'is the project configured' ),
+		( 'GENERIC_ISCONFIGURED', 'is the project configured' ),
 	)
 	opts.Update(env)
 	
@@ -520,11 +527,11 @@ def generate(env):
 	# given.
 	if 'install' in sys.argv: env['_INSTALL']=1
 	else: env['_INSTALL']=0
-	if 'configure' in sys.argv: env['_CONFIGURE']=1
-	else: env['_CONFIGURE']=0
+	if 'configure' in sys.argv: env['_CONFIGURE_']=1
+	else: env['_CONFIGURE_']=0
 
 	# Configure the environment if needed
-	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('ISCONFIGURED')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('GENERIC_ISCONFIGURED')):
 		# be paranoid, unset existing variables
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
@@ -571,7 +578,7 @@ def generate(env):
 		# This dictionnary will contain the config.h variables - used at configuration time only
 		env['BKSYS_CONFIG_H']={'generic':''}
 
-		env['ISCONFIGURED']=1
+		env['GENERIC_ISCONFIGURED']=1
 
 		# And finally save the options in the cache
 		opts.Save(cachefile, env)
@@ -735,7 +742,7 @@ def generate(env):
 
 	def set_build_dir(lenv, dirs, buildto):
 		lenv.SetOption('duplicate', 'soft-copy')
-		lenv['_BUILDDIR_']=buildto
+		lenv['_BUILDDIR_']=buildto # TODO wth ? ita
 		ldirs=lenv.make_list(dirs)
 		for dir in ldirs:
 			lenv.BuildDir(lenv.join(buildto, dir), dir)
