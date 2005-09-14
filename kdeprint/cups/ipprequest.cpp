@@ -36,7 +36,7 @@
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
 #include <q3cstring.h>
-static Q3CString cups_authstring = "";
+static QByteArray cups_authstring = "";
 #endif
 
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::null)
@@ -156,7 +156,7 @@ void IppRequest::init()
 	}
 	request_ = ippNew();
 	//kdDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
-        Q3CString langstr = KGlobal::locale()->language().latin1();
+        QByteArray langstr = KGlobal::locale()->language().latin1();
 	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)
 	lang->encoding = CUPS_UTF8;
@@ -350,7 +350,7 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 		attr = attr->next;
 	// print each attribute
 	ipp_uchar_t	*d;
-	Q3CString	dateStr;
+	QByteArray	dateStr;
 	QDateTime	dt;
 	bool	bg(false);
 	while (attr && attr->group_tag == group)
