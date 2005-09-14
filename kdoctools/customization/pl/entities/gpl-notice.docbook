@@ -1,16 +1,17 @@
-<para>This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.</para>
+<para>Ten program jest wolnym oprogramowaniem, możesz go rozprowadzać 
+i/lub modyfikować na zasadach licencji GNU General Public License, 
+opublikowanej przez Free Software Foundation, w wersji 2 lub 
+(według Twojego uznania) dowolnej późniejszej wersji.</para>
 
-<para>This program is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.</para>
+<para>Ten program jest udostępniany w nadziei, że będzie 
+użyteczny, ale BEZ ŻADNEJ GWARANCJI, nawet bez 
+domyślnej gwarancji CO DO PRZYDATNOŚCI HANDLOWEJ i 
+PRZYDATNOŚCI DO OKREŚLONYCH ZASTOSOWAŃ. 
+Szczegóły można znaleźć w licencji GNU General Public License.</para>
 
-<para>You should have received a copy of the GNU General Public
-License along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Steet, Fifth Floor, Boston, MA 02110-1301, USA.</para>
+<para>Do tego programu powinna zostać dołączona kopia licencji 
+GNU General Public License. Jeśli nie została, napisz  do: Free Software 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.</para>
 <!--
 Local variables:
 mode: sgml
