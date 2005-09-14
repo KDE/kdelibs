@@ -18,19 +18,16 @@
 #ifndef _KINSTANCE_H
 #define _KINSTANCE_H
 
-#include <qbytearray.h> // TODO: move data to Private class and use a forward declaration
 #include "kdelibs_export.h"
 
+class QByteArray;
+class QString;
 class KAboutData;
 class KConfig;
 class KIconLoader;
-class KInstancePrivate;
 class KMimeSourceFactory;
 class KSharedConfig;
 class KStandardDirs;
-
-class QString;
-
 
 /**
  * Access to KDE global objects for use in shared libraries.  In
@@ -43,6 +40,7 @@ class QString;
 class KDECORE_EXPORT KInstance
 {
     friend class KStandardDirs;
+    KConfig* privateConfig() const;
 
  public:
     /**
@@ -63,12 +61,12 @@ class KDECORE_EXPORT KInstance
      */
     KInstance( const KAboutData * aboutData );
 
-    /*
+    /**
      * @internal
      * Only for K(Unique)Application
      * Initialize from src and delete it.
      */
-     
+
     KInstance( KInstance* src );
 
     /**
@@ -80,25 +78,25 @@ class KDECORE_EXPORT KInstance
      * Returns the application standard dirs object.
      * @return The KStandardDirs of the application.
      */
-    KStandardDirs	*dirs() const;
+    KStandardDirs*	dirs() const;
 
     /**
      * Returns the general config object ("appnamerc").
      * @return the KConfig object for the instance.
      */
-    KConfig            *config() const;
+    KConfig*            config() const;
 
     /**
      * Returns the general config object ("appnamerc").
      * @return the KConfig object for the instance.
      */
-    KSharedConfig      *sharedConfig() const;
+    KSharedConfig*      sharedConfig() const;
 
     /**
      *  Returns an iconloader object.
      * @return the iconloader object.
      */
-    KIconLoader	       *iconLoader() const;
+    KIconLoader*        iconLoader() const;
 
     /**
      * Re-allocate the global iconloader.
@@ -108,14 +106,14 @@ class KDECORE_EXPORT KInstance
     /**
      *  Returns the about data of this instance
      *  Warning, can be 0L
-     * @return the about data of the instance, or 0 if it has 
+     * @return the about data of the instance, or 0 if it has
      *         not been set yet
      */
-    const KAboutData *aboutData() const;
+    const KAboutData* aboutData() const;
 
     /**
      * Returns the name of the instance
-     * @return the instance name, can be null if the KInstance has been 
+     * @return the instance name, can be null if the KInstance has been
      *         created with a null name
      */
     QByteArray          instanceName() const;
@@ -129,11 +127,6 @@ class KDECORE_EXPORT KInstance
 
 protected:
     /**
-     *  Copy Constructor is not allowed
-     */
-    KInstance( const KInstance& );
-
-    /**
      * Set name of default config file.
      * @param name the name of the default config file
      * @since 3.1
@@ -141,18 +134,12 @@ protected:
     void setConfigName(const QString &name);
 
 private:
-    mutable KStandardDirs       *_dirs;
+    // Copying is not allowed
+    KInstance( const KInstance& );
+    KInstance& operator=(const KInstance&);
 
-    mutable KConfig             *_config;
-    mutable KIconLoader         *_iconLoader;
-
-    QByteArray                     _name;
-    const KAboutData            *_aboutData;
-
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
-    KInstancePrivate *d;
+    class Private;
+    Private * d; // can't be const because of special KApplication constructor
 };
 
 #endif

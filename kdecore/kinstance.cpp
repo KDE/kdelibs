@@ -15,63 +15,96 @@
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include "kinstance.h"
+
+#include "config.h"
 
 #include <stdlib.h>
-#include <unistd.h>
 
+#include <qbytearray.h>
+#include <qstring.h>
+
+#include "kinstance.h"
 #include "kconfig.h"
-#include "klocale.h"
-#include "kcharsets.h"
 #include "kiconloader.h"
 #include "kaboutdata.h"
 #include "kstandarddirs.h"
-#include "kdebug.h"
 #include "kglobal.h"
 #include "kmimesourcefactory.h"
 
-#include <qfont.h>
-
-#include "config.h"
 #ifndef NDEBUG
-  #include <assert.h>
-  #include <q3ptrdict.h>
-  #include <q3ptrlist.h>
-  static Q3PtrList<KInstance> *allInstances = 0;
-  static Q3PtrDict<QByteArray> *allOldInstances = 0;
-  #define DEBUG_ADD do { if (!allInstances) { allInstances = new Q3PtrList<KInstance>(); allOldInstances = new Q3PtrDict<QByteArray>(); } allInstances->append(this); allOldInstances->insert( this, new QByteArray( _name)); } while (false);
-  #define DEBUG_REMOVE do { allInstances->removeRef(this); } while (false);
-  #define DEBUG_CHECK_ALIVE do { if (!allInstances->contains((KInstance*)this)) { QByteArray *old = allOldInstances->find((KInstance*)this); qWarning("ACCESSING DELETED KINSTANCE! (%s)", old ? old->data() : "<unknown>"); assert(false); } } while (false);
+  #include <qhash.h>
+  static QList<KInstance*> *allInstances = 0;
+  typedef QHash<KInstance*, QByteArray*> InstanceDict;
+  static InstanceDict *allOldInstances = 0;
+  static inline void init_Instances() {
+      if (!allInstances) {
+          allInstances = new QList<KInstance*>;
+	  allOldInstances = new InstanceDict;
+      }
+  }
+  #define DEBUG_ADD do { \
+      init_Instances(); \
+      allInstances->append(this); \
+      allOldInstances->insert(this, new QByteArray(d->name)); \
+      } while (false);
+  #define DEBUG_REMOVE do { allInstances->removeAll(this); } while (false);
+  #define DEBUG_CHECK_ALIVE do { \
+      KInstance *key = const_cast<KInstance*>(this);\
+      if (!allInstances->contains(key)) {\
+          QByteArray *old = allOldInstances->value(key);\
+          qFatal("ACCESSING DELETED KINSTANCE! (%s)",\
+	         (old ? old->data() : "<unknown>"));\
+      }} while (false);
 #else
   #define DEBUG_ADD
   #define DEBUG_REMOVE
   #define DEBUG_CHECK_ALIVE
 #endif
 
-class KInstancePrivate
+class KInstance::Private
 {
 public:
-    KInstancePrivate ()
+    Private ()
     {
+        dirs = 0;
+	config = 0;
+	iconLoader = 0;
+	aboutData = 0;
         mimeSourceFactory = 0L;
     }
 
-    ~KInstancePrivate ()
+    ~Private ()
     {
+        if (ownAboutdata)
+	    delete aboutData;
+	aboutData = 0;
+	delete iconLoader;
+	iconLoader = 0;
+	// do not delete config, stored in d->sharedConfig
+	config = 0;
+	delete dirs;
+	dirs = 0;
         delete mimeSourceFactory;
+	mimeSourceFactory = 0;
     }
 
+    KStandardDirs*      dirs;
+#define _dirs d->dirs
+    KConfig*            config;
+#define _config d->config
+    KIconLoader*        iconLoader;
+#define _iconLoader d->iconLoader
+    QByteArray          name;
+#define _name d->name
+    const KAboutData*   aboutData;
+#define _aboutData d->aboutData
     KMimeSourceFactory* mimeSourceFactory;
-    QString configName;
-    bool ownAboutdata;
-    KSharedConfig::Ptr sharedConfig;
+    QString             configName;
+    bool                ownAboutdata;
+    KSharedConfig::Ptr  sharedConfig;
 };
 
-KInstance::KInstance( const QByteArray& name)
-  : _dirs (0L),
-    _config (0L),
-    _iconLoader (0L),
-    _name( name ), _aboutData( new KAboutData( name, "", 0 ) )
+KInstance::KInstance( const QByteArray& name) : d(new Private)
 {
     DEBUG_ADD
     Q_ASSERT(!name.isEmpty());
@@ -81,17 +114,19 @@ KInstance::KInstance( const QByteArray& name)
       KGlobal::setActiveInstance(this);
     }
 
-    d = new KInstancePrivate ();
+    _name = name;
+    _aboutData = new KAboutData(name, "", 0);
     d->ownAboutdata = true;
 }
 
-KInstance::KInstance( const KAboutData * aboutData )
-  : _dirs (0L),
-    _config (0L),
-    _iconLoader (0L),
-    _name( aboutData->appName() ), _aboutData( aboutData )
+KInstance::KInstance( const KAboutData * aboutData ) : d(new Private)
 {
     DEBUG_ADD
+
+    _name = aboutData->appName();
+    _aboutData = aboutData;
+    d->ownAboutdata = false;
+
     Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance)
@@ -99,16 +134,9 @@ KInstance::KInstance( const KAboutData * aboutData )
       KGlobal::_instance = this;
       KGlobal::setActiveInstance(this);
     }
-
-    d = new KInstancePrivate ();
-    d->ownAboutdata = false;
 }
 
-KInstance::KInstance( KInstance* src )
-  : _dirs ( src->_dirs ),
-    _config ( src->_config ),
-    _iconLoader ( src->_iconLoader ),
-    _name( src->_name ), _aboutData( src->_aboutData )
+KInstance::KInstance( KInstance* src ) : d(src->d)
 {
     DEBUG_ADD
     Q_ASSERT(!_name.isEmpty());
@@ -119,14 +147,7 @@ KInstance::KInstance( KInstance* src )
       KGlobal::setActiveInstance(this);
     }
 
-    d = new KInstancePrivate ();
-    d->ownAboutdata = src->d->ownAboutdata;
-    d->sharedConfig = src->d->sharedConfig;
-
-    src->_dirs = 0L;
-    src->_config = 0L;
-    src->_iconLoader = 0L;
-    src->_aboutData = 0L;
+    src->d = 0;
     delete src;
 }
 
@@ -134,20 +155,8 @@ KInstance::~KInstance()
 {
     DEBUG_CHECK_ALIVE
 
-    if (d->ownAboutdata)
-        delete _aboutData;
-    _aboutData = 0;
-
     delete d;
     d = 0;
-
-    delete _iconLoader;
-    _iconLoader = 0;
-
-    // delete _config; // Do not delete, stored in d->sharedConfig
-    _config = 0;
-    delete _dirs;
-    _dirs = 0;
 
     if (KGlobal::_instance == this)
         KGlobal::_instance = 0;
@@ -161,7 +170,7 @@ KStandardDirs *KInstance::dirs() const
 {
     DEBUG_CHECK_ALIVE
     if( _dirs == 0 ) {
-	_dirs = new KStandardDirs( );
+	_dirs = new KStandardDirs;
         if (_config)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
@@ -172,6 +181,12 @@ KStandardDirs *KInstance::dirs() const
 
 extern bool kde_kiosk_exception;
 extern bool kde_kiosk_admin;
+
+KConfig* KInstance::privateConfig() const
+{
+    DEBUG_CHECK_ALIVE
+    return _config;
+}
 
 KConfig	*KInstance::config() const
 {
@@ -202,7 +217,7 @@ KConfig	*KInstance::config() const
 	    else
 	        d->sharedConfig = KSharedConfig::openConfig( QString::null );
 	}
-	
+
 	// Check if we are excempt from kiosk restrictions
 	if (kde_kiosk_admin && !kde_kiosk_exception && !QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty())
 	{
@@ -210,7 +225,7 @@ KConfig	*KInstance::config() const
             d->sharedConfig = 0;
             return config(); // Reread...
         }
-	
+
 	_config = d->sharedConfig;
         if (_dirs)
             if (_dirs->addCustomized(_config))
@@ -275,7 +290,3 @@ KMimeSourceFactory* KInstance::mimeSourceFactory () const
 
   return d->mimeSourceFactory;
 }
-
-void KInstance::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
