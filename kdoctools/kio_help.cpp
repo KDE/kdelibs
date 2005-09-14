@@ -139,7 +139,7 @@ void HelpProtocol::unicodeError( const QString &t )
 
 HelpProtocol *slave = 0;
 
-HelpProtocol::HelpProtocol( bool ghelp, const Q3CString &pool, const Q3CString &app )
+HelpProtocol::HelpProtocol( bool ghelp, const QByteArray &pool, const Q3CString &app )
   : SlaveBase( ghelp ? "ghelp" : "help", pool, app ), mGhelp( ghelp )
 {
     slave = this;
@@ -348,7 +348,7 @@ void HelpProtocol::get_file( const KURL& url )
 {
     kdDebug( 7119 ) << "get_file " << url.url() << endl;
 
-    Q3CString _path( QFile::encodeName(url.path()));
+    QByteArray _path( QFile::encodeName(url.path()));
     struct stat buff;
     if ( ::stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )

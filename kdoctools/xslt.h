@@ -4,7 +4,7 @@
 #include <libxml/parser.h>
 #include <q3valuevector.h>
 
-class Q3CString;
+class QByteArray;
 
 QString transform(const QString &file, const QString& stylesheet,
                   const Q3ValueVector<const char *> &params = Q3ValueVector<const char *>());
@@ -12,7 +12,7 @@ QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
 bool saveToCache( const QString &contents, const QString &filename );
 QString lookForCache( const QString &filename );
-Q3CString fromUnicode( const QString &data );
+QByteArray fromUnicode( const QString &data );
 void replaceCharsetHeader( QString &output );
 
 extern bool warnings_exist;

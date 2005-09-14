@@ -251,7 +251,7 @@ static bool readCache( const QString &filename,
 
     char buffer[32000];
     int n;
-    Q3CString text;
+    QByteArray text;
     // Also end loop in case of error, when -1 is returned
     while ( ( n = fd->readBlock(buffer, 31900) ) > 0)
     {
@@ -301,10 +301,10 @@ bool compareTimeStamps( const QString &older, const QString &newer )
     return ( _newer.lastModified() > _older.lastModified() );
 }
 
-Q3CString fromUnicode( const QString &data )
+QByteArray fromUnicode( const QString &data )
 {
     QTextCodec *locale = QTextCodec::codecForLocale();
-    Q3CString result;
+    QByteArray result;
     char buffer[30000];
     uint buffer_len = 0;
     uint len = 0;
@@ -316,7 +316,7 @@ Q3CString fromUnicode( const QString &data )
     while ( offset < data.length() )
     {
         part = data.mid( offset, part_len );
-        Q3CString test = locale->fromUnicode( part );
+        QByteArray test = locale->fromUnicode( part );
         if ( locale->toUnicode( test ) == part ) {
             result += test;
             offset += part_len;
@@ -325,7 +325,7 @@ Q3CString fromUnicode( const QString &data )
         len = part.length();
         buffer_len = 0;
         for ( uint i = 0; i < len; i++ ) {
-            Q3CString test = locale->fromUnicode( part.mid( i, 1 ) );
+            QByteArray test = locale->fromUnicode( part.mid( i, 1 ) );
             if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
                 if (buffer_len + test.length() + 1 > sizeof(buffer))
                    break;
@@ -341,7 +341,7 @@ Q3CString fromUnicode( const QString &data )
                 buffer_len += test.length();
             }
         }
-        result += Q3CString( buffer, buffer_len + 1);
+        result += QByteArray( buffer, buffer_len + 1);
         offset += part_len;
     }
     return result;

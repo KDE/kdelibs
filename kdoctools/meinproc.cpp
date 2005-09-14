@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
         QByteArrayList::ConstIterator it = paramList.begin();
         QByteArrayList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
-            const Q3CString tuple = *it;
+            const QByteArray tuple = *it;
             const int ch = tuple.find( '=' );
             if ( ch == -1 ) {
                 kdError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
@@ -277,7 +277,7 @@ int main(int argc, char **argv) {
             }
             replaceCharsetHeader( output );
 
-            Q3CString data = output.local8Bit();
+            QByteArray data = output.local8Bit();
             file.writeBlock(data.data(), data.length());
             file.close();
         } else {
@@ -296,7 +296,7 @@ int main(int argc, char **argv) {
                 QFile file(filename);
                 file.open(QIODevice::WriteOnly);
                 replaceCharsetHeader( filedata );
-                Q3CString data = fromUnicode( filedata );
+                QByteArray data = fromUnicode( filedata );
                 file.writeBlock(data.data(), data.length());
                 file.close();
 
