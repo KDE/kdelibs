@@ -48,7 +48,6 @@
 #include <qregexp.h>
 #include <kmessagebox.h>
 #include <qdir.h>
-#include <qtooltip.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -298,12 +297,12 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_filter->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_filter->setToggleButton(true);
 	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
-	QToolTip::add(d->m_filter, i18n("Toggle selective view on printer list"));
+	d->m_filter->setToolTip(i18n("Toggle selective view on printer list"));
 	d->m_filter->setWhatsThis(whatsThisPrinterFilter);
 	d->m_wizard = new QPushButton(m_pbox);
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
-	QToolTip::add(d->m_wizard, i18n("Add printer..."));
+	d->m_wizard->setToolTip(i18n("Add printer..."));
 	d->m_wizard->setWhatsThis(whatsThisAddPrinterWizard);
 	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
         d->m_ok->setWhatsThis(whatsThisPrintButton);
@@ -328,7 +327,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_dummy = new Q3VBox(this);
 	d->m_plugin = new PluginComboBox(this);
 	d->m_extbtn = new KPushButton(this);
-	QToolTip::add(d->m_extbtn, i18n("Show/hide advanced options"));
+	d->m_extbtn->setToolTip(i18n("Show/hide advanced options"));
 	d->m_extbtn->setWhatsThis(whatsThisOptions);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
         d->m_persistent->setWhatsThis(whatsThisKeepDialogOpenCheckbox);

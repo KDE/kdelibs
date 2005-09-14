@@ -22,7 +22,6 @@
 #include <qtoolbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qtooltip.h>
 #include <q3header.h>
 #include <QDragEnterEvent>
 
@@ -111,40 +110,40 @@ KFileList::KFileList(QWidget *parent)
 	m_add = new QToolButton(this);
 	m_add->setIconSet(SmallIconSet("fileopen"));
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddFile()));
-	QToolTip::add(m_add, i18n("Add file"));
+	m_add->setToolTip(i18n("Add file"));
 	m_add->setWhatsThis(whatsThisAddFileButton);
 
 	m_remove = new QToolButton(this);
 	m_remove->setIconSet(SmallIconSet("remove"));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveFile()));
-	QToolTip::add(m_remove, i18n("Remove file"));
+	m_remove->setToolTip(i18n("Remove file"));
 	m_remove->setWhatsThis(whatsThisRemoveFileButton);
 	m_remove->setEnabled(false);
 
 	m_open = new QToolButton(this);
 	m_open->setIconSet(SmallIconSet("filefind"));
 	connect(m_open, SIGNAL(clicked()), SLOT(slotOpenFile()));
-	QToolTip::add(m_open, i18n("Open file"));
+	m_open->setToolTip(i18n("Open file"));
 	m_open->setWhatsThis(whatsThisOpenFileButton);
 	m_open->setEnabled(false);
 
 	m_up = new QToolButton(this);
 	m_up->setIconSet(SmallIconSet("up"));
 	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
-	QToolTip::add(m_up, i18n("Move up"));
+	m_up->setToolTip(i18n("Move up"));
 	m_up->setWhatsThis(whatsThisMoveFileUpButton);
 	m_up->setEnabled(false);
 
 	m_down = new QToolButton(this);
 	m_down->setIconSet(SmallIconSet("down"));
 	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
-	QToolTip::add(m_down, i18n("Move down"));
+	m_down->setToolTip(i18n("Move down"));
 	m_down->setWhatsThis(whatsThisMoveFileDownButton);
 	m_down->setEnabled(false);
 
 	setAcceptDrops(true);
 
-	QToolTip::add(m_files, i18n(
+	m_files->setToolTip(i18n(
 		"Drag file(s) here or use the button to open a file dialog. "
 		"Leave empty for <b>&lt;STDIN&gt;</b>."));
 

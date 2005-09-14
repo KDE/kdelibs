@@ -23,7 +23,6 @@
 
 #include <qtoolbutton.h>
 #include <q3header.h>
-#include <qtooltip.h>
 #include <qlayout.h>
 #include <klistview.h>
 #include <klocale.h>
@@ -137,27 +136,27 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	m_add = new QToolButton(this);
 	  m_add->setWhatsThis(whatsThisAddFilterButton);
 	m_add->setIconSet(BarIconSet("filter"));
-	QToolTip::add(m_add, i18n("Add filter"));
+	m_add->setToolTip(i18n("Add filter"));
 
 	m_remove = new QToolButton(this);
 	  m_remove->setWhatsThis(whatsThisRemoveFilterButton);
 	m_remove->setIconSet(BarIconSet("remove"));
-	QToolTip::add(m_remove, i18n("Remove filter"));
+	m_remove->setToolTip(i18n("Remove filter"));
 
 	m_up = new QToolButton(this);
 	  m_up->setWhatsThis(whatsThisMoveFilterUpButton);
 	m_up->setIconSet(BarIconSet("up"));
-	QToolTip::add(m_up, i18n("Move filter up"));
+	m_up->setToolTip(i18n("Move filter up"));
 
 	m_down = new QToolButton(this);
 	  m_down->setWhatsThis(whatsThisMoveFilterDownButton);
 	m_down->setIconSet(BarIconSet("down"));
-	QToolTip::add(m_down, i18n("Move filter down"));
+	m_down->setToolTip(i18n("Move filter down"));
 
 	m_configure = new QToolButton(this);
 	  m_configure->setWhatsThis(whatsThisConfigureFilterButton);
 	m_configure->setIconSet(BarIconSet("configure"));
-	QToolTip::add(m_configure, i18n("Configure filter"));
+	m_configure->setToolTip(i18n("Configure filter"));
 
 	connect(m_add,SIGNAL(clicked()),SLOT(slotAddClicked()));
 	connect(m_remove,SIGNAL(clicked()),SLOT(slotRemoveClicked()));

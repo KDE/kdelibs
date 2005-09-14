@@ -27,7 +27,6 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qtooltip.h>
 #include <qlineedit.h>
 #include <kpushbutton.h>
 #include <klocale.h>
@@ -194,7 +193,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
 	m_lockbtn->setOn( true );
 	m_lockbtn->setFixedSize( m_lockbtn->sizeHint() );
-	QToolTip::add( m_lockbtn, i18n( "Link/unlink poster and print size" ) );
+	m_lockbtn->setToolTip( i18n( "Link/unlink poster and print size" ) );
 
 	for ( int i=0; i<KPrinter::NPageSize-1; i++ )
 	{

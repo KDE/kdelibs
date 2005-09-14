@@ -30,7 +30,6 @@
 #include <q3widgetstack.h>
 #include <qtoolbutton.h>
 #include <kpushbutton.h>
-#include <qtooltip.h>
 #include <qcheckbox.h>
 #include <ktextedit.h>
 #include <qregexp.h>
@@ -146,15 +145,15 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_addval->setIconSet(SmallIconSet("editcopy"));
 	m_delval = new QToolButton(w2);
 	m_delval->setIconSet(SmallIconSet("editdelete"));
-	QToolTip::add(m_addval, i18n("Add value"));
-	QToolTip::add(m_delval, i18n("Delete value"));
+	m_addval->setToolTip(i18n("Add value"));
+	m_delval->setToolTip(i18n("Delete value"));
 
-	QToolTip::add(m_apply, i18n("Apply changes"));
-	QToolTip::add(m_addgrp, i18n("Add group"));
-	QToolTip::add(m_addopt, i18n("Add option"));
-	QToolTip::add(m_delopt, i18n("Delete item"));
-	QToolTip::add(m_up, i18n("Move up"));
-	QToolTip::add(m_down, i18n("Move down"));
+	m_apply->setToolTip(i18n("Apply changes"));
+	m_addgrp->setToolTip(i18n("Add group"));
+	m_addopt->setToolTip(i18n("Add option"));
+	m_delopt->setToolTip(i18n("Delete item"));
+	m_up->setToolTip(i18n("Move up"));
+	m_down->setToolTip(i18n("Move down"));
 
 	KSeparator	*sep1 = new KSeparator(KSeparator::HLine, m_dummy);
 
