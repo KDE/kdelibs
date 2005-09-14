@@ -39,7 +39,6 @@
 #include <qscrollbar.h>
 #include <qstringlist.h>
 #include <qfontdatabase.h>
-#include <qtooltip.h>
 
 #include <kcharsets.h>
 #include <kconfig.h>
@@ -140,7 +139,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QString familyCBWhatsThisText =
       i18n("Enable this checkbox to change the font family settings.");
     familyCheckbox->setWhatsThis(familyCBWhatsThisText );
-    QToolTip::add(   familyCheckbox, familyCBToolTipText );
+    familyCheckbox->setToolTip( familyCBToolTipText );
     familyLabel = 0;
   } else {
     familyCheckbox = 0;
@@ -159,7 +158,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QString styleCBWhatsThisText =
       i18n("Enable this checkbox to change the font style settings.");
     styleCheckbox->setWhatsThis(styleCBWhatsThisText );
-    QToolTip::add(   styleCheckbox, styleCBToolTipText );
+    styleCheckbox->setToolTip( styleCBToolTipText );
     styleLabel = 0;
   } else {
     styleCheckbox = 0;
@@ -179,7 +178,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     QString sizeCBWhatsThisText =
       i18n("Enable this checkbox to change the font size settings.");
     sizeCheckbox->setWhatsThis(sizeCBWhatsThisText );
-    QToolTip::add(   sizeCheckbox, sizeCBToolTipText );
+    sizeCheckbox->setToolTip( sizeCBToolTipText );
     sizeLabel = 0;
   } else {
     sizeCheckbox = 0;
@@ -264,7 +263,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     sizeLayout2->addMultiCellWidget(sizeListBox, 1,1, 0,1);
     sizeLayout2->addWidget(sizeIsRelativeCheckBox, 2, 0, Qt::AlignLeft);
     sizeIsRelativeCheckBox->setWhatsThis(sizeIsRelativeCBWhatsThisText );
-    QToolTip::add(   sizeIsRelativeCheckBox, sizeIsRelativeCBToolTipText );
+    sizeIsRelativeCheckBox->setToolTip( sizeIsRelativeCBToolTipText );
   }
   else {
     sizeIsRelativeCheckBox = 0L;

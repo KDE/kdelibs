@@ -17,7 +17,6 @@
 
 #include <qcolor.h>
 #include <qtimer.h>
-#include <qtooltip.h>
 #include <qpixmap.h>
 #include <qapplication.h>
 #include <QMouseEvent>
@@ -196,9 +195,9 @@ void KURLLabel::setUseTips (bool on)
   d->UseTips = on;
 
   if (on)
-    QToolTip::add (this, d->Tip);
+    setToolTip(d->Tip);
   else
-    QToolTip::remove (this);
+    setToolTip(QString());
 }
 
 void KURLLabel::setTipText (const QString& tip)

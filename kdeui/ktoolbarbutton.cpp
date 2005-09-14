@@ -32,7 +32,6 @@
 #include <qimage.h>
 #include <qtimer.h>
 #include <qdrawutil.h>
-#include <qtooltip.h>
 #include <qbitmap.h>
 #include <qmenu.h>
 #include <qcursor.h>
@@ -220,7 +219,7 @@ void KToolBarButton::modeChange()
   int text_height = 0;
   int text_width = 0;
 
-  QToolTip::remove(this);
+  setToolTip(QString());
   if (d->m_iconText != KToolBar::IconOnly)
   {
     // okay, we have to deal with fonts.  let's get our information now
@@ -236,7 +235,7 @@ void KToolBarButton::modeChange()
   }
   else
   {
-    QToolTip::add(this, textLabel());
+    setToolTip(textLabel());
   }
 
   switch (d->m_iconText)

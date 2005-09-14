@@ -372,8 +372,7 @@ void KLineEdit::setSqueezedText()
              d->squeezedEnd = fullText.length() - letters;
           }
 
-          QToolTip::remove( this );
-          QToolTip::add( this, fullText );
+          setToolTip( fullText );
 
     }
     else

@@ -7,7 +7,6 @@
 #include <qobject.h>
 #include <qpixmap.h>
 #include <qtimer.h>
-#include <qtooltip.h>
 #include <ksystemtray.h>
 #include <kwin.h>
 
@@ -105,7 +104,7 @@ void KWindowInfo::display( const QString &text, const QPixmap &pix )
     if ( win->inherits( "KSystemTray" ) ) {
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	tray->setPixmap( icon );
-	QToolTip::add( tray, text );
+	tray->setToolTip( text );
 	return;
     }
 
@@ -150,7 +149,7 @@ void KWindowInfo::restore()
     if ( win->inherits( "KSystemTray" ) ) {
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	tray->setPixmap( oldIcon );
-	QToolTip::add( tray, oldText );
+	tray->setToolTip( oldText );
 	oldText = QString::null;
 	return;
     }

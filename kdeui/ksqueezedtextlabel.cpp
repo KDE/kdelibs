@@ -18,7 +18,6 @@
 
 #include "ksqueezedtextlabel.h"
 #include "kstringhandler.h"
-#include <qtooltip.h>
 
 KSqueezedTextLabel::KSqueezedTextLabel( const QString &text , QWidget *parent, const char *name )
  : QLabel ( parent, name ) {
@@ -61,13 +60,12 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
     QString squeezedText = KStringHandler::cPixelSqueeze(fullText, fm, labelWidth);
 	QLabel::setText(squeezedText);
 
-    QToolTip::remove( this );
-    QToolTip::add( this, fullText );
+    setToolTip( fullText );
 
   } else {
     QLabel::setText(fullText);
 
-    QToolTip::remove( this );
+    setToolTip( QString() );
 //dead in qt4?    QToolTip::hide();
 
   }

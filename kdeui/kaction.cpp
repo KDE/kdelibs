@@ -28,7 +28,6 @@
 #include <assert.h>
 
 #include <QList>
-#include <qtooltip.h>
 #include <q3signal.h>
 #include <kauthorized.h>
 #include <kaccel.h>
@@ -590,7 +589,7 @@ void KAction::updateToolTip( int i )
   QWidget *w = container( i );
 
   if ( qobject_cast<KToolBar *>( w ) )
-    QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), d->toolTip() );
+    static_cast<KToolBar*>(w)->getWidget( itemId( i ) )->setToolTip( d->toolTip() );
 }
 
 QString KAction::toolTip() const
@@ -700,7 +699,7 @@ int KAction::plug( QWidget *w, int index )
         bar->getButton(id_)->setWhatsThis(whatsThisWithIcon() );
 
     if ( !d->toolTip().isEmpty() )
-      QToolTip::add( bar->getButton(id_), d->toolTip() );
+      bar->getButton(id_)->setToolTip( d->toolTip() );
 
     addContainer( bar, id_ );
 

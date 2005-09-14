@@ -42,7 +42,6 @@
 #include <qstring.h>
 #include <qstyle.h>
 #include <qtimer.h>
-#include <qtooltip.h>
 
 #include <kaction.h>
 #include <kanimwidget.h>
@@ -350,7 +349,7 @@ int KToolBar::insertLined (const QString& text, int id,
 {
     KLineEdit *lined = new KLineEdit ( this );
     if ( !toolTipText.isEmpty() )
-        QToolTip::add( lined, toolTipText );
+        lined->setToolTip( toolTipText );
     if ( size > 0 )
         lined->setMinimumWidth( size );
     insertWidgetInternal( lined, index, id );
@@ -376,7 +375,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     if ( size > 0 )
         combo->setMinimumWidth( size );
     if (!tooltiptext.isNull())
-        QToolTip::add( combo, tooltiptext );
+        combo->setToolTip( tooltiptext );
 
     if ( signal && receiver && slot )
         connect ( combo, signal, receiver, slot );
@@ -398,8 +397,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     combo->setEnabled( enabled );
     if ( size > 0 )
         combo->setMinimumWidth( size );
-    if (!tooltiptext.isNull())
-        QToolTip::add( combo, tooltiptext );
+    combo->setToolTip( tooltiptext );
     connect (combo, signal, receiver, slot);
     return index;
 }

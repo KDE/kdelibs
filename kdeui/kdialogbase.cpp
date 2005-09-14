@@ -27,7 +27,6 @@
 #include <q3grid.h>
 #include <q3hbox.h>
 #include <qlayout.h>
-#include <qtooltip.h>
 #include <q3vbox.h>
 #include <qtimer.h>
 #include <QKeyEvent>
@@ -945,9 +944,9 @@ void KDialogBase::setButtonTip( ButtonCode id, const QString &text )
   if( pb )
   {
     if (text.isEmpty())
-      QToolTip::remove( pb );
+      pb->setToolTip( QString() );
     else
-      QToolTip::add( pb, text );
+      pb->setToolTip( text );
   }
 }
 

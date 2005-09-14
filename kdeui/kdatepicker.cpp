@@ -26,7 +26,6 @@
 #include <qstyle.h>
 #include <qtoolbutton.h>
 #include <qcombobox.h>
-#include <qtooltip.h>
 #include <qfont.h>
 #include <qvalidator.h>
 #include <q3popupmenu.h>
@@ -163,14 +162,14 @@ void KDatePicker::init( const QDate &dt )
   d->todayButton = new QToolButton(this);
   d->todayButton->setIconSet(SmallIconSet("today"));
 
-  QToolTip::add(yearForward, i18n("Next year"));
-  QToolTip::add(yearBackward, i18n("Previous year"));
-  QToolTip::add(monthForward, i18n("Next month"));
-  QToolTip::add(monthBackward, i18n("Previous month"));
-  QToolTip::add(d->selectWeek, i18n("Select a week"));
-  QToolTip::add(selectMonth, i18n("Select a month"));
-  QToolTip::add(selectYear, i18n("Select a year"));
-  QToolTip::add(d->todayButton, i18n("Select the current day"));
+  yearForward->setToolTip(i18n("Next year"));
+  yearBackward->setToolTip(i18n("Previous year"));
+  monthForward->setToolTip(i18n("Next month"));
+  monthBackward->setToolTip(i18n("Previous month"));
+  d->selectWeek->setToolTip(i18n("Select a week"));
+  selectMonth->setToolTip(i18n("Select a month"));
+  selectYear->setToolTip(i18n("Select a year"));
+  d->todayButton->setToolTip(i18n("Select the current day"));
 
   // -----
   setFontSize(fontsize);
@@ -526,7 +525,7 @@ KDatePicker::setCloseButton( bool enable )
         d->closeButton->setAutoRaise(true);
         d->navigationLayout->addSpacing(KDialog::spacingHint());
         d->navigationLayout->addWidget(d->closeButton);
-        QToolTip::add(d->closeButton, i18n("Close"));
+        d->closeButton->setToolTip(i18n("Close"));
         d->closeButton->setPixmap( SmallIcon("remove") );
         connect( d->closeButton, SIGNAL( clicked() ),
                  topLevelWidget(), SLOT( close() ) );
