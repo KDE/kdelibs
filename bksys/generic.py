@@ -13,19 +13,23 @@ def write_config_h(lenv):
 	# first remove all config-*.h from the top-level in build/
 	import glob
 	files = glob.glob( lenv.join('build', 'config-*.h') )
-	for file in files: os.path.remove(file)
+	#for file in files: os.path.remove(file)
 
 	# let us use the dictionary contained in env['BKSYS_CONFIG_H']
 	# each module fills its hash entry and we write here the list of config.h
-	if not os.path.exists('build'): os.mkdir('build')
-	dest=open(lenv.join('build','config.h'), 'w')
+
+	# put the files into the builddir
+	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
+	dest=open(lenv.join(lenv['_BUILDDIR_'], 'config.h'), 'w')
+
 	dest.write('/* defines are added below */\n')
 	for key in lenv['BKSYS_CONFIG_H'].keys():
 		if not key or not lenv['BKSYS_CONFIG_H'][key]: continue
 		dest.write('#include "config-%s.h"' % key)
 		header=open(lenv.join('build','config-%s.h'%key), 'w')
-		header.write(env['BKSYS_CONFIG_H'][key])
+		header.write(lenv['BKSYS_CONFIG_H'][key])
 		header.close()
+	dest.write('\n')
 	dest.close()
 
 	dest = open(lenv.join('build','kdemacros.h'), 'w')
@@ -65,7 +69,6 @@ def configure(dict):
 
 	## set the build dir
 	env['_BUILDDIR_']=build_dir
-	#env.Append(CPPPATH = [build_dir])
 
 	## we want symlinks by default
 	env.SetOption('duplicate', cp_method)
@@ -532,6 +535,7 @@ def generate(env):
 
 	# Configure the environment if needed
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('GENERIC_ISCONFIGURED')):
+		env['_CONFIGURE_']=1
 		# be paranoid, unset existing variables
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
