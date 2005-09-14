@@ -411,8 +411,8 @@ void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetr
     const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
         factor = scale*factors[i];
-        fontSizes[i] = int(KMAX( mediumFontSize*factor +.5f, minFontSize));
-        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
+        fontSizes[i] = int(kMax( mediumFontSize*factor +.5f, minFontSize));
+        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(kMax( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 

@@ -397,7 +397,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     }
 
     // make sure we don't bust up X11
-    size = KMAX(0, KMIN(255, size));
+    size = kMax(0, kMin(255, size));
 
 //       qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
 //    	   fontDef.weight, size );

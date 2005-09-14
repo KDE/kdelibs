@@ -218,7 +218,7 @@ void RenderTable::calcWidth()
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
     } else {
-        m_width = KMIN(short( availableWidth ),m_maxWidth);
+        m_width = kMin(short( availableWidth ),m_maxWidth);
     }
 
     // restrict width to what we really have
@@ -226,9 +226,9 @@ void RenderTable::calcWidth()
 
     availableWidth = cb->lineWidth( m_y );
     if ( widthType != Percent )
-        m_width = KMIN( short( availableWidth ), m_width );
+        m_width = kMin( short( availableWidth ), m_width );
 
-    m_width = KMAX (m_width, m_minWidth);
+    m_width = kMax(m_width, m_minWidth);
 
     // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;

@@ -117,7 +117,7 @@ int FixedTableLayout::calcWidthArray()
 		int effWidth = 0;
 		if ( w.isFixed() && w.value() > 0 ) {
                     effWidth = w.value();
-		    effWidth = KMIN( effWidth, 32760 );
+		    effWidth = kMin( effWidth, 32760 );
 		}
 #ifdef DEBUG_LAYOUT
 		qDebug("    col element: effCol=%d, span=%d: %d w=%d type=%d",

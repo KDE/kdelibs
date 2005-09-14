@@ -2162,8 +2162,8 @@ void KHTMLView::displayAccessKeys()
 	        lab->setMargin(3);
 	        lab->adjustSize();
 	        addChild(lab,
-                    KMIN(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
-                    KMIN(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
+                    kMin(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
+                    kMin(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
 	        showChild(lab);
 	    }
         }

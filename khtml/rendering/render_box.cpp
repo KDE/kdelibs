@@ -775,7 +775,7 @@ void RenderBox::calcWidth()
             if (treatAsReplaced)
             {
                 m_width = calcBoxWidth(w.width(cw));
-                m_width = KMAX(m_width, m_minWidth);
+                m_width = kMax(m_width, m_minWidth);
             }
 
             return;
@@ -849,8 +849,8 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
 
         // size to max width?
         if (sizesToMaxWidth()) {
-            width = KMAX(width, (int)m_minWidth);
-            width = KMIN(width, (int)m_maxWidth);
+            width = kMax(width, (int)m_minWidth);
+            width = kMin(width, (int)m_maxWidth);
         }
     }
     else

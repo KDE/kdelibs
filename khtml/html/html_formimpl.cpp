@@ -1508,11 +1508,11 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 QString astr(nme.isEmpty() ? QLatin1String("x") : nme + ".x");
 
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(KMAX( clickX(), 0 ));
+                astr.setNum(kMax( clickX(), 0 ));
                 encoding += fixUpfromUnicode(codec, astr);
                 astr = nme.isEmpty() ? QLatin1String("y") : nme + ".y";
                 encoding += fixUpfromUnicode(codec, astr);
-                astr.setNum(KMAX( clickY(), 0 ) );
+                astr.setNum(kMax( clickY(), 0 ) );
                 encoding += fixUpfromUnicode(codec, astr);
 		astr = value().string();
 		if(astr.length() > 0) {
