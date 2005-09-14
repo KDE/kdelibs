@@ -512,7 +512,7 @@ int KFileItem::overlays() const
     }
   }
 
-  if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
+  if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
      _state |= KIcon::ZipOverlay;
   return _state;
 }
@@ -544,7 +544,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   // Support for gzipped files: extract mimetype of contained file
   // See also the relevant code in overlays, which adds the zip overlay.
-  if ( mime->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
+  if ( mime->name() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
   {
       KURL sf;
       sf.setPath( m_url.path().left( m_url.path().length() - 3 ) );

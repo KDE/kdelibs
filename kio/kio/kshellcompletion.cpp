@@ -92,7 +92,7 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 	if ( match->isNull() )
 		return;
 
-	if ( match->right(1) == QString(QChar('/')) )
+	if ( match->endsWith( QLatin1Char( '/' ) ) )
 		quoteText( match, false, true ); // don't quote the trailing '/'
 	else
 		quoteText( match, false, false ); // quote the whole text
@@ -111,7 +111,7 @@ void KShellCompletion::postProcessMatches( QStringList *matches ) const
 		  it != matches->end(); it++ )
 	{
 		if ( !(*it).isNull() ) {
-			if ( (*it).right(1) == QString(QChar('/')) )
+			if ( (*it).endsWith( QLatin1Char( '/' ) ) )
 				quoteText( &(*it), false, true ); // don't quote trailing '/'
 			else
 				quoteText( &(*it), false, false ); // quote the whole text
@@ -129,7 +129,7 @@ void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
 		  it != matches->end(); it++ )
 	{
 		if ( !(*it).value().isNull() ) {
-			if ( (*it).value().right(1) == QString(QChar('/')) )
+			if ( (*it).value().endsWith( QLatin1Char( '/' ) ) )
 				quoteText( &(*it).value(), false, true ); // don't quote trailing '/'
 			else
 				quoteText( &(*it).value(), false, false ); // quote the whole text

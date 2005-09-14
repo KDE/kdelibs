@@ -359,7 +359,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
             bool isdir = false;
             QString nm;
 
-            if ( name.right(1) == "/" )
+            if ( name.endsWith( QLatin1Char( '/' ) ) )
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
@@ -561,8 +561,8 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
     QString dirName ( QDir::cleanDirPath( name ) );
 
     // Need trailing '/'
-    if ( dirName.right(1) != "/" )
-        dirName += "/";
+    if ( !dirName.endsWith( QLatin1Char( '/' ) ) )
+        dirName += QLatin1Char( '/' );
 
     if ( d->dirList.contains( dirName ) )
         return true; // already there
@@ -826,8 +826,8 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
     QString dirName ( QDir::cleanDirPath( name ) );
 
     // Need trailing '/'
-    if ( dirName.right(1) != "/" )
-        dirName += "/";
+    if ( !dirName.endsWith( QLatin1Char( '/' ) ) )
+        dirName += QLatin1Char( '/' );
 
     if ( d->dirList.contains( dirName ) )
         return true; // already there

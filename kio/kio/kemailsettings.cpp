@@ -244,7 +244,7 @@ KEMailSettings::KEMailSettings()
 
 	QStringList groups = p->m_pConfig->groupList();
 	for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it) {
-		if ( (*it).left(8) == "PROFILE_" )
+		if ( (*it).startsWith( QLatin1String( "PROFILE_" ) ) )
 			p->profiles+= (*it).mid(8, (*it).length());
 	}
 

@@ -107,7 +107,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
             return true; // Probably EOF / trailing junk
         }
 
-        if (ar_header.right(2) != "`\n") { // Check header magic
+        if (!ar_header.endsWith("`\n")) { // Check header magic
             kdWarning(7042) << "Invalid magic" << endl;
             delete[] ar_longnames;
             return false;

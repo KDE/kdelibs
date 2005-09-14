@@ -2973,7 +2973,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   QString genNameStr = config.readEntry( "GenericName" );
   QString commentStr = config.readEntry( "Comment" );
   QString commandStr = config.readPathEntry( "Exec" );
-  if (commandStr.left(12) == "ksystraycmd ")
+  if (commandStr.startsWith(QLatin1String("ksystraycmd ")))
   {
     commandStr.remove(0, 12);
     m_systrayBool = true;

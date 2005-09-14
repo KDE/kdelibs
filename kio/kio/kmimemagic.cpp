@@ -2245,7 +2245,7 @@ refineResult(KMimeMagicResult *r, const QString & _filename)
 		return;
 	if ( tmp == "text/x-c" || tmp == "text/x-objc" )
 	{
-		if ( _filename.right(2) == ".h" )
+		if ( _filename.endsWith( QLatin1String( ".h" ) ) )
 			tmp += "hdr";
 		else
 			tmp += "src";

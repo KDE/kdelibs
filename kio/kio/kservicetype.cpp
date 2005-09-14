@@ -288,7 +288,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
   // nor for non-mimetypes service types)
   if ( !KServiceTypeProfile::configurationMode()
        && isAMimeType
-       && _servicetype.left(4) != "all/" )
+       && !_servicetype.startsWith( QLatin1String( "all/" ) ) )
   {
     // Support for services associated with "all"
     KServiceType * servAll = KServiceTypeFactory::self()->findServiceTypeByName( "all/all" );

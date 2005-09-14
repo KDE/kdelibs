@@ -91,7 +91,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   if (m_strCaption.isEmpty())
   {
      m_strCaption = _relpath;
-     if (m_strCaption.right(1) == "/")
+     if (m_strCaption.endsWith(QLatin1Char('/')))
         m_strCaption = m_strCaption.left(m_strCaption.length()-1);
      int i = m_strCaption.findRev('/');
      if (i > 0)
