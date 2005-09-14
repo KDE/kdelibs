@@ -35,7 +35,6 @@
 #endif
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-#include <q3cstring.h>
 static QByteArray cups_authstring = "";
 #endif
 
