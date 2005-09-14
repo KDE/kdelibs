@@ -21,7 +21,7 @@
 #define POSTERPREVIEW_H
 
 #include <q3frame.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 
 class KProcess;
 
@@ -69,7 +69,7 @@ private:
 	int m_cutmargin;
 	bool m_dirty;
 	QRect m_boundingrect;
-	Q3ValueList<int> m_selectedpages;
+	QList<int> m_selectedpages;
 };
 
 #endif /* POSTERPREVIEW_H */

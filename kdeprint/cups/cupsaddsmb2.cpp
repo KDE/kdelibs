@@ -252,7 +252,7 @@ void CupsAddSmb::doNextAction()
 	m_state = None;
 	if (m_proc.isRunning())
 	{
-		Q3CString	s = m_actions[m_actionindex++].latin1();
+		QByteArray	s = m_actions[m_actionindex++].toLatin1();
 		m_bar->setProgress(m_bar->progress()+1);
 		kdDebug(500) << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
@@ -288,7 +288,7 @@ void CupsAddSmb::doNextAction()
 			m_state = AddPrinter;
 			//m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			m_textinfo->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
-			Q3CString	dest = m_actions[m_actionindex].local8Bit();
+			QByteArray	dest = m_actions[m_actionindex].local8Bit();
 			if (s == "addprinter")
 				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
 			else

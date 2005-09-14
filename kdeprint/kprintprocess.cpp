@@ -57,7 +57,7 @@ void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
 {
 	if (proc == this)
 	{
-		Q3CString	str = Q3CString(buf,len).stripWhiteSpace();
+		QByteArray	str = QByteArray(buf,len).stripWhiteSpace();
 		m_buffer.append(str.append("\n"));
 	}
 }

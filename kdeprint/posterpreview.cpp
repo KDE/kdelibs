@@ -209,7 +209,7 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 
 void PosterPreview::slotProcessStderr( KProcess*, char *buf, int len )
 {
-	m_buffer.append( Q3CString( buf, len ) );
+	m_buffer.append( QByteArray( buf, len ) );
 }
 
 void PosterPreview::slotProcessExited( KProcess* )
@@ -285,7 +285,7 @@ void PosterPreview::emitSelectedPages()
 	QString s;
 	if ( m_selectedpages.count() > 0 )
 	{
-		for ( Q3ValueList<int>::ConstIterator it=m_selectedpages.begin(); it!=m_selectedpages.end(); ++it )
+		for ( QList<int>::ConstIterator it=m_selectedpages.begin(); it!=m_selectedpages.end(); ++it )
 			s.append( QString::number( *it ) + "," );
 		s.truncate( s.length()-1 );
 	}

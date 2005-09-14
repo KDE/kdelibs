@@ -265,7 +265,7 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 		CupsdDialog	dlg(parent);
 		if (dlg.setConfigFile(fn) && dlg.exec())
 		{
-			Q3CString	encodedFn = QFile::encodeName(fn);
+			QByteArray	encodedFn = QFile::encodeName(fn);
 			if (!needUpload)
 				KMessageBox::information(parent,
 					i18n("The config file has not been uploaded to the "
