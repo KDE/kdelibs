@@ -34,7 +34,7 @@ namespace ThreadWeaver {
     public:
         /** Create a job to load an image from the data loaded into file.
             If file has not been finished at this point, it is considered a
-            dependancy.
+            dependency.
         */
         QImageLoaderJob (FileLoaderJob* file, QObject* parent=0);
         ~QImageLoaderJob ();

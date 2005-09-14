@@ -53,11 +53,11 @@ namespace ThreadWeaver {
       done.</li>
 
       <li>How do you implement an operation with complex control flow and
-      dependancies in the execution order (load, parse and display an HTML
+      dependencies in the execution order (load, parse and display an HTML
       document with embedded media): Create jobs for the individual steps you
       need to perform. Try to split the whole operation in as many
       independant, parallelizable parts as possible. Now declare the execution
-      dependancies. A job will only be executed when all jobs it depends on
+      dependencies. A job will only be executed when all jobs it depends on
       are finished. This way every individual operation will be executed as
       soon as it becomes possible. Connect to the final jobs done() signal to
       be notified when all parts of the whole operations have been
@@ -66,7 +66,7 @@ namespace ThreadWeaver {
       point of execution.</li> </ul>
 
       <p>As you can see, ThreadWeaver can provide solutions for simple, but
-      also for complex cases. For an example on how job dependancies can be
+      also for complex cases. For an example on how job dependencies can be
       modeled and used to create elegant, streamlined solutions for control
       flow modeling, see the Simple Multithreaded Image Viewer (SMIV) example
       in the Tests directory.</p>
@@ -157,7 +157,7 @@ namespace ThreadWeaver {
       instructions. This solutions are usually not flexible and do not adapt
       to the actual usage of the CPU nodes and computer
       subsystems. ThreadWeaver provides means to represent code execution
-      dependancies and relies on the operating systems scheduler to actually
+      dependencies and relies on the operating systems scheduler to actually
       distribute the work load. The result is an implementation that is very
       close to the original application semantics, and usually improved
       performance and scalability in different real-life scenarios. </p>
@@ -189,13 +189,13 @@ namespace ThreadWeaver {
       WeaverInterface object. </p>
 
       <p>Jobs may depend on other jobs. A job will only execute if all jobs it
-      depends on are already finished. In this, dependancies reorder job
-      execution.  If no dependancies are declared, jobs are executed in
-      queueing order. Multiple dependancies are possible, which allows the
+      depends on are already finished. In this, dependencies reorder job
+      execution.  If no dependencies are declared, jobs are executed in
+      queueing order. Multiple dependencies are possible, which allows the
       creation of complex flow graphs that are automatically executed by the
-      Weaver. It is important, though, to avoid circular dependancies. Two
+      Weaver. It is important, though, to avoid circular dependencies. Two
       jobs that depend on each other in both directions will simply never be
-      executed, since the dependancies will never resolve.</p>
+      executed, since the dependencies will never resolve.</p>
 
       <p>Threads are created on demand and do not exit until the containing
       weaver is deleted. Threads have an eager policy in trying to execute
@@ -214,7 +214,7 @@ namespace ThreadWeaver {
       programs. The Jobs test provides a GUI example and displays the
       interaction with the weaver state and it's signals. The Simple
       Multithreaded Image Viewer (SMIV) example shows the use of job
-      dependancies.</p>
+      dependencies.</p>
     */
 
     Weaver* Weaver::m_instance;

@@ -34,20 +34,20 @@ namespace ThreadWeaver {
 	  m_mutex (new QMutex (QMutex::NonRecursive) ),
           m_finished (false)
     {
-        // initialize the process global mutex that protects the dependancy tracker:
+        // initialize the process global mutex that protects the dependency tracker:
 	if (sm_mutex == 0)
 	{
 	    sm_mutex=new QMutex();
 	}
         if ( dep != 0 )
         {
-            if (dep->isFinished() == false) addDependancy (dep);
+            if (dep->isFinished() == false) addDependency (dep);
         }
     }
 
     Job::~Job()
     {
-        resolveDependancies();
+        resolveDependencies();
     }
 
     void Job::execute(Thread *th)
@@ -66,18 +66,18 @@ namespace ThreadWeaver {
         m_thread = 0;
 	setFinished (true);
 	m_mutex->unlock();
-        resolveDependancies(); // notify dependants
+        resolveDependencies(); // notify dependants
         emit ( done( this ) );
 	debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
     }
 
-    void Job::addDependancy (Job *dep)
+    void Job::addDependency (Job *dep)
     {   // if *this* depends on dep, *this* will be the key and dep the value:
 	QMutexLocker l(sm_mutex);
 	sm_dep.insert( this, dep );
     }
 
-    bool Job::removeDependancy (Job* dep)
+    bool Job::removeDependency (Job* dep)
     {
 	QMutexLocker l(sm_mutex);
 	// there may be only one (!) occurence of [this, dep]:
@@ -94,13 +94,13 @@ namespace ThreadWeaver {
 	return false;
     }
 
-    bool Job::hasUnresolvedDependancies ()
+    bool Job::hasUnresolvedDependencies ()
     {
         QMutexLocker l(sm_mutex);
         return sm_dep.contains(this);
    }
 
-    void Job::resolveDependancies ()
+    void Job::resolveDependencies ()
     {
         QMutexLocker l(sm_mutex);
         QMutableMapIterator<Job*, Job*> it(sm_dep);

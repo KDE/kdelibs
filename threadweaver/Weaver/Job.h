@@ -36,7 +36,7 @@ namespace ThreadWeaver {
 	Also, please note that Jobs may not be executed twice. Create two
 	different objects to perform two consecutive or parallel runs.
 
-	Jobs may declare dependancies. If Job B depends on Job A, B may not be
+	Jobs may declare dependencies. If Job B depends on Job A, B may not be
 	executed before A is finished.
 
     */
@@ -46,8 +46,8 @@ namespace ThreadWeaver {
         Q_OBJECT
     public:
         /** Construct a Job object which depends on dep.
-            dep will be considered a dependancy if it is not finished
-            yet. Otherwise, no dependancy will be added.
+            dep will be considered a dependency if it is not finished
+            yet. Otherwise, no dependency will be added.
             If dep is zero, it is ignored.
 
             @param dep the other job this job depends on
@@ -87,32 +87,32 @@ namespace ThreadWeaver {
 	    thread or the weaver or whoever). */
 	// virtual void processEvent ( Event* );
 
-        /** Add a dependancy.
-            The object given will be added as a dependancy. The Job will not
-            be executed until all dependancies have been processed.
-            The job is automatically added to the dependancy as a dependant.
-            @param dependancy: the other job this job depends on
+        /** Add a dependency.
+            The object given will be added as a dependency. The Job will not
+            be executed until all dependencies have been processed.
+            The job is automatically added to the dependency as a dependant.
+            @param dependency: the other job this job depends on
         */
-        void addDependancy (Job* dependancy);
+        void addDependency (Job* dependency);
 
-        /** Remove dependancy.
-            The given dependancy will be removed. If none are left, the job
+        /** Remove dependency.
+            The given dependency will be removed. If none are left, the job
             will be executed as soon as a waiting thread is available.
             The job will automatically be removed as a dependant of dep.
 
-            Returns false if the given object is not dependancy of this job.
+            Returns false if the given object is not dependency of this job.
 
 	    This function is inefficient, and should be used only to abort
 	    execution of a job.
 
-	    @param dep the dependancy that will be removed
+	    @param dep the dependency that will be removed
         */
-        bool removeDependancy (Job *dep);
+        bool removeDependency (Job *dep);
 
-        /** Query whether the job has an unresolved dependancy.
+        /** Query whether the job has an unresolved dependency.
             In case it does, it will not be processed by a thread trying to
             request a job. */
-        bool hasUnresolvedDependancies();
+        bool hasUnresolvedDependencies();
 
     signals:
 	/** This signal is emitted when this job is being processed by a
@@ -130,22 +130,22 @@ namespace ThreadWeaver {
 	inline Thread *thread() { return m_thread; }
 	/** Call with status = true to mark this job as done. */
 	inline void setFinished ( bool status ) { m_finished = status; }
-        /** Resolve all dependancies.
+        /** Resolve all dependencies.
             This method is called after the Job has been finished, or
             when it is deleted without being executed (performed by the
             destructor).
             The method will remove all entries stating that another Job
             depends on this one.
         */
-        void resolveDependancies();
+        void resolveDependencies();
 
 	Thread * m_thread;
 
 //         QMutex *m_wcmutex;
 // 	QWaitCondition *m_wc;
 
-	/** A container to keep track of Job dependancies.
-	    For each dependancy A->B, which means Job B depends on Job A and
+	/** A container to keep track of Job dependencies.
+	    For each dependency A->B, which means Job B depends on Job A and
 	    may only be executed after A has been finished, an entry will be
 	    added with key A and value B. When A is finished, the entry will
 	    be removed. */

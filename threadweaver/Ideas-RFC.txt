@@ -8,7 +8,7 @@ Generic items on job handling:
 ------------------------------
 - * job priorities (with Queue merge performed at queueing time)
 - * job categories (can currently be done by using different Weaver objects)
-- cancellation of dependant jobs if a dependancy raises an error
+- cancellation of dependant jobs if a dependency raises an error
   (all-or-nothing)
 - JobSequence objects (a queue of Jobs that will be executed in order,
   automatically sets up deps)
@@ -24,7 +24,7 @@ GUI elements:
 -------------
 - GUI dependant Weaver implementation along with GUI dependant Job classes
   with automatic feedback on Job processing progress
-  (probably needs it's own library, to keep the library dependancies local,
+  (probably needs it's own library, to keep the library dependencies local,
   e.g. ThreadWeaver only relies on QtCore, ThreadWeaverGUI relies on QtCore +
   QtGui)
 

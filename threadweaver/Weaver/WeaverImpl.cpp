@@ -278,7 +278,7 @@ namespace ThreadWeaver {
         Job *next = 0;
         for (int index = 0; index < m_assignments.size(); ++index)
         {
-            if ( ! m_assignments.at(index)->hasUnresolvedDependancies() )
+            if ( ! m_assignments.at(index)->hasUnresolvedDependencies() )
             {
                 next = m_assignments.at(index);
                 m_assignments.removeAt (index);

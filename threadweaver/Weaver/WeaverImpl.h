@@ -86,7 +86,7 @@ namespace ThreadWeaver {
         const int activeThreadCount();
         /** Take the first available job out of the queue and return it.
             The job will be removed from the queue (therefore, take).
-            Only jobs that have no unresolved dependancies are considered
+            Only jobs that have no unresolved dependencies are considered
 	    available. If only jobs that depened on other, unfinished jobs are
 	    in the queue, this method returns a nil pointer. */
         Job* takeFirstAvailableJob();
