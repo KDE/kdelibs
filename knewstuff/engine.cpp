@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <q3cstring.h>
 #include <qdom.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>

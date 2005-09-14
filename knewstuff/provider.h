@@ -20,7 +20,6 @@
 #ifndef KNEWSTUFF_PROVIDER_H
 #define KNEWSTUFF_PROVIDER_H
 
-#include <q3cstring.h>
 #include <qdom.h>
 #include <qobject.h>
 #include <q3ptrlist.h>
