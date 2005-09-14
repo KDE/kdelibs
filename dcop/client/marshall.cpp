@@ -247,7 +247,7 @@ DCOPCString demarshal( QDataStream &stream, const QString &type )
             if ( i < count - 1 )
                 result += '\n';
         }
-    } else if ( type.left( 5 ) == "QMap<" )
+    } else if ( type.startsWith( QLatin1String( "QMap<" ) ) )
     {
         int commaPos = type.indexOf( ',', 5 );
 
@@ -358,15 +358,15 @@ void marshall( QDataStream &arg, DCOPCStringList args, int &i, QString type )
     else if ( type == "QVariant" ) {
 	if ( s == "true" || s == "false" )
 	    arg << QVariant( mkBool( s ) );
-	else if ( s.left( 4 ) == "int(" )
+	else if ( s.startsWith( QLatin1String( "int(" ) ) )
 	    arg << QVariant( s.mid(4, s.length()-5).toInt() );
-	else if ( s.left( 7 ) == "QPoint(" )
+        else if ( s.startsWith( QLatin1String( "QPoint(" ) ) )
 	    arg << QVariant( mkPoint( s.mid(7, s.length()-8) ) );
-	else if ( s.left( 6 ) == "QSize(" )
+	else if ( s.startsWith( QLatin1String( "QSize(" ) ) )
 	    arg << QVariant( mkSize( s.mid(6, s.length()-7) ) );
-	else if ( s.left( 6 ) == "QRect(" )
+	else if ( s.startsWith( QLatin1String( "QRect(" ) ) )
 	    arg << QVariant( mkRect( s.mid(6, s.length()-7) ) );
-	else if ( s.left( 7 ) == "QColor(" )
+	else if ( s.startsWith( QLatin1String( "QColor(" ) ) )
 	    arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
 	else
 	    arg << QVariant( s );

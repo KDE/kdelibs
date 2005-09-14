@@ -1494,7 +1494,7 @@ static bool receiveQtObject( const DCOPCString &objId, const DCOPCString &fun, c
             reply << findQtObjects( id ) ;
             return true;
         }
-    } else if ( objId.left(3) == "qt/" ) {
+    } else if ( objId.startsWith( "qt/" ) ) {
         QObject* o = findQtObject( objId );
         if ( !o )
             return false;
@@ -1649,7 +1649,7 @@ bool DCOPClient::receive(const DCOPCString &/*app*/, const DCOPCString &objId,
         // fall through and send to defaultObject if available
 
     } else if (d->qt_bridge_enabled &&
-               (objId == "qt" || objId.left(3) == "qt/") ) { // dcop <-> qt bridge
+               (objId == "qt" || objId.startsWith( "qt/") ) ) { // dcop <-> qt bridge
         return receiveQtObject( objId, fun, data, replyType, replyData );
     }
 

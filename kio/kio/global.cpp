@@ -507,7 +507,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     host = reqUrl->host();
     protocol = reqUrl->protocol();
 
-    if ( host.left(4) == "www." )
+    if ( host.startsWith( QLatin1String( "www." ) ) )
       domain = host.mid(4);
     else
       domain = host;
