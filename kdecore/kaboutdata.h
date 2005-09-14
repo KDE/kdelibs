@@ -19,7 +19,7 @@
  *
  */
 
-#include <q3valuelist.h>
+#include <qlist.h>
 #include <qstring.h>
 #include <qimage.h>
 #include <klocale.h>

@@ -23,9 +23,8 @@
 // I (espen) prefer that header files are included alphabetically
 
 #include <qlabel.h>
-//Added by qt3to4:
 #include <QPixmap>
-#include <Q3ValueList>
+#include <QList>
 #include <kaboutapplication.h>
 #include <kaboutdialog_private.h>
 #include <kaboutdata.h>
@@ -154,13 +153,13 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 	}
   }
 
-  const Q3ValueList<KAboutTranslator> translatorList = aboutData->translators();
+  const QList<KAboutTranslator> translatorList = aboutData->translators();
 
   if(translatorList.count() > 0)
   {
       QString text = "<qt>";
 
-      Q3ValueList<KAboutTranslator>::ConstIterator it;
+      QList<KAboutTranslator>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
    text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"
