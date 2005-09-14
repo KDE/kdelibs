@@ -42,7 +42,7 @@
 
 extern "C"
 {
-	KDE_EXPORT KDEDModule *create_kdeprintd(const Q3CString& name)
+	KDE_EXPORT KDEDModule *create_kdeprintd(const QByteArray& name)
 	{
 		return new KDEPrintd(name);
 	}
@@ -98,7 +98,7 @@ void StatusWindow::setMessage(const QString& msg)
 
 //*****************************************************************************************************
 
-KDEPrintd::KDEPrintd(const Q3CString& obj)
+KDEPrintd::KDEPrintd(const QByteArray& obj)
 : KDEDModule(obj)
 {
 	m_processpool.setAutoDelete(true);

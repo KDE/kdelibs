@@ -37,7 +37,7 @@ class KDEPrintd : public KDEDModule
 	K_DCOP
 
 public:
-	KDEPrintd(const Q3CString& obj);
+	KDEPrintd(const QByteArray& obj);
 	~KDEPrintd();
 
 k_dcop:
