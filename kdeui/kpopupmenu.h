@@ -116,13 +116,28 @@ public:
      */
     static QAction* contextMenuFocusAction();
 
+#ifdef QT3_SUPPORT
     /**
      * Return the state of the mouse button and keyboard modifiers
      * when the last menuitem was activated.
      * @since 3.4
      */
     Qt::ButtonState state() const;
+#endif
 
+    /**
+     * Return the state of the mouse buttons when the last menuitem was activated.
+     * @since 4.0
+     */
+    Qt::MouseButtons mouseButtons() const;
+
+    /**
+     * Return the state of the keyboard modifiers when the last menuitem was activated.
+     * @since 4.0
+     */
+    Qt::KeyboardModifiers keyboardModifiers() const;
+
+#ifdef QT3_SUPPORT
     /**
      * Inserts a title item with no icon.
      */
@@ -179,7 +194,6 @@ public:
     virtual void activateItemAt(int index) KDE_DEPRECATED;
     // END compat methods
 
-#ifdef QT3_SUPPORT
     /**
      * Helper for porting things. Returns ID of action, or -1 if passed null.
      * ### KDE4: remove once we've cleaned up stuff

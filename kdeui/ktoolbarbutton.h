@@ -257,9 +257,15 @@ signals:
    * Emitted when the toolbar button is clicked (with any mouse button)
    * @param state makes it possible to find out which button was pressed,
    * and whether any keyboard modifiers were held.
-   * @since 3.4
+   * @since 4.0
    */
-  void buttonClicked(int, Qt::ButtonState state);
+  void buttonClicked(int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
+
+//#ifdef QT3_SUPPORT
+  /// Obsolete, use buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers)
+  /// @since 3.4
+  QT_MOC_COMPAT void buttonClicked(int, Qt::ButtonState state);
+//#endif
   void doubleClicked(int);
   void pressed(int);
   void released(int);

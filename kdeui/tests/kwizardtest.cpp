@@ -22,11 +22,13 @@
 #include <qlayout.h>
 //Added by qt3to4:
 #include <QHBoxLayout>
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kwizard.h>
 
 int main(int argc, char **argv)
 {
+  KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication a;
   KWizard *wiz = new KWizard(0, "kwizardtest", false);
   QObject::connect((QObject*) wiz->cancelButton(), SIGNAL(clicked()),

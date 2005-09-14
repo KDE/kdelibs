@@ -20,6 +20,7 @@
 //Added by qt3to4:
 #include <QLabel>
 
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <klineedit.h>
@@ -86,6 +87,7 @@ public:
 
 int main( int argc, char **argv )
 {
+  KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication app;
 
   KGlobal::instance()->dirs()->addResourceDir("data", ".");

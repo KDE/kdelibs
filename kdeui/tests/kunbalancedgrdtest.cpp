@@ -1,5 +1,6 @@
 #include "kunbalancedgrdtest.h"
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kpixmapeffect.h>
 #include <qpainter.h>
 #include <qstring.h>
@@ -170,11 +171,12 @@ void myTopWidget::rebalance()
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication;
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+    KApplication app;
     myTopWidget w;
-    app->setMainWidget(&w);
+    app.setMainWidget(&w);
     w.show();
-    return(app->exec());
+    return app.exec();
 }
 
 #include "kunbalancedgrdtest.moc"

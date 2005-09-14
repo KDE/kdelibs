@@ -461,11 +461,10 @@ void KToolBarButton::mousePressEvent( QMouseEvent * e )
 {
   d->m_buttonDown = true;
 
-  if ( e->button() == Qt::MidButton )
+  if ( e->button() == Qt::MidButton && hitButton( e->pos() ) )
   {
-    // Get QToolButton to show the button being down while pressed
-    QMouseEvent ev( QEvent::MouseButtonPress, e->pos(), e->globalPos(), Qt::LeftButton, e->state() );
-    QToolButton::mousePressEvent(&ev);
+    setDown(true);
+    emit QAbstractButton::pressed();
     return;
   }
   QToolButton::mousePressEvent(e);
@@ -473,21 +472,27 @@ void KToolBarButton::mousePressEvent( QMouseEvent * e )
 
 void KToolBarButton::mouseReleaseEvent( QMouseEvent * e )
 {
-  Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
+#if 0 // Qt3 hack to make button normal again after MMB, I think it's not needed with Qt4 anymore (see QAbstractButton::mouseReleaseEvent)
   if ( e->button() == Qt::MidButton )
   {
-    QMouseEvent ev( QEvent::MouseButtonRelease, e->pos(), e->globalPos(), Qt::LeftButton, e->state() );
+    QMouseEvent ev( QEvent::MouseButtonPress, e->pos(), e->globalPos(), Qt::LeftButton, e->buttons(), e->modifiers() );
     QToolButton::mouseReleaseEvent(&ev);
   }
   else
+#endif
     QToolButton::mouseReleaseEvent(e);
 
   if ( !d->m_buttonDown )
     return;
   d->m_buttonDown = false;
 
-  if ( hitButton( e->pos() ) )
+  if ( hitButton( e->pos() ) ) {
+#ifdef QT3_SUPPORT
+    Qt::ButtonState state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
     emit buttonClicked( d->m_id, state );
+#endif
+    emit buttonClicked( d->m_id, e->button(), e->modifiers() );
+  }
 }
 
 void KToolBarButton::paintEvent( QPaintEvent* )

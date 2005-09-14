@@ -36,7 +36,11 @@ public:
         , shortcuts(false)
         , autoExec(false)
         , lastHitAction(0L)
+#ifdef QT3_SUPPORT
         , state(Qt::NoButton)
+#endif
+        , mouseButtons(Qt::NoButton)
+        , keyboardModifiers(Qt::NoModifier)
         , m_ctxMenu(0)
     {}
 
@@ -58,7 +62,11 @@ public:
     QString originalText;
 
     QAction* lastHitAction;
+#ifdef QT3_SUPPORT
     Qt::ButtonState state;
+    Qt::MouseButtons mouseButtons;
+    Qt::KeyboardModifiers keyboardModifiers;
+#endif
 
     // support for RMB menus on menus
     Q3PopupMenu* m_ctxMenu;
@@ -128,22 +136,45 @@ void KPopupMenu::closeEvent(QCloseEvent*e)
 
 void KPopupMenu::activateItemAt(int index)
 {
+#ifdef QT3_SUPPORT
     d->state = Qt::NoButton;
+#endif
+    d->mouseButtons = Qt::NoButton;
+    d->keyboardModifiers = Qt::NoModifier;
     Q3PopupMenu::activateItemAt(index);
 }
 
+#ifdef QT3_SUPPORT
 Qt::ButtonState KPopupMenu::state() const
 {
     return d->state;
 }
+#endif
+
+Qt::MouseButtons KPopupMenu::mouseButtons() const
+{
+    return d->mouseButtons;
+}
+
+Qt::KeyboardModifiers KPopupMenu::keyboardModifiers() const
+{
+    return d->keyboardModifiers;
+}
 
 void KPopupMenu::keyPressEvent(QKeyEvent* e)
 {
+#ifdef QT3_SUPPORT
     d->state = Qt::NoButton;
+#endif
+    d->mouseButtons = Qt::NoButton;
+    d->keyboardModifiers = Qt::NoModifier;
     if (!d->shortcuts) {
         // continue event processing by Qpopup
         //e->ignore();
+#ifdef QT3_SUPPORT
         d->state = e->state();
+#endif
+        d->keyboardModifiers = e->modifiers();
         Q3PopupMenu::keyPressEvent(e);
         return;
     }
@@ -161,7 +192,10 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
         resetKeyboardVars();
         // continue event processing by Qpopup
         //e->ignore();
+#ifdef QT3_SUPPORT
         d->state = e->state();
+#endif
+        d->keyboardModifiers = e->modifiers();
         Q3PopupMenu::keyPressEvent(e);
         return;
     } else if ( key == Qt::Key_Shift || key == Qt::Key_Control || key == Qt::Key_Alt || key == Qt::Key_Meta )
@@ -351,8 +385,13 @@ void KPopupMenu::mousePressEvent(QMouseEvent* e)
 
 void KPopupMenu::mouseReleaseEvent(QMouseEvent* e)
 {
+#ifdef QT3_SUPPORT
     // Save the button, and the modifiers from state()
     d->state = Qt::ButtonState(e->button() | (e->state() & Qt::KeyboardModifierMask));
+#endif
+    // Save the button, and the modifiers
+    d->keyboardModifiers = e->modifiers();
+    d->mouseButtons = e->buttons();
 
     if ( !d->m_ctxMenu || !d->m_ctxMenu->isVisible() )
 	Q3PopupMenu::mouseReleaseEvent(e);
@@ -511,6 +550,7 @@ KPopupMenu::KPopupMenu(const QString &title, QWidget *parent)
     addAction(title);
 }
 
+#ifdef QT3_SUPPORT
 int KPopupMenu::insertTitle(const QString &text, int id, int index)
 {
     int newid = insertItem(text, id, index);
@@ -586,6 +626,6 @@ int KPopupMenu::contextMenuFocusItem()
     return KPopupMenuPrivate::s_highlightedItem;
 }
 
-// END compat methods
+#endif // END compat methods
 
 #include "kpopupmenu.moc"

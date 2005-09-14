@@ -116,7 +116,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
              KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot );
+	initPrivate( text, cut, receiver, slot, name );
 }
 
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
@@ -124,7 +124,7 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 	KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot );
+	initPrivate( text, cut, receiver, slot, name );
 	d->setIconName( sIconName );
 }
 
@@ -133,7 +133,7 @@ KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
 	KActionCollection* parent, const char* name )
 : QObject( parent), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot );
+	initPrivate( text, cut, receiver, slot, name );
 	d->setIconSet( pix );
 }
 
@@ -142,7 +142,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( item.text(), cut, receiver, slot );
+	initPrivate( item.text(), cut, receiver, slot, name );
 	if( item.hasIcon() )
 		setIcon( item.iconName() );
 	setToolTip( item.toolTip() );
@@ -154,7 +154,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, 0, 0 );
+    initPrivate( text, cut, 0, 0, name );
 }
 
 KAction::KAction( const QString& text, const KShortcut& cut,
@@ -162,7 +162,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
                   const char* slot, QObject* parent, const char* name )
  : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, receiver, slot );
+    initPrivate( text, cut, receiver, slot, name );
 }
 
 KAction::KAction( const QString& text, const QIcon& pix,
@@ -170,7 +170,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
                   QObject* parent, const char* name )
  : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, 0, 0 );
+    initPrivate( text, cut, 0, 0, name );
     setIconSet( pix );
 }
 
@@ -179,7 +179,7 @@ KAction::KAction( const QString& text, const QString& pix,
                   QObject* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, 0, 0 );
+    initPrivate( text, cut, 0, 0, name );
     d->setIconName( pix );
 }
 
@@ -189,7 +189,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
                   const char* name )
  : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, receiver, slot );
+    initPrivate( text, cut, receiver, slot, name );
     setIconSet( pix );
 }
 
@@ -199,14 +199,14 @@ KAction::KAction( const QString& text, const QString& pix,
                   const char* name )
   : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( text, cut, receiver, slot );
+    initPrivate( text, cut, receiver, slot, name );
     d->setIconName(pix);
 }
 
 KAction::KAction( QObject* parent, const char* name )
  : QObject( parent ), d(new KActionPrivate)
 {
-    initPrivate( QString::null, KShortcut(), 0, 0 );
+    initPrivate( QString::null, KShortcut(), 0, 0, name );
 }
 #endif // KDE 4: remove end
 
@@ -239,12 +239,13 @@ KAction::~KAction()
 }
 
 void KAction::initPrivate( const QString& text, const KShortcut& cut,
-                  const QObject* receiver, const char* slot )
+                  const QObject* receiver, const char* slot, const char* name )
 {
+    setObjectName( QLatin1String( name ) );
     d->m_cutDefault = cut;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
-    kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
+    kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
@@ -678,8 +679,8 @@ int KAction::plug( QWidget *w, int index )
 
     if ( icon().isEmpty() && !iconSet().pixmap().isNull() ) // old code using QIconSet directly
     {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
-                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
+                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
                            d->isEnabled(), d->plainText(), index );
     }
     else
@@ -687,8 +688,8 @@ int KAction::plug( QWidget *w, int index )
         QString icon = d->iconName();
         if ( icon.isEmpty() )
             icon = "unknown";
-        bar->insertButton( icon, id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
-                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
+        bar->insertButton( icon, id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
+                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
                            d->isEnabled(), d->plainText(), index, instance );
     }
 
@@ -1062,7 +1063,10 @@ void KAction::addContainer( QWidget* c, QWidget* w )
 
 void KAction::activate()
 {
+#ifdef QT3_SUPPORT
   emit activated( KAction::EmulatedActivation, Qt::NoButton );
+#endif
+  emit activated( KAction::EmulatedActivation, Qt::NoButton, Qt::NoModifier );
   slotActivated();
 }
 
@@ -1071,8 +1075,12 @@ void KAction::slotActivated()
   QObject *senderObj = sender();
   if ( senderObj )
   {
-    if ( qobject_cast<KAccelPrivate *>( senderObj ) )
-        emit activated( KAction::AccelActivation, Qt::NoButton );
+    if ( qobject_cast<KAccelPrivate *>( senderObj ) ) {
+#ifdef QT3_SUPPORT
+      emit activated( KAction::AccelActivation, Qt::NoButton );
+#endif
+      emit activated( KAction::AccelActivation, Qt::NoButton, Qt::NoModifier );
+    }
   }
   emit activated();
 }
@@ -1093,14 +1101,20 @@ void KAction::slotPopupActivated()
       if(qpm)
       {
         KPopupMenu* kpm = dynamic_cast<KPopupMenu *>( qpm );
-        Qt::ButtonState state;
-        if ( kpm ) // KPopupMenu? Nice, it stores the state.
-            state = kpm->state();
-        else { // just a QPopupMenu? We'll ask for the state now then (small race condition?)
-            kdDebug(129) << "KAction::slotPopupActivated not a KPopupMenu -> using keyboardMouseState()" << endl;
-            state = KApplication::keyboardMouseState();
+        Qt::MouseButtons buttons;
+        Qt::KeyboardModifiers modifiers;
+        if ( kpm ) { // KPopupMenu? Nice, it stores the state.
+            buttons = kpm->mouseButtons();
+            modifiers = kpm->keyboardModifiers();
+        } else { // just a QPopupMenu? We'll ask for the state now then (small race condition?)
+            //kdDebug(129) << "KAction::slotPopupActivated not a KPopupMenu -> using QApplication methods" << endl;
+            buttons = QApplication::mouseButtons();
+            modifiers = QApplication::keyboardModifiers();
         }
-        emit activated( KAction::PopupMenuActivation, state );
+        emit activated( KAction::PopupMenuActivation, buttons, modifiers );
+#ifdef QT3_SUPPORT
+        emit activated( KAction::PopupMenuActivation, Qt::ButtonState(int(buttons|modifiers)) );
+#endif
         slotActivated();
         return;
       }
@@ -1108,17 +1122,20 @@ void KAction::slotPopupActivated()
   }
 
   kdWarning(129)<<"Don't connect KAction::slotPopupActivated() to anything, expect into QPopupMenus which are in containers. Use slotActivated instead."<<endl;
+#ifdef QT3_SUPPORT
   emit activated( KAction::PopupMenuActivation, Qt::NoButton );
+#endif
+  emit activated( KAction::PopupMenuActivation, Qt::NoButton, Qt::NoModifier );
   slotActivated();
 }
 
-void KAction::slotButtonClicked( int, Qt::ButtonState state )
+void KAction::slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers )
 {
-  kdDebug(129) << "slotButtonClicked() state=" << state << endl;
-  emit activated( KAction::ToolBarActivation, state );
+  kdDebug(129) << "slotButtonClicked() buttons=" << buttons << " modifiers=" << modifiers << endl;
+  emit activated( KAction::ToolBarActivation, buttons, modifiers );
 
   // RightButton isn't really an activation
-  if ( ( state & Qt::LeftButton ) || ( state & Qt::MidButton ) )
+  if ( ( buttons & Qt::LeftButton ) || ( buttons & Qt::MidButton ) )
     slotActivated();
 }
 

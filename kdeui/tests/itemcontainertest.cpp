@@ -19,6 +19,7 @@
 #include <QVBoxLayout>
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kiconview.h>
@@ -214,6 +215,7 @@ void TopLevel::slotToggleSingleColumn( bool b )
 
 int main( int argc, char ** argv )
 {
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     app = new KApplication;
 
     TopLevel *toplevel = new TopLevel(0, "itemcontainertest");

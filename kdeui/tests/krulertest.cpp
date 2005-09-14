@@ -1,4 +1,4 @@
-
+#include <kcmdlineargs.h>
 
 #include "krulertest.h"
 
@@ -367,6 +367,7 @@ KRulerTest::slotSetYTrans(double d)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
+  KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication *testapp;
   KRulerTest   *window;
 

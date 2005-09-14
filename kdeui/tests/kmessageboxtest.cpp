@@ -86,11 +86,11 @@ case 1:
   i = KMessageBox::warningContinueCancel(w, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", QLatin1String("&Print"), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", false);
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", QLatin1String("&Print"), "dontask", KMessageBox::AllowLink);
+                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", KMessageBox::AllowLink);
   i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>",
   	QString("Bla"), QString("Yes"), QString("No"), "bla", KMessageBox::AllowLink);
   break;
@@ -103,7 +103,7 @@ case 2:
 case 3:
   i = KMessageBox::questionYesNo(0,
                 "Does your printer support color or only black and white?",
-                "Printer setup", QLatin1String("&Color"), QString::fromLatin1("&Black & White"));
+                "Printer setup", KGuiItem( QLatin1String("&Color") ), QString::fromLatin1("&Black & White"));
   break;
 
 case 4:
@@ -130,13 +130,13 @@ case 6:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to print.\n"
 		"Are you sure?",
-                "Print", QLatin1String("&Print"));
+                "Print", KGuiItem( QLatin1String("&Print") ) );
   break;
 case 7:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", QLatin1String("&Print"), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", false);
   break;
 
 case 8:
@@ -156,7 +156,7 @@ case 10:
   i = KMessageBox::warningYesNoCancel(0,
                 "Your document contains unsaved changes.\n"
                 "Do you want to save or discard your changes?\n",
-                "Close", QLatin1String("&Save"), QString::fromLatin1("&Discard") );
+                "Close", KGuiItem( QLatin1String("&Save") ), KGuiItem( QLatin1String("&Discard") ) );
   break;
 
 case 11:

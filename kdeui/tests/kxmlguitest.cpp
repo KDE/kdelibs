@@ -1,5 +1,6 @@
 #include "kxmlguitest.h"
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kmainwindow.h>
 #include <kxmlguifactory.h>
 #include <kxmlguiclient.h>
@@ -18,6 +19,7 @@ void Client::slotSec()
 
 int main( int argc, char **argv )
 {
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     KApplication app;
 
     // KXMLGUIClient looks in the "data" resource for the .rc files

@@ -207,6 +207,11 @@ in the drop/paste side.</li>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
 
+<H4>KAction</H4>
+<ul>
+<li>void activated( KAction::ActivationReason reason, Qt::ButtonState state ); -&gt; void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );</li>
+</ul>
+
 <H4>KRootPixmap</H4>
 <ul>
 <li>checkAvailable() -&gt; isAvailable()</li>

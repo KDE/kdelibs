@@ -18,10 +18,9 @@
  */
 
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <qlayout.h>
 #include <qwidget.h>
-//Added by qt3to4:
 #include <QBoxLayout>
 
 #include "kseparator.h"

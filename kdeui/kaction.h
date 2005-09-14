@@ -535,7 +535,7 @@ public slots:
     /**
      * Calls setEnabled( !disable ).
      * @since 3.5
-     */    
+     */
     void setDisabled(bool disable) { return setEnabled(!disable); }
 
     /**
@@ -554,9 +554,9 @@ protected slots:
     virtual void slotKeycodeChanged();
     virtual void slotActivated();
     /// @since 3.4
-    void slotPopupActivated(); // KDE4: make virtual
+    virtual void slotPopupActivated();
     /// @since 3.4
-    void slotButtonClicked( int, Qt::ButtonState state ); // KDE4: make virtual
+    virtual void slotButtonClicked( int, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 protected:
     KToolBar* toolBar( int index ) const;
@@ -600,18 +600,24 @@ signals:
      *
      * Note that this signal is emitted before the normal activated() signal.
      * Yes, BOTH signals are always emitted, so that connecting to activated() still works.
-     * Applications which care about reason and state can either ignore the activated()
+     * Applications which care about reason and mouse/keyboard state can either ignore the activated()
      * signal for a given action and react to this one instead, or store the
-     * reason and state until the activated() signal is emitted.
+     * reason and mouse/keyboard state until the activated() signal is emitted.
      *
      * @since 3.4
      */
-    void activated( KAction::ActivationReason reason, Qt::ButtonState state );
+    void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
+
+//#ifdef QT3_SUPPORT TODO
+    /// @deprecated, use the signal
+    /// void activated( KAction::ActivationReason reason, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
+    QT_MOC_COMPAT void activated( KAction::ActivationReason reason, Qt::ButtonState state );
+//#endif
     void enabled( bool );
 
 private:
     void initPrivate( const QString& text, const KShortcut& cut,
-                  const QObject* receiver, const char* slot );
+                  const QObject* receiver, const char* slot, const char* name );
     KAccel* kaccelCurrent();
     bool initShortcut( const KShortcut& );
     void plugShortcut();

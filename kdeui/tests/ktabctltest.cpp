@@ -2,6 +2,7 @@
  *
  */
 
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
@@ -31,8 +32,6 @@
 #include "ktabctltest.h"
 
 QFont default_font("Helvetica", 12);
-
-KApplication *a;
 
 TopLevel::TopLevel(QWidget *parent, const char *name)
     : QWidget(parent, name)
@@ -91,20 +90,21 @@ void TopLevel::tabChanged(int newpage)
 
 void TopLevel::okPressed()
 {
-    a->quit();
+    kapp->quit();
 }
 
 int main( int argc, char ** argv )
 {
-    a = new KApplication;
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+    KApplication a;
 
-    a->setFont(default_font);
+    a.setFont(default_font);
 
     TopLevel *toplevel = new TopLevel(0, "_ktabctl_test");
 
     toplevel->show();
-    a->setMainWidget(toplevel);
-    a->exec();
+    a.setMainWidget(toplevel);
+    return a.exec();
 }
 
 #include "ktabctltest.moc"

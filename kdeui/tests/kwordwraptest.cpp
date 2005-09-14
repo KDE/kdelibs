@@ -16,6 +16,7 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <qwidget.h>
@@ -23,21 +24,22 @@
 
 int main(int argc, char *argv[])
 {
-	KApplication app;
-	
-	QFont font( "helvetica", 12 ); // let's hope we all have the same...
-	QFontMetrics fm( font );
-	QRect r( 0, 0, 100, -1 );
-	QString str = "test wadabada [/foo/bar/waba]";
-	KWordWrap* ww = KWordWrap::formatText( fm, r, 0, str );
-	kdDebug() << str << " => " << ww->truncatedString() << endl;
-	delete ww;
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+    KApplication app;
 
-	str = "</p></p></p></p>";
-	for ( ; r.width() > 0 ; r.setWidth( r.width()-10 ) )
-	{
-	    ww = KWordWrap::formatText( fm, r, 0, str );
-	    kdDebug() << str << " => " << ww->truncatedString() << endl;
-	    delete ww;
-	}
+    QFont font( "helvetica", 12 ); // let's hope we all have the same...
+    QFontMetrics fm( font );
+    QRect r( 0, 0, 100, -1 );
+    QString str = "test wadabada [/foo/bar/waba]";
+    KWordWrap* ww = KWordWrap::formatText( fm, r, 0, str );
+    kdDebug() << str << " => " << ww->truncatedString() << endl;
+    delete ww;
+
+    str = "</p></p></p></p>";
+    for ( ; r.width() > 0 ; r.setWidth( r.width()-10 ) )
+    {
+        ww = KWordWrap::formatText( fm, r, 0, str );
+        kdDebug() << str << " => " << ww->truncatedString() << endl;
+        delete ww;
+    }
 }

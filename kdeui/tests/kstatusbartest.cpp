@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "kstatusbar.h"
+#include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
@@ -104,7 +105,8 @@ testWindow::~testWindow ()
 
 int main( int argc, char *argv[] )
 {
-	KApplication *myApp = new KApplication;
+        KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+        KApplication *myApp = new KApplication;
         testWindow *test = new testWindow;
 
         myApp->setMainWidget(test);

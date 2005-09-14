@@ -1,4 +1,5 @@
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <qwidget.h>
 #include <qcursor.h>
 //Added by qt3to4:
@@ -33,6 +34,7 @@ public:
 
 int main(int argc, char **argv)
 {
+    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
     KApplication app;
     DemoWidget w;
     app.setMainWidget(&w);
