@@ -37,8 +37,8 @@
 #include <kaboutdata.h>
 
 #if defined Q_WS_X11
-#include <kwin.h> 
-#include <kstartupinfo.h> 
+#include <kwin.h>
+#include <kstartupinfo.h>
 #endif
 
 #include <kconfig.h>
@@ -46,8 +46,8 @@
 #include "kuniqueapplication.h"
 
 #if defined Q_WS_X11
-#include <netwm.h> 
-#include <X11/Xlib.h> 
+#include <netwm.h>
+#include <X11/Xlib.h>
 #define DISPLAY "DISPLAY"
 #else
 #  ifdef Q_WS_QWS
@@ -74,8 +74,7 @@ struct DCOPRequest {
    DCOPClientTransaction *transaction;
 };
 
-class KUniqueApplication::Private {
-public:
+struct KUniqueApplication::Private {
    QList <DCOPRequest *> requestList;
    bool processingRequest;
    bool firstInstance;
@@ -122,7 +121,7 @@ KUniqueApplication::start()
         if(dcopClient()->registerAs(appName, false).isEmpty()) {
            kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
            ::exit(255);
-        }           
+        }
      }
 #endif
 
@@ -279,7 +278,7 @@ KUniqueApplication::start()
      if( !id.none())
          new_asn_id = id.id();
 #endif
-     
+
      QByteArray data, reply;
      QDataStream ds(&data, QIODevice::WriteOnly);
 	 ds.setVersion( QDataStream::Qt_3_1 );
@@ -315,7 +314,7 @@ KUniqueApplication::start()
 
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool configUnique)
   : KApplication( allowStyles, GUIenabled, initHack( configUnique )),
-    DCOPObject(KCmdLineArgs::about->appName()),d(new KUniqueApplication::Private)
+    DCOPObject(KCmdLineArgs::about->appName()),d(new Private)
 {
   d->processingRequest = false;
   d->firstInstance = true;
@@ -330,7 +329,7 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
 KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
 		Qt::HANDLE colormap, bool allowStyles, bool configUnique)
   : KApplication( display, visual, colormap, allowStyles, initHack( configUnique )),
-    DCOPObject(KCmdLineArgs::about->appName()),d(new KUniqueApplication::Private)
+    DCOPObject(KCmdLineArgs::about->appName()),d(new Private)
 {
   d->processingRequest = false;
   d->firstInstance = true;
@@ -370,7 +369,7 @@ void KUniqueApplication::newInstanceNoFork()
     QTimer::singleShot( 200, this, SLOT(newInstanceNoFork()) );
     return;
   }
-  
+
   s_handleAutoStarted = false;
   newInstance();
   d->firstInstance = false;
@@ -464,7 +463,7 @@ int KUniqueApplication::newInstance()
 {
   if (!d->firstInstance)
   {
-    
+
     if ( mainWidget() )
     {
       mainWidget()->show();
@@ -483,9 +482,5 @@ void KUniqueApplication::setHandleAutoStarted()
 {
     s_handleAutoStarted = false;
 }
-
-void KUniqueApplication::virtual_hook( int id, void* data )
-{ KApplication::virtual_hook( id, data );
-  DCOPObject::virtual_hook( id, data ); }
 
 #include "kuniqueapplication.moc"

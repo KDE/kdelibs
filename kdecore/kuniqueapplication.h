@@ -55,7 +55,7 @@ public:
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * it normally runs in the background but under special circumstances
-   * displays widgets.  Call KApplication::enableStyles() before 
+   * displays widgets.  Call KApplication::enableStyles() before
    * displaying any widgets.
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -81,7 +81,7 @@ public:
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * it normally runs in the background but under special circumstances
-   * displays widgets.  Call KApplication::enableStyles() before 
+   * displays widgets.  Call KApplication::enableStyles() before
    * displaying any widgets.
    * @param configUnique If true, the uniqueness of the application will
    *                 depend on the value of the "MultipleInstances"
@@ -171,8 +171,8 @@ public:
    * running instance is shown and activated if necessary. You should
    * prefer using it from your overridden method instead of doing
    * it directly.
-   * 
-   * Note that newInstance() is called also in the first started 
+   *
+   * Note that newInstance() is called also in the first started
    * application process.
    *
    * @return An exit value. The calling process will exit with this value.
@@ -186,7 +186,7 @@ public:
    * @since KDE 3.3
    */
   bool restoringSession();
-  
+
   /**
    * @internal
    */
@@ -205,17 +205,15 @@ private slots:
   void processDelayed();
 
   void newInstanceNoFork();
-  
+
   static KInstance* initHack( bool configUnique );
- 
+
 private:
   static bool s_nofork;
   static bool s_multipleInstances;
   static bool s_uniqueTestDone;
   static bool s_handleAutoStarted;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class Private;
   Private * const d;
