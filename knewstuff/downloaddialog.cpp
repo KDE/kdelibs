@@ -385,7 +385,7 @@ void DownloadDialog::addEntry(Entry *entry)
 
 void DownloadDialog::slotData(KIO::Job *job, const QByteArray &a)
 {
-  Q3CString tmp(a, a.size() + 1);
+  QByteArray tmp(a, a.size() + 1);
   m_data[job].append(QString::fromUtf8(tmp));
 }
 
