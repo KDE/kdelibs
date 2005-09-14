@@ -24,6 +24,8 @@
 
 #include <dcopobject.h>
 
+#include <Q3CString>
+
 #include <kapplication.h>
 #include <kcmultidialog.h>
 

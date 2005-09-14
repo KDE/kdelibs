@@ -23,6 +23,8 @@
 #include <kdedmodule.h>
 #include <dcopobject.h>
 
+#include <Q3CString>
+
 #include "kdetrayproxy.h"
 
 class KDETrayModule
