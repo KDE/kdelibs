@@ -211,7 +211,6 @@ void KConfigDialog::settingsChangedSlot()
 {
   // Update the buttons
   updateButtons();
-  emit settingsChanged();
   emit settingsChanged(name());
 }
 

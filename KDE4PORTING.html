@@ -221,7 +221,8 @@ in the drop/paste side.</li>
 <ul>
     <li>The dialog name is now a QString instead of a const char*</li>
     <li>signal void settingsChanged(const char *dialogName); -&gt; void settingsChanged(const QString&amp; dialogName);</li>
-</ui>
+    <li>signal void settingsChanged(); has dissapeared use the signal with the parameter instead. If you don't need the parameter don't connect it, e.g <pre>connect(myDialog, SIGNAL(settingsChanged(const QString&amp;)), this, SLOT(mySlot()));</pre></li>
+</ul>
 
 <H4>KDialogBase</H4>
 <li>setButtonOKText -&gt; setButtonOk

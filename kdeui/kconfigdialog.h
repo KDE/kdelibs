@@ -81,15 +81,6 @@ signals:
   /**
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
-   */
-  void settingsChanged();
-
-  /**
-   * One or more of the settings have been permanently changed such as if
-   * the user clicked on the Apply or Ok button.
-   * This signal is useful when using KConfigDialog to configure
-   * items in a list.  When emitted the main class would then know what
-   * item in the list was actually changed.
    * @param dialogName the name of the dialog.
    */
   void settingsChanged(const QString& dialogName);
