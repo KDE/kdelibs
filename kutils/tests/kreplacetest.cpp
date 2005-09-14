@@ -247,7 +247,7 @@ static void testReplaceBackRef( int options, int button = 0 )
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kreplacetest", 0, 0);
+    KCmdLineArgs::init(argc, argv, "kreplacetest", "KReplaceTest", "kreplace test", 0);
     KApplication app;
 
     testReplaceBlank( 0 );

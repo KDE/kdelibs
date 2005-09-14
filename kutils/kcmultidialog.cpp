@@ -156,7 +156,7 @@ void KCMultiDialog::apply()
     for( QStringList::const_iterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
     {
         kdDebug(710) << k_funcinfo << *it << " " << ( *it ).latin1() << endl;
-        emit configCommitted( ( *it ).latin1() );
+        emit configCommitted( ( *it ).toLatin1() );
     }
     emit configCommitted();
 }

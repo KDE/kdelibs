@@ -173,7 +173,7 @@ signals:
      * @param instanceName The name of the instance that needs to reload its
      *                     configuration.
      */
-    void configCommitted( const Q3CString & instanceName );
+    void configCommitted( const QByteArray & instanceName );
 
 protected slots:
     /**

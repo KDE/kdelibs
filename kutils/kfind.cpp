@@ -463,7 +463,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
         return find(text, regExp, index, options, matchedLength);
     }
 
-    bool caseSensitive = (options & KFindDialog::CaseSensitive);
+    Qt::CaseSensitivity caseSensitive = (options & KFindDialog::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
     if (options & KFindDialog::WholeWordsOnly)
     {
@@ -473,7 +473,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
             while (index >= 0)
             {
                 // ...find the next match.
-                index = text.findRev(pattern, index, caseSensitive);
+                index = text.lastIndexOf(pattern, index, caseSensitive);
                 if (index == -1)
                     break;
 
@@ -490,7 +490,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
             while (index < (int)text.length())
             {
                 // ...find the next match.
-                index = text.find(pattern, index, caseSensitive);
+                index = text.indexOf(pattern, index, caseSensitive);
                 if (index == -1)
                     break;
 
@@ -509,11 +509,11 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
         // Non-whole-word search.
         if (options & KFindDialog::FindBackwards)
         {
-            index = text.findRev(pattern, index, caseSensitive);
+            index = text.lastIndexOf(pattern, index, caseSensitive);
         }
         else
         {
-            index = text.find(pattern, index, caseSensitive);
+            index = text.indexOf(pattern, index, caseSensitive);
         }
         if (index != -1)
         {
@@ -534,7 +534,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
             while (index >= 0)
             {
                 // ...find the next match.
-                index = text.findRev(pattern, index);
+                index = text.lastIndexOf(pattern, index);
                 if (index == -1)
                     break;
 
@@ -553,7 +553,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
             while (index < (int)text.length())
             {
                 // ...find the next match.
-                index = text.find(pattern, index);
+                index = text.indexOf(pattern, index);
                 if (index == -1)
                     break;
 
@@ -574,11 +574,11 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
         // Non-whole-word search.
         if (options & KFindDialog::FindBackwards)
         {
-            index = text.findRev(pattern, index);
+            index = text.lastIndexOf(pattern, index);
         }
         else
         {
-            index = text.find(pattern, index);
+            index = text.indexOf(pattern, index);
         }
         if (index != -1)
         {
