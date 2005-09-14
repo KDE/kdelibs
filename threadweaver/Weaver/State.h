@@ -76,8 +76,8 @@ namespace ThreadWeaver {
         /** Resume job processing. */
         virtual void resume() = 0;
         /** Assign a job to an idle thread.
-            @param th: the thread to give a new Job to
-            @param previous: the job this thread finished before calling
+            @param th the thread to give a new Job to
+            @param previous the job this thread finished before calling
          * */
         virtual Job* applyForWork ( Thread *th,  Job* previous ) = 0;
         /** Wait (by suspending the calling thread) until a job becomes available. */

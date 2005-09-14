@@ -50,8 +50,8 @@ namespace ThreadWeaver {
             yet. Otherwise, no dependancy will be added.
             If dep is zero, it is ignored.
 
-            @param dep: the other job this job depends on
-            @param parent: the parent QObject
+            @param dep the other job this job depends on
+            @param parent the parent QObject
         */
         Job (Job* dep = 0, QObject* parent=0);
 
@@ -105,7 +105,7 @@ namespace ThreadWeaver {
 	    This function is inefficient, and should be used only to abort
 	    execution of a job.
 
-	    @param dep: the dependancy that will be removed
+	    @param dep the dependancy that will be removed
         */
         bool removeDependancy (Job *dep);
 

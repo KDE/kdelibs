@@ -34,7 +34,7 @@ namespace ThreadWeaver {
 	    These thread objects are only used inside the Weaver parent
 	    object.
 
-            @param parent: the parent WeaverImpl
+            @param parent the parent WeaverImpl
         */
         Thread(WeaverImpl *parent=0);
 
@@ -51,7 +51,7 @@ namespace ThreadWeaver {
 
 	/** Provide the msleep() method (protected in QThread) to be
 	    available  for executed jobs.
-	    @param msec: amount of milliseconds
+	    @param msec amount of milliseconds
         */
 	void msleep(unsigned long msec);
 
