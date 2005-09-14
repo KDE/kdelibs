@@ -5,12 +5,12 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Pomoc</guimenu>
+<guimenuitem>Podręcznik &kappname;</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Uruchamia System pomocy KDE</action> 
+na stronie pomocy programu &kappname; (czyli na tym dokumencie).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +18,38 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Pomoc</guimenu>
+<guimenuitem>Co to jest?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Zmienia kursor myszy w strzałkę ze znakiem zapytania
+.</action> Kliknięcie na elemencie programu spowoduje otworzenie okna pomocy 
+objaśniającego funkcję tego elementu (o ile taka pomoc istnieje).</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
 <guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenuitem>Raport o błędzie...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Otwiera okienko zgłoszenia błędu</action>, w którym
+możesz zgłosić błąd lub prośbę o dodanie nowej funkcji.</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Pomoc</guimenu>
+<guimenuitem>O programie &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Wyświetla informację o autorach i wersji programu.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Pomoc</guimenu>
+<guimenuitem>Informacje o KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Wyświetla informację o wersji KDE i inne podstawowe informacje.</action></para></listitem>
 </varlistentry>
 </variablelist>
