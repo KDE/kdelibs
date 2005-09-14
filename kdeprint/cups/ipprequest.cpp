@@ -350,7 +350,7 @@ bool IppRequest::htmlReport(int group, QTextStream& output)
 		attr = attr->next;
 	// print each attribute
 	ipp_uchar_t	*d;
-	QByteArray	dateStr;
+	QString	dateStr;
 	QDateTime	dt;
 	bool	bg(false);
 	while (attr && attr->group_tag == group)
