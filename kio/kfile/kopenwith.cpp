@@ -30,7 +30,6 @@
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
 #include <qcheckbox.h>
-#include <qtooltip.h>
 #include <qstyle.h>
 
 #include <kapplication.h>
@@ -420,7 +419,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   clearButton->setIconSet( BarIcon( "locationbar_erase" ) );
   clearButton->setFixedSize( clearButton->sizeHint() );
   connect( clearButton, SIGNAL( clicked() ), SLOT( slotClear() ) );
-  QToolTip::add( clearButton, i18n( "Clear input field" ) );
+  clearButton->setToolTip( i18n( "Clear input field" ) );
 
   hbox->addWidget( clearButton );
 

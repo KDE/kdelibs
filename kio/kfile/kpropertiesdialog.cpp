@@ -63,7 +63,6 @@ extern "C" {
 #include <qlayout.h>
 #include <qcombobox.h>
 #include <q3groupbox.h>
-#include <qtooltip.h>
 #include <qstyle.h>
 #include <q3progressbar.h>
 
@@ -916,9 +915,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     button->setIconSet( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     if ( d->mimeType == KMimeType::defaultMimeType() )
-       QToolTip::add(button, i18n("Create new file type"));
+       button->setToolTip(i18n("Create new file type"));
     else
-    QToolTip::add(button, i18n("Edit file type"));
+       button->setToolTip(i18n("Edit file type"));
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 

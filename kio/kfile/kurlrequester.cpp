@@ -21,7 +21,6 @@
 #include <unistd.h>
 
 #include <qstring.h>
-#include <qtooltip.h>
 
 #include <kaccel.h>
 #include <kcombobox.h>
@@ -208,7 +207,7 @@ void KURLRequester::init()
     QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
     myButton->setIconSet( iconSet );
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
-    QToolTip::add(myButton, i18n("Open file dialog"));
+    myButton->setToolTip(i18n("Open file dialog"));
 
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
 
