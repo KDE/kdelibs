@@ -284,7 +284,7 @@ public:
       static const QString &attrName = KGlobal::staticQString( "name" );
 
       QString name;
-      Q3CString txt( it.namedItem( tagText ).toElement().text().utf8() );
+      QByteArray txt( it.namedItem( tagText ).toElement().text().utf8() );
       if ( txt.isEmpty() )
           txt = it.namedItem( tagText2 ).toElement().text().utf8();
       if ( txt.isEmpty() )

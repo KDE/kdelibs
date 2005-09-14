@@ -345,7 +345,7 @@ public:
      * is shown and the result is stored in *keep.
      * @return Result code: Accepted or Rejected.
      */
-    static int getPassword(QWidget *parent,Q3CString &password, const QString &prompt, int *keep=0L);
+    static int getPassword(QWidget *parent,QByteArray &password, const QString &prompt, int *keep=0L);
 
     /**
      * Pops up the dialog, asks the user for a password and returns it. The
@@ -358,7 +358,7 @@ public:
      * information. The text is word broken to fit nicely in the dialog.
      * @return Result code: Accepted or Rejected.
      */
-    static int getNewPassword(QWidget *parent,Q3CString &password, const QString &prompt);
+    static int getNewPassword(QWidget *parent,QByteArray &password, const QString &prompt);
 
     /**
      * Static helper function that disables core dumps.

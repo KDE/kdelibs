@@ -372,7 +372,7 @@ void KHistoryCombo::init( bool useCompletion )
     myPixProvider = 0L;
 
     // obey HISTCONTROL setting
-    Q3CString histControl = getenv("HISTCONTROL");
+    QByteArray histControl = getenv("HISTCONTROL");
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
 

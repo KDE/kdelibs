@@ -152,7 +152,7 @@ KPasswordEdit::~KPasswordEdit()
 
 void KPasswordEdit::insert(const QString &txt)
 {
-    const Q3CString localTxt = txt.local8Bit();
+    const QByteArray localTxt = txt.local8Bit();
     const unsigned int lim = localTxt.length();
     const int m_MaxLength = maxPasswordLength();
     for(unsigned int i=0; i < lim; ++i)
@@ -529,7 +529,7 @@ void KPasswordDialog::slotKeep(bool keep)
 }
 
 
-int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, const QString &prompt,
+int KPasswordDialog::getPassword(QWidget *parent,QByteArray &password, const QString &prompt,
 	int *keep)
 {
     const bool enableKeep = (keep && *keep);
@@ -546,7 +546,7 @@ int KPasswordDialog::getPassword(QWidget *parent,Q3CString &password, const QStr
 }
 
 
-int KPasswordDialog::getNewPassword(QWidget *parent,Q3CString &password, const QString &prompt)
+int KPasswordDialog::getNewPassword(QWidget *parent,QByteArray &password, const QString &prompt)
 {
     KPasswordDialog* const dlg = new KPasswordDialog(NewPassword, false,false,parent);
     dlg->setPrompt(prompt);
