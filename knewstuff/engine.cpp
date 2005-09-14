@@ -124,9 +124,7 @@ void Engine::slotNewStuffJobData( KIO::Job *job, const QByteArray &data )
 
   kdDebug(5850) << "Engine:slotNewStuffJobData()" << endl;
 
-  QByteArray str( data, data.size() + 1 );
-
-  mNewStuffJobData[ job ].append( QString::fromUtf8( str ) );
+  mNewStuffJobData[ job ].append( QString::fromUtf8( data ) ); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
 
 void Engine::slotNewStuffJobResult( KIO::Job *job )

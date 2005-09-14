@@ -385,8 +385,7 @@ void DownloadDialog::addEntry(Entry *entry)
 
 void DownloadDialog::slotData(KIO::Job *job, const QByteArray &a)
 {
-  QByteArray tmp(a, a.size() + 1);
-  m_data[job].append(QString::fromUtf8(tmp));
+  m_data[job].append(QString::fromUtf8(a)); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
 
 void DownloadDialog::slotDetails()

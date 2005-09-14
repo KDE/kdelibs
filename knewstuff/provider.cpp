@@ -189,9 +189,7 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 
   if ( data.size() == 0 ) return;
 
-  QByteArray str( data, data.size() + 1 );
-
-  mJobData.append( QString::fromUtf8( str ) );
+  mJobData.append( QString::fromUtf8( data ) ); // ####### The fromUtf8 conversion should be done at the end, not chunk by chunk
 }
 
 void ProviderLoader::slotJobResult( KIO::Job *job )
