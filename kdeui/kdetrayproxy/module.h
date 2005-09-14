@@ -33,7 +33,7 @@ class KDETrayModule
     Q_OBJECT
     K_DCOP
     public:
-        KDETrayModule( const Q3CString& obj );
+        KDETrayModule( const QByteArray& obj );
     private:
         KDETrayProxy proxy;
     };
