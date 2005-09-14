@@ -37,7 +37,7 @@ def KDEuse(lenv, flags):
 	if 'dump' in _flags:
 		lenv['DUMPCONFIG']=1
 	if not 'nohelp' in _flags:
-		if lenv['_CONFIGURE'] or lenv['HELP']: lenv.Exit(0)
+		if lenv['_CONFIGURE_'] or lenv['HELP']: lenv.Exit(0)
 	if not 'nosmart' or not lenv.has_key('nosmart_includes'):
 		lenv.AppendUnique(CPPPATH=['#/'])
 		lst=[]
@@ -331,7 +331,7 @@ def generate(env):
 		return instdir
 
 	# reconfigure when things are missing
-	if not env['HELP'] and (env['_CONFIGURE'] or not env.has_key('QTDIR') or not env.has_key('KDEDIR')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('QTDIR') or not env.has_key('KDEDIR')):
 		detect_kde(env)
 		opts.Save(cachefile, env)
 

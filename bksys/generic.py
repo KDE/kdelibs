@@ -309,7 +309,7 @@ class genobj:
 			if len(sal)>1:
 				if sal[1] in lext: self.p_local_shlibs.append(self.fixpath(sal[0]+'.so')[0])
 				elif sal[1] in sext: self.p_local_staticlibs.append(self.fixpath(sal[0]+'.a')[0])
-				else: self.p_global_shlibs.append(l)
+				else: self.p_global_shlibs.append(lib)
 
 		# and now add the libraries from uselib
 		if self.uselib:
