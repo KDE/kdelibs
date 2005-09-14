@@ -90,7 +90,7 @@ namespace ThreadWeaver {
         /** Add a dependency.
             The object given will be added as a dependency. The Job will not
             be executed until all dependencies have been processed.
-            The job is automatically added to the dependency as a dependant.
+            The job is automatically added to the dependency as a dependent.
             @param dependency: the other job this job depends on
         */
         void addDependency (Job* dependency);
@@ -98,7 +98,7 @@ namespace ThreadWeaver {
         /** Remove dependency.
             The given dependency will be removed. If none are left, the job
             will be executed as soon as a waiting thread is available.
-            The job will automatically be removed as a dependant of dep.
+            The job will automatically be removed as a dependent of dep.
 
             Returns false if the given object is not dependency of this job.
 

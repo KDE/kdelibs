@@ -56,7 +56,7 @@ namespace ThreadWeaver {
       dependencies in the execution order (load, parse and display an HTML
       document with embedded media): Create jobs for the individual steps you
       need to perform. Try to split the whole operation in as many
-      independant, parallelizable parts as possible. Now declare the execution
+      independent, parallelizable parts as possible. Now declare the execution
       dependencies. A job will only be executed when all jobs it depends on
       are finished. This way every individual operation will be executed as
       soon as it becomes possible. Connect to the final jobs done() signal to
@@ -139,7 +139,7 @@ namespace ThreadWeaver {
       possible. While code optimizations only lead to so much improvement,
       application performance is usually determined by network and I/O
       throughput. The CPU time needed is usually negligible. At the same time,
-      the different hardware subsystems usually are independant in modern
+      the different hardware subsystems usually are independent in modern
       architectures. Network, I/O and memory interfaces can transfer data all
       at the same time, and the CPU is able to process instructions while all
       these subsystems are busy. The modern computer is not a traditional

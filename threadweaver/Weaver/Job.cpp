@@ -66,7 +66,7 @@ namespace ThreadWeaver {
         m_thread = 0;
 	setFinished (true);
 	m_mutex->unlock();
-        resolveDependencies(); // notify dependants
+        resolveDependencies(); // notify dependents
         emit ( done( this ) );
 	debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
     }
