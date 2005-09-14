@@ -31,7 +31,6 @@
 #include <qevent.h>
 #include <qlayout.h>
 #include <qpainter.h>
-#include <qtooltip.h>
 #include <qfontmetrics.h>
 #include <qstyle.h>
 #include <QStyleOptionButton>
@@ -397,7 +396,7 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q
 	setFixedHeight(24);
 	setFixedWidth(24);
 	m_id=id;
-	QToolTip::add(this,text);
+	setToolTip(text);
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 }
 
@@ -412,7 +411,7 @@ KMultiTabBarButton::KMultiTabBarButton(const QString& text, Q3PopupMenu *popup,
 	setFixedHeight(24);
 	setFixedWidth(24);
 	m_id=id;
-	QToolTip::add(this,text);
+	setToolTip(text);
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
 }
 
@@ -427,7 +426,7 @@ void KMultiTabBarButton::setText(const QString& text)
 {
 	QPushButton::setText(text);
 	m_text=text;
-	QToolTip::add(this,text);
+	setToolTip(text);
 }
 
 void KMultiTabBarButton::slotClicked()
