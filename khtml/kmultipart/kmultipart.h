@@ -78,7 +78,7 @@ private:
     bool m_isHTMLPart;
     bool m_partIsLoading;
     KIO::Job* m_job;
-    Q3CString m_boundary;
+    QByteArray m_boundary;
     int m_boundaryLength;
     QString m_mimeType; // the one handled by m_part - store the kservice instead?
     QString m_nextMimeType; // while parsing headers

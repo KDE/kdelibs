@@ -195,7 +195,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
            if (tmp.startsWith(QLatin1String("--")))
                m_boundary = tmp.latin1();
            else
-               m_boundary = Q3CString("--")+tmp.latin1();
+               m_boundary = QByteArray("--")+tmp.latin1();
            m_boundaryLength = m_boundary.length();
        }
     }
@@ -210,7 +210,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 #ifdef DEBUG_PARSING
             kdDebug() << "lineData.size()=" << lineData.size() << endl;
 #endif
-            Q3CString line( lineData.data(), lineData.size()+1 ); // deep copy
+            QByteArray line( lineData.data(), lineData.size()+1 ); // deep copy
             // 0-terminate the data, but only for the line-based tests below
             // We want to keep the raw data in case it ends up in sendData()
             int sz = line.size();

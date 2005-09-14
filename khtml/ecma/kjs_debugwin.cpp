@@ -37,7 +37,6 @@
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qdatastream.h>
-#include <q3cstring.h>
 #include <qpainter.h>
 #include <qscrollbar.h>
 

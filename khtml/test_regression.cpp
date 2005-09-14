@@ -596,7 +596,7 @@ int main(int argc, char *argv[])
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
 
-    Q3CString baseDir = args->getOption("base");
+    QByteArray baseDir = args->getOption("base");
 
     if ( args->count() < 1 && baseDir.isEmpty() ) {
 	KCmdLineArgs::usage();

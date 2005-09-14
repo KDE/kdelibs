@@ -617,7 +617,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             if (KSSL::doesSSLWork() && !d->kssl)
                 d->kssl = new KSSL;
             QStringList sl;
-            Q3CString answer( "invalid" );
+            QByteArray answer( "invalid" );
 
             if (!d->kssl) {
                 answer = "nossl";
@@ -782,7 +782,7 @@ PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
-Q3CString PermissionDialog::exec( const QString & cert, const QString & perm ) {
+QByteArray PermissionDialog::exec( const QString & cert, const QString & perm ) {
     QPointer<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
 
     dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );

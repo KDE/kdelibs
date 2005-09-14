@@ -116,7 +116,7 @@ namespace KJS {
 
   private:
     const Konqueror* konqueror;
-    Q3CString m_name;
+    QByteArray m_name;
   };
 #endif
 } // namespace KJS
@@ -2545,7 +2545,7 @@ Value KonquerorFunc::tryCall(ExecState *exec, Object &, const List &args)
   if ( !iface )
     return Undefined();
 
-  Q3CString n = m_name.data();
+  QByteArray n = m_name.data();
   n += "()";
   iface->callMethod( n.data(), QVariant() );
 

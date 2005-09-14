@@ -835,7 +835,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 uint tagID = khtml::getTagID(ptr, len);
                 if (!tagID) {
 #ifdef TOKEN_DEBUG
-                    Q3CString tmp(ptr, len+1);
+                    QByteArray tmp(ptr, len+1);
                     kdDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"" << endl;
 #endif
                     dest = buffer;
@@ -843,7 +843,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 else
                 {
 #ifdef TOKEN_DEBUG
-                    Q3CString tmp(ptr, len+1);
+                    QByteArray tmp(ptr, len+1);
                     kdDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
 #endif
                     currToken.tid = beginTag ? tagID : tagID + ID_CLOSE_TAG;
@@ -899,15 +899,15 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
                         if ( !a )
-                            attrName = QLatin1String(Q3CString(cBuffer, cBufferPos+1).data());
+                            attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
 
                         dest = buffer;
                         *dest++ = a;
 #ifdef TOKEN_DEBUG
                         if (!a || (cBufferPos && *cBuffer == '!'))
-                            kdDebug( 6036 ) << "Unknown attribute: *" << Q3CString(cBuffer, cBufferPos+1).data() << "*" << endl;
+                            kdDebug( 6036 ) << "Unknown attribute: *" << QByteArray(cBuffer, cBufferPos+1).data() << "*" << endl;
                         else
-                            kdDebug( 6036 ) << "Known attribute: " << Q3CString(cBuffer, cBufferPos+1).data() << endl;
+                            kdDebug( 6036 ) << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data() << endl;
 #endif
                         // did we just get />
                         if (!a && cBufferPos == 1 && *cBuffer == '/' && curchar == '>')
@@ -923,7 +923,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             }
             if ( cBufferPos == CBUFLEN ) {
                 cBuffer[cBufferPos] = '\0';
-                attrName = QLatin1String(Q3CString(cBuffer, cBufferPos+1).data());
+                attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
                 dest = buffer;
                 *dest++ = 0;
                 tag = SearchEqual;

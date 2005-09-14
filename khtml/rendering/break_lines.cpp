@@ -1,6 +1,5 @@
 #include <break_lines.h>
 #include <klibloader.h>
-#include "q3cstring.h"
 #include <qtextcodec.h>
 #include <q3cleanuphandler.h>
 #include <stdio.h>
@@ -97,7 +96,7 @@ namespace khtml {
         // build up string of thai chars
         if ( string != cache->string ) {
             //fprintf(stderr,"new string found (not in cache), calling libthai\n");
-            Q3CString cstr = thaiCodec->fromUnicode( QConstString(string,len).string());
+            QByteArray cstr = thaiCodec->fromUnicode( QConstString(string,len).string());
             //printf("About to call libthai::th_brk with str: %s",cstr.data());
 
             cache->numwbrpos = th_brk((const unsigned char*) cstr.data(), cache->wbrpos, cache->allocated);

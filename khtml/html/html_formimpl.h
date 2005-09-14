@@ -45,7 +45,7 @@ namespace khtml
     class RenderRadioButton;
     class RenderFileButton;
 
-    typedef Q3ValueList<Q3CString> encodingList;
+    typedef Q3ValueList<QByteArray> encodingList;
 }
 
 namespace KWallet {

@@ -617,8 +617,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it )
         {
-          Q3CString javaPolicy = adviceToStr( it.data() );
-          Q3CString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
+          QByteArray javaPolicy = adviceToStr( it.data() );
+          QByteArray javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "JavaDomainSettings", domainConfig );
@@ -630,8 +630,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         PolicyMap::Iterator it;
         for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it )
         {
-          Q3CString javaPolicy = adviceToStr( KJavaScriptDunno );
-          Q3CString javaScriptPolicy = adviceToStr( it.data() );
+          QByteArray javaPolicy = adviceToStr( KJavaScriptDunno );
+          QByteArray javaScriptPolicy = adviceToStr( it.data() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
         }
         config->writeEntry( "ECMADomainSettings", domainConfig );

@@ -132,7 +132,7 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
     const char sep = 0;
 
     //make space for the command size: 8 characters...
-    const Q3CString space( "        " );
+    const QByteArray space( "        " );
     output << space;
 
     //write command code

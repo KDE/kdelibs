@@ -115,12 +115,12 @@ long HTMLFormElementImpl::length() const
     return len;
 }
 
-static Q3CString encodeCString(const Q3CString& e)
+static QByteArray encodeCString(const QByteArray& e)
 {
     // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
     // safe characters like NS handles them for compatibility
     static const char *safe = "-._*";
-    Q3CString encoded(( e.length()+e.count( '\n' ) )*3
+    QByteArray encoded(( e.length()+e.count( '\n' ) )*3
                      +e.count('\r') * 3 + 1);
     int enclen = 0;
     bool crmissing = false;
@@ -196,9 +196,9 @@ inline static QString escapeUnencodeable(const QTextCodec* codec, const QString&
     return enc_string;
 }
 
-inline static Q3CString fixUpfromUnicode(const QTextCodec* codec, const QString& s)
+inline static QByteArray fixUpfromUnicode(const QTextCodec* codec, const QString& s)
 {
-    Q3CString str = codec->fromUnicode(escapeUnencodeable(codec,s));
+    QByteArray str = codec->fromUnicode(escapeUnencodeable(codec,s));
     str.truncate(str.length());
     return str;
 }
@@ -210,7 +210,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 #endif
 
     QByteArray form_data(0);
-    Q3CString enc_string = ""; // used for non-multipart data
+    QByteArray enc_string = ""; // used for non-multipart data
 
     // find out the QTextcodec to use
     QString str = m_acceptcharset.string();
@@ -284,7 +284,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 }
                 else
                 {
-                    Q3CString hstr("--");
+                    QByteArray hstr("--");
                     hstr += m_boundary.latin1();
                     hstr += "\r\n";
                     hstr += "Content-Disposition: form-data; name=\"";
@@ -1561,7 +1561,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             // can't submit file in www-url-form encoded
             QWidget* const toplevel = static_cast<RenderSubmitButton*>(m_render)->widget()->topLevelWidget();
             if (multipart) {
-                Q3CString filearray( "" );
+                QByteArray filearray( "" );
                 if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
                     const KFileItem fileitem(filestat, fileurl, true, false);
                     if ( fileitem.isFile() &&
@@ -2113,7 +2113,7 @@ void HTMLSelectElementImpl::attach()
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
 {
     bool successful = false;
-    const Q3CString enc_name = fixUpfromUnicode(codec, name().string());
+    const QByteArray enc_name = fixUpfromUnicode(codec, name().string());
     QVector<HTMLGenericFormElementImpl*> items = listItems();
 
     uint i;
@@ -2311,7 +2311,7 @@ void HTMLKeygenElementImpl::parseAttribute(AttributeImpl* attr)
 bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
 {
     bool successful = false;
-    const Q3CString enc_name = fixUpfromUnicode(codec, name().string());
+    const QByteArray enc_name = fixUpfromUnicode(codec, name().string());
 
     encoded_values += enc_name;
 

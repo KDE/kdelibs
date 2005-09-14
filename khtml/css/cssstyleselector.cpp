@@ -299,7 +299,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	QFile f(locate( "data", "khtml/css/html4.css" ) );
 	f.open(QIODevice::ReadOnly);
 
-	Q3CString file( f.size()+1 );
+	QByteArray file( f.size()+1 );
 	int readbytes = f.readBlock( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
@@ -324,7 +324,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 	QFile f(locate( "data", "khtml/css/quirks.css" ) );
 	f.open(QIODevice::ReadOnly);
 
-	Q3CString file( f.size()+1 );
+	QByteArray file( f.size()+1 );
 	int readbytes = f.readBlock( file.data(), f.size() );
 	f.close();
 	if ( readbytes >= 0 )
