@@ -42,7 +42,6 @@
 #include <qmap.h>
 #include <qdir.h>
 #include <qfileinfo.h>
-#include <q3cstring.h>
 
 /***************************************************************************/
 
@@ -235,7 +234,7 @@ ISpellChecker::checkWord( const QString& utf8Word )
 		return false;
 
 	bool retVal = false;
-	Q3CString out;
+	QByteArray out;
 	if (!m_translate_in)
 		return false;
 	else {
@@ -270,7 +269,7 @@ ISpellChecker::suggestWord(const QString& utf8Word)
 			utf8Word.length() == 0)
 		return QStringList();
 
-	Q3CString out;
+	QByteArray out;
 	if (!m_translate_in)
 		return QStringList();
 	else
@@ -317,7 +316,7 @@ s_buildHashNames (std::vector<std::string> & names, const char * dict)
 	names.clear ();
 
 	while ( (tmp = ispell_dirs[i++]) ) {
-		Q3CString maybeFile = Q3CString( tmp ) + '/';
+		QByteArray maybeFile = QByteArray( tmp ) + '/';
 		maybeFile += dict;
 		names.push_back( maybeFile.data() );
 	}
