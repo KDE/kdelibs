@@ -120,7 +120,7 @@ public:
   /**
    * Returns the name of the icon.
    * @return the icon associated with the service,
-   *         or QString::null if not set
+   *         or "unknown" if not set
    */
   QString icon() const { return m_strIcon; }
   /**
