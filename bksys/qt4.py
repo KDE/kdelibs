@@ -10,6 +10,7 @@ import os, re, types
 def exists(env):
 	return True
 
+"""
 def detect_qt4(env):
 	def getpath(varname):
 		if not env.has_key('ARGS'): return None
@@ -120,6 +121,7 @@ def detect_qt4(env):
 	env['QTINCLUDEPATH']=qtincludes
 	if not qtlibs: qtlibs=env.join(qtdir, 'lib', libsuffix)
 	env['QTLIBPATH']=qtlibs
+"""
 
 def generate(env):
 	"""Set up the qt environment and builders - the moc part can be difficult to understand """
@@ -169,7 +171,14 @@ def generate(env):
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('QTDIR')):
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
-		detect_qt4(env)
+		import sys
+		if sys.platform == 'darwin':
+			sys.path.append('bksys'+os.sep+'osx')
+			from detectqt4 import detect
+		else:
+			sys.path.append('bksys'+os.sep+'unix')
+			from detectqt4 import detect
+		detect(env)
 		opts.Save(cachefile, env)
 
 	# TODO cleanup and move to the configuration part

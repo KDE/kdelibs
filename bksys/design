@@ -68,6 +68,15 @@ bksys/unix
 bksys/win32
 bksys/osx
 
+If possible add the platform specific code to those directories and import the code needed like this
+import sys
+if sys.platform == 'darwin':
+   sys.path.append('bksys'+os.sep+'osx')
+   from somemodule import runfunction
+   runfunction(env)
+else:
+   ...
+
 * There will be one config.h in build which will include all other configuration files
 
 DISCUSSION:
