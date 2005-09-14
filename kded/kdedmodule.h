@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <dcopobject.h>
 #include <ksharedptr.h>
-#include <Q3CString>
+#include <QByteArray>
 
 class KDEDModulePrivate;
 class Kded;

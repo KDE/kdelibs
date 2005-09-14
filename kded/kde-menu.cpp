@@ -147,7 +147,7 @@ int main(int argc, char **argv)
       args.append("--incremental");
       args.append("--checkstamps");
       QString command = "kbuildsycoca";
-      Q3CString _launcher = KApplication::launcher();
+      QByteArray _launcher = KApplication::launcher();
       if (!DCOPRef(_launcher, _launcher).call("kdeinit_exec_wait", command, args).isValid())
       {
          qWarning("Can't talk to klauncher!");

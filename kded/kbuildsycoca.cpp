@@ -108,7 +108,7 @@ static QString sycocaPath()
   }
   else
   {
-     Q3CString ksycoca_env = getenv("KDESYCOCA");
+     QByteArray ksycoca_env = getenv("KDESYCOCA");
      if (ksycoca_env.isEmpty())
         path = KGlobal::dirs()->saveLocation("cache")+"ksycoca";
      else
@@ -120,7 +120,7 @@ static QString sycocaPath()
 
 static QString oldSycocaPath()
 {
-  Q3CString ksycoca_env = getenv("KDESYCOCA");
+  QByteArray ksycoca_env = getenv("KDESYCOCA");
   if (ksycoca_env.isEmpty())
      return KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
 
@@ -800,7 +800,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    while(true)
    {
-     Q3CString registeredName = dcopClient->registerAs(appName, false);
+     QByteArray registeredName = dcopClient->registerAs(appName, false);
      if (registeredName.isEmpty())
      {
        fprintf(stderr, "Warning: %s is unable to register with DCOP.\n", appName);
@@ -853,7 +853,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    if( checkstamps && incremental )
    {
        QString path = sycocaPath()+"stamp";
-       Q3CString qPath = QFile::encodeName(path);
+       QByteArray qPath = QFile::encodeName(path);
        cSycocaPath = qPath.data(); // Delete timestamps on crash
        QFile ksycocastamp(path);
        if( ksycocastamp.open( QIODevice::ReadOnly ))
@@ -889,7 +889,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    if( checkfiles && ( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp, oldresourcedirs )))
    {
-      Q3CString qSycocaPath = QFile::encodeName(sycocaPath());
+      QByteArray qSycocaPath = QFile::encodeName(sycocaPath());
       cSycocaPath = qSycocaPath.data();
 
       g_allEntries = 0;
