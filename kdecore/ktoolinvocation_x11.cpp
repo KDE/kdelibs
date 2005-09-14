@@ -78,7 +78,7 @@
 #include <QMutexLocker>
 #include <qglobal.h>
 #warning used non public api for now
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive));
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
 
 
 #define THREADGUARD  do { if (!qApp) return -1; Q_ASSERT(qApp->thread()==QThread::currentThread()); \

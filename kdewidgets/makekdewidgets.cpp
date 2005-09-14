@@ -20,7 +20,7 @@ static const char classHeader[] = 	"/**\n"
 					"#include <QtDesigner/QDesignerCustomWidgetInterface>\n"
 					"#include <qplugin.h>\n"
 					"#include <qdebug.h>\n";
-;
+
 static const char collClassDef[] = "class %CollName : public QObject, public QDesignerCustomWidgetCollectionInterface\n"
                                 "{\n"
                                 "	Q_OBJECT\n"

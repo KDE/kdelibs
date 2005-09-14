@@ -54,7 +54,7 @@ enum MIB
     MibUtf8    = 106,
     MibUtf16   = 1015,
     MibUtf16BE = 1013,
-    MibUtf16LE = 1014,
+    MibUtf16LE = 1014
 };
 
 static bool is16Bit(QTextCodec* codec)

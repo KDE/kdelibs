@@ -870,7 +870,7 @@ protected:
         {
             ContentsMargin,
             FocusMargin            = ContentsMargin + MarginInc,
-            DummyProp      = FocusMargin + MarginInc,
+            DummyProp      = FocusMargin + MarginInc
         };
 
         // TODO: implement CE_ToolButtonLabel to have own Generic::Text,

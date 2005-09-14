@@ -34,7 +34,7 @@ namespace QtTest
 
     static const char *expectFailComment = 0;
     static int expectFailMode = 0;
-};
+}
 
 bool QtTestResult::allDataPassed()
 {

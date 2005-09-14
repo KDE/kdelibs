@@ -154,7 +154,7 @@ namespace KPAC
                   it != proxies.end(); ++it )
             {
                 QString proxy = ( *it ).stripWhiteSpace();
-                if ( proxy.startsWith( QLatin1String( "PROXY" ) )
+                if ( proxy.startsWith( QLatin1String( "PROXY" ) ) )
                 {
                     KURL proxyURL( proxy = proxy.mid( 5 ).stripWhiteSpace() );
                     // If the URL is invalid or the URL is valid but in opaque

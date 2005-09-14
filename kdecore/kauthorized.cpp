@@ -214,7 +214,7 @@ public:
   QMutex mutex;
 };
 
-Q_GLOBAL_STATIC(KAuthorizedPrivate,authPrivate);
+Q_GLOBAL_STATIC(KAuthorizedPrivate,authPrivate)
 #define MY_D KAuthorizedPrivate *d=authPrivate();
 
 
