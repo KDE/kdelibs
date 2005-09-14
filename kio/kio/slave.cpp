@@ -313,9 +313,9 @@ void Slave::gotInput()
         emit error(ERR_SLAVE_DIED, arg);
         // Tell the scheduler about the problem.
         emit slaveDied(this);
-        // After the above signal we're dead!!
     }
     deref();
+    // Here we might be dead!!
 }
 
 void Slave::kill()
