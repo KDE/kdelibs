@@ -2,12 +2,12 @@
 #define _MEIN_XSLT_H_
 
 #include <libxml/parser.h>
-#include <q3valuevector.h>
+#include <QVector>
 
 class QByteArray;
 
 QString transform(const QString &file, const QString& stylesheet,
-                  const Q3ValueVector<const char *> &params = Q3ValueVector<const char *>());
+                  const QVector<const char *> &params = QVector<const char *>());
 QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
 bool saveToCache( const QString &contents, const QString &filename );

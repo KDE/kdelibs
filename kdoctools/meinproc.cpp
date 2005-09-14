@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
     xmlSubstituteEntitiesDefault(1);
     xmlLoadExtDtdDefaultValue = 1;
 
-    Q3ValueVector<const char *> params;
+    QVector<const char *> params;
     if (args->isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );
         params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).latin1() ) );

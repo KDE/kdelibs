@@ -49,7 +49,7 @@ int closeQString(void * context) {
 }
 
 QString transform( const QString &pat, const QString& tss,
-                   const Q3ValueVector<const char *> &params )
+                   const QVector<const char *> &params )
 {
     QString parsed;
 
@@ -77,7 +77,7 @@ QString transform( const QString &pat, const QString& tss,
         return parsed;
 
     INFO(i18n("Applying stylesheet"));
-    Q3ValueVector<const char *> p = params;
+    QVector<const char *> p = params;
     p.append( NULL );
     xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, const_cast<const char **>(&p[0]));
     xmlFreeDoc(doc);
