@@ -16,8 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef ksycoca_h
-#define ksycoca_h
+#ifndef KSYCOCA_H
+#define KSYCOCA_H
 
 #include <dcopobject.h>
 #include <qobject.h>
@@ -26,7 +26,6 @@
 #include <kdelibs_export.h>
 
 class QDataStream;
-class KSycocaPrivate;
 class KSycocaFactory;
 class KSycocaFactoryList;
 
@@ -93,7 +92,7 @@ public:
     * The database contains all changes made _before_ this time and
     * _might_ contain changes made after that.
     */
-   Q_UINT32 timeStamp();
+   quint32 timeStamp();
 
    /**
     * @internal - returns update signature of database
@@ -104,7 +103,7 @@ public:
     * Touching this file causes the database to be recreated
     * from scratch.
     */
-   Q_UINT32 updateSignature();
+   quint32 updateSignature();
 
    /**
     * @internal - returns all directories with information
@@ -172,7 +171,7 @@ protected:
    bool bNoDatabase;
    size_t m_sycoca_size;
    const char *m_sycoca_mmap;
-   Q_UINT32 m_timeStamp;
+   quint32 m_timeStamp;
 
 public:
    static KSycoca *_self; // Internal use only.
@@ -180,7 +179,8 @@ public:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-   KSycocaPrivate *d;
+   class Private;
+   Private *const d;
 };
 
 #endif
