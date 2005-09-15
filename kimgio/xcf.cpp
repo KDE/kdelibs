@@ -31,10 +31,10 @@
 
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
 
-int XCFImageFormat::add_lut[256][256];
+//int XCFImageFormat::add_lut[256][256];
 
 
-XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
+const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
 	{true},		// NORMAL_MODE
 	{true},		// DISSOLVE_MODE
 	{true},		// BEHIND_MODE
@@ -84,16 +84,20 @@ XCFImageFormat::XCFImageFormat()
 		random_table[swap] = tmp;
 	}
 
-	for (int j = 0; j < 256; j++) {
-		for (int k = 0; k < 256; k++) {
-			int tmp_sum = j + k;
-			if (tmp_sum > 255)
-				tmp_sum = 255;
-			add_lut[j][k] = tmp_sum;
-		}
-	}
+//	for (int j = 0; j < 256; j++) {
+//		for (int k = 0; k < 256; k++) {
+//			int tmp_sum = j + k;
+//			if (tmp_sum > 255)
+//				tmp_sum = 255;
+//			add_lut[j][k] = tmp_sum;
+//		}
+//	}
 }
 
+inline
+int XCFImageFormat::add_lut( int a, int b ) {
+	return QMIN( a + b, 255 );
+}
 
 bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
 {
@@ -1539,9 +1543,9 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
 			}
 			break;
 		case ADDITION_MODE: {
-			  src_r = add_lut[dst_r][src_r];
-			  src_g = add_lut[dst_g][src_g];
-			  src_b = add_lut[dst_b][src_b];
+			  src_r = add_lut(dst_r,src_r);
+			  src_g = add_lut(dst_g,src_g);
+			  src_b = add_lut(dst_b,src_b);
 			  src_a = kMin(src_a, dst_a);
 			}
 			break;
@@ -1726,7 +1730,7 @@ void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l
 			}
 			break;
 		case ADDITION_MODE: {
-				src = add_lut[dst][src];
+				src = add_lut(dst,src);
 			}
 			break;
 		case SUBTRACT_MODE: {
@@ -1833,7 +1837,7 @@ void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
 			}
 			break;
 		case ADDITION_MODE: {
-				src = add_lut[dst][src];
+				src = add_lut(dst,src);
 				src_a = kMin(src_a, dst_a);
 			}
 			break;
