@@ -10,28 +10,20 @@ from SCons.Options import Options, PathOption
 
 ## CONFIGURATION: write the config.h files
 def write_config_h(lenv):
-	# first remove all config-*.h from the top-level in build/
 	import glob
-	files = glob.glob( lenv.join('build', 'config-*.h') )
-	#for file in files: os.path.remove(file)
-
-	# let us use the dictionary contained in env['BKSYS_CONFIG_H']
-	# each module fills its hash entry and we write here the list of config.h
 
 	# put the files into the builddir
 	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
 	dest=open(lenv.join(lenv['_BUILDDIR_'], 'config.h'), 'w')
-
 	dest.write('/* defines are added below */\n')
-	for key in lenv['BKSYS_CONFIG_H'].keys():
-		if not key or not lenv['BKSYS_CONFIG_H'][key]: continue
-		dest.write('#include "config-%s.h"' % key)
-		header=open(lenv.join('build','config-%s.h'%key), 'w')
-		header.write(lenv['BKSYS_CONFIG_H'][key])
-		header.close()
+
+	# write the config.h including all others
+	files = glob.glob( lenv.join('build', 'config-*.h') )
+	for file in files: dest.write('#include "%s"' % file)
 	dest.write('\n')
 	dest.close()
 
+	# now the kdemacros .. hummm
 	dest = open(lenv.join('build','kdemacros.h'), 'w')
 	dest.write('#include <kdemacros.h.in>\n')
 	dest.close()
@@ -59,7 +51,7 @@ def configure(dict):
 		else: print 'unknown key: '+key
 
 	## now build the environment
-	env = Environment.Environment( tools=mytools, toolpath=tool_path, ENV=os.environ )
+	env = Environment.Environment( tools=mytools, toolpath=tool_path, ENV=os.environ, _BUILDDIR_=build_dir )
 
 	## at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
@@ -67,8 +59,7 @@ def configure(dict):
 	## disable the rpath in scripts if asked to
 	env['_WANT_RPATH_']=want_rpath
 
-	## set the build dir
-	env['_BUILDDIR_']=build_dir
+	env.Append(CPPPATH=['#']) # ugly hack, remove when possible (ita)
 
 	## we want symlinks by default
 	env.SetOption('duplicate', cp_method)
@@ -367,18 +358,6 @@ class genobj:
 
 		self.executed=1
 
-## HELPER Copy function that honors symlinks
-def copy_bksys(dest, source, env):
-        if os.path.islink(source):
-		#print "symlinking "+source+" "+dest
-		if os.path.islink(dest): os.unlink(dest)
-		os.symlink(os.readlink(source), dest)
-	else:
-		shutil.copy2(source, dest)
-		st=os.stat(source)
-		os.chmod(dest, stat.S_IMODE(st[stat.ST_MODE]) | stat.S_IWRITE)
-	return 0
-
 ## HELPER Expands strings given and make sure to return a list type
 def make_list(env, s):
 	if type(s) is types.ListType: return s
@@ -497,9 +476,6 @@ def generate(env):
 		if dd:
 			env['DESTDIR']=dd
 			env.pprint('CYAN','** Enabling DESTDIR for the project ** ',env['DESTDIR'])
-
-	## install symlinks for shared libraries properly
-	#env['INSTALL'] = copy_bksys
 
 	## Use the same extension .o for all object files
 	env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1

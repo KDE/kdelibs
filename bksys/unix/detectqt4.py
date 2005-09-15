@@ -1,4 +1,4 @@
-# Thomas Nagy, 2005 <tnagy2^8@yahoo.fr>
+# Thomas Nagy, 2005
 
 
 import os, re, types

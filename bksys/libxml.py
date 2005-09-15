@@ -2,8 +2,7 @@
 # BSD license (see COPYING)
 
 """
-This tool is used to find and load the libxml2 and libxslt
-neceessary compilation and link flags
+Find and load the libxml2 and libxslt necessary compilation and link flags
 """
 
 def exists(env):
@@ -26,7 +25,4 @@ def generate(env):
 		if not have_xslt:
 			env.pprint('RED', 'libxslt-2.0 >= 1.1.0 was not found (mandatory).')
 			env.Exit(1)
-
-		# mark the config as done - libxml2 and libxslt are found
-		env['XML_ISCONFIGURED'] = 1
 
