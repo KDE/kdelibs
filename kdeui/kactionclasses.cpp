@@ -1258,7 +1258,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, QString groupname )
     // write file list
     for( unsigned int i = 1 ; i <= lst.count() ; i++ )
     {
-        kdDebug(24000) << "Entry for " << lst[i-1] << d->m_urls[ lst[ i - 1 ] ] << endl;
+        kdDebug(129) << "Entry for " << lst[i-1] << d->m_urls[ lst[ i - 1 ] ] << endl;
         key = QString( "File%1" ).arg( i );
         value = d->m_urls[ lst[ i - 1 ] ].pathOrURL();
         config->writePathEntry( key, value );
