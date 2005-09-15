@@ -152,7 +152,8 @@ private:
 	static int random_table[RANDOM_TABLE_SIZE];
 
 	//! This table provides the add_pixel saturation values (i.e. 250 + 250 = 255).
-	static int add_lut[256][256];
+	//static int add_lut[256][256]; - this is so lame waste of 256k of memory
+	static int add_lut( int, int );
 
 	//! The bottom-most layer is copied into the final QImage by this
 	//! routine.
@@ -170,7 +171,7 @@ private:
 
 	//! Array of layer mode structures for the modes described by
 	//! LayerModeEffects.
-	static LayerModes layer_modes[];
+	static const LayerModes layer_modes[];
 
 	bool loadImageProperties(QDataStream& xcf_io, XCFImage& image);
 	bool loadProperty(QDataStream& xcf_io, PropType& type, QByteArray& bytes);
