@@ -499,7 +499,7 @@ def generate(env):
 			env.pprint('CYAN','** Enabling DESTDIR for the project ** ',env['DESTDIR'])
 
 	## install symlinks for shared libraries properly
-	env['INSTALL'] = copy_bksys
+	#env['INSTALL'] = copy_bksys
 
 	## Use the same extension .o for all object files
 	env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1

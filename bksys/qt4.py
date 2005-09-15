@@ -281,7 +281,7 @@ def generate(env):
 		for line in file(str(source[0]), "r").readlines():
 			match = kcfgFileDeclRx.match(line.strip())
 			if match:
-				kcfgfilename = match.group(1)
+				kcfgfilename = match.group(1).strip()
 				break
 		if not kcfgfilename:
 			print 'invalid kcfgc file'
@@ -295,6 +295,7 @@ def generate(env):
 	## MOC processing
 	env['BUILDERS']['Moc']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
 	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
+	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
 
 	## DOCUMENTATION
 	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')

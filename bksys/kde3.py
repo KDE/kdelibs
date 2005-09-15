@@ -389,7 +389,7 @@ def generate(env):
 		kcfgfilename=""
 		kcfgFileDeclRx = re.compile("[fF]ile\s*=\s*(.+)\s*")
 		match = kcfgFileDeclRx.search(content)
-		if match: kcfgfilename = match.group(1)
+		if match: kcfgfilename = match.group(1).strip()
 
 		if not kcfgfilename:
 			env.pprint('RED','invalid kcfgc file '+source[0].srcnode().abspath)
@@ -403,6 +403,7 @@ def generate(env):
 	## MOC processing
 	env['BUILDERS']['Moc']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
 	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
+	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
 
 	## KIDL file
 	env['BUILDERS']['Kidl']=Builder(action= 'dcopidl $SOURCE > $TARGET || (rm -f $TARGET ; false)',
