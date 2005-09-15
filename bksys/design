@@ -12,6 +12,7 @@ HOW TO RUN:
 * without scons installed:
 cd kdelibs
 tar xjvf bksys/scons-mini.tar.bz2
+./scons configure
 ./scons
 
 * with scons installed:
@@ -25,6 +26,9 @@ is about 30% faster at computing the dependencies
 To make scons run faster you may use these flags:
 export SCONSFLAGS="-u --max-drift=1 --implicit-deps-unchanged",
 but in this case Miniscons and 0.96.91 are about as fast
+
+To install:
+scons install DESTDIR=/tmp/blah
 
 THE API:
 --------

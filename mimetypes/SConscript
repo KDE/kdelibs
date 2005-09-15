@@ -15,7 +15,7 @@ if env['_INSTALL']:
 	# process each subfolder
 	for dir in dirs.split():
 		files=glob.glob( env.join(path, dir, '*.desktop') )
-		env.bksys_insttype('KDEMIME', 'dir', files, 0644)
+		env.bksys_insttype('KDEMIME', dir, files, 0644)
 	
 #	import os, string, fnmatch
 #	for root, dirs, files in os.walk('.'):

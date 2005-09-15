@@ -44,17 +44,18 @@ config = {
 	'config.h' : 1,
 	'rpath'    : 1,
 }
+
+# and the config.h
 env=configure(config)
 
-###################################################################
-# SCRIPTS FOR BUILDING THE TARGETS
-###################################################################
-
-# now the kdemacros .. TODO this has nothing to do right here
+# now the kdemacros (TODO a bootstrap module ?)
 dest = open(env.join('build','kdemacros.h'), 'w')
 dest.write('#include <kdemacros.h.in>\n')
 dest.close()
 
+###################################################################
+# SCRIPTS FOR BUILDING THE TARGETS
+###################################################################
 
 subdirs="""
 dcop

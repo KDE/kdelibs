@@ -565,7 +565,7 @@ def generate(env):
 		if not destfile: install_list = env.Install(lenv.join(basedir,subdir), lenv.make_list(files))
 		elif subdir:     install_list = env.InstallAs(lenv.join(basedir,subdir,destfile), lenv.make_list(files))
 		else:            install_list = env.InstallAs(lenv.join(basedir,destfile), lenv.make_list(files))
-		if perms and install_list: lenv.AddPostAction(install_list, lenv.Chmod(install_list, perms))
+		#if perms and install_list: lenv.AddPostAction(install_list, lenv.Chmod(install_list, perms))
 		env.Alias('install', install_list)
 		return install_list
 
