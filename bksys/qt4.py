@@ -46,10 +46,26 @@ def generate(env):
 		('QTDIR', ''),
 		('QTLIBPATH', 'path to the qt libraries'),
 		('QTINCLUDEPATH', 'path to the qt includes'),
+
 		('QT_UIC', 'uic command'),
 		('QT_UIC3', 'uic3 command'),
 		('QT_MOC', 'moc command'),
 		('QT_RCC', 'rcc command'),
+
+		('LIBPATH_QT', ''),
+		('LIB_QT', ''),
+
+		('LIB_QT3SUPPORT', ''),
+		('CXXFLAGS_QT3SUPPORT', ''),
+
+		('LIB_QTCORE', ''),
+		('LIB_QTDESIGNER', ''),
+		('LIB_QTGUI', ''),
+		('LIB_QTNETWORK', ''),
+		('LIB_QTOPENGL', ''),
+		('LIB_QTSQL', ''),
+		('LIB_QTXML', ''),
+
 		('QTPLUGINS', 'uic executable command'),
 	)
 	opts.Update(env)
@@ -62,40 +78,14 @@ def generate(env):
 		import sys
 		if sys.platform == 'darwin':
 			sys.path.append('bksys'+os.sep+'osx')
-			from detectqt4 import detect
+			from detect_qt4 import detect
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
-			from detectqt4 import detect
+			from detect_qt4 import detect
 		detect(env)
 		opts.Save(cachefile, env)
 
-	# TODO cleanup and move to the configuration part
-	########## X11
-	env['LIB_X11']             = ['X11']
-	env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
-	env['LIB_XRENDER']         = ['Xrender']
-
-	########## QT
-	# QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
-	env['LIBPATH_QT']          = env['LIBPATH_X11']+[env['QTLIBPATH']]
-	env['LIB_QT']              = ['QtGui_debug', 'pthread', 'Xext']+env['LIB_Z']+env['LIB_PNG']+env['LIB_X11']+env['LIB_SM']
-
-	## QT3SUPPORT
-	env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
-	env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
-
-	env['LIB_QTCORE']          = ['QtCore_debug']
-	env['LIB_QTDESIGNER']      = ['QtDesigner_debug']
-	env['LIB_QTGUI']           = ['QtGui_debug']
-	env['LIB_QTNETWORK']       = ['QtNetwork_debug']
-	env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
-	env['LIB_QTSQL']           = ['QtSql_debug']
-	env['LIB_QTXML']           = ['QtXml_debug']
-
 	## set default variables, one can override them in sconscript files
-	# TODO wth (ita)
-	#env.Append(CXXFLAGS = ['-I'+env['QTINCLUDEPATH'], '-I'+env['QTINCLUDEPATH']+'Qt'], LIBPATH = [env['QTLIBPATH'] ])
-	
 	env['QT_AUTOSCAN'] = 1
 	env['QT_DEBUG']    = 0
 
@@ -183,6 +173,7 @@ def generate(env):
 	## MOC processing
 	env['BUILDERS']['Moc']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
 	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
+	# for Moc2 you have to give the dependency explicitely, eg: env.Moc2(['file.cpp'])
 	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
 
 	## DOCUMENTATION

@@ -114,3 +114,25 @@ def detect(env):
 	if not qtlibs: qtlibs=env.join(qtdir, 'lib', libsuffix)
 	env['QTLIBPATH']=qtlibs
 
+        ########## X11
+        env['LIB_X11']             = ['X11']
+        env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
+        env['LIB_XRENDER']         = ['Xrender']
+
+        ########## QT
+        # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+        env['LIBPATH_QT']          = env['LIBPATH_X11']+[env['QTLIBPATH']]
+        env['LIB_QT']              = ['QtGui_debug', 'pthread', 'Xext']+env['LIB_Z']+env['LIB_PNG']+env['LIB_X11']+env['LIB_SM']
+
+        ## QT3SUPPORT
+        env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
+        env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
+
+        env['LIB_QTCORE']          = ['QtCore_debug']
+        env['LIB_QTDESIGNER']      = ['QtDesigner_debug']
+        env['LIB_QTGUI']           = ['QtGui_debug']
+        env['LIB_QTNETWORK']       = ['QtNetwork_debug']
+        env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
+        env['LIB_QTSQL']           = ['QtSql_debug']
+        env['LIB_QTXML']           = ['QtXml_debug']
+

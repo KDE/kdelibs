@@ -23,11 +23,6 @@ def write_config_h(lenv):
 	dest.write('\n')
 	dest.close()
 
-	# now the kdemacros .. hummm
-	dest = open(lenv.join('build','kdemacros.h'), 'w')
-	dest.write('#include <kdemacros.h.in>\n')
-	dest.close()
-
 	lenv.pprint('GREEN','configuration done')
 	lenv.Exit(0)
 

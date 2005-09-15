@@ -50,6 +50,12 @@ env=configure(config)
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################
 
+# now the kdemacros .. TODO this has nothing to do right here
+dest = open(env.join('build','kdemacros.h'), 'w')
+dest.write('#include <kdemacros.h.in>\n')
+dest.close()
+
+
 subdirs="""
 dcop
 libltdl
