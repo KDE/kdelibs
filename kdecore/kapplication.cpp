@@ -2219,4 +2219,10 @@ bool KApplication::guiEnabled()
     return kapp && kapp->d->guiEnabled;
 }
 
+void KApplication::virtual_hook( int id, void* data )
+{ KInstance::virtual_hook( id, data ); }
+
+void KSessionManaged::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kapplication.moc"

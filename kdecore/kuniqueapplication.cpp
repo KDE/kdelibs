@@ -483,4 +483,8 @@ void KUniqueApplication::setHandleAutoStarted()
     s_handleAutoStarted = false;
 }
 
+void KUniqueApplication::virtual_hook( int id, void* data )
+{ KApplication::virtual_hook( id, data );
+  DCOPObject::virtual_hook(id, data ); }
+
 #include "kuniqueapplication.moc"

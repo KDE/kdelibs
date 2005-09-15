@@ -5,12 +5,12 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
@@ -22,7 +22,7 @@
 #include "kconfig.h"
 #include "kdelibs_export.h"
 
-/** 
+/**
  * KDE Desktop File Management.
  *
  * @author Pietro Iglio <iglio@kde.org>
@@ -93,7 +93,7 @@ public:
 
   /**
    * Returns the value of the "Icon=" entry.
-   * @return the icon or QString::null if not specified 
+   * @return the icon or QString::null if not specified
    */
   QString readIcon() const;
 
@@ -213,7 +213,7 @@ public:
   QStringList sortOrder() const;
 
   /**
-   * Copies all entries from this config object to a new 
+   * Copies all entries from this config object to a new
    * KDesktopFile object that will save itself to @p file.
    *
    * Actual saving to @p file happens when the returned object is
@@ -230,6 +230,8 @@ private:
   KDesktopFile( const KDesktopFile& );
   KDesktopFile& operator= ( const KDesktopFile& );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class Private;
   Private *const d;

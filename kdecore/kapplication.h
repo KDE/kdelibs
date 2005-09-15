@@ -980,6 +980,8 @@ private:
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class Private;
   Private* const d;
@@ -1048,6 +1050,8 @@ public:
      */
   virtual bool commitData( QSessionManager& sm );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class Private;
   Private *d;

@@ -132,6 +132,7 @@ protected:
      * @since 3.1
      */
     void setConfigName(const QString &name);
+    virtual void virtual_hook( int id, void* data );
 
 private:
     // Copying is not allowed

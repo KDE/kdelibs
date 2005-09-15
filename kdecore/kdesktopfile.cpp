@@ -76,7 +76,7 @@ QString KDesktopFile::locateLocal(const QString &path)
     }
     else
     {
-      // XDG Desktop menu items come with absolute paths, we need to 
+      // XDG Desktop menu items come with absolute paths, we need to
       // extract their relative path and then build a local path.
       local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", local);
       if (!QDir::isRelativePath(local))
@@ -96,7 +96,7 @@ QString KDesktopFile::locateLocal(const QString &path)
     }
     else
     {
-      // XDG Desktop menu items come with absolute paths, we need to 
+      // XDG Desktop menu items come with absolute paths, we need to
       // extract their relative path and then build a local path.
       local = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
       if (!QDir::isRelativePath(local))
@@ -123,10 +123,10 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 
   if (path.isEmpty())
      return false; // Empty paths are not ok.
-  
+
   if (QDir::isRelativePath(path))
      return true; // Relative paths are ok.
-     
+
   KStandardDirs *dirs = KGlobal::dirs();
   if (QDir::isRelativePath( dirs->relativeLocation("apps", path) ))
      return true;
@@ -136,7 +136,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true;
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
-     
+
   kdWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
   return false;
 }
@@ -181,7 +181,7 @@ QString KDesktopFile::readURL() const
     if (hasDeviceType()) {
         QString device = readDevice();
         KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
-	
+
         for(KMountPoint::List::ConstIterator it = mountPoints.begin();
             it != mountPoints.end(); ++it)
         {
@@ -244,7 +244,7 @@ bool KDesktopFile::hasDeviceType() const
 
 bool KDesktopFile::tryExec() const
 {
-  // Test for TryExec and "X-KDE-AuthorizeAction" 
+  // Test for TryExec and "X-KDE-AuthorizeAction"
   QString te = readPathEntry("TryExec");
 
   if (!te.isEmpty()) {
@@ -283,7 +283,7 @@ bool KDesktopFile::tryExec() const
            return false;
      }
   }
-  
+
   // See also KService::username()
   bool su = readBoolEntry("X-KDE-SubstituteUID");
   if (su)
@@ -296,7 +296,7 @@ bool KDesktopFile::tryExec() const
       if (!KAuthorized::authorize("user/"+user))
         return false;
   }
-  
+
   return true;
 }
 
@@ -317,6 +317,9 @@ KDesktopFile::sortOrder() const
 {
   return readListEntry("SortOrder");
 }
+
+void KDesktopFile::virtual_hook( int id, void* data )
+{ KConfig::virtual_hook( id, data ); }
 
 QString KDesktopFile::readDocPath() const
 {

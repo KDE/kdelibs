@@ -214,6 +214,8 @@ private:
   static bool s_uniqueTestDone;
   static bool s_handleAutoStarted;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class Private;
   Private * const d;
