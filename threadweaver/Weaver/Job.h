@@ -149,7 +149,7 @@ namespace ThreadWeaver {
 	    may only be executed after A has been finished, an entry will be
 	    added with key A and value B. When A is finished, the entry will
 	    be removed. */
-	static QMultiMap<Job*, Job*> sm_dep;
+        static QMultiMap<Job*, Job*> *sm_dep();
 	static QMutex *sm_mutex;
     private:
 	QMutex *m_mutex;
