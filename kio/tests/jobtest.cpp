@@ -176,7 +176,7 @@ void JobTest::get()
     enterLoop();
     assert( m_result == 0 ); // no error
     assert( m_data.size() == 11 );
-    assert( Q3CString( m_data ) == "Hello world" );
+    assert( QByteArray( m_data ) == "Hello world" );
 }
 
 void JobTest::slotGetResult( KIO::Job* job )
