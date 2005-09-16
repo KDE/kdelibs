@@ -3,12 +3,12 @@ INCLUDES = $(all_includes)
 
 lib_LTLIBRARIES = libThreadWeaver.la
 
-libthreadweaver_la_LDFLAGS = -no-undefined $(all_libraries) -version-info 4:0
-libthreadweaver_la_LIBADD = $(LIB_QTCORE)
+libThreadWeaver_la_LDFLAGS = -no-undefined $(all_libraries) -version-info 4:0
+libThreadWeaver_la_LIBADD = $(LIB_QTCORE)
 
 METASOURCES = AUTO
 
-libthreadweaver_la_SOURCES = \
+libThreadWeaver_la_SOURCES = \
 	DestructedState.cpp \
 	WeaverImpl.cpp \
 	Job.cpp \
