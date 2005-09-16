@@ -90,22 +90,23 @@ def detect(env):
 			p('RED',"the qt headers were not found")
 			env.Exit(1)
 
-	if prefix:
-		## use the user-specified prefix
-		if not execprefix:
-			execprefix = prefix
-		if not datadir:
-			datadir=prefix+"/share"
-		if not libdir:
-			libdir=execprefix+"/lib"+libsuffix
+	if not prefix:
+		prefix = "/usr/"
+		
+	## use the user-specified prefix
+	if not execprefix:
+		execprefix = prefix
+	if not datadir:
+		datadir=prefix+"/share"
+	if not libdir:
+		libdir=execprefix+"/lib"+libsuffix
 
-		subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
-				 .replace('${datadir}', datadir)\
-				 .replace('${libdir}', libdir)
-		debian_fix = lambda x: x.replace('/usr/share', '${datadir}')
-		env['PREFIX'] = prefix
-	else:
-		env['PREFIX'] = "/usr/"
+	subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
+			 .replace('${datadir}', datadir)\
+			 .replace('${libdir}', libdir)
+	debian_fix = lambda x: x.replace('/usr/share', '${datadir}')
+
+	env['PREFIX'] = prefix
 
 	#env['QTPLUGINS']=os.popen('kde-config --expandvars --install qtplugins').read().strip()
 
@@ -135,4 +136,5 @@ def detect(env):
         env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
         env['LIB_QTSQL']           = ['QtSql_debug']
         env['LIB_QTXML']           = ['QtXml_debug']
-
+	
+	env['QTLOCALE']=env.join(datadir, 'locale')

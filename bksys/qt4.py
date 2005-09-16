@@ -67,6 +67,8 @@ def generate(env):
 		('LIB_QTXML', ''),
 
 		('QTPLUGINS', 'uic executable command'),
+
+		('QTLOCALE', 'install po files to this path'),
 	)
 	opts.Update(env)
 
@@ -329,7 +331,7 @@ def generate(env):
 		for lang in transfiles:
 			result = lenv.Transfiles(lang)
 			country = SCons.Util.splitext(result[0].name)[0]
-			lenv.QT4installas('QT4LOCALE', lenv.join(country,'LC_MESSAGES',appname+'.mo'), result)
+			lenv.QT4installas('QTLOCALE', lenv.join(country,'LC_MESSAGES',appname+'.mo'), result)
 
 	def QT4icon(lenv, icname='*', path='./', restype='QT4ICONS', subdir=''):
 		"""Contributed by: "Andrey Golovizin" <grooz()gorodok()net>
