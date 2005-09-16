@@ -22,8 +22,8 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#ifndef __KXMESSAGES_H
-#define __KXMESSAGES_H
+#ifndef KXMESSAGES_H
+#define KXMESSAGES_H
 
 #include <qwidget.h>
 #include <q3cstring.h>
@@ -164,3 +164,4 @@ class KDECORE_EXPORT KXMessages
 
 #endif
 #endif
+

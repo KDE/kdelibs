@@ -36,7 +36,6 @@
 #include <netdb.h>
 
 #include "config.h"
-#include "kdebug.h"
 #include "klocale.h"
 
 #ifndef IN6_IS_ADDR_V4MAPPED

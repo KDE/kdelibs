@@ -31,7 +31,6 @@ DEALINGS IN THE SOFTWARE.
 #ifdef Q_WS_X11 // FIXME(E): Figure out what parts we can/should emulate in QT/E
 
 #include <X11/Xlib.h>
-#include <kdebug.h>
 
 // for broadcasting
 const long BROADCAST_MASK = PropertyChangeMask;

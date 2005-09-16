@@ -31,7 +31,6 @@
 #include <qwindowdefs.h>
 #include "kglobal.h"
 
-#include <kdebug.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcharsets.h>
