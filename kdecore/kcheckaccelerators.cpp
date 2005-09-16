@@ -24,7 +24,7 @@
 #include "config.h"
 
 #include "kcheckaccelerators.h"
-#include "kaccelmanager.h"
+#include "kacceleratormanager.h"
 #include <q3popupmenu.h>
 #include <qapplication.h>
 #include <qdialog.h>
