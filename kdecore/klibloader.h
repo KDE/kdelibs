@@ -233,7 +233,7 @@ public:
         if ( !result )
             delete object;
         return result;
-    };
+    }
 
 signals:
     /**
