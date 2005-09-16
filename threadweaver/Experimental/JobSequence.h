@@ -1,3 +1,6 @@
+#include <QList>
+#include <QPointer>
+
 #include "ThreadWeaver.h"
 
 namespace ThreadWeaver {
@@ -41,7 +44,7 @@ namespace ThreadWeaver {
             We have to. */
         void run() {}
        /** The elements of the sequence. */
-        QList <Job*> m_elements;
+        QList < QPointer <Job> > m_elements;
         /** True if this sequence has been queued in the Job queue of a
             Weaver. */
         bool m_queued;

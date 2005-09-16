@@ -19,9 +19,12 @@ namespace ThreadWeaver {
         {
             for ( int i = 0; i < m_elements.size(); ++i )
             {
-                if ( ! m_elements[i]->isFinished() )
+                if ( m_elements[i] ) // ... a QPointer
                 {
-                    m_weaver->dequeue ( m_elements[i] );
+                    if ( ! m_elements[i]->isFinished() )
+                    {
+                        m_weaver->dequeue ( m_elements[i] );
+                    }
                 }
             }
         }
@@ -31,7 +34,7 @@ namespace ThreadWeaver {
     {
         P_ASSERT ( m_queued == false );
 
-        m_elements.append ( j );
+        m_elements.append ( QPointer<Job> ( j ) );
     }
 
     void JobSequence::stop( Job *job )
@@ -69,7 +72,10 @@ namespace ThreadWeaver {
         // queue the sequence:
         if ( m_elements.size () > 1 )
         {
-            weaver->enqueue ( m_elements.mid(0,  m_elements.size() -1 ) );
+            for ( int index = 0; index < m_elements.size() -1; ++ index )
+            {
+                weaver->enqueue ( m_elements.at( index ) );
+            }
         }
         m_queued = true;
     }
