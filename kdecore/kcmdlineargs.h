@@ -288,7 +288,7 @@ public:
   static void init(const KAboutData *about);
 
   /**
-   * add standard Qt/KDE command linee args
+   * add standard Qt/KDE command-line args
    */
   static void addStdCmdLineOptions(StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt)|StdCmdLineArgs(CmdLineArgKDE));
 

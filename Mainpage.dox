@@ -64,9 +64,6 @@
 	* - <a href="dnssd/html/index.html"><b>dnssd</b></a>
         *   (<a href="dnssd/html/classes.html">classes</a>)\n
 	*   <i>Network sevices publishing and discovery.</i>
-	* - <a href="kunittest/html/index.html"><b>kunittest</b></a>
-        *   (<a href="kunittest/html/classes.html">classes</a>)\n
-	*   <i>Unit testing framework in KDE.</i>
 
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
