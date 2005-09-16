@@ -50,6 +50,7 @@ AC_CHECK_HEADERS(sys/param.h sys/mman.h sys/time.h sysent.h strings.h sys/stat.h
 
 USE_POSIX_ACL="yes"
 ACL_LIBS=""
+KDE_CHECK_HEADER(attr/libattr.h, ,[USE_POSIX_ACL="no"])
 KDE_CHECK_HEADER(sys/xattr.h, ,[USE_POSIX_ACL="no"])
 KDE_CHECK_HEADER(sys/acl.h, ,[USE_POSIX_ACL="no"])
 KDE_CHECK_HEADER(acl/libacl.h, ,[USE_POSIX_ACL="no"])
