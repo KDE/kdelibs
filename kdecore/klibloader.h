@@ -220,7 +220,7 @@ public:
      *         factory was unable to create an object of the given type.
      * @since 4.0
      */
-    template<class T>
+    template<typename T>
     T *create( QObject *parent = 0,
                const char *name = 0,
                const QStringList &args = QStringList() )
@@ -449,7 +449,7 @@ public:
      * @return A pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type.
      */
-    template <class T>
+    template <typename T>
     static T *createInstance( const char *libraryName, QObject *parent = 0,
                               const char *name = 0,
                               const QStringList &args = QStringList(),
