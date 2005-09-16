@@ -29,11 +29,12 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
-	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest
+	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
+	kcompletiontest
 
 # TODO kurltest4 when it works
 
-TESTS = kurltest \
+TESTS = kurltest kcompletiontest\
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
 	kstringhandlertest krfcdatetest kcalendartest klibloadertest
 
@@ -62,7 +63,7 @@ $(srcdir)/KIDLTestClient.cpp: KIDLTest_stub.h
 kipctest_SOURCES = kipctest.cpp
 cplusplustest_SOURCES = cplusplustest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp
-kmdcodectest_SOURCES = kmdcodectest.cpp 
+kmdcodectest_SOURCES = kmdcodectest.cpp
 knotifytest_SOURCES = knotifytest.cpp
 ksortablevaluelisttest_SOURCES = ksortablevaluelisttest.cpp
 testqtargs_SOURCES = testqtargs.cpp
@@ -84,3 +85,4 @@ kstringhandlertest_SOURCES = kstringhandlertest.cpp
 kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
 kcalendartest_SOURCES = kcalendartest.cpp
 klibloadertest_SOURCES = klibloadertest.cpp
+kcompletiontest_SOURCES = kcompletiontest.cpp
