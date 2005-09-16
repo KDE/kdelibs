@@ -19,11 +19,11 @@ namespace ThreadWeaver {
         {
             for ( int i = 0; i < m_elements.size(); ++i )
             {
-                if ( m_elements[i] ) // ... a QPointer
+                if ( m_elements.at( i ) ) // ... a QPointer
                 {
-                    if ( ! m_elements[i]->isFinished() )
+                    if ( ! m_elements.at( i )->isFinished() )
                     {
-                        m_weaver->dequeue ( m_elements[i] );
+                        m_weaver->dequeue ( m_elements.at( i ) );
                     }
                 }
             }
@@ -43,13 +43,17 @@ namespace ThreadWeaver {
         // job has failed, so we dequeue everything after job:
         // find job in m_elements:
         int index = m_elements.indexOf ( job );
+
         P_ASSERT ( index != -1 && m_weaver != 0 );
         // dequeue all jobs after it:
         if ( index != -1 && index < m_elements.size() - 1 )
         {
             for ( int i = index; i < m_elements.size(); ++i )
             {
-                m_weaver->dequeue ( m_elements.at ( i ) );
+                if ( m_elements.at( i ) )
+                {
+                    m_weaver->dequeue ( m_elements.at ( i ) );
+                }
             }
         }
     }
@@ -64,9 +68,10 @@ namespace ThreadWeaver {
             // set up the dependencies:
             for ( i = 1; i < m_elements.size() - 1; ++i )
             {
-                m_elements[i]->addDependency ( m_elements[i-1] );
+                P_ASSERT ( m_elements.at( i ) != 0 );
+                m_elements.at( i )->addDependency ( m_elements.at( i-1 ) );
             }
-            addDependency ( m_elements[i-1] );
+            addDependency ( m_elements.at( i-1 ) );
         }
 
         // queue the sequence:
@@ -88,7 +93,9 @@ namespace ThreadWeaver {
             // available thread (the last operation does not get queued in
             // aboutToBeQueued() )
             int pos = m_elements.size() - 1;
-            m_elements[pos]->execute ( t );
+            P_ASSERT ( m_elements.at( pos ) != 0 );
+
+            m_elements.at( pos )->execute ( t );
         }
         Job::execute ( t ); // run() is empty
     }
