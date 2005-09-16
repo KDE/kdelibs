@@ -23,9 +23,10 @@
 
 ComputeThumbNailJob::ComputeThumbNailJob ( QImageLoaderJob *imageLoader,
                                            QObject *parent)
-    : Job (imageLoader, parent),
+    : Job (parent),
       m_image (imageLoader)
 {
+    // addDependency ( imageLoader );
 }
 
 QImage ComputeThumbNailJob::thumb()

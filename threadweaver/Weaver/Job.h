@@ -25,6 +25,7 @@ class QWaitCondition;
 namespace ThreadWeaver {
 
     class Thread;
+    class WeaverInterface;
 
     /** A Job is a simple abstraction of an action that is to be
         executed in a thread context.
@@ -45,15 +46,11 @@ namespace ThreadWeaver {
     {
         Q_OBJECT
     public:
-        /** Construct a Job object which depends on dep.
-            dep will be considered a dependency if it is not finished
-            yet. Otherwise, no dependency will be added.
-            If dep is zero, it is ignored.
+        /** Construct a Job.
 
-            @param dep the other job this job depends on
             @param parent the parent QObject
         */
-        Job (Job* dep = 0, QObject* parent=0);
+        Job ( QObject* parent = 0 );
 
 	/** Destructor. */
         virtual ~Job();
@@ -62,7 +59,7 @@ namespace ThreadWeaver {
 	    is given as a parameter.
             Do not overload this method to create your own Job
             implementation, overload run(). */
-        void execute(Thread*);
+        virtual void execute(Thread*);
 
         /** Abort the execution of the job.
             Call this method to ask the Job to abort if it is currently executed.
@@ -79,6 +76,16 @@ namespace ThreadWeaver {
             abort has completed. It requests the abort, the Job has to act on
             the request. */
         virtual void requestAbort () {}
+
+        /** The job is about to be added to the weaver's job queue.
+            The job will be added right after this method finished. The
+            default implementation does nothing.
+            Use this method to, for example, queue sub-operations as jobs
+            before the job itself is queued.
+
+            @param weaver the Weaver object the job will be queued in
+            */
+        virtual void aboutToBeQueued ( WeaverInterface *weaver );
 
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }
@@ -137,9 +144,9 @@ namespace ThreadWeaver {
             The method will remove all entries stating that another Job
             depends on this one.
         */
-        void resolveDependencies();
+        virtual void resolveDependencies();
 
-	Thread * m_thread;
+        Thread * m_thread;
 
 //         QMutex *m_wcmutex;
 // 	QWaitCondition *m_wc;

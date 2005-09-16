@@ -21,9 +21,10 @@
 namespace ThreadWeaver {
 
     QImageLoaderJob::QImageLoaderJob (FileLoaderJob* file, QObject* parent)
-        : Job (file, parent),
+        : Job (parent),
           m_file (file)
     {
+        // addDependency ( file );
     }
 
     QImageLoaderJob::~QImageLoaderJob()

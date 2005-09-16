@@ -21,7 +21,7 @@
 namespace ThreadWeaver {
 
     FileLoaderJob::FileLoaderJob (QString filename, QObject* parent)
-        : Job (0, parent),
+        : FailableJob (parent),
           m_filename (filename),
           m_data (0),
           m_error (0)
@@ -39,6 +39,11 @@ namespace ThreadWeaver {
     const int FileLoaderJob::error() const
     {
         return m_error;
+    }
+
+    bool FileLoaderJob::success () const
+    {
+        return ( error() == 0 );
     }
 
     const char* FileLoaderJob::data () const

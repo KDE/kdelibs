@@ -31,7 +31,7 @@ extern "C" {
 const int NoOfJobs = 100;
 
 DummyJob::DummyJob (QObject* parent)
-    :Job (0, parent)
+    : Job ( parent )
 {
 }
 

@@ -22,8 +22,9 @@
 #include <QImage>
 
 #include <ThreadWeaver.h>
+#include <JobSequence.h>
+#include <FileLoaderJob.h>
 
-#include "FileLoaderJob.h"
 #include "QImageLoaderJob.h"
 #include "ComputeThumbNailJob.h"
 
@@ -51,6 +52,7 @@ protected:
     QString m_desc1;
     QString m_desc2;
     Weaver *m_weaver;
+    JobSequence *m_sequence;
     FileLoaderJob *m_fileloader;
     QImageLoaderJob *m_imageloader;
     ComputeThumbNailJob *m_thumb;

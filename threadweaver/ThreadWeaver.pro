@@ -1,4 +1,4 @@
 TEMPLATE = subdirs 
-SUBDIRS = Weaver Tests
+SUBDIRS = Weaver Experimental Tests
 
 

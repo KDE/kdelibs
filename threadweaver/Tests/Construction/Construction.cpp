@@ -30,8 +30,8 @@ class DummyJob : public Job
 {
 public:
     DummyJob(QObject* parent = 0, int msec = 100)
-        : Job (0, parent),
-          m_wait (msec)
+        : Job ( parent ),
+          m_wait ( msec )
         {
         }
 

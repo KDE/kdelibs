@@ -27,7 +27,7 @@ extern "C" {
 }
 
 #include <WeaverImpl.h>
-#include <Job.h>
+#include "FailableJob.h"
 
 namespace ThreadWeaver {
 
@@ -41,12 +41,14 @@ namespace ThreadWeaver {
         gets deleted. Objects of this class are not meant to be reused.
 	The allocated memory gets freed on destruction of the object.
     */
-    class FileLoaderJob : public Job
+    class FileLoaderJob : public FailableJob
     {
         Q_OBJECT
     public:
-        FileLoaderJob (QString filename, QObject* parent=0);
+        explicit FileLoaderJob (QString filename, QObject* parent=0);
         ~FileLoaderJob ();
+        /** Return true if the operation succeeded. */
+        bool success () const;
         /** Return the raw data of the file.
             Unless the whole file is read or if an error happened,
 	    this returns zero. */

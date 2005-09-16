@@ -30,7 +30,7 @@ namespace ThreadWeaver {
 
     QMutex *Job::sm_mutex;
 
-    Job::Job (Job *dep, QObject* parent)
+    Job::Job ( QObject *parent )
         : QObject (parent),
 	  m_thread (0),
 	  m_mutex (new QMutex (QMutex::NonRecursive) ),
@@ -41,10 +41,6 @@ namespace ThreadWeaver {
 	{
 	    sm_mutex=new QMutex();
 	}
-        if ( dep != 0 )
-        {
-            if (dep->isFinished() == false) addDependency (dep);
-        }
     }
 
     Job::~Job()
@@ -120,6 +116,10 @@ namespace ThreadWeaver {
                 it.remove();
             }
         }
+    }
+
+    void Job::aboutToBeQueued ( WeaverInterface* )
+    {
     }
 
 }

@@ -36,6 +36,8 @@ SMIVItem::SMIVItem ( Weaver *weaver,
     QFileInfo fi ( path );
     if ( fi.isFile() && fi.isReadable() )
     {
+        m_sequence = new JobSequence ( this );
+
         m_name = fi.baseName();
         m_desc2 = fi.absoluteFilePath();
         m_fileloader = new FileLoaderJob ( fi.absoluteFilePath(),  this );
@@ -47,9 +49,16 @@ SMIVItem::SMIVItem ( Weaver *weaver,
         m_thumb = new ComputeThumbNailJob ( m_imageloader,  this );
         connect ( m_thumb,  SIGNAL ( done( Job* ) ),
                   SLOT ( computeThumbReady ( Job* ) ) );
-        weaver->enqueue( m_fileloader );
-        weaver->enqueue ( m_imageloader );
-        weaver->enqueue ( m_thumb );
+
+        m_sequence->append ( m_fileloader );
+        connect ( m_fileloader,  SIGNAL ( failed ( Job* ) ),
+                  m_sequence,  SLOT ( stop ( Job* ) ) );
+        m_sequence->append ( m_imageloader );
+        m_sequence->append ( m_thumb );
+        weaver->enqueue ( m_sequence );
+//         weaver->enqueue( m_fileloader );
+//         weaver->enqueue ( m_imageloader );
+//         weaver->enqueue ( m_thumb );
     } else {
         // @TODO: error handling
     }

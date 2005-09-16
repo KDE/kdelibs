@@ -151,6 +151,7 @@ namespace ThreadWeaver {
         adjustInventory ( 1 );
 	if (job)
 	{
+            job->aboutToBeQueued ( this );
 	    {
 		QMutexLocker l (m_mutex);
 		m_assignments.append(job);
@@ -164,6 +165,11 @@ namespace ThreadWeaver {
         adjustInventory ( jobs.size() );
 	if (!jobs.isEmpty())
 	{
+            for ( int i = 0; i < jobs.size(); ++i )
+            {
+                jobs[i]->aboutToBeQueued ( this );
+            }
+
 	    {
 		QMutexLocker l (m_mutex);
 		m_assignments << jobs;
