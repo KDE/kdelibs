@@ -29,13 +29,13 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	ksortablevaluelisttest krfcdatetest testqtargs kprociotest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
-	kconfigtest ktempfiletest kurlmimetest kstdacceltest
+	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest
 
 # TODO kurltest4 when it works
 
 TESTS = kurltest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest \
-	kstringhandlertest krfcdatetest kcalendartest
+	kstringhandlertest krfcdatetest kcalendartest klibloadertest
 
 METASOURCES = AUTO
 
@@ -83,3 +83,4 @@ kstdacceltest_SOURCES = kstdacceltest.cpp
 kstringhandlertest_SOURCES = kstringhandlertest.cpp
 kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
 kcalendartest_SOURCES = kcalendartest.cpp
+klibloadertest_SOURCES = klibloadertest.cpp

@@ -129,6 +129,149 @@ private:
 
 class KLibWrapPrivate;
 
+
+/**
+ * If you develop a library that is to be loaded dynamically at runtime, then
+ * you should return a pointer to your factory. The K_EXPORT_COMPONENT_FACTORY
+ * macro is provided for this purpose:
+ * \code
+ *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
+ * \endcode
+ *
+ * The first macro argument is the name of your library, the second specifies the name
+ * of your factory.
+ *
+ * NOTE: you probably want to use KGenericFactory<PluginClassName>
+ * instead of writing your own factory.
+ *
+ * In the constructor of your factory you should create an instance of KInstance
+ * like this:
+ * \code
+ *     s_global = new KInstance( "kspread" );
+ * \endcode
+ * This KInstance is comparable to KGlobal used by normal applications.
+ * It allows you to find resource files (images, XML, sound etc.) belonging
+ * to the library.
+ *
+ * If you want to load a library, use KLibLoader. You can query KLibLoader
+ * directly for a pointer to the libraries factory by using the KLibLoader::factory()
+ * function.
+ *
+ * The KLibFactory is used to create the components that the library has to offer.
+ * The factory of KSpread for example will create instances of KSpreadDoc,
+ * while the Konqueror factory will create KonqView widgets.
+ * All objects created by the factory must be derived from QObject, since QObject
+ * offers type safe casting.
+ *
+ * KLibFactory is an abstract class. Reimplement the
+ * createObject() method to give it functionality.
+ *
+ * @author Torben Weis <weis@kde.org>
+ */
+class KDECORE_EXPORT KLibFactory : public QObject
+{
+    Q_OBJECT
+public:
+    /**
+     * Create a new factory.
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
+     */
+    KLibFactory( QObject* parent = 0 );
+    virtual ~KLibFactory();
+
+    /**
+     * Creates a new object. The returned object has to be derived from
+     * the requested classname.
+     *
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p classname. For example a koffice
+     * library may usually return a pointer to KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.
+     *
+     * create() automatically emits a signal objectCreated to tell
+     * the library about its newly created object.  This is very
+     * important for reference counting, and allows unloading the
+     * library automatically once all its objects have been destroyed.
+     *
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
+     * @param classname the name of the class
+     * @param args a list of arguments
+     */
+
+     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+
+    /**
+     * This template function allows to ask the given factory to create an
+     * instance of the given template type.
+     *
+     * Example of usage:
+     * \code
+     *     MyPlugin *plugin = factory->create&lt;MyPlugin&gt;( factory, parent );
+     * \endcode
+     *
+     * @param parent The parent object (see QObject constructor)
+     * @param name The name of the object to create (see QObject constructor)
+     * @param args A list of string arguments, passed to the factory and possibly
+     *             to the component (see KLibFactory)
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     * @since 4.0
+     */
+    template<class T>
+    T *create( QObject *parent = 0,
+               const char *name = 0,
+               const QStringList &args = QStringList() )
+    {
+        QObject *object = this->create( parent, name,
+                                        T::staticMetaObject.className(),
+                                        args );
+
+        T *result = dynamic_cast<T *>( object );
+        if ( !result )
+            delete object;
+        return result;
+    };
+
+signals:
+    /**
+     * Emitted in #create
+     * @param obj the new object
+     */
+    void objectCreated( QObject *obj );
+
+
+protected:
+
+    /**
+     * Creates a new object. The returned object has to be derived from
+     * the requested classname.
+     *
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p className. For example a koffice
+     * library may usually return a pointer to KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.
+     *
+     * This function is called by #create()
+     * @param parent the parent of the QObject, 0 for no parent
+     * @param name the name of the QObject, 0 for no name
+     * @param className the name of the class
+     * @param args a list of arguments
+     */
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
+                                   const char* className = "QObject",
+                                   const QStringList &args = QStringList() ) = 0;
+
+
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KLibFactoryPrivate *d;
+};
+
 /**
  * The KLibLoader allows you to load libraries dynamically at runtime.
  * Dependent libraries are loaded automatically.
@@ -275,6 +418,68 @@ public:
      */
     static QString findLibrary( const char * name, const KInstance * instance = KGlobal::instance() );
 
+
+    /**
+     * This enum type defines the possible error cases that can happen
+     * when loading a component.
+     *
+     * <ul>
+     *  <li><code>ErrNoLibrary</code> - the specified library could not be
+     *      loaded. Use KLibLoader::lastErrorMessage for details.</li>
+     *  <li><code>ErrNoFactory</code> - the library does not export a factory
+     *      for creating components</li>
+     *  <li><code>ErrNoComponent</code> - the factory does not support creating
+     *      components of the specified type</li>
+     * </ul>
+     */
+    enum ComponentLoadingError { ErrNoLibrary = 1,
+                                 ErrNoFactory,
+                                 ErrNoComponent };
+
+    /**
+     * This template allows to load the specified library and ask the
+     * factory to create an instance of the given template type.
+     *
+     * @param libraryName The library to open
+     * @param parent The parent object (see QObject constructor)
+     * @param name The name of the object to create (see QObject constructor)
+     * @param args A list of string arguments, passed to the factory and possibly
+     *             to the component (see KLibFactory)
+     * @param error
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    static T *createInstance( const char *libraryName, QObject *parent = 0,
+                              const char *name = 0,
+                              const QStringList &args = QStringList(),
+                              int *error = 0 )
+    {
+        KLibrary *library = KLibLoader::self()->library( libraryName );
+        if ( !library )
+        {
+            if ( error )
+                *error = ErrNoLibrary;
+            return 0;
+        }
+        KLibFactory *factory = library->factory();
+        if ( !factory )
+        {
+            library->unload();
+            if ( error )
+                *error = ErrNoFactory;
+            return 0;
+        }
+        T *res = factory->create<T>( parent, name, args );
+        if ( !res )
+        {
+            library->unload();
+            if ( error )
+                *error = ErrNoComponent;
+        }
+        return res;
+    }
+
 protected:
     KLibLoader( QObject* parent = 0 );
 
@@ -290,116 +495,6 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KLibLoaderPrivate *d;
-};
-
-/**
- * If you develop a library that is to be loaded dynamically at runtime, then
- * you should return a pointer to your factory. The K_EXPORT_COMPONENT_FACTORY
- * macro is provided for this purpose:
- * \code
- *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
- * \endcode
- *
- * The first macro argument is the name of your library, the second specifies the name
- * of your factory.
- *
- * NOTE: you probably want to use KGenericFactory<PluginClassName>
- * instead of writing your own factory.
- *
- * In the constructor of your factory you should create an instance of KInstance
- * like this:
- * \code
- *     s_global = new KInstance( "kspread" );
- * \endcode
- * This KInstance is comparable to KGlobal used by normal applications.
- * It allows you to find resource files (images, XML, sound etc.) belonging
- * to the library.
- *
- * If you want to load a library, use KLibLoader. You can query KLibLoader
- * directly for a pointer to the libraries factory by using the KLibLoader::factory()
- * function.
- *
- * The KLibFactory is used to create the components, the library has to offer.
- * The factory of KSpread for example will create instances of KSpreadDoc,
- * while the Konqueror factory will create KonqView widgets.
- * All objects created by the factory must be derived from QObject, since QObject
- * offers type safe casting.
- *
- * KLibFactory is an abstract class. Reimplement the
- * createObject() method to give it functionality.
- *
- * @author Torben Weis <weis@kde.org>
- */
-class KDECORE_EXPORT KLibFactory : public QObject
-{
-    Q_OBJECT
-public:
-    /**
-     * Create a new factory.
-     * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
-     */
-    KLibFactory( QObject* parent = 0 );
-    virtual ~KLibFactory();
-
-    /**
-     * Creates a new object. The returned object has to be derived from
-     * the requested classname.
-     *
-     * It is valid behavior to create different kinds of objects
-     * depending on the requested @p classname. For example a koffice
-     * library may usually return a pointer to KoDocument.  But
-     * if asked for a "QWidget", it could create a wrapper widget,
-     * that encapsulates the Koffice specific features.
-     *
-     * create() automatically emits a signal objectCreated to tell
-     * the library about its newly created object.  This is very
-     * important for reference counting, and allows unloading the
-     * library automatically once all its objects have been destroyed.
-     *
-     * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
-     * @param classname the name of the class
-     * @param args a list of arguments
-     */
-
-     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
-
-signals:
-    /**
-     * Emitted in #create
-     * @param obj the new object
-     */
-    void objectCreated( QObject *obj );
-
-
-protected:
-
-    /**
-     * Creates a new object. The returned object has to be derived from
-     * the requested classname.
-     *
-     * It is valid behavior to create different kinds of objects
-     * depending on the requested @p className. For example a koffice
-     * library may usually return a pointer to KoDocument.  But
-     * if asked for a "QWidget", it could create a wrapper widget,
-     * that encapsulates the Koffice specific features.
-     *
-     * This function is called by #create()
-     * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
-     * @param className the name of the class
-     * @param args a list of arguments
-     */
-    virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
-                                   const char* className = "QObject",
-                                   const QStringList &args = QStringList() ) = 0;
-
-
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
-    KLibFactoryPrivate *d;
 };
 
 #endif

@@ -431,6 +431,7 @@ KLibrary* KLibLoader::library( const char *name )
       if ( !handle )
       {
         const char* errmsg = lt_dlerror();
+        qDebug( "lt_dlopen %s failed: %s", QFile::encodeName(libfile).data(), errmsg );
         if(errmsg)
             d->errorMessage = QLatin1String(errmsg);
         else

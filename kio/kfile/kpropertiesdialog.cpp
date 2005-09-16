@@ -99,7 +99,6 @@ extern "C" {
 #include <ksqueezedtextlabel.h>
 #include <klibloader.h>
 #include <ktrader.h>
-#include <kparts/componentfactory.h>
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
 #include <kprocess.h>
@@ -505,10 +504,10 @@ void KPropertiesDialog::insertPages()
   KTrader::OfferList::ConstIterator end = offers.end();
   for (; it != end; ++it )
   {
-    KPropsDlgPlugin *plugin = KParts::ComponentFactory
-        ::createInstanceFromLibrary<KPropsDlgPlugin>( (*it)->library().local8Bit().data(),
-                                                      this,
-                                                      (*it)->name().latin1() );
+    KPropsDlgPlugin *plugin = KLibLoader
+        ::createInstance<KPropsDlgPlugin>( (*it)->library().toLocal8Bit().data(),
+                                           this,
+                                           (*it)->name().toLatin1() );
     if ( !plugin )
         continue;
 

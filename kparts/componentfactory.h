@@ -4,15 +4,14 @@
 #include <kparts/factory.h>
 #include <kparts/part.h>
 #include <ktrader.h>
-#include <qmetaobject.h>
+#include <klibloader.h>
 
 namespace KParts
 {
-
-    // this is a namespace and not a class because stupid egcs 1.1.2 doesn't grok
-    // static template methods in classes. !@%@#$!
-    namespace ComponentFactory
+    class ComponentFactory
     {
+    public:
+
         /**
          * This enum type defines the possible error cases that can happen
          * when loading a component.
@@ -31,43 +30,11 @@ namespace KParts
          *      components of the specified type</li>
          * </ul>
          */
-        enum ComponentLoadingError { ErrNoServiceFound = 1,
-                                     ErrServiceProvidesNoLibrary,
-                                     ErrNoLibrary,
-                                     ErrNoFactory,
-                                     ErrNoComponent };
-
-        /**
-         * This template function allows to ask the given factory to create an
-         * instance of the given template type.
-         *
-         * Example of usage:
-         * \code
-         *     MyPlugin *plugin = KParts::ComponentFactory::createInstanceFromFactory&lt;MyPlugin&gt;( factory, parent );
-         * \endcode
-         *
-         * @param factory The factory to ask for the creation of the component
-         * @param parent The parent object (see QObject constructor)
-         * @param name The name of the object to create (see QObject constructor)
-         * @param args A list of string arguments, passed to the factory and possibly
-         *             to the component (see KLibFactory)
-         * @return A pointer to the newly created object or a null pointer if the
-         *         factory was unable to create an object of the given type.
-         */
-        template <class T>
-        static T *createInstanceFromFactory( KLibFactory *factory, QObject *parent = 0,
-                                             const char *name = 0,
-                                             const QStringList &args = QStringList() )
-        {
-            QObject *object = factory->create( parent, name,
-                                               T::staticMetaObject.className(),
-                                               args );
-
-            T *result = dynamic_cast<T *>( object );
-            if ( !result )
-                    delete object;
-            return result;
-        }
+        enum ComponentLoadingError { ErrNoLibrary = KLibLoader::ErrNoLibrary,
+                                     ErrNoFactory = KLibLoader::ErrNoFactory,
+                                     ErrNoComponent = KLibLoader::ErrNoComponent,
+                                     ErrNoServiceFound,
+                                     ErrServiceProvidesNoLibrary };
 
         /**
          * This template function allows to ask the given kparts factory to create an
@@ -105,50 +72,6 @@ namespace KParts
             if ( !result )
                 delete object;
             return result;
-        }
-
-        /**
-         * This template allows to load the specified library and ask the
-         * factory to create an instance of the given template type.
-         *
-         * @param libraryName The library to open
-         * @param parent The parent object (see QObject constructor)
-         * @param name The name of the object to create (see QObject constructor)
-         * @param args A list of string arguments, passed to the factory and possibly
-         *             to the component (see KLibFactory)
-         * @param error
-         * @return A pointer to the newly created object or a null pointer if the
-         *         factory was unable to create an object of the given type.
-         */
-        template <class T>
-        static T *createInstanceFromLibrary( const char *libraryName, QObject *parent = 0,
-                                             const char *name = 0,
-                                             const QStringList &args = QStringList(),
-                                             int *error = 0 )
-        {
-            KLibrary *library = KLibLoader::self()->library( libraryName );
-            if ( !library )
-            {
-                if ( error )
-                    *error = ErrNoLibrary;
-                return 0;
-            }
-            KLibFactory *factory = library->factory();
-            if ( !factory )
-            {
-                library->unload();
-                if ( error )
-                    *error = ErrNoFactory;
-                return 0;
-            }
-            T *res = createInstanceFromFactory<T>( factory, parent, name, args );
-            if ( !res )
-            {
-                library->unload();
-                if ( error )
-                    *error = ErrNoComponent;
-            }
-            return res;
         }
 
         template <class T>
@@ -209,7 +132,7 @@ namespace KParts
                 return 0;
             }
 
-            return createInstanceFromLibrary<T>( library.toLocal8Bit().data(), parent,
+            return KLibLoader::createInstance<T>( library.toLocal8Bit().data(), parent,
 	    					 name, args, error );
         }
 
@@ -386,8 +309,7 @@ namespace KParts
                                                       parent, name, args, error );
         }
 
-    }
-
+    };
 }
 
 /*

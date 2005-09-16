@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kparts/componentfactory.h>
+#include <klibloader.h>
 
 #include "kcmoduleloader.h"
 
@@ -73,7 +73,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
       KLibFactory *factory = lib->factory();
       if ( factory )
       {
-        KCModule *module = KParts::ComponentFactory::createInstanceFromFactory<KCModule>( factory, parent, name ? name : mod.handle().latin1(), args );
+        KCModule *module = factory->create<KCModule>( parent, name ? name : mod.handle().latin1(), args );
         if (module)
           return module;
       }
