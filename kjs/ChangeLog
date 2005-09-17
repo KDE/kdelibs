@@ -1,3 +1,7 @@
+2005-09-17  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: MSVC equivalent for strncasecmp().
+
 2005-07-24  Harri Porten  <porten@kde.org>
 
 	* array_object.cpp: harmonized toLocaleString implementation
