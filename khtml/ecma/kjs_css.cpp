@@ -30,6 +30,7 @@
 
 using namespace KJS;
 #include <kdebug.h>
+#include <QList>
 
 static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
 {
@@ -351,7 +352,7 @@ Value DOMStyleSheetList::tryGet(ExecState *exec, const Identifier &p) const
   DOM::NameNodeListImpl namedList( m_doc.documentElement().handle(), p.string() );
   int len = namedList.length();
   if ( len ) {
-    Q3ValueList<DOM::Node> styleSheets;
+    QList<DOM::Node> styleSheets;
     for ( int i = 0 ; i < len ; ++i ) {
       DOM::HTMLStyleElement elem = DOM::Node(namedList.item(i));
       if (!elem.isNull())

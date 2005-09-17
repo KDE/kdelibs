@@ -70,6 +70,7 @@
 #include <kjs/object.h>
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
+#include <QList>
 
 using namespace KJS;
 using namespace khtml;
@@ -405,7 +406,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   ssdvl->addWidget(m_sourceDisplay);
   connect(m_sourceDisplay,SIGNAL(lineDoubleClicked(int)),SLOT(slotToggleBreakpoint(int)));
 
-  Q3ValueList<int> vsplitSizes;
+  QList<int> vsplitSizes;
   vsplitSizes.insert(vsplitSizes.end(),120);
   vsplitSizes.insert(vsplitSizes.end(),480);
   vsplitter->setSizes(vsplitSizes);
@@ -427,7 +428,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   evalLayout->addSpacing(KDialog::spacingHint());
   evalLayout->addWidget(m_evalEdit);
 
-  Q3ValueList<int> hsplitSizes;
+  QList<int> hsplitSizes;
   hsplitSizes.insert(hsplitSizes.end(),400);
   hsplitSizes.insert(hsplitSizes.end(),200);
   hsplitter->setSizes(hsplitSizes);

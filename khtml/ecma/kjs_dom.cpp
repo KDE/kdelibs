@@ -30,6 +30,7 @@
 #include "html/html_baseimpl.h"
 #include <kdebug.h>
 #include <khtml_part.h>
+#include <QList>
 
 #include "kjs_dom.h"
 #include "kjs_html.h"
@@ -1654,7 +1655,7 @@ const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection"
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const Q3ValueList<DOM::Node>& nodes )
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QList<DOM::Node>& nodes )
   : DOMObject(exec->interpreter()->builtinObjectPrototype()),
   m_nodes(nodes)
 {

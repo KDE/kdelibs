@@ -60,6 +60,7 @@
 #include <klocale.h>
 
 #include <kdebug.h>
+#include <QList>
 
 using namespace KJS;
 
@@ -3237,7 +3238,7 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &prop
 
   DOM::DOMString pstr = propertyName.string();
 
-  Q3ValueList<DOM::NodeImpl*> matches = collection.handle()->namedItems(pstr);
+  QList<DOM::NodeImpl*> matches = collection.handle()->namedItems(pstr);
 
   if (!matches.isEmpty()) {
     if (matches.size() == 1) {
@@ -3249,8 +3250,8 @@ Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &prop
     }
     else  {
       // multiple items, return a collection
-      Q3ValueList<DOM::Node> nodes;
-      for (Q3ValueList<DOM::NodeImpl*>::const_iterator i =  matches.begin();
+      QList<DOM::Node> nodes;
+      for (QList<DOM::NodeImpl*>::const_iterator i =  matches.begin();
                                                       i != matches.end(); ++i)
            nodes.append(DOM::Node(*i));
 #ifdef KJS_VERBOSE
