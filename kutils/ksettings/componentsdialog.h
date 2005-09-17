@@ -23,6 +23,7 @@
 #include <kdialogbase.h>
 
 #include <q3valuelist.h>
+#include <QList>
 
 class QString;
 class KPluginInfo;
@@ -61,7 +62,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialogBase
         /**
           Set list of plugins the dialog offers for selection. (Overwrites a previous list)
         */
-        void setPluginInfos( const Q3ValueList<KPluginInfo *> &plugins );
+        void setPluginInfos( const QList<KPluginInfo *> &plugins );
 
         /**
          * reimplemented

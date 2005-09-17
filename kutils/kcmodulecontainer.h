@@ -26,6 +26,7 @@
 
 #include <kcmodule.h>
 #include <kcmoduleloader.h>
+#include <QList>
 
 class QTabWidget;
 class QWidget;
@@ -127,7 +128,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 */
 		void finalize();
 
-		typedef Q3ValueList<KCModuleProxy*> ModuleList;
+		typedef QList<KCModuleProxy*> ModuleList;
 
 		/**
 		 * A list containing KCModuleProxy objects which

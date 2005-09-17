@@ -28,6 +28,7 @@
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <kservice.h>
+#include <QList>
 
 class KCModuleProxy;
 class KCModuleInfo;
@@ -264,7 +265,7 @@ private:
         KService::Ptr service;
         /* KDE 4 Move to Private class */
     };
-    typedef Q3ValueList<CreatedModule> ModuleList;
+    typedef QList<CreatedModule> ModuleList;
     ModuleList m_modules;
 
     typedef QMap<KService::Ptr, KCModuleProxy*> OrphanMap;

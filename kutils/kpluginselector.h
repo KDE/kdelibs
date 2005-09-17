@@ -26,6 +26,7 @@
 #include <q3cstring.h>
 
 #include <kdelibs_export.h>
+#include <QList>
 
 class KInstance;
 class KPluginInfo;
@@ -137,7 +138,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
          *                     For example KViewCanvas passes KSimpleConfig(
          *                     "kviewcanvas" ).
          */
-        void addPlugins( const Q3ValueList<KPluginInfo*> & plugininfos,
+        void addPlugins( const QList<KPluginInfo*> & plugininfos,
                 const QString & catname = QString::null,
                 const QString & category = QString::null,
                 KConfig * config = 0 );
@@ -206,7 +207,7 @@ class KUTILS_EXPORT KPluginSelector : public QWidget
         /**
          * @internal
          */
-	void addPluginsInternal( const Q3ValueList<KPluginInfo*> plugininfos,
+	void addPluginsInternal( const QList<KPluginInfo*> plugininfos,
                                  const QString & catname, const QString & category,
                                  KConfigGroup* cfgGroup );
 

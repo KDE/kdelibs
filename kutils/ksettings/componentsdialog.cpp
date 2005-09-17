@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kseparator.h>
+#include <QList>
 
 namespace KSettings
 {
@@ -41,7 +42,7 @@ class ComponentsDialog::ComponentsDialogPrivate
         QLabel * commentwidget;
         QLabel * descriptionwidget;
         QMap<Q3CheckListItem*, KPluginInfo*> plugininfomap;
-        Q3ValueList<KPluginInfo*> plugininfolist;
+        QList<KPluginInfo*> plugininfolist;
 };
 
 ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
@@ -100,7 +101,7 @@ void ComponentsDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
     }
 }
 
-void ComponentsDialog::setPluginInfos( const Q3ValueList<KPluginInfo *> &plugins )
+void ComponentsDialog::setPluginInfos( const QList<KPluginInfo *> &plugins )
 {
     d->plugininfolist = plugins;
 }
@@ -112,7 +113,7 @@ void ComponentsDialog::show()
     d->plugininfomap.clear();
 
     // construct the treelist
-    for( Q3ValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
+    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
     {
         ( *it )->load();
@@ -151,7 +152,7 @@ void ComponentsDialog::executed( Q3ListViewItem * item )
 
 void ComponentsDialog::savePluginInfos()
 {
-    for( Q3ValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
+    for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
     {
         if( ( *it )->config() )

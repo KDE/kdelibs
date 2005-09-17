@@ -23,6 +23,7 @@
 #include <qwidget.h>
 
 #include <kdelibs_export.h>
+#include <QList>
 
 class KConfigGroup;
 class Q3ListViewItem;
@@ -59,7 +60,7 @@ class KPluginSelectionWidget : public QWidget
          *
          * @internal
          */
-        KPluginSelectionWidget( const Q3ValueList<KPluginInfo*> & plugininfos,
+        KPluginSelectionWidget( const QList<KPluginInfo*> & plugininfos,
                                 KPluginSelector * kps, QWidget * parent, const QString & catname,
                                 const QString & category, KConfigGroup * config = 0 );
 
@@ -183,7 +184,7 @@ class KPluginSelectionWidget : public QWidget
          */
         void embeddPluginKCMs( KPluginInfo *, bool );
 
-        void init( const Q3ValueList<KPluginInfo*> & plugininfos, const QString & );
+        void init( const QList<KPluginInfo*> & plugininfos, const QString & );
         void checkDependencies( const KPluginInfo * );
 
         struct KPluginSelectionWidgetPrivate;

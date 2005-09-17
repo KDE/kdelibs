@@ -22,8 +22,9 @@
 
 #include <qobject.h>
 #include <kservice.h>
+#include <QList>
 
-template<class T> class Q3ValueList;
+template<class T> class QList;
 class KPluginInfo;
 class KCMultiDialog;
 class KCModuleInfo;
@@ -151,7 +152,7 @@ class KUTILS_EXPORT Dialog : public QObject
          * If you use a Configurable dialog you need to pass KPluginInfo
          * objects that the dialog should configure.
          */
-        void addPluginInfos( const Q3ValueList<KPluginInfo*> & plugininfos );
+        void addPluginInfos( const QList<KPluginInfo*> & plugininfos );
 
         KCMultiDialog * dialog();
 
@@ -183,8 +184,8 @@ class KUTILS_EXPORT Dialog : public QObject
          */
         bool isPluginForKCMEnabled( KCModuleInfo * ) const;
 
-        Q3ValueList<KService::Ptr> instanceServices() const;
-        Q3ValueList<KService::Ptr> parentComponentsServices(
+        QList<KService::Ptr> instanceServices() const;
+        QList<KService::Ptr> parentComponentsServices(
                 const QStringList & ) const;
         /**
          * @internal

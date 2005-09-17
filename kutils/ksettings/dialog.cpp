@@ -33,6 +33,7 @@
 #include <kiconloader.h>
 #include <q3vbox.h>
 #include <qlabel.h>
+#include <QList>
 #include "kcmoduleinfo.h"
 
 #include "q3valuelist.h"
@@ -56,7 +57,7 @@ struct GroupInfo
 class PageNode
 {
 	private:
-		typedef Q3ValueList<PageNode*> List;
+		typedef QList<PageNode*> List;
 		enum Type { KCM, Group, Root };
 		union Value
 		{
@@ -353,7 +354,7 @@ class Dialog::DialogPrivate
 		PageNode pagetree;
 		QWidget * parentwidget;
 		QStringList registeredComponents;
-		Q3ValueList<KService::Ptr> services;
+		QList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
@@ -401,9 +402,9 @@ Dialog::~Dialog()
 	delete d;
 }
 
-void Dialog::addPluginInfos( const Q3ValueList<KPluginInfo*> & plugininfos )
+void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
 {
-	for( Q3ValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
+	for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
 	{
 		d->registeredComponents.append( ( *it )->pluginName() );
@@ -427,7 +428,7 @@ KCMultiDialog * Dialog::dialog()
 	return d->dlg;
 }
 
-Q3ValueList<KService::Ptr> Dialog::instanceServices() const
+QList<KService::Ptr> Dialog::instanceServices() const
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
@@ -436,7 +437,7 @@ Q3ValueList<KService::Ptr> Dialog::instanceServices() const
 		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
 
-	Q3ValueList<KService::Ptr> ret;
+	QList<KService::Ptr> ret;
 
 	if( service && service->isValid() )
 	{
@@ -460,7 +461,7 @@ Q3ValueList<KService::Ptr> Dialog::instanceServices() const
 	return ret;
 }
 
-Q3ValueList<KService::Ptr> Dialog::parentComponentsServices(
+QList<KService::Ptr> Dialog::parentComponentsServices(
 		const QStringList & kcdparents ) const
 {
 	d->registeredComponents += kcdparents;
@@ -546,7 +547,7 @@ void Dialog::createDialogFromServices()
 			parseGroupFile( *it );
 
 	// now we process the KCModule services
-	for( Q3ValueList<KService::Ptr>::ConstIterator it = d->services.begin();
+	for( QList<KService::Ptr>::ConstIterator it = d->services.begin();
 			it != d->services.end(); ++it )
 	{
 		// we create the KCModuleInfo

@@ -60,6 +60,7 @@
 #include <kinstance.h>
 #include <q3ptrdict.h>
 #include <qstringlist.h>
+#include <QList>
 #include "kcmoduleproxy.h"
 
 /*
@@ -113,7 +114,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
     QMap<QString, int> widgetIDs;
     QMap<KPluginInfo*, bool> plugincheckedchanged;
     QString catname;
-    Q3ValueList<KCModuleProxy*> modulelist;
+    QList<KCModuleProxy*> modulelist;
     Q3PtrDict<QStringList> moduleParentComponents;
 
     KPluginInfo * currentplugininfo;
@@ -148,7 +149,7 @@ bool KPluginSelectionWidget::eventFilter( QObject *obj, QEvent *ev )
 
 
 KPluginSelectionWidget::KPluginSelectionWidget(
-        const Q3ValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
+        const QList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
         QWidget * parent, const QString & catname, const QString & category,
         KConfigGroup * config )
     : QWidget( parent )
@@ -162,7 +163,7 @@ inline QString KPluginSelectionWidget::catName() const
     return d->catname;
 }
 
-void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos,
+void KPluginSelectionWidget::init( const QList<KPluginInfo*> & plugininfos,
         const QString & category )
 {
     // setup Widgets
@@ -185,7 +186,7 @@ void KPluginSelectionWidget::init( const Q3ValueList<KPluginInfo*> & plugininfos
     listview->setSelectionModeExt( KListView::Single );
     listview->setAllColumnsShowFocus( true );
     listview->addColumn( i18n( "Name" ) );
-    for( Q3ValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
+    for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
             it != plugininfos.end(); ++it )
     {
         d->plugincheckedchanged[ *it ] = false;
@@ -261,7 +262,7 @@ void KPluginSelectionWidget::embeddPluginKCMs( KPluginInfo * plugininfo, bool ch
         d->kps->configPage( id );
         d->widgetIDs[ plugininfo->pluginName() ] = id;
 
-        for( Q3ValueList<KService::Ptr>::ConstIterator it =
+        for( QList<KService::Ptr>::ConstIterator it =
                 plugininfo->kcmServices().begin();
                 it != plugininfo->kcmServices().end(); ++it )
         {
@@ -417,7 +418,7 @@ void KPluginSelectionWidget::load()
             d->currentchecked = info->isPluginEnabled();
     }
 
-    for( Q3ValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
+    for( QList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
             ( *it )->load();
@@ -440,7 +441,7 @@ void KPluginSelectionWidget::save()
         d->plugincheckedchanged[ info ] = false;
     }
     QStringList updatedModules;
-    for( Q3ValueList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
+    for( QList<KCModuleProxy*>::Iterator it = d->modulelist.begin();
             it != d->modulelist.end(); ++it )
         if( ( *it )->changed() )
         {
@@ -498,7 +499,7 @@ class KPluginSelector::KPluginSelectorPrivate
         Q3Frame * frame;
         KTabWidget * tabwidget;
         Q3WidgetStack * widgetstack;
-        Q3ValueList<KPluginSelectionWidget *> pswidgets;
+        QList<KPluginSelectionWidget *> pswidgets;
         bool hideconfigpage;
 };
 
@@ -556,10 +557,10 @@ void KPluginSelector::checkNeedForTabWidget()
     }
 }
 
-static Q3ValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
+static QList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName )
 {
     if( instanceName.isNull() )
-        return Q3ValueList<KPluginInfo*>(); //nothing
+        return QList<KPluginInfo*>(); //nothing
 
     const QStringList desktopfilenames = KGlobal::dirs()->findAllResources( "data",
             instanceName + "/kpartplugins/*.desktop", true, false );
@@ -569,7 +570,7 @@ static Q3ValueList<KPluginInfo*> kpartsPluginInfos( const QString& instanceName 
 void KPluginSelector::addPlugins( const QString & instanceName,
         const QString & catname, const QString & category, KConfig * config )
 {
-    const Q3ValueList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
+    const QList<KPluginInfo*> plugininfos = kpartsPluginInfos( instanceName );
     if ( plugininfos.isEmpty() )
         return;
     checkNeedForTabWidget();
@@ -581,7 +582,7 @@ void KPluginSelector::addPlugins( const QString & instanceName,
     addPluginsInternal( plugininfos, catname, category, cfgGroup );
 }
 
-void KPluginSelector::addPluginsInternal( const Q3ValueList<KPluginInfo*> plugininfos,
+void KPluginSelector::addPluginsInternal( const QList<KPluginInfo*> plugininfos,
                                           const QString & catname, const QString & category,
                                           KConfigGroup* cfgGroup )
 {
@@ -612,7 +613,7 @@ void KPluginSelector::addPlugins( const KInstance * instance, const QString &
     addPlugins( instance->instanceName(), catname, category, config );
 }
 
-void KPluginSelector::addPlugins( const Q3ValueList<KPluginInfo*> & plugininfos,
+void KPluginSelector::addPlugins( const QList<KPluginInfo*> & plugininfos,
         const QString & catname, const QString & category, KConfig * config )
 {
     checkNeedForTabWidget();
@@ -654,7 +655,7 @@ void KPluginSelector::setShowEmptyConfigPage( bool show )
 
 void KPluginSelector::load()
 {
-    for( Q3ValueList<KPluginSelectionWidget *>::Iterator it =
+    for( QList<KPluginSelectionWidget *>::Iterator it =
             d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
     {
         ( *it )->load();
@@ -663,7 +664,7 @@ void KPluginSelector::load()
 
 void KPluginSelector::save()
 {
-    for( Q3ValueList<KPluginSelectionWidget *>::Iterator it =
+    for( QList<KPluginSelectionWidget *>::Iterator it =
             d->pswidgets.begin(); it != d->pswidgets.end(); ++it )
     {
         ( *it )->save();
