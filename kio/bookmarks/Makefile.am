@@ -31,7 +31,7 @@ include_HEADERS = \
 	kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h \
 	kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h 
 libkbookmarks_la_SOURCES = \
-	kbookmark.cc kbookmarkbar.cc kbookmarkdrag.cc \
+	kbookmark.cc kbookmarkbar.cc \
 	kbookmarkimporter.cc kbookmarkmanager.cc kbookmarkmenu.cc \
 	kbookmarkimporter_crash.cc kbookmarkimporter_opera.cc kbookmarkimporter_ie.cc \
 	kbookmarkimporter_ns.cc kbookmarkimporter_kde1.cc kbookmarkdombuilder.cc \
