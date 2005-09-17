@@ -21,41 +21,67 @@ def detect(env):
 
 	p=env.pprint
 
+	# do our best to find the QTDIR (non-Debian systems)
 	qtdir = os.getenv("QTDIR")
+	if qtdir and env.find_file('lib/libqt-mt.so', [qtdir]): qtdir=None # qtdir for qt3, not qt4
 	if not qtdir:
-		p('RED', 'QTDIR not set - for the moment you will have to set it')
-		env.Exit(1)
-	env['QTDIR'] = qtdir.strip()
-	if qtdir:
-		if not qtlibs:
-			qtlibs = os.path.join(qtdir, 'lib' + libsuffix)
-		if not qtincludes:
-			qtincludes = os.path.join(qtdir, 'include')
-		os.putenv('PATH', os.path.join(qtdir , 'bin') +
-				  ":" + os.getenv("PATH"))
+		qtdir=env.find_path('include/', [ # lets find the qt include directory
+				'/usr/local/Trolltech/Qt-4.0.3/', # one never knows
+				'/usr/local/Trolltech/Qt-4.0.2/',
+				'/usr/local/Trolltech/Qt-4.0.1/',
+				'/usr/local/Trolltech/Qt-4.0.0/'])
+		if qtdir: p('YELLOW', 'The qtdir was found as '+qtdir)
+		else:     p('YELLOW', 'There is no QTDIR set')
+	else: env['QTDIR'] = qtdir.strip()
 
-	def find_qt_bin(prog):
-		## Find the necessary programs
-		print "Checking for %s               :" % prog,
-		path = os.path.join(qtdir, 'bin', prog)
-		if os.path.isfile(path):
-			p('GREEN',"%s was found as %s" % (prog, path))
-		else:
-			path = os.popen("which %s 2>/dev/null" % prog).read().strip()
-			if len(path):
+	# if we have the QTDIR, finding the qtlibs and qtincludes is easy
+	if qtdir:
+		if not qtlibs:     qtlibs     = os.path.join(qtdir, 'lib' + libsuffix)
+		if not qtincludes: qtincludes = os.path.join(qtdir, 'include')
+		#os.putenv('PATH', os.path.join(qtdir , 'bin') + ":" + os.getenv("PATH")) # TODO ita 
+
+	# Check for uic, uic-qt3, moc, rcc, ..
+	def find_qt_bin(progs):
+		# first use the qtdir
+		path=''
+		for prog in progs:
+			path=env.find_file(prog, [env.join(qtdir, 'bin')])
+			if path:
+				p('GREEN',"%s was found as %s" % (prog, path))
+				return path
+
+		# else use the environment
+		for prog in progs:
+			path=env.find_program(prog)
+			if path:
 				p('YELLOW',"%s was found as %s" % (prog, path))
-			else:
-				path = os.popen("which %s 2>/dev/null" % prog).read().strip()
-				if len(path):
-					p('YELLOW',"%s was found as %s" % (prog, path))
-				else:
-					p('RED',"%s was not found - fix $QTDIR or $PATH" % prog)
-					env.Exit(1)
-		return path
+				return path
+
+		# and then try to guess using common paths ..
+		common_paths=['/usr/bin', '/usr/local/bin', '/opt/bin', '/opt/local/bin']
+		for prog in progs:
+			path=env.find_file(prog, common_paths)
+			if path:
+				p('YELLOW',"%s was found as %s" % (prog, path))
+				return path
+		# everything failed
+		p('RED',"%s was not found - make sure Qt4-devel is installed, or set $QTDIR or $PATH" % prog)
+		env.Exit(1)
 	
-	env['QT_UIC'] = find_qt_bin('uic')
-	env['QT_UIC3'] = find_qt_bin('uic3')
-	print "Checking for uic version       :",
+	print "Checking for uic               :",
+	env['QT_UIC']  = find_qt_bin(['uic', 'uic-qt4'])
+
+	print "Checking for uic-qt3           :",
+	env['QT_UIC3'] = find_qt_bin(['uic3', 'uic-qt3'])
+
+	print "Checking for moc               :",
+	env['QT_MOC'] = find_qt_bin(['moc', 'moc-qt4'])
+
+	print "Checking for rcc               :",
+	env['QT_RCC'] = find_qt_bin(['rcc'])
+
+	# TODO is this really needed now ?
+	print "Checking for uic3 version      :",
 	version = os.popen(env['QT_UIC'] + " -version 2>&1").read().strip()
 	if version.find(" 3.") != -1:
 		version = version.replace('Qt user interface compiler','')
@@ -63,17 +89,14 @@ def detect(env):
 		p('RED', version + " (too old)")
 		env.Exit(1)
 	p('GREEN', "fine - %s" % version)
-	env['QT_MOC'] = find_qt_bin('moc')
-	env['QT_RCC'] = find_qt_bin('rcc')
 
 	if os.environ.has_key('PKG_CONFIG_PATH'):
-		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] \
-										+ ':' + qtlibs
+		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + ':' + qtlibs
 	else:
 		os.environ['PKG_CONFIG_PATH'] = qtlibs
 
-	## check for the qt and kde includes
-	print "Checking for the qt includes   :",
+	## check for the Qt4 includes
+	print "Checking for the Qt4 includes  :",
 	if qtincludes and os.path.isfile(qtincludes + "/QtGui/QFont"):
 		# The user told where to look for and it looks valid
 		p('GREEN','ok '+qtincludes)
@@ -90,16 +113,14 @@ def detect(env):
 			p('RED',"the qt headers were not found")
 			env.Exit(1)
 
-	if not prefix:
-		prefix = "/usr/"
+
+	## TODO make this specific to the the module QT4
+	if not prefix: prefix = "/usr/"
 		
 	## use the user-specified prefix
-	if not execprefix:
-		execprefix = prefix
-	if not datadir:
-		datadir=prefix+"/share"
-	if not libdir:
-		libdir=execprefix+"/lib"+libsuffix
+	if not execprefix: execprefix = prefix
+	if not datadir:    datadir    = prefix+"/share"
+	if not libdir:     libdir     = execprefix+"/lib"+libsuffix
 
 	subst_vars = lambda x: x.replace('${exec_prefix}', execprefix)\
 			 .replace('${datadir}', datadir)\

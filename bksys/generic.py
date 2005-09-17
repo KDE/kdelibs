@@ -398,8 +398,21 @@ def getreldir(lenv):
 	root=SCons.Node.FS.default_fs.Dir('#').abspath
 	return cwd.replace(root,'').lstrip('/')
 
-## HELPER - 
+## HELPER - find programs and headers
+def find_path(lenv, file, path_list):
+	for dir in path_list:
+		if os.path.exists( lenv.join(dir, file) ):
+			return dir
+	return ''
 
+def find_file(lenv, file, path_list):
+	for dir in path_list:
+                if os.path.exists( lenv.join(dir, file) ):
+                        return lenv.join(dir, file)
+        return ''
+
+def find_program(lenv, prog):
+	return os.popen("which %s 2>/dev/null" % prog).read().strip()
 
 ## Scons-specific function, do not remove
 def exists(env):
@@ -537,6 +550,11 @@ def generate(env):
 				env['GENCXXFLAGS'] = ['-O2', '-DNDEBUG', '-DNO_DEBUG']
 
 		if os.environ.has_key('CFLAGS'): env['GENCCFLAGS'] = SCons.Util.CLVar( os.environ['CFLAGS'] )
+
+		## Linux settings
+		#import sys
+		if sys.platform == 'linux2':
+			env['GENCXXFLAGS'] += ['-D_XOPEN_SOURCE=500', '-D_BSD_SOURCE', '-D_GNU_SOURCE']
 
 		## FreeBSD settings (contributed by will at freebsd dot org)
 		if os.uname()[0] == "FreeBSD":
@@ -751,6 +769,9 @@ def generate(env):
 	SConsEnvironment.link_local_staticlib = link_local_staticlib
 	SConsEnvironment.genobj=genobj
 	SConsEnvironment.set_build_dir=set_build_dir
+	SConsEnvironment.find_path=find_path
+	SConsEnvironment.find_file=find_file
+	SConsEnvironment.find_program=find_program
 
 	if env.has_key('GENCXXFLAGS'):  env.AppendUnique( CPPFLAGS = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):   env.AppendUnique( CCFLAGS = env['GENCCFLAGS'] )
@@ -759,7 +780,7 @@ def generate(env):
         if env.has_key('BKS_DEBUG'):
                 if (env['BKS_DEBUG'] == "full"):
                         env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g3', '-Wall'])
-                elif (env['BKS_DEBUG'] == "trace"):
+                elif (env['BKS_DEBUG'] == "trace"): # i cannot remember who wanted this (TODO ita)
                         env.AppendUnique(
                                 LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),
                                 CXXFLAGS=env.Split("-DDEBUG -Wall -finstrument-functions -g3 -O0"))
