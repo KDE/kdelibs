@@ -62,6 +62,7 @@ dcop
 libltdl
 kdefx
 mimetypes
+kdecore/network
 """
 # kdecore kunittest kdeui
 
