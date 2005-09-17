@@ -1,0 +1,16 @@
+#! /usr/bin/env python
+
+Import('env')
+
+sources = """
+ksvgiconengine.cpp
+ksvgiconpainter.cpp
+"""
+
+obj = env.qt4obj('convenience',env)
+obj.target   = 'libkdesvgicons'
+obj.source   = sources
+obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4 LIBART'
+obj.execute()
+
+
