@@ -26,7 +26,7 @@ METASOURCES = AUTO
 # convenience lib - no _LDFLAGS or _LIBADD !
 
 include_HEADERS = \
-	kbookmark.h kbookmarkbar.h kbookmarkdrag.h kbookmarkexporter.h \
+	kbookmark.h kbookmarkbar.h kbookmarkexporter.h \
 	kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h \
 	kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h \
 	kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h 
