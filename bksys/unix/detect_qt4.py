@@ -90,10 +90,10 @@ def detect(env):
 		env.Exit(1)
 	p('GREEN', "fine - %s" % version)
 
-	if os.environ.has_key('PKG_CONFIG_PATH'):
-		os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + ':' + qtlibs
-	else:
-		os.environ['PKG_CONFIG_PATH'] = qtlibs
+	#if os.environ.has_key('PKG_CONFIG_PATH'):
+	#	os.environ['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH'] + ':' + qtlibs
+	#else:
+	#	os.environ['PKG_CONFIG_PATH'] = qtlibs
 
 	## check for the Qt4 includes
 	print "Checking for the Qt4 includes  :",
