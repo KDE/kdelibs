@@ -91,7 +91,7 @@ def generate(env):
 	opts.Update(env)
 
 	# reconfigure when things are missing
-	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('QTDIR')):
+	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('LIB_QT')):
 		env['_CONFIGURE_']=1
 		for opt in opts.options:
 			if env.has_key(opt.key): env.__delitem__(opt.key)
