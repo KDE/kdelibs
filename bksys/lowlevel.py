@@ -17,6 +17,7 @@ def exists(env):
 ##   and paths from zlib, libpng and kde4 vars defined below
 
 def generate(env):
+	if env['HELP']: return
 
 	#######################################
 	## other stuff
@@ -38,7 +39,8 @@ def generate(env):
 	env['LIBPATH_X11']         = ['/usr/X11R6/lib/']
 	env['LIB_XRENDER']         = ['Xrender']
 
-	# TODO: the config.h stuff
+	# tell it we do have a global config.h file
+	env['_CONFIG_H_'].append('lowlevel')
 
         from SCons.Options import Options
         cachefile=env['CACHEDIR']+'lowlevel.cache.py'
@@ -62,6 +64,6 @@ def generate(env):
 			from detect_lowlevel import detect
 		detect(env)
 
-	env['LOWLEVEL_ISCONFIGURED']=1
-	opts.Save(cachefile, env)
+		env['LOWLEVEL_ISCONFIGURED']=1
+		opts.Save(cachefile, env)
 

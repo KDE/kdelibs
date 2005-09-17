@@ -3,7 +3,7 @@
 Import('env')
 
 # test if install is really wanted
-if env['_INSTALL']:
+if env['_INSTALL_']:
 	# ahem .. a real glob function needed somewhere (ita)
 	import glob
 	import SCons.Util

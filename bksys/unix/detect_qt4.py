@@ -23,7 +23,7 @@ def detect(env):
 
 	qtdir = os.getenv("QTDIR")
 	if not qtdir:
-		p('RED', 'QTDIR not set - please set it')
+		p('RED', 'QTDIR not set - for the moment you will have to set it')
 		env.Exit(1)
 	env['QTDIR'] = qtdir.strip()
 	if qtdir:
@@ -122,19 +122,38 @@ def detect(env):
 
         ########## QT
         # QTLIBPATH is a special var used in the qt4 module - has to be changed (ita)
+	env['CPPPATH_QT']          = [ env.join(env['QTINCLUDEPATH'], 'Qt'), env['QTINCLUDEPATH'] ] # TODO QTINCLUDEPATH (ita)
         env['LIBPATH_QT']          = env['LIBPATH_X11']+[env['QTLIBPATH']]
         env['LIB_QT']              = ['QtGui_debug', 'pthread', 'Xext']+env['LIB_Z']+env['LIB_PNG']+env['LIB_X11']+env['LIB_SM']
 
-        ## QT3SUPPORT
-        env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
         env['CXXFLAGS_QT3SUPPORT'] = ['-DQT3_SUPPORT']
+	env['CPPPATH_QT3SUPPORT']  = [ env.join(env['QTINCLUDEPATH'], 'Qt3Support') ]
+        env['LIB_QT3SUPPORT']      = ['Qt3Support_debug']
 
+	env['CPPPATH_QTCORE']      = [ env.join(env['QTINCLUDEPATH'], 'QtCore') ]
         env['LIB_QTCORE']          = ['QtCore_debug']
+
+	env['CPPPATH_QTASSISTANT'] = [ env.join(env['QTINCLUDEPATH'], 'QtAssistant') ]
+	env['LIB_QTDESIGNER']      = ['QtAssistant_debug']
+
+	env['CPPPATH_QTDESIGNER']  = [ env.join(env['QTINCLUDEPATH'], 'QtDesigner') ]
         env['LIB_QTDESIGNER']      = ['QtDesigner_debug']
-        env['LIB_QTGUI']           = ['QtGui_debug']
+
+	env['CPPPATH_QTNETWORK']   = [ env.join(env['QTINCLUDEPATH'], 'QtNetwork') ]
         env['LIB_QTNETWORK']       = ['QtNetwork_debug']
+
+	env['CPPPATH_QTGUI']       = [ env.join(env['QTINCLUDEPATH'], 'QtGui') ]
+        env['LIB_QTGUI']           = ['QtGui_debug']
+
+	env['CPPPATH_OPENGL']       = [ env.join(env['QTINCLUDEPATH'], 'QtOpengl') ]
         env['LIB_QTOPENGL']        = ['QtOpenGL_debug']
+
+	env['CPPPATH_QTSQL']       = [ env.join(env['QTINCLUDEPATH'], 'QtSql') ]
         env['LIB_QTSQL']           = ['QtSql_debug']
+
+	env['CPPPATH_QTXML']       = [ env.join(env['QTINCLUDEPATH'], 'QtXml') ]
         env['LIB_QTXML']           = ['QtXml_debug']
 	
 	env['QTLOCALE']=env.join(datadir, 'locale')
+
+

@@ -52,20 +52,38 @@ def generate(env):
 		('QT_MOC', 'moc command'),
 		('QT_RCC', 'rcc command'),
 
+		('CPPPATH_QT', ''),
 		('LIBPATH_QT', ''),
 		('LIB_QT', ''),
 
-		('LIB_QT3SUPPORT', ''),
+		('CPPPATH_QT3SUPPORT', ''),
 		('CXXFLAGS_QT3SUPPORT', ''),
+		('LIB_QT3SUPPORT', ''),
 
+		('CPPPATH_QTCORE', ''),
 		('LIB_QTCORE', ''),
+
+		('CPPPATH_QTDESIGNER', ''),
 		('LIB_QTDESIGNER', ''),
-		('LIB_QTGUI', ''),
+		('CPPPATH_QTASSISTANT', ''),
+		('LIB_QTASSISTANT', ''),
+			
+		('CPPPATH_QTNETWORK', ''),
 		('LIB_QTNETWORK', ''),
+
+		('CPPPATH_QTGUI', ''),
+		('LIB_QTGUI', ''),
+
+		('CPPPATH_QTOPENGL', ''),
 		('LIB_QTOPENGL', ''),
+
+		('CPPPATH_QTSQL', ''),
 		('LIB_QTSQL', ''),
+
+		('CPPPATH_QTXML', ''),
 		('LIB_QTXML', ''),
 
+		# TODO remove
 		('QTPLUGINS', 'uic executable command'),
 
 		('QTLOCALE', 'install po files to this path'),
@@ -311,14 +329,14 @@ def generate(env):
 		#return env['PREFIX']
 
 	def QT4install(lenv, restype, subdir, files):
-		if not env['_INSTALL']:
+		if not env['_INSTALL_']:
 			return
 		dir = getInstDirForResType(lenv, restype)
 		install_list = lenv.bksys_install(lenv.join(dir,subdir), files, nodestdir=1)
 		return install_list
 
 	def QT4installas(lenv, restype, destfile, file):
-		if not env['_INSTALL']:
+		if not env['_INSTALL_']:
 			return
 		dir = getInstDirForResType(lenv, restype)
 		install_list = lenv.InstallAs(lenv.join(dir,destfile), file)
@@ -333,68 +351,6 @@ def generate(env):
 			country = SCons.Util.splitext(result[0].name)[0]
 			lenv.QT4installas('QTLOCALE', lenv.join(country,'LC_MESSAGES',appname+'.mo'), result)
 
-	def QT4icon(lenv, icname='*', path='./', restype='QT4ICONS', subdir=''):
-		"""Contributed by: "Andrey Golovizin" <grooz()gorodok()net>
-		modified by "Martin Ellis" <m.a.ellis()ncl()ac()uk>
-
-		Installs icons with filenames such as cr22-action-frame.png into 
-		QT4 icon hierachy with names like icons/crystalsvg/22x22/actions/frame.png.
-		
-		Global QT4 icons can be installed simply using env.QT4icon('name').
-		The second parameter, path, is optional, and specifies the icons
-		location in the source, relative to the SConscript file.
-
-		To install icons that need to go under an applications directory (to
-		avoid name conflicts, for example), use e.g.
-		env.QT4icon('name', './', 'QT4DATA', 'appname/icons')"""
-
-		type_dic = { 'action' : 'actions', 'app' : 'apps', 'device' : 
-			'devices', 'filesys' : 'filesystems', 'mime' : 'mimetypes' } 
-		dir_dic = {
-		'los'  :'locolor/16x16',
-		'lom'  :'locolor/32x32',
-		'him'  :'hicolor/32x32',
-		'hil'  :'hicolor/48x48',
-		'lo16' :'locolor/16x16',
-		'lo22' :'locolor/22x22',
-		'lo32' :'locolor/32x32',
-		'hi16' :'hicolor/16x16',
-		'hi22' :'hicolor/22x22',
-		'hi32' :'hicolor/32x32',
-		'hi48' :'hicolor/48x48',
-		'hi64' :'hicolor/64x64',
-		'hi128':'hicolor/128x128',
-		'hisc' :'hicolor/scalable',
-		'cr16' :'crystalsvg/16x16',
-		'cr22' :'crystalsvg/22x22',
-		'cr32' :'crystalsvg/32x32',
-		'cr48' :'crystalsvg/48x48',
-		'cr64' :'crystalsvg/64x64',
-		'cr128':'crystalsvg/128x128',
-		'crsc' :'crystalsvg/scalable'
-		}
-
-		iconfiles = []
-		for ext in "png xpm mng svg svgz".split():
-			files = glob.glob(path+'/'+'*-*-%s.%s' % (icname, ext))
-			iconfiles += files
-		for iconfile in iconfiles:
-			lst = iconfile.split('/')
-			filename = lst[ len(lst) - 1 ]
-			tmp = filename.split('-')
-			if len(tmp)!=3:
-				lenv.pprint('RED','WARNING: icon filename has unknown format: '+iconfile)
-				continue
-			[icon_dir, icon_type, icon_filename]=tmp
-			try:
-				basedir=getInstDirForResType(lenv, restype)
-				destfile = '%s/%s/%s/%s/%s' % (basedir, subdir, dir_dic[icon_dir], type_dic[icon_type], icon_filename)
-			except KeyError:
-				lenv.pprint('RED','WARNING: unknown icon type: '+iconfile)
-				continue
-			## Do not use QT4installas here, as parsing from an ide will be necessary
-			if env['_INSTALL']: env.Alias('install', env.InstallAs( destfile, iconfile ) )
-
         import generic
         class qt4obj(generic.genobj):
                 def __init__(self, val, senv=None):
@@ -406,13 +362,7 @@ def generate(env):
                                 print self.xml()
                                 return
 			self.env=self.orenv.Copy()
-			self.env.AppendUnique(LIBPATH=env['LIBPATH_KDE4'])
-
-			# then add the includes for qt
-			inctypes="QtXml QtGui QtCore QtOpenGL Qt3Support".split()
-			qtincludes=[env['QTINCLUDEPATH']]
-			for dir in inctypes: qtincludes.append( env.join(env['QTINCLUDEPATH'], dir) )
-			self.env.AppendUnique(CPPPATH=qtincludes)
+			#self.env.AppendUnique(LIBPATH=env['LIBPATH_KDE4'])
 
                         self.setsource( QT4files(env, self.target, self.source) )
                         generic.genobj.execute(self)
@@ -430,6 +380,5 @@ def generate(env):
 	SConsEnvironment.QT4install = QT4install
 	SConsEnvironment.QT4installas = QT4installas
 	SConsEnvironment.QT4lang = QT4lang
-	SConsEnvironment.QT4icon = QT4icon
 	SConsEnvironment.qt4obj=qt4obj
 

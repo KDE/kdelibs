@@ -40,9 +40,10 @@ sys.path.append('bksys')
 from generic import configure
 config = {
 	'modules'  : 'generic lowlevel libxml qt4 kde4',
-	'builddir' : 'build',
-	'config.h' : 1,
-	'rpath'    : 1,
+	'builddir' : 'build', # put all object files under 'build/'
+	'config.h' : 1, # mechanism should be ok
+	'rpath'    : 1, # incomplete
+	'bootstrap': 1, # incomplete
 }
 
 # and the config.h

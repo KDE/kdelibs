@@ -543,7 +543,7 @@ def generate(env):
 			lenv.add_dump(ret)
 			return None
 
-		if not env['_INSTALL']: return None
+		if not env['_INSTALL_']: return None
 		dir = getInstDirForResType(lenv, restype)
 
 		p=None
@@ -554,7 +554,7 @@ def generate(env):
 		return install_list
 
 	def KDEinstallas(lenv, restype, destfile, file):
-		if not env['_INSTALL']: return
+		if not env['_INSTALL_']: return
 		dir = getInstDirForResType(lenv, restype)
 		install_list = lenv.InstallAs(lenv.join(dir, destfile), file)
                 env.Alias('install', install_list)
@@ -816,7 +816,7 @@ def generate(env):
 		lenv.Meinproc( cache, index )
 		lenv.KDEinstall( 'KDEDOC', lenv.join(lang,destination), cache )
 		
-		if env['_INSTALL']:
+		if env['_INSTALL_']:
 			dir=lenv.join(lenv.getInstDirForResType('KDEDOC'), lang, destination)
 			comp='mkdir -p %s && cd %s && rm -f common && ln -s ../common common' % (dir, dir)
 			lenv.Execute(comp)

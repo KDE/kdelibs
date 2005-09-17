@@ -12,7 +12,7 @@ obj = env.qt4obj('shlib',env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libDCOP'
 obj.source   = 'dcopstub.cpp dcopref.cpp dcopobject.cpp dcopclient.cpp'
-obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.libs     = env.join('KDE-ICE', 'libkICE.a')
 obj.instdir  = '/usr/local/lib/'
 obj.execute()
@@ -22,7 +22,7 @@ obj = env.qt4obj('shlib', env) # TODO kdeinit support ?
 obj.target   = 'dcopserver'
 obj.source   = 'dcopserver.cpp dcopsignals.cpp'
 obj.libs     = [env.join('.', 'libDCOP.la')]
-obj.uselib   = 'QTCORE QT3SUPPORT KDE4'
+obj.uselib   = 'QT QTCORE QT3SUPPORT KDE4'
 obj.instdir  = '/usr/local/lib/'
 obj.execute()
 

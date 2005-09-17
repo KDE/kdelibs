@@ -10,16 +10,14 @@ from SCons.Options import Options, PathOption
 
 ## CONFIGURATION: write the config.h files
 def write_config_h(lenv):
-	import glob
-
 	# put the files into the builddir
 	if not os.path.exists( lenv['_BUILDDIR_'] ): os.mkdir(lenv['_BUILDDIR_'])
 	dest=open(lenv.join(lenv['_BUILDDIR_'], 'config.h'), 'w')
 	dest.write('/* defines are added below */\n')
 
 	# write the config.h including all others
-	files = glob.glob( lenv.join('build', 'config-*.h') )
-	for file in files: dest.write('#include "%s"' % file)
+	if lenv.has_key('_CONFIG_H_'):
+		for file in lenv['_CONFIG_H_']: dest.write('#include "config-%s.h"' % file)
 	dest.write('\n')
 	dest.close()
 
@@ -35,7 +33,9 @@ def configure(dict):
 	tool_path  = ['bksys']
 	build_dir  = '.'
 	config_h   = 0
+	bootstrap  = 0
 	want_rpath = 1
+
 	## process the options
 	for key in dict.keys():
 		if   key == 'modules': mytools=dict[key].split()
@@ -43,10 +43,17 @@ def configure(dict):
 		elif key == 'config.h': config_h=1
 		elif key == 'cp_method': cp_method=dict[key]
 		elif key == 'rpath': want_rpath=dict[key]
+		elif key == 'bootstrap': bootstrap=1
 		else: print 'unknown key: '+key
 
 	## now build the environment
-	env = Environment.Environment( tools=mytools, toolpath=tool_path, ENV=os.environ, _BUILDDIR_=build_dir )
+	if not bootstrap:
+		env = Environment.Environment( ENV=os.environ, _BUILDDIR_=build_dir,
+			tools=mytools, toolpath=tool_path )
+	else:
+		env = Environment.Environment( ENV=os.environ, BOOTSTRAP_KDE=1,
+			_BUILDDIR_=build_dir,
+                        tools=mytools, toolpath=tool_path )
 
 	## at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
@@ -55,6 +62,8 @@ def configure(dict):
 	env['_WANT_RPATH_']=want_rpath
 
 	env.Append(CPPPATH=['#']) # ugly hack, remove when possible (ita)
+
+	if bootstrap: env['_BOOTSTRAP_KDE_']=1
 
 	## we want symlinks by default
 	env.SetOption('duplicate', cp_method)
@@ -316,6 +325,8 @@ class genobj:
 					self.env.AppendUnique(CXXFLAGS=self.env['CXXFLAGS_'+lib])
 				if self.env.has_key('CCFLAGS_'+lib):
 					self.env.AppendUnique(CCFLAGS=self.env['CCFLAGS_'+lib])
+				if self.env.has_key('CPPPATH_'+lib):
+					self.env.AppendUnique(CPPPATH=self.env['CPPPATH_'+lib])
 				if self.env.has_key('RPATH_'+lib) and self.env['_WANT_RPATH_']:
 					self.env.AppendUnique(RPATH=self.env['RPATH_'+lib])
 
@@ -387,6 +398,9 @@ def getreldir(lenv):
 	root=SCons.Node.FS.default_fs.Dir('#').abspath
 	return cwd.replace(root,'').lstrip('/')
 
+## HELPER - 
+
+
 ## Scons-specific function, do not remove
 def exists(env):
 	return true
@@ -410,6 +424,8 @@ def generate(env):
 	SConsEnvironment.getreldir = getreldir
 	SConsEnvironment.add_dump = add_dump
 	SConsEnvironment.get_dump = get_dump
+
+	env['_CONFIG_H_']=[]
 
 	env['HELP']=0
 	if '--help' in sys.argv or '-h' in sys.argv or 'help' in sys.argv: env['HELP']=1
@@ -498,8 +514,8 @@ def generate(env):
 	# Check if the following command line arguments have been given
 	# and set a flag in the environment to show whether or not it was
 	# given.
-	if 'install' in sys.argv: env['_INSTALL']=1
-	else: env['_INSTALL']=0
+	if 'install' in sys.argv: env['_INSTALL_']=1
+	else: env['_INSTALL_']=0
 	if 'configure' in sys.argv: env['_CONFIGURE_']=1
 	else: env['_CONFIGURE_']=0
 
@@ -559,7 +575,7 @@ def generate(env):
 
 	def bksys_install(lenv, subdir, files, destfile=None, perms=None):
 		""" Install files on 'scons install' """
-		if not env['_INSTALL']: return
+		if not env['_INSTALL_']: return
 		basedir = env['DESTDIR']
 		install_list=None
 		if not destfile: install_list = env.Install(lenv.join(basedir,subdir), lenv.make_list(files))
@@ -654,14 +670,19 @@ def generate(env):
 		## Handle the versioning
 		if len(vnum)>0:
 			nums=vnum.split('.')
-			symlinkcom = ('cd $TARGET.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
+			symlinkcom = ('cd $SOURCE.dir && rm -f $TARGET.name && ln -s $SOURCE.name $TARGET.name')
 			tg = target+'.so.'+vnum
 			nm1 = target+'.so'
 			nm2 = target+'.so.'+nums[0]
 			thisenv.Command(nm1, tg, symlinkcom)
 			thisenv.Command(nm2, tg, symlinkcom)
-			thisenv.bksys_install(libdir, nm1)
-			thisenv.bksys_install(libdir, nm2)
+
+			#if env['_INSTALL_']:
+			#	print env.join(libdir, nm1)+" "+env.join(libdir, tg)
+			#	thisenv.Command( env.join(libdir, nm1), env.join(libdir, tg), symlinkcom)
+			#	thisenv.Command( env.join(libdir, nm2), library_list, symlinkcom)
+			#	#thisenv.bksys_install(libdir, nm1)
+			#	#thisenv.bksys_install(libdir, nm2)
 		return library_list
 
 	# Declare scons scripts to process
