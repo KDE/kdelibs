@@ -147,6 +147,7 @@ class ResourceExampleConfig : public KRES::ResourceConfigWidget
 #include <qlayout.h>
 #include <qlabel.h"
 #include <kresources/resourceconfigwidget.h>
+#include <QList>
 #include "resourceexample.h"
 #include "resourceexampleconfig.h"
 
@@ -259,7 +260,7 @@ class KRESOURCES_EXPORT Resource : public QObject
 
     Q_OBJECT
   public:
-    typedef Q3ValueList<Resource *> List;
+    typedef QList<Resource *> List;
 
     /**
      * Constructor. Construct resource from config.

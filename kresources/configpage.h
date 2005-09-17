@@ -26,6 +26,7 @@
 #include <ksharedptr.h>
 #include <qstringlist.h>
 #include <qwidget.h>
+#include <QList>
 
 #include "manager.h"
 
@@ -93,7 +94,7 @@ class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Reso
     KConfig* mConfig;
     QString mFamily;
     QStringList mFamilyMap;
-    Q3ValueList<KSharedPtr<ResourcePageInfo> > mInfoMap;
+    QList<KSharedPtr<ResourcePageInfo> > mInfoMap;
 
     KComboBox* mFamilyCombo;
     KListView* mListView;

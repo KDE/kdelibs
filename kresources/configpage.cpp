@@ -37,6 +37,7 @@
 #include <kbuttonbox.h>
 #include <ktrader.h>
 #include <kinputdialog.h>
+#include <QList>
 
 #include "resource.h"
 #include "configdialog.h"
@@ -153,7 +154,7 @@ ConfigPage::ConfigPage( QWidget *parent )
 
 ConfigPage::~ConfigPage()
 {
-  Q3ValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
+  QList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it ) {
     (*it)->mManager->removeObserver( this );
   }
@@ -234,7 +235,7 @@ void ConfigPage::save()
 {
   saveResourceSettings();
 
-  Q3ValueList<KSharedPtr<ResourcePageInfo> >::Iterator it;
+  QList<KSharedPtr<ResourcePageInfo> >::Iterator it;
   for ( it = mInfoMap.begin(); it != mInfoMap.end(); ++it )
     (*it)->mManager->writeConfig( (*it)->mConfig );
 
