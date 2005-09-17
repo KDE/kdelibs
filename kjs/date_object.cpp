@@ -59,6 +59,10 @@
 
 #include "date_object.lut.h"
 
+#ifdef _MSC_VER
+#  define strncasecmp(a,b,c) _strnicmp(a,b,c)
+#endif
+
 using namespace KJS;
 
 // come constants
