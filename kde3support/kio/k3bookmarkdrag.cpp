@@ -19,7 +19,7 @@
 */
 
 #include "k3bookmarkdrag.h"
-#include <kurldrag.h>
+#include <k3urldrag.h>
 #include <kdebug.h>
 
 K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
@@ -37,7 +37,7 @@ K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmar
     // Get each URL encoded in utf8 - and since we get it in escaped
     // form on top of that, .latin1() is fine.
     for ( ; uit != uEnd ; ++uit )
-        uris.append( KURLDrag::urlToString(*uit).latin1() );
+        uris.append( K3URLDrag::urlToString(*uit).latin1() );
 
     return new K3BookmarkDrag( bookmarks, uris, dragSource, name );
 }
@@ -90,7 +90,7 @@ QByteArray K3BookmarkDrag::encodedData( const char* mime ) const
     else if ( mimetype == "text/plain" )
     {
         KURL::List m_lstDragURLs;
-        if ( KURLDrag::decode( this, m_lstDragURLs ) )
+        if ( K3URLDrag::decode( this, m_lstDragURLs ) )
         {
             QStringList uris;
             KURL::List::ConstIterator uit = m_lstDragURLs.begin();
@@ -133,7 +133,7 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
     {
         KURL::List m_lstDragURLs;
         //kdDebug(7043) << "K3BookmarkDrag::decode uri-list" << endl;
-        if ( KURLDrag::decode( e, m_lstDragURLs ) )
+        if ( K3URLDrag::decode( e, m_lstDragURLs ) )
         {
             KURL::List::ConstIterator uit = m_lstDragURLs.begin();
             KURL::List::ConstIterator uEnd = m_lstDragURLs.end();
