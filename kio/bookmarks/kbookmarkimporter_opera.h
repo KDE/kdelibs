@@ -22,7 +22,6 @@
 #define __kbookmarkimporter_opera_h
 
 #include <qdom.h>
-#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
@@ -45,7 +44,7 @@ public:
     static QString operaBookmarksFile();
 
 signals:
-    void newBookmark( const QString & text, const Q3CString & url, const QString & additionalInfo );
+    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();
@@ -75,7 +74,7 @@ class KIO_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KOperaBookmarkExporterImpl(KBookmarkManager* mgr, const QString & filename)
-      : KBookmarkExporterBase(mgr, filename) 
+      : KBookmarkExporterBase(mgr, filename)
     { ; }
     virtual ~KOperaBookmarkExporterImpl() {}
     virtual void write(KBookmarkGroup);

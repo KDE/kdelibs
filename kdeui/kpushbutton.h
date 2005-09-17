@@ -23,9 +23,10 @@
 #include <qpoint.h>
 #include <qpushbutton.h>
 #include <kguiitem.h>
-#include <kstdguiitem.h> 
+#include <kstdguiitem.h>
 
-class Q3DragObject;
+class QDrag;
+
 /**
  * This is nothing but a QPushButton with drag-support and KGuiItem support. You have to call
  * setDragEnabled( true ) and override the virtual method
@@ -56,7 +57,7 @@ public:
      * Constructor, that sets an icon and the button-text to @p text
      */
     KPushButton( const QIcon &icon, const QString &text,
-		     QWidget *parent, const char *name=0 );
+                 QWidget *parent, const char *name=0 );
 
     /**
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
@@ -84,20 +85,21 @@ public:
      */
     void setGuiItem( const KGuiItem& item );
 
-    /** 
+    /**
     * Sets the standard KGuiItem for this button.
     * @since 3.4
     */
     void setGuiItem( KStdGuiItem::StdItem item );
 
     /**
-    * Reads the standard KGuiItem for this button. 
-    * @since 3.4
-    */
+     * Reads the standard KGuiItem for this button.
+     * @since 3.4
+     */
     KStdGuiItem::StdItem guiItem() const;
 
-    // Hack for Qt designer
+    /// @internal Hack for Qt designer
     void setGuiItm(int itm ) { setGuiItem( (KStdGuiItem::StdItem)itm );}
+    /// @internal Hack for Qt designer
     int guiItm() const { return (int)guiItem(); }
 
     /**
@@ -113,11 +115,12 @@ public:
 
 protected:
     /**
-     * Reimplement this and return the QDragObject that should be used
-     * for the drag.
-     * Default implementation returns 0L, so that no drag is initiated.
+     * Reimplement this and return the QDrag object that should be used
+     * for the drag. Remember to give it "this" as parent.
+     *
+     * Default implementation returns 0, so that no drag is initiated.
      */
-    virtual Q3DragObject * dragObject();
+    virtual QDrag * dragObject();
 
     /**
      * Reimplemented to add drag-support

@@ -38,7 +38,7 @@ namespace K3MDIPrivate
  * A class derived from KXMLGUIClient that handles the various
  * K3MDI modes
  */
-class K3MDI_EXPORT K3MDIGUIClient : public QObject,
+class KDE3SUPPORT_EXPORT K3MDIGUIClient : public QObject,
 			public KXMLGUIClient
 {
 	Q_OBJECT
@@ -118,7 +118,7 @@ private:
  * A KToggleAction specifically for toggling the showing
  * or the hiding of a K3MDI tool view
  */
-class K3MDI_EXPORT ToggleToolViewAction: public KToggleAction
+class KDE3SUPPORT_EXPORT ToggleToolViewAction: public KToggleAction
 {
 	Q_OBJECT
 public:

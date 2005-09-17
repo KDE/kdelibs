@@ -25,10 +25,11 @@
 #include <qobject.h>
 #include <qdom.h>
 #include <qpair.h>
-#include <q3ptrlist.h>
 #include <dcopobject.h>
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"
+
+class KBookmarkManagerList;
 
 /**
  * This class implements the reading/writing of bookmarks in XML.
@@ -259,7 +260,7 @@ k_dcop:
 
 signals:
     /**
-     * Signals that the group (or any of its children) with the address 
+     * Signals that the group (or any of its children) with the address
      * @p groupAddress (e.g. "/4/5")
      * has been modified by the caller @p caller.
      */
@@ -279,7 +280,7 @@ private:
     mutable QDomDocument m_toolbarDoc;
     mutable bool m_docIsLoaded;
     bool m_update;
-    static Q3PtrList<KBookmarkManager>* s_pSelf;
+    static KBookmarkManagerList* s_pSelf;
     bool m_showNSBookmarks;
 
 private:
@@ -348,7 +349,7 @@ class KIO_EXPORT KExtendedBookmarkOwner : public QObject, virtual public KBookma
 {
     Q_OBJECT
 public:
-    typedef Q3ValueList<QPair<QString,QString> > QStringPairList;
+    typedef QList<QPair<QString,QString> > QStringPairList;
 public slots:
     void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };
 signals:

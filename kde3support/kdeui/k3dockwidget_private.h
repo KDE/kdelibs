@@ -42,9 +42,9 @@ class K3DockContainer;
  *
  * @author Max Judin.
  */
-class KDEUI_EXPORT K3DockSplitter : public QWidget
+class KDE3SUPPORT_EXPORT K3DockSplitter : public QWidget
 {
-  // NOTE: in theory the KDEUI_EXPORT above shouldn't be there, but it's needed for kexi,
+  // NOTE: in theory the KDE3SUPPORT_EXPORT above shouldn't be there, but it's needed for kexi,
   // which copies the whole definition of the class to be able to access separatorPosInPercent etc. 
   // This needs real fixing in KDE4.
   
@@ -246,7 +246,7 @@ private:
  *
  * @author Max Judin.
 */
-class KDEUI_EXPORT K3DockButton_Private : public QPushButton
+class KDE3SUPPORT_EXPORT K3DockButton_Private : public QPushButton
 {
   Q_OBJECT
 public:

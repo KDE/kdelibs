@@ -51,7 +51,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
             Q3CString t = s.stripWhiteSpace();
             QRegExp rx( "URL=(.*)" );
             if (rx.exactMatch(t)) {
-               emit newBookmark( name, rx.cap(1).latin1(), QString("") );
+               emit newBookmark( name, rx.cap(1), QString("") );
             }
         }
 
@@ -72,7 +72,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldern
    QFileInfoList list = dir.entryInfoList();
    if (list.isEmpty()) return;
 
-   if (dirname != m_fileName) 
+   if (dirname != m_fileName)
       emit newFolder( foldername, false, "" );
 
    foreach (QFileInfo fi, list) {
@@ -91,7 +91,7 @@ void KIEBookmarkImporter::parseIEBookmarks_dir( QString dirname, QString foldern
       }
    }
 
-   if (dirname != m_fileName) 
+   if (dirname != m_fileName)
       emit endFolder();
 }
 
@@ -104,7 +104,7 @@ void KIEBookmarkImporter::parseIEBookmarks( )
 QString KIEBookmarkImporter::IEBookmarksDir()
 {
    static KIEBookmarkImporterImpl* p = 0;
-   if (!p) 
+   if (!p)
        p = new KIEBookmarkImporterImpl;
    return p->findDefaultLocation();
 }
@@ -117,7 +117,7 @@ void KIEBookmarkImporterImpl::parse() {
 
 QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
 {
-    // notify user that they must give a new dir such 
+    // notify user that they must give a new dir such
     // as "Favourites" as otherwise it'll just place
     // lots of .url files in the given dir and gui
     // stuff in the exporter is ugly so that exclues

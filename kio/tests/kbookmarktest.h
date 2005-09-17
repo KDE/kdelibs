@@ -16,18 +16,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCOMPONENTFACTORYTEST_H
-#define KCOMPONENTFACTORYTEST_H
+#ifndef KBOOKMARKTEST_H
+#define KBOOKMARKTEST_H
 
 #include <QObject>
 
-class KComponentFactoryTest : public QObject
+class KBookmarkTest : public QObject
 {
     Q_OBJECT
 private slots:
-    void testNonWorking();
-    void testWorking();
-    void testWrongClass();
+    void testMimeDataOneBookmark();
+    void testMimeDataBookmarkList();
 };
 
 

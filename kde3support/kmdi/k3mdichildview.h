@@ -105,7 +105,7 @@ class K3MdiChildViewPrivate;
   *
   */
 
-class K3MDI_EXPORT K3MdiChildView : public QWidget
+class KDE3SUPPORT_EXPORT K3MdiChildView : public QWidget
 {
 	friend class K3MdiMainFrm;
 	friend class K3MdiChildFrm;

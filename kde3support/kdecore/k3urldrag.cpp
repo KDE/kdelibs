@@ -17,30 +17,29 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kurldrag.h"
+#include "k3urldrag.h"
 #include <q3strlist.h>
 #include <q3dragobject.h>
 #include <qfont.h>
 #include <unistd.h>
 
-#include <kdeversion.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
 
-class KURLDragPrivate
+class K3URLDragPrivate
 {
 public:
     bool m_exportAsText;
 };
 
-KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource )
+K3URLDrag::K3URLDrag( const KURL::List &urls, QWidget* dragSource )
     : Q3UriDrag(dragSource), m_metaData(), d( 0 )
 {
     init(urls);
 }
 
-KURLDrag::KURLDrag( const KURL::List &urls,
+K3URLDrag::K3URLDrag( const KURL::List &urls,
                     const QMap<QString,QString>& metaData,
                     QWidget* dragSource )
     : Q3UriDrag(dragSource), m_metaData(metaData), d( 0 )
@@ -48,12 +47,12 @@ KURLDrag::KURLDrag( const KURL::List &urls,
     init(urls);
 }
 
-KURLDrag::~KURLDrag()
+K3URLDrag::~K3URLDrag()
 {
     delete d;
 }
 
-void KURLDrag::init(const KURL::List &urls)
+void K3URLDrag::init(const KURL::List &urls)
 {
     KURL::List::ConstIterator uit = urls.begin();
     KURL::List::ConstIterator uEnd = urls.end();
@@ -66,26 +65,26 @@ void KURLDrag::init(const KURL::List &urls)
     setUris(m_urls);
 }
 
-void KURLDrag::setExportAsText( bool exp )
+void K3URLDrag::setExportAsText( bool exp )
 {
     // For now d is only used here, so create it on demand
     if ( !d )
-        d = new KURLDragPrivate;
+        d = new K3URLDragPrivate;
     d->m_exportAsText = exp;
 }
 
-KURLDrag * KURLDrag::newDrag( const KURL::List &urls, QWidget* dragSource )
+K3URLDrag * K3URLDrag::newDrag( const KURL::List &urls, QWidget* dragSource )
 {
-    return new KURLDrag( urls, QMap<QString, QString>(), dragSource );
+    return new K3URLDrag( urls, QMap<QString, QString>(), dragSource );
 }
 
-KURLDrag * KURLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+K3URLDrag * K3URLDrag::newDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
                               QWidget* dragSource )
 {
-    return new KURLDrag( urls, metaData, dragSource );
+    return new K3URLDrag( urls, metaData, dragSource );
 }
 
-bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
+bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris )
 {
     // x-kde-urilist is the same format as text/uri-list, but contains
     // KDE-aware urls, like media:/ and system:/, whereas text/uri-list is resolved to
@@ -128,7 +127,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris )
     return !uris.isEmpty();
 }
 
-bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QString>& metaData )
+bool K3URLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QString>& metaData )
 {
     if ( decode( e, uris ) ) // first decode the URLs (see above)
     {
@@ -155,7 +154,7 @@ bool KURLDrag::decode( const QMimeSource *e, KURL::List &uris, QMap<QString,QStr
 }
 
 #ifdef Q_WS_QWS
-bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
+bool K3URLDrag::decode( QStringList const &e, KURL::List &uris )
 {
 	QStringList::ConstIterator end(e.end());
     for(QStringList::ConstIterator it=e.begin(); it!=end; ++it)
@@ -174,7 +173,7 @@ bool KURLDrag::decode( QStringList const &e, KURL::List &uris )
 
 ////
 
-const char * KURLDrag::format( int i ) const
+const char * K3URLDrag::format( int i ) const
 {
     if ( i == 0 )
         return "text/uri-list";
@@ -191,7 +190,7 @@ const char * KURLDrag::format( int i ) const
     else return 0;
 }
 
-QByteArray KURLDrag::encodedData( const char* mime ) const
+QByteArray K3URLDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
     QByteArray mimetype( mime );
@@ -254,7 +253,7 @@ QByteArray KURLDrag::encodedData( const char* mime ) const
     return a;
 }
 
-KURL KURLDrag::stringToUrl(const QByteArray &s)
+KURL K3URLDrag::stringToUrl(const QByteArray &s)
 {
     if (strncmp(s.data(), "file:", 5) == 0)
        return KURL(s, KGlobal::locale()->fileEncodingMib());
@@ -262,7 +261,7 @@ KURL KURLDrag::stringToUrl(const QByteArray &s)
     return KURL(s, 106); // 106 is mib enum for utf8 codec;
 }
 
-QString KURLDrag::urlToString(const KURL &url)
+QString K3URLDrag::urlToString(const KURL &url)
 {
     if (url.isLocalFile())
     {
@@ -293,6 +292,6 @@ QString KURLDrag::urlToString(const KURL &url)
 }
 
 // deprecated ctor
-KURLDrag::KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
+K3URLDrag::K3URLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
                     QWidget * dragSource ) :
 Q3UriDrag( urls, dragSource ), m_urls( urls ), m_metaData( metaData ), d( 0 ) {}

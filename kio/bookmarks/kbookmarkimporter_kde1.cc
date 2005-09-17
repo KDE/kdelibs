@@ -117,7 +117,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
     closedir( dp );
 }
 
-void KBookmarkImporter::parseBookmark( QDomElement & parentElem, Q3CString _text,
+void KBookmarkImporter::parseBookmark( QDomElement & parentElem, const QByteArray& _text,
                                        KSimpleConfig& _cfg, const QString &_group )
 {
     if ( !_group.isEmpty() )

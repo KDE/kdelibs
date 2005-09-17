@@ -33,8 +33,8 @@ class KIO_EXPORT KBookmarkExporterBase
 {
 public:
     KBookmarkExporterBase(KBookmarkManager* mgr, const QString & fileName)
-        : m_fileName(fileName), m_pManager(mgr) 
-    { ; }
+        : m_fileName(fileName), m_pManager(mgr)
+    {}
     virtual ~KBookmarkExporterBase() {}
     virtual void write(KBookmarkGroup) = 0;
 protected:

@@ -40,12 +40,12 @@
 typedef QMap<QString, QString> ViewMap;
 
 // KDE 4.0: remove this BC keeping stub
-void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ ) 
+void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
 {
     ;
 }
 
-ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del ) 
+ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del )
 {
     static const int g_lineLimit = 16*1024;
 
@@ -59,10 +59,10 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
 
     QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
     Q_ASSERT( codec );
-    if ( !codec ) 
+    if ( !codec )
         return views;
 
-    while ( f.readLine( s.data(), g_lineLimit ) >=0 ) 
+    while ( f.readLine( s.data(), g_lineLimit ) >=0 )
     {
         if ( s[s.length()-1] != '\n' )
         {
@@ -72,7 +72,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
         QString t = codec->toUnicode( s.stripWhiteSpace() );
         QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
         rx.setMinimal( true );
-        if ( !rx.exactMatch( t ) ) 
+        if ( !rx.exactMatch( t ) )
             continue;
         if ( rx.cap(1) == "opened" )
             views[rx.cap(2)] = rx.cap(3);
@@ -82,18 +82,18 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
 
     f.close();
 
-    if ( del ) 
+    if ( del )
         f.remove();
 
     return views;
 }
 
-QStringList KCrashBookmarkImporter::getCrashLogs() 
+QStringList KCrashBookmarkImporter::getCrashLogs()
 {
     return KCrashBookmarkImporterImpl::getCrashLogs();
 }
 
-QStringList KCrashBookmarkImporterImpl::getCrashLogs() 
+QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 {
     QMap<QString, bool> activeLogs;
 
@@ -102,21 +102,21 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     DCOPCStringList apps = dcop->registeredApplications();
     foreach ( DCOPCString clientId, apps )
     {
-        if ( qstrncmp(clientId, "konqueror", 9) != 0 ) 
+        if ( qstrncmp(clientId, "konqueror", 9) != 0 )
             continue;
 
         QByteArray data, replyData;
         DCOPCString replyType;
         QDataStream arg( &data, QIODevice::WriteOnly );
 
-        if ( !dcop->call( clientId, "KonquerorIface", 
-                          "crashLogFile()", data, replyType, replyData) ) 
+        if ( !dcop->call( clientId, "KonquerorIface",
+                          "crashLogFile()", data, replyType, replyData) )
         {
             kdWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
             continue;
         }
 
-        if ( replyType != "QString" ) 
+        if ( replyType != "QString" )
             continue;
 
         QDataStream reply( replyData );
@@ -153,17 +153,17 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
     return crashFiles;
 }
 
-void KCrashBookmarkImporterImpl::parse() 
+void KCrashBookmarkImporterImpl::parse()
 {
     Q3Dict<bool> signatureMap;
     QStringList crashFiles = KCrashBookmarkImporterImpl::getCrashLogs();
     int count = 1;
-    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) 
+    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it )
     {
         ViewMap views;
         views = parseCrashLog_noemit( *it, m_shouldDelete );
         QString signature;
-        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit ) 
+        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
             signature += "|"+vit.data();
         if (signatureMap[signature])
         {
@@ -171,20 +171,20 @@ void KCrashBookmarkImporterImpl::parse()
             QFile::remove(*it);
             continue;
         }
-            
+
         signatureMap.insert(signature, (bool *) true); // hack
 
         int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
         if ( outerFolder )
             emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
-        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit ) 
-            emit newBookmark( vit.data(), vit.data().latin1(), QString("") );
+        for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
+            emit newBookmark( vit.data(), vit.data(), QString("") );
         if ( outerFolder )
             emit endFolder();
     }
 }
 
-QString KCrashBookmarkImporter::crashBookmarksDir() 
+QString KCrashBookmarkImporter::crashBookmarksDir()
 {
     static KCrashBookmarkImporterImpl *p = 0;
     if (!p)
@@ -192,12 +192,12 @@ QString KCrashBookmarkImporter::crashBookmarksDir()
     return p->findDefaultLocation();
 }
 
-void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete ) 
+void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete )
 {
     m_shouldDelete = shouldDelete;
 }
 
-void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) 
+void KCrashBookmarkImporter::parseCrashBookmarks( bool del )
 {
     KCrashBookmarkImporterImpl importer;
     importer.setFilename( m_fileName );
@@ -206,7 +206,7 @@ void KCrashBookmarkImporter::parseCrashBookmarks( bool del )
     importer.parse();
 }
 
-QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const 
+QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const
 {
     return locateLocal( "tmp", "" );
 }

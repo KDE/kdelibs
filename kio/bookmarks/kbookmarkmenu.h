@@ -90,7 +90,7 @@ public:
    * @param mgr The bookmark manager to use (i.e. for reading and writing)
    * @param owner implementation of the KBookmarkOwner callback interface.
    * @param parentMenu menu to be filled
-   * @param collec parent collection for the KActions. 
+   * @param collec parent collection for the KActions.
    *  Only used for other menus than the toplevel one.
    * @param root true for the toplevel menu
    * @param add true to show the "Add Bookmark" and "New Folder" entries
@@ -116,13 +116,13 @@ public:
   void fillBookmarkMenu();
 
   /**
-   * Call ensureUpToDate() if you need KBookmarkMenu to adjust to its 
+   * Call ensureUpToDate() if you need KBookmarkMenu to adjust to its
    * final size before it is executed.
    **/
   void ensureUpToDate();
 
   /**
-   * Structure used for storing information about 
+   * Structure used for storing information about
    * the dynamic menu setting
    * @since 3.2
    */
@@ -142,7 +142,7 @@ public:
   static DynMenuInfo showDynamicBookmarks( const QString &id );
 
   /**
-   * Shows an extra menu for the given bookmarks file and type. 
+   * Shows an extra menu for the given bookmarks file and type.
    * Upgrades from option inside XBEL to option in rc file
    * on first call of this function.
    * @param id the unique identification for the dynamic menu
@@ -218,16 +218,18 @@ protected:
   /**
    * List of our sub menus
    */
-  Q3PtrList<KBookmarkMenu> m_lstSubMenus;
+  QList<KBookmarkMenu *> m_lstSubMenus;
   KActionCollection * m_actionCollection;
   /**
    * List of our actions.
    */
-  Q3PtrList<KAction> m_actions;
+  QList<KAction *> m_actions;
   /**
    * Parent bookmark for this menu.
    */
   QString m_parentAddress;
+
+  class KBookmarkMenuPrivate* d;
 
   // TODO make non static!
   static QString s_highlightedAddress;
@@ -250,7 +252,7 @@ public:
   void connectToImporter( const QObject &importer );
 
 protected slots:
-  void newBookmark( const QString & text, const Q3CString & url, const QString & );
+  void newBookmark( const QString & text, const QString & url, const QString & );
   void newFolder( const QString & text, bool, const QString & );
   void newSeparator();
   void endFolder();

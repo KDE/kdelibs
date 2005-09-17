@@ -22,7 +22,6 @@
 #define __kbookmarkimporter_ns_h
 
 #include <qdom.h>
-#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 #include <kdemacros.h>
@@ -50,7 +49,7 @@ public:
     static QString mozillaBookmarksFile( bool forSaving=false );
 
 signals:
-    void newBookmark( const QString & text, const Q3CString & url, const QString & additionalInfo );
+    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();
@@ -117,7 +116,7 @@ class KIO_EXPORT KNSBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KNSBookmarkExporterImpl(KBookmarkManager* mgr, const QString & fileName)
-      : KBookmarkExporterBase(mgr, fileName) 
+      : KBookmarkExporterBase(mgr, fileName)
     { ; }
     virtual ~KNSBookmarkExporterImpl() {}
     virtual void write(KBookmarkGroup);

@@ -46,35 +46,35 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
 
    int lineno = 0;
    QString url, name, type;
-   static const int g_lineLimit = 16*1024; 
+   static const int g_lineLimit = 16*1024;
    Q3CString line(g_lineLimit);
 
    while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
       lineno++;
-    
-      // skip lines that didn't fit in buffer and first two headers lines 
+
+      // skip lines that didn't fit in buffer and first two headers lines
       if ( line[line.length()-1] != '\n' || lineno <= 2 )
           continue;
-    
+
       QString currentLine = codec->toUnicode(line).stripWhiteSpace();
-    
+
       if (currentLine.isEmpty()) {
          // end of data block
          if (type.isNull())
             continue;
          else if ( type == "URL")
-            emit newBookmark( name, url.latin1(), "" );
+            emit newBookmark( name, url, "" );
          else if (type == "FOLDER" )
-            emit newFolder( name, false, "" ); 
+            emit newFolder( name, false, "" );
 
          type = QString::null;
          name = QString::null;
          url = QString::null;
-         
+
       } else if (currentLine == "-") {
          // end of folder
          emit endFolder();
-    
+
       } else {
          // data block line
          QString tag;
@@ -92,8 +92,8 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
 QString KOperaBookmarkImporter::operaBookmarksFile()
 {
    static KOperaBookmarkImporterImpl *p = 0;
-   if (!p) 
-       p = new KOperaBookmarkImporterImpl; 
+   if (!p)
+       p = new KOperaBookmarkImporterImpl;
    return p->findDefaultLocation();
 }
 
@@ -105,11 +105,11 @@ void KOperaBookmarkImporterImpl::parse() {
 
 QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 {
-   return saving ? KFileDialog::getSaveFileName( 
-                       QDir::homeDirPath() + "/.opera", 
+   return saving ? KFileDialog::getSaveFileName(
+                       QDir::homeDirPath() + "/.opera",
                        i18n("*.adr|Opera Bookmark Files (*.adr)") )
-                 : KFileDialog::getOpenFileName( 
-                       QDir::homeDirPath() + "/.opera", 
+                 : KFileDialog::getOpenFileName(
+                       QDir::homeDirPath() + "/.opera",
                        i18n("*.adr|Opera Bookmark Files (*.adr)") );
 }
 

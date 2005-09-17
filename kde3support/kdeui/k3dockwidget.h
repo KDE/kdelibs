@@ -99,7 +99,7 @@ namespace K3MDI
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockWidgetAbstractHeader : public Q3Frame
+class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeader : public Q3Frame
 {
   Q_OBJECT
 public:
@@ -148,7 +148,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockWidgetAbstractHeaderDrag : public Q3Frame
+class KDE3SUPPORT_EXPORT K3DockWidgetAbstractHeaderDrag : public Q3Frame
 {
   Q_OBJECT
 public:
@@ -193,7 +193,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockWidgetHeaderDrag : public K3DockWidgetAbstractHeaderDrag
+class KDE3SUPPORT_EXPORT K3DockWidgetHeaderDrag : public K3DockWidgetAbstractHeaderDrag
 {
   Q_OBJECT
 public:
@@ -234,7 +234,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockWidgetHeader : public K3DockWidgetAbstractHeader
+class KDE3SUPPORT_EXPORT K3DockWidgetHeader : public K3DockWidgetAbstractHeader
 {
   Q_OBJECT
 public:
@@ -359,7 +359,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockTabGroup : public QTabWidget
+class KDE3SUPPORT_EXPORT K3DockTabGroup : public QTabWidget
 {
   Q_OBJECT
 public:
@@ -419,7 +419,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockWidget: public QWidget
+class KDE3SUPPORT_EXPORT K3DockWidget: public QWidget
 {
   Q_OBJECT
 friend class K3DockManager;
@@ -905,7 +905,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockManager: public QObject
+class KDE3SUPPORT_EXPORT K3DockManager: public QObject
 {
   Q_OBJECT
 friend class K3DockWidget;
@@ -1303,7 +1303,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDEUI_EXPORT K3DockMainWindow : public KMainWindow
+class KDE3SUPPORT_EXPORT K3DockMainWindow : public KMainWindow
 {
   Q_OBJECT
 
@@ -1469,7 +1469,7 @@ private:
   K3DockMainWindowPrivate *d;
 };
 
-class KDEUI_EXPORT K3DockArea : public QWidget
+class KDE3SUPPORT_EXPORT K3DockArea : public QWidget
 {
   Q_OBJECT
 

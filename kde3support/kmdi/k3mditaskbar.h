@@ -48,7 +48,7 @@ class K3MdiTaskBarButtonPrivate;
   * It's a special kind of QPushButton catching mouse clicks.
   * And you have the ability to abbreviate the text that it fits in the button.
   */
-class K3MDI_EXPORT K3MdiTaskBarButton : public QPushButton
+class KDE3SUPPORT_EXPORT K3MdiTaskBarButton : public QPushButton
 {
 	Q_OBJECT
 	// methods
@@ -126,7 +126,7 @@ class K3MdiTaskBarPrivate;
  * K3MdiTaskBarButtons can be added or removed dynamically.<br>
  * The button sizes are adjusted dynamically, as well.
  */
-class K3MDI_EXPORT K3MdiTaskBar : public KToolBar
+class KDE3SUPPORT_EXPORT K3MdiTaskBar : public KToolBar
 {
 	Q_OBJECT
 public:

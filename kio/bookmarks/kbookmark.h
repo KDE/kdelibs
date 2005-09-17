@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000-2005 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
 #define __kbookmark_h
 
 #include <qstring.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 #include <qdom.h>
 #include <kurl.h>
 
@@ -34,6 +34,44 @@ class KIO_EXPORT KBookmark
 public:
     enum MetaDataOverwriteMode {
         OverwriteMetaData, DontOverwriteMetaData
+    };
+
+    /**
+     * KURL::Bookmark is a QList that contains bookmarks with a few
+     * convenience methods.
+     * @see KBookmark
+     * @see QList
+     */
+    class KIO_EXPORT List : public QList<KBookmark>
+    {
+    public:
+        List() : QList<KBookmark>() {}
+
+        /**
+         * Adds this list of bookmark into the given QMimeData.
+         *
+         * @param mimeData the QMimeData instance used to drag or copy this bookmark
+         *
+         * @since 4.0
+         */
+        void addToMimeData( QMimeData* mimeData ) const;
+
+        /**
+         * Return true if @p mimeData contains bookmarks
+         * @since 4.0
+         */
+        static bool canDecode( const QMimeData *mimeData );
+
+        /**
+         * Extract a list of bookmarks from the contents of @p mimeData.
+         * Decoding will fail if @p mimeData does not contain any bookmarks.
+         * @param mimeData the mime data to extract from; cannot be 0
+         * @return the list of bookmarks
+         * @note those bookmarks are valid QDomElements, but their parent QDomDocument
+         * is already deleted, do not use ownerDocument()
+         * @since 4.0
+         */
+        static KBookmark::List fromMimeData( const QMimeData *mimeData );
     };
 
     KBookmark( ) {}
@@ -156,7 +194,7 @@ public:
     { return parentAddress(address) + '/' + QString::number(positionInParent(address)+1); }
 
     /**
-     * @return the common parent of both addresses which 
+     * @return the common parent of both addresses which
      * has the greatest depth
      * @since 3.5
      */
@@ -180,6 +218,18 @@ public:
      * @since 3.4
      */
     void setMetaDataItem( const QString &key, const QString &value, MetaDataOverwriteMode mode = OverwriteMetaData );
+
+    /**
+     * Adds this bookmark into the given QMimeData.
+     *
+     * WARNING: do not call this method multiple times, use KBookmark::List::addToMimeData instead.
+     *
+     * @param mimeData the QMimeData instance used to drag or copy this bookmark
+     *
+     * @since 4.0
+     */
+    void addToMimeData( QMimeData* mimeData ) const;
+
 
 protected:
     QDomElement element;
@@ -298,7 +348,7 @@ public:
      * @return the list of urls of bookmarks at top level of the group
      * @since 3.2
      */
-    Q3ValueList<KURL> groupUrlList() const;
+    QList<KURL> groupUrlList() const;
 
 protected:
     QDomElement nextKnownTag( QDomElement start, bool goNext ) const;
@@ -316,13 +366,11 @@ private:
  */
 class KIO_EXPORT KBookmarkGroupTraverser {
 protected:
-    virtual ~KBookmarkGroupTraverser() { ; }
+    virtual ~KBookmarkGroupTraverser() {}
     void traverse(const KBookmarkGroup &);
-    virtual void visit(const KBookmark &) { ; }
-    virtual void visitEnter(const KBookmarkGroup &) { ; }
-    virtual void visitLeave(const KBookmarkGroup &) { ; }
-private:
-    class KBookmarkGroupTraverserPrivate *d;
+    virtual void visit(const KBookmark &) {}
+    virtual void visitEnter(const KBookmarkGroup &) {}
+    virtual void visitLeave(const KBookmarkGroup &) {}
 };
 
 #endif

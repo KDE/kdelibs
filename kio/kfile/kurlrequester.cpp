@@ -17,10 +17,7 @@
 */
 
 
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include <qstring.h>
+#include "kurlrequester.h"
 
 #include <kaccel.h>
 #include <kcombobox.h>
@@ -33,10 +30,14 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kurlcompletion.h>
-#include <kurldrag.h>
 #include <kprotocolinfo.h>
 
-#include "kurlrequester.h"
+#include <qstring.h>
+#include <qdrag.h>
+#include <qmimedata.h>
+
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 class KURLDragPushButton : public KPushButton
@@ -61,12 +62,12 @@ public:
     */
 
 protected:
-    virtual Q3DragObject *dragObject() {
+    virtual QDrag *dragObject() {
 	if ( m_urls.isEmpty() )
-	    return 0L;
+	    return 0;
 
-	Q3DragObject *drag = new KURLDrag( m_urls, this );
-        drag->setObjectName( "url drag" );
+	QDrag *drag = new QDrag( this );
+        m_urls.addToMimeData( drag->mimeData() );
 	return drag;
     }
 

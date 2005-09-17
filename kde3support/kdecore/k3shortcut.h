@@ -46,7 +46,7 @@
 * 
 */
 
-class KDECORE_EXPORT K3Shortcut
+class KDE3SUPPORT_EXPORT K3Shortcut
 {
  public:
         /**

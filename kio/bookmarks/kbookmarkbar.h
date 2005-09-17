@@ -23,7 +23,7 @@
 
 #include <qobject.h>
 #include <qpointer.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 #include <kbookmark.h>
 #include <kaction.h>
 
@@ -33,6 +33,7 @@ class KBookmarkOwner;
 class KActionCollection;
 class KAction;
 class Q3PopupMenu;
+class KBookmarkBarPrivate;
 
 /**
  * This class provides a bookmark toolbar.  Using this class is nearly
@@ -50,7 +51,7 @@ public:
      * @param manager the bookmark manager
      * @param owner implementation of the KBookmarkOwner interface (callbacks)
      * @param toolBar toolbar to fill
-     * 
+     *
      * The KActionCollection pointer argument is now obsolete.
      *
      * @param parent the parent widget for the bookmark toolbar
@@ -98,7 +99,7 @@ public slots:
      * @since 3.4
      */
     void slotBookmarkSelected( KAction::ActivationReason reason, Qt::ButtonState state );
-    
+
     /// @since 3.2
     void slotRMBActionRemove( int );
     /// @since 3.2
@@ -121,10 +122,9 @@ private:
     QPointer<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
     KBookmarkManager *m_pManager;
-    Q3PtrList<KBookmarkMenu> m_lstSubMenus;
+    QList<KBookmarkMenu *> m_lstSubMenus;
 
-private:
-    class KBookmarkBarPrivate* dptr() const;
+    KBookmarkBarPrivate * const d;
 };
 
 #endif // KBOOKMARKBAR_H

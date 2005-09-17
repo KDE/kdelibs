@@ -39,23 +39,23 @@
 
 #include "kbookmarkimporter.h"
 
-void KXBELBookmarkImporterImpl::parse() 
+void KXBELBookmarkImporterImpl::parse()
 {
   //kdDebug() << "KXBELBookmarkImporterImpl::parse()" << endl;
   KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
   KBookmarkGroup root = manager->root();
   traverse(root);
   // FIXME delete it!
-  // delete manager; 
+  // delete manager;
 }
 
-void KXBELBookmarkImporterImpl::visit(const KBookmark &bk) 
+void KXBELBookmarkImporterImpl::visit(const KBookmark &bk)
 {
   //kdDebug() << "KXBELBookmarkImporterImpl::visit" << endl;
-  if (bk.isSeparator()) 
+  if (bk.isSeparator())
     emit newSeparator();
-  else 
-    emit newBookmark(bk.fullText(), bk.url().url().utf8(), "");
+  else
+    emit newBookmark(bk.fullText(), bk.url().url(), "");
 }
 
 void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
@@ -63,7 +63,7 @@ void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
   //kdDebug() << "KXBELBookmarkImporterImpl::visitEnter" << endl;
   emit newFolder(grp.fullText(), false, "");
 }
-   
+
 void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 {
   //kdDebug() << "KXBELBookmarkImporterImpl::visitLeave" << endl;
@@ -72,8 +72,8 @@ void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 
 void KBookmarkImporterBase::setupSignalForwards(QObject *src, QObject *dst)
 {
-  connect(src, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ),
-          dst, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ));
+  connect(src, SIGNAL( newBookmark( const QString &, const QString &, const QString & ) ),
+          dst, SIGNAL( newBookmark( const QString &, const QString &, const QString & ) ));
   connect(src, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
           dst, SIGNAL( newFolder( const QString &, bool, const QString & ) ));
   connect(src, SIGNAL( newSeparator() ),
@@ -94,7 +94,7 @@ KBookmarkImporterBase* KBookmarkImporterBase::factory( const QString &type )
     return new KIEBookmarkImporterImpl;
   else if (type == "opera")
     return new KOperaBookmarkImporterImpl;
-  else 
+  else
     return 0;
 }
 

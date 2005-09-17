@@ -483,12 +483,35 @@ public:
 /**
  * An entry is the list of atoms containing all the informations for a file or URL
  */
-////// KDE4 TODO: m_uds is the key, QVariant would do the job as the value (to allow QDateTime etc.).
-//////  -> remove UDSAtom, turn UDSEntry into QHash<uint, QVariant>, and UDSEntryList can be a QList.
 typedef Q3ValueList<UDSAtom> UDSEntry;
 typedef Q3ValueList<UDSEntry> UDSEntryList;
 typedef Q3ValueListIterator<UDSEntry> UDSEntryListIterator;
 typedef Q3ValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
+
+////// KDE4 TODO: m_uds is the key, QVariant would do the job as the value (to allow QDateTime etc.).
+//////  -> remove UDSAtom, turn UDSEntry into QHash<uint, QVariant>, and UDSEntryList can be a QList.
+////// KDE4 TODO: rename UDSAtomTypes to UDSFieldType or something (no more atoms).
+////// The word UDS isn't really well-known either... ListEntry isn't really good for stat() result though...
+
+/**
+ * UDS entry is the data structure representing all the information about a given URL
+ * (file or directory).
+ *
+ * The KIO::listDir() and KIO:stat() operations use this data structure.
+ *
+ * KIO defines a number of fields, see the UDS_XXX enums.
+ *
+ * For instance, to retrieve the name of the entry, use:
+ * \code
+ * QString displayName = entry.value( KIO::UDS_NAME ).toString();
+ * \endcode
+ */
+typedef QHash<uint, QVariant> UDSEntry4;
+
+/**
+ * A list of UDS entries, as returned by KIO::listDir()
+ */
+typedef QList<UDSEntry4> UDSEntryList4;
 
 /**
  * MetaData is a simple map of key/value strings.

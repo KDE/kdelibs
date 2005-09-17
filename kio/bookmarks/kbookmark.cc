@@ -31,6 +31,7 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 #include <kbookmarkmanager.h>
+#include <qmimedata.h>
 
 KBookmarkGroup::KBookmarkGroup()
  : KBookmark( QDomElement() )
@@ -133,9 +134,9 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
 
     KBookmarkGroup grp(groupElem);
 
-    if (emitSignal) 
+    if (emitSignal)
         emit mgr->notifier().createdNewFolder(
-                                mgr->path(), grp.fullText(), 
+                                mgr->path(), grp.fullText(),
                                 grp.address() );
 
     return grp;
@@ -243,9 +244,9 @@ QDomElement KBookmarkGroup::findToolbar() const
     return QDomElement();
 }
 
-Q3ValueList<KURL> KBookmarkGroup::groupUrlList() const
+QList<KURL> KBookmarkGroup::groupUrlList() const
 {
-    Q3ValueList<KURL> urlList;
+    QList<KURL> urlList;
     for ( KBookmark bm = first(); !bm.isNull(); bm = next(bm) )
     {
         if ( bm.isSeparator() || bm.isGroup() )
@@ -389,7 +390,7 @@ QString KBookmark::commonParent(const QString & A, const QString & B)
 static QDomNode cd_or_create(QDomNode node, QString name)
 {
     QDomNode subnode = node.namedItem(name);
-    if (subnode.isNull()) 
+    if (subnode.isNull())
     {
         subnode = node.ownerDocument().createElement(name);
         node.appendChild(subnode);
@@ -400,7 +401,7 @@ static QDomNode cd_or_create(QDomNode node, QString name)
 static QDomText get_or_create_text(QDomNode node)
 {
     QDomNode subnode = node.firstChild();
-    if (subnode.isNull()) 
+    if (subnode.isNull())
     {
         subnode = node.ownerDocument().createTextNode("");
         node.appendChild(subnode);
@@ -498,25 +499,25 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
     for (;;) {
         if (bk.isNull())
         {
-            if (stack.isEmpty()) 
+            if (stack.isEmpty())
                 return;
             if (stack.count() > 1)
                 visitLeave(stack.top());
             bk = stack.pop();
-        
+
             if (stack.isEmpty())
                 return;
-        
+
             bk = stack.top().next(bk);
             if (bk.isNull())
                 continue;
-        } 
+        }
 
-        if (bk.isGroup()) 
+        if (bk.isGroup())
         {
             KBookmarkGroup gp = bk.toGroup();
             visitEnter(gp);
-            if (!gp.first().isNull()) 
+            if (!gp.first().isNull())
             {
                 stack.push(gp);
                 bk = gp.first();
@@ -524,13 +525,74 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
             }
             // empty group
             visitLeave(gp);
-        } 
-        else 
+        }
+        else
             visit(bk);
 
         bk = stack.top().next(bk);
     }
 
     // never reached
+}
+
+void KBookmark::addToMimeData( QMimeData* mimeData ) const
+{
+    KBookmark::List bookmarkList;
+    bookmarkList.append( *this );
+    bookmarkList.addToMimeData( mimeData );
+}
+
+void KBookmark::List::addToMimeData( QMimeData* mimeData ) const
+{
+    KURL::List urls;
+
+    QDomDocument doc( "xbel" );
+    QDomElement elem = doc.createElement( "xbel" );
+    doc.appendChild( elem );
+
+    for ( const_iterator it = begin(), end = this->end() ; it != end ; ++it ) {
+        urls.append( (*it).url() );
+        elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
+    }
+
+    // This sets text/uri-list and text/plain into the mimedata
+    urls.addToMimeData( mimeData, KURL::MetaDataMap() );
+
+    mimeData->setData( "application/x-xbel", doc.toByteArray() );
+}
+
+bool KBookmark::List::canDecode( const QMimeData *mimeData )
+{
+    return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-xbel" );
+}
+
+KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
+{
+    KBookmark::List bookmarks;
+    QByteArray payload = mimeData->data( "application/x-xbel" );
+    if ( !payload.isEmpty() ) {
+        QDomDocument doc;
+        doc.setContent( payload );
+        QDomElement elem = doc.documentElement();
+        QDomNodeList children = elem.childNodes();
+        for ( int childno = 0; childno < children.count(); childno++)
+        {
+            bookmarks.append( KBookmark( children.item(childno).cloneNode(true).toElement() ));
+        }
+        return bookmarks;
+    }
+    KURL::List urls = KURL::List::fromMimeData( mimeData );
+    if ( !urls.isEmpty() )
+    {
+        KURL::List::ConstIterator uit = urls.begin();
+        KURL::List::ConstIterator uEnd = urls.end();
+        for ( ; uit != uEnd ; ++uit )
+        {
+            //kdDebug(7043) << k_funcinfo << "url=" << (*uit) << endl;
+            bookmarks.append( KBookmark::standaloneBookmark(
+                                  (*uit).prettyURL(), (*uit) ));
+        }
+    }
+    return bookmarks;
 }
 

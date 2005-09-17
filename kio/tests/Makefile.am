@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
 #    Boston, MA 02110-1301, USA.
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/qttestlib $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kio/bookmarks -I$(top_srcdir)/qttestlib $(all_includes)
 LDADD = $(LIB_KIO)
 AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
@@ -27,7 +27,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest netaccesstest jobtest \
-		 kurlcompletiontest kmimetypetest kcomponentfactorytest
+		 kurlcompletiontest kmimetypetest kbookmarktest
 
 # Unfortunately some tests depend on the network settings, it seems
 #check: kurifiltertest
@@ -35,7 +35,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 check-local: kziptest
 	./kziptest list $(srcdir)/wronglocalsizes.zip
 
-TESTS = kmimetypetest kcomponentfactorytest
+TESTS = kmimetypetest kbookmarktest
 
 bin_PROGRAMS = ktradertest
 
@@ -85,6 +85,6 @@ kurlcompletiontest_SOURCES = kurlcompletiontest.cpp
 kmimetypetest_SOURCES = kmimetypetest.cpp
 kmimetypetest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
 
-kcomponentfactorytest_SOURCES = kcomponentfactorytest.cpp
-kcomponentfactorytest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
+kbookmarktest_SOURCES = kbookmarktest.cpp
+kbookmarktest_LDADD = $(LIB_KIO) $(top_builddir)/qttestlib/libqttestlib.la
 

@@ -38,7 +38,6 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <kstaticdeleter.h>
-#include <q3ptrstack.h>
 
 #include "dptrtemplate.h"
 
@@ -54,21 +53,30 @@ KBookmarkManagerPrivate* KBookmarkManager::dptr() const {
 }
 
 // TODO - clean this stuff up by just using the above dptrtemplate?
-Q3PtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
-static KStaticDeleter<Q3PtrList<KBookmarkManager> > sdbm;
+
+class KBookmarkManagerList : public QList<KBookmarkManager *>
+{
+public:
+    ~KBookmarkManagerList() {
+        qDeleteAll( *this ); // auto-delete functionality
+    }
+};
+
+KBookmarkManagerList* KBookmarkManager::s_pSelf;
+static KStaticDeleter<KBookmarkManagerList> sdbm;
 
 class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
     KBookmarkMap( KBookmarkManager * );
     void update();
-    Q3ValueList<KBookmark> find( const QString &url ) const
+    QList<KBookmark> find( const QString &url ) const
     { return m_bk_map[url]; }
 private:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &) { ; }
     virtual void visitLeave(const KBookmarkGroup &) { ; }
 private:
-    typedef Q3ValueList<KBookmark> KBookmarkList;
+    typedef QList<KBookmark> KBookmarkList;
     QMap<QString, KBookmarkList> m_bk_map;
     KBookmarkManager *m_manager;
 };
@@ -98,13 +106,12 @@ void KBookmarkMap::visit(const KBookmark &bk)
 KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
 {
     if ( !s_pSelf ) {
-        sdbm.setObject( s_pSelf, new Q3PtrList<KBookmarkManager> );
-        s_pSelf->setAutoDelete( true );
+        sdbm.setObject( s_pSelf, new KBookmarkManagerList );
     }
-    Q3PtrListIterator<KBookmarkManager> it ( *s_pSelf );
-    for ( ; it.current() ; ++it )
-        if ( it.current()->path() == bookmarksFile )
-            return it.current();
+    for ( KBookmarkManagerList::ConstIterator bmit = s_pSelf->constBegin(), bmend = s_pSelf->constEnd();
+          bmit != bmend; ++bmit )
+        if ( (*bmit)->path() == bookmarksFile )
+            return *bmit;
 
     KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, bImportDesktopFiles );
     s_pSelf->append( mgr );
@@ -115,8 +122,7 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
 KBookmarkManager* KBookmarkManager::createTempManager()
 {
     if ( !s_pSelf ) {
-        sdbm.setObject( s_pSelf, new Q3PtrList<KBookmarkManager> );
-        s_pSelf->setAutoDelete( true );
+        sdbm.setObject( s_pSelf, new KBookmarkManagerList );
     }
     KBookmarkManager* mgr = new KBookmarkManager();
     s_pSelf->append( mgr );
@@ -126,7 +132,7 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
-    : DCOPObject(Q3CString("KBookmarkManager-")+bookmarksFile.utf8()), m_doc("xbel"), m_docIsLoaded(false)
+    : DCOPObject(DCOPCString("KBookmarkManager-")+bookmarksFile.utf8()), m_doc("xbel"), m_docIsLoaded(false)
 {
     m_toolbarDoc.clear();
 
@@ -151,14 +157,10 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
 }
 
 KBookmarkManager::KBookmarkManager( )
-    : DCOPObject(Q3CString("KBookmarkManager-generated")), m_doc("xbel"), m_docIsLoaded(true)
+    : DCOPObject(DCOPCString("KBookmarkManager-generated")), m_doc("xbel"), m_docIsLoaded(true)
 {
-    m_toolbarDoc.clear(); // strange ;-)
-
     m_update = false; // TODO - make it read/write
     m_showNSBookmarks = true;
-
-    m_bookmarksFile = QString::null; // AK - check all codepaths for this one
 
     QDomElement topLevel = m_doc.createElement("xbel");
     m_doc.appendChild( topLevel );
@@ -174,7 +176,7 @@ KBookmarkManager::KBookmarkManager( )
 KBookmarkManager::~KBookmarkManager()
 {
     if ( s_pSelf )
-        s_pSelf->removeRef( this );
+        s_pSelf->remove( this );
 }
 
 void KBookmarkManager::setUpdate( bool update )
@@ -336,7 +338,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
             QString str;
             QTextStream stream(&str, QIODevice::WriteOnly);
             stream << root().findToolbar();
-            Q3CString cstr = str.utf8();
+            const QByteArray cstr = str.utf8();
             cacheFile.file()->writeBlock( cstr.data(), cstr.length() );
             cacheFile.close();
         }
@@ -646,11 +648,11 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
         s_bk_map->update();
     }
 
-    Q3ValueList<KBookmark> list = s_bk_map->find(url);
+    QList<KBookmark> list = s_bk_map->find(url);
     if ( list.count() == 0 )
         return false;
 
-    for ( Q3ValueList<KBookmark>::iterator it = list.begin();
+    for ( QList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
         (*it).updateAccessMetadata();
 
@@ -669,8 +671,8 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
         s_bk_map->update();
     }
 
-    Q3ValueList<KBookmark> list = s_bk_map->find(url);
-    for ( Q3ValueList<KBookmark>::iterator it = list.begin();
+    QList<KBookmark> list = s_bk_map->find(url);
+    for ( QList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
     {
         // TODO - update favicon data based on faviconurl

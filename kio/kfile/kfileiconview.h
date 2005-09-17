@@ -145,9 +145,9 @@ public:
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileIconViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
-    void setAcceptDrops(bool b) 
-    {  
-      KIconView::setAcceptDrops(b); 
+    void setAcceptDrops(bool b)
+    {
+      KIconView::setAcceptDrops(b);
       viewport()->setAcceptDrops(b);
     }
 
@@ -155,15 +155,15 @@ public slots:
     /**
      * Starts loading previews for all files shown and shows them. Switches
      * into 'large rows' mode, if that isn't the current mode yet.
-     * 
+     *
      * @sa setIgnoreMaximumSize
      */
     void showPreviews();
 
     void zoomIn();
-    
+
     void zoomOut();
-    
+
     /**
      * Reimplemented for performance reasons.
      * @since 3.1
@@ -180,9 +180,6 @@ protected:
      * Reimplemented to remove an eventual tooltip
      */
     virtual void hideEvent( QHideEvent * );
-
-    // ### workaround for Qt3 bug (see #35080)
-    virtual void showEvent( QShowEvent * );
 
     virtual bool eventFilter( QObject *o, QEvent *e );
 
@@ -215,7 +212,7 @@ private slots:
 signals:
     /**
      * The user dropped something.
-     * @p fileItem points to the item dropped on or can be 0 if the 
+     * @p fileItem points to the item dropped on or can be 0 if the
      * user dropped on empty space.
      * @since 3.2
      */

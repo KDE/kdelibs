@@ -36,7 +36,6 @@
 #include <kfileitem.h>
 #include <kiconeffect.h>
 #include <kglobalsettings.h>
-#include <kurldrag.h>
 #include <kio/previewjob.h>
 
 #include "kfileiconview.h"
@@ -364,7 +363,7 @@ void KFileIconView::slotActivate( Q3IconViewItem *item )
 
 void KFileIconView::selected( Q3IconViewItem *item )
 {
-    if ( !item || (KApplication::keyboardMouseState() & (Qt::ShiftModifier | Qt::ControlModifier)) != 0 )
+    if ( !item || (QApplication::keyboardModifiers() & (Qt::ShiftModifier | Qt::ControlModifier)) != 0 )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
@@ -750,13 +749,6 @@ bool KFileIconView::eventFilter( QObject *o, QEvent *e )
 
 /////////////////////////////////////////////////////////////////
 
-// ### workaround for Qt3 Bug
-void KFileIconView::showEvent( QShowEvent *e )
-{
-    KIconView::showEvent( e );
-}
-
-
 void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
                               bool updateTextAndPixmap )
 {
@@ -809,6 +801,11 @@ void KFileIconView::zoomOut()
     setPreviewSize( d->previewIconSize - 30 );
 }
 
+#warning port KIconView to QListView, then adapt KFileIconView
+
+// Qt4 porting: once we use QListWidget, this becomes a reimplementation of
+// virtual QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
+// or better: something at the model level, instead?
 Q3DragObject *KFileIconView::dragObject()
 {
     // create a list of the URL:s that we want to drag
@@ -826,9 +823,13 @@ Q3DragObject *KFileIconView::dragObject()
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
+
+#if 0 // there is no more kurldrag, this should use urls.addToMimeData( mimeData ) instead
     Q3DragObject* myDragObject = new KURLDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
+#endif
+    return 0;
 }
 
 void KFileIconView::slotAutoOpen()
@@ -850,7 +851,7 @@ void KFileIconView::slotAutoOpen()
 
 bool KFileIconView::acceptDrag(QDropEvent* e) const
 {
-   return KURLDrag::canDecode( e ) &&
+    return KURL::List::canDecode( e->mimeData() ) &&
        (e->source()!=const_cast<KFileIconView*>(this)) &&
        ( e->action() == QDropEvent::Copy
       || e->action() == QDropEvent::Move
@@ -930,11 +931,11 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
 
     emit dropped(e, fileItem);
 
-    KURL::List urls;
-    if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
+    KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+    if ( !urls.isEmpty() )
     {
-        emit dropped(e, urls, fileItem ? fileItem->url() : KURL());
-        sig->dropURLs(fileItem, e, urls);
+        emit dropped( e, urls, fileItem ? fileItem->url() : KURL() );
+        sig->dropURLs( fileItem, e, urls );
     }
 }
 

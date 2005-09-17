@@ -372,6 +372,12 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt>
 <h4>KFileOpenWithHandler</h4>
 <p>This class has been removed.</p>
 
+<H4>KBookmark classes</H4>
+<li>KBookmarkDrag class has been moved to kde3support. Use KBookmark::addToMimeData() and
+KBookmark::List::addToMimeData() in the drag/copy side,
+and the static methods KBookmark::List::canDecode() and KBookmark::List::fromMimeData()
+in the drop/paste side.</li>
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kparts">Changes in kparts</A></H3>

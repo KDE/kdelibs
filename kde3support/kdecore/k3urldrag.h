@@ -26,7 +26,7 @@
 #include "kdelibs_export.h"
 class QMimeSource;
 
-class KURLDragPrivate;
+class K3URLDragPrivate;
 /**
  * This class is to be used instead of Q3UriDrag when using KURL.
  * The reason is: Q3UriDrag (and the XDND/W3C standards) expect URLs to
@@ -38,10 +38,10 @@ class KURLDragPrivate;
  * This is important, for instance to set a correct HTTP referrer (some websites
  * require it for downloading e.g. an image).
  *
- * To create a drag object, use the KURLDrag constructor.
- * To handle drops, use Q3UriDrag::canDecode() and KURLDrag::decode()
+ * To create a drag object, use the K3URLDrag constructor.
+ * To handle drops, use Q3UriDrag::canDecode() and K3URLDrag::decode()
  */
-class KDECORE_EXPORT KURLDrag : public Q3UriDrag
+class KDE3SUPPORT_EXPORT K3URLDrag : public Q3UriDrag
 {
 public:
   /**
@@ -53,7 +53,7 @@ public:
    * @param dragSource the parent of the QObject. Should be set when doing drag-n-drop,
    * but should be 0 when copying to the clipboard
    */
-  KURLDrag( const KURL::List &urls, QWidget* dragSource = 0 );
+  K3URLDrag( const KURL::List &urls, QWidget* dragSource = 0 );
   /**
    * Constructs an object to drag the list of URLs in @p urls.
    * This version also includes metadata.
@@ -63,14 +63,14 @@ public:
    * but should be 0 when copying to the clipboard
    * @see metaData()
    */
-  KURLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
+  K3URLDrag( const KURL::List &urls, const QMap<QString, QString>& metaData,
             QWidget* dragSource = 0 );
 
-  virtual ~KURLDrag();
+  virtual ~K3URLDrag();
 
   /**
-   * By default, KURLDrag also exports the URLs as plain text, for e.g. dropping onto a text editor.
-   * But in some cases this might not be wanted, e.g. if using the KURLDrag in a KMultipleDrag
+   * By default, K3URLDrag also exports the URLs as plain text, for e.g. dropping onto a text editor.
+   * But in some cases this might not be wanted, e.g. if using the K3URLDrag in a KMultipleDrag
    * and another component of the multiple-drag provides better plain text data.
    * In such a case, setExportAsText( false ) should be called.
    * @since 3.4
@@ -78,14 +78,14 @@ public:
   void setExportAsText( bool exp );
 
   /**
-   * @deprecated Is equivalent with "new KURLDrag(urls, dragSource, name)".
+   * @deprecated Is equivalent with "new K3URLDrag(urls, dragSource, name)".
    */
-  static KURLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
+  static K3URLDrag * newDrag( const KURL::List &urls, QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
   /**
-   * @deprecated Is equivalent with "new KURLDrag(urls, metaData, dragSource, name)".
+   * @deprecated Is equivalent with "new K3URLDrag(urls, metaData, dragSource, name)".
    */
-  static KURLDrag * newDrag( const KURL::List &urls,
+  static K3URLDrag * newDrag( const KURL::List &urls,
                              const QMap<QString, QString>& metaData,
                              QWidget* dragSource = 0 ) KDE_DEPRECATED;
 
@@ -148,9 +148,9 @@ public:
 
 protected:
   /**
-   * @deprecated Use a KURLDrag constructor with a KURL::List
+   * @deprecated Use a K3URLDrag constructor with a KURL::List
    */
-  KURLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
+  K3URLDrag( const Q3StrList & urls, const QMap<QString,QString>& metaData,
             QWidget * dragSource ) KDE_DEPRECATED;
 
 private:
@@ -158,7 +158,7 @@ private:
 
   Q3StrList m_urls;
   QMap<QString,QString> m_metaData;
-  KURLDragPrivate* d;
+  K3URLDragPrivate* d;
 };
 
 #endif

@@ -49,7 +49,7 @@ class K3MdiChildAreaPrivate;
   * and manages the frame widgets of attached MDI views.
   * All actions and stuff concerning only to childframes are handled here.
   */
-class K3MDI_EXPORT K3MdiChildArea : public Q3Frame
+class KDE3SUPPORT_EXPORT K3MdiChildArea : public Q3Frame
 {
 	friend class K3MdiChildFrmCaption;
 	friend class K3MdiChildFrm;

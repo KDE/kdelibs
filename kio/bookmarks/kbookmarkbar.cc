@@ -24,7 +24,6 @@
 #include <qevent.h>
 
 #include <kbookmarkbar.h>
-#include <kbookmarkdrag.h>
 
 #include <kbookmarkmenu.h>
 #include <kdebug.h>
@@ -35,40 +34,33 @@
 #include <kconfig.h>
 #include <kpopupmenu.h>
 
-#include "kbookmarkdrag.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkdombuilder.h"
 
-#include "dptrtemplate.h"
-
 #include <qapplication.h>
 
-class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>
+class KBookmarkBarPrivate
 {
 public:
-    Q3PtrList<KAction> m_actions;
-    bool m_readOnly;
+    QList<KAction *> m_actions;
     KBookmarkManager* m_filteredMgr;
     KToolBar* m_sepToolBar;
     int m_sepIndex;
+    bool m_readOnly;
     bool m_atFirst;
     QString m_dropAddress;
     QString m_highlightedAddress;
-public:
-    KBookmarkBarPrivate() {
-        m_readOnly = false;
-        m_filteredMgr = 0;
-        m_sepToolBar = 0;
-        m_sepIndex = -1;
-        m_atFirst = false;
-    }
-};
-template<> Q3PtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
+    RMB* m_rmb;
 
-KBookmarkBarPrivate* KBookmarkBar::dptr() const
-{
-    return KBookmarkBarPrivate::d( this );
-}
+    KBookmarkBarPrivate() :
+        m_filteredMgr( 0 ),
+        m_sepToolBar( 0 ),
+        m_sepIndex( -1 ),
+        m_readOnly( false ),
+        m_atFirst( false ),
+        m_rmb( 0 )
+    {}
+};
 
 // usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
 class ToolbarFilter : public KXBELBookmarkImporterImpl
@@ -90,14 +82,10 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KActionCollection *coll,
                             QObject *parent )
     : QObject( parent ), m_pOwner(_owner), m_toolBar(_toolBar),
-      m_actionCollection( coll ), m_pManager(mgr)
+      m_actionCollection( coll ), m_pManager( mgr ), d( new KBookmarkBarPrivate )
 {
-    m_lstSubMenus.setAutoDelete( true );
-
     m_toolBar->setAcceptDrops( true );
     m_toolBar->installEventFilter( this ); // for drops
-
-    dptr()->m_actions.setAutoDelete( true );
 
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
@@ -108,34 +96,35 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 
 QString KBookmarkBar::parentAddress()
 {
-    return dptr()->m_filteredMgr ? QString::null : m_pManager->toolbar().address();
+    return d->m_filteredMgr ? QString::null : m_pManager->toolbar().address();
 }
 
 #define CURRENT_TOOLBAR() ( \
-    dptr()->m_filteredMgr ? dptr()->m_filteredMgr->root()  \
+    d->m_filteredMgr ? d->m_filteredMgr->root()  \
                           : m_pManager->toolbar() )
 
 #define CURRENT_MANAGER() ( \
-    dptr()->m_filteredMgr ? dptr()->m_filteredMgr  \
+    d->m_filteredMgr ? d->m_filteredMgr  \
                           : m_pManager )
 
 KBookmarkGroup KBookmarkBar::getToolbar()
 {
     if ( KBookmarkSettings::self()->m_filteredtoolbar )
     {
-        if ( !dptr()->m_filteredMgr ) {
-            dptr()->m_filteredMgr = KBookmarkManager::createTempManager();
+        if ( !d->m_filteredMgr ) {
+            d->m_filteredMgr = KBookmarkManager::createTempManager();
         } else {
-            KBookmarkGroup bkRoot = dptr()->m_filteredMgr->root();
-            Q3ValueList<KBookmark> bks;
+            KBookmarkGroup bkRoot = d->m_filteredMgr->root();
+            QList<KBookmark> bks;
             for (KBookmark bm = bkRoot.first(); !bm.isNull(); bm = bkRoot.next(bm))
-                bks << bm;
-            for ( Q3ValueListConstIterator<KBookmark> it = bks.begin(); it != bks.end(); ++it )
-                bkRoot.deleteBookmark( (*it) );
+                bks.append( bm );
+            for ( QList<KBookmark>::const_iterator bkit = bks.begin(), bkend = bks.end() ; bkit != bkend ; ++bkit ) {
+                bkRoot.deleteBookmark( (*bkit) );
+            }
         }
         ToolbarFilter filter;
-        KBookmarkDomBuilder builder( dptr()->m_filteredMgr->root(),
-                                     dptr()->m_filteredMgr );
+        KBookmarkDomBuilder builder( d->m_filteredMgr->root(),
+                                     d->m_filteredMgr );
         builder.connectImporter( &filter );
         filter.filter( m_pManager->root() );
     }
@@ -146,17 +135,22 @@ KBookmarkGroup KBookmarkBar::getToolbar()
 KBookmarkBar::~KBookmarkBar()
 {
     //clear();
-    KBookmarkBarPrivate::delete_d(this);
+    qDeleteAll( d->m_actions );
+    qDeleteAll( m_lstSubMenus );
+    delete d->m_rmb;
+    delete d;
 }
 
 void KBookmarkBar::clear()
 {
-    Q3PtrListIterator<KAction> it( dptr()->m_actions );
     m_toolBar->clear();
-    for (; it.current(); ++it ) {
-        (*it)->unplugAll();
+    for ( QList<KAction *>::iterator actit = d->m_actions.begin(),
+                                    actend = d->m_actions.end() ; actit != actend ; ++actit ) {
+        (*actit)->unplugAll();
+        delete *actit;
     }
-    dptr()->m_actions.clear();
+    d->m_actions.clear();
+    qDeleteAll( m_lstSubMenus );
     m_lstSubMenus.clear();
 }
 
@@ -177,10 +171,10 @@ void KBookmarkBar::slotBookmarksChanged( const QString & group )
     else
     {
         // Iterate recursively into child menus
-        Q3PtrListIterator<KBookmarkMenu> it( m_lstSubMenus );
-        for (; it.current(); ++it )
+        for ( QList<KBookmarkMenu *>::ConstIterator smit = m_lstSubMenus.begin(), smend = m_lstSubMenus.end();
+              smit != smend; ++smit )
         {
-            it.current()->slotBookmarksChanged( group );
+            (*smit)->slotBookmarksChanged( group );
         }
     }
 }
@@ -211,7 +205,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
                 action->plug(m_toolBar);
 
-                dptr()->m_actions.append( action );
+                d->m_actions.append( action );
             }
         }
         else
@@ -220,7 +214,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                                                            m_actionCollection,
                                                            "bookmarkbar-actionmenu");
             action->setProperty( "address", bm.address() );
-            action->setProperty( "readOnly", dptr()->m_readOnly );
+            action->setProperty( "readOnly", d->m_readOnly );
             action->setDelayed( false );
 
             // this flag doesn't have any UI yet
@@ -238,19 +232,19 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
 
-            dptr()->m_actions.append( action );
+            d->m_actions.append( action );
         }
     }
 }
 
 void KBookmarkBar::setReadOnly(bool readOnly)
 {
-    dptr()->m_readOnly = readOnly;
+    d->m_readOnly = readOnly;
 }
 
 bool KBookmarkBar::isReadOnly() const
 {
-    return dptr()->m_readOnly;
+    return d->m_readOnly;
 }
 
 void KBookmarkBar::slotBookmarkSelected( KAction::ActivationReason /*reason*/, Qt::ButtonState state )
@@ -283,12 +277,12 @@ static void removeTempSep(KBookmarkBarPrivate* p)
     }
 }
 
-static KAction* findPluggedAction(Q3PtrList<KAction> actions, KToolBar *tb, int id)
+static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb, int id)
 {
-    Q3PtrListIterator<KAction> it( actions );
-    for (; (*it); ++it )
+    for ( QList<KAction *>::const_iterator it = actions.begin(), end = actions.end() ; it != end ; ++it ) {
         if ((*it)->isPlugged(tb, id))
             return (*it);
+    }
     return 0;
 }
 
@@ -303,7 +297,7 @@ static KAction* findPluggedAction(Q3PtrList<KAction> actions, KToolBar *tb, int 
  *        returned action was dropped on
  */
 static QString handleToolbarDragMoveEvent(
-    KBookmarkBarPrivate *p, KToolBar *tb, QPoint pos, Q3PtrList<KAction> actions,
+    KBookmarkBarPrivate *p, KToolBar *tb, const QPoint& pos, const QList<KAction *>& actions,
     bool &atFirst, KBookmarkManager *mgr
 ) {
     Q_UNUSED( mgr );
@@ -383,8 +377,8 @@ skipact:
 }
 
 // TODO - document!!!!
-static KAction* handleToolbarMouseButton(QPoint pos, Q3PtrList<KAction> actions,
-	                                     KBookmarkManager * /*mgr*/, QPoint & pt)
+static KAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction *>& actions,
+                                         KBookmarkManager * /*mgr*/, QPoint & pt)
 {
     KAction *act = actions.first();
     if (!act) {
@@ -413,40 +407,38 @@ static KAction* handleToolbarMouseButton(QPoint pos, Q3PtrList<KAction> actions,
 // TODO    *** generic rmb improvements ***
 // don't *ever* show the rmb on press, always relase, possible???
 
-class KBookmarkBarRMBAssoc : public dPtrTemplate<KBookmarkBar, RMB> { };
-template<> Q3PtrDict<RMB>* dPtrTemplate<KBookmarkBar, RMB>::d_ptr = 0;
-
-static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
 
 void RMB::begin_rmb_action(KBookmarkBar *self)
 {
-    RMB *s = rmbSelf(self);
+    if ( !self->d->m_rmb )
+        self->d->m_rmb = new RMB;
+    RMB *s = self->d->m_rmb;
     s->recv = self;
     s->m_parentAddress = self->parentAddress();
-    s->s_highlightedAddress = self->dptr()->m_highlightedAddress; // rename in RMB
+    s->s_highlightedAddress = self->d->m_highlightedAddress; // rename in RMB
     s->m_pManager = self->m_pManager;
     s->m_pOwner = self->m_pOwner;
     s->m_parentMenu = 0;
 }
 
 void KBookmarkBar::slotRMBActionEditAt( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionEditAt( val ); }
 
 void KBookmarkBar::slotRMBActionProperties( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
+{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionProperties( val ); }
 
 void KBookmarkBar::slotRMBActionInsert( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
+{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionInsert( val ); }
 
 void KBookmarkBar::slotRMBActionRemove( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
+{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionRemove( val ); }
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionCopyLocation( val ); }
 
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
-    if (dptr()->m_readOnly || dptr()->m_filteredMgr) // note, we assume m_pManager in various places,
+    if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,
                                                      // this shouldn't really be the case
         return false; // todo: make this limit the actions
 
@@ -458,16 +450,16 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
         KAction *_a;
 
         // FIXME, see how this holds up on an empty toolbar
-        _a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
+        _a = handleToolbarMouseButton( mev->pos(), d->m_actions, m_pManager, pt );
         if (_a && mev->button() == Qt::RightButton)
         {
-            dptr()->m_highlightedAddress = _a->property("address").toString();
-            KBookmark bookmark = m_pManager->findByAddress( dptr()->m_highlightedAddress );
+            d->m_highlightedAddress = _a->property("address").toString();
+            KBookmark bookmark = m_pManager->findByAddress( d->m_highlightedAddress );
             RMB::begin_rmb_action(this);
             KPopupMenu *pm = new KPopupMenu;
-            rmbSelf(this)->fillContextMenu( pm, dptr()->m_highlightedAddress, 0 );
-            emit aboutToShowContextMenu( rmbSelf(this)->atAddress( dptr()->m_highlightedAddress ), pm );
-            rmbSelf(this)->fillContextMenu2( pm, dptr()->m_highlightedAddress, 0 );
+            d->m_rmb->fillContextMenu( pm, d->m_highlightedAddress, 0 );
+            emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), pm );
+            d->m_rmb->fillContextMenu2( pm, d->m_highlightedAddress, 0 );
             pm->popup( pt );
             mev->accept();
         }
@@ -476,47 +468,47 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
     }
     else if ( e->type() == QEvent::DragLeave )
     {
-        removeTempSep(dptr());
-        dptr()->m_dropAddress = QString::null;
+        removeTempSep(d);
+        d->m_dropAddress = QString::null;
     }
     else if ( e->type() == QEvent::Drop )
     {
-        removeTempSep(dptr());
-        QDropEvent *dev = (QDropEvent*)e;
-        if ( !KBookmarkDrag::canDecode( dev ) )
+        removeTempSep(d);
+        QDropEvent *dev = static_cast<QDropEvent*>( e );
+        QList<KBookmark> list = KBookmark::List::fromMimeData( dev->mimeData() );
+        if ( list.isEmpty() )
             return false;
-        Q3ValueList<KBookmark> list = KBookmarkDrag::decode( dev );
         if (list.count() > 1)
             kdWarning(7043) << "Sorry, currently you can only drop one address "
                 "onto the bookmark bar!" << endl;
         KBookmark toInsert = list.first();
-        KBookmark bookmark = m_pManager->findByAddress( dptr()->m_dropAddress );
+        KBookmark bookmark = m_pManager->findByAddress( d->m_dropAddress );
         Q_ASSERT(!bookmark.isNull());
         kdDebug(7043) << "inserting "
-            << QString(dptr()->m_atFirst ? "before" : "after")
-            << " dptr()->m_dropAddress == " << dptr()->m_dropAddress << endl;
+            << QString(d->m_atFirst ? "before" : "after")
+            << " d->m_dropAddress == " << d->m_dropAddress << endl;
         KBookmarkGroup parentBookmark = bookmark.parentGroup();
         Q_ASSERT(!parentBookmark.isNull());
         KBookmark newBookmark = parentBookmark.addBookmark(
                 m_pManager, toInsert.fullText(),
                 toInsert.url() );
-        parentBookmark.moveItem( newBookmark, dptr()->m_atFirst ? KBookmark() : bookmark );
+        parentBookmark.moveItem( newBookmark, d->m_atFirst ? KBookmark() : bookmark );
         m_pManager->emitChanged( parentBookmark );
         return true;
     }
     else if ( e->type() == QEvent::DragMove )
     {
-        QDragMoveEvent *dme = (QDragMoveEvent*)e;
-        if (!KBookmarkDrag::canDecode( dme ))
+        QDragMoveEvent *dme = static_cast<QDragMoveEvent*>( e );
+        if (!KBookmark::List::canDecode( dme->mimeData() ))
             return false;
         bool _atFirst;
         QString dropAddress;
         KToolBar *tb = (KToolBar*)o;
-        dropAddress = handleToolbarDragMoveEvent(dptr(), tb, dme->pos(), dptr()->m_actions, _atFirst, m_pManager);
+        dropAddress = handleToolbarDragMoveEvent(d, tb, dme->pos(), d->m_actions, _atFirst, m_pManager);
         if (!dropAddress.isNull())
         {
-            dptr()->m_dropAddress = dropAddress;
-            dptr()->m_atFirst = _atFirst;
+            d->m_dropAddress = dropAddress;
+            d->m_atFirst = _atFirst;
             dme->accept();
         }
     }

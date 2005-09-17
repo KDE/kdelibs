@@ -22,7 +22,6 @@
 #define __kbookmarkimporter_ie_h
 
 #include <qdom.h>
-#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 #include <kdemacros.h>
@@ -46,7 +45,7 @@ public:
     static QString IEBookmarksDir();
 
 signals:
-    void newBookmark( const QString & text, const Q3CString & url, const QString & additionalInfo );
+    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();
@@ -79,7 +78,7 @@ class KIO_EXPORT KIEBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KIEBookmarkExporterImpl(KBookmarkManager* mgr, const QString & path)
-      : KBookmarkExporterBase(mgr, path) 
+      : KBookmarkExporterBase(mgr, path)
     { ; }
     virtual ~KIEBookmarkExporterImpl() {}
     virtual void write(KBookmarkGroup);

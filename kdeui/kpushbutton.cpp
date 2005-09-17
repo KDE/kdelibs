@@ -19,7 +19,7 @@
 
 #include "kpushbutton.h"
 
-#include <q3dragobject.h>
+#include <qdrag.h>
 #include <qevent.h>
 
 #include "config.h"
@@ -27,7 +27,7 @@
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kipc.h> 
+#include <kipc.h>
 #include <kapplication.h>
 
 class KPushButton::KPushButtonPrivate
@@ -85,7 +85,7 @@ void KPushButton::init( const KGuiItem &item )
     d->item = item;
     d->itemType = (KStdGuiItem::StdItem) 0;
 
-    // call QPushButton's implementation since we don't need to 
+    // call QPushButton's implementation since we don't need to
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
 
@@ -120,7 +120,7 @@ void KPushButton::setGuiItem( const KGuiItem& item )
 {
     d->item = item;
 
-    // call QPushButton's implementation since we don't need to 
+    // call QPushButton's implementation since we don't need to
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
@@ -196,16 +196,16 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
     }
 }
 
-Q3DragObject * KPushButton::dragObject()
+QDrag * KPushButton::dragObject()
 {
-    return 0L;
+    return 0;
 }
 
 void KPushButton::startDrag()
 {
-    Q3DragObject *d = dragObject();
+    QDrag *d = dragObject();
     if ( d )
-	d->dragCopy();
+	d->start();
 }
 
 void KPushButton::virtual_hook( int, void* )

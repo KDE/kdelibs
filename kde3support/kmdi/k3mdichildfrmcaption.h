@@ -41,7 +41,7 @@ class K3MdiChildFrmCaptionPrivate;
 *
 * It's the caption bar of a child frame widget.
 */
-class K3MDI_EXPORT K3MdiChildFrmCaption : public QWidget
+class KDE3SUPPORT_EXPORT K3MdiChildFrmCaption : public QWidget
 {
 	Q_OBJECT
 public:

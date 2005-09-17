@@ -25,22 +25,22 @@
 #include <kbookmark.h>
 
 // Clipboard/dnd data : URLs + XML for bookmarks
-class KIO_EXPORT KBookmarkDrag : public Q3UriDrag
+class KDE3SUPPORT_EXPORT K3BookmarkDrag : public Q3UriDrag
 {
 public:
-    static KBookmarkDrag * newDrag( const Q3ValueList<KBookmark> & bookmarks,
+    static K3BookmarkDrag * newDrag( const Q3ValueList<KBookmark> & bookmarks,
                                     QWidget * dragSource = 0,
                                     const char * name = 0 );
-    static KBookmarkDrag * newDrag( const KBookmark & bookmark,
+    static K3BookmarkDrag * newDrag( const KBookmark & bookmark,
                                     QWidget * dragSource = 0,
                                     const char * name = 0 );
 protected:
-    KBookmarkDrag( const Q3ValueList<KBookmark> & bookmarks,
+    K3BookmarkDrag( const Q3ValueList<KBookmark> & bookmarks,
                    const Q3StrList & urls,
                    QWidget * dragSource,
                    const char * name );
 public:
-    virtual ~KBookmarkDrag() {}
+    virtual ~K3BookmarkDrag() {}
 
     virtual const char* format( int i ) const;
     virtual QByteArray encodedData( const char* mime ) const;
@@ -51,7 +51,5 @@ public:
 protected:
     Q3ValueList<KBookmark> m_bookmarks;
     QDomDocument m_doc;
-    class KBookmarkDragPrivate;
-    KBookmarkDragPrivate * d;
 };
 #endif

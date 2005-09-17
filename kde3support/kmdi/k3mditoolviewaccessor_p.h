@@ -29,7 +29,7 @@
 #include <qpointer.h>
 #include <kaction.h>
 
-class K3MDI_EXPORT K3MdiToolViewAccessorPrivate {
+class KDE3SUPPORT_EXPORT K3MdiToolViewAccessorPrivate {
 public:
 	K3MdiToolViewAccessorPrivate() {
 		widgetContainer=0;

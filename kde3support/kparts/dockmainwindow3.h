@@ -44,7 +44,7 @@ class DockMainWindow3Private;
  * It implements all internal interfaces in the case of a K3DockMainWindow3 as host:
  * the builder and servant interface (for menu merging).
  */
-class KPARTS_EXPORT DockMainWindow3 : public K3DockMainWindow, virtual public PartBase
+class KDE3SUPPORT_EXPORT DockMainWindow3 : public K3DockMainWindow, virtual public PartBase
 {
   Q_OBJECT
  public:

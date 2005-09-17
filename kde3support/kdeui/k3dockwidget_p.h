@@ -40,7 +40,7 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 #include <qstringlist.h>
 // Add some describing comment !!
 
-class KDEUI_EXPORT K3DockContainer
+class KDE3SUPPORT_EXPORT K3DockContainer
 {
 public:
   K3DockContainer();

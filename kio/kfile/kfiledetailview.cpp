@@ -33,7 +33,6 @@
 #include <kicontheme.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kurldrag.h>
 
 #include "kfiledetailview.h"
 #include "config-kfile.h"
@@ -533,6 +532,9 @@ void KFileDetailView::listingCompleted()
     m_resolver->start();
 }
 
+// Qt4 porting: once we use QListWidget, this becomes a reimplementation of
+// virtual QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
+// or better: something at the model level, instead?
 Q3DragObject *KFileDetailView::dragObject()
 {
     // create a list of the URL:s that we want to drag
@@ -550,9 +552,12 @@ Q3DragObject *KFileDetailView::dragObject()
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
+#if 0 // there is no more kurldrag, this should use urls.addToMimeData( mimeData ) instead
     Q3DragObject* myDragObject = new KURLDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
+#endif
+    return 0;
 }
 
 void KFileDetailView::slotAutoOpen()
@@ -574,7 +579,7 @@ void KFileDetailView::slotAutoOpen()
 
 bool KFileDetailView::acceptDrag(QDropEvent* e) const
 {
-   return KURLDrag::canDecode( e ) &&
+    return KURL::List::canDecode( e->mimeData() ) &&
        (e->source()!= const_cast<KFileDetailView*>(this)) &&
        ( e->action() == QDropEvent::Copy
       || e->action() == QDropEvent::Move
@@ -654,8 +659,8 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
 
     emit dropped(e, fileItem);
 
-    KURL::List urls;
-    if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
+    KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+    if ( !urls.isEmpty() )
     {
         emit dropped(e, urls, fileItem ? fileItem->url() : KURL());
         sig->dropURLs(fileItem, e, urls);

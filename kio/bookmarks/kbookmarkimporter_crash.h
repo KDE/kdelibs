@@ -22,7 +22,6 @@
 #define __kbookmarkimporter_crash_h
 
 #include <qdom.h>
-#include <q3cstring.h>
 #include <qstringlist.h>
 #include <qmap.h>
 #include <ksimpleconfig.h>
@@ -44,7 +43,7 @@ public:
     static QString crashBookmarksDir( );
     static QStringList getCrashLogs(); // EMPTY!
 signals:
-    void newBookmark( const QString & text, const Q3CString & url, const QString & additionalInfo );
+    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
     void newSeparator();
     void endFolder();

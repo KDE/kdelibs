@@ -38,6 +38,8 @@
 #include <assert.h>
 #include <unistd.h>
 #include <errno.h>
+#include <qhash.h>
+#include <qvariant.h>
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
@@ -443,6 +445,33 @@ void JobTest::listRecursive()
 
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 {
+    ///////// TEST CODE FOR FUTURE KIO API
+
+    typedef QHash<uint, QVariant> UDSEntry4;
+
+    UDSEntry4 entry;
+    // slave code
+    entry[KIO::UDS_NAME] = "name";
+    entry[KIO::UDS_SIZE] = 123456;
+    entry[KIO::UDS_MODIFICATION_TIME] = QDateTime::currentDateTime();
+
+    // app code
+    QString displayName = entry.value( KIO::UDS_NAME ).toString();
+    KURL url = entry.value( KIO::UDS_URL ).toString();
+
+    typedef QList<UDSEntry4> UDSEntryList4;
+
+    UDSEntryList4 lst4;
+    for( UDSEntryList4::ConstIterator it = lst4.begin(); it != lst4.end(); ++it ) {
+        QString displayName = entry.value( KIO::UDS_NAME ).toString();
+        KURL url = entry.value( KIO::UDS_URL ).toString();
+    }
+
+
+
+
+
+    ////
     for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
         QString displayName;

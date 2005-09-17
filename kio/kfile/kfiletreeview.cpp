@@ -32,7 +32,6 @@
 #include <assert.h>
 #include <kio/job.h>
 #include <kio/global.h>
-#include <kurldrag.h>
 #include <kiconloader.h>
 
 
@@ -208,8 +207,9 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        emit dropped(e, parent, afterme);
        emit dropped(this, e, parent, afterme);
 
-       KURL::List urls;
-       KURLDrag::decode( e, urls );
+       KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+       if ( urls.isEmpty() )
+           return;
        emit dropped( this, e, urls );
 
        KURL parentURL;
@@ -232,7 +232,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
    // kdDebug(250) << "Do accept drops: " << ancestOK << endl;
    ancestOK = ancestOK && itemsMovable();
    // kdDebug(250) << "acceptDrag: " << ancestOK << endl;
-   // kdDebug(250) << "canDecode: " << KURLDrag::canDecode(e) << endl;
+   // kdDebug(250) << "canDecode: " << KURL::List::canDecode(e->mimeData()) << endl;
    // kdDebug(250) << "action: " << e->action() << endl;
 
    /*  KListView::acceptDrag(e);  */
@@ -240,7 +240,7 @@ bool KFileTreeView::acceptDrag(QDropEvent* e ) const
     * acceptDrops() && itemsMovable() && (e->source()==viewport());
     * ask acceptDrops and itemsMovable, but not the third
     */
-   return ancestOK && KURLDrag::canDecode( e ) &&
+   return ancestOK && KURL::List::canDecode( e->mimeData() ) &&
        // Why this test? All DnDs are one of those AFAIK (DF)
       ( e->action() == QDropEvent::Copy
 	|| e->action() == QDropEvent::Move
@@ -268,10 +268,13 @@ Q3DragObject * KFileTreeView::dragObject()
       pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
    hotspot.setX( pixmap.width() / 2 );
    hotspot.setY( pixmap.height() / 2 );
+#if 0 // there is no more kurldrag, this should use urls.addToMimeData( mimeData ) instead
    Q3DragObject* dragObject = new KURLDrag( urls, this );
    if( dragObject )
       dragObject->setPixmap( pixmap, hotspot );
    return dragObject;
+#endif
+   return 0;
 }
 
 

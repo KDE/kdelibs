@@ -16,18 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <unistd.h>
-
-#include <qapplication.h>
-#include <qcheckbox.h>
-#include <qdrawutil.h>
-#include <qfontmetrics.h>
-#include <qlabel.h>
-#include <q3grid.h>
-#include <qpainter.h>
-#include <q3popupmenu.h>
-#include <qstyle.h>
-#include <q3vbox.h>
+#include "kurlbar.h"
 
 #include <kaboutdata.h>
 #include <kconfig.h>
@@ -41,11 +30,21 @@
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 #include <kstringhandler.h>
-#include <kurldrag.h>
 #include <kurlrequester.h>
 
-#include "kurlbar.h"
+#include <qapplication.h>
+#include <qcheckbox.h>
+#include <qdrawutil.h>
+#include <qfontmetrics.h>
+#include <qlabel.h>
+#include <qmimedata.h>
+#include <q3grid.h>
+#include <qpainter.h>
+#include <q3popupmenu.h>
+#include <qstyle.h>
+#include <q3vbox.h>
 
+#include <unistd.h>
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -672,14 +671,14 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
 
 void KURLBar::slotDropped( QDropEvent *e )
 {
-    KURL::List urls;
-    if ( KURLDrag::decode( e, urls ) ) {
+    KURL::List urls = KURL::List::fromMimeData( e->mimeData() );
+    if ( !urls.isEmpty() ) {
         KURL url;
         QString description;
         QString icon;
         bool appLocal = false;
 
-        KURL::List::Iterator it = urls.begin();
+        KURL::List::const_iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
             (void) insertItem( *it, description, appLocal, icon );
             m_isModified = true;
@@ -811,7 +810,7 @@ void KURLBarListBox::paintEvent( QPaintEvent* )
     p.drawRect( 0, 0, width() - 1, height() - 1 );
 }
 
-Q3DragObject * KURLBarListBox::dragObject()
+void KURLBarListBox::addToMimeData( QMimeData* mimeData )
 {
     KURL::List urls;
     KURLBarItem *item = static_cast<KURLBarItem*>( firstItem() );
@@ -824,17 +823,13 @@ Q3DragObject * KURLBarListBox::dragObject()
 
     if ( !urls.isEmpty() ) {
         // ### use custom drag-object with description etc.?
-        KURLDrag *drag = new KURLDrag( urls, this );
-        drag->setObjectName( "urlbar drag" );
-        return drag;
+        urls.addToMimeData( mimeData );
     }
-
-    return 0L;
 }
 
 void KURLBarListBox::contentsDragEnterEvent( QDragEnterEvent *e )
 {
-    e->accept( KURLDrag::canDecode( e ));
+    e->accept( KURL::List::canDecode( e->mimeData() ) );
 }
 
 void KURLBarListBox::contentsDropEvent( QDropEvent *e )

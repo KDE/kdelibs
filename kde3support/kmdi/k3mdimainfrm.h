@@ -70,7 +70,7 @@ class K3MdiMainFrmPrivate;
  *
  * This special event is needed because the view has to inform the main frame that it`s being closed.
  */
-class K3MDI_EXPORT K3MdiViewCloseEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiViewCloseEvent : public QCustomEvent
 {
 public:
 	K3MdiViewCloseEvent( K3MdiChildView* pWnd ) : QCustomEvent( QEvent::User, pWnd ) {}
@@ -237,7 +237,7 @@ public:
  *		m_pMdiMainFrm->addWindow( pWnd, K3Mdi::AddWindowFlags(mdiFlags));
  * \endcode
  */
-class K3MDI_EXPORT K3MdiMainFrm : public KParts::DockMainWindow3
+class KDE3SUPPORT_EXPORT K3MdiMainFrm : public KParts::DockMainWindow3
 {
 	friend class K3MdiChildView;
 	friend class K3MdiTaskBar;

@@ -65,7 +65,7 @@ private:
   QString m_type;
   QString m_location;
 public:
-  KImportedBookmarksActionMenu( 
+  KImportedBookmarksActionMenu(
     const QString &text, const QString& sIconName,
     KActionCollection* parent, const char* name)
   : KActionMenu(text, sIconName, parent, name) {
@@ -90,7 +90,7 @@ private:
   QString m_address;
   bool m_readOnly;
 public:
-  KBookmarkActionMenu( 
+  KBookmarkActionMenu(
     const QString &text, const QString& sIconName,
     KActionCollection* parent, const char* name)
   : KActionMenu(text, sIconName, parent, name) {
@@ -185,7 +185,7 @@ public:
   static void setAddress( Q3ListView *, const QString & );
 };
 
-class KBookmarkSettings 
+class KBookmarkSettings
 {
 public:
   bool m_advancedaddbookmark;
@@ -200,6 +200,7 @@ public:
 class RMB
 {
 public:
+  // ##### DF: How about two normal constructors instead??
   static void begin_rmb_action(KBookmarkMenu *);
   static void begin_rmb_action(KBookmarkBar *);
   bool invalid( int val );

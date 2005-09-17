@@ -35,7 +35,7 @@ class K3MDIGUIClient;
 }
 
 
-class K3MDI_EXPORT K3MdiToolViewAccessor : public QObject
+class KDE3SUPPORT_EXPORT K3MdiToolViewAccessor : public QObject
 {
 	Q_OBJECT
 

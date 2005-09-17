@@ -37,8 +37,8 @@ KBookmarkDomBuilder::~KBookmarkDomBuilder() {
 }
 
 void KBookmarkDomBuilder::connectImporter(const QObject *importer) {
-   connect(importer, SIGNAL( newBookmark(const QString &, const Q3CString &, const QString &) ),
-                     SLOT( newBookmark(const QString &, const Q3CString &, const QString &) ));
+   connect(importer, SIGNAL( newBookmark(const QString &, const QString &, const QString &) ),
+                     SLOT( newBookmark(const QString &, const QString &, const QString &) ));
    connect(importer, SIGNAL( newFolder(const QString &, bool, const QString &) ),
                      SLOT( newFolder(const QString &, bool, const QString &) ));
    connect(importer, SIGNAL( newSeparator() ),
@@ -48,11 +48,11 @@ void KBookmarkDomBuilder::connectImporter(const QObject *importer) {
 }
 
 void KBookmarkDomBuilder::newBookmark(
-   const QString &text, const Q3CString &url, const QString &additionalInfo
+   const QString &text, const QString &url, const QString &additionalInfo
 ) {
    KBookmark bk = m_stack.top().addBookmark(
                                     m_manager, text,
-                                    KURL( QString::fromUtf8(url), 106 /*utf8*/ ),
+                                    KURL( url, 106 /*utf8*/ ),
                                     QString::null, false);
    // store additional info
    bk.internalElement().setAttribute("netscapeinfo", additionalInfo);

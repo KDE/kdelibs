@@ -50,7 +50,7 @@ class QToolButton;
   * @short Internal class, only used on Win32.
   * This class provides a label widget that can process mouse click events.
   */
-class K3MDI_EXPORT K3MdiWin32IconButton : public QLabel
+class KDE3SUPPORT_EXPORT K3MdiWin32IconButton : public QLabel
 {
 	Q_OBJECT
 public:
@@ -69,7 +69,7 @@ signals:
  * @short a QCustomEvent for move
  * This special event will be useful, to inform view about child frame event.
  */
-class K3MDI_EXPORT K3MdiChildFrmMoveEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiChildFrmMoveEvent : public QCustomEvent
 {
 public:
 	K3MdiChildFrmMoveEvent( QMoveEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( K3Mdi::EV_Move ) ), e ) {}
@@ -81,7 +81,7 @@ public:
  * @short a QCustomEvent for begin of dragging
  * This special event will be useful, to inform view about child frame event.
  */
-class K3MDI_EXPORT K3MdiChildFrmDragBeginEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiChildFrmDragBeginEvent : public QCustomEvent
 {
 public:
 	K3MdiChildFrmDragBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( K3Mdi::EV_DragBegin ) ), e ) {}
@@ -92,7 +92,7 @@ public:
  * @short a QCustomEvent for end of dragging
  * This special event will be useful, to inform view about child frame event.
  */
-class K3MDI_EXPORT K3MdiChildFrmDragEndEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiChildFrmDragEndEvent : public QCustomEvent
 {
 public:
 	K3MdiChildFrmDragEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( K3Mdi::EV_DragEnd ) ), e ) {}
@@ -103,7 +103,7 @@ public:
  * @short a QCustomEvent for begin of resizing
  * This special event will be useful, to inform view about child frame event.
  */
-class K3MDI_EXPORT K3MdiChildFrmResizeBeginEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiChildFrmResizeBeginEvent : public QCustomEvent
 {
 public:
 	K3MdiChildFrmResizeBeginEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( K3Mdi::EV_ResizeBegin ) ), e ) {}
@@ -114,7 +114,7 @@ public:
  * @short a QCustomEvent for end of resizing
  * This special event will be useful, to inform view about child frame event.
  */
-class K3MDI_EXPORT K3MdiChildFrmResizeEndEvent : public QCustomEvent
+class KDE3SUPPORT_EXPORT K3MdiChildFrmResizeEndEvent : public QCustomEvent
 {
 public:
 	K3MdiChildFrmResizeEndEvent( QMouseEvent *e ) : QCustomEvent( QEvent::Type( QEvent::User + int( K3Mdi::EV_ResizeEnd ) ), e ) {}
@@ -128,7 +128,7 @@ class K3MdiChildFrmPrivate;
   * It's an MDI child frame widget. It contains a view widget and a frame caption. Usually you derive from its view.
   */ 
 //------------------------------------------------------------------------------
-class K3MDI_EXPORT K3MdiChildFrm : public Q3Frame
+class KDE3SUPPORT_EXPORT K3MdiChildFrm : public Q3Frame
 {
 	friend class K3MdiChildArea;
 	friend class K3MdiChildFrmCaption;

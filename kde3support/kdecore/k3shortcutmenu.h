@@ -30,7 +30,7 @@ class KAccelActions;
 /**
  * @internal
  */
-class KDECORE_EXPORT K3ShortcutMenu : public Q3PopupMenu
+class KDE3SUPPORT_EXPORT K3ShortcutMenu : public Q3PopupMenu
 {
 	Q_OBJECT
  public:

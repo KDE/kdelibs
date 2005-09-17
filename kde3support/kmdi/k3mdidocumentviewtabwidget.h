@@ -19,7 +19,7 @@ class KPopupMenu;
 /**
  * A reimplementation of KTabWidget for K3MDI
  */
-class K3MDI_EXPORT K3MdiDocumentViewTabWidget:
+class KDE3SUPPORT_EXPORT K3MdiDocumentViewTabWidget:
 			public KTabWidget
 {
 	Q_OBJECT

@@ -22,7 +22,6 @@
 #define __kbookmarkimporter_h
 
 #include <qdom.h>
-#include <q3cstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
@@ -55,7 +54,7 @@ signals:
      * Notify about a new bookmark
      * Use "html" for the icon
      */
-    void newBookmark(const QString & text, const Q3CString & url, const QString & additionalInfo);
+    void newBookmark(const QString & text, const QString & url, const QString & additionalInfo);
 
     /**
      * Notify about a new folder

@@ -1,5 +1,5 @@
-//  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
-// vim: set ts=4 sts=4 sw=4 et:
+//  -*- c-basic-offset:2; indent-tabs-mode:nil -*-
+// vim: set ts=2 sts=2 sw=2 et:
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
 
@@ -24,7 +24,6 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_opera.h"
 #include "kbookmarkimporter_ie.h"
-#include "kbookmarkdrag.h"
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -42,16 +41,16 @@
 
 #include <qclipboard.h>
 #include <qfile.h>
-#include <q3header.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <q3listview.h>
 #include <qpushbutton.h>
+#include <qmimedata.h>
+
+#include <q3header.h>
+#include <q3listview.h>
 
 #include <dptrtemplate.h>
-
-template class Q3PtrList<KBookmarkMenu>;
 
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
@@ -90,9 +89,6 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     m_parentAddress( parentAddress )
 {
   m_parentMenu->setKeyboardShortcutsEnabled( true );
-
-  m_lstSubMenus.setAutoDelete( true );
-  m_actions.setAutoDelete( true );
 
   if (m_actionCollection)
   {
@@ -143,12 +139,12 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 KBookmarkMenu::~KBookmarkMenu()
 {
   //kdDebug(7043) << "KBookmarkMenu::~KBookmarkMenu() " << this << endl;
-  Q3PtrListIterator<KAction> it( m_actions );
-  for (; it.current(); ++it )
-    it.current()->unplugAll();
+  QList<KAction *>::Iterator it = m_actions.begin();
+  for (; it != m_actions.end(); ++it )
+    (*it)->unplugAll();
 
-  m_lstSubMenus.clear();
-  m_actions.clear();
+  qDeleteAll( m_lstSubMenus );
+  qDeleteAll( m_actions );
 }
 
 void KBookmarkMenu::ensureUpToDate()
@@ -193,6 +189,8 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
+
+// TODO use d pointer instead - or add a pointer for the RMB instance.
 
 class KBookmarkMenuRMBAssoc : public dPtrTemplate<KBookmarkMenu, RMB> { };
 template<> Q3PtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
@@ -400,14 +398,16 @@ void RMB::slotRMBActionCopyLocation( int val )
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionCopyLocation" << s_highlightedAddress << endl;
   if (invalid(val)) { hidePopup(); return; }
 
-  KBookmark bookmark = atAddress( s_highlightedAddress );
+  const KBookmark bookmark = atAddress( s_highlightedAddress );
 
   if ( !bookmark.isGroup() )
   {
-    qApp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
-                                QClipboard::Selection );
-    qApp->clipboard()->setData( KBookmarkDrag::newDrag(bookmark, 0),
-                                QClipboard::Clipboard );
+    QMimeData* mimeData = new QMimeData;
+    bookmark.addToMimeData( mimeData );
+    QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
+    mimeData = new QMimeData;
+    bookmark.addToMimeData( mimeData );
+    QApplication::clipboard()->setMimeData( mimeData, QClipboard::Clipboard );
   }
 }
 
@@ -455,10 +455,10 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
   else
   {
     // Iterate recursively into child menus
-    Q3PtrListIterator<KBookmarkMenu> it( m_lstSubMenus );
-    for (; it.current(); ++it )
-    {
-      it.current()->slotBookmarksChanged( groupAddress );
+
+    for ( QList<KBookmarkMenu *>::iterator it = m_lstSubMenus.begin(), end = m_lstSubMenus.end() ;
+          it != end ; ++it ) {
+      (*it)->slotBookmarksChanged( groupAddress );
     }
   }
 }
@@ -466,11 +466,13 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 void KBookmarkMenu::refill()
 {
   //kdDebug(7043) << "KBookmarkMenu::refill()" << endl;
+  qDeleteAll( m_lstSubMenus );
   m_lstSubMenus.clear();
 
-  Q3PtrListIterator<KAction> it( m_actions );
-  for (; it.current(); ++it )
-    it.current()->unplug( m_parentMenu );
+  for ( QList<KAction *>::iterator it = m_actions.begin(), end = m_actions.end() ;
+        it != end ; ++it ) {
+    (*it)->unplug( m_parentMenu );
+  }
 
   m_parentMenu->clear();
   m_actions.clear();
@@ -579,9 +581,8 @@ void KBookmarkMenu::fillBookmarkMenu()
   {
     bool haveSep = false;
 
-    Q3ValueList<QString> keys = KBookmarkMenu::dynamicBookmarksList();
-    Q3ValueList<QString>::const_iterator it;
-    for ( it = keys.begin(); it != keys.end(); ++it )
+    const QStringList keys = KBookmarkMenu::dynamicBookmarksList();
+    for ( QStringList::const_iterator it = keys.begin(); it != keys.end(); ++it )
     {
        DynMenuInfo info;
        info = showDynamicBookmarks((*it));
@@ -612,7 +613,7 @@ void KBookmarkMenu::fillBookmarkMenu()
                              m_bAddBookmark, QString::null );
        connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ));
-       m_lstSubMenus.append(subMenu);
+       m_lstSubMenus.append( subMenu );
 
        connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
     }
@@ -1046,15 +1047,15 @@ void KBookmarkMenuNSImporter::openBookmarks( const QString &location, const QStr
 
 void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
 {
-  connect( &importer, SIGNAL( newBookmark( const QString &, const Q3CString &, const QString & ) ),
-           SLOT( newBookmark( const QString &, const Q3CString &, const QString & ) ) );
+  connect( &importer, SIGNAL( newBookmark( const QString &, const QString &, const QString & ) ),
+           SLOT( newBookmark( const QString &, const QString &, const QString & ) ) );
   connect( &importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
            SLOT( newFolder( const QString &, bool, const QString & ) ) );
   connect( &importer, SIGNAL( newSeparator() ), SLOT( newSeparator() ) );
   connect( &importer, SIGNAL( endFolder() ), SLOT( endFolder() ) );
 }
 
-void KBookmarkMenuNSImporter::newBookmark( const QString & text, const Q3CString & url, const QString & )
+void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );

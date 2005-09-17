@@ -18,11 +18,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kbookmarkdrag.h"
+#include "k3bookmarkdrag.h"
 #include <kurldrag.h>
 #include <kdebug.h>
 
-KBookmarkDrag * KBookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
+K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
 {
     KURL::List urls;
 
@@ -39,17 +39,17 @@ KBookmarkDrag * KBookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks
     for ( ; uit != uEnd ; ++uit )
         uris.append( KURLDrag::urlToString(*uit).latin1() );
 
-    return new KBookmarkDrag( bookmarks, uris, dragSource, name );
+    return new K3BookmarkDrag( bookmarks, uris, dragSource, name );
 }
 
-KBookmarkDrag * KBookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dragSource, const char * name )
+K3BookmarkDrag * K3BookmarkDrag::newDrag( const KBookmark & bookmark, QWidget * dragSource, const char * name )
 {
     Q3ValueList<KBookmark> bookmarks;
     bookmarks.append( KBookmark(bookmark) );
     return newDrag(bookmarks, dragSource, name);
 }
 
-KBookmarkDrag::KBookmarkDrag( const Q3ValueList<KBookmark> & bookmarks, const Q3StrList & urls,
+K3BookmarkDrag::K3BookmarkDrag( const Q3ValueList<KBookmark> & bookmarks, const Q3StrList & urls,
                   QWidget * dragSource, const char * name )
     : Q3UriDrag( urls, dragSource, name ), m_bookmarks( bookmarks ), m_doc("xbel")
 {
@@ -62,10 +62,10 @@ KBookmarkDrag::KBookmarkDrag( const Q3ValueList<KBookmark> & bookmarks, const Q3
     for ( Q3ValueListConstIterator<KBookmark> it = bookmarks.begin(); it != bookmarks.end(); ++it ) {
        elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
     }
-    //kdDebug(7043) << "KBookmarkDrag::KBookmarkDrag " << m_doc.toString() << endl;
+    //kdDebug(7043) << "K3BookmarkDrag::K3BookmarkDrag " << m_doc.toString() << endl;
 }
 
-const char* KBookmarkDrag::format( int i ) const
+const char* K3BookmarkDrag::format( int i ) const
 {
     if ( i == 0 )
         return "application/x-xbel";
@@ -76,7 +76,7 @@ const char* KBookmarkDrag::format( int i ) const
     else return 0;
 }
 
-QByteArray KBookmarkDrag::encodedData( const char* mime ) const
+QByteArray K3BookmarkDrag::encodedData( const char* mime ) const
 {
     QByteArray a;
     Q3CString mimetype( mime );
@@ -85,7 +85,7 @@ QByteArray KBookmarkDrag::encodedData( const char* mime ) const
     else if ( mimetype == "application/x-xbel" )
     {
         a = m_doc.toByteArray();
-        //kdDebug(7043) << "KBookmarkDrag::encodedData " << m_doc.toCString() << endl;
+        //kdDebug(7043) << "K3BookmarkDrag::encodedData " << m_doc.toCString() << endl;
     }
     else if ( mimetype == "text/plain" )
     {
@@ -106,19 +106,19 @@ QByteArray KBookmarkDrag::encodedData( const char* mime ) const
     return a;
 }
 
-bool KBookmarkDrag::canDecode( const QMimeSource * e )
+bool K3BookmarkDrag::canDecode( const QMimeSource * e )
 {
     return e->provides("text/uri-list") || e->provides("application/x-xbel") ||
            e->provides("text/plain");
 }
 
-Q3ValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
+Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
 {
     Q3ValueList<KBookmark> bookmarks;
     if ( e->provides("application/x-xbel") )
     {
         QByteArray s( e->encodedData("application/x-xbel") );
-        //kdDebug(7043) << "KBookmarkDrag::decode s=" << QCString(s) << endl;
+        //kdDebug(7043) << "K3BookmarkDrag::decode s=" << QCString(s) << endl;
         QDomDocument doc;
         doc.setContent( s );
         QDomElement elem = doc.documentElement();
@@ -132,14 +132,14 @@ Q3ValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     if ( e->provides("text/uri-list") )
     {
         KURL::List m_lstDragURLs;
-        //kdDebug(7043) << "KBookmarkDrag::decode uri-list" << endl;
+        //kdDebug(7043) << "K3BookmarkDrag::decode uri-list" << endl;
         if ( KURLDrag::decode( e, m_lstDragURLs ) )
         {
             KURL::List::ConstIterator uit = m_lstDragURLs.begin();
             KURL::List::ConstIterator uEnd = m_lstDragURLs.end();
             for ( ; uit != uEnd ; ++uit )
             {
-                //kdDebug(7043) << "KBookmarkDrag::decode url=" << (*uit).url() << endl;
+                //kdDebug(7043) << "K3BookmarkDrag::decode url=" << (*uit).url() << endl;
                 bookmarks.append( KBookmark::standaloneBookmark( 
                                         (*uit).prettyURL(), (*uit) ));
             }
@@ -148,7 +148,7 @@ Q3ValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
     }
     if( e->provides("text/plain") )
     {        
-        //kdDebug(7043) << "KBookmarkDrag::decode text/plain" << endl;
+        //kdDebug(7043) << "K3BookmarkDrag::decode text/plain" << endl;
         QString s;
         if(Q3TextDrag::decode( e, s ))
         {
@@ -158,7 +158,7 @@ Q3ValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
             QStringList::ConstIterator end = listDragURLs.end();
             for( ; it!=end; ++it)
             {
-                //kdDebug(7043)<<"KBookmarkDrag::decode string"<<(*it)<<endl;
+                //kdDebug(7043)<<"K3BookmarkDrag::decode string"<<(*it)<<endl;
                 bookmarks.append( KBookmark::standaloneBookmark( KURL(*it).prettyURL(), KURL(*it)));
             }
             return bookmarks;

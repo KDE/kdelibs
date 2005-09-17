@@ -168,30 +168,30 @@ public:
   };
 
   /**
-   * KURL::List is a QValueList that contains KURLs with a few
+   * KURL::List is a QList that contains KURLs with a few
    * convenience methods.
    * @see KURL
-   * @see QValueList
+   * @see QList
    */
   class KDECORE_EXPORT List : public QList<KURL>
   {
   public:
-    /**
-     * Creates an empty List.
-     */
+      /**
+       * Creates an empty List.
+       */
       List() { }
       /**
        * Creates a list that contains the given URL as only
        * item.
        * @param url the url to add.
        */
-      List(const KURL &url);
+      List(const KURL &url); // TODO explicit?
       /**
        * Creates a list that contains the URLs from the given
        * list.
        * @param list the list containing the URLs as strings
        */
-      List(const QStringList &list);
+      List(const QStringList &list); // TODO explicit?
       /**
        * Converts the URLs of this list to a list of strings.
        * @return the list of strings

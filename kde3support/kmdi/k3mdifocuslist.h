@@ -23,7 +23,7 @@
 #include <qwidget.h>
 #include <kdelibs_export.h>
 
-class K3MDI_EXPORT K3MdiFocusList: public QObject
+class KDE3SUPPORT_EXPORT K3MdiFocusList: public QObject
 {
 	Q_OBJECT
 public:

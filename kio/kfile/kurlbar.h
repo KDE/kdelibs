@@ -479,7 +479,7 @@ private:
 ///////////////////////////////////////////////////////////////////
 
 
-class Q3DragObject;
+class QMimeData;
 
 /**
  * This is the listbox used in KURLBar. It is a subclass of KListBox to support
@@ -526,9 +526,10 @@ signals:
 
 protected:
     /**
-     * @returns a suitable QDragObject when an item is dragged.
+     * Add the data (urls) from the selected item(s) into @p mimeData,
+     * which can be used when dragging or coping items.
      */
-    virtual Q3DragObject * dragObject();
+    virtual void addToMimeData( QMimeData* mimeData );
 
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
     virtual void contentsDropEvent( QDropEvent * );

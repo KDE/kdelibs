@@ -193,7 +193,7 @@ KService::init( KDesktopFile *config )
   m_strExec = config->readPathEntry( "Exec" );
   entryMap.remove("Exec");
 
-  m_strIcon = config->readEntry( "Icon", "unknown" );
+  m_strIcon = config->readEntry( "Icon" );
   entryMap.remove("Icon");
   m_bTerminal = (config->readBoolEntry( "Terminal" )); // should be a property IMHO
   entryMap.remove("Terminal");
@@ -219,8 +219,7 @@ KService::init( KDesktopFile *config )
 
   m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
   entryMap.remove("ServiceTypes");
-  // For compatibility with KDE 1.x
-  m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
+  m_lstServiceTypes += config->readListEntry( "MimeType", ';' ); // freedesktop.org standard
   entryMap.remove("MimeType");
 
   if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )

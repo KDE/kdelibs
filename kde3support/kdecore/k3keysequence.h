@@ -29,7 +29,7 @@
 * @see KShortcut
 */
 
-class KDECORE_EXPORT K3KeySequence
+class KDE3SUPPORT_EXPORT K3KeySequence
 {
  public:
         /// Defines the maximum length of the key sequence
