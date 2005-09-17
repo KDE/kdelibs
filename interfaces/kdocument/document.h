@@ -20,6 +20,8 @@ namespace KDocument {
 	 * graphically. Every document has a unique number accessible with
 	 * documentNumber(). Create a new view with createView() and get a list
 	 * of all views with views().
+	 *
+	 * @see KParts::ReadWritePart
 	 */
 	class KDE_EXPORT Document : public KParts::ReadWritePart {
 		Q_OBJECT
