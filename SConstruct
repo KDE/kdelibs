@@ -64,8 +64,8 @@ libltdl
 kdefx
 mimetypes
 kdecore
+kdeui
 """
-# kdecore kunittest kdeui
 
 # TODO this will not stay like this ..
 dirs=[] # the dirs to process are appended to this var in the loop below
