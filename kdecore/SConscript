@@ -101,7 +101,10 @@ obj = env.qt4obj('shlib', env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdecore'
 obj.source   = core_files
-obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBART'
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+if env.has_key("LIBART_ISCONFIGURED"): 
+	obj.uselib += ' LIBART'
+	obj.cxxflags += ' -DHAVE_LIBART'
 #obj.libs     = env.join('network', 'libkdecorenetwork')
 obj.includes = './network/ '
 obj.execute()
