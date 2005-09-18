@@ -27,6 +27,9 @@ def bootstrap(env):
 	env['KDEDATA']='/usr/share'
 	env['KDEMIME']='/usr/share/mimelnk'
 
+	env['DCOPIDL']='build/dcop/dcopidl/dcopidlold'
+	env['DCOPIDL2CPP']='build/dcop/dcopidl2cpp/dcopidl2cpp'
+
 def detect(env):
 	"""
 	def getpath(varname):

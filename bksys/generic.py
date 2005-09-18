@@ -431,7 +431,7 @@ def generate(env):
 	# This avoids recompiling the same files over and over again: 
 	# very handy when working with cvs
 	# TODO: not portable so add a win32 ifdef
-	if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
+	#if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
 
 	#  Avoid spreading .sconsign files everywhere - keep this line
 	env.SConsignFile( env['CACHEDIR']+'scons_signatures' )
