@@ -219,7 +219,7 @@ public:
        */
       void addToMimeData( QMimeData* mimeData,
                           const KURL::MetaDataMap& metaData = MetaDataMap(),
-                          MimeDataFlags flags = None );
+                          MimeDataFlags flags = None ) const;
 
       /**
        * Return true if @p mimeData contains URI data
@@ -970,7 +970,7 @@ public:
    */
   void addToMimeData( QMimeData* mimeData,
                       const MetaDataMap& metaData = MetaDataMap(),
-                      MimeDataFlags flags = None );
+                      MimeDataFlags flags = None ) const;
 
   /**
    * Convenience function.

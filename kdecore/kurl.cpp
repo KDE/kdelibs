@@ -447,7 +447,7 @@ QStringList KURL::List::toStringList() const
 
 void KURL::List::addToMimeData( QMimeData* mimeData,
                                 const KURL::MetaDataMap& metaData,
-                                MimeDataFlags flags )
+                                MimeDataFlags flags ) const
 {
     QList<QByteArray> urlStringList;
     KURL::List::ConstIterator uit = begin();
@@ -2494,7 +2494,7 @@ KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
 
 void KURL::addToMimeData( QMimeData* mimeData,
                        const MetaDataMap& metaData,
-                       MimeDataFlags flags )
+                       MimeDataFlags flags ) const
 {
     KURL::List lst( *this );
     lst.addToMimeData( mimeData, metaData, flags );
