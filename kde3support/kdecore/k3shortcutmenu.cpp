@@ -150,3 +150,5 @@ void K3ShortcutMenu::keepItemsMatching( KKey key )
 	
 	updateShortcuts();
 }
+
+#include "k3shortcutmenu.moc"
