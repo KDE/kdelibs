@@ -21,7 +21,7 @@ def write_config_h(lenv):
 	dest.write('\n')
 	dest.close()
 
-	lenv.pprint('GREEN','configuration done')
+	lenv.pprint('GREEN','configuration done - run scons to compile now')
 	lenv.Exit(0)
 
 ## CONFIGURATION: configure the project
@@ -62,6 +62,7 @@ def configure(dict):
 	env['_WANT_RPATH_']=want_rpath
 
 	env.Append(CPPPATH=['#']) # ugly hack, remove when possible (ita)
+	env.AppendUnique(LIBPATH=['#', build_dir]) # ugly hack, remove when possible (ita)
 
 	if bootstrap: env['_BOOTSTRAP_KDE_']=1
 
@@ -489,6 +490,7 @@ def generate(env):
 
 	# Another helper, very handy
 	SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
+	#SConsEnvironment.Symlink = SCons.Action.ActionFactory(os.symlink, lambda dest, link: 'symlink("%s", "%s")' % (dest, link))
 
 	## Special trick for installing rpms ...
 	env['DESTDIR']=''
@@ -637,6 +639,13 @@ def generate(env):
 	la_file = env.Action(build_la_file, string_la_file, ['BKSYS_VNUM', 'BKSYS_DESTDIR'])
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
+	def symlink_command(target, source, env):
+		os.symlink( str(source[0].name), target[0].path)
+	def symlink_string(target, source, env):
+		print "symlinking %s (-> %s)" % (target[0].path, source[0].name)
+	symlink = env.Action(symlink_command, symlink_string)
+	env['BUILDERS']['SymLink'] = env.Builder(action=symlink)
+
 	## Function for building shared libraries
 	def bksys_shlib(lenv, ntarget, source, libdir, libprefix='lib', vnum='', noinst=None):
 		""" Install a shared library.
@@ -681,8 +690,8 @@ def generate(env):
 		lafile_list  = thisenv.LaFile(target, library_list)
 
 		## Install the libraries automatically
-		if not thisenv.has_key('NOAUTOINSTALL') and not noinst:
-			thisenv.bksys_install(libdir, library_list)
+		if not thisenv.has_key('NOAUTOINSTALL') and not noinst and libdir:
+			inst_lib=thisenv.bksys_install(libdir, library_list)
 			thisenv.bksys_install(libdir, lafile_list)	
 
 		## Handle the versioning
@@ -692,15 +701,16 @@ def generate(env):
 			tg = target+'.so.'+vnum
 			nm1 = target+'.so'
 			nm2 = target+'.so.'+nums[0]
-			thisenv.Command(nm1, tg, symlinkcom)
-			thisenv.Command(nm2, tg, symlinkcom)
 
-			#if env['_INSTALL_']:
-			#	print env.join(libdir, nm1)+" "+env.join(libdir, tg)
-			#	thisenv.Command( env.join(libdir, nm1), env.join(libdir, tg), symlinkcom)
-			#	thisenv.Command( env.join(libdir, nm2), library_list, symlinkcom)
-			#	#thisenv.bksys_install(libdir, nm1)
-			#	#thisenv.bksys_install(libdir, nm2)
+			thisenv.SymLink(target=nm1, source=library_list)
+			thisenv.SymLink(target=nm2, source=library_list)
+
+			if env['_INSTALL_'] and libdir:
+				link1 = env.join(str(inst_lib[0].dir), nm1)
+				link2 = env.join(str(inst_lib[0].dir), nm2)
+				src   = str(inst_lib[0].name)
+				lenv.Alias('install', thisenv.SymLink(target=link1, source=src))
+				lenv.Alias('install', thisenv.SymLink(target=link2, source=src))
 		return library_list
 
 	# Declare scons scripts to process
