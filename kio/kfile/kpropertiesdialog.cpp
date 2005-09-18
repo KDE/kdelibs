@@ -672,7 +672,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
   d->bIconChanged = false;
-  d->bKDesktopMode = (Q3CString(qApp->name()) == "kdesktop"); // nasty heh?
+  d->bKDesktopMode = (QByteArray(qApp->name()) == "kdesktop"); // nasty heh?
   d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
   kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
@@ -1696,7 +1696,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   /*** Set Group ***/
 
   QStringList groupList;
-  Q3CString strUser;
+  QByteArray strUser;
   user = getpwuid(geteuid());
   if (user != 0L)
     strUser = user->pw_name;
@@ -2935,7 +2935,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   w = new KPropertiesDesktopBase(frame);
   mainlayout->addWidget(w);
 
-  bool bKDesktopMode = (Q3CString(qApp->name()) == "kdesktop"); // nasty heh?
+  bool bKDesktopMode = (QByteArray(qApp->name()) == "kdesktop"); // nasty heh?
 
   if (bKDesktopMode)
   {
@@ -3719,7 +3719,7 @@ class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 public:
   KApplicationPropsPluginPrivate()
   {
-      m_kdesktopMode = Q3CString(qApp->name()) == "kdesktop"; // nasty heh?
+      m_kdesktopMode = QByteArray(qApp->name()) == "kdesktop"; // nasty heh?
   }
   ~KApplicationPropsPluginPrivate()
   {

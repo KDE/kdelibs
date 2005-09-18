@@ -225,7 +225,7 @@ private:
         AnimationInfo( const char * _iconBaseName, uint _iconCount, const QPixmap & _originalPixmap )
             : iconBaseName(_iconBaseName), iconCount(_iconCount), iconNumber(1), originalPixmap(_originalPixmap) {}
         AnimationInfo() : iconCount(0) {}
-        Q3CString iconBaseName;
+        QByteArray iconBaseName;
         uint iconCount;
         uint iconNumber;
         QPixmap originalPixmap;

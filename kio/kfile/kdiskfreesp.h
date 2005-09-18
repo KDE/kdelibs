@@ -78,7 +78,7 @@ private slots:
 
 private:
   KProcess         *dfProc;
-  Q3CString          dfStringErrOut;
+  QByteArray          dfStringErrOut;
   QString           m_mountPoint;
   bool              readingDFStdErrOut;
   class KDiskFreeSpPrivate;
