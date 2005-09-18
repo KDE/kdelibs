@@ -15,6 +15,8 @@ namespace KDocument {
 	/**
 	 * A KParts document that provides several views.
 	 *
+	 * <b>Introduction</b>\n
+	 *
 	 * A document can have any number of views or no view, all representing
 	 * the same data. A view represents the document's content - usually
 	 * graphically. Every document has a unique number accessible with
