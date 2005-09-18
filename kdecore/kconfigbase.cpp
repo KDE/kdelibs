@@ -1337,7 +1337,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
       // A QStrList may contain values in 8bit locale cpecified
       // encoding or in UTF8 encoding.
       value = KStringHandler::from8Bit(it.current());
-	  int strLengh(value.length());
+      uint strLengh(value.length());
       for( i = 0; i < strLengh; i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
@@ -1374,7 +1374,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
     {
       QString value = *it;
       uint i;
-	  int strLength(value.length());
+      uint strLength(value.length());
       for( i = 0; i < strLength; i++ )
         {
           if( value[i] == sep || value[i] == '\\' )

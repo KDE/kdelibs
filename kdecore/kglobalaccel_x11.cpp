@@ -76,7 +76,7 @@ static void calculateGrabMasks()
 
 //----------------------------------------------------
 
-static QValueList< KGlobalAccelPrivate* >* all_accels;
+static QValueList< KGlobalAccelPrivate* >* all_accels = 0;
 
 KGlobalAccelPrivate::KGlobalAccelPrivate()
 : KAccelBase( KAccelBase::NATIVE_KEYS )

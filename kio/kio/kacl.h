@@ -195,7 +195,7 @@ public:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  struct KACLPrivate;
+  class KACLPrivate;
   KACLPrivate * d;
   KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KACL & a );
   KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KACL & a );

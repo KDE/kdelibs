@@ -203,7 +203,18 @@ KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
 KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
+#ifdef WIN32
+#include <windows.h>
+static void kglobal_freeAll();
+BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID impLoad )
+{
+    if (reason == DLL_PROCESS_DETACH)
+        kglobal_freeAll();
+    return TRUE;
+}
+#else
 __attribute__((destructor))
+#endif
 static void kglobal_freeAll()
 {
     delete KGlobal::_locale;

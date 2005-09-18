@@ -37,9 +37,16 @@
 
 //----------------------------------------------------
 
+static QValueList< KGlobalAccelPrivate* >* all_accels = 0;
+
 KGlobalAccelPrivate::KGlobalAccelPrivate()
 : KAccelBase( KAccelBase::NATIVE_KEYS )
+, m_blocked( false )
+, m_blockingDisabled( false )
 {
+        if( all_accels == NULL )
+            all_accels = new QValueList< KGlobalAccelPrivate* >;
+        all_accels->append( this );
 	m_sConfigGroup = "Global Shortcuts";
 //	kapp->installX11EventFilter( this );
 }
@@ -50,12 +57,41 @@ KGlobalAccelPrivate::~KGlobalAccelPrivate()
 	//for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
 	//	const CodeMod& codemod = it.key();
 	//}
+        all_accels->remove( this );
+        if( all_accels->count() == 0 ) {
+            delete all_accels;
+            all_accels = NULL;
+        }
 }
 
 void KGlobalAccelPrivate::setEnabled( bool bEnable )
 {
 	m_bEnabled = bEnable;
 	//updateConnections();
+}
+
+void KGlobalAccelPrivate::blockShortcuts( bool block )
+{
+        if( all_accels == NULL )
+            return;
+        for( QValueList< KGlobalAccelPrivate* >::ConstIterator it = all_accels->begin();
+             it != all_accels->end();
+             ++it ) {
+            if( (*it)->m_blockingDisabled )
+                continue;
+            (*it)->m_blocked = block;
+            (*it)->updateConnections();
+        }
+}
+
+void KGlobalAccelPrivate::disableBlocking( bool block )
+{
+        m_blockingDisabled = block;
+}
+
+bool KGlobalAccelPrivate::isEnabledInternal() const
+{
+        return KAccelBase::isEnabled() && !m_blocked;
 }
 
 bool KGlobalAccelPrivate::emitSignal( Signal )
