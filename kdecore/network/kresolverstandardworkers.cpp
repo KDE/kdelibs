@@ -47,7 +47,6 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
-#include "kapplication.h"
 
 #include "kresolver.h"
 #include "ksocketaddress.h"

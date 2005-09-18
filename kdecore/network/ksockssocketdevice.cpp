@@ -32,7 +32,7 @@
 #define kde_socklen_t ksocklen_t 
 #endif 
 
-#include "kapplication.h"
+#include <QCoreApplication>
 
 #include "ksocks.h"
 #include "ksocketaddress.h"
@@ -465,7 +465,7 @@ void KSocksSocketDevice::initSocks()
   if (init)
     return;
 
-  if (kapp == 0L)
+  if (QCoreApplication::instance() == 0L)
     return;			// no KApplication, so don't initialise
                                 // this should, however, test for KInstance
 

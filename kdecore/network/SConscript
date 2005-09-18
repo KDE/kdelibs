@@ -25,7 +25,7 @@ knetworkinterface.cpp
 obj = env.qt4obj('convenience',env)
 obj.target   = 'libkdecorenetwork'
 obj.source   = sources
-obj.uselib   = 'QTCORE QTGUI QT QT3SUPPORT KDE4'
+obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4'
 obj.execute()
 
 
