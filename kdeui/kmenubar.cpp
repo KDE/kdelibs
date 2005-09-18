@@ -231,11 +231,6 @@ bool KMenuBar::isTopLevelMenu() const
   return d->topLevel;
 }
 
-// KDE4 remove
-void KMenuBar::show()
-{
-    QMenuBar::show();
-}
 
 void KMenuBar::slotReadConfig()
 {
@@ -299,11 +294,6 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     return QMenuBar::eventFilter( obj, ev );
 }
 
-// KDE4 remove
-void KMenuBar::showEvent( QShowEvent *e )
-{
-    QMenuBar::showEvent(e);
-}
 
 void KMenuBar::updateFallbackSize()
 {

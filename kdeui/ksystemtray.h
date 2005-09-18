@@ -179,10 +179,6 @@ protected:
      */
     void showEvent( QShowEvent * );
 
-    /**
-       Reimplemented for internal reasons.
-     */
-    void enterEvent( QEvent* );
 
 private slots:
     void minimizeRestoreAction();

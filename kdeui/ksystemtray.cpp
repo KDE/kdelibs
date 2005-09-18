@@ -127,11 +127,6 @@ void KSystemTray::showEvent( QShowEvent * )
     }
 }
 
-// KDE4 remove
-void KSystemTray::enterEvent( QEvent* e )
-{
-    QLabel::enterEvent( e );
-}
 
 KPopupMenu* KSystemTray::contextMenu() const
 {

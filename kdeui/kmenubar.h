@@ -76,7 +76,6 @@ public:
     virtual void resize( int w, int h );
     void resize( const QSize& s ) { QMenuBar::resize( s ); }
 
-    virtual void show();
     virtual void setFrameStyle( int );
     virtual void setLineWidth( int );
     virtual void setMargin( int );
@@ -84,7 +83,6 @@ public:
 protected slots:
     void slotReadConfig();
 protected:
-    virtual void showEvent( QShowEvent* );
     virtual void resizeEvent( QResizeEvent* );
     virtual bool eventFilter(QObject *, QEvent *);
 #ifdef Q_WS_X11
