@@ -109,11 +109,11 @@ class KIO_EXPORT ProgressItem : public QObject, public Q3ListViewItem {
   Q_OBJECT
 
 public:
-  ProgressItem( ListProgress* view, Q3ListViewItem *after, Q3CString app_id, int job_id,
+  ProgressItem( ListProgress* view, Q3ListViewItem *after, QByteArray app_id, int job_id,
                 bool showDefault = true );
   ~ProgressItem();
 
-  Q3CString appId() { return m_sAppId; }
+  QByteArray appId() { return m_sAppId; }
   int jobId() { return m_iJobId; }
 
     bool keepOpen() const;
@@ -169,7 +169,7 @@ protected:
   void updateVisibility();
 
   // ids that uniquely identify this progress item
-  Q3CString m_sAppId;
+  QByteArray m_sAppId;
   int m_iJobId;
 
   // whether shown or not (it is hidden if a rename dialog pops up for the same job)
@@ -237,7 +237,7 @@ k_dcop:
    *   other things, like SSL dialogs.
    * @return the job id
    */
-  int newJob( Q3CString appId, bool showProgress );
+  int newJob( QByteArray appId, bool showProgress );
 
   ASYNC jobFinished( int id );
 
@@ -404,7 +404,7 @@ protected:
   void writeSettings();
 private:
 
-  void killJob( Q3CString observerAppId, int progressId );
+  void killJob( QByteArray observerAppId, int progressId );
 
   int m_initWidth;
   int m_initHeight;

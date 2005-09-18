@@ -43,7 +43,7 @@ class KSSLD : public KDEDModule
 
 public:
   
-  KSSLD(const Q3CString &name);
+  KSSLD(const QByteArray &name);
   
   virtual ~KSSLD();
 

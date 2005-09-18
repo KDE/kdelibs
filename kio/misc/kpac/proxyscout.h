@@ -41,7 +41,7 @@ namespace KPAC
         Q_OBJECT
         K_DCOP
     public:
-        ProxyScout( const Q3CString& );
+        ProxyScout( const QByteArray& );
         virtual ~ProxyScout();
 
     k_dcop:

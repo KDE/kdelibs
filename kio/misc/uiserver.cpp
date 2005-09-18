@@ -174,7 +174,7 @@ bool ProgressConfigDialog::isChecked(int i) const
    return m_items[i]->isOn();
 }
 
-ProgressItem::ProgressItem( ListProgress* view, Q3ListViewItem *after, Q3CString app_id, int job_id,
+ProgressItem::ProgressItem( ListProgress* view, Q3ListViewItem *after, QByteArray app_id, int job_id,
                             bool showDefault )
   : Q3ListViewItem( view, after ) {
 
@@ -744,7 +744,7 @@ void UIServer::slotApplyConfig()
    listProgress->writeSettings();
 }
 
-int UIServer::newJob( Q3CString observerAppId, bool showProgress )
+int UIServer::newJob( QByteArray observerAppId, bool showProgress )
 {
   kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
             << "Giving id=" << s_jobId+1 << endl;
@@ -1017,7 +1017,7 @@ void UIServer::unmounting( int id, QString point )
   }
 }
 
-void UIServer::killJob( Q3CString observerAppId, int progressId )
+void UIServer::killJob( QByteArray observerAppId, int progressId )
 {
     // Contact the object "KIO::Observer" in the application <appId>
     Observer_stub observer( observerAppId, "KIO::Observer" );

@@ -53,7 +53,7 @@
 // See design notes at end
 
 extern "C" {
-	KDE_EXPORT KDEDModule *create_kssld(const Q3CString &name) {
+	KDE_EXPORT KDEDModule *create_kssld(const QByteArray &name) {
 		return new KSSLD(name);
 	}
 
@@ -78,7 +78,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		}
 
 		QString encodedCertStr = cfg->readEntry("Certificate");
-		Q3CString encodedCert = encodedCertStr.local8Bit();
+		QByteArray encodedCert = encodedCertStr.local8Bit();
 	       	KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
 			cfg->deleteGroup(*i);
@@ -109,7 +109,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 }
 
 
-KSSLD::KSSLD(const Q3CString &name) : KDEDModule(name)
+KSSLD::KSSLD(const QByteArray &name) : KDEDModule(name)
 {
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
@@ -244,7 +244,7 @@ QStringList groups = cfg->groupList();
 			continue;
 		}
 
-		Q3CString encodedCert;
+		QByteArray encodedCert;
 		KSSLCertificate *newCert;
 
 		encodedCert = cfg->readEntry("Certificate").local8Bit();

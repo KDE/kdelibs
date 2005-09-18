@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
     }
     kdDebug() << "recp \"" << recipient << "\"\n";
 
-    Q3CString subject = args->getOption("subject");
+    QByteArray subject = args->getOption("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {

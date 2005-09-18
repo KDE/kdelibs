@@ -39,7 +39,7 @@ namespace KPAC
     {
     }
 
-    ProxyScout::ProxyScout( const Q3CString& name )
+    ProxyScout::ProxyScout( const QByteArray& name )
         : KDEDModule( name ),
           m_instance( new KInstance( "proxyscout" ) ),
           m_downloader( 0 ),
@@ -187,7 +187,7 @@ namespace KPAC
         return "DIRECT";
     }
 
-    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const Q3CString& name )
+    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QByteArray& name )
     {
         return new ProxyScout( name );
     }
