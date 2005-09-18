@@ -55,7 +55,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
     if ( !f.open( QIODevice::ReadOnly ) )
         return views;
 
-    Q3CString s( g_lineLimit );
+    QByteArray s( g_lineLimit );
 
     QTextCodec * codec = QTextCodec::codecForName( "UTF-8" );
     Q_ASSERT( codec );

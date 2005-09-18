@@ -47,7 +47,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
    int lineno = 0;
    QString url, name, type;
    static const int g_lineLimit = 16*1024;
-   Q3CString line(g_lineLimit);
+   QByteArray line(g_lineLimit);
 
    while ( file.readLine(line.data(), g_lineLimit) >=0 ) {
       lineno++;

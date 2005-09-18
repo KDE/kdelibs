@@ -40,7 +40,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
 
     if(f.open(QIODevice::ReadOnly)) {
 
-        Q3CString s(g_lineLimit);
+        QByteArray s(g_lineLimit);
 
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
@@ -48,7 +48,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
                kdWarning() << "IE bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
-            Q3CString t = s.stripWhiteSpace();
+            QByteArray t = s.stripWhiteSpace();
             QRegExp rx( "URL=(.*)" );
             if (rx.exactMatch(t)) {
                emit newBookmark( name, rx.cap(1), QString("") );
