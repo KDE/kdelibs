@@ -86,6 +86,11 @@ bool showWin32FilePropertyDialog(const QString& fileName);
 KDEWIN32_EXPORT
 QCString getWin32LocaleName();
 
+/*! Temporary solutiuon
+ \return a KFileDialog-compatible filter string converted to QFileDialog compatible one. 
+ This is temporary solution for kdelibs/win32... */
+KDEWIN32_EXPORT QString convertKFileDialogFilterToQFileDialogFilter(const QString& filter);
+
 #endif //__cplusplus
 
 #endif

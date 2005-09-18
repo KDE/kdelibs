@@ -1,6 +1,8 @@
 TEMPLATE	= lib
 
 include( $(KDELIBS)/win/common.pro )
+# for kqiodevicegzip_p.cpp
+include( $(KDELIBS)/win/zlib.pro )
 
 # needed to export library classes:
 DEFINES += MAKE_KDECORE_LIB
@@ -107,7 +109,8 @@ kmultipledrag.cpp \
 kipc.cpp \
 kuser.cpp \
 kaudioplayer.cpp \
-kvmallocator.cpp
+kvmallocator.cpp \
+kqiodevicegzip_p.cpp
 
 #network/kresolver.cpp \
 #network/kresolvermanager.cpp \

@@ -11,7 +11,14 @@ INCLUDEPATH += $(KDELIBS)/kded
 
 system( bash kmoc )
 
-TARGET		= kbuildsycoca
+!contains(CONFIG,GUI) {
+	!contains(KW_CONFIG,release) {
+		TARGET = kbuildsycoca_d
+	}
+	contains(KW_CONFIG,release) {
+		TARGET = kbuildsycoca
+	}
+}
 
 SOURCES = \
 kbuildsycoca.cpp \

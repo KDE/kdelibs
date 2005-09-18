@@ -15,16 +15,16 @@ cd "$KDELIBS/$src"
 for pro in `find . -name \*.pro -o -name \*.sh` ; do
 	dir=`dirname "$pro"`
 	if [ ! -d "$KDELIBS/$dir" ] ; then
+		echo "no \$KDELIBS/$dir directory: creating it"
+		mkdir -p "$KDELIBS/$dir"
+	fi
+
+	if [ ! "$pro" -nt "$dest/$pro" ] ; then
 		true
-#		echo "*SKIPPED* - no \$KDELIBS/$dir directory"
-	else
-		if [ ! "$pro" -nt "$dest/$pro" ] ; then
-			true
 #			echo "*SKIPPED* $pro is not newer than destination in $KDELIBS"
-		else
-			echo "UPDATING \$KDELIBS/$pro"
-			cp $pro $dest/$pro
-		fi
+	else
+		echo "UPDATING \$KDELIBS/$pro"
+		cp $pro $dest/$pro
 	fi
 done
 

@@ -38,6 +38,7 @@ kio/davjob.cpp \
 kio/defaultprogress.cpp \
 kio/global.cpp \
 kio/job.cpp \
+kio/kacl.cpp \
 kio/kar.cpp \
 kio/karchive.cpp \
 kio/kdatatool.cpp \

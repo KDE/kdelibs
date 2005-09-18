@@ -2,6 +2,7 @@
 #include <qstring.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qstringlist.h>
 
 #include <windows.h>
 #include <shellapi.h>
@@ -68,4 +69,57 @@ QCString getWin32LocaleName()
 	if (!ok)
 		return QCString();
 	return localeName.latin1();
+}
+
+KDEWIN32_EXPORT
+QString convertKFileDialogFilterToQFileDialogFilter(const QString& filter)
+{
+	QString kde_filters = filter;
+	int pos;
+	// Strip the escape characters from
+	// escaped '/' characters.
+
+	QString copy (kde_filters);
+	for (pos = 0; (pos = copy.find("\\/", pos)) != -1; ++pos)
+		copy.remove(pos, 1);
+
+	//<js>
+	//we need to convert KDE filter format to Qt format
+	//Qt format: "some text (*.first *.second)" or "All (*)"
+	//KDE format: "*.first *.second" or "*"
+	QStringList filters = QStringList::split("\n",kde_filters);
+	QString current;
+	QString converted; //finally - converted filter
+	for (QStringList::ConstIterator it = filters.constBegin(); it!=filters.constEnd();++it) {
+		current = *it;
+		QString new_f;//filter part
+		QString new_name;//filter name part
+		int p = (*it).find('|');
+		if (p!=-1) {
+			new_f = current.left(p);
+			new_name = current.mid(p+1);
+		}else {
+			new_f = current;
+			new_name = current; //nothing better
+		}
+		//remove (.....) from name
+		p=new_name.find('(');
+		int p2 = new_name.findRev(')');
+		QString new_name1, new_name2;
+		if (p!=-1)
+			new_name1 = new_name.left(p);
+		if (p2!=-1)
+			new_name2 = new_name.mid(p2+1);
+		if (!new_name1.isEmpty() || !new_name2.isEmpty())
+			new_name = new_name1.stripWhiteSpace() + " " + new_name2.stripWhiteSpace();
+		new_name.replace('(',"");
+		new_name.replace(')',"");
+		new_name = new_name.stripWhiteSpace();
+
+		if (!converted.isEmpty())
+			converted += ";;";
+
+		converted += (new_name + " (" + new_f + ")");
+	}
+	return converted;
 }
