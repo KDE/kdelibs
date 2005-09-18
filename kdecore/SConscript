@@ -3,7 +3,7 @@
 Import('env')
 
 env.subdirs('kconfig_compiler')
-env.subdirs('network')
+#env.subdirs('network')
 if env.has_key("LIBART_ISCONFIGURED"): env.subdirs('svgicons')
 
 core_files="""
@@ -24,13 +24,13 @@ ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp
 kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp
 kaudioplayer.cpp kdcoppropertyproxy.cpp
 netsupp.cpp kprocio.cpp krandom.cpp
-kpixmapprovider.cpp kurldrag.cpp
+kpixmapprovider.cpp
 kcodecs.cpp ksocks.cpp fakes.c
-ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel
+ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp
 kxmessages.cpp kstartupinfo.cpp kcatalog.cpp
 kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp
-kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp
-kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel
+kclipboard.cpp kcheckaccelerators.cpp
+kdeversion.cpp kdebugdcopiface.cpp
 kcalendarsystem.cpp kcalendarsystemgregorian.cpp
 kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp
 kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
@@ -38,6 +38,26 @@ ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp kconfigdialogmanager.cpp klockfile.cpp
 kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
+network/kresolver.cpp
+network/kresolvermanager.cpp
+network/kresolverworkerbase.cpp
+network/ksocketaddress.cpp
+network/kresolverstandardworkers.cpp
+network/kreverseresolver.cpp
+network/ksocketdevice.cpp
+network/ksocketbase.cpp
+network/kclientsocketbase.cpp
+network/kstreamsocket.cpp
+network/kserversocket.cpp
+network/kdatagramsocket.cpp
+network/khttpproxysocketdevice.cpp
+network/ksockssocketdevice.cpp
+network/kbufferedsocket.cpp
+network/ksocketbuffer.cpp
+network/knetworkinterface.cpp
+ksycoca_skel.cpp
+kappdcopiface_skel.cpp
+kdebugdcopiface_skel.cpp
 """
 
 inst_headers="""
@@ -55,7 +75,7 @@ kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h
 krandomsequence.h knotifyclient.h kiconeffect.h
 kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h
 netwm_def.h kpixmapprovider.h kstaticdeleter.h kprocio.h kasyncio.h krandom.h
-kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h
+kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h
 ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h
 kmultipledrag.h kgenericfactory.h kgenericfactory.tcc
 ktypelist.h ksortablevaluelist.h kclipboard.h
@@ -65,15 +85,25 @@ kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
 kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
 
+# not finished
+env.Kidl("ksycoca.h")
+env.Dcop("ksycoca.kidl")
+env.Kidl("kappdcopiface.h")
+env.Dcop("kappdcopiface.kidl")
+env.Kidl("kdebugdcopiface.h")
+env.Dcop("kdebugdcopiface.kidl")
+
+# not finished
 for i in "kacceleratormanager_private.h kaccelprivate.h ktoolinvocation.h".split():
 	env.Moc(i)
 
 obj = env.qt4obj('shlib', env)
-obj.vnum = '6.0.2'
-obj.target = 'libkdecore'
-obj.source = core_files
-obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
-obj.libs   = env.join('network', 'libkdecorenetwork')
+obj.vnum     = '6.0.2'
+obj.target   = 'libkdecore'
+obj.source   = core_files
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBART'
+#obj.libs     = env.join('network', 'libkdecorenetwork')
+obj.includes = './network/ '
 obj.execute()
 
 """
@@ -108,7 +138,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h \
 	netwm_def.h kpixmapprovider.h kstaticdeleter.h \
 	kprocio.h kasyncio.h krandom.h\
-	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
+	kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kclipboard.h \
@@ -152,9 +182,9 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	netsupp.cpp kprocio.cpp krandom.cpp \
-	kpixmapprovider.cpp kurldrag.cpp \
+	kpixmapprovider.cpp \
 	kcodecs.cpp ksocks.cpp fakes.c \
-	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
+	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
 	kxmessages.cpp kstartupinfo.cpp kcatalog.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \

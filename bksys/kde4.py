@@ -49,6 +49,20 @@ def generate(env):
 	        env['KDE4_ISCONFIGURED']=1
 		opts.Save(cachefile, env)
 
+	import SCons.Defaults
+	Builder=SCons.Builder.Builder
+
+        ## KIDL file
+        env['BUILDERS']['Kidl']=Builder(action= 'dcopidl $SOURCE > $TARGET || (rm -f $TARGET ; false)',
+                        suffix='.kidl', src_suffix='.h')
+        ## DCOP
+        env['BUILDERS']['Dcop']=Builder(action='dcopidl2cpp --c++-suffix cpp --no-signals --no-stub $SOURCE',
+                        suffix='_skel.cpp', src_suffix='.kidl')
+        ## STUB
+        env['BUILDERS']['Stub']=Builder(action= 'dcopidl2cpp --c++-suffix cpp --no-signals --no-skel $SOURCE',
+                        suffix='_stub.cpp', src_suffix='.kidl')
+
+
         def KDEicon(lenv, icname='*', path='./', restype='KDEICONS', subdir=''):
                 """Installs icons with filenames such as cr22-action-frame.png into
                 KDE icon hierachy with names like icons/crystalsvg/22x22/actions/frame.png.
