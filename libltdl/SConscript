@@ -4,7 +4,7 @@ Import('env')
 
 # libtdlc.so - library for ?
 obj = env.genobj('convenience',env)
-obj.target   = 'libtdlc'
+obj.target   = 'libltdlc'
 obj.source   = 'ltdl.c'
 obj.uselib   = 'DL '
 obj.ccflags  = ['-DHAVE_CONFIG_H']
