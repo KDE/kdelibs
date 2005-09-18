@@ -2434,7 +2434,7 @@ void PlastikStyle::renderPanel(QPainter *p,
 
 //     if (kickerMode &&
 //             p->device() && p->device()->devType() == QInternal::Widget &&
-//             Q3CString(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
+//             QByteArray(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
 //     //  Stolen wholesale from Keramik. I don't like it, but oh well.
 //         if (sunken) {
 //             const QCOORD corners[] = { x2, y, x2, y2, x, y2, x, y };
