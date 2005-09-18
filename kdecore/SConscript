@@ -19,7 +19,7 @@ kglobalaccel_x11.cpp kglobalaccel.cpp kstdaccel.cpp kshortcutlist.cpp
 kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp
 kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp
 kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp
-kuniqueapplication.cpp kaccelmanager.cpp
+kuniqueapplication.cpp kacceleratormanager.cpp
 ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp
 kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp
 kaudioplayer.cpp kdcoppropertyproxy.cpp
@@ -53,7 +53,7 @@ kstringhandler.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h
 kallocator.h kvmallocator.h kcrash.h krfcdate.h
 kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h
 krandomsequence.h knotifyclient.h kiconeffect.h
-kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h
+kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h
 netwm_def.h kpixmapprovider.h kstaticdeleter.h kprocio.h kasyncio.h krandom.h
 kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h
 ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h
@@ -65,13 +65,16 @@ kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
 kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
 
-#obj = env.qt4obj('shlib', env)
-#obj.vnum = '6.0.2'
-#obj.target = 'libkdecore'
-#obj.source = core_files
-#obj.uselib = 'QTCORE QT QT3SUPPORT KDE4'
-#obj.libs   = env.join('network', 'libkdecorenetwork')
-#obj.execute()
+for i in "kacceleratormanager_private.h kaccelprivate.h ktoolinvocation.h".split():
+	env.Moc(i)
+
+obj = env.qt4obj('shlib', env)
+obj.vnum = '6.0.2'
+obj.target = 'libkdecore'
+obj.source = core_files
+obj.uselib = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+obj.libs   = env.join('network', 'libkdecorenetwork')
+obj.execute()
 
 """
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore/network $(all_includes) $(LIBART_CFLAGS)
@@ -102,7 +105,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
+	kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h \
 	netwm_def.h kpixmapprovider.h kstaticdeleter.h \
 	kprocio.h kasyncio.h krandom.h\
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kcodecs.h ksocks.h \
@@ -144,7 +147,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvoca
 	kcrash.cpp kurl.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kuniqueapplication.cpp kaccelmanager.cpp \
+	kuniqueapplication.cpp kacceleratormanager.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
