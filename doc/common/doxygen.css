@@ -218,7 +218,7 @@ margin-left: 1em;
 
 /* right footer, contains the wave image */
 #footer_right {
-  position: absolute;
+  float: right;
   right: 0px;
   text-align: right;
   z-index: 5;
@@ -230,8 +230,7 @@ display: none;
 
 /* left footer, contains the text */
 #footer_left {
-  position: absolute;
-  left: 0px;
+  float: left;
   text-align: left;
   padding: 1em 1.5em 0em 1.5em;
   clear: both;
@@ -406,6 +405,14 @@ text-align: right;
 font-size: large;
 color: #418ADE;
 }
+
+hr { display: none; }
+#content h2 { margin-left: 0px; }
+table.mdTable { background-color: #f8f8f8; border: .2em solid #d7d7d7; }
+td.mdRow { padding: 8px 20px; }
+td.md { font-weight: bold; }
+td.mdname1 { font-weight: bold; color: #602020; }
+td.mdname { font-weight: bold; color: #602020;  }
 
 div.bic {
 border: 2px solid #E72300;
