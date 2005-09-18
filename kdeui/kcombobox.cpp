@@ -37,7 +37,6 @@
 #include <kpixmapprovider.h>
 #include <kstdaccel.h>
 #include <kurl.h>
-#include <kurldrag.h>
 
 #include <kdebug.h>
 
