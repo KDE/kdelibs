@@ -6,6 +6,7 @@ def detect(env):
 	if env['ARGS'].get('debug', None):
 		env['BKS_DEBUG'] = env['ARGS'].get('debug', None)
 		env.pprint('CYAN','** Enabling debug for the project **')
+		env['GENCXXFLAGS'] = ['-g']
 	else:
 		if os.environ.has_key('CXXFLAGS'):
 			# user-defined flags (gentooers will be elighted)
