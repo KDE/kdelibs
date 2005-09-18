@@ -144,8 +144,8 @@ def generate(env):
 		target.append(bs+'.cpp')
 		target.append(bs+'.moc')
 		return target, source
-	env['BUILDERS']['Uic']=Builder(action=uic3_processing,emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
-	env['BUILDERS']['Uic3']=Builder(action=uic_processing,emitter=uicEmitter,suffix='.h',src_suffix='.ui3')
+	env['BUILDERS']['Uic']=Builder(action=uic_processing,emitter=uicEmitter,suffix='.h',src_suffix='.ui')
+	env['BUILDERS']['Uic3']=Builder(action=uic3_processing,emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
 
 	def qrc_buildit(target, source, env):
 		dir=str(source[0].get_dir())
@@ -262,7 +262,7 @@ def generate(env):
 			elif ext in ui_ext:
 				lenv.Uic(file)
 			elif ext in ui3_ext:
-				lenv.Uic3(file)
+				lenv.Uic3(bs+'.ui')
 				src.append(bs+'.cpp')
 			else:
 				src.append(file)
