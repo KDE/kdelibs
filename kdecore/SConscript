@@ -4,7 +4,7 @@ Import('env')
 
 env.subdirs('kconfig_compiler')
 env.subdirs('network')
-env.subdirs('svgicons')
+if env.has_key("LIBART_ISCONFIGURED"): env.subdirs('svgicons')
 
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp

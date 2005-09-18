@@ -7,10 +7,10 @@ def generate(env):
 
 	def Check_libart2(context):
 		import SCons.Util
+	    	context.Message('Checking for libart2 ... ')
 		ret = context.TryAction('libart2-config --version')
 		if ret[0]: 
     			ver = os.popen('libart2-config --version').read().strip().split('.')
-		    	context.Message('Checking for libart2 ... ')
 			if (int(ver[0])*1000000 + int(ver[1])*1000 + int(ver[2]))<2003008: 
 			    context.Result(False)
 			    return False
@@ -38,7 +38,6 @@ def generate(env):
 
 	    if not conf.Check_libart2():
 				print 'libart2 >= 2.3.8 not found.'
-				env.Exit(1)
 
 	    env = conf.Finish()
 	    opts.Save(optionFile, env)
