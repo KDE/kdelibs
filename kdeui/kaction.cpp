@@ -693,7 +693,7 @@ int KAction::plug( QWidget *w, int index )
     }
 
     KToolBarButton* ktb = bar->getButton(id_);
-    ktb->setName( Q3CString("toolbutton_")+name() );
+    ktb->setName( QByteArray("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
         bar->getButton(id_)->setWhatsThis(whatsThisWithIcon() );

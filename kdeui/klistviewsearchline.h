@@ -24,7 +24,7 @@
 #include <q3hbox.h>
 #include <QContextMenuEvent>
 //Added by qt3to4:
-#include <Q3ValueList>
+#include <QList>
 #include <q3valuelist.h>
 
 class KListView;
@@ -66,7 +66,7 @@ public:
      * @since 4.0
      */
     KListViewSearchLine(QWidget *parent,
-                        const Q3ValueList<KListView *> &listViews);
+                        const QList<KListView *> &listViews);
 
 
     /**
@@ -87,7 +87,7 @@ public:
      *
      * @see setSearchColumns
      */
-    Q3ValueList<int> searchColumns() const;
+    QList<int> searchColumns() const;
 
     /**
      * If this is true (the default) then the parents of matched items will also
@@ -112,7 +112,7 @@ public:
      * @see setListViews(), addListView(), listView()
      * @since 4.0
      */
-    const Q3ValueList<KListView *> &listViews() const;
+    const QList<KListView *> &listViews() const;
 
 public slots:
     /**
@@ -168,7 +168,7 @@ public slots:
      *
      * @see searchColumns
      */
-    void setSearchColumns(const Q3ValueList<int> &columns);
+    void setSearchColumns(const QList<int> &columns);
 
     /**
      * Sets the KListView that is filtered by this search line, replacing any
@@ -187,7 +187,7 @@ public slots:
      * @see listViews(), addListView(), setListView()
      * @since 4.0
      */
-    void setListViews(const Q3ValueList<KListView *> &lv);
+    void setListViews(const QList<KListView *> &lv);
 
 
   protected:
