@@ -100,8 +100,7 @@ class KDEUI_EXPORT KSpellConfig : public QWidget
      * activateHelp for more information.
      *
      */
-  /// KDE4 remove name parameter
-    KSpellConfig( QWidget *parent=0, const char *name=0,
+    KSpellConfig( QWidget *parent=0, 
 		  KSpellConfig *spellConfig=0, bool addHelpButton = true );
 
     KSpellConfig( const KSpellConfig & );

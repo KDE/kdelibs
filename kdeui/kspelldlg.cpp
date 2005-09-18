@@ -91,7 +91,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
 
   connect( d->ui->m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
            SLOT( replace() ) );
-  d->spellConfig = new KSpellConfig( 0, 0 ,0, false );
+  d->spellConfig = new KSpellConfig( 0, 0 , false );
   d->spellConfig->fillDicts( d->ui->m_language );
   connect( d->ui->m_language, SIGNAL(activated(int)),
 	   d->spellConfig, SLOT(sSetDictionary(int)) );

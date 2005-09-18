@@ -66,7 +66,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 }
 
 
-KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
+KSpellConfig::KSpellConfig( QWidget *parent,
 			    KSpellConfig *_ksc, bool addHelpButton )
   : QWidget (parent), nodialog(false)
   , kc(0)

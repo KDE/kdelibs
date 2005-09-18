@@ -826,11 +826,6 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     return true;
 }
 
-void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup)
-{
-    return applyMainWindowSettings(config,configGroup,false);
-}
-
 void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &configGroup,bool force)
 {
     kdDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;

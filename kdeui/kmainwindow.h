@@ -379,7 +379,6 @@ public:
     KStatusBar *statusBar();
 
 
-    //KDE4: replace with memberList() and make memberList member private
     /**
      * List of members of KMainWindow class.
      * @since 3.4
@@ -476,9 +475,7 @@ public:
      * group name is used.
      * @param force if set, even default settings are re-applied
      */
-    void applyMainWindowSettings(KConfig *config, const QString &groupName, bool force);
-    // KDE4 merge with force=false
-    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
+    void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null, bool force = false);
 
     /**
      * Save settings for statusbar, menubar and toolbar to their respective
