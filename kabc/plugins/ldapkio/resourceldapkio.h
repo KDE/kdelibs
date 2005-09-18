@@ -160,7 +160,7 @@ signals:
     void createCache();
     void activateCache();
     void enter_loop();
-    Q3CString addEntry( const QString &attr, const QString &value, bool mod );
+    QByteArray addEntry( const QString &attr, const QString &value, bool mod );
     QString findUid( const QString &uid );
     bool AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
       const QString &olddn );

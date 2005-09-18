@@ -177,9 +177,9 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   return d->mResultDn;
 }
 
-Q3CString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, bool mod )
+QByteArray ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, bool mod )
 {
-  Q3CString tmp;
+  QByteArray tmp;
   if ( !attr.isEmpty() ) {
     if ( mod ) tmp += LDIF::assembleLine( "replace", attr ) + "\n";
     tmp += LDIF::assembleLine( attr, value ) + "\n";
@@ -191,7 +191,7 @@ Q3CString ResourceLDAPKIO::addEntry( const QString &attr, const QString &value, 
 bool ResourceLDAPKIO::AddresseeToLDIF( QByteArray &ldif, const Addressee &addr,
   const QString &olddn )
 {
-  Q3CString tmp;
+  QByteArray tmp;
   QString dn;
   QByteArray data;
   bool mod = false;
