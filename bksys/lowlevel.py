@@ -57,7 +57,7 @@ def generate(env):
 		if sys.platform == 'darwin':
 			#sys.path.append('bksys'+os.sep+'osx')
 			#from detect_lowlevel import detect
-			env.pprint('RED', 'Not implemented, see bksys/osx/lowlevel.py')
+			env.pprint('RED', 'Not implemented, see bksys/osx/detect_lowlevel.py')
 			env.Exit(1)
 		else:
 			sys.path.append('bksys'+os.sep+'unix')

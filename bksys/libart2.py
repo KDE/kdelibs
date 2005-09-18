@@ -37,8 +37,8 @@ def generate(env):
 	    conf = env.Configure(custom_tests =	 { 'Check_libart2' : Check_libart2 } )
 
 	    if not conf.Check_libart2():
-				print 'libart2 >= 2.3.8 not found.'
+				print 'libart2 >= 2.3.8 not found (mandatory).'
 
 	    env = conf.Finish()
 	    opts.Save(optionFile, env)
-	    
+    
