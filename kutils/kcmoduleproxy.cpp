@@ -534,7 +534,7 @@ void KCModuleProxy::save()
 	}
 }
 
-void KCModuleProxy::callRootModule( const Q3CString& function )
+void KCModuleProxy::callRootModule( const QByteArray& function )
 {
 	QByteArray sendData, replyData;
 	DCOPCString replyType;
@@ -632,7 +632,7 @@ bool KCModuleProxy::rootMode() const
 	return d->rootMode;
 }
 
-Q3CString KCModuleProxy::dcopName() const
+QByteArray KCModuleProxy::dcopName() const
 {
 	return d->dcopName;
 }

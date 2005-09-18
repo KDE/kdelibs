@@ -103,7 +103,7 @@ class KPluginSelectionWidget : public QWidget
          * argument is the name of the parent component that needs to reload
          * its config
          */
-        void configCommitted( const Q3CString & instanceName );
+        void configCommitted( const QByteArray & instanceName );
 
     protected:
         /**

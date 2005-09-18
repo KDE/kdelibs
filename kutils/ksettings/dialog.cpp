@@ -597,8 +597,8 @@ void Dialog::createDialogFromServices()
 		SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(),
 		SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( configCommitted( const Q3CString & ) ),
-		Dispatcher::self(), SLOT( reparseConfiguration( const Q3CString & ) ) );
+	connect( d->dlg, SIGNAL( configCommitted( const QByteArray & ) ),
+		Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
 
 	d->pagetree.addToDialog( d->dlg );
 

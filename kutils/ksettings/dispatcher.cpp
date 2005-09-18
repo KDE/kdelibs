@@ -65,7 +65,7 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
     assert( instance != 0 );
     // keep the KInstance around and call
     // instance->config()->reparseConfiguration when the app should reparse
-    Q3CString instanceName = instance->instanceName();
+    QByteArray instanceName = instance->instanceName();
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
     m_instanceName[ recv ] = instanceName;
     Q3Signal * sig;
@@ -85,7 +85,7 @@ void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const c
     connect( recv, SIGNAL( destroyed( QObject * ) ), this, SLOT( unregisterInstance( QObject * ) ) );
 }
 
-KConfig * Dispatcher::configForInstanceName( const Q3CString & instanceName )
+KConfig * Dispatcher::configForInstanceName( const QByteArray & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     if( m_instanceInfo.contains( instanceName ) )
@@ -103,13 +103,13 @@ Q3StrList Dispatcher::instanceNames() const
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     Q3StrList names;
-    for( QMap<Q3CString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
+    for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
         if( ( *it ).count > 0 )
             names.append( it.key() );
     return names;
 }
 
-void Dispatcher::reparseConfiguration( const Q3CString & instanceName )
+void Dispatcher::reparseConfiguration( const QByteArray & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
     // check if the instanceName is valid:
@@ -128,7 +128,7 @@ void Dispatcher::reparseConfiguration( const Q3CString & instanceName )
 
 void Dispatcher::syncConfiguration()
 {
-    for( QMap<Q3CString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
+    for( QMap<QByteArray, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
     {
         ( *it ).instance->config()->sync();
     }
@@ -137,7 +137,7 @@ void Dispatcher::syncConfiguration()
 void Dispatcher::unregisterInstance( QObject * obj )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
-    Q3CString name = m_instanceName[ obj ];
+    QByteArray name = m_instanceName[ obj ];
     m_instanceName.remove( obj ); //obj will be destroyed when we return, so we better remove this entry
     --m_instanceInfo[ name ].count;
     if( m_instanceInfo[ name ].count == 0 )

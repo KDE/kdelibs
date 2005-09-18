@@ -53,8 +53,8 @@ class PluginPage::PluginPagePrivate
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( d->selwid, SIGNAL( configCommitted( const Q3CString & ) ),
-            Dispatcher::self(), SLOT( reparseConfiguration( const Q3CString & ) ) );
+    connect( d->selwid, SIGNAL( configCommitted( const QByteArray & ) ),
+            Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
 }
 
 PluginPage::~PluginPage()

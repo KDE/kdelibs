@@ -30,7 +30,7 @@
 
 #include <qmessagebox.h>
 
-KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const Q3CString& name,
+KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QByteArray& name,
 		KCModuleProxy* const client )
 	: DCOPObject( name ), QObject( 0 ),
 		p( const_cast<KCModuleProxy *>( client ))
@@ -96,7 +96,7 @@ void KCModuleProxyIfaceImpl::quickHelpRelay()
 
 /***************************************************************/
 KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
-		( const Q3CString& name, KCModuleProxy* const client )
+		( const QByteArray& name, KCModuleProxy* const client )
 	: DCOPObject( name ), QObject( 0 ),
 		p( const_cast<KCModuleProxy *>( client ))
 {

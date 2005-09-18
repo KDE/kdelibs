@@ -600,8 +600,8 @@ void KPluginSelector::addPluginsInternal( const QList<KPluginInfo*> plugininfos,
                 catname, category, cfgGroup );
     w->setMinimumSize( 200, 200 );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( w, SIGNAL( configCommitted( const Q3CString & ) ), this,
-            SIGNAL( configCommitted( const Q3CString & ) ) );
+    connect( w, SIGNAL( configCommitted( const QByteArray & ) ), this,
+            SIGNAL( configCommitted( const QByteArray & ) ) );
     d->pswidgets += w;
 }
 

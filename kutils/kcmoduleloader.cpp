@@ -144,7 +144,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
      * Only try to load libkcm_* if it exists, otherwise KLibLoader::lastErrorMessage would say
      * "libkcm_foo not found" instead of the real problem with loading kcm_foo.
      */
-    if (!KLibLoader::findLibrary( Q3CString( "libkcm_" ) + QFile::encodeName( mod.library() ) ).isEmpty() )
+    if (!KLibLoader::findLibrary( QByteArray( "libkcm_" ) + QFile::encodeName( mod.library() ) ).isEmpty() )
       module = load(mod, "libkcm_%1", loader, report, parent, name, args );
     if (module)
       return module;

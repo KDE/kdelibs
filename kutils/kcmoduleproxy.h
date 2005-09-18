@@ -229,7 +229,7 @@ public:
 	 *
 	 * @since 3.4
 	 */
-	Q3CString dcopName() const;
+	QByteArray dcopName() const;
 
 public slots:
 
@@ -319,7 +319,7 @@ private slots:
 	* @param function the function signature of the function to call.
 	* @since 3.4
 	*/
-	void callRootModule( const Q3CString& function );
+	void callRootModule( const QByteArray& function );
 
 	/**
 	 * This is called when the module exits from root mode. It zeroes

@@ -75,7 +75,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
         /**
          * @return the KConfig object that belongs to the instanceName
          */
-        KConfig * configForInstanceName( const Q3CString & instanceName );
+        KConfig * configForInstanceName( const QByteArray & instanceName );
 
         /**
          * @return a list of all the instance names that are currently
@@ -96,7 +96,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
          *
          * @param instanceName The value of X-KDE-ParentComponents.
          */
-        void reparseConfiguration( const Q3CString & instanceName );
+        void reparseConfiguration( const QByteArray & instanceName );
 
         /**
          * When this slot is called the KConfig objects of all the registered
@@ -119,8 +119,8 @@ class KUTILS_EXPORT Dispatcher : public QObject
             Q3Signal * signal;
             int count;
         };
-        QMap<Q3CString, InstanceInfo> m_instanceInfo;
-        QMap<QObject *, Q3CString> m_instanceName;
+        QMap<QByteArray, InstanceInfo> m_instanceInfo;
+        QMap<QObject *, QByteArray> m_instanceName;
 
         class DispatcherPrivate;
         DispatcherPrivate * d;
