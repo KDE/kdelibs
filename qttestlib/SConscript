@@ -11,7 +11,7 @@ obj.source   = Split("""qtestcase.cpp
     qasciikey.cpp qplaintestlogger.cpp qxmltestlogger.cpp
     qsignaldumper.cpp qabstracttestlogger.cpp""")
 obj.cxxflags = '-DQT_NO_CAST_TO_ASCII -DQT_NO_CAST_FROM_ASCII -DQT_NO_DATASTREAM -DQTESTLIB_MAKEDLL'
-obj.uselib   = 'QTCORE KDE4'
+obj.uselib   = 'QT QTCORE KDE4'
 obj.execute()
 
 """
