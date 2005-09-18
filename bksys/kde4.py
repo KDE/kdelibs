@@ -62,6 +62,42 @@ def generate(env):
         env['BUILDERS']['Stub']=Builder(action= 'dcopidl2cpp --c++-suffix cpp --no-signals --no-skel $SOURCE',
                         suffix='_stub.cpp', src_suffix='.kidl')
 
+	## DOCUMENTATION
+	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')
+
+	def kcfg_buildit(target, source, env):
+		comp='kconfig_compiler -d%s %s %s' % (str(target[0].get_dir()), source[1].path, source[0].path)
+		return env.Execute(comp)
+	
+	def kcfg_stringit(target, source, env):
+		print "processing %s to get %s and %s" % (source[0].name, target[0].name, target[1].name)
+		
+	def kcfgEmitter(target, source, env):
+		adjustixes = SCons.Util.adjustixes
+		bs = SCons.Util.splitext(str(source[0].name))[0]
+		bs = os.path.join(str(target[0].get_dir()),bs)
+		# .h file is already there
+		target.append(bs+'.cpp')
+
+		if not os.path.isfile(str(source[0])):
+			lenv.pprint('RED','kcfg file given'+str(source[0])+' does not exist !')
+			return target, source
+		kfcgfilename=""
+		kcfgFileDeclRx = re.compile("^[fF]ile\s*=\s*(.+)\s*$")
+		for line in file(str(source[0]), "r").readlines():
+			match = kcfgFileDeclRx.match(line.strip())
+			if match:
+				kcfgfilename = match.group(1).strip()
+				break
+		if not kcfgfilename:
+			print 'invalid kcfgc file'
+			return 0
+		source.append(  env.join(str(source[0].get_dir()), kcfgfilename)  )
+		return target, source
+
+	env['BUILDERS']['Kcfg']=Builder(action=env.Action(kcfg_buildit, kcfg_stringit),
+			emitter=kcfgEmitter, suffix='.h', src_suffix='.kcfgc')
+
 
         def KDEicon(lenv, icname='*', path='./', restype='KDEICONS', subdir=''):
                 """Installs icons with filenames such as cr22-action-frame.png into

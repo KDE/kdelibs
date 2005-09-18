@@ -157,47 +157,12 @@ def generate(env):
 
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
-	def kcfg_buildit(target, source, env):
-		comp='kconfig_compiler -d%s %s %s' % (str(target[0].get_dir()), source[1].path, source[0].path)
-		return env.Execute(comp)
-	
-	def kcfg_stringit(target, source, env):
-		print "processing %s to get %s and %s" % (source[0].name, target[0].name, target[1].name)
-		
-	def kcfgEmitter(target, source, env):
-		adjustixes = SCons.Util.adjustixes
-		bs = SCons.Util.splitext(str(source[0].name))[0]
-		bs = os.path.join(str(target[0].get_dir()),bs)
-		# .h file is already there
-		target.append(bs+'.cpp')
-
-		if not os.path.isfile(str(source[0])):
-			lenv.pprint('RED','kcfg file given'+str(source[0])+' does not exist !')
-			return target, source
-		kfcgfilename=""
-		kcfgFileDeclRx = re.compile("^[fF]ile\s*=\s*(.+)\s*$")
-		for line in file(str(source[0]), "r").readlines():
-			match = kcfgFileDeclRx.match(line.strip())
-			if match:
-				kcfgfilename = match.group(1).strip()
-				break
-		if not kcfgfilename:
-			print 'invalid kcfgc file'
-			return 0
-		source.append(  env.join(str(source[0].get_dir()), kcfgfilename)  )
-		return target, source
-
-	env['BUILDERS']['Kcfg']=Builder(action=env.Action(kcfg_buildit, kcfg_stringit),
-			emitter=kcfgEmitter, suffix='.h', src_suffix='.kcfgc')
-	
 	## MOC processing
 	env['BUILDERS']['Moc']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
 	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
 	# for Moc2 you have to give the dependency explicitely, eg: env.Moc2(['file.cpp'])
 	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
 
-	## DOCUMENTATION
-	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')
 	## TRANSLATIONS
 	env['BUILDERS']['Transfiles']=Builder(action='$MSGFMT $SOURCE -o $TARGET',suffix='.gmo',src_suffix='.po')
 
