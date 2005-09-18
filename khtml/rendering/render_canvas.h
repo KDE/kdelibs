@@ -2,6 +2,7 @@
  * This file is part of the HTML widget for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,15 +30,26 @@ class QScrollView;
 
 namespace khtml {
 
+class RenderPage;
+class RenderStyle;
+
+enum CanvasMode {
+    CanvasViewPort, // Paints inside a viewport
+    CanvasPage,     // Paints one page
+    CanvasDocument  // Paints the whole document
+};
+
 class RenderCanvas : public RenderBlock
 {
 public:
     RenderCanvas(DOM::NodeImpl* node, KHTMLView *view);
+    ~RenderCanvas();
 
     virtual const char *renderName() const { return "RenderCanvas"; }
 
     virtual bool isCanvas() const { return true; }
 
+    virtual void setStyle(RenderStyle *style);
     virtual void layout();
     virtual void calcWidth();
     virtual void calcHeight();
@@ -62,26 +74,53 @@ public:
     virtual RenderObject *selectionStart() const { return m_selectionStart; }
     virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
 
-    void setPrintingMode(bool print) { m_printingMode = print; }
-    bool printingMode() const { return m_printingMode; }
     void setPrintImages(bool enable) { m_printImages = enable; }
     bool printImages() const { return m_printImages; }
 
-    void setTruncatedAt(int y) { m_truncatedAt = y; m_bestTruncatedAt = m_truncatorWidth = 0; m_forcedPageBreak = false; }
-    void setBestTruncatedAt(int y, RenderObject *forRenderer, bool forcedBreak = false);
-    int truncatedAt() const { return m_truncatedAt; }
-    int bestTruncatedAt() const { return m_bestTruncatedAt; }
-private:
-    int m_bestTruncatedAt;
-    int m_truncatorWidth;
-    bool m_forcedPageBreak;
+    void setCanvasMode(CanvasMode mode) { m_canvasMode = mode; }
+    CanvasMode canvasMode() const { return m_canvasMode; }
+
+    void setPagedMode(bool b) { m_pagedMode = b; }
+    void setStaticMode(bool b) { m_staticMode = b; }
+
+    bool pagedMode() const { return m_pagedMode; }
+    bool staticMode() const { return m_staticMode; }
+
+    void setPageTop(int top) {
+        m_pageTop = top;
+//         m_y = top;
+    }
+    void setPageBottom(int bottom) { m_pageBottom = bottom; }
+    int pageTop() const { return m_pageTop; }
+    int pageBottom() const { return m_pageBottom; }
+
+    int pageTopAfter(int y) const {
+        if (pageHeight() == 0) return 0;
+        return (y / pageHeight() + 1) * pageHeight() ;
+    }
+
+    int crossesPageBreak(int top, int bottom) const {
+        if (pageHeight() == 0) return false;
+        int pT = top / pageHeight();
+        // bottom is actually the first line not in the box
+        int pB = (bottom-1) / pageHeight();
+        return (pT == pB) ? 0 : (pB + 1);
+    }
+
+    void setPageNumber(int number) { m_pageNr = number; }
+    int pageNumber() const { return m_pageNr; }
 
 public:
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
 
+//     void setPageHeight( int height ) { m_viewportHeight = m_pageHeight = height; }
+    int pageHeight() const { return m_pageBottom - m_pageTop; }
+
     int viewportWidth() const { return m_viewportWidth; }
     int viewportHeight() const { return m_viewportHeight; }
+
+    RenderPage* page();
 
     QRect selectionRect() const;
 
@@ -101,27 +140,94 @@ protected:
     int m_selectionStartPos;
     int m_selectionEndPos;
 
+    CanvasMode m_canvasMode;
+
     int m_rootWidth;
     int m_rootHeight;
 
     int m_viewportWidth;
     int m_viewportHeight;
 
-    // used to ignore viewport width when painting to the printer
-    bool m_printingMode;
     bool m_printImages;
     bool m_needsFullRepaint;
-    int m_truncatedAt;
+
+    // Canvas is not interactive
+    bool m_staticMode;
+    // Canvas is paged
+    bool m_pagedMode;
+
+    short m_pageNr;
+
+    int m_pageTop;
+    int m_pageBottom;
+
+    RenderPage* m_page;
 
     int m_maximalOutlineSize; // Used to apply a fudge factor to dirty-rect checks on blocks/tables.
     QValueList<RenderObject*> m_dirtyChildren;
 };
 
 inline RenderCanvas* RenderObject::canvas() const
-{ 
-    return static_cast<RenderCanvas*>(document()->renderer()); 
+{
+    return static_cast<RenderCanvas*>(document()->renderer());
 }
- 
+
+// Represents the page-context of CSS
+class RenderPage
+{
+public:
+    RenderPage(RenderCanvas* canvas) : m_canvas(canvas),
+        m_marginTop(0), m_marginBottom(0),
+        m_marginLeft(0), m_marginRight(0),
+        m_pageWidth(0), m_pageHeight(0),
+        m_fixedSize(false)
+    {
+        m_style = new RenderPageStyle();
+    }
+    virtual ~RenderPage()
+    {
+        delete m_style;
+    }
+
+    int marginTop() const       { return m_marginTop; }
+    int marginBottom() const    { return m_marginBottom; }
+    int marginLeft() const      { return m_marginLeft; }
+    int marginRight() const     { return m_marginRight; }
+
+    void setMarginTop(int margin)       { m_marginTop = margin; }
+    void setMarginBottom(int margin)    { m_marginBottom = margin; }
+    void setMarginLeft(int margin)      { m_marginLeft = margin; }
+    void setMarginRight(int margin)     { m_marginRight = margin; }
+
+    int pageWidth() const   { return m_pageWidth; }
+    int pageHeight() const  { return m_pageHeight; }
+
+    void setPageSize(int width, int height) {
+        m_pageWidth = width;
+        m_pageHeight = height;
+    }
+
+    // Returns true if size was set by document, false if set by user-agent
+    bool fixedSize() const { return m_fixedSize; }
+    void setFixedSize(bool b) { m_fixedSize = b; }
+
+    RenderPageStyle* style() { return m_style; }
+    const RenderPageStyle* style() const { return m_style; }
+
+protected:
+    RenderCanvas* m_canvas;
+    RenderPageStyle* m_style;
+
+    int m_marginTop;
+    int m_marginBottom;
+    int m_marginLeft;
+    int m_marginRight;
+
+    int m_pageWidth;
+    int m_pageHeight;
+
+    bool m_fixedSize;
+};
 
 }
 #endif

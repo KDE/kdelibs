@@ -1368,6 +1368,44 @@ public:
     static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
 };
 
+class RenderPageStyle {
+    friend class CSSStyleSelector;
+public:
+    enum PageType { NO_PAGE = 0, ANY_PAGE, FIRST_PAGE, LEFT_PAGES, RIGHT_PAGES };
+
+    RenderPageStyle();
+    ~RenderPageStyle();
+
+    PageType pageType() { return m_pageType; }
+
+    RenderPageStyle* getPageStyle(PageType type);
+    RenderPageStyle* addPageStyle(PageType type);
+    void removePageStyle(PageType type);
+
+    Length marginTop()    const { return margin.top;    }
+    Length marginBottom() const { return margin.bottom; }
+    Length marginLeft()   const { return margin.left;   }
+    Length marginRight()  const { return margin.right;  }
+
+    Length pageWidth()  const   { return m_pageWidth;   }
+    Length pageHeight() const   { return m_pageHeight;  }
+
+    void setMarginTop(Length v)     {  margin.top = v;    }
+    void setMarginBottom(Length v)  {  margin.bottom = v; }
+    void setMarginLeft(Length v)    {  margin.left = v;   }
+    void setMarginRight(Length v)   {  margin.right = v;  }
+
+    void setPageWidth(Length v)    {  m_pageWidth = v;   }
+    void setPageHeight(Length v)   {  m_pageHeight = v;  }
+
+protected:
+    RenderPageStyle *next;
+    PageType m_pageType;
+
+    LengthBox margin;
+    Length m_pageWidth;
+    Length m_pageHeight;
+};
 
 } // namespace
 

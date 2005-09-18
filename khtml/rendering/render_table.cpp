@@ -7,6 +7,7 @@
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 //#define BOX_DEBUG
 #include "rendering/render_table.h"
 #include "rendering/render_replaced.h"
+#include "rendering/render_canvas.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
 #include "misc/htmltags.h"
@@ -330,6 +332,7 @@ void RenderTable::layout()
             m_height += th;
         }
     }
+
     int bl = borderLeft();
     if (!collapseBorders())
         bl += paddingLeft();
@@ -359,12 +362,27 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
-    m_overflowHeight = m_height;
+    if (canvas()->pagedMode()) {
+        RenderObject *child = firstChild();
+        // relayout taking real position into account
+        while( child ) {
+            if ( !(child->element() && child->element()->id() == ID_FORM) ) {
+                child->setNeedsLayout(true);
+                child->layout();
+                if (child->containsPageBreak()) setContainsPageBreak(true);
+                if (child->needsPageClear()) setNeedsPageClear(true);
+            }
+            child = child->nextSibling();
+        }
+    }
+
     //kdDebug(0) << "table height: " << m_height << endl;
 
     // table can be containing block of positioned elements.
     // ### only pass true if width or height changed.
     layoutPositionedObjects( true );
+
+    m_overflowHeight = m_height;
 
     setNeedsLayout(false);
 }
@@ -1177,6 +1195,7 @@ void RenderTableSection::calcRowHeight()
 	Row *row = grid[r].row;
 	int totalCols = row->size();
 	int totalRows = grid.size();
+	bool pagedMode = canvas()->pagedMode();
 
 	for ( int c = 0; c < totalCols; c++ ) {
 	    cell = cellAt(r, c);
@@ -1191,6 +1210,7 @@ void RenderTableSection::calcRowHeight()
             if (cell->cellPercentageHeight()) {
                 cell->setCellPercentageHeight(0);
                 cell->setChildNeedsLayout(true, false);
+                if (pagedMode) cell->setNeedsLayout(true);
                 cell->layoutIfNeeded();
             }
 
@@ -1570,6 +1590,45 @@ RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
+bool RenderTableSection::canClear(RenderObject */*child*/, PageBreakLevel level)
+{
+    // We cannot clear rows yet.
+    return parent()->canClear(this, level);
+}
+
+void RenderTableSection::addSpaceAt(int pos, int dy)
+{
+    const int nEffCols = table()->numEffCols();
+    const int totalRows = numRows();
+    for ( int r = 0; r < totalRows; r++ ) {
+        if (rowPos[r] >= pos) {
+            rowPos[r] += dy;
+            Row *row = grid[r].row;
+            int totalCols = row->size();
+            int rindx;
+            for ( int c = 0; c < nEffCols; c++ )
+            {
+                RenderTableCell *cell = cellAt(r, c);
+                if (!cell || cell == (RenderTableCell *)-1 )
+                    continue;
+                if ( r < totalRows - 1 && cell == cellAt(r+1, c) )
+                    continue;
+
+                if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
+                    rindx = 0;
+
+                cell->setPos(cell->xPos(), rowPos[r]);
+            }
+        }
+    }
+    if (rowPos[totalRows] >= pos)
+        rowPos[totalRows] += dy;
+    m_height = rowPos[totalRows];
+
+    setContainsPageBreak(true);
+}
+
+
 #ifdef ENABLE_DUMP
 void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
 {
@@ -1796,10 +1855,17 @@ void RenderTableRow::layout()
     KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
-
+    const bool pagedMode = canvas()->pagedMode();
     while( child ) {
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
+            if (pagedMode) {
+                cell->setNeedsLayout(true);
+                int oldHeight = child->height();
+                cell->layout();
+                if (oldHeight > 0 && child->containsPageBreak() && child->height() != oldHeight)
+                    section()->addSpaceAt(child->yPos()+1, child->height() - oldHeight);
+            } else
             if ( child->needsLayout() ) {
                 if (markedForRepaint())
                     cell->setMarkedForRepaint( true );
@@ -1807,6 +1873,7 @@ void RenderTableRow::layout()
                 cell->layout();
                 cell->setCellTopExtra(0);
                 cell->setCellBottomExtra(0);
+                if (child->containsPageBreak()) setContainsPageBreak(true);
             }
 	}
 	child = child->nextSibling();
@@ -1971,6 +2038,11 @@ bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
     if (ret)
       yPos += _topExtra;
     return ret;
+}
+
+int RenderTableCell::pageTopAfter(int y) const
+{
+    return section()->pageTopAfter(y+m_y + _topExtra) - (m_y  + _topExtra);
 }
 
 short RenderTableCell::baselinePosition( bool ) const
@@ -2344,7 +2416,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << pI.r.y() << "/" << pI.r.height() << endl;
 #endif
 
     if (needsLayout()) return;

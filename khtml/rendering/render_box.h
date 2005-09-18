@@ -113,6 +113,9 @@ public:
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
     RenderBlock* createAnonymousBlock();
 
+    virtual int pageTopAfter(int y) const;
+    virtual int crossesPageBreak(int t, int b) const;
+
 protected:
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
@@ -155,13 +158,12 @@ protected:
     void restructureParentFlow();
 
 
-    // the actual height of the contents + borders + padding
+    // the actual height of the contents + borders + padding (border-box)
     int m_height;
-
     int m_y;
 
-    short m_x;
     short m_width;
+    short m_x;
 
     short m_marginTop;
     short m_marginBottom;

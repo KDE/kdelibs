@@ -180,7 +180,10 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_mouseInside( false ),
       m_hasFirstLine( false ),
       m_isSelectionBorder( false ),
-      m_isRoot( false )
+      m_isRoot( false ),
+      m_afterPageBreak( false ),
+      m_needsPageClear( false ),
+      m_containsPageBreak( false )
 {
   assert( node );
   if (node->getDocument()->documentElement() == node) setIsRoot(true);
@@ -1201,6 +1204,7 @@ void RenderObject::dump(QTextStream &ts, const QString &ind) const
     if (minMaxKnown()) { ts << " minMaxKnown"; }
     if (overhangingContents()) { ts << " overhangingContents"; }
     if (hasFirstLine()) { ts << " hasFirstLine"; }
+    if (afterPageBreak()) { ts << " afterPageBreak"; }
 }
 #endif
 

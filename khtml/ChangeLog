@@ -1,3 +1,33 @@
+2005-09-18  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implementation of real page-breaking algorithm respecting the CSS 2.1 specification.
+
+        * khtmlview.cpp:
+        Do layout for page-breaks before printing.
+        Use screen resolution as default instead of 72DPI.
+        * css/html4.css: Add the print media default styles
+        * rendering/render_style.*: Add RenderPageStyle as the style for the page-context. Not yet used.
+        * rendering/render_canvas.*:
+        Separate paged and static properties of printing.
+        Use rootHeight as pageHeight.
+        Add RenderPage as the page-context(@page). Not yet used.
+        * rendering/render_flow.*:
+        (deleteLastLineBox) new function to remove the last line (in order to redo it).
+        * rendering/render_line.*:
+        (removeFromLine) ditto
+        * rendering/bidi.cpp: New algorithm in layoutInlineChildren for doing page-breaks at layout-time,
+        and respecting orphans/widows CSS settings.
+        * rendering/render_block.cpp:
+        (makePageBreakAvoidBlocks) Function for collecting runs of page-break-after/before: avoid blocks, so
+        they can be moved across page-breaks collectively.
+        (layoutBlockChildren) New algorithm for doing page-breaks at layout time,
+        and respecting page-break-after/before/inside
+        * rendering/render_table.cpp: Force page-breaks to happen inside cells and not between rows.
+        (RenderTableSection::addSpaceAt) moves later table-rows down when one cell expands to handle a
+        page-break.
+        * rendering/render_list.cpp: Remove truncation logic from paint
+        * rendering/render_text.cpp: ditto
+
 2005-08-18 Luís Pedro Coelho <luis@luispedro.org>
         * rendering/render_image.cpp:  Scale images correctly (adjust both height and width)
           when max-width is used.

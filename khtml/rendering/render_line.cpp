@@ -80,6 +80,22 @@ RootInlineBox* InlineBox::root()
     return static_cast<RootInlineBox*>(this);
 }
 
+void InlineFlowBox::removeFromLine(InlineBox *child)
+{
+    if (child == m_firstChild) {
+        m_firstChild = child->nextOnLine();
+    }
+    if (child == m_lastChild) {
+        m_lastChild = child->prevOnLine();
+    }
+    if (child->nextOnLine()) {
+        child->nextOnLine()->m_prev = child->prevOnLine();
+    }
+    if (child->prevOnLine()) {
+        child->prevOnLine()->m_next = child->nextOnLine();
+    }
+}
+
 int InlineFlowBox::marginLeft() const
 {
     if (!includeLeftEdge())

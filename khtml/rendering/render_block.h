@@ -49,6 +49,8 @@ public:
     virtual void setChildrenInline(bool b) { m_childrenInline = b; }
     void makeChildrenNonInline(RenderObject* insertionPoint = 0);
 
+    void makePageBreakAvoidBlocks();
+
     // The height (and width) of a block when you include overflow spillage out of the bottom
     // of the block (e.g., a <div style="height:25px"> that has a 100px tall image inside
     // it would have an overflow height of borderTop() + paddingTop() + 100px.
@@ -94,7 +96,7 @@ public:
     virtual void layout();
     void layoutBlock( bool relayoutChildren );
     void layoutBlockChildren( bool relayoutChildren );
-    void layoutInlineChildren( bool relayoutChildren );
+    void layoutInlineChildren( bool relayoutChildren, int breakBeforeLine = 0);
 
     void layoutPositionedObjects( bool relayoutChildren );
     void insertPositionedObject(RenderObject *o);
@@ -110,6 +112,7 @@ public:
     InlineFlowBox* createLineBoxes(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiState &bidi);
     void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
+    bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
@@ -292,6 +295,22 @@ protected:
         int margin() const { return m_posMargin - m_negMargin; }
     };
 
+    class PageBreakInfo {
+        int m_pageBottom; // Next calculated page-break
+        bool m_forcePageBreak : 1; // Must break before next block
+        // ### to do better "page-break-after/before: avoid" this struct
+        // should keep a pagebreakAvoid block and gather children in it
+    public:
+        PageBreakInfo(int pageBottom) : m_pageBottom(pageBottom), m_forcePageBreak(false) {};
+        bool forcePageBreak() { return m_forcePageBreak; }
+        void setForcePageBreak(bool b) { m_forcePageBreak = b; }
+        int pageBottom() { return m_pageBottom; };
+        void setPageBottom(int bottom) { m_pageBottom = bottom; }
+    };
+
+    virtual bool canClear(RenderObject *child, PageBreakLevel level);
+    void clearPageBreak(RenderObject* child, int pageBottom);
+
     void adjustPositionedBlock(RenderObject* child, const MarginInfo& marginInfo);
     void adjustFloatingBlock(const MarginInfo& marginInfo);
     RenderObject* handleSpecialChild(RenderObject* child, const MarginInfo& marginInfo, CompactInfo& compactInfo, bool& handled);
@@ -306,6 +325,7 @@ protected:
     void determineHorizontalPosition(RenderObject* child);
     void handleBottomOfBlock(int top, int bottom, MarginInfo& marginInfo);
     void setCollapsedBottomMargin(const MarginInfo& marginInfo);
+    void clearChildOfPageBreaks(RenderObject* child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo);
     // End helper functions and structs used by layoutBlockChildren.
 
 protected:
@@ -323,6 +343,7 @@ private:
     bool m_pre            : 1;
     bool m_firstLine      : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
+    bool m_avoidPageBreak : 1; // anonymous avoid page-break block
     bool m_topMarginQuirk : 1;
     bool m_bottomMarginQuirk : 1;
 

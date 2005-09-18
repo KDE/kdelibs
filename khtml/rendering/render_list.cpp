@@ -271,25 +271,6 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
         }
     }
 
-
-    bool isPrinting = (paintInfo.p->device()->devType() == QInternal::Printer);
-    if (isPrinting)
-    {
-        if (_ty < paintInfo.r.y())
-        {
-            // This has been painted already we suppose.
-            return;
-        }
-        if (_ty + m_height + paddingBottom() + borderBottom() > paintInfo.r.bottom())
-        {
-            RenderCanvas *rootObj = canvas();
-            if (_ty < rootObj->truncatedAt())
-                rootObj->setBestTruncatedAt(_ty, this);
-            // Let's paint this on the next page.
-            return;
-        }
-    }
-
     int offset = fm.ascent()*2/3;
     bool haveImage = m_listImage && !m_listImage->isErrorImage();
     if (haveImage)

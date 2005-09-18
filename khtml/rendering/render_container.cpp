@@ -420,10 +420,13 @@ void RenderContainer::layout()
 {
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
-
+    const bool pagedMode = canvas()->pagedMode();
     RenderObject *child = firstChild();
     while( child ) {
+        if (pagedMode) child->setNeedsLayout(true);
         child->layoutIfNeeded();
+        if (child->containsPageBreak()) setContainsPageBreak(true);
+        if (child->needsPageClear()) setNeedsPageClear(true);
         child = child->nextSibling();
     }
     setNeedsLayout(false);

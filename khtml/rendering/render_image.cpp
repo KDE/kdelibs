@@ -231,7 +231,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !canvas()->printImages())
+    if (!canvas()->printImages())
         return;
 
     CachedImage* i = oimage && oimage->valid_rect().size() == oimage->pixmap_size() &&

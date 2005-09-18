@@ -82,6 +82,20 @@ typedef enum {
     HitTestChildrenOnly = 2
 } HitTestAction;
 
+typedef enum {
+    PageBreakNormal = 0, // all rules apply
+    PageBreakHarder = 1, // page-break-inside: avoid is ignored
+    PageBreakForced = 2  // page-break-after/before: avoid, orphans and widows ignored
+} PageBreakLevel;
+
+inline PageBreakLevel operator| (PageBreakLevel a, PageBreakLevel b) {
+    if (a == PageBreakForced || b == PageBreakForced)
+        return PageBreakForced;
+    if (a == PageBreakHarder || b == PageBreakHarder)
+        return PageBreakHarder;
+    return PageBreakNormal;
+}
+
 namespace DOM {
     class HTMLAreaElementImpl;
     class DOMString;
@@ -411,6 +425,35 @@ public:
     // of a containing block).  HTML4 buttons, legends, and floating/compact elements do this.
     bool sizesToMaxWidth() const;
 
+    /*
+     * NeesPageClear indicates the object crossed a page-break but could not break itself and now
+     * needs to be moved clear by its parent.
+     */
+    void setNeedsPageClear(bool b = true) { m_needsPageClear = b; }
+    virtual bool needsPageClear() const { return m_needsPageClear; }
+
+    /*
+     * ContainsPageBreak indicates the object contains a clean page-break.
+     * ### should be removed and replaced with (crossesPageBreak && !needsPageClear)
+     */
+    void setContainsPageBreak(bool b = true) { m_containsPageBreak = b; }
+    virtual bool containsPageBreak() const { return m_containsPageBreak; }
+
+    virtual int pageTopAfter(int y) const { if (parent()) return parent()->pageTopAfter(y); else return 0; }
+
+    virtual int crossesPageBreak(int top, int bottom) const
+    { if (parent()) return parent()->crossesPageBreak(top, bottom); else return 0; }
+
+    // Checks if a page-break before child is possible at the given page-break level
+    // false means the child should attempt the break self.
+    virtual bool canClear(RenderObject */*child*/, PageBreakLevel level)
+    { if (parent()) return parent()->canClear(this, level); else return false; }
+
+    void setAfterPageBreak(bool b = true)  { m_afterPageBreak = b; };
+    void setBeforePageBreak(bool b = true) { m_beforePageBreak = b; };
+    virtual bool afterPageBreak() const  { return m_afterPageBreak; }
+    virtual bool beforePageBreak() const { return m_beforePageBreak; }
+
     // does a query on the rendertree and finds the innernode
     // and overURL for the given position
     // if readonly == false, it will recalc hover styles accordingly
@@ -737,7 +780,13 @@ private:
 
     bool m_isRoot                    : 1;
 
-    // ### we have 16 + 19 bits. Cut 3 and save 32
+    bool m_beforePageBreak           : 1;
+    bool m_afterPageBreak            : 1;
+
+    bool m_needsPageClear            : 1;
+    bool m_containsPageBreak         : 1;
+
+    // ### we have 16 + 23 bits. Cut 4 and save 32
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

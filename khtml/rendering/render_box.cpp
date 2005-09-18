@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -382,6 +383,7 @@ void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
    // The <body> only paints its background if the root element has defined a background
    // independent of the body.  Go through the DOM to get to the root element's render object,
    // since the root could be inline and wrapped in an anonymous block.
+
    if (!isBody() || !document()->isHTMLDocument() || document()->documentElement()->renderer()->style()->hasBackground())
         paintBackgrounds(paintInfo.p, style()->backgroundColor(), style()->backgroundLayers(), my, mh, _tx, _ty, w, h);
 
@@ -568,7 +570,7 @@ QRect RenderBox::getOverflowClipRect(int tx, int ty)
 QRect RenderBox::getClipRect(int tx, int ty)
 {
     int bl=borderLeft(),bt=borderTop(),bb=borderBottom(),br=borderRight();
-    // ### what about apddings?
+    // ### what about paddings?
     int clipw = m_width-bl-br;
     int cliph = m_height-bt-bb;
 
@@ -620,7 +622,7 @@ short RenderBox::containingBlockWidth() const
 {
     if (isRoot() && canvas()->view())
     {
-        if (canvas()->printingMode())
+        if (canvas()->pagedMode())
             return canvas()->width();
         else
             return canvas()->view()->visibleWidth();
@@ -1016,7 +1018,10 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         // We need to recur and compute the percentage height for our containing block.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
     else if (cb->isCanvas()) {
-        result = static_cast<RenderCanvas*>(cb)->viewportHeight();
+        if (!canvas()->pagedMode())
+            result = static_cast<RenderCanvas*>(cb)->viewportHeight();
+        else
+            result = static_cast<RenderCanvas*>(cb)->height();
         result -= cb->style()->borderTopWidth() - cb->style()->borderBottomWidth();
         result -= cb->paddingTop() + cb->paddingBottom();
     }
@@ -1131,7 +1136,10 @@ int RenderBox::availableHeightUsing(const Length& h) const
         return h.value();
 
     if (isCanvas())
-        return static_cast<const RenderCanvas*>(this)->viewportHeight();
+        if (static_cast<const RenderCanvas*>(this)->pagedMode())
+            return static_cast<const RenderCanvas*>(this)->pageHeight();
+        else
+            return static_cast<const RenderCanvas*>(this)->viewportHeight();
 
     // We need to stop here, since we don't want to increase the height of the table
     // artificially.  We're going to rely on this cell getting expanded to some new
@@ -1582,6 +1590,24 @@ int RenderBox::rightmostPosition(bool /*includeOverflowInterior*/, bool includeS
 int RenderBox::leftmostPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
     return includeSelf ? 0 : m_width;
+}
+
+int RenderBox::pageTopAfter(int y) const
+{
+    RenderObject* cb = container();
+    if (cb)
+        return cb->pageTopAfter(y+yPos()) - yPos();
+    else
+        return 0;
+}
+
+int RenderBox::crossesPageBreak(int t, int b) const
+{
+    RenderObject* cb = container();
+    if (cb)
+        return cb->crossesPageBreak(yPos()+t, yPos()+b);
+    else
+        return false;
 }
 
 void RenderBox::caretPos(int /*offset*/, int flags, int &_x, int &_y, int &width, int &height)

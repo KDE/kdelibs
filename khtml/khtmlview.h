@@ -206,7 +206,6 @@ protected:
     void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
     void timerEvent ( QTimerEvent * );
-
 protected slots:
     void slotPaletteChanged();
     void slotScrollBarMoved();
@@ -246,6 +245,14 @@ private:
      **/
     void paint(QPainter *p, const QRect &rc, int yOff = 0, bool *more = 0);
 
+#if 0
+    /**
+     * Paints the HTML document to a QPainter.
+     * The document will be scaled to match the width.
+     **/
+    void paint(QPainter *p, int width);
+#endif
+
     /**
      * Get/set the CSS Media Type.
      *
@@ -258,6 +265,8 @@ private:
      */
     void setMediaType( const QString &medium );
     QString mediaType() const;
+
+    bool pagedMode() const;
 
     bool scrollTo(const QRect &);
 

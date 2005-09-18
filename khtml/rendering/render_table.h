@@ -229,7 +229,7 @@ public:
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
-	virtual short width() const;
+    virtual short width() const;
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
@@ -272,6 +272,9 @@ public:
     }
 
     virtual RenderObject* removeChildNode(RenderObject* child);
+
+    virtual bool canClear(RenderObject *child, PageBreakLevel level);
+    void addSpaceAt(int pos, int dy);
 
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
@@ -380,6 +383,8 @@ public:
     void setCellBottomExtra(int p) { _bottomExtra = p; }
     int cellTopExtra() const { return _topExtra; }
     int cellBottomExtra() const { return _bottomExtra; }
+
+    int pageTopAfter(int x) const;
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 

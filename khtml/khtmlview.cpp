@@ -220,6 +220,7 @@ public:
         ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
+        paged = false;
 	clickX = -1;
 	clickY = -1;
         prevMouseX = -1;
@@ -340,6 +341,8 @@ public:
 
     int borderX, borderY;
     KSimpleConfig *formCompletions;
+
+    bool paged;
 
     int clickX, clickY, clickCount;
     bool isDoubleClick;
@@ -646,6 +649,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
+
     //kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
     for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
@@ -2605,6 +2609,11 @@ QString KHTMLView::mediaType() const
     return m_medium;
 }
 
+bool KHTMLView::pagedMode() const
+{
+    return d->paged;
+}
+
 void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
 {
     if (vis) {
@@ -2630,8 +2639,7 @@ void KHTMLView::print(bool quick)
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    // this only works on Unix - we assume 72dpi
-    KPrinter *printer = new KPrinter(true, QPrinter::PrinterResolution);
+    KPrinter *printer = new KPrinter(true, QPrinter::ScreenResolution);
     printer->addDialogPage(new KHTMLPrintSettings());
     QString docname = m_part->xmlDocImpl()->URL().prettyURL();
     if ( !docname.isEmpty() )
@@ -2665,22 +2673,26 @@ void KHTMLView::print(bool quick)
 
         QPaintDeviceMetrics metrics( printer );
 
-        // this is a simple approximation... we layout the document
-        // according to the width of the page, then just cut
-        // pages without caring about the content. We should do better
-        // in the future, but for the moment this is better than no
-        // printing support
         kdDebug(6000) << "printing: physical page width = " << metrics.width()
                       << " height = " << metrics.height() << endl;
-        root->setPrintingMode(true);
+        root->setStaticMode(true);
+        root->setPagedMode(true);
         root->setWidth(metrics.width());
+//         root->setHeight(metrics.height());
+        root->setPageTop(0);
+        root->setPageBottom(0);
+        d->paged = true;
 
         m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
+        root->makePageBreakAvoidBlocks();
+
         root->setNeedsLayoutAndMinMaxRecalc();
         root->layout();
         khtml::RenderWidget::flushWidgetResizes(); // make sure widgets have their final size
+
+        // check sizes ask for action.. (scale or clip)
 
         bool printHeader = (printer->option("app-khtml-printheader") == "true");
 
@@ -2706,8 +2718,8 @@ void KHTMLView::print(bool quick)
                       << " height = " << metrics.height() << endl;
         // if the width is too large to fit on the paper we just scale
         // the whole thing.
-        int pageHeight = metrics.height();
         int pageWidth = metrics.width();
+        int pageHeight = metrics.height();
         p->setClipRect(0,0, pageWidth, pageHeight);
 
         pageHeight -= headerHeight;
@@ -2725,6 +2737,12 @@ void KHTMLView::print(bool quick)
 #endif
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
+
+        root->setHeight(pageHeight);
+        root->setPageBottom(pageHeight);
+        root->setNeedsLayout(true);
+        root->layoutIfNeeded();
+//         m_part->slotDebugRenderTree();
 
         // Squeeze header to make it it on the page.
         if (printHeader)
@@ -2744,11 +2762,11 @@ void KHTMLView::print(bool quick)
         }
 
         int top = 0;
-        int page = 1;
         int bottom = 0;
-        int oldbottom = 0;
+        int page = 1;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+            p->setClipRect(0, 0, pageWidth, headerHeight, QPainter::CoordDevice);
             if (printHeader)
             {
                 int dy = p->fontMetrics().lineSpacing();
@@ -2762,23 +2780,26 @@ void KHTMLView::print(bool quick)
                 p->drawText(0, 0, metrics.width(), dy, Qt::AlignRight, headerRight);
             }
 
+
 #ifndef QT_NO_TRANSFORMATIONS
             if (scalePage)
                 p->scale(scale, scale);
 #endif
+
+            p->setClipRect(0, headerHeight, pageWidth, pageHeight, QPainter::CoordDevice);
             p->translate(0, headerHeight-top);
 
-            oldbottom = top+pageHeight;
-            root->setTruncatedAt(oldbottom);
+            bottom = top+pageHeight;
+
+            root->setPageTop(top);
+            root->setPageBottom(bottom);
+            root->setPageNumber(page);
 
             root->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
-            bottom = root->bestTruncatedAt();
-            kdDebug(6000) << "printed: page " << page <<" truncatedAt = " << oldbottom
-                          << " bestTruncatedAt = " << bottom << endl;
-            if (bottom == 0) bottom = oldbottom;
-
-            if (bottom >= root->docHeight())
-                break; // Stop if we have printed everything
+//             m_part->xmlDocImpl()->renderer()->layer()->paint(p, QRect(0, top, pageWidth, pageHeight));
+//             root->repaint();
+//             p->flush();
+            kdDebug(6000) << "printed: page " << page <<" bottom At = " << bottom << endl;
 
             top = bottom;
             p->resetXForm();
@@ -2789,7 +2810,9 @@ void KHTMLView::print(bool quick)
         delete p;
 
         // and now reset the layout to the usual one...
-        root->setPrintingMode(false);
+        root->setPagedMode(false);
+        root->setStaticMode(false);
+        d->paged = false;
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
         m_part->xmlDocImpl()->setPaintDevice( this );
@@ -2821,7 +2844,8 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     if(!root) return;
 
     m_part->xmlDocImpl()->setPaintDevice(p->device());
-    root->setPrintingMode(true);
+    root->setPagedMode(true);
+    root->setStaticMode(true);
     root->setWidth(rc.width());
 
     p->save();
@@ -2832,13 +2856,16 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 #ifndef QT_NO_TRANSFORMATIONS
     p->scale(scale, scale);
 #endif
+    root->setPageTop(yOff);
+    root->setPageBottom(yOff+height);
 
     root->layer()->paint(p, QRect(0, yOff, root->docWidth(), height));
     if (more)
         *more = yOff + height < root->docHeight();
     p->restore();
 
-    root->setPrintingMode(false);
+    root->setPagedMode(false);
+    root->setStaticMode(false);
     m_part->xmlDocImpl()->setPaintDevice( this );
 }
 
