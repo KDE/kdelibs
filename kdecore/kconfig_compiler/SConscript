@@ -6,7 +6,7 @@ obj = env.qt4obj('program', env)
 obj.target = 'kconfig_compiler'
 obj.source = 'kconfig_compiler.cpp '
 obj.libs   = '../libkdecore.la '
-obj.uselib = 'QTCORE QT3SUPPORT KDE4'
+obj.uselib = 'QTCORE QTGUI QT3SUPPORT QT KDE4'
 obj.execute()
 
 """

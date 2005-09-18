@@ -63,8 +63,7 @@ dcop
 libltdl
 kdefx
 mimetypes
-kdecore/network
-kdecore/svgicons
+kdecore
 """
 # kdecore kunittest kdeui
 

@@ -3,6 +3,8 @@
 Import('env')
 
 env.subdirs('kconfig_compiler')
+env.subdirs('network')
+env.subdirs('svgicons')
 
 core_files="""
 libintl.cpp kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
@@ -35,7 +37,8 @@ kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 kprotocolinfo_kdecore.cpp kprotocolinfofactory.cpp kxerrorhandler.cpp
 kuser.cpp kconfigskeleton.cpp kconfigdialogmanager.cpp klockfile.cpp
-kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp"""
+kqiodevicegzip_p.cpp ktimezones.cpp kmath.cpp
+"""
 
 inst_headers="""
 kconfig.h kconfigskeleton.h
@@ -61,6 +64,14 @@ kmanagerselection.h kmountpoint.h kuser.h klockfile.h
 kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
 kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
+
+#obj = env.qt4obj('shlib', env)
+#obj.vnum = '6.0.2'
+#obj.target = 'libkdecore'
+#obj.source = core_files
+#obj.uselib = 'QTCORE QT QT3SUPPORT KDE4'
+#obj.libs   = env.join('network', 'libkdecorenetwork')
+#obj.execute()
 
 """
 INCLUDES = -I$(top_srcdir)/kdefx -I$(top_srcdir)/kdecore/network $(all_includes) $(LIBART_CFLAGS)
