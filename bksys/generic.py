@@ -284,7 +284,7 @@ class genobj:
 				if self.env.has_key('LIBPATH_'+lib):
 					self.env.AppendUnique(LIBPATH=self.env['LIBPATH_'+lib])
 				if self.env.has_key('LINKFLAGS_'+lib):
-					self.env.AppendUnique(LIBPATH=self.env['LINKFLAGS_'+lib])
+					self.env.AppendUnique(LINKFLAGS=self.env['LINKFLAGS_'+lib])
 				if self.env.has_key('INCLUDES_'+lib):
 					self.env.AppendUnique(CPPPATH=self.env['INCLUDES_'+lib])
 				if self.env.has_key('CXXFLAGS_'+lib):
@@ -300,7 +300,6 @@ class genobj:
 		if len(self.p_global_shlibs)>0:    self.env.AppendUnique(LIBS=self.p_global_shlibs)
 		if len(self.libpaths)>0:           self.env.PrependUnique(LIBPATH=self.fixpath(self.libpaths))
 		if len(self.linkflags)>0:          self.env.PrependUnique(LINKFLAGS=self.env.make_list(self.linkflags))
-
 		if len(self.p_local_shlibs)>0:     self.env.link_local_shlib(self.p_local_shlibs)
 		if len(self.p_local_staticlibs)>0: self.env.link_local_staticlib(self.p_local_staticlibs)
 
