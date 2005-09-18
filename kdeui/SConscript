@@ -1,0 +1,64 @@
+#! /usr/bin/env python
+
+Import('env')
+
+ui_files="""
+ksharedpixmap.cpp kpixmapio.cpp
+kpopupmenu.cpp kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp
+kactioncollection.cpp kactionclasses.cpp
+kurllabel.cpp kmenubar.cpp kinputdialog.cpp
+knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp
+kcolordialog.cpp kselect.cpp kdatepicker.cpp
+kdatetbl.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp
+kstatusbar.cpp kmainwindow.cpp
+keditlistbox.cpp kscrollview.cpp
+kseparator.cpp krestrictedline.cpp
+kcolorbutton.cpp ksystemtray.cpp
+kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp
+kshortcutdialog_simple.ui3 kshortcutdialog_advanced.ui3
+kshortcutdialog.cpp kkeybutton.cpp kkeydialog.cpp
+kruler.cpp kcursor.cpp
+kcharselect.cpp kcolordrag.cpp
+knumvalidator.cpp kdialog.cpp kdialogbase.cpp
+kjanuswidget.cpp kaboutdialog.cpp
+kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp
+ktoolbarradiogroup.cpp ktoolbarbutton.cpp
+ktextbrowser.cpp khelpmenu.cpp
+kcmenumngr.cpp
+kiconview.cpp klistbox.cpp kwordwrap.cpp kbugreport.cpp
+kcombobox.cpp kpassdlg.cpp kxmlguiclient.cpp kxmlguifactory.cpp
+kxmlguifactory_p.cpp kxmlguibuilder.cpp kedittoolbar.cpp
+kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp
+kaboutapplication.cpp kdcopactionproxy.cpp
+kcolorcombo.cpp kpushbutton.cpp
+kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp
+kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp
+kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp
+kmainwindowiface_skel.cpp kguiitem.cpp kstdguiitem.cpp
+kstringvalidator.cpp kactivelabel.cpp
+kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp
+ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp
+ksconfig.cpp kspelldlg.cpp
+kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp
+ksplashscreen.cpp kspellui.ui3 kconfigdialog.cpp
+kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp
+kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp
+kwhatsthismanager.cpp kiconviewsearchline.cpp
+ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp
+"""
+
+for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h klistviewlineedit.h kwhatsthismanager_p.h".split():
+	env.Moc(i)
+
+env.Kidl("kmainwindowiface.h")
+env.Dcop("kmainwindowiface.kidl")
+
+obj = env.qt4obj('shlib', env)
+obj.vnum     = '6.0.2'
+obj.target   = 'libkdeui'
+obj.source   = ui_files
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+obj.libs     = '../kdecore/libkdecore.la ../kdefx/libkdefx.la'
+obj.execute()
+
+
