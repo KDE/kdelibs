@@ -27,6 +27,7 @@
 #include <qfileinfo.h>
 #include <kprocess.h>
 #include <q3valuevector.h>
+#include <QList>
 
 extern int xmlLoadExtDtdDefaultValue;
 
@@ -35,7 +36,7 @@ public:
     QString word;
     int base;};
 
-typedef Q3ValueList<MyPair> PairList;
+typedef QList<MyPair> PairList;
 
 void parseEntry(PairList &list, xmlNodePtr cur, int base)
 {
