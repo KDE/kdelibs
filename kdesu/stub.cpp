@@ -162,10 +162,5 @@ int StubProcess::ConverseStub(int check)
 }
 
 
-void StubProcess::notifyTaskbar(const QString &)
-{
-    kdWarning(900) << "Obsolete StubProcess::notifyTaskbar() called!" << endl;
-}
-
 void StubProcess::virtual_hook( int id, void* data )
 { PtyProcess::virtual_hook( id, data ); }

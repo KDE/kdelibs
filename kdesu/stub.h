@@ -83,13 +83,6 @@ protected:
     int ConverseStub(int check);
 
     /**
-     * Notify the taskbar that a new application has been started.
-     * @obsolete
-     */
-    // KDE4 remove
-    void notifyTaskbar(const QString &suffix);
-
-    /**
      * This virtual function can be overloaded when special behavior is
      * desired. By default, it returns the value returned by KCookie.
      */
