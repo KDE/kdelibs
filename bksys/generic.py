@@ -217,6 +217,7 @@ class genobj:
 				ret.append(v)
 			else:
 				ret.append( self.orenv.join('#', bdir, dir, v) )
+				ret.append( self.orenv.join('#', dir, v) )
 
 		return ret
 

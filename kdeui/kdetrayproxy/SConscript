@@ -10,5 +10,5 @@ obj.target = 'kded_kdetrayproxy'
 obj.source = "kdetrayproxy.cpp module.cpp module_skel.cpp"
 obj.uselib = "QT QTCORE QTGUI QT3SUPPORT KDE4"
 obj.libs   = "../../kdecore/libkdecore.la"
-obj.cxxflags = "-Ikded"
+obj.includes = '../../kded'
 obj.execute()
