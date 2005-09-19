@@ -403,16 +403,31 @@ final class KJASHttpURLConnection extends HttpURLConnection
         kioconnection = new KIOHttpConnection(u);
     }
     public Map getHeaderFields() {
+	try {
+            connect();
+	} catch (IOException e) {
+            Main.debug ("Error on implicit connect()");
+	}
         Main.debug ("KIO getHeaderFields");
         return kioconnection.headersmap;
     }
     public String getHeaderField(String name) {
+	try {
+            connect();
+	} catch (IOException e) {
+            Main.debug ("Error on implicit connect()");
+	}
         String field = (String) kioconnection.headersmap.get(name);
         Main.debug ("KIO getHeaderField:" + name + "=" + field);
 	//(new Exception()).printStackTrace();
         return field;
     }
     public String getHeaderField(int n) {
+	try {
+            connect();
+	} catch (IOException e) {
+            Main.debug ("Error on implicit connect()");
+	}
         Main.debug ("KIO getHeaderField(" + n + ") size=" + kioconnection.headersmap.size());
         if (n >= kioconnection.headersmap.size())
             return null;
@@ -424,6 +439,11 @@ final class KJASHttpURLConnection extends HttpURLConnection
         return line;
     }
     public String getHeaderFieldKey(int n) {
+	try {
+            connect();
+	} catch (IOException e) {
+            Main.debug ("Error on implicit connect()");
+	}
         Main.debug ("KIO getHeaderFieldKey " + n);
         if (n >= kioconnection.headersmap.size())
             return null;
@@ -446,6 +466,8 @@ final class KJASHttpURLConnection extends HttpURLConnection
         return false; // FIXME
     }
     public void connect() throws IOException {
+        if (connected)
+            return;
         Main.debug ("KIO KJASHttpURLConnection.connect " + url);
         SecurityManager security = System.getSecurityManager();
         if (security != null)
