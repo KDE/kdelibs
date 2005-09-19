@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KTIMEZONES_H
-#define _KTIMEZONES_H
+#ifndef KTIMEZONES_H
+#define KTIMEZONES_H
 
 #include "kdelibs_export.h"
 #include <qnamespace.h>

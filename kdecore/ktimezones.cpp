@@ -428,17 +428,11 @@ const KTimezones::ZoneMap KTimezones::allZones()
             continue;
         }
 
-        // Got three tokens. Now check for two ordinates plus first one is "".
-        QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
-        if (ordinates.count() < 2)
-        {
-            kdError() << "invalid coordinates: " << tokens[1] << endl;
-            continue;
-        }
-
-        float latitude = convertCoordinate(ordinates[0]);
-        float longitude = convertCoordinate(ordinates[1]);
-
+        // Skip the first + or -
+        int split = tokens[1].indexOf(ordinateSeparator, 1);
+        float latitude = convertCoordinate(tokens[1].left(split));
+        float longitude = convertCoordinate(tokens[1].mid(split));
+        
         // Add entry to list.
         if (tokens[0] == "??")
             tokens[0] = "";
@@ -460,7 +454,7 @@ float KTimezones::convertCoordinate(const QString &coordinate)
     int minutes = 0;
     int seconds = 0;
 
-    if (coordinate.length() > 11)
+    if (coordinate.length() > 6)
     {
         degrees = value / 10000;
         value -= degrees * 10000;
