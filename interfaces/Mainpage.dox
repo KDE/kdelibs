@@ -7,7 +7,7 @@
 *
 * Documented interfaces are:
 *
-* - \ref KSpeech The KDE Text-to-Speech API.
+* - KSpeech - The KDE Text-to-Speech API.
 * - Terminal
 * - KTextEditor
 *

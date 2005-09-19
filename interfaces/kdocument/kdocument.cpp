@@ -3,6 +3,7 @@
 #include "kdocument/factory.h"
 
 namespace KDocument {
+	/// Contains the current highest document number.
 	static int globalDocumentNumber = 0;
 	class Document::Private {
 	};

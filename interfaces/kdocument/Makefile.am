@@ -19,5 +19,6 @@ METASOURCES = AUTO
 #kcm_kdocument_DATA = kcm_kdocument.desktop
 #kcm_kdocumentdir = $(kde_datadir)/kcm_componentchooser
 
+DOXYGEN_REFERENCES = kparts
 include ../../admin/Doxyfile.am
 
