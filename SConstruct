@@ -44,6 +44,7 @@ config = {
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
 	'bootstrap': 1, # incomplete
+	'colorfull': 1, # only with scons >= 0.96.9
 }
 
 # and the config.h

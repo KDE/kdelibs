@@ -109,7 +109,7 @@ if env.has_key("LIBART_ISCONFIGURED"):
 	obj.libpaths = "./svgicons"
 	obj.libs += " libkdesvgicons"
 #obj.libs     = env.join('network', 'libkdecorenetwork')
-obj.includes = './network/ '
+obj.includes = 'network'
 obj.execute()
 
 """

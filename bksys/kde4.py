@@ -274,19 +274,14 @@ def generate(env):
 				self.xml()
 				return
 			if (self.type=='shlib' or self.type=='kioslave'):
-				install_dir = 'KDEMODULE'
-				if self.iskdelib==1: install_dir = 'KDELIB'
-				self.instdir=getInstDirForResType(self.orenv, install_dir)
+				if self.iskdelib==1: self.instdir=getInstDirForResType(self.orenv, 'KDELIB')
+				else:                self.instdir=getInstDirForResType(self.orenv, 'KDEMODULE')
 			elif self.type=='program':
 				self.instdir=getInstDirForResType(self.orenv, 'KDEBIN')
 				self.perms=0755
 
-			# ITA
-			#print self.source
-			#print "hallo"
-			self.p_localsource=KDEfiles(env, self.joinpath(self.target), self.joinpath(self.source))
-			# ITA
-			#print self.p_localsource
+			self.env=self.orenv.Copy()
+			self.setsource( KDEfiles(self.env, self.joinpath(self.target), self.joinpath(self.source)) )
 			generic.genobj.execute(self)
 
 		def xml(self):
@@ -297,7 +292,6 @@ def generate(env):
 				for i in self.orenv.make_list(self.source): ret+='    <source file="%s"/>\n' % i
 			ret+="</compile>\n"
 			self.orenv.add_dump(ret)
-
 
 	from SCons.Script.SConscript import SConsEnvironment
 	SConsEnvironment.KDEicon = KDEicon

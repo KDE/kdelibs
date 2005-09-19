@@ -36,6 +36,7 @@ def configure(dict):
 	config_h   = 0
 	bootstrap  = 0
 	want_rpath = 1
+	use_colors = 0
 
 	## process the options
 	for key in dict.keys():
@@ -46,16 +47,19 @@ def configure(dict):
 		elif key == 'rpath':     want_rpath = dict[key]
 		elif key == 'bootstrap': bootstrap  = 1
 		elif key == 'cachedir':  cache_dir  = dict[key]
+		elif key == 'colorfull': use_colors = 1
 		else: print 'unknown key: '+key
 
 	## now build the environment
 	if bootstrap:
 		env = Environment.Environment( ENV=os.environ, BOOTSTRAP_KDE=1,
-			_BUILDDIR_=build_dir, CACHEDIR=cache_dir,
-                        tools=mytools, toolpath=tool_path )
+			_BUILDDIR_=build_dir, CACHEDIR=cache_dir, _USECOLORS_=use_colors,
+			tools=mytools, toolpath=tool_path )
 	else:
 		env = Environment.Environment( ENV=os.environ, _BUILDDIR_=build_dir,
-			CACHEDIR=cache_dir, tools=mytools, toolpath=tool_path )
+			_USECOLORS_=use_colors, CACHEDIR=cache_dir,
+			tools=mytools, toolpath=tool_path )
+		#CCCOMSTR=building_obj, CXXCOMSTR=building_obj,  SHCXXCOMSTR=building_obj,
 
 	## at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
@@ -102,11 +106,7 @@ def dist(env, appname, version=None):
                         from detect_generic import distclean
                 distclean(env)
 
-def pprint(env, col, str, label=''):
-	if env.has_key('NOCOLORS'):
-		print "%s %s" % (str, label)
-		return
-	colors= {
+colors= {
 	'BOLD'  :"\033[1m",
 	'RED'   :"\033[91m",
 	'GREEN' :"\033[92m",
@@ -114,13 +114,17 @@ def pprint(env, col, str, label=''):
 	'CYAN'  :"\033[96m",
 	'NORMAL':"\033[0m", }
 
+def pprint(env, col, str, label=''):
+	if not env['_USECOLORS_']:
+		print "%s %s" % (str, label)
+		return
 	try: mycol=colors[col]
 	except: mycol=''
 	print "%s%s%s %s" % (mycol, str, colors['NORMAL'], label)
 
 class genobj:
 	def __init__(self, val, env):
-		if not val in ["program", "shlib", "kioslave", "staticlib", "convenience"]:
+		if not val in ["program", "shlib", "kioslave", "staticlib", "module", "convenience"]:
 			env.pprint('RED', 'unknown object type given to genobj: '+val)
 			env.Exit(1)
 
@@ -277,7 +281,8 @@ class genobj:
 
 		# and now add the libraries from uselib
 		if self.uselib:
-			libs=self.env.make_list(self.uselib)
+			#libs=self.env.make_list(self.uselib)
+			libs=SCons.Util.CLVar(self.uselib) # self.env.Split(self.uselib)
 			for lib in libs:
 				if self.env.has_key('LIB_'+lib):
 					self.env.AppendUnique(LIBS=self.env['LIB_'+lib])
@@ -305,7 +310,7 @@ class genobj:
 
 		# The target to return - IMPORTANT no more self.env modification is possible after this part
 		ret=None
-		if self.type=='shlib' or self.type=='kioslave':
+		if self.type=='shlib' or self.type=='kioslave' or self.type=='module':
 			ret=self.env.bksys_shlib(self.p_localtarget, self.p_localsource, self.instdir, 
 				self.libprefix, self.vnum)
 		elif self.type=='program':
@@ -430,7 +435,7 @@ def generate(env):
 	# This avoids recompiling the same files over and over again: 
 	# very handy when working with cvs
 	# TODO: not portable so add a win32 ifdef
-	#if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
+	if os.getuid() != 0: env.CacheDir( env.join(os.getcwd(),'cache','objects') )
 
 	#  Avoid spreading .sconsign files everywhere - keep this line
 	env.SConsignFile( env['CACHEDIR']+'scons_signatures' )
@@ -477,7 +482,7 @@ def generate(env):
 		('GENLINKFLAGS', 'additional link flags' ),
 		('EXTRAINCLUDES', 'extra include paths for the project' ),
 		('BKS_DEBUG', 'debug level: full, trace, or just something' ),
-		('NOCOLORS', 'no colors if the user does not want them'),
+		('_USECOLORS_', 'colors for developers'),
 		('GENERIC_ISCONFIGURED', 'is the project configured' ),
 	)
 	opts.Update(env)
@@ -512,6 +517,12 @@ def generate(env):
 
 		# And finally save the options in the cache
 		opts.Save(cachefile, env)
+
+	if env['_USECOLORS_']:
+		building_obj='%scompiling%s $TARGET' % (colors['GREEN'], colors['NORMAL'])
+		env['CCCOMSTR']=building_obj
+		env['CXXCOMSTR']=building_obj,
+		env['SHCXXCOMSTR']=building_obj
 
 	def bksys_install(lenv, subdir, files, destfile=None, perms=None):
 		""" Install files on 'scons install' """
@@ -564,7 +575,10 @@ def generate(env):
 	def symlink_command(target, source, env):
 		os.symlink( str(source[0].name), target[0].path)
 	def symlink_string(target, source, env):
-		print "symlinking %s (-> %s)" % (target[0].path, source[0].name)
+		if env['_USECOLORS_']:
+			print colors['GREEN']+"symlinking"+colors['NORMAL']+" %s (-> %s)" % (target[0].path, source[0].name)
+		else:
+			print "symlinking %s (-> %s)" % (target[0].path, source[0].name)
 	symlink = env.Action(symlink_command, symlink_string)
 	env['BUILDERS']['SymLink'] = env.Builder(action=symlink)
 

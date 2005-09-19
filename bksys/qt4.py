@@ -158,8 +158,8 @@ def generate(env):
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	## MOC processing
-	env['BUILDERS']['Moc']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
-	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
+	env['BUILDERS']['Moc']=Builder(action='$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
+	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
 	# for Moc2 you have to give the dependency explicitely, eg: env.Moc2(['file.cpp'])
 	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
 
@@ -323,13 +323,13 @@ def generate(env):
                         else: generic.genobj.__init__(self, val, env)
                         self.iskdelib=0
                 def execute(self):
+			if self.executed: return
                         if self.orenv.has_key('DUMPCONFIG'):
                                 print self.xml()
+				self.executed=1
                                 return
 			self.env=self.orenv.Copy()
-			#self.env.AppendUnique(LIBPATH=env['LIBPATH_KDE4'])
-
-                        self.setsource( QT4files(env, self.target, self.source) )
+                        self.setsource( QT4files(self.env, self.target, self.source) )
                         generic.genobj.execute(self)
 
                 def xml(self):
