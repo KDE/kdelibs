@@ -161,7 +161,7 @@ public:
     /**
      * @internal (for KBookmarkGroup)
      */
-    void emitChanged( KBookmarkGroup & group );
+    void emitChanged( const KBookmarkGroup & group );
 
     void emitConfigChanged();
 

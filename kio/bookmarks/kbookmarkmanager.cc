@@ -531,7 +531,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 }
 
 
-void KBookmarkManager::emitChanged( /*KDE4 const*/ KBookmarkGroup & group )
+void KBookmarkManager::emitChanged( const KBookmarkGroup & group )
 {
     save();
 
