@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+
+Import('env')
+
+env.Kidl("module.h")
+env.Dcop("module.kidl")
+
+obj = env.qt4obj('module', env)
+obj.target = 'kded_kdetrayproxy'
+obj.source = "kdetrayproxy.cpp module.cpp module_skel.cpp"
+obj.uselib = "QT QTCORE QTGUI QT3SUPPORT KDE4"
+obj.libs   = "../../kdecore/libkdecore.la"
+obj.cxxflags = "-Ikded"
+obj.execute()
