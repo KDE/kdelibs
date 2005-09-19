@@ -149,15 +149,15 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->addNewItems( *(itemU->lstItems) );
       lister->emitItems();
 
+      // _url is already in use, so there is already an entry in urlsCurrentlyHeld
+      assert( urlsCurrentlyHeld[urlStr] );
+      urlsCurrentlyHeld[urlStr]->append( lister );
+
       lister->d->complete = oldState;
 
       emit lister->completed( _url );
       if ( lister->d->complete )
         emit lister->completed();
-
-      // _url is already in use, so there is already an entry in urlsCurrentlyHeld
-      assert( urlsCurrentlyHeld[urlStr] );
-      urlsCurrentlyHeld[urlStr]->append( lister );
 
       if ( _reload || !itemU->complete )
         updateDirectory( _url );
@@ -181,16 +181,16 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       lister->addNewItems( *(itemC->lstItems) );
       lister->emitItems();
 
+      Q_ASSERT( !urlsCurrentlyHeld[urlStr] );
+      QPtrList<KDirLister> *list = new QPtrList<KDirLister>;
+      list->append( lister );
+      urlsCurrentlyHeld.insert( urlStr, list );
+
       lister->d->complete = oldState;
 
       emit lister->completed( _url );
       if ( lister->d->complete )
         emit lister->completed();
-
-      Q_ASSERT( !urlsCurrentlyHeld[urlStr] );
-      QPtrList<KDirLister> *list = new QPtrList<KDirLister>;
-      list->append( lister );
-      urlsCurrentlyHeld.insert( urlStr, list );
 
       if ( !itemC->complete )
         updateDirectory( _url );
