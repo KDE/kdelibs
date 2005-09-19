@@ -50,6 +50,12 @@ config = {
 env=configure(config)
 
 # now the kdemacros (TODO a bootstrap module ?)
+import os
+try:
+   os.mkdir('build')
+except OSError:
+   pass
+
 dest = open(env.join('build','kdemacros.h'), 'w')
 dest.write('#include <kdemacros.h.in>\n')
 dest.close()
@@ -71,8 +77,13 @@ kdesu
 # TODO this will not stay like this ..
 dirs=[] # the dirs to process are appended to this var in the loop below
 for dir in subdirs.split():
-	env.BuildDir( env.join('#build', dir), dir, duplicate=0)
-	dirs.append( env.join('#build', dir) )
+	jdir =  env.join('#build', dir)
+	try:
+		os.mkdir(jdir[1:])
+	except OSError:
+		pass
+	env.BuildDir( jdir, dir, duplicate=0)
+	dirs.append( jdir )
 env.subdirs(dirs)
 
 ###################################################################
