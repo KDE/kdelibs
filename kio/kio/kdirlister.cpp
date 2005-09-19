@@ -418,6 +418,12 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
   Q_ASSERT( holders );
   holders->removeRef( lister );
 
+  // remove the dir from lister->d->lstDirs so that it doesn't contain things
+  // that itemsInUse doesn't. When emitting the canceled signals lstDirs must
+  // not contain anything that itemsInUse does not contain. (otherwise it 
+  // might crash in findByName()).
+  lister->d->lstDirs.remove( lister->d->lstDirs.find( url ) );
+
   DirItem *item = itemsInUse[urlStr];
   Q_ASSERT( item );
 
@@ -426,12 +432,6 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
     urlsCurrentlyHeld.remove( urlStr ); // this deletes the (empty) holders list
     if ( !urlsCurrentlyListed[urlStr] )
     {
-      // remove the dir from lister->d->lstDirs so that it doesn't contain things
-      // that itemsInUse doesn't. When emitting the canceled signals lstDirs must
-      // not contain anything that itemsInUse does not contain. (otherwise it 
-      // might crash in findByName()).
-      lister->d->lstDirs.remove( lister->d->lstDirs.find( url ) );
-
       // item not in use anymore -> move into cache if complete
       itemsInUse.remove( urlStr );
 
