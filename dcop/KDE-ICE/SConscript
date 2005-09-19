@@ -31,6 +31,6 @@ obj          = env.genobj('convenience', env)
 obj.target   = 'libkICE.a'
 obj.source   = ice_sources
 obj.includes = '#/ ./ ..'
-obj.cflags = ice_flags
+obj.ccflags = ice_flags
 obj.execute()
 
