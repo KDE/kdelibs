@@ -83,10 +83,4 @@ void KHTMLRun::save( const KURL & url, const QString & suggestedFilename )
     KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As" ), url, m_args.metaData(), QString::null, 0, suggestedFilename );
 }
 
-// KDE4: remove
-void KHTMLRun::handleError( KIO::Job *job )
-{
-    KParts::BrowserRun::handleError( job );
-}
-
 #include "khtml_run.moc"
