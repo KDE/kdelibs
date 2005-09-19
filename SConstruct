@@ -39,7 +39,7 @@ sys.path.append('bksys')
 ## Import the main configuration tool
 from generic import configure
 config = {
-	'modules'  : 'generic lowlevel libxml qt4 kde4 libart2',
+	'modules'  : 'generic lowlevel libxml qt4 kde4 libart2 libidn',
 	'builddir' : 'build', # put all object files under 'build/'
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
@@ -64,7 +64,6 @@ dest.close()
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################
-
 subdirs="""
 dcop
 libltdl

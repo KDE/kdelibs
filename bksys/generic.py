@@ -17,7 +17,7 @@ def write_config_h(lenv):
 
 	# write the config.h including all others
 	if lenv.has_key('_CONFIG_H_'):
-		for file in lenv['_CONFIG_H_']: dest.write('#include "config-%s.h"' % file)
+		for file in lenv['_CONFIG_H_']: dest.write('#include "config-%s.h"\n' % file)
 	dest.write('\n')
 	dest.close()
 
