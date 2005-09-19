@@ -65,6 +65,7 @@ kdefx
 mimetypes
 kdecore
 kdeui
+kdesu
 """
 
 # TODO this will not stay like this ..
