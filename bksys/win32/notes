@@ -1,0 +1,27 @@
+2005-09-19
+
+1. Python installation
+Python can be installed in two ways:
+a) within Cygwin, using Cygwin's installer (this is the default for now)
+   -- we're assuming you will use Cygwin bash shell
+b) as Windows app, using standalone installer
+   -- we're assuming you will use DOS window as your text shell
+
+Notes: note that two parallel python installation can introduce conflicts
+
+2. SCons installation
+SCons can be installed in two ways:
+a) If you have selected 1a), read "Building and Installing SCons on Any System" 
+section of SCons Manual: http://www.scons.org/doc/HTML/scons-user/x166.html
+b) If you have selected 1b), download Scons with Windows installer from
+http://www.scons.org/download.php
+
+3. pkg-config installation
+Get this: http://www.gimp.org/~tml/gimp/win32/pkgconfig-0.15.zip
+Sources. if you want to build it: http://pkgconfig.freedesktop.org/releases/
+
+
+
+$ scons debug=full extraincludes=/cygdrive/f/oo/kw/kdelibs4/win
+
+#/cygdrive/f/oo/kw/kdelibs4/kdecore ?
