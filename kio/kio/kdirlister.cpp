@@ -114,11 +114,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
     // stop the job listing _url for this lister
     stop( lister, _url );
 
-    // remove the _url as well, it will be added in a couple of lines again!
-    // forgetDirs with three args does not do this
-    // TODO: think about moving this into forgetDirs
-    lister->d->lstDirs.remove( lister->d->lstDirs.find( _url ) );
-
     // clear _url for lister
     forgetDirs( lister, _url, true );
 
@@ -402,13 +397,9 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   kdDebug(7004) << k_funcinfo << lister << endl;
 
   emit lister->clear();
-  // clear lister->d->lstDirs before calling forgetDirs(), so that
-  // it doesn't contain things that itemsInUse doesn't. When emitting
-  // the canceled signals, lstDirs must not contain anything that
-  // itemsInUse does not contain. (otherwise it might crash in findByName()).
-  KURL::List lstDirsCopy = lister->d->lstDirs;
-  lister->d->lstDirs.clear();
 
+  // forgetDirs() will modify lstDirs, make a copy first
+  KURL::List lstDirsCopy = lister->d->lstDirs;
   for ( KURL::List::Iterator it = lstDirsCopy.begin();
         it != lstDirsCopy.end(); ++it )
   {
@@ -435,6 +426,12 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
     urlsCurrentlyHeld.remove( urlStr ); // this deletes the (empty) holders list
     if ( !urlsCurrentlyListed[urlStr] )
     {
+      // remove the dir from lister->d->lstDirs so that it doesn't contain things
+      // that itemsInUse doesn't. When emitting the canceled signals lstDirs must
+      // not contain anything that itemsInUse does not contain. (otherwise it 
+      // might crash in findByName()).
+      lister->d->lstDirs.remove( lister->d->lstDirs.find( url ) );
+
       // item not in use anymore -> move into cache if complete
       itemsInUse.remove( urlStr );
 
@@ -455,10 +452,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
       }
 
       if ( notify )
-      {
-        lister->d->lstDirs.remove( url );
         emit lister->clear( url );
-      }
 
       if ( item->complete )
       {
@@ -1696,12 +1690,7 @@ void KDirListerCache::deleteDir( const KURL& dirUrl )
           {
             bool treeview = kdl->d->lstDirs.count() > 1;
             if ( !treeview )
-            {
               emit kdl->clear();
-              kdl->d->lstDirs.clear();
-            }
-            else
-              kdl->d->lstDirs.remove( kdl->d->lstDirs.find( deletedUrl ) );
 
             forgetDirs( kdl, deletedUrl, treeview );
           }
