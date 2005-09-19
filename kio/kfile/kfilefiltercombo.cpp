@@ -110,6 +110,16 @@ QString KFileFilterCombo::currentFilter() const
 
 void KFileFilterCombo::setCurrentFilter( const QString& filter )
 {
+    int pos = 0;
+    for( QStringList::ConstIterator it = filters.begin();
+         it != filters.end();
+         ++it, ++pos ) {
+        if( *it == filter ) {
+            setCurrentItem( pos );
+            filterChanged();
+            return;
+        }
+    }
     setCurrentText( filter );
     filterChanged();
 }
