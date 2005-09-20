@@ -29,7 +29,6 @@
 #include "kio/kprotocolmanager.h"
 
 #include <kurl.h>
-#include <kurldrag.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kinputdialog.h>
@@ -40,6 +39,7 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qtextstream.h>
+#include <QMimeData>
 
 static KURL getNewFileName( const KURL &u, const QString& text )
 {
