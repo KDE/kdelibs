@@ -28,7 +28,7 @@
 #include <kdelibs_export.h>
 
 class KActionCollection;
-class KPopupMenu;
+class KMenu;
 class QWidget;
 
 class KAboutData;
@@ -64,7 +64,7 @@ class KHelpMenuPrivate;
  * \endcode
  *
  * IMPORTANT:
- * The first time you use KHelpMenu::menu(), a KPopupMenu object is
+ * The first time you use KHelpMenu::menu(), a KMenu object is
  * allocated. Only one object is created by the class so if you call
  * KHelpMenu::menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
@@ -115,7 +115,7 @@ class KHelpMenuPrivate;
  * void MyClass::myFunc()
  * {
  *   KHelpMenu *helpMenu = new KHelpMenu( this );
- *   KPopupMenu *help = mHelpMenu->menu();
+ *   KMenu *help = mHelpMenu->menu();
  *   help->connectItem( KHelpMenu::menuAboutApp, this, SLOT(myDialogSlot()) );
  * }
  *
@@ -191,7 +191,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * Note: This method will only create one instance of the menu. If
      * you call this method twice or more the same pointer is returned
      */
-    KPopupMenu *menu();
+    KMenu *menu();
 
   public slots:
     /**
@@ -255,7 +255,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
     void showAboutApplication();
 
   private:
-    KPopupMenu   *mMenu;
+    KMenu   *mMenu;
     KDialogBase  *mAboutApp;
     KAboutKDE    *mAboutKDE;
     KBugReport   *mBugReport;

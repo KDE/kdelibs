@@ -44,7 +44,7 @@
 #include <kstdaccel.h>
 #include "kdatepicker.h"
 #include "kdatetbl.h"
-#include "kpopupmenu.h"
+#include "kmenu.h"
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qpen.h>
@@ -485,7 +485,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
 
   if (  e->button() == Qt::RightButton && d->popupMenuEnabled )
   {
-        KPopupMenu *menu = new KPopupMenu();
+        KMenu *menu = new KMenu();
         menu->addTitle( KGlobal::locale()->formatDate(clickedDate) );
         emit aboutToShowContextMenu( menu, clickedDate );
         menu->popup(e->globalPos());

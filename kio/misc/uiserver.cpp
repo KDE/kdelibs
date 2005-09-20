@@ -41,7 +41,7 @@
 #include <kwin.h>
 #include <kdialog.h>
 #include <ksystemtray.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kaction.h>
 
 #include <qcheckbox.h>
@@ -94,7 +94,7 @@ class UIServerSystemTray:public KSystemTray
       UIServerSystemTray(UIServer* uis)
          :KSystemTray(uis)
       {
-         KPopupMenu* pop= contextMenu();
+         KMenu* pop= contextMenu();
          pop->insertItem(i18n("Settings..."), uis, SLOT(slotConfigure()));
          pop->insertItem(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
          setPixmap(loadIcon("filesave"));

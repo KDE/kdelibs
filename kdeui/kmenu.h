@@ -48,12 +48,29 @@ public:
     /**
      * Constructs a KMenu.
      */
-    KMenu(QWidget *parent=0);
+    KMenu(QWidget *parent = 0L);
+
+    /**
+     * Constructs a KMenu.
+     * \param title The text displayed in a parent menu when it is inserted
+     *              into another menu as a submenu.
+     */
+    KMenu(const QString& title, QWidget *parent = 0L);
 
     /**
      * Destructs the object
      */
     ~KMenu();
+
+    /**
+     * Inserts a title item with no icon.
+     */
+    QAction* addTitle(const QString &text, QAction* before = 0L);
+
+    /**
+     * Inserts a title item with the given icon and title.
+     */
+    QAction* addTitle(const QIcon &icon, const QString &text, QAction* before = 0L);
 
     /**
      * Enables keyboard navigation by searching for the entered key sequence.
@@ -108,11 +125,16 @@ public:
     static QAction* contextMenuFocusAction();
 
     /**
-     * Return the state of the mouse button and keyboard modifiers
-     * when the last menuitem was activated.
-     * @since 3.4
+     * Return the state of the mouse buttons when the last menuitem was activated.
+     * @since 4.0
      */
-    Qt::ButtonState state() const;
+    Qt::MouseButtons mouseButtons() const;
+
+    /**
+     * Return the state of the keyboard modifiers when the last menuitem was activated.
+     * @since 4.0
+     */
+    Qt::KeyboardModifiers keyboardModifiers() const;
 
     // BEGIN compat methods
     /**
@@ -162,15 +184,17 @@ private:
  * @author Joseph Wenninger <jowenn@kde.org>
  */
 class KDEUI_EXPORT KMenuContext {
-	public:
-		KMenuContext():m_menu(0),m_action(0){}
-		KMenuContext(const KMenuContext& o):m_menu(o.m_menu),m_action(o.m_action){}
-		KMenuContext(QPointer<KMenu> menu,QPointer<QAction> action):m_menu(menu),m_action(action){}
-		inline QPointer<KMenu> menu() const {return m_menu;}
-		inline QPointer<QAction> action() const {return m_action;}
-	private:
-		QPointer<KMenu> m_menu;
-		QPointer<QAction> m_action;
+public:
+    KMenuContext();
+    KMenuContext(const KMenuContext& o);
+    KMenuContext(QPointer<KMenu> menu,QPointer<QAction> action);
+
+    inline QPointer<KMenu> menu() const { return m_menu; }
+    inline QPointer<QAction> action() const { return m_action; }
+
+private:
+    QPointer<KMenu> m_menu;
+    QPointer<QAction> m_action;
 };
 
 

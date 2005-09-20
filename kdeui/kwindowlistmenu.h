@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kwindowlistmenu_h__
 #define __kwindowlistmenu_h__
 
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <qmap.h>
 
 #ifdef Q_WS_X11 // not yet available for non-X11
@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class KWinModule;
 class KWindowListMenuPrivate;
 
-class KDEUI_EXPORT KWindowListMenu : public KPopupMenu
+class KDEUI_EXPORT KWindowListMenu : public KMenu
 {
     Q_OBJECT
 

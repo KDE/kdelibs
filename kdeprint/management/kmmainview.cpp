@@ -49,7 +49,7 @@
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kdebug.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <klibloader.h>
 #include <kdialogbase.h>
 #include <ksimpleconfig.h>

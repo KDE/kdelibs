@@ -112,7 +112,7 @@ using namespace DOM;
 
 #include "khtmlpart_p.h"
 #include "kpassivepopup.h"
-#include "kpopupmenu.h"
+#include "kmenu.h"
 #include "rendering/render_form.h"
 #include "misc/loader.h"
 #include <kwin.h>
@@ -274,7 +274,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding = new KActionMenu( i18n( "Set &Encoding" ), "charset", actionCollection(), "setEncoding" );
   d->m_paSetEncoding->setDelayed( false );
 
-  d->m_automaticDetection = new KPopupMenu( 0L );
+  d->m_automaticDetection = new KMenu( 0L );
 
   d->m_automaticDetection->insertItem( i18n( "Semi-Automatic" ), 0 );
   d->m_automaticDetection->insertItem( i18n( "Arabic" ), 1 );
@@ -1119,7 +1119,7 @@ void KHTMLPart::disableJSErrorExtension() {
 }
 
 void KHTMLPart::jsErrorDialogContextMenu() {
-  KPopupMenu *m = new KPopupMenu(0L);
+  KMenu *m = new KMenu(0L);
   m->insertItem(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
   m->insertItem(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
   m->popup(QCursor::pos());
@@ -7250,7 +7250,7 @@ void KHTMLPart::launchWalletManager()
 void KHTMLPart::walletMenu()
 {
 #ifndef KHTML_NO_WALLET
-  KPopupMenu *m = new KPopupMenu(0L);
+  KMenu *m = new KMenu(0L);
   m->insertItem(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
   m->popup(QCursor::pos());
 #endif // KHTML_NO_WALLET
@@ -7346,7 +7346,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 }
 
 void KHTMLPart::suppressedPopupMenu() {
-  KPopupMenu *m = new KPopupMenu(0L);
+  KMenu *m = new KMenu(0L);
   m->setCheckable(true);
   if ( d->m_openableSuppressedPopups )
       m->insertItem(i18n("&Show Blocked Popup Window","Show %n Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));

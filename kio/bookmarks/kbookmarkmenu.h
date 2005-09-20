@@ -48,7 +48,7 @@ class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
-class KPopupMenu;
+class KMenu;
 
 namespace KIO { class Job; }
 
@@ -66,7 +66,7 @@ namespace KIO { class Job; }
  *
  * Using this class is very simple:
  *
- * 1) Create a popup menu (either KActionMenu or KPopupMenu will do)
+ * 1) Create a popup menu (either KActionMenu or KMenu will do)
  * 2) Instantiate a new KBookmarkMenu object using the above popup
  *    menu as a parameter
  * 3) Insert your (now full) popup menu wherever you wish
@@ -102,7 +102,7 @@ public:
    * An _empty_ parentAddress denotes the toplevel bookmark menu
    */
   KBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KPopupMenu * parentMenu,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
                  KActionCollection * collec, bool root, bool add = true,
                  const QString & parentAddress = "" );
 
@@ -169,7 +169,7 @@ public slots: // public for bookmark bar
 
 protected slots:
   void slotAboutToShow();
-  void slotAboutToShowContextMenu( KPopupMenu *, int, QMenu * );
+  void slotAboutToShowContextMenu( KMenu *, int, QMenu * );
   void slotActionHighlighted( KAction * );
 
   void slotRMBActionRemove( int );
@@ -214,7 +214,7 @@ protected:
    * The menu in which we plug our actions.
    * Supplied in the constructor.
    */
-  KPopupMenu * m_parentMenu;
+  KMenu * m_parentMenu;
   /**
    * List of our sub menus
    */

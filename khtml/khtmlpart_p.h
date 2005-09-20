@@ -54,7 +54,7 @@
 
 class KFind;
 class KFindDialog;
-class KPopupMenu;
+class KMenu;
 class KSelectAction;
 class KURLLabel;
 class KJavaAppletContext;
@@ -540,7 +540,7 @@ public:
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 
   khtml::Decoder::AutoDetectLanguage m_autoDetectLanguage;
-  KPopupMenu *m_automaticDetection;
+  KMenu *m_automaticDetection;
   KSelectAction *m_manualDetection;
 
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);

@@ -26,7 +26,7 @@
 #include <kimageeffect.h>
 #include <QRubberBand>
 
-class KPopupMenu;
+class KMenu;
 
 #include <kdelibs_export.h>
 
@@ -137,9 +137,9 @@ public slots:
 
 protected:
    /**
-    * Creates a KPopupMenu with the menu that appears when clicking with the right button on the label
+    * Creates a KMenu with the menu that appears when clicking with the right button on the label
     */
-   virtual KPopupMenu *createPopupMenu();
+   virtual KMenu *createPopupMenu();
 
 private:
    bool eventFilter(QObject *obj, QEvent *ev);

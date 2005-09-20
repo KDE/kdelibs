@@ -103,7 +103,7 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * This enum describes the return type for insertTearOffHandle() whether to insert
      * a handle or not. Applications who independently want to use handles in their popup menus
-     * should test for Application level before calling the appropriate function in KPopupMenu.
+     * should test for Application level before calling the appropriate function in KMenu.
      * @since 3,1
      **/
     enum TearOffHandle {
@@ -113,8 +113,8 @@ class KDECORE_EXPORT KGlobalSettings
     };
 
     /**
-     * Returns whether tear-off handles are inserted in KPopupMenus.
-     * @return whether tear-off handles are inserted in KPopupMenus.
+     * Returns whether tear-off handles are inserted in KMenus.
+     * @return whether tear-off handles are inserted in KMenus.
      * @since 3.1
      **/
     static TearOffHandle insertTearOffHandle();

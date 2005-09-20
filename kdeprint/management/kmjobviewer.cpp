@@ -35,7 +35,7 @@
 #include <q3popupmenu.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kiconloader.h>

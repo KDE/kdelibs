@@ -46,7 +46,7 @@
 #include <kglobal.h>
 #include <kmessagebox.h>
 #include <kguiitem.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kmenubar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -436,7 +436,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   vl->addWidget(hsplitter);
 
   // actions
-  KPopupMenu *debugMenu = new KPopupMenu(this);
+  KMenu *debugMenu = new KMenu(this);
   menuBar()->insertItem("&Debug",debugMenu);
 
   m_actionCollection = new KActionCollection(this);

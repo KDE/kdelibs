@@ -18,7 +18,7 @@
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include "kwindowtest.h"
 
 #include <kglobal.h>

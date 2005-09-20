@@ -30,7 +30,7 @@
 
 #include <kdelibs_export.h>
 
-class KPopupMenu;
+class KMenu;
 
 /** Week selection widget.
 * @internal
@@ -404,7 +404,7 @@ signals:
      *
      * @since 3.2
      */
-    void aboutToShowContextMenu( KPopupMenu * menu, const QDate &date);
+    void aboutToShowContextMenu( KMenu * menu, const QDate &date);
 
 private slots:
   void nextMonth();

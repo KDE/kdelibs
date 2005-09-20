@@ -22,7 +22,7 @@
 #include <qlabel.h>
 
 class KActionCollection;
-class KPopupMenu;
+class KMenu;
 class KSystemTrayPrivate;
 
 /**
@@ -89,7 +89,7 @@ public:
        Access to the context menu. This makes it easy to add new items
        to it.
      */
-    KPopupMenu* contextMenu() const;
+    KMenu* contextMenu() const;
 
     /**
        Easy access to the actions in the context menu
@@ -172,7 +172,7 @@ protected:
        Makes it easy to adjust some menu items right before the
        context menu becomes visible.
      */
-    virtual void contextMenuAboutToShow( KPopupMenu* menu );
+    virtual void contextMenuAboutToShow( KMenu* menu );
 
     /**
        Reimplemented for internal reasons.
@@ -187,7 +187,7 @@ private slots:
 private:
     void activateOrHide();
     void minimizeRestore( bool restore );
-    KPopupMenu* menu;
+    KMenu* menu;
     // minimizeRestoreId is no longer needed. remove in KDE 4.0
     int minimizeRestoreId;
     uint hasQuit :1;

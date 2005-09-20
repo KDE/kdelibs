@@ -22,7 +22,7 @@
 #include <kprinter.h>
 #include <kdeprint/kmmanager.h>
 #include <kiconloader.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <klocale.h>
 
 class KPrintAction::KPrintActionPrivate

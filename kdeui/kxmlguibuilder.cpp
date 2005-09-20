@@ -21,7 +21,7 @@
 #include "kauthorized.h"
 #include "kxmlguibuilder.h"
 #include "kmenubar.h"
-#include "kpopupmenu.h"
+#include "kmenu.h"
 #include "ktoolbar.h"
 #include "kstatusbar.h"
 #include "kmainwindow.h"
@@ -154,7 +154,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (!KAuthorized::authorizeKAction(name))
        return 0;
 
-    KPopupMenu *popup = new KPopupMenu(p);
+    KMenu *popup = new KMenu(p);
     popup->setObjectName(name);
 
     QString i18nText;
@@ -358,7 +358,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   }
   else if ( element.tagName().lower() == d->tagMenuTitle )
   {
-    if ( qobject_cast<KPopupMenu*>( parent ) )
+    if ( qobject_cast<KMenu*>( parent ) )
     {
       QString i18nText;
       QByteArray text = element.text().utf8();
@@ -380,7 +380,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         pix = SmallIcon( icon, instance );
       }
 
-      KPopupMenu *m = static_cast<KPopupMenu *>(parent);
+      KMenu *m = static_cast<KMenu *>(parent);
       QAction *before = m->actions().value(index + 1);
 
       if ( !icon.isEmpty() ) {

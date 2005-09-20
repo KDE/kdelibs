@@ -54,7 +54,7 @@ class KConfigBase;
 class KURL;
 class KInstance;
 class KActionCollection;
-class KPopupMenu;
+class KMenu;
 class KMainWindow;
 
 /**
@@ -1011,7 +1011,7 @@ public:
     virtual void insert( KAction*, int index = -1 );
     virtual void remove( KAction* );
 
-    KPopupMenu* popupMenu() const;
+    KMenu* popupMenu() const;
     void popup( const QPoint& global );
 
     /**
@@ -1134,7 +1134,7 @@ public:
      * button. You may want to plug items into it on creation, or connect to
      * aboutToShow for a more dynamic menu.
      */
-    KPopupMenu *popupMenu() const;
+    KMenu *popupMenu() const;
 
     /**
      * Returns true if this action creates a delayed popup menu
@@ -1164,7 +1164,7 @@ public:
     void setStickyMenu(bool sticky);
 
 private:
-    KPopupMenu *m_popup;
+    KMenu *m_popup;
     bool m_delayed:1;
     bool m_stickyMenu:1;
 protected:
@@ -1395,7 +1395,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private:
-    KPopupMenu *m_popup;
+    KMenu *m_popup;
     bool m_mixedMode;
     class KPasteTextActionPrivate;
     KPasteTextActionPrivate *d;

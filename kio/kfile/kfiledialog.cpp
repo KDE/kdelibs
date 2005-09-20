@@ -61,7 +61,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kprotocolinfo.h>
 #include <kpushbutton.h>
 #include <krecentdirs.h>

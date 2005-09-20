@@ -26,7 +26,7 @@
 #include <q3mainwindow.h>
 #include <qmetaobject.h>
 
-class KPopupMenu;
+class KMenu;
 class KXMLGUIFactory;
 class KConfig;
 class KHelpMenu;
@@ -174,7 +174,7 @@ public:
      *
      * Example (adding a standard help menu to your application):
      * \code
-     * KPopupMenu *help = helpMenu( <myTextString> );
+     * KMenu *help = helpMenu( <myTextString> );
      * menuBar()->insertItem( i18n("&Help"), help );
      * \endcode
      *
@@ -188,7 +188,7 @@ public:
      *
      * @return A standard help menu.
      */
-    KPopupMenu* helpMenu( const QString &aboutAppText = QString::null,
+    KMenu* helpMenu( const QString &aboutAppText = QString::null,
 			  bool showWhatsThis = true );
 
     /**
@@ -213,7 +213,7 @@ public:
      *
      * @return A standard help menu.
      */
-    KPopupMenu* customHelpMenu( bool showWhatsThis = true );
+    KMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
      * <b>Session Management</b>

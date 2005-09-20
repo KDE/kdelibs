@@ -35,7 +35,7 @@
 #include <kcursor.h>
 #include <klocale.h>
 #include <kstdaccel.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>

@@ -34,7 +34,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
 #include <kstringhandler.h>
@@ -77,7 +77,7 @@ static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QS
 /********************************************************************/
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
-                              KBookmarkOwner * _owner, KPopupMenu * _parentMenu,
+                              KBookmarkOwner * _owner, KMenu * _parentMenu,
                               KActionCollection *collec, bool _isRoot, bool _add,
                               const QString & parentAddress )
   : QObject(),
@@ -109,8 +109,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     if ( KBookmarkSettings::self()->m_contextmenu )
     {
       (void) _parentMenu->contextMenu();
-      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QMenu*) ),
-               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QMenu*) ));
+      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KMenu*, int, QMenu*) ),
+               this, SLOT( slotAboutToShowContextMenu(KMenu*, int, QMenu*) ));
     }
 
     if ( m_bIsRoot )
@@ -230,12 +230,12 @@ KBookmark RMB::atAddress(const QString & address)
   return bookmark;
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KMenu*, int, QMenu* contextMenu )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull())
   {
-    KPopupMenu::contextMenuFocus()->hideContextMenu();
+    KMenu::contextMenuFocus()->hideContextMenu();
     return;
   }
   contextMenu->clear();
@@ -412,7 +412,7 @@ void RMB::slotRMBActionCopyLocation( int val )
 }
 
 void RMB::hidePopup() {
-  KPopupMenu::contextMenuFocus()->hideContextMenu();
+  KMenu::contextMenuFocus()->hideContextMenu();
 }
 
 /********************************************************************/

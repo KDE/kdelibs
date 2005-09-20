@@ -21,7 +21,7 @@
 
 #include <kbookmarkimporter.h>
 #include <kbookmarkdombuilder.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kstandarddirs.h>
 
 #include "kfiledialog.h"
@@ -33,7 +33,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
       m_dialog( dialog )
 {
     setObjectName( "KFileBookmarkHandler" );
-    m_menu = new KPopupMenu( dialog );
+    m_menu = new KMenu( dialog );
     m_menu->setObjectName( "bookmark menu" );
 
     QString file = locate( "data", "kfile/bookmarks.xml" );

@@ -50,7 +50,7 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KBookmarkBar;
-class KPopupMenu;
+class KMenu;
 
 class KImportedBookmarksActionMenu : public KActionMenu {
   Q_OBJECT

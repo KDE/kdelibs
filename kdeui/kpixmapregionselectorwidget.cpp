@@ -31,7 +31,7 @@
 #include <kimageeffect.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kaction.h>
 #include <stdlib.h>
 #include <qcursor.h>
@@ -138,9 +138,9 @@ void KPixmapRegionSelectorWidget::updatePixmap()
 }
 
 
-KPopupMenu *KPixmapRegionSelectorWidget::createPopupMenu()
+KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
-    KPopupMenu *popup=new KPopupMenu(this );
+    KMenu *popup=new KMenu(this );
     popup->setObjectName( "PixmapRegionSelectorPopup");
    popup->addTitle(i18n("Image Operations"));
 
@@ -219,7 +219,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 
       if ( mev->button() == Qt::RightButton )
       {
-         KPopupMenu *popup = createPopupMenu( );
+         KMenu *popup = createPopupMenu( );
          popup->exec( mev->globalPos() );
          delete popup;
          return true;

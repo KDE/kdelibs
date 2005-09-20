@@ -38,7 +38,7 @@
 #include <kguiitem.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 
@@ -115,37 +115,37 @@ KAction::KAction( const QString& text, const KShortcut& cut,
              KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot, name );
+  initPrivate( text, cut, receiver, slot, name );
 }
 
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
-	const QObject* receiver, const char* slot,
-	KActionCollection* parent, const char* name )
+  const QObject* receiver, const char* slot,
+  KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot, name );
-	d->setIconName( sIconName );
+  initPrivate( text, cut, receiver, slot, name );
+  d->setIconName( sIconName );
 }
 
 KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
-	const QObject* receiver, const char* slot,
-	KActionCollection* parent, const char* name )
+  const QObject* receiver, const char* slot,
+  KActionCollection* parent, const char* name )
 : QObject( parent), d(new KActionPrivate)
 {
-	initPrivate( text, cut, receiver, slot, name );
-	d->setIconSet( pix );
+  initPrivate( text, cut, receiver, slot, name );
+  d->setIconSet( pix );
 }
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
-	const QObject* receiver, const char* slot,
-	KActionCollection* parent, const char* name )
+  const QObject* receiver, const char* slot,
+  KActionCollection* parent, const char* name )
 : QObject( parent ), d(new KActionPrivate)
 {
-	initPrivate( item.text(), cut, receiver, slot, name );
-	if( item.hasIcon() )
-		setIcon( item.iconName() );
-	setToolTip( item.toolTip() );
-	setWhatsThis( item.whatsThis() );
+  initPrivate( item.text(), cut, receiver, slot, name );
+  if( item.hasIcon() )
+    setIcon( item.iconName() );
+  setToolTip( item.toolTip() );
+  setWhatsThis( item.whatsThis() );
 }
 
 #ifndef KDE_NO_COMPAT // KDE 4: remove
@@ -282,10 +282,10 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
 
 /*
 Three actionCollection conditions:
-	1) Scope is known on creation and KAccel object is created (e.g. KMainWindow)
-	2) Scope is unknown and no KAccel object is available (e.g. KXMLGUIClient)
-		a) addClient() will be called on object
-		b) we just want to add the actions to another KXMLGUIClient object
+  1) Scope is known on creation and KAccel object is created (e.g. KMainWindow)
+  2) Scope is unknown and no KAccel object is available (e.g. KXMLGUIClient)
+    a) addClient() will be called on object
+    b) we just want to add the actions to another KXMLGUIClient object
 
 The question is how to do we incorporate #2b into the XMLGUI framework?
 
@@ -294,7 +294,7 @@ We have a KCommandHistory object with undo and redo actions in a passed actionCo
 We have a KoDoc object which holds a KCommandHistory object and the actionCollection
 We have two KoView objects which both point to the same KoDoc object
 Undo and Redo should be available in both KoView objects, and
-	calling the undo->setEnabled() should affect both KoViews
+  calling the undo->setEnabled() should affect both KoViews
 
 When addClient is called, it needs to be able to find the undo and redo actions
 When it calls plug() on them, they need to be inserted into the KAccel object of the appropriate KoView
@@ -305,49 +305,49 @@ have the same scope as the KoView actionCollection
 KXMLGUIClient::addSubActionCollection
 
 Document:
-	create document actions
+  create document actions
 
 View
-	create view actions
-	add document actionCollection as sub-collection
+  create view actions
+  add document actionCollection as sub-collection
 
 A parentCollection is created
 Scenario 1: parentCollection has a focus widget set (e.g. via KMainWindow)
-	A KAccel object is created in the parentCollection
-	A KAction is created with parent=parentCollection
-	The shortcut is inserted into this actionCollection
-	Scenario 1a: xml isn't used
-		done
-	Scenario 1b: KXMLGUIBuilder::addClient() called
-		setWidget is called -- ignore
-		shortcuts are set
+  A KAccel object is created in the parentCollection
+  A KAction is created with parent=parentCollection
+  The shortcut is inserted into this actionCollection
+  Scenario 1a: xml isn't used
+    done
+  Scenario 1b: KXMLGUIBuilder::addClient() called
+    setWidget is called -- ignore
+    shortcuts are set
 Scenario 2: parentCollection has no focus widget (e.g., KParts)
-	A KAction is created with parent=parentCollection
-	Scenario 2a: xml isn't used
-		no shortcuts
-	Scenario 2b: KXMLGUIBuilder::addClient() called
-		setWidget is called
-		shortcuts are inserted into current KAccel
-		shortcuts are set in all other KAccels, if the action is present in the other KAccels
+  A KAction is created with parent=parentCollection
+  Scenario 2a: xml isn't used
+    no shortcuts
+  Scenario 2b: KXMLGUIBuilder::addClient() called
+    setWidget is called
+    shortcuts are inserted into current KAccel
+    shortcuts are set in all other KAccels, if the action is present in the other KAccels
 */
 
 /*
 shortcut may be set:
-	- on construction
-	- on plug
-	- on reading XML
-	- on plugAccel (deprecated)
+  - on construction
+  - on plug
+  - on reading XML
+  - on plugAccel (deprecated)
 
 On Construction: [via initShortcut()]
-	insert into KAccel of m_parentCollection,
-		if kaccel() && isAutoConnectShortcuts() exists
+  insert into KAccel of m_parentCollection,
+    if kaccel() && isAutoConnectShortcuts() exists
 
 On Plug: [via plug() -> plugShortcut()]
-	insert into KAccel of m_parentCollection, if exists and not already inserted into
+  insert into KAccel of m_parentCollection, if exists and not already inserted into
 
 On Read XML: [via setShortcut()]
-	set in all current KAccels
-	insert into KAccel of m_parentCollection, if exists and not already inserted into
+  set in all current KAccels
+  insert into KAccel of m_parentCollection, if exists and not already inserted into
 */
 
 KAccel* KAction::kaccelCurrent()
@@ -601,8 +601,8 @@ int KAction::plug( QWidget *w, int index )
 {
   //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
   if (!w ) {
-	kdWarning(129) << "KAction::plug called with 0 argument\n";
- 	return -1;
+  kdWarning(129) << "KAction::plug called with 0 argument\n";
+  return -1;
   }
 
   // Ellis: print warning if there is a shortcut, but no KAccel available (often due to no widget available in the actioncollection)
@@ -1099,14 +1099,14 @@ void KAction::slotPopupActivated()
       QMenu* qpm = dynamic_cast<QMenu *>( container(pos) );
       if(qpm)
       {
-        KPopupMenu* kpm = dynamic_cast<KPopupMenu *>( qpm );
+        KMenu* kpm = dynamic_cast<KMenu *>( qpm );
         Qt::MouseButtons buttons;
         Qt::KeyboardModifiers modifiers;
-        if ( kpm ) { // KPopupMenu? Nice, it stores the state.
+        if ( kpm ) { // KMenu? Nice, it stores the state.
             buttons = kpm->mouseButtons();
             modifiers = kpm->keyboardModifiers();
         } else { // just a QPopupMenu? We'll ask for the state now then (small race condition?)
-            //kdDebug(129) << "KAction::slotPopupActivated not a KPopupMenu -> using QApplication methods" << endl;
+            //kdDebug(129) << "KAction::slotPopupActivated not a KMenu -> using QApplication methods" << endl;
             buttons = QApplication::mouseButtons();
             modifiers = QApplication::keyboardModifiers();
         }

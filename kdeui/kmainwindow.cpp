@@ -324,7 +324,7 @@ KMainWindow::~KMainWindow()
     mMemberList->remove( this );
 }
 
-KPopupMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
+KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
     if( !mHelpMenu ) {
         if ( aboutAppText.isEmpty() )
@@ -341,7 +341,7 @@ KPopupMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsTh
     return mHelpMenu->menu();
 }
 
-KPopupMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
+KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 {
     if( !mHelpMenu ) {
         mHelpMenu = new KHelpMenu( this, QString::null, showWhatsThis );

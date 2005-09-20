@@ -41,7 +41,7 @@
 293        kdeui (KLineEdit)
 294        kdeui (KEdit)
 295        kdeui (KMenuBar)
-296        kdeui (KPopupMenu)
+296        kdeui (KMenu)
 298        kdeui (KDatePicker)
 399        kimgio
 400        artskde

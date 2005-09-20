@@ -39,7 +39,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
@@ -106,7 +106,7 @@ KHelpMenu::~KHelpMenu()
 }
 
 
-KPopupMenu* KHelpMenu::menu()
+KMenu* KHelpMenu::menu()
 {
   if( !mMenu )
   {
@@ -118,7 +118,7 @@ KPopupMenu* KHelpMenu::menu()
     const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::instance()->aboutData();
     QString appName = (aboutData)? aboutData->programName() : QLatin1String(qApp->name());
 
-    mMenu = new KPopupMenu();
+    mMenu = new KMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     bool need_separator = false;

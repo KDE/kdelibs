@@ -75,7 +75,7 @@ int NameSortedInfoList::compareItems( Q3PtrCollection::Item s1, Q3PtrCollection:
 } // namespace
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char */*name*/)
-  : KPopupMenu(parent)
+  : KMenu(parent)
 {
     kwin_module = new KWinModule(this);
 
@@ -249,7 +249,7 @@ void KWindowListMenu::slotCascadeWindows()
 }
 
 void KWindowListMenu::virtual_hook( int id, void* data )
-{ KPopupMenu::virtual_hook( id, data ); }
+{ KMenu::virtual_hook( id, data ); }
 
 #endif // Q_WS_X11
 

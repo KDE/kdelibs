@@ -32,7 +32,7 @@
 #include <ktoolbarbutton.h>
 
 #include <kconfig.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkdombuilder.h"
@@ -456,7 +456,7 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
             d->m_highlightedAddress = _a->property("address").toString();
             KBookmark bookmark = m_pManager->findByAddress( d->m_highlightedAddress );
             RMB::begin_rmb_action(this);
-            KPopupMenu *pm = new KPopupMenu;
+            KMenu *pm = new KMenu;
             d->m_rmb->fillContextMenu( pm, d->m_highlightedAddress, 0 );
             emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), pm );
             d->m_rmb->fillContextMenu2( pm, d->m_highlightedAddress, 0 );

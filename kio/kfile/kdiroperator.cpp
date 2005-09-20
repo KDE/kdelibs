@@ -40,7 +40,7 @@
 #include <kinputdialog.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kprogress.h>
 #include <kstdaction.h>
 #include <kio/job.h>

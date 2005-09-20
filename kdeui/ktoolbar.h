@@ -48,7 +48,7 @@ class KToolBar;
 class KToolBarButton;
 class KToolBoxManager;
 class KAnimWidget;
-class KPopupMenu;
+class KMenu;
 class KInstance;
 class KComboBox;
 class KXMLGUIClient;
@@ -1065,13 +1065,13 @@ private:
     void removeWidgetInternal( QWidget *w );
     void getAttributes( QString &position, QString &icontext, int &index );
     int dockWindowIndex();
-    KPopupMenu *contextMenu();
+    KMenu *contextMenu();
     void doModeChange();
 
     QMap<QWidget*, int > widget2id;
     typedef QMap<int, QWidget* > Id2WidgetMap;
     Id2WidgetMap id2widget;
-    KPopupMenu *context;
+    KMenu *context;
     Q3PtrList<QWidget> widgets;
     QTimer *layoutTimer;
     QPointer<QWidget> stretchableWidget, rightAligned;

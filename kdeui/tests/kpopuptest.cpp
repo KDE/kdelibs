@@ -5,11 +5,11 @@
 //Added by qt3to4:
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include "kpopupmenu.h"
+#include "kmenu.h"
 
 class DemoWidget : public QWidget {
 private:
-    KPopupMenu *menu;
+    KMenu *menu;
     
 void mousePressEvent(QMouseEvent *)
 {
@@ -24,7 +24,7 @@ void paintEvent(QPaintEvent *)
 public:
     DemoWidget() : QWidget()
     {
-        menu = new KPopupMenu("Popup Menu:");
+        menu = new KMenu("Popup Menu:");
         menu->insertItem("Item1");
         menu->insertItem("Item2");
         menu->insertSeparator();

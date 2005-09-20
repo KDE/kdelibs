@@ -23,7 +23,7 @@
 #include "kmessagebox.h"
 #include "kshortcut.h"
 #include "ksystemtray.h"
-#include "kpopupmenu.h"
+#include "kmenu.h"
 #include <kapplication.h>
 #include "klocale.h"
 #include "kaboutdata.h"
@@ -75,7 +75,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     setBackgroundMode(Qt::X11ParentRelative);
     setBackgroundOrigin(WindowOrigin);
     hasQuit = 0;
-    menu = new KPopupMenu( this );
+    menu = new KMenu( this );
     menu->addTitle( kapp->miniIcon(), kapp->caption() );
     move( -1000, -1000 );
     KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
@@ -128,7 +128,7 @@ void KSystemTray::showEvent( QShowEvent * )
 }
 
 
-KPopupMenu* KSystemTray::contextMenu() const
+KMenu* KSystemTray::contextMenu() const
 {
     return menu;
 }
@@ -167,7 +167,7 @@ void KSystemTray::mouseReleaseEvent( QMouseEvent * )
 }
 
 
-void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
+void KSystemTray::contextMenuAboutToShow( KMenu* )
 {
 }
 

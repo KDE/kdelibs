@@ -23,7 +23,7 @@
 #include <kbookmarkmenu.h>
 
 class QTextStream;
-class KPopupMenu;
+class KMenu;
 
 
 class KIO_EXPORT KFileBookmarkHandler : public QObject, public KBookmarkOwner
@@ -40,7 +40,7 @@ public:
     virtual void openBookmarkURL( const QString& url ) { emit openURL( url ); }
     virtual QString currentURL() const;
 
-    KPopupMenu *menu() const { return m_menu; }
+    KMenu *menu() const { return m_menu; }
 
 signals:
     void openURL( const QString& url );
@@ -49,7 +49,7 @@ private:
     void importOldBookmarks( const QString& path, KBookmarkManager *manager );
 
     KFileDialog *m_dialog;
-    KPopupMenu *m_menu;
+    KMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
 
 protected:

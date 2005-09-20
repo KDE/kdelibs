@@ -56,7 +56,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmainwindow.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <kseparator.h>
 #include <kstdaction.h>
 #include <ktoolbar.h>
@@ -1954,17 +1954,17 @@ void KToolBar::positionYourself( bool force )
     d->positioned = true;
 }
 
-KPopupMenu *KToolBar::contextMenu()
+KMenu *KToolBar::contextMenu()
 {
   if ( context )
     return context;
   // Construct our context popup menu. Name it qt_dockwidget_internal so it
   // won't be deleted by QToolBar::clear().
-  context = new KPopupMenu( this );
+  context = new KMenu( this );
   context->setObjectName( "qt_dockwidget_internal" );
   context->addTitle(i18n("Toolbar Menu"));
 
-  KPopupMenu *orient = new KPopupMenu( i18n("Orientation"), context );
+  KMenu *orient = new KMenu( i18n("Orientation"), context );
   orient->setObjectName( "orient" );
   context->addMenu( orient );
 
@@ -1978,7 +1978,7 @@ KPopupMenu *KToolBar::contextMenu()
   d->contextFloat = orient->addAction( i18n("toolbar position string","Floating"), this, SLOT(slotContextFloat()) );
   d->contextFlat = orient->addAction( i18n("min toolbar", "Flat"), this, SLOT(slotContextFlat()) );
 
-  KPopupMenu *mode = new KPopupMenu( i18n("Text Position"), context );
+  KMenu *mode = new KMenu( i18n("Text Position"), context );
   mode->setObjectName( "mode" );
   context->addMenu( mode );
 
@@ -1988,7 +1988,7 @@ KPopupMenu *KToolBar::contextMenu()
   d->contextTextRight = mode->addAction( i18n("Text Alongside Icons"), this, SLOT(slotContextTextRight()) );
   d->contextTextUnder = mode->addAction( i18n("Text Under Icons"), this, SLOT(slotContextTextUnder()) );
 
-  KPopupMenu *size = new KPopupMenu( i18n("Icon Size"), context );
+  KMenu *size = new KMenu( i18n("Icon Size"), context );
   size->setObjectName( "size" );
   context->addMenu( size );
   d->contextIconSizes.insert(size->addAction( i18n("Default"), this, SLOT(slotContextIconSize())), 0);

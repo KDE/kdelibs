@@ -46,7 +46,7 @@
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
-#include <kpopupmenu.h>
+#include <kmenu.h>
 #include <ktoolbar.h>
 #include <ktoolbarbutton.h>
 #include <kurl.h>
@@ -482,7 +482,7 @@ QMenu* KSelectAction::popupMenu() const
 	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
   {
-      d->m_menu = new KPopupMenu();
+      d->m_menu = new KMenu();
       d->m_menu->setObjectName( "KSelectAction::popupMenu()");
     setupMenu();
     if ( d->m_current >= 0 )
@@ -937,7 +937,7 @@ public:
     m_popup = 0;
   }
   int m_maxItems;
-  KPopupMenu *m_popup;
+  KMenu *m_popup;
   QMap<QString, QString> m_shortNames;
   QMap<QString, KURL> m_urls;
 };
@@ -1049,7 +1049,7 @@ KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
 void KRecentFilesAction::init()
 {
   KRecentFilesAction *that = const_cast<KRecentFilesAction*>(this);
-  that->d->m_popup = new KPopupMenu;
+  that->d->m_popup = new KMenu;
   connect(d->m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
   connect(d->m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
   connect( this, SIGNAL( activated( const QString& ) ),
@@ -1281,7 +1281,7 @@ void KRecentFilesAction::menuItemActivated( int id )
 
 void KRecentFilesAction::menuAboutToShow()
 {
-    KPopupMenu *menu = d->m_popup;
+    KMenu *menu = d->m_popup;
     menu->clear();
     QStringList list = items();
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
@@ -1687,7 +1687,7 @@ class KActionMenu::KActionMenuPrivate
 public:
   KActionMenuPrivate()
   {
-      m_popup = new KPopupMenu();
+      m_popup = new KMenu();
       m_popup->setObjectName( "KActionMenu::KActionMenuPrivate");
     m_delayed = true;
     m_stickyMenu = true;
@@ -1696,7 +1696,7 @@ public:
   {
     delete m_popup; m_popup = 0;
   }
-  KPopupMenu *m_popup;
+  KMenu *m_popup;
   bool m_delayed;
   bool m_stickyMenu;
 };
@@ -1744,7 +1744,7 @@ void KActionMenu::popup( const QPoint& global )
   popupMenu()->popup( global );
 }
 
-KPopupMenu* KActionMenu::popupMenu() const
+KMenu* KActionMenu::popupMenu() const
 {
   return d->m_popup;
 }
@@ -1972,11 +1972,11 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
   return KAction::plug( widget, index );
 }
 
-KPopupMenu *KToolBarPopupAction::popupMenu() const
+KMenu *KToolBarPopupAction::popupMenu() const
 {
     if ( !m_popup ) {
         KToolBarPopupAction *that = const_cast<KToolBarPopupAction*>(this);
-        that->m_popup = new KPopupMenu;
+        that->m_popup = new KMenu;
     }
     return m_popup;
 }
@@ -2250,7 +2250,7 @@ KPasteTextAction::KPasteTextAction( const QString& text,
                             const char* name)
   : KAction( text, icon, cut, receiver, slot, parent, name )
 {
-  m_popup = new KPopupMenu;
+  m_popup = new KMenu;
   connect(m_popup, SIGNAL(aboutToShow()), this, SLOT(menuAboutToShow()));
   connect(m_popup, SIGNAL(activated(int)), this, SLOT(menuItemActivated(int)));
   m_popup->setCheckable(true);
