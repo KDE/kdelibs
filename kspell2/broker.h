@@ -84,7 +84,8 @@ namespace KSpell2
          *
          * @param language specifies the language of the dictionary. If an
          *        empty string will be passed the default language will
-         *        be used.
+         *        be used. Has to be one of the values returned by
+         *        \ref languages()
          * @param client specifies the preferred client. If no client is
          *               specified a client which supports the given
          *               language is picked. If a few clients supports
