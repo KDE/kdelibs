@@ -4,7 +4,7 @@ Import('env')
 
 ui_files="""
 ksharedpixmap.cpp kpixmapio.cpp
-kpopupmenu.cpp kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp
+kmenu.cpp ktoolbar.cpp kaction.cpp kstdaction.cpp
 kactioncollection.cpp kactionclasses.cpp
 kurllabel.cpp kmenubar.cpp kinputdialog.cpp
 knuminput.cpp klineedit.cpp klistview.cpp kprogress.cpp

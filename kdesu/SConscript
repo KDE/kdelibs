@@ -11,6 +11,7 @@ obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
 obj.libs     = '../kdecore/libkdecore.la'
 obj.execute()
 
-obj = env.qt4obj('program', env)
-obj.target = 'kdesu_stub'
-obj.source = 'kdesu_stub.c'
+stubobj = env.qt4obj('program', env)
+stubobj.target = 'kdesu_stub'
+stubobj.source = 'kdesu_stub.c'
+stubobj.execute()

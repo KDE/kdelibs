@@ -666,7 +666,7 @@ def generate(env):
 		if lenv.has_key('USE_THE_FORCE_LUKE'):
 			for ke in lenv['USE_THE_FORCE_LUKE']:
 				if ke.executed: continue
-				#lenv.pprint('GREEN',"you forgot to execute object "+ke.target)
+				lenv.pprint('GREEN',"you forgot to execute object "+ke.target)
 				ke.lockworkdir()
 				ke.execute()
 				ke.unlockworkdir()
