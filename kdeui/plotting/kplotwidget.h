@@ -56,7 +56,7 @@ public:
 	 * @param parent the parent widget
 	 * @param name name label for the KPlotWidget
 	 */
-	KPlotWidget( double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0, QWidget *parent=0, const char* name=0 );
+	KPlotWidget( double x1=0.0, double x2=1.0, double y1=0.0, double y2=1.0, QWidget *parent=0 );
 
 	/**
 	 * Destructor (empty)
@@ -199,7 +199,7 @@ public:
 	 * This function is deprecated, set the label property in the BottomAxis directly.
 	 * @param xlabel a short string describing the data plotted on the x-axis.
 	 */
-	virtual void setXAxisLabel( QString xlabel ) { BottomAxis.setLabel(xlabel); }
+	virtual void setXAxisLabel( const QString& xlabel ) { BottomAxis.setLabel(xlabel); }
 	/**
 	 * Sets the Y-axis label
 	 * Set the label to an empty string to omit the axis label.
@@ -207,7 +207,7 @@ public:
 	 * This function is deprecated, set the label property in the LeftAxis directly.
 	 * @param ylabel a short string describing the data plotted on the y-axis.
 	 */
-	virtual void setYAxisLabel( QString ylabel ) { LeftAxis.setLabel(ylabel); }
+	virtual void setYAxisLabel( const QString& ylabel ) { LeftAxis.setLabel(ylabel); }
 
 	/**
 	 * @returns the number of pixels to the left of the plot area.

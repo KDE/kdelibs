@@ -66,7 +66,7 @@ public:
 	double x() const { return X; }
 	double y() const { return Y; }
 
-	QPoint qpoint( QRect pb, DRect db ) {
+	QPoint qpoint( const QRect& pb, const DRect& db ) {
 		int px = pb.left() + int( pb.width()*( x() -  db.x() )/db.width() );
 		int py = pb.top() + int( pb.height()*( db.y2() - y() )/db.height() );
 		return QPoint( px, py );
