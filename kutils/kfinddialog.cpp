@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <assert.h>
-
+#include <kfind.h>
 #include <kregexpeditorinterface.h>
 #include <kparts/componentfactory.h>
 
@@ -41,7 +41,7 @@ class KFindDialog::KFindDialogPrivate
 public:
     KFindDialogPrivate() : m_regexpDialog(0),
         m_regexpDialogQueryDone(false),
-        m_enabled(WholeWordsOnly | FromCursor | SelectedText | Qt::CaseSensitive | FindBackwards | RegularExpression), m_initialShowDone(false) {}
+        m_enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | Qt::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression), m_initialShowDone(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
     long m_enabled; // uses Options to define which search options are enabled
@@ -302,15 +302,15 @@ long KFindDialog::options() const
     if (m_caseSensitive->isChecked())
         options |= Qt::CaseSensitive;
     if (m_wholeWordsOnly->isChecked())
-        options |= WholeWordsOnly;
+        options |= KFind::WholeWordsOnly;
     if (m_fromCursor->isChecked())
-        options |= FromCursor;
+        options |= KFind::FromCursor;
     if (m_findBackwards->isChecked())
-        options |= FindBackwards;
+        options |= KFind::FindBackwards;
     if (m_selectedText->isChecked())
-        options |= SelectedText;
+        options |= KFind::SelectedText;
     if (m_regExp->isChecked())
-        options |= RegularExpression;
+        options |= KFind::RegularExpression;
     return options;
 }
 
@@ -341,8 +341,8 @@ void KFindDialog::setFindHistory(const QStringList &strings)
 
 void KFindDialog::setHasSelection(bool hasSelection)
 {
-    if (hasSelection) d->m_enabled |= SelectedText;
-    else d->m_enabled &= ~SelectedText;
+    if (hasSelection) d->m_enabled |= KFind::SelectedText;
+    else d->m_enabled &= ~KFind::SelectedText;
     m_selectedText->setEnabled( hasSelection );
     if ( !hasSelection )
     {
@@ -354,26 +354,26 @@ void KFindDialog::setHasSelection(bool hasSelection)
 void KFindDialog::slotSelectedTextToggled(bool selec)
 {
     // From cursor doesn't make sense if we have a selection
-    m_fromCursor->setEnabled( !selec && (d->m_enabled & FromCursor) );
+    m_fromCursor->setEnabled( !selec && (d->m_enabled & KFind::FromCursor) );
     if ( selec ) // uncheck if disabled
         m_fromCursor->setChecked( false );
 }
 
 void KFindDialog::setHasCursor(bool hasCursor)
 {
-    if (hasCursor) d->m_enabled |= FromCursor;
-    else d->m_enabled &= ~FromCursor;
+    if (hasCursor) d->m_enabled |= KFind::FromCursor;
+    else d->m_enabled &= ~KFind::FromCursor;
     m_fromCursor->setEnabled( hasCursor );
-    m_fromCursor->setChecked( hasCursor && (options() & FromCursor) );
+    m_fromCursor->setChecked( hasCursor && (options() & KFind::FromCursor) );
 }
 
 void KFindDialog::setSupportsBackwardsFind( bool supports )
 {
     // ########## Shouldn't this hide the checkbox instead?
-    if (supports) d->m_enabled |= FindBackwards;
-    else d->m_enabled &= ~FindBackwards;
+    if (supports) d->m_enabled |= KFind::FindBackwards;
+    else d->m_enabled &= ~KFind::FindBackwards;
     m_findBackwards->setEnabled( supports );
-    m_findBackwards->setChecked( supports && (options() & FindBackwards) );
+    m_findBackwards->setChecked( supports && (options() & KFind::FindBackwards) );
 }
 
 void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
@@ -388,29 +388,29 @@ void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
 void KFindDialog::setSupportsWholeWordsFind( bool supports )
 {
     // ########## This should hide the checkbox instead
-    if (supports) d->m_enabled |= WholeWordsOnly;
-    else d->m_enabled &= ~WholeWordsOnly;
+    if (supports) d->m_enabled |= KFind::WholeWordsOnly;
+    else d->m_enabled &= ~KFind::WholeWordsOnly;
     m_wholeWordsOnly->setEnabled( supports );
-    m_wholeWordsOnly->setChecked( supports && (options() & WholeWordsOnly) );
+    m_wholeWordsOnly->setChecked( supports && (options() & KFind::WholeWordsOnly) );
 }
 
 void KFindDialog::setSupportsRegularExpressionFind( bool supports )
 {
     // ########## This should hide the checkbox instead
-    if (supports) d->m_enabled |= RegularExpression;
-    else d->m_enabled &= ~RegularExpression;
+    if (supports) d->m_enabled |= KFind::RegularExpression;
+    else d->m_enabled &= ~KFind::RegularExpression;
     m_regExp->setEnabled( supports );
-    m_regExp->setChecked( supports && (options() & RegularExpression) );
+    m_regExp->setChecked( supports && (options() & KFind::RegularExpression) );
 }
 
 void KFindDialog::setOptions(long options)
 {
     m_caseSensitive->setChecked((d->m_enabled & Qt::CaseSensitive) && (options & Qt::CaseSensitive));
-    m_wholeWordsOnly->setChecked((d->m_enabled & WholeWordsOnly) && (options & WholeWordsOnly));
-    m_fromCursor->setChecked((d->m_enabled & FromCursor) && (options & FromCursor));
-    m_findBackwards->setChecked((d->m_enabled & FindBackwards) && (options & FindBackwards));
-    m_selectedText->setChecked((d->m_enabled & SelectedText) && (options & SelectedText));
-    m_regExp->setChecked((d->m_enabled & RegularExpression) && (options & RegularExpression));
+    m_wholeWordsOnly->setChecked((d->m_enabled & KFind::WholeWordsOnly) && (options & KFind::WholeWordsOnly));
+    m_fromCursor->setChecked((d->m_enabled & KFind::FromCursor) && (options & KFind::FromCursor));
+    m_findBackwards->setChecked((d->m_enabled & KFind::FindBackwards) && (options & KFind::FindBackwards));
+    m_selectedText->setChecked((d->m_enabled & KFind::SelectedText) && (options & KFind::SelectedText));
+    m_regExp->setChecked((d->m_enabled & KFind::RegularExpression) && (options & KFind::RegularExpression));
 }
 
 // Create a popup menu with a list of regular expression terms, to help the user

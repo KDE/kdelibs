@@ -105,6 +105,21 @@ class KUTILS_EXPORT KFind :
 
 public:
 
+    // KDE4: move to KFind
+    enum Options
+    {
+        WholeWordsOnly = 1,     // Match whole words only.
+        FromCursor = 2,         // Start from current cursor position.
+        SelectedText = 4,       // Only search selected area.
+        CaseSensitive = 8,      // Consider case when matching.
+        FindBackwards = 16,     // Go backwards.
+        RegularExpression = 32, // Interpret the pattern as a regular expression.
+        FindIncremental = 64,   // Find incremental.
+        // Note that KReplaceDialog uses 256 and 512
+        // User extensions can use boolean options above this value.
+        MinimumUserOption = 65536
+    };
+
     /**
      * Only use this constructor if you don't use KFindDialog, or if
      * you use it as a modal dialog.

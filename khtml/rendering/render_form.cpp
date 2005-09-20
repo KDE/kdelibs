@@ -1366,9 +1366,9 @@ void TextAreaWidget::slotDoReplace()
 
     delete m_replace;
     m_replace = new KReplace(m_repDlg->pattern(), m_repDlg->replacement(), m_repDlg->options(), this);
-    if (m_replace->options() & KFindDialog::FromCursor) {
+    if (m_replace->options() & KFind::FromCursor) {
         getCursorPosition(&m_repPara, &m_repIndex);
-    } else if (m_replace->options() & KFindDialog::FindBackwards) {
+    } else if (m_replace->options() & KFind::FindBackwards) {
         m_repPara = paragraphs() - 1;
         m_repIndex = paragraphLength(m_repPara) - 1;
     } else {
@@ -1403,7 +1403,7 @@ void TextAreaWidget::slotReplaceNext()
     KFind::Result res = KFind::NoMatch;
     while (res == KFind::NoMatch) {
         // If we're done.....
-        if (m_replace->options() & KFindDialog::FindBackwards) {
+        if (m_replace->options() & KFind::FindBackwards) {
             if (m_repIndex == 0 && m_repPara == 0) {
                 break;
             }
@@ -1421,7 +1421,7 @@ void TextAreaWidget::slotReplaceNext()
         res = m_replace->replace();
 
         if (res == KFind::NoMatch) {
-            if (m_replace->options() & KFindDialog::FindBackwards) {
+            if (m_replace->options() & KFind::FindBackwards) {
                 if (m_repPara == 0) {
                     m_repIndex = 0;
                 } else {
@@ -1465,9 +1465,9 @@ void TextAreaWidget::slotDoFind()
 
     delete m_find;
     m_find = new KFind(m_findDlg->pattern(), m_findDlg->options(), this);
-    if (m_find->options() & KFindDialog::FromCursor) {
+    if (m_find->options() & KFind::FromCursor) {
         getCursorPosition(&m_findPara, &m_findIndex);
-    } else if (m_find->options() & KFindDialog::FindBackwards) {
+    } else if (m_find->options() & KFind::FindBackwards) {
         m_findPara = paragraphs() - 1;
         m_findIndex = paragraphLength(m_findPara) - 1;
     } else {
@@ -1497,7 +1497,7 @@ void TextAreaWidget::slotFindNext()
     KFind::Result res = KFind::NoMatch;
     while (res == KFind::NoMatch) {
         // If we're done.....
-        if (m_find->options() & KFindDialog::FindBackwards) {
+        if (m_find->options() & KFind::FindBackwards) {
             if (m_findIndex == 0 && m_findPara == 0) {
                 break;
             }
@@ -1515,7 +1515,7 @@ void TextAreaWidget::slotFindNext()
         res = m_find->find();
 
         if (res == KFind::NoMatch) {
-            if (m_find->options() & KFindDialog::FindBackwards) {
+            if (m_find->options() & KFind::FindBackwards) {
                 if (m_findPara == 0) {
                     m_findIndex = 0;
                 } else {

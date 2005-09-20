@@ -2988,7 +2988,7 @@ void KHTMLPart::findText()
   d->m_findDialog->setHasSelection( hasSelection() );
   d->m_findDialog->setHasCursor( d->m_findNode != 0 );
   if ( d->m_findNode ) // has a cursor -> default to 'FromCursor'
-    d->m_lastFindState.options |= KFindDialog::FromCursor;
+    d->m_lastFindState.options |= KFind::FromCursor;
 
   // TODO? optionsDialog.setPattern( d->m_lastFindState.text );
   d->m_findDialog->setFindHistory( d->m_lastFindState.history );
@@ -3026,9 +3026,9 @@ void KHTMLPart::findText( const QString &str, long options, QWidget *parent, KFi
   if ( !findDialog )
   {
     d->m_lastFindState.options = options;
-    initFindNode( options & KFindDialog::SelectedText,
-                  options & KFindDialog::FindBackwards,
-                  options & KFindDialog::FromCursor );
+    initFindNode( options & KFind::SelectedText,
+                  options & KFind::FindBackwards,
+                  options & KFind::FromCursor );
   }
 }
 
@@ -3055,23 +3055,23 @@ bool KHTMLPart::findTextNext( bool reverse )
     {
       d->m_find->setOptions( options );
 
-      if ( options & KFindDialog::SelectedText )
+      if ( options & KFind::SelectedText )
         Q_ASSERT( hasSelection() );
 
       long difference = d->m_lastFindState.options ^ options;
-      if ( difference & (KFindDialog::SelectedText | KFindDialog::FromCursor ) )
+      if ( difference & (KFind::SelectedText | KFind::FromCursor ) )
       {
           // Important options changed -> reset search range
-        (void) initFindNode( options & KFindDialog::SelectedText,
-                             options & KFindDialog::FindBackwards,
-                             options & KFindDialog::FromCursor );
+        (void) initFindNode( options & KFind::SelectedText,
+                             options & KFind::FindBackwards,
+                             options & KFind::FromCursor );
       }
       d->m_lastFindState.options = options;
     }
   } else
     options = d->m_lastFindState.options;
   if( reverse )
-    options = options ^ KFindDialog::FindBackwards;
+    options = options ^ KFind::FindBackwards;
   if( d->m_find->options() != options )
     d->m_find->setOptions( options );
 
@@ -3079,7 +3079,7 @@ bool KHTMLPart::findTextNext( bool reverse )
   // Additionally since d->m_findNode points after the last node
   // that was searched, it needs to be "after" it in the opposite direction.
   if( d->m_lastFindState.last_dir != -1
-      && bool( d->m_lastFindState.last_dir ) != bool( options & KFindDialog::FindBackwards ))
+      && bool( d->m_lastFindState.last_dir ) != bool( options & KFind::FindBackwards ))
   {
     qSwap( d->m_findNodeEnd, d->m_findNodeStart );
     qSwap( d->m_findPosEnd, d->m_findPosStart );
@@ -3092,7 +3092,7 @@ bool KHTMLPart::findTextNext( bool reverse )
     else
     {
       do {
-        obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
+        obj = (options & KFind::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
       } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
     }
     if ( obj )
@@ -3100,7 +3100,7 @@ bool KHTMLPart::findTextNext( bool reverse )
     else
       d->m_findNode = 0;
   }
-  d->m_lastFindState.last_dir = ( options & KFindDialog::FindBackwards ) ? 1 : 0;
+  d->m_lastFindState.last_dir = ( options & KFind::FindBackwards ) ? 1 : 0;
 
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
@@ -3182,7 +3182,7 @@ bool KHTMLPart::findTextNext( bool reverse )
         if ( !s.isEmpty() )
         {
           newLine = s.find( '\n' ) != -1; // did we just get a newline?
-          if( !( options & KFindDialog::FindBackwards ))
+          if( !( options & KFind::FindBackwards ))
           {
             //kdDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode << endl;
             d->m_stringPortions.append( KHTMLPartPrivate::StringPortion( str.length(), lastNode ) );
@@ -3209,7 +3209,7 @@ bool KHTMLPart::findTextNext( bool reverse )
             // We advance until the next RenderObject that has a NodeImpl as its element().
             // Otherwise (if we keep the 'last node', and it has a '\n') we might be stuck
             // on that object forever...
-            obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
+            obj = (options & KFind::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
           } while ( obj && ( !obj->element() || obj->isInlineContinuation() ) );
         }
         if ( obj )
@@ -3240,7 +3240,7 @@ bool KHTMLPart::findTextNext( bool reverse )
     if ( !(options & FindNoPopups) && d->m_find->shouldRestart() )
     {
       //kdDebug(6050) << "Restarting" << endl;
-      initFindNode( false, options & KFindDialog::FindBackwards, false );
+      initFindNode( false, options & KFind::FindBackwards, false );
       findTextNext( reverse );
     }
     else // really done
@@ -3248,7 +3248,7 @@ bool KHTMLPart::findTextNext( bool reverse )
       //kdDebug(6050) << "Finishing" << endl;
       //delete d->m_find;
       //d->m_find = 0L;
-      initFindNode( false, options & KFindDialog::FindBackwards, false );
+      initFindNode( false, options & KFind::FindBackwards, false );
       d->m_find->resetCounts();
       slotClearSelection();
     }

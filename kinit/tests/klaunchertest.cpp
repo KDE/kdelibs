@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
 #if 0
    QString error;
-   Q3CString dcopService;
+   QByteArray dcopService;
    int pid;
    int result = KApplication::startServiceByDesktopName(
 		QLatin1String("konsole"), QString::null, &error, &dcopService, &pid );

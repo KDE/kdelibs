@@ -124,7 +124,7 @@ KFind::Result KReplace::replace()
         kdDebug() << k_funcinfo << "beginning of loop: m_index=" << m_index << endl;
 #endif
         // Find the next match.
-        if ( m_options & KReplaceDialog::RegularExpression )
+        if ( m_options & KFind::RegularExpression )
             m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
         else
             m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
@@ -163,7 +163,7 @@ KFind::Result KReplace::replace()
             else
             {
                 // not validated -> move on
-                if (m_options & KFindDialog::FindBackwards)
+                if (m_options & KFind::FindBackwards)
                     m_index--;
                 else
                     m_index++;
@@ -185,7 +185,7 @@ int KReplace::replace(QString &text, const QString &pattern, const QString &repl
     if (index != -1)
     {
         *replacedLength = replace(text, replacement, index, options, matchedLength);
-        if (options & KReplaceDialog::FindBackwards)
+        if (options & KFind::FindBackwards)
             index--;
         else
             index += *replacedLength;
@@ -201,7 +201,7 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
     if (index != -1)
     {
         *replacedLength = replace(text, replacement, index, options, matchedLength);
-        if (options & KReplaceDialog::FindBackwards)
+        if (options & KFind::FindBackwards)
             index--;
         else
             index += *replacedLength;
@@ -230,7 +230,7 @@ void KReplace::slotReplaceAll()
 
 void KReplace::slotSkip()
 {
-    if (m_options & KReplaceDialog::FindBackwards)
+    if (m_options & KFind::FindBackwards)
         m_index--;
     else
         m_index++;
@@ -262,7 +262,7 @@ void KReplace::doReplace()
     kdDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
 #endif
     m_replacements++;
-    if (m_options & KReplaceDialog::FindBackwards)
+    if (m_options & KFind::FindBackwards)
         m_index--;
     else {
         m_index += replacedLength;
@@ -287,7 +287,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     // ... Or if the prompt-on-replace option was set.
     // Well, unless the user can modify the document during a search operation,
     // hence the force boolean.
-    if ( !forceAsking && (m_options & KFindDialog::FromCursor) == 0
+    if ( !forceAsking && (m_options & KFind::FromCursor) == 0
          && (m_options & KReplaceDialog::PromptOnReplace) == 0 )
     {
         displayFinalDialog();
@@ -303,7 +303,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     }
     else
     {
-        if ( m_options & KFindDialog::FindBackwards )
+        if ( m_options & KFind::FindBackwards )
             message = i18n( "Beginning of document reached." );
         else
             message = i18n( "End of document reached." );
@@ -312,7 +312,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     message += "\n";
     // Hope this word puzzle is ok, it's a different sentence
     message +=
-        ( m_options & KFindDialog::FindBackwards ) ?
+        ( m_options & KFind::FindBackwards ) ?
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 

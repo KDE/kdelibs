@@ -32,8 +32,8 @@
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kdemacros.h>
+#include <kfind.h>
 #include <kfinddialog.h>
-
 #include <qregexp.h>
 
 class KHTMLPartPrivate;
@@ -697,8 +697,8 @@ public:
    */
   enum FindOptions
   {
-  	FindLinksOnly   = 1 * KFindDialog::MinimumUserOption,
-  	FindNoPopups    = 2 * KFindDialog::MinimumUserOption
+  	FindLinksOnly   = 1 * KFind::MinimumUserOption,
+  	FindNoPopups    = 2 * KFind::MinimumUserOption
   	//FindIncremental = 4 * KFindDialog::MinimumUserOption
   };
 
