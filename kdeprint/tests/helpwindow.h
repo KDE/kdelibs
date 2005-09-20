@@ -17,7 +17,7 @@
 #include <qdir.h>
 
 class QComboBox;
-class Q3PopupMenu;
+class QMenu;
 
 class HelpWindow : public KMainWindow
 {
@@ -52,7 +52,7 @@ private:
     QString selectedURL;
     QStringList history, bookmarks;
     QMap<int, QString> mHistory, mBookmarks;
-    Q3PopupMenu *hist, *bookm;
+    QMenu *hist, *bookm;
 
 };
 

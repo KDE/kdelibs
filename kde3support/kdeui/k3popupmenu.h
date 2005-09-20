@@ -19,7 +19,7 @@
 #ifndef _KPOPUP_H
 #define _KPOPUP_H
 
-#include <QMenu>
+#include <Q3PopupMenu>
 #include <QMenuItem>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
@@ -28,10 +28,12 @@
 /**
  * @short A menu with keyboard searching and convenience methods for title items.
  *
- * KPopupMenu is a class for menus with standard title items and keyboard
+ * K3PopupMenu is a compatability class for KPopupMenu from KDE 3.
+ * It provides menus with standard title items and keyboard
  * accessibility for popups with many options and/or varying options. It acts
- * identically to QMenu, with the addition of addTitle(),
- * setKeyboardShortcutsEnabled() and setKeyboardShortcutsExecute() methods.
+ * identically to QMenu, with the addition of insertTitle(),
+ * changeTitle(), setKeyboardShortcutsEnabled() and
+ * setKeyboardShortcutsExecute() methods.
  *
  * The titles support a text string and an icon.
  *
@@ -41,23 +43,18 @@
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KPopupMenu : public QMenu {
+class KDEUI_EXPORT K3PopupMenu : public Q3PopupMenu {
     Q_OBJECT
 public:
     /**
-     * Constructs a KPopupMenu.
+     * Constructs a K3PopupMenu.
      */
-    KPopupMenu(QWidget *parent=0);
-
-    /**
-     * Constructs a KPopupMenu with a title.
-     */
-    KPopupMenu(const QString& title, QWidget *parent=0);
+    K3PopupMenu(QWidget *parent=0);
 
     /**
      * Destructs the object
      */
-    ~KPopupMenu();
+    ~K3PopupMenu();
 
     /**
      * Inserts a title item with no icon.
@@ -94,12 +91,12 @@ public:
     /**
      * Returns the context menu associated with this menu
      */
-    QMenu* contextMenu();
+    Q3PopupMenu* contextMenu();
 
     /**
      * Returns the context menu associated with this menu
      */
-    const QMenu* contextMenu() const;
+    const Q3PopupMenu* contextMenu() const;
 
     /**
      * Hides the context menu if shown
@@ -108,16 +105,25 @@ public:
     void hideContextMenu();
 
     /**
-     * Returns the KPopupMenu associated with the current context menu
+     * Returns the K3PopupMenu associated with the current context menu
      * @since 3.2
      */
-    static KPopupMenu* contextMenuFocus();
+    static K3PopupMenu* contextMenuFocus();
 
     /**
      * returns the QAction associated with the current context menu
      * @since 3.2
      */
     static QAction* contextMenuFocusAction();
+
+#ifdef QT3_SUPPORT
+    /**
+     * Return the state of the mouse button and keyboard modifiers
+     * when the last menuitem was activated.
+     * @since 3.4
+     */
+    Qt::ButtonState state() const;
+#endif
 
     /**
      * Return the state of the mouse buttons when the last menuitem was activated.
@@ -131,6 +137,74 @@ public:
      */
     Qt::KeyboardModifiers keyboardModifiers() const;
 
+#ifdef QT3_SUPPORT
+    /**
+     * Inserts a title item with no icon.
+     */
+    int insertTitle(const QString &text, int id=-1, int index=-1) KDE_DEPRECATED;
+    /**
+     * Inserts a title item with the given icon and title.
+     */
+    int insertTitle(const QPixmap &icon, const QString &text, int id=-1,
+                    int index=-1) KDE_DEPRECATED;
+    /**
+     * Changes the title of the item at the specified id. If a icon was
+     * previously set it is cleared.
+     */
+    void changeTitle(int id, const QString &text) KDE_DEPRECATED;
+    /**
+     * Changes the title and icon of the title item at the specified id.
+     */
+    void changeTitle(int id, const QPixmap &icon, const QString &text) KDE_DEPRECATED;
+    /**
+     * Returns the title of the title item at the specified id. The default
+     * id of -1 is for backwards compatibility only, you should always specify
+     * the id.
+     */
+    QString title(int id=-1) const KDE_DEPRECATED;
+    /**
+     * Returns the icon of the title item at the specified id.
+     */
+    QPixmap titlePixmap(int id) const KDE_DEPRECATED;
+
+    /**
+     * @deprecated
+     * Obsolete method provided for backwards compatibility only. Use the
+     * normal constructor and insertTitle instead.
+     */
+    K3PopupMenu(const QString &title, QWidget *parent=0) KDE_DEPRECATED;
+
+    /**
+     * @deprecated
+     * Obsolete method provided for backwards compatibility only. Use
+     * insertTitle and changeTitle instead.
+     */
+    void setTitle(const QString &title) KDE_DEPRECATED;
+
+    /**
+     * returns the ID of the menuitem associated with the current context menu
+     * @since 3.2
+     */
+    static int contextMenuFocusItem() KDE_DEPRECATED;
+
+    /**
+     * Reimplemented for internal purposes
+     * @since 3.4
+     */
+    virtual void activateItemAt(int index) KDE_DEPRECATED;
+    // END compat methods
+
+    /**
+     * Helper for porting things. Returns ID of action, or -1 if passed null.
+     * ### KDE4: remove once we've cleaned up stuff
+     */
+    static int KDE_DEPRECATED actionId(QAction* action)
+    {
+        if (!action)
+            return -1;
+        return static_cast<QMenuItem*>(action)->id();
+    }
+#endif
 signals:
     /**
      * connect to this signal to be notified when a context menu is about to be shown
@@ -139,7 +213,9 @@ signals:
      * @param ctxMenu The context menu itself
      * @since 3.2
      */
-    void aboutToShowContextMenu(KPopupMenu* menu, QAction* menuAction, QMenu* ctxMenu);
+    void aboutToShowContextMenu(K3PopupMenu* menu, QAction* menuAction, QMenu* ctxMenu);
+    /// compat
+    void aboutToShowContextMenu(K3PopupMenu* menu, int menuItem, Q3PopupMenu* ctxMenu);
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -164,8 +240,8 @@ protected slots:
     void ctxMenuHideShowingMenu();
 
 private:
-    class KPopupMenuPrivate;
-    KPopupMenuPrivate *d;
+    class K3PopupMenuPrivate;
+    K3PopupMenuPrivate *d;
 };
 
 #endif

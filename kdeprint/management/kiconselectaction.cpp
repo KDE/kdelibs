@@ -33,7 +33,7 @@ public:
 		m_menu = 0;
 	}
 	QStringList	m_iconlst;
-	Q3PopupMenu*	m_menu;
+	QMenu*	m_menu;
 };
 
 KIconSelectAction::KIconSelectAction(const QString& text, int accel, QObject* parent, const char* name)

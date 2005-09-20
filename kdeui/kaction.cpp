@@ -487,15 +487,15 @@ void KAction::updateShortcut( int i )
   int id = itemId( i );
 
   QWidget* w = container( i );
-  if ( qobject_cast<Q3PopupMenu *>( w ) ) {
-    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>(w);
+  if ( qobject_cast<QMenu *>( w ) ) {
+    QMenu* menu = static_cast<QMenu*>(w);
     updateShortcut( menu, id );
   }
   else if ( qobject_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
 }
 
-void KAction::updateShortcut( Q3PopupMenu* menu, int id )
+void KAction::updateShortcut( QMenu* menu, int id )
 {
   //kdDebug(129) << "KAction::updateShortcut(): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
   // If the action has a KAccel object,
@@ -621,9 +621,9 @@ int KAction::plug( QWidget *w, int index )
 
   plugShortcut();
 
-  if ( qobject_cast<Q3PopupMenu *>( w ) )
+  if ( qobject_cast<QMenu *>( w ) )
   {
-    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( w );
+    QMenu* menu = static_cast<QMenu*>( w );
     int id;
     // Don't insert shortcut into menu if it's already in a KAccel object.
     int keyQt = (d->m_kaccelList.count() || d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
@@ -721,9 +721,9 @@ void KAction::unplug( QWidget *w )
     return;
   int id = itemId( i );
 
-  if ( qobject_cast<Q3PopupMenu *>( w ) )
+  if ( qobject_cast<QMenu *>( w ) )
   {
-    Q3PopupMenu *menu = static_cast<Q3PopupMenu *>( w );
+    QMenu *menu = static_cast<QMenu *>( w );
     menu->removeItem( id );
   }
   else if ( qobject_cast<KToolBar *>( w ) )
@@ -825,8 +825,8 @@ void KAction::updateEnabled( int i )
 {
     QWidget *w = container( i );
 
-    if ( qobject_cast<Q3PopupMenu *>( w ) )
-      static_cast<Q3PopupMenu*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
+    if ( qobject_cast<QMenu *>( w ) )
+      static_cast<QMenu*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
     else if ( qobject_cast<QMenuBar *>( w ) )
       static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), d->isEnabled() );
     else if ( qobject_cast<KToolBar *>( w ) )
@@ -868,11 +868,11 @@ void KAction::updateText( int i )
 {
   QWidget *w = container( i );
 
-  if ( qobject_cast<Q3PopupMenu *>( w ) ) {
+  if ( qobject_cast<QMenu *>( w ) ) {
     int id = itemId( i );
-    static_cast<Q3PopupMenu*>(w)->changeItem( id, d->text() );
+    static_cast<QMenu*>(w)->changeItem( id, d->text() );
     if (!d->m_cut.isNull())
-      updateShortcut( static_cast<Q3PopupMenu*>(w), id );
+      updateShortcut( static_cast<QMenu*>(w), id );
   }
   else if ( qobject_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
@@ -908,11 +908,11 @@ void KAction::updateIcon( int id )
 {
   QWidget* w = container( id );
 
-  if ( qobject_cast<Q3PopupMenu *>( w ) ) {
+  if ( qobject_cast<QMenu *>( w ) ) {
     int itemId_ = itemId( id );
-    static_cast<Q3PopupMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
+    static_cast<QMenu*>(w)->changeItem( itemId_, d->iconSet( KIcon::Small ), d->text() );
     if (!d->m_cut.isNull())
-      updateShortcut( static_cast<Q3PopupMenu*>(w), itemId_ );
+      updateShortcut( static_cast<QMenu*>(w), itemId_ );
   }
   else if ( qobject_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet( KIcon::Small ), d->text() );
@@ -939,12 +939,12 @@ void KAction::updateIconSet( int id )
 {
   QWidget *w = container( id );
 
-  if ( qobject_cast<Q3PopupMenu *>( w ) )
+  if ( qobject_cast<QMenu *>( w ) )
   {
     int itemId_ = itemId( id );
-    static_cast<Q3PopupMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
+    static_cast<QMenu*>(w)->changeItem( itemId_, d->iconSet(), d->text() );
     if (!d->m_cut.isNull())
-      updateShortcut( static_cast<Q3PopupMenu*>(w), itemId_ );
+      updateShortcut( static_cast<QMenu*>(w), itemId_ );
   }
   else if ( qobject_cast<QMenuBar *>( w ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), d->iconSet(), d->text() );
@@ -978,7 +978,7 @@ void KAction::setWhatsThis( const QString& text )
 
 void KAction::updateWhatsThis( int i )
 {
-  Q3PopupMenu* pm = popupMenu( i );
+  QMenu* pm = popupMenu( i );
   if ( pm )
   {
     pm->setWhatsThis( itemId( i ), d->whatsThis() );
@@ -1019,9 +1019,9 @@ KToolBar* KAction::toolBar( int index ) const
     return dynamic_cast<KToolBar *>( d->m_containers.at(index).m_container );
 }
 
-Q3PopupMenu* KAction::popupMenu( int index ) const
+QMenu* KAction::popupMenu( int index ) const
 {
-    return dynamic_cast<Q3PopupMenu *>( d->m_containers.at(index).m_container );
+    return dynamic_cast<QMenu *>( d->m_containers.at(index).m_container );
 }
 
 QWidget* KAction::representative( int index ) const
@@ -1096,7 +1096,7 @@ void KAction::slotPopupActivated()
     int pos = findContainer(id);
     if(pos != -1)
     {
-      Q3PopupMenu* qpm = dynamic_cast<Q3PopupMenu *>( container(pos) );
+      QMenu* qpm = dynamic_cast<QMenu *>( container(pos) );
       if(qpm)
       {
         KPopupMenu* kpm = dynamic_cast<KPopupMenu *>( qpm );

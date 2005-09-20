@@ -60,7 +60,7 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 
     resize( 640,700 );
 
-    Q3PopupMenu* file = new Q3PopupMenu( this );
+    QMenu* file = new QMenu( this );
     file->insertItem( "&New Window", this, SLOT( newWindow() ), Qt::ALT | Qt::Key_N );
     file->insertItem( "&Open File", this, SLOT( openFile() ), Qt::ALT | Qt::Key_O );
     file->insertItem( "&Print", this, SLOT( print() ), Qt::ALT | Qt::Key_P );
@@ -73,7 +73,7 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     QIcon icon_forward( QPixmap("forward.xpm") );
     QIcon icon_home( QPixmap("home.xpm") );
 
-    Q3PopupMenu* go = new Q3PopupMenu( this );
+    QMenu* go = new QMenu( this );
     backwardId = go->insertItem( icon_back,
 				 "&Backward", browser, SLOT( backward() ),
 				 Qt::ALT | Qt::Key_Left );
@@ -82,18 +82,18 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 				Qt::ALT | Qt::Key_Right );
     go->insertItem( icon_home, "&Home", browser, SLOT( home() ) );
 
-    Q3PopupMenu* help = new Q3PopupMenu( this );
+    QMenu* help = new QMenu( this );
     help->insertItem( "&About ...", this, SLOT( about() ) );
     help->insertItem( "About &Qt ...", this, SLOT( aboutQt() ) );
 
-    hist = new Q3PopupMenu( this );
+    hist = new QMenu( this );
     QStringList::Iterator it = history.begin();
     for ( ; it != history.end(); ++it )
 	mHistory[ hist->insertItem( *it ) ] = *it;
     connect( hist, SIGNAL( activated( int ) ),
 	     this, SLOT( histChosen( int ) ) );
 
-    bookm = new Q3PopupMenu( this );
+    bookm = new QMenu( this );
     bookm->insertItem( tr( "Add Bookmark" ), this, SLOT( addBookmark() ) );
     bookm->insertSeparator();
 

@@ -37,7 +37,7 @@
 #include "kbookmarkmanager.h"
 
 class QString;
-class Q3PopupMenu;
+class QMenu;
 class QPushButton;
 class Q3ListView;
 class KLineEdit;
@@ -158,7 +158,7 @@ public:
   static QStringList dynamicBookmarksList();
 
 signals:
-  void aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * );
+  void aboutToShowContextMenu( const KBookmark &, QMenu * );
   /**
    * @since 3.4
    */
@@ -169,7 +169,7 @@ public slots: // public for bookmark bar
 
 protected slots:
   void slotAboutToShow();
-  void slotAboutToShowContextMenu( KPopupMenu *, int, Q3PopupMenu * );
+  void slotAboutToShowContextMenu( KPopupMenu *, int, QMenu * );
   void slotActionHighlighted( KAction * );
 
   void slotRMBActionRemove( int );
@@ -200,7 +200,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void fillContextMenu( Q3PopupMenu *, const QString &, int );
+  void fillContextMenu( QMenu *, const QString &, int );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;

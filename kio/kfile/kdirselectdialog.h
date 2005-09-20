@@ -23,7 +23,7 @@
 #include <kdialogbase.h>
 #include <kurl.h>
 
-class Q3PopupMenu;
+class QMenu;
 class QVBoxLayout;
 class KConfig;
 class KFileTreeBranch;
@@ -117,7 +117,7 @@ private:
     KFileTreeBranch * createBranch( const KURL& url );
 
     KFileTreeView *m_treeView;
-    Q3PopupMenu *m_contextMenu;
+    QMenu *m_contextMenu;
     KToggleAction *m_showHiddenFolders;
     bool m_localOnly;
 

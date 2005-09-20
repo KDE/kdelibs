@@ -34,6 +34,7 @@ class QTextStream;
 class KHistoryCombo;
 class KIntNumInput;
 class Q3VButtonGroup;
+class QMenu;
 
 class KDEUI_EXPORT KEdGotoLine : public KDialogBase
 {
@@ -243,7 +244,7 @@ public:
      *
      *  The Popup Menu will be activated on a right mouse button press event.
      */
-    void 	installRBPopup( Q3PopupMenu* );
+    void 	installRBPopup( QMenu* );
 
     /**
      * Retrieve the current line number.

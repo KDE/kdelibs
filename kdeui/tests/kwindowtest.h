@@ -50,10 +50,10 @@ public slots:
     void slotToggled(int);
 protected:
     KMenuBar *menuBar;
-    Q3PopupMenu *fileMenu;
-    Q3PopupMenu *itemsMenu;
-    Q3PopupMenu *completions;
-    Q3PopupMenu *toolBarMenu;
+    QMenu *fileMenu;
+    QMenu *itemsMenu;
+    QMenu *completions;
+    QMenu *toolBarMenu;
     KStatusBar *statusBar;
     KHelpMenu *helpMenu;
     KToolBar *tb;

@@ -547,7 +547,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     Q3MultiLineEdit::keyPressEvent(e);
 }
 
-void KEdit::installRBPopup(Q3PopupMenu *p) {
+void KEdit::installRBPopup(QMenu *p) {
   KContextMenuManager::insert( this, p );
 }
 

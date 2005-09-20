@@ -109,8 +109,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     if ( KBookmarkSettings::self()->m_contextmenu )
     {
       (void) _parentMenu->contextMenu();
-      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, Q3PopupMenu*) ),
-               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, Q3PopupMenu*) ));
+      connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QMenu*) ),
+               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QMenu*) ));
     }
 
     if ( m_bIsRoot )
@@ -230,7 +230,7 @@ KBookmark RMB::atAddress(const QString & address)
   return bookmark;
 }
 
-void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, Q3PopupMenu* contextMenu )
+void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QMenu* contextMenu )
 {
   //kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
   if (s_highlightedAddress.isNull())
@@ -242,7 +242,7 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, Q3PopupMenu* c
   fillContextMenu( contextMenu, s_highlightedAddress, 0 );
 }
 
-void RMB::fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, int val )
+void RMB::fillContextMenu( QMenu* contextMenu, const QString & address, int val )
 {
   KBookmark bookmark = atAddress(address);
 
@@ -265,7 +265,7 @@ void RMB::fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, in
   }*/
 }
 
-void RMB::fillContextMenu2( Q3PopupMenu* contextMenu, const QString & address, int val )
+void RMB::fillContextMenu2( QMenu* contextMenu, const QString & address, int val )
 {
   KBookmark bookmark = atAddress(address);
 
@@ -419,7 +419,7 @@ void RMB::hidePopup() {
 /********************************************************************/
 /********************************************************************/
 
-void KBookmarkMenu::fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, int val )
+void KBookmarkMenu::fillContextMenu( QMenu* contextMenu, const QString & address, int val )
 {
   RMB::begin_rmb_action(this);
   rmbSelf(this)->fillContextMenu(contextMenu, address, val);
@@ -668,8 +668,8 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                   m_bAddBookmark,
                                                   bm.address() );
 
-      connect(subMenu, SIGNAL( aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * ) ),
-                 this, SIGNAL( aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * ) ));
+      connect(subMenu, SIGNAL( aboutToShowContextMenu( const KBookmark &, QMenu * ) ),
+                 this, SIGNAL( aboutToShowContextMenu( const KBookmark &, QMenu * ) ));
       connect(subMenu, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::ButtonState ) ));
       m_lstSubMenus.append( subMenu );

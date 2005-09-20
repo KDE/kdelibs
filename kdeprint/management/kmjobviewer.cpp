@@ -286,7 +286,7 @@ void KMJobViewer::initActions()
 
 	if (!m_pop)
 	{
-		m_pop = new Q3PopupMenu(this);
+		m_pop = new QMenu(this);
 		connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 		connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 		hact->plug(m_pop);
@@ -345,7 +345,7 @@ void KMJobViewer::initActions()
 	slotSelectionChanged();
 }
 
-void KMJobViewer::buildPrinterMenu(Q3PopupMenu *menu, bool use_all, bool use_specials)
+void KMJobViewer::buildPrinterMenu(QMenu *menu, bool use_all, bool use_specials)
 {
 	loadPrinters();
 	menu->clear();
@@ -368,13 +368,13 @@ void KMJobViewer::buildPrinterMenu(Q3PopupMenu *menu, bool use_all, bool use_spe
 
 void KMJobViewer::slotShowMoveMenu()
 {
-	Q3PopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
+	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
 	buildPrinterMenu(menu, false, false);
 }
 
 void KMJobViewer::slotShowPrinterMenu()
 {
-	Q3PopupMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
+	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
 	buildPrinterMenu(menu, true, true);
 }
 
@@ -606,7 +606,7 @@ void KMJobViewer::loadPluginActions()
 		if (m_pop)
 			(*it)->plug(m_pop, mpopindex++);
 		if (item->menu())
-			(*it)->plug(static_cast<Q3PopupMenu*>(item->menu()), menuindex++);
+			(*it)->plug(static_cast<QMenu*>(item->menu()), menuindex++);
 	}
 }
 

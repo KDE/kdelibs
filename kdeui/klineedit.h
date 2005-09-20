@@ -33,7 +33,7 @@
 #include <qlineedit.h>
 #include <kcompletion.h>
 
-class Q3PopupMenu;
+class QMenu;
 
 class KCompletionBox;
 class KURL;

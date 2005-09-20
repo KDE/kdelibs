@@ -32,7 +32,7 @@ class KMJobManager;
 class KMJob;
 class KListView;
 class JobItem;
-class Q3PopupMenu;
+class QMenu;
 class Q3ListViewItem;
 class KMPrinter;
 class QTimer;
@@ -103,7 +103,7 @@ protected:
 	void triggerRefresh();
 	void addToManager();
 	void removeFromManager();
-	void buildPrinterMenu(Q3PopupMenu *menu, bool use_all = false, bool use_specials = false);
+	void buildPrinterMenu(QMenu *menu, bool use_all = false, bool use_specials = false);
 	void updateCaption();
 	void updateStatusBar();
 
@@ -111,7 +111,7 @@ private:
 	KListView		*m_view;
 	Q3PtrList<KMJob>		m_jobs;
 	Q3PtrList<JobItem>		m_items;
-	Q3PopupMenu		*m_pop;
+	QMenu		*m_pop;
 	Q3PtrList<KMPrinter>	m_printers;
 	QString	m_prname;
 	int	m_type;

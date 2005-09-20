@@ -38,7 +38,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <ktoolbar.h>
-#include <kpopupmenu.h>
+#include <k3popupmenu.h>
 #include <kwin.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
@@ -1656,7 +1656,7 @@ K3DockManager::K3DockManager( QWidget* mainWindow , const char* name )
   menuData->setAutoDelete( true );
 
 #ifndef NO_KDE2
-  menu = new KPopupMenu();
+  menu = new K3PopupMenu();
 #else
   menu = new Q3PopupMenu();
 #endif

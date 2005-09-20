@@ -134,7 +134,7 @@ KToggleAction::~KToggleAction()
 
 int KToggleAction::plug( QWidget* widget, int index )
 {
-  if ( !qobject_cast<Q3PopupMenu*>( widget ) && !qobject_cast<KToolBar*>( widget ) )
+  if ( !qobject_cast<QMenu*>( widget ) && !qobject_cast<KToolBar*>( widget ) )
   {
     kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
@@ -191,8 +191,8 @@ void KToggleAction::updateChecked( int id )
 {
   QWidget *w = container( id );
 
-  if ( qobject_cast<Q3PopupMenu*>( w ) ) {
-    Q3PopupMenu* pm = static_cast<Q3PopupMenu*>(w);
+  if ( qobject_cast<QMenu*>( w ) ) {
+    QMenu* pm = static_cast<QMenu*>(w);
     int itemId_ = itemId( id );
     if ( !d->m_checkedGuiItem )
       pm->setItemChecked( itemId_, d->m_checked );
@@ -343,7 +343,7 @@ public:
   }
   bool m_edit;
   bool m_menuAccelsEnabled;
-  Q3PopupMenu *m_menu;
+  QMenu *m_menu;
   int m_current;
   int m_comboWidth;
   QStringList m_list;
@@ -477,7 +477,7 @@ void KSelectAction::setMaxComboViewCount( int n )
   d->m_maxComboViewCount = n;
 }
 
-Q3PopupMenu* KSelectAction::popupMenu() const
+QMenu* KSelectAction::popupMenu() const
 {
 	kdDebug(129) << "KAction::popupMenu()" << endl; // remove -- ellis
   if ( !d->m_menu )
@@ -636,12 +636,12 @@ int KSelectAction::plug( QWidget *widget, int index )
   if (kapp && !KAuthorized::authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( qobject_cast<Q3PopupMenu*>( widget) )
+  if ( qobject_cast<QMenu*>( widget) )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
 
-    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
+    QMenu* menu = static_cast<QMenu*>( widget );
     int id;
     if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
@@ -1782,9 +1782,9 @@ int KActionMenu::plug( QWidget* widget, int index )
   if (kapp && !KAuthorized::authorizeKAction(name()))
     return -1;
   kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( qobject_cast<Q3PopupMenu*>( widget ) )
+  if ( qobject_cast<QMenu*>( widget ) )
   {
-    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
+    QMenu* menu = static_cast<QMenu*>( widget );
     int id;
     if ( hasIcon() )
       id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
@@ -2203,9 +2203,9 @@ KActionSeparator::~KActionSeparator()
 
 int KActionSeparator::plug( QWidget *widget, int index )
 {
-  if ( qobject_cast<Q3PopupMenu*>( widget) )
+  if ( qobject_cast<QMenu*>( widget) )
   {
-    Q3PopupMenu* menu = static_cast<Q3PopupMenu*>( widget );
+    QMenu* menu = static_cast<QMenu*>( widget );
 
     int id = menu->insertSeparator( index );
 

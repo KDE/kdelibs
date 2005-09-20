@@ -31,7 +31,7 @@
 #include <kfileitem.h>
 #include <kfile.h>
 
-class Q3PopupMenu;
+class QMenu;
 class QTimer;
 
 class KAction;

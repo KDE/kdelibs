@@ -40,7 +40,7 @@
 #include <ktoolbar.h>
 
 class QMenuBar;
-class Q3PopupMenu;
+class QMenu;
 class QComboBox;
 class QPoint;
 class QIcon;
@@ -474,7 +474,7 @@ public:
     /**
      * Returns a pointer to the popup menu used by this action.
      */
-    Q3PopupMenu* popupMenu() const;
+    QMenu* popupMenu() const;
 
     /**
      * @deprecated See setMenuAccelsEnabled .

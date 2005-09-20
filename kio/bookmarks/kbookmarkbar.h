@@ -32,7 +32,7 @@ class KBookmarkMenu;
 class KBookmarkOwner;
 class KActionCollection;
 class KAction;
-class Q3PopupMenu;
+class QMenu;
 class KBookmarkBarPrivate;
 
 /**
@@ -83,7 +83,7 @@ signals:
     /**
      * @since 3.2
      */
-    void aboutToShowContextMenu( const KBookmark &, Q3PopupMenu * );
+    void aboutToShowContextMenu( const KBookmark &, QMenu * );
     /**
      * @since 3.4
      */

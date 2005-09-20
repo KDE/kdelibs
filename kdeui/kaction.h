@@ -31,7 +31,7 @@
 #include <kicontheme.h>
 #include <kshortcut.h>
 
-class Q3PopupMenu;
+class QMenu;
 class QIcon;
 class QString;
 
@@ -560,7 +560,7 @@ protected slots:
 
 protected:
     KToolBar* toolBar( int index ) const;
-    Q3PopupMenu* popupMenu( int index ) const;
+    QMenu* popupMenu( int index ) const;
     void removeContainer( int index );
     int findContainer( const QWidget* widget ) const;
     int findContainer( int id ) const;
@@ -570,7 +570,7 @@ protected:
     void addContainer( QWidget* parent, QWidget* representative );
 
     virtual void updateShortcut( int i );
-    virtual void updateShortcut( Q3PopupMenu* menu, int id );
+    virtual void updateShortcut( QMenu* menu, int id );
     virtual void updateGroup( int id );
     virtual void updateText(int i );
     virtual void updateEnabled(int i);

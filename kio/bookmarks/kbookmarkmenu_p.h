@@ -38,7 +38,7 @@
 #include "kbookmarkmanager.h"
 
 class QString;
-class Q3PopupMenu;
+class QMenu;
 class QPushButton;
 class Q3ListView;
 class KLineEdit;
@@ -205,8 +205,8 @@ public:
   static void begin_rmb_action(KBookmarkBar *);
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
-  void fillContextMenu( Q3PopupMenu* contextMenu, const QString & address, int val );
-  void fillContextMenu2( Q3PopupMenu* contextMenu, const QString & address, int val );
+  void fillContextMenu( QMenu* contextMenu, const QString & address, int val );
+  void fillContextMenu2( QMenu* contextMenu, const QString & address, int val );
   void slotRMBActionEditAt( int val );
   void slotRMBActionProperties( int val );
   void slotRMBActionInsert( int val );

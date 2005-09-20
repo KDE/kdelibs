@@ -694,52 +694,41 @@ void KURLBar::slotContextMenuRequested( Q3ListBoxItem *_item, const QPoint& pos 
 
     KURLBarItem *item = dynamic_cast<KURLBarItem*>( _item );
 
-    static const int IconSize   = 10;
-    static const int AddItem    = 20;
-    static const int EditItem   = 30;
-    static const int RemoveItem = 40;
-
     KURL lastURL = m_activeItem ? m_activeItem->url() : KURL();
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
-    Q3PopupMenu *popup = new Q3PopupMenu();
-    popup->insertItem( smallIcons ?
-                       i18n("&Large Icons") : i18n("&Small Icons"),
-                       IconSize );
-    popup->insertSeparator();
+    QMenu *popup = new QMenu();
+    QAction* IconSize = popup->addAction( smallIcons ?
+                       i18n("&Large Icons") : i18n("&Small Icons"));
+    popup->addSeparator();
 
+    QAction* EditItem = 0L;
     if (item != 0L && item->isPersistent())
     {
-        popup->insertItem(SmallIconSet("edit"), i18n("&Edit Entry..."), EditItem);
-        popup->insertSeparator();
+        EditItem = popup->addAction(SmallIconSet("edit"), i18n("&Edit Entry..."));
+        popup->addSeparator();
     }
 
-    popup->insertItem(SmallIconSet("filenew"), i18n("&Add Entry..."), AddItem);
+    QAction* AddItem = popup->addAction(SmallIconSet("filenew"), i18n("&Add Entry..."));
 
+    QAction* RemoveItem = 0L;
     if (item != 0L && item->isPersistent())
-    {
-        popup->insertItem( SmallIconSet("editdelete"), i18n("&Remove Entry"),
-                          RemoveItem );
-    }
+        RemoveItem = popup->addAction( SmallIconSet("editdelete"), i18n("&Remove Entry"));
 
-    int result = popup->exec( pos );
-    switch ( result ) {
-        case IconSize:
-            setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmallMedium );
-            m_listBox->triggerUpdate( true );
-            break;
-        case AddItem:
-            addNewItem();
-            break;
-        case EditItem:
-            editItem( static_cast<KURLBarItem *>( item ) );
-            break;
-        case RemoveItem:
-            delete item;
-            m_isModified = true;
-            break;
-        default: // abort
-            break;
+    QAction* result = popup->exec( pos );
+    if (result == IconSize) {
+        setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmallMedium );
+        m_listBox->triggerUpdate( true );
+
+    } else if (result == AddItem) {
+        addNewItem();
+
+    } else if (result == EditItem) {
+        editItem( static_cast<KURLBarItem *>( item ) );
+
+    } else if (result == RemoveItem) {
+        delete item;
+        m_isModified = true;
     }
 
     // reset current item

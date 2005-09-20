@@ -52,7 +52,7 @@ setAutoSaveSettings();
     menuBar = new KMenuBar (this);
 
     // First popup... 
-    fileMenu = new Q3PopupMenu;
+    fileMenu = new QMenu;
     // We insert this popup in menubar with caption "File".
     // Prefix "&" means that "F" will be underlined
     menuBar->insertItem ("&File", fileMenu);
@@ -62,12 +62,12 @@ setAutoSaveSettings();
                           SLOT( quit() ), Qt::ALT + Qt::Key_Q );
 
     // Another popup...
-    toolBarMenu = new Q3PopupMenu;
+    toolBarMenu = new QMenu;
     menuBar->insertItem ("&Toolbars", toolBarMenu);
     toolBarMenu->insertItem ("(Un)Hide tollbar 1", this, SLOT(slotHide1()));
     toolBarMenu->insertItem ("(Un)Hide tollbar 2", this, SLOT(slotHide2()));
 
-    itemsMenu = new Q3PopupMenu;
+    itemsMenu = new QMenu;
     menuBar->insertItem ("&Items", itemsMenu);
 
     exitB = true;   // exit button is shown
@@ -235,7 +235,7 @@ setAutoSaveSettings();
 
     // This is not strictly related to toolbars, menubars or KMainWindow.
     // Setup popup for completions
-    completions = new Q3PopupMenu;
+    completions = new QMenu;
   
     completions->insertItem("/");
     completions->insertItem("/usr/");

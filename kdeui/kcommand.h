@@ -28,7 +28,7 @@
 
 class KAction;
 class KActionCollection;
-class Q3PopupMenu;
+class QMenu;
 
 /**
  * The abstract base class for all Commands. Commands are used to
@@ -276,7 +276,7 @@ private:
 
     Q3PtrList<KCommand> m_commands;
     KAction *m_undo, *m_redo;
-    Q3PopupMenu *m_undoPopup, *m_redoPopup;
+    QMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;
     bool m_first;  // attention: it's the first command in the list!
 protected:

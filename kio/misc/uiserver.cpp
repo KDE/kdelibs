@@ -676,7 +676,7 @@ void UIServer::slotShowContextMenu(KListView*, Q3ListViewItem* item, const QPoin
 {
    if (m_contextMenu==0)
    {
-      m_contextMenu=new Q3PopupMenu(this);
+      m_contextMenu=new QMenu(this);
       m_idCancelItem = m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
 //      m_contextMenu->insertItem(i18n("Toggle Progress"), this, SLOT(slotToggleDefaultProgress()));
       m_contextMenu->insertSeparator();

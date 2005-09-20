@@ -33,7 +33,7 @@ class KMPrinterView;
 class KMPrinter;
 class KMPages;
 class KActionCollection;
-class Q3PopupMenu;
+class QMenu;
 class QTimer;
 class QSplitter;
 class KToolBar;
@@ -113,7 +113,7 @@ protected:
 private:
 	KMPrinterView	*m_printerview;
 	KMPages		*m_printerpages;
-	Q3PopupMenu	*m_pop;
+	QMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
 	KToolBar	*m_toolbar;

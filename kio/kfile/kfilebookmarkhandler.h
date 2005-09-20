@@ -34,7 +34,7 @@ public:
     KFileBookmarkHandler( KFileDialog *dialog );
     ~KFileBookmarkHandler();
 
-    Q3PopupMenu * popupMenu();
+    QMenu * popupMenu();
 
     // KBookmarkOwner interface:
     virtual void openBookmarkURL( const QString& url ) { emit openURL( url ); }

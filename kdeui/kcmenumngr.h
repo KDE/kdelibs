@@ -22,7 +22,7 @@
 
 
 class QWidget;
-class Q3PopupMenu;
+class QMenu;
 class KContextMenuManagerPrivate;
 #include <qobject.h>
 #include <q3ptrdict.h>
@@ -84,7 +84,7 @@ public:
        Ownership of the popup menu is not transferred to the context
        menu manager.
     */
-    static void insert( QWidget* widget, Q3PopupMenu* popup );
+    static void insert( QWidget* widget, QMenu* popup );
 
     /**
      * Use this method to get information about when a popup menu
@@ -102,7 +102,7 @@ private:
     KContextMenuManager( QObject* parent = 0);
     ~KContextMenuManager();
     bool eventFilter( QObject *, QEvent * );
-    Q3PtrDict<Q3PopupMenu> menus;
+    Q3PtrDict<QMenu> menus;
     bool showOnPress;
     QKeySequence menuKey;
     static KContextMenuManager* manager;

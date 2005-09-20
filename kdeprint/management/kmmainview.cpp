@@ -87,7 +87,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	// create widgets
 	m_printerview = new KMPrinterView(this, "PrinterView");
 	m_printerpages = new KMPages(this, "PrinterPages");
-	m_pop = new Q3PopupMenu(this);
+	m_pop = new QMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
 	m_plugin = new PluginComboBox(this );
@@ -270,13 +270,13 @@ void KMMainView::initActions()
 	m_actions->action("view_pfilter")->plug(m_toolbar);
 
 	// add actions to the menu bar
-	Q3PopupMenu *menu = new Q3PopupMenu( this );
+	QMenu *menu = new QMenu( this );
 	m_actions->action( "printer_add" )->plug( menu );
 	m_actions->action( "printer_add_special" )->plug( menu );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
 	m_menubar->insertButton( "wizard", 0, true, i18n( "Add" ) );
 	m_menubar->getButton( 0 )->setPopup( menu, true );
-	menu = new Q3PopupMenu( this );
+	menu = new QMenu( this );
 	m_actions->action("printer_state_change")->plug( menu );
 	m_actions->action("printer_spool_change")->plug( menu );
 	menu->insertSeparator();
@@ -291,19 +291,19 @@ void KMMainView::initActions()
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
 	m_menubar->insertButton( "printer2", 1, true, i18n( "Printer" ) );
 	m_menubar->getButton( 1 )->setPopup( menu, true );
-	menu = new Q3PopupMenu( this );
+	menu = new QMenu( this );
 	m_actions->action("server_restart")->plug( menu );
 	m_actions->action("server_configure")->plug( menu );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
 	m_menubar->insertButton( "misc", 2, true, i18n( "Print Server" ) );
 	m_menubar->getButton( 2 )->setPopup( menu, true );
-	menu = new Q3PopupMenu( this );
+	menu = new QMenu( this );
 	m_actions->action("manager_configure")->plug( menu );
 	m_actions->action("view_refresh")->plug( menu );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
 	m_menubar->insertButton( "konsole3", 3, true, i18n( "Print Manager" ) );
 	m_menubar->getButton( 3 )->setPopup( menu, true );
-	menu = new Q3PopupMenu( this );
+	menu = new QMenu( this );
 	m_actions->action("view_printerinfos")->plug( menu );
 	m_actions->action("view_change")->plug( menu );
 	m_actions->action("orientation_change")->plug( menu );
@@ -315,7 +315,7 @@ void KMMainView::initActions()
 	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
 	m_menubar->getButton( 4 )->setPopup( menu, true );
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
-	menu = new Q3PopupMenu( this );
+	menu = new QMenu( this );
 	m_actions->action( "invoke_help" )->plug( menu );
 	m_actions->action( "invoke_web" )->plug( menu );
 	m_menubar->insertButton( "help", 5, true, i18n( "Documentation" ) );

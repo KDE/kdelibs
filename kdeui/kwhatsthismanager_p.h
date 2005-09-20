@@ -24,7 +24,7 @@
 #include <kdialogbase.h>
 
 class QToolButton;
-class Q3PopupMenu;
+class QMenu;
 class Q3StyleSheet;
 class Q3TextEdit;
 

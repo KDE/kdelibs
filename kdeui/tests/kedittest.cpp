@@ -8,7 +8,7 @@ int main( int argc, char **argv )
   KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication app;
   KEdit *edit = new KEdit( 0L );
-  Q3PopupMenu *pop = new Q3PopupMenu( 0L );
+  QMenu *pop = new QMenu( 0L );
   pop->insertItem( "Popupmenu item" );
   edit->installRBPopup( pop );
   edit->show();

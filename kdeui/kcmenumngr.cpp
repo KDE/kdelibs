@@ -29,7 +29,7 @@
 #undef KeyPress
 #undef None
 
-template class Q3PtrDict<Q3PopupMenu>;
+template class Q3PtrDict<QMenu>;
 
 KContextMenuManager* KContextMenuManager::manager = 0;
 
@@ -55,7 +55,7 @@ bool KContextMenuManager::showOnButtonPress( void )
 }
 
 
-void KContextMenuManager::insert( QWidget* widget, Q3PopupMenu* popup )
+void KContextMenuManager::insert( QWidget* widget, QMenu* popup )
 {
     if ( !manager )
 	manager = new KContextMenuManager;
@@ -67,7 +67,7 @@ void KContextMenuManager::insert( QWidget* widget, Q3PopupMenu* popup )
 
 bool KContextMenuManager::eventFilter( QObject *o, QEvent * e)
 {
-    Q3PopupMenu* popup = 0;
+    QMenu* popup = 0;
     QPoint pos;
     switch ( e->type() ) {
     case QEvent::MouseButtonPress:

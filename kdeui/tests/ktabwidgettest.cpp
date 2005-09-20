@@ -6,7 +6,7 @@
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QLabel>
-#include <Q3PopupMenu>
+#include <QMenu>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -167,7 +167,7 @@ void Test::toggleLeftPopup(bool state)
 {
   if (state) {
     if (!mLeftPopup) {
-      mLeftPopup = new Q3PopupMenu(this);
+      mLeftPopup = new QMenu(this);
       mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab", 0);
       mLeftPopup->insertItem(SmallIcon( "tab_new" ), "Empty Tab After First", 3);
       mLeftPopup->insertSeparator();
@@ -218,7 +218,7 @@ void Test::toggleRightPopup(bool state)
 {
   if (state) {
     if (!mRightPopup) {
-      mRightPopup = new Q3PopupMenu(this);
+      mRightPopup = new QMenu(this);
       mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Current Tab", 1);
       mRightPopup->insertSeparator();
       mRightPopup->insertItem(SmallIcon( "tab_remove" ), "Most Left Tab", 0);
@@ -267,7 +267,7 @@ void Test::contextMenu(QWidget *w, const QPoint &p)
   if (mContextPopup)
       delete mContextPopup;
 
-  mContextPopup = new Q3PopupMenu(this);
+  mContextPopup = new QMenu(this);
   mContextPopup->insertItem( "Activate Tab", 4);
   mContextPopup->insertSeparator();
   mContextPopup->insertItem(SmallIcon( "konsole" ), "Set This Icon", 0);
@@ -306,7 +306,7 @@ void Test::tabbarContextMenu(const QPoint &p)
   if (mTabbarContextPopup)
       delete mTabbarContextPopup;
 
-  mTabbarContextPopup = new Q3PopupMenu(this);
+  mTabbarContextPopup = new QMenu(this);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_new" ), mLeftWidget->isVisible() ? "Hide \"Add\" Button" : "Show \"Add\" Button", 0);
   mTabbarContextPopup->insertItem(SmallIcon( "tab_remove" ), mRightWidget->isVisible() ? "Hide \"Remove\" Button" : "Show \"Remove\" Button", 1);
   mTabbarContextPopup->insertSeparator();

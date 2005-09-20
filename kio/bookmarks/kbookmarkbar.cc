@@ -224,8 +224,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->popupMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
-            connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, Q3PopupMenu * ) ),
-                    this, SIGNAL( aboutToShowContextMenu(const KBookmark &, Q3PopupMenu * ) ));
+            connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),
+                    this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ));
             connect(menu, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ),
                     this, SIGNAL( openBookmark( const QString &, Qt::ButtonState) ));
             menu->fillBookmarkMenu();

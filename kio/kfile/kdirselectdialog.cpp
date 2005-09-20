@@ -121,7 +121,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     connect( d->urlCombo, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotComboTextChanged( const QString& ) ));
 
-    m_contextMenu = new Q3PopupMenu( this );
+    m_contextMenu = new QMenu( this );
     KAction* newFolder = new KAction( i18n("New Folder..."), "folder_new", 0, this, SLOT( slotMkdir() ), this);
     newFolder->plug(m_contextMenu);
     m_contextMenu->insertSeparator();

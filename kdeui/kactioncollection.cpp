@@ -516,7 +516,7 @@ void KActionCollection::connectHighlight( QWidget *container, KAction *action )
   {
     actionList = new Q3PtrList<KAction>;
 
-    if ( qobject_cast<Q3PopupMenu*>( container ) )
+    if ( qobject_cast<QMenu*>( container ) )
     {
       connect( container, SIGNAL( highlighted( int ) ),
                this, SLOT( slotMenuItemHighlighted( int ) ) );

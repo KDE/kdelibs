@@ -58,10 +58,10 @@ private:
   QToolButton*    mLeftWidget;
   QToolButton*    mRightWidget;
 
-  Q3PopupMenu*     mLeftPopup;
-  Q3PopupMenu*     mRightPopup;
-  Q3PopupMenu*     mTabbarContextPopup;
-  Q3PopupMenu*     mContextPopup;
+  QMenu*     mLeftPopup;
+  QMenu*     mRightPopup;
+  QMenu*     mTabbarContextPopup;
+  QMenu*     mContextPopup;
   QWidget*        mContextWidget;
 };
 

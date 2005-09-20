@@ -64,20 +64,6 @@
 #include <kxmlguifactory.h>
 #include <kwin.h>
 
-enum {
-    CONTEXT_TOP = 0,
-    CONTEXT_LEFT = 1,
-    CONTEXT_RIGHT = 2,
-    CONTEXT_BOTTOM = 3,
-    CONTEXT_FLOAT = 4,
-    CONTEXT_FLAT = 5,
-    CONTEXT_ICONS = 6,
-    CONTEXT_TEXT = 7,
-    CONTEXT_TEXTRIGHT = 8,
-    CONTEXT_TEXTUNDER = 9,
-    CONTEXT_ICONSIZES = 50 // starting point for the icon size list, put everything else before
-};
-
 class KToolBarPrivate
 {
 public:
@@ -138,6 +124,18 @@ public:
     ToolBarInfo toolBarInfo;
     QList<int> iconSizes;
     QTimer repaintTimer;
+
+    QAction* contextTop;
+    QAction* contextLeft;
+    QAction* contextRight;
+    QAction* contextBottom;
+    QAction* contextFloat;
+    QAction* contextFlat;
+    QAction* contextIcons;
+    QAction* contextTextRight;
+    QAction* contextText;
+    QAction* contextTextUnder;
+    QMap<QAction*,int> contextIconSizes;
 
   // Default Values.
   bool HiddenDefault;
@@ -316,7 +314,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
 }
 
 
-int KToolBar::insertButton(const QString& icon, int id, Q3PopupMenu *popup,
+int KToolBar::insertButton(const QString& icon, int id, QMenu *popup,
                             bool enabled, const QString &text, int index )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text );
@@ -328,7 +326,7 @@ int KToolBar::insertButton(const QString& icon, int id, Q3PopupMenu *popup,
 }
 
 
-int KToolBar::insertButton(const QPixmap& pixmap, int id, Q3PopupMenu *popup,
+int KToolBar::insertButton(const QPixmap& pixmap, int id, QMenu *popup,
                             bool enabled, const QString &text, int index )
 {
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text );
@@ -392,7 +390,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
 {
     KComboBox *combo = new KComboBox ( writable, this );
     insertWidgetInternal( combo, index, id );
-    combo->insertItem (text);
+    combo->insertItem(text);
     combo->setInsertionPolicy(policy);
     combo->setEnabled( enabled );
     if ( size > 0 )
@@ -497,7 +495,7 @@ void KToolBar::setButtonIconSet( int id, const QIcon& iconset )
 }
 
 
-void KToolBar::setDelayedPopup (int id , Q3PopupMenu *_popup, bool toggle )
+void KToolBar::setDelayedPopup (int id , QMenu *_popup, bool toggle )
 {
     KToolBarButton * button = getButton( id );
     if ( button )
@@ -1116,53 +1114,11 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
     Q3MainWindow *mw = mainWindow();
     if ( mw->toolBarsMovable() && d->m_enableContext ) {
         if ( m->button() == Qt::RightButton ) {
-	    QPointer<KToolBar> guard( this );
-            int i = contextMenu()->exec( m->globalPos(), 0 );
-	    // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
-	    if ( guard )
+            QPointer<KToolBar> guard( this );
+            contextMenu()->exec( m->globalPos() );
+            // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
+            if ( guard )
                 slotContextAboutToHide();
-            switch ( i ) {
-            case -1:
-                return; // popup canceled
-            case CONTEXT_LEFT:
-                mw->moveDockWindow( this, Qt::DockLeft );
-                break;
-            case CONTEXT_RIGHT:
-                mw->moveDockWindow( this, Qt::DockRight );
-                break;
-            case CONTEXT_TOP:
-                mw->moveDockWindow( this, Qt::DockTop );
-                break;
-            case CONTEXT_BOTTOM:
-                mw->moveDockWindow( this, Qt::DockBottom );
-                break;
-            case CONTEXT_FLOAT:
-                mw->moveDockWindow( this, Qt::DockTornOff );
-                break;
-            case CONTEXT_FLAT:
-                mw->moveDockWindow( this, Qt::DockMinimized );
-                break;
-            case CONTEXT_ICONS:
-                setIconText( IconOnly );
-                break;
-            case CONTEXT_TEXTRIGHT:
-                setIconText( IconTextRight );
-                break;
-            case CONTEXT_TEXT:
-                setIconText( TextOnly );
-                break;
-            case CONTEXT_TEXTUNDER:
-                setIconText( IconTextBottom );
-                break;
-            default:
-                if ( i >= CONTEXT_ICONSIZES )
-					setIconSize( i - CONTEXT_ICONSIZES );
-                else
-                    return; // assume this was an action handled elsewhere, no need for setSettingsDirty()
-            }
-            KMainWindow *kmw = dynamic_cast<KMainWindow *>(mw);
-            if ( kmw )
-                kmw->setSettingsDirty();
         }
     }
 }
@@ -1204,7 +1160,7 @@ void KToolBar::rebuildLayout()
             w->hide();
             continue;
         }
-        if ( dynamic_cast<Q3PopupMenu *>(w) ) // w is a QPopupMenu?
+        if ( dynamic_cast<QMenu *>(w) ) // w is a QPopupMenu?
             continue;
         l->addWidget( w );
         w->show();
@@ -1237,7 +1193,7 @@ void KToolBar::childEvent( QChildEvent *e )
            return;
         }
         if ( e->type() == QEvent::ChildInserted ) {
-            if ( !dynamic_cast<Q3PopupMenu *>(w)) { // e->child() is not a QPopupMenu
+            if ( !dynamic_cast<QMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
                 if ( !widget2id.contains( w ) &&
@@ -2006,28 +1962,37 @@ KPopupMenu *KToolBar::contextMenu()
   // won't be deleted by QToolBar::clear().
   context = new KPopupMenu( this );
   context->setObjectName( "qt_dockwidget_internal" );
-  context->insertTitle(i18n("Toolbar Menu"));
+  context->addTitle(i18n("Toolbar Menu"));
 
-  KPopupMenu *orient = new KPopupMenu( context );
+  KPopupMenu *orient = new KPopupMenu( i18n("Orientation"), context );
   orient->setObjectName( "orient" );
-  orient->insertItem( i18n("toolbar position string","Top"),  CONTEXT_TOP );
-  orient->insertItem( i18n("toolbar position string","Left"), CONTEXT_LEFT );
-  orient->insertItem( i18n("toolbar position string","Right"), CONTEXT_RIGHT );
-  orient->insertItem( i18n("toolbar position string","Bottom"), CONTEXT_BOTTOM );
-  orient->insertSeparator(-1);
-  orient->insertItem( i18n("toolbar position string","Floating"), CONTEXT_FLOAT );
-  orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
+  context->addMenu( orient );
 
-  KPopupMenu *mode = new KPopupMenu( context );
+  d->contextTop = orient->addAction( i18n("toolbar position string","Top"), this, SLOT(slotContextTop()) );
+  d->contextTop->setChecked(true);
+  d->contextLeft = orient->addAction( i18n("toolbar position string","Left"), this , SLOT(slotContextLeft()) );
+  d->contextRight = orient->addAction( i18n("toolbar position string","Right"), this, SLOT(slotContextRight()) );
+  d->contextBottom = orient->addAction( i18n("toolbar position string","Bottom"), this, SLOT(slotContextBottom()) );
+  orient->addSeparator();
+
+  d->contextFloat = orient->addAction( i18n("toolbar position string","Floating"), this, SLOT(slotContextFloat()) );
+  d->contextFlat = orient->addAction( i18n("min toolbar", "Flat"), this, SLOT(slotContextFlat()) );
+
+  KPopupMenu *mode = new KPopupMenu( i18n("Text Position"), context );
   mode->setObjectName( "mode" );
-  mode->insertItem( i18n("Icons Only"), CONTEXT_ICONS );
-  mode->insertItem( i18n("Text Only"), CONTEXT_TEXT );
-  mode->insertItem( i18n("Text Alongside Icons"), CONTEXT_TEXTRIGHT );
-  mode->insertItem( i18n("Text Under Icons"), CONTEXT_TEXTUNDER );
+  context->addMenu( mode );
 
-  KPopupMenu *size = new KPopupMenu( context );
+  d->contextIcons = mode->addAction( i18n("Icons Only"), this, SLOT(slotContextIcons()) );
+  d->contextIcons->setChecked(true);
+  d->contextText = mode->addAction( i18n("Text Only"), this, SLOT(slotContextText()) );
+  d->contextTextRight = mode->addAction( i18n("Text Alongside Icons"), this, SLOT(slotContextTextRight()) );
+  d->contextTextUnder = mode->addAction( i18n("Text Under Icons"), this, SLOT(slotContextTextUnder()) );
+
+  KPopupMenu *size = new KPopupMenu( i18n("Icon Size"), context );
   size->setObjectName( "size" );
-  size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
+  context->addMenu( size );
+  d->contextIconSizes.insert(size->addAction( i18n("Default"), this, SLOT(slotContextIconSize())), 0);
+
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
   QList<int> avSizes;
@@ -2054,8 +2019,8 @@ KPopupMenu *KToolBar::contextMenu()
               text = i18n("Large (%1x%2)").arg(it).arg(it);
           else
               text = i18n("Huge (%1x%2)").arg(it).arg(it);
-          //we use the size as an id, with an offset
-          size->insertItem( text, CONTEXT_ICONSIZES + it );
+          // save the size in the contextIconSizes map
+          d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
       }
   }
   else {
@@ -2074,19 +2039,13 @@ KPopupMenu *KToolBar::contextMenu()
                       text = i18n("Large (%1x%2)").arg(it).arg(it);
                   else
                       text = i18n("Huge (%1x%2)").arg(it).arg(it);
-                  //we use the size as an id, with an offset
-                  size->insertItem( text, CONTEXT_ICONSIZES + it );
+                  // save the size in the contextIconSizes map
+                  d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
                   break;
               }
           }
       }
   }
-
-  context->insertItem( i18n("Orientation"), orient );
-  orient->setItemChecked(CONTEXT_TOP, true);
-  context->insertItem( i18n("Text Position"), mode );
-  context->setItemChecked(CONTEXT_ICONS, true);
-  context->insertItem( i18n("Icon Size"), size );
 
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   // Unplugging a submenu from abouttohide leads to the popupmenu floating around
@@ -2122,56 +2081,60 @@ void KToolBar::slotContextAboutToShow()
     configureAction->plug(context);
   KEditToolbar::setDefaultToolbar(QObject::name());
 
-  for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
-    context->setItemChecked(i, false);
+  // Uncheck everything
+  foreach(QAction* action, context->actions()) {
+    action->setChecked(false);
+    if (action->menu())
+        foreach(QAction* action2, action->menu()->actions())
+            action2->setChecked(false);
+  }
 
+  // Now check the actions that should be checked
   switch( d->m_iconText )
   {
         case IconOnly:
         default:
-            context->setItemChecked(CONTEXT_ICONS, true);
+            d->contextIcons->setChecked(true);
             break;
         case IconTextRight:
-            context->setItemChecked(CONTEXT_TEXTRIGHT, true);
+            d->contextTextRight->setChecked(true);
             break;
         case TextOnly:
-            context->setItemChecked(CONTEXT_TEXT, true);
+            d->contextText->setChecked(true);
             break;
         case IconTextBottom:
-            context->setItemChecked(CONTEXT_TEXTUNDER, true);
+            d->contextTextUnder->setChecked(true);
             break;
   }
 
-  int size;
-  foreach(size, d->iconSizes)
-      context->setItemChecked( CONTEXT_ICONSIZES + size, false );
-
-  context->setItemChecked( CONTEXT_ICONSIZES, false );
-
-  context->setItemChecked( CONTEXT_ICONSIZES + d->m_iconSize, true );
-
-  for ( int i = CONTEXT_TOP; i <= CONTEXT_FLAT; ++i )
-      context->setItemChecked( i, false );
+  QMapIterator<QAction*,int> it = d->contextIconSizes;
+  while (it.hasNext()) {
+    it.next();
+    if (it.value() == d->m_iconSize) {
+      it.key()->setChecked(true);
+      break;
+    }
+  }
 
   switch ( barPos() )
   {
   case KToolBar::Flat:
-      context->setItemChecked( CONTEXT_FLAT, true );
+      d->contextFlat->setChecked( true );
       break;
   case KToolBar::Bottom:
-      context->setItemChecked( CONTEXT_BOTTOM, true );
+      d->contextBottom->setChecked( true );
       break;
   case KToolBar::Left:
-      context->setItemChecked( CONTEXT_LEFT, true );
+      d->contextLeft->setChecked( true );
       break;
   case KToolBar::Right:
-      context->setItemChecked( CONTEXT_RIGHT, true );
+      d->contextRight->setChecked( true );
       break;
   case KToolBar::Floating:
-      context->setItemChecked( CONTEXT_FLOAT, true );
+      d->contextFloat->setChecked( true );
       break;
   case KToolBar::Top:
-      context->setItemChecked( CONTEXT_TOP, true );
+      d->contextTop->setChecked( true );
       break;
   default: break;
   }
@@ -2222,6 +2185,97 @@ void KToolBar::removeWidgetInternal( QWidget * w )
 
 void KToolBar::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+void KToolBar::slotContextLeft( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockLeft );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextRight( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockRight );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextTop( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockTop );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextBottom( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockBottom );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextFloat( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockTornOff );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextFlat( )
+{
+    mainWindow()->moveDockWindow( this, Qt::DockMinimized );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextIcons( )
+{
+    setIconText( IconOnly );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextText( )
+{
+    setIconText( TextOnly );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextTextUnder( )
+{
+    setIconText( IconTextBottom );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextTextRight( )
+{
+    setIconText( IconTextRight );
+    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+    if ( kmw )
+        kmw->setSettingsDirty();
+}
+
+void KToolBar::slotContextIconSize( )
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action && d->contextIconSizes.contains(action)) {
+        setIconSize(d->contextIconSizes.value(action));
+        KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+        if ( kmw )
+            kmw->setSettingsDirty();
+    }
+}
 
 #include "ktoolbar.moc"
 

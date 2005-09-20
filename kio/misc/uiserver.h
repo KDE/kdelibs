@@ -197,7 +197,7 @@ class QResizeEvent;
 class QHideEvent;
 class QShowEvent;
 class ProgressConfigDialog;
-class Q3PopupMenu;
+class QMenu;
 class UIServerSystemTray;
 
 /**
@@ -419,7 +419,7 @@ private:
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
   ProgressConfigDialog *m_configDialog;
-  Q3PopupMenu* m_contextMenu;
+  QMenu* m_contextMenu;
   UIServerSystemTray *m_systemTray;
 
   static int s_jobId;

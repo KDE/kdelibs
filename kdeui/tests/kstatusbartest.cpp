@@ -21,7 +21,7 @@ testWindow::testWindow (QWidget *, const char *name)
  {
     // Setup Menus
     menuBar = new KMenuBar (this);
-    fileMenu = new Q3PopupMenu;
+    fileMenu = new QMenu;
     menuBar->insertItem ("&File", fileMenu);
     fileMenu->insertItem ("&Exit", KApplication::kApplication(),
                           SLOT( quit() ), Qt::ALT + Qt::Key_Q );
@@ -44,7 +44,7 @@ testWindow::testWindow (QWidget *, const char *name)
 
     setCaption( KApplication::kApplication()->caption() );
 
-    smenu = new Q3PopupMenu;
+    smenu = new QMenu;
   
     smenu->insertItem("50%");
     smenu->insertItem("75%");

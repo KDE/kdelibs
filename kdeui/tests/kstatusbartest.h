@@ -22,8 +22,8 @@ public slots:
     void slotMenu(int i);
     
 protected:
-    Q3PopupMenu *fileMenu;
-    Q3PopupMenu *smenu;
+    QMenu *fileMenu;
+    QMenu *smenu;
     KMenuBar *menuBar;
     KStatusBar *statusbar;
     bool insert;

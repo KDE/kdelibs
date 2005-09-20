@@ -282,7 +282,7 @@ void KListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
     QMenu *popup = KLineEdit::createStandardContextMenu();
 
     if (d->canChooseColumns) {
-        Q3PopupMenu *subMenu = new Q3PopupMenu(popup);
+        QMenu *subMenu = new QMenu(popup);
         connect(subMenu, SIGNAL(activated(int)), this, SLOT(searchColumnsMenuActivated(int)));
 
         popup->insertSeparator();

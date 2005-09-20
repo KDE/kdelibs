@@ -34,7 +34,7 @@
 #include <kglobal.h>
 
 class Q3MainWindow;
-class Q3PopupMenu;
+class QMenu;
 class QDomDocument;
 class QDomElement;
 class QIcon;
@@ -286,7 +286,7 @@ public:
    * You can add custom popups which inherit QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
-    int insertButton(const QString& icon, int id, Q3PopupMenu *popup,
+    int insertButton(const QString& icon, int id, QMenu *popup,
 		     bool enabled, const QString&_text, int index=-1);
 
   /**
@@ -301,7 +301,7 @@ public:
    * You can add custom popups which inherit QPopupMenu to get popups
    * with tables, drawings etc. Just don't fiddle with events there.
    */
-    int insertButton(const QPixmap& pixmap, int id, Q3PopupMenu *popup,
+    int insertButton(const QPixmap& pixmap, int id, QMenu *popup,
 		     bool enabled, const QString&_text, int index=-1);
 
   /**
@@ -473,7 +473,7 @@ public:
    * add popups that are already in the menu bar or are submenus of
    * other popups.
    */
-    void setDelayedPopup (int id , Q3PopupMenu *_popup, bool toggle = false);
+    void setDelayedPopup (int id , QMenu *_popup, bool toggle = false);
 
   /**
    * Turns a button into an autorepeat button.
@@ -1045,6 +1045,18 @@ private slots:
     void slotContextAboutToShow();
     void slotContextAboutToHide();
     void widgetDestroyed();
+
+    void slotContextLeft();
+    void slotContextRight();
+    void slotContextTop();
+    void slotContextBottom();
+    void slotContextFloat();
+    void slotContextFlat();
+    void slotContextIcons();
+    void slotContextText();
+    void slotContextTextRight();
+    void slotContextTextUnder();
+    void slotContextIconSize();
 
 private:
     void init( bool readConfig = true, bool honorStyle = false );
