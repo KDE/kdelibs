@@ -6,6 +6,9 @@ def exists(env):
 def generate(env):
 	if env['HELP']: return
 
+	from SCons.Tool import Tool
+        Tool('qt4', ['./bksys']).generate(env)
+
         from SCons.Options import Options
         cachefile=env['CACHEDIR']+'kde4.cache.py'
         opts = Options(cachefile)
