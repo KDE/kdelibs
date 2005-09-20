@@ -72,6 +72,7 @@ mimetypes
 kdecore
 kdeui
 kdesu
+kwallet
 """
 
 # TODO this will not stay like this ..

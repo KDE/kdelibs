@@ -1,0 +1,21 @@
+#! /usr/bin/env python
+
+Import('env')
+
+#FIXME
+env.Kidl("kwallet.h")
+env.Dcop("kwallet.kidl")
+
+obj = env.qt4obj('shlib', env)
+obj.vnum     = '1.1.0'
+obj.target   = 'libkwalletclient'
+obj.source   = """
+kwallet_skel.cpp
+kwallet.cc
+"""
+
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+obj.libs     = '../../kdecore/libkdecore.la'
+obj.execute()
+
+
