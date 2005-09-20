@@ -1368,7 +1368,7 @@ public:
     static EMarqueeDirection initialMarqueeDirection() { return MAUTO; }
 };
 
-class KDE_EXPORT RenderPageStyle {
+class RenderPageStyle {
     friend class CSSStyleSelector;
 public:
     enum PageType { NO_PAGE = 0, ANY_PAGE, FIRST_PAGE, LEFT_PAGES, RIGHT_PAGES };

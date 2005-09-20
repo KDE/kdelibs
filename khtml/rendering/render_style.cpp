@@ -1050,6 +1050,7 @@ QString RenderStyle::createDiff( const RenderStyle &parent ) const
 
     return res;
 }
+#endif
 
 RenderPageStyle::RenderPageStyle() : next(0), m_pageType(ANY_PAGE)
 {
@@ -1100,5 +1101,3 @@ void RenderPageStyle::removePageStyle(PageType type)
         ps = ps->next;
     }
 }
-
-#endif
