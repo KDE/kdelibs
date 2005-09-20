@@ -21,7 +21,11 @@ def generate(env):
 
 	#######################################
 	## other stuff
-	env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
+
+	if env['WINDOWS']:
+		env['CONVENIENCE']         = []
+	else:
+		env['CONVENIENCE']         = ['-fPIC','-DPIC'] # TODO flags for convenience libraries
 
 	########## zlib
 	env['LIB_Z']               = ['z']

@@ -9,6 +9,8 @@ def exists(env):
 	return true
 
 def generate(env):
+	if env['WINDOWS']:
+		return #generate() doesn't work on win32, why? (js)
 	if not env['HELP'] and (env['_CONFIGURE_'] or not env.has_key('XML_ISCONFIGURED')):
 		from SCons.Tool import Tool
 		pkgs = Tool('pkgconfig', ['./bksys'])

@@ -392,6 +392,11 @@ def generate(env):
 	from SCons.Tool import Tool;
 	Tool('default').generate(env)
 
+	if env['PLATFORM'] == 'cygwin' or env['PLATFORM'] <> 'win32' or env['PLATFORM'] <> 'win64':
+		env['WINDOWS']=1
+	else:
+		env['WINDOWS']=0
+
 	## Bksys requires scons >= 0.96
 	env.EnsureSConsVersion(0, 96)
 
@@ -509,10 +514,14 @@ def generate(env):
 			#from detect_lowlevel import detect
 			env.pprint('RED', 'Not implemented, see bksys/osx/lowlevel.py')
 			env.Exit(1)
+		elif env['WINDOWS']:
+			sys.path.append('bksys'+os.sep+'win32')
+			from detect_generic import detect
+			detect(env)
 		else:
 			sys.path.append('bksys'+os.sep+'unix')
 			from detect_generic import detect
-                detect(env)
+			detect(env)
 
 		env['GENERIC_ISCONFIGURED']=1
 
@@ -716,7 +725,11 @@ def generate(env):
 
         if env.has_key('BKS_DEBUG'):
                 if (env['BKS_DEBUG'] == "full"):
-                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-g3', '-Wall'])
+                        env.AppendUnique(CXXFLAGS = ['-DDEBUG', '-Wall'])
+                        if env['WINDOWS']:
+                                pass
+                        else:
+                                env.AppendUnique(CXXFLAGS = ['-g3'])
                 elif (env['BKS_DEBUG'] == "trace"): # i cannot remember who wanted this (TODO ita)
                         env.AppendUnique(
                                 LINKFLAGS=env.Split("-lmrwlog4cxxconfiguration -lmrwautofunctiontracelog4cxx -finstrument-functions"),
