@@ -39,7 +39,7 @@ KPlotObject::~KPlotObject()
 
 void KPlotObject::removePoint( int index ) {
 	if ( ( index < 1 ) || ( index > pList.count() - 1 ) ) {
-		kdWarning() << i18n( "Ignoring attempt to remove non-existent plot object" ) << endl;
+		kdWarning() << "Ignoring attempt to remove non-existent plot object" << endl;
 		return;
 	}
 
