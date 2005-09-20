@@ -20,7 +20,8 @@
 
 #include "lock.h"
 
-#include <kapplication.h>
+#include <krandom.h>
+#include <kinstance.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -110,7 +111,7 @@ bool Lock::lock()
   }
 
   QString lockUniqueName;
-  lockUniqueName = mIdentifier + kapp->randomString( 8 );
+  lockUniqueName = mIdentifier + KRandom::randomString( 8 );
   mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
   kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 

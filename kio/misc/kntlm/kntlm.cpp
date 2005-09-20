@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include <qdatetime.h>
-#include <kapplication.h>
+#include <krandom.h>
 #include <kswap.h>
 #include <kcodecs.h>
 #include <kdebug.h>
@@ -256,7 +256,7 @@ QByteArray KNTLM::getLMv2Response( const QString &target, const QString &user,
   QByteArray hash = ntlmv2Hash( target, user, password );
   QByteArray clientChallenge( 8 );
   for ( uint i = 0; i<8; i++ ) {
-    clientChallenge.data()[i] = KApplication::random() % 0xff;
+    clientChallenge.data()[i] = KRandom::random() % 0xff;
   }
   return lmv2Response( hash, clientChallenge, challenge );
 }
@@ -295,7 +295,7 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
   now *= (Q_UINT64)10000000;
   bl->timestamp = KFromToLittleEndian( now );
   for ( uint i = 0; i<8; i++ ) {
-    bl->challenge[i] = KApplication::random() % 0xff;
+    bl->challenge[i] = KRandom::random() % 0xff;
   }
   memcpy( blob.data() + sizeof(Blob), targetinfo.data(), targetinfo.size() );
   return blob;

@@ -471,6 +471,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
                 GUIenabled ),
   KInstance( KCmdLineArgs::about), d (new Private)
 {
+
     pIcon = 0L;
     pMiniIcon = 0L;
     read_app_startup_id();

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kde3support/kdecore $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio/bookmarks -I$(top_srcdir)/kde3support/kdecore $(all_includes)
 
 noinst_LTLIBRARIES = libk3io.la
 libk3io_la_LDFLAGS = $(all_libraries)

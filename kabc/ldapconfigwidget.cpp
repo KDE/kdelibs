@@ -30,7 +30,7 @@
 #include <qradiobutton.h>
 
 #include <kmessagebox.h>
-#include <kaccelmanager.h>
+#include <kacceleratormanager.h>
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <klineedit.h>

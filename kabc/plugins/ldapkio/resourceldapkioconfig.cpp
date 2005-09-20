@@ -27,7 +27,7 @@
 #include <q3vbox.h>
 #include <qradiobutton.h>
 
-#include <kaccelmanager.h>
+#include <kacceleratormanager.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
