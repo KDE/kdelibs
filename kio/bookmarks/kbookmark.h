@@ -160,7 +160,7 @@ public:
      * has the greatest depth
      * @since 3.5
      */
-     static QString commonParent(const QString & A, const QString & B);
+     static QString commonParent(QString A, QString B);
 
     /**
      * Get the value of a specific metadata item.

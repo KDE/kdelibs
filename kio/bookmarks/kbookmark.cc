@@ -368,11 +368,14 @@ QString KBookmark::left(const QString & str, uint len)
         return str.left(len);
 }
 
-QString KBookmark::commonParent(const QString & A, const QString & B)
+QString KBookmark::commonParent(QString A, QString B)
 {
     QString error("ERROR");
     if(A == error || B == error)
         return error;
+
+    A += "/";
+    B += "/";
 
     uint lastCommonSlash = 0;
     uint lastPos = A.length() < B.length() ? A.length() : B.length();
@@ -383,7 +386,7 @@ QString KBookmark::commonParent(const QString & A, const QString & B)
         if(A[i] == '/')
             lastCommonSlash = i;
     }
-    return left(A, lastPos);
+    return left(A, lastCommonSlash);
 }
 
 static QDomNode cd_or_create(QDomNode node, QString name)
