@@ -137,12 +137,12 @@ void KMWRlpr::initialize()
 		int 		p(-1);
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
 			if ((p=line.find(':')) != -1)
 			{
-				host = line.left(p).stripWhiteSpace();
+				host = line.left(p).trimmed();
 				Q3ListViewItem	*hitem = new Q3ListViewItem(m_view,host);
 				hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
 				QStringList	prs = QStringList::split(' ',line.right(line.length()-p-1),false);
@@ -169,12 +169,12 @@ void KMWRlpr::initialize()
 			buffer = QString::null;
 			while (!t.atEnd())
 			{
-				line = t.readLine().stripWhiteSpace();
+				line = t.readLine().trimmed();
 				if (line.isEmpty() || line[0] == '#')
 					continue;
 				buffer.append(line);
 				if (buffer.right(1) == "\\")
-					buffer = buffer.left(buffer.length()-1).stripWhiteSpace();
+					buffer = buffer.left(buffer.length()-1).trimmed();
 				else
 					break;
 			}

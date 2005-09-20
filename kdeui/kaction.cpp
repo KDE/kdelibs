@@ -133,7 +133,7 @@ KAction::KAction( const QString& text, const QIcon& pix, const KShortcut& cut,
 : QObject( parent), d(new KActionPrivate)
 {
   initPrivate( text, cut, receiver, slot, name );
-  d->setIconSet( pix );
+  d->setIcon( pix );
 }
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
@@ -170,7 +170,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
  : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, 0, 0, name );
-    setIconSet( pix );
+    setIcon( pix );
 }
 
 KAction::KAction( const QString& text, const QString& pix,
@@ -189,7 +189,7 @@ KAction::KAction( const QString& text, const QIcon& pix,
  : QObject( parent ), d(new KActionPrivate)
 {
     initPrivate( text, cut, receiver, slot, name );
-    setIconSet( pix );
+    setIcon( pix );
 }
 
 KAction::KAction( const QString& text, const QString& pix,
@@ -925,9 +925,9 @@ QString KAction::icon() const
   return d->iconName( );
 }
 
-void KAction::setIconSet( const QIcon &iconset )
+void KAction::setIcon( const QIcon &iconset )
 {
-  d->setIconSet( iconset );
+  d->setIcon( iconset );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )

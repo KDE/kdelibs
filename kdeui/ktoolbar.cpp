@@ -491,7 +491,7 @@ void KToolBar::setButtonIconSet( int id, const QIcon& iconset )
 {
     KToolBarButton * button = getButton( id );
     if ( button )
-        button->setIconSet( iconset );
+        button->setIcon( iconset );
 }
 
 
@@ -929,7 +929,7 @@ void KToolBar::saveState()
              !n.isNull(); n = n.nextSibling()) {
             current = n.toElement();
 
-            if ( current.tagName().lower() != "toolbar" )
+            if ( current.tagName().toLower() != "toolbar" )
                 continue;
 
             QString curname(current.attribute( "name" ));
@@ -955,7 +955,7 @@ void KToolBar::saveState()
              !n.isNull(); n = n.nextSibling()) {
             QDomElement elem = n.toElement();
 
-            if ( elem.tagName().lower() != "toolbar" )
+            if ( elem.tagName().toLower() != "toolbar" )
                 continue;
 
             QString curname(elem.attribute( "name" ));
@@ -991,7 +991,7 @@ QString KToolBar::settingsGroup() const
     if ( mainWindow() )
     {
         configGroup.prepend(" ");
-        configGroup.prepend( mainWindow()->name() );
+        configGroup.prepend( mainWindow()->objectName() );
     }
     return configGroup;
 }
@@ -1187,7 +1187,7 @@ void KToolBar::childEvent( QChildEvent *e )
 {
     if ( e->child()->isWidgetType() ) {
         QWidget * w = dynamic_cast<QWidget *>(e->child());
-        if (!w || !(::qstrcmp( "qt_dockwidget_internal", w->name())))
+        if (!w || !(w->objectName().compare("qt_dockwidget_internal")))
         {
            Q3ToolBar::childEvent( e );
            return;
@@ -1711,7 +1711,7 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     {
-        QByteArray attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
+        QByteArray attrFullWidth = element.attribute( "fullWidth" ).toLower().latin1();
         if ( !attrFullWidth.isEmpty() )
             setFullSize( attrFullWidth == "true" );
     }
@@ -1746,10 +1746,10 @@ void KToolBar::loadState( const QDomElement &element )
     }
     //kdDebug(220) << name() << " loadState loadingAppDefaults=" << loadingAppDefaults << endl;
 
-    Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).lower() );
+    Qt::ToolBarDock dock = stringToDock( element.attribute( "position" ).toLower() );
 
     {
-        QByteArray attrIconText = element.attribute( "iconText" ).lower().latin1();
+        QByteArray attrIconText = element.attribute( "iconText" ).toLower().latin1();
         if ( !attrIconText.isEmpty() ) {
             //kdDebug(220) << name() << " loadState attrIconText=" << attrIconText << endl;
             if ( attrIconText == "icontextright" )
@@ -1771,7 +1771,7 @@ void KToolBar::loadState( const QDomElement &element )
 	}
     }
 
-    QString attrIconSize = element.attribute( "iconSize" ).lower();
+    QString attrIconSize = element.attribute( "iconSize" ).toLower();
     int iconSize = d->IconSizeDefault;
     if ( !attrIconSize.isEmpty() )
         iconSize = attrIconSize.toInt();
@@ -1780,7 +1780,7 @@ void KToolBar::loadState( const QDomElement &element )
     int index = -1; // append by default. This is very important, otherwise
     // with all 0 indexes, we keep reversing the toolbars.
     {
-        QString attrIndex = element.attribute( "index" ).lower();
+        QString attrIndex = element.attribute( "index" ).toLower();
         if ( !attrIndex.isEmpty() )
             index = attrIndex.toInt();
     }
@@ -1796,13 +1796,13 @@ void KToolBar::loadState( const QDomElement &element )
     }
 
     {
-        QString attrNewLine = element.attribute( "newline" ).lower();
+        QString attrNewLine = element.attribute( "newline" ).toLower();
         if ( !attrNewLine.isEmpty() )
             newLine = attrNewLine == "true";
     }
 
     {
-        QString attrHidden = element.attribute( "hidden" ).lower();
+        QString attrHidden = element.attribute( "hidden" ).toLower();
         if ( !attrHidden.isEmpty() ) {
             hidden = attrHidden  == "true";
         }

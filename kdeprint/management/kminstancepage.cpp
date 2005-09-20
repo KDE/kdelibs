@@ -74,7 +74,7 @@ void KMInstancePage::addButton(const QString& txt, const QString& pixmap, const 
 {
 	QPushButton	*btn = new QPushButton(this, 0L);
 	btn->setText(txt);
-	btn->setIconSet(BarIconSet(pixmap));
+	btn->setIcon(BarIconSet(pixmap));
 	btn->setFlat(true);
 	connect(btn, SIGNAL(clicked()), receiver);
 	m_buttons.append(btn);

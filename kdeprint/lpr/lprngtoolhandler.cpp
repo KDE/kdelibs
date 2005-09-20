@@ -139,7 +139,7 @@ void LPRngToolHandler::loadAuthFile(const QString& filename, QString& user, QStr
 		QString	line;
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
 			int	p = line.find('=');
@@ -200,7 +200,7 @@ QList< QPair<QString,QStringList> > LPRngToolHandler::loadChoiceDict(const QStri
 		QStringList	l;
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.startsWith("OPTION"))
 			{
 				if (l.count() > 0 && !key.isEmpty())

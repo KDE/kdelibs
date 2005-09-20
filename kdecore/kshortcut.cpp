@@ -111,7 +111,7 @@ bool KKey::init( const QString& sSpec )
 {
 	clear();
 
-	QString sKey = sSpec.stripWhiteSpace();
+	QString sKey = sSpec.trimmed();
 	if( sKey.startsWith( "default(" ) && sKey.endsWith( ")" ) )
 		sKey = sKey.mid( 8, sKey.length() - 9 );
 	// i.e., "Ctrl++" = "Ctrl+Plus"

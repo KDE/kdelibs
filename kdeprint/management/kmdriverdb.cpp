@@ -207,7 +207,7 @@ void KMDriverDB::loadDbFile()
 
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
 			int	p = line.find('=');

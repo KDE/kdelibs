@@ -1350,7 +1350,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 			_ke->accept();
 			return;
 		}
-		else if(_ke->key() == Qt::Key_Space || !_ke->text().stripWhiteSpace().isEmpty())
+		else if(_ke->key() == Qt::Key_Space || !_ke->text().trimmed().isEmpty())
 		{
 			d->findString += _ke->text();
 
@@ -2335,7 +2335,7 @@ static QString getElementText( NodeImpl* start, bool after )
                 case ID_WBR:
                     break;
                 case ID_TD:
-                    if( ret.stripWhiteSpace().isEmpty())
+                    if( ret.trimmed().isEmpty())
                         break;
                     // fall through
                 default:
@@ -2478,7 +2478,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                 text = getElementText( element, false );
             if( text.isNull() && text_after )
                 text = getElementText( element, true );
-            text = text.stripWhiteSpace();
+            text = text.trimmed();
             // increase priority of items which have explicitly specified accesskeys in the config
             Q3ValueList< QPair< QString, QChar > > priorities
                 = m_part->settings()->fallbackAccessKeysAssignments();

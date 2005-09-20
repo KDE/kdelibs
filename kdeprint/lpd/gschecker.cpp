@@ -45,7 +45,7 @@ void GsChecker::loadDriverList()
 		bool	ok(false);
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (ok)
 			{
 				if (line.find(':') != -1)

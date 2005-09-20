@@ -339,18 +339,18 @@ void KCModuleProxy::runAsRoot()
 	 */
 
 	/* Prepare the process to run the kcmshell */
-	QString cmd = moduleInfo().service()->exec().stripWhiteSpace();
+	QString cmd = moduleInfo().service()->exec().trimmed();
 	if (cmd.left(5) == "kdesu")
 	{
-		cmd = cmd.remove(0,5).stripWhiteSpace();
+		cmd = cmd.remove(0,5).trimmed();
 
 		/* Remove all kdesu switches */
 		while( cmd.length() > 1 && cmd[ 0 ] == '-' )
-			cmd = cmd.remove( 0, cmd.find( ' ' ) ).stripWhiteSpace();
+			cmd = cmd.remove( 0, cmd.find( ' ' ) ).trimmed();
 	}
 
 	if (cmd.left(8) == "kcmshell")
-		cmd = cmd.remove(0,8).stripWhiteSpace();
+		cmd = cmd.remove(0,8).trimmed();
 
 	/* Run the process */
 	QString kdesu = KStandardDirs::findExe("kdesu");

@@ -144,7 +144,7 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 
       Value header = getResponseHeader("Content-Type");
       if (header.type() != UndefinedType) {
-	mimeType = QStringList::split(";", header.toString(exec).qstring())[0].stripWhiteSpace();
+	mimeType = QStringList::split(";", header.toString(exec).qstring())[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -436,7 +436,7 @@ Value XMLHttpRequest::getResponseHeader(const QString& name) const
 
   int endOfLine = responseHeaders.find("\n", headerLinePos + matchLength);
 
-  return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).stripWhiteSpace());
+  return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
 
 static Value httpStatus(const QString& response, bool textStatus = false)
@@ -455,7 +455,7 @@ static Value httpStatus(const QString& response, bool textStatus = false)
   }
 
   if (textStatus) {
-    QString statusText = firstLine.mid(codeEnd + 1, endOfLine - (codeEnd + 1)).stripWhiteSpace();
+    QString statusText = firstLine.mid(codeEnd + 1, endOfLine - (codeEnd + 1)).trimmed();
     return String(statusText);
   }
 
@@ -567,7 +567,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
         // qDebug("XMLHttpRequest::slotData: 'content-type = %s'", type.latin1());
         index = type.find (';');
         if (index > -1)
-          encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).stripWhiteSpace();
+          encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", false)).trimmed();
         // qDebug("XMLHttpRequest::slotData: 'encoding = %s'", encoding.latin1());
      }
 

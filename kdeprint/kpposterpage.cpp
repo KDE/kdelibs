@@ -307,7 +307,7 @@ void KPPosterPage::getOptions( QMap<QString,QString>& opts, bool )
 		opts[ "_kde-poster-size" ] = pageSizeToPageName( ( KPrinter::PageSize )page_sizes[ m_postersize->currentItem() ].ID );
 		opts[ "kde-printsize" ] = QString::number( page_sizes[ m_printsize->currentItem() ].ID );
 		opts[ "_kde-poster-cut" ] = QString::number( m_cutmargin->value() );
-		opts[ "_kde-poster-select" ] = m_selection->text().stripWhiteSpace();
+		opts[ "_kde-poster-select" ] = m_selection->text().trimmed();
 	}
 }
 

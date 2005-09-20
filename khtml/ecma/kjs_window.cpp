@@ -1393,8 +1393,8 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
         QString key, val;
         int pos = s.find('=');
         if (pos >= 0) {
-          key = s.left(pos).stripWhiteSpace().lower();
-          val = s.mid(pos + 1).stripWhiteSpace().lower();
+          key = s.left(pos).trimmed().lower();
+          val = s.mid(pos + 1).trimmed().lower();
           QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
@@ -1423,7 +1423,7 @@ Value Window::executeOpenWindow(ExecState *exec, const KURL& url, const QString&
           continue;
         } else {
           // leaving away the value gives true
-          key = s.stripWhiteSpace().lower();
+          key = s.trimmed().lower();
           val = "1";
         }
       boolargs:

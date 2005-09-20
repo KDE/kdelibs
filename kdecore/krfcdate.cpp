@@ -372,9 +372,9 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 
   // Now parse the date part.
 
-  QString dateString = input.left(tPos).stripWhiteSpace();
+  QString dateString = input.left(tPos).trimmed();
 
-  QString timeString = input.mid(tPos + 1).stripWhiteSpace();
+  QString timeString = input.mid(tPos + 1).trimmed();
 
   QStringList l = QStringList::split('-', dateString);
 

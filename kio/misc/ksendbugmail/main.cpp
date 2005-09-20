@@ -40,7 +40,7 @@ void BugMailer::slotError(int errornum) {
             lstr = i18n("Time out waiting for server interaction.");
             break;
         default:
-            lstr = sm->getLastLine().stripWhiteSpace();
+            lstr = sm->getLastLine().trimmed();
             lstr = i18n("Server said: \"%1\"").arg(lstr);
     }
     fputs(lstr.utf8().data(), stdout);

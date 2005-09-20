@@ -170,7 +170,7 @@ void SmbView::processGroups()
 		int	p = (*it).find("<1d>");
 		if (p == -1)
 			continue;
-		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).stripWhiteSpace());
+		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).trimmed());
 		item->setExpandable(true);
 		item->setPixmap(0,SmallIcon("network"));
 	}
@@ -182,12 +182,12 @@ void SmbView::processServers()
 	QString		line;
 	int 		index(0);
 	for (;index < lines.count();index++)
-		if (lines[index].stripWhiteSpace().startsWith("Server"))
+		if (lines[index].trimmed().startsWith("Server"))
 			break;
 	index += 2;
 	while (index < lines.count())
 	{
-		line = lines[index++].stripWhiteSpace();
+		line = lines[index++].trimmed();
 		if (line.isEmpty())
 			break;
 		QStringList	words = QStringList::split(' ',line,false);
@@ -203,12 +203,12 @@ void SmbView::processShares()
 	QString		line;
 	int 		index(0);
 	for (;index < lines.count();index++)
-		if (lines[index].stripWhiteSpace().startsWith("Sharename"))
+		if (lines[index].trimmed().startsWith("Sharename"))
 			break;
 	index += 2;
 	while (index < lines.count())
 	{
-		line = lines[index++].stripWhiteSpace();
+		line = lines[index++].trimmed();
 		if (line.isEmpty())
 			break;
 		else if ( line.startsWith( "Error returning" ) )
@@ -216,12 +216,12 @@ void SmbView::processShares()
 			KMessageBox::error( this, line );
 			break;
 		}
-		QString	typestr(line.mid(15, 10).stripWhiteSpace());
+		QString	typestr(line.mid(15, 10).trimmed());
 		//QStringList	words = QStringList::split(' ',line,false);
 		//if (words[1] == "Printer")
 		if (typestr == "Printer")
 		{
-			QString	comm(line.mid(25).stripWhiteSpace()), sharen(line.mid(0, 15).stripWhiteSpace());
+			QString	comm(line.mid(25).trimmed()), sharen(line.mid(0, 15).trimmed());
 			//for (uint i=2; i<words.count(); i++)
 			//	comm += (words[i]+" ");
 			//QListViewItem	*item = new QListViewItem(m_current,words[0],comm);

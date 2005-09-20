@@ -298,7 +298,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         current->renderer())
                     {
                         KURL path;
-                        QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().stripWhiteSpace();
+                        QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().trimmed();
                         if (!val.isEmpty() &&
                             QDir::isRelativePath(val) &&
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
@@ -413,7 +413,7 @@ static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
     // ensure that we have the user / password inside the url
     // otherwise we might have a potential security problem
     // by saving passwords under wrong lookup key.
-    const QString name = e.getAttribute(ATTR_NAME).string().stripWhiteSpace();
+    const QString name = e.getAttribute(ATTR_NAME).string().trimmed();
     const QRegExp re("[;,!]");
     const QStringList url = QStringList::split(re, k.url());
     return url[0] + '#' + name;
@@ -2137,7 +2137,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
         HTMLOptionElementImpl* const option = static_cast<HTMLOptionElementImpl*>(items[0]);
         encoded_values += enc_name;
         if (option->value().isNull())
-            encoded_values += fixUpfromUnicode(codec, option->text().string().stripWhiteSpace());
+            encoded_values += fixUpfromUnicode(codec, option->text().string().trimmed());
         else
             encoded_values += fixUpfromUnicode(codec, option->value().string());
         successful = true;

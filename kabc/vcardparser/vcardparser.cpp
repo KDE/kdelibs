@@ -85,7 +85,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         }
 
         VCardLine vCardLine;
-        const QString key = currentLine.left( colon ).stripWhiteSpace();
+        const QString key = currentLine.left( colon ).trimmed();
         QString value = currentLine.mid( colon + 1 );
 
         QStringList params = QStringList::split( ';', key );

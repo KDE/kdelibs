@@ -205,7 +205,7 @@ void KIconView::slotAutoSelect()
 	r.setHeight( m_pCurrentItem->y() - previousItem->y() + m_pCurrentItem->height() );
       else
 	r.setHeight( previousItem->y() - m_pCurrentItem->y() + previousItem->height() );
-      r = r.normalize();
+      r = r.normalized();
 
       //Check for each item whether it is within the rectangle.
       //If yes, select it
@@ -476,7 +476,7 @@ void KIconViewItem::calcRect( const QString& text_ )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !iconView()->inherits("KIconView") )
     {
-        kdWarning() << "KIconViewItem used in a " << iconView()->className() << " !!" << endl;
+        kdWarning() << "KIconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif
@@ -634,7 +634,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !view->inherits("KIconView") )
     {
-        kdWarning() << "KIconViewItem used in a " << view->className() << " !!" << endl;
+        kdWarning() << "KIconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
         return;
     }
 #endif

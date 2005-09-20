@@ -569,7 +569,7 @@ void KFontChooser::setupDisplay()
 {
   // Calling familyListBox->setCurrentItem() causes the value of selFont
   // to change, so we save the family, style and size beforehand.
-  QString family = selFont.family().lower();
+  QString family = selFont.family().toLower();
   int style = (selFont.bold() ? 2 : 0) + (selFont.italic() ? 1 : 0);
   int size = selFont.pointSize();
   if (size == -1)
@@ -580,7 +580,7 @@ void KFontChooser::setupDisplay()
 
   numEntries = familyListBox->count();
   for (i = 0; i < numEntries; i++) {
-    if (family == familyListBox->text(i).lower()) {
+    if (family == familyListBox->text(i).toLower()) {
       familyListBox->setCurrentItem(i);
       break;
     }
@@ -591,9 +591,9 @@ void KFontChooser::setupDisplay()
   {
     if (family.contains('['))
     {
-      family = family.left(family.find('[')).stripWhiteSpace();
+      family = family.left(family.find('[')).trimmed();
       for (i = 0; i < numEntries; i++) {
-        if (family == familyListBox->text(i).lower()) {
+        if (family == familyListBox->text(i).toLower()) {
           familyListBox->setCurrentItem(i);
           break;
         }
@@ -606,7 +606,7 @@ void KFontChooser::setupDisplay()
   {
     QString fallback = family+" [";
     for (i = 0; i < numEntries; i++) {
-      if (familyListBox->text(i).lower().startsWith(fallback)) {
+      if (familyListBox->text(i).toLower().startsWith(fallback)) {
         familyListBox->setCurrentItem(i);
         break;
       }
@@ -617,7 +617,7 @@ void KFontChooser::setupDisplay()
   if ( (i == numEntries) )
   {
     for (i = 0; i < numEntries; i++) {
-      if (familyListBox->text(i).lower().startsWith(family)) {
+      if (familyListBox->text(i).toLower().startsWith(family)) {
         familyListBox->setCurrentItem(i);
         break;
       }

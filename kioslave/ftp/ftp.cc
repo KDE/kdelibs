@@ -622,7 +622,7 @@ void Ftp::ftpAutoLoginMacro ()
         // TODO: Add support for arbitrary commands
         // besides simply changing directory!!
         if ( (*it).startsWith( "cwd" ) )
-          ftpFolder( (*it).mid(4).stripWhiteSpace(), false );
+          ftpFolder( (*it).mid(4).trimmed(), false );
       }
 
       break;
@@ -1655,7 +1655,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
           continue; // Don't trick us!
         // Some sites put more than one space between the date and the name
         // e.g. ftp://ftp.uni-marburg.de/mirror/
-        de.name     = remoteEncoding()->decode(tmp.stripWhiteSpace());
+        de.name     = remoteEncoding()->decode(tmp.trimmed());
       }
 
       de.type = S_IFREG;

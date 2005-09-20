@@ -135,27 +135,27 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 
 	m_add = new QToolButton(this);
 	  m_add->setWhatsThis(whatsThisAddFilterButton);
-	m_add->setIconSet(BarIconSet("filter"));
+	m_add->setIcon(BarIconSet("filter"));
 	m_add->setToolTip(i18n("Add filter"));
 
 	m_remove = new QToolButton(this);
 	  m_remove->setWhatsThis(whatsThisRemoveFilterButton);
-	m_remove->setIconSet(BarIconSet("remove"));
+	m_remove->setIcon(BarIconSet("remove"));
 	m_remove->setToolTip(i18n("Remove filter"));
 
 	m_up = new QToolButton(this);
 	  m_up->setWhatsThis(whatsThisMoveFilterUpButton);
-	m_up->setIconSet(BarIconSet("up"));
+	m_up->setIcon(BarIconSet("up"));
 	m_up->setToolTip(i18n("Move filter up"));
 
 	m_down = new QToolButton(this);
 	  m_down->setWhatsThis(whatsThisMoveFilterDownButton);
-	m_down->setIconSet(BarIconSet("down"));
+	m_down->setIcon(BarIconSet("down"));
 	m_down->setToolTip(i18n("Move filter down"));
 
 	m_configure = new QToolButton(this);
 	  m_configure->setWhatsThis(whatsThisConfigureFilterButton);
-	m_configure->setIconSet(BarIconSet("configure"));
+	m_configure->setIcon(BarIconSet("configure"));
 	m_configure->setToolTip(i18n("Configure filter"));
 
 	connect(m_add,SIGNAL(clicked()),SLOT(slotAddClicked()));

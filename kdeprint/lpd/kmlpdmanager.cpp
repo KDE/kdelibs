@@ -296,7 +296,7 @@ void KMLpdManager::checkStatus()
 		int		p(-1);
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
 			if ((p=line.find(':')) != -1)
@@ -499,7 +499,7 @@ bool KMLpdManager::savePrinttoolCfgFile(const QString& templatefile, const QStri
 		int		p(-1);
 		while (!tin.atEnd())
 		{
-			line = tin.readLine().stripWhiteSpace();
+			line = tin.readLine().trimmed();
 			if (line.isEmpty() || line[0] == '#')
 			{
 				tout << line << endl;

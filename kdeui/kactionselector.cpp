@@ -140,19 +140,19 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
   {
     case ButtonAdd:
     d->addIcon = icon;
-    d->btnAdd->setIconSet( SmallIconSet( icon, d->iconSize ) );
+    d->btnAdd->setIcon( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonRemove:
     d->removeIcon = icon;
-    d->btnRemove->setIconSet( SmallIconSet( icon, d->iconSize ) );
+    d->btnRemove->setIcon( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonUp:
     d->upIcon = icon;
-    d->btnUp->setIconSet( SmallIconSet( icon, d->iconSize ) );
+    d->btnUp->setIcon( SmallIconSet( icon, d->iconSize ) );
     break;
     case ButtonDown:
     d->downIcon = icon;
-    d->btnDown->setIconSet( SmallIconSet( icon, d->iconSize ) );
+    d->btnDown->setIcon( SmallIconSet( icon, d->iconSize ) );
     break;
     default:
     kdDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!"<<endl;
@@ -164,16 +164,16 @@ void KActionSelector::setButtonIconSet( const QIcon &iconset, MoveButton button 
   switch ( button )
   {
     case ButtonAdd:
-    d->btnAdd->setIconSet( iconset );
+    d->btnAdd->setIcon( iconset );
     break;
     case ButtonRemove:
-    d->btnRemove->setIconSet( iconset );
+    d->btnRemove->setIcon( iconset );
     break;
     case ButtonUp:
-    d->btnUp->setIconSet( iconset );
+    d->btnUp->setIcon( iconset );
     break;
     case ButtonDown:
-    d->btnDown->setIconSet( iconset );
+    d->btnDown->setIcon( iconset );
     break;
     default:
     kdDebug(13001)<<"KActionSelector::setButtonIconSet: DAINBREAD!"<<endl;
@@ -482,10 +482,10 @@ void KActionSelector::itemDoubleClicked( Q3ListBoxItem *item )
 
 void KActionSelector::loadIcons()
 {
-  d->btnAdd->setIconSet( SmallIconSet( d->addIcon, d->iconSize ) );
-  d->btnRemove->setIconSet( SmallIconSet( d->removeIcon, d->iconSize ) );
-  d->btnUp->setIconSet( SmallIconSet( d->upIcon, d->iconSize ) );
-  d->btnDown->setIconSet( SmallIconSet( d->downIcon, d->iconSize ) );
+  d->btnAdd->setIcon( SmallIconSet( d->addIcon, d->iconSize ) );
+  d->btnRemove->setIcon( SmallIconSet( d->removeIcon, d->iconSize ) );
+  d->btnUp->setIcon( SmallIconSet( d->upIcon, d->iconSize ) );
+  d->btnDown->setIcon( SmallIconSet( d->downIcon, d->iconSize ) );
 }
 
 void KActionSelector::moveItem( Q3ListBoxItem *item )

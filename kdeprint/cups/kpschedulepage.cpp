@@ -231,10 +231,10 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 		}
 	}
 	QRegExp	re("^\"|\"$");
-	t = opts["job-billing"].stripWhiteSpace();
+	t = opts["job-billing"].trimmed();
 	t.replace(re, "");
 	m_billing->setText(t);
-	t = opts["page-label"].stripWhiteSpace();
+	t = opts["page-label"].trimmed();
 	t.replace(re, "");
 	m_pagelabel->setText(t);
 	int	val = opts["job-priority"].toInt();

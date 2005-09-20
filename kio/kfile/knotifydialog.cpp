@@ -236,7 +236,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     d->tips[COL_TASKBAR] = i18n("Flash the taskbar entry");
 
 
-    m_playButton->setIconSet( SmallIconSet( "player_play" ) );
+    m_playButton->setIcon( SmallIconSet( "player_play" ) );
     connect( m_playButton, SIGNAL( clicked() ), SLOT( playSound() ));
 
     connect( m_listview, SIGNAL( currentChanged( Q3ListViewItem * ) ),

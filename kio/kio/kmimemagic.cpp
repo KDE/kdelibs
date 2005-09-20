@@ -2232,7 +2232,7 @@ KMimeMagic::findBufferType(const QByteArray &array)
                 tryit(conf, buf, nbytes);
         }
         /* if we have any results, put them in the request structure */
-	magicResult->setMimeType(conf->resultBuf.stripWhiteSpace());
+	magicResult->setMimeType(conf->resultBuf.trimmed());
 	magicResult->setAccuracy(conf->accuracy);
         return magicResult;
 }
@@ -2306,7 +2306,7 @@ KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 
         /* if we have any results, put them in the request structure */
         //finishResult();
-	magicResult->setMimeType(conf->resultBuf.stripWhiteSpace());
+	magicResult->setMimeType(conf->resultBuf.trimmed());
 	magicResult->setAccuracy(conf->accuracy);
 	refineResult(magicResult, fn);
         return magicResult;

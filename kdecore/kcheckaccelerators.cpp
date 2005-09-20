@@ -81,7 +81,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     setObjectName( "kapp_accel_filter" );
     parent->installEventFilter( this );
     KConfigGroupSaver saver( KGlobal::config(), "Development" );
-    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).stripWhiteSpace();
+    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).trimmed();
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( cuts.count() > 0 )

@@ -491,7 +491,7 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 	{
 		if (it.key().startsWith("kde-") || it.key().startsWith("app-"))
 			continue;
-		QString	value = it.data().stripWhiteSpace(), lovalue;
+		QString	value = it.data().trimmed(), lovalue;
 		value.replace(re, "");
 		lovalue = value.lower();
 

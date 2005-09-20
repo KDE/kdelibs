@@ -1119,7 +1119,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if ( ( a = currToken.attrs->getValue( ATTR_SRC ) ) )
                         scriptSrc = parser->doc()->completeURL(khtml::parseURL( DOMString(a) ).string() );
                     if ( ( a = currToken.attrs->getValue( ATTR_CHARSET ) ) )
-                        scriptSrcCharset = DOMString(a).string().stripWhiteSpace();
+                        scriptSrcCharset = DOMString(a).string().trimmed();
                     if ( scriptSrcCharset.isEmpty() && view)
                         scriptSrcCharset = parser->doc()->view()->part()->encoding();
                     /* Check type before language, since language is deprecated */
@@ -1139,7 +1139,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
                         We want to accept all the values that either of these browsers accept, but not other values.
                      */
-                    QString type = DOMString(a).string().stripWhiteSpace().lower();
+                    QString type = DOMString(a).string().trimmed().lower();
                     if( type.compare("text/javascript") != 0 &&
                         type.compare("text/javascript1.0") != 0 &&
                         type.compare("text/javascript1.1") != 0 &&

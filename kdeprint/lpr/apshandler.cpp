@@ -147,11 +147,11 @@ QMap<QString,QString> ApsHandler::loadVarFile(const QString& filename)
 		int	p(-1);
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty() || line[0] == '#' || (p = line.find('=')) == -1)
 				continue;
-			QString	variable = line.left(p).stripWhiteSpace();
-			QString	value = line.mid(p+1).stripWhiteSpace();
+			QString	variable = line.left(p).trimmed();
+			QString	value = line.mid(p+1).trimmed();
 			if (!value.isEmpty() && value[0] == '\'')
 				value = value.mid(1, value.length()-2);
 			opts[variable] = value;

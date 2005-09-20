@@ -829,26 +829,26 @@ void KEditToolbarWidget::setupLayout()
 
   m_upAction     = new QToolButton(this);
   iconSet = SmallIconSet( "up" );
-  m_upAction->setIconSet( iconSet );
+  m_upAction->setIcon( iconSet );
   m_upAction->setEnabled(false);
   m_upAction->setAutoRepeat(true);
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(this);
   iconSet = QApplication::reverseLayout() ? SmallIconSet( "back" ) : SmallIconSet( "forward" );
-  m_insertAction->setIconSet( iconSet );
+  m_insertAction->setIcon( iconSet );
   m_insertAction->setEnabled(false);
   connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(this);
   iconSet = QApplication::reverseLayout() ? SmallIconSet( "forward" ) : SmallIconSet( "back" );
-  m_removeAction->setIconSet( iconSet );
+  m_removeAction->setIcon( iconSet );
   m_removeAction->setEnabled(false);
   connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));
 
   m_downAction   = new QToolButton(this);
   iconSet = SmallIconSet( "down" );
-  m_downAction->setIconSet( iconSet );
+  m_downAction->setIcon( iconSet );
   m_downAction->setEnabled(false);
   m_downAction->setAutoRepeat(true);
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
@@ -975,7 +975,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if (it.tagName() == tagSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-      bool isLineSep = ( it.attribute(attrLineSeparator, "true").lower() == QLatin1String("true") );
+      bool isLineSep = ( it.attribute(attrLineSeparator, "true").toLower() == QLatin1String("true") );
       if(isLineSep)
         act->setText(1, LINESEPARATORSTRING);
       else
@@ -1011,10 +1011,10 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
       KAction *action = actionCollection->action( i );
 
       // do we have a match?
-      if (it.attribute( attrName ) == action->name())
+      if (it.attribute( attrName ) == action->objectName())
       {
         // we have a match!
-        ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->name(), action->toolTip());
+        ToolbarItem *act = new ToolbarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
         act->setText(1, action->plainText());
         if (action->hasIcon())
           if (!action->icon().isEmpty())
@@ -1022,7 +1022,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
           else // Has iconset
             act->setPixmap(0, action->iconSet(KIcon::Toolbar).pixmap());
 
-        active_list.insert(action->name(), true);
+        active_list.insert(action->objectName(), true);
         break;
       }
     }
@@ -1034,10 +1034,10 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     KAction *action = actionCollection->action( i );
 
     // skip our active ones
-    if (active_list.contains(action->name()))
+    if (active_list.contains(action->objectName()))
       continue;
 
-    ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->name(), action->toolTip());
+    ToolbarItem *act = new ToolbarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
     act->setText(1, action->plainText());
     if (action->hasIcon())
       if (!action->icon().isEmpty())

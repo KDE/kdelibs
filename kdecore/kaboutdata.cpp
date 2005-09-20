@@ -349,7 +349,7 @@ KAboutData::translators() const
 
         QString name=*nit;
 
-        personList.append(KAboutTranslator(name.stripWhiteSpace(), email.stripWhiteSpace()));
+        personList.append(KAboutTranslator(name.trimmed(), email.trimmed()));
     }
 
     return personList;

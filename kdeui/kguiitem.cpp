@@ -89,7 +89,7 @@ KGuiItem::KGuiItem( const QString &text,    const QIcon &iconSet,
     d->m_text = text;
     d->m_toolTip = toolTip;
     d->m_whatsThis = whatsThis;
-    setIconSet( iconSet );
+    setIcon( iconSet );
 }
 
 KGuiItem::KGuiItem( const KGuiItem &rhs )
@@ -213,7 +213,7 @@ void KGuiItem::setText( const QString &text ) {
     d->m_text=text;
 }
 
-void KGuiItem::setIconSet( const QIcon &iconset )
+void KGuiItem::setIcon( const QIcon &iconset )
 {
     d->m_iconSet = iconset;
     d->m_iconName = QString::null;

@@ -106,7 +106,7 @@ public:
      * Sets the Icon Set for this button. It also takes into account hte
      * KGlobalSettings::showIconsOnPushButtons() setting.
      */
-    void setIconSet( const QIcon &iconSet );
+    void setIcon( const QIcon &iconSet );
 
     /**
     * Sets the text of the button

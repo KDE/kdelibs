@@ -246,7 +246,7 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
 QString RenderSubmitButton::rawText()
 {
     QString value = element()->value().isEmpty() ? defaultLabel() : element()->value().string();
-    value = value.stripWhiteSpace();
+    value = value.trimmed();
     QString raw;
     for(int i = 0; i < value.length(); i++) {
         raw += value[i];

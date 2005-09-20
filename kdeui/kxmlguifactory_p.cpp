@@ -372,7 +372,7 @@ QDomElement ContainerNode::findElementForChild( const QDomElement &baseElement,
           n = n.nextSibling() )
     {
         QDomElement e = n.toElement();
-        if ( e.tagName().lower() == childNode->tagName &&
+        if ( e.tagName().toLower() == childNode->tagName &&
              e.attribute( attrName ) == childNode->name )
             return e;
     }
@@ -563,7 +563,7 @@ void BuildHelper::processElement( const QDomElement &e )
     static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
     static const QString &attrName = KGlobal::staticQString( "name" );
 
-    QString tag( e.tagName().lower() );
+    QString tag( e.tagName().toLower() );
     QString currName( e.attribute( attrName ) );
 
     bool isActionTag = ( tag == tagAction );
@@ -643,7 +643,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
         QDomElement e = n.toElement();
         if (e.isNull()) continue;
 
-        QString tagName = e.tagName().lower();
+        QString tagName = e.tagName().toLower();
 
         if ( tagName != "enable" && tagName != "disable" )
             continue;
@@ -654,7 +654,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
         for (QDomNode n2 = n.firstChild(); !n2.isNull(); n2 = n2.nextSibling() )
         {
             QDomElement actionEl = n2.toElement();
-            if ( actionEl.tagName().lower() != "action" ) continue;
+            if ( actionEl.tagName().toLower() != "action" ) continue;
 
             QString actionName = actionEl.attribute( "name" );
             if ( actionName.isEmpty() ) return;

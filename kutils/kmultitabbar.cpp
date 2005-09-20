@@ -388,7 +388,7 @@ KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, Q
 		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style)
 	:QPushButton(QIcon(),text,parent),m_style(style)
 {
-	setIconSet(pic);
+	setIcon(pic);
 	setText(text);
 	m_position=pos;
   	if (popup) setPopup(popup);
@@ -534,7 +534,7 @@ void KMultiTabBarTab::setTabsPosition(KMultiTabBar::KMultiTabBarPosition pos)
 			QMatrix temp;// (1.0F, 0.0F, 0.0F, -1.0F, 0.0F, 0.0F);
 			temp.rotate(180);
 			d->pix=d->pix.xForm(temp);
-			setIconSet(d->pix);
+			setIcon(d->pix);
 		}
 	}
 
@@ -560,8 +560,8 @@ void KMultiTabBarTab::setIcon(const QPixmap& icon)
 				rotateMatrix.rotate(-90);
 			QPixmap pic=icon.xForm(rotateMatrix); //TODO FIX THIS, THIS SHOWS WINDOW
 			d->pix=pic;
-			setIconSet(pic);
-		} else setIconSet(icon);
+			setIcon(pic);
+		} else setIcon(icon);
 	}
 }
 

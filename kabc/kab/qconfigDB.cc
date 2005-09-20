@@ -41,7 +41,7 @@ extern "C" {
 static bool isComment(Q3CString line)
 {
   // ############################################################################
-  line=line.stripWhiteSpace();
+  line=line.trimmed();
   if(line.isEmpty())
     {
       return false; // line is empty but not a comment
@@ -336,7 +336,7 @@ KeyValueMap::parseComplexString
     }
   // ----- prepare the string:
   temp=orig.mid(index, orig.length()-index); // remove everything before index
-  mod=temp.stripWhiteSpace(); // remove leading and trailing white spaces
+  mod=temp.trimmed(); // remove leading and trailing white spaces
   // ----- test some conditions:
   if(mod.length()<2)
     {
@@ -720,7 +720,7 @@ KeyValueMap::get(const Q3CString& key, bool& value) const
       return false;
     }
   // ----- find its state:
-  v=v.stripWhiteSpace();
+  v=v.trimmed();
   if(v=="true")
     {
 	kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::get[bool]: success, "

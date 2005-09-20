@@ -887,7 +887,7 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
 {
     QString pref = spinBox->prefix();
     QString suff = spinBox->suffix();
-    QString suffStriped = suff.stripWhiteSpace();
+    QString suffStriped = suff.trimmed();
     int overhead = pref.length() + suff.length();
     State state = Invalid;
 
@@ -908,9 +908,9 @@ QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) co
         } else {
             state = KDoubleValidator::validate( str, pos );
             if ( state == Invalid ) {
-                // stripWhiteSpace(), cf. QSpinBox::interpretText()
-                QString special = spinBox->specialValueText().stripWhiteSpace();
-                QString candidate = str.stripWhiteSpace();
+                // trimmed(), cf. QSpinBox::interpretText()
+                QString special = spinBox->specialValueText().trimmed();
+                QString candidate = str.trimmed();
 
                 if ( special.startsWith(candidate) ) {
                     if ( candidate.length() == special.length() ) {

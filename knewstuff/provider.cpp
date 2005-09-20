@@ -127,7 +127,7 @@ void Provider::parseDomElement( const QDomElement &element )
     QDomElement p = n.toElement();
     
     if ( p.tagName() == "noupload" ) setNoUpload( true );
-    if ( p.tagName() == "title" ) setName( p.text().stripWhiteSpace() );
+    if ( p.tagName() == "title" ) setName( p.text().trimmed() );
   }
 }
 

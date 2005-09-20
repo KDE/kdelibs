@@ -320,11 +320,11 @@ void KActionCollection::_insert( KAction* action )
     return;
 
   char unnamed_name[100];
-  const char *name = action->name();
+  QByteArray name = action->objectName().toLatin1();
   if( action->objectName().isEmpty() )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
-     name = unnamed_name;
+     name = QByteArray(unnamed_name);
   }
 
   // look if we already have THIS action under THIS name ;)
@@ -354,11 +354,11 @@ KAction* KActionCollection::_take( KAction* action )
     return 0;
 
   char unnamed_name[100];
-  const char *name = action->name();
+  QByteArray name = action->objectName().toLatin1();
   if( action->objectName().isEmpty() )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *) action);
-     name = unnamed_name;
+     name = QByteArray(unnamed_name);
   }
 
   KAction *a = d->m_actionDict.take( name );
@@ -400,8 +400,8 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
   else {
     foreach( KAction* itAction, d->m_actionDict )
     {
-      if ( ( !name || !strcmp( itAction->name(), name ) ) &&
-          ( !classname || !strcmp( itAction->className(), classname ) ) ) {
+      if ( ( !name || !itAction->objectName().compare( name ) )  &&
+          ( !classname || !strcmp( itAction->metaObject()->className(), classname ) ) ) {
         pAction = itAction;
         break;
       }
@@ -700,7 +700,7 @@ KActionShortcutList::~KActionShortcutList()
 uint KActionShortcutList::count() const
 	{ return m_actions.count(); }
 QString KActionShortcutList::name( uint i ) const
-	{ return m_actions.action(i)->name(); }
+	{ return m_actions.action(i)->objectName(); }
 QString KActionShortcutList::label( uint i ) const
 	{ return m_actions.action(i)->text(); }
 QString KActionShortcutList::whatsThis( uint i ) const
@@ -785,7 +785,7 @@ KActionPtrShortcutList::~KActionPtrShortcutList()
 uint KActionPtrShortcutList::count() const
 	{ return m_actions.count(); }
 QString KActionPtrShortcutList::name( uint i ) const
-	{ return m_actions[i]->name(); }
+	{ return m_actions[i]->objectName(); }
 QString KActionPtrShortcutList::label( uint i ) const
 	{ return m_actions[i]->text(); }
 QString KActionPtrShortcutList::whatsThis( uint i ) const

@@ -307,7 +307,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		while (!tin.atEnd())
 		{
 			line = tin.readLine();
-			if (line.stripWhiteSpace().startsWith("$postpipe"))
+			if (line.trimmed().startsWith("$postpipe"))
 				continue;
 			else if ((p = line.find("'name'")) != -1)
 			{

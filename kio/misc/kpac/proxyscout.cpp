@@ -153,10 +153,10 @@ namespace KPAC
             for ( QStringList::ConstIterator it = proxies.begin();
                   it != proxies.end(); ++it )
             {
-                QString proxy = ( *it ).stripWhiteSpace();
+                QString proxy = ( *it ).trimmed();
                 if ( proxy.startsWith( QLatin1String( "PROXY" ) ) )
                 {
-                    KURL proxyURL( proxy = proxy.mid( 5 ).stripWhiteSpace() );
+                    KURL proxyURL( proxy = proxy.mid( 5 ).trimmed() );
                     // If the URL is invalid or the URL is valid but in opaque
                     // format which indicates a port number being present in
                     // this particular case, simply calling setProtocol() on

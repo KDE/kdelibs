@@ -41,7 +41,7 @@ void KExtPrinterImpl::preparePrinting(KPrinter *printer)
 
 bool KExtPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	cmd = printer->option("kde-printcommand").stripWhiteSpace();
+	cmd = printer->option("kde-printcommand").trimmed();
 	if (cmd.isEmpty())
 	{
 		printer->setErrorMessage(i18n("Empty print command."));

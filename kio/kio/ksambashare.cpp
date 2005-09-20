@@ -118,7 +118,7 @@ bool KSambaSharePrivate::readSmbConf() {
 
   while (!s.atEnd())
   {
-    QString currentLine = s.readLine().stripWhiteSpace();
+    QString currentLine = s.readLine().trimmed();
 
     if (continuedLine) {
       completeLine += currentLine;
@@ -149,8 +149,8 @@ bool KSambaSharePrivate::readSmbConf() {
 
     if (i>-1)
     {
-      QString name = completeLine.left(i).stripWhiteSpace().lower();
-      QString value = completeLine.mid(i+1).stripWhiteSpace();
+      QString name = completeLine.left(i).trimmed().lower();
+      QString value = completeLine.mid(i+1).trimmed();
 
       if (name == KGlobal::staticQString("path")) {
         // Handle quotation marks

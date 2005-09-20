@@ -396,7 +396,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
 
         // We need to trim whitespace off the public identifier.
         publicID = buffer.mid(publicIDStart, publicIDEnd - publicIDStart);
-        publicID = publicID.stripWhiteSpace();
+        publicID = publicID.trimmed();
         *resultFlags |= PARSEMODE_HAVE_PUBLIC_ID;
     } else {
         if (containsString("system", buffer, index)) {

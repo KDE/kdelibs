@@ -185,7 +185,7 @@ DrMain* LprHandler::loadToolDriver(const QString& filename)
 		driver->set("text", "Tool Driver");
 		while (!t.atEnd())
 		{
-			l = QStringList::split('|', t.readLine().stripWhiteSpace(), false);
+			l = QStringList::split('|', t.readLine().trimmed(), false);
 			if (l.count() == 0)
 				continue;
 			if (l[0] == "GROUP")

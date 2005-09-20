@@ -160,7 +160,7 @@ void KDatePicker::init( const QDate &dt )
 
   d->selectWeek = new QComboBox(false, this);  // read only week selection
   d->todayButton = new QToolButton(this);
-  d->todayButton->setIconSet(SmallIconSet("today"));
+  d->todayButton->setIcon(SmallIconSet("today"));
 
   yearForward->setToolTip(i18n("Next year"));
   yearBackward->setToolTip(i18n("Previous year"));
@@ -177,17 +177,17 @@ void KDatePicker::init( const QDate &dt )
   line->installEventFilter( this );
   if (  QApplication::reverseLayout() )
   {
-      yearForward->setIconSet(BarIconSet(QLatin1String("2leftarrow")));
-      yearBackward->setIconSet(BarIconSet(QLatin1String("2rightarrow")));
-      monthForward->setIconSet(BarIconSet(QLatin1String("1leftarrow")));
-      monthBackward->setIconSet(BarIconSet(QLatin1String("1rightarrow")));
+      yearForward->setIcon(BarIconSet(QLatin1String("2leftarrow")));
+      yearBackward->setIcon(BarIconSet(QLatin1String("2rightarrow")));
+      monthForward->setIcon(BarIconSet(QLatin1String("1leftarrow")));
+      monthBackward->setIcon(BarIconSet(QLatin1String("1rightarrow")));
   }
   else
   {
-      yearForward->setIconSet(BarIconSet(QLatin1String("2rightarrow")));
-      yearBackward->setIconSet(BarIconSet(QLatin1String("2leftarrow")));
-      monthForward->setIconSet(BarIconSet(QLatin1String("1rightarrow")));
-      monthBackward->setIconSet(BarIconSet(QLatin1String("1leftarrow")));
+      yearForward->setIcon(BarIconSet(QLatin1String("2rightarrow")));
+      yearBackward->setIcon(BarIconSet(QLatin1String("2leftarrow")));
+      monthForward->setIcon(BarIconSet(QLatin1String("1rightarrow")));
+      monthBackward->setIcon(BarIconSet(QLatin1String("1leftarrow")));
   }
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));

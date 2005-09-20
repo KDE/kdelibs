@@ -52,7 +52,7 @@ Button::Button(QWidget* parent, const char* name)
 
 void Button::init()
 {
-    setIconSet(SmallIconSet("knewstuff"));
+    setIcon(SmallIconSet("knewstuff"));
     connect(this, SIGNAL(clicked()), SLOT(showDialog()));
 }
 

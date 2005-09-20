@@ -2593,7 +2593,7 @@ try_again:
         return false;
      }
 
-     m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
+     m_strMimeType = QString::fromUtf8( buffer).trimmed();
 
      kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
                    << "data mimetype: " << m_strMimeType << endl;
@@ -2607,7 +2607,7 @@ try_again:
         return false;
      }
 
-     m_request.strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
+     m_request.strCharset = QString::fromUtf8( buffer).trimmed().lower();
      setMetaData("charset", m_request.strCharset);
      if (!m_request.lastModified.isEmpty())
          setMetaData("modified", m_request.lastModified);
@@ -2940,7 +2940,7 @@ try_again:
           it != options.end();
           it++)
       {
-         QString option = (*it).stripWhiteSpace().lower();
+         QString option = (*it).trimmed().lower();
          if (option.startsWith("timeout="))
          {
             m_keepAliveTimeout = option.mid(8).toInt();
@@ -2956,7 +2956,7 @@ try_again:
           it != cacheControls.end();
           it++)
       {
-         QString cacheControl = (*it).stripWhiteSpace();
+         QString cacheControl = (*it).trimmed();
          if (strncasecmp(cacheControl.latin1(), "no-cache", 8) == 0)
          {
             m_request.bCachedWrite = false; // Don't put in cache
@@ -2969,7 +2969,7 @@ try_again:
          }
          else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
          {
-            QString age = cacheControl.mid(8).stripWhiteSpace();
+            QString age = cacheControl.mid(8).trimmed();
             if (!age.isNull())
               maxAge = STRTOLL(age.latin1(), 0, 10);
          }
@@ -2986,7 +2986,7 @@ try_again:
 
     else if (strncasecmp(buf, "Content-location:", 17) == 0) {
       setMetaData ("content-location",
-                   QString::fromLatin1(trimLead(buf+17)).stripWhiteSpace());
+                   QString::fromLatin1(trimLead(buf+17)).trimmed());
     }
 
     // what type of data do we have?
@@ -2998,7 +2998,7 @@ try_again:
       while ( *pos && *pos != ';' )  pos++;
 
       // Assign the mime-type.
-      m_strMimeType = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
+      m_strMimeType = QString::fromLatin1(start, pos-start).trimmed().lower();
       kdDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
 
       // If we still have text, then it means we have a mime-type with a
@@ -3013,8 +3013,8 @@ try_again:
 
         if (*pos)
         {
-          mediaAttribute = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
-          mediaValue = QString::fromLatin1(pos+1, end-pos-1).stripWhiteSpace();
+          mediaAttribute = QString::fromLatin1(start, pos-start).trimmed().lower();
+          mediaValue = QString::fromLatin1(pos+1, end-pos-1).trimmed();
 	  pos = end;
           if (mediaValue.length() &&
               (mediaValue[0] == '"') &&
@@ -3058,7 +3058,7 @@ try_again:
 
     // Cache management
     else if (strncasecmp(buf, "Last-Modified:", 14) == 0) {
-      m_request.lastModified = (QString::fromLatin1(trimLead(buf+14))).stripWhiteSpace();
+      m_request.lastModified = (QString::fromLatin1(trimLead(buf+14))).trimmed();
     }
 
     // whoops.. we received a warning
@@ -3070,7 +3070,7 @@ try_again:
 
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buf, "Pragma:", 7) == 0) {
-      Q3CString pragma = Q3CString(trimLead(buf+7)).stripWhiteSpace().lower();
+      Q3CString pragma = Q3CString(trimLead(buf+7)).trimmed().lower();
       if (pragma == "no-cache")
       {
          m_request.bCachedWrite = false; // Don't put in cache
@@ -3082,14 +3082,14 @@ try_again:
     // The deprecated Refresh Response
     else if (strncasecmp(buf,"Refresh:", 8) == 0) {
       mayCache = false;  // Do not cache page as it defeats purpose of Refresh tag!
-      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buf+8)).stripWhiteSpace() );
+      setMetaData( "http-refresh", QString::fromLatin1(trimLead(buf+8)).trimmed() );
     }
 
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buf, "Location:", 9) == 0) {
       // Redirect only for 3xx status code, will ya! Thanks, pal!
       if ( m_responseCode > 299 && m_responseCode < 400 )
-        locationStr = Q3CString(trimLead(buf+9)).stripWhiteSpace();
+        locationStr = Q3CString(trimLead(buf+9)).trimmed();
     }
 
     // Check for cookies
@@ -3172,7 +3172,7 @@ try_again:
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
-            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).stripWhiteSpace();
+            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).trimmed();
 
           while ( *dispositionBuf == ';' || *dispositionBuf == ' ' )
             dispositionBuf++;
@@ -3205,11 +3205,11 @@ try_again:
                                                  .replace(QRegExp("^Link:[ ]*"),
                                                           ""));
       if (link.count() == 2) {
-        QString rel = link[1].stripWhiteSpace();
+        QString rel = link[1].trimmed();
         if (rel.startsWith("rel=\"")) {
           rel = rel.mid(5, rel.length() - 6);
           if (rel.lower() == "pageservices") {
-            QString url = link[0].replace(QRegExp("[<>]"),"").stripWhiteSpace();
+            QString url = link[0].replace(QRegExp("[<>]"),"").trimmed();
             setMetaData("PageServices", url);
           }
         }
@@ -3228,7 +3228,7 @@ try_again:
          if (policy.count() == 2) {
             if (policy[0].lower() == "policyref") {
                policyrefs << policy[1].replace(QRegExp("[\"\']"), "")
-                                      .stripWhiteSpace();
+                                      .trimmed();
             } else if (policy[0].lower() == "cp") {
                // We convert to cp\ncp\ncp\n[...]\ncp to be consistent with
                // other metadata sent in strings.  This could be a bit more
@@ -3731,7 +3731,7 @@ try_again:
 
 void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
 {
-  encoding = encoding.stripWhiteSpace().lower();
+  encoding = encoding.trimmed().lower();
   // Identity is the same as no encoding
   if (encoding == "identity") {
     return;
@@ -4641,7 +4641,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       ok = false;
    if (ok)
    {
-      m_request.etag = QString(buffer).stripWhiteSpace();
+      m_request.etag = QString(buffer).trimmed();
    }
 
    // Last-Modified
@@ -4649,7 +4649,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       ok = false;
    if (ok)
    {
-      m_request.lastModified = QString(buffer).stripWhiteSpace();
+      m_request.lastModified = QString(buffer).trimmed();
    }
 
    if (ok)

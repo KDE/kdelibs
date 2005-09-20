@@ -271,7 +271,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     QDomElement actionPropElement = docElement.namedItem( actionPropElementName ).toElement();
     if ( actionPropElement.isNull() )
-        actionPropElement = docElement.namedItem( actionPropElementName.lower() ).toElement();
+        actionPropElement = docElement.namedItem( actionPropElementName.toLower() ).toElement();
 
     if ( !actionPropElement.isNull() )
         applyActionProperties( actionPropElement );
@@ -442,7 +442,7 @@ Q3PtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
 {
     Q3PtrList<QWidget> res;
 
-    if ( node->tagName == tagName.lower() )
+    if ( node->tagName == tagName.toLower() )
         res.append( node->container );
 
     Q3PtrListIterator<KXMLGUI::ContainerNode> it( node->children );
@@ -493,7 +493,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
          !n.isNull(); n = n.nextSibling() )
     {
         QDomElement e = n.toElement();
-        if ( e.tagName().lower() != tagAction )
+        if ( e.tagName().toLower() != tagAction )
             continue;
 
         KAction *action = d->guiClient->action( e );
@@ -522,11 +522,11 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     QString attrName = attribute.name();
     // If the attribute is a deprecated "accel", change to "shortcut".
-    if ( attrName.lower() == QLatin1String("accel") )
+    if ( attrName.toLower() == QLatin1String("accel") )
         attrName = attrShortcut;
 
     // No need to re-set name, particularly since it's "objectName" in Qt4
-    if ( attrName.lower() == QLatin1String("name") )
+    if ( attrName.toLower() == QLatin1String("name") )
         return;
 
     QVariant propertyValue;

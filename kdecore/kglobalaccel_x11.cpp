@@ -351,23 +351,23 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
-                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, Q_ARG(int, n));
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1, Q_ARG(int, n));
                 }
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
-                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 ) {
-                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1
                          ,Q_ARG(QString, pAction->name())
                          ,Q_ARG(QString, pAction->label())
                          ,Q_ARG(const KKeySequence *, &seq)
                          );
                 }
 	} else {
-                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1 );
+                int slot_id = pAction->objSlotPtr()->metaObject()->indexOfSlot( QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1 );
                 if( slot_id >= 0 )
-                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1);
+                    QMetaObject::invokeMethod (const_cast< QObject* >( pAction->objSlotPtr()), QMetaObject::normalizedSignature( pAction->methodSlotPtr() ).data() + 1);
 	}
 }
 

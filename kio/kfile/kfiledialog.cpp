@@ -318,7 +318,7 @@ void KFileDialog::slotOk()
     const KFileItemList *items = ops->selectedItems();
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
-        if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
+        if ( locationEdit->currentText().trimmed().isEmpty() ) {
             if ( !items || items->isEmpty() )
             {
                 QString msg;
@@ -439,7 +439,7 @@ void KFileDialog::slotOk()
         kdDebug(kfile_area) << "Directory" << endl;
         bool done = true;
         if ( d->url.isLocalFile() ) {
-            if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
+            if ( locationEdit->currentText().trimmed().isEmpty() ) {
                 QFileInfo info( d->url.path() );
                 if ( info.isDir() ) {
                     d->filenames = QString::null;
@@ -735,7 +735,7 @@ void KFileDialog::multiSelectionChanged()
         ++it;
     }
 
-    setLocationText( text.stripWhiteSpace() );
+    setLocationText( text.trimmed() );
 }
 
 void KFileDialog::setLocationText( const QString& text )
@@ -2279,11 +2279,11 @@ void KFileDialog::setStartDir( const KURL& directory )
 void KFileDialog::setNonExtSelection()
 {
     // Enhanced rename: Don't highlight the file extension.
-    QString pattern, filename = locationEdit->currentText().stripWhiteSpace();
+    QString pattern, filename = locationEdit->currentText().trimmed();
     KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
 
     if ( !pattern.isEmpty() && pattern.at( 0 ) == '*' && pattern.find( '*' , 1 ) == -1 )
-       locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.stripWhiteSpace().length()+1 );
+       locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.trimmed().length()+1 );
     else
     {
        int lastDot = filename.findRev( '.' );

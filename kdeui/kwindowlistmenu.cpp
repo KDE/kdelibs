@@ -66,9 +66,9 @@ int NameSortedInfoList::compareItems( Q3PtrCollection::Item s1, Q3PtrCollection:
     KWin::WindowInfo *i2 = static_cast<KWin::WindowInfo *>(s2);
     QString title1, title2;
     if (i1)
-        title1 = i1->visibleNameWithState().lower();
+        title1 = i1->visibleNameWithState().toLower();
     if (i2)
-        title2 = i2->visibleNameWithState().lower();
+        title2 = i2->visibleNameWithState().toLower();
     return title1.compare(title2);
 }
 

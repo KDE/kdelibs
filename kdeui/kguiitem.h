@@ -76,7 +76,7 @@ public:
 #endif
 
     void setText( const QString &text );
-    void setIconSet( const QIcon &iconset );
+    void setIcon( const QIcon &iconset );
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
     void setWhatsThis( const QString &whatsThis );

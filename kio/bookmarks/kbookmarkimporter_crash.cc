@@ -69,7 +69,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
             kdWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
             continue;
         }
-        QString t = codec->toUnicode( s.stripWhiteSpace() );
+        QString t = codec->toUnicode( s.trimmed() );
         QRegExp rx( "(.*)\\((.*)\\):(.*)$" );
         rx.setMinimal( true );
         if ( !rx.exactMatch( t ) )

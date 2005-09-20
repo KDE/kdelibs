@@ -146,7 +146,7 @@ QStringList splitPrinttoolLine(const QString& line)
 		l.append(line.left(p));
 		p = line.find('{',p);
 		if (p == -1)
-			l.append(line.right(line.length()-l[0].length()-1).stripWhiteSpace());
+			l.append(line.right(line.length()-l[0].length()-1).trimmed());
 		else
 		{
 			while (p != -1)
@@ -397,7 +397,7 @@ QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 	QString	line, buffer, comm;
 	while (!t.atEnd())
 	{
-		buffer = t.readLine().stripWhiteSpace();
+		buffer = t.readLine().trimmed();
 		if (buffer.isEmpty() || buffer[0] == '#')
 		{
 			comm = buffer;
@@ -407,7 +407,7 @@ QString getPrintcapLine(QTextStream& t, QString *lastcomment)
 		if (line.right(1) == "\\")
 		{
 			line.truncate(line.length()-1);
-			line = line.stripWhiteSpace();
+			line = line.trimmed();
 		}
 		else break;
 	}

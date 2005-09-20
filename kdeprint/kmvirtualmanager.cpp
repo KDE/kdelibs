@@ -258,7 +258,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty()) continue;
 			words = QStringList::split(' ',line,false);
 			if (words.count() < 2) continue;

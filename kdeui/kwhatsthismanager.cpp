@@ -67,16 +67,16 @@ bool KWhatsThisUndefined::clicked (const QString& href)
         QString body;
         body . append ("Widget text: '" + (m_widget -> property ("text") . toString ()) + "'\n");
         QString dsc = QString ("current --> ") + m_widget -> name ();
-        dsc . append (QString (" (") + m_widget -> className () + ")\n");
+        dsc . append (QString (" (") + m_widget -> metaObject () -> className () + ")\n");
         for (w = m_widget; w && w != m_widget -> topLevelWidget (); w = w -> parentWidget ()) {
             dsc . append (w -> name ());
-            dsc . append (QString (" (") + w -> className () + ")\n");
+            dsc . append (QString (" (") + w -> metaObject () -> className () + ")\n");
         }
         w = m_widget -> topLevelWidget ();
         if (w) {
             dsc . append ("toplevel --> ");
             dsc . append (w -> name ());
-            dsc . append (QString (" (") + w -> className () + ")\n");
+            dsc . append (QString (" (") + w -> metaObject () -> className () + ")\n");
         }
         body . append (dsc);
         QString subj ("What's This submission: ");

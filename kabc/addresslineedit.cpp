@@ -203,7 +203,7 @@ void AddressLineEdit::insert(const QString &t)
        KLineEdit::insert(t);
        return;
     }
-    QString newText = t.stripWhiteSpace();
+    QString newText = t.trimmed();
     if (newText.isEmpty())
        return;
 
@@ -302,7 +302,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
           n++;
 
         prevAddr = s.left(n);
-        s = s.mid(n,255).stripWhiteSpace();
+        s = s.mid(n,255).trimmed();
     }
 
     if ( s_addressesDirty )
@@ -465,7 +465,7 @@ void AddressLineEdit::startLoadingLDAPEntries()
     if (n>= 0)
     {
         prevAddr = s.left(n+1) + ' ';
-        s = s.mid(n+1,255).stripWhiteSpace();
+        s = s.mid(n+1,255).trimmed();
     }
     if( s.length() == 0 )
         return;
@@ -588,7 +588,7 @@ QStringList AddressLineEdit::addresses()
           addr += '<' + email + '>';
         else
           addr += email;
-        addr = addr.stripWhiteSpace();
+        addr = addr.trimmed();
         result.append( addr );
       }
     }

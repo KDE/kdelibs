@@ -480,14 +480,14 @@ static const char * parseNameValue(const char *header,
             Name = "";
             Value = QString::fromLatin1(header);
             Value.truncate( s - header );
-            Value = Value.stripWhiteSpace();
+            Value = Value.trimmed();
             return (s);
         }
     }
 
     Name = header;
     Name.truncate( s - header );
-    Name = Name.stripWhiteSpace();
+    Name = Name.trimmed();
 
     // *s == '='
     s++;
@@ -543,7 +543,7 @@ static const char * parseNameValue(const char *header,
         // End of Name
         Value = QString::fromLatin1(header);
         Value.truncate( s - header );
-        Value = Value.stripWhiteSpace();
+        Value = Value.trimmed();
     }
     return (s);
 

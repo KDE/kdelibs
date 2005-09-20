@@ -226,26 +226,26 @@ void Entry::parseDomElement( const QDomElement &element )
   QDomNode n;
   for( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
     QDomElement e = n.toElement();
-    if ( e.tagName() == "name" ) setName( e.text().stripWhiteSpace() );
-    if ( e.tagName() == "author" ) setAuthor( e.text().stripWhiteSpace() );
-    if ( e.tagName() == "licence" ) setLicence( e.text().stripWhiteSpace() );
+    if ( e.tagName() == "name" ) setName( e.text().trimmed() );
+    if ( e.tagName() == "author" ) setAuthor( e.text().trimmed() );
+    if ( e.tagName() == "licence" ) setLicence( e.text().trimmed() );
     if ( e.tagName() == "summary" ) {
       QString lang = e.attribute( "lang" );
-      setSummary( e.text().stripWhiteSpace(), lang );
+      setSummary( e.text().trimmed(), lang );
     }
-    if ( e.tagName() == "version" ) setVersion( e.text().stripWhiteSpace() );
+    if ( e.tagName() == "version" ) setVersion( e.text().trimmed() );
     if ( e.tagName() == "release" ) setRelease( e.text().toInt() );
     if ( e.tagName() == "releasedate" ) {
-      QDate date = QDate::fromString( e.text().stripWhiteSpace(), Qt::ISODate );
+      QDate date = QDate::fromString( e.text().trimmed(), Qt::ISODate );
       setReleaseDate( date );
     }
     if ( e.tagName() == "preview" ) {
       QString lang = e.attribute( "lang" );
-      setPreview( KURL( e.text().stripWhiteSpace() ), lang );
+      setPreview( KURL( e.text().trimmed() ), lang );
     }
     if ( e.tagName() == "payload" ) {
       QString lang = e.attribute( "lang" );
-      setPayload( KURL( e.text().stripWhiteSpace() ), lang );
+      setPayload( KURL( e.text().trimmed() ), lang );
     }
     if ( e.tagName() == "rating" ) setRating( e.text().toInt() );
     if ( e.tagName() == "downloads" ) setDownloads( e.text().toInt() );

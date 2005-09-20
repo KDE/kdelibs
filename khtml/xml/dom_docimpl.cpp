@@ -1579,7 +1579,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     if(strcasecmp(equiv, "refresh") == 0 && v && v->part()->metaRefreshEnabled())
     {
         // get delay and url
-        QString str = content.string().stripWhiteSpace();
+        QString str = content.string().trimmed();
         int pos = str.find(QRegExp("[;,]"));
         if ( pos == -1 )
             pos = str.find(QRegExp("[ \t]"));
@@ -1598,8 +1598,8 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             str = str.mid(pos);
             if(str.find("url", 0,  false ) == 0)  str = str.mid(3);
-            str = str.stripWhiteSpace();
-            if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
+            str = str.trimmed();
+            if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).trimmed();
             while(str.length() &&
                   (str[str.length()-1] == ';' || str[str.length()-1] == ','))
                 str.setLength(str.length()-1);
@@ -1612,7 +1612,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     else if(strcasecmp(equiv, "expires") == 0)
     {
         bool relative = false;
-        QString str = content.string().stripWhiteSpace();
+        QString str = content.string().trimmed();
         time_t expire_date = KRFCDate::parseDate(str);
         if (!expire_date)
         {
@@ -1626,7 +1626,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
     else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
-        QString str = content.string().lower().stripWhiteSpace();
+        QString str = content.string().lower().trimmed();
         KURL url = v->part()->url();
         if ((str == "no-cache") && url.protocol().startsWith("http"))
         {

@@ -136,7 +136,7 @@ int KToggleAction::plug( QWidget* widget, int index )
 {
   if ( !qobject_cast<QMenu*>( widget ) && !qobject_cast<KToolBar*>( widget ) )
   {
-    kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
+    kdWarning() << "Can not plug KToggleAction in " << widget->metaObject()->className() << endl;
     return -1;
   }
   if (kapp && !KAuthorized::authorizeKAction(name()))
@@ -713,7 +713,7 @@ int KSelectAction::plug( QWidget *widget, int index )
     return containerCount() - 1;
   }
 
-  kdWarning() << "Can not plug KAction in " << widget->className() << endl;
+  kdWarning() << "Can not plug KAction in " << widget->metaObject()->className() << endl;
   return -1;
 }
 
@@ -1468,11 +1468,11 @@ KFontAction::~KFontAction()
  */
 void KFontAction::setFont( const QString &family )
 {
-    QString lowerName = family.lower();
+    QString lowerName = family.toLower();
     int i = 0;
     for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
     {
-       if ((*it).lower() == lowerName)
+       if ((*it).toLower() == lowerName)
        {
           setCurrentItem(i);
           return;
@@ -1485,7 +1485,7 @@ void KFontAction::setFont( const QString &family )
        i = 0;
        for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
        {
-          if ((*it).lower() == lowerName)
+          if ((*it).toLower() == lowerName)
           {
              setCurrentItem(i);
              return;
@@ -1497,13 +1497,13 @@ void KFontAction::setFont( const QString &family )
     i = 0;
     for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
     {
-       if ((*it).lower().startsWith(lowerName))
+       if ((*it).toLower().startsWith(lowerName))
        {
           setCurrentItem(i);
           return;
        }
     }
-    kdDebug(129) << "Font not found " << family.lower() << endl;
+    kdDebug(129) << "Font not found " << family.toLower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )

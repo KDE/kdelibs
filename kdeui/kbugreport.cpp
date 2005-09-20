@@ -156,9 +156,9 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     packageList << QString::fromLatin1(packages[c]);
   d->appcombo->addItems(packageList);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
-  d->appname = QString::fromLatin1( m_aboutData
-                                    ? m_aboutData->productName()
-                                    : qApp->name() );
+  d->appname = m_aboutData
+                                    ? QString::fromLatin1(m_aboutData->productName())
+                                    : qApp->applicationName() ;
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;
   for (; index < d->appcombo->count(); index++) {
@@ -436,9 +436,9 @@ void KBugReport::slotCancel()
 
 QString KBugReport::text() const
 {
-    kdDebug() << m_bgSeverity->selected()->name() << endl;
+    kdDebug() << m_bgSeverity->selected()->objectName() << endl;
     // Prepend the pseudo-headers to the contents of the mail
-  QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
+  QString severity = m_bgSeverity->selected()->objectName();
   QString appname = d->appcombo->currentText();
   QString os = QString::fromLatin1("OS: %1 (%2)\n").
                arg(KDE_COMPILING_OS).

@@ -115,7 +115,7 @@ QStringList KXMLGUIBuilder::containerTags() const
 QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, int &id )
 {
   id = -1;
-  if ( element.tagName().lower() == d->tagMainWindow )
+  if ( element.tagName().toLower() == d->tagMainWindow )
   {
     KMainWindow *mainwindow = 0;
     if ( qobject_cast<KMainWindow*>( d->m_widget ) )
@@ -124,7 +124,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return mainwindow;
   }
 
-  if ( element.tagName().lower() == d->tagMenuBar )
+  if ( element.tagName().toLower() == d->tagMenuBar )
   {
     KMenuBar *bar;
 
@@ -137,7 +137,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().lower() == d->tagMenu )
+  if ( element.tagName().toLower() == d->tagMenu )
   {
     // Look up to see if we are inside a mainwindow. If yes, then
     // use it as parent widget (to get kaction to plug itself into the
@@ -201,7 +201,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return popup;
   }
 
-  if ( element.tagName().lower() == d->tagToolBar )
+  if ( element.tagName().toLower() == d->tagToolBar )
   {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
@@ -224,7 +224,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().lower() == d->tagStatusBar )
+  if ( element.tagName().toLower() == d->tagStatusBar )
   {
       if ( qobject_cast<KMainWindow*>( d->m_widget ) )
     {
@@ -279,7 +279,7 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
       delete static_cast<KStatusBar *>(container);
   }
   else
-     kdWarning() << "Unhandled container to remove : " << container->className() << endl;
+     kdWarning() << "Unhandled container to remove : " << container->metaObject()->className() << endl;
 }
 
 QStringList KXMLGUIBuilder::customTags() const
@@ -291,7 +291,7 @@ QStringList KXMLGUIBuilder::customTags() const
 
 int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomElement &element )
 {
-  if ( element.tagName().lower() == d->tagSeparator )
+  if ( element.tagName().toLower() == d->tagSeparator )
   {
     if ( qobject_cast<QMenu*>( parent ) )
     {
@@ -333,8 +333,8 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
       {
         QDomAttr attr = attributes.item( i ).toAttr();
 
-        if ( attr.name().lower() == d->attrLineSeparator &&
-             attr.value().lower() == QLatin1String("false") )
+        if ( attr.name().toLower() == d->attrLineSeparator &&
+             attr.value().toLower() == QLatin1String("false") )
         {
           isLineSep = false;
           break;
@@ -351,12 +351,12 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
       return id;
     }
   }
-  else if ( element.tagName().lower() == d->tagTearOffHandle )
+  else if ( element.tagName().toLower() == d->tagTearOffHandle )
   {
     if ( qobject_cast<QMenu*>( parent )  && KGlobalSettings::insertTearOffHandle())
       return static_cast<QMenu *>(parent)->insertTearOffHandle( -1, index );
   }
-  else if ( element.tagName().lower() == d->tagMenuTitle )
+  else if ( element.tagName().toLower() == d->tagMenuTitle )
   {
     if ( qobject_cast<KMenu*>( parent ) )
     {

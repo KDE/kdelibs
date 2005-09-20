@@ -113,7 +113,7 @@ bool VCardFormat::checkFormat( QFile *file ) const
   QByteArray line;
 
   file->readLine( line.data(), 1024 );
-  line = line.stripWhiteSpace();
+  line = line.trimmed();
   if ( line == "BEGIN:VCARD" )
     return true;
   else

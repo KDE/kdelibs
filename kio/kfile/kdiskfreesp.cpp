@@ -143,7 +143,7 @@ void KDiskFreeSp::dfDone()
 
 
       s=s.remove(0,s.find(BLANK)+1 );  // delete the capacity 94%
-      QString mountPoint = s.stripWhiteSpace();
+      QString mountPoint = s.trimmed();
       //kdDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
 
       if ( mountPoint == m_mountPoint )

@@ -290,7 +290,7 @@ void KIconDialog::init()
 
     QToolButton *clearSearch = new QToolButton(main);
     clearSearch->setTextLabel(i18n("Clear Search"), true);
-    clearSearch->setIconSet(SmallIconSet(QApplication::reverseLayout() ? "clear_left" :"locationbar_erase"));
+    clearSearch->setIcon(SmallIconSet(QApplication::reverseLayout() ? "clear_left" :"locationbar_erase"));
     searchLayout->addWidget(clearSearch);
 
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
@@ -670,7 +670,7 @@ void KIconButton::setIconType(KIcon::Group group, KIcon::Context context, bool u
 void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
-    setIconSet(mpLoader->loadIconSet(mIcon, mGroup, d->iconSize));
+    setIcon(mpLoader->loadIconSet(mIcon, mGroup, d->iconSize));
 
     if (!mpDialog)
     {
@@ -685,7 +685,7 @@ void KIconButton::setIcon(const QString& icon)
 void KIconButton::resetIcon()
 {
     mIcon = QString::null;
-    setIconSet(QIcon());
+    setIcon(QIcon());
 }
 
 void KIconButton::slotChangeIcon()
@@ -706,7 +706,7 @@ void KIconButton::newIconName(const QString& name)
         return;
 
     QIcon iconset = mpLoader->loadIconSet(name, mGroup, d->iconSize);
-    setIconSet(iconset);
+    setIcon(iconset);
     mIcon = name;
 
     if ( mbUser )

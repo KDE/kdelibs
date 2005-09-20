@@ -41,7 +41,7 @@ Shell::Shell()
   m_paCloseEditor = new KAction( "&Close file editor", 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
   m_paCloseEditor->setEnabled(false);
   KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
-  paQuit->setIconSet(QIcon(BarIcon("exit")));
+  paQuit->setIcon(QIcon(BarIcon("exit")));
 
   (void)new KAction( "Yet another menu item", 0, coll, "shell_yami" );
   (void)new KAction( "Yet another submenu item", 0, coll, "shell_yasmi" );

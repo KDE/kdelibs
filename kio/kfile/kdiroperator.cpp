@@ -586,7 +586,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     QString text = _txt;
     // it's unlikely to happen, that at the beginning are spaces, but
     // for the end, it happens quite often, I guess.
-    text = text.stripWhiteSpace();
+    text = text.trimmed();
     // if the argument is no URL (the check is quite fragil) and it's
     // no absolute path, we add the current directory to get a correct url
     if (text.find(':') < 0 && text[0] != '/')

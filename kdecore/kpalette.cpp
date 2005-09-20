@@ -69,7 +69,7 @@ KPalette::KPalette(const QString &name)
      {
         // This is a comment line
         line = line.mid(1); // Strip '#' 
-        line = line.stripWhiteSpace(); // Strip remaining white space..
+        line = line.trimmed(); // Strip remaining white space..
         if (!line.isEmpty())
         {
            mDesc += line+"\n"; // Add comment to description
@@ -78,7 +78,7 @@ KPalette::KPalette(const QString &name)
      else
      {
         // This is a color line, hopefully
-        line = line.stripWhiteSpace();
+        line = line.trimmed();
         if (line.isEmpty()) continue;
         int r, g, b;
         int pos = 0;
@@ -87,7 +87,7 @@ KPalette::KPalette(const QString &name)
            r = qBound(0, r, 255);
            g = qBound(0, g, 255);
            b = qBound(0, b, 255);
-           QString name = line.mid(pos).stripWhiteSpace();
+           QString name = line.mid(pos).trimmed();
            mColorList.append(ColorNode(QColor(r, g, b), name));
         }
      }
@@ -113,7 +113,7 @@ KPalette::save()
 
    QTextStream *str = sf.textStream();
 
-   QString description = mDesc.stripWhiteSpace();
+   QString description = mDesc.trimmed();
    description = "#"+QStringList::split("\n", description, true).join("\n#");
 
    (*str) << "KDE RGB Palette\n";   

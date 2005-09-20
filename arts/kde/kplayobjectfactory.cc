@@ -186,7 +186,7 @@ QStringList KDE::PlayObjectFactory::mimeTypes(void)
 		for(vector<string>::iterator mimetype = mimetypes->begin();
 		    mimetype != mimetypes->end(); ++mimetype)
 		{
-			QString name = QString::fromLocal8Bit((*mimetype).c_str()).stripWhiteSpace();
+			QString name = QString::fromLocal8Bit((*mimetype).c_str()).trimmed();
 			if(KMimeType::mimeType(name))
 				results.append(name);
 		}

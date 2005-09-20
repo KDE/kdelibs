@@ -44,8 +44,8 @@ KMWClass::KMWClass(QWidget *parent)
 
 	QToolButton	*add = new QToolButton(this);
 	QToolButton	*remove = new QToolButton(this);
-	add->setIconSet(BarIcon("forward"));
-	remove->setIconSet(BarIcon("back"));
+	add->setIcon(BarIcon("forward"));
+	remove->setIcon(BarIcon("back"));
 	connect(add,SIGNAL(clicked()),SLOT(slotAdd()));
 	connect(remove,SIGNAL(clicked()),SLOT(slotRemove()));
 

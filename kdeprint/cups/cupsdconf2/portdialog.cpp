@@ -96,7 +96,7 @@ QString PortDialog::editListen(const QString& s, QWidget *parent, CupsdConf *con
 	if (p != -1)
 	{
 		dlg.usessl_->setChecked(s.left(p).startsWith("SSL"));
-		QString	addr = s.mid(p+1).stripWhiteSpace();
+		QString	addr = s.mid(p+1).trimmed();
 		int p1 = addr.find(':');
 		if (p1 == -1)
 		{

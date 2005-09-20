@@ -303,7 +303,7 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, con
     : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
-    if ( icon.stripWhiteSpace().isEmpty() )
+    if ( icon.trimmed().isEmpty() )
 	d->iconName = "password";
     else
 	d->iconName = icon;

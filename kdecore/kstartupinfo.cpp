@@ -158,7 +158,7 @@ void KStartupInfo::got_message( const QString& msg_P )
     {
 // TODO do something with SCREEN= ?
     kdDebug( 172 ) << "got:" << msg_P << endl;
-    QString msg = msg_P.stripWhiteSpace();
+    QString msg = msg_P.trimmed();
     if( msg.startsWith( "new:" )) // must match length below
         got_startup_info( msg.mid( 4 ), false );
     else if( msg.startsWith( "change:" )) // must match length below

@@ -93,10 +93,10 @@ QString LprSettings::printcapFile()
 				QString	line;
 				while (!t.atEnd())
 				{
-					line = t.readLine().stripWhiteSpace();
+					line = t.readLine().trimmed();
 					if (line.startsWith("printcap_path"))
 					{
-						QString	filename = line.mid(14).stripWhiteSpace();
+						QString	filename = line.mid(14).trimmed();
 						if (filename[0] != '|')
 							m_printcapfile = filename;
 						else
@@ -124,10 +124,10 @@ QString LprSettings::defaultRemoteHost()
 			QString	line;
 			while (!t.atEnd())
 			{
-				line = t.readLine().stripWhiteSpace();
+				line = t.readLine().trimmed();
 				if (line.startsWith("default_remote_host"))
 				{
-					QString	hostname = line.mid(20).stripWhiteSpace();
+					QString	hostname = line.mid(20).trimmed();
 					m_defaultremotehost = hostname;
 				}
 			}

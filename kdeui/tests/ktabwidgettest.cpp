@@ -149,7 +149,7 @@ void Test::toggleLeftButton(bool state)
     if (!mLeftWidget) {
       mLeftWidget = new QToolButton( mWidget );
       connect( mLeftWidget, SIGNAL( clicked() ), SLOT( addTab() ) );
-      mLeftWidget->setIconSet( SmallIcon( "tab_new" ) );
+      mLeftWidget->setIcon( SmallIcon( "tab_new" ) );
       mLeftWidget->setTextLabel("New");
       mLeftWidget->setTextPosition(QToolButton::BesideIcon);
       mLeftWidget->adjustSize();
@@ -200,7 +200,7 @@ if (state) {
     if ( !mRightWidget) {
       mRightWidget = new QToolButton( mWidget );
       QObject::connect( mRightWidget, SIGNAL( clicked() ), SLOT( removeCurrentTab() ) );
-      mRightWidget->setIconSet( SmallIcon( "tab_remove" ) );
+      mRightWidget->setIcon( SmallIcon( "tab_remove" ) );
       mRightWidget->setTextLabel("Close");
       mRightWidget->setTextPosition(QToolButton::BesideIcon);
       mRightWidget->adjustSize();

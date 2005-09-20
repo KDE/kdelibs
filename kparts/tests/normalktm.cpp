@@ -44,7 +44,7 @@ Shell::Shell()
   m_paCloseEditor->plug( pFile );
 
   KAction * paQuit = new KAction( "&Quit", 0, this, SLOT( close() ), coll, "shell_quit" );
-  paQuit->setIconSet(QIcon(BarIcon("exit")));
+  paQuit->setIcon(QIcon(BarIcon("exit")));
   paQuit->plug( pFile );
 
   setCentralWidget( m_splitter );

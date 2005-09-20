@@ -132,7 +132,7 @@ public:
 
   /**
    * Set the icon for this button. The icon will be loaded internally
-   * with the correct size. This function is preferred over setIconSet
+   * with the correct size. This function is preferred over setIcon
    *
    * @param icon The name of the icon
    */
@@ -142,13 +142,10 @@ public:
   virtual void setIcon( const QPixmap &pixmap )
   { QToolButton::setIcon( pixmap ); }
 
-  /**
-   * Set the pixmaps for this toolbar button from a QIconSet.
-   * If you call this you don't need to call any of the other methods
-   * that set icons or pixmaps.
-   * @param iconset  The iconset to use
-   */
-  virtual void setIconSet( const QIcon &iconset );
+  // @since 4.0
+  virtual void setIcon( const QIcon &icon)
+  { QToolButton::setIcon(icon); }
+
 
 #ifndef KDE_NO_COMPAT
   /**

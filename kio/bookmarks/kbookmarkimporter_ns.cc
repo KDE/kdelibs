@@ -53,7 +53,7 @@ void KNSBookmarkImporterImpl::parse()
                kdWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
-            QByteArray t = s.stripWhiteSpace();
+            QByteArray t = s.trimmed();
             if(t.left(12).upper() == "<DT><A HREF=" ||
                t.left(16).upper() == "<DT><H3><A HREF=") {
               int firstQuotes = t.find('"')+1;

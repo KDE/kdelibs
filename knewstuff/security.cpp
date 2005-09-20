@@ -132,7 +132,7 @@ void Security::slotDataArrived(KProcIO *procIO)
           }
           break;
        case Verify:
-          data = data.section("]",1,-1).stripWhiteSpace();
+          data = data.section("]",1,-1).trimmed();
           if (data.startsWith("GOODSIG"))
           {
               m_result &= SIGNED_BAD_CLEAR;

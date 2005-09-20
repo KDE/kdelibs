@@ -97,7 +97,7 @@ void KMRlprManager::loadPrintersConf(const QString& filename)
 		QString		line;
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty() || line[0] == '#')
 				continue;
 			QStringList	w = QStringList::split('\t',line,true);

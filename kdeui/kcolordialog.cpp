@@ -664,7 +664,7 @@ KPaletteTable::readNamedColor( void )
 	// Remove duplicates. Every name with a space and every name
 	// that start with "gray".
 	//
-	QString name = line.mid(pos).stripWhiteSpace();
+	QString name = line.mid(pos).trimmed();
 	QByteArray s1 = line.mid(pos);
 	if( name.isNull() || name.find(' ') != -1 ||
 	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )

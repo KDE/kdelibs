@@ -44,9 +44,9 @@ KMJob* LpqHelper::parseLineLpr(const QString& line)
 		return NULL;
 	KMJob	*job = new KMJob;
 	job->setState((rank[0].isDigit() ? KMJob::Queued : KMJob::Printing));
-	job->setOwner(line.mid(7, 11).stripWhiteSpace());
+	job->setOwner(line.mid(7, 11).trimmed());
 	job->setId(line.mid(18, 5).toInt());
-	job->setName(line.mid(23, 38).stripWhiteSpace());
+	job->setName(line.mid(23, 38).trimmed());
 	int	p = line.find(' ', 61);
 	if (p != -1)
 	{
@@ -57,7 +57,7 @@ KMJob* LpqHelper::parseLineLpr(const QString& line)
 
 KMJob* LpqHelper::parseLineLPRng(const QString& line)
 {
-	QString	rank = line.left(7).stripWhiteSpace();
+	QString	rank = line.left(7).trimmed();
 	if (!rank[0].isDigit() && rank != "active" && rank != "hold")
 		return NULL;
 	KMJob	*job = new KMJob;
@@ -76,7 +76,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 	q = p+25;
 	while (line[q].isDigit())
 		q--;
-	job->setName(line.mid(p, q-p).stripWhiteSpace());
+	job->setName(line.mid(p, q-p).trimmed());
 	job->setSize(line.mid(q+1, p+26-q).toInt() / 1000);
 	return job;
 }
@@ -93,7 +93,7 @@ void LpqHelper::listJobs(Q3PtrList<KMJob>& jobs, const QString& prname, int limi
 
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.startsWith("Rank"))
 				break;
 		}

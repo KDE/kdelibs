@@ -48,7 +48,7 @@ void KIEBookmarkImporter::parseIEBookmarks_url_file( QString filename, QString n
                kdWarning() << "IE bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
                continue;
             }
-            QByteArray t = s.stripWhiteSpace();
+            QByteArray t = s.trimmed();
             QRegExp rx( "URL=(.*)" );
             if (rx.exactMatch(t)) {
                emit newBookmark( name, rx.cap(1), QString("") );

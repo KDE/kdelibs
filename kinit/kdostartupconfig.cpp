@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 QString get_entry( QString* ll )
     {
     QString& l = *ll;
-    l = l.stripWhiteSpace();
+    l = l.trimmed();
     if( l.isEmpty())
         return QString::null;
     QString ret;
@@ -87,7 +87,7 @@ int main()
 	      break;
 	    line = QString::fromLocal8Bit(buf);
 	  }
-        line = line.stripWhiteSpace();
+        line = line.trimmed();
         if( line.isEmpty())
             break;
         QString tmp = line;

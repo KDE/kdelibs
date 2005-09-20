@@ -73,7 +73,7 @@ bool KMThreadJob::loadJobs()
 		m_jobs.clear();
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.isEmpty())
 				continue;
 			QStringList	ll = QStringList::split(CHARSEP,line,true);

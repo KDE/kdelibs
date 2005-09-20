@@ -145,7 +145,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         }
         if (skip_entry) continue;
 
-        name = name.stripWhiteSpace(); // Process filename
+        name = name.trimmed(); // Process filename
         name.replace( "/", "" );
         kdDebug(7042) << "Filename: " << name << " Size: " << size << endl;
 

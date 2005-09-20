@@ -42,10 +42,10 @@ bool PrintcapReader::nextLine(QString& line)
 		m_buffer = QString::null;
 	}
 	else
-		line = m_stream.readLine().stripWhiteSpace();
+		line = m_stream.readLine().trimmed();
 	// strip any '\' at the end
 	if (line[line.length()-1] == '\\')
-		line = line.left(line.length()-1).stripWhiteSpace();
+		line = line.left(line.length()-1).trimmed();
 	return true;
 }
 

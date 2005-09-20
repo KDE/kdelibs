@@ -114,7 +114,7 @@ void LpcHelper::parseStatusLPRng(QTextStream& t)
 	QString	printer;
 
 	while (!t.atEnd())
-		if (t.readLine().stripWhiteSpace().startsWith("Printer"))
+		if (t.readLine().trimmed().startsWith("Printer"))
 			break;
 	while (!t.atEnd())
 	{
@@ -211,7 +211,7 @@ static QString lprngAnswer(const QString& result, const QString& printer)
 	{
 		q = result.find(':', p)+2;
 		p = result.find('\n', q);
-		QString	answer = result.mid(q, p-q).stripWhiteSpace();
+		QString	answer = result.mid(q, p-q).trimmed();
 		return answer;
 	}
 	return QString::null;

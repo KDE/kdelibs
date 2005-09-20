@@ -296,6 +296,12 @@ public:
     void setIcon(const QString& icon);
 
     /**
+     * @since 4.0
+     */
+    void setIcon(const QIcon& icon)
+    {QPushButton::setIcon(icon);}
+
+    /**
      * Resets the icon (reverts to an empty button).
      */
     void resetIcon();

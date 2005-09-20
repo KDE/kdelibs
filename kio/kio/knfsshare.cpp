@@ -94,7 +94,7 @@ bool KNFSSharePrivate::readExportsFile() {
 
   while ( !s.atEnd() )
   {
-    QString currentLine = s.readLine().stripWhiteSpace();
+    QString currentLine = s.readLine().trimmed();
 
     if (continuedLine) {
       completeLine += currentLine;

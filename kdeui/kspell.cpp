@@ -137,7 +137,7 @@ static bool determineASpellV6()
     // Close textstream before we close fs
     {
       QTextStream ts(fs, QIODevice::ReadOnly);
-      result = ts.read().stripWhiteSpace();
+      result = ts.read().trimmed();
     }
     pclose(fs);
   }
@@ -710,7 +710,7 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
 
     if( d->m_bIgnoreUpperWords && word[0] == word[0].upper() )
     {
-      QString text = word[0] + word.right( word.length()-1 ).lower();
+      QString text = word[0] + word.right( word.length()-1 ).toLower();
       if( text == word )
         return IGNORE;
     }
@@ -719,7 +719,7 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     //We don't take advantage of ispell's ignore function because
     //we can't interrupt ispell's output (when checking a large
     //buffer) to add a word to _it's_ ignore-list.
-    if ( ignorelist.findIndex( word.lower() ) != -1 )
+    if ( ignorelist.findIndex( word.toLower() ) != -1 )
       return IGNORE;
 
     //// Position in line ///
@@ -1255,7 +1255,7 @@ void KSpell::dialog2( int result )
     break;
   case KS_IGNOREALL:
     // would be better to lower case only words with beginning cap
-    ignorelist.prepend( dlgorigword.lower() );
+    ignorelist.prepend( dlgorigword.toLower() );
     emit ignoreall( dlgorigword );
     break;
   case KS_ADD:
@@ -1263,7 +1263,7 @@ void KSpell::dialog2( int result )
     personaldict = true;
     emit addword( dlgorigword );
     // adding to pesonal dict takes effect at the next line, not the current
-    ignorelist.prepend( dlgorigword.lower() );
+    ignorelist.prepend( dlgorigword.toLower() );
     break;
   case KS_REPLACEALL:
   {

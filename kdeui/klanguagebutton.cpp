@@ -105,7 +105,7 @@ void KLanguageButton::setText(const QString & text)
 {
   d->staticText = true;
   d->button->setText(text);
-  d->button->setIconSet(QIcon()); // remove the icon
+  d->button->setIcon(QIcon()); // remove the icon
 }
 
 void KLanguageButton::init()
@@ -246,7 +246,7 @@ void KLanguageButton::clear()
   if ( !d->staticText )
   {
     d->button->setText( QString::null );
-    d->button->setIconSet( QIcon() );
+    d->button->setIcon( QIcon() );
   }
 }
 

@@ -347,7 +347,7 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
     QString grpNotifMsgs = QLatin1String("Notification Messages");
     KConfig *config = againConfig ? againConfig : KGlobal::config();
     KConfigGroupSaver saver( config, grpNotifMsgs );
-    QString dontAsk = config->readEntry(dontShowAgainName).lower();
+    QString dontAsk = config->readEntry(dontShowAgainName).toLower();
     if (dontAsk == "yes") {
         result = Yes;
         return false;

@@ -277,7 +277,7 @@ QString KInputDialog::getText( const QString &caption,
 
   // A validator may explicitly allow leading and trailing whitespace
   if ( !validator )
-    result = result.stripWhiteSpace();
+    result = result.trimmed();
 
   return result;
 }
@@ -411,7 +411,7 @@ void KInputDialog::slotEditTextChanged( const QString &text )
     on = ( lineEdit()->validator()->validate( str, index )
       == QValidator::Acceptable );
   } else {
-    on = !text.stripWhiteSpace().isEmpty();
+    on = !text.trimmed().isEmpty();
   }
 
   enableButton( Ok, on );

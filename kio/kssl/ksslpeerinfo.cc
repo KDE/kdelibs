@@ -55,7 +55,7 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
 }
 
 void KSSLPeerInfo::setPeerHost(QString realHost) {
-	d->peerHost = realHost.stripWhiteSpace();
+	d->peerHost = realHost.trimmed();
 	while(d->peerHost.endsWith("."))
 		d->peerHost.truncate(d->peerHost.length()-1);
 
@@ -73,7 +73,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
 	cns += m_cert.subjAltNames();
 
 	for (QStringList::Iterator cn = cns.begin(); cn != cns.end(); ++cn) {
-		if (cnMatchesAddress((*cn).stripWhiteSpace().lower()))
+		if (cnMatchesAddress((*cn).trimmed().lower()))
 			return true;
 	}
 

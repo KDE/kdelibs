@@ -60,13 +60,13 @@ bool Comment::load(QFile *f)
                 }
 		else if (line.left(2) == "%%")
 		{
-			key_ = line.mid(2).stripWhiteSpace();
+			key_ = line.mid(2).trimmed();
 		}
                 else if (line.left(2) == "@@")
                 {
                         return true;
                 }
-                else if (line.stripWhiteSpace().isEmpty())
+                else if (line.trimmed().isEmpty())
                 {
                         ; // do nothing
                 }

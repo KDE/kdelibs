@@ -280,7 +280,7 @@ bool NetRC::parse( int fd )
       while( buf[tail-1] == '\n' || buf[tail-1] =='\r' )
         tail--;
 
-      QString mac = QString::fromLatin1(buf, tail).stripWhiteSpace();
+      QString mac = QString::fromLatin1(buf, tail).trimmed();
       if ( !mac.isEmpty() )
         loginMap[type][index].macdef[macro].append( mac );
 

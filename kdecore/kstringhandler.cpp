@@ -72,7 +72,7 @@ QString KStringHandler::word( const QString &text , const char *range )
        ++pos;
     }
 
-    return tmp.stripWhiteSpace();
+    return tmp.trimmed();
 }
 
 //
@@ -196,7 +196,7 @@ QString KStringHandler::capwords( const QString &text )
         return text;
     }
 
-    const QString strippedText = text.stripWhiteSpace();
+    const QString strippedText = text.trimmed();
     const QStringList words = capwords( QStringList::split( ' ', strippedText ) );
 
     QString result = text;
@@ -248,7 +248,7 @@ QStringList KStringHandler::reverse( const QStringList &list )
 
 QString KStringHandler::center( const QString &text , int width )
 {
-    const QString s = text.stripWhiteSpace();
+    const QString s = text.trimmed();
     const int length = s.length();
     if ( width <= length ) {
         return s;

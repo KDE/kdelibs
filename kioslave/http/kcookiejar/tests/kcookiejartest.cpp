@@ -145,7 +145,7 @@ static void processCheck(QString &line)
 
    QString expectedCookies = line;
 
-   QString cookies = jar->findCookies(urlStr, false, 0, 0).stripWhiteSpace();
+   QString cookies = jar->findCookies(urlStr, false, 0, 0).trimmed();
    if (cookies != expectedCookies)
       FAIL(urlStr+QString("\nGot '%1' expected '%2'")
               .arg(cookies, expectedCookies));

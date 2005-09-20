@@ -140,7 +140,7 @@ namespace KPAC
         m_helper->disconnect( this );
         QString line;
         m_helper->readln( line );
-        download( KURL( line.stripWhiteSpace() ) );
+        download( KURL( line.trimmed() ) );
     }
 }
 

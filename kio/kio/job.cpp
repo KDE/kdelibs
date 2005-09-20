@@ -4540,7 +4540,7 @@ QFile *CacheInfo::cachedFile()
       ok = false;
    if (ok)
    {
-      m_etag = QString(buffer).stripWhiteSpace();
+      m_etag = QString(buffer).trimmed();
    }
 
    // Last-Modified
@@ -4548,7 +4548,7 @@ QFile *CacheInfo::cachedFile()
       ok = false;
    if (ok)
    {
-      m_lastModified = QString(buffer).stripWhiteSpace();
+      m_lastModified = QString(buffer).trimmed();
    }
 
    fclose(fs);

@@ -56,7 +56,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
       if ( line[line.length()-1] != '\n' || lineno <= 2 )
           continue;
 
-      QString currentLine = codec->toUnicode(line).stripWhiteSpace();
+      QString currentLine = codec->toUnicode(line).trimmed();
 
       if (currentLine.isEmpty()) {
          // end of data block

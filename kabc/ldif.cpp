@@ -117,7 +117,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
     // strange: we did not find a fieldname
     fieldname = "";
     Q3CString str;
-    str = line.stripWhiteSpace();
+    str = line.trimmed();
     linelen = str.length();
     data = str.data();
     tmp.setRawData( data, linelen );
@@ -132,7 +132,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == ':' ) {
     // String is BASE64 encoded -> decode it now.
     fieldname = QString::fromUtf8(
-      line.left( position ).stripWhiteSpace() );
+      line.left( position ).trimmed() );
     if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
@@ -147,7 +147,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
   if ( linelen > ( position + 1 ) && line[ position + 1 ] == '<' ) {
     // String is an URL.
     fieldname = QString::fromUtf8(
-      line.left( position ).stripWhiteSpace() );
+      line.left( position ).trimmed() );
     if ( linelen <= ( position + 3 ) ) {
       value.resize( 0 );
       return false;
@@ -159,7 +159,7 @@ bool LDIF::splitLine( const Q3CString &line, QString &fieldname, QByteArray &val
     return true;
   }
 
-  fieldname = QString::fromUtf8(line.left( position ).stripWhiteSpace());
+  fieldname = QString::fromUtf8(line.left( position ).trimmed());
   if ( linelen <= ( position + 2 ) ) {
     value.resize( 0 );
     return false;

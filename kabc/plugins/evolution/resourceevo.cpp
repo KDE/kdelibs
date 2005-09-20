@@ -88,7 +88,7 @@ bool ResourceEvolution::load() {
 
         qWarning( "val:%s", it.value().latin1() );
         VCardTool tool;
-        QString str = it.value().stripWhiteSpace();
+        QString str = it.value().trimmed();
         Addressee::List list = tool.parseVCards( str );
         if (!list.first().isEmpty() ) {
             Addressee adr = list.first();

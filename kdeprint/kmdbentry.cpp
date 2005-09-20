@@ -51,7 +51,7 @@ bool KMDBEntry::validate(bool checkIt)
 	// extract manufacturer from model
 	if (model.find(manufacturer,0,false) == 0)
 	{
-		model = model.right(model.length()-manufacturer.length()-1).stripWhiteSpace();
+		model = model.right(model.length()-manufacturer.length()-1).trimmed();
 		if (model.isEmpty()) return false;
 	}
 

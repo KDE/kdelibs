@@ -264,7 +264,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           }
           break;
       case EnvVarProxy:
-          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit())).stripWhiteSpace();
+          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit())).trimmed();
           break;
       case ManualProxy:
           proxy = proxyFor( url.protocol() );
@@ -360,7 +360,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         {
            QString qhost = url.host().lower();
            const char *host = qhost.latin1();
-           QString qno_proxy = noProxy.stripWhiteSpace().lower();
+           QString qno_proxy = noProxy.trimmed().lower();
            const char *no_proxy = qno_proxy.latin1();
            isRevMatch = revmatch(host, no_proxy);
 

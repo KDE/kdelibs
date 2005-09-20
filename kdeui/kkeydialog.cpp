@@ -320,7 +320,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   QToolButton *clearSearch = new QToolButton(this);
   clearSearch->setTextLabel(i18n("Clear Search"), true);
-  clearSearch->setIconSet(SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase"));
+  clearSearch->setIcon(SmallIconSet(QApplication::reverseLayout() ? "clear_left" : "locationbar_erase"));
   searchLayout->addWidget(clearSearch);
   QLabel* slbl = new QLabel(i18n("&Search:"), this);
   searchLayout->addWidget(slbl);
@@ -935,7 +935,7 @@ bool KKeyChooser::removeShortcut( const QString& name, const KShortcut &cut )
 // KDE4 remove this
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
 {
-	sAction = sAction.stripWhiteSpace();
+	sAction = sAction.trimmed();
 
 	QString s =
 		i18n("The '%1' key combination has already been allocated "
@@ -970,7 +970,7 @@ bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAc
 		"to the \"%2\" action.\n"
 		"Do you want to reassign it from that action to the current one?");
         }
-	s = s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
+	s = s.arg(cut.toString()).arg(sAction.trimmed());
 
 	return KMessageBox::warningContinueCancel( parent, s, sTitle, i18n("Reassign") ) == KMessageBox::Continue;
 }

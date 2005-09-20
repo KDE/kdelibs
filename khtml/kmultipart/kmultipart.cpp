@@ -235,7 +235,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 }
                 else if ( !qstrnicmp( line.data(), "Content-Encoding:", 17 ) )
                 {
-                    QString encoding = QString::fromLatin1(line.data()+17).stripWhiteSpace().lower();
+                    QString encoding = QString::fromLatin1(line.data()+17).trimmed().lower();
                     if (encoding == "gzip" || encoding == "x-gzip") {
                         m_gzip = true;
                     } else {
@@ -246,7 +246,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 else if ( !qstrnicmp( line.data(), "Content-Type:", 13 ) )
                 {
                     Q_ASSERT( m_nextMimeType.isNull() );
-                    m_nextMimeType = QString::fromLatin1( line.data() + 14 ).stripWhiteSpace();
+                    m_nextMimeType = QString::fromLatin1( line.data() + 14 ).trimmed();
                     int semicolon = m_nextMimeType.find( ';' );
                     if ( semicolon != -1 )
                         m_nextMimeType = m_nextMimeType.left( semicolon );

@@ -277,7 +277,7 @@ QString KConfigBase::readEntry( const char *pKey,
           if (fs)
           {
              QTextStream ts(fs, QIODevice::ReadOnly);
-             result = ts.read().stripWhiteSpace();
+             result = ts.read().trimmed();
              pclose(fs);
           }
           aValue.replace( nDollarPos, nEndPos-nDollarPos, result );

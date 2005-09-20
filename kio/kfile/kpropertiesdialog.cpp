@@ -876,7 +876,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QString pattern;
     KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
     if (!pattern.isEmpty() && pattern.at(0)=='*' && pattern.find('*',1)==-1)
-      d->m_lined->setSelection(0, filename.length()-pattern.stripWhiteSpace().length()+1);
+      d->m_lined->setSelection(0, filename.length()-pattern.trimmed().length()+1);
     else
     {
       int lastDot = filename.findRev('.');
@@ -911,7 +911,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     QIcon iconSet = SmallIconSet(QString::fromLatin1("configure"));
     QPixmap pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
-    button->setIconSet( iconSet );
+    button->setIcon( iconSet );
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     if ( d->mimeType == KMimeType::defaultMimeType() )
        button->setToolTip(i18n("Create new file type"));
@@ -3352,10 +3352,10 @@ void KDesktopPropsPlugin::slotAdvanced()
 
   if ( dlg.exec() == QDialog::Accepted )
   {
-    m_terminalOptionStr = w->terminalEdit->text().stripWhiteSpace();
+    m_terminalOptionStr = w->terminalEdit->text().trimmed();
     m_terminalBool = w->terminalCheck->isChecked();
     m_suidBool = w->suidCheck->isChecked();
-    m_suidUserStr = w->suidEdit->text().stripWhiteSpace();
+    m_suidUserStr = w->suidEdit->text().trimmed();
     m_startupBool = w->startupInfoCheck->isChecked();
     m_systrayBool = w->systrayCheck->isChecked();
 
@@ -3690,7 +3690,7 @@ void KExecPropsPlugin::applyChanges()
   if (d->nocloseonexitCheck )
     if ( d->nocloseonexitCheck->isChecked() )
       temp += QString::fromLatin1("--noclose ");
-  temp = temp.stripWhiteSpace();
+  temp = temp.trimmed();
   config.writeEntry( "TerminalOptions", temp );
   config.writeEntry( "X-KDE-SubstituteUID", suidCheck->isChecked() );
   config.writeEntry( "X-KDE-Username", suidEdit->text() );
@@ -3741,7 +3741,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   addExtensionButton = new QPushButton( QString::null, d->m_frame );
   iconSet = SmallIconSet( "back" );
-  addExtensionButton->setIconSet( iconSet );
+  addExtensionButton->setIcon( iconSet );
   pixMap = iconSet.pixmap( QIcon::Small, QIcon::Normal );
   addExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( addExtensionButton, SIGNAL( clicked() ),
@@ -3749,7 +3749,7 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   delExtensionButton = new QPushButton( QString::null, d->m_frame );
   iconSet = SmallIconSet( "forward" );
-  delExtensionButton->setIconSet( iconSet );
+  delExtensionButton->setIcon( iconSet );
   delExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( delExtensionButton, SIGNAL( clicked() ),
             SLOT( slotDelExtension() ) );

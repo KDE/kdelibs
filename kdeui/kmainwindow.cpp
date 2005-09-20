@@ -221,7 +221,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         QList<QWidget*> list = kapp->topLevelWidgets();
         bool found = false;
 		foreach ( QWidget* w, list ) {
-			if( w != this && w->name() == s )
+			if( w != this && w->objectName() == s )
 			{
 				found = true;
 				break;
@@ -558,9 +558,9 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
       {
           QDomElement e = n.toElement();
 
-          if ( e.tagName().lower() == "toolbar" )
+          if ( e.tagName().toLower() == "toolbar" )
               factory_->resetContainer( e.attribute( "name" ) );
-          else if ( e.tagName().lower() == "menubar" )
+          else if ( e.tagName().toLower() == "menubar" )
               factory_->resetContainer( e.tagName(), true );
       }
 
@@ -755,7 +755,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
         {
            // Give a number to the toolbar, but prefer a name if there is one,
            // because there's no real guarantee on the ordering of toolbars
-           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->name());
+           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
@@ -861,7 +861,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
         {
            // Give a number to the toolbar, but prefer a name if there is one,
            // because there's no real guarantee on the ordering of toolbars
-           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->name());
+           group = (toolbar->objectName().isEmpty() ? QString::number(n) : QString(" ")+toolbar->objectName());
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }

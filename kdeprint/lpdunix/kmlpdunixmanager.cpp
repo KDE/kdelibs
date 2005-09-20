@@ -78,7 +78,7 @@ QString readLine(KTextBuffer& t)
 
 	while (!t.atEnd())
 	{
-		buffer = t.readLine().stripWhiteSpace();
+		buffer = t.readLine().trimmed();
 		if (buffer.isEmpty() || buffer[0] == '#')
 			continue;
 		if (buffer[0] == '|' || buffer[0] == ':' || lineContinue || line.isEmpty())
@@ -87,7 +87,7 @@ QString readLine(KTextBuffer& t)
 			if (line.right(1) == "\\")
 			{
 				line.truncate(line.length()-1);
-				line = line.stripWhiteSpace();
+				line = line.trimmed();
 				lineContinue = true;
 			}
 			else
@@ -120,9 +120,9 @@ QMap<QString,QString> readEntry(KTextBuffer& t)
 				entry["printer-name"] = l[0];
 			for (int i=1; i<l.count(); i++)
 				if ((p=l[i].find('=')) != -1)
-					entry[l[i].left(p).stripWhiteSpace()] = l[i].right(l[i].length()-p-1).stripWhiteSpace();
+					entry[l[i].left(p).trimmed()] = l[i].right(l[i].length()-p-1).trimmed();
 				else
-					entry[l[i].stripWhiteSpace()] = QString::null;
+					entry[l[i].trimmed()] = QString::null;
 		}
 	}
 	return entry;
@@ -159,11 +159,11 @@ QString getPrintcapFileName()
 		QString		line;
 		while (!t.atEnd())
 		{
-			line = t.readLine().stripWhiteSpace();
+			line = t.readLine().trimmed();
 			if (line.startsWith("printcap_path="))
 			{
 				kdDebug() << "printcap_path entry found: " << line << endl;
-				QString	pcentry = line.mid(14).stripWhiteSpace();
+				QString	pcentry = line.mid(14).trimmed();
 				kdDebug() << "printcap_path value: " << pcentry << endl;
 				if (pcentry[0] == '|')
 				{ // printcap through pipe
@@ -354,7 +354,7 @@ void KMLpdUnixManager::parseSpoolInterface()
 
 			while (!t.atEnd())
 			{
-				line = t.readLine().stripWhiteSpace();
+				line = t.readLine().trimmed();
 				if (line.startsWith("HOSTNAME"))
 				{
 					QStringList	l = QStringList::split('=',line,false);

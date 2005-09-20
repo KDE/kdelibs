@@ -170,7 +170,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   installEventFilter(this);
 
   // set our pixmap and do our initial setup
-  setIconSet( QIcon( pixmap ));
+  setIcon( QIcon( pixmap ));
   modeChange();
 }
 
@@ -209,7 +209,7 @@ void KToolBarButton::modeChange()
   // we'll start with the size of our pixmap
   int pix_width  = d->m_iconSize;
   if ( d->m_iconSize == 0 ) {
-      if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
+      if (d->m_parent && !(d->m_parent->objectName()== QLatin1String("mainToolBar")))
           pix_width = IconSize( KIcon::MainToolbar );
       else
           pix_width = IconSize( KIcon::Toolbar );
@@ -298,18 +298,14 @@ void KToolBarButton::setIcon( const QString &icon )
   if (d->m_parent)
     d->m_iconSize = d->m_parent->iconSize();
   // QObject::name() return "const char *" instead of QString.
-  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
-    QToolButton::setIconSet( d->m_instance->iconLoader()->loadIconSet(
+  if (d->m_parent && !(d->m_parent->objectName() == QLatin1String("mainToolBar")))
+    QToolButton::setIcon( d->m_instance->iconLoader()->loadIconSet(
         d->m_iconName, KIcon::MainToolbar, d->m_iconSize ));
   else
-    QToolButton::setIconSet( d->m_instance->iconLoader()->loadIconSet(
+    QToolButton::setIcon( d->m_instance->iconLoader()->loadIconSet(
         d->m_iconName, KIcon::Toolbar, d->m_iconSize ));
 }
 
-void KToolBarButton::setIconSet( const QIcon &iconset )
-{
-  QToolButton::setIconSet( iconset );
-}
 
 // remove?
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
@@ -321,49 +317,49 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
   }
   QIcon set = iconSet();
   set.setPixmap( pixmap, QIcon::Automatic, QIcon::Active );
-  QToolButton::setIconSet( set );
+  QToolButton::setIcon( set );
 }
 
 void KToolBarButton::setDefaultPixmap( const QPixmap &pixmap )
 {
   QIcon set = iconSet();
   set.setPixmap( pixmap, QIcon::Automatic, QIcon::Normal );
-  QToolButton::setIconSet( set );
+  QToolButton::setIcon( set );
 }
 
 void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 {
   QIcon set = iconSet();
   set.setPixmap( pixmap, QIcon::Automatic, QIcon::Disabled );
-  QToolButton::setIconSet( set );
+  QToolButton::setIcon( set );
 }
 
 void KToolBarButton::setDefaultIcon( const QString& icon )
 {
   QIcon set = iconSet();
   QPixmap pm;
-  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
+  if (d->m_parent && !(d->m_parent->objectName() == QLatin1String("mainToolBar")))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
         d->m_iconSize );
   else
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
         d->m_iconSize );
   set.setPixmap( pm, QIcon::Automatic, QIcon::Normal );
-  QToolButton::setIconSet( set );
+  QToolButton::setIcon( set );
 }
 
 void KToolBarButton::setDisabledIcon( const QString& icon )
 {
   QIcon set = iconSet();
   QPixmap pm;
-  if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
+  if (d->m_parent && !(d->m_parent->objectName()==QLatin1String("mainToolBar")))
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::MainToolbar,
         d->m_iconSize );
   else
     pm = d->m_instance->iconLoader()->loadIcon( icon, KIcon::Toolbar,
         d->m_iconSize );
   set.setPixmap( pm, QIcon::Automatic, QIcon::Disabled );
-  QToolButton::setIconSet( set );
+  QToolButton::setIcon( set );
 }
 
 

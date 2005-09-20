@@ -250,7 +250,7 @@ bool KonfUpdate::checkFile(const QString &filename)
    QString id;
    while(!ts.atEnd())
    {
-      QString line = ts.readLine().stripWhiteSpace();
+      QString line = ts.readLine().trimmed();
       lineCount++;
       if (line.isEmpty() || (line[0] == '#'))
          continue;
@@ -269,11 +269,11 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
    int i = _file.find(',');
    if (i == -1)
    {
-      file = _file.stripWhiteSpace();
+      file = _file.trimmed();
    }
    else
    {
-      file = _file.mid(i+1).stripWhiteSpace();
+      file = _file.mid(i+1).trimmed();
    }
 
 //   qDebug("File %s, id %s", file.latin1(), id.latin1());
@@ -325,7 +325,7 @@ bool KonfUpdate::updateFile(const QString &filename)
    resetOptions();
    while(!ts.atEnd())
    {
-      m_line = ts.readLine().stripWhiteSpace();
+      m_line = ts.readLine().trimmed();
       m_lineCount++;
       if (m_line.isEmpty() || (m_line[0] == '#'))
          continue;
@@ -487,12 +487,12 @@ void KonfUpdate::gotFile(const QString &_file)
    int i = _file.find(',');
    if (i == -1)
    {
-      oldFile = _file.stripWhiteSpace();
+      oldFile = _file.trimmed();
    }
    else
    {
-      oldFile = _file.left(i).stripWhiteSpace();
-      newFile = _file.mid(i+1).stripWhiteSpace();
+      oldFile = _file.left(i).trimmed();
+      newFile = _file.mid(i+1).trimmed();
       if (oldFile == newFile)
          newFile = QString::null;
    }
@@ -542,19 +542,19 @@ void KonfUpdate::gotGroup(const QString &_group)
    int i = _group.find(',');
    if (i == -1)
    {
-      oldGroup = _group.stripWhiteSpace();
+      oldGroup = _group.trimmed();
       newGroup = oldGroup;
    }
    else
    {
-      oldGroup = _group.left(i).stripWhiteSpace();
-      newGroup = _group.mid(i+1).stripWhiteSpace();
+      oldGroup = _group.left(i).trimmed();
+      newGroup = _group.mid(i+1).trimmed();
    }
 }
 
 void KonfUpdate::gotRemoveGroup(const QString &_group)
 {
-   oldGroup = _group.stripWhiteSpace();
+   oldGroup = _group.trimmed();
 
    if (!oldConfig1)
    {
@@ -575,13 +575,13 @@ void KonfUpdate::gotKey(const QString &_key)
    int i = _key.find(',');
    if (i == -1)
    {
-      oldKey = _key.stripWhiteSpace();
+      oldKey = _key.trimmed();
       newKey = oldKey;
    }
    else
    {
-      oldKey = _key.left(i).stripWhiteSpace();
-      newKey = _key.mid(i+1).stripWhiteSpace();
+      oldKey = _key.left(i).trimmed();
+      newKey = _key.mid(i+1).trimmed();
    }
 
    if (oldKey.isEmpty() || newKey.isEmpty())
@@ -625,7 +625,7 @@ void KonfUpdate::gotKey(const QString &_key)
 
 void KonfUpdate::gotRemoveKey(const QString &_key)
 {
-   oldKey = _key.stripWhiteSpace();
+   oldKey = _key.trimmed();
 
    if (oldKey.isEmpty())
    {
@@ -693,10 +693,10 @@ void KonfUpdate::gotOptions(const QString &_options)
        it != options.end();
        ++it)
    {
-       if ( (*it).lower().stripWhiteSpace() == "copy")
+       if ( (*it).lower().trimmed() == "copy")
           m_bCopy = true;
 
-       if ( (*it).lower().stripWhiteSpace() == "overwrite")
+       if ( (*it).lower().trimmed() == "overwrite")
           m_bOverwrite = true;
    }
 }
@@ -725,12 +725,12 @@ void KonfUpdate::gotScript(const QString &_script)
    int i = _script.find(',');
    if (i == -1)
    {
-      script = _script.stripWhiteSpace();
+      script = _script.trimmed();
    }
    else
    {
-      script = _script.left(i).stripWhiteSpace();
-      interpreter = _script.mid(i+1).stripWhiteSpace();
+      script = _script.left(i).trimmed();
+      interpreter = _script.mid(i+1).trimmed();
    }
 
 
@@ -883,7 +883,7 @@ void KonfUpdate::gotScript(const QString &_script)
          }
          else if (line.startsWith("# DELETEGROUP"))
          {
-            QString key = line.mid(13).stripWhiteSpace();
+            QString key = line.mid(13).trimmed();
             if (key[0] == '[')
             {
                int j = key.find(']')+1;

@@ -1318,7 +1318,7 @@ void KLocale::setMainCatalog(const char *catalog)
 
 double KLocale::readNumber(const QString &_str, bool * ok) const
 {
-  QString str = _str.stripWhiteSpace();
+  QString str = _str.trimmed();
   bool neg = str.indexOf(negativeSign()) == 0;
   if (neg)
     str.remove( 0, negativeSign().length() );
@@ -1383,7 +1383,7 @@ double KLocale::readNumber(const QString &_str, bool * ok) const
 
 double KLocale::readMoney(const QString &_str, bool * ok) const
 {
-  QString str = _str.stripWhiteSpace();
+  QString str = _str.trimmed();
   bool neg = false;
   bool currencyFound = false;
   // First try removing currency symbol from either end
@@ -1391,7 +1391,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
   if ( pos == 0 || pos == (int) str.length()-1 )
     {
       str.remove(pos,currencySymbol().length());
-      str = str.stripWhiteSpace();
+      str = str.trimmed();
       currencyFound = true;
     }
   if (str.isEmpty())
@@ -1419,7 +1419,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
 	  str.remove(i1,negativeSign().length());
         }
     }
-  if (neg) str = str.stripWhiteSpace();
+  if (neg) str = str.trimmed();
 
   // Finally try again for the currency symbol, if we didn't find
   // it already (because of the negative sign being in the way).
@@ -1429,7 +1429,7 @@ double KLocale::readMoney(const QString &_str, bool * ok) const
       if ( pos == 0 || pos == (int) str.length()-1 )
         {
 	  str.remove(pos,currencySymbol().length());
-	  str = str.stripWhiteSpace();
+	  str = str.trimmed();
         }
     }
 
@@ -1841,7 +1841,7 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
   QString ret( buffer, index );
   delete [] buffer;
   if ( isDuration ) // eliminate trailing-space due to " %p"
-    return ret.stripWhiteSpace();
+    return ret.trimmed();
   else
     return ret;
 }
@@ -1992,13 +1992,13 @@ QString KLocale::decodeFileNameUTF8( const QByteArray & localFileName )
 void KLocale::setDateFormat(const QString & format)
 {
   doFormatInit();
-  m_dateFormat = format.stripWhiteSpace();
+  m_dateFormat = format.trimmed();
 }
 
 void KLocale::setDateFormatShort(const QString & format)
 {
   doFormatInit();
-  m_dateFormatShort = format.stripWhiteSpace();
+  m_dateFormatShort = format.trimmed();
 }
 
 void KLocale::setDateMonthNamePossessive(bool possessive)
@@ -2010,7 +2010,7 @@ void KLocale::setDateMonthNamePossessive(bool possessive)
 void KLocale::setTimeFormat(const QString & format)
 {
   doFormatInit();
-  m_timeFormat = format.stripWhiteSpace();
+  m_timeFormat = format.trimmed();
 }
 
 void KLocale::setWeekStartDay(int day)
@@ -2043,7 +2043,7 @@ QString KLocale::timeFormat() const
 void KLocale::setDecimalSymbol(const QString & symbol)
 {
   doFormatInit();
-  m_decimalSymbol = symbol.stripWhiteSpace();
+  m_decimalSymbol = symbol.trimmed();
 }
 
 void KLocale::setThousandsSeparator(const QString & separator)
@@ -2056,13 +2056,13 @@ void KLocale::setThousandsSeparator(const QString & separator)
 void KLocale::setPositiveSign(const QString & sign)
 {
   doFormatInit();
-  m_positiveSign = sign.stripWhiteSpace();
+  m_positiveSign = sign.trimmed();
 }
 
 void KLocale::setNegativeSign(const QString & sign)
 {
   doFormatInit();
-  m_negativeSign = sign.stripWhiteSpace();
+  m_negativeSign = sign.trimmed();
 }
 
 void KLocale::setPositiveMonetarySignPosition(SignPosition signpos)
@@ -2105,13 +2105,13 @@ void KLocale::setMonetaryThousandsSeparator(const QString & separator)
 void KLocale::setMonetaryDecimalSymbol(const QString & symbol)
 {
   doFormatInit();
-  m_monetaryDecimalSymbol = symbol.stripWhiteSpace();
+  m_monetaryDecimalSymbol = symbol.trimmed();
 }
 
 void KLocale::setCurrencySymbol(const QString & symbol)
 {
   doFormatInit();
-  m_currencySymbol = symbol.stripWhiteSpace();
+  m_currencySymbol = symbol.trimmed();
 }
 
 int KLocale::pageSize() const

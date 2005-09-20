@@ -397,7 +397,7 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 	kdDebug() << e->text() << " " << (int)e->text()[0].latin1()<<  " " << (int)e->ascii() << endl;
 	//if key is a letter, it must be stored as lowercase
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ? 
-		(QChar( e->key() & 0xff ).lower().latin1() | (e->key() & 0xffff00) )
+		(QChar( e->key() & 0xff ).toLower().latin1() | (e->key() & 0xffff00) )
 		: e->key();
 	int modQt = KKeyServer::qtButtonStateToMod( e->state() );
 	KKeyNative keyNative( KKey(keyQt, modQt) );

@@ -803,7 +803,7 @@ KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const
     if ( e.isNull() )
       continue;
 
-    if ( e.tagName().lower() != "action" )
+    if ( e.tagName().toLower() != "action" )
       continue;
 
     QString actionName = e.attribute( "name" );

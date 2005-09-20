@@ -522,7 +522,7 @@ public slots:
      * Sets the QIconSet from which the icons used to display this action will
      * be chosen.
      */
-    virtual void setIconSet( const QIcon &iconSet );
+    virtual void setIcon( const QIcon &iconSet );
 
     virtual void setIcon( const QString& icon );
 

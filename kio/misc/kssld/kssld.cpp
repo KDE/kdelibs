@@ -719,7 +719,7 @@ static QStringList caReadCerticatesFromFile(QString filename) {
 			continue;
 		}
 
-		certificate += temp.stripWhiteSpace();
+		certificate += temp.trimmed();
 	}
 
 	file.close();

@@ -72,7 +72,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			else
 			    aboutData = KGlobal::instance()->aboutData();
 			*/
-			QString appName = (aboutData) ? aboutData->programName() : QLatin1String(qApp->name());
+			QString appName = (aboutData) ? aboutData->programName() : qApp->applicationName();
 			sLabel = i18n(pInfo->psLabel).arg(appName);
 			}
 			break;

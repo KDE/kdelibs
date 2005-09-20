@@ -459,9 +459,9 @@ addComment:
     QStringList::Iterator it;
     for ( it = list.begin(); it != list.end(); ++it ) {
       if ( (*it).startsWith( "cn=" ) )
-        name = (*it).mid( 3 ).stripWhiteSpace();
+        name = (*it).mid( 3 ).trimmed();
       if ( (*it).startsWith( "mail=" ) )
-        email = (*it).mid( 5 ).stripWhiteSpace();
+        email = (*it).mid( 5 ).trimmed();
     }
     if ( !name.isEmpty() && !email.isEmpty() )
       email = " <" + email + ">";

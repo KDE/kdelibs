@@ -498,7 +498,7 @@ QString KCharsets::encodingForName( const QString &descriptiveName )
     const int left = descriptiveName.findRev( '(' );
     
     if (left<0) // No parenthesis, so assume it is a normal encoding name
-	return descriptiveName.stripWhiteSpace();
+	return descriptiveName.trimmed();
     
     QString name(descriptiveName.mid(left+1));
     
@@ -507,7 +507,7 @@ QString KCharsets::encodingForName( const QString &descriptiveName )
     if (right<0) 
         return name;
 
-    return name.left(right).stripWhiteSpace();
+    return name.left(right).trimmed();
 }
 
 QStringList KCharsets::descriptiveEncodingNames()

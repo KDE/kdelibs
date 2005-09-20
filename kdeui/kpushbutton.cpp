@@ -95,7 +95,7 @@ void KPushButton::init( const KGuiItem &item )
         initialized = true;
     }
 
-    setIconSet( d->item.iconSet() );
+    setIcon( d->item.iconSet() );
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
@@ -123,7 +123,7 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     // call QPushButton's implementation since we don't need to
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
-    setIconSet( d->item.iconSet() );
+    setIcon( d->item.iconSet() );
     setToolTip( d->item.toolTip() );
     setWhatsThis( d->item.whatsThis() );
 }
@@ -146,25 +146,25 @@ void KPushButton::setText( const QString &text )
     // we need to re-evaluate the icon set when the text
     // is removed, or when it is supplied
     if (text.isEmpty() != d->item.text().isEmpty())
-        setIconSet(d->item.iconSet());
+        setIcon(d->item.iconSet());
 
     d->item.setText(text);
 }
 
-void KPushButton::setIconSet( const QIcon &iconSet )
+void KPushButton::setIcon( const QIcon &iconSet )
 {
-    d->item.setIconSet(iconSet);
+    d->item.setIcon(iconSet);
 
     if ( s_useIcons || text().isEmpty() )
-        QPushButton::setIconSet( iconSet );
+        QPushButton::setIcon( iconSet );
     else
-        QPushButton::setIconSet( QIcon() );
+        QPushButton::setIcon( QIcon() );
 }
 
 void KPushButton::slotSettingsChanged( int /* category */ )
 {
     readSettings();
-    setIconSet( d->item.iconSet() );
+    setIcon( d->item.iconSet() );
 }
 
 void KPushButton::setDragEnabled( bool enable )

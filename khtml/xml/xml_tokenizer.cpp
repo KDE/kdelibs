@@ -234,7 +234,7 @@ bool XMLHandler::characters( const QString& ch )
 {
     //this is needed for xhtml parsing. otherwise we try to attach
     //"\n\t" to html, head and other nodes which don't accept textchildren
-    if ( ch.stripWhiteSpace().isEmpty() )
+    if ( ch.trimmed().isEmpty() )
         return true;
 
     if (currentNode()->nodeType() == Node::TEXT_NODE ||

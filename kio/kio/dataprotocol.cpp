@@ -193,7 +193,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
   // read mime type
   if (header_info.data_offset >= raw_url_len) return;
   QString mime_type = extract(raw_url,header_info.data_offset,';',',')
-  			.stripWhiteSpace();
+  			.trimmed();
   if (!mime_type.isEmpty()) header_info.mime_type = mime_type;
 
   if (header_info.data_offset >= raw_url_len) return;
@@ -205,7 +205,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
   while (!data_begin_reached && header_info.data_offset < raw_url_len) {
     // read attribute
     QString attribute = extract(raw_url,header_info.data_offset,'=',';',',')
-    			.stripWhiteSpace();
+    			.trimmed();
     if (header_info.data_offset >= raw_url_len
     	|| raw_url[header_info.data_offset] != '=') {
       // no assigment, must be base64 option
@@ -224,7 +224,7 @@ static void parseDataHeader(const KURL &url, DataHeader &header_info) {
         ignoreWS(raw_url,header_info.data_offset);
       } else
         value = extract(raw_url,header_info.data_offset,';',',')
-        		.stripWhiteSpace();
+        		.trimmed();
 
       // add attribute to map
       header_info.attributes[attribute.lower()] = value;

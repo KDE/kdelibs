@@ -940,9 +940,9 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
   }
 
 ABORT_PARSING:
-  displayName = displayName.stripWhiteSpace();
-  comment = comment.stripWhiteSpace();
-  addrSpec = addrSpec.stripWhiteSpace();
+  displayName = displayName.trimmed();
+  comment = comment.trimmed();
+  addrSpec = addrSpec.trimmed();
 
   fullName = QString::fromUtf8( displayName );
   email = QString::fromUtf8( addrSpec );

@@ -105,7 +105,7 @@ bool KTabCtl::isTabEnabled(const QString& name)
     unsigned int i;
 
     for(i = 0; i < pages.size(); i++)
-	if (QLatin1String(pages[i]->name()) == name)
+	if (pages[i]->objectName() == name)
 	    return tabs->isTabEnabled(i);   /* return the enabled status */
     return false;     /* tab does not exist */
 }
@@ -118,7 +118,7 @@ void KTabCtl::setTabEnabled(const QString& name, bool state)
         return;
 
     for (i = 0; i < pages.size(); i++)
-	if (QLatin1String(pages[i]->name()) == name)
+	if (pages[i]->objectName() == name)
 	    tabs->setTabEnabled(i, state);
 }
 

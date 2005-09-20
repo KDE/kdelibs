@@ -63,7 +63,7 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   int  val = 0;
   QString newStr;
 
-  newStr = str.stripWhiteSpace();
+  newStr = str.trimmed();
   if (_base > 10)
     newStr = newStr.upper();
 
@@ -207,7 +207,7 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   bool    ok;
   double  val = 0;
   QString newStr;
-  newStr = str.stripWhiteSpace();
+  newStr = str.trimmed();
 
   if (newStr == QLatin1String("-")) // a special case
     if ((_min || _max) && _min >= 0)
