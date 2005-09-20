@@ -172,7 +172,7 @@ unsigned int KTabWidget::tabBarWidthForMaxChars( uint maxLength )
     int x = 0;
     for( int i=0; i < count(); ++i ) {
         QString newTitle = d->m_tabNames[ i ];
-        newTitle = KStringHandler::rsqueeze( newTitle, maxLength ).leftJustify( d->m_minLength, ' ' );
+        newTitle = KStringHandler::rsqueeze( newTitle, maxLength ).leftJustified( d->m_minLength, ' ' );
 
         int lw = fm.width( newTitle );
         int iw = 0;
@@ -287,7 +287,7 @@ void KTabWidget::updateTab( int index )
     if ( title.length() > (int)d->m_CurrentMaxLength )
         setTabToolTip( page( index ), title );
 
-    title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustify( d->m_minLength, ' ' );
+    title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustified( d->m_minLength, ' ' );
     title.replace( '&', "&&" );
 
     if ( QTabWidget::label( index ) != title )

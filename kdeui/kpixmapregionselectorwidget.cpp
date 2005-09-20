@@ -126,9 +126,12 @@ void KPixmapRegionSelectorWidget::updatePixmap()
         m_rubberBand->hide();
    else
    {
-        m_rubberBand->setGeometry(QRect(m_label -> mapToGlobal(m_selectedRegion.topLeft()),
+        m_rubberBand->setGeometry(QRect(m_selectedRegion.topLeft(),
                                         m_selectedRegion.size()));
 
+/*        m_rubberBand->setGeometry(QRect(m_label -> mapToGlobal(m_selectedRegion.topLeft()),
+                                        m_selectedRegion.size()));
+*/
         m_rubberBand->show();
    }
 
@@ -264,39 +267,39 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          bool mouseOutside=false;
          if ( mevx < 0 )
          {
-           m_selectedRegion.moveBy(-m_selectedRegion.x(),0);
+           m_selectedRegion.translate(-m_selectedRegion.x(),0);
            mouseOutside=true;
          }
          else if ( mevx > m_originalPixmap.width() )
          {
-           m_selectedRegion.moveBy(m_originalPixmap.width()-m_selectedRegion.width()-m_selectedRegion.x(),0);
+           m_selectedRegion.translate(m_originalPixmap.width()-m_selectedRegion.width()-m_selectedRegion.x(),0);
            mouseOutside=true;
          }
          if ( mevy < 0 )
          {
-           m_selectedRegion.moveBy(0,-m_selectedRegion.y());
+           m_selectedRegion.translate(0,-m_selectedRegion.y());
            mouseOutside=true;
          }
          else if ( mevy > m_originalPixmap.height() )
          {
-           m_selectedRegion.moveBy(0,m_originalPixmap.height()-m_selectedRegion.height()-m_selectedRegion.y());
+           m_selectedRegion.translate(0,m_originalPixmap.height()-m_selectedRegion.height()-m_selectedRegion.y());
            mouseOutside=true;
          }
          if (mouseOutside) { updatePixmap(); return true; };
 
-         m_selectedRegion.moveBy( mev->x()-m_tempFirstClick.x(),
+         m_selectedRegion.translate( mev->x()-m_tempFirstClick.x(),
                                   mev->y()-m_tempFirstClick.y() );
 
          // Check that the region has not fallen outside the image
          if (m_selectedRegion.x() < 0)
-            m_selectedRegion.moveBy(-m_selectedRegion.x(),0);
+            m_selectedRegion.translate(-m_selectedRegion.x(),0);
          else if (m_selectedRegion.right() > m_originalPixmap.width())
-            m_selectedRegion.moveBy(-(m_selectedRegion.right()-m_originalPixmap.width()),0);
+            m_selectedRegion.translate(-(m_selectedRegion.right()-m_originalPixmap.width()),0);
 
          if (m_selectedRegion.y() < 0)
-            m_selectedRegion.moveBy(0,-m_selectedRegion.y());
+            m_selectedRegion.translate(0,-m_selectedRegion.y());
          else if (m_selectedRegion.bottom() > m_originalPixmap.height())
-            m_selectedRegion.moveBy(0,-(m_selectedRegion.bottom()-m_originalPixmap.height()));
+            m_selectedRegion.translate(0,-(m_selectedRegion.bottom()-m_originalPixmap.height()));
 
          m_tempFirstClick=mev->pos();
          updatePixmap();

@@ -38,7 +38,7 @@ picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h kdatepik.h \
-	kdatepicker.h kdatetbl.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
+	kdatepicker.h kdatetbl.h kdatetable.h kfontdialog.h kmenu.h kfontrequester.h ktabctl.h \
 	kstatusbar.h kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h knuminput.h \
 	kseparator.h klineedit.h krestrictedline.h kcolorbutton.h kcolorbtn.h ksystemtray.h \
 	kbuttonbox.h keditcl.h kled.h keditlistbox.h kwizard.h kkeydialog.h kkeybutton.h \

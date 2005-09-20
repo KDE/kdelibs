@@ -20,7 +20,7 @@
 
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <qpainter.h>
 #include <qdialog.h>
 #include <qstyle.h>
@@ -28,7 +28,7 @@
 #include <qcombobox.h>
 #include <qfont.h>
 #include <qvalidator.h>
-#include <q3popupmenu.h>
+#include <qmenu.h>
 #include <QMenuItem>
 #include <QStyleOptionToolButton>
 #include <qapplication.h>
@@ -45,7 +45,7 @@
 #include <kcalendarsystem.h>
 #include <QKeyEvent>
 
-#include "kdatetbl.h"
+#include "kdatetable.h"
 #include "kdatepicker.moc"
 
 // Week numbers are defined by ISO 8601
@@ -89,7 +89,7 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   {
     QString week = i18n("Week %1").arg(calendar->weekNumber(day, &year));
     if ( year != calendar->year(day) ) week += "*";  // show that this is a week from a different year
-    d->selectWeek->insertItem(week);
+    d->selectWeek->addItem(week);
 
     // make sure that the week of the lastDay is always inserted: in Chinese calendar
     // system, this is not always the case
@@ -99,19 +99,19 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
 }
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
-  : Q3Frame(parent,name)
+  : QFrame(parent,name)
 {
   init( dt );
 }
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name, Qt::WFlags f)
-  : Q3Frame(parent,name, f)
+  : QFrame(parent,name, f)
 {
   init( dt );
 }
 
 KDatePicker::KDatePicker( QWidget *parent, const char *name )
-  : Q3Frame(parent,name)
+  : QFrame(parent,name)
 {
   init( QDate::currentDate() );
 }
@@ -235,7 +235,7 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
           return true; // eat event
        }
    }
-   return Q3Frame::eventFilter( o, e );
+   return QFrame::eventFilter( o, e );
 }
 
 void
@@ -353,22 +353,23 @@ KDatePicker::selectMonthClicked()
   QDate date = table->getDate();
   int i, month, months = calendar->monthsInYear(date);
 
-  Q3PopupMenu popup(selectMonth);
+  QMenu popup(selectMonth);
 
   for (i = 1; i <= months; i++)
-    popup.insertItem(calendar->monthName(i, calendar->year(date)), i);
+    popup.addAction(calendar->monthName(i, calendar->year(date)))->setData(i);
 
-  QMenuItem *item = popup.findItem (calendar->month(date) - 1);
-  if (item)
+  //QMenuItem *item = popup.findItem (calendar->month(date) - 1);
+  QAction *item=popup.actions()[calendar->month(date)-1];
+  if (item) // if this happens the above should already given an assertion
     popup.setActiveAction(item);
-
-  if ( (month = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), calendar->month(date) - 1)) == -1 ) return;  // canceled
+ 
+  if ( (item = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), item)) == 0 ) return;  // canceled
 
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
   //date.setYMD(date.year(), month, 1);
   //date.setYMD(date.year(), month, QMIN(day, date.daysInMonth()));
-  calendar->setYMD(date, calendar->year(date), month,
+  calendar->setYMD(date, calendar->year(date), item->data().toInt(),
                    QMIN(day, calendar->daysInMonth(date)));
   // ----- set this month
   setDate(date);

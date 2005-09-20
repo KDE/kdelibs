@@ -705,10 +705,10 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     //check() needs this
     orig=word;
 
-    if( d->m_bIgnoreTitleCase && word == word.upper() )
+    if( d->m_bIgnoreTitleCase && word == word.toUpper() )
       return IGNORE;
 
-    if( d->m_bIgnoreUpperWords && word[0] == word[0].upper() )
+    if( d->m_bIgnoreUpperWords && word[0] == word[0].toUpper() )
     {
       QString text = word[0] + word.right( word.length()-1 ).toLower();
       if( text == word )

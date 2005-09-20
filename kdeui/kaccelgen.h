@@ -209,7 +209,7 @@ generate(Iter begin, Iter end, QStringList& target)
 
             if( found ) {
                 // Both upper and lower case marked as used
-                used_accels.insert(item[j].upper(),true);
+                used_accels.insert(item[j].toUpper(),true);
                 used_accels.insert(item[j].lower(),true);
                 item.insert(j,QChar('&'));
             }

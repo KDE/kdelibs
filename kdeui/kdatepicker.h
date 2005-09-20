@@ -20,7 +20,7 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 #include <qdatetime.h>
-#include <q3frame.h>
+#include <qframe.h>
 #include <kdelibs_export.h>
 
 class QLineEdit;
@@ -47,7 +47,7 @@ class KDateTable;
  *     @author Tim Gilman, Mirko Boehm
  *
  **/
-class KDEUI_EXPORT KDatePicker: public Q3Frame
+class KDEUI_EXPORT KDatePicker: public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate)

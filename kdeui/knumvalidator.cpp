@@ -65,7 +65,7 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
 
   newStr = str.trimmed();
   if (_base > 10)
-    newStr = newStr.upper();
+    newStr = newStr.toUpper();
 
   if (newStr == QLatin1String("-")) // a special case
     if ((_min || _max) && _min >= 0)

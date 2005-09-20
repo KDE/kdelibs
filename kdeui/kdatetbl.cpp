@@ -43,7 +43,7 @@
 #include <kshortcut.h>
 #include <kstdaccel.h>
 #include "kdatepicker.h"
-#include "kdatetbl.h"
+#include "kdatetable.h"
 #include "kmenu.h"
 #include <qdatetime.h>
 #include <qstring.h>
@@ -593,8 +593,8 @@ void KDateTable::unsetCustomDatePainting( const QDate &date )
 }
 
 KDateInternalWeekSelector::KDateInternalWeekSelector
-(QWidget* parent, const char* name)
-  : QLineEdit(parent, name),
+(QWidget* parent)
+  : QLineEdit(parent),
     val(new QIntValidator(this)),
     result(0)
 {
@@ -832,8 +832,8 @@ KDateInternalMonthPicker::contentsMouseReleaseEvent(QMouseEvent *e)
 
 
 KDateInternalYearSelector::KDateInternalYearSelector
-(QWidget* parent, const char* name)
-  : QLineEdit(parent, name),
+(QWidget* parent)
+  : QLineEdit(parent),
     val(new QIntValidator(this)),
     result(0)
 {
@@ -888,7 +888,7 @@ KDateInternalYearSelector::setYear(int year)
 }
 
 KPopupFrame::KPopupFrame(QWidget* parent, const char*  name)
-  : Q3Frame(parent, name, Qt::WType_Popup),
+  : QFrame(parent, name, Qt::WType_Popup),
     result(0), // rejected
     main(0)
 {
@@ -902,7 +902,8 @@ KPopupFrame::keyPressEvent(QKeyEvent* e)
   if(e->key()==Qt::Key_Escape)
     {
       result=0; // rejected
-      qApp->exit_loop();
+      emit leaveModality();
+      //qApp->exit_loop();
     }
 }
 
@@ -910,7 +911,8 @@ void
 KPopupFrame::close(int r)
 {
   result=r;
-  qApp->exit_loop();
+  emit leaveModality();
+  //qApp->exit_loop();
 }
 
 void
@@ -962,7 +964,11 @@ KPopupFrame::exec(const QPoint &pos)
 {
   popup(pos);
   repaint();
-  qApp->enter_loop();
+  QEventLoop eventLoop;
+  connect(this, SIGNAL(leaveModality()),
+          &eventLoop, SLOT(quit()));
+  eventLoop.exec();
+
   hide();
   return result;
 }
@@ -979,4 +985,4 @@ void KPopupFrame::virtual_hook( int, void* )
 void KDateTable::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "kdatetbl.moc"
+#include "kdatetable.moc"
