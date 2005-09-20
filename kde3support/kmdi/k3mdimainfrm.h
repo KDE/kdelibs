@@ -31,7 +31,7 @@
 #ifndef _K3MDIMAINFRM_H_
 #define _K3MDIMAINFRM_H_
 
-#include <kparts/dockmainwindow3.h>
+#include <dockmainwindow3.h>
 
 #include <kmenubar.h>
 #include <kpopupmenu.h>
