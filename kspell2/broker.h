@@ -43,7 +43,7 @@ namespace KSpell2
      *
      * This class manages all dictionaries. It's the top level
      * KSpell2 class, you can think of it as the kernel or manager
-     * of the KSpell22 architecture.
+     * of the KSpell2 architecture.
      */
     class KDE_EXPORT Broker : public QObject,
                    public KShared
