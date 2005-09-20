@@ -33,6 +33,19 @@ def generate(env):
                 ('KDEMIME', ''), ('KDEICONS', ''), ('KDESERV', ''),
                 ('KDESERVTYPES', ''), ('KDEAPPS', ''),
 
+		# the main KDE libraries - the naming is important here, see genobj.uselib
+		('LIBPATH_KDECORE', ''),
+		('LIBPATH_KIO', ''),
+		('LIBPATH_KDEUI', ''),
+
+		('CPPPATH_KDECORE', ''),
+		('CPPPATH_KIO', ''),
+		('CPPPATH_KDEUI', ''),
+
+		('LIB_KDECORE', ''),
+		('LIB_KIO', ''),
+		('LIB_KDEUI', ''),
+
 		('DCOPIDL', ''), ('DCOPIDL2CPP', ''),
         )
         opts.Update(env)

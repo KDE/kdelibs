@@ -59,7 +59,6 @@ def configure(dict):
 		env = Environment.Environment( ENV=os.environ, _BUILDDIR_=build_dir,
 			_USECOLORS_=use_colors, CACHEDIR=cache_dir,
 			tools=mytools, toolpath=tool_path )
-		#CCCOMSTR=building_obj, CXXCOMSTR=building_obj,  SHCXXCOMSTR=building_obj,
 
 	## at this point the help was displayed if asked to, then quit
 	if env['HELP']: env.Exit(0)
@@ -110,7 +109,8 @@ colors= {
 	'BOLD'  :"\033[1m",
 	'RED'   :"\033[91m",
 	'GREEN' :"\033[92m",
-	'YELLOW':"\033[1m", #"\033[93m" # unreadable on white backgrounds
+	'YELLOW':"\033[93m", # unreadable on white backgrounds - fix konsole ?
+	'BLUE'  :"\033[94m",
 	'CYAN'  :"\033[96m",
 	'NORMAL':"\033[0m", }
 
@@ -531,8 +531,12 @@ def generate(env):
 	if env['_USECOLORS_']:
 		building_obj='%scompiling%s $TARGET' % (colors['GREEN'], colors['NORMAL'])
 		env['CCCOMSTR']=building_obj
-		env['CXXCOMSTR']=building_obj,
+		env['SHCCCOMSTR']=building_obj
+		env['CXXCOMSTR']=building_obj
 		env['SHCXXCOMSTR']=building_obj
+		link_obj='%slinking%s $TARGET' % (colors['YELLOW'], colors['NORMAL'])
+		env['LINKCOMSTR']=link_obj
+		env['SHLINKCOMSTR']=link_obj
 
 	def bksys_install(lenv, subdir, files, destfile=None, perms=None):
 		""" Install files on 'scons install' """

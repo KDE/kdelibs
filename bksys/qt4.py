@@ -158,13 +158,20 @@ def generate(env):
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	## MOC processing
-	env['BUILDERS']['Moc']=Builder(action='$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE',suffix='.moc',src_suffix='.h')
-	env['BUILDERS']['Moccpp']=Builder(action='$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE',suffix='_moc.cpp',src_suffix='.h')
+	import generic
+	moc_comp    = '$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE'
+	if env['_USECOLORS_']: moc_str='%screating%s $TARGET' % (generic.colors['BLUE'], generic.colors['NORMAL'])
+	else:                  moc_str=''
+	
+	moc_action = env.Action(moc_comp, moc_str)
+
+	env['BUILDERS']['Moc']    = Builder(action=moc_action,suffix='.moc',src_suffix='.h')
+	env['BUILDERS']['Moccpp'] = Builder(action=moc_action,suffix='_moc.cpp',src_suffix='.h')
 	# for Moc2 you have to give the dependency explicitely, eg: env.Moc2(['file.cpp'])
-	env['BUILDERS']['Moc2']=Builder(action='$QT_MOC -o $TARGET $SOURCE',suffix='.moc',src_suffix='.cpp')
+	env['BUILDERS']['Moc2']   = Builder(action=moc_action,suffix='.moc',src_suffix='.cpp')
 
 	## TRANSLATIONS
-	env['BUILDERS']['Transfiles']=Builder(action='$MSGFMT $SOURCE -o $TARGET',suffix='.gmo',src_suffix='.po')
+	#env['BUILDERS']['Transfiles']=Builder(action='$MSGFMT $SOURCE -o $TARGET',suffix='.gmo',src_suffix='.po')
 
 	## Handy helpers for building kde programs
 	## You should not have to modify them ..
