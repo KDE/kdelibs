@@ -52,6 +52,7 @@ for i in "kaboutdialog_private.h kcursor_private.h kdialogbase_priv.h keditcl.h 
 
 env.Kidl("kmainwindowiface.h")
 env.Dcop("kmainwindowiface.kidl")
+env.Moc('kdatetable.h')
 
 obj = env.qt4obj('shlib', env)
 obj.vnum     = '6.0.2'
