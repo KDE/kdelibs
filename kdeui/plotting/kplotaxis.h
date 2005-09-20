@@ -20,8 +20,6 @@
 
 #include <qstring.h>
 
-#include <kdemacros.h>
-
 /**class KPlotAxis
 	*@short Contains all data for drawing an axis including format specification axis labels.
 	*@author Andreas Nicolai

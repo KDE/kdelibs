@@ -187,13 +187,10 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 				case KPlotObject::CURVE :
 				{
 					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
-					DPoint *dp = po->points()->first();
-#warning "Qt4 : moveTo ? lineTo ?"
-#if 0					
-					p->moveTo( dp->qpoint( PixRect, DataRect ) );
-					for ( dp = po->points()->next(); dp; dp = po->points()->next() )
-						p->lineTo( dp->qpoint( PixRect, DataRect ) );
-#endif
+					QPolygon poly;
+					for ( QList<DPoint*>::ConstIterator dpit = po->points()->begin(); dpit != po->points()->constEnd(); ++dpit )
+						poly << ( *dpit )->qpoint( PixRect, DataRect );
+					p->drawPolyline( poly );
 					break;
 				}
 
@@ -206,9 +203,9 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 
 				case KPlotObject::POLYGON :
 				{
-					p->setPen( QPen( QColor( po->color() ), po->size(), (Qt::PenStyle)po->param() ) );
-#warning "Qt4 p->setBrush( po->color() ); ?"
-					//p->setBrush( po->color() );
+					QColor co( po->color() );
+					p->setPen( QPen( co, po->size(), (Qt::PenStyle)po->param() ) );
+					p->setBrush( co );
 
 					QPolygon a( po->count() );
 
@@ -220,7 +217,9 @@ void KPlotWidget::drawObjects( QPainter *p ) {
 					break;
 				}
 
-				case KPlotObject::UNKNOWN_TYPE : break;
+				case KPlotObject::UNKNOWN_TYPE :
+				default:
+					kdDebug() << "Unknown object type: " << po->type() << endl;
 			}
 		}
 	}
