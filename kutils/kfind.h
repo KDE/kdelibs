@@ -105,7 +105,6 @@ class KUTILS_EXPORT KFind :
 
 public:
 
-    // KDE4: move to KFind
     enum Options
     {
         WholeWordsOnly = 1,     // Match whole words only.
