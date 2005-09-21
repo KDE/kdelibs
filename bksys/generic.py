@@ -388,6 +388,15 @@ def generate(env):
 	else:
 		env['WINDOWS']=0
 
+	env['BKS_COLORS']={
+	'BOLD'  :"\033[1m",
+	'RED'   :"\033[91m",
+	'GREEN' :"\033[92m",
+	'YELLOW':"\033[93m", # unreadable on white backgrounds - fix konsole ?
+	'BLUE'  :"\033[94m",
+	'CYAN'  :"\033[96m",
+	'NORMAL':"\033[0m",}
+
 	## Bksys requires scons >= 0.96
 	try: env.EnsureSConsVersion(0, 96, 91)
 	except:
@@ -402,15 +411,6 @@ def generate(env):
 	SConsEnvironment.getreldir = getreldir
 	SConsEnvironment.add_dump = add_dump
 	SConsEnvironment.get_dump = get_dump
-
-	env['BKS_COLORS']={
-	'BOLD'  :"\033[1m",
-	'RED'   :"\033[91m",
-	'GREEN' :"\033[92m",
-	'YELLOW':"\033[93m", # unreadable on white backgrounds - fix konsole ?
-	'BLUE'  :"\033[94m",
-	'CYAN'  :"\033[96m",
-	'NORMAL':"\033[0m",}
 
 	# list of the modules which provide a config.h
 	env['_CONFIG_H_']=[]
