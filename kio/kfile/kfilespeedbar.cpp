@@ -57,10 +57,6 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         insertItem( u, i18n("Home Folder"), false,
                                "folder_home" );
 
-        u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            insertItem( u, i18n("Floppy"), false,
-                                   KProtocolInfo::icon( "floppy" ) );
         u = "media:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Storage Media"), false,
