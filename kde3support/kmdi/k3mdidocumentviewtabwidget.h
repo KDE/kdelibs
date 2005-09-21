@@ -13,8 +13,6 @@
 #include <ktabwidget.h>
 #include <k3mdidefines.h>
 
-class KPopupMenu;
-
 //KDE4: Add a d pointer
 /**
  * A reimplementation of KTabWidget for K3MDI

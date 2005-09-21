@@ -8,7 +8,6 @@
 //----------------------------------------------------------------------------
 
 #include <ktabbar.h>
-#include <kpopupmenu.h>
 #include "k3mdidocumentviewtabwidget.h"
 
 K3MdiDocumentViewTabWidget::K3MdiDocumentViewTabWidget( QWidget* parent, const char* name ) : KTabWidget( parent, name )

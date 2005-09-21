@@ -34,7 +34,6 @@
 #include <dockmainwindow3.h>
 
 #include <kmenubar.h>
-#include <kpopupmenu.h>
 
 #include <q3ptrlist.h>
 #include <qrect.h>
