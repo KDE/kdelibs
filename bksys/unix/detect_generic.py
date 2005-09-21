@@ -51,6 +51,12 @@ def detect(env):
 		env['EXTRAINCLUDES'] = env['EXTRAINCLUDES'].split(':')
 		env.pprint('CYAN','** extra include paths for the project set to:',env['EXTRAINCLUDES'])
 
+	# User-specified library search paths
+	env['EXTRALIBS'] = env['ARGS'].get('extralibs', None)
+	if env['EXTRALIBS']:
+		env['EXTRALIBS'] = env['EXTRALIBS'].split(':')
+		env.pprint('CYAN','** extra library search paths for the project set to:',env['EXTRALIBS'])
+
 	## no colors if user does not want them
 	if os.environ.has_key('NOCOLORS'): env['NOCOLORS']=1
 

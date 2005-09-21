@@ -398,10 +398,10 @@ def generate(env):
 	'NORMAL':"\033[0m",}
 
 	## Bksys requires scons >= 0.96
-	try: env.EnsureSConsVersion(0, 96, 91)
-	except:
-		pprint(env, 'RED', 'Your scons version is too old, make sure to use 0.96.91')
-		env.Exit(1)
+#	try: env.EnsureSConsVersion(0, 96, 91)
+#	except:
+#		pprint(env, 'RED', 'Your scons version is too old, make sure to use 0.96.91')
+#		env.Exit(1)
 
 	## attach the helper functions to "env"
 	SConsEnvironment.pprint = pprint
@@ -431,7 +431,8 @@ def generate(env):
 		p('BOLD','* debug        ','debug=1 (-g) or debug=full (-g3, slower) else use environment CXXFLAGS, or -O2 by default')
 		p('BOLD','* prefix       ','the installation path')
 		p('BOLD','* extraincludes','a list of paths separated by ":"')
-		p('BOLD','* scons configure debug=full prefix=/usr/local extraincludes=/tmp/include:/usr/local')
+		p('BOLD','* extralibs','a list of paths separated by ":"')
+		p('BOLD','* scons configure debug=full prefix=/usr/local extraincludes=/tmp/include:/usr/local extralibs=/usr/local/lib')
 		p('BOLD','* scons install prefix=/opt/local DESTDIR=/tmp/blah\n')
 		return
 
@@ -490,6 +491,7 @@ def generate(env):
                 ('GENCXXFLAGS', 'additional cxx flags for the project' ),
 		('GENLINKFLAGS', 'additional link flags' ),
 		('EXTRAINCLUDES', 'extra include paths for the project' ),
+		('EXTRALIBS', 'extra library search paths for the project' ),
 		('BKS_DEBUG', 'debug level: full, trace, or just something' ),
 		('GENERIC_ISCONFIGURED', 'is the project configured' ),
 	)
@@ -734,6 +736,7 @@ def generate(env):
 	if env.has_key('GENCCFLAGS'):    env.AppendUnique( CCFLAGS   = env['GENCCFLAGS'] )
 	if env.has_key('GENLINKFLAGS'):  env.AppendUnique( LINKFLAGS = env['GENLINKFLAGS'] )
 	if env.has_key('EXTRAINCLUDES'): env.AppendUnique( CPPPATH   = env['EXTRAINCLUDES'])
+	if env.has_key('EXTRALIBS'):     env.AppendUnique( LINKFLAGS = env['EXTRALIBS'])
 
         if env.has_key('BKS_DEBUG'):
                 if (env['BKS_DEBUG'] == "full"):
