@@ -37,6 +37,9 @@ def detect(env):
 			else:
 				env.AppendUnique( GENLINKFLAGS = ['-pthread'])
 
+		env.AppendUnique( GENLINKFLAGS = ['-L/usr/local/lib', '-L/usr/X11R6/lib'] )
+		env.AppendUnique( GENCXXFLAGS = ['-I/usr/local/include', '-I/usr/X11R6/include'] )
+
 	# User-specified prefix
 	if env['ARGS'].has_key('prefix'):
 		env['PREFIX'] = os.path.abspath( env['ARGS'].get('prefix', '') )
