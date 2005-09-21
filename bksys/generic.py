@@ -398,7 +398,10 @@ def generate(env):
 		env['WINDOWS']=0
 
 	## Bksys requires scons >= 0.96
-	env.EnsureSConsVersion(0, 96)
+	try: env.EnsureSConsVersion(0, 96, 91)
+	except:
+		pprint(env, 'RED', 'Your scons version is too old, make sure to use 0.96.91')
+		env.Exit(1)
 
 	## attach the helper functions to "env"
 	SConsEnvironment.pprint = pprint
