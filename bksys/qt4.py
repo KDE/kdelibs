@@ -120,6 +120,7 @@ def generate(env):
 		bs = SCons.Util.splitext(str(source[0].name))[0]
 		bs = os.path.join(str(target[0].get_dir()),bs)
 		return target, source
+
 	def uic3_processing(target, source, env):
 		inc_moc  ='#include "%s"\n' % target[2].name
 		comp_h   ='$QT_UIC3 -L $QTPLUGINS -nounload -o %s %s' % (target[0].path, source[0].path)
@@ -144,8 +145,13 @@ def generate(env):
 		target.append(bs+'.cpp')
 		target.append(bs+'.moc')
 		return target, source
-	env['BUILDERS']['Uic']=Builder(action=uic_processing,emitter=uicEmitter,suffix='.h',src_suffix='.ui')
-	env['BUILDERS']['Uic3']=Builder(action=uic3_processing,emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
+
+	def uic3_string(target, source, env):
+		return "%screating%s %s" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'], target[0].name)
+	env['BUILDERS']['Uic']=Builder(action=env.Action(uic_processing, uic3_string),
+		emitter=uicEmitter,suffix='.h',src_suffix='.ui')
+	env['BUILDERS']['Uic3']=Builder(action=env.Action(uic3_processing, uic3_string),
+		emitter=uic3Emitter,suffix='.h',src_suffix='.ui')
 
 	def qrc_buildit(target, source, env):
 		dir=str(source[0].get_dir())
@@ -153,17 +159,15 @@ def generate(env):
 		comp='cd %s && %s -name %s %s -o %s' % (dir, env['QT_RCC'], name, source[0].name, target[0].name)
 		return env.Execute(comp)
 	def qrc_stringit(target, source, env):
-		print "processing %s to get %s" % (source[0].name, target[0].name)
+		print "%screating%s %s" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'], target[0].name)
 
 	env['BUILDERS']['Qrc']=Builder(action=env.Action(qrc_buildit, qrc_stringit), suffix='_qrc.cpp', src_suffix='.qrc')
 
 	## MOC processing
-	import generic
-	moc_comp    = '$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE'
-	if env['_USECOLORS_']: moc_str='%screating%s $TARGET' % (generic.colors['BLUE'], generic.colors['NORMAL'])
-	else:                  moc_str=''
-	
-	moc_action = env.Action(moc_comp, moc_str)
+	moc_comp   = '$QT_MOC $_CPPINCFLAGS -o $TARGET $SOURCE'
+	moc_string = "%screating%s $TARGET.name" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
+	if not env['_USECOLORS_']: moc_string=""
+	moc_action = env.Action(moc_comp, moc_string)
 
 	env['BUILDERS']['Moc']    = Builder(action=moc_action,suffix='.moc',src_suffix='.h')
 	env['BUILDERS']['Moccpp'] = Builder(action=moc_action,suffix='_moc.cpp',src_suffix='.h')

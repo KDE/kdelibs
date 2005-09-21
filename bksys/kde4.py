@@ -70,15 +70,21 @@ def generate(env):
 	import SCons.Defaults
 	Builder=SCons.Builder.Builder
 
+	creation_string = "%screating%s $TARGET.name" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
+
         ## KIDL file
-        env['BUILDERS']['Kidl']=Builder(action='$DCOPIDL $SOURCE > $TARGET || (rm -f $TARGET ; false)',
-                        suffix='.kidl', src_suffix='.h')
+	kidl_str='$DCOPIDL $SOURCE > $TARGET || (rm -f $TARGET ; false)'
+	if not env['_USECOLORS_']: creation_string=""
+	kidl_action=env.Action(kidl_str, creation_string)
+        env['BUILDERS']['Kidl']=Builder(action=kidl_action, suffix='.kidl', src_suffix='.h')
         ## DCOP
-        env['BUILDERS']['Dcop']=Builder(action='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-stub $SOURCE',
-                        suffix='_skel.cpp', src_suffix='.kidl')
+	dcop_str='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-stub $SOURCE'
+	dcop_action=env.Action(dcop_str, creation_string)
+        env['BUILDERS']['Dcop']=Builder(action=dcop_action, suffix='_skel.cpp', src_suffix='.kidl')
         ## STUB
-        env['BUILDERS']['Stub']=Builder(action='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-skel $SOURCE',
-                        suffix='_stub.cpp', src_suffix='.kidl')
+	stub_str='$DCOPIDL2CPP --c++-suffix cpp --no-signals --no-skel $SOURCE'
+	stub_action=env.Action(stub_str, creation_string)
+        env['BUILDERS']['Stub']=Builder(action=stub_action, suffix='_stub.cpp', src_suffix='.kidl')
 
 	## DOCUMENTATION
 	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')

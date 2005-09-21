@@ -24,9 +24,9 @@ Documentation is in bksys/design
 # Suggested plan ? (ita)
 # * convert some kde4 code as a base for further developments : ok
 # * find the variables for the configuration modules          : ok
-# * create the config.h system                                : doing it at the moment
-# * write the configuration modules                           : __
-# * use the automatic converter for the rest of the tree      : __
+# * create the config.h system                                : ok
+# * write the configuration modules                           : ~
+# * use an automatic converter for the rest of the tree       : ?
 
 ###################################################################
 # LOAD THE ENVIRONMENT AND SET UP THE TOOLS
@@ -44,7 +44,7 @@ config = {
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
 	'bootstrap': 1, # incomplete
-	'colorfull': 1, # only with scons >= 0.96.9
+	'colorfull': 1, # only with scons >= 0.96.91 - now miniscons
 }
 
 # and the config.h

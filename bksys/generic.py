@@ -105,22 +105,13 @@ def dist(env, appname, version=None):
                         from detect_generic import distclean
                 distclean(env)
 
-colors= {
-	'BOLD'  :"\033[1m",
-	'RED'   :"\033[91m",
-	'GREEN' :"\033[92m",
-	'YELLOW':"\033[93m", # unreadable on white backgrounds - fix konsole ?
-	'BLUE'  :"\033[94m",
-	'CYAN'  :"\033[96m",
-	'NORMAL':"\033[0m", }
-
 def pprint(env, col, str, label=''):
 	if not env['_USECOLORS_']:
 		print "%s %s" % (str, label)
 		return
-	try: mycol=colors[col]
+	try: mycol=env['BKS_COLORS'][col]
 	except: mycol=''
-	print "%s%s%s %s" % (mycol, str, colors['NORMAL'], label)
+	print "%s%s%s %s" % (mycol, str, env['BKS_COLORS']['NORMAL'], label)
 
 class genobj:
 	def __init__(self, val, env):
@@ -412,6 +403,15 @@ def generate(env):
 	SConsEnvironment.add_dump = add_dump
 	SConsEnvironment.get_dump = get_dump
 
+	env['BKS_COLORS']={
+	'BOLD'  :"\033[1m",
+	'RED'   :"\033[91m",
+	'GREEN' :"\033[92m",
+	'YELLOW':"\033[93m", # unreadable on white backgrounds - fix konsole ?
+	'BLUE'  :"\033[94m",
+	'CYAN'  :"\033[96m",
+	'NORMAL':"\033[0m",}
+
 	# list of the modules which provide a config.h
 	env['_CONFIG_H_']=[]
 
@@ -491,7 +491,6 @@ def generate(env):
 		('GENLINKFLAGS', 'additional link flags' ),
 		('EXTRAINCLUDES', 'extra include paths for the project' ),
 		('BKS_DEBUG', 'debug level: full, trace, or just something' ),
-		('_USECOLORS_', 'colors for developers'),
 		('GENERIC_ISCONFIGURED', 'is the project configured' ),
 	)
 	opts.Update(env)
@@ -532,14 +531,14 @@ def generate(env):
 		opts.Save(cachefile, env)
 
 	if env['_USECOLORS_']:
-		building_obj='%scompiling%s $TARGET' % (colors['GREEN'], colors['NORMAL'])
-		env['CCCOMSTR']=building_obj
-		env['SHCCCOMSTR']=building_obj
-		env['CXXCOMSTR']=building_obj
-		env['SHCXXCOMSTR']=building_obj
-		link_obj='%slinking%s $TARGET' % (colors['YELLOW'], colors['NORMAL'])
-		env['LINKCOMSTR']=link_obj
-		env['SHLINKCOMSTR']=link_obj
+		c='%scompiling%s $TARGET' % (env['BKS_COLORS']['GREEN'], env['BKS_COLORS']['NORMAL'])
+		l='%slinking%s $TARGET' % (env['BKS_COLORS']['YELLOW'], env['BKS_COLORS']['NORMAL'])
+		env['CCCOMSTR']    =c
+		env['SHCCCOMSTR']  =c
+		env['CXXCOMSTR']   =c
+		env['SHCXXCOMSTR'] =c
+		env['LINKCOMSTR']  =l
+		env['SHLINKCOMSTR']=l
 
 	def bksys_install(lenv, subdir, files, destfile=None, perms=None):
 		""" Install files on 'scons install' """
@@ -581,22 +580,28 @@ def generate(env):
 		dest.write("dlopen=''\ndlpreopen=''\n")
 		dest.write("libdir='%s'" % env['BKSYS_DESTDIR'])
 		dest.close()
-		return 0
-
+		#return 0
 	def string_la_file(target, source, env):
-		print "building '%s' from '%s'" % (target[0].name, source[0].name)
-	la_file = env.Action(build_la_file, string_la_file, ['BKSYS_VNUM', 'BKSYS_DESTDIR'])
+		blue=''
+		normal=''
+		if env['_USECOLORS_']:
+			blue=env['BKS_COLORS']['BLUE']
+			normal=env['BKS_COLORS']['NORMAL']
+		return "%screating%s %s" % (blue, normal, target[0].path)
+	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
 	## Build symlinks
 	def symlink_command(target, source, env):
 		os.symlink( str(source[0].name), target[0].path)
-	def symlink_string(target, source, env):
+	def symlink_str(target, source, env):
+		yellow=''
+		normal=''
 		if env['_USECOLORS_']:
-			print colors['GREEN']+"symlinking"+colors['NORMAL']+" %s (-> %s)" % (target[0].path, source[0].name)
-		else:
-			print "symlinking %s (-> %s)" % (target[0].path, source[0].name)
-	symlink = env.Action(symlink_command, symlink_string)
+			yellow=env['BKS_COLORS']['YELLOW']
+			normal=env['BKS_COLORS']['NORMAL']
+		return "%ssymlinking%s %s (-> %s)" % (yellow, normal, target[0].path, str(source[0].name) )
+	symlink = env.Action(symlink_command, symlink_str)
 	env['BUILDERS']['SymLink'] = env.Builder(action=symlink)
 
 	## Function for building shared libraries
