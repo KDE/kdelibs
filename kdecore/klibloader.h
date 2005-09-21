@@ -470,9 +470,11 @@ public:
                 *error = ErrNoFactory;
             return 0;
         }
-        T *res = factory->create<T>( parent, name, args );
+        QObject *object = factory->create( parent, name, T::staticMetaObject.className(), args );
+        T *res = dynamic_cast<T *>( object );
         if ( !res )
         {
+            delete object;
             library->unload();
             if ( error )
                 *error = ErrNoComponent;
