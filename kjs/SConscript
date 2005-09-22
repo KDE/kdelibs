@@ -25,7 +25,7 @@ list.h simple_number.h function.h
 
 env.CFile(target="grammar.tab.cpp", source="grammar.y", YACCFLAGS="-d -p kjsyy")
 
-env['BUILDERS']['Hash']    = Builder(action="${TARGET.srcdir}/create_hash_table $SOURCE -i > $TARGET" ,suffix='.lut.h',src_suffix='.cpp')
+env['BUILDERS']['Hash']    = Builder(action="perl ${TARGET.srcdir}/create_hash_table $SOURCE -i > $TARGET" ,suffix='.lut.h',src_suffix='.cpp')
 
 for i in ["array_object.cpp","math_object.cpp", "date_object.cpp", "number_object.cpp", "string_object.cpp", "keywords.table" ]: 
     env.Hash(i)
