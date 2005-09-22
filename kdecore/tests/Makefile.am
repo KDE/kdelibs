@@ -30,7 +30,7 @@ check_PROGRAMS = kconfigtestgui klocaletest kprocesstest ksimpleconfigtest \
 	kcharsetstest kcalendartest kmacroexpandertest kshelltest \
 	kxerrorhandlertest startserviceby kglobaltest ktimezonestest \
 	kconfigtest ktempfiletest kurlmimetest kstdacceltest klibloadertest \
-	kcompletiontest
+	kcompletiontest klockfiletest
 
 # TODO kurltest4 when it works
 
@@ -86,3 +86,4 @@ kurltest4_SOURCES = kurltest4.cpp kurl4.cpp
 kcalendartest_SOURCES = kcalendartest.cpp
 klibloadertest_SOURCES = klibloadertest.cpp
 kcompletiontest_SOURCES = kcompletiontest.cpp
+klockfiletest_SOURCES = klockfiletest.cpp
