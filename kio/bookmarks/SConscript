@@ -1,0 +1,28 @@
+#! /usr/bin/env python
+
+Import('env')
+
+sources = """
+kbookmark.cc kbookmarkbar.cc 
+kbookmarkimporter.cc kbookmarkmanager.cc kbookmarkmenu.cc 
+kbookmarkimporter_crash.cc kbookmarkimporter_opera.cc kbookmarkimporter_ie.cc 
+kbookmarkimporter_ns.cc kbookmarkimporter_kde1.cc kbookmarkdombuilder.cc 
+kbookmarkmanager.skel kbookmarknotifier.skel
+"""
+
+inst_headers = """
+kbookmark.h kbookmarkbar.h kbookmarkexporter.h 
+kbookmarkimporter.h kbookmarkmanager.h kbookmarkmenu.h kbookmarknotifier.h 
+kbookmarkimporter_crash.h kbookmarkimporter_opera.h kbookmarkimporter_ie.h 
+kbookmarkimporter_ns.h kbookmarkimporter_kde1.h kbookmarkdombuilder.h 
+"""
+
+env.Moc("kbookmarkmenu_p.h")
+
+obj = env.kdeobj('convenience',env)
+obj.target   = 'libkbookmarks'
+obj.source   = sources
+obj.uselib   = 'QTCORE QT3SUPPORT QT KDE4'
+obj.execute()
+
+

@@ -75,6 +75,7 @@ kdeui
 kdesu
 kwallet
 kjs
+kio
 """
 
 # TODO this will not stay like this ..
