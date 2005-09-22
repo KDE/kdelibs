@@ -130,29 +130,29 @@ public:
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *, const QString & ); KDE_DEPRECATED;
+    void changeTab( QWidget *, const QString & ) KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *child, const QIcon& iconset, const QString &label ); KDE_DEPRECATED;
+    void changeTab( QWidget *child, const QIcon& iconset, const QString &label ) KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    QString label( int ) const; KDE_DEPRECATED;
+    QString label( int ) const KDE_DEPRECATED;
 
     QString tabText( int ) const;
 
     /*!
       Reimplemented for internal reasons.
     */
-    QString tabLabel( QWidget * ) const; KDE_DEPRECATED;
+    QString tabLabel( QWidget * ) const KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    void setTabLabel( QWidget *, const QString & ); KDE_DEPRECATED;
+    void setTabLabel( QWidget *, const QString & ) KDE_DEPRECATED;
 
     void setTabText( int , const QString & );
 
