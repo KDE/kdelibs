@@ -219,7 +219,7 @@ int KSpellingHighlighter::highlightParagraph( const QString &text,
 		d->currentWord += text[i];
 	    }
 	}
-	if ( !text[len - 1].isLetter() ||
+	if ( ( len > 0 && !text[len - 1].isLetter() ) ||
 	     ( index + 1 ) != text.length() ||
 	     para != paraNo )
 	    flushCurrentWord();
