@@ -195,9 +195,6 @@ def detect(lenv):
 /* Define to 1 if you have the `grantpt' function. */
 #define HAVE_GRANTPT 1
 
-/* Define to 1 if you have the <idna.h> header file. */
-#define HAVE_IDNA_H 1
-
 /* Define to 1 if you have the <ieeefp.h> header file. */
 /* #undef HAVE_IEEEFP_H */
 

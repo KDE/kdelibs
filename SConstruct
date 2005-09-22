@@ -40,7 +40,7 @@ sys.path.append('bksys')
 ## Import the main configuration tool
 from generic import configure
 config = {
-	'modules'  : 'generic lowlevel libxml kde4 libart2 libidn',
+	'modules'  : 'generic lowlevel libxml kde4 libart2 libidn libpcre',
 	'builddir' : 'build', # put all object files under 'build/'
 	'config.h' : 1, # mechanism should be ok
 	'rpath'    : 1, # incomplete
@@ -74,6 +74,7 @@ kdecore
 kdeui
 kdesu
 kwallet
+kjs
 """
 
 # TODO this will not stay like this ..
