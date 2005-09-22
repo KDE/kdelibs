@@ -498,6 +498,11 @@ bool KURL::List::canDecode( const QMimeData *mimeData )
     return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-kde-urilist" );
 }
 
+QStringList KURL::List::mimeDataTypes()
+{
+    return QStringList()<<("application/x-kde-urilist")<<("text/uri-list");
+}
+
 KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMap* metaData )
 {
     KURL::List uris;

@@ -566,7 +566,12 @@ void KBookmark::List::addToMimeData( QMimeData* mimeData ) const
 
 bool KBookmark::List::canDecode( const QMimeData *mimeData )
 {
-    return mimeData->hasFormat( "text/uri-list" ) || mimeData->hasFormat( "application/x-xbel" );
+    return mimeData->hasFormat( "application/x-xbel" )  || KURL::List::canDecode(mimeData);
+}
+
+QStringList KBookmark::List::mimeDataTypes()
+{
+    return QStringList()<<("application/x-xbel")<<KURL::List::mimeDataTypes();
 }
 
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )

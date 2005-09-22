@@ -63,6 +63,12 @@ public:
         static bool canDecode( const QMimeData *mimeData );
 
         /**
+         * Return the list of mimeTypes that can be decoded by fromMimeData
+         * @since 4.0
+         */
+        static QStringList mimeDataTypes();
+
+        /**
          * Extract a list of bookmarks from the contents of @p mimeData.
          * Decoding will fail if @p mimeData does not contain any bookmarks.
          * @param mimeData the mime data to extract from; cannot be 0

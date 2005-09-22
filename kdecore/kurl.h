@@ -228,6 +228,12 @@ public:
       static bool canDecode( const QMimeData *mimeData );
 
       /**
+        * Return the list of mimeTypes that can be decoded by fromMimeData
+        * @since 4.0
+        */
+      static QStringList mimeDataTypes();
+
+      /**
        * Extract a list of KURLs from the contents of @p mimeData.
        * Decoding will fail if @p mimeData does not contain any URLs, or if at
        * least one extracted URL is not valid.
