@@ -70,7 +70,7 @@ public:
      * @param db The timezone database to use. If 0, the system timezone
      *           database is used.
      */
-    KTimezoneWidget(QWidget *parent = 0, KTimezones *db = 0);
+    KTimezoneWidget(QWidget *parent = 0,const char *name = 0, KTimezones *db = 0);
 
     /**
      * Destroys the timezone selection widget.
