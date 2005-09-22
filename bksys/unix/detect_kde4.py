@@ -25,9 +25,11 @@ def bootstrap(env):
 
 	#######################################
 	## install paths
-	env['KDEBIN']='/usr/bin'
-	env['KDEDATA']='/usr/share'
-	env['KDEMIME']='/usr/share/mimelnk'
+	env['KDEBIN']    = env.join( env['PREFIX'], 'bin')
+	env['KDEDATA']   = env.join( env['PREFIX'], 'share')
+	env['KDEMIME']   = env.join( env['PREFIX'], 'share/mimelnk')
+	env['KDELIB']    = env.join( env['PREFIX'], 'lib')
+	env['KDEMODULE'] = env.join( env['PREFIX'], 'lib/kde4')
 
 	env['DCOPIDL']='dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng'
 	env['DCOPIDL2CPP']='build/dcop/dcopidl2cpp/dcopidl2cpp'

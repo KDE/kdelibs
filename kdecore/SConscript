@@ -3,7 +3,6 @@
 Import('env')
 
 env.subdirs('kconfig_compiler')
-#env.subdirs('network')
 if env.has_key("LIBART_ISCONFIGURED"): env.subdirs('svgicons')
 
 core_files="""
@@ -55,9 +54,7 @@ network/ksockssocketdevice.cpp
 network/kbufferedsocket.cpp
 network/ksocketbuffer.cpp
 network/knetworkinterface.cpp
-ksycoca_skel.cpp
-kappdcopiface_skel.cpp
-kdebugdcopiface_skel.cpp
+ksycoca.skel kappdcopiface.skel kdebugdcopiface.skel
 """
 
 inst_headers="""
@@ -85,32 +82,23 @@ kidna.h ktempdir.h kshell.h fixx11h.h kxerrorhandler.h kdelibs_export.h
 kdemacros.h kde_file.h ktimezones.h kmdcodec.h kmath.h
 """
 
-# not finished
-env.Kidl("ksycoca.h")
-env.Dcop("ksycoca.kidl")
-env.Kidl("kappdcopiface.h")
-env.Dcop("kappdcopiface.kidl")
-env.Kidl("kdebugdcopiface.h")
-env.Dcop("kdebugdcopiface.kidl")
-
-# not finished
+# not finished (ita)
 for i in "kacceleratormanager_private.h kaccelprivate.h ktoolinvocation.h".split():
 	env.Moc(i)
 
-obj = env.qt4obj('shlib', env)
+obj = env.kdeobj('shlib', env)
 obj.vnum     = '6.0.2'
 obj.target   = 'libkdecore'
 obj.source   = core_files
 obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4 LIBIDN'
 obj.libs     = '../libltdl/libltdlc.a'
+obj.iskdelib = 1
+obj.includes = 'network'
 if env.has_key("LIBART_ISCONFIGURED"): 
 	obj.uselib += ' LIBART'
 	obj.cxxflags += ' -DHAVE_LIBART '
-
 	obj.libpaths = "./svgicons"
 	obj.libs += " libkdesvgicons"
-#obj.libs     = env.join('network', 'libkdecorenetwork')
-obj.includes = 'network'
 obj.execute()
 
 """

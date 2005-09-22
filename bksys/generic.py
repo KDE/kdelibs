@@ -321,7 +321,18 @@ class genobj:
 
 		self.executed=1
 
+## install files given named resources, for example KDEBIN to install stuff with kde binaries
+def getInstDirForResType(lenv,restype):
+	if len(restype) == 0 or not lenv.has_key(restype):
+		lenv.pprint('RED',"unknown resource type "+restype)
+		lenv.Exit(1)
+	else: instdir = lenv[restype]
+	if lenv['ARGS'] and lenv['ARGS'].has_key('prefix'):
+		instdir = instdir.replace(lenv['PREFIX'], lenv['ARGS']['prefix'])
+	return instdir
+
 ## HELPER Expands strings given and make sure to return a list type
+## TODO: get rid of it (ita)
 def make_list(env, s):
 	if type(s) is types.ListType: return s
 	else:
@@ -731,6 +742,7 @@ def generate(env):
 	SConsEnvironment.find_path=find_path
 	SConsEnvironment.find_file=find_file
 	SConsEnvironment.find_program=find_program
+	SConsEnvironment.getInstDirForResType=getInstDirForResType
 
 	if env.has_key('GENCXXFLAGS'):   env.AppendUnique( CPPFLAGS  = env['GENCXXFLAGS'] )
 	if env.has_key('GENCCFLAGS'):    env.AppendUnique( CCFLAGS   = env['GENCCFLAGS'] )

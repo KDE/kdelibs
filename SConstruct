@@ -26,7 +26,8 @@ Documentation is in bksys/design
 # * find the variables for the configuration modules          : ok
 # * create the config.h system                                : ok
 # * write the configuration modules                           : ~
-# * use an automatic converter for the rest of the tree       : ?
+# * fix the installation process and the kobject builder      :
+# * use an automatic converter for the rest of the tree       :
 
 ###################################################################
 # LOAD THE ENVIRONMENT AND SET UP THE TOOLS

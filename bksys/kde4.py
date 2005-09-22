@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import re
+
 def exists(env):
 	return True
 
@@ -283,7 +285,7 @@ def generate(env):
 
 	#valid_targets = "program convenience shlib kioslave staticlib".split()
 	import generic
-	class kobject(generic.genobj):
+	class kdeobj(generic.genobj):
 		def __init__(self, val, senv=None):
 			if senv: generic.genobj.__init__(self, val, senv)
 			else: generic.genobj.__init__(self, val, env)
@@ -296,10 +298,10 @@ def generate(env):
 				self.xml()
 				return
 			if (self.type=='shlib' or self.type=='kioslave'):
-				if self.iskdelib==1: self.instdir=getInstDirForResType(self.orenv, 'KDELIB')
-				else:                self.instdir=getInstDirForResType(self.orenv, 'KDEMODULE')
+				if self.iskdelib==1: self.instdir=self.orenv.getInstDirForResType('KDELIB')
+				else:                self.instdir=self.orenv.getInstDirForResType('KDEMODULE')
 			elif self.type=='program':
-				self.instdir=getInstDirForResType(self.orenv, 'KDEBIN')
+				self.instdir=self.orenv.getInstDirForResType('KDEBIN')
 				self.perms=0755
 
 			self.env=self.orenv.Copy()
@@ -317,4 +319,4 @@ def generate(env):
 
 	from SCons.Script.SConscript import SConsEnvironment
 	SConsEnvironment.KDEicon = KDEicon
-
+	SConsEnvironment.kdeobj = kdeobj
