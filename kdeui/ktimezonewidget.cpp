@@ -33,7 +33,7 @@
 #define COLUMN_COMMENT 2
 #define COLUMN_ZONE 3
 
-KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *db) :
+KTimezoneWidget::KTimezoneWidget(QWidget *parent, KTimezones *db) :
     KListView(parent),
     d(0)
 {
