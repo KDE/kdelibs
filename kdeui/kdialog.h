@@ -118,12 +118,6 @@ class KDEUI_EXPORT KDialog : public QDialog
 
   public slots:
     /**
-     * If the dialog starts with focus in a QLineEdit child,
-     * then call selectAll() on the child.
-     */
-    virtual void polish();
-
-    /**
      * Make a KDE compliant caption.
      *
      * @param caption Your caption. Do @p not include the application name

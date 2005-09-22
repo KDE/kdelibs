@@ -108,12 +108,6 @@ int KDialog::spacingHint()
   return mSpacingSize;
 }
 
-// KDE4: Remove me
-void KDialog::polish()
-{
-  QDialog::polish();
-}
-
 
 void KDialog::setCaption( const QString &_caption )
 {

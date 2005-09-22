@@ -1556,11 +1556,6 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         updateGeometry();
 }
 
-void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
-{
-    return applySettings(config,_configGroup,false);
-}
-
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup, bool force)
 {
     //kdDebug(220) << name() << " applySettings group=" << _configGroup << endl;

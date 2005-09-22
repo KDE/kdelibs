@@ -62,8 +62,7 @@ public:
      * colors.
      *
      */
-    /// KDE4 remove name argument
-    KDualColorButton(QWidget *parent=0, const char *name=0, QWidget* dialogParent=0);
+    KDualColorButton(QWidget *parent=0, QWidget* dialogParent=0);
 
     /**
      * Constructs a new KDualColorButton with the supplied foreground and
@@ -71,7 +70,7 @@ public:
      */
     /// KDE4 remove name argument
     KDualColorButton(const QColor &fgColor, const QColor &bgColor,
-                     QWidget *parent=0, const char *name=0, QWidget* dialogParent=0);
+                     QWidget *parent=0, QWidget* dialogParent=0);
 
     ~KDualColorButton();
     /**
