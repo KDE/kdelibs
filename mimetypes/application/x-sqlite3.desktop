@@ -7,6 +7,7 @@ Patterns=
 Comment=SQLite3 Database File
 Comment[bg]=Файл за данни на SQLite3
 Comment[cs]=Databázový soubor SQLite3
+Comment[da]=SQLite3 Databasefil
 Comment[de]=SQLite3-Datenbankdatei
 Comment[el]=Αρχείο βάσης δεδομένων SQLite3
 Comment[es]=Archivo de la base de datos SQLite3
