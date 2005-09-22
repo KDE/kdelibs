@@ -129,7 +129,8 @@ static QString qrichtextify( const QString& text )
   if ( text.isEmpty() || text[0] == '<' )
     return text;
 
-  QStringList lines = QStringList::split('\n', text);
+  //QStringList lines = QStringList::split('\n', text);
+  QStringList lines = text.split('\n',QString::SkipEmptyParts);
   for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
   {
     *it = Q3StyleSheet::convertFromPlainText( *it, Q3StyleSheetItem::WhiteSpaceNormal );
@@ -986,7 +987,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
     QPixmap ret = KApplication::kApplication()->icon();
     if (ret.isNull())
         ret = QMessageBox::standardIcon(QMessageBox::Information);
-    dialog->setIcon(ret);
+    dialog->setWindowIcon(ret);
 
     createKMessageBox(dialog, ret, text, QStringList(), QString::null, 0, options);
     

@@ -130,27 +130,31 @@ public:
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *, const QString & );
+    void changeTab( QWidget *, const QString & ); KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    void changeTab( QWidget *child, const QIcon& iconset, const QString &label );
+    void changeTab( QWidget *child, const QIcon& iconset, const QString &label ); KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    QString label( int ) const;
+    QString label( int ) const; KDE_DEPRECATED;
+
+    QString tabText( int ) const;
 
     /*!
       Reimplemented for internal reasons.
     */
-    QString tabLabel( QWidget * ) const;
+    QString tabLabel( QWidget * ) const; KDE_DEPRECATED;
 
     /*!
       Reimplemented for internal reasons.
     */
-    void setTabLabel( QWidget *, const QString & );
+    void setTabLabel( QWidget *, const QString & ); KDE_DEPRECATED;
+
+    void setTabText( int , const QString & );
 
 public slots:
     /*!
@@ -162,8 +166,16 @@ public slots:
     /*!
       Removes the widget, reimplemented for
       internal reasons (keeping labels in sync).
+      @deprecated since 4.0
     */
-    virtual void removePage ( QWidget * w );
+    virtual QT_MOC_COMPAT void removePage ( QWidget * w );
+
+    /*!
+      Removes the widget, reimplemented for
+      internal reasons (keeping labels in sync).
+      @since 4.0
+    */
+    virtual void removeTab(int index);
 
     /*!
       If \a enable is true, tab reordering with middle button will be enabled.

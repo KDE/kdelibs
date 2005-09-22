@@ -437,11 +437,13 @@ public slots:
      * no item is selected.
      */
     void setCurrentItem( const QString& item, bool insert = false, int index = -1 );
+
     /**
      * Simply calls QComboBox' implementation. Only here to not become
      * shadowed.
+     * @deprecated since 4.0
      */
-    void setCurrentItem(int index) { QComboBox::setCurrentItem(index); }
+    QT_MOC_COMPAT void setCurrentItem(int index) { QComboBox::setCurrentIndex(index); }
 
 protected slots:
 

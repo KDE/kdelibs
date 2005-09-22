@@ -56,6 +56,7 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     //connect( mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
 
     mActivateDragSwitchTabTimer = new QTimer( this );
+    mActivateDragSwitchTabTimer->setSingleShot(true);
     connect( mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
 
     //connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
@@ -267,7 +268,7 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
         emit testCanDecode( e, accept);
         if ( accept && tab != currentIndex() ) {
           mDragSwitchTab = tab;
-          mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval()*2, true );
+          mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval()*2);
         }
         e->accept( accept );
         return;

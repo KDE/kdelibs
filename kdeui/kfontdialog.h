@@ -211,7 +211,7 @@ public:
    */
   void setSampleBoxVisible( bool visible )
   {
-    sampleEdit->setShown( visible );
+    sampleEdit->setVisible( visible );
   }
 
   /**

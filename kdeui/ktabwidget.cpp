@@ -211,6 +211,11 @@ void KTabWidget::changeTab( QWidget *w, const QIcon &iconset, const QString &lab
 
 QString KTabWidget::label( int index ) const
 {
+	return tabText(index);
+}
+
+QString KTabWidget::tabText( int index ) const
+{
     if ( d->m_automaticResizeTabs ) {
         if ( index >= 0 && index < count() )
             return d->m_tabNames[ index ];
@@ -218,27 +223,23 @@ QString KTabWidget::label( int index ) const
             return QString::null;
     }
     else
-        return QTabWidget::label( index );
+        return QTabWidget::tabText( index );
 }
 
 QString KTabWidget::tabLabel( QWidget * w ) const
 {
-    if ( d->m_automaticResizeTabs ) {
-        int index = indexOf( w );
-        if ( index == -1 )
-            return QString::null;
-        else
-            return d->m_tabNames[ index ];
-    }
-    else
-        return QTabWidget::tabLabel( w );
+    return label(indexOf(w));
 }
 
 void KTabWidget::setTabLabel( QWidget *w, const QString &l )
 {
-    QTabWidget::setTabLabel( w, l );
+  setTabText(indexOf(w),l);
+}
+
+void KTabWidget::setTabText( int index, const QString &l )
+{
+    QTabWidget::setTabText( index, l );
     if ( d->m_automaticResizeTabs ) {
-        int index = indexOf( w );
         if ( index != -1 ) {
             d->m_tabNames[ index ] = l;
             resizeTabs( index );
@@ -282,16 +283,16 @@ void KTabWidget::resizeTabs( int changeTabIndex )
 
 void KTabWidget::updateTab( int index )
 {
-    QString title = d->m_automaticResizeTabs ? d->m_tabNames[ index ] : QTabWidget::label( index );
-    removeTabToolTip( page( index ) );
+    QString title = d->m_automaticResizeTabs ? d->m_tabNames[ index ] : QTabWidget::tabText( index );
+    setTabToolTip(index,QString());
     if ( title.length() > (int)d->m_CurrentMaxLength )
-        setTabToolTip( page( index ), title );
+        setTabToolTip(index, title );
 
     title = KStringHandler::rsqueeze( title, d->m_CurrentMaxLength ).leftJustified( d->m_minLength, ' ' );
     title.replace( '&', "&&" );
 
-    if ( QTabWidget::label( index ) != title )
-        QTabWidget::setTabLabel( page( index ), title );
+    if ( QTabWidget::tabText( index ) != title )
+        QTabWidget::setTabText(index, title );
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
@@ -342,7 +343,7 @@ void KTabWidget::wheelDelta( int delta )
         if ( page < 0 )
             page = count() - 1;
     }
-    setCurrentPage( page );
+    setCurrentIndex( page );
 }
 #endif
 
@@ -376,40 +377,40 @@ void KTabWidget::mousePressEvent( QMouseEvent *e )
 
 void KTabWidget::receivedDropEvent( int index, QDropEvent *e )
 {
-    emit( receivedDropEvent( page( index ), e ) );
+    emit( receivedDropEvent( widget( index ), e ) );
 }
 
 void KTabWidget::initiateDrag( int index )
 {
-    emit( initiateDrag( page( index ) ) );
+    emit( initiateDrag( widget( index ) ) );
 }
 
 void KTabWidget::contextMenu( int index, const QPoint &p )
 {
-    emit( contextMenu( page( index ), p ) );
+    emit( contextMenu( widget( index ), p ) );
 }
 
 void KTabWidget::mouseDoubleClick( int index )
 {
-    emit( mouseDoubleClick( page( index ) ) );
+    emit( mouseDoubleClick( widget( index ) ) );
 }
 
 void KTabWidget::mouseMiddleClick( int index )
 {
-    emit( mouseMiddleClick( page( index ) ) );
+    emit( mouseMiddleClick( widget( index ) ) );
 }
 
 void KTabWidget::moveTab( int from, int to )
 {
-    QString tablabel = label( from );
-    QWidget *w = page( from );
+    QString tablabel = tabText( from );
+    QWidget *w = widget( from );
     //QColor color = tabColor( w );
-    QIcon tabiconset = tabIconSet( w );
-    QString tabtooltip = tabToolTip( w );
-    bool current = ( w == currentPage() );
-    bool enabled = isTabEnabled( w );
+    QIcon tabiconset = tabIcon( from );
+    QString tabtooltip = tabToolTip( from );
+    bool current = ( from == currentIndex() );
+    bool enabled = isTabEnabled( from );
     blockSignals(true);
-    removePage( w );
+    removeTab( from );
 
     // Work-around kmdi brain damage which calls showPage() in insertTab()
     insertTab(to, w, tablabel);
@@ -420,20 +421,27 @@ void KTabWidget::moveTab( int from, int to )
             d->m_tabNames.insert( to, QString::null );
     }
 
-    w = page( to );
-    changeTab( w, tabiconset, tablabel );
-    setTabToolTip( w, tabtooltip );
+    setTabIcon(to,tabiconset);
+    setTabText(to,tablabel);
+    setTabToolTip( to, tabtooltip );
     //setTabColor( w, color );
     if ( current )
-        showPage( w );
-    setTabEnabled( w, enabled );
+        setCurrentIndex( to );
+    setTabEnabled( to, enabled );
     blockSignals(false);
 
     emit ( movedTab( from, to ) );
 }
 
+
 void KTabWidget::removePage( QWidget * w ) {
-    QTabWidget::removePage( w );
+    QTabWidget::removeTab( indexOf(w) );
+    if ( d->m_automaticResizeTabs )
+        resizeTabs();
+}
+
+void KTabWidget::removeTab(int tab) {
+    QTabWidget::removeTab(tab);
     if ( d->m_automaticResizeTabs )
         resizeTabs();
 }
@@ -509,7 +517,7 @@ bool KTabWidget::automaticResizeTabs() const
 
 void KTabWidget::closeRequest( int index )
 {
-    emit( closeRequest( page( index ) ) );
+    emit( closeRequest( widget( index ) ) );
 }
 
 void KTabWidget::resizeEvent( QResizeEvent *e )
