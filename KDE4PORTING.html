@@ -66,6 +66,7 @@ or <a href="http://doc.trolltech.com/4.0/porting4.html">this page online</a>.<P>
 <ul>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
 by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
+<li>random() has been moved to the KMath class</li>
 <li>For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized now</li>
 <li>invoke* has been moved to ktoolinvocation. there are static methods invoke*, if you want to use slots as before connect to the innvoke* slots of KToolInvocation::self()</li>
 <li>startService*, kdeinitExec* -&gt; KToolInvocation</li>
