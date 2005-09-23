@@ -129,9 +129,10 @@ def generate(env):
 		comp_moc ='$QT_MOC -o %s %s' % (target[2].path, target[0].path)
 		if env.Execute(comp_h):
 			return ret
-		dest = open( target[1].path, "w" )
-		#dest.write(inc_kde)
-		dest.close()
+		if env.has_key('UIC3_PRE_INCLUDE'):
+			dest = open( target[1].path, "w" )
+			dest.write(env['UIC3_PRE_INCLUDE'])
+			dest.close()
 		if env.Execute( comp_c+" >> "+target[1].path ):
 			return ret
 		dest = open( target[1].path, "a" )

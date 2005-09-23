@@ -49,6 +49,7 @@ def generate(env):
 		('LIB_KDEUI', ''),
 
 		('DCOPIDL', ''), ('DCOPIDL2CPP', ''),
+		('UIC3_PRE_INCLUDE', '')
         )
         opts.Update(env)
 
@@ -74,8 +75,10 @@ def generate(env):
 		env['_CONFIG_H_'].append('kde')
 		
 	        env['KDE4_ISCONFIGURED']=1
-		opts.Save(cachefile, env)
+		env['UIC3_PRE_INCLUDE']="#include <kdialog.h>\n#include <klocale.h>\n"
 
+		opts.Save(cachefile, env)
+		
 	import SCons.Defaults
 	Builder=SCons.Builder.Builder
 
