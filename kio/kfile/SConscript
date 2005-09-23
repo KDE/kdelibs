@@ -1,0 +1,93 @@
+#! /usr/bin/env python
+
+Import('env')
+
+sources = """
+kfilefiltercombo.cpp 
+kfileview.cpp kfileiconview.cpp
+krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp
+kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp
+kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp
+kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp
+krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp kfilesharedlg.cpp
+kurlbar.cpp kmetaprops.cpp kpreviewprops.cpp
+kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp
+kdirselectdialog.cpp kfilebookmarkhandler.cpp
+kfilemetainfowidget.cpp kcustommenueditor.cpp knotifydialog.cpp
+knotifywidgetbase.ui3 kfilespeedbar.cpp kpreviewwidgetbase.cpp
+kfilemetapreview.cpp kpropertiesdesktopbase.ui3
+kpropertiesdesktopadvbase.ui3 kpropertiesmimetypebase.ui3
+kencodingfiledialog.cpp
+"""
+
+env.Moc('kopenwith_p.h')
+
+obj = env.kdeobj('convenience',env)
+obj.target   = 'libkfile'
+obj.source   = sources
+obj.uselib   = 'QTCORE QT QT3SUPPORT KDE4 LIBART'
+obj.includes = '../../kdefx ../kio #/ ../../libltdl ../bookmarks'
+obj.execute()
+#TODO other stuffs
+
+"""
+INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx \
+    -I$(top_builddir)/kio/kio -I$(top_srcdir)/kio/bookmarks $(all_includes) $(LIBART_CFLAGS)
+
+noinst_LTLIBRARIES  = libkfile.la
+
+METASOURCES = AUTO
+
+#SUBDIRS = . acl_prop_page
+
+include_HEADERS = kfiledialog.h kencodingfiledialog.h\
+	kdiroperator.h kfileview.h kfilefiltercombo.h \
+	kfiledetailview.h kcombiview.h kdiskfreesp.h \
+	kfileiconview.h krecentdocument.h \
+	kurlrequester.h kfilepreview.h kfile.h \
+	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
+	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h \
+	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
+	kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h \
+	kcustommenueditor.h knotifywidgetbase.h
+
+noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
+	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
+	kfilespeedbar.h kpreviewprops.h
+
+libkfile_la_SOURCES = \
+	kfilefiltercombo.cpp \
+	kfileview.cpp kfileiconview.cpp \
+	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
+	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
+	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
+	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
+	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp kfilesharedlg.cpp \
+	kurlbar.cpp kmetaprops.cpp kpreviewprops.cpp \
+	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
+	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
+	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui3 \
+	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
+	kfilemetapreview.cpp kpropertiesdesktopbase.ui3 \
+	kpropertiesdesktopadvbase.ui3 kpropertiesmimetypebase.ui3 \
+	kencodingfiledialog.cpp
+
+libkfile_la_COMPILE_FIRST = $(srcdir)/../kio/kdirnotify_stub.h
+
+EXTRA_DIST = NOTES
+
+# convenience lib - no _LDFLAGS or _LIBADD !
+
+servicetype_DATA = kpropsdlgplugin.desktop
+servicetypedir = $(kde_servicetypesdir)
+
+
+#Can't be a module, we need to link to it for readConfig
+#kde_module_LTLIBRARIES = libkfileshare.la
+#libkfileshare_la_SOURCES = kfileshare.cpp
+#libkfileshare_la_LIBADD = libkfile.la
+#libkfileshare_la_LDFLAGS = -module $(KDE_PLUGIN)
+#kde_services_DATA = kfilesharepropsplugin.desktop
+
+include $(top_srcdir)/admin/Doxyfile.am
+"""
