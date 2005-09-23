@@ -173,6 +173,9 @@ static KStaticDeleter<kDebugPrivate> pcd;
 static KStaticDeleter<KDebugDCOPIface> dcopsd;
 static KDebugDCOPIface* kDebugDCOPIface = 0;
 
+// ######## KDE4: kDebug is not threadsafe!  Races and crashes apps that call
+//                it from both threads.  Let's rework this altogether, and
+//                maybe make it faster too.
 static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
 {
   if ( !kDebug_data )
