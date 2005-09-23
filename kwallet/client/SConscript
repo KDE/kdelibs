@@ -2,15 +2,12 @@
 
 Import('env')
 
-#FIXME
-env.Kidl("kwallet.h")
-env.Dcop("kwallet.kidl")
-
-obj = env.qt4obj('shlib', env)
+obj = env.kdeobj('shlib', env)
+obj.iskdelib = 1
 obj.vnum     = '1.1.0'
 obj.target   = 'libkwalletclient'
 obj.source   = """
-kwallet_skel.cpp
+kwallet.skel
 kwallet.cc
 """
 

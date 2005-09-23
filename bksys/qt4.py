@@ -42,6 +42,7 @@ def generate(env):
 	opts = Options(cachefile)
 	opts.AddOptions(
 		('PREFIX', 'root of the program installation'),
+		('LIBSUFFIXEXT', 'suffix of libraries on amd64'),
 
 		('QTDIR', ''),
 		('QTLIBPATH', 'path to the qt libraries'),
@@ -327,29 +328,28 @@ def generate(env):
 			country = SCons.Util.splitext(result[0].name)[0]
 			lenv.QT4installas('QTLOCALE', lenv.join(country,'LC_MESSAGES',appname+'.mo'), result)
 
-        import generic
-        class qt4obj(generic.genobj):
-                def __init__(self, val, senv=None):
-                        if senv: generic.genobj.__init__(self, val, senv)
-                        else: generic.genobj.__init__(self, val, env)
-                        self.iskdelib=0
-                def execute(self):
+	import generic
+	class qt4obj(generic.genobj):
+		def __init__(self, val, senv=None):
+			if senv: generic.genobj.__init__(self, val, senv)
+			else: generic.genobj.__init__(self, val, env)
+			self.iskdelib=0
+		def execute(self):
 			if self.executed: return
-                        if self.orenv.has_key('DUMPCONFIG'):
-                                print self.xml()
+			if self.orenv.has_key('DUMPCONFIG'):
+				print self.xml()
 				self.executed=1
-                                return
+				return
 			self.env=self.orenv.Copy()
-                        self.setsource( QT4files(self.env, self.target, self.source) )
-                        generic.genobj.execute(self)
-
-                def xml(self):
-                        ret= '<compile type="%s" dirprefix="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" iskdelib="%s" libprefix="%s">\n' % (self.type, self.dirprefix, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.iskdelib, self.libprefix)
-                        if self.source:
-                                for i in self.orenv.make_list(self.source):
-                                        ret += '  <source file="%s"/>\n' % i
-                        ret += "</compile>"
-                        return ret
+			self.setsource( QT4files(self.env, self.target, self.source) )
+			generic.genobj.execute(self)
+		def xml(self):
+			ret= '<compile type="%s" dirprefix="%s" target="%s" cxxflags="%s" cflags="%s" includes="%s" linkflags="%s" libpaths="%s" libs="%s" vnum="%s" iskdelib="%s" libprefix="%s">\n' % (self.type, self.dirprefix, self.target, self.cxxflags, self.cflags, self.includes, self.linkflags, self.libpaths, self.libs, self.vnum, self.iskdelib, self.libprefix)
+			if self.source:
+				for i in self.orenv.make_list(self.source):
+					ret += '  <source file="%s"/>\n' % i
+			ret += "</compile>"
+			return ret
 
 	# Attach the functions to the environment so that SConscripts can use them
 	from SCons.Script.SConscript import SConsEnvironment

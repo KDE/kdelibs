@@ -128,6 +128,7 @@ def detect(env):
 	debian_fix = lambda x: x.replace('/usr/share', '${datadir}')
 
 	env['PREFIX'] = prefix
+	env['LIBSUFFIXEXT'] = libsuffix
 
 	#env['QTPLUGINS']=os.popen('kde-config --expandvars --install qtplugins').read().strip()
 

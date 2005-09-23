@@ -540,6 +540,8 @@ def generate(env):
 
 		env['GENERIC_ISCONFIGURED']=1
 
+		env.AppendUnique( GENCXXFLAGS = ['-DHAVE_CONFIG_H'])
+
 		# And finally save the options in the cache
 		opts.Save(cachefile, env)
 
