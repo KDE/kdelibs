@@ -31,6 +31,7 @@ def bootstrap(env):
 	env['KDELIB']    = env.join( env['PREFIX'], 'lib')
 	env['KDEMODULE'] = env.join( env['PREFIX'], 'lib/kde4')
 
+	env['KCONFIGCOMPILER']='build/kdecore/kconfig_compiler/kconfig_compiler'
 	env['DCOPIDL']='dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng'
 	env['DCOPIDL2CPP']='build/dcop/dcopidl2cpp/dcopidl2cpp'
 

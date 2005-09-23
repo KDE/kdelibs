@@ -48,6 +48,7 @@ def generate(env):
 		('LIB_KIO', ''),
 		('LIB_KDEUI', ''),
 
+		('KCONFIGCOMPILER', ''),
 		('DCOPIDL', ''), ('DCOPIDL2CPP', ''),
 		('UIC3_PRE_INCLUDE', '')
         )
@@ -102,7 +103,7 @@ def generate(env):
 	env['BUILDERS']['Meinproc']=Builder(action='$MEINPROC --check --cache $TARGET $SOURCE',suffix='.cache.bz2')
 
 	def kcfg_buildit(target, source, env):
-		comp='kconfig_compiler -d%s %s %s' % (str(target[0].get_dir()), source[1].path, source[0].path)
+		comp='$KCONFIGCOMPILER -d%s %s %s' % (str(target[0].get_dir()), source[1].path, source[0].path)
 		return env.Execute(comp)
 	
 	def kcfg_stringit(target, source, env):
