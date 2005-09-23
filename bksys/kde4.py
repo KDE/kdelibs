@@ -261,6 +261,9 @@ def generate(env):
 				hfile=lenv.Kcfg(file)
 				cppkcfgfile=sfile.dir.File(bs+'.cpp')
 				src.append(bs+'.cpp')
+			elif ext == ".dummy":
+				lenv.EmptyFile(bs)
+				src.append('dummy_'+bs+'.cpp')
 			else:
 				src.append(file)
 

@@ -2,4 +2,14 @@
 
 Import('env')
 
-env.subdirs('kssl kio bookmarks kfile')
+env.subdirs('kssl kio bookmarks kfile kpasswdserver')
+
+obj = env.kdeobj('shlib', env)
+obj.target   = 'libkio'
+obj.vnum     = '6.0.2'
+obj.source   = "SConscript.dummy"
+obj.iskdelib = 1
+obj.uselib   = 'QT QTCORE QTGUI QT3SUPPORT KDE4'
+obj.libs     = 'kssl/libkssl.a kio/libkiocore.a kio/libksycoca.a bookmarks/libkbookmarks.a kfile/libkfile.a ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kwallet/client/libkwalletclient.la'
+#$(LIBZ) $(LIBFAM) $(LIBVOLMGT)
+obj.execute()

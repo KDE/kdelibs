@@ -606,6 +606,14 @@ def generate(env):
 	la_file = env.Action(build_la_file, string_la_file)
 	env['BUILDERS']['LaFile'] = env.Builder(action=la_file,suffix='.la',src_suffix=env['SHLIBSUFFIX'])
 
+        def build_empty_file(target, source, env):
+                """ Writes an empty file """
+                dest=open(target[0].path, 'w')
+		print target[0].path + " +++++"
+		dest.write("")
+                dest.close()
+        env['BUILDERS']['EmptyFile'] = env.Builder(action=env.Action(build_empty_file), prefix='dummy_', suffix='.cpp', src_suffix='')
+
 	## Build symlinks
 	def symlink_command(target, source, env):
 		os.symlink( str(source[0].name), target[0].path)
