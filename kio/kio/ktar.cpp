@@ -394,7 +394,7 @@ bool KTar::openArchive( int mode )
             // '0' for files, '1' hard link, '2' symlink, '5' for directory
             // (and 'L' for longlink filenames, 'K' for longlink symlink targets)
             // and 'D' for GNU tar extension DUMPDIR
-            if ( typeflag == '1' )
+            if ( typeflag == '5' )
                 isdir = true;
 
             bool isDumpDir = false;
@@ -412,7 +412,7 @@ bool KTar::openArchive( int mode )
             KArchiveEntry* e;
             if ( isdir )
             {
-                //kdDebug(7041) << "KArchive::open directory " << nm << endl;
+                //kdDebug(7041) << "KTar::openArchive directory " << nm << endl;
                 e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
             }
             else
@@ -427,10 +427,11 @@ bool KTar::openArchive( int mode )
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
                 {
-		    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
+                    //kdDebug(7041) << "KTar::openArchive " << nm << " isDumpDir" << endl;
+                    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
-		else
-		{
+                else
+                {
 
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
@@ -439,17 +440,17 @@ bool KTar::openArchive( int mode )
                         kdDebug(7041) << "HARD LINK, setting size to " << size << endl;
                     }
 
-                    // kdDebug(7041) << "KArchive::open file " << nm << " size=" << size << endl;
+                    //kdDebug(7041) << "KTar::openArchive file " << nm << " size=" << size << endl;
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->at(), size );
-		}
+                }
 
                 // Skip contents + align bytes
                 int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kdDebug(7041) << "KArchive::open, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
+                //kdDebug(7041) << "KTar::openArchive, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
                 if (! dev->at( dev->at() + skip ) )
-                    kdWarning(7041) << "KArchive::open skipping " << skip << " failed" << endl;
+                    kdWarning(7041) << "KTar::openArchive skipping " << skip << " failed" << endl;
             }
 
             if ( pos == -1 )

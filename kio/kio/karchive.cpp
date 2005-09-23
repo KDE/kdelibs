@@ -395,10 +395,13 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 
     // Already created ? => found
     KArchiveEntry* ent = rootDir()->entry( path );
-    if ( ent && ent->isDirectory() )
+    if ( ent )
     {
-        //kdDebug() << "KArchive::findOrCreate found it" << endl;
-        return (KArchiveDirectory *) ent;
+        if ( ent->isDirectory() )
+            //kdDebug() << "KArchive::findOrCreate found it" << endl;
+            return (KArchiveDirectory *) ent;
+        else
+            kdWarning() << "Found " << path << " but it's not a directory" << endl;
     }
 
     // Otherwise go up and try again
@@ -585,6 +588,10 @@ const KArchiveEntry* KArchiveDirectory::entry( QString name ) const
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
   Q_ASSERT( !entry->name().isEmpty() );
+  if( m_entries[ entry->name() ] ) {
+      kdWarning() << "KArchiveDirectory::addEntry: directory " << name()
+                  << " has entry " << entry->name() << " already" << endl;
+  }
   m_entries.insert( entry->name(), entry );
 }
 
