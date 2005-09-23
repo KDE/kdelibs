@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="18">
+<kpartgui name="khtmlpart" version="19">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -39,8 +39,6 @@
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
  <ActionList name="loadImages" />
- <Separator />
- <Action name="security" />
 </ToolBar>
 <ActionProperties>
  <Action shortcut="F7" name="caretMode" />
