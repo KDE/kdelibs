@@ -216,7 +216,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   int size = (int)strtol( p, &dummy, 8 );
 
   longlink.resize(size);
-  size--;	// ignore trailing null
+  size--;    // ignore trailing null
   dummy = longlink.data();
   int offset = 0;
   while (size > 0) {
@@ -393,7 +393,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
             // '0' for files, '1' hard link, '2' symlink, '5' for directory
             // (and 'L' for longlink filenames, 'K' for longlink symlink targets)
             // and 'D' for GNU tar extension DUMPDIR
-            if ( typeflag == '1' )
+            if ( typeflag == '5' )
                 isdir = true;
 
             bool isDumpDir = false;
@@ -411,7 +411,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
             KArchiveEntry* e;
             if ( isdir )
             {
-                //kdDebug(7041) << "KArchive::open directory " << nm << endl;
+                //kdDebug(7041) << "KTar::openArchive directory " << nm << endl;
                 e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
             }
             else
@@ -426,10 +426,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
                 {
-		    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
+                    //kdDebug(7041) << "KTar::openArchive " << nm << " isDumpDir" << endl;
+                    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
-		else
-		{
+                else
+                {
 
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
@@ -438,17 +439,17 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
                         kdDebug(7041) << "HARD LINK, setting size to " << size << endl;
                     }
 
-                    // kdDebug(7041) << "KArchive::open file " << nm << " size=" << size << endl;
+                    //kdDebug(7041) << "KTar::openArchive file " << nm << " size=" << size << endl;
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->at(), size );
-		}
+                }
 
                 // Skip contents + align bytes
                 int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kdDebug(7041) << "KArchive::open, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
+                //kdDebug(7041) << "KTar::openArchive, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
                 if (! dev->at( dev->at() + skip ) )
-                    kdWarning(7041) << "KArchive::open skipping " << skip << " failed" << endl;
+                    kdWarning(7041) << "KTar::openArchive skipping " << skip << " failed" << endl;
             }
 
             if ( pos == -1 )
@@ -606,7 +607,7 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
     mode_t dflt_perm = 0100644;
     time_t the_time = time(0);
     return prepareWriting(name,user,group,size,dflt_perm,
-    		the_time,the_time,the_time);
+                          the_time,the_time,the_time);
 }
 
 bool KTar::doneWriting( uint size )
@@ -714,7 +715,7 @@ void KTar::fillBuffer( char * buffer,
 }
 
 void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
-	const char *uname, const char *gname) {
+                         const char *uname, const char *gname) {
   strcpy( buffer, "././@LongLink" );
   int namelen = name.length() + 1;
   fillBuffer( buffer, "     0", namelen, 0, typeflag, uname, gname );
@@ -732,14 +733,14 @@ void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
 }
 
 bool KTar::prepareWriting(const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime) {
+                          const QString& group, uint size, mode_t perm,
+                          time_t atime, time_t mtime, time_t ctime) {
   return KArchive::prepareWriting(name,user,group,size,perm,atime,mtime,ctime);
 }
 
 bool KTar::prepareWriting_impl(const QString &name, const QString &user,
-    			const QString &group, uint size, mode_t perm,
-    			time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                               const QString &group, uint size, mode_t perm,
+                               time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpened() )
     {
         kdWarning(7041) << "KTar::prepareWriting: You must open the tar file before writing to it\n";
@@ -802,14 +803,14 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
 }
 
 bool KTar::writeDir(const QString& name, const QString& user,
-    			const QString& group, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime) {
+                    const QString& group, mode_t perm,
+                    time_t atime, time_t mtime, time_t ctime) {
   return KArchive::writeDir(name,user,group,perm,atime,mtime,ctime);
 }
 
 bool KTar::writeDir_impl(const QString &name, const QString &user,
-    			const QString &group, mode_t perm,
-    			time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                         const QString &group, mode_t perm,
+                         time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpened() )
     {
         kdWarning(7041) << "KTar::writeDir: You must open the tar file before writing to it\n";
@@ -864,14 +865,14 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
 }
 
 bool KTar::writeSymLink(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t atime, time_t mtime, time_t ctime) {
+                        const QString &user, const QString &group,
+                        mode_t perm, time_t atime, time_t mtime, time_t ctime) {
   return KArchive::writeSymLink(name,target,user,group,perm,atime,mtime,ctime);
 }
 
 bool KTar::writeSymLink_impl(const QString &name, const QString &target,
-    			const QString &user, const QString &group,
-    			mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                             const QString &user, const QString &group,
+                             mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
     if ( !isOpened() )
     {
         kdWarning(7041) << "KTar::writeSymLink: You must open the tar file before writing to it\n";
@@ -927,22 +928,22 @@ void KTar::virtual_hook( int id, void* data ) {
     case VIRTUAL_WRITE_SYMLINK: {
       WriteSymlinkParams *params = reinterpret_cast<WriteSymlinkParams *>(data);
       params->retval = writeSymLink_impl(*params->name,*params->target,
-        		*params->user,*params->group,params->perm,
-          		params->atime,params->mtime,params->ctime);
+                                         *params->user,*params->group,params->perm,
+                                         params->atime,params->mtime,params->ctime);
       break;
     }
     case VIRTUAL_WRITE_DIR: {
       WriteDirParams *params = reinterpret_cast<WriteDirParams *>(data);
       params->retval = writeDir_impl(*params->name,*params->user,
-			*params->group,params->perm,
-          		params->atime,params->mtime,params->ctime);
+                                     *params->group,params->perm,
+                                     params->atime,params->mtime,params->ctime);
       break;
     }
     case VIRTUAL_PREPARE_WRITING: {
       PrepareWritingParams *params = reinterpret_cast<PrepareWritingParams *>(data);
       params->retval = prepareWriting_impl(*params->name,*params->user,
-        		*params->group,params->size,params->perm,
-          		params->atime,params->mtime,params->ctime);
+                                           *params->group,params->size,params->perm,
+                                           params->atime,params->mtime,params->ctime);
       break;
     }
     default:
