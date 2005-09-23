@@ -24,14 +24,14 @@
 #include <qapplication.h>
 
 KHBox::KHBox( QWidget* parentWidget )
-    : QWidget( parentWidget )
+    : QFrame( parentWidget )
 {
     setLayout( new QHBoxLayout( this ) );
 }
 
 
 KHBox::KHBox( bool /*vertical*/, QWidget* parentWidget )
-    : QWidget( parentWidget )
+    : QFrame( parentWidget )
 {
     setLayout( new QVBoxLayout( this ) );
 }
@@ -46,7 +46,7 @@ bool KHBox::event( QEvent* ev )
             QWidget* w = static_cast<QWidget *>( childEv->child() );
             static_cast<QBoxLayout *>( layout() )->addWidget( w );
         }
-        return QWidget::event( ev );
+        return QFrame::event( ev );
     }
     case QEvent::ChildRemoved:
     {
@@ -55,10 +55,10 @@ bool KHBox::event( QEvent* ev )
             QWidget* w = static_cast<QWidget *>( childEv->child() );
             static_cast<QBoxLayout *>( layout() )->removeWidget( w );
         }
-        return QWidget::event( ev );
+        return QFrame::event( ev );
     }
     default:
-        return QWidget::event( ev );
+        return QFrame::event( ev );
     }
 }
 
@@ -66,7 +66,7 @@ QSize KHBox::sizeHint() const
 {
     KHBox* that = const_cast<KHBox *>( this );
     QApplication::sendPostedEvents( that, QEvent::ChildAdded );
-    return QWidget::sizeHint();
+    return QFrame::sizeHint();
 }
 
 void KHBox::setSpacing( int sp )
@@ -77,6 +77,11 @@ void KHBox::setSpacing( int sp )
 void KHBox::setStretchFactor( QWidget* w, int stretch )
 {
     static_cast<QBoxLayout *>( layout() )->setStretchFactor( w, stretch );
+}
+
+void KHBox::setMargin(int margin)
+{
+	layout()->setMargin(margin);
 }
 
 #include "khbox.moc"

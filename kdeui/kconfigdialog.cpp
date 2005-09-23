@@ -28,7 +28,7 @@
 #include <kdebug.h>
 
 #include <qlayout.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qmap.h>
 
 QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;
@@ -121,7 +121,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
     case TreeList:
     case IconList:
     case Tabbed: {
-      Q3VBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
+      KVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());

@@ -23,7 +23,7 @@
 
 #include <klocale.h>
 
-#include <q3vbox.h>
+#include <kvbox.h>
 
 using namespace KSpell2;
 
@@ -50,7 +50,7 @@ ConfigDialog::~ConfigDialog()
 void ConfigDialog::init( Broker *broker )
 {
     d = new Private;
-    Q3VBox *page = makeVBoxMainWidget();
+    KVBox *page = makeVBoxMainWidget();
     d->ui = new ConfigWidget( broker, page );
 }
 

@@ -79,7 +79,7 @@ public:
    * Use setURL() and setText() or QListView::setPixmap()
    * to set the resp. properties.
    */
-  KURLLabel (QWidget* parent = 0L, const char* name = 0L);
+  KURLLabel (QWidget* parent = 0L);
 
   /**
    * Convenience constructor.
@@ -94,7 +94,7 @@ public:
    * them further down
    */
   KURLLabel (const QString& url, const QString& text = QString::null,
-              QWidget* parent = 0L, const char* name = 0L);
+              QWidget* parent = 0L);
 
   /**
    * Destructs the label.

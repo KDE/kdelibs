@@ -225,7 +225,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     lay->addWidget( m_bgSeverity );
 
     // Subject
-    QHBoxLayout * hlay = new QHBoxLayout( lay );
+    QHBoxLayout * hlay = new QHBoxLayout();
+    lay->addItem(hlay);
     tmpLabel = new QLabel( i18n("S&ubject: "), parent );
     hlay->addWidget( tmpLabel );
     m_subject = new KLineEdit( parent );
@@ -237,7 +238,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
                         "bug report.\n"
                         "If you press \"Send\", a mail message will be sent to the maintainer of "
                         "this program.\n");
-    QLabel * label = new QLabel( parent, "label" );
+    QLabel * label = new QLabel( parent);
 
     label->setText( text );
     lay->addWidget( label );
@@ -256,7 +257,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QString text = i18n("To submit a bug report, click on the button below.\n"
                         "This will open a web browser window on http://bugs.kde.org where you will find a form to fill in.\n"
                         "The information displayed above will be transferred to that server.");
-    QLabel * label = new QLabel( text, parent, "label");
+    QLabel * label = new QLabel( text, parent);
     lay->addWidget( label );
     lay->addSpacing(10);
 

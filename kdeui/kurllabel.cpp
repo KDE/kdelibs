@@ -70,8 +70,8 @@ public:
 };
 
 KURLLabel::KURLLabel (const QString& url, const QString& text,
-                        QWidget* parent, const char* name)
-  : QLabel (!text.isNull() ? text : url, parent, name),
+                        QWidget* parent)
+  : QLabel (!text.isNull() ? text : url, parent),
     d (new Private (url, this))
 {
   setFont (font());
@@ -79,8 +79,8 @@ KURLLabel::KURLLabel (const QString& url, const QString& text,
   setLinkColor (d->LinkColor);
 }
 
-KURLLabel::KURLLabel (QWidget* parent, const char* name)
-  : QLabel (parent, name),
+KURLLabel::KURLLabel (QWidget* parent)
+  : QLabel (parent),
     d (new Private (QString::null, this))
 {
   setFont (font());
@@ -322,7 +322,7 @@ bool KURLLabel::event (QEvent *e)
     // use parentWidget() unless you are a toplevel widget, then try qAapp
     QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
     p.setBrush(QColorGroup::Base, p.brush(QPalette::Normal, QColorGroup::Background));
-    p.setColor(QColorGroup::Foreground, palette().active().foreground());
+    p.setColor(QColorGroup::Foreground, palette().color(QPalette::Active,QPalette::Foreground));
     setPalette(p);
     d->LinkColor = KGlobalSettings::linkColor();
     setLinkColor(d->LinkColor);

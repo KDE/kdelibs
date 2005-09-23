@@ -455,7 +455,7 @@ void KPluginSelectionWidget::save()
                     updatedModules.append( *nameit );
         }
     for( QStringList::ConstIterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
-        emit configCommitted( ( *it ).latin1() );
+        emit configCommitted( ( *it ).toLatin1() );
 
     updateConfigPage();
     kdDebug( 702 ) << "syncing config file" << endl;

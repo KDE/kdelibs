@@ -171,6 +171,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
 #endif
+   mAutoTimer.setSingleShot(true);
    connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
    requestList.setAutoDelete(true);
    mSlaveWaitRequest.setAutoDelete(true);
@@ -488,7 +489,7 @@ void KLauncher::setLaunchEnv(const DCOPCString &name, const DCOPCString &_value)
    if (value.isNull())
       value = "";
    klauncher_header request_header;
-   QByteArray requestData(name.length()+value.length()+2);
+   QByteArray requestData(name.length()+value.length()+2,0);
    memcpy(requestData.data(), name.data(), name.length()+1);
    memcpy(requestData.data()+name.length()+1, value.data(), value.length()+1);
    request_header.cmd = LAUNCHER_SETENV;
@@ -680,7 +681,7 @@ KLauncher::autoStart(int phase)
    mAutoStart.setPhase(phase);
    if (phase == 1)
       mAutoStart.loadAutoStartList();
-   mAutoTimer.start(0, true);
+   mAutoTimer.start(0);
 }
 
 void
@@ -760,7 +761,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->autoStart)
    {
-      mAutoTimer.start(0, true);
+      mAutoTimer.start(0);
    }
 
    if (request->transaction)
@@ -882,7 +883,7 @@ KLauncher::exec_blind( const DCOPCString &name, const DCOPCStringList &arg_list,
    request->transaction = 0; // No confirmation is send
    request->envs = envs;
    // Find service, if any - strip path if needed
-   KService::Ptr service = KService::serviceByDesktopName( name.mid( name.findRev( '/' ) + 1 ));
+   KService::Ptr service = KService::serviceByDesktopName( name.mid( name.lastIndexOf( '/' ) + 1 ));
    if (service != NULL)
        send_service_startup_info( request,  service,
            startup_id, Q3ValueList< DCOPCString >());
@@ -1005,7 +1006,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    }
 
    request->name = request->arg_list.first();
-   request->arg_list.remove(request->arg_list.begin());
+   request->arg_list.removeFirst(); //(request->arg_list.begin());
 
    request->dcop_service_type =  service->DCOPServiceType();
 
@@ -1014,7 +1015,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    {
       QVariant v = service->property("X-DCOP-ServiceName");
       if (v.isValid())
-         request->dcop_name = v.toString().utf8();
+         request->dcop_name = v.toString().toUtf8();
       if (request->dcop_name.isEmpty())
       {
          request->dcop_name = QFile::encodeName(KRun::binaryName(service->exec(), true));
@@ -1136,10 +1137,10 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        it++)
    {
        QString arg = *it;
-       request->arg_list.append(arg.local8Bit());
+       request->arg_list.append(arg.toLocal8Bit());
    }
 
-   request->name = app.local8Bit();
+   request->name = app.toLocal8Bit();
 
    if (wait)
       request->dcop_service_type = KService::DCOP_Wait;
@@ -1152,7 +1153,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
 #endif
    request->envs = envs;
    // Find service, if any - strip path if needed
-   KService::Ptr service = KService::serviceByDesktopName( app.mid( app.findRev( '/' ) + 1 ));
+   KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
    if (service != NULL)
        send_service_startup_info( request,  service,
            startup_id, Q3ValueList< DCOPCString >());
@@ -1201,7 +1202,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   for(QStringList::ConstIterator it = params.begin();
       it != params.end(); ++it)
   {
-     request->arg_list.append((*it).local8Bit());
+     request->arg_list.append((*it).toLocal8Bit());
   }
   request->cwd = QFile::encodeName(service->path());
 }
@@ -1269,8 +1270,8 @@ KLauncher::requestSlave(const QString &protocol,
         return 0;
     }
 
-    DCOPCString name = _name.latin1(); // ex: "kio_ftp"
-    DCOPCString arg1 = protocol.latin1();
+    DCOPCString name = _name.toLatin1(); // ex: "kio_ftp"
+    DCOPCString arg1 = protocol.toLatin1();
     DCOPCString arg2 = QFile::encodeName(mPoolSocketName);
     DCOPCString arg3 = QFile::encodeName(app_socket);
     DCOPCStringList arg_list;

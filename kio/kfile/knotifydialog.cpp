@@ -48,7 +48,7 @@
 #include <qstring.h>
 #include <qtooltip.h>
 #include <qtimer.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <QHelpEvent>
 
 using namespace KNotify;
@@ -127,7 +127,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
     : KDialogBase(parent, name, modal, i18n("Notification Settings"),
                   Ok | Apply | Cancel | Default, Ok, true )
 {
-    Q3VBox *box = makeVBoxMainWidget();
+    KVBox *box = makeVBoxMainWidget();
 
     m_notifyWidget = new KNotifyWidget( box, "knotify widget" );
 

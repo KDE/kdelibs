@@ -22,7 +22,7 @@
 */
 
 #include <qcursor.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qlayout.h>
 #include <kpushbutton.h>
 
@@ -155,7 +155,7 @@ void KCMultiDialog::apply()
     }
     for( QStringList::const_iterator it = updatedModules.begin(); it != updatedModules.end(); ++it )
     {
-        kdDebug(710) << k_funcinfo << *it << " " << ( *it ).latin1() << endl;
+        kdDebug(710) << k_funcinfo << *it << " " << ( *it ).toLatin1() << endl;
         emit configCommitted( ( *it ).toLatin1() );
     }
     emit configCommitted();

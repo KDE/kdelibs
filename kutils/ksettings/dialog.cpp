@@ -31,7 +31,7 @@
 #include <kstandarddirs.h>
 #include <kinstance.h>
 #include <kiconloader.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qlabel.h>
 #include <QList>
 #include "kcmoduleinfo.h"
@@ -225,7 +225,7 @@ class PageNode
 				if( ! m_value.group->icon.isNull() )
 					icon = SmallIcon( m_value.group->icon,
 							IconSize( KIcon::Small ) );
-				Q3VBox * page = dlg->addVBoxPage( m_value.group->name,
+				KVBox * page = dlg->addVBoxPage( m_value.group->name,
 						QString::null, icon );
 				QLabel * comment = new QLabel( m_value.group->comment, page );
 				comment->setTextFormat( Qt::RichText );
@@ -521,7 +521,7 @@ void Dialog::parseGroupFile( const QString & filename )
 	{
 		GroupInfo group;
 		QString id = *it;
-		file.setGroup( id.utf8() );
+		file.setGroup( id.toUtf8() );
 		group.id = id;
 		group.name = file.readEntry( "Name" );
 		group.comment = file.readEntry( "Comment" );

@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qregexp.h>
 #include <qimage.h>
 #include <qpushbutton.h>
@@ -90,7 +90,7 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
     m_listView(0)
 {
     d = new KCustomMenuEditorPrivate;
-   Q3HBox *page = makeHBoxMainWidget();
+   KHBox *page = makeHBoxMainWidget();
    m_listView = new KListView(page);
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);

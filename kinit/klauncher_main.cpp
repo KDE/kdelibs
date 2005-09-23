@@ -50,7 +50,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    if (fcntl(LAUNCHER_FD, F_GETFD) == -1)
    {
       fprintf(stderr, "%s", i18n("klauncher: This program is not supposed to be started manually.\n"
-                                 "klauncher: It is started automatically by kdeinit.\n").local8Bit().data());
+                                 "klauncher: It is started automatically by kdeinit.\n").toLocal8Bit().data());
       return 1;
    }
 

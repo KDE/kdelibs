@@ -25,9 +25,9 @@
 #include <stdlib.h>
 
 #include <q3grid.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <qlayout.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qtimer.h>
 #include <QKeyEvent>
 #include <QHideEvent>
@@ -303,13 +303,15 @@ void KDialogBase::setupLayout()
 
   if( mButtonOrientation == Qt::Horizontal )
   {
-    mTopLayout = new QBoxLayout( this, QBoxLayout::TopToBottom,
-				 marginHint(), spacingHint() );
+    mTopLayout = new QVBoxLayout( this );
+    mTopLayout->setMargin(marginHint());
+    mTopLayout->setSpacing(spacingHint());
   }
   else
   {
-    mTopLayout = new QBoxLayout( this, QBoxLayout::LeftToRight,
-				 marginHint(), spacingHint() );
+    mTopLayout = new QHBoxLayout( this);
+    mTopLayout->setMargin(marginHint());
+    mTopLayout->setSpacing(spacingHint());
   }
 
   if( mUrlHelp )
@@ -1184,7 +1186,7 @@ void KDialogBase::enableLinkedHelp( bool state )
       return;
     }
 
-    mUrlHelp = new KURLLabel( this, "url" );
+    mUrlHelp = new KURLLabel( this );
     mUrlHelp->setText( helpLinkText() );
     mUrlHelp->setFloat(true);
     mUrlHelp->setUnderline(true);
@@ -1242,27 +1244,27 @@ QFrame *KDialogBase::addPage( const QStringList &items, const QString &header,
 }
 
 
-Q3VBox *KDialogBase::addVBoxPage( const QString &itemName,
+KVBox *KDialogBase::addVBoxPage( const QString &itemName,
 				 const QString &header, const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addVBoxPage( itemName, header, pixmap) : 0);
 }
 
-Q3VBox *KDialogBase::addVBoxPage( const QStringList &items,
+KVBox *KDialogBase::addVBoxPage( const QStringList &items,
 				 const QString &header, const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addVBoxPage( items, header, pixmap) : 0);
 }
 
 
-Q3HBox *KDialogBase::addHBoxPage( const QString &itemName,
+KHBox *KDialogBase::addHBoxPage( const QString &itemName,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
   return ( mJanus ? mJanus->addHBoxPage( itemName, header, pixmap ) : 0);
 }
 
-Q3HBox *KDialogBase::addHBoxPage( const QStringList &items,
+KHBox *KDialogBase::addHBoxPage( const QStringList &items,
 				 const QString &header,
 				 const QPixmap &pixmap )
 {
@@ -1306,7 +1308,7 @@ QFrame *KDialogBase::makeMainWidget()
 }
 
 
-Q3VBox *KDialogBase::makeVBoxMainWidget()
+KVBox *KDialogBase::makeVBoxMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1314,14 +1316,14 @@ Q3VBox *KDialogBase::makeVBoxMainWidget()
     return 0;
   }
 
-  Q3VBox *mainWidget = new Q3VBox( this );
+  KVBox *mainWidget = new KVBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return mainWidget;
 }
 
 
-Q3HBox *KDialogBase::makeHBoxMainWidget()
+KHBox *KDialogBase::makeHBoxMainWidget()
 {
   if( mJanus || mMainWidget )
   {
@@ -1329,7 +1331,7 @@ Q3HBox *KDialogBase::makeHBoxMainWidget()
     return 0;
   }
 
-  Q3HBox *mainWidget = new Q3HBox( this );
+  KHBox *mainWidget = new KHBox( this );
   mainWidget->setSpacing( spacingHint() );
   setMainWidget( mainWidget );
   return mainWidget;

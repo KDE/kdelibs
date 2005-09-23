@@ -129,7 +129,7 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     input.setGroup( "Global" );
     QHash<QString, QString> MainMap;
     MainMap.insert( "PluginName", input.readEntry( "PluginName", pluginName ) );
-    MainMap.insert( "PluginNameLower", input.readEntry( "PluginName", pluginName ).lower() );
+    MainMap.insert( "PluginNameLower", input.readEntry( "PluginName", pluginName ).toLower() );
     MainMap.insert( "Init", input.readEntry( "Init", "" ) );
     MainMap.insert( "Destroy", input.readEntry( "Destroy", "" ) );
     ts << classHeader << endl;
@@ -183,13 +183,13 @@ QString buildWidgetClass( const QString &name, KConfig &input, const QString &gr
     QHash<QString, QString> defMap;
 
     defMap.insert( "Group", input.readEntry( "Group", group ).replace( "\"", "\\\"" ) );
-    defMap.insert( "IconSet", input.readEntry( "IconSet", name.lower() + ".png" ).replace( ":", "_" ) );
-    defMap.insert( "Pixmap", name.lower().replace( ":", "_" ) + "_xpm" );
-    defMap.insert( "IncludeFile", input.readEntry( "IncludeFile", name.lower() + ".h" ).remove( ":" ) );
+    defMap.insert( "IconSet", input.readEntry( "IconSet", name.toLower() + ".png" ).replace( ":", "_" ) );
+    defMap.insert( "Pixmap", name.toLower().replace( ":", "_" ) + "_xpm" );
+    defMap.insert( "IncludeFile", input.readEntry( "IncludeFile", name.toLower() + ".h" ).remove( ":" ) );
     defMap.insert( "ToolTip", input.readEntry( "ToolTip", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "WhatsThis", input.readEntry( "WhatsThis", name + " Widget" ).replace( "\"", "\\\"" ) );
     defMap.insert( "IsContainer", input.readEntry( "IsContainer", "false" ) );
-    defMap.insert( "IconName", input.readEntry( "IconName", QString(":/pics/%1.png").arg( denamespace( name ).lower() ) ) );
+    defMap.insert( "IconName", input.readEntry( "IconName", QString(":/pics/%1.png").arg( denamespace( name ).toLower() ) ) );
     defMap.insert( "Class", name );
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
 
@@ -207,5 +207,5 @@ QString buildWidgetClass( const QString &name, KConfig &input, const QString &gr
 
 QString buildWidgetInclude( const QString &name, KConfig &input ) {
     input.setGroup( name );
-    return input.readEntry( "IncludeFile", name.lower() + ".h" );
+    return input.readEntry( "IncludeFile", name.toLower() + ".h" );
 }

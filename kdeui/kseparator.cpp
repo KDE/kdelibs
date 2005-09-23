@@ -26,8 +26,8 @@
 #include "kseparator.moc"
 
 
-KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
-   : QFrame(parent, name, f)
+KSeparator::KSeparator(QWidget* parent, Qt::WFlags f)
+   : QFrame(parent, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -36,8 +36,8 @@ KSeparator::KSeparator(QWidget* parent, const char* name, Qt::WFlags f)
 
 
 
-KSeparator::KSeparator(int orientation, QWidget* parent, const char* name, Qt::WFlags f)
-   : QFrame(parent, name, f)
+KSeparator::KSeparator(int orientation, QWidget* parent, Qt::WFlags f)
+   : QFrame(parent, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);

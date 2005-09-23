@@ -20,7 +20,7 @@
 
 #include <qbitmap.h>
 #include <q3grid.h>
-#include <q3hbox.h>
+#include <khbox.h>
 #include <q3header.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -28,7 +28,7 @@
 #include <qpixmap.h>
 #include <qsplitter.h>
 #include <qtabwidget.h>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <q3widgetstack.h>
 #include <qpainter.h>
 #include <qstyle.h>
@@ -97,7 +97,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     d = new KJanusWidgetPrivate;
     d->mSplitter = 0;
 
-    Q3Frame *page;
+    QFrame *page;
     if( mFace == TreeList )
     {
       d->mSplitter = new QSplitter( this );
@@ -119,12 +119,12 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       // Page area. Title at top with a separator below and a pagestack using
       // all available space at bottom.
       //
-      Q3Frame *p = new Q3Frame( d->mSplitter );
+      QFrame *p = new QFrame( d->mSplitter );
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
       hbox->addSpacing( KDialog::marginHint() );
 
-      page = new Q3Frame( p );
+      page = new QFrame( p );
       hbox->addWidget( page, 10 );
     }
     else
@@ -143,7 +143,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       mIconList->verticalScrollBar()->installEventFilter( this );
       connect( mIconList, SIGNAL(selectionChanged()), SLOT(slotShowPage()));
       hbox->addSpacing( KDialog::marginHint() );
-      page = new Q3Frame( this );
+      page = new QFrame( this );
       hbox->addWidget( page, 10 );
     }
 
@@ -162,7 +162,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     mTitleLabel->setFont( titleFont );
 
     mTitleSep = new KSeparator( page );
-    mTitleSep->setFrameStyle( Q3Frame::HLine|Q3Frame::Plain );
+    mTitleSep->setFrameStyle( QFrame::HLine|QFrame::Plain );
     vbox->addWidget( mTitleSep );
 
     mPageStack = new Q3WidgetStack( page );
@@ -188,7 +188,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   else
   {
     mFace = Plain;
-    mPlainPage = new Q3Frame( this );
+    mPlainPage = new QFrame( this );
     topLayout->addWidget( mPlainPage, 10 );
   }
 
@@ -212,7 +212,7 @@ bool KJanusWidget::isValid() const
 }
 
 
-Q3Frame *KJanusWidget::plainPage()
+QFrame *KJanusWidget::plainPage()
 {
   return mPlainPage;
 }
@@ -233,7 +233,7 @@ QWidget *KJanusWidget::FindParent()
   }
 }
 
-Q3Frame *KJanusWidget::addPage( const QStringList &items, const QString &header,
+QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
 			       const QPixmap &pixmap )
 {
   if( !mValid )
@@ -242,7 +242,7 @@ Q3Frame *KJanusWidget::addPage( const QStringList &items, const QString &header,
     return 0;
   }
 
-  Q3Frame *page = new Q3Frame( FindParent(), "page" );
+  QFrame *page = new QFrame( FindParent());
   addPageWidget( page, items, header, pixmap );
 
   return page;
@@ -259,7 +259,7 @@ void KJanusWidget::slotReopen( Q3ListViewItem * item )
     item->setOpen( true );
 }
 
-Q3Frame *KJanusWidget::addPage( const QString &itemName, const QString &header,
+QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 			       const QPixmap &pixmap )
 {
   QStringList items;
@@ -269,7 +269,7 @@ Q3Frame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 
 
 
-Q3VBox *KJanusWidget::addVBoxPage( const QStringList &items,
+KVBox *KJanusWidget::addVBoxPage( const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -279,14 +279,14 @@ Q3VBox *KJanusWidget::addVBoxPage( const QStringList &items,
     return 0;
   }
 
-  Q3VBox *page = new Q3VBox(FindParent() , "page" );
+  KVBox *page = new KVBox(FindParent());
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
   return page;
 }
 
-Q3VBox *KJanusWidget::addVBoxPage( const QString &itemName,
+KVBox *KJanusWidget::addVBoxPage( const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -295,7 +295,7 @@ Q3VBox *KJanusWidget::addVBoxPage( const QString &itemName,
   return addVBoxPage(items, header, pixmap);
 }
 
-Q3HBox *KJanusWidget::addHBoxPage( const QStringList &items,
+KHBox *KJanusWidget::addHBoxPage( const QStringList &items,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -304,14 +304,14 @@ Q3HBox *KJanusWidget::addHBoxPage( const QStringList &items,
     return 0;
   }
 
-  Q3HBox *page = new Q3HBox(FindParent(), "page");
+  KHBox *page = new KHBox(FindParent());
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
   return page;
 }
 
-Q3HBox *KJanusWidget::addHBoxPage( const QString &itemName,
+KHBox *KJanusWidget::addHBoxPage( const QString &itemName,
 				  const QString &header,
 				  const QPixmap &pixmap )
 {
@@ -331,7 +331,7 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
     return 0;
   }
 
-  Q3Grid *page = new Q3Grid( n, dir, FindParent(), "page" );
+  Q3Grid *page = new Q3Grid( n, dir, FindParent());
   page->setSpacing( KDialog::spacingHint() );
   addPageWidget( page, items, header, pixmap );
 
@@ -349,7 +349,7 @@ Q3Grid *KJanusWidget::addGridPage( int n, Qt::Orientation dir,
   return addGridPage(n, dir, items, header, pixmap);
 }
 
-void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, Q3Frame *page)
+void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page)
 {
   bool isTop = true;
   Q3ListViewItem *curTop = 0, *child, *last, *newChild;
@@ -423,7 +423,7 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
   }
 }
 
-void KJanusWidget::addPageWidget( Q3Frame *page, const QStringList &items,
+void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
   connect(page, SIGNAL(destroyed(QObject*)), SLOT(pageGone(QObject*)));

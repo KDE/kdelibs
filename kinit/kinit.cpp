@@ -236,8 +236,8 @@ static void close_fds()
 
 static void exitWithErrorMsg(const QString &errorMsg)
 {
-   fprintf( stderr, "%s\n", errorMsg.local8Bit().data() );
-   QByteArray utf8ErrorMsg = errorMsg.utf8();
+   fprintf( stderr, "%s\n", errorMsg.toLocal8Bit().data() );
+   QByteArray utf8ErrorMsg = errorMsg.toUtf8();
    d.result = 3; // Error with msg
    write(d.fd[1], &d.result, 1);
    int l = utf8ErrorMsg.length();
@@ -358,7 +358,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
      {
          const char* path = get_env_var( "PATH=", envc, envs );
          if( path != NULL )
-             paths = QStringList::split( QRegExp( "[:\b]" ), path, true );
+             paths = QString(path).split( QRegExp( "[:\b]" ));
      }
      else
          paths = QStringList::split( QRegExp( "[:\b]" ), getenv( "PATH" ), true );
@@ -366,14 +366,14 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
          s_instance->dirs()->findExe( exec, paths.join( QString( ":" ))));
      if( avoid_loops && !execpath.isEmpty())
      {
-         int pos = execpath.findRev( '/' );
+         int pos = execpath.lastIndexOf( '/' );
          QString bin_path = execpath.left( pos );
          for( QStringList::Iterator it = paths.begin();
               it != paths.end();
               ++it )
              if( ( *it ) == bin_path || ( *it ) == bin_path + '/' )
              {
-                 paths.remove( it );
+                 paths.erase( it );
                  break; // -->
              }
          execpath = QFile::encodeName(
@@ -420,7 +420,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   {
      lib = _name;
      name = _name;
-     name = name.mid( name.findRev('/') + 1);
+     name = name.mid( name.lastIndexOf('/') + 1);
      exec = _name;
      if (lib.right(3) == ".la")
         libpath = lib;
@@ -437,7 +437,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      perror("kdeinit: pipe() failed!\n");
      d.result = 3;
      d.errorMsg = i18n("Unable to start new process.\n"
-                       "The system may have reached the maximum number of open files possible or the maximum number of open files that you are allowed to use has been reached.").utf8();
+                       "The system may have reached the maximum number of open files possible or the maximum number of open files that you are allowed to use has been reached.").toUtf8();
      close(d.fd[0]);
      close(d.fd[1]);
      d.fork = 0;
@@ -459,7 +459,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      perror("kdeinit: fork() failed!\n");
      d.result = 3;
      d.errorMsg = i18n("Unable to create new process.\n"
-                       "The system may have reached the maximum number of processes possible or the maximum number of processes that you are allowed to use has been reached.").utf8();
+                       "The system may have reached the maximum number of processes possible or the maximum number of processes that you are allowed to use has been reached.").toUtf8();
      close(d.fd[0]);
      close(d.fd[1]);
      d.fork = 0;
@@ -495,7 +495,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
              unset_envs.append( environ[ tmp_env_count ] );
          foreach(QByteArray tmp, unset_envs)
          {
-             int pos = tmp.find( '=' );
+             int pos = tmp.indexOf( '=' );
              if( pos >= 0 )
                  unsetenv( tmp.left( pos ));
          }
@@ -1424,9 +1424,9 @@ static void handle_requests(pid_t waitForPid)
 static void kdeinit_library_path()
 {
    QStringList ltdl_library_path =
-     QStringList::split(':', QFile::decodeName(getenv("LTDL_LIBRARY_PATH")));
+     QFile::decodeName(getenv("LTDL_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
    QStringList ld_library_path =
-     QStringList::split(':', QFile::decodeName(getenv("LD_LIBRARY_PATH")));
+     QFile::decodeName(getenv("LD_LIBRARY_PATH")).split(':',QString::SkipEmptyParts);
 
    QByteArray extra_path;
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
@@ -1475,7 +1475,7 @@ static void kdeinit_library_path()
      exit(255);
    }
    int i;
-   if((i = display.findRev('.')) > display.findRev(':') && i >= 0)
+   if((i = display.lastIndexOf('.')) > display.lastIndexOf(':') && i >= 0)
      display.truncate(i);
 
    QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(QLatin1String(display)), s_instance));

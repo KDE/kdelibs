@@ -33,7 +33,7 @@
 
 #include <qdir.h>
 #include <QWhatsThis>
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
@@ -142,7 +142,7 @@ void CupsdDialog::addConfPage(CupsdPage *page)
                                                                    KIcon::SizeMedium
 	                                                          );
 
-	Q3VBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
+	KVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
 	page->reparent(box, QPoint(0,0));
 	pagelist_.append(page);
 }

@@ -18,7 +18,7 @@
 */
 
 #include "kfilesharedlg.h"
-#include <q3vbox.h>
+#include <kvbox.h>
 #include <qlabel.h>
 #include <qdir.h>
 #include <qradiobutton.h>
@@ -43,7 +43,7 @@
 class KFileSharePropsPlugin::Private
 {
 public:
-    Q3VBox *m_vBox;
+    KVBox *m_vBox;
     KProcess *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;

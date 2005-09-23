@@ -513,7 +513,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    Q3VBox *addVBoxPage( const QString &itemName,
+    KVBox *addVBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -528,7 +528,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    Q3VBox *addVBoxPage( const QStringList &items,
+    KVBox *addVBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -550,7 +550,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The page widget which must be used as the toplevel widget for
      *         the page.
      */
-    Q3HBox *addHBoxPage( const QString &itemName,
+    KHBox *addHBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -565,7 +565,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * be added for the @p IconList face too. In other faces than the
      * @p TreeList, all the strings except the last one is ignored.
      **/
-    Q3HBox *addHBoxPage( const QStringList &items,
+    KHBox *addHBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -648,7 +648,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    Q3VBox *makeVBoxMainWidget();
+    KVBox *makeVBoxMainWidget();
 
     /**
      * Make a main widget.
@@ -663,7 +663,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
      * @return The main widget or 0 if any of the rules described above
      *         were broken.
      */
-    Q3HBox *makeHBoxMainWidget();
+    KHBox *makeHBoxMainWidget();
 
     /**
      * Make a main widget.

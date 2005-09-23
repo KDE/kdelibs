@@ -73,7 +73,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
       KLibFactory *factory = lib->factory();
       if ( factory )
       {
-        KCModule *module = factory->create<KCModule>( parent, name ? name : mod.handle().latin1(), args );
+        KCModule *module = factory->create<KCModule>( parent, name ? name : mod.handle().toLatin1().data(), args );
         if (module)
           return module;
       }
@@ -90,7 +90,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
       // create the module
       KCModule* (*func)(QWidget *, const char *);
       func = (KCModule* (*)(QWidget *, const char *)) create;
-      return  func( parent, name ? name : mod.handle().latin1() );
+      return  func( parent, name ? name : mod.handle().toLatin1().data() );
     }
     else
     {
@@ -243,7 +243,7 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
     KLibrary* library = loader->library( QFile::encodeName((QString("kcm_%1").arg(module.library()))) );
     if( library )
     {
-      void *test_func = library->symbol( QString("test_%1").arg(module.factoryName()).utf8() );
+      void *test_func = library->symbol( QString("test_%1").arg(module.factoryName()).toUtf8() );
       if( test_func )
       {
         bool (*func)() = (bool(*)())test_func;

@@ -71,10 +71,10 @@ void AutoStart::setPhaseDone()
 
 static QString extractName(QString path)
 {
-  int i = path.findRev('/');
+  int i = path.lastIndexOf('/');
   if (i >= 0)
      path = path.mid(i+1);
-  i = path.findRev('.');
+  i = path.lastIndexOf('.');
   if (i >= 0)
      path = path.left(i);
   return path;
@@ -85,7 +85,7 @@ static bool startCondition(const QString &condition)
   if (condition.isEmpty())
      return true;
 
-  QStringList list = QStringList::split(':', condition, true);
+  QStringList list = condition.split(':');
   if (list.count() < 4) 
      return true;
   if (list[0].isEmpty() || list[2].isEmpty()) 
@@ -95,7 +95,7 @@ static bool startCondition(const QString &condition)
   if (!list[1].isEmpty())
      config.setGroup(list[1]);
 
-  bool defaultValue = (list[3].lower() == "true");
+  bool defaultValue = (list[3].toLower() == "true");
 
   return config.readBoolEntry(list[2], defaultValue);
 }
@@ -151,7 +151,8 @@ AutoStart::startService()
            return service;
         }
      }
-     m_started.remove(m_started.begin());
+     //m_started.remove(m_started.begin());
+     m_started.removeFirst();
    }
    
    // Check for items that don't depend on anything

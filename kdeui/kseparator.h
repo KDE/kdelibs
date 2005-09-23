@@ -37,20 +37,18 @@ class KDEUI_EXPORT KSeparator : public QFrame
   /**
    * Constructor.
    * @param parent parent object.
-   * @param name name of the new object.
    * @param f extra QWidget flags.
    **/
-  KSeparator(QWidget* parent=0, const char* name=0, Qt::WFlags f=0);
+  KSeparator(QWidget* parent=0, Qt::WFlags f=0);
 
   /**
    * Constructor.
    * @param orientation Set the orientation of the separator.
    * Possible values are HLine or Horizontal and VLine or Vertical.
    * @param parent parent object.
-   * @param name name of the new object.
    * @param f extra QWidget flags.
    **/
-  KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
+  KSeparator(int orientation, QWidget* parent=0, 
 	     Qt::WFlags f=0);
   
   /**

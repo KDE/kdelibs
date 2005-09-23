@@ -31,10 +31,10 @@
 class KListView;
 
 class Q3Grid;
-class Q3HBox;
+class KHBox;
 class QLabel;
 class QTabWidget;
-class Q3VBox;
+class KVBox;
 class Q3WidgetStack;
 class KSeparator;
 class Q3ListViewItem;
@@ -195,7 +195,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The widget or 0 if the face in not Plain.
      */
-    virtual Q3Frame *plainPage();
+    virtual QFrame *plainPage();
 
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed
@@ -216,7 +216,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual Q3Frame *addPage(const QString &item,const QString &header=QString::null,
+    virtual QFrame *addPage(const QString &item,const QString &header=QString::null,
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -233,7 +233,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 	 * Deleting the returned frame will cause the listitem or tab to be
 	 * removed (you can re-add a page with the same name later.
      **/
-     virtual Q3Frame *addPage(const QStringList &items, const QString &header=QString::null,
+     virtual QFrame *addPage(const QStringList &items, const QString &header=QString::null,
 		    const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -255,7 +255,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      *
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.  */
-    virtual Q3VBox *addVBoxPage( const QString &item,
+    virtual KVBox *addVBoxPage( const QString &item,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -271,7 +271,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      **/
-    virtual Q3VBox *addVBoxPage( const QStringList &items,
+    virtual KVBox *addVBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -295,7 +295,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * @return The empty page or 0 if the face is not TreeList, IconList or
      *         Tabbed.
      */
-    virtual Q3HBox *addHBoxPage( const QString &itemName,
+    virtual KHBox *addHBoxPage( const QString &itemName,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -311,7 +311,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
      * Deleting the returned frame will cause the listitem or tab to be
      * removed (you can re-add a page with the same name later.
      **/
-    virtual Q3HBox *addHBoxPage( const QStringList &items,
+    virtual KHBox *addHBoxPage( const QStringList &items,
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
 
@@ -565,9 +565,9 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
 
   protected:
     bool showPage( QWidget *w );
-    void addPageWidget( Q3Frame *page, const QStringList &items,
+    void addPageWidget( QFrame *page, const QStringList &items,
 			const QString &header, const QPixmap &pixmap );
-    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, Q3Frame *page);
+    void InsertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
     QWidget *FindParent();
 
   private:
@@ -583,7 +583,7 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     Q3WidgetStack *mPageStack;
     QLabel       *mTitleLabel;
     QTabWidget   *mTabControl;
-    Q3Frame       *mPlainPage;
+    QFrame       *mPlainPage;
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;

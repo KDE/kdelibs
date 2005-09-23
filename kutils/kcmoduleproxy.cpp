@@ -160,7 +160,7 @@ KCModule * KCModuleProxy::realModule() const
 
 	if( !d->isInitialized )
 	{
-  		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").utf8();
+  		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").toUtf8();
 		d->topLayout = new QVBoxLayout( that, 0, 0, "topLayout" );
 
 		d->isInitialized = true;

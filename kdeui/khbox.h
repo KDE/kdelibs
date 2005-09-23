@@ -19,14 +19,14 @@
 #ifndef KHBOX_H
 #define KHBOX_H
 
-#include <qwidget.h>
+#include <qframe.h>
 #include <kdelibs_export.h>
 
 /**
  * A container widget which arranges its children horizontally.
  * When using a KHBox you don't need to create a layout nor to add the child widgets to it.
  */
-class KDEUI_EXPORT KHBox : public QWidget
+class KDEUI_EXPORT KHBox : public QFrame
 {
     Q_OBJECT
 public:
@@ -43,6 +43,7 @@ public:
 
     virtual QSize sizeHint() const;
 
+    void setMargin(int margin);
 protected:
     /*
      * @internal
