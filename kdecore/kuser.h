@@ -16,18 +16,18 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
 #ifndef KUSER_H
 #define KUSER_H
 
 #include "ksharedptr.h"
+#include <sys/types.h>
 
 class KUserGroup;
 class QString;
 class QStringList;
-class KUserPrivate;
 struct passwd;
 template <class T> class QList;
 
@@ -64,16 +64,14 @@ public:
    *        such a case use the effective UID for checking permissions, and
    *        the real UID for displaying information about the user.
    */
-  // XXX KDE4: Make this explicit
-  KUser(UIDMode mode = UseEffectiveUID);
+  explicit KUser(UIDMode mode = UseEffectiveUID);
 
   /**
    * Creates an object for the user with the given user id.
    * If the user does not exist isValid() will return false.
    * @param uid the user id
    */
-  // XXX KDE4: Make this explicit; give parameter as uid_t instead of "long"
-  KUser(long uid);
+  explicit KUser(uid_t uid);
 
   /**
    * Creates an object that contains information about the user with the given
@@ -81,8 +79,7 @@ public:
    *
    * @param name the name of the user
    */
-  // XXX KDE4: Make this explicit
-  KUser(const QString& name);
+  explicit KUser(const QString& name);
 
   /**
    * Creates an object that contains information about the user with the given
@@ -90,8 +87,7 @@ public:
    *
    * @param name the name of the user
    */
-  // XXX KDE4: Make this explicit
-  KUser(const char* name);
+  explicit KUser(const char* name);
 
   /**
    * Creates an object from a passwd structure.
@@ -99,8 +95,7 @@ public:
    *
    * @param p the passwd structure to create the user from
    */
-  // XXX KDE4: Make this explicit
-  KUser(struct passwd *p);
+  explicit KUser(const passwd *p);
 
   /**
    * Creates an object from another KUser object
@@ -116,14 +111,12 @@ public:
   KUser& operator =(const KUser& user);
 
   /**
-   * Two KUser objects are equal if isValid() is true
-   * and the uid() are identical.
+   * Two KUser objects are equal if the uid() are identical.
    */
   bool operator ==(const KUser& user) const;
 
   /**
-   * Two KUser objects are not equal if either isValid() is
-   * not true or uid() are not identical.
+   * Two KUser objects are not equal if uid() are not identical.
    */
   bool operator !=(const KUser &user) const;
 
@@ -138,19 +131,16 @@ public:
    * Returns the user id of the user.
    * @return the id of the user or -1 if user is invalid
    */
-  // XXX KDE4: Make this return uid_t
-  long uid() const;
-
+  uid_t uid() const;
 
   /**
    * Returns the group id of the user.
    * @return the id of the group or -1 if user is invalid
    */
-  // XXX KDE4: Make this return gid_t
-  long gid() const;
+  gid_t gid() const;
 
   /**
-   * Checks whether the user it the super user (root).
+   * Checks whether the user is the super user (root).
    * @return true if the user is root
    */
   bool isSuperUser() const;
@@ -233,12 +223,11 @@ public:
   static QStringList allUserNames();
 
 private:
-  KSharedPtr<KUserPrivate> d;
-  void fillPasswd(struct passwd* p);
+  class Private;
+  KSharedPtr<Private> d;
+  void fillPasswd(const passwd* p);
   void fillName(const char *name);
 };
-
-class KUserGroupPrivate;
 
 struct group;
 
@@ -274,8 +263,7 @@ public:
    * If the group does not exist, isValid() will return false.
    * @param gid the group id
    */
-  // XXX KDE4: Give parameter as gid_t instead of "long"
-  explicit KUserGroup(long gid);
+  explicit KUserGroup(gid_t gid);
 
   /**
    * Create an object from a group name.
@@ -296,7 +284,7 @@ public:
    * If the pointer is null, isValid() will return false.
    * @param g the group structure to create the group from.
    */
-  explicit KUserGroup(struct group *g);
+  explicit KUserGroup(const group *g);
 
   /**
    * Creates a new KUserGroup instance from another KUserGroup object
@@ -337,8 +325,7 @@ public:
    * Returns the group id of the group.
    * @return the group id of the group or -1 if the group is invalid
    */
-  // XXX KDE4: Return gid_t instead of "long"
-  long gid() const;
+  gid_t gid() const;
 
   /**
    * The name of the group.
@@ -358,7 +345,6 @@ public:
    */
   QStringList userNames() const;
 
-
   /**
    * Destructor.
    */
@@ -375,10 +361,10 @@ public:
   static QStringList allGroupNames();
 
 private:
-  KSharedPtr<KUserGroupPrivate> d;
-  void fillGroup(struct group* g);
+  class Private;
+  KSharedPtr<Private> d;
+  void fillGroup(const group* g);
   void fillName(const char *name);
 };
-
 
 #endif

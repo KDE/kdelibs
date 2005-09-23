@@ -15,44 +15,39 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
 
+#undef QT3_SUPPORT
 #include <kuser.h>
 
-#include "kstringhandler.h"
-#include <q3valuelist.h>
 #include <qstringlist.h>
 
-#include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <grp.h>
 
-
-class KUserPrivate : public KShared
+struct KUser::Private : public KShared
 {
-public:
-	bool valid;
-	long uid, gid;
+	uid_t uid;
+	gid_t gid;
 	QString loginName, fullName;
 	QString roomNumber, workPhone, homePhone;
 	QString homeDir, shell;
 
-	KUserPrivate() : valid(false) {}
+	Private() : uid(uid_t(-1)), gid(gid_t(-1)) {}
 
-	KUserPrivate(long _uid,
-		     long _gid,
-		     const QString &_loginname,
-		     const QString &_fullname,
-		     const QString &_room,
-		     const QString &_workPhone,
-		     const QString &_homePhone,
-		     const QString &_homedir,
-		     const QString &_shell) :
-		valid(true),
+	Private(uid_t _uid,
+		gid_t _gid,
+		const QString &_loginname,
+		const QString &_fullname,
+		const QString &_room,
+		const QString &_workPhone,
+		const QString &_homePhone,
+		const QString &_homedir,
+		const QString &_shell) :
 		uid(_uid),
 		gid(_gid),
 		loginName(_loginname),
@@ -66,7 +61,7 @@ public:
 
 
 KUser::KUser(UIDMode mode) {
-	long _uid = ::getuid(), _euid;
+	uid_t _uid = ::getuid(), _euid;
 	if (mode == UseEffectiveUID && (_euid = ::geteuid()) != _uid )
 		fillPasswd( ::getpwuid( _euid ) );
 	else {
@@ -79,85 +74,80 @@ KUser::KUser(UIDMode mode) {
 	}
 }
 
-KUser::KUser(long uid) {
-	fillPasswd( ::getpwuid( uid ) );
+KUser::KUser(uid_t _uid) {
+	fillPasswd( ::getpwuid( _uid ) );
 }
 
 KUser::KUser(const QString& name) {
-	fillName( name.local8Bit().data() );
+	fillName( name.toLocal8Bit().data() );
 }
 
 KUser::KUser(const char *name) {
 	fillName( name );
 }
 
-KUser::KUser(struct passwd *p) {
+KUser::KUser(const passwd *p) {
     fillPasswd(p);
 }
 
-KUser::KUser(const KUser & user) 
-  : d(user.d) 
+KUser::KUser(const KUser & user)
+  : d(user.d)
 {
 }
 
-KUser& KUser::operator =(const KUser& user) 
+KUser& KUser::operator =(const KUser& user)
 {
   d = user.d;
   return *this;
 }
 
 bool KUser::operator ==(const KUser& user) const {
-    if (isValid() != user.isValid())
-	return false;
-    if (isValid())
 	return uid() == user.uid();
-    else
-	return true;
 }
 
 bool KUser::operator !=(const KUser& user) const {
-	return !operator ==(user);
+	return uid() != user.uid();
 }
 
 void KUser::fillName(const char *name) {
 	fillPasswd(name ? ::getpwnam( name ) : 0);
 }
 
-void KUser::fillPasswd(struct passwd *p) {
+void KUser::fillPasswd(const passwd *p) {
 	if (p) {
-		QString gecos = KStringHandler::from8Bit(p->pw_gecos); 
-		QStringList gecosList = QStringList::split(',', gecos, true);
+		QString gecos = QString::fromLocal8Bit(p->pw_gecos);
+		QStringList gecosList = gecos.split(QLatin1Char(','));
 
-		d = new KUserPrivate(p->pw_uid,
-				     p->pw_gid,
-				     QString::fromLocal8Bit(p->pw_name),
-				     (gecosList.size() > 0) ? gecosList[0] : QString::null,
-				     (gecosList.size() > 1) ? gecosList[1] : QString::null,
-				     (gecosList.size() > 2) ? gecosList[2] : QString::null,
-				     (gecosList.size() > 3) ? gecosList[3] : QString::null,
-				     QString::fromLocal8Bit(p->pw_dir),
-				     QString::fromLocal8Bit(p->pw_shell));
+		// fill up the list, should be at least 4 entries
+		switch (gecosList.size()) {
+		case 0: gecosList << QString::null;
+		case 1: gecosList << QString::null;
+		case 2: gecosList << QString::null;
+		case 3: gecosList << QString::null;
+		}
+
+		d = new Private(p->pw_uid,
+				p->pw_gid,
+				QString::fromLocal8Bit(p->pw_name),
+				gecosList[0], gecosList[1],
+				gecosList[2], gecosList[3],
+				QString::fromLocal8Bit(p->pw_dir),
+				QString::fromLocal8Bit(p->pw_shell));
 	}
 	else
-		d = new KUserPrivate();
+		d = new Private;
 }
 
 bool KUser::isValid() const {
-	return d->valid;
+	return uid() != uid_t(-1);
 }
 
-long KUser::uid() const {
-	if (d->valid)
-		return d->uid;
-	else
-		return -1;
+uid_t KUser::uid() const {
+	return d->uid;
 }
 
-long KUser::gid() const {
-	if (d->valid)
-		return d->gid;
-	else
-		return -1;
+gid_t KUser::gid() const {
+	return d->gid;
 }
 
 bool KUser::isSuperUser() const {
@@ -165,52 +155,31 @@ bool KUser::isSuperUser() const {
 }
 
 QString KUser::loginName() const {
-	if (d->valid)
-		return d->loginName;
-	else
-		return QString::null;
+	return d->loginName;
 }
 
 QString KUser::fullName() const {
-	if (d->valid)
-		return d->fullName;
-	else
-		return QString::null;
+	return d->fullName;
 }
 
 QString KUser::roomNumber() const {
-	if (d->valid)
-		return d->roomNumber;
-	else
-		return QString::null;
+	return d->roomNumber;
 }
 
 QString KUser::workPhone() const {
-	if (d->valid)
-		return d->workPhone;
-	else
-		return QString::null;
+	return d->workPhone;
 }
 
 QString KUser::homePhone() const {
-	if (d->valid)
-		return d->homePhone;
-	else
-		return QString::null;
+	return d->homePhone;
 }
 
 QString KUser::homeDir() const {
-	if (d->valid)
-		return d->homeDir;
-	else
-		return QString::null;
+	return d->homeDir;
 }
 
 QString KUser::shell() const {
-	if (d->valid)
-		return d->shell;
-	else
-		return QString::null;
+	return d->shell;
 }
 
 QList<KUserGroup> KUser::groups() const {
@@ -219,7 +188,7 @@ QList<KUserGroup> KUser::groups() const {
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
     QList<KUser> users = (*it).users();
-    if ( users.find( *this ) != users.end()) {
+    if ( users.contains(*this) ) {
        result.append(*it);
     }
   }
@@ -232,7 +201,7 @@ QStringList KUser::groupNames() const {
   QList<KUserGroup>::const_iterator it;
   for ( it = allGroups.begin(); it != allGroups.end(); ++it ) {
     QList<KUser> users = (*it).users();
-    if ( users.find( *this ) != users.end()) {
+    if ( users.contains(*this) ) {
        result.append((*it).name());
     }
   }
@@ -243,7 +212,7 @@ QStringList KUser::groupNames() const {
 QList<KUser> KUser::allUsers() {
   QList<KUser> result;
 
-  struct passwd* p;
+  passwd* p;
 
   while ((p = getpwent()))  {
     result.append(KUser(p));
@@ -257,7 +226,7 @@ QList<KUser> KUser::allUsers() {
 QStringList KUser::allUserNames() {
   QStringList result;
 
-  struct passwd* p;
+  passwd* p;
 
   while ((p = getpwent()))  {
     result.append(QString::fromLocal8Bit(p->pw_name));
@@ -267,25 +236,19 @@ QStringList KUser::allUserNames() {
   return result;
 }
 
-
 KUser::~KUser() {
 }
 
-class KUserGroupPrivate : public KShared
+struct KUserGroup::Private : public KShared
 {
-public:
-  bool valid;
-  long gid;
+  gid_t gid;
   QString name;
   QList<KUser> users;
-  
-  KUserGroupPrivate() : valid(false) {}
-  
-  KUserGroupPrivate(long _gid, 
-                const QString & _name, 
-                const QList<KUser> & _users):
-    valid(true), 
-    gid(_gid), 
+
+  Private() : gid(gid_t(-1)) {}
+
+  Private(gid_t _gid, const QString & _name, const QList<KUser> & _users):
+    gid(_gid),
     name(_name),
     users(_users) {}
 };
@@ -295,24 +258,23 @@ KUserGroup::KUserGroup(KUser::UIDMode mode) {
   fillGroup(getgrgid(user.gid()));
 }
 
-KUserGroup::KUserGroup(long gid) {
-  fillGroup(getgrgid(gid));
+KUserGroup::KUserGroup(gid_t _gid) {
+  fillGroup(getgrgid(_gid));
 }
 
-KUserGroup::KUserGroup(const QString& name) {
-  fillName(name.local8Bit().data());
+KUserGroup::KUserGroup(const QString& _name) {
+  fillName(_name.toLocal8Bit().data());
 }
 
-KUserGroup::KUserGroup(const char *name) {
-  fillName(name);
+KUserGroup::KUserGroup(const char *_name) {
+  fillName(_name);
 }
 
-KUserGroup::KUserGroup(struct group *g) {
+KUserGroup::KUserGroup(const group *g) {
   fillGroup(g);
 }
 
-
-KUserGroup::KUserGroup(const KUserGroup & group) 
+KUserGroup::KUserGroup(const KUserGroup & group)
   : d(group.d)
 {
 }
@@ -323,63 +285,49 @@ KUserGroup& KUserGroup::operator =(const KUserGroup& group) {
 }
 
 bool KUserGroup::operator ==(const KUserGroup& group) const {
-  if (isValid() != group.isValid())
-    return false;
-  if (isValid())
-    return gid() == group.gid();
-  else
-    return true;
+	return gid() == group.gid();
 }
 
 bool KUserGroup::operator !=(const KUserGroup& user) const {
-  return !operator ==(user);
+	return gid() != user.gid();
 }
 
-void KUserGroup::fillName(const char *name) {
-  fillGroup(name ? ::getgrnam( name ) : 0);
+void KUserGroup::fillName(const char *_name) {
+  fillGroup(_name ? ::getgrnam( _name ) : 0);
 }
 
-void KUserGroup::fillGroup(struct group *p) {
+void KUserGroup::fillGroup(const group *p) {
   if (!p) {
-    d = new KUserGroupPrivate();
+    d = new Private;
     return;
   }
-  
-  QString name = KStringHandler::from8Bit(p->gr_name); 
-  QList<KUser> users;
-  
-  char **user = p->gr_mem;  
-  for ( ; *user; user++) {
-    KUser kUser(QString::fromLocal8Bit(*user));
-    users.append(kUser);
-  }
-  
-  d = new KUserGroupPrivate(p->gr_gid,
-            QString::fromLocal8Bit(p->gr_name),
-            users);  
 
+  QString aName = QString::fromLocal8Bit(p->gr_name);
+  QList<KUser> userList;
+
+  char **user = p->gr_mem;
+  for ( ; *user; user++) {
+    KUser kUser(*user);
+    userList.append(kUser);
+  }
+
+  d = new Private(p->gr_gid, aName, userList);
 }
 
 bool KUserGroup::isValid() const {
-  return d->valid;
+	return gid() != gid_t(-1);
 }
 
-long KUserGroup::gid() const {
-  if (d->valid)
-    return d->gid;
-  else
-    return -1;
+gid_t KUserGroup::gid() const {
+	return d->gid;
 }
 
 QString KUserGroup::name() const {
-  if (d->valid)
-    return d->name;
-  else
-    return QString::null;
+	return d->name;
 }
 
 const QList<KUser>& KUserGroup::users() const {
-  return d->users;
+	return d->users;
 }
 
 QStringList KUserGroup::userNames() const {
@@ -391,12 +339,10 @@ QStringList KUserGroup::userNames() const {
   return result;
 }
 
-
-
 QList<KUserGroup> KUserGroup::allGroups() {
   QList<KUserGroup> result;
-  
-  struct group* g;
+
+  group* g;
   while ((g = getgrent()))  {
      result.append(KUserGroup(g));
   }
@@ -408,8 +354,8 @@ QList<KUserGroup> KUserGroup::allGroups() {
 
 QStringList KUserGroup::allGroupNames() {
   QStringList result;
-  
-  struct group* g;
+
+  group* g;
   while ((g = getgrent()))  {
      result.append(QString::fromLocal8Bit(g->gr_name));
   }
@@ -419,7 +365,5 @@ QStringList KUserGroup::allGroupNames() {
   return result;
 }
 
-
 KUserGroup::~KUserGroup() {
 }
-
