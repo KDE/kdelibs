@@ -40,7 +40,7 @@
 #include <config.h> //For endian
 extern "C" {
 #include <gif_lib.h>
-};
+}
 namespace khtmlImLoad {
 
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
