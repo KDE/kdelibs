@@ -13,20 +13,17 @@
 
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KTEMPDIR_H_
-#define _KTEMPDIR_H_
+#ifndef KTEMPDIR_H
+#define KTEMPDIR_H
 
-#include <qstring.h>
-#include <stdio.h>
-#include <errno.h>
 #include "kdelibs_export.h"
 
+class QString;
 class QDir;
-class KTempDirPrivate;
 
 /**
  * The KTempDir class creates a unique directory for temporary use.
@@ -35,9 +32,9 @@ class KTempDirPrivate;
  * writable directory like /tmp without being vulnerable to so called
  * symlink attacks.
  *
- * KDE applications, however, shouldn't create files or directories in /tmp in the first
- * place but use the "tmp" resource instead. The standard KTempDir
- * constructor will do that by default.
+ * KDE applications, however, shouldn't create files or directories in /tmp
+ * in the first place but use the "tmp" resource instead. The standard
+ * KTempDir constructor will do that by default.
  *
  * To create a temporary directory that starts with a certain name
  * in the "tmp" resource, one should use:
@@ -45,7 +42,7 @@ class KTempDirPrivate;
  *
  * KTempFile does not create any missing directories, but locateLocal() does.
  *
- * See also KStandardDirs
+ * @see KStandardDirs
  *
  * @since 3.2
  * @author Joseph Wenninger <jowenn@kde.org>
@@ -73,7 +70,9 @@ public:
 
 
    /**
-    * The destructor deletes the directory and it's contents if autoDelete is enabled
+    * The destructor deletes the directory and it's contents if autoDelete
+    * is set to true.
+    * @see setAutoDelete.
     **/
    ~KTempDir();
 
@@ -82,21 +81,22 @@ public:
     * Automatic deletion is off by default.
     * @param autoDelete true to turn automatic deletion on
     **/
-   void setAutoDelete(bool autoDelete) { bAutoDelete = autoDelete; }
+   void setAutoDelete(bool autoDelete);
 
    /**
-    * Returns the status of the directory creation  based on errno. (see errno.h)
-    * 0 means OK.
+    * Returns the status of the directory creation  based on errno.
+    * (see errno.h)
     *
-    * You should check the status after object creation to check
-    * whether a directory could be created in the first place.
+    * @note You should check the status after object creation to check
+    * whether the directory could be created.
     *
     * @return the errno status, 0 means ok
     **/
    int status() const;
 
    /**
-    * Returns the full path and name of the directory, including a trailing '/'.
+    * Returns the full path and name of the directory, including a
+    * trailing '/'.
     * @return The name of the directory, or QString::null if creating the
     *         directory has failed or the directory has been unlinked
     **/
@@ -105,8 +105,9 @@ public:
 
    /**
     * Returns the QDir* of the temporary directory.
-    * @return QDir directory information of the directory or 0 if their is no managed directory
-    * The caller has to free the pointer open for writing to the
+    * @return QDir directory information of the directory or 0 if there is
+    *         no managed directory
+    * @note The caller has to free the pointer returned.
     **/
    QDir *qDir();
 
@@ -116,9 +117,11 @@ public:
    void unlink();
 
    /**
-    * @return true if a temporary directory has successfully been created and not been unlinked yet
+    * Returns true if a temporary directory has successfully been created
+    * and has not been unlinked yet.
     */
-   bool existing() const;
+   bool exists() const;
+   bool existing() const KDE_DEPRECATED;
 
 protected:
 
@@ -127,7 +130,7 @@ protected:
     * @param directoryPrefix to use when creating temp directory
     *       (the rest is generated randomly)
     * @param mode directory permissions
-    * @return bool true upon sucess
+    * @return true upon sucess
     */
    bool create(const QString &directoryPrefix,  int mode);
 
@@ -135,15 +138,14 @@ protected:
     * Sets the errno value
     * @param error the value to set the status to.
     */
-   void setError(int error) { mError = error; }
+   void setError(int error);
 
 private:
-   int mError;
-   QString mTmpName;
-   bool bExisting;
-   bool bAutoDelete;
-
-   KTempDirPrivate *d;
+   class Private;
+   Private *const d;
 };
+
+// KDE4
+bool KTempDir::existing() const { return exists(); }
 
 #endif

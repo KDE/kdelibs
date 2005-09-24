@@ -13,10 +13,11 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
 
+#undef QT3_SUPPORT
 #include <config.h>
 
 #include <sys/types.h>
@@ -28,6 +29,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #ifdef HAVE_TEST
 #include <test.h>
@@ -40,7 +42,6 @@
 #define _PATH_TMP "/tmp"
 #endif
 
-#include <qdatetime.h>
 #include <qdir.h>
 
 #include "kglobal.h"
@@ -51,10 +52,22 @@
 #include "kprocess.h"
 #include <kdebug.h>
 
-KTempDir::KTempDir(QString directoryPrefix, int mode)
+struct KTempDir::Private
+{
+   int _error;
+#define mError d->_error
+   QString _tmpName;
+#define mTmpName d->_tmpName
+   bool _exists;
+#define bExists d->_exists
+   bool _autoDelete;
+#define bAutoDelete d->_autoDelete
+};
+
+KTempDir::KTempDir(QString directoryPrefix, int mode) : d(new Private)
 {
    bAutoDelete = false;
-   bExisting = false;
+   bExists = false;
    mError=0;
    if (directoryPrefix.isEmpty())
    {
@@ -74,8 +87,9 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    if((realName=mkdtemp(nme.data())) == 0)
    {
        // Recreate it for the warning, mkdtemps emptied it
-       QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
-       qWarning("KTempDir: Error trying to create %s: %s", nme.data(), strerror(errno));
+       nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
+       kdWarning(180) << "KTempDir: Error trying to create " << nme.data()
+		      << ": " << ::strerror(errno) << endl;
        mError = errno;
        mTmpName = QString::null;
        return false;
@@ -84,14 +98,15 @@ KTempDir::create(const QString &directoryPrefix, int mode)
    // got a return value != 0
    QByteArray realNameStr(realName);
    mTmpName = QFile::decodeName(realNameStr)+"/";
-   kdDebug(180) << "KTempDir: Temporary directory created :" << mTmpName << endl;
+   kdDebug(180) << "KTempDir: Temporary directory created :" << mTmpName
+	        << endl;
    mode_t tmp = 0;
    mode_t umsk = umask(tmp);
    umask(umsk);
    chmod(nme, mode&(~umsk));
 
    // Success!
-   bExisting = true;
+   bExists = true;
 
    // Set uid/gid (necessary for SUID programs)
    chown(nme, getuid(), getgid());
@@ -117,27 +132,38 @@ KTempDir::name() const
 }
 
 bool
-KTempDir::existing() const
+KTempDir::exists() const
 {
-   return bExisting;
+   return bExists;
 }
 
 QDir *
 KTempDir::qDir()
 {
-   if (bExisting) return new QDir(mTmpName);
+   if (bExists) return new QDir(mTmpName);
    return 0;
 }
 
 void
 KTempDir::unlink()
 {
-   if (!bExisting) return;
+   if (!bExists) return;
    QString rmstr("/bin/rm -rf ");
    rmstr += KProcess::quote(mTmpName);
    ::system( QFile::encodeName(rmstr) );
 
-   bExisting=false;
+   bExists=false;
    mError=0;
 }
 
+void
+KTempDir::setAutoDelete(bool autoDelete)
+{
+   bAutoDelete = autoDelete;
+}
+
+void
+KTempDir::setError(int error)
+{
+   mError = error;
+}
