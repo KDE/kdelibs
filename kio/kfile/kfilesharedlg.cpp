@@ -105,7 +105,7 @@ void KFileSharePropsPlugin::init()
     case KFileShare::Authorized:
     {
         // Check if all selected dirs are in $HOME
-        QString home = QDir::homeDirPath();
+        QString home = QDir::homePath();
         if ( home[home.length()-1] != '/' )
             home += '/';
         bool ok = true;

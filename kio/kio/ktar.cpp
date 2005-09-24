@@ -465,8 +465,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
             }
             else
             {
-                // In some tar files we can find dir/./file => call cleanDirPath
-                QString path = QDir::cleanDirPath( name.left( pos ) );
+                // In some tar files we can find dir/./file => call cleanPath
+                QString path = QDir::cleanPath( name.left( pos ) );
                 // Ensure container directory exists, create otherwise
                 KArchiveDirectory * d = findOrCreate( path );
                 d->addEntry( e );
@@ -558,8 +558,8 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
         return false;
     }
 
-    // In some tar files we can find dir/./ => call cleanDirPath
-    QString dirName ( QDir::cleanDirPath( name ) );
+    // In some tar files we can find dir/./ => call cleanPath
+    QString dirName ( QDir::cleanPath( name ) );
 
     // Need trailing '/'
     if ( !dirName.endsWith( QLatin1Char( '/' ) ) )
@@ -753,8 +753,8 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
         return false;
     }
 
-    // In some tar files we can find dir/./file => call cleanDirPath
-    QString fileName ( QDir::cleanDirPath( name ) );
+    // In some tar files we can find dir/./file => call cleanPath
+    QString fileName ( QDir::cleanPath( name ) );
 
     /*
       // Create toplevel dirs
@@ -823,8 +823,8 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
         return false;
     }
 
-    // In some tar files we can find dir/./ => call cleanDirPath
-    QString dirName ( QDir::cleanDirPath( name ) );
+    // In some tar files we can find dir/./ => call cleanPath
+    QString dirName ( QDir::cleanPath( name ) );
 
     // Need trailing '/'
     if ( !dirName.endsWith( QLatin1Char( '/' ) ) )
@@ -885,8 +885,8 @@ bool KTar::writeSymLink_impl(const QString &name, const QString &target,
         return false;
     }
 
-    // In some tar files we can find dir/./file => call cleanDirPath
-    QString fileName ( QDir::cleanDirPath( name ) );
+    // In some tar files we can find dir/./file => call cleanPath
+    QString fileName ( QDir::cleanPath( name ) );
 
     char buffer[ 0x201 ];
     memset( buffer, 0, 0x200 );

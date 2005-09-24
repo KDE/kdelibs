@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
 QString JobTest::homeTmpDir() const
 {
-    return QDir::homeDirPath() + "/.kde/jobtest/";
+    return QDir::homePath() + "/.kde/jobtest/";
 }
 
 QString JobTest::otherTmpDir() const

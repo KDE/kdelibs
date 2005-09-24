@@ -746,7 +746,7 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
             KArchiveEntry* entry;
             if ( isdir )
             {
-                QString path = QDir::cleanDirPath( name );
+                QString path = QDir::cleanPath( name );
                 KArchiveEntry* ent = rootDir()->entry( path );
                 if ( ent && ent->isDirectory() )
                 {
@@ -782,8 +782,8 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
                 }
                 else
                 {
-                    // In some tar files we can find dir/./file => call cleanDirPath
-                    QString path = QDir::cleanDirPath( name.left( pos ) );
+                    // In some tar files we can find dir/./file => call cleanPath
+                    QString path = QDir::cleanPath( name.left( pos ) );
                     // Ensure container directory exists, create otherwise
                     KArchiveDirectory * tdir = findOrCreate( path );
                     tdir->addEntry(entry);

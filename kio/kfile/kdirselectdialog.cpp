@@ -75,7 +75,7 @@ static KURL rootUrl(const KURL &url)
 
     if (!KAuthorized::authorizeURLAction("list", KURL(), root))
     {
-        root = KURL::fromPathOrURL( QDir::homeDirPath() );
+        root = KURL::fromPathOrURL( QDir::homePath() );
         if (!KAuthorized::authorizeURLAction("list", KURL(), root))
         {
             root = url;
@@ -137,7 +137,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
         if (QDir(docPath).exists())
             d->startURL.setPath( docPath );
         else
-            d->startURL.setPath( QDir::homeDirPath() );
+            d->startURL.setPath( QDir::homePath() );
     }
 
     KURL root = rootUrl(d->startURL);

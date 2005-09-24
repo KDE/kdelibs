@@ -106,10 +106,10 @@ void KOperaBookmarkImporterImpl::parse() {
 QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 {
    return saving ? KFileDialog::getSaveFileName(
-                       QDir::homeDirPath() + "/.opera",
+                       QDir::homePath() + "/.opera",
                        i18n("*.adr|Opera Bookmark Files (*.adr)") )
                  : KFileDialog::getOpenFileName(
-                       QDir::homeDirPath() + "/.opera",
+                       QDir::homePath() + "/.opera",
                        i18n("*.adr|Opera Bookmark Files (*.adr)") );
 }
 

@@ -59,7 +59,7 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
    setCentralWidget( treeView );
    resize( 600, 400 );
 
-   showPath( KURL::fromPathOrURL( QDir::homeDirPath() ));
+   showPath( KURL::fromPathOrURL( QDir::homePath() ));
 }
 
 void testFrame::showPath( const KURL &url )

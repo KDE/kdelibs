@@ -377,7 +377,7 @@ void KURLRequester::slotUpdateURL()
 {
     // bin compat, myButton is declared as QPushButton
     KURL u;
-    u = KURL( KURL( QDir::currentDirPath() + '/' ), url() );
+    u = KURL( KURL( QDir::currentPath() + '/' ), url() );
     (static_cast<KURLDragPushButton *>( myButton ))->setURL( u );
 }
 

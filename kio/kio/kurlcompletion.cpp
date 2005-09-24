@@ -194,7 +194,7 @@ void DirectoryListThread::run()
 	// of all of the things that would seem to be problematic.  Here are a few
 	// things that I have checked to be safe here (some used indirectly):
 	//
-	// QDir::currentDirPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
+	// QDir::currentPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
 	// QString::fromLocal8Bit(), QString::toLocal8Bit(), QTextCodec::codecForLocale()
 	//
 	// Also see (for POSIX functions):
@@ -220,7 +220,7 @@ void DirectoryListThread::run()
 		// chdir to the directroy so we won't have to deal with full paths
 		// with stat()
 
-		QString path = QDir::currentDirPath();
+		QString path = QDir::currentPath();
 		QDir::setCurrent( *it );
 
 		// Loop through all directory entries
@@ -507,7 +507,7 @@ void KURLCompletion::init()
 {
 	d = new KURLCompletionPrivate;
 
-	d->cwd = QDir::homeDirPath();
+	d->cwd = QDir::homePath();
 
 	d->replace_home = true;
 	d->replace_env = true;
@@ -1473,7 +1473,7 @@ static bool expandTilde(QString &text)
 		// A single ~ is replaced with $HOME
 		//
 		if ( user.isEmpty() ) {
-			dir = QDir::homeDirPath();
+			dir = QDir::homePath();
 		}
 		// ~user is replaced with the dir from passwd
 		//

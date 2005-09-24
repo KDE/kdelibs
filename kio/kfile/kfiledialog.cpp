@@ -822,13 +822,13 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                                                  "locations that have been visited recently.") + autocompletionWhatsThisText);
 
     KURL u;
-    u.setPath( QDir::rootDirPath() );
+    u.setPath( QDir::rootPath() );
     QString text = i18n("Root Folder: %1").arg( u.path() );
     d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
 
-    u.setPath( QDir::homeDirPath() );
+    u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1").arg( u.path( +1 ) );
     d->pathCombo->addDefaultURL( u, KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
@@ -2150,7 +2150,7 @@ void KFileDialog::toggleSpeedbar( bool show )
         // check to see if they have a home item defined, if not show the home button
         KURLBarItem *urlItem = static_cast<KURLBarItem*>( d->urlBar->listBox()->firstItem() );
         KURL homeURL;
-        homeURL.setPath( QDir::homeDirPath() );
+        homeURL.setPath( QDir::homePath() );
         while ( urlItem )
         {
             if ( homeURL.equals( urlItem->url(), true ) )
@@ -2253,15 +2253,15 @@ KURL KFileDialog::getStartURL( const QString& startDir,
         if (lastDirectory->isEmpty()) {
             lastDirectory->setPath(KGlobalSettings::documentPath());
             KURL home;
-            home.setPath( QDir::homeDirPath() );
+            home.setPath( QDir::homePath() );
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
             if ( lastDirectory->path(+1) == home.path(+1) ||
-                 QDir::currentDirPath() != QDir::homeDirPath() ||
+                 QDir::currentPath() != QDir::homePath() ||
                  !QDir(lastDirectory->path(+1)).exists() )
-                lastDirectory->setPath(QDir::currentDirPath());
+                lastDirectory->setPath(QDir::currentPath());
         }
         ret = *lastDirectory;
     }

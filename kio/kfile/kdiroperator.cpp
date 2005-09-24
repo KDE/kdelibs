@@ -107,7 +107,7 @@ KDirOperator::KDirOperator(const KURL& _url, QWidget *parent)
     d = new KDirOperatorPrivate;
 
     if (_url.isEmpty()) { // no dir specified -> current dir
-        QString strPath = QDir::currentDirPath();
+        QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
         currUrl = KURL();
         currUrl.setProtocol(QLatin1String("file"));
@@ -637,7 +637,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     KURL newurl;
 
     if ( !_newurl.isValid() )
-	newurl.setPath( QDir::homeDirPath() );
+	newurl.setPath( QDir::homePath() );
     else
 	newurl = _newurl;
 
@@ -773,7 +773,7 @@ void KDirOperator::cdUp()
 void KDirOperator::home()
 {
     KURL u;
-    u.setPath( QDir::homeDirPath() );
+    u.setPath( QDir::homePath() );
     setURL(u, true);
 }
 

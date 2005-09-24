@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 
     else if (argv1 == QLatin1String("save")) {
         KURL u = KFileDialog::getSaveURL();
-//        QString(QDir::homeDirPath() + QLatin1String("/testfile")),
+//        QString(QDir::homePath() + QLatin1String("/testfile")),
 //        QString::null, 0L);
         name1 = u.url();
     }

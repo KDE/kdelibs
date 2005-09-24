@@ -102,15 +102,15 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     if (m_utf8)
     {
        if ( forSaving )
-           return KFileDialog::getSaveFileName( QDir::homeDirPath() + "/.mozilla",
+           return KFileDialog::getSaveFileName( QDir::homePath() + "/.mozilla",
                                                 i18n("*.html|HTML Files (*.html)") );
        else
-           return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
+           return KFileDialog::getOpenFileName( QDir::homePath() + "/.mozilla",
                                                 i18n("*.html|HTML Files (*.html)") );
     }
     else
     {
-       return QDir::homeDirPath() + "/.netscape/bookmarks.html";
+       return QDir::homePath() + "/.netscape/bookmarks.html";
     }
 }
 

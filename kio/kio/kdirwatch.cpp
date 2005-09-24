@@ -401,7 +401,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
   if (e->isDir) {
     if (e->m_status == NonExistent) {
       // If the directory does not exist we watch the parent directory
-      addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+      addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
     }
     else {
       int res =FAMMonitorDirectory(&fc, QFile::encodeName(e->path),
@@ -504,7 +504,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 		    << ") for " << e->path << endl;
     }
     else { // NotExisting
-      addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+      addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
     }
   }
   else { // File
@@ -688,7 +688,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     }
     else {
       if (e->isDir)
-	removeEntry(0, QDir::cleanDirPath(e->path+"/.."), e);
+	removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
       else
 	removeEntry(0, QFileInfo(e->path).dirPath(true), e);
     }
@@ -714,7 +714,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 	}
       }
       else {
-	removeEntry(0, QDir::cleanDirPath(e->path+"/.."), e);
+	removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
       }
     }
   }
@@ -957,7 +957,7 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
       path += "/" + fileName;
 #elif defined(Q_WS_WIN)
       //current drive is passed instead of /
-      path += QDir::currentDirPath().left(2) + "/" + fileName;
+      path += QDir::currentPath().left(2) + "/" + fileName;
 #endif
   }
 
@@ -1086,11 +1086,11 @@ void KDirWatchPrivate::slotRescan()
   // Scan parent of deleted directories for new creation
   Entry* e;
   for(e=dList.first();e;e=dList.next())
-    addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
+    addEntry(0, QDir::cleanPath( e->path+"/.."), e, true);
 
   // Remove watch of parent of new created directories
   for(e=cList.first();e;e=cList.next())
-    removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
+    removeEntry(0, QDir::cleanPath( e->path+"/.."), e);
 #endif
 
   if ( timerRunning )
@@ -1214,7 +1214,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
                         << FAMREQUEST_GETREQNUM(&(e->fr))
                         << " for " << e->path << endl;
           // Scan parent for a new creation
-          addEntry(0, QDir::cleanDirPath( e->path+"/.."), e, true);
+          addEntry(0, QDir::cleanPath( e->path+"/.."), e, true);
         }
         break;
 

@@ -174,7 +174,7 @@ int main(int argc, char **argv)
 		"%s\n%s\n%s\n",execs[ex],terms[te],sus[su]);
           close(fd);
 	  fclose(f);
-          KService s(QDir::currentDirPath() + "/kruntest.desktop");
+          KService s(QDir::currentPath() + "/kruntest.desktop");
           unlink("kruntest.desktop");
           checkPDE( s, l0, hs, false, rslts[ex+te*2+su*4+hs*8]);
         }

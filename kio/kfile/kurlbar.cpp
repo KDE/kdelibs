@@ -293,7 +293,7 @@ class KURLBar::KURLBarPrivate
 public:
     KURLBarPrivate()
     {
-        currentURL.setPath( QDir::homeDirPath() );
+        currentURL.setPath( QDir::homePath() );
         defaultIconSize = 0;
     }
 
@@ -925,7 +925,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
                          "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
                          "By clicking on the button next to the text edit box you can browse to an "
-                         "appropriate URL.</qt>").arg(QDir::homeDirPath());
+                         "appropriate URL.</qt>").arg(QDir::homePath());
     label = new QLabel( i18n("&URL:"), grid );
     m_urlEdit = new KURLRequester( url.prettyURL(), grid );
     m_urlEdit->setMode( KFile::Directory );

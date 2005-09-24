@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 {
     // Ensure that user configuration doesn't change the results of those tests
     // KDEHOME needs to be writable though, for a ksycoca database
-    setenv( "KDEHOME", QFile::encodeName( QDir::homeDirPath() + "/.kde-kurifiltertest" ), true );
+    setenv( "KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-kurifiltertest" ), true );
     setenv( "KDE_FORK_SLAVES", "yes", true ); // simpler, for the final cleanup
 
     KAboutData aboutData(appName, programName, version, description);
@@ -241,8 +241,8 @@ int main(int argc, char **argv)
 
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ) );
-    filter( "~/.kderc", QDir::homeDirPath().toLocal8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, QStringList( "kshorturifilter" ) );
-    filter( "~", QDir::homeDirPath().toLocal8Bit(), KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), "/tmp" );
+    filter( "~/.kderc", QDir::homePath().toLocal8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, QStringList( "kshorturifilter" ) );
+    filter( "~", QDir::homePath().toLocal8Bit(), KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), "/tmp" );
     filter( "~foobar", 0, KURIFilterData::ERROR, QStringList( "kshorturifilter" ) );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
@@ -349,7 +349,7 @@ int main(int argc, char **argv)
     filter( sc.sprintf("gg%cпрйвет", delimiter) /* greetings in russian utf-8*/, "http://www.google.com/search?q=%D0%BF%D1%80%D0%B9%D0%B2%D0%B5%D1%82&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     // Absolute Path tests for kshorturifilter
-    filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share/" ); // cleanDirPath removes the trailing slash
+    filter( "./", kdehome+"/share", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share/" ); // cleanPath removes the trailing slash
     filter( "../", kdehome, KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share" );
     filter( "config", kdehome+"/share/config", KURIFilterData::LOCAL_DIR, QStringList( "kshorturifilter" ), kdehome+"/share" );
 

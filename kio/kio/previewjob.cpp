@@ -136,7 +136,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->bSave = save && scale;
     d->succeeded = false;
     d->currentItem.item = 0;
-    d->thumbRoot = QDir::homeDirPath() + "/.thumbnails/";
+    d->thumbRoot = QDir::homePath() + "/.thumbnails/";
     d->ignoreMaximumSize = false;
 
     // Return to event loop first, determineNextFile() might delete this;

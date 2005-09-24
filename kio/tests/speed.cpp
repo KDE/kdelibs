@@ -31,7 +31,7 @@ SpeedTest::SpeedTest( const KURL & url )
     : QObject(0, "speed")
 {
     Job *job = listRecursive( url );
-    //Job *job = del( KURL("file:" + QDir::currentDirPath()) ); DANGEROUS !
+    //Job *job = del( KURL("file:" + QDir::currentPath()) ); DANGEROUS !
     connect(job, SIGNAL( result( KIO::Job*)),
 	    SLOT( finished( KIO::Job* ) ));
     /*connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     if ( args->count() == 1 )
       url = args->url(0);
     else
-      url = "file:" + QDir::currentDirPath();
+      url = "file:" + QDir::currentPath();
 
     kdDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
     kdDebug() << url.url() << " is " << (KIO::manually_mounted(url.path()) ? "manually" : "system") << " mounted\n";
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     // SpeedTest test( url );
     // app.exec();
 
-    url.setPath(QDir::homeDirPath());
+    url.setPath(QDir::homePath());
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
     if ( args->count() == 1 )
       url = args->url(0);
     else
-      url = "file:" + QDir::currentDirPath();
+      url = "file:" + QDir::currentPath();
 
     mp = KIO::findPathMountPoint(url.path());
     if (mp.isEmpty()) {
