@@ -176,7 +176,7 @@ void KPassivePopup::setTimeout( int delay )
     if( hideTimer->isActive() )
     {
         if( delay ) {
-            hideTimer->changeInterval( delay );
+            hideTimer->start( delay );
         } else {
             hideTimer->stop();
         }

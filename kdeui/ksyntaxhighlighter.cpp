@@ -615,7 +615,7 @@ bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	QKeyEvent *k = static_cast<QKeyEvent *>(e);
 	d->autoReady = true;
 	if (d->rehighlightRequest->isActive()) // try to stay out of the users way
-	    d->rehighlightRequest->changeInterval( 500 );
+	    d->rehighlightRequest->start( 500 );
 	if ( k->key() == Qt::Key_Enter ||
 	     k->key() == Qt::Key_Return ||
 	     k->key() == Qt::Key_Up ||
