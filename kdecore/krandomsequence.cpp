@@ -14,51 +14,53 @@
 
   You should have received a copy of the GNU Library General Public License
   along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
+  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301, USA.
 */
 
-#include <q3ptrlist.h>
-
+#undef QT3_SUPPORT
 #include "krandomsequence.h"
 #include "krandom.h"
 #include <string.h>
 
-const int    KRandomSequence::m_nShuffleTableSize = 32;
+static const int m_nShuffleTableSize = 32;
+
+struct KRandomSequence::Private
+{
+  long _lngSeed1;
+#define m_lngSeed1 d->_lngSeed1
+  long _lngSeed2;
+#define m_lngSeed2 d->_lngSeed2
+  long _lngShufflePos;
+#define m_lngShufflePos d->_lngShufflePos
+  long _ShuffleArray[m_nShuffleTableSize];
+#define m_ShuffleArray d->_ShuffleArray
+};
 
 //////////////////////////////////////////////////////////////////////////////
 //	Construction / Destruction
 //////////////////////////////////////////////////////////////////////////////
 
-KRandomSequence::KRandomSequence( long lngSeed1 )
+KRandomSequence::KRandomSequence( long lngSeed1 ) : d(new Private)
 {
   // Seed the generator
   setSeed( lngSeed1 );
-	
-	
-  // Set the size of the shuffle table
-  m_ShuffleArray = new long [m_nShuffleTableSize];
 }
 
 KRandomSequence::~KRandomSequence()
 {
-  delete [] m_ShuffleArray;
+   delete d;
 }
 
-KRandomSequence::KRandomSequence(const KRandomSequence &a)
+KRandomSequence::KRandomSequence(const KRandomSequence &a) : d(new Private)
 {
-  // Set the size of the shuffle table
-  m_ShuffleArray = new long [m_nShuffleTableSize];
-  *this = a;
+  *d = *a.d;
 }
 
 KRandomSequence &
 KRandomSequence::operator=(const KRandomSequence &a)
 {
-  m_lngSeed1 = a.m_lngSeed1;
-  m_lngSeed2 = a.m_lngSeed2;
-  m_lngShufflePos = a.m_lngShufflePos;
-  memcpy(m_ShuffleArray, a.m_ShuffleArray, sizeof(long)*m_nShuffleTableSize);
+  *d = *a.d;
   return *this;
 }
 
@@ -107,13 +109,13 @@ void KRandomSequence::Draw()
   // with a negative number to initialize; thereafter, do not alter idum
   // between successive deviates in a sequence. RNMX should approximate
   // the largest floating point value that is less than 1.
-	
+
   int j; // Index for the shuffle table
   long k;
-	
+
   // Initialise
   if ( m_lngSeed1 <= 0 )
-  {	
+  {
     m_lngSeed2 = m_lngSeed1;
 
     // Load the shuffle table after 8 warm-ups
@@ -125,18 +127,18 @@ void KRandomSequence::Draw()
       {
         m_lngSeed1 += sMod1;
       }
-			
+
       if ( j < m_nShuffleTableSize )
       {
  	m_ShuffleArray[j] = m_lngSeed1;
       }
     }
-		
+
     m_lngShufflePos = m_ShuffleArray[0];
   }
-	
+
   // Start here when not initializing
-	
+
   // Compute m_lngSeed1 = ( lngIA1*m_lngSeed1 ) % lngIM1 without overflows
   // by Schrage's method
   k = m_lngSeed1 / sQ1;
@@ -145,7 +147,7 @@ void KRandomSequence::Draw()
   {
     m_lngSeed1 += sMod1;
   }
-	
+
   // Compute m_lngSeed2 = ( lngIA2*m_lngSeed2 ) % lngIM2 without overflows
   // by Schrage's method
   k = m_lngSeed2 / sQ2;
@@ -154,18 +156,18 @@ void KRandomSequence::Draw()
   {
     m_lngSeed2 += sMod2;
   }
-	
+
   j = m_lngShufflePos / sDiv;
   m_lngShufflePos = m_ShuffleArray[j] - m_lngSeed2;
   m_ShuffleArray[j] = m_lngSeed1;
-	
+
   if ( m_lngShufflePos < 1 )
   {
     m_lngShufflePos += sMM1;
   }
 }
 
-void 
+void
 KRandomSequence::modulate(int i)
 {
   m_lngSeed2 -= i;
@@ -173,7 +175,7 @@ KRandomSequence::modulate(int i)
   {
     m_lngShufflePos += sMod2;
   }
-  Draw();  
+  Draw();
   m_lngSeed1 -= i;
   if ( m_lngSeed1 < 0 )
   {
@@ -207,7 +209,7 @@ KRandomSequence::getLong(unsigned long max)
 {
   Draw();
 
-  return max ? (((unsigned long) m_lngShufflePos) % max) : 0;  
+  return max ? (((unsigned long) m_lngShufflePos) % max) : 0;
 }
 
 bool
@@ -215,26 +217,5 @@ KRandomSequence::getBool()
 {
   Draw();
 
-  return (((unsigned long) m_lngShufflePos) & 1);  
-}
-
-class KRandomSequenceList : public Q3GList
-{
-  friend class KRandomSequence;
-public:
-  KRandomSequenceList() : Q3GList() { }
-  virtual void deleteItem( Q3PtrCollection::Item ) {}
-};
-
-void
-KRandomSequence::randomize(Q3GList *_list)
-{
-  KRandomSequenceList *list = (KRandomSequenceList *)_list;
-  KRandomSequenceList l;
-  while(list->count())
-     l.append(list->takeFirst());
-
-  list->append(l.takeFirst()); // Start with 1
-  while(l.count())
-     list->insertAt(getLong(list->count()+1), l.takeFirst());
+  return (((unsigned long) m_lngShufflePos) & 1);
 }
