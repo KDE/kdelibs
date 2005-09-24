@@ -57,7 +57,7 @@
 
 using namespace KNetwork;
 
-#define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
+#define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).toUtf8())
 
 void extractMaticData(QString& buf, const QString& filename);
 QString printerURI(KMPrinter *p, bool useExistingURI = false);
@@ -228,7 +228,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 	{
 		// driver informations
 		QString	ppdname = downloadDriver(p);
-		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.local8Bit()));
+		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.toLocal8Bit()));
 		if (ppd)
 		{
 			KMDBEntry	entry;
@@ -305,7 +305,7 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 				QStringList	members;
 				for (QStringList::ConstIterator it=values.begin(); it!=values.end(); ++it)
 				{
-				int	p = (*it).findRev('/');
+				int	p = (*it).lastIndexOf('/');
 				if (p != -1)
 				members.append((*it).right((*it).length()-p-1));
 				}
@@ -965,7 +965,7 @@ QString downloadDriver(KMPrinter *p)
 		// the printer name to use. Note that for remote
 		// printer, this operation is read-only, no counterpart
 		// for saving operation.
-		cupsSetServer(p->uri().host().local8Bit());
+		cupsSetServer(p->uri().host().toLocal8Bit());
 		ippSetPort(p->uri().port());
 		// strip any "@..." from the printer name
 		prname = prname.replace(QRegExp("@.*"), "");
@@ -974,12 +974,12 @@ QString downloadDriver(KMPrinter *p)
 	*/
 
 	// download driver
-	driverfile = cupsGetPPD(prname.local8Bit());
+	driverfile = cupsGetPPD(prname.toLocal8Bit());
 
 	// restore host:port (if they have changed)
 	if (changed)
 	{
-		cupsSetServer(CupsInfos::self()->host().local8Bit());
+		cupsSetServer(CupsInfos::self()->host().toLocal8Bit());
 		ippSetPort(CupsInfos::self()->port());
 	}
 

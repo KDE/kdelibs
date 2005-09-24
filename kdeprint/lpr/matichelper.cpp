@@ -29,7 +29,7 @@ QString maticFile(PrintcapEntry *entry)
 		s = entry->field("filter_options");
 		if (!s.isEmpty())
 		{
-			int	p = s.findRev(' ');
+			int	p = s.lastIndexOf(' ');
 			if (p != -1)
 				s = s.mid(p+1);
 		}

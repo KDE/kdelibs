@@ -80,7 +80,7 @@ QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 	if (infos.count() > 0)
 	{
 		QString	IPstr = infos[0].address().nodeName();
-		int	p = IPstr.findRev('.');	// this is wrong!! -thiago
+		int	p = IPstr.lastIndexOf('.');	// this is wrong!! -thiago
 		IPstr.truncate(p);
 		return IPstr;
 	}

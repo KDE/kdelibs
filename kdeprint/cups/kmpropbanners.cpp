@@ -62,8 +62,8 @@ void KMPropBanners::setPrinter(KMPrinter *p)
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);
 		while ( l.count() < 2 )
 			l.append( "none" );
-		m_startbanner->setText(i18n(mapBanner(l[0]).utf8()));
-		m_stopbanner->setText(i18n(mapBanner(l[1]).utf8()));
+		m_startbanner->setText(i18n(mapBanner(l[0]).toUtf8()));
+		m_stopbanner->setText(i18n(mapBanner(l[1]).toUtf8()));
 		emit enable(true);
 		emit enableChange(p->isLocal());
 	}

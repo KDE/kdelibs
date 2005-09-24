@@ -124,8 +124,8 @@ void KMWBanners::initPrinter(KMPrinter *p)
 				m_bans.prepend("none");
 			for ( QStringList::Iterator it=m_bans.begin(); it!=m_bans.end(); ++it )
 			{
-				m_start->insertItem( i18n( mapBanner(*it).utf8() ) );
-				m_end->insertItem( i18n( mapBanner(*it).utf8() ) );
+				m_start->insertItem( i18n( mapBanner(*it).toUtf8() ) );
+				m_end->insertItem( i18n( mapBanner(*it).toUtf8() ) );
 			}
 		}
 		QStringList	l = QStringList::split(',',p->option("kde-banners"),false);

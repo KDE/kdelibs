@@ -211,7 +211,7 @@ QString localRootIP()
 	if (!infos.error() && infos.count() > 0)
 	{
 		QString	IPstr = infos.first().address().nodeName();
-		int	p = IPstr.findRev('.');
+		int	p = IPstr.lastIndexOf('.');
 		IPstr.truncate(p);
 		return IPstr;
 	}

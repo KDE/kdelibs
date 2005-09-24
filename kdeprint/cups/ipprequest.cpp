@@ -167,7 +167,7 @@ void IppRequest::init()
 void IppRequest::addString_p(int group, int type, const QString& name, const QString& value)
 {
 	if (!name.isEmpty())
-		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),NULL,(value.isEmpty() ? "" : value.local8Bit().data()));
+		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),NULL,(value.isEmpty() ? "" : value.toLocal8Bit().data()));
 }
 
 void IppRequest::addStringList_p(int group, int type, const QString& name, const QStringList& values)
@@ -177,7 +177,7 @@ void IppRequest::addStringList_p(int group, int type, const QString& name, const
 		ipp_attribute_t	*attr = ippAddStrings(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),(int)(values.count()),NULL,NULL);
 		int	i(0);
 		for (QStringList::ConstIterator it=values.begin(); it != values.end(); ++it, i++)
-			attr->values[i].string.text = strdup((*it).local8Bit());
+			attr->values[i].string.text = strdup((*it).toLocal8Bit());
 	}
 }
 
@@ -504,7 +504,7 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 			 || lovalue == "true" || lovalue == "false")
 			addName(IPP_TAG_JOB, it.key(), value);
 		else
-			n = cupsAddOption(it.key().local8Bit(), value.local8Bit(), n, &options);
+			n = cupsAddOption(it.key().toLocal8Bit(), value.toLocal8Bit(), n, &options);
 	}
 	if (n > 0)
 		cupsEncodeOptions(request_, n, options);

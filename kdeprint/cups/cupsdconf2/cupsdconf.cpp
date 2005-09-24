@@ -148,7 +148,7 @@ bool CupsdConf::loadFromFile(const QString& filename)
 		bool	done(false), value(true);
 		while (!done && value)
 		{
-			line = t.readLine().simplifyWhiteSpace();
+			line = t.readLine().simplified();
 			if (line.isEmpty())
 			{
 				if (t.atEnd()) done = true;
@@ -462,7 +462,7 @@ bool CupsdConf::parseLocation(CupsLocation *location, QTextStream& file)
 	bool	value(true);
 	while (!done && value)
 	{
-		line = file.readLine().simplifyWhiteSpace();
+		line = file.readLine().simplified();
 		if (line.isEmpty())
 		{
 			if (file.atEnd())
@@ -482,7 +482,7 @@ bool CupsdConf::parseLocation(CupsLocation *location, QTextStream& file)
 bool CupsdConf::parseOption(const QString& line)
 {
 	int p(-1);
-	QString keyword, value, l(line.simplifyWhiteSpace());
+	QString keyword, value, l(line.simplified());
 
 	if ((p=l.find(' ')) != -1)
 	{
@@ -611,7 +611,7 @@ bool CupsdConf::loadAvailableResources()
 	conf.setGroup("CUPS");
 	QString	host = conf.readEntry("Host",cupsServer());
 	int 	port = conf.readNumEntry("Port",ippPort());
-	http_t	*http_ = httpConnect(host.local8Bit(),port);
+	http_t	*http_ = httpConnect(host.toLocal8Bit(),port);
 
 	resources_.clear();
 	// standard resources
@@ -717,7 +717,7 @@ CupsLocation::CupsLocation(const CupsLocation& loc)
 
 bool CupsLocation::parseResource(const QString& line)
 {
-	QString	str = line.simplifyWhiteSpace();
+	QString	str = line.simplified();
 	int	p1 = line.find(' '), p2 = line.find('>');
 	if (p1 != -1 && p2 != -1)
 	{
@@ -730,7 +730,7 @@ bool CupsLocation::parseResource(const QString& line)
 bool CupsLocation::parseOption(const QString& line)
 {
 	int p(-1);
-	QString keyword, value, l(line.simplifyWhiteSpace());
+	QString keyword, value, l(line.simplified());
 
 	if ((p=l.find(' ')) != -1)
 	{

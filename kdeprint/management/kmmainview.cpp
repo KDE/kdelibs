@@ -824,7 +824,7 @@ void KMMainView::slotToolSelected(int ID)
 	libname.prepend("kdeprint_tool_");
 	if (m_current && !m_current->device().isEmpty() && !libname.isEmpty())
 	{
-		KLibFactory	*factory = KLibLoader::self()->factory(libname.local8Bit());
+		KLibFactory	*factory = KLibLoader::self()->factory(libname.toLocal8Bit());
 		if (factory)
 		{
 			QStringList	args;

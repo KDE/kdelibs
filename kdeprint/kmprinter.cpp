@@ -165,7 +165,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 				fName = ( printer->docName() + "." + ext );
 			else
 			{
-				int p = fName.findRev( '.' );
+				int p = fName.lastIndexOf( '.' );
 				if ( p == -1 )
 					fName.append( "." ).append( ext );
 				else

@@ -60,7 +60,7 @@ bool Foomatic2Loader::readFromFile( const QString& filename )
 
 bool Foomatic2Loader::readFromBuffer( const QString& buffer )
 {
-	QByteArray buf = buffer.utf8();
+	QByteArray buf = buffer.toUtf8();
 	QBuffer d( &buf );
 	m_foodata.clear();
 	if ( d.open( QIODevice::ReadOnly ) )

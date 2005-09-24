@@ -170,7 +170,7 @@ QString getPrintcapFileName()
 					printcap = locateLocal("tmp","printcap");
 					QString	cmd = QString::fromLatin1("echo \"all\" | %1 > %2").arg(pcentry.mid(1)).arg(printcap);
 					kdDebug() << "printcap obtained through pipe" << endl << "executing: " << cmd << endl;
-					::system(cmd.local8Bit());
+					::system(cmd.toLocal8Bit());
 				}
 				break;
 			}

@@ -73,7 +73,7 @@ static QString processLocaleString( const QString& s )
 
 static Q3ValueList<float> splitNumberString( const QString& _s )
 {
-        QString s = _s.simplifyWhiteSpace();
+        QString s = _s.simplified();
 	Q3ValueList<float> l;
 	int p1 = 1, p2 = 0;
 	while ( true )

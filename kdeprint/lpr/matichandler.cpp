@@ -126,7 +126,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 QString MaticHandler::parsePostpipe(const QString& s)
 {
 	QString	url;
-	int	p = s.findRev('|');
+	int	p = s.lastIndexOf('|');
 	QStringList	args = QStringList::split(" ", s.right(s.length()-p-1));
 
 	if (args.count() != 0)

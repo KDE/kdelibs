@@ -288,7 +288,7 @@ void CupsAddSmb::doNextAction()
 			m_state = AddPrinter;
 			//m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			m_textinfo->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
-			QByteArray	dest = m_actions[m_actionindex].local8Bit();
+			QByteArray	dest = m_actions[m_actionindex].toLocal8Bit();
 			if (s == "addprinter")
 				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
 			else
@@ -409,7 +409,7 @@ bool CupsAddSmb::doExport()
 
 	const char	*ppdfile;
 
-	if ((ppdfile = cupsGetPPD(m_dest.local8Bit())) == NULL)
+	if ((ppdfile = cupsGetPPD(m_dest.toLocal8Bit())) == NULL)
 	{
 		showError(i18n("The driver for printer <b>%1</b> could not be found.").arg(m_dest));
 		return false;

@@ -46,7 +46,7 @@ static void setOptionText(DrBase *opt, const QString& s)
 	if (s.isEmpty())
 		opt->set("text", opt->name());
 	else
-		opt->set("text", i18n(s.utf8()));
+		opt->set("text", i18n(s.toUtf8()));
 }
 
 class KXmlCommand::KXmlCommandPrivate

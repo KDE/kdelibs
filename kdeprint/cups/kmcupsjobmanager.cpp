@@ -210,7 +210,7 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 		else if (name == "job-printer-uri" && !pr->isRemote())
 		{
 			QString	str(attr->values[0].string.text);
-			int	p = str.findRev('/');
+			int	p = str.lastIndexOf('/');
 			if (p != -1)
 				job->setPrinter(str.mid(p+1));
 		}
