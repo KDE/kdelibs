@@ -738,7 +738,7 @@ QString KLocale::translate( const char *singular, const char *plural,
 	}
   }
 
-  QStringList forms = QStringList::split( "\n", r, false );
+  QStringList forms = r.split( "\n", QString::SkipEmptyParts);
   switch ( pluralType ) {
   case 0: // NoPlural
     EXPECT_LENGTH( 1 );

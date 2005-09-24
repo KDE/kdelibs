@@ -376,7 +376,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 
   QString timeString = input.mid(tPos + 1).trimmed();
 
-  QStringList l = QStringList::split('-', dateString);
+  QStringList l = dateString.split( '-');
 
   year   = l[0].toUInt();
   month  = l[1].toUInt();
@@ -418,7 +418,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 
   // Now parse the time part.
 
-  l = QStringList::split(':', timeString);
+  l = timeString.split( ':');
 
   hour   = l[0].toUInt();
   min    = l[1].toUInt();

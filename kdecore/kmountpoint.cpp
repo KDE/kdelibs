@@ -147,7 +147,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
       if (infoNeeded & NeedMountOptions || (mp->m_mountType == "supermount"))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
-         mp->m_mountOptions = QStringList::split(',', options);
+         mp->m_mountOptions = options.split( ',' );
       }
 
       if(mp->m_mountType == "supermount")
@@ -177,7 +177,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
           continue;
 
       // not empty or commented out by '#'
-      QStringList item = QStringList::split(' ', s);
+      QStringList item = s.split( ' ');
         
 #ifdef _OS_SOLARIS_
       if (item.count() < 5)
@@ -201,7 +201,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
 
       if (infoNeeded & NeedMountOptions)
       {
-         mp->m_mountOptions = QStringList::split(',', options);
+         mp->m_mountOptions = options.split( ',');
       }
 
       if (infoNeeded & NeedRealDeviceName)
@@ -244,7 +244,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
       {
          struct fstab *ft = getfsfile(mounted[i].f_mntonname);
          QString options = QFile::decodeName(ft->fs_mntops);
-         mp->m_mountOptions = QStringList::split(',', options);
+         mp->m_mountOptions = options.split( ',' );
       }
 
       if (infoNeeded & NeedRealDeviceName)
@@ -348,7 +348,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
       if (infoNeeded & NeedMountOptions || (mp->m_mountType == "supermount"))
       {
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
-         mp->m_mountOptions = QStringList::split(',', options);
+         mp->m_mountOptions = options.split( ',' );
       }
 
       if (mp->m_mountType == "supermount")

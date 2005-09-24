@@ -958,7 +958,7 @@ KCmdLineArgs::usage(const char *id)
          if (option->description)
          {
             description = i18n(option->description);
-            dl = QStringList::split("\n", description, true);
+            dl = description.split( "\n", QString::KeepEmptyParts);
             description = dl.first();
             dl.remove( dl.begin() );
          }

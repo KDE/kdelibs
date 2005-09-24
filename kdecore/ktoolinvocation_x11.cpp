@@ -171,7 +171,7 @@ void KToolInvocation::invokeMailer(const KURL &mailtoURL, const QByteArray& star
 {
    THREADGUARD_VOID;
    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
-   QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+   QStringList queries = mailtoURL.query().mid(1).split( '&');
    QStringList attachURLs;
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
    {

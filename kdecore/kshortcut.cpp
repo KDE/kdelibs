@@ -117,7 +117,7 @@ bool KKey::init( const QString& sSpec )
 	// i.e., "Ctrl++" = "Ctrl+Plus"
 	if( sKey.endsWith( "++" ) )
 		sKey = sKey.left( sKey.length() - 1 ) + "plus";
-	QStringList rgs = QStringList::split( '+', sKey, true );
+	QStringList rgs = sKey.split( '+', QString::KeepEmptyParts);
 
 	int i;
 	// Check for modifier keys first.
@@ -398,7 +398,7 @@ bool KShortcut::init( const QString& s )
 	m_seq = QKeySequence(s);
 /*
 	bool bRet = true;
-	QStringList rgs = QStringList::split( ';', s );
+	QStringList rgs = s.split( ';');
 
 	if( s == "none" || rgs.size() == 0 )
 		clear();

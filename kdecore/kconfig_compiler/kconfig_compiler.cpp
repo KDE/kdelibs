@@ -307,7 +307,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
          cpp << endl;
 
       cpp << "  QStringList default" << name << ";" << endl;
-      QStringList defaults = QStringList::split( ",", defaultValue );
+      QStringList defaults = defaultValue.split( "," );
       QStringList::ConstIterator it;
       for( it = defaults.begin(); it != defaults.end(); ++it ) {
         cpp << "  default" << name << ".append( QString::fromUtf8( \"" << *it << "\" ) );"
@@ -343,7 +343,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
          cpp << endl;
 
       cpp << "  QList<int> default" << name << ";" << endl;
-      QStringList defaults = QStringList::split( ",", defaultValue );
+	  QStringList defaults = defaultValue.split( "," );
       QStringList::ConstIterator it;
       for( it = defaults.begin(); it != defaults.end(); ++it ) {
         cpp << "  default" << name << ".append( " << *it << " );"

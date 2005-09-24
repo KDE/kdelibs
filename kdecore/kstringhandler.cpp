@@ -50,7 +50,7 @@ QString KStringHandler::word( const QString &text , const char *range )
     //
     // 0:        first word to end
     // 1:3        second to fourth words
-    QStringList list = QStringList::split( " ", text , true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
     QString tmp = "";
     QString r = range;
 
@@ -87,7 +87,7 @@ QString KStringHandler::insword( const QString &text , const QString &word , int
         return text;
 
     // Split words and add into list
-    QStringList list = QStringList::split( " ", text, true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
 
     if ( pos >= list.count() )
         list.append( word );
@@ -107,7 +107,7 @@ QString KStringHandler::setword( const QString &text , const QString &word , int
         return text;
 
     // Split words and add into list
-    QStringList list = QStringList::split( " ", text, true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
 
     if ( pos >= list.count() )
         list.append( word );
@@ -127,7 +127,7 @@ QString KStringHandler::remrange( const QString &text , const char *range )
     //
     // 0:        first word to end
     // 1:3        second to fourth words
-    QStringList list = QStringList::split( " ", text , true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
     QString tmp = "";
     QString r = range;
 
@@ -156,7 +156,7 @@ QString KStringHandler::remword( const QString &text , int pos )
         return tmp;
 
     // Split words and add into list
-    QStringList list = QStringList::split( " ", text, true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
 
     if ( pos < list.count() )
         list.remove( list.at( pos ) );
@@ -176,7 +176,7 @@ QString KStringHandler::remword( const QString &text , const QString &word )
         return text;
 
     // Split words and add into list
-    QStringList list = QStringList::split( " ", text, true );
+    QStringList list = text.split( " ", QString::KeepEmptyParts);
 
     QStringList::Iterator it = list.find(word);
 
@@ -197,8 +197,9 @@ QString KStringHandler::capwords( const QString &text )
     }
 
     const QString strippedText = text.trimmed();
-    const QStringList words = capwords( QStringList::split( ' ', strippedText ) );
-
+    const QStringList words = capwords( strippedText.split(' '));
+		
+					
     QString result = text;
     result.replace( strippedText, words.join( " " ) );
     return result;
@@ -224,7 +225,7 @@ QString KStringHandler::reverse( const QString &text )
         return tmp;
 
     QStringList list;
-    list = QStringList::split( " ", text, true );
+    list = text.split( " ", QString::KeepEmptyParts);
     list = reverse( list );
 
     return list.join( " " );

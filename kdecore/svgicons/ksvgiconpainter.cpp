@@ -335,7 +335,7 @@ public:
 			if(m_dashes.length() > 0)
 			{
 				QRegExp reg("[, ]");
-				QStringList dashList = QStringList::split(reg, m_dashes);
+				QStringList dashList = m_dashes.split( reg);
 
 				double *dashes = new double[dashList.count()];
 				for(int i = 0; i < dashList.count(); i++)
@@ -2330,7 +2330,7 @@ QColor KSVGIconPainter::parseColor(const QString &param)
 	else if(param.trimmed().startsWith("rgb("))
 	{
 		QString parse = param.trimmed();
-		QStringList colors = QStringList::split(',', parse);
+		QStringList colors = parse.split( ',' );
 		QString r = colors[0].right((colors[0].length() - 4));
 		QString g = colors[1];
 		QString b = colors[2].left((colors[2].length() - 1));
@@ -2760,12 +2760,12 @@ QMatrix KSVGIconPainter::parseTransform(const QString &transform)
 	QMatrix result;
 
 	// Split string for handling 1 transform statement at a time
-	QStringList subtransforms = QStringList::split(')', transform);
+	QStringList subtransforms = transform.split( ')');
 	QStringList::ConstIterator it = subtransforms.begin();
 	QStringList::ConstIterator end = subtransforms.end();
 	for(; it != end; ++it)
 	{
-		QStringList subtransform = QStringList::split('(', (*it));
+		QStringList subtransform = (*it).split( '(');
 
 		subtransform[0] = subtransform[0].trimmed().toLower();
 		subtransform[1] = subtransform[1].simplified();

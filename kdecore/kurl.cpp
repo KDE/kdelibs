@@ -536,7 +536,7 @@ KURL::List KURL::List::fromMimeData( const QMimeData *mimeData, KURL::MetaDataMa
         if ( !metaDataPayload.isEmpty() )
         {
             const QString str = QString::fromUtf8( metaDataPayload );
-            const QStringList lst = QStringList::split( "$@@$", str );
+            const QStringList lst = str.split( "$@@$");
             QStringList::ConstIterator it = lst.begin();
             bool readingKey = true; // true, then false, then true, etc.
             QString key;
