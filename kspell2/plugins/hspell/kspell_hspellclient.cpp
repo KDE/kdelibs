@@ -32,7 +32,7 @@ K_EXPORT_COMPONENT_FACTORY( kspell_hspell, HSpellClientFactory( "kspell_hspell" 
 using namespace KSpell2;
 
 HSpellClient::HSpellClient( QObject *parent, const char *name, const QStringList& /* args */  )
-    : Client( parent, name )
+    : Client( parent )
 {
 }
 
