@@ -943,7 +943,7 @@ void KCryptoConfig::load()
   for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>" || *i == "General") continue;
     policies->setGroup(*i);
-    KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
+    KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).toLocal8Bit());
     if (cert) {
       new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
                         policies->readBoolEntry("Permanent", true),
@@ -1375,7 +1375,7 @@ void KCryptoConfig::slotExportCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
    if (x) {
      policies->setGroup(x->getMD5());
-     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
+     KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).toLocal8Bit());
      if (cert) {
         KCertExport kce;
         kce.setCertificate(cert);
@@ -1408,7 +1408,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
   if (!x) return;
 
   policies->setGroup(x->getMD5());
-  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
+  KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).toLocal8Bit());
 
   if (!cert) {
     KMessageBox::error(this, i18n("Error obtaining the certificate."), i18n("SSL"));
@@ -1518,7 +1518,7 @@ QString iss = QString::null;
       cacheUntil->setEnabled(true);
       policies->setGroup(x->getMD5());
 
-      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
+      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).toLocal8Bit());
 
       if (cert) {
          QPalette cspl;
@@ -1890,7 +1890,7 @@ void KCryptoConfig::slotCAImport() {
 
 	if (certLookup &&
 	    KOSSL::self()->X509_LOOKUP_load_file(certLookup,
-		                                 certFile.local8Bit(),
+		                                 certFile.toLocal8Bit(),
 						 X509_FILETYPE_PEM)) {
 		for (int i = 0; i < sk_X509_OBJECT_num(certStore->objs); i++) {
 			X509_OBJECT* x5o = sk_X509_OBJECT_value(certStore->objs, i);
@@ -1924,7 +1924,7 @@ void KCryptoConfig::slotCAImport() {
                                                                    m;
         	                 m = static_cast<CAItem *>(m->nextSibling())) {
 			         if (m->configName() == name) {
-				    KSSLCertificate *y = KSSLCertificate::fromString(m->getCert().local8Bit());
+				    KSSLCertificate *y = KSSLCertificate::fromString(m->getCert().toLocal8Bit());
 				    if (!y) continue;
 				    if (*x == *y) {
 					QString emsg = name + ":\n" +
@@ -2012,7 +2012,7 @@ void KCryptoConfig::slotCAImport() {
                                                                    i;
                          i = static_cast<CAItem *>(i->nextSibling())) {
 		         if (i->configName() == name) {
-			    KSSLCertificate *y = KSSLCertificate::fromString(i->getCert().local8Bit());
+			    KSSLCertificate *y = KSSLCertificate::fromString(i->getCert().toLocal8Bit());
 			    if (!y) continue;
 			    if (*x == *y) {
 				 KMessageBox::error(this,
@@ -2116,7 +2116,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
  if (x) {
     caSSLRemove->setEnabled(true);
     caSubject->setValues(x ? x->getName() : QString(QString::null));
-    KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().local8Bit());
+    KSSLCertificate *cert = KSSLCertificate::fromString(x->getCert().toLocal8Bit());
     if (!cert) {
        caIssuer->setValues(QString(QString::null));
        caSite->setEnabled(false);

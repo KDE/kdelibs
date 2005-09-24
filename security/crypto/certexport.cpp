@@ -122,7 +122,7 @@ QString certt;
       }
 
       if (_text->isChecked())
-        outFile.writeBlock(certt.local8Bit(), certt.length());
+        outFile.writeBlock(certt.toLocal8Bit(), certt.length());
       else outFile.writeBlock(cert);
 
       outFile.close();
