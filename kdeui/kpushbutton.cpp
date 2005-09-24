@@ -125,8 +125,13 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
-    QToolTip::add( this, d->item.toolTip() );
     QWhatsThis::add( this, d->item.whatsThis() );
+
+    // Do not add a tooltip to the button automatically as 99% of the time the
+    // tooltip is redundant to the button text and it results in QTipManager
+    // invoking an eventHandler on the QApplication which breaks certain apps
+    // like KDesktop which are sensitive to such things
+//    QToolTip::add( this, d->item.toolTip() );
 }
 
 void KPushButton::setGuiItem( KStdGuiItem::StdItem item )
