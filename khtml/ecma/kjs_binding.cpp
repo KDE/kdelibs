@@ -53,7 +53,7 @@ Value DOMObject::get(ExecState *exec, const Identifier &p) const
     // ### translate code into readable string ?
     // ### oh, and s/QString/i18n or I18N_NOOP (the code in kjs uses I18N_NOOP... but where is it translated ?)
     //     and where does it appear to the user ?
-    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
     exec->setException( err );
     result = Undefined();
   }
@@ -72,7 +72,7 @@ void DOMObject::put(ExecState *exec, const Identifier &propertyName,
     tryPut(exec, propertyName, value, attr);
   }
   catch (DOM::DOMException e) {
-    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
     exec->setException(err);
   }
   catch (...) {
@@ -91,7 +91,7 @@ Value DOMFunction::get(ExecState *exec, const Identifier &propertyName) const
     return tryGet(exec, propertyName);
   }
   catch (DOM::DOMException e) {
-    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM exception %1").arg(e.code).toLocal8Bit());
     exec->setException(err);
     return Undefined();
   }
@@ -110,25 +110,25 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
   // ### Look into setting prototypes of these & the use of instanceof so the exception
   // type can be determined. See what other browsers do.
   catch (DOM::DOMException e) {
-    Object err = Error::create(exec, GeneralError, QString("DOM Exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM Exception %1").arg(e.code).toLocal8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
     return Undefined();
   }
   catch (DOM::RangeException e) {
-    Object err = Error::create(exec, GeneralError, QString("DOM Range Exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM Range Exception %1").arg(e.code).toLocal8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
     return Undefined();
   }
   catch (DOM::CSSException e) {
-    Object err = Error::create(exec, GeneralError, QString("CSS Exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("CSS Exception %1").arg(e.code).toLocal8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
     return Undefined();
   }
   catch (DOM::EventException e) {
-    Object err = Error::create(exec, GeneralError, QString("DOM Event Exception %1").arg(e.code).local8Bit());
+    Object err = Error::create(exec, GeneralError, QString("DOM Event Exception %1").arg(e.code).toLocal8Bit());
     err.put(exec, "code", Number(e.code));
     exec->setException(err);
     return Undefined();

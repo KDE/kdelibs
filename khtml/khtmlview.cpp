@@ -2339,11 +2339,11 @@ static QString getElementText( NodeImpl* start, bool after )
                         break;
                     // fall through
                 default:
-                    return ret.simplifyWhiteSpace();
+                    return ret.simplified();
             }
         }
     }
-    return ret.simplifyWhiteSpace();
+    return ret.simplified();
 }
 
 static QMap< NodeImpl*, QString > buildLabels( NodeImpl* start )
@@ -2356,7 +2356,7 @@ static QMap< NodeImpl*, QString > buildLabels( NodeImpl* start )
             HTMLLabelElementImpl* label = static_cast< HTMLLabelElementImpl* >( n );
             NodeImpl* labelfor = label->getFormElement();
             if( labelfor )
-                ret[ labelfor ] = label->innerText().string().simplifyWhiteSpace();
+                ret[ labelfor ] = label->innerText().string().simplified();
         }
     }
     return ret;
@@ -2396,7 +2396,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                     url = khtml::parseURL(element->getAttribute(ATTR_HREF)).string();
                     if( url.isEmpty()) // doesn't have href, it's only an anchor
                         continue;
-                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplifyWhiteSpace();
+                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplified();
                     priority = 2;
                     break;
                 case ID_INPUT: {
@@ -2443,7 +2443,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
                     break;
                 }
                 case ID_BUTTON:
-                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplifyWhiteSpace();
+                    text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplified();
                     switch( static_cast< HTMLButtonElementImpl* >( element )->buttonType()) {
                         case HTMLButtonElementImpl::SUBMIT:
                             if( text.isEmpty())

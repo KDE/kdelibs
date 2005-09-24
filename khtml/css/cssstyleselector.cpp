@@ -235,7 +235,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     u.setQuery( QString::null );
     u.setRef( QString::null );
     encodedurl.file = u.url();
-    int pos = encodedurl.file.findRev('/');
+    int pos = encodedurl.file.lastIndexOf('/');
     encodedurl.path = encodedurl.file;
     if ( pos > 0 ) {
 	encodedurl.path.truncate( pos );
@@ -782,9 +782,9 @@ static void cleanpath(QString &path)
     while ( (pos = path.find( "/../" )) != -1 ) {
         int prev = 0;
         if ( pos > 0 )
-            prev = path.findRev( "/", pos -1 );
+            prev = path.lastIndexOf( "/", pos -1 );
         // don't remove the host, i.e. http://foo.org/../foo.html
-        if (prev < 0 || (prev > 3 && path.findRev("://", prev-1) == prev-2))
+        if (prev < 0 || (prev > 3 && path.lastIndexOf("://", prev-1) == prev-2))
             path.remove( pos, 3);
         else
             // matching directory found ?

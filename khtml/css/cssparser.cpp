@@ -2412,7 +2412,7 @@ unsigned short *DOM::CSSParser::text(int *length)
                 escape++;
             }
 //             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).latin1(), uc );
-            // can't handle chars outside ucs2
+            // can't handle chars outside utf16
             if ( uc > 0xffff )
                 uc = 0xfffd;
             *(out++) = (unsigned short)uc;
@@ -2441,7 +2441,7 @@ unsigned short *DOM::CSSParser::text(int *length)
             escape++;
         }
         //             qDebug(" converting escape: string='%s', value=0x%x", QString( (QChar *)e, current-e ).latin1(), uc );
-        // can't handle chars outside ucs2
+        // can't handle chars outside utf16
         if ( uc > 0xffff )
             uc = 0xfffd;
         *(out++) = (unsigned short)uc;

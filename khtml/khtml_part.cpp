@@ -1302,7 +1302,7 @@ void KHTMLPart::slotDebugDOMTree()
   for (; it != end; ++it )
     if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
       KParts::ReadOnlyPart* const p = ( *it )->m_part;
-      kdDebug(6050) << QString().leftJustify(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->name() << " " << endl;
+      kdDebug(6050) << QString().leftJustified(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->name() << " " << endl;
       static_cast<KHTMLPart*>( p )->slotDebugDOMTree();
     }
   s_DOMTreeIndentLevel = indentLevel;
@@ -4133,7 +4133,7 @@ void KHTMLPart::slotSecurity()
 	  kid->setSecurityInQuestion(true);
 
   if (d->m_ssl_in_use) {
-    KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.local8Bit());
+    KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.toLocal8Bit());
     if (x) {
        // Set the chain back onto the certificate
        const QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
@@ -4143,7 +4143,7 @@ void KHTMLPart::slotSecurity()
        QStringList::ConstIterator it = cl.begin();
        const QStringList::ConstIterator itEnd = cl.end();
        for (; it != itEnd; ++it) {
-          KSSLCertificate* const y = KSSLCertificate::fromString((*it).local8Bit());
+          KSSLCertificate* const y = KSSLCertificate::fromString((*it).toLocal8Bit());
           if (y) ncl.append(y);
        }
 
@@ -5314,7 +5314,7 @@ static int s_saveStateIndentLevel = 0;
 void KHTMLPart::saveState( QDataStream &stream )
 {
 #ifndef NDEBUG
-  QString indent = QString().leftJustify( s_saveStateIndentLevel * 4, ' ' );
+  QString indent = QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
   kdDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
 #endif

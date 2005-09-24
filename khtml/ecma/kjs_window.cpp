@@ -981,7 +981,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
       return;
     case Name:
       if (isSafeScript(exec))
-        part->setName( value.toString(exec).qstring().local8Bit().data() );
+        part->setName( value.toString(exec).qstring().toLocal8Bit().data() );
       return;
     default:
       break;

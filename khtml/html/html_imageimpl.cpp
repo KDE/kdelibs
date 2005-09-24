@@ -213,7 +213,7 @@ DOMString HTMLImageElementImpl::altText() const
     if ( alt.isNull() ) {
         QString p = KURL( getDocument()->completeURL( getAttribute(ATTR_SRC).string() ) ).prettyURL();
         int pos;
-        if ( ( pos = p.findRev( '.' ) ) > 0 )
+        if ( ( pos = p.lastIndexOf( '.' ) ) > 0 )
             p.truncate( pos );
         alt = DOMString( KStringHandler::csqueeze( p ) );
     }

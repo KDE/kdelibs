@@ -1715,7 +1715,7 @@ void RegressionTest::createMissingDirs(const QString & filename)
     pathComponents.prepend(parentDir.absFilePath());
     while (!parentDir.exists()) {
 	QString parentPath = parentDir.absFilePath();
-	int slashPos = parentPath.findRev('/');
+	int slashPos = parentPath.lastIndexOf('/');
 	if (slashPos < 0)
 	    break;
 	parentPath = parentPath.left(slashPos);

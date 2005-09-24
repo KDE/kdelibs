@@ -281,7 +281,7 @@ khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
         if (cc > '9' || (cc < '0' && cc != '-' && cc != '*' && cc != '.'))
             str[i] = ' ';
     }
-    str = str.simplifyWhiteSpace();
+    str = str.simplified();
 
     len = str.count(' ') + 1;
     khtml::Length* r = new khtml::Length[len];
@@ -302,7 +302,7 @@ khtml::Length* DOMStringImpl::toCoordsArray(int& len) const
 khtml::Length* DOMStringImpl::toLengthArray(int& len) const
 {
     QString str(s, l);
-    str = str.simplifyWhiteSpace();
+    str = str.simplified();
 
     len = str.count(QLatin1Char(',')) + 1;
     khtml::Length* r = new khtml::Length[len];

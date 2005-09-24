@@ -309,7 +309,7 @@ void XMLHttpRequest::send(const QString& _body)
   aborted = false;
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
-      job = KIO::http_post( url, QByteArray(_body.utf8()), false );
+      job = KIO::http_post( url, QByteArray(_body.toUtf8()), false );
       if(contentType.isNull())
 	job->addMetaData( "content-type", "Content-type: text/plain" );
       else
