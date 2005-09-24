@@ -119,7 +119,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
     file = QDir::home().path() + "/" + path + "/";
     if ( entry ) file += entry->fullName();
   }
-  else file = locateLocal( res.utf8() , target );
+  else file = locateLocal( res.toUtf8() , target );
 
   return file;
 }
