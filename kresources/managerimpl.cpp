@@ -39,7 +39,7 @@
 using namespace KRES;
 
 ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
-  : DCOPObject( "ManagerIface_" + family.utf8() ),
+  : DCOPObject( "ManagerIface_" + family.toUtf8() ),
     mNotifier( notifier ),
     mFamily( family ), mConfig( 0 ), mStdConfig( 0 ), mStandard( 0 ),
     mFactory( 0 ), mConfigRead( false )
@@ -55,17 +55,17 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
   }
 
   kdDebug(5650) << "Connecting DCOP signals..." << endl;
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.utf8(),
+  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceAdded( QString, QString )",
                            "dcopKResourceAdded( QString, QString )", false ) )
     kdWarning(5650) << "Could not connect ResourceAdded signal!" << endl;
 
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.utf8(),
+  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceModified( QString, QString )",
                            "dcopKResourceModified( QString, QString )", false ) )
     kdWarning(5650) << "Could not connect ResourceModified signal!" << endl;
 
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.utf8(),
+  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
                            "signalKResourceDeleted( QString, QString )",
                            "dcopKResourceDeleted( QString, QString )", false ) )
     kdWarning(5650) << "Could not connect ResourceDeleted signal!" << endl;
