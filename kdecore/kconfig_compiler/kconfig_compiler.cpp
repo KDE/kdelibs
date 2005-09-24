@@ -276,7 +276,7 @@ static QString dumpNode(const QDomNode &node)
   QTextStream s(&msg, QIODevice::WriteOnly );
   node.save(s, 0);
 
-  msg = msg.simplifyWhiteSpace();
+  msg = msg.simplified();
   if (msg.length() > 40)
     return msg.left(37)+"...";
   return msg;
@@ -284,7 +284,7 @@ static QString dumpNode(const QDomNode &node)
 
 static QString filenameOnly(QString path)
 {
-   int i = path.findRev('/');
+   int i = path.lastIndexOf('/');
    if (i >= 0)
       return path.mid(i+1);
    return path;

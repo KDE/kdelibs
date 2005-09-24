@@ -1504,14 +1504,14 @@ QDate KLocale::readDate(const QString &intstr, bool* ok) const
 
 QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) const
 {
-  QString fmt = ((flags & ShortFormat) ? dateFormatShort() : dateFormat()).simplifyWhiteSpace();
+  QString fmt = ((flags & ShortFormat) ? dateFormatShort() : dateFormat()).simplified();
   return readDate( intstr, fmt, ok );
 }
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
   //kdDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
-  QString str = intstr.simplifyWhiteSpace().lower();
+  QString str = intstr.simplified().lower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
   int year = calendar()->year(QDate::currentDate());
@@ -1649,8 +1649,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 
   QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
   {
-    QString str = intstr.simplifyWhiteSpace().lower();
-    QString Format = timeFormat().simplifyWhiteSpace();
+    QString str = intstr.simplified().lower();
+    QString Format = timeFormat().simplified();
     if (flags & WithoutSeconds)
       Format.remove(QRegExp(".%S"));
 
@@ -1981,7 +1981,7 @@ void KLocale::initFileNameEncoding(KConfig *)
 
 QByteArray KLocale::encodeFileNameUTF8( const QString & fileName )
 {
-  return fileName.utf8();
+  return fileName.toUtf8();
 }
 
 QString KLocale::decodeFileNameUTF8( const QByteArray & localFileName )

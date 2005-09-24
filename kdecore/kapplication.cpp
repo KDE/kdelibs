@@ -1227,7 +1227,7 @@ void KApplication::dcopFailure(const QString &msg)
      }
      else
      {
-       fprintf(stderr, "%s\n", msgStr.local8Bit().data());
+       fprintf(stderr, "%s\n", msgStr.toLocal8Bit().data());
      }
 
      return;
@@ -1260,7 +1260,7 @@ void KApplication::parseCommandLine( )
 		   }
 
        if (d->overrideStyle.isEmpty())
-          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).local8Bit().data());
+          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).toLocal8Bit().data());
     }
 
     if (args->isSet("caption"))

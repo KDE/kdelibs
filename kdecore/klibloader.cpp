@@ -338,7 +338,7 @@ static inline QByteArray makeLibName( const char* name )
     // only append ".la" if there is no extension
     // this allows to load non-libtool libraries as well
     // (mhk, 20000228)
-    int pos = libname.findRev('/');
+    int pos = libname.lastIndexOf('/');
     if (pos < 0)
       pos = 0;
     if (libname.find('.', pos) < 0)

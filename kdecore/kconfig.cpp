@@ -138,7 +138,7 @@ QStringList KConfig::groupList() const
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
 {
-  QByteArray pGroup_utf = pGroup.utf8();
+  QByteArray pGroup_utf = pGroup.toUtf8();
   KEntryKey groupKey( pGroup_utf, 0 );
   QMap<QString, QString> tmpMap;
 
@@ -175,7 +175,7 @@ void KConfig::reparseConfiguration()
 
 KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
-  QByteArray pGroup_utf = pGroup.utf8();
+  QByteArray pGroup_utf = pGroup.toUtf8();
   KEntry aEntry;
   KEntryMapConstIterator aIt;
   KEntryKey aKey(pGroup_utf, 0);

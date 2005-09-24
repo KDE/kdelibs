@@ -147,7 +147,7 @@ void KCompletion::addWeightedItem( const QString& item )
     uint weight = 0;
 
     // find out the weighting of this item (appended to the string as ":num")
-    int index = item.findRev(':');
+    int index = item.lastIndexOf(':');
     if ( index > 0 ) {
         bool ok;
         weight = item.mid( index + 1 ).toUInt( &ok );

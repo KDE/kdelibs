@@ -172,7 +172,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
 
    while (! t.atEnd()) 
    {
-      s=t.readLine().simplifyWhiteSpace();
+      s=t.readLine().simplified();
       if ( s.isEmpty() || (s[0] == '#'))
           continue;
 

@@ -908,7 +908,7 @@ char *gai_strerror(int errorcode)
     return NULL;
 
   static char buffer[200];
-  strcpy(buffer, i18n(messages[errorcode]).local8Bit());
+  strcpy(buffer, i18n(messages[errorcode]).toLocal8Bit());
   return buffer;
 }
 

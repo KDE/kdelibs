@@ -399,7 +399,7 @@ kdbgstream::kdbgstream(const kdbgstream &str)
 void kdbgstream::flush() {
     if (d->output.isEmpty() || !d->print)
 	return;
-    kDebugBackend( d->level, d->area, d->output.local8Bit().data() );
+    kDebugBackend( d->level, d->area, d->output.toLocal8Bit().data() );
     d->output = QString::null;
 }
 
@@ -631,7 +631,7 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
         d->output += QLatin1Char('[');
         int sz = QMIN( data.size(), 64 );
         for ( int i = 0; i < sz ; ++i ) {
-            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustify(2, QLatin1Char('0'));
+            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustified(2, QLatin1Char('0'));
             if ( i < sz )
                 d->output += QLatin1Char(' ');
         }

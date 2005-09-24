@@ -454,7 +454,7 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
     const KURL::List::ConstIterator uEnd = end();
     for ( ; uit != uEnd ; ++uit )
     {
-        // Get each URL encoded in utf8 - and since we get it in escaped
+        // Get each URL encoded in toUtf8 - and since we get it in escaped
         // form on top of that, .latin1() is fine.
         urlStringList.append( (*uit).toMimeDataString().latin1() );
     }
@@ -473,7 +473,7 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
         for ( uit = begin(); uit != uEnd ; ++uit )
             prettyURLsList.append( (*uit).prettyURL() );
 
-        QByteArray plainTextData = prettyURLsList.join( "\n" ).local8Bit();
+        QByteArray plainTextData = prettyURLsList.join( "\n" ).toLocal8Bit();
         if( count() > 1 ) // terminate last line, unless it's the only line
             plainTextData.append( "\n" );
         mimeData->setData( "text/plain", plainTextData );
@@ -1744,7 +1744,7 @@ QString KURL::toMimeDataString() const // don't fold this into addToMimeData, it
       return path();
   }
 
-  return url(0, 106); // 106 is mib enum for utf8 codec
+  return url(0, 106); // 106 is mib enum for toUtf8 codec
 }
 
 KURL KURL::fromMimeDataByteArray( const QByteArray& str )
@@ -1752,7 +1752,7 @@ KURL KURL::fromMimeDataByteArray( const QByteArray& str )
   if ( strncmp( str.data(), "file:", 5 ) == 0 )
     return KURL( str, QTextCodec::codecForLocale()->mibEnum() );
 
-  return KURL( str, 106 ); // 106 is mib enum for utf8 codec;
+  return KURL( str, 106 ); // 106 is mib enum for toUtf8 codec;
 }
 
 KURL::List KURL::split( const KURL& _url )

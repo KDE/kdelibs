@@ -364,7 +364,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
        // Boot strap language
        bootLanguage = KLocale::_initLanguage(pConfig);
-       setLocaleString(bootLanguage.utf8());
+       setLocaleString(bootLanguage.toUtf8());
     }
 
     bFileImmutable = false;
@@ -398,7 +398,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
        if (bootLanguage != currentLanguage)
        {
           bReadFile = true;
-          setLocaleString(currentLanguage.utf8());
+          setLocaleString(currentLanguage.toUtf8());
        }
     }
   }
@@ -1103,7 +1103,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
     if (!cmdToExec.isEmpty() && app)
     {
       KProcess lprocess;
-      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg.local8Bit();
+      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg.toLocal8Bit();
       lprocess.start( KProcess::Block );
     }
   }

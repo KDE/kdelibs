@@ -165,7 +165,7 @@ bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir,
    else
    {
        QByteArray nameOnly;
-       int slash = cFilename.findRev('/');
+       int slash = cFilename.lastIndexOf('/');
        if (slash < 0)
 	   nameOnly = cFilename;
        else

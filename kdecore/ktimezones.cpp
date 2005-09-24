@@ -237,12 +237,12 @@ QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &dateTime
     char *originalZone = ::getenv("TZ");
 
     // Convert the given localtime to UTC.
-    ::putenv(strdup(QString("TZ=:").append(m_name).utf8()));
+    ::putenv(strdup(QString("TZ=:").append(m_name).toUtf8()));
     tzset();
     unsigned utc = dateTime.toTime_t();
 
     // Set the timezone and convert UTC to localtime.
-    ::putenv(strdup(QString("TZ=:").append(newZone->name()).utf8()));
+    ::putenv(strdup(QString("TZ=:").append(newZone->name()).toUtf8()));
     tzset();
     QDateTime remoteTime;
     remoteTime.setTime_t(utc, Qt::LocalTime);
@@ -254,7 +254,7 @@ QDateTime KTimezone::convert(const KTimezone *newZone, const QDateTime &dateTime
     }
     else
     {
-        ::putenv(strdup(QString("TZ=").append(originalZone).utf8()));
+        ::putenv(strdup(QString("TZ=").append(originalZone).toUtf8()));
     }
     tzset();
     return remoteTime;
@@ -288,7 +288,7 @@ int KTimezone::offset(Qt::TimeSpec basisSpec) const
     QDateTime basisTime = QDateTime::currentDateTime(basisSpec);
 
     // Set the timezone and find out what time it is there compared to the basis.
-    ::putenv(strdup(QString("TZ=:").append(m_name).utf8()));
+    ::putenv(strdup(QString("TZ=:").append(m_name).toUtf8()));
     tzset();
     QDateTime remoteTime = QDateTime::currentDateTime(Qt::LocalTime);
     int offset = remoteTime.secsTo(basisTime);
@@ -300,7 +300,7 @@ int KTimezone::offset(Qt::TimeSpec basisSpec) const
     }
     else
     {
-        ::putenv(strdup(QString("TZ=").append(originalZone).utf8()));
+        ::putenv(strdup(QString("TZ=").append(originalZone).toUtf8()));
     }
     tzset();
     return offset;

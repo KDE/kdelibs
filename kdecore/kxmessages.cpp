@@ -153,7 +153,7 @@ void KXMessages::send_message_internal( WId w_P, const QString& msg_P, long mask
     Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P )
     {
     unsigned int pos = 0;
-    QByteArray msg = msg_P.utf8();
+    QByteArray msg = msg_P.toUtf8();
     unsigned int len = strlen( msg );
     XEvent e;
     e.xclient.type = ClientMessage;

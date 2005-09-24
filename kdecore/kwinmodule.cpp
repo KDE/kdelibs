@@ -417,7 +417,7 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
 {
     if (desktop <= 0 || desktop > (int) d->numberOfDesktops() )
 	desktop = currentDesktop();
-    d->setDesktopName( desktop, name.utf8().data() );
+    d->setDesktopName( desktop, name.toUtf8().data() );
 }
 
 

@@ -108,7 +108,7 @@ void printResult(const QString &s)
     if (s.isEmpty())
         printf("\n");
     else
-        printf("%s\n", s.local8Bit().data());
+        printf("%s\n", s.toLocal8Bit().data());
 }
 
 int main(int argc, char **argv)
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     {
         QString tmp(KDELIBSUFF);
         tmp.remove('"');
-        printResult(expandvars(tmp.local8Bit()));
+        printResult(expandvars(tmp.toLocal8Bit()));
         return 0;
     }
 
@@ -198,9 +198,9 @@ int main(int argc, char **argv)
                 index += 2;
             }
             if (helptexts[index]) {
-                printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).local8Bit().data());
+                printf("%s - %s\n", helptexts[index], i18n(helptexts[index+1]).toLocal8Bit().data());
             } else {
-                printf("%s", i18n("%1 - unknown type\n").arg(*it).local8Bit().data());
+                printf("%s", i18n("%1 - unknown type\n").arg(*it).toLocal8Bit().data());
             }
         }
         return 0;
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
         else if ( type == "document" )
             printResult(KGlobalSettings::documentPath());
         else
-            fprintf(stderr, "%s", i18n("%1 - unknown type of userpath\n").arg(type).local8Bit().data() );
+            fprintf(stderr, "%s", i18n("%1 - unknown type of userpath\n").arg(type).toLocal8Bit().data() );
         return 0;
     }
 

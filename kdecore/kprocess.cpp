@@ -980,7 +980,7 @@ int KProcess::commSetupDoneC()
   if (d->usePty) {
     d->pty->setCTty();
     if (d->addUtmp)
-      d->pty->login(KUser(KUser::UseRealUserID).loginName().local8Bit().data(), getenv("DISPLAY"));
+      d->pty->login(KUser(KUser::UseRealUserID).loginName().toLocal8Bit().data(), getenv("DISPLAY"));
   }
 #endif //Q_OS_UNIX
 

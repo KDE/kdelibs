@@ -389,7 +389,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 
   // +zone or -zone suffix (offset from UTC).
 
-  int plusPos = timeString.findRev('+');
+  int plusPos = timeString.lastIndexOf('+');
 
   if (-1 != plusPos) {
     QString offsetString = timeString.mid(plusPos + 1);
@@ -398,7 +398,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
 
     timeString = timeString.left(plusPos);
   } else {
-    int minusPos = timeString.findRev('-');
+    int minusPos = timeString.lastIndexOf('-');
 
     if (-1 != minusPos) {
       QString offsetString = timeString.mid(minusPos + 1);
@@ -410,7 +410,7 @@ KRFCDate::parseDateISO8601( const QString& input_ )
   }
 
   // secfrac suffix.
-  int dotPos = timeString.findRev('.');
+  int dotPos = timeString.lastIndexOf('.');
 
   if (-1 != dotPos) {
     timeString = timeString.left(dotPos);

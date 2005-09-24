@@ -570,7 +570,7 @@ bool KStandardWorker::sanityCheck()
 	    }
 
 	  // qDebug("Using encoded hostname '%s' for '%s' (UTF-8)", m_encodedName.data(),
-	  //	 node.utf8().data());
+	  //	 node.toUtf8().data());
 	}
     }
   else
@@ -684,7 +684,7 @@ KResolver::ErrorCodes KStandardWorker::addUnix()
     // put it in /tmp
     pathname.prepend("/tmp/");
 
-  //  qDebug("QNoResolveWorker::addUnix(): adding Unix socket for %s", pathname.local8Bit().data());
+  //  qDebug("QNoResolveWorker::addUnix(): adding Unix socket for %s", pathname.toLocal8Bit().data());
   KUnixSocketAddress sa(pathname);
   int socktype = socketType();
   if (socktype == 0)

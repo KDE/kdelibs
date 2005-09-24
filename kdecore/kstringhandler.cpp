@@ -259,7 +259,7 @@ QString KStringHandler::center( const QString &text , int width )
     result.fill( ' ', ( width - length ) / 2 );
     result += s;
 
-    return result.leftJustify( width );
+    return result.leftJustified( width );
 }
 
 QString KStringHandler::lsqueeze( const QString & str, int maxlen )

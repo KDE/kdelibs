@@ -587,7 +587,7 @@ KCmdLineArgs::findOption(const char *_opt, QByteArray opt, int &i, bool _enabled
 void
 KCmdLineArgs::printQ(const QString &msg)
 {
-   QByteArray localMsg = msg.local8Bit();
+   QByteArray localMsg = msg.toLocal8Bit();
    fprintf(stdout, "%s", localMsg.data());
 }
 
@@ -810,13 +810,13 @@ void
 KCmdLineArgs::usage(const QString &error)
 {
     assert(KGlobal::_locale);
-    QByteArray localError = error.local8Bit();
+    QByteArray localError = error.toLocal8Bit();
     if (localError[error.length()-1] == '\n')
   localError = localError.left(error.length()-1);
     fprintf(stderr, "%s: %s\n", argv[0], localError.data());
 
     QString tmp = i18n("Use --help to get a list of available command line options.");
-    localError = tmp.local8Bit();
+    localError = tmp.toLocal8Bit();
     fprintf(stderr, "%s: %s\n", argv[0], localError.data());
     exit(254);
 }

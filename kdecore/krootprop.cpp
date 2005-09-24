@@ -67,7 +67,7 @@ void KRootProp::sync()
 
   XChangeProperty( QX11Info::display(), QX11Info::appRootWindow(), atom,
                   XA_STRING, 8, PropModeReplace,
-                  (const unsigned char *)propString.utf8().data(),
+                  (const unsigned char *)propString.toUtf8().data(),
                   propString.length());
   XFlush( QX11Info::display() );
 }
@@ -91,7 +91,7 @@ void KRootProp::setProp( const QString& rProp )
   if( rProp.isEmpty() )
     return;
 
-  atom = XInternAtom( QX11Info::display(), rProp.utf8(), False);
+  atom = XInternAtom( QX11Info::display(), rProp.toUtf8(), False);
 
   QString s;
   offset = 0; bytes_after = 1;
@@ -129,7 +129,7 @@ void KRootProp::setProp( const QString& rProp )
 
     // split key and value and add to dictionary
 
-    keypair.simplifyWhiteSpace();
+    keypair.simplified();
 
     i = keypair.indexOf( "=" );
     if( i != -1 )

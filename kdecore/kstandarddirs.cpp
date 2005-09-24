@@ -899,7 +899,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
             else
             {
                 QString user = p.mid( 1, len - 1 );
-                struct passwd *dir = getpwnam( user.local8Bit().data() );
+                struct passwd *dir = getpwnam( user.toLocal8Bit().data() );
                 if ( dir && strlen( dir->pw_dir ) )
                     p.replace( 0, len, QString::fromLocal8Bit( dir->pw_dir ) );
             }
@@ -1487,7 +1487,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     for( QStringList::ConstIterator it = groups.begin();
          it != groups.end(); ++it )
     {
-        QByteArray grp = (*it).utf8();
+        QByteArray grp = (*it).toUtf8();
         // Check if user is in this group
         struct group *grp_ent = getgrnam(grp);
         if (!grp_ent) continue;
