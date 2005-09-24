@@ -83,7 +83,7 @@ def generate(env):
 	import SCons.Defaults
 	Builder=SCons.Builder.Builder
 
-	creation_string = "%screating%s $TARGET.name" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
+	creation_string = "%screating%s $TARGET.path" % (env['BKS_COLORS']['BLUE'], env['BKS_COLORS']['NORMAL'])
 
         ## KIDL file
 	kidl_str='$DCOPIDL $SOURCE > $TARGET || (rm -f $TARGET ; false)'
@@ -251,13 +251,13 @@ def generate(env):
 				if not bs in kidl:
 					kidl.append(bs)
 				lenv.Dcop(bs+'.kidl')
-				lenv.Depends(bs+'_skel.cpp', '$DCOPIDL2CPP')
+				lenv.Depends(bs+'_skel.cpp', lenv['DCOPIDL2CPP'])
 				src.append(bs+'_skel.cpp')
 			elif ext in stub_ext:
 				if not bs in kidl:
 					kidl.append(bs)
 				lenv.Stub(bs+'.kidl')
-				lenv.Depends(bs+'_stub.cpp', '$DCOPIDL2CPP')
+				lenv.Depends(bs+'_stub.cpp', lenv['DCOPIDL2CPP'])
 				src.append(bs+'_stub.cpp')
 			elif ext == ".moch":
 				lenv.Moccpp(bs+'.h')
@@ -266,6 +266,7 @@ def generate(env):
 				name=SCons.Util.splitext(sfile.name)[0]
 				hfile=lenv.Kcfg(file)
 				cppkcfgfile=sfile.dir.File(bs+'.cpp')
+				lenv.Depends(bs+'.cpp', lenv['KCONFIGCOMPILER'])
 				src.append(bs+'.cpp')
 			elif ext == ".dummy":
 				lenv.EmptyFile(bs)

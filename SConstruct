@@ -62,8 +62,6 @@ dest = open(env.join('build','kdemacros.h'), 'w')
 dest.write('#include <kdemacros.h.in>\n')
 dest.close()
 
-env['DCOPIDL2CPP'] = '#build/dcop/dcopidl2cpp/dcopidl2cpp'
-
 ###################################################################
 # SCRIPTS FOR BUILDING THE TARGETS
 ###################################################################

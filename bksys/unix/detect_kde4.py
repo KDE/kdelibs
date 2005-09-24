@@ -1,6 +1,6 @@
 # Thomas Nagy, 2005
 
-#import os
+import os
 
 def bootstrap(env):
 
@@ -31,9 +31,9 @@ def bootstrap(env):
 	env['KDELIB']    = env.join( env['PREFIX'], 'lib')
 	env['KDEMODULE'] = env.join( env['PREFIX'], 'lib/kde4')
 
-	env['KCONFIGCOMPILER']='build/kdecore/kconfig_compiler/kconfig_compiler'
-	env['DCOPIDL']='dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng'
-	env['DCOPIDL2CPP']='build/dcop/dcopidl2cpp/dcopidl2cpp'
+	env['KCONFIGCOMPILER']= env.join(os.getcwd(), env['_BUILDDIR_'], 'kdecore/kconfig_compiler/kconfig_compiler')
+	env['DCOPIDL']        = env.join(os.getcwd(), 'dcop/dcopidlng/dcopidl --srcdir dcop/dcopidlng')
+	env['DCOPIDL2CPP']    = env.join(os.getcwd(), env['_BUILDDIR_'], 'dcop/dcopidl2cpp/dcopidl2cpp')
 
 	env['LIB_KDECORE'] = ['kdecore']
 	env['LIB_KIO']     = ['kio']
