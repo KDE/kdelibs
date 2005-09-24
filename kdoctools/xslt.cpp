@@ -170,7 +170,7 @@ QString splitOut(const QString &parsed, int index)
     index = filedata.find("<FILENAME ");
 
     if (index > 0) {
-        int endindex = filedata.findRev("</FILENAME>");
+        int endindex = filedata.lastIndexOf("</FILENAME>");
         while (filedata.at(endindex) != '>') endindex++;
         endindex++;
         filedata = filedata.left(index) + filedata.mid(endindex);
@@ -222,7 +222,7 @@ bool saveToCache( const QString &contents, const QString &filename )
        return false;
     }
 
-    fd->writeBlock( contents.utf8() );
+    fd->writeBlock( contents.toUtf8() );
     fd->close();
     delete fd;
     return true;
@@ -243,7 +243,7 @@ static bool readCache( const QString &filename,
     if (!fd->open(QIODevice::ReadOnly))
     {
        delete fd;
-       ::unlink( cache.local8Bit() );
+       ::unlink( cache.toLocal8Bit() );
        return false;
     }
 

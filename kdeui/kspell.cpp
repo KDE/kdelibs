@@ -392,7 +392,7 @@ KSpell::setUpDialog( bool reallyuseprogressbar )
 
 bool KSpell::addPersonal( const QString & word )
 {
-  QString qs = word.simplifyWhiteSpace();
+  QString qs = word.simplified();
 
   //we'll let ispell do the work here b/c we can
   if ( qs.find(' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
@@ -411,7 +411,7 @@ bool KSpell::writePersonalDictionary()
 
 bool KSpell::ignore( const QString & word )
 {
-  QString qs = word.simplifyWhiteSpace();
+  QString qs = word.simplified();
 
   //we'll let ispell do the work here b/c we can
   if ( qs.find (' ') != -1 || qs.isEmpty() )    // make sure it's a _word_
@@ -483,7 +483,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog )
     return true;
   }
   d->checking = true;
-  QString qs = buffer.simplifyWhiteSpace();
+  QString qs = buffer.simplified();
 
   if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
     d->checkNextTimer->start( 0, true );
@@ -525,7 +525,7 @@ bool KSpell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
     return true;
   }
   d->checking = true;
-  QString qs = buffer.simplifyWhiteSpace();
+  QString qs = buffer.simplified();
 
   if ( qs.find (' ') != -1 || qs.isEmpty() ) {   // make sure it's a _word_
     d->checkNextTimer->start( 0, true );
@@ -662,7 +662,7 @@ QString KSpell::funnyWord( const QString & word )
 
       i = j-1;
 
-      if ( !( k = qs.findRev(shorty) ) || k != -1 )
+      if ( !( k = qs.lastIndexOf(shorty) ) || k != -1 )
         qs.remove( k, shorty.length() );
       else
       {
@@ -730,7 +730,7 @@ int KSpell::parseOneResponse( const QString &buffer, QString &word, QStringList 
     else
       qs2 = buffer;
 
-    posinline = qs2.right( qs2.length()-qs2.findRev(' ') ).toInt()-1;
+    posinline = qs2.right( qs2.length()-qs2.lastIndexOf(' ') ).toInt()-1;
 
     ///// Replace-list stuff ////
     QStringList::Iterator it = replacelist.begin();
@@ -1070,7 +1070,7 @@ void KSpell::check2( KProcIO * )
           // convert line to UTF-8, cut at pos, convert back to UCS-2
           // and get string length
           posinline = (QString::fromUtf8(
-                         origbuffer.mid(lastlastline,lastline-lastlastline).utf8(),
+                         origbuffer.mid(lastlastline,lastline-lastlastline).toUtf8(),
                          posinline)).length();
           // kdDebug(750) << "posinline corr: " << posinline << endl;
         }

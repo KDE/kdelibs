@@ -152,7 +152,7 @@ KPasswordEdit::~KPasswordEdit()
 
 void KPasswordEdit::insert(const QString &txt)
 {
-    const QByteArray localTxt = txt.local8Bit();
+    const QByteArray localTxt = txt.toLocal8Bit();
     const unsigned int lim = localTxt.length();
     const int m_MaxLength = maxPasswordLength();
     for(unsigned int i=0; i < lim; ++i)
@@ -203,7 +203,7 @@ void KPasswordEdit::keyPressEvent(QKeyEvent *e)
 	}
 	break;
     default:
-	const unsigned char ke = e->text().local8Bit()[0];
+	const unsigned char ke = e->text().toLocal8Bit()[0];
 	if (ke >= 32) {
 	    insert(e->text());
 	} else

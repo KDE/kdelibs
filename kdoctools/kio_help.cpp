@@ -82,7 +82,7 @@ QString HelpProtocol::langLookup(QString fname)
 
         if ( ( *it ).right( 5 ) == ".html" )
         {
-            QString file = (*it).left((*it).findRev('/')) + "/index.docbook";
+            QString file = (*it).left((*it).lastIndexOf('/')) + "/index.docbook";
             kdDebug( 7119 ) << "Looking for help in: " << file << endl;
             info.setFile(file);
             if (info.exists() && info.isFile() && info.isReadable())
@@ -196,7 +196,7 @@ void HelpProtocol::get( const KURL& url )
          return;
       }
     } else {
-        QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
+        QString docbook_file = file.left(file.lastIndexOf('/')) + "/index.docbook";
         if (!KStandardDirs::exists(file)) {
             file = docbook_file;
         } else {
@@ -231,7 +231,7 @@ void HelpProtocol::get( const KURL& url )
                 mParsed.replace( pos1, pos2 - pos1, "charset=UTF-8" );
               }
             }
-            data( mParsed.utf8() );
+            data( mParsed.toUtf8() );
         }
     } else {
 
@@ -290,12 +290,12 @@ void HelpProtocol::get( const KURL& url )
                     if ( mParsed.mid( index, 11 + anchor.length() ).lower() ==
                          QString( "<a name=\"%1\">" ).arg( anchor ) )
                     {
-                        index = mParsed.findRev( "<FILENAME filename=", index ) +
+                        index = mParsed.lastIndexOf( "<FILENAME filename=", index ) +
                                  strlen( "<FILENAME filename=\"" );
                         QString filename=mParsed.mid( index, 2000 );
                         filename = filename.left( filename.find( '\"' ) );
                         QString path = target.path();
-                        path = path.left( path.findRev( '/' ) + 1) + filename;
+                        path = path.left( path.lastIndexOf( '/' ) + 1) + filename;
                         kdDebug( 7119 ) << "anchor found in " << path <<endl;
                         target.setPath( path );
                         break;
@@ -314,7 +314,7 @@ void HelpProtocol::emitFile( const KURL& url )
 {
     infoMessage(i18n("Looking up section"));
 
-    QString filename = url.path().mid(url.path().findRev('/') + 1);
+    QString filename = url.path().mid(url.path().lastIndexOf('/') + 1);
 
     int index = mParsed.find(QString("<FILENAME filename=\"%1\"").arg(filename));
     if (index == -1) {

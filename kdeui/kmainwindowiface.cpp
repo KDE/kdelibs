@@ -117,7 +117,7 @@ DCOPCString KMainWindowInterface::actionToolTip( const DCOPCString& action)
 	KAction *tmp_Action = m_dcopActionProxy->action(action);
 	if (tmp_Action)
 	{
-		return tmp_Action->toolTip().utf8();
+		return tmp_Action->toolTip().toUtf8();
 	}
 	else
 		return "Error no such object!";

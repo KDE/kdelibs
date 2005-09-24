@@ -174,7 +174,7 @@ void Form1::slotList()
 void Form1::slotHighlighted( const QString& text )
 {
     // remove any "weighting"
-    int index = text.findRev( ':' );
+    int index = text.lastIndexOf( ':' );
     if ( index > 0 )
 	LineEdit1->setText( text.left( index ) );
     else

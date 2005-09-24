@@ -157,7 +157,7 @@ KEdit::cleanWhiteSpace()
    for(QStringList::Iterator it = lines.begin();
        it != lines.end();)
    {
-      QString line = (*it).simplifyWhiteSpace();
+      QString line = (*it).simplified();
       if (line.isEmpty())
       {
          if (addSpace)

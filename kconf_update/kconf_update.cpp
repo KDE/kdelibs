@@ -216,7 +216,7 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
       struct stat buff;
       if (stat( QFile::encodeName(file), &buff) == 0)
       {
-         int i = file.findRev('/');
+         int i = file.lastIndexOf('/');
          if (i != -1) 
             file = file.mid(i+1);
          config->setGroup(file);
@@ -235,7 +235,7 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 bool KonfUpdate::checkFile(const QString &filename)
 {
    currentFilename = filename;
-   int i = currentFilename.findRev('/');
+   int i = currentFilename.lastIndexOf('/');
    if (i != -1) 
       currentFilename = currentFilename.mid(i+1);
    skip = true;
@@ -309,7 +309,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
 bool KonfUpdate::updateFile(const QString &filename)
 {
    currentFilename = filename;
-   int i = currentFilename.findRev('/');
+   int i = currentFilename.lastIndexOf('/');
    if (i != -1) 
        currentFilename = currentFilename.mid(i+1);
    skip = true;

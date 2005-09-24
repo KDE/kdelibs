@@ -1698,9 +1698,9 @@ void KToolBar::loadState( const QDomElement &element )
         return;
 
     {
-        QByteArray text = element.namedItem( "text" ).toElement().text().utf8();
+        QByteArray text = element.namedItem( "text" ).toElement().text().toUtf8();
         if ( text.isEmpty() )
-            text = element.namedItem( "Text" ).toElement().text().utf8();
+            text = element.namedItem( "Text" ).toElement().text().toUtf8();
         if ( !text.isEmpty() )
             setText( i18n( text ) );
     }

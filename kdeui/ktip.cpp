@@ -376,7 +376,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
      "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>")
      .arg(mTextColor.name())
      .arg(mBaseColor.name())
-     .arg(i18n(mDatabase->tip().utf8())));
+     .arg(i18n(mDatabase->tip().toUtf8())));
       mTipText->setContentsPos(0, 0);
   }
 
@@ -386,7 +386,7 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
       mTipText->setText(QString::fromLatin1("<qt text=\"%1\" bgcolor=\"%2\">%3</qt>")
         .arg(mTextColor.name())
         .arg(mBaseColor.name())
-        .arg(i18n(mDatabase->tip().utf8())));
+        .arg(i18n(mDatabase->tip().toUtf8())));
       mTipText->setContentsPos(0, 0);
   }
 

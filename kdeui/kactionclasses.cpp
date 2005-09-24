@@ -2319,7 +2319,7 @@ void KPasteTextAction::menuAboutToShow()
     bool found = false;
     for ( QStringList::ConstIterator it = list.begin(); it != list.end(); ++it )
     {
-      QString text = KStringHandler::cEmSqueeze((*it).simplifyWhiteSpace(), m_popup->fontMetrics(), 20);
+      QString text = KStringHandler::cEmSqueeze((*it).simplified(), m_popup->fontMetrics(), 20);
       text.replace("&", "&&");
       int id = m_popup->insertItem(text);
       if (!found && *it == clipboardText)

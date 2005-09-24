@@ -284,9 +284,9 @@ public:
       static const QString &attrName = KGlobal::staticQString( "name" );
 
       QString name;
-      QByteArray txt( it.namedItem( tagText ).toElement().text().utf8() );
+      QByteArray txt( it.namedItem( tagText ).toElement().text().toUtf8() );
       if ( txt.isEmpty() )
-          txt = it.namedItem( tagText2 ).toElement().text().utf8();
+          txt = it.namedItem( tagText2 ).toElement().text().toUtf8();
       if ( txt.isEmpty() )
           name = it.attribute( attrName );
       else
@@ -486,7 +486,7 @@ void KEditToolbar::slotDefault()
     }
     else
     {
-        int slash = d->m_file.findRev('/')+1;
+        int slash = d->m_file.lastIndexOf('/')+1;
         if (slash)
             d->m_file = d->m_file.mid(slash);
         QString xml_file = locateLocal("data", QLatin1String( KGlobal::instance()->instanceName() + '/' ) + d->m_file);

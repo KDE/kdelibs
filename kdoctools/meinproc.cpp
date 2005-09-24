@@ -53,7 +53,7 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
         if ( cur->type == XML_TEXT_NODE ) {
             QString words = QString::fromUtf8( ( char* )cur->content );
-            QStringList wlist = QStringList::split( ' ',  words.simplifyWhiteSpace() );
+            QStringList wlist = QStringList::split( ' ',  words.simplified() );
             for ( QStringList::ConstIterator it = wlist.begin();
                   it != wlist.end(); ++it )
             {
@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
                 int wi = 0;
                 for ( PairList::ConstIterator it = list.begin(); it != list.end();
                       ++it, ++wi )
-                    fprintf( stdout, "w\t%s\t%d\t%d\n", ( *it ).word.utf8().data(),
+                    fprintf( stdout, "w\t%s\t%d\t%d\n", ( *it ).word.toUtf8().data(),
                              1000*wi/list.count(), ( *it ).base );
 
                 xmlFreeDoc(res);
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
             }
             replaceCharsetHeader( output );
 
-            QByteArray data = output.local8Bit();
+            QByteArray data = output.toLocal8Bit();
             file.writeBlock(data.data(), data.length());
             file.close();
         } else {

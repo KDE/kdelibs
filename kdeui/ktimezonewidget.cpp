@@ -53,7 +53,7 @@ KTimezoneWidget::KTimezoneWidget(QWidget *parent, const char *name, KTimezones *
         QString tzName = zone->name();
         QString comment = zone->comment();
         if (!comment.isEmpty())
-            comment = i18n(comment.utf8());
+            comment = i18n(comment.toUtf8());
 
         // Convert:
         //
@@ -85,7 +85,7 @@ KTimezoneWidget::~KTimezoneWidget()
 
 QString KTimezoneWidget::displayName(const KTimezone *zone)
 {
-    return i18n(zone->name().utf8()).replace("_", " ");
+    return i18n(zone->name().toUtf8()).replace("_", " ");
 }
 
 QStringList KTimezoneWidget::selection() const
