@@ -251,11 +251,13 @@ def generate(env):
 				if not bs in kidl:
 					kidl.append(bs)
 				lenv.Dcop(bs+'.kidl')
+				lenv.Depends(bs+'_skel.cpp', '$DCOPIDL2CPP')
 				src.append(bs+'_skel.cpp')
 			elif ext in stub_ext:
 				if not bs in kidl:
 					kidl.append(bs)
 				lenv.Stub(bs+'.kidl')
+				lenv.Depends(bs+'_stub.cpp', '$DCOPIDL2CPP')
 				src.append(bs+'_stub.cpp')
 			elif ext == ".moch":
 				lenv.Moccpp(bs+'.h')
