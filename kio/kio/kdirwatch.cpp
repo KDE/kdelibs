@@ -419,7 +419,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
   else {
     if (e->m_status == NonExistent) {
       // If the file does not exist we watch the directory
-      addEntry(0, QFileInfo(e->path).dirPath(true), e, true);
+      addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
     }
     else {
       int res = FAMMonitorFile(&fc, QFile::encodeName(e->path),
@@ -510,7 +510,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
   else { // File
     // we always watch the directory (DNOTIFY can't watch files alone)
     // this notifies us about changes of files therein
-    addEntry(0, QFileInfo(e->path).dirPath(true), e, true);
+    addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
   }
 
   return true;
@@ -690,7 +690,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
       if (e->isDir)
 	removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
       else
-	removeEntry(0, QFileInfo(e->path).dirPath(true), e);
+	removeEntry(0, QFileInfo(e->path).absolutePath(), e);
     }
   }
 #endif
@@ -698,7 +698,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 #ifdef HAVE_DNOTIFY
   if (e->m_mode == DNotifyMode) {
     if (!e->isDir) {
-      removeEntry(0, QFileInfo(e->path).dirPath(true), e);
+      removeEntry(0, QFileInfo(e->path).absolutePath(), e);
     }
     else { // isDir
       // must close the FD.

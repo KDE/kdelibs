@@ -453,7 +453,7 @@ void KSpellConfig::getAvailDictsIspell () {
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
-	       << dir.filePath() << " " << dir.dirPath() << endl;
+	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*.hash");
   const QStringList entryList = thedir.entryList();
@@ -517,7 +517,7 @@ void KSpellConfig::getAvailDictsAspell () {
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
-	       << dir.filePath() << " " << dir.dirPath() << endl;
+	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*");
   const QStringList entryList = thedir.entryList();
@@ -603,7 +603,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       if (!dir.exists() || !dir.isDir()) return;
 
       kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
-                   << dir.filePath() << " " << dir.dirPath() << endl;
+                   << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*.hash");
       const QStringList entryList = thedir.entryList();
@@ -673,7 +673,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       if (!dir.exists() || !dir.isDir()) return;
 
       kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
-                   << dir.filePath() << " " << dir.dirPath() << endl;
+                   << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*");
       const QStringList entryList = thedir.entryList();

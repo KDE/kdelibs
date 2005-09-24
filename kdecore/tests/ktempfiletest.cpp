@@ -56,7 +56,7 @@ void KTempFileTest::testFixedExtension()
 void KTempFileTest::testHomeDir()
 {
     printf("Making tempfile in home directory.\n");
-    const QString home = QDir::homeDirPath();
+    const QString home = QDir::homePath();
     KTempFile f3(home+QLatin1String("/testXXX"), ".myEXT", 0666);
     f3.setAutoDelete( true );
     qDebug("Filename = %s", qPrintable(f3.name()));

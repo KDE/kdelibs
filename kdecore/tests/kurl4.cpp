@@ -89,7 +89,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
                (len > 1 && path[len-2] == QLatin1Char('/') && path[len-1] == QLatin1Char('.'));
 
   // The following code cleans up directory path much like
-  // QDir::cleanDirPath() except it can be made to ignore multiple
+  // QDir::cleanPath() except it can be made to ignore multiple
   // directory separators by setting the flag to false.  That fixes
   // bug# 15044, mail.altavista.com and other similar brain-dead server
   // implementations that do not follow what has been specified in
@@ -218,7 +218,7 @@ void KURL::List::addToMimeData( QMimeData* mimeData,
         for ( uit = begin(); uit != uEnd ; ++uit )
             prettyURLsList.append( (*uit).prettyURL() );
 
-        QByteArray plainTextData = prettyURLsList.join( "\n" ).local8Bit();
+        QByteArray plainTextData = prettyURLsList.join( "\n" ).toLocal8Bit();
         if( count() > 1 ) // terminate last line, unless it's the only line
             plainTextData.append( "\n" );
         mimeData->setData( "text/plain", plainTextData );

@@ -553,7 +553,7 @@ void KIconDialog::slotButtonClicked(int id)
             {
                 d->custom = file;
                 if ( mType == 1 )
-                  d->customLocation = QFileInfo( file ).dirPath( true );
+                  d->customLocation = QFileInfo( file ).absolutePath();
                 slotOk();
             }
         }
@@ -679,7 +679,7 @@ void KIconButton::setIcon(const QString& icon)
     }
 
     if ( mbUser )
-      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
+      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).absolutePath() );
 }
 
 void KIconButton::resetIcon()
@@ -710,7 +710,7 @@ void KIconButton::newIconName(const QString& name)
     mIcon = name;
 
     if ( mbUser )
-      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
+      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).absolutePath() );
 
     emit iconChanged(name);
 }

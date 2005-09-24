@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
     // Need to set SRCDIR before calling fillInstance
     QString srcdir;
     if ( args->isSet( "srcdir" ) )
-        srcdir = QDir( QFile::decodeName( args->getOption( "srcdir" ) ) ).absPath();
+        srcdir = QDir( QFile::decodeName( args->getOption( "srcdir" ) ) ).absolutePath();
     fillInstance(ins,srcdir);
 
     LIBXML_TEST_VERSION
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
         char pwd_buffer[250];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
         getcwd( pwd_buffer, 250 );
-        chdir( QFile::encodeName( file.dirPath( true ) ) );
+        chdir( QFile::encodeName( file.absolutePath() ) );
 
         QString catalogs;
         catalogs += locate( "dtd", "customization/catalog" );

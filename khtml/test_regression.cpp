@@ -468,7 +468,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 	    }
 
             QString filename = args[0].toString(exec).qstring();
-            QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absFilePath();
+            QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absoluteFilePath();
             KURL url;
             url.setProtocol("file");
             url.setPath(fullFilename);
@@ -922,7 +922,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 
         khtml::Cache::init();
 
-	QString relativeDir = QFileInfo(relPath).dirPath();
+	QString relativeDir = QFileInfo(relPath).path();
 	QString filename = info.fileName();
 	m_currentBase = m_baseDir + "/tests/"+relativeDir;
 	m_currentCategory = relativeDir;
@@ -1203,8 +1203,8 @@ void RegressionTest::doJavascriptReport( const QString &test )
  */
 static QString makeRelativePath(const QString &base, const QString &path)
 {
-    QString absBase = QFileInfo(base).absFilePath();
-    QString absPath = QFileInfo(path).absFilePath();
+    QString absBase = QFileInfo(base).absoluteFilePath();
+    QString absPath = QFileInfo(path).absoluteFilePath();
 //     kdDebug() << "absPath: \"" << absPath << "\"" << endl;
 //     kdDebug() << "absBase: \"" << absBase << "\"" << endl;
 
@@ -1306,7 +1306,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     // create a relative path so that it works via web as well. ugly
     QString relpath = makeRelativePath(m_outputDir + "/"
-        + QFileInfo(test).dirPath(), m_baseDir);
+        + QFileInfo(test).path(), m_baseDir);
 
     compare.open( QIODevice::WriteOnly|QIODevice::Truncate );
     QString cl;
@@ -1399,7 +1399,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     // load page
     KURL url;
     url.setProtocol("file");
-    url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absFilePath());
+    url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absoluteFilePath());
     PartMonitor pm(m_part);
     m_part->openURL(url);
     pm.waitForCompletion();
@@ -1565,7 +1565,7 @@ void RegressionTest::testJSFile(const QString & filename )
 RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filename)
 {
     QString againstFilename( filename + "-dump.png" );
-    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
+    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absoluteFilePath();
     if ( svnIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
         return Ignored;
@@ -1589,7 +1589,7 @@ RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filena
 
 RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFilename)
 {
-    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
+    QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absoluteFilePath();
     if ( svnIgnored( absFilename ) ) {
         m_known_failures = NoFailure;
         return Ignored;
@@ -1602,7 +1602,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     CheckResult result = Success;
 
     // compare result to existing file
-    QString outputFilename = QFileInfo(m_outputDir + "/" + againstFilename).absFilePath();
+    QString outputFilename = QFileInfo(m_outputDir + "/" + againstFilename).absoluteFilePath();
     bool kf = false;
     if ( m_known_failures & AllFailure )
         kf = true;
@@ -1706,15 +1706,15 @@ void RegressionTest::printDescription(const QString& description)
 void RegressionTest::createMissingDirs(const QString & filename)
 {
     QFileInfo dif(filename);
-    QFileInfo dirInfo( dif.dirPath() );
+    QFileInfo dirInfo( dif.path() );
     if (dirInfo.exists())
 	return;
 
     QStringList pathComponents;
     QFileInfo parentDir = dirInfo;
-    pathComponents.prepend(parentDir.absFilePath());
+    pathComponents.prepend(parentDir.absoluteFilePath());
     while (!parentDir.exists()) {
-	QString parentPath = parentDir.absFilePath();
+	QString parentPath = parentDir.absoluteFilePath();
 	int slashPos = parentPath.lastIndexOf('/');
 	if (slashPos < 0)
 	    break;
@@ -1743,7 +1743,7 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
 bool RegressionTest::svnIgnored( const QString &filename )
 {
     QFileInfo fi( filename );
-    QString ignoreFilename = fi.dirPath() + "/svnignore";
+    QString ignoreFilename = fi.path() + "/svnignore";
     QFile ignoreFile(ignoreFilename);
     if (!ignoreFile.open(QIODevice::ReadOnly))
         return false;

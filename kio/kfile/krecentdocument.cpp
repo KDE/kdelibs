@@ -60,7 +60,7 @@ QStringList KRecentDocument::recentDocuments()
     QStringList fullList;
 
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-       QString pathDesktop = d.absFilePath( *it );
+       QString pathDesktop = d.absoluteFilePath( *it );
        KDesktopFile tmpDesktopFile( pathDesktop, false);
        KURL urlDesktopFile(tmpDesktopFile.readURL());
        if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())

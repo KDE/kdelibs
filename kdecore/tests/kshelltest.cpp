@@ -8,7 +8,7 @@ ps(const QString &s)
   if (s.isNull())
     return "(null)";
   else
-    return s.local8Bit();
+    return s.toLocal8Bit();
 }
 
 static void

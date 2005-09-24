@@ -115,8 +115,8 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
 	URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
 
     QString file;
-    if (KStandardDirs::exists( QDir::currentDirPath() + "/" + URL ) )
-        file = QDir::currentDirPath() + "/" + URL;
+    if (KStandardDirs::exists( QDir::currentPath() + "/" + URL ) )
+        file = QDir::currentPath() + "/" + URL;
     else
         file = locate("dtd", URL);
 
