@@ -1973,7 +1973,7 @@ void KCryptoConfig::slotCAImport() {
 			}
 			certtext = certtext.replace("-----BEGIN CERTIFICATE-----", QString::null);
 			certtext = certtext.replace("-----END CERTIFICATE-----", QString::null);
-			certtext = certtext.stripWhiteSpace();
+			certtext = certtext.trimmed();
 			certtext = certtext.replace("\n", QString::null);
 		} else {
 			// Must [could?] be DER
