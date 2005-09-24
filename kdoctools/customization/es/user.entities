@@ -9,6 +9,7 @@
 <!ENTITY Alt "<keycap>Alt</keycap>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
 <!ENTITY Ctrl "<keycap>Ctrl</keycap>">
+<!ENTITY Tab  "<keycap>Tab</keycap>">
 <!ENTITY Enter "<keycap>Intro</keycap>">
 <!ENTITY dpi    "<acronym>ppp</acronym>">
 <!ENTITY eg     "<abbrev>p. ej.</abbrev>" ><!-- eg -->
@@ -33,3 +34,4 @@
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
 <!ENTITY X-Windows      "Sistema de ventanas X">
+<!ENTITY TODO "Pendiente">
