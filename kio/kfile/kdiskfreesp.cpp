@@ -105,7 +105,7 @@ void KDiskFreeSp::dfDone()
   while ( !t.atEnd() ) {
     QString u,v;
     s=t.readLine();
-    s=s.simplifyWhiteSpace();
+    s=s.simplified();
     if ( !s.isEmpty() ) {
       //kdDebug(kfile_area) << "GOT: [" << s << "]" << endl;
 
@@ -113,7 +113,7 @@ void KDiskFreeSp::dfDone()
 	if ( !t.atEnd() ) {       // just appends the next line
             v=t.readLine();
             s=s.append(v);
-            s=s.simplifyWhiteSpace();
+            s=s.simplified();
             //kdDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
 	 }//if silly linefeed
 

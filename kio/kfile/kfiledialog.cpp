@@ -1210,7 +1210,7 @@ void KFileDialog::setSelection(const QString& url)
     }
     else {
         QString filename = u.url();
-        int sep = filename.findRev('/');
+        int sep = filename.lastIndexOf('/');
         if (sep >= 0) { // there is a / in it
             if ( KProtocolInfo::supportsListing( u )) {
                 KURL dir(u);
@@ -2001,10 +2001,10 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
     KURL url = getCompleteURL (urlStr);
     kdDebug (kfile_area) << "updateLocationEditExtension (" << url << ")" << endl;
 
-    const int fileNameOffset = urlStr.findRev ('/') + 1;
+    const int fileNameOffset = urlStr.lastIndexOf ('/') + 1;
     QString fileName = urlStr.mid (fileNameOffset);
 
-    const int dot = fileName.findRev ('.');
+    const int dot = fileName.lastIndexOf ('.');
     const int len = fileName.length ();
     if (dot > 0 && // has an extension already and it's not a hidden file
                    // like ".hidden" (but we do accept ".hidden.ext")
@@ -2057,7 +2057,7 @@ void KFileDialog::appendExtension (KURL &url)
     kdDebug (kfile_area) << "appendExtension(" << url << ")" << endl;
 
     const int len = fileName.length ();
-    const int dot = fileName.findRev ('.');
+    const int dot = fileName.lastIndexOf ('.');
 
     const bool suppressExtension = (dot == len - 1);
     const bool unspecifiedExtension = (dot <= 0);
@@ -2286,7 +2286,7 @@ void KFileDialog::setNonExtSelection()
        locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.trimmed().length()+1 );
     else
     {
-       int lastDot = filename.findRev( '.' );
+       int lastDot = filename.lastIndexOf( '.' );
        if ( lastDot > 0 )
           locationEdit->lineEdit()->setSelection( 0, lastDot );
     }

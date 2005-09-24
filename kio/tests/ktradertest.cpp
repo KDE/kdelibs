@@ -58,10 +58,10 @@ int main( int argc, char **argv )
   if ( args->count() == 4 )
     preference = QString::fromLocal8Bit( args->arg( 3 ) );
 
-  printf( "query is : %s\n", query.local8Bit().data() );
-  printf( "genericServiceType is : %s\n", genericServiceType.local8Bit().data() );
-  printf( "constraint is : %s\n", constraint.local8Bit().data() );
-  printf( "preference is : %s\n", preference.local8Bit().data() );
+  printf( "query is : %s\n", query.toLocal8Bit().data() );
+  printf( "genericServiceType is : %s\n", genericServiceType.toLocal8Bit().data() );
+  printf( "constraint is : %s\n", constraint.toLocal8Bit().data() );
+  printf( "preference is : %s\n", preference.toLocal8Bit().data() );
 
   KTrader::OfferList offers = KTrader::self()->query( query, genericServiceType, constraint, preference );
 
@@ -82,7 +82,7 @@ int main( int argc, char **argv )
 
       if ( !prop.isValid() )
       {
-        printf("Invalid property %s\n", (*propIt).local8Bit().data());
+        printf("Invalid property %s\n", (*propIt).toLocal8Bit().data());
 	continue;
       }
 
@@ -103,7 +103,7 @@ int main( int argc, char **argv )
       }
 
       if ( !outp.isEmpty() )
-        printf("%s'\n", outp.local8Bit().data());
+        printf("%s'\n", outp.toLocal8Bit().data());
     }
   }
 }

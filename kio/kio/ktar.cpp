@@ -365,7 +365,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode )
                 name = name.left( name.length() - 1 );
             }
 
-            int pos = name.findRev( '/' );
+            int pos = name.lastIndexOf( '/' );
             if ( pos == -1 )
                 nm = name;
             else
@@ -576,7 +576,7 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
     if ( dirName.length() > 99 )
     {
         strcpy( buffer, "././@LongLink" );
-        fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
+        fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.toLocal8Bit(), group.toLocal8Bit() );
         device()->writeBlock( buffer, 0x200 );
         strncpy( buffer, QFile::encodeName(dirName), 0x200 );
         buffer[0x200] = 0;
@@ -591,7 +591,7 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
         buffer[0x200] = 0;
     }
 
-    fillBuffer( buffer, " 40755", 0, 0x35, user.local8Bit(), group.local8Bit());
+    fillBuffer( buffer, " 40755", 0, 0x35, user.toLocal8Bit(), group.toLocal8Bit());
 
     // Write header
     device()->writeBlock( buffer, 0x200 );
@@ -710,7 +710,7 @@ void KTar::fillBuffer( char * buffer,
   for( uint j = 0; j < 0x200; ++j )
     check += buffer[j];
   s = QByteArray::number( check, 8 ); // octal
-  s = s.rightJustify( 7, ' ' );
+  s = s.rightJustified( 7, ' ' );
   strcpy( buffer + 0x94, s.data() );
 }
 
@@ -763,7 +763,7 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
       // But as KTar and the "tar" program both handle tar files without
       // dir entries, there's really no need for that
       QString tmp ( fileName );
-      int i = tmp.findRev( '/' );
+      int i = tmp.lastIndexOf( '/' );
       if ( i != -1 )
       {
       QString d = tmp.left( i + 1 ); // contains trailing slash
@@ -781,8 +781,8 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
 
     // provide converted stuff we need lateron
     QByteArray encodedFilename = QFile::encodeName(fileName);
-    QByteArray uname = user.local8Bit();
-    QByteArray gname = group.local8Bit();
+    QByteArray uname = user.toLocal8Bit();
+    QByteArray gname = group.toLocal8Bit();
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )
@@ -795,7 +795,7 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustify(6, ' ');
+    permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
@@ -839,8 +839,8 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
 
     // provide converted stuff we need lateron
     QByteArray encodedDirname = QFile::encodeName(dirName);
-    QByteArray uname = user.local8Bit();
-    QByteArray gname = group.local8Bit();
+    QByteArray uname = user.toLocal8Bit();
+    QByteArray gname = group.toLocal8Bit();
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( dirName.length() > 99 )
@@ -853,7 +853,7 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustify(6, ' ');
+    permstr.rightJustified(6, ' ');
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
     // Write header
@@ -895,8 +895,8 @@ bool KTar::writeSymLink_impl(const QString &name, const QString &target,
     // provide converted stuff we need lateron
     QByteArray encodedFilename = QFile::encodeName(fileName);
     QByteArray encodedTarget = QFile::encodeName(target);
-    QByteArray uname = user.local8Bit();
-    QByteArray gname = group.local8Bit();
+    QByteArray uname = user.toLocal8Bit();
+    QByteArray gname = group.toLocal8Bit();
 
     // If more than 100 chars, we need to use the LongLink trick
     if (target.length() > 99)
@@ -914,7 +914,7 @@ bool KTar::writeSymLink_impl(const QString &name, const QString &target,
     memset(buffer+0x9d+100, 0, 0x200 - 100 - 0x9d);
 
     QByteArray permstr = QByteArray::number( perm, 8 );
-    permstr.rightJustify(6, ' ');
+    permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
     // Write header

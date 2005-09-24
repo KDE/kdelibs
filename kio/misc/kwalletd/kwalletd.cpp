@@ -317,7 +317,7 @@ int KWalletD::doTransactionOpen(const QByteArray& appid, const QString& wallet, 
 			// Create the wallet
 			KWallet::Backend *b = new KWallet::Backend(KWallet::Wallet::LocalWallet());
 			QByteArray p;
-			p.duplicate(wiz->_pass1->text().utf8(), wiz->_pass1->text().length());
+			p.duplicate(wiz->_pass1->text().toUtf8(), wiz->_pass1->text().length());
 			b->open(p);
 			b->createFolder(KWallet::Wallet::PasswordFolder());
 			b->createFolder(KWallet::Wallet::FormDataFolder());

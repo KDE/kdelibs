@@ -195,7 +195,7 @@ void KSSLCertChain::setCertChain(const QStringList& chain) {
     Q3PtrList<KSSLCertificate> cl;
     cl.setAutoDelete(true);
     for (QStringList::ConstIterator s = chain.begin(); s != chain.end(); ++s) {
-       KSSLCertificate *c = KSSLCertificate::fromString((*s).local8Bit());
+       KSSLCertificate *c = KSSLCertificate::fromString((*s).toLocal8Bit());
        if (c) {
           cl.append(c);
        }

@@ -185,7 +185,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                     kdDebug(7024) << "lib is empty" << endl;
                     continue;
                 }
-                KLibrary *lib = KLibLoader::self()->library(libName.local8Bit() );
+                KLibrary *lib = KLibLoader::self()->library(libName.toLocal8Bit() );
                 if(!lib) {
                     continue;
                 }
@@ -446,7 +446,7 @@ QString RenameDlg::suggestName(const KURL& baseURL, const QString& oldName)
     basename.truncate( index );
   }
 
-  int pos = basename.findRev( '_' );
+  int pos = basename.lastIndexOf( '_' );
   if(pos != -1 ){
     QString tmp = basename.mid( pos+1 );
     bool ok;

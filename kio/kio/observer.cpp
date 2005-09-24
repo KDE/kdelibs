@@ -290,14 +290,14 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             break;
         case KIO::SlaveBase::SSLMessageBox:
         {
-            Q3CString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
+            Q3CString observerAppId = caption.toUtf8(); // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
             Observer_stub observer( observerAppId, "KIO::Observer" );
 
             KIO::MetaData meta = observer.metadata( progressId );
             KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
-            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
+            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate
                QStringList cl =
@@ -306,7 +306,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
 
                ncl.setAutoDelete(true);
                for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
-                  KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
+                  KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
                   if (y) ncl.append(y);
                }
 

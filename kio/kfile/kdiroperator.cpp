@@ -595,7 +595,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     // in case we have a selection defined and someone patched the file-
     // name, we check, if the end of the new name is changed.
     if (!selection.isNull()) {
-        int position = text.findRev('/');
+        int position = text.lastIndexOf('/');
         ASSERT(position >= 0); // we already inserted the current dir in case
         QString filename = text.mid(position + 1, text.length());
         if (filename != selection)

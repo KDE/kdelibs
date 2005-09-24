@@ -99,7 +99,7 @@ return false; }
      KEntry entry;
      QString value = slave->metaData(key.c_key);
      if (!value.isNull())
-        entry.mValue = value.utf8();
+        entry.mValue = value.toUtf8();
      return entry;
    }
 protected:
@@ -708,7 +708,7 @@ void SlaveBase::sendAuthenticationKey( const Q3CString& key,
 
 void SlaveBase::delCachedAuthentication( const QString& key )
 {
-    KIO_DATA << key.utf8() ;
+    KIO_DATA << key.toUtf8() ;
     m_pConnection->send( MSG_DEL_AUTH_KEY, data );
 }
 

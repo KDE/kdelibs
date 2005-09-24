@@ -123,9 +123,9 @@ KService::init( KDesktopFile *config )
     }
     // Try to make up a name.
     m_strName = entryPath();
-    int i = m_strName.findRev('/');
+    int i = m_strName.lastIndexOf('/');
     m_strName = m_strName.mid(i+1);
-    i = m_strName.findRev('.');
+    i = m_strName.lastIndexOf('.');
     if (i != -1)
        m_strName = m_strName.left(i);
   }
@@ -183,7 +183,7 @@ KService::init( KDesktopFile *config )
   }
 
   QString name = entryPath();
-  int pos = name.findRev('/');
+  int pos = name.lastIndexOf('/');
   if (pos != -1)
      name = name.mid(pos+1);
   pos = name.find('.');
@@ -564,7 +564,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
         }
     default:
         // All others
-        KServiceReadProperty ksrp(_name, it.data().toString().utf8());
+        KServiceReadProperty ksrp(_name, it.data().toString().toUtf8());
         return ksrp.readPropertyEntry(_name, t);
   }
 }
@@ -643,7 +643,7 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
      return new KService(_storageId);
 
   QString tmp = _storageId;
-  tmp = tmp.mid(tmp.findRev('/')+1); // Strip dir
+  tmp = tmp.mid(tmp.lastIndexOf('/')+1); // Strip dir
 
   if (tmp.endsWith(".desktop"))
      tmp.truncate(tmp.length()-8);

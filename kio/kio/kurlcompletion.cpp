@@ -195,7 +195,7 @@ void DirectoryListThread::run()
 	// things that I have checked to be safe here (some used indirectly):
 	//
 	// QDir::currentDirPath(), QDir::setCurrent(), QFile::decodeName(), QFile::encodeName()
-	// QString::fromLocal8Bit(), QString::local8Bit(), QTextCodec::codecForLocale()
+	// QString::fromLocal8Bit(), QString::toLocal8Bit(), QTextCodec::codecForLocale()
 	//
 	// Also see (for POSIX functions):
 	// http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
@@ -1422,7 +1422,7 @@ static bool expandEnv( QString &text )
 				int len	= pos2 - pos;
 				QString key	= text.mid( pos+1, len-1);
 				QString value =
-					QString::fromLocal8Bit( ::getenv(key.local8Bit()) );
+					QString::fromLocal8Bit( ::getenv(key.toLocal8Bit()) );
 
 				if ( !value.isEmpty() ) {
 					expanded = true;
@@ -1478,7 +1478,7 @@ static bool expandTilde(QString &text)
 		// ~user is replaced with the dir from passwd
 		//
 		else {
-			struct passwd *pw = ::getpwnam( user.local8Bit() );
+			struct passwd *pw = ::getpwnam( user.toLocal8Bit() );
 
 			if ( pw )
 				dir = QFile::decodeName( pw->pw_dir );

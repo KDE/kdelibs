@@ -656,7 +656,7 @@ void KOpenWithDlg::slotOK()
             exec.replace("-caption \"%c\"", "");
             exec.replace("%i", "");
             exec.replace("%m", "");
-            exec = exec.simplifyWhiteSpace();
+            exec = exec.simplified();
             if (exec == typedExec)
             {
                 ok = true;

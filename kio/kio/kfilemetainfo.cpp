@@ -171,7 +171,7 @@ QString KFileMetaInfoItem::translatedKey() const
     if (d->mimeTypeInfo->key().isNull())
     {
         // then try if we have luck with i18n()
-        return i18n(d->key.utf8());
+        return i18n(d->key.toUtf8());
     }
 
     return d->mimeTypeInfo->translatedKey();
@@ -931,7 +931,7 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
         return 0;
 
     KFilePlugin* plugin = KParts::ComponentFactory::createInstanceFromService<KFilePlugin>
-                          ( service, this, mimeType.local8Bit() );
+                          ( service, this, mimeType.toLocal8Bit() );
     if (!plugin)
         kdWarning(7033) << "error loading the plugin from " << service->desktopEntryPath() << endl;
 

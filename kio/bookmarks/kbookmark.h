@@ -174,13 +174,13 @@ public:
      * @return address of parent
      */
     static QString parentAddress( const QString & address )
-    { return address.left( address.findRev('/') ); }
+    { return address.left( address.lastIndexOf('/') ); }
 
     /**
      * @return position in parent (e.g. /4/5/2 -> 2)
      */
     static uint positionInParent( const QString & address )
-    { return address.mid( address.findRev('/') + 1 ).toInt(); }
+    { return address.mid( address.lastIndexOf('/') + 1 ).toInt(); }
 
     /**
      * @return address of previous sibling (e.g. /4/5/2 -> /4/5/1)

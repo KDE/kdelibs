@@ -840,7 +840,7 @@ void KDirListerCache::slotFileDirty( const QString& _file )
     if ( checkUpdate( dir.url() ) )
     {
       // Nice hack to save memory: use the qt object name to store the filename
-      QTimer *timer = new QTimer( this, _file.utf8() );
+      QTimer *timer = new QTimer( this, _file.toUtf8() );
       connect( timer, SIGNAL(timeout()), this, SLOT(slotFileDirtyDelayed()) );
       pendingUpdates.insert( _file, timer );
       timer->start( 500, true );

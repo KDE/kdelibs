@@ -132,7 +132,7 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
-    : DCOPObject(DCOPCString("KBookmarkManager-")+bookmarksFile.utf8()), m_doc("xbel"), m_docIsLoaded(false)
+    : DCOPObject(DCOPCString("KBookmarkManager-")+bookmarksFile.toUtf8()), m_doc("xbel"), m_docIsLoaded(false)
 {
     m_toolbarDoc.clear();
 
@@ -338,7 +338,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
             QString str;
             QTextStream stream(&str, QIODevice::WriteOnly);
             stream << root().findToolbar();
-            const QByteArray cstr = str.utf8();
+            const QByteArray cstr = str.toUtf8();
             cacheFile.file()->writeBlock( cstr.data(), cstr.length() );
             cacheFile.close();
         }

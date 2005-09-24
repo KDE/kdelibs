@@ -117,7 +117,7 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    int pos = 0;
    do
    {
-      pos = host.findRev('.', pos-1);
+      pos = host.lastIndexOf('.', pos-1);
 
       if (pos < 0)
         domain = host;

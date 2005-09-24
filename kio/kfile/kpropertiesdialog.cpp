@@ -879,7 +879,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       d->m_lined->setSelection(0, filename.length()-pattern.trimmed().length()+1);
     else
     {
-      int lastDot = filename.findRev('.');
+      int lastDot = filename.lastIndexOf('.');
       if (lastDot > 0)
         d->m_lined->setSelection(0, lastDot);
     }
@@ -1087,7 +1087,7 @@ void KFilePropsPlugin::slotEditFileType()
 #ifdef Q_WS_X11
   QString mime;
   if ( d->mimeType == KMimeType::defaultMimeType() ) {
-    int pos = d->oldFileName.findRev( '.' );
+    int pos = d->oldFileName.lastIndexOf( '.' );
     if ( pos != -1 )
 	mime = "*" + d->oldFileName.mid(pos);
     else
@@ -2769,7 +2769,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   bool ro = config.readBoolEntry( "ReadOnly", false );
   QString unmountedStr = config.readEntry( "UnmountIcon" );
 
-  fileSystem->setText( i18n(config.readEntry("FSType").local8Bit()) );
+  fileSystem->setText( i18n(config.readEntry("FSType").toLocal8Bit()) );
 
   device->setEditText( deviceStr );
   if ( !deviceStr.isEmpty() ) {

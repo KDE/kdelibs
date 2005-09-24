@@ -211,7 +211,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     {
         while ( pos > 0 )
         {
-            pos = path.findRev( '/', pos -1 );
+            pos = path.lastIndexOf( '/', pos -1 );
             if ( pos >= 0 )
             {
                 dirToList.setPath( path.left( pos +1 ) );

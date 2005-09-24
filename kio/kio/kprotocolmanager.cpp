@@ -213,7 +213,7 @@ QString KProtocolManager::noProxyFor()
 
   QString noProxy = cfg->readEntry( "NoProxyFor" );
   if (type == EnvVarProxy)
-    noProxy = QString::fromLocal8Bit(getenv(noProxy.local8Bit()));
+    noProxy = QString::fromLocal8Bit(getenv(noProxy.toLocal8Bit()));
 
   return noProxy;
 }
@@ -264,7 +264,7 @@ QString KProtocolManager::proxyForURL( const KURL &url )
           }
           break;
       case EnvVarProxy:
-          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).local8Bit())).trimmed();
+          proxy = QString::fromLocal8Bit(getenv(proxyFor(url.protocol()).toLocal8Bit())).trimmed();
           break;
       case ManualProxy:
           proxy = proxyFor( url.protocol() );

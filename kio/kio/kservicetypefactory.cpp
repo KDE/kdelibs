@@ -134,12 +134,12 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
    Q_INT32 right = nrOfEntries - 1;
    Q_INT32 middle;
    // Extract extension
-   int lastDot = _filename.findRev('.');
+   int lastDot = _filename.lastIndexOf('.');
    int ext_len = _filename.length() - lastDot - 1;
    if (lastDot != -1 && ext_len <= 4) // if no '.', skip the extension lookup
    {
       QString extension = _filename.right( ext_len );
-      extension = extension.leftJustify(4);
+      extension = extension.leftJustified(4);
 
       QString pattern;
       while (left <= right) {

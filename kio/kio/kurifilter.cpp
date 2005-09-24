@@ -158,7 +158,7 @@ QString KURIFilterData::iconName()
             case KURIFilterData::EXECUTABLE:
             {
                 QString exeName = m_pURI.url();
-                exeName = exeName.mid( exeName.findRev( '/' ) + 1 ); // strip path if given
+                exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
                 KService::Ptr service = KService::serviceByDesktopName( exeName );
                 if (service && service->icon() != QLatin1String( "unknown" ))
                     m_strIconName = service->icon();

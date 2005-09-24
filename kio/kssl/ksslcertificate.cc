@@ -243,7 +243,7 @@ QString KSSLCertificate::getKDEKey() const {
 
 QString KSSLCertificate::getMD5DigestFromKDEKey(const QString &k) {
 	QString rc;
-	int pos = k.findRev('(');
+	int pos = k.lastIndexOf('(');
 	if (pos != -1) {
 		unsigned int len = k.length();
 		if (k.at(len-1) == ')') {
@@ -995,7 +995,7 @@ const char *footer = "-----END CERTIFICATE-----\n";
 
 	thecert.append(footer);
 
-	qba.duplicate(thecert.local8Bit(), thecert.length());
+	qba.duplicate(thecert.toLocal8Bit(), thecert.length());
 return qba;
 }
 
@@ -1060,7 +1060,7 @@ return text;
 // KDE 4: Make it const QString &
 bool KSSLCertificate::setCert(const QString& cert) {
 #ifdef KSSL_HAVE_SSL
-        QByteArray qba, qbb = cert.local8Bit();
+        QByteArray qba, qbb = cert.toLocal8Bit();
 	KCodecs::base64Decode(qbb, qba);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
 	X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());

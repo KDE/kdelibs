@@ -63,7 +63,7 @@ void KNSBookmarkImporterImpl::parse()
                 QByteArray link = t.mid(firstQuotes, secondQuotes-firstQuotes);
                 int endTag = t.find('>', secondQuotes+1);
                 QByteArray name = t.mid(endTag+1);
-                name = name.left(name.findRev('<'));
+                name = name.left(name.lastIndexOf('<'));
                 if ( name.right(4) == "</A>" )
                     name = name.left( name.length() - 4 );
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
@@ -77,7 +77,7 @@ void KNSBookmarkImporterImpl::parse()
             else if(t.left(7).upper() == "<DT><H3") {
                 int endTag = t.find('>', 7);
                 QByteArray name = t.mid(endTag+1);
-                name = name.left(name.findRev('<'));
+                name = name.left(name.lastIndexOf('<'));
                 QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QByteArray additionalInfo = t.mid( 8, endTag-8 );
                 bool folded = (additionalInfo.left(6) == "FOLDED");

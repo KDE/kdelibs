@@ -999,7 +999,7 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
   
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
     QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
-    const Q3CString app = dcopcall.section(' ', 0,0).utf8();
+    const Q3CString app = dcopcall.section(' ', 0,0).toUtf8();
     
     QByteArray dataToSend;
     QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
@@ -1007,8 +1007,8 @@ Q3ValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices
     dataStream << file_list;
     DCOPCString replyType;
     QByteArray replyData;
-    DCOPCString object   =  dcopcall.section(' ', 1,-2).utf8();
-    DCOPCString function =  dcopcall.section(' ', -1).utf8();
+    DCOPCString object   =  dcopcall.section(' ', 1,-2).toUtf8();
+    DCOPCString function =  dcopcall.section(' ', -1).toUtf8();
     if(!function.endsWith("(KURL::List)")) {
       kdWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KURL::List) and must be specified." << endl;
     } else {

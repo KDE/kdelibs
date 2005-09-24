@@ -246,7 +246,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(new QLabel(i18n("Cipher in use:"), this), 7, 0);
     layout->addWidget(new QLabel(cipher, this), 7, 1);
     layout->addWidget(new QLabel(i18n("Details:"), this), 8, 0);
-    layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 8, 1);
+    layout->addWidget(new QLabel(cipherdesc.simplified(), this), 8, 1);
     layout->addWidget(new QLabel(i18n("SSL version:"), this), 9, 0);
     layout->addWidget(new QLabel(sslversion, this), 9, 1);
     layout->addWidget(new QLabel(i18n("Cipher strength:"), this), 10, 0);

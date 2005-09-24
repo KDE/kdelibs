@@ -78,7 +78,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		}
 
 		QString encodedCertStr = cfg->readEntry("Certificate");
-		QByteArray encodedCert = encodedCertStr.local8Bit();
+		QByteArray encodedCert = encodedCertStr.toLocal8Bit();
 	       	KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
 			cfg->deleteGroup(*i);
@@ -247,7 +247,7 @@ QStringList groups = cfg->groupList();
 		QByteArray encodedCert;
 		KSSLCertificate *newCert;
 
-		encodedCert = cfg->readEntry("Certificate").local8Bit();
+		encodedCert = cfg->readEntry("Certificate").toLocal8Bit();
 	       	newCert = KSSLCertificate::fromString(encodedCert);
 
 		if (!newCert) {
@@ -673,7 +673,7 @@ return true;
 
 
 bool KSSLD::caAdd(QString certificate, bool ssl, bool email, bool code) {
-KSSLCertificate *x = KSSLCertificate::fromString(certificate.local8Bit());
+KSSLCertificate *x = KSSLCertificate::fromString(certificate.toLocal8Bit());
 
 	if (!x) return false;
 
@@ -756,7 +756,7 @@ bool KSSLD::caRemoveFromFile(QString filename) {
 	for (QStringList::Iterator it = certificates.begin();
 					it != certificates.end(); ++it ) {
 		QString certificate = *it;
-		KSSLCertificate *x = KSSLCertificate::fromString(certificate.local8Bit());
+		KSSLCertificate *x = KSSLCertificate::fromString(certificate.toLocal8Bit());
 		ok &= x && caRemove(x->getSubject());
 		delete x;
 	}

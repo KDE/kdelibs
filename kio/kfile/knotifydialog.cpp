@@ -826,8 +826,8 @@ void KNotifyWidget::save()
 // "/opt/kde3/share/apps/kwin/eventsrc"
 QString KNotifyWidget::makeRelative( const QString& fullPath )
 {
-    int slash = fullPath.findRev( '/' ) - 1;
-    slash = fullPath.findRev( '/', slash );
+    int slash = fullPath.lastIndexOf( '/' ) - 1;
+    slash = fullPath.lastIndexOf( '/', slash );
 
     if ( slash < 0 )
         return QString::null;

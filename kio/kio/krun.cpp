@@ -495,7 +495,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it)
     if (!(*it).contains('='))
       // Remove path if wanted
-      return removePath ? (*it).mid((*it).findRev('/') + 1) : *it;
+      return removePath ? (*it).mid((*it).lastIndexOf('/') + 1) : *it;
   return QString::null;
 }
 

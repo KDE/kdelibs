@@ -59,7 +59,7 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
   stream << (int) 7 << url << method;
   // Same for static data
   if ( ! request.isEmpty() && ! request.isNull() ) {
-    staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.utf8();
+    staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.toUtf8();
     staticData.truncate( staticData.size() - 1 );
     d->savedStaticData = staticData;
   }

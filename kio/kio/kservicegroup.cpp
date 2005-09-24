@@ -93,7 +93,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
      m_strCaption = _relpath;
      if (m_strCaption.endsWith(QLatin1Char('/')))
         m_strCaption = m_strCaption.left(m_strCaption.length()-1);
-     int i = m_strCaption.findRev('/');
+     int i = m_strCaption.lastIndexOf('/');
      if (i > 0)
         m_strCaption = m_strCaption.mid(i+1);
   }
@@ -355,20 +355,20 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         // strxfrm() crashes on Solaris
 #ifndef USE_SOLARIS
         // maybe it'd be better to use wcsxfrm() where available
-        size_t ln = strxfrm( key.data(), name.local8Bit().data(), key.size());
+        size_t ln = strxfrm( key.data(), name.toLocal8Bit().data(), key.size());
         if( ln != size_t( -1 ))
         {
             if( (int)ln >= key.size())
             { // didn't fit?
                 key.resize( ln + 1 );
-                if( strxfrm( key.data(), name.local8Bit().data(), key.size()) == size_t( -1 ))
-                    key = name.local8Bit();
+                if( strxfrm( key.data(), name.toLocal8Bit().data(), key.size()) == size_t( -1 ))
+                    key = name.toLocal8Bit();
             }
         }
         else
 #endif
         {
-            key = name.local8Bit();
+            key = name.toLocal8Bit();
         }
         list.insert(key,SPtr(*it));
     }

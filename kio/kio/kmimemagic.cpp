@@ -563,7 +563,7 @@ public:
 
     bool restoreAccessTime( const QString & file ) const
     {
-        QString dir = file.left( file.findRev( '/' ) );
+        QString dir = file.left( file.lastIndexOf( '/' ) );
         bool res = tmpDirs.contains( dir );
         //kdDebug(7018) << "restoreAccessTime " << file << " dir=" << dir << " result=" << res << endl;
         return res;

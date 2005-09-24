@@ -157,7 +157,7 @@ void IEExporter::visit( const KBookmark &bk ) {
     file.open( QIODevice::WriteOnly );
     QTextStream ts( &file );
     ts << "[InternetShortcut]\r\n";
-    ts << "URL=" << bk.url().url().utf8() << "\r\n";
+    ts << "URL=" << bk.url().url().toUtf8() << "\r\n";
 }
 
 void IEExporter::visitEnter( const KBookmarkGroup &grp ) {

@@ -40,37 +40,37 @@ public:
 public slots:
    void started( const KURL &url )
    {
-      cout << "*** started( " << url.url().local8Bit().data() << " )" << endl;
+      cout << "*** started( " << url.url().toLocal8Bit().data() << " )" << endl;
    }
    void canceled() { cout << "canceled()" << endl; }
    void canceled( const KURL& url )
    {
-      cout << "*** canceled( " << url.prettyURL().local8Bit().data() << " )" << endl;
+      cout << "*** canceled( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
    void completed() { cout << "*** completed()" << endl; }
    void completed( const KURL& url )
    {
-      cout << "*** completed( " << url.prettyURL().local8Bit().data() << " )" << endl;
+      cout << "*** completed( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
    void redirection( const KURL& url )
    {
-      cout << "*** redirection( " << url.prettyURL().local8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
    void redirection( const KURL& src, const KURL& dest )
    {
-      cout << "*** redirection( " << src.prettyURL().local8Bit().data() << ", "
-           << dest.prettyURL().local8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << src.prettyURL().toLocal8Bit().data() << ", "
+           << dest.prettyURL().toLocal8Bit().data() << " )" << endl;
    }
    void clear() { cout << "*** clear()" << endl; }
    void newItems( const KFileItemList& items )
    {
       cout << "*** newItems: " << endl;
       for ( KFileItemListIterator it( items ) ; it.current() ; ++it )
-          cout << it.current() << " " << it.current()->name().local8Bit().data() << endl;
+          cout << it.current() << " " << it.current()->name().toLocal8Bit().data() << endl;
    }
    void deleteItem( KFileItem* item )
    {
-      cout << "*** deleteItem: " << item->url().prettyURL().local8Bit().data() << endl;
+      cout << "*** deleteItem: " << item->url().prettyURL().toLocal8Bit().data() << endl;
    }
    void itemsFilteredByMime( const KFileItemList&  )
    {
@@ -83,7 +83,7 @@ public slots:
       // TODO
    }
    void infoMessage( const QString& msg )
-   { cout << "*** infoMessage: " << msg.local8Bit().data() << endl; }
+   { cout << "*** infoMessage: " << msg.toLocal8Bit().data() << endl; }
 
    void percent( int percent )
    { cout << "*** percent: " << percent << endl; }

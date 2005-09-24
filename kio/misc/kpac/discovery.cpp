@@ -95,7 +95,7 @@ namespace KPAC
             HEADER header;
             unsigned char buf[ PACKETSZ ];
         } response;
-        int len = res_query( m_hostname.local8Bit(), C_IN, T_SOA,
+        int len = res_query( m_hostname.toLocal8Bit(), C_IN, T_SOA,
                              response.buf, sizeof( response.buf ) );
         if ( len <= int( sizeof( response.header ) ) ||
              ntohs( response.header.ancount ) != 1 ) return true;

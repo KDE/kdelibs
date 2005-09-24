@@ -405,7 +405,7 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
     }
 
     // Otherwise go up and try again
-    int pos = path.findRev( '/' );
+    int pos = path.lastIndexOf( '/' );
     KArchiveDirectory * parent;
     QString dirname;
     if ( pos == -1 ) // no more slash => create in root dir

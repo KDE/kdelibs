@@ -241,7 +241,7 @@ Wed Oct 20 15:07:16 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 	
 1999-06-09  Woohyun JANG <louis@mizi.co.kr>
 
-	* kdir.cpp: used QString::local8Bit() instead of QString::ascii() 
+	* kdir.cpp: used QString::toLocal8Bit() instead of QString::ascii() 
 	for file names and directory names.
 
 	* kfiledialog.cpp: used QStringList instead of QStrIList. 

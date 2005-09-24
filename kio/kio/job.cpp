@@ -2515,7 +2515,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     QString path = url.path();
                     int pos = 0;
                     for ( int n = 0; n < numberOfSlashes + 1; ++n ) {
-                        pos = path.findRev( '/', pos - 1 );
+                        pos = path.lastIndexOf( '/', pos - 1 );
                         if ( pos == -1 ) { // error
                             kdWarning(7007) << "kioslave bug: not enough slashes in UDS_URL " << path << " - looking for " << numberOfSlashes << " slashes" << endl;
                             break;

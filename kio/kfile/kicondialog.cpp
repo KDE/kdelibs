@@ -65,7 +65,7 @@ protected:
 public:
  IconPath(const QString &ip) : QString (ip)
  {
-   int n = findRev('/');
+   int n = lastIndexOf('/');
    m_iconName = (n==-1) ? static_cast<QString>(*this) : mid(n+1);
  }
 

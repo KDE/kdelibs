@@ -268,16 +268,16 @@ static void printSupportedMimeTypes()
     if ( allMimeTypes.isEmpty() )
     {
         kdDebug() <<
-            i18n("No support for metadata extraction found.").local8Bit()
+            i18n("No support for metadata extraction found.").toLocal8Bit()
              << endl;
         return;
     }
 
-    kdDebug() << i18n("Supported MimeTypes:").local8Bit() << endl;
+    kdDebug() << i18n("Supported MimeTypes:").toLocal8Bit() << endl;
 
     QStringList::ConstIterator it = allMimeTypes.begin();
     for ( ; it != allMimeTypes.end(); it++ )
-        kdDebug() << (*it).local8Bit() << endl;
+        kdDebug() << (*it).toLocal8Bit() << endl;
 }
 
 // caller needs to delete the returned list!
@@ -305,8 +305,8 @@ static void printMimeTypes( const KCmdLineArgs *args )
     {
         KURL url = args->url( i );
         KMimeType::Ptr mt = KMimeType::findByURL( url );
-        kdDebug() << args->arg(i) << ": " << mt->comment().local8Bit() << " ("
-             << mt->name().local8Bit() << ")" << endl;
+        kdDebug() << args->arg(i) << ": " << mt->comment().toLocal8Bit() << " ("
+             << mt->name().toLocal8Bit() << ")" << endl;
     }
 }
 
@@ -314,7 +314,7 @@ static void printList( const QStringList& list )
 {
     QStringList::ConstIterator it = list.begin();
     for ( ; it != list.end(); ++it )
-        kdDebug() << (*it).local8Bit() << endl;
+        kdDebug() << (*it).toLocal8Bit() << endl;
     kdDebug() << endl;
 }
 
@@ -350,7 +350,7 @@ static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
             QStringList::ConstIterator git = groups.begin();
             for ( ; git != groups.end(); ++git )
             {
-                kdDebug() << "Group: " << (*git).local8Bit() << endl;
+                kdDebug() << "Group: " << (*git).toLocal8Bit() << endl;
                 printList( props->availableKeys( *git ) );
             }
         }
@@ -364,7 +364,7 @@ static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
             QString key = QString::fromLocal8Bit( args->getOption("getValue"));
             QStringList::ConstIterator git = props->groupsToUse().begin();
             for ( ; git != props->groupsToUse().end(); ++git )
-                kdDebug() << props->getValue( *git, key ).local8Bit() << endl;
+                kdDebug() << props->getValue( *git, key ).toLocal8Bit() << endl;
         }
 
         if ( args->isSet( "setValue" ) )
@@ -464,7 +464,7 @@ int main( int argc, char **argv )
             if ( !quiet )
             {
                 kdWarning() << args->arg(i) << ": " <<
-                i18n("Cannot determine metadata").local8Bit() << endl;
+                i18n("Cannot determine metadata").toLocal8Bit() << endl;
             }
             delete props;
         }

@@ -393,7 +393,7 @@ QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
     bool reverse = sortSpec & QDir::Reversed;
     bool dirsFirst = sortSpec & QDir::DirsFirst;
     char start = (isDir && dirsFirst) ? (reverse ? '2' : '0') : '1';
-    return KIO::number( value ).rightJustify( 24, '0' ).prepend( QLatin1Char(start) );
+    return KIO::number( value ).rightJustified( 24, '0' ).prepend( QLatin1Char(start) );
 }
 
 void KFileView::setDropOptions(int options)

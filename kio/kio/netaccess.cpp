@@ -398,7 +398,7 @@ QString NetAccess::fish_executeInternal(const KURL & url, const QString command,
     remoteTempFileName = tmpFile.name();
     // only need the filename KTempFile adds some KDE specific dirs
     // that probably does not exist on the remote side
-    int pos = remoteTempFileName.findRev('/');
+    int pos = remoteTempFileName.lastIndexOf('/');
     remoteTempFileName = "/tmp/fishexec_" + remoteTempFileName.mid(pos + 1);
     tempPathUrl.setPath( remoteTempFileName );
     bJobOK = true; // success unless further error occurs

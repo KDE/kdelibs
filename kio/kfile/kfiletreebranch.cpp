@@ -182,7 +182,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
             if( !m_showExtensions && !currItem->isDir() )	/* Need to cut the extension */
             {
                 QString name = currItem->text();
-                int mPoint = name.findRev( '.' );
+                int mPoint = name.lastIndexOf( '.' );
                 if( mPoint > 0 )
                     name = name.left( mPoint );
                 newKFTVI->setText( 0, name );

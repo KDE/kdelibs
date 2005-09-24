@@ -79,7 +79,7 @@ void SMTP::setSenderAddress(const QString& sender)
     index =  senderAddress.find('>');
     if (index != -1)
         senderAddress = senderAddress.left(index);
-    senderAddress = senderAddress.simplifyWhiteSpace();
+    senderAddress = senderAddress.simplified();
     while (1) {
         index =  senderAddress.find(' ');
         if (index != -1)

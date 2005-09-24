@@ -149,13 +149,13 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	// Set the subject
 	X509_NAME *n = kossl->X509_NAME_new();
 
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_countryName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_organizationName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_organizationalUnitName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_localityName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_stateOrProvinceName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_commonName, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
-	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_pkcs9_emailAddress, MBSTRING_UTF8, (unsigned char*)name.local8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_countryName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_organizationName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_organizationalUnitName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_localityName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_stateOrProvinceName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_commonName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
+	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_pkcs9_emailAddress, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
 	
 	rc = kossl->X509_REQ_set_subject_name(req, n);
 
@@ -188,7 +188,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	kossl->i2d_X509_REQ_fp(csrFile.fstream(), req);
 
 	kossl->i2d_PKCS8PrivateKey_fp(p8File.fstream(), pkey,
-			kossl->EVP_bf_cbc(), pass.local8Bit().data(),
+			kossl->EVP_bf_cbc(), pass.toLocal8Bit().data(),
 			pass.length(), 0L, 0L);
 
 	// FIXME Write kconfig entry to store the filenames under the md5 hash

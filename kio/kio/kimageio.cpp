@@ -498,7 +498,7 @@ QString KImageIO::type(const QString& filename)
 {
   KImageIOFormatList *formatList = KImageIOFactory::self()->formatList;
   QString suffix = filename;
-  int dot = suffix.findRev('.');
+  int dot = suffix.lastIndexOf('.');
   if (dot >= 0)
     suffix = suffix.mid(dot + 1);
 

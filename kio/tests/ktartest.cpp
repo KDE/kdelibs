@@ -145,7 +145,7 @@ int main( int argc, char** argv )
       QString str, num;
       str.fill( 'a', i-10 );
       num.setNum( i );
-      num = num.rightJustify( 10, '0' );
+      num = num.rightJustified( 10, '0' );
       tar.writeFile( str+num, "testu", "testg", 3, "hum" );
     }
     // Result of this test : works perfectly now (failed at 482 formerly and

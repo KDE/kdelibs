@@ -1178,7 +1178,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
 void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, int mainwindow)
 {
    KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
-   KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
+   KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
    if (x) {
       // Set the chain back onto the certificate
       QStringList cl =
@@ -1187,7 +1187,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
 
       ncl.setAutoDelete(true);
       for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
-         KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
+         KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
          if (y) ncl.append(y);
       }
 
