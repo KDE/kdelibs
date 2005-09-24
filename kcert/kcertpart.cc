@@ -526,7 +526,7 @@ if (whatType == "application/x-pkcs12") {
 		isPEM = theFile.contains(signature);
 	}
 
-	fp = fopen(m_file.local8Bit(), "r");
+	fp = fopen(m_file.toLocal8Bit(), "r");
 	if (!fp) {
 		KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
 		return false;
