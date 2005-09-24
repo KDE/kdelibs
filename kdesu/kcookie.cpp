@@ -99,7 +99,7 @@ void KCookie::getXCookie()
 	return;
     }
     unblockSigChild();
-    output = output.simplifyWhiteSpace();
+    output = output.simplified();
     if (output.isEmpty())
     {
        kdWarning(900) << "No X authentication info set for display " <<
